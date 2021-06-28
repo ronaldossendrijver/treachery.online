@@ -1,0 +1,109 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameComponent
+
+@if (CurrentGame != null)
+{
+    var info = CurrentGame;
+
+    <div class="card p-1 mb-2 border-danger">
+
+        <div class="card-header">Welcome to @info.GameName</div>
+
+        <div class="card-body">
+
+            <div class="mt-1 mb-0"><strong>Maximum number of turns:</strong> @info.MaximumNumberOfTurns</div>
+
+            <div class="mt-1 mb-0"><strong>Maximum number of players:</strong> @info.MaximumNumberOfPlayers</div>
+
+            <div class="mt-1 mb-0"><strong>Players:</strong> @Skin.Current.Join(info.Players)</div>
+
+            <div class="mt-1 mb-0"><strong>Bots:</strong> @Skin.Current.Join(info.Rules.Where(r => Game.GetRuleGroup(r) == RuleGroup.Bots).Select(r => Skin.Current.Describe(r)))</div>
+
+            <div class="mt-1 mb-0"><strong>Factions:</strong> @Skin.Current.Join(info.FactionsInPlay)</div>
+
+            <div class="mt-2 mb-0"><strong>Ruleset:</strong> @Skin.Current.Describe(info.Ruleset)</div>
+
+            <label class="mt-1 mb-0 small">Core Game, Advanced Rules</label>
+            <ul class="mt-0 mb-1">
+                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreAdvanced))
+                {
+                    <li class="small" style="@DetermineRuleClass(info.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
+                }
+            </ul>
+
+            <label class="mt-1 mb-0 small">Core Game, Exceptions to Basic Rules</label>
+            <ul class="mt-0 mb-1">
+                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreBasicExceptions))
+                {
+                    <li class="small" style="@DetermineRuleClass(info.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
+                }
+            </ul>
+
+            <label class="mt-1 mb-0 small">Core Game, Exceptions to Advanced Rules</label>
+            <ul class="mt-0 mb-1">
+                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreAdvancedExceptions))
+                {
+                    <li class="small" style="@DetermineRuleClass(info.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
+                }
+            </ul>
+
+            <label class="mt-1 mb-0 small">Ixians &amp; Tleilaxu Expansion</label>
+            <ul class="mt-0 mb-1">
+                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.ExpansionIxAndBtBasic))
+                {
+                    <li class="small" style="@DetermineRuleClass(info.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
+                }
+            </ul>
+
+            <label class="mt-1 mb-0 small">Ixians &amp; Tleilaxu Expansion, Advanced Rules</label>
+            <ul class="mt-0 mb-1">
+                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.ExpansionIxAndBtAdvanced))
+                {
+                    <li class="small" style="@DetermineRuleClass(info.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
+                }
+            </ul>
+
+            <label class="mt-1 mb-0 small">House Rules</label>
+            <ul class="mt-0 mb-1">
+                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.House))
+                {
+                    <li class="small" style="@DetermineRuleClass(info.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
+                }
+            </ul>
+
+        </div>
+    </div>
+}
+
+@code {
+
+    private string StyleDef(Faction f)
+    {
+        return string.Format("color:{0}", Skin.Current.GetFactionColor(f));
+    }
+
+    private string DetermineRuleClass(bool applicable)
+    {
+        if (applicable)
+        {
+            return "color:white";
+        }
+        else
+        {
+            return "color:grey";
+        }
+    }
+
+    private GameInfo CurrentGame
+    {
+        get
+        {
+            return h.AvailableGames.Keys.FirstOrDefault(info => info.HostID == h.HostProxy.HostID);
+        }
+    }
+}

@@ -1,0 +1,54 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<ClairVoyanceAnswered>
+@implements IDisposable
+
+<div class="card p-1 mb-2 border-danger" style="@BackgroundStyle">
+    <div class="card-header" style="@HeaderStyle">@Skin.Current.Describe(h.Game.LatestClairvoyance.Initiator) questions you with @Skin.Current.Describe(TreacheryCardType.Clairvoyance)!</div>
+    <div class="card-body" style="@BodyStyle">
+
+        <div class="font-italic bg-dark">@h.Game.LatestClairvoyance.GetQuestion()</div>
+
+        <button class="btn btn-primary mt-1" @onclick="Confirm">Yes</button>
+        <button class="btn btn-primary mt-1" @onclick="Pass">No</button>
+        <button class="btn btn-primary mt-1" @onclick="Other">I can't answer that...</button>
+
+    </div>
+</div>
+
+@code {
+
+    protected override ClairVoyanceAnswered ConfirmedResult
+    {
+        get
+        {
+            return new ClairVoyanceAnswered(h.Game) { Initiator = h.Faction, Answer = ClairVoyanceAnswer.Yes };
+        }
+    }
+
+    protected override ClairVoyanceAnswered PassedResult
+    {
+        get
+        {
+            return new ClairVoyanceAnswered(h.Game) { Initiator = h.Faction, Answer = ClairVoyanceAnswer.No };
+        }
+    }
+
+    protected override ClairVoyanceAnswered OtherResult
+    {
+        get
+        {
+            return new ClairVoyanceAnswered(h.Game) { Initiator = h.Faction, Answer = ClairVoyanceAnswer.Unknown };
+        }
+    }
+
+    public void Dispose()
+    {
+
+    }
+
+}

@@ -1,0 +1,55 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameComponent
+
+<div class="card p-0 mb-2" style="@(StatusBackground)">
+
+    <div class="card-header text-center bg-transparent border-bottom-0">
+        @if (h.Game != null)
+        {
+            <div class="@(StatusDescriptionClass)">@h.Status.Description</div>
+        }
+        else
+        {
+            <div class="@(StatusDescriptionClass)">Select an existing game to join or host one yourself...</div>
+        }
+    </div>
+
+</div>
+
+@code {
+
+    private string StatusBackground
+    {
+        get
+        {
+            if (h.Game == null || h.Status.WaitingForOthers)
+            {
+                return "background-image:url('art/worm.gif');background-size:contain;background-repeat:no-repeat;background-color:#e8dba6ee;background-clip:content-box";
+            }
+            else
+            {
+                return "background-size:contain;background-repeat:no-repeat;background-color:#e8dba6ee;background-clip:content-box";
+            }
+        }
+    }
+
+    private string StatusDescriptionClass
+    {
+        get
+        {
+            if (h.Game != null && h.Status.WaitingForOthers)
+            {
+                return "text-dark";
+            }
+            else
+            {
+                return "text-danger font-weight-bold";
+            }
+        }
+    }
+}

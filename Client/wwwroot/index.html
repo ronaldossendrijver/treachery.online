@@ -1,0 +1,512 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="Description" content="Online multiplayer game inspired by the Dune board game" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
+
+    <title>treachery.online</title>
+
+    <base href="/" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspanel4@4.11.3/dist/jspanel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.1/howler.min.js"></script>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/darkly/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jspanel4@4.11.3/dist/jspanel.min.css">
+    <link rel="stylesheet" href="Treachery.Client.styles.css" />
+    <link rel="stylesheet" href="css/app.css" />
+
+    <script type="text/javascript">
+
+        function DetermineCanvas() {
+
+            var dims = GetMapDimensions();
+
+            if (dims != null) {
+
+                if (Math.abs(dims.Width - dims.Ratio * dims.DivWidth) >= 1) {
+
+                    var h = 1.110012062726176 * dims.DivWidth;
+
+                    canvas.width = dims.Ratio * dims.DivWidth;
+                    canvas.height = dims.Ratio * h;
+                    canvas.style.width = dims.DivWidth + "px";
+                    canvas.style.height = h + "px";
+
+                    var ctx = canvas.getContext('2d');
+                    ctx.scale(dims.Ratio * dims.DivWidth / 4145, dims.Ratio * h / 4601);
+
+                    Draw();
+                }
+            }
+        }
+
+        var canvas = null;
+        var mapdiv = null;
+
+        function GetMapDimensions() {
+
+            if (canvas == null || mapdiv == null) {
+
+                canvas = document.querySelector('canvas');
+                mapdiv = document.getElementById('mapdiv');
+
+                if (canvas == null || mapdiv == null) return null; //{ X: 0, Ratio: 1, DivWidth: 0, Y: 0, Width: 0, Height: 0, ScaleX: 1, ScaleY: 1, CanvasScrollY: 0 }
+            }
+
+            var ratio = window.devicePixelRatio != 0 ? 1.5 * window.devicePixelRatio : 2;
+
+            return {
+                X: mapdiv.offsetParent.offsetLeft + mapdiv.offsetLeft,
+                //Y: mapdiv.offsetParent.offsetTop + mapdiv.offsetTop,
+                Ratio: ratio,
+                DivWidth: mapdiv.offsetWidth,
+                Width: canvas.width,
+                Height: canvas.height,
+                ScaleX: canvas.width / (ratio * 4145),
+                ScaleY: canvas.height / (ratio * 4601),
+                //CanvasScrollX: mapdiv.getBoundingClientRect().left,
+                ScrollY: mapdiv.getBoundingClientRect().top,
+            };
+        }
+
+        function GetWindowDimensions() {
+
+            return { X: 0, Y: 0, Width: $(window).width(), Height: $(window).height() };
+        }
+
+        function Draw() {
+
+            DotNet.invokeMethodAsync('Treachery.Client', 'MapDrawerDraw');
+        }
+
+        function EnablePopovers() {
+
+            $('[data-toggle="popover"]').popover('dispose');
+            $('[data-toggle="popover"]').popover({ sanitize: false });
+
+            $('[data-toggle="tooltip"]').tooltip('dispose');
+            $('[data-toggle="tooltip"]').tooltip({ sanitize: false });
+        }
+
+        function EnableMapHover() {
+
+            $("#mapdiv").on('mousemove', function (e) {
+                UpdateTooltip(e);
+            }
+            );
+        }
+
+        var oldX = 0;
+        var oldY = 0;
+        function UpdateTooltip(e) {
+
+            if (Math.abs(e.clientX - oldX) > 10 || Math.abs(e.clientY - oldY) > 10) {
+
+                oldX = e.clientX;
+                oldY = e.clientY;
+
+                tooltip = DotNet.invokeMethodAsync('Treachery.Client', 'DetermineTooltip', e.clientX, e.clientY, GetMapDimensions())
+                    .then(result => SetTooltipText(result));
+            }
+        }
+
+        var oldText = "";
+        function SetTooltipText(text) {
+
+            if (text != oldText) {
+
+                oldText = text;
+                $('#mapdiv')
+                    .tooltip('hide')
+                    .attr('data-original-title', text)
+                    .tooltip('show');
+            }
+
+        }
+
+        function SendChatMessage() {
+
+            var msgElt = document.getElementById("messageSentBody");
+            var body = msgElt.value;
+            msgElt.value = '';
+            var target = document.getElementById("messageSentTarget").value;
+            DotNet.invokeMethodAsync('Treachery.Client', 'SendMessage', body, target)
+        }
+
+        function AddChatEnterListener() {
+
+            var chatMessageBody = document.getElementById('messageSentBody');
+            if (chatMessageBody != null) {
+                chatMessageBody.addEventListener('keyup', function (event) {
+                    if (event.key == "Enter") {
+                        SendChatMessage();
+                    }
+                });
+            }
+        }
+
+        function AddEnterListeners() {
+
+            var userName = document.getElementById('userName');
+            if (userName != null) {
+                userName.addEventListener('keyup', function (event) {
+                    if (event.key == "Enter") {
+                        DotNet.invokeMethodAsync('Treachery.Client', 'ConfirmUsername');
+                    }
+                });
+            }
+        }
+
+        Howler.autoUnlock = false;
+
+        let sounds = new Map();
+        function PlaySound(file, volume, loop) {
+
+            var sound = sounds.get(file);
+            if (sound == null) {
+
+                sound = new Howl({ src: file, html5: true, volume: volume, loop: loop });
+                sounds.set(file, sound);
+            }
+            else {
+
+                sound.stop();
+                sound.volume(volume);
+                sound.loop(loop);
+            }
+
+            sound.play();
+        }
+
+        function StopSound(file) {
+
+            var sound = sounds.get(file);
+            if (sound != null) {
+
+                sound.stop();
+            }
+        }
+
+        function FadeSound(file, fromVolume, toVolume, seconds) {
+
+            var sound = sounds.get(file);
+            if (sound != null) {
+
+                sound.fade(fromVolume, toVolume, seconds);
+            }
+        }
+
+        function ChangeSoundVolume(file, volume) {
+
+            var sound = sounds.get(file);
+
+            if (sound != null) {
+
+                sound.volume(volume);
+            }
+        }
+
+        function StopSounds() {
+
+            Howler.stop();
+        }
+
+        function saveFile(filename, data) {
+
+            var link = document.createElement('a');
+            link.download = filename;
+            link.href = "data:text/plain," + data;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function readFile(inputFile) {
+
+            const temporaryFileReader = new FileReader();
+            return new Promise((resolve, reject) => {
+
+                temporaryFileReader.onerror = () => {
+                    temporaryFileReader.abort();
+                    reject(new DOMException("Problem parsing input file."));
+                };
+
+                temporaryFileReader.addEventListener("load", function () {
+                    resolve(temporaryFileReader.result);
+                }, false);
+
+                temporaryFileReader.readAsText(inputFile.files[0]);
+            });
+        }
+
+        function Clear(id) {
+
+            document.getElementById(id).value = "";
+        }
+
+        function UrlExists(url) {
+
+            let img = new Image();
+
+            return new Promise(
+
+                (resolve) => {
+
+                    img.onerror = () => {
+                        resolve(false);
+                    };
+
+                    img.onload = () => {
+                        resolve(true);
+                    };
+
+                    img.src = url;
+
+                });
+        }
+
+        /*
+         * Floating Panel (JSPanel) support functions
+         */
+
+        let panels = new Map();
+        function CreateJsPanel(options) {
+
+            var newPanel = jsPanel.create(options);
+            panels.set(newPanel.id, newPanel);
+            return newPanel.id;
+        }
+
+        function UpdateJsPanel(panelID, elementRef, options) {
+
+            if (panelID != null) {
+                var existingPanel = panels.get(panelID);
+                existingPanel.content = elementRef;
+                return panelID;
+            }
+        }
+
+        function HideJsPanel(panelID) {
+
+            if (panelID != null) {
+                var existingPanel = panels.get(panelID);
+                existingPanel.opacity = 0.2;
+            }
+        }
+
+        function CloseJsPanel(panelID) {
+
+            if (panelID != null) {
+                var existingPanel = panels.get(panelID);
+                existingPanel.close();
+                panels.delete(panelID);
+            }
+        }
+
+        /*
+         * Popout Chat Panel functions
+         */
+
+        var chatPopup;
+        function OpenChatPopup() {
+
+            if (chatPopup == null) {
+
+                var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+                var eventer = window[eventMethod];
+                var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+
+                // Listen to message from child window
+                eventer(messageEvent, function (e) {
+
+                    DotNet.invokeMethodAsync('Treachery.Client', 'SendMessage', e.data.body, e.data.target)
+
+                }, false);
+            }
+
+            chatPopup = window.open("chat.html", "mywindow", "width=640,height=480,status=no,titlebar=no,location=no");
+            chatPopup.onload = ChatPopupLoaded();
+        }
+
+        function ChatPopupLoaded() {
+
+            if (chatPopup != null) {
+
+                DotNet.invokeMethodAsync('Treachery.Client', 'InitializeChatPopup')
+                chatPopup.focus();
+            }
+        }
+
+        function SendToChatPopup(chatobj) {
+
+            if (chatPopup != null) {
+                chatPopup.postMessage(chatobj, '*');
+            }
+        }
+
+        /*
+         * Other support functions
+         */
+
+        function ClearSelection() {
+
+            if (window.getSelection) { window.getSelection().removeAllRanges(); }
+            else if (document.selection) { document.selection.empty(); }
+        }
+
+        function HideModal(modalId) {
+
+            $(modalId).modal('hide');
+        }
+
+        function ToggleFullScreen() {
+
+            var element = document.body;
+
+            var isFullscreen = document.webkitIsFullScreen || document.mozFullScreen || false;
+
+            element.requestFullScreen = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || function () { return false; };
+            document.cancelFullScreen = document.cancelFullScreen || document.webkitCancelFullScreen || document.mozCancelFullScreen || function () { return false; };
+
+            isFullscreen ? document.cancelFullScreen() : element.requestFullScreen();
+        }
+
+        function Print(elementId) {
+
+            var elem = document.getElementById(elementId);
+
+            var domClone = elem.cloneNode(true);
+
+            var $printSection = document.getElementById("printSection");
+
+            if (!$printSection) {
+                var $printSection = document.createElement("div");
+                $printSection.id = "printSection";
+                document.body.appendChild($printSection);
+            }
+
+            $printSection.innerHTML = "";
+            $printSection.appendChild(domClone);
+            window.print();
+        }
+
+        //Sets the .src of an existing <IMG> within the dom to the specified value
+        function SetImageSVG(id, svg) {
+
+            document.getElementById(id).src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+        }
+
+        /*
+         * Arrows
+         */
+
+        function CreateArrowImage(arrowImageId, radius, pointFromXYZ, pointToXYZ, arrowcolor, bordercolor, segmentScale) {
+
+            var svg = DetermineArrowSVG(radius, pointFromXYZ, pointToXYZ, arrowcolor, bordercolor, segmentScale, 12, 4.0);
+            SetImageSVG(arrowImageId, svg);
+        }
+
+        function DetermineArrowSVG(radius, from, to, arrowcolor, bordercolor, segmentScale, shadowDistance, shadowBlur) {
+
+            var result = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${radius * 2}" height="${radius * 2}">`;
+            var template = GetArrowSegmentTemplate(arrowcolor, bordercolor, 10, segmentScale, shadowDistance, shadowBlur);
+            result += template;
+            const u = from.map(a => a / radius);
+            const w = cross(from, to);
+            let v = cross(u, w);
+            v = v.map(a => a / length(w));
+            const tMax = Math.acos(inner(from, to) / length(from) / length(to));
+            const n = Math.round((50 * tMax) / Math.PI);
+            for (let i = 0; i <= n; i++) {
+                const t = -tMax * (i / n);
+                const t2 = -tMax * ((i + 1) / n);
+                const x = radius * (u[0] * Math.cos(t) + v[0] * Math.sin(t))
+                const y = radius * (u[1] * Math.cos(t) + v[1] * Math.sin(t))
+                const x2 = radius * (u[0] * Math.cos(t2) + v[0] * Math.sin(t2))
+                const y2 = radius * (u[1] * Math.cos(t2) + v[1] * Math.sin(t2))
+                const a = -Math.atan2((x2 - x), (y2 - y)) / Math.PI * 180 + 90
+                result += DetermineArrowSegmentSVG(radius, x, y, a);
+            }
+            result += "</svg>";
+            return result;
+        }
+
+        function GetArrowSegmentTemplate(fillColor, bordercolor, strokeWidth, scale, shadowDistance, shadowBlur) {
+
+            var result =
+            `<defs>
+            <path id="pijl" d="M-50,-50L0,0L-50,50L0,100L100,0L0,-100L-50,-50Z" fill="${fillColor}" stroke="${bordercolor}" stroke-width="${strokeWidth}" stroke-linejoin="round" transform="scale(${scale})"/>		
+            <linearGradient id="Gradient-1" x1="20%" y1="30%" x2="40%" y2="80%">
+                <stop offset="0%" stop-color="#B8D0DE"></stop>            
+                <stop offset="100%" stop-color="#73A2BD"></stop>
+            </linearGradient>
+            <filter id="dropshadow" xmlns="http://www.w3.org/2000/svg" height="200%" width="200%">
+                <feGaussianBlur in="SourceAlpha" stdDeviation="${shadowBlur}"/>
+                <feOffset dx="${shadowDistance}" dy="${shadowDistance}" result="offsetblur"/>
+                <feComponentTransfer>
+                    <feFuncA type="linear" slope="0.5"></feFuncA>
+                </feComponentTransfer>      
+                <feMerge>
+                    <feMergeNode/>
+                    <feMergeNode in="SourceGraphic"></feMergeNode>
+                </feMerge>
+            </filter>
+            </defs>`;
+
+            return result;
+        }
+
+        function DetermineArrowSegmentSVG(radius, x, y, alpha = 0) {
+
+            return `<g transform="translate(${x + radius},${y + radius}) rotate(${alpha})" filter="url(#dropshadow)" fill="url(#Gradient-1)"><use xlink:href="#pijl"/></g>`;
+        }
+
+        const cross = (a, b) => [
+            a[1] * b[2] - a[2] * b[1],
+            a[2] * b[0] - a[0] * b[2],
+            a[0] * b[1] - a[1] * b[0],
+        ];
+
+        const inner = (v1, v2) => {
+            if (v1.length !== v2.length) return NaN;
+            return v1.reduce((sum, cur, i) => sum + cur * v2[i], 0);
+        };
+
+        const length = vector =>
+            vector.reduce((sum, cur) => sum + cur ** 2, 0) ** 0.5;
+
+    </script>
+
+</head>
+
+<body>
+
+    <div id="app">Loading...</div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="_content/Blazor.Extensions.Canvas/blazor.extensions.canvas.js"></script>
+
+    <script type="text/javascript">
+
+        window.onbeforeunload = function () { return "This will disconnect you from the game! Are you sure?"; }
+        window.addEventListener("resize", DetermineCanvas);
+
+    </script>
+
+</body>
+
+</html>

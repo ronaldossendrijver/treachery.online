@@ -1,0 +1,146 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Client.GenericComponents;
+@using Treachery.Shared;
+
+<ModalComponent Id="@Id" Title="The story of this game..." Size="modal-xl" Scrolling="true" Printable="true">
+
+    @{
+        Phase previousPhase = Phase.AwaitingPlayers;
+        MainPhase previousMainPhase = MainPhase.Started;
+
+        for (int i = 0; i < Game.History.Count; i++)
+        {
+            var evt = Game.History[i];
+            var replay = Game.States[i];
+
+            if ((previousPhase == Phase.TradingFactions || previousPhase == Phase.SelectingFactions) &&
+                replay.CurrentPhase != Phase.TradingFactions && replay.CurrentPhase != Phase.SelectingFactions)
+            {
+                <h1 class="h1">@replay.Name</h1>
+
+                <h4 class="h4">Setup</h4>
+
+                <div class="mt-1"><strong>Ruleset:</strong> @Skin.Current.Describe(replay.DetermineApproximateRuleset())</div>
+
+                @if (replay.GetCustomRules().Any())
+                {
+                    <div class="mt-1"><strong>Custom rules:</strong> @Skin.Current.Join(replay.GetCustomRules())</div>
+                }
+
+                <div class="mt-1"><strong>Game started:</strong> @evt.Time.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss \"UTC\"")</div>
+
+                <StoryPlayerInfoComponent Game="replay" ShowName="true" />
+            }
+
+            if (evt is BluePrediction)
+            {
+                var e = evt as BluePrediction;
+
+                @if (replay.YieldsSecrets(e.Initiator))
+                {
+                    <div>
+                        <img class="img-fluid" width="24" src="@Skin.Current.GetImageURL(Faction.Blue)" /> Predicted that <img class="img-fluid" width="24" src="@Skin.Current.GetImageURL(e.ToWin)" /> would win in turn @e.Turn.
+                    </div>
+                }
+            }
+
+            if (replay.CurrentMainPhase != previousMainPhase && (replay.CurrentMainPhase == MainPhase.Charity))
+            {
+                <h4 class="h4">Turn @replay.CurrentTurn</h4>
+
+                <h5 class="h5">Situation right after the spice blow:</h5>
+                <StoryPlayerInfoComponent Game="replay" ShowAlly="ShowAllies(replay)" ShowCards="true" ShowTraitorsAndFacedancers="true" ShowResources="true" ShowTechTokens="@(Game.Applicable(Rule.GreyAndPurpleExpansionTechTokens))" />
+            }
+
+            if (replay.CurrentMainPhase != previousMainPhase && (replay.CurrentMainPhase == MainPhase.Resurrection))
+            {
+                <h5>Situation at the end of bidding:</h5>
+                <StoryPlayerInfoComponent Game="replay" ShowCards="true" ShowResources="true" />
+            }
+
+            if (replay.CurrentMainPhase != previousMainPhase && (replay.CurrentMainPhase == MainPhase.Battle))
+            {
+                <h5>Situation at the end of ship & move:</h5>
+                <StoryPlayerInfoComponent Game="replay" ShowAlly="ShowAllies(replay)" ShowResources="true" ShowForces="true" ShowLeaders="true" ShowPoints="true" />
+            }
+
+            if (evt is BattleInitiated)
+            {
+                <h5>Battle for @replay.CurrentBattle.Territory</h5>
+            }
+
+            if (IsMilestone(evt))
+            {
+                <div class="mb-1">
+                    <img class="img-fluid" width="24" src="@Skin.Current.GetImageURL(evt.Initiator)" /> @evt.GetMessage()
+                </div>
+            }
+
+            if (replay.CurrentPhase != previousPhase && (replay.CurrentPhase == Phase.BattleReport))
+            {
+                <StoryBattleComponent Game="replay" />
+            }
+
+            if (replay.CurrentMainPhase != previousMainPhase && (replay.CurrentMainPhase == MainPhase.Contemplate || replay.CurrentMainPhase == MainPhase.Ended))
+            {
+                <h5>Situation at the end of turn @replay.CurrentTurn:</h5>
+                <StoryPlayerInfoComponent Game="replay" ShowAlly="ShowAllies(replay)" ShowForces="true" ShowTanks="true" ShowResources="true" ShowTechTokens="true" ShowPoints="true" />
+
+                @if (replay.CurrentPhase == Phase.GameEnded)
+                {
+                    @foreach (var w in replay.Winners)
+                    {
+                        <div>
+                            <h3 class="h3"><img class="img-fluid" width="30" src="@Skin.Current.GetImageURL(w.Faction)" /> @w.Name wins @Skin.Current.Describe(replay.WinMethod)!</h3>
+                        </div>
+                    }
+
+                    <div class="mt-2 mb-0"><strong>Game ended:</strong> @evt.Time.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss \"UTC\"")</div>
+                }
+            }
+
+            previousPhase = replay.CurrentPhase;
+            previousMainPhase = replay.CurrentMainPhase;
+        }
+
+    }
+
+</ModalComponent>
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; } = "";
+
+    [Parameter]
+    public Game Game { get; set; }
+
+    private bool IsMilestone(GameEvent evt)
+    {
+        return
+            evt is FaceDanced && ((evt as FaceDanced).FaceDancerCalled) ||
+            evt is TreacheryCalled && ((evt as TreacheryCalled).TraitorCalled) ||
+            evt is Voice ||
+            evt is Prescience ||
+            evt is Karma ||
+            evt is KarmaHandSwap ||
+            evt is KarmaFreeRevival ||
+            evt is KarmaMonster ||
+            evt is KarmaHmsMovement ||
+            evt is KarmaPrescience ||
+            evt is MetheorPlayed ||
+            evt is StormSpellPlayed ||
+            evt is AmalPlayed ||
+            evt is ClairVoyancePlayed ||
+            evt is ClairVoyanceAnswered;
+    }
+
+    private bool ShowAllies(Game g)
+    {
+        return g.Players.Any(p => p.Ally != Faction.None);
+    }
+
+}

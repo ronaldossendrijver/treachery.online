@@ -1,0 +1,38 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<ReplacedCardWon>
+
+<div class="card p-1 mb-2 border-danger">
+    <div class="card-header">Replace the card you just won by discarding it and drawing a new card from the Treachery Card deck?</div>
+    <div class="card-body">
+        <div class="form-group">
+            <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Yes</button>
+            <div class="text-danger bg-dark">@validationError</div>
+            <button class="btn btn-primary mt-1" @onclick="Pass">No</button>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    protected override ReplacedCardWon ConfirmedResult
+    {
+        get
+        {
+            return new ReplacedCardWon(h.Game) { Initiator = h.Faction, Passed = false };
+        }
+    }
+
+    protected override ReplacedCardWon PassedResult
+    {
+        get
+        {
+            return new ReplacedCardWon(h.Game) { Initiator = h.Faction, Passed = true };
+        }
+    }
+
+}

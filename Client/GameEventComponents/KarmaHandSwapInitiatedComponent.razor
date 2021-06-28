@@ -1,0 +1,45 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<KarmaHandSwapInitiated>
+
+<div class="card p-1 mb-2" style="@BackgroundStyle">
+    <div class="card-header" style="@HeaderStyle">
+        Use @Skin.Current.Describe(TreacheryCardType.Karma) to perform a Hand Swap
+    </div>
+    <div class="card-body" style="@BodyStyle">
+
+        <label for="karamaHandSwapStartTarget">Target</label>
+        <select class="custom-select" @bind="@target" id="karamaHandSwapStartTarget">
+            @foreach (var f in h.Game.ValidTargets(h.Player))
+            {
+                <option value="@f">@Skin.Current.Describe(f)</option>
+            }
+        </select>
+
+        <button disabled="@(!Valid)" class="btn btn-primary mt-1" @onclick="Confirm">Confirm</button>
+        <div class="text-danger bg-dark">@validationError</div>
+
+    </div>
+</div>
+
+@code {
+
+    private Faction target;
+
+    protected override KarmaHandSwapInitiated ConfirmedResult
+    {
+        get
+        {
+            return new KarmaHandSwapInitiated(h.Game) { Initiator = h.Faction, Target = target };
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Initialize<Faction, Faction>(ref target, h.Game.ValidTargets(h.Player));
+    }
+}

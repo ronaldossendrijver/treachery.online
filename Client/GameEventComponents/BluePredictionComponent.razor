@@ -1,0 +1,59 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<BluePrediction>
+@implements IDisposable
+
+<div class="card p-1 mb-2 border-danger">
+    <div class="card-header">Predict which faction will win the game</div>
+    <div class="card-body">
+
+        <label for="beneGesseritPredictionTurn">Turn</label>
+        <select class="custom-select" @bind="turn" id="beneGesseritPredictionTurn">
+            @foreach (var s in BluePrediction.ValidTurns(h.Game))
+            {
+                <option value="@s">@s</option>
+            }
+        </select>
+
+        <label for="beneGesseritPredictionToWin">Faction</label>
+        <select class="custom-select" @bind="toWin" id="beneGesseritPredictionToWin">
+            @foreach (var f in BluePrediction.ValidTargets(h.Game, h.Player))
+            {
+                <option value="@f">@Skin.Current.Describe(f)</option>
+            }
+        </select>
+
+        <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
+        <div class="text-danger bg-dark">@validationError</div>
+
+    </div>
+</div>
+
+@code {
+
+    private int turn;
+    private Faction toWin;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Initialize<int, int>(ref turn, BluePrediction.ValidTurns(h.Game));
+        Initialize<Faction, Faction>(ref toWin, BluePrediction.ValidTargets(h.Game, h.Player));
+    }
+
+    protected override BluePrediction ConfirmedResult
+    {
+        get
+        {
+            return new BluePrediction(h.Game) { Initiator = h.Faction, ToWin = toWin, Turn = turn };
+        }
+    }
+
+    public void Dispose()
+    {
+
+    }
+}

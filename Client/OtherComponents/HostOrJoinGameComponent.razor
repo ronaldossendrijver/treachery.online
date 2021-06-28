@@ -1,0 +1,228 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameComponent
+
+<div class="card p-1 mb-2">
+    <div class="card-header">Host a new game</div>
+    <div class="card-body">
+        <input type="text" class="form-control" @bind="hostPWD" maxlength="24" placeholder="Game password (optional)" />
+
+        <label class="btn btn-dark mt-1 p-2" title="Load game...">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" class="bi bi-file-earmark-arrow-up" viewBox="0 0 16 16">
+                <path d="M8.5 11.5a.5.5 0 0 1-1 0V7.707L6.354 8.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 7.707V11.5z" />
+                <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+            </svg>
+            @LoadGameLabel
+            <input hidden type="file" class="custom-file-input" id="fileInput" @ref="_fileInput" @onchange="LoadGame" />
+        </label>
+        <div class="text-danger small">@_loadValidationError</div>
+
+        <button class="btn btn-primary mt-1" @onclick="StartNewGame">@StartNewGameLabel</button>
+    </div>
+</div>
+
+<div class="card p-1 mb-2">
+    <div class="card-header">Join or observe a game</div>
+    <div class="card-body">
+        @if (!RunningGames.Any())
+        {
+            <div class="text-info">No games hosted...</div>
+        }
+        else
+        {
+            <table class="table table-sm table-striped" id="availableGames">
+                <tbody>
+
+                    @foreach (var av in RunningGames)
+                    {
+                        if (!joinPWD.ContainsKey(av.HostID))
+                        {
+                            joinPWD.Add(av.HostID, "");
+                            h._joinError.Add(av.HostID, "");
+                        }
+
+                        <tr class="small">
+                            <td class="w-25">@av.GameName</td>
+
+                            @if (av.CurrentPhase == Phase.AwaitingPlayers)
+                            {
+                                <td class="w-50">
+                                    @av.Players.Count() Players, @Skin.Current.Describe(av.Ruleset)
+                                </td>
+                                <td class="w-25">
+
+                                    @if (av.HasPassword)
+                                    {
+                                        <input class="form-inline input-sm" @bind="joinPWD[av.HostID]" maxlength="24" placeholder="Game password" />
+                                    }
+                                    <button class="btn btn-primary btn-sm" @onclick="@(e => JoinGameAsPlayer(av.HostID, joinPWD[av.HostID]))">Join</button>
+                                    <button class="btn btn-primary btn-sm" @onclick="@(e => JoinGameAsObserver(av.HostID, joinPWD[av.HostID]))">Observe</button>
+                                    <div class="text-danger">@h._joinError[av.HostID]</div>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    @GameInfoMessage(av)
+                                </td>
+                                <td>
+                                    @if (h._gameinprogressHostId == av.HostID)
+                                    {
+                                        <div class="form-inline">
+                                            @if (av.HasPassword)
+                                            {
+                                                <input class="form-inline input-sm" @bind="joinPWD[av.HostID]" maxlength="24" placeholder="Game password" />
+                                            }
+                                            <button class="btn btn-primary btn-sm" @onclick="@(e => RejoinGameAsPlayer(av.HostID, joinPWD[av.HostID]))">Reconnect</button>
+                                        </div>
+                                        <div class="text-danger">@h._joinError[av.HostID]</div>
+                                    }
+                                    <button class="btn btn-primary btn-sm" @onclick="@(e => RejoinGameAsObserver(av.HostID, joinPWD[av.HostID]))">Observe</button>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+@code {
+
+    private const int MAX_SAVEGAME_SIZE = 4194304;
+
+    public object _fileInput;
+    private string _loadValidationError = "";
+    private string loadedGameData = null;
+    private Game loadedGame = null;
+
+    private string hostPWD = "";
+    private Dictionary<int, string> joinPWD = new Dictionary<int, string>();
+
+    public GameInfo RejoinableGame(int hostID)
+    {
+        return RunningGames.FirstOrDefault(g => g.HostID == hostID && g.CurrentPhase > Phase.AwaitingPlayers);
+    }
+
+    public IEnumerable<GameInfo> RunningGames
+    {
+        get
+        {
+            return h.AvailableGames.Where(gameAndDate => DateTime.Now.Subtract(gameAndDate.Value).TotalSeconds < 15).Select(gameAndDate => gameAndDate.Key);
+        }
+    }
+
+    private async Task StartNewGame()
+    {
+        h.StartHost(hostPWD, loadedGameData, loadedGame);
+        await JoinGameAsPlayer(h.Host.HostID, hostPWD);
+    }
+
+    private async Task JoinGameAsPlayer(int hostID, string pwd)
+    {
+        h._joinError[hostID] = "";
+        await h.Request(hostID, new PlayerJoined() { HashedPassword = Support.GetHash(pwd), Name = h.PlayerName });
+    }
+
+    private async Task RejoinGameAsPlayer(int hostID, string pwd)
+    {
+        h._joinError[hostID] = "";
+        await h.Request(h._gameinprogressHostId, new PlayerRejoined() { HashedPassword = Support.GetHash(pwd), Name = h.PlayerName });
+    }
+
+    private async Task JoinGameAsObserver(int hostID, string pwd)
+    {
+        h._joinError[hostID] = "";
+        await h.Request(hostID, new ObserverJoined() { HashedPassword = Support.GetHash(pwd), Name = h.PlayerName });
+    }
+
+    private async Task RejoinGameAsObserver(int hostID, string pwd)
+    {
+        h._joinError[hostID] = "";
+        await h.Request(hostID, new ObserverRejoined() { HashedPassword = Support.GetHash(pwd), Name = h.PlayerName });
+    }
+
+    private string GameInfoMessage(GameInfo av)
+    {
+        return Skin.Current.Format("Started ({0} Players{1}, {2}, Turn {3}: {4})",
+            av.Players.Count(),
+            NumberOfBotsMessage(av),
+            av.Ruleset,
+            av.CurrentTurn,
+            av.CurrentMainPhase);
+    }
+
+    private string NumberOfBotsMessage(GameInfo av)
+    {
+        if (av.NumberOfBots > 0)
+        {
+
+            return string.Format(", {0} Bots", av.NumberOfBots);
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    private async Task LoadGame()
+    {
+        try
+        {
+            _loadValidationError = "";
+            loadedGameData = await Browser.LoadFile(_fileInput);
+            await Browser.ClearFileInput("fileInput");
+
+            if (loadedGameData.Length < MAX_SAVEGAME_SIZE)
+            {
+                var state = GameState.Load(loadedGameData);
+
+                if (state.Version > 0)
+                {
+                    loadedGame = null;
+                    var result = Game.TryLoad(state, true, true, ref loadedGame);
+
+                    if (result != "")
+                    {
+                        _loadValidationError = string.Format("Error loading game ({0})", result);
+                    }
+                }
+                else
+                {
+                    _loadValidationError = "Invalid savegame file....";
+                }
+            }
+            else
+            {
+                _loadValidationError = "Savegame file is too big...";
+            }
+        }
+        catch (Exception e)
+        {
+            _loadValidationError = string.Format("Error loading game ({0})", e.Message);
+        }
+    }
+
+    private string LoadGameLabel
+    {
+        get
+        {
+            if (loadedGame == null)
+            {
+                return "Optionally, click here to load a saved game...";
+            }
+            else
+            {
+                return Skin.Current.Format("Loaded game: {0} players - turn {1}, {2}, started: {3}", loadedGame.Players.Count, loadedGame.CurrentTurn, loadedGame.DetermineApproximateRuleset(), loadedGame.Started);
+            }
+        }
+    }
+
+    private string StartNewGameLabel => loadedGame == null ? "Create Game!" : "Continue Game!";
+
+}

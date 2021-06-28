@@ -1,0 +1,88 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<RaiseDeadPlayed>
+
+<div class="card p-1 mb-2" style="@BackgroundStyle">
+    <div class="card-header" style="@HeaderStyle">
+        Use @Skin.Current.Describe(TreacheryCardType.RaiseDead) to revive up to five forces or one leader for free
+        <CollapseButton @bind-Collapsed="Collapsed" />
+    </div>
+    @if (!Collapsed)
+    {
+        <div class="card-body" style="@BodyStyle">
+            <label class="mb-0" for="revivalAmountOfForces">@h.Player.ForceName</label>
+            <select class="custom-select" @bind="amountOfForces" id="revivalAmountOfForces">
+                @foreach (var s in ValidRevivalAmounts)
+                {
+                    <option value="@s">@s</option>
+                }
+            </select>
+
+            @if (h.Player.HasSpecialForces)
+            {
+                <label class="mb-0" for="revivalAmountOfSpecialForces">@(h.Player.SpecialForceName)</label>
+                <select class="custom-select" @bind="amountOfSpecialForces" id="revivalAmountOfSpecialForces">
+                    @foreach (var s in ValidRevivalSpecialAmounts)
+                    {
+                        <option value="@s">@s</option>
+                    }
+                </select>
+            }
+
+            <label class="mb-0" for="revivalLeader">Leader</label>
+            <select class="custom-select" @bind="hero" id="revivalLeader">
+                <option value="-1">None</option>
+                @foreach (var v in h.Game.ValidFreeRevivalHeroes(h.Player))
+                {
+                    <option value="@v.Id">@v</option>
+                }
+            </select>
+
+            <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
+            <div class="text-danger bg-dark">@validationError</div>
+        </div>
+    }
+</div>
+
+@code {
+
+    private int amountOfForces;
+    private int amountOfSpecialForces;
+    private int hero = -1;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Initialize<int, int>(ref amountOfForces, ValidRevivalAmounts);
+        Initialize<int, int>(ref amountOfSpecialForces, ValidRevivalSpecialAmounts);
+        Initialize<int, IHero>(ref hero, h.Game.ValidFreeRevivalHeroes(h.Player), true, -1);
+    }
+
+    protected override RaiseDeadPlayed ConfirmedResult
+    {
+        get
+        {
+            return new RaiseDeadPlayed(h.Game) { Initiator = h.Faction, AmountOfForces = amountOfForces, AmountOfSpecialForces = amountOfSpecialForces, Hero = LeaderManager.HeroLookup.Find(hero) };
+        }
+    }
+
+    private IEnumerable<int> ValidRevivalAmounts
+    {
+        get
+        {
+            return RaiseDeadPlayed.ValidAmounts(h.Player, false);
+        }
+    }
+
+
+    private IEnumerable<int> ValidRevivalSpecialAmounts
+    {
+        get
+        {
+            return RaiseDeadPlayed.ValidAmounts(h.Player, true);
+        }
+    }
+}

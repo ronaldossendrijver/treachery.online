@@ -1,0 +1,59 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<YellowSentMonster>
+@implements IDisposable
+
+<div class="card p-1 mb-2 border-danger">
+    <div class="card-header">Select where to send @Skin.Current.Describe(Concept.Monster)</div>
+    <div class="card-body">
+
+        <label for="yellowSentMonsterTarget">To <kbd>click</kbd></label>
+        <select class="custom-select" @bind="@targetId" id="yellowSentMonsterTarget">
+            @foreach (var f in YellowSentMonster.ValidTargets(h.Game))
+            {
+                <option value="@f.Id">@f.Name</option>
+            }
+        </select>
+
+        <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
+        <div class="text-danger bg-dark">@validationError</div>
+
+    </div>
+</div>
+
+@code {
+
+    public int targetId = -1;
+
+    protected override YellowSentMonster ConfirmedResult
+    {
+        get
+        {
+            return new YellowSentMonster(h.Game) { Initiator = h.Faction, Territory = h.Game.Map.TerritoryLookup.Find(targetId) };
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            MapDrawer.OnLocationSelected += HandleLocationSelected;
+        }
+
+        Initialize<int, Territory>(ref targetId, YellowSentMonster.ValidTargets(h.Game));
+    }
+
+    public void Dispose()
+    {
+        MapDrawer.OnLocationSelected -= HandleLocationSelected;
+    }
+
+    private void HandleLocationSelected(object sender, Location l)
+    {
+        SetIfValid<int, Territory>(ref targetId, YellowSentMonster.ValidTargets(h.Game), l.Territory);
+    }
+}

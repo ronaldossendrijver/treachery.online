@@ -1,0 +1,56 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<SetIncreasedRevivalLimits>
+
+<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
+    <div class="card-header">Which factions may have their revival limit increased to 5?</div>
+    <div class="card-body">
+
+        @foreach (var faction in AllFactions)
+        {
+            <ChecklistItemComponent Value="@faction" Values="factions" style="@ColorTransparant(faction)" Callback="OnChangeFactions" />
+        }
+
+        <button class="btn btn-primary mt-3" @onclick="Confirm" disabled="@(!Valid)">Confirm</button>
+        <div class="text-danger bg-dark">@validationError</div>
+
+    </div>
+</div>
+
+@code {
+
+    private List<Faction> factions = new List<Faction>();
+
+
+    protected override void OnInitialized()
+    {
+        factions.AddRange(h.Game.FactionsWithIncreasedRevivalLimits);
+    }
+
+    private void OnChangeFactions()
+    {
+        StateHasChanged();
+    }
+
+    protected override SetIncreasedRevivalLimits ConfirmedResult
+    {
+        get
+        {
+            return new SetIncreasedRevivalLimits(h.Game) { Initiator = h.Faction, Factions = factions.ToArray() };
+        }
+    }
+
+    private IEnumerable<Faction> AllFactions
+    {
+        get
+        {
+            return SetIncreasedRevivalLimits.ValidTargets(h.Game, h.Player);
+        }
+    }
+
+
+}

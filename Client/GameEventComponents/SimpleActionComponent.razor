@@ -1,0 +1,69 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<GameEventType>
+@typeparam GameEventType
+
+@if (!dismissed)
+{
+    <div class="card p-1 mb-2 @(Alert ? "border-danger" : "border-light")" style="@BackgroundStyle">
+        <div class="card-header" style="@HeaderStyle">
+            @Title
+            @if (Collapsible)
+            {
+                <CollapseButton @bind-Collapsed="Collapsed" />
+            }
+        </div>
+        @if (!Collapsible || !Collapsed)
+        {
+            <div class="card-body" style="@BodyStyle">
+                <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>@ConfirmLabel</button>
+                <div class="text-danger bg-dark">@validationError</div>
+                @if (Dismissable)
+                {
+                    <button class="btn btn-primary mt-1" @onclick="Dismiss" disabled=@(!Valid)>@DismissLabel</button>
+                }
+            </div>
+        }
+    </div>
+}
+
+@code {
+
+    private bool dismissed = false;
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string ConfirmLabel { get; set; } = "Ok";
+
+    [Parameter]
+    public bool Alert { get; set; }
+
+    [Parameter]
+    public bool Dismissable { get; set; } = false;
+
+    [Parameter]
+    public string DismissLabel { get; set; } = "Dismiss";
+
+    [Parameter]
+    public bool Collapsible { get; set; } = false;
+
+    protected override GameEventType ConfirmedResult
+    {
+        get
+        {
+            return new GameEventType() { Game = h.Game, Initiator = h.Faction };
+        }
+    }
+
+    private void Dismiss()
+    {
+        dismissed = true;
+    }
+}
+

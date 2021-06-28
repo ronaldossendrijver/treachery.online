@@ -1,0 +1,120 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<ClairVoyancePlayed>
+
+<div class="card p-1 mb-2" style="@BackgroundStyle">
+    <div class="card-header" style="@HeaderStyle">
+        @Support.GetCardTitle(TreacheryCardType.Clairvoyance)
+        <CollapseButton @bind-Collapsed="Collapsed" />
+    </div>
+    @if (!Collapsed)
+    {
+        <div class="card-body" style="@BodyStyle">
+
+            <SelectComponent @bind-Value="target" Values="ClairVoyancePlayed.ValidTargets(h.Game, h.Player)" Label="Target Faction" />
+
+            <SelectComponent @bind-Value="question" Values="ClairVoyancePlayed.ValidQuestions(h.Game, target)" ValueLabels="ClairVoyancePlayed.ValidQuestions(h.Game, target).Select(q => ToLabel(q))" Label="Question" />
+
+            @if (question == ClairvoyanceQuestion.CardTypeInBattle || question == ClairvoyanceQuestion.CardTypeAsWeaponInBattle || question == ClairvoyanceQuestion.CardTypeAsDefenseInBattle || question == ClairvoyanceQuestion.HasCardTypeInHand)
+            {
+                <SelectComponent @bind-Value="questionParameterA" Values="Voice.ValidTypes(h.Game).Select(v => v.ToString())" ValueLabels="Voice.ValidTypes(h.Game)" Label="Card Type" />
+            }
+            else if (question == ClairvoyanceQuestion.LeaderAsFacedancer || question == ClairvoyanceQuestion.LeaderAsTraitor || question == ClairvoyanceQuestion.LeaderInBattle)
+            {
+                <SelectComponent @bind-Value="questionParameterA" Values="h.Game.TraitorsInPlay.OrderBy(l => l.Name).Select(l => l.Id).Select(v => v.ToString())" ValueLabels="h.Game.TraitorsInPlay.OrderBy(l => l.Name)" Label="Leader" />
+            }
+            else if (question == ClairvoyanceQuestion.Prediction)
+            {
+                <SelectComponent @bind-Value="questionParameterA" Values="h.Game.Players.Select(p => p.Faction).Select(v => v.ToString())" ValueLabels="h.Game.Players.Select(p => p.Faction)" Label="Faction" />
+                <SelectComponent @bind-Value="questionParameterB" Values="BluePrediction.ValidTurns(h.Game).Select(v => v.ToString())" Label="Turn" />
+            }
+            else if (question == ClairvoyanceQuestion.DialOfMoreThanXInBattle)
+            {
+                <SelectComponent @bind-Value="questionParameterA" Values="ValidDials.Select(v => v.ToString())" Label="Dial" />
+            }
+            else if (question == ClairvoyanceQuestion.WillAttackX)
+            {
+                <SelectComponent @bind-Value="questionParameterA" Values="h.Game.Map.Territories.Select(t => t.Id).Select(v => v.ToString())" ValueLabels="h.Game.Map.Territories" Label="Territory" />
+            }
+
+            <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
+            <div class="text-danger bg-dark">@validationError</div>
+
+        </div>
+    }
+
+</div>
+
+@code {
+
+    private Faction target;
+    private ClairvoyanceQuestion question;
+    private string questionParameterA;
+    private string questionParameterB;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Initialize<Faction, Faction>(ref target, ClairVoyancePlayed.ValidTargets(h.Game, h.Player));
+        Initialize<ClairvoyanceQuestion, ClairvoyanceQuestion>(ref question, ClairVoyancePlayed.ValidQuestions(h.Game, target));
+
+        if (question == ClairvoyanceQuestion.CardTypeInBattle || question == ClairvoyanceQuestion.CardTypeAsWeaponInBattle || question == ClairvoyanceQuestion.CardTypeAsDefenseInBattle || question == ClairvoyanceQuestion.HasCardTypeInHand)
+        {
+            Initialize<string, string>(ref questionParameterA, Voice.ValidTypes(h.Game).Select(v => v.ToString()));
+        }
+        else if (question == ClairvoyanceQuestion.LeaderAsFacedancer || question == ClairvoyanceQuestion.LeaderAsTraitor || question == ClairvoyanceQuestion.LeaderInBattle)
+        {
+            Initialize<string, string>(ref questionParameterA, h.Game.TraitorsInPlay.OrderBy(l => l.Name).Select(l => l.Id).Select(v => v.ToString()));
+        }
+        else if (question == ClairvoyanceQuestion.Prediction)
+        {
+            Initialize<string, string>(ref questionParameterA, h.Game.Players.Select(p => p.Faction).Select(v => v.ToString()));
+            Initialize<string, string>(ref questionParameterB, BluePrediction.ValidTurns(h.Game).Select(v => v.ToString()));
+        }
+        else if (question == ClairvoyanceQuestion.DialOfMoreThanXInBattle)
+        {
+            Initialize<string, string>(ref questionParameterA, ValidDials.Select(v => v.ToString()));
+        }
+        else if (question == ClairvoyanceQuestion.WillAttackX)
+        {
+            Initialize<string, string>(ref questionParameterA, h.Game.Map.Territories.Select(t => t.Id).Select(v => v.ToString()));
+        }
+    }
+
+    protected override ClairVoyancePlayed ConfirmedResult
+    {
+        get
+        {
+            return new ClairVoyancePlayed(h.Game)
+            {
+                Initiator = h.Faction,
+                Target = target,
+                Question = question,
+                QuestionParameter1 = questionParameterA,
+                QuestionParameter2 = questionParameterB
+            };
+        }
+    }
+
+    private IEnumerable<float> ValidDials
+    {
+        get
+        {
+            var result = new List<float>();
+            for (float current = 0.0f; current <= 30; current += 0.5f)
+            {
+                result.Add(current);
+            }
+
+            return result;
+        }
+    }
+
+    private string ToLabel(ClairvoyanceQuestion q)
+    {
+        return Skin.Current.Format(Skin.Current.Describe(q), "...", "...");
+    }
+}

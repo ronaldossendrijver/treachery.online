@@ -1,0 +1,69 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared;
+ 
+@code {
+
+    [Parameter]
+    public Handler h { get; set; }
+
+    protected string Color(Faction f)
+    {
+        return string.Format("background-color:{0}", Skin.Current.GetFactionColor(f));
+    }
+
+    protected string ColorTransparant(Faction f)
+    {
+        return string.Format("background-color:{0}", Skin.Current.GetFactionColorTransparant(f));
+    }
+
+    private static Dictionary<Type, bool> SavedCollapsedStateValues = new Dictionary<Type, bool>();
+
+    protected async Task Request(GameEvent e)
+    {
+        await h.HostProxy.Request(e);
+    }
+
+    protected Game Game => h.Game;
+
+    protected Player Player => h.Player;
+
+    protected Faction Faction => h.Faction;
+
+    private bool? _collapsed = null;
+    protected bool Collapsed
+    {
+        get
+        {
+            if (_collapsed == null)
+            {
+                if (SavedCollapsedStateValues.ContainsKey(GetType()))
+                {
+                    _collapsed = SavedCollapsedStateValues[GetType()];
+                }
+                else
+                {
+                    _collapsed = false;
+                }
+            }
+
+            return (bool)_collapsed;
+        }
+        set
+        {
+            if (_collapsed != value)
+            {
+                if (SavedCollapsedStateValues.ContainsKey(GetType()))
+                {
+                    SavedCollapsedStateValues.Remove(GetType());
+                }
+
+                SavedCollapsedStateValues.Add(GetType(), value);
+                _collapsed = value;
+                StateHasChanged();
+            }
+        }
+    }
+}

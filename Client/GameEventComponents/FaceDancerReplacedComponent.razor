@@ -1,0 +1,53 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<FaceDancerReplaced>
+@implements IDisposable
+
+<div class="card p-1 mb-2 border-danger">
+    <div class="card-header">Select which Face Dancer to replace</div>
+    <div class="card-body">
+
+        <SelectComponent @bind-Value="dancerId" Values="FaceDancerReplaced.ValidFaceDancers(h.Player).Select(h => h.Id)" ValueLabels="FaceDancerReplaced.ValidFaceDancers(h.Player)" />
+
+        <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
+        <div class="text-danger bg-dark">@validationError</div>
+        <button class="btn btn-primary mr-1" @onclick="Pass">Pass</button>
+
+    </div>
+</div>
+
+@code {
+
+    private int dancerId;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Initialize<int, IHero>(ref dancerId, FaceDancerReplaced.ValidFaceDancers(h.Player));
+    }
+
+    public void Dispose()
+    {
+
+    }
+
+    protected override FaceDancerReplaced ConfirmedResult
+    {
+        get
+        {
+            return new FaceDancerReplaced(h.Game) { Initiator = h.Faction, Passed = false, SelectedDancer = LeaderManager.HeroLookup.Find(dancerId) };
+        }
+    }
+
+    protected override FaceDancerReplaced PassedResult
+    {
+        get
+        {
+            return new FaceDancerReplaced(h.Game) { Initiator = h.Faction, Passed = true };
+        }
+    }
+
+}

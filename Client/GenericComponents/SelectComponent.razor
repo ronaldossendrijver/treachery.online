@@ -1,0 +1,152 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using System.Collections.Generic;
+@using System.Collections;
+@using Treachery.Shared;
+@using Treachery.Client.GenericComponents;
+
+@typeparam T
+
+@if (Layout == SelectComponentLayout.MultipleInputsPerLineLabelsAbove)
+{
+    var labels = LabelsForValues.GetEnumerator();
+
+    <div class="form-group col-auto">
+
+        @if (Label != "")
+        {
+            <label class="mt-1 mb-0" for="@Id">@Label <ClickHintComponent Button="@ButtonHint" Modifier="@ModifierHint"/></label>
+        }
+
+        <select class="custom-select form-control" @bind="@Value" id="@Id">
+            @ChildContent
+            @foreach (var v in Values)
+            {
+                @labels.MoveNext();
+                <option value="@v">@Skin.Current.Describe(labels.Current)</option>
+            }
+        </select>
+
+    </div>
+}
+else if (Layout == SelectComponentLayout.OneInputPerLineLabelLeft)
+{
+    var labels = LabelsForValues.GetEnumerator();
+
+    <div class="form-row">
+
+        @if (Label != "")
+        {
+            <div class="form-group col-auto">
+                <label for="@Id">@Label <ClickHintComponent Button="@ButtonHint" Modifier="@ModifierHint" /></label>
+            </div>
+        }
+
+        <div class="form-group col-auto">
+            <select class="custom-select form-control" @bind="@Value" id="@Id">
+                @ChildContent
+                @foreach (var v in Values)
+                {
+                    @labels.MoveNext();
+                    <option value="@v">@Skin.Current.Describe(labels.Current)</option>
+                }
+            </select>
+        </div>
+
+    </div>
+}
+else if (Layout == SelectComponentLayout.OneInputPerLineLabelAbove)
+{
+    var labels = LabelsForValues.GetEnumerator();
+
+    @if (Label != "")
+    {
+        <label class="mb-0" for="@Id">@Label <ClickHintComponent Button="@ButtonHint" Modifier="@ModifierHint" /></label>
+    }
+
+    <select class="custom-select form-control" @bind="@Value" id="@Id">
+        @ChildContent
+        @foreach (var v in Values)
+        {
+            @labels.MoveNext();
+            <option value="@v">@Skin.Current.Describe(labels.Current)</option>
+        }
+    </select>
+}
+
+@code {
+
+    [Parameter]
+    public IEnumerable<T> Values { get; set; }
+
+    [Parameter]
+    public IEnumerable ValueLabels { get; set; } = null;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    private T _value;
+
+    [Parameter]
+    public T Value
+    {
+        get
+        {
+            return _value;
+        }
+        set
+        {
+            if (_value == null && value != null || _value != null && !_value.Equals(value))
+            {
+                _value = value;
+                ValueChanged.InvokeAsync(value);
+            }
+        }
+    }
+
+    [Parameter]
+    public SelectComponentLayout Layout { get; set; } = SelectComponentLayout.OneInputPerLineLabelAbove;
+
+    [Parameter]
+    public string Label { get; set; } = "";
+
+    [Parameter]
+    public ClickHintButton ButtonHint { get; set; } = ClickHintButton.None;
+
+    [Parameter]
+    public ClickHintModifier ModifierHint { get; set; } = ClickHintModifier.None;
+
+    [Parameter]
+    public EventCallback<T> ValueChanged { get; set; }
+
+    private IEnumerable LabelsForValues
+    {
+        get
+        {
+            if (ValueLabels == null)
+            {
+                return Values;
+            }
+            else
+            {
+                return ValueLabels;
+            }
+        }
+    }
+
+    private string _id = null;
+    private string Id
+    {
+        get
+        {
+            if (_id == null)
+            {
+                _id = Guid.NewGuid().ToString();
+            }
+
+            return _id;
+        }
+    }
+}

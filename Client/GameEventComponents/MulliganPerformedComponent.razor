@@ -1,0 +1,44 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<MulliganPerformed>
+@implements IDisposable
+
+<div class="card p-1 mb-2 border-danger">
+    <div class="card-header">Draw a new selection of four traitors?</div>
+    <div class="card-body">
+        @if (MulliganPerformed.MayMulligan(h.Player))
+        {
+            <button class="btn btn-primary mt-1" @onclick="Confirm">Yes</button>
+        }
+        <button class="btn btn-primary mt-1" @onclick="Pass">No (proceed with current traitors)</button>
+
+    </div>
+</div>
+
+@code {
+
+    protected override MulliganPerformed ConfirmedResult
+    {
+        get
+        {
+            return new MulliganPerformed(h.Game) { Initiator = h.Faction, Passed = false };
+        }
+    }
+
+    protected override MulliganPerformed PassedResult
+    {
+        get
+        {
+            return new MulliganPerformed(h.Game) { Initiator = h.Faction, Passed = true };
+        }
+    }
+
+    public void Dispose()
+    {
+
+    }
+}

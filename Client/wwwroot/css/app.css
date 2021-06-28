@@ -1,0 +1,171 @@
+﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+
+html, body {
+    font-family: Calibri, sans-serif;
+}
+
+a, .btn-link {
+    color: #0366d6;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.content {
+    padding-top: 1.1rem;
+}
+
+@media (min-width: 576px) {
+    .card-columns {
+        column-count: 1;
+    }
+}
+
+@media (min-width: 768px) {
+    .card-columns {
+        column-count: 1;
+    }
+}
+
+@media (min-width: 992px) {
+    .card-columns {
+        column-count: 1;
+    }
+}
+
+@media (min-width: 1200px) {
+    .card-columns {
+        column-count: 1;
+    }
+}
+
+@media (min-width: 1600px) {
+    .card-columns {
+        column-count: 2;
+    }
+}
+
+@media screen {
+    #printSection {
+        display: none;
+    }
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    #printSection, #printSection * {
+        visibility: visible;
+    }
+
+    #printSection {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+}
+
+.valid.modified:not([type=checkbox]) {
+    outline: 1px solid #26b050;
+}
+
+.invalid {
+    outline: 1px solid red;
+}
+
+.validation-message {
+    color: red;
+}
+
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
+
+@font-face {
+    font-family: "Copperplate";
+    src: url("../Copperplate.ttf");
+}
+
+@font-face {
+    font-family: "Advokat";
+    src: url("../Advokat.ttf");
+}
+
+#mapdiv {
+    position: relative;
+}
+
+canvas {
+    position: relative;
+    z-index: 2;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+#mapimg {
+    position: absolute;
+    z-index: 1;
+}
+
+.top-row {
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.popover {
+    max-width: 800px;
+    max-height: 1000px;
+    background-color: transparent;
+    border: none;
+    pointer-events: none;
+}
+
+.tooltip {
+    pointer-events: none;
+}
+
+.tooltip-inner {
+    max-width: 800px;
+    max-height: 1000px;
+    pointer-events: none;
+}
+
+.card {
+    cursor: pointer;
+    font-family: Candara, sans-serif;
+}
+
+kbd {
+    background-color: #eee;
+    border-radius: 3px;
+    border: 1px solid #b4b4b4;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 2px 0 0 rgba(255, 255, 255, .7) inset;
+    color: #333;
+    display: inline-block;
+    font-size: .85em;
+    font-weight: 700;
+    line-height: 1;
+    padding: 2px 4px;
+    white-space: nowrap;
+}

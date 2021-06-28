@@ -1,0 +1,220 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared;
+@using Treachery.Client.GenericComponents;
+@inherits GameComponent
+
+@if (Player != null && h.CurrentPhase > Phase.TradingFactions)
+{
+    <div class="card p-1 border-light mb-1">
+
+        @if (ShowHeader)
+        {
+            <div class="card-header">
+                @Skin.Current.Describe(ShownPlayer.Faction)
+                <CollapseButton @bind-Collapsed="Collapsed" />
+            </div>
+        }
+
+        @if (!Collapsed)
+        {
+            <div class="card-body p-0 bg-transparent text-center" style="background-image: url('@Skin.Current.GetImageURL(ShownPlayer.Faction)'); background-position:center; background-size:300px 300px; background-clip:content-box; background-repeat: no-repeat">
+
+                <div class="card-text h-100 text-white" style="background-color:rgba(0,0,0,0.6);">
+
+                    @if (h.CurrentPhase > Phase.TradingFactions)
+                    {
+                        <div class="row m-0 bg-dark justify-content-center">
+
+                            <!-- Resources -->
+                            <div class="col p-0">
+                                <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.Harvester_URL" title="@Skin.Current.Describe(Concept.Resource)" /><strong>&nbsp;@ResourcesText</strong>
+                            </div>
+
+                            <!-- Forces -->
+                            <div class="col p-0">
+                                <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.GetFactionForceImageURL(ShownPlayer.Faction)" title="@(ShownPlayer.ForceName)" /><strong>&nbsp;@ShownPlayer.ForcesInReserve</strong>
+                            </div>
+
+                            <!-- Special Forces -->
+                            @if (ShownPlayer.HasSpecialForces)
+                            {
+                                <div class="col p-0">
+                                    <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.GetFactionSpecialForceImageURL(ShownPlayer.Faction)" title="@(ShownPlayer.SpecialForceName)" /><strong>&nbsp;@ShownPlayer.SpecialForcesInReserve</strong>
+                                </div>
+                            }
+
+                        </div>
+
+                        <!-- Leaders -->
+                        @foreach (var v in ShownPlayer.Leaders.Where(l => h.Game.IsAlive(l)))
+                        {
+                            <img src="@Skin.Current.GetImageURL(v)" class="img-fluid p-1" width=60 data-animation="true" data-content="@Support.GetHeroHoverHTML(v)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
+                        }
+
+                        @foreach (var v in ShownPlayer.Leaders.Where(l => !h.Game.IsAlive(l)))
+                        {
+                            <img src="@Skin.Current.GetImageURL(v)" style="filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8)" class="img-fluid p-1" width=60 data-animation="true" data-content="@Support.GetHeroHoverHTML(v)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
+                        }
+
+                        <!-- Traitors and Face Dancers -->
+                        @if (ShownPlayer.FaceDancers.Count > 0)
+                        {
+                            <h5 class="mt-1 mb-0">Face Dancers</h5>
+                            @foreach (var v in ShownPlayer.FaceDancers)
+                            {
+                                var style = ShownPlayer.RevealedDancers.Contains(v) ? "filter:brightness(150%) contrast(100%) blur(1px)" : "";
+                                <img src="@Skin.Current.GetImageURL(v)" style="@style" class="img-fluid p-1" width=60 data-animation="true" data-content="@Support.GetHeroHoverHTML(v)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
+                            }
+                        }
+                        else if (!h.Game.Applicable(Rule.AssistedNotekeeping) && ShownPlayer.Traitors.Count == 1)
+                        {
+                            <div><img src="@Skin.Current.GetImageURL(ShownPlayer.Traitors[0])" class="img-fluid p-1" width=60 data-animation="true" data-content="@Support.GetHeroHoverHTML(ShownPlayer.Traitors[0])" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover"> is your traitor.</div>
+                        }
+                        else if (ShownPlayer.Traitors.Count > 0)
+                        {
+                            @if (ShownPlayer.Traitors.Count > 1)
+                            {
+                                <h5 class="mt-1 mb-0">Traitors</h5>
+                            }
+                            else
+                            {
+                                <h5 class="mt-1 mb-0">Traitor</h5>
+                            }
+
+                            @foreach (var v in ShownPlayer.Traitors)
+                            {
+                                var style = ShownPlayer.RevealedTraitors.Contains(v) ? "filter:brightness(150%) contrast(110%) blur(1px)" : "";
+                                <img src="@Skin.Current.GetImageURL(v)" style="@style" class="img-fluid p-1" width=60 data-animation="true" data-content="@Support.GetHeroHoverHTML(v)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
+                            }
+
+                            @foreach (var v in ShownPlayer.DiscardedTraitors)
+                            {
+                                <img src="@Skin.Current.GetImageURL(v)" style="filter:grayscale(100%) opacity(60%)" class="img-fluid p-1" width=60 data-animation="true" data-content="@Support.GetHeroHoverHTML(v)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
+                            }
+                        }
+
+                        @if (h.CurrentPhase > Phase.DiallingStorm && h.Game.HasStormPrescience(Player))
+                        {
+                            <div>The next storm will move <span class="badge badge-primary badge-pill">@(h.Game.NextStormMoves)</span> sectors.</div>
+                        }
+
+                        @if (ShownPlayer.Faction == Faction.Blue && h.CurrentPhase > Phase.BluePredicting)
+                        {
+                            <div>Prediction: <span class="badge badge-primary badge-pill" style="@Color(ShownPlayer.PredictedFaction)">@Skin.Current.Describe(ShownPlayer.PredictedFaction)</span> win turn <span class="badge badge-primary badge-pill">@ShownPlayer.PredictedTurn</span></div>
+                        }
+
+                        @if (ShownPlayer.Faction == Faction.Green)
+                        {
+                            if (h.Game.Applicable(Rule.GreenMessiah))
+                            {
+                                if (ShownPlayer.TotalForcesKilledInBattle >= 7)
+                                {
+                                    if (ShownPlayer.MessiahAvailable)
+                                    {
+                                        <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> is available.</div>
+                                    }
+                                    else
+                                    {
+                                        <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> has been killed.</div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> will be available after <span class="badge badge-primary badge-pill">@(7 - ShownPlayer.TotalForcesKilledInBattle)</span> more forces are killed in battle.</div>
+                                }
+                            }
+                        }
+
+                        @if (h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove && h.Game.HasResourceDeckPrescience(Player))
+                        {
+                            <div data-animation="true" data-content="@Support.GetResourceCardHoverHTML(h.Game.ResourceCardDeck.Top)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">Top card of @Skin.Current.Describe(Concept.Resource) Deck: <span class="badge badge-primary badge-pill">@h.Game.ResourceCardDeck.Top</span></div>
+                        }
+
+                        <!-- Cards -->
+                        @if (ShownPlayer.TreacheryCards.Count == 0 && h.Game.CardSetAsideForBid(Player) == null)
+                        {
+                            <div>You don't own any treachery cards.</div>
+                        }
+                        else
+                        {
+                            <div class="row row-cols-2 row-cols-xl-4 ml-0 mr-0 mt-1 justify-content-center">
+
+                                @foreach (var v in ShownPlayer.TreacheryCards)
+                                {
+                                    <div class="card bg-transparent">
+                                        <img src="@Skin.Current.GetImageURL(v)" class="img-fluid" data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(v)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover">
+                                    </div>
+                                }
+
+                                @if (h.Game.CardSetAsideForBid(Player) != null)
+                                {
+                                    var v = h.Game.CardSetAsideForBid(Player);
+                                    <div class="card bg-transparent">
+                                        <img src="@Skin.Current.GetImageURL(v)" class="img-fluid" data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(v)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover">
+                                    </div>
+                                }
+
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public Player ShownPlayer { get; set; }
+
+    [Parameter]
+    public bool ShowHeader { get; set; } = false;
+
+    private string PlayerColor
+    {
+        get
+        {
+            return string.Format("background-color:{0}", Skin.Current.GetFactionColorTransparant(ShownPlayer.Faction));
+        }
+    }
+
+    private string ResourcesText
+    {
+        get
+        {
+            if (ShownPlayer.Bribes > 0)
+            {
+
+                if (ShownPlayer.ResourcesAfterBidding > 0)
+                {
+                    return Skin.Current.Format("{0}, {1} at end of turn, {2} at end of bidding", ShownPlayer.Resources, ShownPlayer.Bribes, ShownPlayer.ResourcesAfterBidding);
+                }
+                else
+                {
+                    return Skin.Current.Format("{0}, {1} at {2}", ShownPlayer.Resources, ShownPlayer.Bribes, MainPhase.Contemplate);
+                }
+            }
+            else
+            {
+                if (ShownPlayer.ResourcesAfterBidding > 0)
+                {
+                    return Skin.Current.Format("{0}, {1} at end of {2}", ShownPlayer.Resources, ShownPlayer.ResourcesAfterBidding, MainPhase.Bidding);
+                }
+                else
+                {
+                    return Skin.Current.Format("{0}", ShownPlayer.Resources);
+                }
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Browser.EnablePopovers();
+    }
+}

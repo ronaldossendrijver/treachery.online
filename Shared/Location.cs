@@ -1,0 +1,83 @@
+﻿/*
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+ */
+
+using System.Collections.Generic;
+
+namespace Treachery.Shared
+{
+    public class Location : IIdentifiable
+    {
+        public virtual int Sector { get; set; }
+
+        private Territory _territory = null;
+        public virtual Territory Territory
+        {
+            get
+            {
+                return _territory;
+            }
+            set
+            {
+                _territory = value;
+
+                if (value != null)
+                {
+                    _territory.AddLocation(this);
+                }
+            }
+        }
+
+        public virtual Point Center { get; set; }
+        public virtual Point SpiceLocation { get; set; }
+
+        public virtual List<Location> Neighbours { get; set; } = new List<Location>();
+
+        public virtual string Name { get; set; } = "";
+
+        public virtual int SpiceBlowAmount { get; set; } = 0;
+
+        public Location(int id)
+        {
+            Id = id;
+        }
+
+        public override string ToString()
+        {
+            if (Name != "")
+            {
+                return string.Format("{0} ({1} Sector)", Territory.Name, Name);
+            }
+            else
+            {
+                return Territory.Name;
+            }
+        }
+
+        public int Id { get; set; }
+        public bool IsStronghold
+        {
+            get
+            {
+                return Territory.IsStronghold;
+            }
+        }
+
+        public virtual bool IsInside(Map map, int x, int y)
+        {
+            return (Sector == -1 || map.FindSector(x, y) == Sector) && Territory.IsInside(x, y);
+        }
+
+        public bool IsProtectedFromStorm => Territory.IsProtectedFromStorm;
+
+        public override bool Equals(object obj)
+        {
+            return obj is Location l && l.Id == Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return Id;
+        }
+    }
+}

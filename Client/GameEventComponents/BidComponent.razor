@@ -1,0 +1,167 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<Bid>
+
+<div class="card p-1 mb-2 border-danger">
+
+    <div class="card-header">Bid or pass on the current card on auction</div>
+
+    <div class="card-body">
+
+        @if (Karma.CanKarma(h.Game, h.Player))
+        {
+            <div>Use @Skin.Current.Describe(TreacheryCardType.Karma) to bid without limit or win immediately?</div> <InfoComponent Contents="@InfoMessage" />
+            <select class="custom-select" @bind="karmaCardId" id="karamaCard">
+                <option value="-1">Don't use @Skin.Current.Describe(TreacheryCardType.Karma)</option>
+                @foreach (var v in Karma.ValidKarmaCards(h.Game, h.Player))
+                {
+                    <option value="@v.Id">@v</option>
+                }
+            </select>
+        }
+
+        <div class="mt-1 mb-2">Your bid: <span class="badge badge-primary badge-pill">@(amount + allyContributionAmount + redContributionAmount)</span></div>
+
+        <div class="row">
+
+            <div class="form-group col-auto">
+
+                @if (h.Player.Ally == Faction.None)
+                {
+                    <label class="mb-0" for="bidAmount">@Skin.Current.Describe(Concept.Resource)</label>
+                }
+                else
+                {
+                    <label class="mb-0" for="bidAmount">Paid by you</label>
+                }
+
+                <select class="custom-select" @bind="amount" id="bidAmount">
+                    @foreach (var s in Bid.ValidAmounts(h.Player, karmaCardId > 0))
+                    {
+                        <option value="@s">@s</option>
+                    }
+                </select>
+            </div>
+
+            @if (h.Player.Ally != Faction.None)
+            {
+                <div class="form-group col-auto">
+                    <label class="mb-0" for="allyContributionAmount">Paid by your ally</label>
+                    <select class="custom-select" @bind="allyContributionAmount" id="allyContributionAmount">
+                        @foreach (var s in Bid.ValidAllyAmounts(h.Game, h.Player))
+                        {
+                            <option value="@s">@s</option>
+                        }
+                    </select>
+                </div>
+            }
+
+            @if (h.Game.SpiceForBidsRedCanPay(h.Faction) > 0)
+            {
+                <div class="form-group col-auto">
+                    <label class="mb-0" for="redContributionAmount">Paid by @Skin.Current.Describe(Faction.Red)</label>
+                    <select class="custom-select" @bind="redContributionAmount" id="redContributionAmount">
+                        @foreach (var s in Bid.ValidRedAmounts(h.Game, h.Player))
+                        {
+                            <option value="@s">@s</option>
+                        }
+                    </select>
+                </div>
+            }
+
+        </div>
+
+        <div class="form-inline">
+            <button class="btn btn-primary mr-1" @onclick="Confirm" disabled=@(!Valid)>Bid</button>
+            @if (karmaCardId > 0)
+            {
+                <button class="btn btn-primary mr-1" @onclick="Other">Win immediately</button>
+            }
+            <button class="btn btn-primary mr-1" @onclick="Pass">Pass</button>
+        </div>
+
+        <div class="text-danger bg-dark">@validationError</div>
+
+    </div>
+</div>
+
+@code {
+
+    private int amount;
+    private int allyContributionAmount;
+    private int redContributionAmount;
+    private int karmaCardId = -1;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Initialize<int, int>(ref allyContributionAmount, Bid.ValidAllyAmounts(h.Game, h.Player));
+        Initialize<int, int>(ref redContributionAmount, Bid.ValidRedAmounts(h.Game, h.Player));
+        Initialize<int, int>(ref amount, Bid.ValidAmounts(h.Player, karmaCardId > 0));
+        Initialize<int, TreacheryCard>(ref karmaCardId, Karma.ValidKarmaCards(h.Game, h.Player), true, -1);
+    }
+
+    private async Task Autopass()
+    {
+        if (h.Game.CurrentBid != null && h.Game.CurrentBid.TotalAmount + 1 > h.BidAutoPassThreshold ||
+            h.Game.CurrentBid == null && h.BidAutoPassThreshold == 0)
+        {
+            await Pass();
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        int allyResources = h.Player.Ally == Faction.None ? 0 : h.Game.GetPermittedUseOfAllySpice(h.Faction);
+        int playerResources = h.Player.Resources;
+        int bidToDo = h.Game.CurrentBid != null ? h.Game.CurrentBid.TotalAmount + 1 : 1;
+        allyContributionAmount = Math.Min(bidToDo, allyResources);
+        amount = Math.Min(bidToDo - allyContributionAmount, playerResources);
+
+        _ = Task.Delay(1000).ContinueWith(e => Autopass());
+    }
+
+    protected override Bid ConfirmedResult
+    {
+        get
+        {
+            return new Bid(h.Game)
+            {
+                Initiator = h.Faction,
+                Passed = false,
+                Amount = amount,
+                KarmaBid = false,
+                KarmaCard = TreacheryCardManager.Lookup.Find(karmaCardId),
+                AllyContributionAmount = allyContributionAmount,
+                RedContributionAmount = redContributionAmount
+            };
+        }
+    }
+
+    protected override Bid OtherResult
+    {
+        get
+        {
+            return new Bid(h.Game) { Initiator = h.Faction, Passed = false, KarmaBid = true, KarmaCard = TreacheryCardManager.Lookup.Find(karmaCardId) };
+        }
+    }
+
+    protected override Bid PassedResult
+    {
+        get
+        {
+            return new Bid(h.Game) { Initiator = h.Faction, Passed = true, KarmaBid = false };
+        }
+    }
+
+    private string InfoMessage
+    {
+        get
+        {
+            return Skin.Current.Format("If you use a {0} card to bid any amount of {1} you wish, that card will be set aside until someone outbids you and will be discarded only if you win the auction. If you instead use your {0} card to win immediately, it is immediately discarded.", TreacheryCardType.Karma, Concept.Resource);
+        }
+    }
+}

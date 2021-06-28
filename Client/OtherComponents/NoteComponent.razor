@@ -1,0 +1,344 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared;
+@using Treachery.Client.GenericComponents;
+@using System.Linq;
+@inherits GameComponent
+
+<div class="card p-1 mb-2">
+
+    <div class="card-header">
+        Mentat: Notekeeping Assistant
+        <CollapseButton @bind-Collapsed="Collapsed" />
+    </div>
+
+    @if (!Collapsed)
+    {
+        <div class="card-body">
+
+            <div class="row mb-2 ml-0">
+
+                @foreach (var p in Players.Where(p => p != h.Player))
+                {
+                    <button class="btn @ButtonStyle(p) p-0 mt-1 mr-1" @onclick="(e => Toggle(p))" data-toggle="tooltip" title="@Skin.Current.Describe(p.Faction)">
+                        <img class="img-fluid" width="29" height="29" src="@Skin.Current.GetFactionTableImageURL(p.Faction)" />
+                    </button>
+                }
+
+            </div>
+
+            @if (Shown is Player)
+            {
+                var p = (Player)Shown;
+
+                <div class="row m-0">
+
+                    <!-- Resources -->
+                    <div class="col p-0">
+                        <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.Harvester_URL" title="@Skin.Current.Describe(Concept.Resource)" /><strong>&nbsp;@ResourcesText(p)</strong>
+                    </div>
+
+                    <!-- Forces -->
+                    <div class="col p-0">
+                        <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.GetFactionForceImageURL(p.Faction)" title="@(p.ForceName)" /><strong>&nbsp;@p.ForcesInReserve</strong>
+                    </div>
+
+                    <!-- Special Forces -->
+                    @if (p.HasSpecialForces)
+                    {
+                        <div class="col p-0">
+                            <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.GetFactionSpecialForceImageURL(p.Faction)" title="@(p.SpecialForceName)" /><strong>&nbsp;@p.SpecialForcesInReserve</strong>
+                        </div>
+                    }
+
+                </div>
+
+                if (p.TreacheryCards.Count > 0)
+                {
+                    <div>Treachery cards</div>
+                    <div class="row row-cols-4 m-0">
+
+                        @foreach (var c in p.TreacheryCards)
+                        {
+                            bool isKnown = IsKnownCard(c);
+                            var popover = isKnown ? Support.GetTreacheryCardHoverHTML(c) : "<div class='p-1 small' style='color:black;background-color:white;border: 1px solid black;'>Unknown</div>";
+
+                            <div class="card border-0 pr-1" data-toggle="popover" data-animation="true" data-content="@popover" data-html="true" data-placement="top" data-trigger="hover">
+
+                                @if (IsKnownCard(c))
+                                {
+                                    <img src="@Skin.Current.GetImageURL(c)" class="img-fluid" />
+                                }
+                                else
+                                {
+                                    <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="img-fluid" />
+                                }
+
+                            </div>
+                        }
+
+                    </div>
+                }
+                else
+                {
+                    <div>They don't own any Treachery cards</div>
+                }
+
+                if (p.RevealedTraitors.Count > 0)
+                {
+                    <div class="mt-1">@(p.RevealedTraitors.Count > 1 ? "Revealed Traitors" : "Revealed Traitor")</div>
+                    <div class="row row-cols-4 m-0">
+                        @foreach (var c in p.RevealedTraitors)
+                        {
+                            <img class="img-fluid pr-1" width=60 src="@Skin.Current.GetImageURL(c)"
+                                 data-animation="true" data-content="@Support.GetHeroHoverHTML(c)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
+                        }
+                    </div>
+                }
+
+                if (p.RevealedDancers.Count > 0)
+                {
+                    <div class="mt-1">Revealed Face Dancers</div>
+                    <div class="row row-cols-4 m-0">
+                        @foreach (var c in p.RevealedDancers)
+                        {
+                            <img class="img-fluid pr-1" width=60 src="@Skin.Current.GetImageURL(c)"
+                                 data-animation="true" data-content="@Support.GetHeroHoverHTML(c)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
+                        }
+                    </div>
+                }
+            }
+
+        </div>
+    }
+
+</div>
+
+@code {
+
+    private object Shown = null;
+
+    private bool popoversNeedUpdate = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (popoversNeedUpdate)
+        {
+            popoversNeedUpdate = false;
+            await Browser.EnablePopovers();
+        }
+    }
+
+
+    //Faction currentlyPickedFaction = Faction.None;
+    /*int currentlyPickedCardId;
+
+    public int CurrentCard
+    {
+        get
+        {
+            if (currentlyPickedFaction != Faction.None)
+            {
+                return Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId];
+            }
+            else
+            {
+                return TreacheryCard.NONE;
+            }
+        }
+    }
+
+    private void SetCurrent(Faction f, int i)
+    {
+        currentlyPickedFaction = f;
+        currentlyPickedCardId = i;
+    }
+
+    public void Pick(int cardID)
+    {
+        try
+        {
+            Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId] = cardID;
+            popoversNeedUpdate = true;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+
+        }
+    }
+
+    public void Discard()
+    {
+        try
+        {
+            if (Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId] != TreacheryCard.NONE && Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId] != TreacheryCard.UNKNOWN)
+            {
+                Info.Discard(currentlyPickedFaction, currentlyPickedCardId);
+                popoversNeedUpdate = true;
+                StateHasChanged();
+            }
+        }
+        catch (Exception)
+        {
+
+        }
+    }
+
+    public IEnumerable<TreacheryCard> CardsToPick
+    {
+        get
+        {
+            return Info.AvailableDistinctCards(currentlyPickedFaction, currentlyPickedCardId);
+        }
+    }
+
+    private void SetNotDiscarded(TreacheryCard c)
+    {
+        Info.SetNotDiscarded(c);
+        popoversNeedUpdate = true;
+        StateHasChanged();
+    }
+    */
+
+
+
+    /*
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await Load();
+        }
+        catch (Exception e)
+        {
+            Support.Log(e);
+        }
+    }
+
+    private async Task Save()
+    {
+        await Browser.SaveSetting(string.Format("treachery.online;currentgame;{0};trackerdata", h.Game.Seed), Info.ToString());
+    }
+
+    private async Task Load()
+    {
+        var trackerdata = await Browser.LoadSetting<string>(string.Format("treachery.online;currentgame;{0};trackerdata", h.Game.Seed));
+        if (trackerdata != null && trackerdata != "")
+        {
+            Info = GreenIntelligence.Parse(h.Game, trackerdata);
+            StateHasChanged();
+        }
+    }
+
+    public class CardInfo
+    {
+        public Player Player;
+        public int CardNumber;
+        public int CardId;
+    }
+
+    private IEnumerable<IHero> AllLeadersInPlay
+    {
+        get
+        {
+            return h.Game.TraitorsInPlay.OrderBy(l => l.Name);
+        }
+    }
+
+    private IEnumerable<string> AllSpiceCards
+    {
+        get
+        {
+            return h.Game.Map
+                .Locations
+                .Where(c => c.SpiceBlowAmount > 0)
+                .Select(c => c.Territory.Name)
+                .OrderBy(c => c)
+                .Distinct();
+        }
+    }
+    */
+
+    private IEnumerable<Player> Players
+    {
+        get
+        {
+            return h.Game.Players.OrderBy(p => Skin.Current.Describe(p.Faction));
+        }
+    }
+    /*
+    private string InfoMessage
+    {
+        get
+        {
+            return Skin.Current.Format("Welcome to the {0} Tracker! Use it to take note of (discarded) traitors, the top spice card and treachery cards.<br>When a (possibly unknown) card is won, click on an empty card placeholder and select it.<br>To indicate that a card was discarded, click it and then select the 'trash can' which will move the card to the Discarded section. When an unknown card becomes known and discarded, select it first, then discard it.<br>When the discard pile is shuffled into a new draw pile, click 'reshuffle' to clear the Discarded section.<br>If you sent a card to the Discarded section by mistake, click on the X next to it.", Faction.Green);
+        }
+    }
+    */
+
+    private void Toggle(object toShow)
+    {
+        if (toShow == Shown)
+        {
+            Shown = null;
+        }
+        else
+        {
+            Shown = toShow;
+        }
+
+        popoversNeedUpdate = true;
+    }
+
+
+
+    private bool IsKnownCard(TreacheryCard c)
+    {
+        return h.Player.KnownCards.Contains(c);
+    }
+
+
+    private string ButtonStyle(object o)
+    {
+        if (o == Shown)
+        {
+            return "btn-primary";
+        }
+        else
+        {
+            return "btn-outline-primary";
+        }
+    }
+
+
+    private string ResourcesText(Player p)
+    {
+        if (p.Bribes > 0)
+        {
+
+            if (p.ResourcesAfterBidding > 0)
+            {
+                return Skin.Current.Format("{0}, {1} at end of turn, {2} at end of bidding", p.Resources, p.Bribes, p.ResourcesAfterBidding);
+            }
+            else
+            {
+                return Skin.Current.Format("{0}, {1} at {2}", p.Resources, p.Bribes, MainPhase.Contemplate);
+            }
+        }
+        else
+        {
+            if (p.ResourcesAfterBidding > 0)
+            {
+                return Skin.Current.Format("{0}, {1} at end of {2}", p.Resources, p.ResourcesAfterBidding, MainPhase.Bidding);
+            }
+            else
+            {
+                return Skin.Current.Format("{0}", p.Resources);
+            }
+        }
+    }
+}

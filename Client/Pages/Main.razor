@@ -1,0 +1,264 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@page "/"
+@using Treachery.Shared;
+@using Treachery.Client.GenericComponents;
+@using Treachery.Client.OtherComponents;
+@using Blazor.Extensions.Canvas;
+@using Microsoft.Extensions.Logging;
+
+@inject NavigationManager NavigationManager
+@inject ILogger<Index> logger
+@inject IJSRuntime JSRuntime
+
+<div class="row">
+
+    <!--Empty Column-->
+    @if (h.IsObserver)
+    {
+        <div class="col-sm-1 col-lg-1 col-xl-1" />
+    }
+
+    <!--Map Column-->
+    <div class="col-sm-12 col-lg-6">
+        @if (h.HostProxy != null)
+        {
+            <div @onmousedown="MapDrawer.MapClick" class="p-0 m-0 cursor-hand" id="mapdiv" data-trigger="hover click" data-toggle="tooltip" data-placement="bottom" data-html="true" data-animation="false" data-delay="100">
+                <BECanvas @ref="h._canvas"></BECanvas>
+            </div>
+        }
+        else
+        {
+            <div class="text-center">
+                <img src="@Skin.Current.Planet_URL" class="img-fluid" />
+                <p class="text-light" style="font: @Skin.Current.GAMEVERSION_FONT">Version @Game.LatestVersion</p>
+            </div>
+        }
+    </div>
+
+    <!--Action Column-->
+    @if (!h.IsObserver)
+    {
+        <div class="col-sm-12 col-lg-4">
+
+            <MenuComponent h="@h" />
+
+            @if (!h.IsConnected)
+            {
+                <div>Disconnected...</div>
+            }
+            else if (h.PlayerName == "")
+            {
+                <PlayerNameComponent h="@h" />
+            }
+            else if (h.HostProxy == null && h.Host == null)
+            {
+                <HostOrJoinGameComponent h="@h" />
+            }
+            else
+            {
+                <GameStatusComponent h="@h" />
+
+                @if (h.Game.CurrentMainPhase == MainPhase.Bidding)
+                {
+                    <BiddingPanel h="h" />
+                }
+
+                @if (h.CurrentPhase == Phase.GameEnded)
+                {
+                    <WinnerPanel h="h" />
+                }
+
+                <ActionPanel h="@h" />
+            }
+
+        </div>
+    }
+
+    <!--Information Column-->
+    <div class="@InformationLayout">
+
+        @if (h.IsObserver)
+        {
+            <MenuComponent h="@h" />
+        }
+
+        @if (!h.IsObserver && h.Player.Faction != Faction.None)
+        {
+            <PlayerPanel h="h" ShownPlayer="h.Player" />
+        }
+        else if (h.IsObserver)
+        {
+            <GameStatusComponent h="@h" />
+
+            @if (h.CurrentPhase == Phase.GameEnded)
+            {
+                <WinnerPanel h="h" />
+            }
+
+            @if (h.Game.CurrentMainPhase == MainPhase.Bidding)
+            {
+                <BiddingPanel h="h" />
+            }
+        }
+
+        @if (h.Game.CurrentReport != null)
+        {
+            <ReportComponent h="@h" Report="h.Game.CurrentReport" Title="@h.Game.CurrentReport.Title" Background="@Skin.Current.GetReportBackground(h.Game.CurrentReport)" />
+        }
+
+        @if (!h.IsObserver && h.Player.Faction == Faction.None && h.CurrentPhase > Phase.TradingFactions)
+        {
+            foreach (Player p in h.Game.Players)
+            {
+                <PlayerPanel h="h" ShownPlayer="p" ShowHeader="true" />
+            }
+        }
+
+    </div>
+
+    <!--Global Components-->
+
+    @if ((!h.IsObserver || h.PlayerName == "$RonaldAdmin$") && h.CurrentPhase > Phase.AwaitingPlayers)
+    {
+        <ChatComponent h="@h" />
+    }
+
+    @if (h.Timer != null)
+    {
+        <TimerComponent h="@h" />
+    }
+
+    @if (h.CurrentPhase == Phase.GameEnded || h.CurrentPhase == Phase.BattleConclusion)
+    {
+        <WinnerFlashComponent h="@h" />
+    }
+
+    <ImageFlashComponent h="@h" />
+
+    <!--Empty Column-->
+    @if (h.IsObserver)
+    {
+        <div class="col-sm-1 col-lg-1 col-xl-1" />
+    }
+
+</div>
+
+<!--Load Artwork-->
+
+<img src="@Skin.Current.Map_URL" hidden @ref="Artwork.MapImage" />
+<img src="@Skin.Current.Eye_URL" hidden @ref="Artwork.EyeImage" />
+<img src="@Skin.Current.EyeSlash_URL" hidden @ref="Artwork.EyeSlashImage" />
+<img src="@Skin.Current.Monster_URL" hidden @ref="Artwork.Monster" />
+<img src="@Skin.Current.CardBack_ResourceCard_URL" hidden @ref="Artwork.ResourceCardBackImage" />
+<img src="@Skin.Current.CardBack_TreacheryCard_URL" hidden @ref="Artwork.TreacheryCardBackImage" />
+<img src="@Skin.Current.BattleScreen_URL" hidden @ref="Artwork.BattleScreenImage" />
+<img src="@Skin.Current.Messiah_URL" hidden @ref="Artwork.MessiahImage" />
+<img src="@Skin.Current.Harvester_URL" hidden @ref="Artwork.HarvesterImage" />
+<img src="@Skin.Current.Resource_URL" hidden @ref="Artwork.ResourceImage" />
+<img src="@Skin.Current.HMS_URL" hidden @ref="Artwork.HiddenMobileStrongholdImage" />
+
+@foreach (var leader in LeaderManager.Leaders)
+{
+    <img src="@Skin.Current.GetImageURL(leader)" hidden @ref="Artwork.LeaderTokens[leader].Value" />
+}
+
+@foreach (var card in TreacheryCardManager.GetCardsInAndOutsidePlay())
+{
+    <img src="@Skin.Current.GetImageURL(card)" hidden @ref="Artwork.TreacheryCards[card].Value" />
+}
+
+@if (h.Game != null)
+{
+    @foreach (var card in Map.GetResourceCardsInAndOutsidePlay(h.Game.Map))
+    {
+        <img src="@Skin.Current.GetImageURL(card)" hidden @ref="Artwork.GetResourceCard(card).Value" />
+    }
+}
+
+@foreach (var key in Enumerations.GetValuesExceptDefault(typeof(Faction), Faction.None))
+{
+    <img src="@Skin.Current.GetImageURL(key)" hidden @ref="Artwork.FactionTokens[key].Value" />
+    <img src="@Skin.Current.GetFactionTableImageURL(key)" hidden @ref="Artwork.FactionTableTokens[key].Value" />
+    <img src="@Skin.Current.GetFactionFacedownImageURL(key)" hidden @ref="Artwork.FactionFacedownTokens[key].Value" />
+    <img src="@Skin.Current.GetFactionForceImageURL(key)" hidden @ref="Artwork.ForceTokens[key].Value" />
+    <img src="@Skin.Current.GetFactionSpecialForceImageURL(key)" hidden @ref="Artwork.SpecialForceTokens[key].Value" />
+}
+
+@foreach (var key in Enumerations.GetValuesExceptDefault(typeof(TechToken), TechToken.None))
+{
+    <img src="@Skin.Current.GetImageURL(key)" hidden @ref="Artwork.TechTokens[key].Value" />
+}
+
+@for (int i = 0; i < Artwork.Arrows.Length; i++)
+{
+    int y = i;
+    <img id="@ArrowId.CreateArrowId(y)" hidden @ref="Artwork.Arrows[y].Value" />
+}
+
+@code {
+
+    private Handler h;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Browser.Initialize(JSRuntime);
+        h = new Handler(NavigationManager.ToAbsoluteUri("/gameHub"), logger);
+        h.RefreshPageControls += RefreshControls;
+        h.RefreshPageAll += RefreshAll;
+        await h.Start();
+    }
+
+    private bool mapHoverInitialized = false;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            await LoadSkinDataIfSaved();
+            MapDrawer.SetGame(h._canvas, h);
+            await Browser.DetermineCanvas();
+            await Browser.EnableEnterEvents();
+
+            if (h.HostProxy != null && !mapHoverInitialized)
+            {
+                mapHoverInitialized = true;
+                await Browser.EnableMapHover();
+            }
+        }
+        catch (Exception)
+        {
+
+        }
+    }
+
+    private async Task LoadSkinDataIfSaved()
+    {
+        var existingSkinData = await Browser.LoadStringSetting("treachery.online;setting.skin");
+        if (existingSkinData != null && existingSkinData.Length > 0)
+        {
+            Skin.Current = Support.LoadSkin(existingSkinData);
+            await Skin.Current.ValidateAndFix(Browser.UrlExists);
+        }
+    }
+
+
+    public void RefreshAll()
+    {
+        Support.LogDuration("RefreshAll-Start");
+        MapDrawer.SetGame(h._canvas, h);
+        _ = MapDrawer.Draw();
+        StateHasChanged();
+        Support.LogDuration("RefreshAll-End");
+    }
+
+    public void RefreshControls()
+    {
+        Support.LogDuration("RefreshControls-Start");
+        StateHasChanged();
+        Support.LogDuration("RefreshControls-End");
+    }
+
+    private string InformationLayout => h.IsObserver ? "col-sm-12 col-lg-4 cursor-hand" : "col-sm-12 col-lg-2 cursor-hand";
+}

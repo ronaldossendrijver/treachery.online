@@ -1,0 +1,85 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared;
+@using Treachery.Client.GenericComponents;
+
+<ModalComponent Id="@Id" Title="Pick a card" Size="">
+
+    <div class="row row-cols-3 row-cols-md-6 m-0">
+
+        <div class="card p-1 m-0 border-0">
+            <div class="card-img-top"
+                 data-animation="true" data-content="Set as unknown card" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
+                <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="card-img" alt="Unknown" @onclick="e => Pick(TreacheryCard.UNKNOWN)">
+            </div>
+        </div>
+
+        @if (Tracker.CurrentCard != TreacheryCard.NONE)
+        {
+            <div class="card p-1 m-0 border-0">
+                <div class="card-img-top"
+                     data-animation="true" data-content="Set to 'none'" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
+                    <svg viewBox="0 0 16 22.5" xmlns="http://www.w3.org/2000/svg" @onclick="e => Pick(TreacheryCard.NONE)">
+                        <rect width="16" height="22.5" rx="2" style="fill:rgb(64,64,64);stroke-width:1;stroke:rgb(200,200,200)" />
+                    </svg>
+                </div>
+            </div>
+        }
+
+        @if (Tracker.CurrentCard != TreacheryCard.NONE && Tracker.CurrentCard != TreacheryCard.UNKNOWN)
+        {
+            <div class="card p-1 m-0 border-0">
+                <div class="card-img-top"
+                     data-animation="true" data-content="Discard this card" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
+                    <svg viewBox="0 0 16 22.5" xmlns="http://www.w3.org/2000/svg" @onclick="e => Discard()">
+                        <rect width="16" height="22.5" rx="2" style="fill:rgb(64,64,64);stroke-width:1;stroke:rgb(200,200,200)" />
+                        <path transform="translate(0,4)" fill="white" d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                        <path transform="translate(0,4)" fill="white" fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                    </svg>
+                </div>
+            </div>
+        }
+
+        @{
+            string lastWonCardName = Tracker.h.Game.CardJustWon != null ? Tracker.h.Game.CardJustWon.Name : "";
+
+            @foreach (var v in Tracker.CardsToPick)
+            {
+                string border = lastWonCardName == v.Name ? "border-success" : "border-0";
+                string cardbg = lastWonCardName == v.Name ? "bg-light" : "";
+
+                <div class="card p-1 m-0 @border @cardbg">
+                    <div class="card-img-top"
+                         data-animation="true" data-content="@Tracker.DeterminePopup(v.Id)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
+                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@(v.Name)" @onclick="e => Pick(v.Id)">
+                    </div>
+                </div>
+            }
+        }
+
+    </div>
+
+</ModalComponent>
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; } = "";
+
+    [Parameter]
+    public TrackerComponent Tracker { get; set; }
+
+    private async Task Pick(int cardId)
+    {
+        await Browser.HideModal(Id);
+        Tracker.Pick(cardId);
+    }
+
+    private async Task Discard()
+    {
+        await Browser.HideModal(Id);
+        Tracker.Discard();
+    }
+}

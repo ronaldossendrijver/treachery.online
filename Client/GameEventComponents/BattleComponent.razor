@@ -1,0 +1,307 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<Battle>
+@implements IDisposable
+
+<div class="card p-1 mb-2 border-danger">
+    <div class="card-header">Plan your battle against @Skin.Current.Describe(Opponent) in @h.Game.CurrentBattle.Territory.Name.</div>
+    <div class="card-body">
+
+        <div class="text-warning">@(h.IAm(h.Game.CurrentBattle.Aggressor) ? "You are aggressor." : Skin.Current.Format("Aggressor: {0}.", h.Game.CurrentBattle.Aggressor))</div>
+
+        @if (h.Game.CurrentVoice != null)
+        {
+            @if (h.Faction == Faction.Blue || h.Player.Ally == Faction.Blue)
+            {
+                <div class="text-success">Your opponent @(h.Game.CurrentVoice.Must? "must use" : "may not use") @Skin.Current.Describe(h.Game.CurrentVoice.Type).</div>
+            }
+            else
+            {
+                <div class="text-warning">You @(h.Game.CurrentVoice.Must? "must use" : "may not use") @Skin.Current.Describe(h.Game.CurrentVoice.Type).</div>
+            }
+        }
+
+        @if (h.Faction == Faction.Green || h.Player.Ally == Faction.Green)
+        {
+            var opponentBattlePlan = h.Game.CurrentBattle.Initiator == h.Faction ? h.Game.DefenderBattleAction : h.Game.AggressorBattleAction;
+            if (h.Game.GreenKarma)
+            {
+                if (opponentBattlePlan != null)
+                {
+                    <div class="text-success">Enemy @PrescienceAspect.Dial: @GetTextForAspect(PrescienceAspect.Dial, opponentBattlePlan).</div>
+                    <div class="text-success" data-animation="true" data-content="@GetPopupForAspect(PrescienceAspect.Weapon, opponentBattlePlan)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">Enemy @PrescienceAspect.Weapon: @GetTextForAspect(PrescienceAspect.Weapon, opponentBattlePlan).</div>
+                    <div class="text-success" data-animation="true" data-content="@GetPopupForAspect(PrescienceAspect.Defense, opponentBattlePlan)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">Enemy @PrescienceAspect.Defense: @GetTextForAspect(PrescienceAspect.Defense, opponentBattlePlan).</div>
+                    <div class="text-success" data-animation="true" data-content="@GetPopupForAspect(PrescienceAspect.Leader, opponentBattlePlan)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">Enemy @PrescienceAspect.Leader: @GetTextForAspect(PrescienceAspect.Leader, opponentBattlePlan).</div>
+                }
+                else
+                {
+                    <div class="text-success">Enemy battle plan will be visible as soon as they confirm it.</div>
+                }
+            }
+            else if (h.Game.CurrentPrescience != null)
+            {
+                if (opponentBattlePlan != null)
+                {
+
+                    <div class="text-success" data-animation="true" data-content="@GetPopupForAspect(h.Game.CurrentPrescience.Aspect, opponentBattlePlan)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">Enemy @h.Game.CurrentPrescience.Aspect: @GetTextForAspect(h.Game.CurrentPrescience.Aspect, opponentBattlePlan).</div>
+                }
+                else
+                {
+                    <div class="text-success">Enemy @h.Game.CurrentPrescience.Aspect will be visible as soon as they confirm their battle plan.</div>
+                }
+            }
+        }
+
+        <SelectComponent @bind-Value="forces" Values="Battle.ValidBattleForces(h.Game, h.Player)" Label="@h.Player.ForceName" />
+
+        @if (Battle.MustPayForForcesInBattle(h.Game, h.Player) && h.Faction != Faction.Grey)
+        {
+            <SelectComponent @bind-Value="forcesAtHalfStrength" Values="Battle.ValidBattleForces(h.Game, h.Player)" Label="@ForcesHalfStrengthLabel" />
+        }
+
+        @if (h.Player.HasSpecialForces)
+        {
+            <SelectComponent @bind-Value="specialForces" Values="Battle.ValidBattleSpecialForces(h.Game, h.Player)" Label="@h.Player.SpecialForceName" />
+
+            @if (Battle.MustPayForForcesInBattle(h.Game, h.Player))
+            {
+                <SelectComponent @bind-Value="specialForcesAtHalfStrength" Values="Battle.ValidBattleSpecialForces(h.Game, h.Player)" Label="@SpecialForcesHalfStrengthLabel" />
+            }
+        }
+
+        @if (Battle.MustPayForForcesInBattle(h.Game, h.Player))
+        {
+            <p>Total cost of battle: <span class="badge badge-primary badge-pill">@Cost</span></p>
+        }
+
+        <SelectComponent @bind-Value="hero" Values="Battle.ValidBattleHeroes(h.Game, h.Player).Select(h => h.Id)" ValueLabels="Battle.ValidBattleHeroes(h.Game, h.Player)" Label="Hero">
+            <option value="-1">None</option>
+        </SelectComponent>
+
+        <SelectComponent @bind-Value="weapon" Values="Weapons.Select(w => w != null ? w.Id : -1)" ValueLabels="Weapons.Select(w => w != null ? w.Name : NONE)" Label="Weapon" />
+
+        <SelectComponent @bind-Value="defense" Values="Defenses.Select(w => w != null? w.Id : -1)" ValueLabels="Defenses.Select(w => w != null ? w.Name : NONE)" Label="Defense" />
+
+        @if (h.Faction == Faction.Green && h.Game.Applicable(Rule.GreenMessiah))
+        {
+            <div>Should the @Skin.Current.Describe(Concept.Messiah) join the fight?</div>
+            <div class="custom-control custom-radio">
+                <input class="custom-control-input" @onchange="OnChange" type="radio" id="battleKwisatzHaderachNo" value="false" checked="@(!messiah)">
+                <label class="custom-control-label" for="battleKwisatzHaderachNo">No</label>
+            </div>
+            <div class="custom-control custom-radio">
+                <input class="custom-control-input" @onchange="OnChange" type="radio" id="battleKwisatzHaderachYes" value="true" checked="@(messiah)">
+                <label class="custom-control-label" for="battleKwisatzHaderachYes">Yes</label>
+            </div>
+        }
+
+        <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Battle!</button>
+        <div class="text-danger bg-dark">@validationError</div>
+
+        <div class="text-info small">Toggle <img src="@Skin.Current.Eye_URL" /> on the map to show/hide the battle wheel.</div>
+
+    </div>
+</div>
+
+@code {
+
+    private int forces;
+    private int forcesAtHalfStrength;
+    private int specialForces;
+    private int specialForcesAtHalfStrength;
+    private int hero = -1;
+    private bool messiah = false;
+    private int defense = -1;
+    private int weapon = -1;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        Initialize<int, int>(ref forces, Battle.ValidBattleForces(h.Game, h.Player));
+        Initialize<int, int>(ref forcesAtHalfStrength, Battle.ValidBattleForces(h.Game, h.Player));
+        Initialize<int, int>(ref specialForces, Battle.ValidBattleSpecialForces(h.Game, h.Player));
+        Initialize<int, int>(ref specialForcesAtHalfStrength, Battle.ValidBattleSpecialForces(h.Game, h.Player));
+        Initialize<int, IHero>(ref hero, Battle.ValidBattleHeroes(h.Game, h.Player), true, -1);
+        var weap = Weapons.ToList();
+        Initialize<int, TreacheryCard>(ref weapon, weap, weap.Contains(null), -1);
+        var defs = Defenses.ToList();
+        Initialize<int, TreacheryCard>(ref defense, defs, defs.Contains(null), -1);
+        await DrawIfNeeded();
+    }
+
+    private int lastforces;
+    private int lastforcesAtHalfStrength;
+    private int lastspecialForces;
+    private int lastspecialForcesAtHalfStrength;
+    private int lasthero;
+    private bool lastmessiah = false;
+    private int lastdefense = -1;
+    private int lastweapon = -1;
+
+    private async Task DrawIfNeeded()
+    {
+        if (
+            forces != lastforces ||
+            forcesAtHalfStrength != lastforcesAtHalfStrength ||
+            specialForces != lastspecialForces ||
+            specialForcesAtHalfStrength != lastspecialForcesAtHalfStrength ||
+            hero != lasthero ||
+            messiah != lastmessiah ||
+            defense != lastdefense ||
+            weapon != lastweapon)
+        {
+            lastforces = forces;
+            lastforcesAtHalfStrength = forcesAtHalfStrength;
+            lastspecialForces = specialForces;
+            lastspecialForcesAtHalfStrength = specialForcesAtHalfStrength;
+            lasthero = hero;
+            lastmessiah = messiah;
+            lastdefense = defense;
+            lastweapon = weapon;
+
+            h._battleUnderConstruction = (Battle)ConfirmedResult;
+            await MapDrawer.Draw();
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (h.RevisedPlan != null)
+        {
+            forces = h.RevisedPlan.Forces;
+            forcesAtHalfStrength = h.RevisedPlan.ForcesAtHalfStrength;
+            specialForces = h.RevisedPlan.SpecialForces;
+            specialForcesAtHalfStrength = h.RevisedPlan.SpecialForcesAtHalfStrength;
+            hero = LeaderManager.HeroLookup.GetId(h.RevisedPlan.Hero);
+            messiah = h.RevisedPlan.Messiah;
+            defense = TreacheryCardManager.Lookup.GetId(h.RevisedPlan.Defense);
+            weapon = TreacheryCardManager.Lookup.GetId(h.RevisedPlan.Weapon);
+            h.RevisedPlan = null;
+        }
+    }
+
+    public void Dispose()
+    {
+
+    }
+
+    protected override Battle ConfirmedResult
+    {
+        get
+        {
+            return new Battle(h.Game)
+            {
+                Initiator = h.Faction,
+                Defense = h.Player.TreacheryCards.FirstOrDefault(x => x.Id == defense),
+                Forces = forces,
+                ForcesAtHalfStrength = forcesAtHalfStrength,
+                Hero = LeaderManager.HeroLookup.Find(hero),
+                Messiah = messiah,
+                SpecialForces = specialForces,
+                SpecialForcesAtHalfStrength = specialForcesAtHalfStrength,
+                Weapon = h.Player.TreacheryCards.FirstOrDefault(x => x.Id == weapon)
+            };
+        }
+    }
+
+    private void OnChange(ChangeEventArgs args)
+    {
+        messiah = Convert.ToBoolean(args.Value);
+        StateHasChanged();
+    }
+
+    private Faction Opponent
+    {
+        get
+        {
+            if (h.Game.CurrentBattle != null)
+            {
+                if (h.Game.CurrentBattle.Initiator == h.Faction)
+                {
+                    return h.Game.CurrentBattle.Target;
+                }
+                else
+                {
+                    return h.Game.CurrentBattle.Initiator;
+                }
+            }
+            else
+            {
+                return Faction.None;
+            }
+        }
+    }
+
+    private int Cost
+    {
+        get
+        {
+            return Battle.Cost(h.Game, h.Player, forces, specialForces);
+        }
+    }
+
+    private string ForcesHalfStrengthLabel
+    {
+        get
+        {
+            return Skin.Current.FormatCapitalized("{0} at half strength (not supported by {1})", h.Player.Force, Concept.Resource);
+        }
+    }
+
+    private string SpecialForcesHalfStrengthLabel
+    {
+        get
+        {
+            return Skin.Current.FormatCapitalized("{0} at half strength", h.Player.SpecialForce);
+        }
+    }
+
+    private string GetTextForAspect(PrescienceAspect aspect, Battle plan)
+    {
+        switch (aspect)
+        {
+            case PrescienceAspect.Defense: return plan.Defense == null ? "None" : Skin.Current.Describe(plan.Defense);
+            case PrescienceAspect.Weapon: return plan.Weapon == null ? "None" : Skin.Current.Describe(plan.Weapon);
+            case PrescienceAspect.Dial: return plan.Dial(h.Game, h.Faction).ToString();
+            case PrescienceAspect.Leader: return plan.Hero == null ? "None" : Skin.Current.Describe(plan.Hero);
+        }
+
+        return "?";
+    }
+
+    private string GetPopupForAspect(PrescienceAspect aspect, Battle plan)
+    {
+        switch (aspect)
+        {
+            case PrescienceAspect.Defense: return plan.Defense == null ? "" : Support.GetTreacheryCardHoverHTML(plan.Defense);
+            case PrescienceAspect.Weapon: return plan.Weapon == null ? "" : Support.GetTreacheryCardHoverHTML(plan.Weapon);
+            case PrescienceAspect.Dial: return "";
+            case PrescienceAspect.Leader: return plan.Hero == null ? "" : Support.GetHeroHoverHTML(plan.Hero);
+        }
+
+        return "?";
+    }
+
+    private const string NONE = "None";
+
+    private IEnumerable<TreacheryCard> Weapons
+    {
+        get
+        {
+            return Battle.ValidWeapons(h.Game, h.Player, h.Player.TreacheryCards.FirstOrDefault(x => x.Id == defense), true).OrderBy(c => c);
+            //return Battle.ValidWeapons(h.Game, h.Player, null, true);
+        }
+    }
+
+    private IEnumerable<TreacheryCard> Defenses
+    {
+        get
+        {
+            return Battle.ValidDefenses(h.Game, h.Player, h.Player.TreacheryCards.FirstOrDefault(x => x.Id == weapon), true).OrderBy(c => c);
+            //return Battle.ValidDefenses(h.Game, h.Player, null, true);
+        }
+    }
+}

@@ -1,0 +1,51 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<TreacheryCalled>
+@implements IDisposable
+
+<div class="card p-1 mb-2 border-danger">
+    <div class="card-header">Call TREACHERY?</div>
+    <div class="card-body">
+
+        @if (TreacheryCalled.MayCallTreachery(h.Game, h.Player))
+        {
+            <button class="btn btn-primary mt-1" @onclick="Confirm">Confirm</button>
+            <div class="text-danger bg-dark">@validationError</div>
+        }
+
+        @if (h.Faction == h.Game.AggressorBattleAction.Initiator || h.Faction == h.Game.DefenderBattleAction.Initiator)
+        {
+            <button class="btn btn-primary mt-1" @onclick="Pass">Pass</button>
+        }
+
+    </div>
+</div>
+
+@code {
+
+    protected override TreacheryCalled ConfirmedResult
+    {
+        get
+        {
+            return new TreacheryCalled(h.Game) { Initiator = h.Faction, TraitorCalled = true };
+        }
+    }
+
+    protected override TreacheryCalled PassedResult
+    {
+        get
+        {
+            return new TreacheryCalled(h.Game) { Initiator = h.Faction, TraitorCalled = false };
+        }
+    }
+
+    public void Dispose()
+    {
+
+    }
+
+}

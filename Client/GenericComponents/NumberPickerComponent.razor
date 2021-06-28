@@ -1,0 +1,83 @@
+﻿<div class="container pt-1 pb-1">
+
+    <div class="row justify-content-start">
+
+        <div style="width: 50px; height: 50px; background-image: url('@SymbolSRC'); background-size: contain; background-repeat: no-repeat;">
+            <div style="text-align: center; padding-top: 6px; font-size: 22px; font-weight: bold; color: @NumberColor">
+                <span>@Value</span>
+            </div>
+        </div>
+
+        <div style="margin: 0px 0px 0px 4px;">
+            <div @onclick="@Increase" style="margin: 2px 0px 0px 0px">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="@IncreaseArrowColor" class="bi bi-triangle-fill" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z" />
+                </svg>
+            </div>
+            <div @onclick="@Decrease" style="margin: 0px 0px 2px 0px">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="@DecreaseArrowColor" class="bi bi-triangle-fill" viewBox="0 0 16 16">
+                    <path transform="rotate(180,8,8)" fill-rule="evenodd" d="M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z" />
+                </svg>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@code {
+
+    private int _value;
+
+    [Parameter]
+    public int Value
+    {
+        get
+        {
+            return _value;
+        }
+        set
+        {
+            if (_value != value)
+            {
+                _value = value;
+                ValueChanged.InvokeAsync(value);
+            }
+        }
+    }
+
+    [Parameter]
+    public int Min { get; set; } = 0;
+
+    [Parameter]
+    public int Max { get; set; } = 10;
+
+    [Parameter]
+    public string SymbolSRC { get; set; } = "#FF5400";
+
+    [Parameter]
+    public string ArrowColor { get; set; } = "#FF5400";
+
+    [Parameter]
+    public string DisabledColor { get; set; } = "#AAAAAA";
+
+    [Parameter]
+    public string NumberColor { get; set; } = "white";
+
+    [Parameter]
+    public EventCallback<int> ValueChanged { get; set; }
+
+    private void Increase()
+    {
+        if (Value < Max) Value++;
+    }
+
+    private void Decrease()
+    {
+        if (Value > Min) Value--;
+    }
+
+    private string IncreaseArrowColor => Value < Max ? ArrowColor : DisabledColor;
+
+    private string DecreaseArrowColor => Value > Min ? ArrowColor : DisabledColor;
+}

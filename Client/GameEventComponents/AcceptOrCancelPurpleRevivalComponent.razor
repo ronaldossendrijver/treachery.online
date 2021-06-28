@@ -1,0 +1,77 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents; 
+@inherits GameEventComponent<AcceptOrCancelPurpleRevival>
+
+<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
+
+    <div class="card-header">Manage Revival Requests</div>
+
+    <div class="card-body">
+
+        @if (h.Game.CurrentPurpleRevivalRequest != null)
+        {
+            var hero = h.Game.CurrentPurpleRevivalRequest.Hero;
+            <div>@Skin.Current.Describe(h.Game.CurrentPurpleRevivalRequest.Initiator) have requested revival of <span class="badge badge-primary badge-pill" style="@Color(hero.Faction)" data-animation="true" data-content="@Support.GetHeroHoverHTML(hero)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">@hero</span>. If you agree, set your price below.</div>
+
+            <NumberPickerComponent @bind-Value="price" Min="AcceptOrCancelPurpleRevival.MinAmount()" Max="AcceptOrCancelPurpleRevival.MaxAmount()" SymbolSRC="@Skin.Current.Harvester_URL" />
+            <button class="btn btn-primary" @onclick="Confirm" disabled=@(!Valid)>Confirm Offer</button>
+        }
+
+        @if (CurrentRevivalOfferValues.Any())
+        {
+            <SelectComponent @bind-Value="heroId" Values="CurrentRevivalOfferValues" ValueLabels="CurrentRevivalOfferLabels" Label="Cancel an existing revival offer:" />
+            <button class="btn btn-primary" @onclick="Pass" disabled=@(!CurrentRevivalOfferValues.Contains(heroId))>Cancel Offer</button>
+        }
+
+    </div>
+</div>
+
+@code {
+
+    protected override bool Urgent => false;
+    protected override Faction GameEventTypeFaction => Faction.Purple;
+
+    private int heroId;
+    private int price;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Initialize<int, int>(ref heroId, CurrentRevivalOfferValues);
+    }
+
+    protected override AcceptOrCancelPurpleRevival ConfirmedResult
+    {
+        get
+        {
+            return new AcceptOrCancelPurpleRevival(h.Game) { Initiator = h.Faction, Cancel = false, Hero = h.Game.CurrentPurpleRevivalRequest.Hero, Price = price };
+        }
+    }
+
+    protected override AcceptOrCancelPurpleRevival PassedResult
+    {
+        get
+        {
+            return new AcceptOrCancelPurpleRevival(h.Game) { Initiator = h.Faction, Cancel = true, Hero = LeaderManager.HeroLookup.Find(heroId) };
+        }
+    }
+
+    private IEnumerable<int> CurrentRevivalOfferValues
+    {
+        get
+        {
+            return h.Game.AllowedEarlyRevivals.Select(kvp => kvp.Key.Id);
+        }
+    }
+
+    private IEnumerable<string> CurrentRevivalOfferLabels
+    {
+        get
+        {
+            return h.Game.AllowedEarlyRevivals.Select(kvp => Skin.Current.Format("{0} for {1}", kvp.Key, kvp.Value));
+        }
+    }
+}

@@ -1,0 +1,53 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<GreySwappedCardOnBid>
+
+<div class="card p-1 mb-2 border-danger">
+    <div class="card-header">Swap the next card on auction with a card from your hand? You can do this once per Bidding round.</div>
+    <div class="card-body">
+
+        <label for="card">Select a card from your hand</label>
+        <select class="custom-select" @bind="cardId" id="card">
+            @foreach (var v in h.Player.TreacheryCards)
+            {
+                <option value="@v.Id">@v</option>
+            }
+        </select>
+
+        <button class="btn btn-primary mt-1" @onclick="Confirm">Swap</button>
+        <button class="btn btn-primary mt-1" @onclick="Pass">Pass</button>
+
+    </div>
+</div>
+
+@code {
+
+    private int cardId;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Initialize<int, TreacheryCard>(ref cardId, h.Player.TreacheryCards);
+    }
+
+    protected override GreySwappedCardOnBid ConfirmedResult
+    {
+
+        get
+        {
+            return new GreySwappedCardOnBid(h.Game) { Initiator = h.Faction, Passed = false, Card = TreacheryCardManager.Lookup.Find(cardId) };
+        }
+    }
+
+    protected override GreySwappedCardOnBid PassedResult
+    {
+        get
+        {
+            return new GreySwappedCardOnBid(h.Game) { Initiator = h.Faction, Passed = true };
+        }
+    }
+
+}

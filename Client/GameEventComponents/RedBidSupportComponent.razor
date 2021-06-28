@@ -1,0 +1,89 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<RedBidSupport>
+
+<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
+
+    <div class="card-header">
+        How much of your @Skin.Current.Describe(Concept.Resource) may non-allied factions use for bidding?
+        <CollapseButton @bind-Collapsed="Collapsed" />
+    </div>
+
+    @if (!Collapsed)
+    {
+        <div class="card-body">
+
+            <div class="row">
+                @foreach (var faction in factions)
+                {
+                    <SelectComponent @bind-Value="amounts[faction]" Values="ValidValues" Label="@Skin.Current.Describe(faction)" Layout="SelectComponentLayout.MultipleInputsPerLineLabelsAbove" />
+                }
+            </div>
+
+            <div class="text-info small">Your contributions to opponent bids will flow back to you <i>at the end</i> of the bidding phase.</div>
+
+            <button class="btn btn-primary mt-3" @onclick="Confirm" disabled="@(!Valid)">Confirm</button>
+            <div class="text-danger bg-dark">@validationError</div>
+
+        </div>
+    }
+
+</div>
+
+@code {
+
+    private List<Faction> factions = new List<Faction>();
+    private Dictionary<Faction, int> amounts = new Dictionary<Faction, int>();
+
+    protected override void OnInitialized()
+    {
+        factions.AddRange(ValidTargets);
+        foreach (var f in factions)
+        {
+            amounts.Add(f, h.Game.SpiceForBidsRedCanPay(f));
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        foreach (var f in factions)
+        {
+            int value = amounts[f];
+            Initialize<int, int>(ref value, ValidValues);
+            amounts[f] = value;
+        }
+    }
+
+    protected override RedBidSupport ConfirmedResult
+    {
+        get
+        {
+            return new RedBidSupport(h.Game) { Initiator = h.Faction, Amounts = amounts };
+        }
+    }
+
+    private IEnumerable<Faction> ValidTargets
+    {
+        get
+        {
+            return SetIncreasedRevivalLimits.ValidTargets(h.Game, h.Player).Where(f => f != h.Player.Ally);
+        }
+    }
+
+    private string StyleDef(Faction f)
+    {
+        return string.Format("background-color:{0}", Skin.Current.GetFactionColorTransparant(f));
+    }
+
+    private IEnumerable<int> ValidValues
+    {
+        get
+        {
+            return Enumerable.Range(0, h.Player.Resources + 1);
+        }
+    }
+}

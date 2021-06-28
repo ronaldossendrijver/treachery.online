@@ -1,0 +1,76 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+<div class="modal fade" id="@Id" tabindex="-1" role="dialog" aria-labelledby="@LabelId" aria-hidden="true">
+    <div class="modal-dialog @Size" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="@LabelId">@Title</h5>
+                &nbsp;
+                <button class="btn btn-link p-0" type="button" @onclick="Print">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-printer" viewBox="0 0 16 16">
+                        <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" />
+                        <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z" />
+                    </svg>
+                </button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body @(ScrollClass)" id="@BodyId">
+                @ChildContent
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string Id { get; set; } = "";
+
+    [Parameter]
+    public string Size { get; set; } = ""; //modal-sm modal-lg modal-xl
+
+    [Parameter]
+    public string Title { get; set; } = "";
+
+    [Parameter]
+    public bool Scrolling { get; set; } = false;
+
+    [Parameter]
+    public bool Printable { get; set; } = false;
+
+    private string LabelId
+    {
+        get
+        {
+            return Id + "Label";
+        }
+    }
+
+    private string BodyId
+    {
+        get
+        {
+            return Id + "Body";
+        }
+    }
+
+    private string ScrollClass
+    {
+        get
+        {
+            return Scrolling ? "overflow-auto" : "";
+        }
+    }
+
+    private void Print()
+    {
+        _ = Browser.Print(BodyId);
+    }
+}

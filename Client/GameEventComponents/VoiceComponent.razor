@@ -1,0 +1,66 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@using System.Linq;
+@inherits GameEventComponent<Voice>
+
+<div class="card p-1 mb-2 border-danger">
+
+    <div class="card-header">Use Voice</div>
+
+    <div class="card-body">
+
+        <div class="custom-control custom-radio">
+            <input class="custom-control-input" @onchange="OnChange" type="radio" id="voiceMustUse" value="true" checked="@(mustUse)">
+            <label class="custom-control-label" for="voiceMustUse">Force the use of...</label>
+        </div>
+
+        <div class="custom-control custom-radio">
+            <input class="custom-control-input" @onchange="OnChange" type="radio" id="voiceCantUse" value="false" checked="@(!mustUse)">
+            <label class="custom-control-label" for="voiceCantUse">Deny the use of...</label>
+        </div>
+
+        <SelectComponent @bind-Value="type" Values="ValidTypes" />
+
+        <button class="btn btn-primary" @onclick="Confirm" disabled=@(!Valid)>Confirm</button>
+
+        <div class="text-danger bg-dark">@validationError</div>
+
+    </div>
+</div>
+
+@code {
+
+    private bool mustUse = true;
+    private TreacheryCardType type;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Initialize<TreacheryCardType, TreacheryCardType>(ref type, ValidTypes);
+    }
+
+    protected override Voice ConfirmedResult
+    {
+        get
+        {
+            return new Voice(h.Game) { Initiator = h.Faction, Must = mustUse, Type = type };
+        }
+    }
+
+    private void OnChange(ChangeEventArgs args)
+    {
+        mustUse = Convert.ToBoolean(args.Value);
+        StateHasChanged();
+    }
+
+    private IEnumerable<TreacheryCardType> ValidTypes
+    {
+        get
+        {
+            return Voice.ValidTypes(h.Game).OrderBy(t => Skin.Current.Describe(t));
+        }
+    }
+}

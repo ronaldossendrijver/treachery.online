@@ -1,0 +1,112 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using System.Collections.Generic;
+
+
+@typeparam T
+
+<div>
+    @foreach (var item in Values.Zip(ImageURLs, (v, i) => new { Value = v, Image = i }).Zip(PopupHTMLs, (v, h) => new { Value = v.Value, Image = v.Image, Popup = h }))
+    {
+        <img src="@item.Image"
+             @onclick="e => Click(item.Value)"
+             @onmouseover="e => MouseOver(item.Value)"
+             @onmouseout="e => MouseOut(item.Value)"
+             style="@DetermineFilter(item.Value)"
+             class="img-fluid p-1" width=@ImageWidth data-animation="true" data-content="@item.Popup" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
+    }
+</div>
+
+@code {
+
+    private T _value;
+
+    [Parameter]
+    public T Value
+    {
+        get
+        {
+            return _value;
+        }
+        set
+        {
+            if ((object)_value != (object)value)
+            {
+                _value = value;
+                ValueChanged.InvokeAsync(value);
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<T> ValueChanged { get; set; }
+
+    [Parameter]
+    public IEnumerable<T> Values { get; set; }
+
+    [Parameter]
+    public IEnumerable<string> ImageURLs { get; set; }
+
+    [Parameter]
+    public int ImageWidth { get; set; } = 60;
+
+    [Parameter]
+    public IEnumerable<string> PopupHTMLs { get; set; }
+
+    [Parameter]
+    public string UnselectedFilter { get; set; } = "grayscale(100%) opacity(50%)";
+
+    [Parameter]
+    public string HoverFilter { get; set; } = "brightness(120%)";
+
+    [Parameter]
+    public bool Required { get; set; } = true;
+
+    protected override void OnParametersSet()
+    {
+        if (ImageURLs == null) ImageURLs = Values.Select(v => "");
+        if (PopupHTMLs == null) PopupHTMLs = Values.Select(v => "");
+
+        if (Required && (object)Value == default)
+        {
+            Value = Values.FirstOrDefault();
+        }
+    }
+
+    private void Click(T item)
+    {
+        if ((object)Value == (object)item)
+        {
+            if (!Required)
+            {
+                Value = default;
+            }
+        }
+        else
+        {
+            Value = item;
+        }
+    }
+
+    private T _hovered = default;
+
+    private void MouseOver(T item)
+    {
+        _hovered = item;
+    }
+
+    private void MouseOut(T item)
+    {
+        _hovered = default;
+    }
+
+    private string DetermineFilter(T item)
+    {
+        string result = "filter:";
+        if ((object)item != (object)_value) result += UnselectedFilter + " ";
+        if ((object)item == (object)_hovered) result += HoverFilter;
+        return result;
+    }
+}

@@ -1,0 +1,40 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<FactionSelected>
+
+<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
+
+    <div class="card-header">Choose your faction. If you don't, it will be assigned at random.</div>
+
+    <div class="card-body">
+
+        <SelectComponent @bind-Value="faction" Values="FactionSelected.ValidFactions(h.Game)" Label="Faction" />
+
+        <button class="btn btn-primary" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
+
+        <div class="text-danger bg-dark">@validationError</div>
+
+    </div>
+</div>
+
+@code {
+
+    private Faction faction;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Initialize<Faction, Faction>(ref faction, FactionSelected.ValidFactions(h.Game));
+    }
+
+    protected override FactionSelected ConfirmedResult
+    {
+        get
+        {
+            return new FactionSelected(h.Game) { Initiator = Faction.None, InitiatorPlayerName = h.PlayerName, Faction = faction };
+        }
+    }
+}

@@ -1,0 +1,59 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<KarmaHandSwap>
+
+<div class="card p-1 mb-2" style="@BackgroundStyle">
+    <div class="card-header" style="@HeaderStyle">
+        Return @h.Game.KarmaHandSwapNumberOfCards cards to @Skin.Current.Describe(h.Game.KarmaHandSwapTarget).
+    </div>
+    <div class="card-body" style="@BodyStyle">
+
+        @foreach (var v in h.Player.TreacheryCards)
+        {
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" @onchange="eventArgs => { CheckboxClicked(v, eventArgs.Value); }" />
+                <label>@v.Name</label>
+            </div>
+        }
+
+        <button disabled="@(!Valid)" class="btn btn-primary mt-1" @onclick="Confirm">Confirm</button>
+        <div class="text-danger bg-dark">@validationError</div>
+
+    </div>
+</div>
+
+@code {
+
+    private List<TreacheryCard> selectedCards = new List<TreacheryCard>();
+    private Faction target;
+
+    void CheckboxClicked(TreacheryCard c, object checkedValue)
+    {
+        bool check = (bool)checkedValue;
+        if (check)
+        {
+            selectedCards.Add(c);
+        }
+        else
+        {
+            selectedCards.Remove(c);
+        }
+    }
+
+    protected override KarmaHandSwap ConfirmedResult
+    {
+        get
+        {
+            return new KarmaHandSwap(h.Game) { Initiator = h.Faction, ReturnedCards = selectedCards };
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Initialize<Faction, Faction>(ref target, h.Game.ValidTargets(h.Player));
+    }
+}

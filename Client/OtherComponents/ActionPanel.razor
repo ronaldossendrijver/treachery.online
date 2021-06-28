@@ -1,0 +1,332 @@
+﻿@using Treachery.Shared
+@using Treachery.Client.GameEventComponents;
+
+@if (!h.IsHost && h.CurrentPhase == Phase.AwaitingPlayers)
+{
+    <AwaitingGameComponent h="@h" />
+}
+
+@foreach (var a in h.Actions)
+{
+    if (a == typeof(EstablishPlayers))
+    {
+        <EstablishPlayersComponent h="@h" />
+    }
+}
+
+<div class="card-columns">
+
+    @foreach (var a in h.Actions)
+    {
+        if (a == typeof(EndPhase))
+        {
+            <SimpleActionComponent GameEventType="EndPhase" h="@h" Title="@h.NextPhase()" Alert="true" />
+        }
+        else if (a == typeof(FactionSelected))
+        {
+            <FactionSelectedComponent h="@h" />
+        }
+        else if (a == typeof(FactionTradeOffered))
+        {
+            <FactionTradeOfferedComponent h="@h" />
+        }
+        else if (a == typeof(StormDialled))
+        {
+            <StormDialledComponent h="@h" />
+        }
+        else if (a == typeof(PerformSetup))
+        {
+            <PerformSetupComponent h="@h" />
+        }
+        else if (a == typeof(PerformYellowSetup))
+        {
+            <PerformYellowSetupComponent h="@h" />
+        }
+        else if (a == typeof(BluePrediction))
+        {
+            <BluePredictionComponent h="@h" />
+        }
+        else if (a == typeof(PerformBluePlacement))
+        {
+            <PerformBluePlacementComponent h="@h" />
+        }
+        else if (a == typeof(MulliganPerformed))
+        {
+            <MulliganPerformedComponent h="@h" />
+        }
+        else if (a == typeof(TraitorsSelected))
+        {
+            <TraitorsSelectedComponent h="@h" />
+        }
+        else if (a == typeof(StormSpellPlayed))
+        {
+            <StormSpellPlayedComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.StormSpell)" />
+        }
+        else if (a == typeof(MetheorPlayed))
+        {
+            <SimpleActionComponent GameEventType="MetheorPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Metheor)" title="@Support.GetCardTitle(TreacheryCardType.Metheor)" Alert="false" />
+        }
+        else if (a == typeof(TakeLosses))
+        {
+            <TakeLossesComponent h="@h" />
+        }
+        else if (a == typeof(YellowSentMonster))
+        {
+            <YellowSentMonsterComponent h="@h" />
+        }
+        else if (a == typeof(YellowRidesMonster))
+        {
+            <YellowRideComponent h="@h" />
+        }
+        else if (a == typeof(AllianceOffered))
+        {
+            <AllianceOfferedComponent h="@h" />
+        }
+        else if (a == typeof(AllianceBroken))
+        {
+            <SimpleActionComponent GameEventType="AllianceBroken" h="@h" title="Break your current alliance?" Alert="false" />
+        }
+        else if (a == typeof(CharityClaimed))
+        {
+            <SimpleActionComponent GameEventType="CharityClaimed" h="@h" title="Claim Charity?" Alert="false" />
+        }
+        else if (a == typeof(Bid))
+        {
+            <BidComponent h="@h" />
+        }
+        else if (a == typeof(Revival))
+        {
+            <RevivalComponent h="@h" />
+        }
+        else if (a == typeof(Shipment))
+        {
+            <ShipmentComponent h="@h" />
+        }
+        else if (a == typeof(OrangeDelay))
+        {
+            <SimpleActionComponent GameEventType="OrangeDelay" h="@h" title="Delay your turn?" Alert="true" />
+        }
+        else if (a == typeof(BlueAccompanies))
+        {
+            <BlueAccompaniesComponent h="@h" />
+        }
+        else if (a == typeof(BlueFlip))
+        {
+            <BlueFlipComponent h="@h" />
+        }
+        else if (a == typeof(BlueBattleAnnouncement))
+        {
+            <BlueBattleAnnouncementComponent h="@h" />
+        }
+        else if (a == typeof(Move))
+        {
+            <MoveComponent h="@h" />
+        }
+        else if (a == typeof(Caravan))
+        {
+            <CaravanComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Caravan)" />
+        }
+        else if (a == typeof(BattleInitiated))
+        {
+            <BattleInitiatedComponent h="@h" />
+        }
+        else if (a == typeof(Voice))
+        {
+            <VoiceComponent h="@h" />
+        }
+        else if (a == typeof(Prescience))
+        {
+            <PrescienceComponent h="@h" />
+        }
+        else if (a == typeof(Battle))
+        {
+            <BattleComponent h="@h" />
+        }
+        else if (a == typeof(BattleRevision))
+        {
+            <BattleRevisionComponent h="@h" />
+        }
+        else if (a == typeof(TreacheryCalled))
+        {
+            <TreacheryCalledComponent h="@h" />
+        }
+        else if (a == typeof(BattleConcluded))
+        {
+            <BattleConcludedComponent h="@h" />
+        }
+        else if (a == typeof(RaiseDeadPlayed))
+        {
+            <RaiseDeadComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.RaiseDead)" />
+        }
+        else if (a == typeof(Donated))
+        {
+            <DonatedComponent h="@h" />
+        }
+        else if (a == typeof(AllyPermission))
+        {
+            <AllyPermissionComponent h="@h" />
+        }
+        else if (a == typeof(ClairVoyancePlayed))
+        {
+            <ClairVoyancePlayedComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Clairvoyance)" />
+        }
+        else if (a == typeof(ClairVoyanceAnswered))
+        {
+            <ClairVoyanceAnsweredComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Clairvoyance)" />
+        }
+        else if (a == typeof(KarmaHandSwapInitiated))
+        {
+            <KarmaHandSwapInitiatedComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
+        }
+        else if (a == typeof(KarmaHandSwap))
+        {
+            <KarmaHandSwapComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
+        }
+        else if (a == typeof(KarmaFreeRevival))
+        {
+            <KarmaFreeRevivalComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
+        }
+        else if (a == typeof(KarmaHmsMovement))
+        {
+            <KarmaHmsMovementComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
+        }
+        else if (a == typeof(KarmaMonster))
+        {
+            <KarmaMonsterComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
+        }
+        else if (a == typeof(KarmaPrescience))
+        {
+            <SimpleActionComponent GameEventType="KarmaPrescience" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" Title="@KarmaPrescienceTitle" Alert="false" Collapsible="false" />
+        }
+        else if (a == typeof(Karma))
+        {
+            <KarmaComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
+        }
+        else if (a == typeof(FaceDanced))
+        {
+            <FaceDancedComponent h="@h" />
+        }
+        else if (a == typeof(FaceDancerReplaced))
+        {
+            <FaceDancerReplacedComponent h="@h" />
+        }
+        else if (a == typeof(SetIncreasedRevivalLimits))
+        {
+            <SetIncreasedRevivalLimitsComponent h="@h" />
+        }
+        else if (a == typeof(RedBidSupport))
+        {
+            <RedBidSupportComponent h="@h" />
+        }
+        else if (a == typeof(RequestPurpleRevival))
+        {
+            <RequestPurpleRevivalComponent h="@h" />
+        }
+        else if (a == typeof(AcceptOrCancelPurpleRevival))
+        {
+            <AcceptOrCancelPurpleRevivalComponent h="@h" />
+        }
+        else if (a == typeof(AmalPlayed))
+        {
+            <SimpleActionComponent GameEventType="AmalPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Amal)" title="@Support.GetCardTitle(TreacheryCardType.Amal)" Alert="false" Collapsible="true" />
+        }
+        else if (a == typeof(GreyRemovedCardFromAuction))
+        {
+            <GreyRemovedCardFromAuctionComponent h="@h" />
+        }
+        else if (a == typeof(GreySelectedStartingCard))
+        {
+            <GreySelectedStartingCardComponent h="@h" />
+        }
+        else if (a == typeof(GreySwappedCardOnBid))
+        {
+            <GreySwappedCardOnBidComponent h="@h" />
+        }
+        else if (a == typeof(PerformHmsMovement))
+        {
+            <PerformHmsMovementComponent h="@h" />
+        }
+        else if (a == typeof(PerformHmsPlacement))
+        {
+            <PerformHmsPlacementComponent h="@h" />
+        }
+        else if (a == typeof(HarvesterPlayed))
+        {
+            <SimpleActionComponent GameEventType="HarvesterPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Harvester)" title="@Support.GetCardTitle(TreacheryCardType.Harvester)" Alert="false" />
+        }
+        else if (a == typeof(PoisonToothCancelled))
+        {
+            <SimpleActionComponent GameEventType="PoisonToothCancelled" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.PoisonTooth)" title="Cancel Poison Tooth?" Alert="false" />
+        }
+        else if (a == typeof(ReplacedCardWon))
+        {
+            <ReplacedCardWonComponent h="@h" />
+        }
+        else if (a == typeof(ThumperPlayed))
+        {
+            <SimpleActionComponent GameEventType="ThumperPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Thumper)" title="@Support.GetCardTitle(TreacheryCardType.Thumper)" Alert="false" />
+        }
+        else if (a == typeof(HideSecrets))
+        {
+            <SimpleActionComponent GameEventType="HideSecrets" h="@h" Title="Do you object against your secret information (like cards and traitors) being visible at the end of the game?" ConfirmLabel="Yes" Alert="true" Dismissable="true" DismissLabel="No" />
+        }
+        else if (a == typeof(DealOffered))
+        {
+            <DealOfferedComponent h="@h" />
+        }
+        else if (a == typeof(PlayerReplaced))
+        {
+            <PlayerReplacedComponent h="@h" />
+        }
+    }
+
+    @if (DealAccepted.CurrentDeals(h.Game).Any() || h.IsPlayer && (DealAccepted.AcceptableDeals(h.Game, h.Player).Any() || DealAccepted.CancellableDeals(h.Game, h.Player).Any()))
+    {
+        <DealComponent h="@h" />
+    }
+
+    @if (h.Game.Applicable(Rule.AssistedNotekeeping))
+    {
+        <NoteComponent h="@h" />
+    }
+
+    @if (h.IsPlayer && h.CurrentPhase >= Phase.SelectingTraitors && h.IAm(Faction.Green))
+    {
+        <TrackerComponent h="@h" />
+    }
+
+    @if (h.Game.CurrentPhase == Phase.GameEnded && h.IsHost && !h.StatisticsSent && h.Game.Players.Count() >= 4 && h.Game.Players.Count(p => !(p.IsBot)) > h.Game.Players.Count(p => p.IsBot))
+    {
+        <div class="card p-1 mb-2">
+            <div class="card-header">
+                Upload game results to <a href="https://dune.games" target="_blank">https://dune.games</a>?
+            </div>
+            <div class="card-body">
+                <button class="btn btn-primary mt-1" @onclick="ConfirmUpload">Ok</button>
+            </div>
+        </div>
+    }
+
+</div>
+
+@code {
+
+    [Parameter]
+    public Handler h { get; set; }
+
+    private string KarmaPrescienceTitle
+    {
+        get
+        {
+            return Skin.Current.Format("Use {0} to see the entire enemy battle plan", TreacheryCardType.Karma);
+        }
+    }
+
+
+    private async Task ConfirmUpload()
+    {
+        await h.Host.UploadStatistics(h.Game);
+        h.StatisticsSent = true;
+        StateHasChanged();
+    }
+}

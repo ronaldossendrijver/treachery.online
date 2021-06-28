@@ -1,0 +1,46 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameComponent
+
+<div class="card p-1 mb-2">
+    <div class="card-header">Please enter your player name</div>
+    <div class="card-body">
+        <input class="form-control" @bind-value="playername" @bind-value:event="oninput" maxlength="24" placeholder="Your name" id="userName" />
+        <button class="btn btn-primary mt-1" disabled="@(!IsValid)" @onclick="Confirm">Confirm</button>
+    </div>
+</div>
+
+@code {
+
+    private static Func<Task> action;
+
+    private string playername;
+
+    protected override void OnInitialized()
+    {
+        action = Confirm;
+    }
+
+    private bool IsValid
+    {
+        get
+        {
+            return PlayerJoined.ValidName(playername) == "";
+        }
+    }
+
+    private async Task Confirm()
+    {
+        await h.ConfirmPlayername(playername);
+    }
+
+    [JSInvokable("ConfirmUsername")]
+    public async static Task ConfirmPlayername()
+    {
+        await action.Invoke();
+    }
+}

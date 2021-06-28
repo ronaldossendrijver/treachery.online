@@ -1,0 +1,45 @@
+﻿<div class="row ml-0 mt-2 mb-1 mr-0 justify-content-end">
+
+    @if (Other.HasDelegate)
+    {
+        <button class="btn btn-primary mr-1" @onclick="Other">@OtherText</button>
+    }
+
+    @if (Pass.HasDelegate)
+    {
+        <button class="btn btn-primary mr-1" @onclick="Pass">@PassText</button>
+    }
+
+    @if (Confirm.HasDelegate)
+    {
+        <button class="btn btn-primary" @onclick="Confirm" disabled=@(ConfirmError != "")>@ConfirmText</button>
+    }
+
+</div>
+
+<div class="text-danger bg-dark text-right">@ConfirmError</div>
+
+@code {
+
+    [Parameter]
+    public EventCallback Confirm { get; set; }
+
+    [Parameter]
+    public string ConfirmText { get; set; } = "Confirm";
+
+    [Parameter]
+    public string ConfirmError { get; set; } = "";
+
+    [Parameter]
+    public EventCallback Pass { get; set; }
+
+    [Parameter]
+    public string PassText { get; set; } = "Pass";
+
+    [Parameter]
+    public EventCallback Other { get; set; }
+
+    [Parameter]
+    public string OtherText { get; set; } = "Other";
+
+}

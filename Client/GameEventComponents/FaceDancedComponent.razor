@@ -1,0 +1,256 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<FaceDanced>
+@implements IDisposable
+
+<div class="card p-1 mb-2 border-danger">
+    <div class="card-header">
+        Reveal a Face Dancer or Pass?
+    </div>
+    <div class="card-body">
+
+        @if (FaceDanced.MayCallFaceDancer(h.Game, h.Player))
+        {
+            <p>If you decide to reveal, you may place up to @FaceDanced.MaximumNumberOfForces(h.Game, h.Player) forces in @h.Game.CurrentBattle.Territory from your reserves or anywhere on the planet.</p>
+
+            <label class="mb-0" for="forcesFromReserveAmount">From Reserves:</label>
+            <select class="custom-select" @bind="forcesFromReserve" id="forcesFromReserveAmount">
+                @foreach (var s in FaceDanced.ValidForcesFromReserves(h.Player))
+                {
+                    <option value="@s">@s</option>
+                }
+            </select>
+
+            @if (FaceDanced.ValidSourceLocations(h.Game, h.Player).Any())
+            {
+                <label class="mt-2 mb-0">From somewhere on the planet:</label>
+                <table class="table-sm table-bordered border-light">
+                    <thead>
+                        <tr class="small">
+                            <td>Location</td>
+                            <td colspan="3">@h.Player.ForceName <kbd>click</kbd></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var l in FaceDanced.ValidSourceLocations(h.Game, h.Player))
+                        {
+                            <tr class="small">
+
+                                <td>@l.ToString()</td>
+
+                                <td class="p-0"><button type="button" @onclick="(e => ForceAmountButton(l, -1, false))" class="btn btn-primary btn-sm">-</button></td>
+                                <td class="border-left-0 border-right-0">@Forces(l, false)</td>
+                                <td class="p-0"><button type="button" @onclick="(e => ForceAmountButton(l, 1, false))" class="btn btn-primary btn-sm">+</button></td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+
+            <label class="mt-2 mb-0">Select where to put your replacements:</label>
+            <table class="table table-striped table-sm m-0 w-auto">
+                <thead>
+                    <tr class="small">
+                        <td>Location</td>
+                        <td colspan="3">@h.Player.ForceName <kbd>ctrl+click</kbd></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var l in FaceDanced.ValidTargetLocations(h.Game))
+                    {
+                        <tr class="small">
+
+                            <td>@l.ToString()</td>
+
+                            <td class="p-0"><button type="button" @onclick="(e => TargetForceAmountButton(l, -1, false))" class="btn btn-primary btn-sm">-</button></td>
+                            <td>@TargetForces(l, false)</td>
+                            <td class="p-0"><button type="button" @onclick="(e => TargetForceAmountButton(l, 1, false))" class="btn btn-primary btn-sm">+</button></td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <button class="btn btn-primary mt-3" @onclick="Confirm" disabled="@(!Valid)">Reveal &amp; Place Forces</button>
+            <div class="text-danger bg-dark">@validationError</div>
+        }
+
+        <button class="btn btn-primary mt-1" @onclick="Pass">Pass</button>
+
+    </div>
+</div>
+
+@code {
+
+    private Dictionary<Location, Battalion> forces = new Dictionary<Location, Battalion>();
+    private Dictionary<Location, Battalion> targetForces = new Dictionary<Location, Battalion>();
+    private int forcesFromReserve;
+
+    protected override FaceDanced ConfirmedResult
+    {
+        get
+        {
+            return new FaceDanced(h.Game) { Initiator = h.Faction, FaceDancerCalled = true, ForceLocations = forces, ForcesFromReserve = forcesFromReserve, TargetForceLocations = targetForces };
+        }
+    }
+
+    protected override FaceDanced PassedResult
+    {
+        get
+        {
+            return new FaceDanced(h.Game) { Initiator = h.Faction, FaceDancerCalled = false };
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            MapDrawer.OnLocationSelected += HandleAddForce;
+            MapDrawer.OnLocationSelectedWithShift += HandleRemoveForce;
+            MapDrawer.OnLocationSelectedWithCtrlOrAlt += HandleAddTargetForce;
+            MapDrawer.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleRemoveTargetForce;
+        }
+
+        Initialize<int, int>(ref forcesFromReserve, FaceDanced.ValidForcesFromReserves(h.Player));
+    }
+
+    public void Dispose()
+    {
+        MapDrawer.OnLocationSelected -= HandleAddForce;
+        MapDrawer.OnLocationSelectedWithShift -= HandleRemoveForce;
+        MapDrawer.OnLocationSelectedWithCtrlOrAlt -= HandleAddTargetForce;
+        MapDrawer.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleRemoveTargetForce;
+    }
+
+    private void HandleAddForce(object sender, Location l)
+    {
+        if (FaceDanced.ValidSourceLocations(h.Game, h.Player).Contains(l))
+        {
+            ForceAmountButton(l, 1, false);
+        }
+    }
+
+    private void HandleAddTargetForce(object sender, Location l)
+    {
+        if (FaceDanced.ValidTargetLocations(h.Game).Contains(l))
+        {
+            TargetForceAmountButton(l, 1, false);
+        }
+    }
+
+    private void HandleRemoveForce(object sender, Location l)
+    {
+        if (FaceDanced.ValidSourceLocations(h.Game, h.Player).Contains(l))
+        {
+            ForceAmountButton(l, -1, false);
+        }
+    }
+
+    private void HandleRemoveTargetForce(object sender, Location l)
+    {
+        if (FaceDanced.ValidTargetLocations(h.Game).Contains(l))
+        {
+            TargetForceAmountButton(l, -1, false);
+        }
+    }
+
+    protected int Forces(Location l, bool special)
+    {
+        if (forces.ContainsKey(l))
+        {
+            if (special)
+            {
+                return forces[l].AmountOfSpecialForces;
+            }
+            else
+            {
+                return forces[l].AmountOfForces;
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    protected void ForceAmountButton(Location location, int amount, bool specialForces)
+    {
+        if (forces.ContainsKey(location))
+        {
+            if (specialForces)
+            {
+                forces[location].ChangeSpecialForces(amount);
+            }
+            else
+            {
+                forces[location].ChangeForces(amount);
+            }
+        }
+        else if (amount > 0)
+        {
+            if (specialForces)
+            {
+                forces.Add(location, new Battalion() { AmountOfSpecialForces = amount, AmountOfForces = 0 });
+            }
+            else
+            {
+                forces.Add(location, new Battalion() { AmountOfSpecialForces = 0, AmountOfForces = amount });
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    protected int TargetForces(Location l, bool special)
+    {
+        if (targetForces.ContainsKey(l))
+        {
+            if (special)
+            {
+                return targetForces[l].AmountOfSpecialForces;
+            }
+            else
+            {
+                return targetForces[l].AmountOfForces;
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    protected void TargetForceAmountButton(Location location, int amount, bool specialForces)
+    {
+        if (targetForces.ContainsKey(location))
+        {
+            if (specialForces)
+            {
+                targetForces[location].ChangeSpecialForces(amount);
+            }
+            else
+            {
+                targetForces[location].ChangeForces(amount);
+            }
+        }
+        else if (amount > 0)
+        {
+            if (specialForces)
+            {
+                targetForces.Add(location, new Battalion() { AmountOfSpecialForces = amount, AmountOfForces = 0 });
+            }
+            else
+            {
+                targetForces.Add(location, new Battalion() { AmountOfSpecialForces = 0, AmountOfForces = amount });
+            }
+        }
+
+        StateHasChanged();
+    }
+}

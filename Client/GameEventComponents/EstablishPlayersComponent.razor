@@ -1,0 +1,222 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<EstablishPlayers>
+
+<div class="card p-1 mb-2 border-danger">
+    <div class="card-header">@h.NextPhase()</div>
+    <div class="card-body">
+
+        <div class="custom-control custom-checkbox">
+            <input class="custom-control-input" type="checkbox" @bind="info.HostParticipates" id="establishPlayersHostParticipates" />
+            <label class="custom-control-label" for="establishPlayersHostParticipates">The host (you) will participate in this game</label>
+        </div>
+
+        <div class="mt-2"><strong>Players:</strong> @string.Join(", ", Players)</div>
+
+        <label class="mt-1 mb-0" for="establishPlayersMaximumTurns">Maximum number of turns</label>
+        <select disabled="@Readonly" class="custom-select" @bind="info.MaximumNumberOfTurns" id="establishPlayersMaximumTurns">
+            @foreach (var s in EstablishPlayers.GetValidMaximumNumberOfTurns())
+            {
+                <option value="@s">@s</option>
+            }
+        </select>
+
+        <label class="mt-1 mb-0" for="establishPlayersMaximumPlayers">Maximum number of players</label>
+        <select disabled="@Readonly" class="custom-select" @bind="info.MaximumNumberOfPlayers" id="establishPlayersMaximumPlayers">
+            @foreach (var s in EstablishPlayers.GetValidMaximumNumberOfPlayers())
+            {
+                <option value="@s">@s</option>
+            }
+        </select>
+
+        <label class="mt-1 mb-0" for="establishPlayersFactionsInPlay">Factions in play</label>
+        @foreach (var faction in AllFactions)
+        {
+            <ChecklistItemComponent Disabled="@Readonly" Value="@faction" Values="info.FactionsInPlay" style="@StyleDef(faction)" Callback="OnChangeFactions" />
+        }
+
+        <label class="mt-1 mb-0">AI Players</label>
+        @foreach (var rule in Game.GetRulesInGroup(RuleGroup.Bots))
+        {
+            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="OnChangeRules" />
+        }
+
+        <label class="mt-1 mb-0" for="establishPlayersRules">Rules</label>
+        <select disabled="@Readonly" class="custom-select" id="establishPlayersRules" value="@info.Ruleset" @onchange="RulesetChanged">
+            @foreach (var ruleset in Rulesets)
+            {
+                <option value="@ruleset">@Skin.Current.Describe(ruleset)</option>
+            }
+        </select>
+
+        <button class="btn btn-primary mt-3" @onclick="StartNewOrLoadedGame" disabled="@(!Valid)">@StartButtonLabel</button>
+        <div class="text-danger bg-dark">@validationError</div>
+
+        @if (h.Host.LoadedGame == null)
+        {
+            <div class="text-info mt-2 mb-1">You can enable or disable individual rules below.</div>
+        }
+
+        <label class="mt-1 mb-0">Core Game, Advanced Rules</label>
+        @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreAdvanced))
+        {
+            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="OnChangeRules" />
+        }
+
+        <label class="mt-1 mb-0">Core Game, Exceptions to Basic Rules</label>
+        @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreBasicExceptions))
+        {
+            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="OnChangeRules" />
+        }
+
+        <label class="mt-1 mb-0">Core Game, Exceptions to Advanced Rules</label>
+        @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreAdvancedExceptions))
+        {
+            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="OnChangeRules" />
+        }
+
+        <label class="mt-1 mb-0">Ixians &amp; Tleilaxu Expansion</label>
+        @foreach (var rule in Game.GetRulesInGroup(RuleGroup.ExpansionIxAndBtBasic))
+        {
+            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="OnChangeRules" />
+        }
+
+        <label class="mt-1 mb-0">Ixians &amp; Tleilaxu Expansion, Advanced Rules</label>
+        @foreach (var rule in Game.GetRulesInGroup(RuleGroup.ExpansionIxAndBtAdvanced))
+        {
+            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="OnChangeRules" />
+        }
+
+        <label class="mt-1 mb-0">House Rules</label>
+        @foreach (var rule in Game.GetRulesInGroup(RuleGroup.House))
+        {
+            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="OnChangeRules" />
+        }
+
+    </div>
+</div>
+
+@code {
+
+    private GameInfo info
+    {
+
+        get
+        {
+            return h.Host.GameBeingEstablished;
+        }
+    }
+
+    private void OnChangeRules()
+    {
+        info.Ruleset = Game.DetermineRuleset(info.Rules.Where(r => Game.GetRuleGroup(r) != RuleGroup.Bots));
+        StateHasChanged();
+    }
+
+    private void OnChangeFactions()
+    {
+        info.Ruleset = Game.DetermineRuleset(info.Rules.Where(r => Game.GetRuleGroup(r) != RuleGroup.Bots));
+        StateHasChanged();
+    }
+
+    private async Task StartNewOrLoadedGame()
+    {
+        var skinData = Skin.Current == Skin.Dune1979 ? "" : Skin.SkinToString(Skin.Current);
+        if (h.Host.LoadedGame != null)
+        {
+            await h.Host.LoadGameAndSkin(h.Host.LoadedGameData, h.Host.LoadedGame, skinData);
+        }
+        else
+        {
+            await base.Confirm();
+            if (skinData != "")
+            {
+                await h.Host.LoadSkin(skinData);
+            }
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (h.Host.LoadedGame != null)
+        {
+            info.Ruleset = h.Host.LoadedGame.Ruleset;
+            info.MaximumNumberOfPlayers = h.Host.LoadedGame.MaximumNumberOfPlayers;
+            info.MaximumNumberOfTurns = h.Host.LoadedGame.MaximumNumberOfTurns;
+            info.Rules = h.Host.LoadedGame.AllRules.ToList();
+            info.Ruleset = h.Host.LoadedGame.Ruleset;
+            info.FactionsInPlay = h.Host.LoadedGame.Players.Select(p => p.Faction).ToList();
+        }
+    }
+
+    protected override EstablishPlayers ConfirmedResult
+    {
+        get
+        {
+            return new EstablishPlayers(h.Game)
+            {
+                GameName = string.Format("{0}'s Game", h.PlayerName),
+                Seed = new Random().Next(),
+                Players = Players,
+                MaximumTurns = info.MaximumNumberOfTurns,
+                MaximumNumberOfPlayers = info.MaximumNumberOfPlayers,
+                ApplicableRules = info.Rules.ToArray(),
+                FactionsInPlay = info.FactionsInPlay
+            };
+        }
+    }
+
+    private IEnumerable<string> Players
+    {
+        get
+        {
+            return h.Host.JoinedPlayers.Where(p => info.HostParticipates || p != h.PlayerName);
+        }
+    }
+
+    private void RulesetChanged(ChangeEventArgs e)
+    {
+        var botRules = info.Rules.Where(r => Game.GetRuleGroup(r) == RuleGroup.Bots).ToArray();
+
+        info.Rules.Clear();
+        info.Rules.AddRange(botRules);
+
+        info.Ruleset = Enum.Parse<Ruleset>(e.Value.ToString());
+
+        if (Game.RulesetDefinition.ContainsKey(info.Ruleset))
+        {
+            info.Rules.AddRange(Game.RulesetDefinition[info.Ruleset]);
+        }
+
+        StateHasChanged();
+    }
+
+    private IEnumerable<Ruleset> Rulesets
+    {
+        get
+        {
+            return Enumerations.GetValuesExceptDefault(typeof(Ruleset), Ruleset.None);
+        }
+    }
+
+    private string StyleDef(Faction f)
+    {
+        return string.Format("background-color:{0}", Skin.Current.GetFactionColorTransparant(f));
+    }
+
+    private static IEnumerable<Faction> AllFactions
+    {
+        get
+        {
+            return new Faction[] { Faction.Green, Faction.Black, Faction.Yellow, Faction.Red, Faction.Orange, Faction.Blue, Faction.Grey, Faction.Purple };
+        }
+    }
+
+    private bool Readonly => h.Host.LoadedGame != null;
+
+    private string StartButtonLabel => string.Format("{0} Game!", h.Host.LoadedGame == null ? "Start" : "Continue");
+}

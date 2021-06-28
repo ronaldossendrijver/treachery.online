@@ -1,0 +1,311 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<Shipment>
+@implements IDisposable
+
+<div class="card p-1 mb-2 border-danger">
+
+    <div class="card-header">
+
+        @if (h.Faction == Faction.Yellow)
+        {
+            <div>Bring any number of forces onto @(h.Game.Map.TheGreatFlat.Territory.Name) or onto any one territory within two territories of @(h.Game.Map.TheGreatFlat.Territory.Name). You may click the map to select a location.</div>
+
+            @if (MayShipAsGuild)
+            {
+                <div>In addition, your ally allows you to ship to other locations as well from your reserves.</div>
+            }
+        }
+        else
+        {
+            <div>Select forces to ship, or pass.</div>
+        }
+
+        @if (MayShipAsGuild)
+        {
+            <div>You may ship site-to-site any number of forces from a source location to another location.</div>
+        }
+
+        @if (h.Faction == Faction.Orange)
+        {
+            <div>You may ship any number of forces from any one location back to your reserves.</div>
+        }
+
+    </div>
+
+    <div class="card-body">
+
+        @if (MayShipAsGuild)
+        {
+            <div class="form-check mb-0">
+                <input class="form-check-input" @onchange="ShipmentTypeOnChange" type="radio" name="shipmentType" id="shipmentTypeNORMAL" value="@SHIPMENT_NORMAL" checked="@(shipmentType.Equals(SHIPMENT_NORMAL))">
+                <label class="form-check-label" for="shipmentTypeNORMAL">
+                    Normal Shipment
+                </label>
+            </div>
+            <div class="form-check mb-0">
+                <input class="form-check-input" @onchange="ShipmentTypeOnChange" type="radio" name="shipmentType" id="shipmentTypeSITETOSITE" value="@SHIPMENT_SITETOSITE" checked="@(shipmentType.Equals(SHIPMENT_SITETOSITE))">
+                <label class="form-check-label" for="shipmentTypeSITETOSITE">
+                    Site-to-site
+                </label>
+            </div>
+            @if (h.Faction == Faction.Orange)
+            {
+                <div class="form-check disabled mb-0">
+                    <input class="form-check-input" @onchange="ShipmentTypeOnChange" type="radio" name="shipmentType" id="shipmentTypeBACK" value="@SHIPMENT_BACK" checked="@(shipmentType.Equals(SHIPMENT_BACK))">
+                    <label class="form-check-label" for="shipmentTypeBACK">
+                        Back to reserves
+                    </label>
+                </div>
+            }
+        }
+
+        @if (@shipmentType == SHIPMENT_SITETOSITE)
+        {
+            <label class="mb-0 mt-1" for="shipmentFrom">From <kbd>ctrl+click</kbd></label>
+            <select class="custom-select" @bind="shipmentFrom" id="shipmentFrom">
+                @foreach (var f in ValidSourceLocations)
+                {
+                    <option value="@f">@f.ToString()</option>
+                }
+            </select>
+        }
+
+        <label class="mb-0 mt-1" for="shipmentLocation">@(shipmentType == SHIPMENT_BACK? "From" : "To") <kbd>click</kbd></label>
+        <select class="custom-select mb-1" @bind="shipmentTo" id="shipmentLocation">
+            @foreach (var f in ValidShipmentLocations.OrderByDescending(l => l.IsStronghold).ThenBy(l => l.Territory.Name).ThenBy(l => l.Name))
+            {
+                <option value="@f">@f.ToString()</option>
+            }
+        </select>
+
+        @if (shipmentType != SHIPMENT_BACK && h.Game.ContainsConflictingAlly(h.Player, h.Game.Map.Get(shipmentTo)))
+        {
+            <div class="text-danger bg-dark">Note: any of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
+        }
+
+        <label class="mb-0 mt-1" for="shipmentForceAmount">@h.Player.ForceName</label>
+        <select class="custom-select mb-1" @bind="shipmentForceAmount" id="shipmentForceAmount">
+            @foreach (var s in ValidShipmentForces)
+            {
+                <option value="@s">@s</option>
+            }
+        </select>
+
+        @if (h.Player.HasSpecialForcesToMove)
+        {
+            <label class="mb-0 mt-1" for="shipmentSpecialForceAmount">@(h.Player.SpecialForceName)</label>
+            <select class="custom-select mb-1" @bind="shipmentSpecialForceAmount" id="shipmentSpecialForceAmount">
+                @foreach (var s in ValidShipmentSpecialForces)
+                {
+                    <option value="@s">@s</option>
+                }
+            </select>
+        }
+
+        <div>Total cost of shipment: <span class="badge badge-primary badge-pill">@Cost</span></div>
+
+        @if (h.Player.Ally != Faction.None)
+        {
+            <label class="mb-0 mt-1" for="shipmentAllyContributionAmount">Amount paid by your ally</label>
+            <select class="custom-select" @bind="shipmentAllyContributionAmount" id="shipmentAllyContributionAmount">
+                @foreach (var s in ValidAllyContributionAmounts)
+                {
+                    <option value="@s">@s</option>
+                }
+            </select>
+        }
+
+        @if (Karma.CanKarmaShipment(h.Game, h.Player) && h.Faction != Faction.Yellow)
+        {
+            <label class="mb-0 mt-1" for="shipmentKaramaCard">Use @Skin.Current.Describe(TreacheryCardType.Karma) to ship at @Skin.Current.Describe(Faction.Orange) rate?</label>
+            <select class="custom-select" @bind="karmaCardId" id="shipmentKaramaCard">
+                <option value="-1">Don't use @Skin.Current.Describe(TreacheryCardType.Karma)</option>
+                @foreach (var v in Karma.ValidKarmaCardsForShipment(h.Game, h.Player))
+                {
+                    <option value="@v.Id">@v</option>
+                }
+            </select>
+        }
+
+        <div class="form-inline">
+            <button class="btn btn-primary mr-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
+            <button class="btn btn-primary mr-1" @onclick="Pass">Pass</button>
+        </div>
+
+        <div class="text-danger bg-dark">@validationError</div>
+
+    </div>
+
+</div>
+
+@code {
+
+    const int SHIPMENT_NORMAL = 0;
+    const int SHIPMENT_SITETOSITE = 1;
+    const int SHIPMENT_BACK = 2;
+
+    private int shipmentType = SHIPMENT_NORMAL;
+    private int karmaCardId = -1;
+    private int shipmentForceAmount;
+    private int shipmentSpecialForceAmount;
+    private string shipmentFrom;
+    private string shipmentTo;
+    private int shipmentAllyContributionAmount;
+
+
+    protected override Shipment ConfirmedResult
+    {
+        get
+        {
+            int direction = (shipmentType == SHIPMENT_BACK ? -1 : 1);
+            var from = (shipmentType == SHIPMENT_SITETOSITE ? h.Game.Map.Get(shipmentFrom) : null);
+
+            return new Shipment(h.Game)
+            {
+                Initiator = h.Faction,
+                ForceAmount = direction * shipmentForceAmount,
+                SpecialForceAmount = direction * shipmentSpecialForceAmount,
+                From = from,
+                To = h.Game.Map.Get(shipmentTo),
+                Passed = false,
+                KarmaCard = TreacheryCardManager.Lookup.Find(karmaCardId),
+                AllyContributionAmount = shipmentAllyContributionAmount
+            };
+        }
+    }
+
+    protected override Shipment PassedResult
+    {
+        get
+        {
+            return new Shipment(h.Game) { Initiator = h.Faction, Passed = true };
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            MapDrawer.OnLocationSelected += HandleLocationSelected;
+            MapDrawer.OnLocationSelectedWithShift += HandleLocationSelectedWithModifier;
+            MapDrawer.OnLocationSelectedWithCtrlOrAlt += HandleLocationSelectedWithModifier;
+            MapDrawer.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleLocationSelectedWithModifier;
+        }
+
+        Initialize<int, int>(ref shipmentForceAmount, ValidShipmentForces);
+        Initialize<int, int>(ref shipmentSpecialForceAmount, ValidShipmentSpecialForces);
+        Initialize<string, Location>(ref shipmentFrom, ValidSourceLocations);
+        Initialize<string, Location>(ref shipmentTo, ValidShipmentLocations);
+        Initialize<int, int>(ref shipmentAllyContributionAmount, ValidAllyContributionAmounts);
+        Initialize<int, TreacheryCard>(ref karmaCardId, Karma.ValidKarmaCardsForShipment(h.Game, h.Player), true, -1);
+    }
+
+    public void Dispose()
+    {
+        MapDrawer.OnLocationSelected -= HandleLocationSelected;
+        MapDrawer.OnLocationSelectedWithShift -= HandleLocationSelectedWithModifier;
+        MapDrawer.OnLocationSelectedWithCtrlOrAlt -= HandleLocationSelectedWithModifier;
+        MapDrawer.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleLocationSelectedWithModifier;
+    }
+
+    private void HandleLocationSelected(object sender, Location l)
+    {
+        SetIfValid<string, Location>(ref shipmentTo, ValidShipmentLocations, l);
+    }
+
+    private void HandleLocationSelectedWithModifier(object sender, Location l)
+    {
+        SetIfValid<string, Location>(ref shipmentFrom, ValidSourceLocations, l);
+    }
+
+    private void ShipmentTypeOnChange(ChangeEventArgs args)
+    {
+        shipmentType = Convert.ToInt32(args.Value);
+        StateHasChanged();
+    }
+
+    private IEnumerable<Location> ValidShipmentLocations
+    {
+        get
+        {
+            switch (shipmentType)
+            {
+                case SHIPMENT_NORMAL:
+                case SHIPMENT_SITETOSITE:
+                    return Shipment.ValidShipmentLocations(h.Game, h.Player);
+
+                case SHIPMENT_BACK:
+                    return h.Player.LocationsWithAnyForces;
+            }
+
+            return new Location[] { };
+        }
+    }
+
+    private IEnumerable<int> ValidAllyContributionAmounts
+    {
+        get
+        {
+            return Enumerable.Range(0, h.Game.SpiceYourAllyCanPay(h.Player) + 1);
+        }
+    }
+
+    private IEnumerable<int> ValidShipmentForces
+    {
+        get
+        {
+            switch (shipmentType)
+            {
+                case SHIPMENT_NORMAL: return Shipment.ValidNormalShipmentForces(h.Player, false);
+                case SHIPMENT_SITETOSITE: return Shipment.ValidShipmentSiteToSiteForces(h.Player, false, h.Game.Map.Get(shipmentFrom));
+                case SHIPMENT_BACK: return Shipment.ValidShipmentBackForces(h.Player, false, h.Game.Map.Get(shipmentTo));
+            }
+
+            return new int[] { 0 };
+        }
+    }
+
+    private IEnumerable<int> ValidShipmentSpecialForces
+    {
+        get
+        {
+            switch (shipmentType)
+            {
+                case SHIPMENT_NORMAL: return Shipment.ValidNormalShipmentForces(h.Player, true);
+                case SHIPMENT_SITETOSITE: return Shipment.ValidShipmentSiteToSiteForces(h.Player, true, h.Game.Map.Get(shipmentFrom));
+                case SHIPMENT_BACK: return Shipment.ValidShipmentBackForces(h.Player, true, h.Game.Map.Get(shipmentTo));
+            }
+
+            return new int[] { 0 };
+        }
+    }
+
+    private IEnumerable<Location> ValidSourceLocations
+    {
+        get
+        {
+            return h.Game.LocationsWithAnyForcesNotInStorm(h.Player);
+        }
+    }
+
+    private bool MayShipAsGuild
+    {
+        get
+        {
+            return h.Game.MayShipAsGuild(h.Player);
+        }
+    }
+
+    private int Cost
+    {
+        get
+        {
+            return Shipment.DetermineCost(h.Game, h.Player, (Shipment)ConfirmedResult);
+        }
+    }
+}

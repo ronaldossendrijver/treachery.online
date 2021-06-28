@@ -1,0 +1,453 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared;
+@using System.Linq;
+@using Treachery.Client.GenericComponents;
+@inherits GameComponent
+
+<CardPickerComponent Tracker="this" Id="picker" />
+<div class="card p-1 mb-2">
+
+    <div class="card-header">
+        Card Tracker
+        <InfoComponent Contents="@InfoMessage" />
+        <CollapseButton @bind-Collapsed="Collapsed" />
+    </div>
+
+    @if (!Collapsed)
+    {
+        <div class="card-body">
+
+            <div class="row mb-2 ml-0">
+
+                @foreach (var p in Players)
+                {
+                    <button class="btn @ButtonStyle(p) p-0 mt-1 mr-1" @onclick="(e => Toggle(p))" data-toggle="tooltip" title="@Skin.Current.Describe(p.Faction)">
+                        <img class="img-fluid" width="29" height="29" src="@Skin.Current.GetFactionTableImageURL(p.Faction)" />
+                    </button>
+                }
+
+                <button class="btn @ButtonStyle(h.Game.TreacheryDiscardPile) p-0 mt-1 mr-1" @onclick="(e => Toggle(h.Game.TreacheryDiscardPile))" data-toggle="tooltip" title="Discarded Treachery Cards">
+                    <img class="img-fluid ml-1 mr-1" width="21" height="29" src="@Skin.Current.CardBack_TreacheryCard_URL" />
+                </button>
+
+                <button class="btn @ButtonStyle(h.Game.ResourceCardDeck) p-0 mt-1 mr-2" @onclick="(e => Toggle(h.Game.ResourceCardDeck))" data-toggle="tooltip" title="Discarded Spice Cards">
+                    <img class="img-fluid ml-1 mr-1" width="21" height="29" src="@Skin.Current.CardBack_ResourceCard_URL" />
+                </button>
+
+            </div>
+
+            @if (Shown is Player)
+            {
+                var p = (Player)Shown;
+
+                <div>Treachery cards</div>
+                <div class="row row-cols-4 m-0">
+
+                    @for (int i = 0; i < p.MaximumNumberOfCards; i++)
+                    {
+                        int selIndex = i;
+                        int cardId = Info.TrackedTreacheryCards[p.Faction][selIndex];
+
+                        <div class="card border-0"
+                             data-toggle="popover" data-animation="true" data-content="@DeterminePopup(Info.TrackedTreacheryCards[p.Faction][selIndex])" data-html="true" data-placement="top" data-trigger="hover">
+
+                            @if (cardId == TreacheryCard.NONE)
+                            {
+                                <a class="btn btn-link p-1" data-toggle="modal" data-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
+                                    <svg class="img-fluid w-100" viewBox="0 0 268 372" xmlns="http://www.w3.org/2000/svg">
+                                        <rect width="268" height="372" rx="20" style="fill:rgb(64,64,64);stroke-width:3;stroke:rgb(200,200,200)" />
+                                    </svg>
+                                </a>
+                            }
+                            else if (cardId == TreacheryCard.UNKNOWN)
+                            {
+                                <a class="btn btn-link p-1" data-toggle="modal" data-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
+                                    <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="img-fluid" />
+                                </a>
+                            }
+                            else
+                            {
+                                <a class="btn btn-link p-1" data-toggle="modal" data-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
+                                    <img src="@DetermineImageSrc(cardId)" class="img-fluid" />
+                                </a>
+                            }
+
+                        </div>
+                    }
+
+                </div>
+
+                @if (p.Faction == Faction.Green)
+                {
+                    <div>Traitors discarded at start</div>
+                    <div class="row row-cols-3 m-0">
+
+                        @for (int i = 0; i < 3; i++)
+                        {
+                            var selIndex = i;
+                            var sel = Info.GetDiscardedTraitor(selIndex);
+
+                            <select class="custom-select form-control-sm mt-0" style="font: @Skin.Current.TRACKER_FONT" value="@sel"
+                                    @onchange="eventArgs => { Info.ChangeDiscardedTraitor(selIndex, int.Parse(eventArgs.Value as string)); }"
+                                    data-animation="true" data-content="@Support.GetHeroHoverHTML(LeaderManager.HeroLookup.Find(sel))" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" data-container="body">
+
+                                <option value="-1">Unknown</option>
+                                @foreach (var c in AllLeadersInPlay)
+                                {
+                                    <option value="@c.Id">@c.Name</option>
+                                }
+                            </select>
+                        }
+                    </div>
+
+
+                }
+                else if (p.Faction != Faction.Purple)
+                {
+                    <div>@(p.NumberOfTraitors > 1 ? "Traitors" : "Traitor")</div>
+                    <div class="row">
+                        @for (int i = 0; i < p.NumberOfTraitors; i++)
+                        {
+                            var selIndex = i;
+                            var sel = Info.GetSelectedTraitor(p.Faction, selIndex);
+
+                            <div class="col-sm-6">
+                                <select class="custom-select form-control-sm mt-0" style="font: @Skin.Current.TRACKER_FONT" value="@sel" @onchange="eventArgs => { Info.ChangeSelectedTraitor(p.Faction, selIndex, int.Parse(eventArgs.Value as string)); }"
+                                        data-animation="true" data-content="@Support.GetHeroHoverHTML(LeaderManager.HeroLookup.Find(sel))" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" data-container="body">
+
+                                    <option value="-1">Unknown</option>
+                                    @foreach (var c in AllLeadersInPlay)
+                                    {
+                                        <option value="@c.Id">@c.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div>Face Dancers</div>
+                    <div class="row">
+                        @for (int i = 0; i < p.NumberOfFacedancers; i++)
+                        {
+                            var selIndex = i;
+                            var sel = Info.GetSelectedTraitor(p.Faction, selIndex);
+
+                            <div class="col-sm-4">
+                                <select class="custom-select form-control-sm mt-0" style="font: @Skin.Current.TRACKER_FONT" value="@sel" @onchange="eventArgs => { Info.ChangeSelectedTraitor(p.Faction, selIndex, int.Parse(eventArgs.Value as string)); }"
+                                        data-animation="true" data-content="@Support.GetHeroHoverHTML(LeaderManager.HeroLookup.Find(sel))" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" data-container="body">
+
+                                    <option value="-1">Unknown</option>
+                                    @foreach (var c in AllLeadersInPlay)
+                                    {
+                                        <option value="@c.Id">@c.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        }
+
+                    </div>
+                }
+            }
+
+            else if (Shown == h.Game.TreacheryDiscardPile)
+            {
+                <ul class="list-inline mt-0">
+
+                    @foreach (var c in Info.DiscardedCards.Union(Info.RemovedCards))
+                    {
+                        <li class="list-inline-item">
+
+                            <p class="mb-0" data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(c)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" data-container="body">
+                                <span class="badge badge-primary badge-pill">@c</span>
+                                <button class="close" @onclick="@(e => SetNotDiscarded(c))"><span aria-hidden="true">&times;</span></button>
+                            </p>
+
+                        </li>
+                    }
+
+                    @if (!Info.DiscardedCards.Any() && !Info.RemovedCards.Any())
+                    {
+                        <li class="list-inline-item text-info">No treachery cards discarded yet.</li>
+                    }
+
+                </ul>
+
+                <button class="btn btn-primary btn-sm" @onclick="@Info.ClearDiscarded">Reshuffle (clear) discarded cards</button>
+            }
+
+            else if (Shown == h.Game.ResourceCardDeck)
+            {
+                <div class="row mt-1 mb-1">
+                    <div class="col-auto">
+                        <label class="small" for="trackedSpiceCard">Top @Skin.Current.Describe(Concept.Resource) card:</label>
+                    </div>
+                    <div class="col-auto">
+                        <select class="custom-select form-control-sm mt-0 ml-0" style="font: @Skin.Current.TRACKER_FONT" @bind="@Info.TrackedSpiceCard" id="trackedSpiceCard"
+                                data-animation="true" data-content="@Support.GetResourceCardHoverHTMLSmall(SpiceCard(Info.TrackedSpiceCard))" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" data-container="body">
+                            <option value="Unknown">Unknown</option>
+                            <option value="@Skin.Current.Describe(Concept.Monster)">@Skin.Current.Describe(Concept.Monster)</option>
+                            @foreach (var c in AllSpiceCards)
+                            {
+                                <option value="@c">@c</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                if (h.Game.Applicable(Rule.IncreasedResourceFlow))
+                {
+                    @if (h.Game.ResourceCardDiscardPileA.Items.Any() || h.Game.ResourceCardDiscardPileA.Items.Any())
+                    {
+                        <div class="small"><strong>Discard pile A:</strong> @string.Join(", ", h.Game.ResourceCardDiscardPileA.Items)</div>
+                        <div class="small"><strong>Discard pile B:</strong> @string.Join(", ", h.Game.ResourceCardDiscardPileB.Items)</div>
+                    }
+                }
+                else
+                {
+                    @if (h.Game.ResourceCardDiscardPileA.Items.Any())
+                    {
+                        <div class="small"><strong>Discarded:</strong> @string.Join(", ", h.Game.ResourceCardDiscardPileA.Items)</div>
+                    }
+                }
+            }
+
+        </div>
+    }
+
+</div>
+
+@code {
+
+    private object Shown = null;
+
+    private int trackedGameId = -1;
+
+    private GreenIntelligence Info = null;
+
+    private bool popoversNeedUpdate = true;
+
+    protected override void OnInitialized()
+    {
+        Info = new GreenIntelligence(h.Game);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (trackedGameId != h.Game.Seed)
+        {
+            await Load();
+            trackedGameId = h.Game.Seed;
+        }
+        else
+        {
+            await Save();
+        }
+
+        if (popoversNeedUpdate)
+        {
+            popoversNeedUpdate = false;
+            await Browser.EnablePopovers();
+        }
+    }
+
+
+    Faction currentlyPickedFaction = Faction.None;
+    int currentlyPickedCardId;
+
+    public int CurrentCard
+    {
+        get
+        {
+            if (currentlyPickedFaction != Faction.None)
+            {
+                return Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId];
+            }
+            else
+            {
+                return TreacheryCard.NONE;
+            }
+        }
+    }
+
+    private void SetCurrent(Faction f, int i)
+    {
+        currentlyPickedFaction = f;
+        currentlyPickedCardId = i;
+    }
+
+    public void Pick(int cardID)
+    {
+        try
+        {
+            Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId] = cardID;
+            popoversNeedUpdate = true;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+
+        }
+    }
+
+    public void Discard()
+    {
+        try
+        {
+            if (Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId] != TreacheryCard.NONE && Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId] != TreacheryCard.UNKNOWN)
+            {
+                Info.Discard(currentlyPickedFaction, currentlyPickedCardId);
+                popoversNeedUpdate = true;
+                StateHasChanged();
+            }
+        }
+        catch (Exception)
+        {
+
+        }
+    }
+
+    public IEnumerable<TreacheryCard> CardsToPick
+    {
+        get
+        {
+            return Info.AvailableDistinctCards(currentlyPickedFaction, currentlyPickedCardId);
+        }
+    }
+
+    private void SetNotDiscarded(TreacheryCard c)
+    {
+        Info.SetNotDiscarded(c);
+        popoversNeedUpdate = true;
+        StateHasChanged();
+    }
+
+    public string DeterminePopup(int cardID)
+    {
+        if (cardID == -1)
+        {
+            return "<div class='p-1 small' style='color:black;background-color:white;border: 1px solid black;'>Unknown</div>";
+        }
+        else if (cardID == -2)
+        {
+            return "<div class='p-1 small' style='color:black;background-color:white;border: 1px solid black;'>None</div>";
+        }
+        else
+        {
+            var card = TreacheryCardManager.Lookup.Find(cardID);
+            return Support.GetTreacheryCardHoverHTML(card);
+        }
+    }
+
+    private string DetermineImageSrc(int cardID)
+    {
+        var card = TreacheryCardManager.Lookup.Find(cardID);
+        return Skin.Current.GetImageURL(card);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await Load();
+        }
+        catch (Exception e)
+        {
+            Support.Log(e);
+        }
+    }
+
+    private async Task Save()
+    {
+        await Browser.SaveSetting(string.Format("treachery.online;currentgame;{0};trackerdata", h.Game.Seed), Info.ToString());
+    }
+
+    private async Task Load()
+    {
+        var trackerdata = await Browser.LoadSetting<string>(string.Format("treachery.online;currentgame;{0};trackerdata", h.Game.Seed));
+        if (trackerdata != null && trackerdata != "")
+        {
+            Info = GreenIntelligence.Parse(h.Game, trackerdata);
+            StateHasChanged();
+        }
+    }
+
+    public class CardInfo
+    {
+        public Player Player;
+        public int CardNumber;
+        public int CardId;
+    }
+
+    private IEnumerable<IHero> AllLeadersInPlay
+    {
+        get
+        {
+            return h.Game.TraitorsInPlay.OrderBy(l => l.Name);
+        }
+    }
+
+    private IEnumerable<string> AllSpiceCards
+    {
+        get
+        {
+            return h.Game.Map
+                .Locations
+                .Where(c => c.SpiceBlowAmount > 0)
+                .Select(c => c.Territory.Name)
+                .OrderBy(c => c)
+                .Distinct();
+        }
+    }
+
+    private IEnumerable<Player> Players
+    {
+        get
+        {
+            return h.Game.Players.OrderBy(p => Skin.Current.Describe(p.Faction));
+        }
+    }
+
+    private string InfoMessage
+    {
+        get
+        {
+            return Skin.Current.Format("Welcome to the {0} Tracker! Use it to take note of (discarded) traitors, the top spice card and treachery cards.<br>When a (possibly unknown) card is won, click on an empty card placeholder and select it.<br>To indicate that a card was discarded, click it and then select the 'trash can' which will move the card to the Discarded section. When an unknown card becomes known and discarded, select it first, then discard it.<br>When the discard pile is shuffled into a new draw pile, click 'reshuffle' to clear the Discarded section.<br>If you sent a card to the Discarded section by mistake, click on the X next to it.", Faction.Green);
+        }
+    }
+
+    private void Toggle(object toShow)
+    {
+        if (toShow == Shown)
+        {
+            Shown = null;
+        }
+        else
+        {
+            Shown = toShow;
+        }
+
+        popoversNeedUpdate = true;
+    }
+
+    private string ButtonStyle(object o)
+    {
+        if (o == Shown)
+        {
+            return "btn-primary";
+        }
+        else
+        {
+            return "btn-outline-primary";
+        }
+    }
+
+    private ResourceCard SpiceCard(string name)
+    {
+        return Map.GetResourceCardsInAndOutsidePlay(h.Game.Map).FirstOrDefault(c => c.ToString() == name);
+    }
+}

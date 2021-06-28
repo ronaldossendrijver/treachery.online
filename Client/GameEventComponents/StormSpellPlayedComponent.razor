@@ -1,0 +1,51 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Client.GenericComponents;
+@using Treachery.Shared
+@inherits GameEventComponent<StormSpellPlayed>
+@implements IDisposable
+
+<div class="card p-1 mb-2" style="@BackgroundStyle">
+
+    <div class="card-header" style="@HeaderStyle">Use @Skin.Current.Describe(TreacheryCardType.StormSpell)?</div>
+
+    <div class="card-body" style="@BodyStyle">
+
+        <label for="StormSpellPlayedMoveAmount">Number of sectors</label>
+        <select class="custom-select" @bind="nrOfSectors" id="StormSpellPlayedMoveAmount">
+            @foreach (var s in Enumerable.Range(0, 11))
+            {
+                <option value="@s">@s</option>
+            }
+        </select>
+
+        <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
+        <div class="text-danger bg-dark">@validationError</div>
+
+    </div>
+</div>
+
+@code {
+
+    private int nrOfSectors;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Initialize<int, int>(ref nrOfSectors, Enumerable.Range(0, 11));
+    }
+
+    public void Dispose()
+    {
+
+    }
+
+    protected override StormSpellPlayed ConfirmedResult
+    {
+        get
+        {
+            return new StormSpellPlayed(h.Game) { Initiator = h.Faction, MoveAmount = nrOfSectors };
+        }
+    }
+}

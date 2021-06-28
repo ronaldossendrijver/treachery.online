@@ -1,0 +1,48 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Client.GenericComponents;
+
+<ModalComponent Id="@Id" Title="Credits">
+
+    <table class="table-borderless text-center">
+        <tr>
+            <td style="width: 50%" class="p-2 text-right align-text-top">Game Development</td>
+            <td style="width: 50%" class="p-2 text-left align-text-top font-weight-bold">Ronald Ossendrijver, <a href="mailto:admin@treachery.online" target="_blank">admin@treachery.online</a></td>
+        </tr>
+        <tr>
+            <td style="width: 50%" class="p-2 text-right align-text-top">Map &amp; Token Artwork</td>
+            <td style="width: 50%" class="p-2 text-left align-text-top font-weight-bold">Ilya Baranovsky &amp; Reinier de Graaf</td>
+        </tr>
+        <tr>
+            <td style="width: 50%" class="p-2 text-right align-text-top">Leader &amp; Treachery Card Artwork</td>
+            <td style="width: 50%" class="p-2 text-left align-text-top font-weight-bold">Avalon Hill</td>
+        </tr>
+        <tr>
+            <td style="width: 50%" class="p-2 text-right align-text-top">Music</td>
+            <td style="width: 50%" class="p-2 text-left align-text-top font-weight-bold">St&eacute;phane Picq & Philippe Ulrich</td>
+        </tr>
+        <tr>
+            <td style="width: 50%" class="p-2 text-right align-text-top">Quality Assurance</td>
+            <td style="width: 50%" class="p-2 text-left align-text-top font-weight-bold">Adriaan, Andries, Carlos, Central419, Damien, Friso, Jess W, Michiel, Reinier, Ren&eacute; &amp; Sander</td>
+        </tr>
+        <tr>
+            <td style="width: 50%" class="p-2 text-right align-text-top">Donations</td>
+            <td style="width: 50%" class="p-2 text-left align-text-top font-weight-bold">Andries, Stuart, Eamon, Adriaan, Luca, Valerio, Richard, Peter, Patrick, Vladislav, Derek, Darren, Doug, Aaron, Marko, Daniel, Erik, Shea, Justin, Lee, Marko, Aaron W., Tom, Nathan, Denis &amp; Jason</td>
+        </tr>
+    </table>
+
+    <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" class="form-group mt-1 mb-0 p-0 text-center">
+        <input type="hidden" name="cmd" value="_s-xclick" />
+        <input type="hidden" name="hosted_button_id" value="X6BLRPXHX7HDQ" />
+        <input type="image" src="art/donate.png" border="0" width="120" name="submit" title="Donate CHOAM Charity using PayPal" alt="Donate CHOAM Charity using PayPal button" />
+    </form>
+
+</ModalComponent>
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; } = "";
+}

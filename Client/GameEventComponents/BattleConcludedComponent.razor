@@ -1,0 +1,204 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<BattleConcluded>
+@implements IDisposable
+
+<div class="card p-1 mb-2 border-danger">
+
+    <div class="card-header">Conclude the battle you just won</div>
+
+    <div class="card-body">
+
+        @if (h.Faction == h.Game.BattleWinner)
+        {
+            if (h.Game.GreySpecialForceLossesToTake > 0)
+            {
+                <label for="replacementAmount">How many @Skin.Current.SpecialForceName_STR[Faction.Grey] losses should be exchanged with surviving @Skin.Current.ForceName_STR[Faction.Grey]?</label>
+                <select class="custom-select mt-0" @bind="replacementAmount" id="replacementAmount">
+                    @foreach (var s in BattleConcluded.ValidReplacementForceAmounts(h.Game, h.Player))
+                    {
+                        <option value="@s">@s</option>
+                    }
+                </select>
+            }
+
+            var discardableMercenary = DiscardableMercenaryAfterBattle;
+            var discardableWeapon = DiscardableWeaponAfterBattle;
+            var discardableDefense = DiscardableDefenseAfterBattle;
+
+            if (discardableMercenary != null || discardableWeapon != null || discardableDefense != null)
+            {
+                <div class="mt-2">Select any cards you wish to discard:</div>
+
+                if (discardableMercenary != null)
+                {
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" type="checkbox" @bind="discardMercenary" id="battleConcludedDiscardMercenary" />
+                        <label class="custom-control-label" for="battleConcludedDiscardMercenary">@discardableMercenary.Name</label>
+                    </div>
+                }
+
+                if (discardableWeapon != null)
+                {
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" type="checkbox" @bind="discardWeapon" id="battleConcludedDiscardWeapon" />
+                        <label class="custom-control-label" for="battleConcludedDiscardWeapon">@discardableWeapon.Name</label>
+                    </div>
+                }
+
+                if (discardableDefense != null)
+                {
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" type="checkbox" @bind="discardDefense" id="battleConcludedDiscardDefense" />
+                        <label class="custom-control-label" for="battleConcludedDiscardDefense">@discardableDefense.Name</label>
+                    </div>
+                }
+            }
+
+            if (BattleConcluded.MayCaptureOrKill(h.Game, h.Player))
+            {
+                <div>We caught <span class="badge badge-primary badge-pill" style="@Color(h.Game.BlackVictim.Faction)" data-animation="true" data-content="@Support.GetHeroHoverHTML(h.Game.BlackVictim)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">@h.Game.BlackVictim</span>... What are your orders, capture or kill?</div>
+
+                <div class="custom-control custom-radio">
+                    <input class="custom-control-input" @onchange="CaptureDecisionOnChange" type="radio" id="battleConcludedKillFalse" value="@CaptureDecision.Capture" checked="@(captureDecision == CaptureDecision.Capture)">
+                    <label class="custom-control-label" for="battleConcludedKillFalse">Capture</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    <input class="custom-control-input" @onchange="CaptureDecisionOnChange" type="radio" id="battleConcludedKillTrue" value="@CaptureDecision.Kill" checked="@(captureDecision == CaptureDecision.Kill)">
+                    <label class="custom-control-label" for="battleConcludedKillTrue">Kill to gain 2 @Skin.Current.Describe(Concept.Resource)</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    <input class="custom-control-input" @onchange="CaptureDecisionOnChange" type="radio" id="battleConcludedKillNeither" value="@CaptureDecision.DontCapture" checked="@(captureDecision == CaptureDecision.DontCapture)">
+                    <label class="custom-control-label" for="battleConcludedKillNeither">Neither capture nor kill</label>
+                </div>
+            }
+
+            if (Loser.TechTokens.Count > 0)
+            {
+                <SelectComponent @bind-Value="stolenToken" Values="Loser.TechTokens" Label="Choose a tech token to steal" />
+            }
+        }
+
+        <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
+        <div class="text-danger bg-dark">@validationError</div>
+
+    </div>
+</div>
+
+@code {
+
+    private CaptureDecision captureDecision = CaptureDecision.Kill;
+    private bool discardMercenary;
+    private bool discardWeapon;
+    private bool discardDefense;
+    private TechToken stolenToken;
+    private int replacementAmount;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Initialize<TechToken, TechToken>(ref stolenToken, Loser.TechTokens);
+        Initialize<int, int>(ref replacementAmount, BattleConcluded.ValidReplacementForceAmounts(h.Game, h.Player));
+    }
+
+    public void Dispose()
+    {
+    }
+
+    protected override BattleConcluded ConfirmedResult
+    {
+        get
+        {
+            return new BattleConcluded(h.Game) { Initiator = h.Faction, DiscardedCards = DetermineSelectedCards(), StolenToken = stolenToken, SpecialForceLossesReplaced = replacementAmount, CaptureDecision = captureDecision };
+        }
+    }
+
+    private IEnumerable<TreacheryCard> DetermineSelectedCards()
+    {
+        var result = new List<TreacheryCard>();
+        if (discardMercenary) result.Add(DiscardableMercenaryAfterBattle);
+        if (discardWeapon) result.Add(DiscardableWeaponAfterBattle);
+        if (discardDefense) result.Add(DiscardableDefenseAfterBattle);
+        return result;
+    }
+
+    private void CaptureDecisionOnChange(ChangeEventArgs args)
+    {
+        captureDecision = Enum.Parse<CaptureDecision>((string)args.Value);
+        StateHasChanged();
+    }
+
+    private TreacheryCard DiscardableMercenaryAfterBattle
+    {
+        get
+        {
+            var action = MyBattleAction;
+            if (action != null && action.Hero is TreacheryCard && h.Game.BattleWinner == h.Faction && h.Player.TreacheryCards.Contains(action.Hero))
+            {
+                return action.Hero as TreacheryCard;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+
+    private TreacheryCard DiscardableWeaponAfterBattle
+    {
+        get
+        {
+            var action = MyBattleAction;
+            if (action != null && h.Game.BattleWinner == h.Faction && h.Player.TreacheryCards.Contains(action.Weapon))
+            {
+                return action.Weapon;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+
+    private TreacheryCard DiscardableDefenseAfterBattle
+    {
+        get
+        {
+            var action = MyBattleAction;
+            if (action != null && h.Game.BattleWinner == h.Faction && h.Player.TreacheryCards.Contains(action.Defense))
+            {
+                return action.Defense;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+
+    private Battle MyBattleAction
+    {
+        get
+        {
+            if (h.Game.AggressorBattleAction != null)
+            {
+                return h.Game.AggressorBattleAction.Initiator == h.Faction ? h.Game.AggressorBattleAction : h.Game.DefenderBattleAction;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+
+    private Player Loser
+    {
+        get
+        {
+            return h.Game.GetPlayer(h.Game.BattleLoser);
+        }
+    }
+}

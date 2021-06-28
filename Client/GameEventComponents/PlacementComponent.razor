@@ -1,0 +1,128 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<PlacementEventType>
+@typeparam PlacementEventType
+@implements IDisposable
+
+@code {
+
+    protected int fromTerritoryId = -1;
+    protected int toLocationId = -1;
+    protected Dictionary<Location, Battalion> forces = new Dictionary<Location, Battalion>();
+    protected bool asAdvisors = false;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            MapDrawer.OnLocationSelected += HandleLocationSelected;
+            MapDrawer.OnLocationSelectedWithCtrlOrAlt += HandleLocationSelectedWithModifier;
+        }
+
+        Initialize<int, Territory>(ref fromTerritoryId, ValidSources);
+        Initialize<int, Location>(ref toLocationId, ValidTargets);
+    }
+
+    public void Dispose()
+    {
+        MapDrawer.OnLocationSelected -= HandleLocationSelected;
+        MapDrawer.OnLocationSelectedWithCtrlOrAlt -= HandleLocationSelectedWithModifier;
+    }
+
+    protected void AsAdvisorsOnChange(ChangeEventArgs args)
+    {
+        asAdvisors = Convert.ToBoolean(args.Value);
+        StateHasChanged();
+    }
+
+    protected int Forces(Location l, bool special)
+    {
+        if (forces.ContainsKey(l))
+        {
+            if (special)
+            {
+                return forces[l].AmountOfSpecialForces;
+            }
+            else
+            {
+                return forces[l].AmountOfForces;
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    protected void ForceAmountButton(Location location, int amount, bool specialForces)
+    {
+        var currentLocation = forces.Keys.FirstOrDefault();
+        if (currentLocation != null && currentLocation.Territory != location.Territory)
+        {
+            forces.Clear();
+        }
+
+        if (forces.ContainsKey(location))
+        {
+            if (specialForces)
+            {
+                forces[location].ChangeSpecialForces(amount);
+            }
+            else
+            {
+                forces[location].ChangeForces(amount);
+            }
+        }
+        else if (amount > 0)
+        {
+            if (specialForces)
+            {
+                forces.Add(location, new Battalion() { AmountOfSpecialForces = amount, AmountOfForces = 0 });
+            }
+            else
+            {
+                forces.Add(location, new Battalion() { AmountOfSpecialForces = 0, AmountOfForces = amount });
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    protected virtual IEnumerable<Territory> ValidSources
+    {
+        get
+        {
+            return PlacementEvent.TerritoriesWithAnyForcesNotInStorm(h.Game, h.Player);
+        }
+    }
+
+    protected virtual IEnumerable<Location> ValidTargets
+    {
+        get
+        {
+            if (forces.Sum(kvp => kvp.Value.TotalAmountOfForces) > 0)
+            {
+                return PlacementEvent.ValidTargets(h.Game, h.Player, forces).OrderByDescending(l => l.IsStronghold).ThenBy(l => l.Territory.Name).ThenBy(l => l.Name);
+            }
+            else
+            {
+                return new Location[] { };
+            }
+        }
+    }
+
+    private void HandleLocationSelected(object sender, Location l)
+    {
+        SetIfValid(ref toLocationId, ValidTargets, l);
+    }
+
+    private void HandleLocationSelectedWithModifier(object sender, Location l)
+    {
+        SetIfValid(ref fromTerritoryId, ValidSources, l.Territory);
+    }
+
+}

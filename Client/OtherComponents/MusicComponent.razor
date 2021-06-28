@@ -1,0 +1,151 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared;
+@using Treachery.Client.GenericComponents;
+@inherits GameComponent;
+ 
+@if (Visible)
+{
+    <div class="card p-1 mb-2 small">
+        <div class="card-body text-right">
+            <div class="form-group mt-1 mb-0 p-0">
+                <label class="mt-0" for="musicVolume">&nbsp;Music volume</label>
+                <input class="mt-2" id="musicVolume" type="range" min="1" max="100" step="1" @bind="@DesiredMusicVolume" @bind:event="oninput" />
+            </div>
+            <div class="form-group mt-1 mb-0 p-0">
+                <label class="mt-0" for="effectVolume">&nbsp;Sound effects volume</label>
+                <input class="mt-2" id="effectVolume" type="range" min="1" max="100" step="1" @bind="@DesiredEffectVolume" @bind:event="oninput" />
+            </div>
+            <div class="form-group mt-1 mb-0 p-0">
+                <label class="mt-0" for="chatVolume">&nbsp;Chat notification volume</label>
+                <input class="mt-2" id="chatVolume" type="range" min="1" max="100" step="1" @bind="@DesiredChatVolume" @bind:event="oninput" />
+            </div>
+        </div>
+    </div>
+
+}
+
+@code {
+
+    [Parameter]
+    public bool Visible { get; set; } = false;
+
+    private float DesiredMusicVolume = 1;
+    private float DesiredEffectVolume = 1;
+    private float DesiredChatVolume = 1;
+
+    private string CurrentSoundtrack = "";
+
+    private float CurrentMusicVolume = -1;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSettings();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await UpdateMusicAndSound();
+        await SaveSettings();
+    }
+
+    private async Task UpdateMusicAndSound()
+    {
+        if (h.HostProxy != null)
+        {
+            var soundtrackToPlay = DetermineSoundtrack();
+
+            if (CurrentSoundtrack != soundtrackToPlay)
+            {
+                await Browser.FadeAndStopSound(CurrentSoundtrack, DesiredMusicVolume);
+                await Browser.PlaySound(soundtrackToPlay, DesiredMusicVolume <= 1 ? 0 : DesiredMusicVolume, true);
+                CurrentSoundtrack = soundtrackToPlay;
+            }
+            else if (CurrentMusicVolume != DesiredMusicVolume)
+            {
+                if (DesiredMusicVolume <= 1)
+                {
+                    await Browser.StopSounds();
+                    CurrentSoundtrack = "";
+                }
+                else
+                {
+                    await Browser.ChangeSoundVolume(soundtrackToPlay, DesiredMusicVolume <= 1 ? 0 : DesiredMusicVolume);
+                }
+
+                CurrentMusicVolume = DesiredMusicVolume;
+            }
+
+            h.CurrentEffectVolume = DesiredEffectVolume;
+            h.CurrentChatVolume = DesiredChatVolume;
+        }
+    }
+
+    private string DetermineSoundtrack()
+    {
+        if (h.Game == null)
+        {
+            return Skin.Current.MusicGeneral_URL;
+        }
+        else if (h.Game.CurrentMainPhase == MainPhase.Setup)
+        {
+            return Skin.Current.MusicSetup_URL;
+        }
+        else if (h.Game.CurrentMainPhase == MainPhase.Blow || h.Game.CurrentMainPhase == MainPhase.Charity)
+        {
+            return Skin.Current.MusicResourceBlow_URL;
+        }
+        else if (h.Game.CurrentMainPhase == MainPhase.Bidding)
+        {
+            return Skin.Current.MusicBidding_URL;
+        }
+        else if (h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
+        {
+            return Skin.Current.MusicShipmentAndMove_URL;
+        }
+        else if (h.Game.CurrentMainPhase == MainPhase.Battle && h.Game.CurrentPhase == Phase.BattlePhase)
+        {
+            return Skin.Current.MusicBattle_URL;
+        }
+        else if (h.Game.CurrentMainPhase == MainPhase.Battle)
+        {
+            return Skin.Current.MusicBattleClimax_URL;
+        }
+        else if (h.Game.CurrentMainPhase == MainPhase.Contemplate || h.Game.CurrentMainPhase == MainPhase.Ended)
+        {
+            return Skin.Current.MusicMentat_URL;
+        }
+        else
+        {
+            return Skin.Current.MusicGeneral_URL;
+        }
+    }
+
+    private async Task SaveSettings()
+    {
+        await Browser.SaveSetting("treachery.online;setting.music", DesiredMusicVolume);
+        await Browser.SaveSetting("treachery.online;setting.effect", DesiredEffectVolume);
+        await Browser.SaveSetting("treachery.online;setting.chatvolume", DesiredChatVolume);
+    }
+
+    private async Task LoadSettings()
+    {
+        try
+        {
+            DesiredMusicVolume = await Browser.LoadSetting<float>("treachery.online;setting.music");
+            if (DesiredMusicVolume == 0) DesiredMusicVolume = 50;
+            DesiredEffectVolume = await Browser.LoadSetting<float>("treachery.online;setting.effect");
+            if (DesiredEffectVolume == 0) DesiredEffectVolume = 50;
+            DesiredChatVolume = await Browser.LoadSetting<float>("treachery.online;setting.chatvolume");
+            if (DesiredChatVolume == 0) DesiredChatVolume = 50;
+        }
+        catch (Exception)
+        {
+
+        }
+    }
+
+}

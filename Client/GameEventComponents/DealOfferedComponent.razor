@@ -1,0 +1,104 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<DealOffered>
+
+<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
+
+    <div class="card-header">
+        Offer a Deal
+        <CollapseButton @bind-Collapsed="Collapsed" />
+    </div>
+
+    @if (!Collapsed)
+    {
+        <div class="card-body">
+
+            <label class="mt-1 mb-0">Offer to whom (select none to offer to all)</label>
+            @foreach (var faction in h.Game.ValidTargets(h.Player))
+            {
+                <ChecklistItemComponent Value="@faction" Values="to" style="@ColorTransparant(faction)" Callback="OnChangeFactions" />
+            }
+
+            <SelectComponent @bind-Value="price" Values="Enumerable.Range(0, 21)" Label="Price" />
+
+            <SelectComponent @bind-Value="type" Values="DealOffered.GetHumanDealTypes(h.Game, h.Player)" Label="Type of Deal" />
+
+            <SelectComponent @bind-Value="until" Values="ApplicableEndPhases" Label="Until" />
+
+            <textarea class="form-control mt-1" rows="5" @bind="text" maxlength="512" placeholder="Deal description" />
+
+            <button class="btn btn-primary mt-1" @onclick="ConfirmOffer" disabled=@(!Valid)>Ok</button>
+
+            <div class="text-danger bg-dark">@validationError</div>
+
+        </div>
+    }
+
+</div>
+
+@code {
+
+    private List<Faction> to = new List<Faction>();
+    private int price;
+    private DealType type;
+    private string text = "";
+    private Phase until;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Initialize<int, int>(ref price, Enumerable.Range(0, 21));
+        Initialize<DealType, DealType>(ref type, DealOffered.GetHumanDealTypes(h.Game, h.Player));
+        Initialize<Phase, Phase>(ref until, ApplicableEndPhases);
+    }
+
+    protected override void OnInitialized()
+    {
+        Collapsed = true;
+    }
+
+    private void OnChangeFactions()
+    {
+        StateHasChanged();
+    }
+
+    protected override DealOffered ConfirmedResult
+    {
+        get
+        {
+            return new DealOffered(h.Game)
+            {
+                Initiator = h.Faction,
+                To = to.Count >= h.Game.Players.Count - 1 ? Array.Empty<Faction>() : to.ToArray(),
+                Price = price,
+                Type = type,
+                Text = text,
+                EndPhase = until
+            };
+        }
+    }
+
+    private async Task ConfirmOffer()
+    {
+        await base.Confirm();
+        text = "";
+    }
+
+    private IEnumerable<Phase> ApplicableEndPhases
+    {
+        get
+        {
+
+            return type switch
+            {
+                DealType.ShareStormPrescience => new Phase[] { Phase.TurnConcluded },
+                DealType.ShareBiddingPrescience => new Phase[] { Phase.Bidding, Phase.BiddingReport },
+                DealType.ShareResourceDeckPrescience => new Phase[] { Phase.TurnConcluded },
+                _ => new Phase[] { Phase.TurnConcluded, Phase.GameEnded }
+            };
+        }
+    }
+}

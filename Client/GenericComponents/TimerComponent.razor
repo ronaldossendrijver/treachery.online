@@ -1,0 +1,49 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared;
+@inherits GameComponent
+
+@inject IJSRuntime JSRuntime;
+
+<JsPanel Title="Timer" Width="100" Height="22" HeaderShown="true" ShowClose="false" ShowMaximize="false" ShowMinimize="false" ShowSmallify="false" Opacity="0.9f" Position="JsPanel.PanelPosition.CenterTop" ContentOverflow="hidden" Resizable="false">
+
+    <h5 style="cursor: pointer" class="text-center @(h.TimedFactions.Contains(h.Faction) ? "alert-danger" : "alert-info")">@h.Timer.Elapsed.ToString("mm':'ss")</h5>
+
+</JsPanel>
+
+@code {
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (h.Timer != null)
+        {
+            _ = Task.Delay(1000).ContinueWith(e => StateHasChanged());
+        }
+    }
+
+    private string TimerInfo
+    {
+        get
+        {
+            var result = "<div style='background-color:rgba(0,0,0,1)'><h5>Cumulative Timers</h5>";
+            foreach (var p in h.Game.Players)
+            {
+                TimeSpan total = new TimeSpan(0);
+                result += string.Format("<div class='mt-1' style='{0}'>{1}</div>", Color(p.Faction), Skin.Current.Describe(p.Faction));
+
+                var times = h.ThinkTimer(p.Faction).Times;
+                foreach (var phase in times.Keys)
+                {
+                    total = total.Add(times[phase]);
+                    result += string.Format("<div>{0}:{1}</div>", Skin.Current.Describe(phase), times[phase].ToString("mm':'ss"));
+                }
+
+                result += string.Format("<div>Total: {0}</div>", total.ToString("mm':'ss"));
+            }
+            result += "</div>";
+            return result;
+        }
+    }
+}

@@ -1,0 +1,32 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<BattleRevision>
+
+<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
+    <div class="card-header">Change your battle plan?</div>
+    <div class="card-body">
+        <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
+        <div class="text-danger bg-dark">@validationError</div>
+    </div>
+</div>
+
+@code {
+
+    protected override BattleRevision ConfirmedResult
+    {
+        get
+        {
+            return new BattleRevision(h.Game) { Initiator = h.Faction };
+        }
+    }
+
+    private new async Task Confirm()
+    {
+        h.RevisedPlan = h.IAm(h.Game.CurrentBattle.Initiator) ? h.Game.AggressorBattleAction : h.Game.DefenderBattleAction;
+        await h.HostProxy.Request(ConfirmedResult);
+    }
+}

@@ -1,0 +1,66 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<BlueBattleAnnouncement>
+@implements IDisposable
+
+<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
+    <div class="card-header">
+        Choose a territory in which you have advisors and wish to battle, flipping them to fighters.
+        <CollapseButton @bind-Collapsed="Collapsed" />
+    </div>
+    @if (!Collapsed)
+    {
+        <div class="card-body">
+
+            <label for="battleAnnouncementTarget">Territory <kbd>click</kbd></label>
+            <select class="custom-select" @bind="@targetId" id="battleAnnouncementTarget">
+                @foreach (var f in BlueBattleAnnouncement.ValidTerritories(h.Game, h.Player))
+                {
+                    <option value="@f.Id">@f.ToString()</option>
+                }
+            </select>
+
+            <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
+            <div class="text-danger bg-dark">@validationError</div>
+
+        </div>
+    }
+
+</div>
+
+@code {
+
+    public int targetId = -1;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            MapDrawer.OnLocationSelected += HandleLocationSelected;
+        }
+
+        Initialize<int, Territory>(ref targetId, BlueBattleAnnouncement.ValidTerritories(h.Game, h.Player));
+    }
+
+    protected override BlueBattleAnnouncement ConfirmedResult
+    {
+        get
+        {
+            return new BlueBattleAnnouncement(h.Game) { Initiator = h.Faction, Territory = h.Game.Map.TerritoryLookup.Find(targetId) };
+        }
+    }
+
+    private void HandleLocationSelected(object sender, Location l)
+    {
+        SetIfValid<int, Territory>(ref targetId, BlueBattleAnnouncement.ValidTerritories(h.Game, h.Player), l.Territory);
+    }
+
+    public void Dispose()
+    {
+        MapDrawer.OnLocationSelected -= HandleLocationSelected;
+    }
+}

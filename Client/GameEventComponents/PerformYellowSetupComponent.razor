@@ -1,0 +1,185 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<PerformYellowSetup>
+@implements IDisposable
+
+<div class="card p-1 mb-2 border-danger">
+    <div class="card-header">
+        Distribute @(10 - forces.Sum(fl => fl.Value.AmountOfForces + fl.Value.AmountOfSpecialForces)) forces on @h.Game.Map.SietchTabr.ToString(), @h.Game.Map.FalseWallSouth.ToString(), and @h.Game.Map.FalseWallWest.ToString().
+    </div>
+    <div class="card-body">
+
+        <table class="table table-striped table-sm m-0 w-auto">
+            <thead>
+                <tr class="small">
+                    <td>Location</td>
+                    <td colspan="3">@h.Player.ForceName<br /><kbd>click</kbd></td>
+                    @if (h.Player.HasSpecialForces)
+                    {
+                        <td colspan="3">@h.Player.SpecialForceName<br /><kbd>ctrl+click</kbd></td>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var l in ValidLocations)
+                {
+                    <tr class="small">
+
+                        <td>@l.ToString()</td>
+
+                        <td class="p-0"><button type="button" @onclick="(e => ForceAmountButton(l, -1, false))" class="btn btn-primary btn-sm">-</button></td>
+                        <td>@Forces(l, false)</td>
+                        <td class="p-0"><button type="button" @onclick="(e => ForceAmountButton(l, 1, false))" class="btn btn-primary btn-sm">+</button></td>
+
+                        @if (h.Player.HasSpecialForces)
+                        {
+                            <td class="p-0"><button type="button" @onclick="(e => ForceAmountButton(l, -1, true))" class="btn btn-primary btn-sm">-</button></td>
+                            <td>@Forces(l, true)</td>
+                            <td class="p-0"><button type="button" @onclick="(e => ForceAmountButton(l, 1, true))" class="btn btn-primary btn-sm">+</button></td>
+                        }
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <button class="btn btn-primary mt-3" @onclick="Confirm" disabled="@(!Valid)">Confirm</button>
+        <div class="text-danger bg-dark">@validationError</div>
+
+    </div>
+</div>
+
+@code {
+
+    private Dictionary<Location, Battalion> forces = new Dictionary<Location, Battalion>();
+
+    protected override PerformYellowSetup ConfirmedResult
+    {
+        get
+        {
+            return new PerformYellowSetup(h.Game) { Initiator = h.Faction, ForceLocations = forces };
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            MapDrawer.OnLocationSelected += HandleAddForce;
+            MapDrawer.OnLocationSelectedWithShift += HandleRemoveForce;
+
+            if (h.Player.HasSpecialForces)
+            {
+                MapDrawer.OnLocationSelectedWithCtrlOrAlt += HandleAddSpecialForce;
+                MapDrawer.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleRemoveSpecialForce;
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        MapDrawer.OnLocationSelected -= HandleAddForce;
+        MapDrawer.OnLocationSelectedWithShift -= HandleRemoveForce;
+
+        if (h.Player.HasSpecialForces)
+        {
+            MapDrawer.OnLocationSelectedWithCtrlOrAlt -= HandleAddSpecialForce;
+            MapDrawer.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleRemoveSpecialForce;
+        }
+    }
+
+    private void HandleAddForce(object sender, Location l)
+    {
+        if (ValidLocations.Contains(l))
+        {
+            ForceAmountButton(l, 1, false);
+        }
+    }
+
+    private void HandleAddSpecialForce(object sender, Location l)
+    {
+        if (ValidLocations.Contains(l))
+        {
+            ForceAmountButton(l, 1, true);
+        }
+    }
+
+    private void HandleRemoveForce(object sender, Location l)
+    {
+        if (ValidLocations.Contains(l))
+        {
+            ForceAmountButton(l, -1, false);
+        }
+    }
+
+    private void HandleRemoveSpecialForce(object sender, Location l)
+    {
+        if (ValidLocations.Contains(l))
+        {
+            ForceAmountButton(l, -1, true);
+        }
+    }
+
+    private IEnumerable<Location> ValidLocations
+    {
+        get
+        {
+            var result = new List<Location>();
+            result.Add(h.Game.Map.SietchTabr);
+            result.AddRange(h.Game.Map.FalseWallSouth.Locations);
+            result.AddRange(h.Game.Map.FalseWallWest.Locations);
+            return result;
+        }
+    }
+
+    protected int Forces(Location l, bool special)
+    {
+        if (forces.ContainsKey(l))
+        {
+            if (special)
+            {
+                return forces[l].AmountOfSpecialForces;
+            }
+            else
+            {
+                return forces[l].AmountOfForces;
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    protected void ForceAmountButton(Location location, int amount, bool specialForces)
+    {
+        if (forces.ContainsKey(location))
+        {
+            if (specialForces)
+            {
+                forces[location].ChangeSpecialForces(amount);
+            }
+            else
+            {
+                forces[location].ChangeForces(amount);
+            }
+        }
+        else if (amount > 0)
+        {
+            if (specialForces)
+            {
+                forces.Add(location, new Battalion() { AmountOfSpecialForces = amount, AmountOfForces = 0 });
+            }
+            else
+            {
+                forces.Add(location, new Battalion() { AmountOfSpecialForces = 0, AmountOfForces = amount });
+            }
+        }
+
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,99 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<KarmaFreeRevival>
+
+<div class="card p-1 mb-2" style="@BackgroundStyle">
+    <div class="card-header" style="@HeaderStyle">
+        Use @Skin.Current.Describe(TreacheryCardType.Karma) to revive forces or a leader
+    </div>
+    <div class="card-body" style="@BodyStyle">
+        <label for="karamaFreeRevivalAmountOfForces">Forces</label>
+        <select class="custom-select" @bind="amountOfForces" id="karamaFreeRevivalAmountOfForces">
+            @foreach (var s in ValidFreeRevivalAmounts)
+            {
+                <option value="@s">@s</option>
+            }
+        </select>
+        <label for="karamaFreeRevivalAmountOfSpecialForces">@Skin.Current.Describe(FactionSpecialForce.Red)</label>
+        <select class="custom-select" @bind="amountOfSpecialForces" id="karamaFreeRevivalAmountOfSpecialForces">
+            @foreach (var s in ValidSpecialFreeRevivalAmounts)
+            {
+                <option value="@s">@s</option>
+            }
+        </select>
+        <label for="karamaFreeRevivalLeader">Leader</label>
+        <select class="custom-select" @bind="hero" id="karamaFreeRevivalLeader">
+            <option value="">None</option>
+            @foreach (var v in h.Game.ValidFreeRevivalHeroes(h.Player))
+            {
+                <option value="@v">@v</option>
+            }
+        </select>
+
+        <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
+        <div class="text-danger bg-dark">@validationError</div>
+    </div>
+</div>
+
+@code {
+
+    private int amountOfForces;
+    private int amountOfSpecialForces;
+    private string hero = "";
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Initialize<int, int>(ref amountOfForces, ValidFreeRevivalAmounts);
+        Initialize<int, int>(ref amountOfSpecialForces, ValidSpecialFreeRevivalAmounts);
+        Initialize<string, IHero>(ref hero, h.Game.ValidFreeRevivalHeroes(h.Player), true, "");
+    }
+
+    protected override KarmaFreeRevival ConfirmedResult
+    {
+        get
+        {
+            return new KarmaFreeRevival(h.Game) { Initiator = h.Faction, AmountOfForces = amountOfForces, AmountOfSpecialForces = amountOfSpecialForces, Hero = Hero(hero) };
+        }
+    }
+
+    private IEnumerable<int> ValidFreeRevivalAmounts
+    {
+        get
+        {
+            return KarmaFreeRevival.ValidAmounts(h.Player, false);
+        }
+    }
+
+
+    private IEnumerable<int> ValidSpecialFreeRevivalAmounts
+    {
+        get
+        {
+            return KarmaFreeRevival.ValidAmounts(h.Player, true);
+        }
+    }
+
+    private IHero Hero(string heroName)
+    {
+        //TODO: STANDARDIZE
+        if (heroName == LeaderManager.Messiah.ToString())
+        {
+            return LeaderManager.Messiah;
+        }
+        else
+        {
+            IHero result = LeaderManager.Find(heroName);
+            if (result == null)
+            {
+                result = h.Player.TreacheryCards.FirstOrDefault(x => x.Name == heroName);
+            }
+            return result;
+        }
+    }
+
+
+}

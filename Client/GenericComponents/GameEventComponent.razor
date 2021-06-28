@@ -1,0 +1,192 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared;
+@inherits GameComponent
+@typeparam GameEventType
+ 
+@code {
+
+    [Parameter]
+    public string BackgroundImage { get; set; } = "";
+
+    protected string Border => Urgent ? "border-white" : "";
+
+    protected string validationError = "";
+
+    protected async Task Confirm()
+    {
+        await Request(ConfirmedResult);
+    }
+
+    protected async Task Pass()
+    {
+        await Request(PassedResult);
+    }
+
+    protected async Task Other()
+    {
+        await Request(OtherResult);
+    }
+
+    protected bool Valid
+    {
+        get
+        {
+            try
+            {
+                validationError = ConfirmedResult.Validate();
+                return validationError == "";
+            }
+            catch (Exception e)
+            {
+                validationError = string.Format("Error: {0}", e.Message);
+            }
+
+            return false;
+        }
+    }
+
+    protected virtual Faction GameEventTypeFaction => Faction.None;
+
+    protected virtual bool Urgent => false;
+
+    protected virtual GameEventType ConfirmedResult
+    {
+        get
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    protected virtual GameEventType PassedResult
+    {
+        get
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    protected virtual GameEventType OtherResult
+    {
+        get
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    protected List<string> ValidValues<T>(IEnumerable<T> values)
+    {
+        return values.Select(o => o.ToString()).ToList();
+    }
+
+    protected bool Initialize<DisplayType, OriginalType>(ref DisplayType field, IEnumerable<OriginalType> values, bool allowDefaultValue = false, DisplayType defaultValue = default(DisplayType)/*, bool showLog = false*/)
+    {
+        if (allowDefaultValue && defaultValue.Equals(field))
+        {
+            return false;
+        }
+
+        object firstValidValue = defaultValue;
+        bool validValueFound = allowDefaultValue;
+        bool sameType = (typeof(OriginalType) == typeof(DisplayType));
+        bool useId = (typeof(DisplayType) == typeof(int)) && typeof(IIdentifiable).IsAssignableFrom(typeof(OriginalType));
+
+        foreach (var originalValue in values)
+        {
+            if (originalValue != null)
+            {
+                object displayValue = null;
+
+                if (sameType)
+                {
+                    displayValue = originalValue;
+                }
+                else if (useId)
+                {
+                    displayValue = ((IIdentifiable)originalValue).Id;
+                }
+                else
+                {
+                    displayValue = originalValue.ToString();
+                }
+
+                if (displayValue.Equals(field))
+                {
+                    //if (showLog) Console.WriteLine("The current value is valid; just return");
+                    return false;
+                }
+
+                if (!validValueFound)
+                {
+                    //This is the first valid value
+                    firstValidValue = displayValue;
+                    validValueFound = true;
+                }
+            }
+        }
+
+        if (validValueFound || allowDefaultValue)
+        {
+            //if (showLog) Console.WriteLine("field = (DisplayType)firstValidValue");
+            field = (DisplayType)firstValidValue;
+            StateHasChanged();
+            return true;
+        }
+
+        return false;
+    }
+
+
+    protected void SetIfValid<DisplayType, OriginalType>(ref DisplayType field, IEnumerable<OriginalType> validValues, OriginalType newValue)
+    {
+        if ((object)field != (object)newValue && validValues.Contains(newValue))
+        {
+            bool sameType = (typeof(OriginalType) == typeof(DisplayType));
+            bool useId = (typeof(DisplayType) == typeof(int)) && typeof(IIdentifiable).IsAssignableFrom(typeof(OriginalType));
+
+            if (sameType)
+            {
+                field = (DisplayType)(object)newValue;
+            }
+            else if (useId)
+            {
+                field = (DisplayType)((object)((IIdentifiable)newValue).Id);
+            }
+            else
+            {
+                field = (DisplayType)(object)(newValue.ToString());
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    protected string BackgroundStyle
+    {
+        get
+        {
+            if (BackgroundImage == "")
+            {
+                if (Faction != Faction.None)
+                {
+                    return "";
+                }
+                else
+                {
+                    return Skin.Current.GetFactionColorTransparant(Faction);
+                }
+            }
+            else
+            {
+                return string.Format("border-style: none; background-color: rgba(0,0,0,0); background-image: url('{0}'); background-size: cover; background-repeat: no-repeat;", BackgroundImage);
+            }
+        }
+    }
+
+
+    protected string HeaderStyle => BackgroundImage != "" ? "background-color:rgba(0,0,0,0.8);" : "";
+
+    protected string BodyStyle => BackgroundImage != "" ? "background-color:rgba(0,0,0,0.6);" : "";
+}

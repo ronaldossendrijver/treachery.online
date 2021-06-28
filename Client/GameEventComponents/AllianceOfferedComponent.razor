@@ -1,0 +1,45 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<AllianceOffered>
+@implements IDisposable
+
+<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
+    <div class="card-header">Offer a faction to form an Alliance</div>
+    <div class="card-body">
+
+        <div class="form-row">
+            <SelectComponent @bind-Value="target" Values="h.Game.ValidTargets(h.Player)" Layout="SelectComponentLayout.MultipleInputsPerLineLabelsAbove" />
+            <button class="btn btn-primary" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
+        </div>
+
+        <div class="text-danger bg-dark">@validationError</div>
+
+    </div>
+</div>
+
+@code {
+
+    private Faction target;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Initialize<Faction, Faction>(ref target, h.Game.ValidTargets(h.Player));
+    }
+
+    public void Dispose()
+    {
+
+    }
+
+    protected override AllianceOffered ConfirmedResult
+    {
+        get
+        {
+            return new AllianceOffered(h.Game) { Initiator = h.Faction, Target = target };
+        }
+    }
+}

@@ -1,0 +1,106 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared;
+@using Treachery.Client.GenericComponents;
+@inherits GameComponent
+
+@if (h.Game.CurrentMainPhase == MainPhase.Bidding || (h.Game.Version < 38 && h.CurrentPhase == Phase.Resurrection))
+{
+    <div class="card p-1 mb-2 border-light" style="background-image:url('@Skin.Current.PanelBackground_Bidding_URL');background-size:cover;background-repeat:no-repeat">
+
+        <div class="card-body">
+
+            <div><span class="badge badge-primary badge-pill">@h.Game.CardsOnAuction.Items.Count</span> cards left on auction.</div>
+
+            @if (h.Game.CurrentBid != null)
+            {
+                <div>
+                    Current bid:
+                    <span class="badge badge-primary badge-pill">@(h.Game.CurrentBid.TotalAmount)</span> by
+                    <span class="badge badge-primary badge-pill" style="@Color(h.Game.CurrentBid.Initiator)">@Skin.Current.Describe(h.Game.CurrentBid.Initiator)</span>
+                </div>
+            }
+            else if (h.Game.CurrentPhase != Phase.BiddingReport)
+            {
+                <div>No bids yet.</div>
+            }
+
+            @if (h.CurrentPhase == Phase.Bidding && !h.Game.CardsOnAuction.IsEmpty && h.Game.HasBiddingPrescience(h.Player))
+            {
+                <div data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(h.Game.CardsOnAuction.Top)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">On auction: <span class="badge badge-primary badge-pill">@h.Game.CardsOnAuction.Top</span></div>
+            }
+
+            <h5 class="mt-2 mb-0">Bidding order &amp; Cards owned</h5>
+            <ul class="list-inline mb-1">
+                @{
+                    bool first = true;
+                    foreach (var p in PlayersInSequence)
+                    {
+                        if (first)
+                        {
+                            first = false;
+                            <li class="list-inline-item @(p.Item2 ? "font-weight-bolder" : "")">@Skin.Current.Describe(p.Item1.Faction) <span class="badge badge-primary badge-pill">@p.Item1.TreacheryCards.Count()</span></li>
+                        }
+                        else
+                        {
+                            <li class="list-inline-item @(p.Item2 ? "font-weight-bolder" : "")">&rarr;&nbsp;@Skin.Current.Describe(p.Item1.Faction) <span class="badge badge-primary badge-pill">@p.Item1.TreacheryCards.Count()</span>&nbsp;</li>
+                        }
+                    }
+                }
+            </ul>
+
+            @if (!h.IsObserver && h.Player.Faction != Faction.None)
+            {
+                <label class="mb-0" for="bidAmount">Auto-pass bids when above:</label>
+                <select class="custom-select w-auto" @bind="@h.BidAutoPassThreshold" id="bidAmount">
+                    <option value="@int.MaxValue">Don't autopass</option>
+                    @foreach (var s in AutopassAmounts)
+                    {
+                        <option value="@s">@s</option>
+                    }
+                </select>
+
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="resetAutopass" @bind="@h.ResetAutopassSetting">
+                    <label class="custom-control-label" for="resetAutopass">Reset auto-pass after each bidding round</label>
+                </div>
+            }
+
+        </div>
+    </div>
+}
+
+@code {
+
+    private IEnumerable<Tuple<Player, bool>> PlayersInSequence
+    {
+        get
+        {
+            var players = h.Game.BidSequence.Players;
+            var result = new List<Tuple<Player, bool>>();
+            int currentPlayerPosition = h.Game.BidSequence.RoundStartedAt;
+
+            for (int i = 0; i < h.Game.MaximumNumberOfPlayers; i++)
+            {
+                var player = players.SingleOrDefault(p => p.PositionAtTable == currentPlayerPosition);
+                if (player != null)
+                {
+                    result.Add(new Tuple<Player, bool>(player, player.PositionAtTable == h.Game.BidSequence.Current));
+                }
+                currentPlayerPosition = (currentPlayerPosition + 1) % h.Game.MaximumNumberOfPlayers;
+            }
+
+            return result;
+        }
+    }
+
+    private IEnumerable<int> AutopassAmounts
+    {
+        get
+        {
+            return Enumerable.Range(0, 100);
+        }
+    }
+}

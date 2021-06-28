@@ -1,0 +1,67 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<KarmaMonster>
+@implements IDisposable
+
+<div class="card p-1 mb-2" style="@BackgroundStyle">
+    <div class="card-header" style="@HeaderStyle">
+        Use @Skin.Current.Describe(TreacheryCardType.Karma) to beacon @Skin.Current.Describe(Concept.Monster) to a territory of choice
+    </div>
+    <div class="card-body" style="@BodyStyle">
+        <label for="karamaShaiHuludTarget">To <kbd>click</kbd></label>
+        <select class="custom-select" @bind="@targetId" id="karamaShaiHuludTarget">
+            @foreach (var f in ValidTargets)
+            {
+                <option value="@f.Id">@f.Name</option>
+            }
+        </select>
+        <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
+        <div class="text-danger bg-dark">@validationError</div>
+    </div>
+</div>
+
+@code {
+
+    private int targetId;
+
+    protected override KarmaMonster ConfirmedResult
+    {
+        get
+        {
+            return new KarmaMonster(h.Game) { Initiator = h.Faction, Territory = h.Game.Map.TerritoryLookup.Find(targetId) };
+        }
+    }
+
+    public void Dispose()
+    {
+        MapDrawer.OnLocationSelected -= HandleLocationSelected;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            MapDrawer.OnLocationSelected += HandleLocationSelected;
+        }
+
+        Initialize<int, Territory>(ref targetId, ValidTargets);
+    }
+
+
+    private void HandleLocationSelected(object sender, Location l)
+    {
+        SetIfValid<int, Territory>(ref targetId, ValidTargets, l.Territory);
+    }
+
+    private IEnumerable<Territory> ValidTargets
+    {
+        get
+        {
+            return h.Game.Map.Territories.Where(t => !t.IsProtectedFromWorm);
+        }
+    }
+}
