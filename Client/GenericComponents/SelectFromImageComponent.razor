@@ -3,8 +3,6 @@
 --->
 
 @using System.Collections.Generic;
-
-
 @typeparam T
 
 <div>
@@ -32,7 +30,7 @@
         }
         set
         {
-            if ((object)_value != (object)value)
+            if (_value == null && value != null || _value != null && !_value.Equals(value))
             {
                 _value = value;
                 ValueChanged.InvokeAsync(value);
@@ -47,13 +45,13 @@
     public IEnumerable<T> Values { get; set; }
 
     [Parameter]
-    public IEnumerable<string> ImageURLs { get; set; }
+    public IEnumerable<string> ImageURLs { get; set; } = null;
 
     [Parameter]
     public int ImageWidth { get; set; } = 60;
 
     [Parameter]
-    public IEnumerable<string> PopupHTMLs { get; set; }
+    public IEnumerable<string> PopupHTMLs { get; set; } = null;
 
     [Parameter]
     public string UnselectedFilter { get; set; } = "grayscale(100%) opacity(50%)";
@@ -66,8 +64,9 @@
 
     protected override void OnParametersSet()
     {
-        if (ImageURLs == null) ImageURLs = Values.Select(v => "");
-        if (PopupHTMLs == null) PopupHTMLs = Values.Select(v => "");
+        var nrOfValues = Values.Count();
+        if (ImageURLs == null) ImageURLs = new string[nrOfValues];
+        if (PopupHTMLs == null) PopupHTMLs = new string[nrOfValues];
 
         if (Required && (object)Value == default)
         {
@@ -105,8 +104,10 @@
     private string DetermineFilter(T item)
     {
         string result = "filter:";
-        if ((object)item != (object)_value) result += UnselectedFilter + " ";
-        if ((object)item == (object)_hovered) result += HoverFilter;
+        if (_value == null && item != null || _value != null && !_value.Equals(item)) result += UnselectedFilter + " ";
+        if (_hovered == null && item != null || _hovered != null && !_hovered.Equals(item)) result += HoverFilter;
         return result;
     }
+
+
 }

@@ -78,13 +78,11 @@
             <p>Total cost of battle: <span class="badge badge-primary badge-pill">@Cost</span></p>
         }
 
-        <SelectComponent @bind-Value="hero" Values="Battle.ValidBattleHeroes(h.Game, h.Player).Select(h => h.Id)" ValueLabels="Battle.ValidBattleHeroes(h.Game, h.Player)" Label="Hero">
-            <option value="-1">None</option>
-        </SelectComponent>
+        <SelectComponent @bind-Value="hero" Values="Battle.ValidBattleHeroes(h.Game, h.Player)" Label="Hero"/>
 
-        <SelectComponent @bind-Value="weapon" Values="Weapons.Select(w => w != null ? w.Id : -1)" ValueLabels="Weapons.Select(w => w != null ? w.Name : NONE)" Label="Weapon" />
+        <SelectComponent @bind-Value="weapon" Values="Weapons" NullValueLabel="None" Label="Weapon" />
 
-        <SelectComponent @bind-Value="defense" Values="Defenses.Select(w => w != null? w.Id : -1)" ValueLabels="Defenses.Select(w => w != null ? w.Name : NONE)" Label="Defense" />
+        <SelectComponent @bind-Value="defense" Values="Defenses" NullValueLabel="None" Label="Defense" />
 
         @if (h.Faction == Faction.Green && h.Game.Applicable(Rule.GreenMessiah))
         {
@@ -109,14 +107,16 @@
 
 @code {
 
+    private const string NONE = "None";
+
     private int forces;
     private int forcesAtHalfStrength;
     private int specialForces;
     private int specialForcesAtHalfStrength;
-    private int hero = -1;
+    private IHero hero;
     private bool messiah = false;
-    private int defense = -1;
-    private int weapon = -1;
+    private TreacheryCard defense;
+    private TreacheryCard weapon;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -124,11 +124,11 @@
         Initialize<int, int>(ref forcesAtHalfStrength, Battle.ValidBattleForces(h.Game, h.Player));
         Initialize<int, int>(ref specialForces, Battle.ValidBattleSpecialForces(h.Game, h.Player));
         Initialize<int, int>(ref specialForcesAtHalfStrength, Battle.ValidBattleSpecialForces(h.Game, h.Player));
-        Initialize<int, IHero>(ref hero, Battle.ValidBattleHeroes(h.Game, h.Player), true, -1);
-        var weap = Weapons.ToList();
-        Initialize<int, TreacheryCard>(ref weapon, weap, weap.Contains(null), -1);
-        var defs = Defenses.ToList();
-        Initialize<int, TreacheryCard>(ref defense, defs, defs.Contains(null), -1);
+        //Initialize<IHero, IHero>(ref hero, Battle.ValidBattleHeroes(h.Game, h.Player));
+        //var weap = Weapons.ToList();
+        //Initialize<TreacheryCard, TreacheryCard>(ref weapon, weap, weap.Contains(null), null);
+        //var defs = Defenses.ToList();
+        //Initialize<TreacheryCard, TreacheryCard>(ref defense, defs, defs.Contains(null), null);
         await DrawIfNeeded();
     }
 
@@ -136,10 +136,10 @@
     private int lastforcesAtHalfStrength;
     private int lastspecialForces;
     private int lastspecialForcesAtHalfStrength;
-    private int lasthero;
+    private IHero lasthero;
     private bool lastmessiah = false;
-    private int lastdefense = -1;
-    private int lastweapon = -1;
+    private TreacheryCard lastdefense;
+    private TreacheryCard lastweapon;
 
     private async Task DrawIfNeeded()
     {
@@ -175,10 +175,10 @@
             forcesAtHalfStrength = h.RevisedPlan.ForcesAtHalfStrength;
             specialForces = h.RevisedPlan.SpecialForces;
             specialForcesAtHalfStrength = h.RevisedPlan.SpecialForcesAtHalfStrength;
-            hero = LeaderManager.HeroLookup.GetId(h.RevisedPlan.Hero);
+            hero = h.RevisedPlan.Hero;
             messiah = h.RevisedPlan.Messiah;
-            defense = TreacheryCardManager.Lookup.GetId(h.RevisedPlan.Defense);
-            weapon = TreacheryCardManager.Lookup.GetId(h.RevisedPlan.Weapon);
+            defense = h.RevisedPlan.Defense;
+            weapon = h.RevisedPlan.Weapon;
             h.RevisedPlan = null;
         }
     }
@@ -195,14 +195,14 @@
             return new Battle(h.Game)
             {
                 Initiator = h.Faction,
-                Defense = h.Player.TreacheryCards.FirstOrDefault(x => x.Id == defense),
+                Defense = defense,
                 Forces = forces,
                 ForcesAtHalfStrength = forcesAtHalfStrength,
-                Hero = LeaderManager.HeroLookup.Find(hero),
+                Hero = hero,
                 Messiah = messiah,
                 SpecialForces = specialForces,
                 SpecialForcesAtHalfStrength = specialForcesAtHalfStrength,
-                Weapon = h.Player.TreacheryCards.FirstOrDefault(x => x.Id == weapon)
+                Weapon = weapon
             };
         }
     }
@@ -285,14 +285,11 @@
         return "?";
     }
 
-    private const string NONE = "None";
-
     private IEnumerable<TreacheryCard> Weapons
     {
         get
         {
-            return Battle.ValidWeapons(h.Game, h.Player, h.Player.TreacheryCards.FirstOrDefault(x => x.Id == defense), true).OrderBy(c => c);
-            //return Battle.ValidWeapons(h.Game, h.Player, null, true);
+            return Battle.ValidWeapons(h.Game, h.Player, defense, true).OrderBy(c => c);
         }
     }
 
@@ -300,8 +297,7 @@
     {
         get
         {
-            return Battle.ValidDefenses(h.Game, h.Player, h.Player.TreacheryCards.FirstOrDefault(x => x.Id == weapon), true).OrderBy(c => c);
-            //return Battle.ValidDefenses(h.Game, h.Player, null, true);
+            return Battle.ValidDefenses(h.Game, h.Player, weapon, true).OrderBy(c => c);
         }
     }
 }

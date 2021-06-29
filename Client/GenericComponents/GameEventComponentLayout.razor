@@ -1,0 +1,28 @@
+﻿<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
+
+    <div class="card-header">
+        @Header
+        <CollapseButton @bind-Collapsed="Collapsed" />
+    </div>
+
+    <div class="card-body">
+
+        @ChildContent
+
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string Border { get; set; }
+
+    [Parameter]
+    public string BackgroundStyle { get; set; }
+
+    [Parameter]
+    public string Header { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

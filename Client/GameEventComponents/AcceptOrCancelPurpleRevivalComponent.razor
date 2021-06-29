@@ -6,34 +6,28 @@
 @using Treachery.Client.GenericComponents; 
 @inherits GameEventComponent<AcceptOrCancelPurpleRevival>
 
-<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" Header="Manage Revival Requests" >
 
-    <div class="card-header">Manage Revival Requests</div>
+    @if (Game.CurrentPurpleRevivalRequest != null)
+    {
+        var hero = Game.CurrentPurpleRevivalRequest.Hero;
+        <div>@Skin.Current.Describe(Game.CurrentPurpleRevivalRequest.Initiator) have requested revival of <span class="badge badge-primary badge-pill" style="@Color(hero.Faction)" data-animation="true" data-content="@Support.GetHeroHoverHTML(hero)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">@hero</span>. If you agree, set your price below.</div>
 
-    <div class="card-body">
+        <NumberPickerComponent @bind-Value="price" Min="AcceptOrCancelPurpleRevival.MinAmount()" Max="AcceptOrCancelPurpleRevival.MaxAmount()" SymbolSRC="@Skin.Current.Harvester_URL" />
+        <button class="btn btn-primary" @onclick="Confirm" disabled=@(!Valid)>Confirm Offer</button>
+    }
 
-        @if (h.Game.CurrentPurpleRevivalRequest != null)
-        {
-            var hero = h.Game.CurrentPurpleRevivalRequest.Hero;
-            <div>@Skin.Current.Describe(h.Game.CurrentPurpleRevivalRequest.Initiator) have requested revival of <span class="badge badge-primary badge-pill" style="@Color(hero.Faction)" data-animation="true" data-content="@Support.GetHeroHoverHTML(hero)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">@hero</span>. If you agree, set your price below.</div>
+    @if (CurrentRevivalOfferValues.Any())
+    {
+        <SelectComponent @bind-Value="heroId" Values="CurrentRevivalOfferValues" ValueLabels="CurrentRevivalOfferLabels" Label="Cancel an existing revival offer:" />
+        <button class="btn btn-primary" @onclick="Pass" disabled=@(!CurrentRevivalOfferValues.Contains(heroId))>Cancel Offer</button>
+    }
 
-            <NumberPickerComponent @bind-Value="price" Min="AcceptOrCancelPurpleRevival.MinAmount()" Max="AcceptOrCancelPurpleRevival.MaxAmount()" SymbolSRC="@Skin.Current.Harvester_URL" />
-            <button class="btn btn-primary" @onclick="Confirm" disabled=@(!Valid)>Confirm Offer</button>
-        }
-
-        @if (CurrentRevivalOfferValues.Any())
-        {
-            <SelectComponent @bind-Value="heroId" Values="CurrentRevivalOfferValues" ValueLabels="CurrentRevivalOfferLabels" Label="Cancel an existing revival offer:" />
-            <button class="btn btn-primary" @onclick="Pass" disabled=@(!CurrentRevivalOfferValues.Contains(heroId))>Cancel Offer</button>
-        }
-
-    </div>
-</div>
+</GameEventComponentLayout>
 
 @code {
 
-    protected override bool Urgent => false;
-    protected override Faction GameEventTypeFaction => Faction.Purple;
+    protected override Faction IsFactionSpecific => Faction.Purple;
 
     private int heroId;
     private int price;
@@ -43,35 +37,12 @@
         Initialize<int, int>(ref heroId, CurrentRevivalOfferValues);
     }
 
-    protected override AcceptOrCancelPurpleRevival ConfirmedResult
-    {
-        get
-        {
-            return new AcceptOrCancelPurpleRevival(h.Game) { Initiator = h.Faction, Cancel = false, Hero = h.Game.CurrentPurpleRevivalRequest.Hero, Price = price };
-        }
-    }
+    protected override AcceptOrCancelPurpleRevival ConfirmedResult => new AcceptOrCancelPurpleRevival(Game) { Initiator = Faction, Cancel = false, Hero = Game.CurrentPurpleRevivalRequest.Hero, Price = price };
 
-    protected override AcceptOrCancelPurpleRevival PassedResult
-    {
-        get
-        {
-            return new AcceptOrCancelPurpleRevival(h.Game) { Initiator = h.Faction, Cancel = true, Hero = LeaderManager.HeroLookup.Find(heroId) };
-        }
-    }
+    protected override AcceptOrCancelPurpleRevival PassedResult => new AcceptOrCancelPurpleRevival(Game) { Initiator = Faction, Cancel = true, Hero = LeaderManager.HeroLookup.Find(heroId) };
 
-    private IEnumerable<int> CurrentRevivalOfferValues
-    {
-        get
-        {
-            return h.Game.AllowedEarlyRevivals.Select(kvp => kvp.Key.Id);
-        }
-    }
+    private IEnumerable<int> CurrentRevivalOfferValues => Game.AllowedEarlyRevivals.Select(kvp => kvp.Key.Id);
 
-    private IEnumerable<string> CurrentRevivalOfferLabels
-    {
-        get
-        {
-            return h.Game.AllowedEarlyRevivals.Select(kvp => Skin.Current.Format("{0} for {1}", kvp.Key, kvp.Value));
-        }
-    }
+    private IEnumerable<string> CurrentRevivalOfferLabels => Game.AllowedEarlyRevivals.Select(kvp => Skin.Current.Format("{0} for {1}", kvp.Key, kvp.Value));
+
 }

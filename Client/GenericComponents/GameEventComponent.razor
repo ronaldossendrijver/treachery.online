@@ -8,10 +8,14 @@
  
 @code {
 
+    protected virtual Faction IsFactionSpecific => Faction.None;
+
+    protected virtual bool IsUrgent => false;
+
     [Parameter]
     public string BackgroundImage { get; set; } = "";
 
-    protected string Border => Urgent ? "border-white" : "";
+    protected string Border => IsUrgent ? "border-white" : "";
 
     protected string validationError = "";
 
@@ -47,10 +51,6 @@
             return false;
         }
     }
-
-    protected virtual Faction GameEventTypeFaction => Faction.None;
-
-    protected virtual bool Urgent => false;
 
     protected virtual GameEventType ConfirmedResult
     {
@@ -138,7 +138,6 @@
         return false;
     }
 
-
     protected void SetIfValid<DisplayType, OriginalType>(ref DisplayType field, IEnumerable<OriginalType> validValues, OriginalType newValue)
     {
         if ((object)field != (object)newValue && validValues.Contains(newValue))
@@ -184,7 +183,6 @@
             }
         }
     }
-
 
     protected string HeaderStyle => BackgroundImage != "" ? "background-color:rgba(0,0,0,0.8);" : "";
 

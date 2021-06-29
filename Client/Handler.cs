@@ -95,7 +95,7 @@ namespace Treachery.Client
             RefreshPageControls.Invoke();
         }
 
-        public async Task RefreshAll()
+        public void RefreshAll()
         {
             RefreshPageAll.Invoke();
         }
@@ -389,7 +389,7 @@ namespace Treachery.Client
             await Skin.Current.ValidateAndFix(Browser.UrlExists);
             
             MapDrawer.Loading = true;
-            await RefreshAll();
+            RefreshAll();
             _ = Task.Delay(4000).ContinueWith(e => RedrawMapAfterSkinLoad());
         }
 
@@ -712,7 +712,7 @@ namespace Treachery.Client
                 PerformBotAction();
             }
 
-            await RefreshAll();
+            RefreshAll();
 
             if (!(e is AllyPermission || e is Bid && !Game.RecentMilestones.Contains(Milestone.AuctionWon) || e is DealOffered))
             {

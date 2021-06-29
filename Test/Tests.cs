@@ -24,8 +24,8 @@ namespace Treachery.Test
 
         private static string TestSpecialCases(Game g, GameEvent e)
         {
-            //var latestTT = 
-            /*if (e is Battle b && b.Weapon != null && g.LatestClairvoyanceQandA != null && g.LatestClairvoyanceBattle == g.CurrentBattle && g.LatestClairvoyanceQandA.Answer.Initiator == b.Initiator && 
+            /*
+            if (e is Battle b && b.Weapon != null && g.LatestClairvoyanceQandA != null && g.LatestClairvoyanceBattle == g.CurrentBattle && g.LatestClairvoyanceQandA.Answer.Initiator == b.Initiator && 
                 g.LatestClairvoyanceQandA.Question.Question == ClairvoyanceQuestion.CardTypeAsWeaponInBattle &&
                 (
                 g.LatestClairvoyanceQandA.Answer.IsYes() && !ClairVoyancePlayed.IsInScopeOf(true, b.Weapon.Type, (TreacheryCardType)g.LatestClairvoyanceQandA.Question.Parameter1) ||
@@ -45,7 +45,8 @@ namespace Treachery.Test
                 )
             {
                 return "defense lie?";
-            }*/
+            }
+            */
 
             /*
             if (e is Battle b && b.Weapon != null && b.Weapon.IsLaser && b.Defense != null && b.Defense.IsShield)

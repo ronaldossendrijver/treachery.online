@@ -5,21 +5,14 @@
 @using Treachery.Shared
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<AllianceOffered>
-@implements IDisposable
 
-<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
-    <div class="card-header">Offer a faction to form an Alliance</div>
-    <div class="card-body">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" Header="Offer a faction to form an Alliance">
 
-        <div class="form-row">
-            <SelectComponent @bind-Value="target" Values="h.Game.ValidTargets(h.Player)" Layout="SelectComponentLayout.MultipleInputsPerLineLabelsAbove" />
-            <button class="btn btn-primary" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
-        </div>
+    <SelectFactionComponent @bind-Value="target" Values="h.Game.ValidTargets(h.Player)" />
 
-        <div class="text-danger bg-dark">@validationError</div>
+    <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@validationError" />
 
-    </div>
-</div>
+</GameEventComponentLayout>
 
 @code {
 
@@ -30,16 +23,5 @@
         Initialize<Faction, Faction>(ref target, h.Game.ValidTargets(h.Player));
     }
 
-    public void Dispose()
-    {
-
-    }
-
-    protected override AllianceOffered ConfirmedResult
-    {
-        get
-        {
-            return new AllianceOffered(h.Game) { Initiator = h.Faction, Target = target };
-        }
-    }
+    protected override AllianceOffered ConfirmedResult => new AllianceOffered(h.Game) { Initiator = h.Faction, Target = target };
 }

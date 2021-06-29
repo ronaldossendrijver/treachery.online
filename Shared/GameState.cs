@@ -66,7 +66,7 @@ namespace Treachery.Shared
 
         private static string FixGameStateString(string state)
         {
-            return state.Replace("Threachery.online", "Treachery.online");
+            return state.Replace("Treachery.online", "Treachery");
         }
     }
 }

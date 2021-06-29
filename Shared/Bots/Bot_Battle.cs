@@ -216,27 +216,13 @@ namespace Treachery.Shared
             var weapClairvoyance = RulingWeaponClairvoyanceForThisBattle;
             if (weapClairvoyance != null && !IsAllowedWithClairvoyance(weapClairvoyance, weapon, true))
             {
-                if (weapon == null)
-                {
-                    weapon = Weapons(defense).FirstOrDefault(c => IsAllowedWithClairvoyance(weapClairvoyance, c, true));
-                }
-                else
-                {
-                    weapon = null;
-                }
+                weapon = Weapons(defense).FirstOrDefault(c => IsAllowedWithClairvoyance(weapClairvoyance, c, true));
             }
             
             var defClairvoyance = RulingDefenseClairvoyanceForThisBattle;
             if (defClairvoyance != null && !IsAllowedWithClairvoyance(defClairvoyance, defense, false))
             {
-                if (defense == null)
-                {
-                    defense = Defenses(weapon).FirstOrDefault(c => IsAllowedWithClairvoyance(defClairvoyance, c, false));
-                }
-                else
-                {
-                    defense = null;
-                }
+                defense = Defenses(weapon).FirstOrDefault(c => IsAllowedWithClairvoyance(defClairvoyance, c, false));
             }
 
             if (defense == weapon && weapon != null && weapon.Type == TreacheryCardType.Chemistry) weapon = null;
