@@ -5,25 +5,20 @@
 @using Treachery.Shared
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<BattleConcluded>
-@implements IDisposable
 
-<div class="card p-1 mb-2 border-danger">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle">
 
-    <div class="card-header">Conclude the battle you just won</div>
+    <Header>Conclude the battle you just won</Header>
 
-    <div class="card-body">
+    <Body>
 
         @if (h.Faction == h.Game.BattleWinner)
         {
-            if (h.Game.GreySpecialForceLossesToTake > 0)
+            var maxReplacementForces = BattleConcluded.ValidMaxReplacementForceAmount(Game, Player);
+            if (maxReplacementForces > 0)
             {
                 <label for="replacementAmount">How many @Skin.Current.SpecialForceName_STR[Faction.Grey] losses should be exchanged with surviving @Skin.Current.ForceName_STR[Faction.Grey]?</label>
-                <select class="custom-select mt-0" @bind="replacementAmount" id="replacementAmount">
-                    @foreach (var s in BattleConcluded.ValidReplacementForceAmounts(h.Game, h.Player))
-                    {
-                        <option value="@s">@s</option>
-                    }
-                </select>
+                <NumberPickerComponent @bind-Value="replacementAmount" Min="0" Max="maxReplacementForces" SymbolSRC="@Skin.Current.GetFactionSpecialForceImageURL(Faction)" />
             }
 
             var discardableMercenary = DiscardableMercenaryAfterBattle;
@@ -36,32 +31,29 @@
 
                 if (discardableMercenary != null)
                 {
-                    <div class="custom-control custom-checkbox">
-                        <input class="custom-control-input" type="checkbox" @bind="discardMercenary" id="battleConcludedDiscardMercenary" />
-                        <label class="custom-control-label" for="battleConcludedDiscardMercenary">@discardableMercenary.Name</label>
-                    </div>
+                    <CheckboxComponent @bind-Value="discardMercenary">
+                        @discardableMercenary.Name
+                    </CheckboxComponent>
                 }
 
                 if (discardableWeapon != null)
                 {
-                    <div class="custom-control custom-checkbox">
-                        <input class="custom-control-input" type="checkbox" @bind="discardWeapon" id="battleConcludedDiscardWeapon" />
-                        <label class="custom-control-label" for="battleConcludedDiscardWeapon">@discardableWeapon.Name</label>
-                    </div>
+                    <CheckboxComponent @bind-Value="discardWeapon">
+                        @discardableWeapon.Name
+                    </CheckboxComponent>
                 }
 
                 if (discardableDefense != null)
                 {
-                    <div class="custom-control custom-checkbox">
-                        <input class="custom-control-input" type="checkbox" @bind="discardDefense" id="battleConcludedDiscardDefense" />
-                        <label class="custom-control-label" for="battleConcludedDiscardDefense">@discardableDefense.Name</label>
-                    </div>
+                    <CheckboxComponent @bind-Value="discardDefense">
+                        @discardableDefense.Name
+                    </CheckboxComponent>
                 }
             }
 
             if (BattleConcluded.MayCaptureOrKill(h.Game, h.Player))
             {
-                <div>We caught <span class="badge badge-primary badge-pill" style="@Color(h.Game.BlackVictim.Faction)" data-animation="true" data-content="@Support.GetHeroHoverHTML(h.Game.BlackVictim)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">@h.Game.BlackVictim</span>... What are your orders, capture or kill?</div>
+                <div>We caught <HeroComponent Value="h.Game.BlackVictim" />. What are your orders, capture or kill?</div>
 
                 <div class="custom-control custom-radio">
                     <input class="custom-control-input" @onchange="CaptureDecisionOnChange" type="radio" id="battleConcludedKillFalse" value="@CaptureDecision.Capture" checked="@(captureDecision == CaptureDecision.Capture)">
@@ -79,19 +71,21 @@
 
             if (Loser.TechTokens.Count > 0)
             {
-                <SelectComponent @bind-Value="stolenToken" Values="Loser.TechTokens">
+                <SelectFromImageComponent @bind-Value="stolenToken" Values="Loser.TechTokens" ImageURLs="Loser.TechTokens.Select(t => Skin.Current.GetImageURL(t))" PopupHTMLs="Loser.TechTokens.Select(t => Support.GetTechTokenHTML(t))">
                     <Label>Choose a tech token to steal</Label>
-                </SelectComponent>
+                </SelectFromImageComponent>
             }
         }
 
-        <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
-        <div class="text-danger bg-dark">@validationError</div>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@validationError" />
 
-    </div>
-</div>
+    </Body>
+
+</GameEventComponentLayout>
 
 @code {
+
+    protected override bool IsUrgent => true;
 
     private CaptureDecision captureDecision = CaptureDecision.Kill;
     private bool discardMercenary;
@@ -106,17 +100,7 @@
         Initialize<int, int>(ref replacementAmount, BattleConcluded.ValidReplacementForceAmounts(h.Game, h.Player));
     }
 
-    public void Dispose()
-    {
-    }
-
-    protected override BattleConcluded ConfirmedResult
-    {
-        get
-        {
-            return new BattleConcluded(h.Game) { Initiator = h.Faction, DiscardedCards = DetermineSelectedCards(), StolenToken = stolenToken, SpecialForceLossesReplaced = replacementAmount, CaptureDecision = captureDecision };
-        }
-    }
+    protected override BattleConcluded ConfirmedResult => new BattleConcluded(h.Game) { Initiator = h.Faction, DiscardedCards = DetermineSelectedCards(), StolenToken = stolenToken, SpecialForceLossesReplaced = replacementAmount, CaptureDecision = captureDecision };
 
     private IEnumerable<TreacheryCard> DetermineSelectedCards()
     {

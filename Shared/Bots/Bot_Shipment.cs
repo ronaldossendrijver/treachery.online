@@ -121,7 +121,7 @@ namespace Treachery.Shared
 
             if (opponent != null && ValidShipmentLocations.Contains(Game.Map.HiddenMobileStronghold))
             {
-                var dialNeeded = GetDialNeeded(Game.Map.HiddenMobileStronghold.Territory, true);
+                var dialNeeded = GetDialNeeded(Game.Map.HiddenMobileStronghold.Territory, opponent, true);
 
                 int forces = 0;
                 int specialForces = 0;
@@ -363,7 +363,7 @@ namespace Treachery.Shared
                 {
                     s.Stronghold,
                     Opponent = s.Opponent.Faction,
-                    DialNeeded = GetDialNeeded(s.Stronghold.Territory, true)
+                    DialNeeded = GetDialNeeded(s.Stronghold.Territory, s.Opponent, true)
                 });
 
             int forces = 0;
@@ -566,7 +566,7 @@ namespace Treachery.Shared
             {
                 var opponent = Game.GetPlayer(Game.ForcesOnPlanet[weakestShippableLocationOfWinningOpponent.Stronghold].First().Faction);
 
-                var dialNeeded = GetDialNeeded(weakestShippableLocationOfWinningOpponent.Stronghold.Territory, true);
+                var dialNeeded = GetDialNeeded(weakestShippableLocationOfWinningOpponent.Stronghold.Territory, opponent, true);
                 int dialNeededMadeEfficient = MakeEvenIfEfficientForShipping(dialNeeded);
 
                 int nrOfForces = 0;
@@ -694,10 +694,12 @@ namespace Treachery.Shared
                 (Game.IsProtectedFromStorm(destination) || !StormWillProbablyHit(destination))
                 );*/
 
+            var opponent = GetOpponentThatOccupies(destination.Territory);
+
             return WithinRange(source, destination, b) &&
                 AllyNotIn(destination.Territory) &&
                 ProbablySafeFromShaiHulud(destination.Territory) &&
-                (NotOccupiedByOthers(destination.Territory) || mayFight && GetDialNeeded(destination.Territory, false) < MaxDial(Resources, b, GetOpponentThatOccupies(destination.Territory).Faction)) &&
+                (opponent == null || mayFight && GetDialNeeded(destination.Territory, opponent, false) < MaxDial(Resources, b, opponent.Faction)) &&
                 !StormWillProbablyHit(destination);
         }
 

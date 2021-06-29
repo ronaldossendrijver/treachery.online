@@ -12,14 +12,13 @@ namespace Treachery.Shared
     {
         protected virtual BattleInitiated DetermineBattleInitiated()
         {
-            var territory = Battle.ValidBattleTerritories(Game, this).OrderByDescending(t => MaxDial(this, t, GetOpponentThatOccupies(t).Faction) - TotalMaxDialOfOpponents(t)).FirstOrDefault();
-            var targetPlayer = GetOpponentThatOccupies(territory);
+            var battle = Battle.BattlesToBeFought(Game, this).OrderByDescending(b => GetDialNeeded(b.Item1, Game.GetPlayer(b.Item2), false)).FirstOrDefault();
 
             return new BattleInitiated(Game)
             {
                 Initiator = Faction,
-                Target = targetPlayer.Faction,
-                Territory = territory
+                Target = battle.Item2,
+                Territory = battle.Item1
             };
         }
 
@@ -694,9 +693,9 @@ namespace Treachery.Shared
             isTraitor = !messiahUsed && revealedTraitorsByOpponentsInBattle.Contains(hero);
         }
 
-        protected float GetDialNeeded(Territory territory, bool takeReinforcementsIntoAccount)
+        protected float GetDialNeeded(Territory territory, Player opponent, bool takeReinforcementsIntoAccount)
         {
-            var opponent = GetOpponentThatOccupies(territory);
+            //var opponent = GetOpponentThatOccupies(territory);
             var voicePlan = Voice.MayUseVoice(Game, this) ? BestVoice(null, this, opponent) : null;
             var strength = MaxDial(opponent, territory, Faction);
             var prescience = Prescience.MayUsePrescience(Game, this) ? BestPrescience(opponent, strength) : null;

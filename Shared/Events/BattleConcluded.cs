@@ -109,6 +109,17 @@ namespace Treachery.Shared
             return Enumerable.Range(0, 1 + Math.Min(replacementForcesLeft, g.GreySpecialForceLossesToTake));
         }
 
+        public static int ValidMaxReplacementForceAmount(Game g, Player p)
+        {
+            if (g.GreySpecialForceLossesToTake == 0) return 0;
+
+            int replacementForcesLeft = p.ForcesIn(g.CurrentBattle.Territory) - (g.WinnerBattleAction.Forces + g.WinnerBattleAction.ForcesAtHalfStrength);
+
+            if (replacementForcesLeft <= 0) return 0;
+
+            return Math.Min(replacementForcesLeft, g.GreySpecialForceLossesToTake);
+        }
+
         public static bool MayCaptureOrKill(Game g, Player p)
         {
             return p.Faction == Faction.Black && g.BattleWinner == Faction.Black && !g.Prevented(FactionAdvantage.BlackCaptureLeader) && g.Applicable(Rule.BlackCapturesOrKillsLeaders) && g.BlackVictim != null;

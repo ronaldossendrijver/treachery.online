@@ -6,11 +6,14 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<AllianceOffered>
 
-<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" Header="Offer a faction to form an Alliance">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle">
 
-    <SelectFactionComponent @bind-Value="target" Values="h.Game.ValidTargets(h.Player)" />
+    <Header>Offer a faction to form an Alliance</Header>
 
-    <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@validationError" />
+    <Body>
+        <SelectFactionComponent @bind-Value="target" Values="h.Game.ValidTargets(h.Player)" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@validationError" />
+    </Body>
 
 </GameEventComponentLayout>
 
@@ -20,7 +23,7 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
-        Initialize<Faction, Faction>(ref target, h.Game.ValidTargets(h.Player));
+        //Initialize<Faction, Faction>(ref target, h.Game.ValidTargets(h.Player));
     }
 
     protected override AllianceOffered ConfirmedResult => new AllianceOffered(h.Game) { Initiator = h.Faction, Target = target };

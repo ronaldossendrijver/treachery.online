@@ -382,41 +382,9 @@ namespace Treachery.Shared
             }
         }
 
-
-        public static IEnumerable<Faction> ValidBattleTargets(Game g, Player player)
+        public static IEnumerable<Tuple<Territory,Faction>> BattlesToBeFought(Game g, Player player)
         {
-            var result = new List<Faction>();
-
-            if (g.AggressorBattleAction == null)
-            {
-                foreach (var b in BattlesToBeFought(g, player))
-                {
-                    foreach (var f in b.Value)
-                    {
-
-                        if (!result.Contains(f))
-                        {
-                            result.Add(f);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                result.Add(g.AggressorBattleAction.Initiator);
-            }
-
-            return result;
-        }
-
-        public static IEnumerable<Territory> ValidBattleTerritories(Game g, Player player)
-        {
-            return BattlesToBeFought(g, player).Keys.Distinct();
-        }
-
-        public static Dictionary<Territory, List<Faction>> BattlesToBeFought(Game g, Player player)
-        {
-            var result = new Dictionary<Territory, List<Faction>>();
+            var result = new List<Tuple<Territory, Faction>>();
 
             bool mayBattleUnderStorm = g.Applicable(Rule.BattlesUnderStorm);
 
@@ -431,15 +399,7 @@ namespace Treachery.Shared
 
                     foreach (var f in defenders.Select(b => b.Faction))
                     {
-                        if (!result.ContainsKey(occupiedLocation.Territory))
-                        {
-                            result.Add(occupiedLocation.Territory, new List<Faction>());
-                        }
-
-                        if (!result[occupiedLocation.Territory].Contains(f))
-                        {
-                            result[occupiedLocation.Territory].Add(f);
-                        }
+                        result.Add(new Tuple<Territory, Faction>(occupiedLocation.Territory, f));
                     }
                 }
             }

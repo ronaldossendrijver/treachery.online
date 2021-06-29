@@ -289,7 +289,7 @@ namespace Treachery.Shared
                 var amountICanReinforce = MaxReinforcedDialTo(this, territory);
                 var maxDial = MaxDial(this, territory, opponent.Faction);
 
-                if (WinWasPredictedByMeThisTurn(opponent.Faction) || GetDialNeeded(territory, false) <= maxDial || potentialWinningOpponents.Contains(opponent) && GetDialNeeded(territory, false) <= amountICanReinforce + maxDial)
+                if (WinWasPredictedByMeThisTurn(opponent.Faction) || GetDialNeeded(territory, opponent, false) <= maxDial || potentialWinningOpponents.Contains(opponent) && GetDialNeeded(territory, opponent, false) <= amountICanReinforce + maxDial)
                 {
                     return true;
                 }
@@ -302,7 +302,7 @@ namespace Treachery.Shared
         {
             if (Game.CurrentMainPhase == MainPhase.Resurrection && NrOfBattlesToFight < 2)
             {
-                var territory = BlueBattleAnnouncement.ValidTerritories(Game, this).OrderBy(t => GetDialNeeded(t, false)).FirstOrDefault(t => IWantToAnnounceBattleIn(t));
+                var territory = BlueBattleAnnouncement.ValidTerritories(Game, this).OrderBy(t => GetDialNeeded(t, GetOpponentThatOccupies(t), false)).FirstOrDefault(t => IWantToAnnounceBattleIn(t));
 
                 if (territory != null)
                 {
@@ -323,7 +323,7 @@ namespace Treachery.Shared
 
             if (opponent != null)
             {
-                var dialNeeded = GetDialNeeded(territory, true);
+                var dialNeeded = GetDialNeeded(territory, opponent, true);
                 var forcesIn = SpecialForcesIn(territory);
 
                 if (territory.IsStronghold && WinWasPredictedByMeThisTurn(opponent.Faction) || dialNeeded <= forcesIn + MaxReinforcedDialTo(this, territory))

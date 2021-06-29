@@ -440,7 +440,7 @@ namespace Treachery.Shared
                 {
                     s.Stronghold,
                     Opponent = s.Opponent.Faction,
-                    DialNeeded = GetDialNeeded(s.Stronghold.Territory, true)
+                    DialNeeded = GetDialNeeded(s.Stronghold.Territory, GetOpponentThatOccupies(s.Stronghold.Territory), true)
                 });
 
             return enemyWeakStrongholds.Where(s => 

@@ -8,9 +8,7 @@
     @if (!Collapsed)
     {
         <div class="card-body">
-
-            @ChildContent
-
+            @Body
         </div>
     }
 
@@ -25,10 +23,10 @@
     public string BackgroundStyle { get; set; }
 
     [Parameter]
-    public string Header { get; set; }
+    public RenderFragment Header { get; set; }
 
     [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    public RenderFragment Body { get; set; }
 
     private static Dictionary<Type, bool> SavedCollapsedStateValues = new Dictionary<Type, bool>();
     private bool? _collapsed = null;

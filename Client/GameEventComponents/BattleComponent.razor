@@ -5,11 +5,12 @@
 @using Treachery.Shared
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<Battle>
-@implements IDisposable
 
-<div class="card p-1 mb-2 border-danger">
-    <div class="card-header">Plan your battle against @Skin.Current.Describe(Opponent) in @h.Game.CurrentBattle.Territory.Name.</div>
-    <div class="card-body">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle">
+
+    <Header>Plan your battle against @Skin.Current.Describe(Opponent) in @h.Game.CurrentBattle.Territory.Name.</Header>
+
+    <Body>
 
         <div class="text-warning">@(h.IAm(h.Game.CurrentBattle.Aggressor) ? "You are aggressor." : Skin.Current.Format("Aggressor: {0}.", h.Game.CurrentBattle.Aggressor))</div>
 
@@ -93,15 +94,17 @@
             </div>
         }
 
-        <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Battle!</button>
-        <div class="text-danger bg-dark">@validationError</div>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Battle!" ConfirmError="@validationError" />
 
         <div class="text-info small">Toggle <img src="@Skin.Current.Eye_URL" /> on the map to show/hide the battle wheel.</div>
+    
+    </Body>
 
-    </div>
-</div>
+</GameEventComponentLayout>
 
 @code {
+
+    protected override bool IsUrgent => true;
 
     private const string NONE = "None";
 
@@ -176,13 +179,6 @@
         }
     }
 
-    
-
-    public void Dispose()
-    {
-
-    }
-
     protected override Battle ConfirmedResult
     {
         get
@@ -232,30 +228,6 @@
         }
     }
 
-    private int Cost
-    {
-        get
-        {
-            return Battle.Cost(h.Game, h.Player, forces, specialForces);
-        }
-    }
-
-    private string ForcesHalfStrengthLabel
-    {
-        get
-        {
-            return Skin.Current.FormatCapitalized("{0} at half strength (not supported by {1})", h.Player.Force, Concept.Resource);
-        }
-    }
-
-    private string SpecialForcesHalfStrengthLabel
-    {
-        get
-        {
-            return Skin.Current.FormatCapitalized("{0} at half strength", h.Player.SpecialForce);
-        }
-    }
-
     private string GetTextForAspect(PrescienceAspect aspect, Battle plan)
     {
         switch (aspect)
@@ -282,19 +254,7 @@
         return "?";
     }
 
-    private IEnumerable<TreacheryCard> Weapons
-    {
-        get
-        {
-            return Battle.ValidWeapons(h.Game, h.Player, defense).OrderBy(c => c);
-        }
-    }
+    private IEnumerable<TreacheryCard> Weapons => Battle.ValidWeapons(h.Game, h.Player, defense).OrderBy(c => c);
 
-    private IEnumerable<TreacheryCard> Defenses
-    {
-        get
-        {
-            return Battle.ValidDefenses(h.Game, h.Player, weapon).OrderBy(c => c);
-        }
-    }
+    private IEnumerable<TreacheryCard> Defenses => Battle.ValidDefenses(h.Game, h.Player, weapon).OrderBy(c => c);
 }

@@ -1,0 +1,38 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@inherits Component
+
+<div class="custom-control custom-checkbox">
+    <input type="checkbox" class="custom-control-input" id="@Id" @bind="Value">
+    <label for="@Id" class="custom-control-label">@ChildContent</label>
+</div>
+
+@code {
+
+    private bool _value;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public bool Value
+    {
+        get
+        {
+            return _value;
+        }
+        set
+        {
+            if (_value != value)
+            {
+                _value = value;
+                ValueChanged.InvokeAsync(value);
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<bool> ValueChanged { get; set; }
+}
