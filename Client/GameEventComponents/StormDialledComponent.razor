@@ -14,7 +14,9 @@
 
     <div class="card-body">
 
-        <SelectComponent @bind-Value="amount" Values="StormDialled.ValidAmounts(h.Game)" Label="Amount" />
+        <SelectComponent @bind-Value="amount" Values="StormDialled.ValidAmounts(h.Game)">
+            <Label>Amount to dial</Label>
+        </SelectComponent>
 
         <button class="btn btn-primary" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
 

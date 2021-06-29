@@ -8,17 +8,25 @@
 @inherits Component;
 @typeparam T
 
-@if (Label != "")
-{
-    <label class="mb-0" for="@Id">@Label <ClickHintComponent Button="@ButtonHint" Modifier="@ModifierHint" /></label>
-}
+<label class="mb-0" for="@Id">
+@Label 
+<ClickHintComponent Button="@ButtonHint" Modifier="@ModifierHint" />
+</label>
 
 <select class="custom-select form-control" @bind="@Value" id="@Id">
-    @ChildContent
+    
+    @if (AddEmptyValue)
+    {
+        <option value="">@EmptyLabel</option>
+    }
+
+    @Options
+    
     @foreach (var valueAndLabel in Values.Zip(LabelsForValues, (v, l) => new { Value = v, Label = l }))
     {
         <option value="GetValueAsString(@valueAndLabel.Value)">@Skin.Current.Describe(valueAndLabel.Label)</option>
     }
+
 </select>
 
 @code {
@@ -31,10 +39,13 @@
     public IEnumerable ValueLabels { get; set; } = null;
 
     [Parameter]
-    public string NullValueLabel { get; set; } = "";
+    public bool AddEmptyValue { get; set; } = false;
 
     [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    public string EmptyLabel { get; set; } = "";
+
+    [Parameter]
+    public RenderFragment Options { get; set; }
 
     private bool _isIdentifiable = false;
 
@@ -96,7 +107,7 @@
     }
 
     [Parameter]
-    public string Label { get; set; } = "";
+    public RenderFragment Label { get; set; }
 
     [Parameter]
     public ClickHintButton ButtonHint { get; set; } = ClickHintButton.None;
@@ -124,7 +135,7 @@
         {
             if (ValueLabels == null)
             {
-                return Values.Select(v => v != null ? v.ToString() : NullValueLabel);
+                return Values.Select(v => v != null ? v.ToString() : EmptyLabel);
             }
             else
             {

@@ -15,30 +15,46 @@
     {
         <div class="card-body" style="@BodyStyle">
 
-            <SelectComponent @bind-Value="target" Values="ClairVoyancePlayed.ValidTargets(h.Game, h.Player)" Label="Target Faction" />
+            <SelectComponent @bind-Value="target" Values="ClairVoyancePlayed.ValidTargets(h.Game, h.Player)">
+                <Label>Target Faction</Label>
+            </SelectComponent>
 
-            <SelectComponent @bind-Value="question" Values="ClairVoyancePlayed.ValidQuestions(h.Game, target)" ValueLabels="ClairVoyancePlayed.ValidQuestions(h.Game, target).Select(q => ToLabel(q))" Label="Question" />
+            <SelectComponent @bind-Value="question" Values="ClairVoyancePlayed.ValidQuestions(h.Game, target)" ValueLabels="ClairVoyancePlayed.ValidQuestions(h.Game, target).Select(q => ToLabel(q))">
+                <Label>Question</Label>
+            </SelectComponent>
 
             @if (question == ClairvoyanceQuestion.CardTypeInBattle || question == ClairvoyanceQuestion.CardTypeAsWeaponInBattle || question == ClairvoyanceQuestion.CardTypeAsDefenseInBattle || question == ClairvoyanceQuestion.HasCardTypeInHand)
             {
-                <SelectComponent @bind-Value="questionParameterA" Values="Voice.ValidTypes(h.Game).Select(v => v.ToString())" ValueLabels="Voice.ValidTypes(h.Game)" Label="Card Type" />
+                <SelectComponent @bind-Value="questionParameterA" Values="Voice.ValidTypes(h.Game).Select(v => v.ToString())" ValueLabels="Voice.ValidTypes(h.Game)">
+                    <Label>Card Type</Label>
+                </SelectComponent>
             }
             else if (question == ClairvoyanceQuestion.LeaderAsFacedancer || question == ClairvoyanceQuestion.LeaderAsTraitor || question == ClairvoyanceQuestion.LeaderInBattle)
             {
-                <SelectComponent @bind-Value="questionParameterA" Values="h.Game.TraitorsInPlay.OrderBy(l => l.Name).Select(l => l.Id).Select(v => v.ToString())" ValueLabels="h.Game.TraitorsInPlay.OrderBy(l => l.Name)" Label="Leader" />
+                <SelectComponent @bind-Value="questionParameterA" Values="h.Game.TraitorsInPlay.OrderBy(l => l.Name).Select(l => l.Id).Select(v => v.ToString())" ValueLabels="h.Game.TraitorsInPlay.OrderBy(l => l.Name)">
+                    <Label>Leader</Label>
+                </SelectComponent>
             }
             else if (question == ClairvoyanceQuestion.Prediction)
             {
-                <SelectComponent @bind-Value="questionParameterA" Values="h.Game.Players.Select(p => p.Faction).Select(v => v.ToString())" ValueLabels="h.Game.Players.Select(p => p.Faction)" Label="Faction" />
-                <SelectComponent @bind-Value="questionParameterB" Values="BluePrediction.ValidTurns(h.Game).Select(v => v.ToString())" Label="Turn" />
+                <SelectComponent @bind-Value="questionParameterA" Values="h.Game.Players.Select(p => p.Faction).Select(v => v.ToString())" ValueLabels="h.Game.Players.Select(p => p.Faction)">
+                    <Label>Faction</Label>
+                </SelectComponent>
+                <SelectComponent @bind-Value="questionParameterB" Values="BluePrediction.ValidTurns(h.Game).Select(v => v.ToString())">
+                    <Label>Turn</Label>
+                </SelectComponent>
             }
             else if (question == ClairvoyanceQuestion.DialOfMoreThanXInBattle)
             {
-                <SelectComponent @bind-Value="questionParameterA" Values="ValidDials.Select(v => v.ToString())" Label="Dial" />
+                <SelectComponent @bind-Value="questionParameterA" Values="ValidDials.Select(v => v.ToString())">
+                    <Label>Dial</Label>
+                </SelectComponent>
             }
             else if (question == ClairvoyanceQuestion.WillAttackX)
             {
-                <SelectComponent @bind-Value="questionParameterA" Values="h.Game.Map.Territories.Select(t => t.Id).Select(v => v.ToString())" ValueLabels="h.Game.Map.Territories" Label="Territory" />
+                <SelectComponent @bind-Value="questionParameterA" Values="h.Game.Map.Territories.Select(t => t.Id).Select(v => v.ToString())" ValueLabels="h.Game.Map.Territories">
+                    <Label>Territory</Label>
+                </SelectComponent>
             }
 
             <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>

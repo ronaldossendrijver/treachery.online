@@ -5,11 +5,15 @@
         <CollapseButton @bind-Collapsed="Collapsed" />
     </div>
 
-    <div class="card-body">
+    @if (!Collapsed)
+    {
+        <div class="card-body">
 
-        @ChildContent
+            @ChildContent
 
-    </div>
+        </div>
+    }
+
 </div>
 
 @code {
@@ -25,4 +29,40 @@
 
     [Parameter]
     public RenderFragment ChildContent { get; set; }
+
+    private static Dictionary<Type, bool> SavedCollapsedStateValues = new Dictionary<Type, bool>();
+    private bool? _collapsed = null;
+    protected bool Collapsed
+    {
+        get
+        {
+            if (_collapsed == null)
+            {
+                if (SavedCollapsedStateValues.ContainsKey(GetType()))
+                {
+                    _collapsed = SavedCollapsedStateValues[GetType()];
+                }
+                else
+                {
+                    _collapsed = false;
+                }
+            }
+
+            return (bool)_collapsed;
+        }
+        set
+        {
+            if (_collapsed != value)
+            {
+                if (SavedCollapsedStateValues.ContainsKey(GetType()))
+                {
+                    SavedCollapsedStateValues.Remove(GetType());
+                }
+
+                SavedCollapsedStateValues.Add(GetType(), value);
+                _collapsed = value;
+                StateHasChanged();
+            }
+        }
+    }
 }

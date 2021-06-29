@@ -12,7 +12,9 @@
 
     <div class="card-body">
 
-        <SelectComponent @bind-Value="faction" Values="FactionSelected.ValidFactions(h.Game)" Label="Faction" />
+        <SelectComponent @bind-Value="faction" Values="FactionSelected.ValidFactions(h.Game)">
+            <Label>@Faction</Label>
+        </SelectComponent>
 
         <button class="btn btn-primary" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
 

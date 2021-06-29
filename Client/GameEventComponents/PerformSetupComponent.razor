@@ -16,7 +16,9 @@
         <button class="btn btn-primary" @onclick="Confirm" disabled="@(!Valid)">Confirm</button>
         <div class="text-danger bg-dark">@validationError</div>
 
-        <SelectComponent @bind-Value="resources" Values="ValidAmounts" Label="@Skin.Current.Describe(Concept.Resource)" />
+        <SelectComponent @bind-Value="resources" Values="ValidAmounts">
+            <Label>@Skin.Current.Describe(Concept.Resource)"</Label>
+        </SelectComponent>
 
         <table class="table table-striped table-sm m-0 w-auto">
             <thead>

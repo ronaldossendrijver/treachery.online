@@ -20,7 +20,9 @@
             <div class="row">
                 @foreach (var faction in factions)
                 {
-                    <SelectComponent @bind-Value="amounts[faction]" Values="ValidValues" Label="@Skin.Current.Describe(faction)" />
+                    <SelectComponent @bind-Value="amounts[faction]" Values="ValidValues">
+                        <Label>@Skin.Current.Describe(faction)</Label>
+                    </SelectComponent>
                 }
             </div>
 

@@ -56,33 +56,29 @@
             }
         }
 
-        <SelectComponent @bind-Value="forces" Values="Battle.ValidBattleForces(h.Game, h.Player)" Label="@h.Player.ForceName" />
+        <NumberPickerComponent @bind-Value="forces" Min="0" Max="Battle.MaxForces(Game, Player, false)" SymbolSRC="@Skin.Current.GetFactionForceImageURL(Faction)" />
 
-        @if (Battle.MustPayForForcesInBattle(h.Game, h.Player) && h.Faction != Faction.Grey)
+        @if (Battle.MaxForces(Game, Player, true) > 0)
         {
-            <SelectComponent @bind-Value="forcesAtHalfStrength" Values="Battle.ValidBattleForces(h.Game, h.Player)" Label="@ForcesHalfStrengthLabel" />
-        }
-
-        @if (h.Player.HasSpecialForces)
-        {
-            <SelectComponent @bind-Value="specialForces" Values="Battle.ValidBattleSpecialForces(h.Game, h.Player)" Label="@h.Player.SpecialForceName" />
-
-            @if (Battle.MustPayForForcesInBattle(h.Game, h.Player))
-            {
-                <SelectComponent @bind-Value="specialForcesAtHalfStrength" Values="Battle.ValidBattleSpecialForces(h.Game, h.Player)" Label="@SpecialForcesHalfStrengthLabel" />
-            }
+            <NumberPickerComponent @bind-Value="specialForces" Min="0" Max="Battle.MaxForces(Game, Player, true)" SymbolSRC="@Skin.Current.GetFactionSpecialForceImageURL(Faction)" />
         }
 
         @if (Battle.MustPayForForcesInBattle(h.Game, h.Player))
         {
-            <p>Total cost of battle: <span class="badge badge-primary badge-pill">@Cost</span></p>
+            <NumberPickerComponent @bind-Value="resources" Min="0" Max="Math.Min(Player.Resources, forces + specialForces)" SymbolSRC="@Skin.Current.Harvester_URL" />
         }
 
-        <SelectComponent @bind-Value="hero" Values="Battle.ValidBattleHeroes(h.Game, h.Player)" Label="Hero"/>
+        <SelectHeroComponent @bind-Value="hero" Values="Battle.ValidBattleHeroes(h.Game, h.Player)">
+            <Label>Hero</Label>
+        </SelectHeroComponent>
 
-        <SelectComponent @bind-Value="weapon" Values="Weapons" NullValueLabel="None" Label="Weapon" />
+        <SelectCardComponent @bind-Value="weapon" Values="Weapons" Required="false">
+            <Label>Weapon</Label>
+        </SelectCardComponent>
 
-        <SelectComponent @bind-Value="defense" Values="Defenses" NullValueLabel="None" Label="Defense" />
+        <SelectCardComponent @bind-Value="defense" Values="Defenses" Required="false">
+            <Label>Defense</Label>
+        </SelectCardComponent>
 
         @if (h.Faction == Faction.Green && h.Game.Applicable(Rule.GreenMessiah))
         {
@@ -110,9 +106,8 @@
     private const string NONE = "None";
 
     private int forces;
-    private int forcesAtHalfStrength;
     private int specialForces;
-    private int specialForcesAtHalfStrength;
+    private int resources;
     private IHero hero;
     private bool messiah = false;
     private TreacheryCard defense;
@@ -120,10 +115,12 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        /*
         Initialize<int, int>(ref forces, Battle.ValidBattleForces(h.Game, h.Player));
         Initialize<int, int>(ref forcesAtHalfStrength, Battle.ValidBattleForces(h.Game, h.Player));
         Initialize<int, int>(ref specialForces, Battle.ValidBattleSpecialForces(h.Game, h.Player));
         Initialize<int, int>(ref specialForcesAtHalfStrength, Battle.ValidBattleSpecialForces(h.Game, h.Player));
+        */
         //Initialize<IHero, IHero>(ref hero, Battle.ValidBattleHeroes(h.Game, h.Player));
         //var weap = Weapons.ToList();
         //Initialize<TreacheryCard, TreacheryCard>(ref weapon, weap, weap.Contains(null), null);
@@ -133,9 +130,8 @@
     }
 
     private int lastforces;
-    private int lastforcesAtHalfStrength;
     private int lastspecialForces;
-    private int lastspecialForcesAtHalfStrength;
+    private int lastResources;
     private IHero lasthero;
     private bool lastmessiah = false;
     private TreacheryCard lastdefense;
@@ -145,18 +141,16 @@
     {
         if (
             forces != lastforces ||
-            forcesAtHalfStrength != lastforcesAtHalfStrength ||
             specialForces != lastspecialForces ||
-            specialForcesAtHalfStrength != lastspecialForcesAtHalfStrength ||
+            resources != lastResources ||
             hero != lasthero ||
             messiah != lastmessiah ||
             defense != lastdefense ||
             weapon != lastweapon)
         {
             lastforces = forces;
-            lastforcesAtHalfStrength = forcesAtHalfStrength;
             lastspecialForces = specialForces;
-            lastspecialForcesAtHalfStrength = specialForcesAtHalfStrength;
+            lastResources = resources;
             lasthero = hero;
             lastmessiah = messiah;
             lastdefense = defense;
@@ -171,10 +165,9 @@
     {
         if (h.RevisedPlan != null)
         {
-            forces = h.RevisedPlan.Forces;
-            forcesAtHalfStrength = h.RevisedPlan.ForcesAtHalfStrength;
-            specialForces = h.RevisedPlan.SpecialForces;
-            specialForcesAtHalfStrength = h.RevisedPlan.SpecialForcesAtHalfStrength;
+            forces = h.RevisedPlan.Forces + h.RevisedPlan.ForcesAtHalfStrength;
+            specialForces = h.RevisedPlan.SpecialForces + h.RevisedPlan.SpecialForcesAtHalfStrength;
+            resources = h.RevisedPlan.Cost(Game);
             hero = h.RevisedPlan.Hero;
             messiah = h.RevisedPlan.Messiah;
             defense = h.RevisedPlan.Defense;
@@ -182,6 +175,8 @@
             h.RevisedPlan = null;
         }
     }
+
+    
 
     public void Dispose()
     {
@@ -192,16 +187,18 @@
     {
         get
         {
+            Battle.DetermineForces(Game, Player, forces, specialForces, resources, out int forcesFull, out int forcesHalf, out int specialForcesFull, out int specialForcesHalf);
+
             return new Battle(h.Game)
             {
                 Initiator = h.Faction,
                 Defense = defense,
-                Forces = forces,
-                ForcesAtHalfStrength = forcesAtHalfStrength,
+                Forces = forcesFull,
+                ForcesAtHalfStrength = forcesHalf,
                 Hero = hero,
                 Messiah = messiah,
-                SpecialForces = specialForces,
-                SpecialForcesAtHalfStrength = specialForcesAtHalfStrength,
+                SpecialForces = specialForcesFull,
+                SpecialForcesAtHalfStrength = specialForcesHalf,
                 Weapon = weapon
             };
         }
@@ -289,7 +286,7 @@
     {
         get
         {
-            return Battle.ValidWeapons(h.Game, h.Player, defense, true).OrderBy(c => c);
+            return Battle.ValidWeapons(h.Game, h.Player, defense).OrderBy(c => c);
         }
     }
 
@@ -297,7 +294,7 @@
     {
         get
         {
-            return Battle.ValidDefenses(h.Game, h.Player, weapon, true).OrderBy(c => c);
+            return Battle.ValidDefenses(h.Game, h.Player, weapon).OrderBy(c => c);
         }
     }
 }

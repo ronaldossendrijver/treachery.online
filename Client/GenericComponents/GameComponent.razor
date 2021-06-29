@@ -10,18 +10,6 @@
     [Parameter]
     public Handler h { get; set; }
 
-    protected string Color(Faction f)
-    {
-        return string.Format("background-color:{0}", Skin.Current.GetFactionColor(f));
-    }
-
-    protected string ColorTransparant(Faction f)
-    {
-        return string.Format("background-color:{0}", Skin.Current.GetFactionColorTransparant(f));
-    }
-
-    private static Dictionary<Type, bool> SavedCollapsedStateValues = new Dictionary<Type, bool>();
-
     protected async Task Request(GameEvent e)
     {
         await h.HostProxy.Request(e);
@@ -33,6 +21,7 @@
 
     protected Faction Faction => h.Faction;
 
+    private static Dictionary<Type, bool> SavedCollapsedStateValues = new Dictionary<Type, bool>();
     private bool? _collapsed = null;
     protected bool Collapsed
     {

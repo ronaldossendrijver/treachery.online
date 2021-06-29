@@ -10,7 +10,7 @@
     <div class="card-header">Select which traitor to keep</div>
     <div class="card-body">
 
-        <SelectFromImageComponent @bind-Value="traitor" Values="h.Player.Traitors" ImageURLs="h.Player.Traitors.Select(h => Skin.Current.GetImageURL(h))" PopupHTMLs="h.Player.Traitors.Select(h => Support.GetHeroHoverHTML(h))" ImageWidth="80" />
+        <SelectHeroComponent @bind-Value="traitor" Values="h.Player.Traitors" />
 
         <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
         <div class="text-danger bg-dark">@validationError</div>

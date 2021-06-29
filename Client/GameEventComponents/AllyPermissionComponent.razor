@@ -7,150 +7,130 @@
 @inherits GameEventComponent<AllyPermission>
 @implements IDisposable
 
-<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
-    <div class="card-header">
-        Alliance Management
-        <CollapseButton @bind-Collapsed="Collapsed" />
-    </div>
-    @if (!Collapsed)
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" Header="Alliance Management">
+
+    <div>You're allied with <span class="badge badge-primary badge-pill" style="@Color(h.Player.Ally)">@Skin.Current.Describe(h.Player.Ally)</span></div>
+
+    @if (h.Player.AlliedPlayer.IsBot)
     {
-        <div class="card-body">
+        var ally = h.Player.AlliedPlayer;
 
-            <div>You're allied with <span class="badge badge-primary badge-pill" style="@Color(h.Player.Ally)">@Skin.Current.Describe(h.Player.Ally)</span></div>
+        if (ally.TreacheryCards.Any(c => c.IsWeapon))
+        {
+            <div>They say they own a weapon.</div>
+        }
+        else
+        {
+            <div>They say they don't own weapons.</div>
+        }
 
-            @if (h.Player.AlliedPlayer.IsBot)
+        if (ally.TreacheryCards.Any(c => c.IsDefense))
+        {
+            <div>They say they own a defense.</div>
+        }
+        else
+        {
+            <div>They say they don't own defenses.</div>
+        }
+
+        var safeLeaders = ally.KnownNonTraitors.Where(l => l.Faction == h.Faction)
+            .Union(ally.Traitors.Where(l => l.Faction == h.Faction)
+            .Union(ally.FaceDancers.Where(l => l.Faction == h.Faction)));
+
+        if (safeLeaders.Any())
+        {
+            <div>They say you can safely use: <strong>@string.Join(", ", safeLeaders)</strong>.</div>
+        }
+        else
+        {
+
+            <div>They don't know of any safe leaders you could use.</div>
+        }
+
+        <div>They own <strong>@ally.Resources</strong> @Skin.Current.Describe(Concept.Resource).</div>
+    }
+
+    <label class="mt-2 mb-0">How much are you willing to pay for their bids and shipments (currently: <span class="badge badge-primary badge-pill">@h.Game.GetPermittedUseOfAllySpice(h.Player.Ally)</span>)? @(h.Faction == Faction.Red ? "Payments for bids flow back to you." : "")</label>
+    <NumberPickerComponent @bind-Value="spice" Min="0" Max="h.Player.Resources" SymbolSRC="@Skin.Current.Harvester_URL" />
+
+    @if (Karma.CanKarma(h.Game, h.Player))
+    {
+        var permittedKarma = h.Game.GetPermittedUseOfAllyKarma(h.Player.Ally);
+
+        <SelectCardComponent @bind-Value="karmaCard" Values="Karma.ValidKarmaCards(h.Game, h.Player)">
+            <Label>May your ally use one of your @Skin.Current.Describe(TreacheryCardType.Karma) cards to ship at @Skin.Current.Describe(Faction.Orange) rates (currently: <span class="badge badge-primary badge-pill">@(permittedKarma == null ? "no" : permittedKarma.Name)</span>)?</Label>
+        </SelectCardComponent>
+    }
+
+    @if (h.Faction == Faction.Red)
+    {
+        <label for="allyPermissionEmperorWillPayForExtraRevival" class="mt-1 mb-0">How many forces may they revive at your expense (currently: <span class="badge badge-primary badge-pill">@(h.Game.RedWillPayForExtraRevival)</span>)?</label>
+        <select class="custom-select" @bind="emperorWillPayForExtraRevival" id="allyPermissionEmperorWillPayForExtraRevival">
+            @foreach (var s in Enumerable.Range(0, 4))
             {
-                var ally = h.Player.AlliedPlayer;
-
-                if (ally.TreacheryCards.Any(c => c.IsWeapon))
-                {
-                    <div>They say they own a weapon.</div>
-                }
-                else
-                {
-                    <div>They say they don't own weapons.</div>
-                }
-
-                if (ally.TreacheryCards.Any(c => c.IsDefense))
-                {
-                    <div>They say they own a defense.</div>
-                }
-                else
-                {
-                    <div>They say they don't own defenses.</div>
-                }
-
-                var safeLeaders = ally.KnownNonTraitors.Where(l => l.Faction == h.Faction)
-                    .Union(ally.Traitors.Where(l => l.Faction == h.Faction)
-                    .Union(ally.FaceDancers.Where(l => l.Faction == h.Faction)));
-
-                if (safeLeaders.Any())
-                {
-                    <div>They say you can safely use: <strong>@string.Join(", ", safeLeaders)</strong>.</div>
-                }
-                else
-                {
-
-                    <div>They don't know of any safe leaders you could use.</div>
-                }
-
-                <div>They own <strong>@ally.Resources</strong> @Skin.Current.Describe(Concept.Resource).</div>
+                <option value="@s">@s</option>
             }
+        </select>
+    }
+    else if (h.Faction == Faction.Orange)
+    {
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="allyPermissionGuildAllyMayShipAsGuild" @bind="guildAllyMayShipAsGuild">
+            <label class="custom-control-label" for="allyPermissionGuildAllyMayShipAsGuild">Allow them to ship at @Skin.Current.Describe(Faction.Orange) rates and site-to-site (currently: <span class="badge badge-primary badge-pill">@(h.Game.OrangeAllyMayShipAsGuild ? "yes" : "no")</span>)</label>
+        </div>
+    }
+    else if (h.Faction == Faction.Purple)
+    {
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="allyPermissionPurpleAllyMyReviveAsPurple" @bind="purpleAllyMyReviveAsPurple">
+            <label class="custom-control-label" for="allyPermissionPurpleAllyMyReviveAsPurple">Allow them to revive at @Skin.Current.Describe(Faction.Purple) rates (currently: <span class="badge badge-primary badge-pill">@(h.Game.PurpleAllyMayReviveAsPurple ? "yes" : "no")</span>)</label>
+        </div>
+    }
+    else if (h.Faction == Faction.Grey)
+    {
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="allyPermissionGreyAllyMayReplace" @bind="greyAllyMayReplace">
+            <label class="custom-control-label" for="allyPermissionGreyAllyMayReplace">Allow them to replace treachery cards they win by new cards (currently: <span class="badge badge-primary badge-pill">@(h.Game.GreyAllyMayReplaceCards ? "yes" : "no")</span>)</label>
+        </div>
+    }
+    else if (h.Faction == Faction.Yellow)
+    {
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="allyPermissionFremenAllowsThreeFreeRevivals" @bind="fremenAllowsThreeFreeRevivals">
+            <label class="custom-control-label" for="allyPermissionFremenAllowsThreeFreeRevivals">Allow them to revive three forces for free (currently: <span class="badge badge-primary badge-pill">@(h.Game.YellowAllowsThreeFreeRevivals ? "yes" : "no")</span>)</label>
+        </div>
 
-            <label class="mt-2 mb-0" for="allyPermittedSpice">How much are you willing to pay for their bids and shipments (currently: <span class="badge badge-primary badge-pill">@h.Game.GetPermittedUseOfAllySpice(h.Player.Ally)</span>)? @(h.Faction == Faction.Red ? "Payments for bids flow back to you." : "")</label>
-            <select class="custom-select" @bind="spice" id="allyPermittedSpice">
-                @foreach (var s in h.Player.ValidSpiceAmounts)
-                {
-                    <option value="@s">@s</option>
-                }
-            </select>
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="allyPermissionFremenWillProtectFromShaiHulud" @bind="fremenWillProtectFromShaiHulud">
+            <label class="custom-control-label" for="allyPermissionFremenWillProtectFromShaiHulud">Protect them from being devoured by @Skin.Current.Describe(Concept.Monster) (currently: <span class="badge badge-primary badge-pill">@(h.Game.YellowWillProtectFromShaiHulud ? "yes" : "no")</span>)</label>
+        </div>
 
-            @if (Karma.CanKarma(h.Game, h.Player))
-            {
-                var permittedKarma = h.Game.GetPermittedUseOfAllyKarma(h.Player.Ally);
-
-                <label for="karamaCard" class="mt-1 mb-0">May your ally use one of your @Skin.Current.Describe(TreacheryCardType.Karma) cards to ship at @Skin.Current.Describe(Faction.Orange) rates (currently: <span class="badge badge-primary badge-pill">@(permittedKarma == null ? "no" : permittedKarma.Name)</span>)?</label>
-                <select class="custom-select" @bind="karmaCardId" id="karamaCard">
-                    <option value="-1">No</option>
-                    @foreach (var v in Karma.ValidKarmaCards(h.Game, h.Player))
-                    {
-                        <option value="@v.Id">@v</option>
-                    }
-                </select>
-            }
-
-            @if (h.Faction == Faction.Red)
-            {
-                <label for="allyPermissionEmperorWillPayForExtraRevival" class="mt-1 mb-0">How many forces may they revive at your expense (currently: <span class="badge badge-primary badge-pill">@(h.Game.RedWillPayForExtraRevival)</span>)?</label>
-                <select class="custom-select" @bind="emperorWillPayForExtraRevival" id="allyPermissionEmperorWillPayForExtraRevival">
-                    @foreach (var s in Enumerable.Range(0, 4))
-                    {
-                        <option value="@s">@s</option>
-                    }
-                </select>
-            }
-            else if (h.Faction == Faction.Orange)
-            {
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="allyPermissionGuildAllyMayShipAsGuild" @bind="guildAllyMayShipAsGuild">
-                    <label class="custom-control-label" for="allyPermissionGuildAllyMayShipAsGuild">Allow them to ship at @Skin.Current.Describe(Faction.Orange) rates and site-to-site (currently: <span class="badge badge-primary badge-pill">@(h.Game.OrangeAllyMayShipAsGuild ? "yes" : "no")</span>)</label>
-                </div>
-            }
-            else if (h.Faction == Faction.Purple)
-            {
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="allyPermissionPurpleAllyMyReviveAsPurple" @bind="purpleAllyMyReviveAsPurple">
-                    <label class="custom-control-label" for="allyPermissionPurpleAllyMyReviveAsPurple">Allow them to revive at @Skin.Current.Describe(Faction.Purple) rates (currently: <span class="badge badge-primary badge-pill">@(h.Game.PurpleAllyMayReviveAsPurple ? "yes" : "no")</span>)</label>
-                </div>
-            }
-            else if (h.Faction == Faction.Grey)
-            {
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="allyPermissionGreyAllyMayReplace" @bind="greyAllyMayReplace">
-                    <label class="custom-control-label" for="allyPermissionGreyAllyMayReplace">Allow them to replace treachery cards they win by new cards (currently: <span class="badge badge-primary badge-pill">@(h.Game.GreyAllyMayReplaceCards ? "yes" : "no")</span>)</label>
-                </div>
-            }
-            else if (h.Faction == Faction.Yellow)
-            {
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="allyPermissionFremenAllowsThreeFreeRevivals" @bind="fremenAllowsThreeFreeRevivals">
-                    <label class="custom-control-label" for="allyPermissionFremenAllowsThreeFreeRevivals">Allow them to revive three forces for free (currently: <span class="badge badge-primary badge-pill">@(h.Game.YellowAllowsThreeFreeRevivals ? "yes" : "no")</span>)</label>
-                </div>
-
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="allyPermissionFremenWillProtectFromShaiHulud" @bind="fremenWillProtectFromShaiHulud">
-                    <label class="custom-control-label" for="allyPermissionFremenWillProtectFromShaiHulud">Protect them from being devoured by @Skin.Current.Describe(Concept.Monster) (currently: <span class="badge badge-primary badge-pill">@(h.Game.YellowWillProtectFromShaiHulud ? "yes" : "no")</span>)</label>
-                </div>
-
-                @if (h.Game.Applicable(Rule.YellowSeesStorm))
-                {
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="allyPermissionFremenShareStormPrescience" @bind="fremenShareStormPrescience">
-                        <label class="custom-control-label" for="allyPermissionFremenShareStormPrescience">Share your storm knowledge with them (currently: <span class="badge badge-primary badge-pill">@(h.Game.YellowSharesPrescience ? "yes" : "no")</span>)</label>
-                    </div>
-                }
-            }
-            else if (h.Faction == Faction.Green)
-            {
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="allyPermissionGreenSharePrescience" @bind="greenSharePrescience">
-                    <label class="custom-control-label" for="allyPermissionGreenSharePrescience">Share your Prescience with them (currently: <span class="badge badge-primary badge-pill">@(h.Game.GreenSharesPrescience ? "yes" : "no")</span>)</label>
-                </div>
-            }
-            else if (h.Faction == Faction.Blue)
-            {
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="allyPermissionBlueAllowsVoice" @bind="blueAllyMayUseVoice">
-                    <label class="custom-control-label" for="allyPermissionBlueAllowsVoice">Allow them to use your Voice (currently: <span class="badge badge-primary badge-pill">@(h.Game.BlueAllyMayUseVoice ? "yes" : "no")</span>)</label>
-                </div>
-            }
-
-            <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
-            <div class="text-danger bg-dark">@validationError</div>
+        @if (h.Game.Applicable(Rule.YellowSeesStorm))
+        {
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="allyPermissionFremenShareStormPrescience" @bind="fremenShareStormPrescience">
+                <label class="custom-control-label" for="allyPermissionFremenShareStormPrescience">Share your storm knowledge with them (currently: <span class="badge badge-primary badge-pill">@(h.Game.YellowSharesPrescience ? "yes" : "no")</span>)</label>
+            </div>
+        }
+    }
+    else if (h.Faction == Faction.Green)
+    {
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="allyPermissionGreenSharePrescience" @bind="greenSharePrescience">
+            <label class="custom-control-label" for="allyPermissionGreenSharePrescience">Share your Prescience with them (currently: <span class="badge badge-primary badge-pill">@(h.Game.GreenSharesPrescience ? "yes" : "no")</span>)</label>
+        </div>
+    }
+    else if (h.Faction == Faction.Blue)
+    {
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="allyPermissionBlueAllowsVoice" @bind="blueAllyMayUseVoice">
+            <label class="custom-control-label" for="allyPermissionBlueAllowsVoice">Allow them to use your Voice (currently: <span class="badge badge-primary badge-pill">@(h.Game.BlueAllyMayUseVoice ? "yes" : "no")</span>)</label>
         </div>
     }
 
-</div>
+    <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@validationError" />
+
+</GameEventComponentLayout>
 
 @code {
 
@@ -164,19 +144,18 @@
     private bool greenSharePrescience;
     private bool blueAllyMayUseVoice;
     private int spice;
-    private int karmaCardId = -1;
+    private TreacheryCard karmaCard;
 
     protected override void OnAfterRender(bool firstRender)
     {
         Initialize<int, int>(ref spice, h.Player.ValidSpiceAmounts);
-        Initialize<int, TreacheryCard>(ref karmaCardId, Karma.ValidKarmaCards(h.Game, h.Player), true, -1);
+        //Initialize<int, TreacheryCard>(ref karmaCardId, Karma.ValidKarmaCards(h.Game, h.Player), true, -1);
     }
 
     protected override void OnParametersSet()
     {
         spice = h.Game.GetPermittedUseOfAllySpice(h.Player.Ally);
-        var karmaCard = h.Game.GetPermittedUseOfAllyKarma(h.Player.Ally);
-        karmaCardId = karmaCard == null ? -1 : karmaCard.Id;
+        karmaCard = h.Game.GetPermittedUseOfAllyKarma(h.Player.Ally);
         purpleAllyMyReviveAsPurple = h.Game.PurpleAllyMayReviveAsPurple;
         greyAllyMayReplace = h.Game.GreyAllyMayReplaceCards;
         guildAllyMayShipAsGuild = h.Game.OrangeAllyMayShipAsGuild;
@@ -209,7 +188,7 @@
                 AllyMayReviveAsPurple = purpleAllyMyReviveAsPurple,
                 AllyMayReplaceCards = greyAllyMayReplace,
                 PermittedResources = spice,
-                PermittedKarmaCard = TreacheryCardManager.Lookup.Find(karmaCardId)
+                PermittedKarmaCard = karmaCard
             };
         }
     }

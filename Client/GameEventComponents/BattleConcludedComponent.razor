@@ -79,7 +79,9 @@
 
             if (Loser.TechTokens.Count > 0)
             {
-                <SelectComponent @bind-Value="stolenToken" Values="Loser.TechTokens" Label="Choose a tech token to steal" />
+                <SelectComponent @bind-Value="stolenToken" Values="Loser.TechTokens">
+                    <Label>Choose a tech token to steal</Label>
+                </SelectComponent>
             }
         }
 

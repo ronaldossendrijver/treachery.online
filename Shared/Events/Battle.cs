@@ -365,6 +365,23 @@ namespace Treachery.Shared
             return Enumerable.Range(0, max + 1);
         }
 
+        public static int MaxForces(Game g, Player p, bool specialForces)
+        {
+            if (g.CurrentBattle.Territory == null)
+            {
+                return 0;
+            }
+
+            if (!specialForces)
+            {
+                return p.ForcesIn(g.CurrentBattle.Territory);
+            }
+            else
+            {
+                return p.SpecialForcesIn(g.CurrentBattle.Territory);
+            }
+        }
+
 
         public static IEnumerable<Faction> ValidBattleTargets(Game g, Player player)
         {
@@ -606,6 +623,26 @@ namespace Treachery.Shared
         public static bool MessiahAvailableForBattle(Game g, Player p)
         {
             return p.MessiahAvailable && g.CanJoinCurrentBattle(LeaderManager.Messiah) && !g.Prevented(FactionAdvantage.GreenUseMessiah) && g.Applicable(Rule.GreenMessiah);
+        }
+
+        public static void DetermineForces(Game g, Player p, int forces, int specialForces, int resources, out int forcesFull, out int forcesHalf, out int specialForcesFull, out int specialForcesHalf)
+        {
+            if (MustPayForForcesInBattle(g, p))
+            {
+                specialForcesFull = Math.Min(specialForces, resources);
+                specialForcesHalf = specialForces - specialForcesFull;
+
+                forcesFull = Math.Min(forces, resources - specialForcesFull);
+                forcesHalf = forces - forcesFull;
+            }
+            else
+            {
+                specialForcesFull = specialForces;
+                specialForcesHalf = 0;
+
+                forcesFull = forces;
+                forcesHalf = 0;
+            }
         }
     }
 }

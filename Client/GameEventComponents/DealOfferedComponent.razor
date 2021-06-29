@@ -23,11 +23,17 @@
                 <ChecklistItemComponent Value="@faction" Values="to" style="@ColorTransparant(faction)" Callback="OnChangeFactions" />
             }
 
-            <SelectComponent @bind-Value="price" Values="Enumerable.Range(0, 21)" Label="Price" />
+            <SelectComponent @bind-Value="price" Values="Enumerable.Range(0, 21)">
+                <Label>Price</Label>
+            </SelectComponent>
 
-            <SelectComponent @bind-Value="type" Values="DealOffered.GetHumanDealTypes(h.Game, h.Player)" Label="Type of Deal" />
+            <SelectComponent @bind-Value="type" Values="DealOffered.GetHumanDealTypes(h.Game, h.Player)">
+                <Label>Type of Deal</Label>
+            </SelectComponent>
 
-            <SelectComponent @bind-Value="until" Values="ApplicableEndPhases" Label="Until" />
+            <SelectComponent @bind-Value="until" Values="ApplicableEndPhases">
+                <Label>Until</Label>
+            </SelectComponent>
 
             <textarea class="form-control mt-1" rows="5" @bind="text" maxlength="512" placeholder="Deal description" />
 

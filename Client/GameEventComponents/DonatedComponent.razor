@@ -18,14 +18,16 @@
     {
         <div class="card-body">
 
-            <SelectComponent @bind-Value="target" Values="Donated.ValidTargets(h.Game, h.Player)" Label="Faction" />
+            <SelectComponent @bind-Value="target" Values="Donated.ValidTargets(h.Game, h.Player)">
+                <Label>Faction</Label>
+            </SelectComponent>
 
             <NumberPickerComponent @bind-Value="resources" Min="Donated.MinAmount(h.Game, h.Player)" Max="Donated.MaxAmount(h.Game, h.Player)" SymbolSRC="@Skin.Current.Harvester_URL" />
 
             @if (h.Game.Applicable(Rule.CardsCanBeTraded))
             {
-                <SelectComponent @bind-Value="card" Values="h.Player.TreacheryCards.Select(h => h.Id)" ValueLabels="h.Player.TreacheryCards" Label="Give one of your cards">
-                    <option value="-1">None</option>
+                <SelectComponent @bind-Value="card" Values="h.Player.TreacheryCards.Select(h => h.Id)" ValueLabels="h.Player.TreacheryCards" AddEmptyValue="true" EmptyLabel="None">
+                    <Label>Give one of your cards</Label>
                 </SelectComponent>
             }
 

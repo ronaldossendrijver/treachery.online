@@ -14,7 +14,9 @@
 
             @if (h.Player.ForcesInReserve > 0 && h.Game.Applicable(Rule.BlueAccompaniesToShipmentLocation))
             {
-                <SelectComponent Label="To" ButtonHint="ClickHintButton.LMB" Value="target" Values="BlueAccompanies.ValidTargets(h.Game, h.Player).Select(t => t.ToString())"/>
+                <SelectComponent ButtonHint="ClickHintButton.LMB" Value="target" Values="BlueAccompanies.ValidTargets(h.Game, h.Player).Select(t => t.ToString())">
+                    <Label>To</Label>
+                </SelectComponent>
             }
 
             <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError="@validationError" Pass="Pass" PassText="No"/>

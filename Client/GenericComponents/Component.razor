@@ -1,4 +1,6 @@
-﻿@code {
+﻿@using Treachery.Shared;
+
+@code {
 
     private string _id = null;
     protected string Id
@@ -14,4 +16,13 @@
         }
     }
 
+    protected string Color(Faction f)
+    {
+        return string.Format("background-color:{0}", Skin.Current.GetFactionColor(f));
+    }
+
+    protected string ColorTransparant(Faction f)
+    {
+        return string.Format("background-color:{0}", Skin.Current.GetFactionColorTransparant(f));
+    }
 }

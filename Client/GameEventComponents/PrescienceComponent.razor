@@ -12,7 +12,9 @@
 
     <div class="card-body">
 
-        <SelectComponent @bind-Value="aspect" Values="Prescience.ValidAspects" Label="What should be foreseen?" />
+        <SelectComponent @bind-Value="aspect" Values="Prescience.ValidAspects">
+            <Label>What should be foreseen?</Label>
+        </SelectComponent>
 
         <button class="btn btn-primary" @onclick="Confirm" disabled=@(!Valid)>Confirm</button>
 

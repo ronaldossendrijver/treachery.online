@@ -1,0 +1,14 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared;
+@inherits Component 
+
+<span class="badge badge-primary badge-pill" style="@Color(Value.Faction)" data-animation="true" data-content="@Support.GetHeroHoverHTML(Value)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">@Value</span>
+
+@code {
+
+    [Parameter]
+    public IHero Value { get; set; }
+}
