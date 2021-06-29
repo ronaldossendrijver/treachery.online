@@ -6,29 +6,21 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<BlueFlip>
 
-<div class="card p-1 mb-2 border-danger">
-    <div class="card-header">Choose to be fighters or advisors in @(BlueFlip.GetTerritory(h.Game)).</div>
-    <div class="card-body">
-        <button class="btn btn-primary mt-1" @onclick="Confirm">Fighters</button>
-        <button class="btn btn-primary mt-1" @onclick="Other">Advisors</button>
-    </div>
-</div>
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle">
+
+    <Header>Choose to be fighters or advisors in @(BlueFlip.GetTerritory(h.Game)).</Header>
+    <Body>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Fighters" ConfirmError="@validationError" Other="Other" OtherText="Advisors"/>
+    </Body>
+
+</GameEventComponentLayout>
 
 @code {
 
-    protected override BlueFlip ConfirmedResult
-    {
-        get
-        {
-            return new BlueFlip(h.Game) { Initiator = h.Faction, AsAdvisors = false };
-        }
-    }
+    protected override bool IsUrgent => true;
+    protected override Faction IsFactionSpecific => Faction.Blue;
 
-    protected override BlueFlip OtherResult
-    {
-        get
-        {
-            return new BlueFlip(h.Game) { Initiator = h.Faction, AsAdvisors = true };
-        }
-    }
+    protected override BlueFlip ConfirmedResult => new BlueFlip(h.Game) { Initiator = h.Faction, AsAdvisors = false };
+
+    protected override BlueFlip OtherResult => new BlueFlip(h.Game) { Initiator = h.Faction, AsAdvisors = true };
 }

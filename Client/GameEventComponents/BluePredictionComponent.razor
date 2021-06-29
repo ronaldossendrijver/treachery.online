@@ -5,55 +5,35 @@
 @using Treachery.Shared
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<BluePrediction>
-@implements IDisposable
 
-<div class="card p-1 mb-2 border-danger">
-    <div class="card-header">Predict which faction will win the game</div>
-    <div class="card-body">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle">
 
-        <label for="beneGesseritPredictionTurn">Turn</label>
-        <select class="custom-select" @bind="turn" id="beneGesseritPredictionTurn">
-            @foreach (var s in BluePrediction.ValidTurns(h.Game))
-            {
-                <option value="@s">@s</option>
-            }
-        </select>
+    <Header>Predict which faction will win the game.</Header>
+    <Body>
 
-        <label for="beneGesseritPredictionToWin">Faction</label>
-        <select class="custom-select" @bind="toWin" id="beneGesseritPredictionToWin">
-            @foreach (var f in BluePrediction.ValidTargets(h.Game, h.Player))
-            {
-                <option value="@f">@Skin.Current.Describe(f)</option>
-            }
-        </select>
+        <SelectFactionComponent @bind-Value="toWin" Values="BluePrediction.ValidTargets(h.Game, h.Player)" />
 
-        <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
-        <div class="text-danger bg-dark">@validationError</div>
+        <NumberPickerComponent @bind-Value="turn" Min="1" Max="Game.MaximumNumberOfTurns" />
 
-    </div>
-</div>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@validationError" />
+
+    </Body>
+
+</GameEventComponentLayout>
 
 @code {
+
+    protected override bool IsUrgent => true;
+    protected override Faction IsFactionSpecific => Faction.Blue;
 
     private int turn;
     private Faction toWin;
 
     protected override void OnAfterRender(bool firstRender)
     {
-        Initialize<int, int>(ref turn, BluePrediction.ValidTurns(h.Game));
-        Initialize<Faction, Faction>(ref toWin, BluePrediction.ValidTargets(h.Game, h.Player));
+        //Initialize<int, int>(ref turn, BluePrediction.ValidTurns(h.Game));
+        //Initialize<Faction, Faction>(ref toWin, BluePrediction.ValidTargets(h.Game, h.Player));
     }
 
-    protected override BluePrediction ConfirmedResult
-    {
-        get
-        {
-            return new BluePrediction(h.Game) { Initiator = h.Faction, ToWin = toWin, Turn = turn };
-        }
-    }
-
-    public void Dispose()
-    {
-
-    }
+    protected override BluePrediction ConfirmedResult => new BluePrediction(h.Game) { Initiator = h.Faction, ToWin = toWin, Turn = turn };
 }

@@ -1,11 +1,16 @@
 ﻿<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
 
-    <div class="card-header">
+    <div class="card-header" style="@HeaderStyle">
         @Header
-        <CollapseButton @bind-Collapsed="Collapsed" />
+
+        @if (Collapsible)
+        {
+            <CollapseButton @bind-Collapsed="Collapsed" />
+        }
+
     </div>
 
-    @if (!Collapsed)
+    @if (!Collapsible || !Collapsed)
     {
         <div class="card-body">
             @Body
@@ -23,10 +28,16 @@
     public string BackgroundStyle { get; set; }
 
     [Parameter]
+    public string HeaderStyle { get; set; }
+
+    [Parameter]
     public RenderFragment Header { get; set; }
 
     [Parameter]
     public RenderFragment Body { get; set; }
+
+    [Parameter]
+    public bool Collapsible { get; set; } = true;
 
     private static Dictionary<Type, bool> SavedCollapsedStateValues = new Dictionary<Type, bool>();
     private bool? _collapsed = null;

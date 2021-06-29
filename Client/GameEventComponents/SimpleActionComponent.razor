@@ -9,6 +9,18 @@
 
 @if (!dismissed)
 {
+    <GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle">
+
+        <Header>@Title</Header>
+        <Body>
+
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError="@validationError" Other="Dismiss" OtherText="@DismissLabel" />
+
+        </Body>
+
+    </GameEventComponentLayout>
+
+
     <div class="card p-1 mb-2 @(Alert ? "border-danger" : "border-light")" style="@BackgroundStyle">
         <div class="card-header" style="@HeaderStyle">
             @Title
@@ -31,7 +43,9 @@
     </div>
 }
 
-@code {
+@code {        
+    
+    protected override bool IsUrgent => Alert;
 
     private bool dismissed = false;
 
@@ -53,13 +67,7 @@
     [Parameter]
     public bool Collapsible { get; set; } = false;
 
-    protected override GameEventType ConfirmedResult
-    {
-        get
-        {
-            return new GameEventType() { Game = h.Game, Initiator = h.Faction };
-        }
-    }
+    protected override GameEventType ConfirmedResult => new GameEventType() { Game = h.Game, Initiator = h.Faction };
 
     private void Dismiss()
     {

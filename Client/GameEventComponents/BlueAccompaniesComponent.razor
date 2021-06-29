@@ -7,27 +7,30 @@
 @inherits GameEventComponent<BlueAccompanies>
 @implements IDisposable
 
-<div class="card p-1 mb-2 border-danger">
-    <div class="card-header">Accompany the latest shipment?</div>
-    <div class="card-body">
-        <div class="form-group">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle">
 
-            @if (h.Player.ForcesInReserve > 0 && h.Game.Applicable(Rule.BlueAccompaniesToShipmentLocation))
-            {
-                <SelectComponent ButtonHint="ClickHintButton.LMB" Value="target" Values="BlueAccompanies.ValidTargets(h.Game, h.Player).Select(t => t.ToString())">
-                    <Label>To</Label>
-                </SelectComponent>
-            }
+    <Header>Accompany the latest shipment?</Header>
+    <Body>
 
-            <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError="@validationError" Pass="Pass" PassText="No"/>
+        @if (h.Player.ForcesInReserve > 0 && h.Game.Applicable(Rule.BlueAccompaniesToShipmentLocation))
+        {
+            <SelectComponent ButtonHint="ClickHintButton.LMB" Value="target" Values="BlueAccompanies.ValidTargets(h.Game, h.Player)">
+                <Label>To</Label>
+            </SelectComponent>
+        }
 
-        </div>
-    </div>
-</div>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError="@validationError" Pass="Pass" PassText="No" />
+
+    </Body>
+
+</GameEventComponentLayout>
 
 @code {
 
-    private string target;
+    protected override bool IsUrgent => true;
+    protected override Faction IsFactionSpecific => Faction.Blue;
+
+    private Location target;
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -36,7 +39,7 @@
             MapDrawer.OnLocationSelected += HandleLocationSelected;
         }
 
-        Initialize<string, Location>(ref target, BlueAccompanies.ValidTargets(h.Game, h.Player));
+        //Initialize<string, Location>(ref target, BlueAccompanies.ValidTargets(h.Game, h.Player));
     }
 
     public void Dispose()
@@ -44,24 +47,12 @@
         MapDrawer.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override BlueAccompanies ConfirmedResult
-    {
-        get
-        {
-            return new BlueAccompanies(h.Game) { Initiator = h.Faction, Location = h.Game.Map.Get(target), Accompanies = true };
-        }
-    }
+    protected override BlueAccompanies ConfirmedResult => new BlueAccompanies(h.Game) { Initiator = h.Faction, Location = h.Game.Map.Get(target), Accompanies = true };
 
-    protected override BlueAccompanies PassedResult
-    {
-        get
-        {
-            return new BlueAccompanies(h.Game) { Initiator = h.Faction, Accompanies = false };
-        }
-    }
+    protected override BlueAccompanies PassedResult => new BlueAccompanies(h.Game) { Initiator = h.Faction, Accompanies = false };
 
     private void HandleLocationSelected(object sender, Location l)
     {
-        SetIfValid<string, Location>(ref target, BlueAccompanies.ValidTargets(h.Game, h.Player), l);
+        SetIfValid<Location, Location>(ref target, BlueAccompanies.ValidTargets(h.Game, h.Player), l);
     }
 }
