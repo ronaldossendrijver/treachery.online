@@ -1,4 +1,9 @@
-﻿<div class="container pt-1 pb-1">
+﻿@if (Label != "")
+{
+    <label class="mb-0">@Label</label>
+}
+
+<div class="container pt-1 pb-1">
 
     <div class="row justify-content-start">
 
@@ -72,6 +77,9 @@
 
     [Parameter]
     public EventCallback OnDown { get; set; }
+
+    [Parameter]
+    public string Label { get; set; } = "";
 
     private void Increase()
     {

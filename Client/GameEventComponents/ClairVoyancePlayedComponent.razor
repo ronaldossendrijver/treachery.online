@@ -6,64 +6,58 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<ClairVoyancePlayed>
 
-<div class="card p-1 mb-2" style="@BackgroundStyle">
-    <div class="card-header" style="@HeaderStyle">
-        @Support.GetCardTitle(TreacheryCardType.Clairvoyance)
-        <CollapseButton @bind-Collapsed="Collapsed" />
-    </div>
-    @if (!Collapsed)
-    {
-        <div class="card-body" style="@BodyStyle">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-            <SelectComponent @bind-Value="target" Values="ClairVoyancePlayed.ValidTargets(h.Game, h.Player)">
-                <Label>Target Faction</Label>
+    <Header>Play @Support.GetCardTitle(TreacheryCardType.Clairvoyance)</Header>
+    <Body>
+
+        <SelectComponent @bind-Value="target" Values="ClairVoyancePlayed.ValidTargets(h.Game, h.Player)">
+            <Label>Target Faction</Label>
+        </SelectComponent>
+
+        <SelectComponent @bind-Value="question" Values="ClairVoyancePlayed.ValidQuestions(h.Game, target)" ValueLabels="ClairVoyancePlayed.ValidQuestions(h.Game, target).Select(q => ToLabel(q))">
+            <Label>Question</Label>
+        </SelectComponent>
+
+        @if (question == ClairvoyanceQuestion.CardTypeInBattle || question == ClairvoyanceQuestion.CardTypeAsWeaponInBattle || question == ClairvoyanceQuestion.CardTypeAsDefenseInBattle || question == ClairvoyanceQuestion.HasCardTypeInHand)
+        {
+            <SelectComponent @bind-Value="questionParameterA" Values="Voice.ValidTypes(h.Game).Select(v => v.ToString())" ValueLabels="Voice.ValidTypes(h.Game)">
+                <Label>Card Type</Label>
             </SelectComponent>
-
-            <SelectComponent @bind-Value="question" Values="ClairVoyancePlayed.ValidQuestions(h.Game, target)" ValueLabels="ClairVoyancePlayed.ValidQuestions(h.Game, target).Select(q => ToLabel(q))">
-                <Label>Question</Label>
+        }
+        else if (question == ClairvoyanceQuestion.LeaderAsFacedancer || question == ClairvoyanceQuestion.LeaderAsTraitor || question == ClairvoyanceQuestion.LeaderInBattle)
+        {
+            <SelectComponent @bind-Value="questionParameterA" Values="h.Game.TraitorsInPlay.OrderBy(l => l.Name).Select(l => l.Id).Select(v => v.ToString())" ValueLabels="h.Game.TraitorsInPlay.OrderBy(l => l.Name)">
+                <Label>Leader</Label>
             </SelectComponent>
+        }
+        else if (question == ClairvoyanceQuestion.Prediction)
+        {
+            <SelectComponent @bind-Value="questionParameterA" Values="h.Game.Players.Select(p => p.Faction).Select(v => v.ToString())" ValueLabels="h.Game.Players.Select(p => p.Faction)">
+                <Label>Faction</Label>
+            </SelectComponent>
+            <SelectComponent @bind-Value="questionParameterB" Values="BluePrediction.ValidTurns(h.Game).Select(v => v.ToString())">
+                <Label>Turn</Label>
+            </SelectComponent>
+        }
+        else if (question == ClairvoyanceQuestion.DialOfMoreThanXInBattle)
+        {
+            <SelectComponent @bind-Value="questionParameterA" Values="ValidDials.Select(v => v.ToString())">
+                <Label>Dial</Label>
+            </SelectComponent>
+        }
+        else if (question == ClairvoyanceQuestion.WillAttackX)
+        {
+            <SelectComponent @bind-Value="questionParameterA" Values="h.Game.Map.Territories.Select(t => t.Id).Select(v => v.ToString())" ValueLabels="h.Game.Map.Territories">
+                <Label>Territory</Label>
+            </SelectComponent>
+        }
 
-            @if (question == ClairvoyanceQuestion.CardTypeInBattle || question == ClairvoyanceQuestion.CardTypeAsWeaponInBattle || question == ClairvoyanceQuestion.CardTypeAsDefenseInBattle || question == ClairvoyanceQuestion.HasCardTypeInHand)
-            {
-                <SelectComponent @bind-Value="questionParameterA" Values="Voice.ValidTypes(h.Game).Select(v => v.ToString())" ValueLabels="Voice.ValidTypes(h.Game)">
-                    <Label>Card Type</Label>
-                </SelectComponent>
-            }
-            else if (question == ClairvoyanceQuestion.LeaderAsFacedancer || question == ClairvoyanceQuestion.LeaderAsTraitor || question == ClairvoyanceQuestion.LeaderInBattle)
-            {
-                <SelectComponent @bind-Value="questionParameterA" Values="h.Game.TraitorsInPlay.OrderBy(l => l.Name).Select(l => l.Id).Select(v => v.ToString())" ValueLabels="h.Game.TraitorsInPlay.OrderBy(l => l.Name)">
-                    <Label>Leader</Label>
-                </SelectComponent>
-            }
-            else if (question == ClairvoyanceQuestion.Prediction)
-            {
-                <SelectComponent @bind-Value="questionParameterA" Values="h.Game.Players.Select(p => p.Faction).Select(v => v.ToString())" ValueLabels="h.Game.Players.Select(p => p.Faction)">
-                    <Label>Faction</Label>
-                </SelectComponent>
-                <SelectComponent @bind-Value="questionParameterB" Values="BluePrediction.ValidTurns(h.Game).Select(v => v.ToString())">
-                    <Label>Turn</Label>
-                </SelectComponent>
-            }
-            else if (question == ClairvoyanceQuestion.DialOfMoreThanXInBattle)
-            {
-                <SelectComponent @bind-Value="questionParameterA" Values="ValidDials.Select(v => v.ToString())">
-                    <Label>Dial</Label>
-                </SelectComponent>
-            }
-            else if (question == ClairvoyanceQuestion.WillAttackX)
-            {
-                <SelectComponent @bind-Value="questionParameterA" Values="h.Game.Map.Territories.Select(t => t.Id).Select(v => v.ToString())" ValueLabels="h.Game.Map.Territories">
-                    <Label>Territory</Label>
-                </SelectComponent>
-            }
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@validationError" />
 
-            <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
-            <div class="text-danger bg-dark">@validationError</div>
+    </Body>
 
-        </div>
-    }
-
-</div>
+</GameEventComponentLayout>
 
 @code {
 
@@ -100,27 +94,14 @@
         }
     }
 
-    protected override ClairVoyancePlayed ConfirmedResult
-    {
-        get
-        {
-            return new ClairVoyancePlayed(h.Game)
-            {
-                Initiator = h.Faction,
-                Target = target,
-                Question = question,
-                QuestionParameter1 = questionParameterA,
-                QuestionParameter2 = questionParameterB
-            };
-        }
-    }
+    protected override ClairVoyancePlayed ConfirmedResult => new ClairVoyancePlayed(h.Game) { Initiator = h.Faction, Target = target, Question = question, QuestionParameter1 = questionParameterA, QuestionParameter2 = questionParameterB };
 
     private IEnumerable<float> ValidDials
     {
         get
         {
             var result = new List<float>();
-            for (float current = 0.0f; current <= 30; current += 0.5f)
+            for (float current = 0.0f; current <= 25; current += 0.5f)
             {
                 result.Add(current);
             }

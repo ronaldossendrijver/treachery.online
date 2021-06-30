@@ -1,0 +1,106 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared;
+@inherits GameComponent
+
+<table class="table table-striped table-sm m-0 w-auto">
+    <tbody>
+        @foreach (var l in Locations)
+        {
+            <tr class="small">
+
+                @if (Locations.Count() > 1)
+                {
+                    <td>@l.Name</td>
+                }
+
+                @if (l.Sector != Game.SectorInStorm)
+                {
+                    <td><NumberPickerComponent Value="@ForceAmount(l, false)" OnDown="(e => ForceAmountButton(l, -1, false))" OnUp="(e => ForceAmountButton(l, 1, false))" Min="0" Max="Player.ForcesIn(l)" SymbolSRC="@Skin.Current.GetFactionForceImageURL(Faction)" /></td>
+                }
+                else
+                {
+                    <td class="font-italic text-danger">cannot move from storm</td>
+                }
+
+                @if (Player.SpecialForcesIn(l) > 0)
+                {
+                    if (l.Sector != Game.SectorInStorm)
+                    {
+                        <td><NumberPickerComponent Value="@ForceAmount(l, true)" OnDown="(e => ForceAmountButton(l, -1, true))" OnUp="(e => ForceAmountButton(l, 1, true))" Min="0" Max="Player.SpecialForcesIn(l)" SymbolSRC="@Skin.Current.GetFactionSpecialForceImageURL(Faction)" /></td>
+                    }
+                    else
+                    {
+                        <td class="font-italic text-danger">cannot move from storm</td>
+                    }
+                }
+
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+@code {
+
+    [Parameter]
+    public Dictionary<Location, Battalion> Forces { get; set; }
+
+    [Parameter]
+    public IEnumerable<Location> Locations { get; set; }
+
+    private int ForceAmount(Location l, bool special)
+    {
+        if (Forces.ContainsKey(l))
+        {
+            if (special)
+            {
+                return Forces[l].AmountOfSpecialForces;
+            }
+            else
+            {
+                return Forces[l].AmountOfForces;
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    private void ForceAmountButton(Location location, int amount, bool specialForces)
+    {
+        var currentLocation = Forces.Keys.FirstOrDefault();
+        if (currentLocation != null && currentLocation.Territory != location.Territory)
+        {
+            Forces.Clear();
+        }
+
+        if (Forces.ContainsKey(location))
+        {
+            if (specialForces)
+            {
+                Forces[location].ChangeSpecialForces(amount);
+            }
+            else
+            {
+                Forces[location].ChangeForces(amount);
+            }
+        }
+        else if (amount > 0)
+        {
+            if (specialForces)
+            {
+                Forces.Add(location, new Battalion() { AmountOfSpecialForces = amount, AmountOfForces = 0 });
+            }
+            else
+            {
+                Forces.Add(location, new Battalion() { AmountOfSpecialForces = 0, AmountOfForces = amount });
+            }
+        }
+
+        StateHasChanged();
+    }
+}

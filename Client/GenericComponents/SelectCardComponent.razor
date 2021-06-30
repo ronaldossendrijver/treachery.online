@@ -5,7 +5,9 @@
 @using System.Collections.Generic;
 @using Treachery.Shared;
 
-<SelectFromImageComponent @bind-Value="Value" Values="Values" ImageURLs="Values.Select(c => Skin.Current.GetImageURL(c))" PopupHTMLs="Values.Select(c => Support.GetTreacheryCardHoverHTML(c))" Required="Required" ImageWidth="80" Label="@Label"/>
+<SelectFromImageComponent @bind-Value="Value" Values="Values" ImageURLs="Values.Select(c => Skin.Current.GetImageURL(c))" PopupHTMLs="Values.Select(c => Support.GetTreacheryCardHoverHTML(c))" Required="Required" ImageWidth="80">
+    <Label>@Label</Label>
+</SelectFromImageComponent>
 
 @code {
 

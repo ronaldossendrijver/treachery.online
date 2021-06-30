@@ -5,12 +5,17 @@
 @using System.Collections.Generic;
 @using Treachery.Shared;
 
-<SelectFromImageComponent @bind-Value="Value" Values="@Values" ImageURLs="Values.Select(f => Skin.Current.GetImageURL(f))" ImageWidth="50" />
+<SelectFromImageComponent @bind-Value="Value" Values="@Values" Selected="@Selected" ImageURLs="Values.Select(f => Skin.Current.GetImageURL(f))" ImageWidth="50" Required="@(Selected == null)">
+    <Label>@Label</Label>
+</SelectFromImageComponent>
 
 @code {
 
     [Parameter]
     public IEnumerable<Faction> Values { get; set; }
+
+    [Parameter]
+    public List<Faction> Selected { get; set; } = null;
 
     private Faction _value;
 
@@ -33,5 +38,8 @@
 
     [Parameter]
     public EventCallback<Faction> ValueChanged { get; set; }
+
+    [Parameter]
+    public RenderFragment Label { get; set; }
 }
 

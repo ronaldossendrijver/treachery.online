@@ -6,45 +6,32 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<DealOffered>
 
-<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-    <div class="card-header">
-        Offer a Deal
-        <CollapseButton @bind-Collapsed="Collapsed" />
-    </div>
+    <Header>Offer a Deal</Header>
+    <Body>
 
-    @if (!Collapsed)
-    {
-        <div class="card-body">
+        <SelectFactionComponent Selected="to" Values="Game.ValidTargets(Player)">
+            <Label>Offer to whom (select none to offer to all)</Label>
+        </SelectFactionComponent>
 
-            <label class="mt-1 mb-0">Offer to whom (select none to offer to all)</label>
-            @foreach (var faction in h.Game.ValidTargets(h.Player))
-            {
-                <ChecklistItemComponent Value="@faction" Values="to" style="@ColorTransparant(faction)" Callback="OnChangeFactions" />
-            }
+        <NumberPickerComponent @bind-Value="price" Min="0" Max="20" SymbolSRC="@Skin.Current.Harvester_URL" Label="Price"/>
 
-            <SelectComponent @bind-Value="price" Values="Enumerable.Range(0, 21)">
-                <Label>Price</Label>
-            </SelectComponent>
+        <SelectComponent @bind-Value="type" Values="DealOffered.GetHumanDealTypes(Game, Player)">
+            <Label>Type of Deal</Label>
+        </SelectComponent>
 
-            <SelectComponent @bind-Value="type" Values="DealOffered.GetHumanDealTypes(h.Game, h.Player)">
-                <Label>Type of Deal</Label>
-            </SelectComponent>
+        <SelectComponent @bind-Value="until" Values="ApplicableEndPhases">
+            <Label>Until</Label>
+        </SelectComponent>
 
-            <SelectComponent @bind-Value="until" Values="ApplicableEndPhases">
-                <Label>Until</Label>
-            </SelectComponent>
+        <textarea class="form-control mt-1" rows="5" @bind="text" maxlength="512" placeholder="Deal description" />
 
-            <textarea class="form-control mt-1" rows="5" @bind="text" maxlength="512" placeholder="Deal description" />
+        <ButtonRowComponent Confirm="ConfirmOffer" ConfirmText="Confirm" ConfirmError="@validationError" />
 
-            <button class="btn btn-primary mt-1" @onclick="ConfirmOffer" disabled=@(!Valid)>Ok</button>
+    </Body>
 
-            <div class="text-danger bg-dark">@validationError</div>
-
-        </div>
-    }
-
-</div>
+</GameEventComponentLayout>
 
 @code {
 
@@ -57,7 +44,7 @@
     protected override void OnAfterRender(bool firstRender)
     {
         Initialize<int, int>(ref price, Enumerable.Range(0, 21));
-        Initialize<DealType, DealType>(ref type, DealOffered.GetHumanDealTypes(h.Game, h.Player));
+        Initialize<DealType, DealType>(ref type, DealOffered.GetHumanDealTypes(Game, Player));
         Initialize<Phase, Phase>(ref until, ApplicableEndPhases);
     }
 
@@ -71,21 +58,7 @@
         StateHasChanged();
     }
 
-    protected override DealOffered ConfirmedResult
-    {
-        get
-        {
-            return new DealOffered(h.Game)
-            {
-                Initiator = h.Faction,
-                To = to.Count >= h.Game.Players.Count - 1 ? Array.Empty<Faction>() : to.ToArray(),
-                Price = price,
-                Type = type,
-                Text = text,
-                EndPhase = until
-            };
-        }
-    }
+    protected override DealOffered ConfirmedResult => new DealOffered(Game) { Initiator = Faction, To = to.Count >= Game.Players.Count - 1 ? Array.Empty<Faction>() : to.ToArray(), Price = price, Type = type, Text = text, EndPhase = until };
 
     private async Task ConfirmOffer()
     {
@@ -97,7 +70,6 @@
     {
         get
         {
-
             return type switch
             {
                 DealType.ShareStormPrescience => new Phase[] { Phase.TurnConcluded },

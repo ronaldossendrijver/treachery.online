@@ -39,59 +39,6 @@
         StateHasChanged();
     }
 
-    protected int Forces(Location l, bool special)
-    {
-        if (forces.ContainsKey(l))
-        {
-            if (special)
-            {
-                return forces[l].AmountOfSpecialForces;
-            }
-            else
-            {
-                return forces[l].AmountOfForces;
-            }
-        }
-        else
-        {
-            return 0;
-        }
-    }
-
-    protected void ForceAmountButton(Location location, int amount, bool specialForces)
-    {
-        var currentLocation = forces.Keys.FirstOrDefault();
-        if (currentLocation != null && currentLocation.Territory != location.Territory)
-        {
-            forces.Clear();
-        }
-
-        if (forces.ContainsKey(location))
-        {
-            if (specialForces)
-            {
-                forces[location].ChangeSpecialForces(amount);
-            }
-            else
-            {
-                forces[location].ChangeForces(amount);
-            }
-        }
-        else if (amount > 0)
-        {
-            if (specialForces)
-            {
-                forces.Add(location, new Battalion() { AmountOfSpecialForces = amount, AmountOfForces = 0 });
-            }
-            else
-            {
-                forces.Add(location, new Battalion() { AmountOfSpecialForces = 0, AmountOfForces = amount });
-            }
-        }
-
-        StateHasChanged();
-    }
-
     protected virtual IEnumerable<Territory> ValidSources
     {
         get

@@ -40,6 +40,9 @@
     }
 
     [Parameter]
+    public List<T> Selected { get; set; } = null;
+
+    [Parameter]
     public EventCallback<T> ValueChanged { get; set; }
 
     [Parameter]
@@ -74,22 +77,56 @@
 
         if (Required && Equals(Value, default(T)))
         {
-            Value = Values.FirstOrDefault();
+            if (Selected == null)
+            {
+                Value = Values.FirstOrDefault();
+            }
+            else if (!Selected.Any() && Values.Any())
+            {
+                AddToSelection(Values.FirstOrDefault());
+            }
+        }
+    }
+
+    private void AddToSelection(T value)
+    {
+        if (!Selected.Contains(value))
+        {
+            Selected.Add(value);
+        }
+    }
+
+    private void SwapSelection(T value)
+    {
+        if (Selected.Contains(value))
+        {
+            Selected.Remove(value);
+        }
+        else
+        {
+            Selected.Add(value);
         }
     }
 
     private void Click(T item)
     {
-        if (Equal(_value, item))
+        if (Selected == null)
         {
-            if (!Required)
+            if (Equal(_value, item))
             {
-                Value = default;
+                if (!Required)
+                {
+                    Value = default;
+                }
+            }
+            else
+            {
+                Value = item;
             }
         }
         else
         {
-            Value = item;
+            SwapSelection(item);
         }
     }
 
@@ -108,7 +145,16 @@
     private string DetermineFilter(T item)
     {
         string result = "filter:";
-        if (!Equal(_value, item)) result += UnselectedFilter + " ";
+
+        if (Selected == null)
+        {
+            if (!Equal(_value, item)) result += UnselectedFilter + " ";
+        }
+        else
+        {
+            if (!Selected.Contains(item)) result += UnselectedFilter + " ";
+        }
+
         if (Equal(_hovered, item)) result += HoverFilter;
         return result;
     }
