@@ -125,13 +125,14 @@ namespace Treachery.Shared
             return "";
         }
 
-        public static IEnumerable<int> GetValidMaximumNumberOfPlayers()
+        public static int GetMaximumNumberOfPlayers()
         {
-            return Enumerable.Range(1, 8);
+            return 8;
         }
-        public static IEnumerable<int> GetValidMaximumNumberOfTurns()
+
+        public static int GetMaximumNumberOfTurns()
         {
-            return Enumerable.Range(1, 20);
+            return 20;
         }
 
         protected override void ExecuteConcreteEvent()

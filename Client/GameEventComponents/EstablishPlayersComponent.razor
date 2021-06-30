@@ -6,55 +6,46 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<EstablishPlayers>
 
-<div class="card p-1 mb-2 border-danger">
-    <div class="card-header">@h.NextPhase()</div>
-    <div class="card-body">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-        <div class="custom-control custom-checkbox">
-            <input class="custom-control-input" type="checkbox" @bind="info.HostParticipates" id="establishPlayersHostParticipates" />
-            <label class="custom-control-label" for="establishPlayersHostParticipates">The host (you) will participate in this game</label>
-        </div>
+    <Header>@h.NextPhase()</Header>
+    <Body>
+
+        <CheckboxComponent Value="info.HostParticipates">The host (you) will participate in this game</CheckboxComponent>
 
         <div class="mt-2"><strong>Players:</strong> @string.Join(", ", Players)</div>
 
-        <label class="mt-1 mb-0" for="establishPlayersMaximumTurns">Maximum number of turns</label>
-        <select disabled="@Readonly" class="custom-select" @bind="info.MaximumNumberOfTurns" id="establishPlayersMaximumTurns">
-            @foreach (var s in EstablishPlayers.GetValidMaximumNumberOfTurns())
-            {
-                <option value="@s">@s</option>
-            }
-        </select>
+        <NumberPickerComponent Disabled="@Readonly" @bind-Value="info.MaximumNumberOfTurns" Min="1" Max="EstablishPlayers.GetMaximumNumberOfTurns()" Label="Maximum number of turns">
+            <NumberBackground>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                    <circle cx="8" cy="8" r="8" fill="white" />
+                </svg>
+            </NumberBackground>
+        </NumberPickerComponent>
 
-        <label class="mt-1 mb-0" for="establishPlayersMaximumPlayers">Maximum number of players</label>
-        <select disabled="@Readonly" class="custom-select" @bind="info.MaximumNumberOfPlayers" id="establishPlayersMaximumPlayers">
-            @foreach (var s in EstablishPlayers.GetValidMaximumNumberOfPlayers())
-            {
-                <option value="@s">@s</option>
-            }
-        </select>
+        <NumberPickerComponent Disabled="@Readonly" @bind-Value="info.MaximumNumberOfPlayers" Min="1" Max="EstablishPlayers.GetMaximumNumberOfPlayers()" Label="Maximum number of players">
+            <NumberBackground>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                    <circle cx="8" cy="8" r="8" fill="white" />
+                </svg>
+            </NumberBackground>
+        </NumberPickerComponent>
 
-        <label class="mt-1 mb-0" for="establishPlayersFactionsInPlay">Factions in play</label>
-        @foreach (var faction in AllFactions)
-        {
-            <ChecklistItemComponent Disabled="@Readonly" Value="@faction" Values="info.FactionsInPlay" style="@StyleDef(faction)" Callback="OnChangeFactions" />
-        }
+        <SelectFactionComponent Disabled="@Readonly" Selected="info.FactionsInPlay" Values="AllFactions">
+            <Label>Factions in play</Label>
+        </SelectFactionComponent>
 
-        <label class="mt-1 mb-0">AI Players</label>
+        <label class="mt-1 mb-0">Bots</label>
         @foreach (var rule in Game.GetRulesInGroup(RuleGroup.Bots))
         {
             <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="OnChangeRules" />
         }
 
-        <label class="mt-1 mb-0" for="establishPlayersRules">Rules</label>
-        <select disabled="@Readonly" class="custom-select" id="establishPlayersRules" value="@info.Ruleset" @onchange="RulesetChanged">
-            @foreach (var ruleset in Rulesets)
-            {
-                <option value="@ruleset">@Skin.Current.Describe(ruleset)</option>
-            }
-        </select>
+        <SelectComponent Disabled="@Readonly" @bind-Value="@Ruleset" Values="Rulesets">
+            <Label>Rules</Label>
+        </SelectComponent>
 
-        <button class="btn btn-primary mt-3" @onclick="StartNewOrLoadedGame" disabled="@(!Valid)">@StartButtonLabel</button>
-        <div class="text-danger bg-dark">@validationError</div>
+        <ButtonRowComponent Confirm="StartNewOrLoadedGame" ConfirmText="@StartButtonLabel" ConfirmError="@Validation" />
 
         @if (h.Host.LoadedGame == null)
         {
@@ -97,8 +88,9 @@
             <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="OnChangeRules" />
         }
 
-    </div>
-</div>
+    </Body>
+
+</GameEventComponentLayout>
 
 @code {
 
@@ -111,13 +103,35 @@
         }
     }
 
-    private void OnChangeRules()
+    private Ruleset Ruleset
     {
-        info.Ruleset = Game.DetermineRuleset(info.Rules.Where(r => Game.GetRuleGroup(r) != RuleGroup.Bots));
+        get
+        {
+            return info.Ruleset;
+        }
+        set
+        {
+            info.Ruleset = value;
+            RulesetChanged(value);
+        }
+    }
+
+    private void RulesetChanged(Ruleset ruleset)
+    {
+        var botRules = info.Rules.Where(r => Game.GetRuleGroup(r) == RuleGroup.Bots).ToArray();
+
+        info.Rules.Clear();
+        info.Rules.AddRange(botRules);
+
+        if (Game.RulesetDefinition.ContainsKey(info.Ruleset))
+        {
+            info.Rules.AddRange(Game.RulesetDefinition[info.Ruleset]);
+        }
+
         StateHasChanged();
     }
 
-    private void OnChangeFactions()
+    private void OnChangeRules()
     {
         info.Ruleset = Game.DetermineRuleset(info.Rules.Where(r => Game.GetRuleGroup(r) != RuleGroup.Bots));
         StateHasChanged();
@@ -157,7 +171,7 @@
     {
         get
         {
-            return new EstablishPlayers(h.Game)
+            return new EstablishPlayers(Game)
             {
                 GameName = string.Format("{0}'s Game", h.PlayerName),
                 Seed = new Random().Next(),
@@ -178,22 +192,7 @@
         }
     }
 
-    private void RulesetChanged(ChangeEventArgs e)
-    {
-        var botRules = info.Rules.Where(r => Game.GetRuleGroup(r) == RuleGroup.Bots).ToArray();
 
-        info.Rules.Clear();
-        info.Rules.AddRange(botRules);
-
-        info.Ruleset = Enum.Parse<Ruleset>(e.Value.ToString());
-
-        if (Game.RulesetDefinition.ContainsKey(info.Ruleset))
-        {
-            info.Rules.AddRange(Game.RulesetDefinition[info.Ruleset]);
-        }
-
-        StateHasChanged();
-    }
 
     private IEnumerable<Ruleset> Rulesets
     {

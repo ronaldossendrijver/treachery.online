@@ -31,29 +31,23 @@
 
                 if (discardableMercenary != null)
                 {
-                    <CheckboxComponent @bind-Value="discardMercenary">
-                        @discardableMercenary.Name
-                    </CheckboxComponent>
+                    <CheckboxComponent @bind-Value="discardMercenary">@discardableMercenary.Name</CheckboxComponent>
                 }
 
                 if (discardableWeapon != null)
                 {
-                    <CheckboxComponent @bind-Value="discardWeapon">
-                        @discardableWeapon.Name
-                    </CheckboxComponent>
+                    <CheckboxComponent @bind-Value="discardWeapon">@discardableWeapon.Name</CheckboxComponent>
                 }
 
                 if (discardableDefense != null)
                 {
-                    <CheckboxComponent @bind-Value="discardDefense">
-                        @discardableDefense.Name
-                    </CheckboxComponent>
+                    <CheckboxComponent @bind-Value="discardDefense">@discardableDefense.Name</CheckboxComponent>
                 }
             }
 
             if (BattleConcluded.MayCaptureOrKill(h.Game, h.Player))
             {
-                <div>We caught <HeroComponent Value="h.Game.BlackVictim" />. What are your orders, capture or kill?</div>
+                <div>We caught <HeroComponent Value="h.Game.BlackVictim" />... What are your orders, capture or kill?</div>
 
                 <div class="custom-control custom-radio">
                     <input class="custom-control-input" @onchange="CaptureDecisionOnChange" type="radio" id="battleConcludedKillFalse" value="@CaptureDecision.Capture" checked="@(captureDecision == CaptureDecision.Capture)">

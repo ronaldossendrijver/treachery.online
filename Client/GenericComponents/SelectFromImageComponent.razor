@@ -69,6 +69,9 @@
     [Parameter]
     public RenderFragment Label { get; set; }
 
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
     protected override void OnParametersSet()
     {
         var nrOfValues = Values.Count();
@@ -83,16 +86,8 @@
             }
             else if (!Selected.Any() && Values.Any())
             {
-                AddToSelection(Values.FirstOrDefault());
+                Selected.Add(Values.FirstOrDefault());
             }
-        }
-    }
-
-    private void AddToSelection(T value)
-    {
-        if (!Selected.Contains(value))
-        {
-            Selected.Add(value);
         }
     }
 
@@ -106,27 +101,32 @@
         {
             Selected.Add(value);
         }
+
+        ValueChanged.InvokeAsync(value);
     }
 
     private void Click(T item)
     {
-        if (Selected == null)
+        if (!Disabled)
         {
-            if (Equal(_value, item))
+            if (Selected == null)
             {
-                if (!Required)
+                if (Equal(_value, item))
                 {
-                    Value = default;
+                    if (!Required)
+                    {
+                        Value = default;
+                    }
+                }
+                else
+                {
+                    Value = item;
                 }
             }
             else
             {
-                Value = item;
+                SwapSelection(item);
             }
-        }
-        else
-        {
-            SwapSelection(item);
         }
     }
 

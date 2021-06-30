@@ -7,57 +7,40 @@
 
 @inherits GameEventComponent<Donated>
 
-<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-    <div class="card-header">
-        Bribe @(h.Faction == Faction.Red?"any":"a non-allied") faction
-        <CollapseButton @bind-Collapsed="Collapsed"/>
-    </div>
+    <Header>Bribe @(h.Faction == Faction.Red?"any":"a non-allied") faction</Header>
+    <Body>
 
-    @if (!Collapsed)
-    {
-        <div class="card-body">
+        <SelectFactionComponent @bind-Value="target" Values="Donated.ValidTargets(h.Game, h.Player)" />
 
-            <SelectComponent @bind-Value="target" Values="Donated.ValidTargets(h.Game, h.Player)">
-                <Label>Faction</Label>
+        <NumberPickerComponent @bind-Value="resources" Min="Donated.MinAmount(h.Game, h.Player)" Max="Donated.MaxAmount(h.Game, h.Player)" SymbolSRC="@Skin.Current.Harvester_URL" />
+
+        @if (h.Game.Applicable(Rule.CardsCanBeTraded))
+        {
+            <SelectComponent @bind-Value="card" Values="h.Player.TreacheryCards" AddEmptyValue="true" EmptyLabel="None">
+                <Label>Give one of your cards</Label>
             </SelectComponent>
+        }
 
-            <NumberPickerComponent @bind-Value="resources" Min="Donated.MinAmount(h.Game, h.Player)" Max="Donated.MaxAmount(h.Game, h.Player)" SymbolSRC="@Skin.Current.Harvester_URL" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
-            @if (h.Game.Applicable(Rule.CardsCanBeTraded))
-            {
-                <SelectComponent @bind-Value="card" Values="h.Player.TreacheryCards.Select(h => h.Id)" ValueLabels="h.Player.TreacheryCards" AddEmptyValue="true" EmptyLabel="None">
-                    <Label>Give one of your cards</Label>
-                </SelectComponent>
-            }
+    </Body>
 
-            <button class="btn btn-primary" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
-
-            <div class="text-danger bg-dark">@validationError</div>
-
-        </div>
-    }
-
-</div>
+</GameEventComponentLayout>
 
 @code {
 
     private Faction target;
     private int resources;
-    private int card = -1;
+    private TreacheryCard card;
 
     protected override void OnAfterRender(bool firstRender)
     {
         Initialize<Faction, Faction>(ref target, Donated.ValidTargets(h.Game, h.Player));
         Initialize<int, int>(ref resources, Donated.ValidAmounts(h.Game, h.Player));
-        Initialize<int, TreacheryCard>(ref card, h.Player.TreacheryCards, true, -1);
+        Initialize<TreacheryCard, TreacheryCard>(ref card, h.Player.TreacheryCards, true);
     }
 
-    protected override Donated ConfirmedResult
-    {
-        get
-        {
-            return new Donated(h.Game) { Initiator = h.Faction, Target = target, Resources = resources, Card = TreacheryCardManager.Lookup.Find(card) };
-        }
-    }
+    protected override Donated ConfirmedResult => new Donated(h.Game) { Initiator = h.Faction, Target = target, Resources = resources, Card = card };
 }

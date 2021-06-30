@@ -7,9 +7,11 @@
 
     <div class="row justify-content-start">
 
-        <div style="width: 50px; height: 50px; background-image: url('@SymbolSRC'); background-size: contain; background-repeat: no-repeat;">
-            <div style="text-align: center; padding-top: 6px; font-size: 22px; font-weight: bold; color: @NumberColor">
-                <span>@Value</span>
+        <div style="width: 50px; height: 50px; background-image: url('data:image/svg+xml;utf8,@NumberBackground'); background-size: contain; background-repeat: no-repeat;">
+            <div style="padding: 0 0 0 0; margin: 0 0 0 0; background-image: url('@SymbolSRC'); background-size: contain; background-repeat: no-repeat;">
+                <div style="text-align: center; padding-top: 6px; font-size: 22px; font-weight: bold; color: @NumberColor">
+                    <span>@Value</span>
+                </div>
             </div>
         </div>
 
@@ -81,9 +83,15 @@
     [Parameter]
     public string Label { get; set; } = "";
 
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
+    [Parameter]
+    public RenderFragment NumberBackground { get; set; }
+
     private void Increase()
     {
-        if (Value < Max)
+        if (!Disabled && Value < Max)
         {
             Value++;
             OnUp.InvokeAsync();
@@ -92,14 +100,14 @@
 
     private void Decrease()
     {
-        if (Value > Min)
+        if (!Disabled && Value > Min)
         {
             Value--;
             OnDown.InvokeAsync();
         }
     }
 
-    private string IncreaseArrowColor => Value < Max ? ArrowColor : DisabledColor;
+    private string IncreaseArrowColor => !Disabled && Value < Max ? ArrowColor : DisabledColor;
 
-    private string DecreaseArrowColor => Value > Min ? ArrowColor : DisabledColor;
+    private string DecreaseArrowColor => !Disabled && Value > Min ? ArrowColor : DisabledColor;
 }

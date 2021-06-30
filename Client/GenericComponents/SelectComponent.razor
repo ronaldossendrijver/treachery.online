@@ -13,7 +13,7 @@
 <ClickHintComponent Button="@ButtonHint" Modifier="@ModifierHint" />
 </label>
 
-<select class="custom-select form-control" @bind="@ValueAsString">
+<select class="custom-select form-control" @bind="@ValueAsString" disabled="@Disabled">
     
     @if (AddEmptyValue)
     {
@@ -46,6 +46,9 @@
 
     [Parameter]
     public RenderFragment Options { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; } = false;
 
     private bool _isIdentifiable = false;
 
