@@ -14,7 +14,7 @@
 
         @if (h.Player.ForcesInReserve > 0 && h.Game.Applicable(Rule.BlueAccompaniesToShipmentLocation))
         {
-            <SelectComponent ButtonHint="ClickHintButton.LMB" Value="target" Values="BlueBattleAnnouncement.ValidTerritories(h.Game, h.Player)">
+            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="BlueBattleAnnouncement.ValidTerritories(h.Game, h.Player)">
                 <Label>Territory</Label>
             </SelectComponent>
         }

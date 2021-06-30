@@ -14,7 +14,7 @@
 
         <SelectFactionComponent @bind-Value="target" Values="Donated.ValidTargets(h.Game, h.Player)" />
 
-        <NumberPickerComponent @bind-Value="resources" Min="Donated.MinAmount(h.Game, h.Player)" Max="Donated.MaxAmount(h.Game, h.Player)" SymbolSRC="@Skin.Current.Harvester_URL" />
+        <NumberPickerComponent @bind-Value="resources" Min="Donated.MinAmount(h.Game, h.Player)" Max="Donated.MaxAmount(h.Game, h.Player)" SymbolSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400" />
 
         @if (h.Game.Applicable(Rule.CardsCanBeTraded))
         {
@@ -39,7 +39,7 @@
     {
         Initialize<Faction, Faction>(ref target, Donated.ValidTargets(h.Game, h.Player));
         Initialize<int, int>(ref resources, Donated.ValidAmounts(h.Game, h.Player));
-        Initialize<TreacheryCard, TreacheryCard>(ref card, h.Player.TreacheryCards, true);
+        //Initialize<TreacheryCard, TreacheryCard>(ref card, h.Player.TreacheryCards, true);
     }
 
     protected override Donated ConfirmedResult => new Donated(h.Game) { Initiator = h.Faction, Target = target, Resources = resources, Card = card };

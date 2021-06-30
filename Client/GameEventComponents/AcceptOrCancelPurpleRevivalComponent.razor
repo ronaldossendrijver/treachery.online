@@ -15,7 +15,7 @@
         @if (Game.CurrentPurpleRevivalRequest != null)
         {
             <div>@Skin.Current.Describe(Game.CurrentPurpleRevivalRequest.Initiator) have requested revival of <HeroComponent Value="Game.CurrentPurpleRevivalRequest.Hero" />. If you agree, set your price below.</div>
-            <NumberPickerComponent @bind-Value="price" Min="AcceptOrCancelPurpleRevival.MinAmount()" Max="AcceptOrCancelPurpleRevival.MaxAmount()" SymbolSRC="@Skin.Current.Harvester_URL" />
+            <NumberPickerComponent @bind-Value="price" Min="AcceptOrCancelPurpleRevival.MinAmount()" Max="AcceptOrCancelPurpleRevival.MaxAmount()" SymbolSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400" />
             <button class="btn btn-primary" @onclick="Confirm" disabled=@(!Valid)>Confirm Offer</button>
         }
 

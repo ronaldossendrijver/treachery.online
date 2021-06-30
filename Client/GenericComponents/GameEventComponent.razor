@@ -171,13 +171,13 @@
         {
             if (BackgroundImage == "")
             {
-                if (Faction != Faction.None)
+                if (IsFactionSpecific == Faction.None)
                 {
                     return "";
                 }
                 else
                 {
-                    return Skin.Current.GetFactionColorTransparant(Faction);
+                    return string.Format("background-color: {0};", Skin.Current.GetFactionColorTransparant(IsFactionSpecific, "48"));
                 }
             }
             else

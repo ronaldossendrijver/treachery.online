@@ -55,7 +55,7 @@
         }
 
         <label class="mt-2 mb-0">How much are you willing to pay for their bids and shipments (currently: <span class="badge badge-primary badge-pill">@Game.GetPermittedUseOfAllySpice(Player.Ally)</span>)? @(Faction == Faction.Red ? "Payments for bids flow back to you." : "")</label>
-        <NumberPickerComponent @bind-Value="spice" Min="0" Max="Player.Resources" SymbolSRC="@Skin.Current.Harvester_URL" />
+        <NumberPickerComponent @bind-Value="spice" Min="0" Max="Player.Resources" SymbolSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400" />
 
         @if (Karma.CanKarma(Game, Player))
         {

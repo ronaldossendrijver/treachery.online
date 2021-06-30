@@ -15,21 +15,9 @@
 
         <div class="mt-2"><strong>Players:</strong> @string.Join(", ", Players)</div>
 
-        <NumberPickerComponent Disabled="@Readonly" @bind-Value="info.MaximumNumberOfTurns" Min="1" Max="EstablishPlayers.GetMaximumNumberOfTurns()" Label="Maximum number of turns">
-            <NumberBackground>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-                    <circle cx="8" cy="8" r="8" fill="white" />
-                </svg>
-            </NumberBackground>
-        </NumberPickerComponent>
+        <NumberPickerComponent Disabled="@Readonly" @bind-Value="info.MaximumNumberOfTurns" Min="1" Max="EstablishPlayers.GetMaximumNumberOfTurns()" Label="Maximum number of turns"/>
 
-        <NumberPickerComponent Disabled="@Readonly" @bind-Value="info.MaximumNumberOfPlayers" Min="1" Max="EstablishPlayers.GetMaximumNumberOfPlayers()" Label="Maximum number of players">
-            <NumberBackground>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-                    <circle cx="8" cy="8" r="8" fill="white" />
-                </svg>
-            </NumberBackground>
-        </NumberPickerComponent>
+        <NumberPickerComponent Disabled="@Readonly" @bind-Value="info.MaximumNumberOfPlayers" Min="1" Max="EstablishPlayers.GetMaximumNumberOfPlayers()" Label="Maximum number of players"/>
 
         <SelectFactionComponent Disabled="@Readonly" Selected="info.FactionsInPlay" Values="AllFactions">
             <Label>Factions in play</Label>

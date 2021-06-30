@@ -3,26 +3,26 @@
     <label class="mb-0">@Label</label>
 }
 
-<div class="container pt-1 pb-1">
+<div class="container mt-1 mb-1">
 
     <div class="row justify-content-start">
 
-        <div style="width: 50px; height: 50px; background-image: url('data:image/svg+xml;utf8,@NumberBackground'); background-size: contain; background-repeat: no-repeat;">
-            <div style="padding: 0 0 0 0; margin: 0 0 0 0; background-image: url('@SymbolSRC'); background-size: contain; background-repeat: no-repeat;">
-                <div style="text-align: center; padding-top: 6px; font-size: 22px; font-weight: bold; color: @NumberColor">
-                    <span>@Value</span>
+        <div style="width: @ImageSize; height: @ImageSize; background-image: @BackgroundImage; background-size: contain; background-repeat: no-repeat;">
+            <div style="width: @ImageSize; height: @ImageSize; background-image: @ForegroundImage; background-size: contain; background-repeat: no-repeat; display:flex;">
+                <div style="width: @NumberSize; height: @NumberSize; margin: @NumberOffsetY 0 0 @NumberOffsetX; font-size: @FontSize; font-weight: bold; color: @NumberColor; line-height: 1.0; text-align:center">
+                    @Value
                 </div>
             </div>
         </div>
 
         <div style="margin: 0px 0px 0px 4px;">
-            <div @onclick="@Increase" style="margin: 2px 0px 0px 0px">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="@IncreaseArrowColor" class="bi bi-triangle-fill" viewBox="0 0 16 16">
+            <div @onclick="@Increase" style="margin: @ArrowOffsetY 0px 1px 0px; display:flex; flex-direction:column;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" height="@ArrowSize" fill="@IncreaseArrowColor" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z" />
                 </svg>
             </div>
-            <div @onclick="@Decrease" style="margin: 0px 0px 2px 0px">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="@DecreaseArrowColor" class="bi bi-triangle-fill" viewBox="0 0 16 16">
+            <div @onclick="@Decrease" style="margin: 1px 0px @ArrowOffsetY 0px; display:flex; flex-direction:column;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" height="@ArrowSize" fill="@DecreaseArrowColor" viewBox="0 0 16 16">
                     <path transform="rotate(180,8,8)" fill-rule="evenodd" d="M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z" />
                 </svg>
             </div>
@@ -35,6 +35,32 @@
 @code {
 
     private int _value;
+
+    private string BackgroundImage
+    {
+        get
+        {
+            return NumberAlignment switch
+            {
+                NumberPickerAlignment.Center => NumberBackground,
+                NumberPickerAlignment.BottomRight => "url('" + SymbolSRC + "')",
+                _ => "0px"
+            };
+        }
+    }
+
+    private string ForegroundImage
+    {
+        get
+        {
+            return NumberAlignment switch
+            {
+                NumberPickerAlignment.Center => "url('" + SymbolSRC + "')",
+                NumberPickerAlignment.BottomRight => NumberBackground,
+                _ => "0px"
+            };
+        }
+    }
 
     [Parameter]
     public int Value
@@ -69,7 +95,7 @@
     public string DisabledColor { get; set; } = "#AAAAAA";
 
     [Parameter]
-    public string NumberColor { get; set; } = "white";
+    public string NumberColor { get; set; } = "black";
 
     [Parameter]
     public EventCallback<int> ValueChanged { get; set; }
@@ -87,7 +113,26 @@
     public bool Disabled { get; set; } = false;
 
     [Parameter]
-    public RenderFragment NumberBackground { get; set; }
+    public int Size { get; set; } = 40;
+
+    [Parameter]
+    public string NumberBackgroundFillColor { get; set; } = "white";
+
+    [Parameter]
+    public string NumberBackgroundBorderColor { get; set; } = "black";
+
+    [Parameter]
+    public NumberPickerAlignment NumberAlignment { get; set; } = NumberPickerAlignment.Center;
+
+
+    private string NumberBackground
+    {
+        get
+        {
+            return string.Format("url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'><circle cx='{0}' cy='{1}' r='{2}' stroke='{3}' stroke-width='1%' fill='{4}' /></svg>\")",
+                BackgroundOffsetX, BackgroundOffsetY, BackgroundRadius, NumberBackgroundBorderColor.Replace("#","%23"), NumberBackgroundFillColor.Replace("#", "%23"));
+        }
+    }
 
     private void Increase()
     {
@@ -110,4 +155,101 @@
     private string IncreaseArrowColor => !Disabled && Value < Max ? ArrowColor : DisabledColor;
 
     private string DecreaseArrowColor => !Disabled && Value > Min ? ArrowColor : DisabledColor;
+
+    private string ImageSize => "" + Size + "px";
+
+    private string FontSize
+    {
+        get
+        {
+            return NumberAlignment switch
+            {
+                NumberPickerAlignment.Center => "" + ((int)(0.5f * Size)) + "px",
+                NumberPickerAlignment.BottomRight => "" + ((int)(0.4f * Size)) + "px",
+                _ => "0px"
+            };
+        }
+    }
+
+    private float BackgroundRadius
+    {
+        get
+        {
+            return NumberAlignment switch
+            {
+                NumberPickerAlignment.Center => 7.5f,
+                NumberPickerAlignment.BottomRight => 3.5f,
+                _ => 0
+            };
+        }
+    }
+
+    private int BackgroundOffsetY
+    {
+        get
+        {
+            return NumberAlignment switch
+            {
+                NumberPickerAlignment.Center => 8,
+                NumberPickerAlignment.BottomRight => 12,
+                _ => 0
+            };
+        }
+    }
+
+    private int BackgroundOffsetX
+    {
+        get
+        {
+            return NumberAlignment switch
+            {
+                NumberPickerAlignment.Center => 8,
+                NumberPickerAlignment.BottomRight => 12,
+                _ => 0
+            };
+        }
+    }
+
+    private string NumberSize
+    {
+        get
+        {
+            return NumberAlignment switch
+            {
+                NumberPickerAlignment.Center => "" + ((int)(0.5f * Size)) + "px",
+                NumberPickerAlignment.BottomRight => "" + ((int)(0.3f * Size)) + "px",
+                _ => "0px"
+            };
+        }
+    }
+
+    private string NumberOffsetY
+    {
+        get
+        {
+            return NumberAlignment switch
+            {
+                NumberPickerAlignment.Center => "" + ((int)(0.25f * Size)) + "px",
+                NumberPickerAlignment.BottomRight => "" + ((int)(0.5f * Size)) + "px",
+                _ => "0px"
+            };
+        }
+    }
+
+    private string NumberOffsetX
+    {
+        get
+        {
+            return NumberAlignment switch
+            {
+                NumberPickerAlignment.Center => "" + ((int)(0.25f * Size)) + "px",
+                NumberPickerAlignment.BottomRight => "" + ((int)(0.6f * Size)) + "px",
+                _ => "0px"
+            };
+        }
+    }
+
+    private int ArrowSize => (int)(0.4f * Size);
+
+    private string ArrowOffsetY => "" + (int)(0.1f * Size) + "px";
 }

@@ -18,13 +18,13 @@
 
         @if (ValidSources.Any())
         {
-            <SelectComponent ButtonHint="ClickHintButton.LMB" ModifierHint="ClickHintModifier.CTRL" Value="fromTerritory" Values="ValidSources">
+            <SelectComponent ButtonHint="ClickHintButton.LMB" ModifierHint="ClickHintModifier.CTRL" @bind-Value="fromTerritory" Values="ValidSources">
                 <Label>From</Label>
             </SelectComponent>
 
             <ForceSelectionComponent h="h" Forces="forces" Locations="Player.LocationsWithAnyForcesInTerritory(fromTerritory)" />
 
-            <SelectComponent ButtonHint="ClickHintButton.LMB" Value="toLocation" Values="ValidTargets">
+            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="toLocation" Values="ValidTargets">
                 <Label>To</Label>
             </SelectComponent>
 

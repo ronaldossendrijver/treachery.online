@@ -669,6 +669,11 @@ namespace Treachery.Shared
             return FactionColorTransparant[faction];
         }
 
+        public string GetFactionColorTransparant(Faction faction, string transparancy)
+        {
+            return FactionColor[faction] + transparancy;
+        }
+
         #endregion NamesAndImages
 
         #region FactionManual
