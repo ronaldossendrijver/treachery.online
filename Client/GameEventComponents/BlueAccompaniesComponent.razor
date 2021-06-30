@@ -47,7 +47,7 @@
         MapDrawer.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override BlueAccompanies ConfirmedResult => new BlueAccompanies(h.Game) { Initiator = h.Faction, Location = h.Game.Map.Get(target), Accompanies = true };
+    protected override BlueAccompanies ConfirmedResult => new BlueAccompanies(h.Game) { Initiator = h.Faction, Location = target, Accompanies = true };
 
     protected override BlueAccompanies PassedResult => new BlueAccompanies(h.Game) { Initiator = h.Faction, Accompanies = false };
 

@@ -10,8 +10,8 @@
 
 @code {
 
-    protected int fromTerritoryId = -1;
-    protected int toLocationId = -1;
+    protected Territory fromTerritory;
+    protected Location toLocation;
     protected Dictionary<Location, Battalion> forces = new Dictionary<Location, Battalion>();
     protected bool asAdvisors = false;
 
@@ -23,8 +23,8 @@
             MapDrawer.OnLocationSelectedWithCtrlOrAlt += HandleLocationSelectedWithModifier;
         }
 
-        Initialize<int, Territory>(ref fromTerritoryId, ValidSources);
-        Initialize<int, Location>(ref toLocationId, ValidTargets);
+        Initialize<Territory, Territory>(ref fromTerritory, ValidSources);
+        Initialize<Location, Location>(ref toLocation, ValidTargets);
     }
 
     public void Dispose()
@@ -117,12 +117,12 @@
 
     private void HandleLocationSelected(object sender, Location l)
     {
-        SetIfValid(ref toLocationId, ValidTargets, l);
+        SetIfValid(ref toLocation, ValidTargets, l);
     }
 
     private void HandleLocationSelectedWithModifier(object sender, Location l)
     {
-        SetIfValid(ref fromTerritoryId, ValidSources, l.Territory);
+        SetIfValid(ref fromTerritory, ValidSources, l.Territory);
     }
 
 }

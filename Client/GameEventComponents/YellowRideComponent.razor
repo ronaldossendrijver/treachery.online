@@ -6,36 +6,19 @@
 @using Treachery.Client.GenericComponents;
 @inherits PlacementComponent<YellowRidesMonster>
 
-<div class="card p-1 mb-2 border-danger">
-    <div class="card-header">Travel with @Skin.Current.Describe(Concept.Monster)</div>
-    <div class="card-body">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
+
+    <Header>Travel with @Skin.Current.Describe(Concept.Monster)</Header>
+    <Body>
+
+        <SelectComponent ButtonHint="ClickHintButton.LMB" ModifierHint="ClickHintModifier.CTRL" Value="fromTerritory" Values="ValidSources">
+            <Label>From</Label>
+        </SelectComponent>
 
         @{
-            var locations = h.Player.LocationsWithAnyForcesInTerritory(h.Game.Map.TerritoryLookup.Find(fromTerritoryId)).ToList();
-
-            <label for="moveFrom">From <kbd>ctrl+click</kbd></label>
-            <select class="custom-select" @bind="fromTerritoryId" id="moveFrom">
-                @foreach (var t in ValidSources)
-                {
-                    <option value="@t.Id">@t.Name</option>
-                }
-            </select>
+            var locations = Player.LocationsWithAnyForcesInTerritory(fromTerritory).ToList();
 
             <table class="table table-striped table-sm m-0 w-auto">
-                <thead>
-                    <tr class="small">
-                        @if (locations.Count > 1)
-                        {
-                            <td>Location</td>
-                        }
-
-                        <td colspan="3">@h.Player.ForceName</td>
-                        @if (h.Player.HasSpecialForcesToMove)
-                        {
-                            <td colspan="3">@h.Player.SpecialForceName</td>
-                        }
-                    </tr>
-                </thead>
                 <tbody>
                     @foreach (var l in locations)
                     {
@@ -45,81 +28,53 @@
                                 <td>@l.Name</td>
                             }
 
-                            @if (l.Sector != h.Game.SectorInStorm)
+                            @if (l.Sector != Game.SectorInStorm)
                             {
-                                <td class="p-0"><button type="button" @onclick="(e => ForceAmountButton(l, -1, false))" disabled="@(Forces(l, false) == 0)" class="btn btn-primary btn-sm">-</button></td>
-                                <td>@Forces(l, false)</td>
-                                <td class="p-0"><button type="button" @onclick="(e => ForceAmountButton(l, 1, false))" disabled="@(Forces(l, false) == h.Player.ForcesIn(l))" class="btn btn-primary btn-sm">+</button></td>
+                                <td><NumberPickerComponent Value="@Forces(l, false)" OnDown="(e => ForceAmountButton(l, -1, false))" OnUp="(e => ForceAmountButton(l, 1, false))" Min="0" Max="Player.ForcesIn(l)" SymbolSRC="@Skin.Current.GetFactionForceImageURL(Faction)" /></td>
                             }
                             else
                             {
-                                <td colspan="3" class="font-italic text-danger">cannot move from storm</td>
+                                <td class="font-italic text-danger">cannot move from storm</td>
                             }
 
-                            @if (h.Player.HasSpecialForcesToMove)
+                            @if (Player.SpecialForcesIn(l) > 0)
                             {
-                                @if (l.Sector != h.Game.SectorInStorm)
+                                if (l.Sector != Game.SectorInStorm)
                                 {
-                                    <td class="p-0"><button type="button" @onclick="(e => ForceAmountButton(l, -1, true))" disabled="@(Forces(l, true) == 0)" class="btn btn-primary btn-sm">-</button></td>
-                                    <td>@Forces(l, true)</td>
-                                    <td class="p-0"><button type="button" @onclick="(e => ForceAmountButton(l, 1, true))" disabled="@(Forces(l, true) == h.Player.SpecialForcesIn(l))" class="btn btn-primary btn-sm">+</button></td>
+                                    <td><NumberPickerComponent Value="@Forces(l, true)" OnDown="(e => ForceAmountButton(l, -1, true))" OnUp="(e => ForceAmountButton(l, 1, true))" Min="0" Max="Player.SpecialForcesIn(l)" SymbolSRC="@Skin.Current.GetFactionSpecialForceImageURL(Faction)" /></td>
                                 }
                                 else
                                 {
-                                    <td colspan="3" class="font-italic text-danger">cannot move from storm</td>
+                                    <td class="font-italic text-danger">cannot move from storm</td>
                                 }
                             }
                         </tr>
                     }
+
                 </tbody>
             </table>
-
-            <label for="rideTo">To <kbd>click</kbd></label>
-            <select class="custom-select" @bind="toLocationId" id="rideTo">
-                @foreach (var f in ValidTargets)
-                {
-                    <option value="@h.Game.Map.LocationLookup.GetId(f)">@f</option>
-                }
-            </select>
-
-            <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
-            <div class="text-danger bg-dark">@validationError</div>
         }
-        <button class="btn btn-primary mt-1" @onclick="Pass">Pass</button>
-    </div>
-</div>
+
+        <SelectComponent ButtonHint="ClickHintButton.LMB" Value="toLocation" Values="ValidTargets">
+            <Label>To</Label>
+        </SelectComponent>
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@validationError" Pass="Pass" PassText="Pass" />
+
+    </Body>
+
+</GameEventComponentLayout>
 
 @code {
 
-    override protected YellowRidesMonster ConfirmedResult
-    {
-        get
-        {
-            return new YellowRidesMonster(h.Game) { Initiator = h.Faction, ForceLocations = forces, To = h.Game.Map.LocationLookup.Find(toLocationId), Passed = false };
-        }
-    }
+    protected override bool IsUrgent => true;
+    protected override Faction IsFactionSpecific => Faction.Yellow;
 
-    override protected YellowRidesMonster PassedResult
-    {
-        get
-        {
-            return new YellowRidesMonster(h.Game) { Initiator = h.Faction, Passed = true };
-        }
-    }
+    override protected YellowRidesMonster ConfirmedResult => new YellowRidesMonster(h.Game) { Initiator = h.Faction, ForceLocations = forces, To = toLocation, Passed = false };
 
-    protected override IEnumerable<Territory> ValidSources
-    {
-        get
-        {
-            return YellowRidesMonster.ValidSources(h.Game);
-        }
-    }
+    override protected YellowRidesMonster PassedResult => new YellowRidesMonster(h.Game) { Initiator = h.Faction, Passed = true };
 
-    protected override IEnumerable<Location> ValidTargets
-    {
-        get
-        {
-            return YellowRidesMonster.ValidTargets(h.Game, h.Player);
-        }
-    }
+    protected override IEnumerable<Territory> ValidSources => YellowRidesMonster.ValidSources(h.Game);
+
+    protected override IEnumerable<Location> ValidTargets => YellowRidesMonster.ValidTargets(h.Game, h.Player);
 }

@@ -2,45 +2,29 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
 --->
 
-@using Treachery.Shared
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<GameEventType>
 @typeparam GameEventType
 
 @if (!dismissed)
 {
-    <GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle">
+    <GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
         <Header>@Title</Header>
         <Body>
 
-            <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError="@validationError" Other="Dismiss" OtherText="@DismissLabel" />
+            @if (Dismissable)
+            {
+                <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError="@validationError" Other="Dismiss" OtherText="@DismissLabel" />
+            }
+            else
+            {
+                <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError="@validationError" />
+            }
 
         </Body>
 
     </GameEventComponentLayout>
-
-
-    <div class="card p-1 mb-2 @(Alert ? "border-danger" : "border-light")" style="@BackgroundStyle">
-        <div class="card-header" style="@HeaderStyle">
-            @Title
-            @if (Collapsible)
-            {
-                <CollapseButton @bind-Collapsed="Collapsed" />
-            }
-        </div>
-        @if (!Collapsible || !Collapsed)
-        {
-            <div class="card-body" style="@BodyStyle">
-                <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>@ConfirmLabel</button>
-                <div class="text-danger bg-dark">@validationError</div>
-                @if (Dismissable)
-                {
-                    <button class="btn btn-primary mt-1" @onclick="Dismiss" disabled=@(!Valid)>@DismissLabel</button>
-                }
-            </div>
-        }
-    </div>
 }
 
 @code {        

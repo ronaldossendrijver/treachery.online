@@ -67,14 +67,28 @@
     [Parameter]
     public EventCallback<int> ValueChanged { get; set; }
 
+    [Parameter]
+    public EventCallback OnUp { get; set; }
+
+    [Parameter]
+    public EventCallback OnDown { get; set; }
+
     private void Increase()
     {
-        if (Value < Max) Value++;
+        if (Value < Max)
+        {
+            Value++;
+            OnUp.InvokeAsync();
+        }
     }
 
     private void Decrease()
     {
-        if (Value > Min) Value--;
+        if (Value > Min)
+        {
+            Value--;
+            OnDown.InvokeAsync();
+        }
     }
 
     private string IncreaseArrowColor => Value < Max ? ArrowColor : DisabledColor;

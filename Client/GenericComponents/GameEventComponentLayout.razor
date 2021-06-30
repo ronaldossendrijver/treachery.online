@@ -12,7 +12,7 @@
 
     @if (!Collapsible || !Collapsed)
     {
-        <div class="card-body">
+        <div class="card-body" style="@BodyStyle">
             @Body
         </div>
     }
@@ -29,6 +29,9 @@
 
     [Parameter]
     public string HeaderStyle { get; set; }
+
+    [Parameter]
+    public string BodyStyle { get; set; }
 
     [Parameter]
     public RenderFragment Header { get; set; }
