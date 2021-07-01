@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<KarmaHandSwap>
 
-<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
     <Header>Return @Game.KarmaHandSwapNumberOfCards cards to @Skin.Current.Describe(Game.KarmaHandSwapTarget)</Header>
     <Body>
@@ -17,6 +17,9 @@
 </GameEventComponentLayout>
 
 @code {
+
+    protected override bool IsUrgent => true;
+    protected override Faction IsFactionSpecific => Faction.Black;
 
     private List<TreacheryCard> selectedCards = new List<TreacheryCard>();
 

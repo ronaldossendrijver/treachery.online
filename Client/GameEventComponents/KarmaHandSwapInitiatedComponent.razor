@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<KarmaHandSwapInitiated>
 
-<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
     <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to perform a Hand Swap</Header>
     <Body>
@@ -22,6 +22,8 @@
 </GameEventComponentLayout>
 
 @code {
+
+    protected override Faction IsFactionSpecific => Faction.Black;
 
     private Faction target;
 

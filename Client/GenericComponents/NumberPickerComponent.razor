@@ -1,15 +1,15 @@
 ﻿@if (Label != "")
 {
-    <label class="mb-0">@Label</label>
+    <label class="mt-1">@Label</label>
 }
 
-<div class="container mt-1 mb-1">
+<div class="container mb-1">
 
     <div class="row justify-content-start">
 
         <div style="width: @ImageSize; height: @ImageSize; background-image: @BackgroundImage; background-size: contain; background-repeat: no-repeat;">
             <div style="width: @ImageSize; height: @ImageSize; background-image: @ForegroundImage; background-size: contain; background-repeat: no-repeat; display:flex;">
-                <div style="width: @NumberSize; height: @NumberSize; margin: @NumberOffsetY 0 0 @NumberOffsetX; font-size: @FontSize; font-weight: bold; color: @NumberColor; line-height: 1.0; text-align:center">
+                <div style="width: @NumberSize; height: @NumberSize; margin: @NumberOffsetY 0 0 @NumberOffsetX; font-size: @FontSize; font-weight: bold; color: @NumberColor; line-height: 1.0; text-align:center; white-space:nowrap">
                     @Value
                 </div>
             </div>
@@ -126,7 +126,7 @@
 
     protected override void OnParametersSet()
     {
-        Value = Min;
+        if (Value < Min || Value > Max) Value = Min;
     }
 
     private string NumberBackground
@@ -234,7 +234,7 @@
             return NumberAlignment switch
             {
                 NumberPickerAlignment.Center => "" + ((int)(0.225f * Size)) + "px",
-                NumberPickerAlignment.BottomRight => "" + ((int)(0.5f * Size)) + "px",
+                NumberPickerAlignment.BottomRight => "" + ((int)(0.53f * Size)) + "px",
                 _ => "0px"
             };
         }
@@ -247,7 +247,7 @@
             return NumberAlignment switch
             {
                 NumberPickerAlignment.Center => "" + ((int)(0.25f * Size)) + "px",
-                NumberPickerAlignment.BottomRight => "" + ((int)(0.6f * Size)) + "px",
+                NumberPickerAlignment.BottomRight => "" + ((int)(0.63f * Size)) + "px",
                 _ => "0px"
             };
         }

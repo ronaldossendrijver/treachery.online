@@ -25,7 +25,7 @@
                     <td class="font-italic text-danger">cannot move from storm</td>
                 }
 
-                @if (Player.SpecialForcesIn(l) > 0)
+                @if (MaxSpecial(l) > 0)
                 {
                     if (MaySelectFromStorm || l.Sector != Game.SectorInStorm)
                     {

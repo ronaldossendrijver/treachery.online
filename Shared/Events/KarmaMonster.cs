@@ -3,6 +3,8 @@
  */
 
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Treachery.Shared
 {
@@ -34,6 +36,11 @@ namespace Treachery.Shared
         public override Message GetMessage()
         {
             return new Message(Initiator, "Using {0}, {1} send {2} to {3}.", TreacheryCardType.Karma, Initiator, Concept.Monster, Territory);
+        }
+
+        public static IEnumerable<Territory> ValidTargets(Game g)
+        {
+            return g.Map.Territories.Where(t => !t.IsProtectedFromWorm);
         }
     }
 }

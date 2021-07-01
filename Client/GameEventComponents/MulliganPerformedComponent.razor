@@ -5,40 +5,31 @@
 @using Treachery.Shared
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<MulliganPerformed>
-@implements IDisposable
 
-<div class="card p-1 mb-2 border-danger">
-    <div class="card-header">Draw a new selection of four traitors?</div>
-    <div class="card-body">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Draw a new selection of four traitors?</Header>
+    <Body>
+
         @if (MulliganPerformed.MayMulligan(Player))
         {
-            <button class="btn btn-primary mt-1" @onclick="Confirm">Yes</button>
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError="@Validation" Pass="Pass" PassText="No (proceed with current traitors)" />
         }
-        <button class="btn btn-primary mt-1" @onclick="Pass">No (proceed with current traitors)</button>
+        else
+        {
+            <ButtonRowComponent Pass="Pass" PassText="No (proceed with current traitors)" />
+        }
 
-    </div>
-</div>
+    </Body>
+
+</GameEventComponentLayout>
 
 @code {
 
-    protected override MulliganPerformed ConfirmedResult
-    {
-        get
-        {
-            return new MulliganPerformed(Game) { Initiator = Faction, Passed = false };
-        }
-    }
+    protected override bool IsUrgent => true;
+    protected override Faction IsFactionSpecific => Faction.Black;
 
-    protected override MulliganPerformed PassedResult
-    {
-        get
-        {
-            return new MulliganPerformed(Game) { Initiator = Faction, Passed = true };
-        }
-    }
+    protected override MulliganPerformed ConfirmedResult => new MulliganPerformed(Game) { Initiator = Faction, Passed = false };
 
-    public void Dispose()
-    {
-
-    }
+    protected override MulliganPerformed PassedResult => new MulliganPerformed(Game) { Initiator = Faction, Passed = true };
 }

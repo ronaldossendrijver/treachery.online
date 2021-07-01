@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits PlacementComponent<Caravan>
 
-<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
     <Header>Perform a @Skin.Current.Describe(TreacheryCardType.Caravan)?</Header>
     <Body>

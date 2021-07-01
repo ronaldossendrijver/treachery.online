@@ -7,34 +7,28 @@
 @inherits GameEventComponent<KarmaMonster>
 @implements IDisposable
 
-<div class="card p-1 mb-2" style="@BackgroundStyle">
-    <div class="card-header" style="@HeaderStyle">
-        Use @Skin.Current.Describe(TreacheryCardType.Karma) to beacon @Skin.Current.Describe(Concept.Monster) to a territory of choice
-    </div>
-    <div class="card-body" style="@BodyStyle">
-        <label for="karamaShaiHuludTarget">To <kbd>click</kbd></label>
-        <select class="custom-select" @bind="@targetId" id="karamaShaiHuludTarget">
-            @foreach (var f in ValidTargets)
-            {
-                <option value="@f.Id">@f.Name</option>
-            }
-        </select>
-        <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
-        <div class="text-danger bg-dark">@validationError</div>
-    </div>
-</div>
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle">
+
+    <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to make @Skin.Current.Describe(Concept.Monster) appear in a territory of choice</Header>
+    <Body>
+
+        <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="KarmaMonster.ValidTargets(Game)">
+            <Label>Territory</Label>
+        </SelectComponent>
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
 
 @code {
 
-    private int targetId;
+    protected override Faction IsFactionSpecific => Faction.Yellow;
 
-    protected override KarmaMonster ConfirmedResult
-    {
-        get
-        {
-            return new KarmaMonster(Game) { Initiator = Faction, Territory = Game.Map.TerritoryLookup.Find(targetId) };
-        }
-    }
+    private Territory target;
+
+    protected override KarmaMonster ConfirmedResult => new KarmaMonster(Game) { Initiator = Faction, Territory = target };
 
     public void Dispose()
     {
@@ -47,21 +41,12 @@
         {
             MapDrawer.OnLocationSelected += HandleLocationSelected;
         }
-
-        Initialize<int, Territory>(ref targetId, ValidTargets);
     }
-
 
     private void HandleLocationSelected(object sender, Location l)
     {
-        SetIfValid<int, Territory>(ref targetId, ValidTargets, l.Territory);
+        SetIfValid(ref target, KarmaMonster.ValidTargets(Game), l.Territory);
     }
 
-    private IEnumerable<Territory> ValidTargets
-    {
-        get
-        {
-            return Game.Map.Territories.Where(t => !t.IsProtectedFromWorm);
-        }
-    }
+
 }

@@ -334,8 +334,8 @@ namespace Treachery.Shared
 
         public void HandleEvent(PlayerReplaced e)
         {
-            GetPlayer(e.ToReplace).IsBot = true;
-            CurrentReport.Add(e.GetMessage());
+            GetPlayer(e.ToReplace).IsBot = !GetPlayer(e.ToReplace).IsBot;
+            CurrentReport.Add(e.ToReplace, "{0} will now be played by a {1}.", e.ToReplace, GetPlayer(e.ToReplace).IsBot? "Bot" : "Human");
         }
     }
 }

@@ -32,12 +32,12 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(ToReplace, "{0} will now be played by a Bot.", ToReplace);
+            return new Message(ToReplace, "{0} player has been replaced.", ToReplace);
         }
 
         public static IEnumerable<Faction> ValidTargets(Game g)
         {
-            return g.Players.Where(p => !p.IsBot).Select(p => p.Faction);
+            return g.Players.Select(p => p.Faction);
         }
 
     }

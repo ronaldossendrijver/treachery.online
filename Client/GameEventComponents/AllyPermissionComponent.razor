@@ -54,7 +54,7 @@
             <div>They own <strong>@ally.Resources</strong> @Skin.Current.Describe(Concept.Resource).</div>
         }
 
-        <label class="mt-2 mb-0">How much are you willing to pay for their bids and shipments (currently: <span class="badge badge-primary badge-pill">@Game.GetPermittedUseOfAllySpice(Player.Ally)</span>)? @(Faction == Faction.Red ? "Payments for bids flow back to you." : "")</label>
+        <label class="mt-2 mb-0">How much are you willing to pay for their bids and shipments (currently: <strong>@Game.GetPermittedUseOfAllySpice(Player.Ally)</strong>)? @(Faction == Faction.Red ? "Payments for bids flow back to you." : "")</label>
         <NumberPickerComponent @bind-Value="spice" Min="0" Max="Player.Resources" SymbolSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400" />
 
         @if (Karma.CanKarma(Game, Player))
@@ -62,60 +62,60 @@
             var permittedKarma = Game.GetPermittedUseOfAllyKarma(Player.Ally);
 
             <SelectCardComponent @bind-Value="karmaCard" Values="Karma.ValidKarmaCards(Game, Player)">
-                <Label>May your ally use one of your @Skin.Current.Describe(TreacheryCardType.Karma) cards to ship at @Skin.Current.Describe(Faction.Orange) rates (currently: <span class="badge badge-primary badge-pill">@(permittedKarma == null ? "no" : permittedKarma.Name)</span>)?</Label>
+                <Label>Allow use of your @Skin.Current.Describe(TreacheryCardType.Karma) cards to ship at @Skin.Current.Describe(Faction.Orange) rates (currently: <strong>@(permittedKarma == null ? "no" : permittedKarma.Name)</strong>)?</Label>
             </SelectCardComponent>
         }
 
         @if (Faction == Faction.Red)
         {
-            <label class="mt-1 mb-0">How many forces may they revive at your expense (currently: <span class="badge badge-primary badge-pill">@(Game.RedWillPayForExtraRevival)</span>)?</label>
+            <label class="mt-1 mb-0">How many revivals will you pay for them (currently: <strong>@(Game.RedWillPayForExtraRevival)</strong>)?</label>
             <NumberPickerComponent @bind-Value="emperorWillPayForExtraRevival" Min="0" Max="3" SymbolSRC="@Skin.Current.GetFactionForceImageURL(Player.Ally)" />
         }
         else if (Faction == Faction.Orange)
         {
             <CheckboxComponent @bind-Value="guildAllyMayShipAsGuild">
-                Allow them to ship at @Skin.Current.Describe(Faction.Orange) rates and site-to-site (currently: <span class="badge badge-primary badge-pill">@(Game.OrangeAllyMayShipAsGuild ? "yes" : "no")</span>)
+                Allow shipment at @Skin.Current.Describe(Faction.Orange) rates and site-to-site (currently: <strong>@(Game.OrangeAllyMayShipAsGuild ? "yes" : "no")</strong>)
             </CheckboxComponent>
         }
         else if (Faction == Faction.Purple)
         {
             <CheckboxComponent @bind-Value="purpleAllyMyReviveAsPurple">
-                Allow them to revive at @Skin.Current.Describe(Faction.Purple) rates (currently: <span class="badge badge-primary badge-pill">@(Game.PurpleAllyMayReviveAsPurple ? "yes" : "no")</span>)
+                Allow revival at @Skin.Current.Describe(Faction.Purple) rates (currently: <strong>@(Game.PurpleAllyMayReviveAsPurple ? "yes" : "no")</strong>)
             </CheckboxComponent>
         }
         else if (Faction == Faction.Grey)
         {
             <CheckboxComponent @bind-Value="greyAllyMayReplace">
-                Allow them to replace treachery cards they win by new cards (currently: <span class="badge badge-primary badge-pill">@(Game.GreyAllyMayReplaceCards ? "yes" : "no")</span>)
+                Allow replacing treachery cards they win (currently: <strong>@(Game.GreyAllyMayReplaceCards ? "yes" : "no")</strong>)
             </CheckboxComponent>
         }
         else if (Faction == Faction.Yellow)
         {
             <CheckboxComponent @bind-Value="fremenAllowsThreeFreeRevivals">
-                Allow them to revive three forces for free (currently: <span class="badge badge-primary badge-pill">@(Game.YellowAllowsThreeFreeRevivals ? "yes" : "no")</span>)
+                Allow 3 free revivals (currently: <strong>@(Game.YellowAllowsThreeFreeRevivals ? "yes" : "no")</strong>)
             </CheckboxComponent>
 
             <CheckboxComponent @bind-Value="fremenWillProtectFromShaiHulud">
-                Protect them from being devoured by @Skin.Current.Describe(Concept.Monster) (currently: <span class="badge badge-primary badge-pill">@(Game.YellowWillProtectFromShaiHulud ? "yes" : "no")</span>)
+                Protect them from @Skin.Current.Describe(Concept.Monster) (currently: <strong>@(Game.YellowWillProtectFromShaiHulud ? "yes" : "no")</strong>)
             </CheckboxComponent>
 
             @if (Game.Applicable(Rule.YellowSeesStorm))
             {
                 <CheckboxComponent @bind-Value="fremenShareStormPrescience">
-                    Share your storm knowledge with them (currently: <span class="badge badge-primary badge-pill">@(Game.YellowSharesPrescience ? "yes" : "no")</span>)
+                    Share storm knowledge (currently: <strong>@(Game.YellowSharesPrescience ? "yes" : "no")</strong>)
                 </CheckboxComponent>
             }
         }
         else if (Faction == Faction.Green)
         {
             <CheckboxComponent @bind-Value="greenSharePrescience">
-                Share your Prescience with them (currently: <span class="badge badge-primary badge-pill">@(Game.GreenSharesPrescience ? "yes" : "no")</span>)
+                Share your Prescience (currently: <strong>@(Game.GreenSharesPrescience ? "yes" : "no")</strong>)
             </CheckboxComponent>
         }
         else if (Faction == Faction.Blue)
         {
             <CheckboxComponent @bind-Value="blueAllyMayUseVoice">
-                Allow them to use your Voice (currently: <span class="badge badge-primary badge-pill">@(Game.BlueAllyMayUseVoice ? "yes" : "no")</span>)
+                Allow use of Voice (currently: <strong>@(Game.BlueAllyMayUseVoice ? "yes" : "no")</strong>)
             </CheckboxComponent>
         }
 

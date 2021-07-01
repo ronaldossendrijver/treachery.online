@@ -42,39 +42,26 @@
     [Parameter]
     public bool Collapsible { get; set; } = true;
 
-    private static Dictionary<Type, bool> SavedCollapsedStateValues = new Dictionary<Type, bool>();
-    private bool? _collapsed = null;
-    protected bool Collapsed
+    private bool _collapsed  = false;
+
+    [Parameter]
+    public bool Collapsed
     {
         get
         {
-            if (_collapsed == null)
-            {
-                if (SavedCollapsedStateValues.ContainsKey(GetType()))
-                {
-                    _collapsed = SavedCollapsedStateValues[GetType()];
-                }
-                else
-                {
-                    _collapsed = false;
-                }
-            }
-
-            return (bool)_collapsed;
+            return _collapsed;
         }
         set
         {
+
             if (_collapsed != value)
             {
-                if (SavedCollapsedStateValues.ContainsKey(GetType()))
-                {
-                    SavedCollapsedStateValues.Remove(GetType());
-                }
-
-                SavedCollapsedStateValues.Add(GetType(), value);
                 _collapsed = value;
-                StateHasChanged();
+                CollapsedChanged.InvokeAsync(value);
             }
         }
     }
+
+    [Parameter]
+    public EventCallback<bool> CollapsedChanged { get; set; }
 }

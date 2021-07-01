@@ -6,12 +6,8 @@ using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Web;
-using System.Collections.Generic;
 using Treachery.Shared;
-
 
 namespace Treachery.Client
 {
@@ -164,6 +160,7 @@ namespace Treachery.Client
                 return "";
             }
 
+            /*
             using SHA256 sha256Hash = SHA256.Create();
 
             // Convert the input string to a byte array and compute the hash.
@@ -181,7 +178,15 @@ namespace Treachery.Client
             }
 
             // Return the hexadecimal string.
-            return sBuilder.ToString();
+            return sBuilder.ToString();*/
+
+            UInt64 hashedValue = 3074457345618258791ul;
+            for (int i = 0; i < input.Length; i++)
+            {
+                hashedValue += input[i];
+                hashedValue *= 3074457345618258799ul;
+            }
+            return hashedValue.ToString();
         }
 
         // Verify a hash against a string.

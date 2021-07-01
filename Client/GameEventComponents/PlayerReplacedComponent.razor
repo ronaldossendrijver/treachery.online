@@ -5,58 +5,34 @@
 @using Treachery.Shared
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<PlayerReplaced>
-@implements IDisposable
 
-<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
-    <div class="card-header">
-        Replace a player with a Bot
-        <CollapseButton @bind-Collapsed="Collapsed" />
-    </div>
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    @if (!Collapsed)
-    {
-        <div class="card-body">
+    <Header>Replace a player with a Bot (or vice versa)</Header>
+    <Body>
 
-            <label for="toReplace">Faction</label>
-            <select class="custom-select" @bind="toReplace" id="toReplace">
-                @foreach (var f in PlayerReplaced.ValidTargets(Game))
-                {
-                    <option value="@f">@Skin.Current.Describe(f)</option>
-                }
-            </select>
+        <SelectFactionComponent @bind-Value="toReplace" Values="PlayerReplaced.ValidTargets(Game)" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError="@Validation" />
 
-            <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
-            <div class="text-danger bg-dark">@validationError</div>
+    </Body>
 
-        </div>
-    }
-
-</div>
+</GameEventComponentLayout>
 
 @code {
 
     private Faction toReplace;
 
-    protected override void OnInitialized()
-    {
-        Collapsed = true;
-    }
-
     protected override void OnAfterRender(bool firstRender)
     {
+        if (firstRender)
+        {
+            Collapsed = true;
+        }
+
         Initialize<Faction, Faction>(ref toReplace, PlayerReplaced.ValidTargets(Game));
     }
 
-    protected override PlayerReplaced ConfirmedResult
-    {
-        get
-        {
-            return new PlayerReplaced(Game) { Initiator = Faction, ToReplace = toReplace };
-        }
-    }
+    protected override PlayerReplaced ConfirmedResult => new PlayerReplaced(Game) { Initiator = Faction, ToReplace = toReplace };
 
-    public void Dispose()
-    {
-
-    }
+    private string ConfirmLabel => Game.GetPlayer(toReplace) != null && Game.GetPlayer(toReplace).IsBot ? "Replace by a human" : "Replace by a bot";
 }

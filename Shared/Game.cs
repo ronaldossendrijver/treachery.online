@@ -220,7 +220,7 @@ namespace Treachery.Shared
                     break;
             }
 
-            if (CurrentPhase > Phase.TradingFactions && Players.Any(p => !p.IsBot))
+            if (CurrentMainPhase >= MainPhase.Setup)
             {
                 result.Add(typeof(PlayerReplaced));
             }

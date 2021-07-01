@@ -26,7 +26,7 @@ namespace Treachery.Shared
             if (numberOfSpecialForces > p.SpecialForcesInReserve) return Skin.Current.Format("Too many {0}", p.SpecialForce);
 
             int numberOfForces = ForceLocations.Values.Sum(b => b.AmountOfForces);
-            if (numberOfForces > p.ForcesInReserve) return "Too many forces";
+            if (numberOfForces > p.ForcesInReserve) return Skin.Current.Format("Too many {0}", p.Force);
 
             return "";
         }

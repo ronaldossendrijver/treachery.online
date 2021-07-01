@@ -57,13 +57,6 @@
         }
     }
 
-    /*
-    protected IEnumerable<int> GetIds(IEnumerable<IIdentifiable> items, int idIfNull = -1)
-    {
-        return items.Select(i => i != null ? i.Id : idIfNull);
-    }
-    */
-
     protected IEnumerable<string> GetLabels<T>(IEnumerable<T> items, string labelIfNull = "")
     {
         return items.Select(i => i != null ? i.ToString() : labelIfNull);
