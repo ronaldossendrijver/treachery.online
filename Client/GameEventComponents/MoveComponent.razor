@@ -22,7 +22,7 @@
                 <Label>From</Label>
             </SelectComponent>
 
-            <ForceSelectionComponent h="h" Forces="forces" Locations="Player.LocationsWithAnyForcesInTerritory(fromTerritory)" />
+            <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="forces" Locations="Player.LocationsWithAnyForcesInTerritory(fromTerritory)" />
 
             <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="toLocation" Values="ValidTargets">
                 <Label>To</Label>

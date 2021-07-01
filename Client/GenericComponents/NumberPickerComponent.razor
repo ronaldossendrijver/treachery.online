@@ -113,7 +113,7 @@
     public bool Disabled { get; set; } = false;
 
     [Parameter]
-    public int Size { get; set; } = 40;
+    public int Size { get; set; } = 36;
 
     [Parameter]
     public string NumberBackgroundFillColor { get; set; } = "white";
@@ -229,7 +229,7 @@
         {
             return NumberAlignment switch
             {
-                NumberPickerAlignment.Center => "" + ((int)(0.25f * Size)) + "px",
+                NumberPickerAlignment.Center => "" + ((int)(0.225f * Size)) + "px",
                 NumberPickerAlignment.BottomRight => "" + ((int)(0.5f * Size)) + "px",
                 _ => "0px"
             };

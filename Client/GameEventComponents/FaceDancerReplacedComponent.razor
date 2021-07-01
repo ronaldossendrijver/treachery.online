@@ -5,49 +5,29 @@
 @using Treachery.Shared
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<FaceDancerReplaced>
-@implements IDisposable
 
-<div class="card p-1 mb-2 border-danger">
-    <div class="card-header">Select which Face Dancer to replace</div>
-    <div class="card-body">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-        <SelectComponent @bind-Value="dancerId" Values="FaceDancerReplaced.ValidFaceDancers(h.Player).Select(h => h.Id)" ValueLabels="FaceDancerReplaced.ValidFaceDancers(h.Player)" />
+    <Header>Replace a Face Dancer?</Header>
+    <Body>
 
-        <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
-        <div class="text-danger bg-dark">@validationError</div>
-        <button class="btn btn-primary mr-1" @onclick="Pass">Pass</button>
+        <SelectHeroComponent @bind-Value="dancer" Values="FaceDancerReplaced.ValidFaceDancers(h.Player)"/>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
 
-    </div>
-</div>
+    </Body>
+
+</GameEventComponentLayout>
 
 @code {
 
-    private int dancerId;
+    private IHero dancer;
 
     protected override void OnAfterRender(bool firstRender)
     {
-        Initialize<int, IHero>(ref dancerId, FaceDancerReplaced.ValidFaceDancers(h.Player));
+        //Initialize(ref dancer, FaceDancerReplaced.ValidFaceDancers(h.Player));
     }
 
-    public void Dispose()
-    {
+    protected override FaceDancerReplaced ConfirmedResult => new FaceDancerReplaced(h.Game) { Initiator = h.Faction, Passed = false, SelectedDancer = dancer };
 
-    }
-
-    protected override FaceDancerReplaced ConfirmedResult
-    {
-        get
-        {
-            return new FaceDancerReplaced(h.Game) { Initiator = h.Faction, Passed = false, SelectedDancer = LeaderManager.HeroLookup.Find(dancerId) };
-        }
-    }
-
-    protected override FaceDancerReplaced PassedResult
-    {
-        get
-        {
-            return new FaceDancerReplaced(h.Game) { Initiator = h.Faction, Passed = true };
-        }
-    }
-
+    protected override FaceDancerReplaced PassedResult => new FaceDancerReplaced(h.Game) { Initiator = h.Faction, Passed = true };
 }

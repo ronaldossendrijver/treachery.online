@@ -11,14 +11,14 @@
         {
             <tr class="small bg-transparent">
 
-                @if (Locations.Count() > 1)
+                @if (AlwaysShowLocation || Locations.Count() > 1)
                 {
-                    <td>@l.Name</td>
+                    <td>@l.ToString()</td>
                 }
 
-                @if (l.Sector != Game.SectorInStorm)
+                @if (MaySelectFromStorm || l.Sector != Game.SectorInStorm)
                 {
-                    <td><NumberPickerComponent Value="@ForceAmount(l, false)" OnDown="(e => ForceAmountButton(l, -1, false))" OnUp="(e => ForceAmountButton(l, 1, false))" Min="0" Max="Player.ForcesIn(l)" SymbolSRC="@Skin.Current.GetFactionForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight"/></td>
+                    <td><NumberPickerComponent Value="@ForceAmount(l, false)" OnDown="(e => ForceAmountButton(l, -1, false))" OnUp="(e => ForceAmountButton(l, 1, false))" Min="Min" Max="Max(l)" SymbolSRC="@Skin.Current.GetFactionForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight"/></td>
                 }
                 else
                 {
@@ -27,9 +27,9 @@
 
                 @if (Player.SpecialForcesIn(l) > 0)
                 {
-                    if (l.Sector != Game.SectorInStorm)
+                    if (MaySelectFromStorm || l.Sector != Game.SectorInStorm)
                     {
-                        <td><NumberPickerComponent Value="@ForceAmount(l, true)" OnDown="(e => ForceAmountButton(l, -1, true))" OnUp="(e => ForceAmountButton(l, 1, true))" Min="0" Max="Player.SpecialForcesIn(l)" SymbolSRC="@Skin.Current.GetFactionSpecialForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight"/></td>
+                        <td><NumberPickerComponent Value="@ForceAmount(l, true)" OnDown="(e => ForceAmountButton(l, -1, true))" OnUp="(e => ForceAmountButton(l, 1, true))" Min="Min" Max="MaxSpecial(l)" SymbolSRC="@Skin.Current.GetFactionSpecialForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight"/></td>
                     }
                     else
                     {
@@ -50,6 +50,25 @@
 
     [Parameter]
     public IEnumerable<Location> Locations { get; set; }
+
+    [Parameter]
+    public bool MaySelectFromStorm { get; set; } = false;
+
+    [Parameter]
+    public bool AlwaysShowLocation { get; set; } = false;
+
+    [Parameter]
+    public bool FullLocationName { get; set; } = false;
+
+    [Parameter]
+    public int FixedMaxForces { get; set; } = -1;
+
+    [Parameter]
+    public Action OnChanged { get; set; }
+
+    private int Min => 0;
+    private int Max(Location l) => FixedMaxForces >= 0 ? FixedMaxForces : Player.ForcesIn(l);
+    private int MaxSpecial(Location l) => FixedMaxForces >= 0 ? FixedMaxForces : Player.SpecialForcesIn(l);
 
     private int ForceAmount(Location l, bool special)
     {
@@ -101,6 +120,6 @@
             }
         }
 
-        StateHasChanged();
+        OnChanged?.Invoke();
     }
 }

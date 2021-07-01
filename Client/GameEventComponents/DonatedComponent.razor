@@ -14,7 +14,7 @@
 
         <SelectFactionComponent @bind-Value="target" Values="Donated.ValidTargets(h.Game, h.Player)" />
 
-        <NumberPickerComponent @bind-Value="resources" Min="Donated.MinAmount(h.Game, h.Player)" Max="Donated.MaxAmount(h.Game, h.Player)" SymbolSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400" />
+        <NumberPickerComponent @bind-Value="resources" Min="Donated.MinAmount(h.Game, h.Player)" Max="Donated.MaxAmount(h.Game, h.Player)" SymbolSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400"/>
 
         @if (h.Game.Applicable(Rule.CardsCanBeTraded))
         {
