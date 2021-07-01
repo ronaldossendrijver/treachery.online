@@ -6,24 +6,24 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<Prescience>
 
-<div class="card p-1 mb-2 border-danger">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-    <div class="card-header">Use Prescience</div>
-
-    <div class="card-body">
+    <Header>Use Prescience</Header>
+    <Body>
 
         <SelectComponent @bind-Value="aspect" Values="Prescience.ValidAspects">
             <Label>What should be foreseen?</Label>
         </SelectComponent>
 
-        <button class="btn btn-primary" @onclick="Confirm" disabled=@(!Valid)>Confirm</button>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
-        <div class="text-danger bg-dark">@validationError</div>
+    </Body>
 
-    </div>
-</div>
+</GameEventComponentLayout>
 
 @code {
+
+    protected override Faction IsFactionSpecific => Faction.Green;
 
     private PrescienceAspect aspect;
 

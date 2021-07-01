@@ -75,6 +75,7 @@
             {
                 _value = value;
                 ValueChanged.InvokeAsync(value);
+                OnChanged?.Invoke();
             }
         }
     }
@@ -123,6 +124,9 @@
 
     [Parameter]
     public NumberPickerAlignment NumberAlignment { get; set; } = NumberPickerAlignment.Center;
+
+    [Parameter]
+    public Action OnChanged { get; set; }
 
     protected override void OnParametersSet()
     {

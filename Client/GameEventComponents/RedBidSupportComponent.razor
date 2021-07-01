@@ -6,86 +6,46 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<RedBidSupport>
 
-<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-    <div class="card-header">
-        How much of your @Skin.Current.Describe(Concept.Resource) may non-allied factions use for bidding?
-        <CollapseButton @bind-Collapsed="Collapsed" />
-    </div>
+    <Header>How much of your @Skin.Current.Describe(Concept.Resource) may non-allied factions use for bidding?</Header>
+    <Body>
 
-    @if (!Collapsed)
-    {
-        <div class="card-body">
-
-            <div class="row">
-                @foreach (var faction in factions)
+        <table class="table table-borderless table-sm w-auto">
+            <tbody>
+                @foreach (var faction in amounts.Keys)
                 {
-                    <SelectComponent @bind-Value="amounts[faction]" Values="ValidValues">
-                        <Label>@Skin.Current.Describe(faction)</Label>
-                    </SelectComponent>
+                    <tr class="small bg-transparent">
+                        <td><img width=36 src="@Skin.Current.GetImageURL(faction)" /></td>
+                        <td><NumberPickerComponent @bind-Value="amounts[faction]" Min="0" Max="Player.Resources" SymbolSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400" OnChanged="StateHasChanged" /></td>
+                    </tr>
                 }
-            </div>
+            </tbody>
+        </table>
 
-            <div class="text-info small">Your contributions to opponent bids will flow back to you <i>at the end</i> of the bidding phase.</div>
+        <div class="text-info small">Your contributions to opponent bids will flow back to you <i>at the end</i> of the bidding phase.</div>
 
-            <button class="btn btn-primary mt-3" @onclick="Confirm" disabled="@(!Valid)">Confirm</button>
-            <div class="text-danger bg-dark">@validationError</div>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
-        </div>
-    }
+    </Body>
 
-</div>
+</GameEventComponentLayout>
 
 @code {
 
-    private List<Faction> factions = new List<Faction>();
+    protected override Faction IsFactionSpecific => Faction.Red;
+
     private Dictionary<Faction, int> amounts = new Dictionary<Faction, int>();
 
     protected override void OnInitialized()
     {
-        factions.AddRange(ValidTargets);
-        foreach (var f in factions)
+        foreach (var f in ValidTargets)
         {
             amounts.Add(f, Game.SpiceForBidsRedCanPay(f));
         }
     }
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        foreach (var f in factions)
-        {
-            int value = amounts[f];
-            Initialize<int, int>(ref value, ValidValues);
-            amounts[f] = value;
-        }
-    }
+    protected override RedBidSupport ConfirmedResult => new RedBidSupport(Game) { Initiator = Faction, Amounts = amounts };
 
-    protected override RedBidSupport ConfirmedResult
-    {
-        get
-        {
-            return new RedBidSupport(Game) { Initiator = Faction, Amounts = amounts };
-        }
-    }
-
-    private IEnumerable<Faction> ValidTargets
-    {
-        get
-        {
-            return SetIncreasedRevivalLimits.ValidTargets(Game, Player).Where(f => f != Player.Ally);
-        }
-    }
-
-    private string StyleDef(Faction f)
-    {
-        return string.Format("background-color:{0}", Skin.Current.GetFactionColorTransparant(f));
-    }
-
-    private IEnumerable<int> ValidValues
-    {
-        get
-        {
-            return Enumerable.Range(0, Player.Resources + 1);
-        }
-    }
+    private IEnumerable<Faction> ValidTargets => Game.ValidTargets(Player).Where(f => f != Player.Ally);
 }

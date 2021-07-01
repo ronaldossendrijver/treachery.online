@@ -83,8 +83,6 @@ namespace Treachery.Shared
         {
             switch (q)
             {
-                case ClairvoyanceQuestion.None: return false;
-
                 case ClairvoyanceQuestion.CardTypeInBattle:
                 case ClairvoyanceQuestion.CardTypeAsDefenseInBattle:
                 case ClairvoyanceQuestion.CardTypeAsWeaponInBattle:

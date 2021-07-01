@@ -432,6 +432,8 @@ namespace Treachery.Shared
                 Phase.TurnConcluded => "End of turn",
                 Phase.Bidding => "Next bidding round",
                 Phase.BiddingReport => "End of bidding phase",
+                Phase.ShipmentAndMoveConcluded => "End of movement phase",
+                Phase.BattleReport => "End of battle phase",
                 Phase.GameEnded=> "End of game",
                 _ => "unknown"
             };

@@ -64,11 +64,14 @@
     public int FixedMaxForces { get; set; } = -1;
 
     [Parameter]
+    public int FixedMaxSpecialForces { get; set; } = -1;
+
+    [Parameter]
     public Action OnChanged { get; set; }
 
     private int Min => 0;
     private int Max(Location l) => FixedMaxForces >= 0 ? FixedMaxForces : Player.ForcesIn(l);
-    private int MaxSpecial(Location l) => FixedMaxForces >= 0 ? FixedMaxForces : Player.SpecialForcesIn(l);
+    private int MaxSpecial(Location l) => FixedMaxSpecialForces >= 0 ? FixedMaxSpecialForces : Player.SpecialForcesIn(l);
 
     private int ForceAmount(Location l, bool special)
     {

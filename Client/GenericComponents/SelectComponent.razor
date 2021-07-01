@@ -4,24 +4,25 @@
 
 @using System.Collections;
 @using System.Collections.Generic;
+@using System.Linq;
 @using Treachery.Shared;
 @inherits Component;
 @typeparam T
 
 <label class="mb-0" for="@Id">
-@Label 
-<ClickHintComponent Button="@ButtonHint" Modifier="@ModifierHint" />
+    @Label
+    <ClickHintComponent Button="@ButtonHint" Modifier="@ModifierHint" />
 </label>
 
 <select class="custom-select form-control" @bind="@ValueAsString" disabled="@Disabled">
-    
+
     @if (AddEmptyValue)
     {
         <option value="">@EmptyLabel</option>
     }
 
     @Options
-    
+
     @foreach (var valueAndLabel in Values.Zip(LabelsForValues, (v, l) => new { Value = v, Label = l }))
     {
         <option value="@GetValueAsString(valueAndLabel.Value)">@Skin.Current.Describe(valueAndLabel.Label)</option>

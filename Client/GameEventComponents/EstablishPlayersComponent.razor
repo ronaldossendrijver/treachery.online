@@ -19,14 +19,14 @@
 
         <NumberPickerComponent Disabled="@Readonly" @bind-Value="info.MaximumNumberOfPlayers" Min="1" Max="EstablishPlayers.GetMaximumNumberOfPlayers()" Label="Maximum number of players"/>
 
-        <SelectFactionComponent Disabled="@Readonly" Selected="info.FactionsInPlay" Values="AllFactions">
+        <SelectFactionComponent Disabled="@Readonly" Selected="info.FactionsInPlay" Values="AllFactions" OnChanged="StateHasChanged">
             <Label>Factions in play</Label>
         </SelectFactionComponent>
 
         <label class="mt-1 mb-0">Bots</label>
         @foreach (var rule in Game.GetRulesInGroup(RuleGroup.Bots))
         {
-            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" />
+            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="StateHasChanged" />
         }
 
         <SelectComponent Disabled="@Readonly" @bind-Value="@Ruleset" Values="Rulesets">
@@ -175,8 +175,6 @@
             return h.Host.JoinedPlayers.Where(p => info.HostParticipates || p != h.PlayerName);
         }
     }
-
-
 
     private IEnumerable<Ruleset> Rulesets
     {

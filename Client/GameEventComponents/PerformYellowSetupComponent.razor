@@ -7,63 +7,34 @@
 @inherits GameEventComponent<PerformYellowSetup>
 @implements IDisposable
 
-<div class="card p-1 mb-2 border-danger">
-    <div class="card-header">
-        Distribute @(10 - forces.Sum(fl => fl.Value.AmountOfForces + fl.Value.AmountOfSpecialForces)) forces on @Game.Map.SietchTabr.ToString(), @Game.Map.FalseWallSouth.ToString(), and @Game.Map.FalseWallWest.ToString().
-    </div>
-    <div class="card-body">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-        <table class="table table-striped table-sm m-0 w-auto">
-            <thead>
-                <tr class="small">
-                    <td>Location</td>
-                    <td colspan="3">@Player.ForceName<br /><kbd>click</kbd></td>
-                    @if (Player.HasSpecialForces)
-                    {
-                        <td colspan="3">@Player.SpecialForceName<br /><kbd>ctrl+click</kbd></td>
-                    }
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var l in ValidLocations)
-                {
-                    <tr class="small">
+    <Header>Distribute @(10 - forces.Sum(fl => fl.Value.AmountOfForces + fl.Value.AmountOfSpecialForces)) forces on @Game.Map.SietchTabr.ToString(), @Game.Map.FalseWallSouth.ToString(), and @Game.Map.FalseWallWest.ToString().</Header>
+    <Body>
 
-                        <td>@l.ToString()</td>
+        <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="true" FixedMaxForces="10" FixedMaxSpecialForces="0" />
 
-                        <td class="p-0"><button type="button" @onclick="(e => ForceAmountButton(l, -1, false))" class="btn btn-primary btn-sm">-</button></td>
-                        <td>@Forces(l, false)</td>
-                        <td class="p-0"><button type="button" @onclick="(e => ForceAmountButton(l, 1, false))" class="btn btn-primary btn-sm">+</button></td>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
-                        @if (Player.HasSpecialForces)
-                        {
-                            <td class="p-0"><button type="button" @onclick="(e => ForceAmountButton(l, -1, true))" class="btn btn-primary btn-sm">-</button></td>
-                            <td>@Forces(l, true)</td>
-                            <td class="p-0"><button type="button" @onclick="(e => ForceAmountButton(l, 1, true))" class="btn btn-primary btn-sm">+</button></td>
-                        }
+        <p>You may use the planet map:</p>
+        <div><ClickHintComponent Button="ClickHintButton.LMB" /> and <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.SHIFT" /> to add or remove @Player.ForceName.</div>
+        @if (Player.HasSpecialForces)
+        {
+            <div><ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL" /> and <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL | ClickHintModifier.SHIFT" /> to add or remove @Player.SpecialForceName.</div>
+        }
 
-                    </tr>
-                }
-            </tbody>
-        </table>
+    </Body>
 
-        <button class="btn btn-primary mt-3" @onclick="Confirm" disabled="@(!Valid)">Confirm</button>
-        <div class="text-danger bg-dark">@validationError</div>
-
-    </div>
-</div>
+</GameEventComponentLayout>
 
 @code {
 
+    protected override bool IsUrgent => true;
+    protected override Faction IsFactionSpecific => Faction.Yellow;
+
     private Dictionary<Location, Battalion> forces = new Dictionary<Location, Battalion>();
 
-    protected override PerformYellowSetup ConfirmedResult
-    {
-        get
-        {
-            return new PerformYellowSetup(Game) { Initiator = Faction, ForceLocations = forces };
-        }
-    }
+    protected override PerformYellowSetup ConfirmedResult => new PerformYellowSetup(Game) { Initiator = Faction, ForceLocations = forces };
 
     protected override void OnAfterRender(bool firstRender)
     {

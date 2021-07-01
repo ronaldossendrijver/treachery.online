@@ -100,5 +100,24 @@ namespace Treachery.Shared
                 return Enumerable.Range(0, Math.Min(p.ForcesKilled, 5) + 1);
             }
         }
+
+        public static int ValidMaxAmount(Player p, bool specialForces)
+        {
+            if (specialForces)
+            {
+                if (p.Faction == Faction.Red || p.Faction == Faction.Yellow)
+                {
+                    return Math.Min(p.SpecialForcesKilled, 1);
+                }
+                else
+                {
+                    return Math.Min(p.SpecialForcesKilled, 5);
+                }
+            }
+            else
+            {
+                return Math.Min(p.ForcesKilled, 5);
+            }
+        }
     }
 }
