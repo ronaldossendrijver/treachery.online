@@ -15,7 +15,7 @@
 
         <NumberPickerComponent @bind-Value="turn" Min="1" Max="Game.MaximumNumberOfTurns" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@validationError" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
     </Body>
 
@@ -28,12 +28,6 @@
 
     private int turn;
     private Faction toWin;
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        //Initialize<int, int>(ref turn, BluePrediction.ValidTurns(Game));
-        //Initialize<Faction, Faction>(ref toWin, BluePrediction.ValidTargets(Game, Player));
-    }
 
     protected override BluePrediction ConfirmedResult => new BluePrediction(Game) { Initiator = Faction, ToWin = toWin, Turn = turn };
 }

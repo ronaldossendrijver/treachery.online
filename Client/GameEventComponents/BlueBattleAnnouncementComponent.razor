@@ -19,7 +19,7 @@
             </SelectComponent>
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@validationError" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
     </Body>
 
@@ -37,8 +37,6 @@
         {
             MapDrawer.OnLocationSelected += HandleLocationSelected;
         }
-
-        //Initialize<int, Territory>(ref targetId, BlueBattleAnnouncement.ValidTerritories(Game, Player));
     }
 
     protected override BlueBattleAnnouncement ConfirmedResult => new BlueBattleAnnouncement(Game) { Initiator = Faction, Territory = target };

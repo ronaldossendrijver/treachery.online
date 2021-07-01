@@ -27,7 +27,7 @@
 
         <textarea class="form-control mt-1" rows="5" @bind="text" maxlength="512" placeholder="Deal description" />
 
-        <ButtonRowComponent Confirm="ConfirmOffer" ConfirmText="Confirm" ConfirmError="@validationError" />
+        <ButtonRowComponent Confirm="ConfirmOffer" ConfirmText="Confirm" ConfirmError="@Validation" />
 
     </Body>
 
@@ -40,13 +40,6 @@
     private DealType type;
     private string text = "";
     private Phase until;
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        Initialize<int, int>(ref price, Enumerable.Range(0, 21));
-        Initialize<DealType, DealType>(ref type, DealOffered.GetHumanDealTypes(Game, Player));
-        Initialize<Phase, Phase>(ref until, ApplicableEndPhases);
-    }
 
     protected override void OnInitialized()
     {

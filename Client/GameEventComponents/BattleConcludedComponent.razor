@@ -71,7 +71,7 @@
             }
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@validationError" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
     </Body>
 
@@ -87,12 +87,6 @@
     private bool discardDefense;
     private TechToken stolenToken;
     private int replacementAmount;
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        Initialize<TechToken, TechToken>(ref stolenToken, Loser.TechTokens);
-        Initialize<int, int>(ref replacementAmount, BattleConcluded.ValidReplacementForceAmounts(Game, Player));
-    }
 
     protected override BattleConcluded ConfirmedResult => new BattleConcluded(Game) { Initiator = Faction, DiscardedCards = DetermineSelectedCards(), StolenToken = stolenToken, SpecialForceLossesReplaced = replacementAmount, CaptureDecision = captureDecision };
 

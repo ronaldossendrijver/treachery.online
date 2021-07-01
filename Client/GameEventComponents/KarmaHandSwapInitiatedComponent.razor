@@ -6,40 +6,24 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<KarmaHandSwapInitiated>
 
-<div class="card p-1 mb-2" style="@BackgroundStyle">
-    <div class="card-header" style="@HeaderStyle">
-        Use @Skin.Current.Describe(TreacheryCardType.Karma) to perform a Hand Swap
-    </div>
-    <div class="card-body" style="@BodyStyle">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-        <label for="karamaHandSwapStartTarget">Target</label>
-        <select class="custom-select" @bind="@target" id="karamaHandSwapStartTarget">
-            @foreach (var f in Game.ValidTargets(Player))
-            {
-                <option value="@f">@Skin.Current.Describe(f)</option>
-            }
-        </select>
+    <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to perform a Hand Swap</Header>
+    <Body>
 
-        <button disabled="@(!Valid)" class="btn btn-primary mt-1" @onclick="Confirm">Confirm</button>
-        <div class="text-danger bg-dark">@validationError</div>
+        <SelectFactionComponent @bind-Value="target" Values="Game.ValidTargets(Player)">
+            <Label>Target</Label>
+        </SelectFactionComponent>
 
-    </div>
-</div>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
 
 @code {
 
     private Faction target;
 
-    protected override KarmaHandSwapInitiated ConfirmedResult
-    {
-        get
-        {
-            return new KarmaHandSwapInitiated(Game) { Initiator = Faction, Target = target };
-        }
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        Initialize<Faction, Faction>(ref target, Game.ValidTargets(Player));
-    }
+    protected override KarmaHandSwapInitiated ConfirmedResult => new KarmaHandSwapInitiated(Game) { Initiator = Faction, Target = target };
 }

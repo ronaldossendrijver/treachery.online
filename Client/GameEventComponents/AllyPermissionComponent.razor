@@ -119,7 +119,7 @@
             </CheckboxComponent>
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@validationError" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
     </Body>
 
@@ -138,12 +138,6 @@
     private bool blueAllyMayUseVoice;
     private int spice;
     private TreacheryCard karmaCard;
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        //Initialize<int, int>(ref spice, Player.ValidSpiceAmounts);
-        //Initialize<int, TreacheryCard>(ref karmaCardId, Karma.ValidKarmaCards(Game, Player), true, -1);
-    }
 
     protected override void OnParametersSet()
     {

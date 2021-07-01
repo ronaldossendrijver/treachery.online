@@ -94,7 +94,7 @@
             </div>
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Battle!" ConfirmError="@validationError" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Battle!" ConfirmError="@Validation" />
 
         <div class="text-info small">Toggle <img src="@Skin.Current.Eye_URL" /> on the map to show/hide the battle wheel.</div>
     
@@ -118,17 +118,6 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        /*
-        Initialize<int, int>(ref forces, Battle.ValidBattleForces(Game, Player));
-        Initialize<int, int>(ref forcesAtHalfStrength, Battle.ValidBattleForces(Game, Player));
-        Initialize<int, int>(ref specialForces, Battle.ValidBattleSpecialForces(Game, Player));
-        Initialize<int, int>(ref specialForcesAtHalfStrength, Battle.ValidBattleSpecialForces(Game, Player));
-        */
-        //Initialize<IHero, IHero>(ref hero, Battle.ValidBattleHeroes(Game, Player));
-        //var weap = Weapons.ToList();
-        //Initialize<TreacheryCard, TreacheryCard>(ref weapon, weap, weap.Contains(null), null);
-        //var defs = Defenses.ToList();
-        //Initialize<TreacheryCard, TreacheryCard>(ref defense, defs, defs.Contains(null), null);
         await DrawIfNeeded();
     }
 

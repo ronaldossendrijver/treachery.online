@@ -21,9 +21,24 @@ namespace Treachery.Test
     [TestClass]
     public class Tests
     {
+        private static List<Type> Written = new List<Type>();
+        private static void WriteSavegameIfApplicable(Game g, Type t)
+        {
+            if (!Written.Contains(t))
+            {
+                var playerWithAction = g.Players.FirstOrDefault(p => g.GetApplicableEvents(p, false).Contains(t));
+                if (playerWithAction != null)
+                {
+                    File.WriteAllText(t.Name + "-" + playerWithAction.Name.Replace('*','X') + ".json", GameState.GetStateAsString(g));
+                    Written.Add(t);
+                }
+            }
+        }
 
         private static string TestSpecialCases(Game g, GameEvent e)
         {
+            WriteSavegameIfApplicable(g, typeof(KarmaHandSwapInitiated));
+            
             /*
             if (e is Battle b && b.Weapon != null && g.LatestClairvoyanceQandA != null && g.LatestClairvoyanceBattle == g.CurrentBattle && g.LatestClairvoyanceQandA.Answer.Initiator == b.Initiator && 
                 g.LatestClairvoyanceQandA.Question.Question == ClairvoyanceQuestion.CardTypeAsWeaponInBattle &&
@@ -210,13 +225,19 @@ namespace Treachery.Test
             var factions = Enumerations.GetValuesExceptDefault(typeof(Faction), Faction.None).ToList();
             int nrOfPlayers = 8;
 
+            //Game to find a specific situation to test
+            //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
+            //rules.Add(Rule.FillWithBots);
+            //rules.Add(Rule.ExtraKaramaCards);
+            //var factions = new List<Faction>() { Faction.Black, Faction.Green, Faction.Yellow, Faction.Red };
+            //int nrOfPlayers = 4;
+
             //Expansion, advanced game, 6 players:
             //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
             //rules.Add(Rule.FillWithBots);
             //rules.Add(Rule.BotsCannotAlly);
             //var factions = new List<Faction>() { Faction.Black, Faction.Green, Faction.Yellow, Faction.Red, Faction.Grey, Faction.Blue };
             //int nrOfPlayers = 6;
-
 
             //Expansion, advanced game, 8 players:
             //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();

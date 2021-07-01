@@ -19,7 +19,7 @@
             </SelectComponent>
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError="@validationError" Pass="Pass" PassText="No" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError="@Validation" Pass="Pass" PassText="No" />
 
     </Body>
 
@@ -38,8 +38,6 @@
         {
             MapDrawer.OnLocationSelected += HandleLocationSelected;
         }
-
-        //Initialize<string, Location>(ref target, BlueAccompanies.ValidTargets(Game, Player));
     }
 
     public void Dispose()

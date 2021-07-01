@@ -84,22 +84,15 @@ namespace Treachery.Shared
             }
         }
 
-        public static IEnumerable<int> ValidAmounts(Player p, bool specialForces)
+        public static int ValidMaxAmount(Player p, bool specialForces)
         {
             if (specialForces)
             {
-                if (p.Faction == Faction.Red || p.Faction == Faction.Yellow)
-                {
-                    return Enumerable.Range(0, Math.Min(p.SpecialForcesKilled, 1) + 1);
-                }
-                else
-                {
-                    return Enumerable.Range(0, Math.Min(p.SpecialForcesKilled, 3) + 1);
-                }
+                return Math.Min(1, p.SpecialForcesKilled);
             }
             else
             {
-                return Enumerable.Range(0, Math.Min(p.ForcesKilled, 3) + 1);
+                return Math.Min(3, p.ForcesKilled);
             }
         }
     }

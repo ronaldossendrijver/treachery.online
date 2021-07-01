@@ -5,15 +5,14 @@
 @using System.Collections.Generic;
 @using Treachery.Shared;
 
-<SelectFromImageComponent @bind-Value="Value" Values="Values" ImageURLs="Values.Select(c => Skin.Current.GetImageURL(c))" PopupHTMLs="Values.Select(c => Support.GetHeroHoverHTML(c))" Required="Required" ImageWidth="80" Label="@Label"/>
+<SelectFromImageComponent @bind-Value="Value" Values="Values" ImageURLs="Values.Select(c => Skin.Current.GetImageURL(c))" PopupHTMLs="Values.Select(c => Support.GetHeroHoverHTML(c))" Required="Required" ImageWidth="80" OnChanged="@OnChanged">
+    <Label>@Label</Label>
+</SelectFromImageComponent>
 
 @code {
 
     [Parameter]
     public IEnumerable<IHero> Values { get; set; }
-
-    [Parameter]
-    public RenderFragment Label { get; set; }
 
     [Parameter]
     public bool Required { get; set; } = true;
@@ -39,5 +38,11 @@
 
     [Parameter]
     public EventCallback<IHero> ValueChanged { get; set; }
+
+    [Parameter]
+    public RenderFragment Label { get; set; }
+
+    [Parameter]
+    public Action OnChanged { get; set; }
 }
 

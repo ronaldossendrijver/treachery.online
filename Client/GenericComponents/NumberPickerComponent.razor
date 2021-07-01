@@ -124,6 +124,10 @@
     [Parameter]
     public NumberPickerAlignment NumberAlignment { get; set; } = NumberPickerAlignment.Center;
 
+    protected override void OnParametersSet()
+    {
+        Value = Min;
+    }
 
     private string NumberBackground
     {

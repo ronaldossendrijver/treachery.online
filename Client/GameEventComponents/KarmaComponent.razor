@@ -6,63 +6,29 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<Karma>
 
-<div class="card p-1 mb-2" style="@BackgroundStyle">
-    <div class="card-header" style="@HeaderStyle">
-        Use @Skin.Current.Describe(TreacheryCardType.Karma) to prevent a faction from using one of their advantages
-        <CollapseButton @bind-Collapsed="Collapsed" />
-    </div>
-    @if (!Collapsed)
-    {
-        <div class="card-body" style="@BodyStyle">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-            <label class="mb-0" for="karamaCard">Select a card to play</label>
-            <select class="custom-select" @bind="cardId" id="karamaCard">
-                @foreach (var v in Karma.ValidKarmaCards(Game, Player))
-                {
-                    <option value="@v.Id">@v</option>
-                }
-            </select>
+    <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to prevent a faction from using one of their advantages</Header>
+    <Body>
 
-            <label class="mb-0" for="karamaCard">Select an advantage to prevent</label> <InfoComponent Contents="@InfoMessage" />
-            <select class="custom-select" @bind="prevented" id="karamaPrevented">
-                @foreach (var v in Karma.ValidFactionAdvantages(Game, Player))
-                {
-                    <option value="@v">@Skin.Current.Describe(v)</option>
-                }
-            </select>
+        <SelectCardComponent @bind-Value="card" Values="Karma.ValidKarmaCards(Game, Player)" />
 
-            <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
-            <div class="text-danger bg-dark">@validationError</div>
+        <SelectComponent @bind-Value="prevented" Values="Karma.ValidFactionAdvantages(Game, Player)">
+            <Label>Advantage to prevent <InfoComponent Contents="@InfoMessage" /></Label>
+        </SelectComponent>
 
-        </div>
-    }
-</div>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
 
 @code {
 
-    private int cardId;
+    private TreacheryCard card;
     private FactionAdvantage prevented;
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        Initialize<int, TreacheryCard>(ref cardId, Karma.ValidKarmaCards(Game, Player));
-        Initialize<FactionAdvantage, FactionAdvantage>(ref prevented, Karma.ValidFactionAdvantages(Game, Player));
-    }
+    protected override Karma ConfirmedResult => new Karma(Game) { Initiator = Faction, Card = card, Prevented = prevented };
 
-    protected override Karma ConfirmedResult
-    {
-
-        get
-        {
-            return new Karma(Game) { Initiator = Faction, Card = TreacheryCardManager.Lookup.Find(cardId), Prevented = prevented };
-        }
-    }
-
-    private string InfoMessage
-    {
-        get
-        {
-            return "Prevention of an advantages with a * cannot be done automatically and must be done verbally between players. This might require an undo-action by the host after the action you want to prevent has occured.";
-        }
-    }
+    private string InfoMessage => "Prevention of an advantages with a * cannot be done automatically and must be done verbally between players. This might require an undo-action by the host after the action you want to prevent has occured.";
 }

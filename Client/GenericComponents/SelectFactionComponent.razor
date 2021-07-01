@@ -5,7 +5,7 @@
 @using System.Collections.Generic;
 @using Treachery.Shared;
 
-<SelectFromImageComponent @bind-Value="Value" Values="@Values" Selected="@Selected" ImageURLs="Values.Select(f => Skin.Current.GetImageURL(f))" ImageWidth="40" Required="@(Selected == null)" Disabled="@Disabled">
+<SelectFromImageComponent @bind-Value="Value" Values="@Values" Selected="@Selected" ImageURLs="Values.Select(f => Skin.Current.GetImageURL(f))" ImageWidth="40" Required="@(Selected == null)" Disabled="@Disabled" OnChanged="@OnChanged">
     <Label>@Label</Label>
 </SelectFromImageComponent>
 
@@ -44,5 +44,8 @@
 
     [Parameter]
     public bool Disabled { get; set; } = false;
+
+    [Parameter]
+    public Action OnChanged { get; set; }
 }
 

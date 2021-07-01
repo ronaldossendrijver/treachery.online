@@ -38,11 +38,6 @@
     private IHero hero;
     private int price;
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        //Initialize<int, int>(ref heroId, CurrentRevivalOfferValues);
-    }
-
     protected override AcceptOrCancelPurpleRevival ConfirmedResult => new AcceptOrCancelPurpleRevival(Game) { Initiator = Faction, Cancel = false, Hero = Game.CurrentPurpleRevivalRequest.Hero, Price = price };
 
     protected override AcceptOrCancelPurpleRevival PassedResult => new AcceptOrCancelPurpleRevival(Game) { Initiator = Faction, Cancel = true, Hero = hero };

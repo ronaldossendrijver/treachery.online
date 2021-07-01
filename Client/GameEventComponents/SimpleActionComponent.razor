@@ -15,11 +15,11 @@
 
             @if (Dismissable)
             {
-                <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError="@validationError" Other="Dismiss" OtherText="@DismissLabel" />
+                <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError="@Validation" Other="Dismiss" OtherText="@DismissLabel" />
             }
             else
             {
-                <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError="@validationError" />
+                <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError="@Validation" />
             }
 
         </Body>

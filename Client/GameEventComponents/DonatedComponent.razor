@@ -34,12 +34,5 @@
     private int resources;
     private TreacheryCard card;
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        Initialize<Faction, Faction>(ref target, Donated.ValidTargets(Game, Player));
-        Initialize<int, int>(ref resources, Donated.ValidAmounts(Game, Player));
-        //Initialize<TreacheryCard, TreacheryCard>(ref card, Player.TreacheryCards, true);
-    }
-
     protected override Donated ConfirmedResult => new Donated(Game) { Initiator = Faction, Target = target, Resources = resources, Card = card };
 }

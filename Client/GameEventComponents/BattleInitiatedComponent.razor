@@ -12,7 +12,7 @@
     <Body>
 
         <SelectComponent @bind-Value="battle" Values="Battle.BattlesToBeFought(Game, Player)" ValueLabels="BattleLabels"/>
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@validationError" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
     </Body>
 
@@ -30,12 +30,6 @@
         {
             _ = Task.Delay(500).ContinueWith(e => Confirm());
         }
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        //Initialize<int, Territory>(ref battleTerritoryId, ValidBattleTerritories);
-        //Initialize<Faction, Faction>(ref battleTarget, ValidBattleTargets);
     }
 
     protected override BattleInitiated ConfirmedResult => new BattleInitiated(Game) { Initiator = Faction, Territory = battle.Item1, Target = battle.Item2 };
