@@ -6,37 +6,21 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<FactionSelected>
 
-<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-    <div class="card-header">Choose your faction. If you don't, it will be assigned at random.</div>
+    <Header>Choose your faction. If you don't, it will be assigned at random.</Header>
+    <Body>
 
-    <div class="card-body">
+        <SelectFactionComponent @bind-Value="faction" Values="FactionSelected.ValidFactions(Game)" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
-        <SelectComponent @bind-Value="faction" Values="FactionSelected.ValidFactions(h.Game)">
-            <Label>@Faction</Label>
-        </SelectComponent>
+    </Body>
 
-        <button class="btn btn-primary" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
-
-        <div class="text-danger bg-dark">@validationError</div>
-
-    </div>
-</div>
+</GameEventComponentLayout>
 
 @code {
 
     private Faction faction;
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        Initialize<Faction, Faction>(ref faction, FactionSelected.ValidFactions(h.Game));
-    }
-
-    protected override FactionSelected ConfirmedResult
-    {
-        get
-        {
-            return new FactionSelected(h.Game) { Initiator = Faction.None, InitiatorPlayerName = h.PlayerName, Faction = faction };
-        }
-    }
+    protected override FactionSelected ConfirmedResult => new FactionSelected(Game) { Initiator = Faction.None, InitiatorPlayerName = h.PlayerName, Faction = faction };
 }

@@ -14,7 +14,7 @@
 
     <div class="card-body">
 
-        <SelectComponent @bind-Value="amount" Values="StormDialled.ValidAmounts(h.Game)">
+        <SelectComponent @bind-Value="amount" Values="StormDialled.ValidAmounts(Game)">
             <Label>Amount to dial</Label>
         </SelectComponent>
 
@@ -33,14 +33,14 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
-        Initialize<int, int>(ref amount, StormDialled.ValidAmounts(h.Game));
+        Initialize<int, int>(ref amount, StormDialled.ValidAmounts(Game));
     }
 
     protected override StormDialled ConfirmedResult
     {
         get
         {
-            return new StormDialled(h.Game) { Initiator = h.Faction, Amount = amount };
+            return new StormDialled(Game) { Initiator = Faction, Amount = amount };
         }
     }
 }

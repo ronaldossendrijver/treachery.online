@@ -6,64 +6,24 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<GreyRemovedCardFromAuction>
 
-<div class="card p-1 mb-2 border-danger">
-    <div class="card-header">Select one card and put it on top or on the bottom of the Treachery Card deck?</div>
-    <div class="card-body">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-        <div class="row row-cols-2 row-cols-md-4 ml-0 mr-0">
-            @foreach (var v in h.Game.CardsOnAuction.Items)
-            {
-                <div class="card">
-                    <div class="card-img-top" data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(v)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
-                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@(v.Name)" @onclick="e => SelectCard(v.Id)">
-                    </div>
-                </div>
-            }
-        </div>
+    <Header>Put one card on top or on the bottom of the Treachery Card deck</Header>
+    <Body>
+        <SelectCardComponent @bind-Value="card" Values="Game.CardsOnAuction.Items" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Put on top" ConfirmError="@Validation" Pass="Other" PassText="Put on bottom" />
+    </Body>
 
-        <label for="card">Select a card to remove from bidding</label>
-        <select class="custom-select" @bind="cardId" id="card">
-            @foreach (var v in h.Game.CardsOnAuction.Items)
-            {
-                <option value="@v.Id">@v</option>
-            }
-        </select>
-
-        <button class="btn btn-primary mt-1" @onclick="Confirm">Put on top</button>
-        <button class="btn btn-primary mt-1" @onclick="Pass">Put on the bottom</button>
-
-    </div>
-</div>
+</GameEventComponentLayout>
 
 @code {
 
-    private int cardId;
+    protected override bool IsUrgent => true;
+    protected override Faction IsFactionSpecific => Faction.Grey;
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        Initialize<int, TreacheryCard>(ref cardId, h.Game.CardsOnAuction.Items);
-    }
+    private TreacheryCard card;
 
-    protected override GreyRemovedCardFromAuction ConfirmedResult
-    {
+    protected override GreyRemovedCardFromAuction ConfirmedResult => new GreyRemovedCardFromAuction(Game) { Initiator = Faction, PutOnTop = true, Card = card };
 
-        get
-        {
-            return new GreyRemovedCardFromAuction(h.Game) { Initiator = h.Faction, PutOnTop = true, Card = TreacheryCardManager.Lookup.Find(cardId) };
-        }
-    }
-
-    protected override GreyRemovedCardFromAuction PassedResult
-    {
-
-        get
-        {
-            return new GreyRemovedCardFromAuction(h.Game) { Initiator = h.Faction, PutOnTop = false, Card = TreacheryCardManager.Lookup.Find(cardId) };
-        }
-    }
-
-    private void SelectCard(int selectedCardId)
-    {
-        cardId = selectedCardId;
-    }
+    protected override GreyRemovedCardFromAuction OtherResult => new GreyRemovedCardFromAuction(Game) { Initiator = Faction, PutOnTop = false, Card = card };
 }

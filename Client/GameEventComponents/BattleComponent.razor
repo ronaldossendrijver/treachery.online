@@ -8,28 +8,28 @@
 
 <GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle">
 
-    <Header>Plan your battle against @Skin.Current.Describe(Opponent) in @h.Game.CurrentBattle.Territory.Name.</Header>
+    <Header>Plan your battle against @Skin.Current.Describe(Opponent) in @Game.CurrentBattle.Territory.Name.</Header>
 
     <Body>
 
-        <div class="text-warning">@(h.IAm(h.Game.CurrentBattle.Aggressor) ? "You are aggressor." : Skin.Current.Format("Aggressor: {0}.", h.Game.CurrentBattle.Aggressor))</div>
+        <div class="text-warning">@(h.IAm(Game.CurrentBattle.Aggressor) ? "You are aggressor." : Skin.Current.Format("Aggressor: {0}.", Game.CurrentBattle.Aggressor))</div>
 
-        @if (h.Game.CurrentVoice != null)
+        @if (Game.CurrentVoice != null)
         {
-            @if (h.Faction == Faction.Blue || h.Player.Ally == Faction.Blue)
+            @if (Faction == Faction.Blue || Player.Ally == Faction.Blue)
             {
-                <div class="text-success">Your opponent @(h.Game.CurrentVoice.Must? "must use" : "may not use") @Skin.Current.Describe(h.Game.CurrentVoice.Type).</div>
+                <div class="text-success">Your opponent @(Game.CurrentVoice.Must? "must use" : "may not use") @Skin.Current.Describe(Game.CurrentVoice.Type).</div>
             }
             else
             {
-                <div class="text-warning">You @(h.Game.CurrentVoice.Must? "must use" : "may not use") @Skin.Current.Describe(h.Game.CurrentVoice.Type).</div>
+                <div class="text-warning">You @(Game.CurrentVoice.Must? "must use" : "may not use") @Skin.Current.Describe(Game.CurrentVoice.Type).</div>
             }
         }
 
-        @if (h.Faction == Faction.Green || h.Player.Ally == Faction.Green)
+        @if (Faction == Faction.Green || Player.Ally == Faction.Green)
         {
-            var opponentBattlePlan = h.Game.CurrentBattle.Initiator == h.Faction ? h.Game.DefenderBattleAction : h.Game.AggressorBattleAction;
-            if (h.Game.GreenKarma)
+            var opponentBattlePlan = Game.CurrentBattle.Initiator == Faction ? Game.DefenderBattleAction : Game.AggressorBattleAction;
+            if (Game.GreenKarma)
             {
                 if (opponentBattlePlan != null)
                 {
@@ -43,16 +43,16 @@
                     <div class="text-success">Enemy battle plan will be visible as soon as they confirm it.</div>
                 }
             }
-            else if (h.Game.CurrentPrescience != null)
+            else if (Game.CurrentPrescience != null)
             {
                 if (opponentBattlePlan != null)
                 {
 
-                    <div class="text-success" data-animation="true" data-content="@GetPopupForAspect(h.Game.CurrentPrescience.Aspect, opponentBattlePlan)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">Enemy @h.Game.CurrentPrescience.Aspect: @GetTextForAspect(h.Game.CurrentPrescience.Aspect, opponentBattlePlan).</div>
+                    <div class="text-success" data-animation="true" data-content="@GetPopupForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">Enemy @Game.CurrentPrescience.Aspect: @GetTextForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan).</div>
                 }
                 else
                 {
-                    <div class="text-success">Enemy @h.Game.CurrentPrescience.Aspect will be visible as soon as they confirm their battle plan.</div>
+                    <div class="text-success">Enemy @Game.CurrentPrescience.Aspect will be visible as soon as they confirm their battle plan.</div>
                 }
             }
         }
@@ -64,12 +64,12 @@
             <NumberPickerComponent @bind-Value="specialForces" Min="0" Max="Battle.MaxForces(Game, Player, true)" SymbolSRC="@Skin.Current.GetFactionSpecialForceImageURL(Faction)" />
         }
 
-        @if (Battle.MustPayForForcesInBattle(h.Game, h.Player))
+        @if (Battle.MustPayForForcesInBattle(Game, Player))
         {
             <NumberPickerComponent @bind-Value="resources" Min="0" Max="Math.Min(Player.Resources, forces + specialForces)" SymbolSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400" />
         }
 
-        <SelectHeroComponent @bind-Value="hero" Values="Battle.ValidBattleHeroes(h.Game, h.Player)">
+        <SelectHeroComponent @bind-Value="hero" Values="Battle.ValidBattleHeroes(Game, Player)">
             <Label>Hero</Label>
         </SelectHeroComponent>
 
@@ -81,7 +81,7 @@
             <Label>Defense</Label>
         </SelectCardComponent>
 
-        @if (h.Faction == Faction.Green && h.Game.Applicable(Rule.GreenMessiah))
+        @if (Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah))
         {
             <div>Should the @Skin.Current.Describe(Concept.Messiah) join the fight?</div>
             <div class="custom-control custom-radio">
@@ -119,12 +119,12 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         /*
-        Initialize<int, int>(ref forces, Battle.ValidBattleForces(h.Game, h.Player));
-        Initialize<int, int>(ref forcesAtHalfStrength, Battle.ValidBattleForces(h.Game, h.Player));
-        Initialize<int, int>(ref specialForces, Battle.ValidBattleSpecialForces(h.Game, h.Player));
-        Initialize<int, int>(ref specialForcesAtHalfStrength, Battle.ValidBattleSpecialForces(h.Game, h.Player));
+        Initialize<int, int>(ref forces, Battle.ValidBattleForces(Game, Player));
+        Initialize<int, int>(ref forcesAtHalfStrength, Battle.ValidBattleForces(Game, Player));
+        Initialize<int, int>(ref specialForces, Battle.ValidBattleSpecialForces(Game, Player));
+        Initialize<int, int>(ref specialForcesAtHalfStrength, Battle.ValidBattleSpecialForces(Game, Player));
         */
-        //Initialize<IHero, IHero>(ref hero, Battle.ValidBattleHeroes(h.Game, h.Player));
+        //Initialize<IHero, IHero>(ref hero, Battle.ValidBattleHeroes(Game, Player));
         //var weap = Weapons.ToList();
         //Initialize<TreacheryCard, TreacheryCard>(ref weapon, weap, weap.Contains(null), null);
         //var defs = Defenses.ToList();
@@ -185,9 +185,9 @@
         {
             Battle.DetermineForces(Game, Player, forces, specialForces, resources, out int forcesFull, out int forcesHalf, out int specialForcesFull, out int specialForcesHalf);
 
-            return new Battle(h.Game)
+            return new Battle(Game)
             {
-                Initiator = h.Faction,
+                Initiator = Faction,
                 Defense = defense,
                 Forces = forcesFull,
                 ForcesAtHalfStrength = forcesHalf,
@@ -210,15 +210,15 @@
     {
         get
         {
-            if (h.Game.CurrentBattle != null)
+            if (Game.CurrentBattle != null)
             {
-                if (h.Game.CurrentBattle.Initiator == h.Faction)
+                if (Game.CurrentBattle.Initiator == Faction)
                 {
-                    return h.Game.CurrentBattle.Target;
+                    return Game.CurrentBattle.Target;
                 }
                 else
                 {
-                    return h.Game.CurrentBattle.Initiator;
+                    return Game.CurrentBattle.Initiator;
                 }
             }
             else
@@ -234,7 +234,7 @@
         {
             case PrescienceAspect.Defense: return plan.Defense == null ? "None" : Skin.Current.Describe(plan.Defense);
             case PrescienceAspect.Weapon: return plan.Weapon == null ? "None" : Skin.Current.Describe(plan.Weapon);
-            case PrescienceAspect.Dial: return plan.Dial(h.Game, h.Faction).ToString();
+            case PrescienceAspect.Dial: return plan.Dial(Game, Faction).ToString();
             case PrescienceAspect.Leader: return plan.Hero == null ? "None" : Skin.Current.Describe(plan.Hero);
         }
 
@@ -254,7 +254,7 @@
         return "?";
     }
 
-    private IEnumerable<TreacheryCard> Weapons => Battle.ValidWeapons(h.Game, h.Player, defense).OrderBy(c => c);
+    private IEnumerable<TreacheryCard> Weapons => Battle.ValidWeapons(Game, Player, defense).OrderBy(c => c);
 
-    private IEnumerable<TreacheryCard> Defenses => Battle.ValidDefenses(h.Game, h.Player, weapon).OrderBy(c => c);
+    private IEnumerable<TreacheryCard> Defenses => Battle.ValidDefenses(Game, Player, weapon).OrderBy(c => c);
 }

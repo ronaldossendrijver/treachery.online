@@ -38,7 +38,7 @@
         //Initialize<Faction, Faction>(ref battleTarget, ValidBattleTargets);
     }
 
-    protected override BattleInitiated ConfirmedResult => new BattleInitiated(h.Game) { Initiator = h.Faction, Territory = battle.Item1, Target = battle.Item2 };
+    protected override BattleInitiated ConfirmedResult => new BattleInitiated(Game) { Initiator = Faction, Territory = battle.Item1, Target = battle.Item2 };
 
     private IEnumerable<string> BattleLabels => Battle.BattlesToBeFought(Game, Player).Select(b => Skin.Current.Format("{0} in {1}", b.Item2, b.Item1));
 }

@@ -28,7 +28,7 @@
         <label for="karamaFreeRevivalLeader">Leader</label>
         <select class="custom-select" @bind="hero" id="karamaFreeRevivalLeader">
             <option value="">None</option>
-            @foreach (var v in h.Game.ValidFreeRevivalHeroes(h.Player))
+            @foreach (var v in Game.ValidFreeRevivalHeroes(Player))
             {
                 <option value="@v">@v</option>
             }
@@ -49,14 +49,14 @@
     {
         Initialize<int, int>(ref amountOfForces, ValidFreeRevivalAmounts);
         Initialize<int, int>(ref amountOfSpecialForces, ValidSpecialFreeRevivalAmounts);
-        Initialize<string, IHero>(ref hero, h.Game.ValidFreeRevivalHeroes(h.Player), true, "");
+        Initialize<string, IHero>(ref hero, Game.ValidFreeRevivalHeroes(Player), true, "");
     }
 
     protected override KarmaFreeRevival ConfirmedResult
     {
         get
         {
-            return new KarmaFreeRevival(h.Game) { Initiator = h.Faction, AmountOfForces = amountOfForces, AmountOfSpecialForces = amountOfSpecialForces, Hero = Hero(hero) };
+            return new KarmaFreeRevival(Game) { Initiator = Faction, AmountOfForces = amountOfForces, AmountOfSpecialForces = amountOfSpecialForces, Hero = Hero(hero) };
         }
     }
 
@@ -64,7 +64,7 @@
     {
         get
         {
-            return KarmaFreeRevival.ValidAmounts(h.Player, false);
+            return KarmaFreeRevival.ValidAmounts(Player, false);
         }
     }
 
@@ -73,7 +73,7 @@
     {
         get
         {
-            return KarmaFreeRevival.ValidAmounts(h.Player, true);
+            return KarmaFreeRevival.ValidAmounts(Player, true);
         }
     }
 
@@ -89,7 +89,7 @@
             IHero result = LeaderManager.Find(heroName);
             if (result == null)
             {
-                result = h.Player.TreacheryCards.FirstOrDefault(x => x.Name == heroName);
+                result = Player.TreacheryCards.FirstOrDefault(x => x.Name == heroName);
             }
             return result;
         }

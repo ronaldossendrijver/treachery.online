@@ -10,7 +10,7 @@
 <div class="card p-1 mb-2 border-danger">
     <div class="card-header">Draw a new selection of four traitors?</div>
     <div class="card-body">
-        @if (MulliganPerformed.MayMulligan(h.Player))
+        @if (MulliganPerformed.MayMulligan(Player))
         {
             <button class="btn btn-primary mt-1" @onclick="Confirm">Yes</button>
         }
@@ -25,7 +25,7 @@
     {
         get
         {
-            return new MulliganPerformed(h.Game) { Initiator = h.Faction, Passed = false };
+            return new MulliganPerformed(Game) { Initiator = Faction, Passed = false };
         }
     }
 
@@ -33,7 +33,7 @@
     {
         get
         {
-            return new MulliganPerformed(h.Game) { Initiator = h.Faction, Passed = true };
+            return new MulliganPerformed(Game) { Initiator = Faction, Passed = true };
         }
     }
 

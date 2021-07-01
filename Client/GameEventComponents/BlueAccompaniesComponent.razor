@@ -12,9 +12,9 @@
     <Header>Accompany the latest shipment?</Header>
     <Body>
 
-        @if (h.Player.ForcesInReserve > 0 && h.Game.Applicable(Rule.BlueAccompaniesToShipmentLocation))
+        @if (Player.ForcesInReserve > 0 && Game.Applicable(Rule.BlueAccompaniesToShipmentLocation))
         {
-            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="BlueAccompanies.ValidTargets(h.Game, h.Player)">
+            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="BlueAccompanies.ValidTargets(Game, Player)">
                 <Label>To</Label>
             </SelectComponent>
         }
@@ -39,7 +39,7 @@
             MapDrawer.OnLocationSelected += HandleLocationSelected;
         }
 
-        //Initialize<string, Location>(ref target, BlueAccompanies.ValidTargets(h.Game, h.Player));
+        //Initialize<string, Location>(ref target, BlueAccompanies.ValidTargets(Game, Player));
     }
 
     public void Dispose()
@@ -47,12 +47,12 @@
         MapDrawer.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override BlueAccompanies ConfirmedResult => new BlueAccompanies(h.Game) { Initiator = h.Faction, Location = target, Accompanies = true };
+    protected override BlueAccompanies ConfirmedResult => new BlueAccompanies(Game) { Initiator = Faction, Location = target, Accompanies = true };
 
-    protected override BlueAccompanies PassedResult => new BlueAccompanies(h.Game) { Initiator = h.Faction, Accompanies = false };
+    protected override BlueAccompanies PassedResult => new BlueAccompanies(Game) { Initiator = Faction, Accompanies = false };
 
     private void HandleLocationSelected(object sender, Location l)
     {
-        SetIfValid<Location, Location>(ref target, BlueAccompanies.ValidTargets(h.Game, h.Player), l);
+        SetIfValid<Location, Location>(ref target, BlueAccompanies.ValidTargets(Game, Player), l);
     }
 }

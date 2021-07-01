@@ -11,7 +11,7 @@
     <Header>Perform a Move?</Header>
     <Body>
 
-        @if (h.Player.Has(TreacheryCardType.Caravan))
+        @if (Player.Has(TreacheryCardType.Caravan))
         {
             <div class="text-info small">Note: if you want to perform a @Skin.Current.Describe(TreacheryCardType.Caravan) this turn, you need to do that before performing your regular move.</div>
         }
@@ -28,12 +28,12 @@
                 <Label>To</Label>
             </SelectComponent>
 
-            @if (h.Game.ContainsConflictingAlly(h.Player, toLocation))
+            @if (Game.ContainsConflictingAlly(Player, toLocation))
             {
                 <div class="text-danger bg-dark">Note: any of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
             }
 
-            @if (h.Faction == Faction.Blue)
+            @if (Faction == Faction.Blue)
             {
                 <div>Move as fighters or advisors?</div>
                 <div class="custom-control custom-radio">
@@ -61,7 +61,7 @@
 
     protected override bool IsUrgent => true;
 
-    override protected Move ConfirmedResult => new Move(h.Game) { Initiator = h.Faction, ForceLocations = forces, To = toLocation, AsAdvisors = asAdvisors, Passed = false };
+    override protected Move ConfirmedResult => new Move(Game) { Initiator = Faction, ForceLocations = forces, To = toLocation, AsAdvisors = asAdvisors, Passed = false };
 
-    override protected Move PassedResult => new Move(h.Game) { Initiator = h.Faction, Passed = true };
+    override protected Move PassedResult => new Move(Game) { Initiator = Faction, Passed = true };
 }

@@ -8,11 +8,11 @@
 
 <div class="card p-1 mb-2" style="@BackgroundStyle">
     <div class="card-header" style="@HeaderStyle">
-        Return @h.Game.KarmaHandSwapNumberOfCards cards to @Skin.Current.Describe(h.Game.KarmaHandSwapTarget).
+        Return @Game.KarmaHandSwapNumberOfCards cards to @Skin.Current.Describe(Game.KarmaHandSwapTarget).
     </div>
     <div class="card-body" style="@BodyStyle">
 
-        @foreach (var v in h.Player.TreacheryCards)
+        @foreach (var v in Player.TreacheryCards)
         {
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" @onchange="eventArgs => { CheckboxClicked(v, eventArgs.Value); }" />
@@ -48,12 +48,12 @@
     {
         get
         {
-            return new KarmaHandSwap(h.Game) { Initiator = h.Faction, ReturnedCards = selectedCards };
+            return new KarmaHandSwap(Game) { Initiator = Faction, ReturnedCards = selectedCards };
         }
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
-        Initialize<Faction, Faction>(ref target, h.Game.ValidTargets(h.Player));
+        Initialize<Faction, Faction>(ref target, Game.ValidTargets(Player));
     }
 }

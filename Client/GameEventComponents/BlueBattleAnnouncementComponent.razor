@@ -12,9 +12,9 @@
     <Header>Choose a territory in which you have advisors and wish to battle, flipping them to fighters.</Header>
     <Body>
 
-        @if (h.Player.ForcesInReserve > 0 && h.Game.Applicable(Rule.BlueAccompaniesToShipmentLocation))
+        @if (Player.ForcesInReserve > 0 && Game.Applicable(Rule.BlueAccompaniesToShipmentLocation))
         {
-            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="BlueBattleAnnouncement.ValidTerritories(h.Game, h.Player)">
+            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="BlueBattleAnnouncement.ValidTerritories(Game, Player)">
                 <Label>Territory</Label>
             </SelectComponent>
         }
@@ -38,14 +38,14 @@
             MapDrawer.OnLocationSelected += HandleLocationSelected;
         }
 
-        //Initialize<int, Territory>(ref targetId, BlueBattleAnnouncement.ValidTerritories(h.Game, h.Player));
+        //Initialize<int, Territory>(ref targetId, BlueBattleAnnouncement.ValidTerritories(Game, Player));
     }
 
-    protected override BlueBattleAnnouncement ConfirmedResult => new BlueBattleAnnouncement(h.Game) { Initiator = h.Faction, Territory = target };
+    protected override BlueBattleAnnouncement ConfirmedResult => new BlueBattleAnnouncement(Game) { Initiator = Faction, Territory = target };
 
     private void HandleLocationSelected(object sender, Location l)
     {
-        SetIfValid<Territory, Territory>(ref target, BlueBattleAnnouncement.ValidTerritories(h.Game, h.Player), l.Territory);
+        SetIfValid<Territory, Territory>(ref target, BlueBattleAnnouncement.ValidTerritories(Game, Player), l.Territory);
     }
 
     public void Dispose()

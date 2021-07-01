@@ -6,55 +6,22 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<GreySelectedStartingCard>
 
-<div class="card p-1 mb-2 border-danger">
-    <div class="card-header">Select your starting Treachery Card. The remaining cards will be shuffled and dealt to the other factions.</div>
-    <div class="card-body">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-        <div class="row row-cols-2 row-cols-md-4 ml-0 mr-0">
-            @foreach (var v in h.Game.StartingTreacheryCards.Items)
-            {
-                <div class="card">
-                    <div class="card-img-top" data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(v)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
-                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@(v.Name)" @onclick="e => SelectCard(v.Id)">
-                    </div>
-                </div>
-            }
-        </div>
+    <Header>Select your starting Treachery Card. The remaining cards will be shuffled and dealt to the other factions.</Header>
+    <Body>
+        <SelectCardComponent @bind-Value="card" Values="Game.StartingTreacheryCards.Items" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+    </Body>
 
-        <label for="card">Select a card to keep</label>
-        <select class="custom-select" @bind="cardId" id="card">
-            @foreach (var v in h.Game.StartingTreacheryCards.Items)
-            {
-                <option value="@v.Id">@v</option>
-            }
-        </select>
-
-        <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
-        <div class="text-danger bg-dark">@validationError</div>
-
-    </div>
-</div>
+</GameEventComponentLayout>
 
 @code {
 
-    private int cardId;
+    protected override bool IsUrgent => true;
+    protected override Faction IsFactionSpecific => Faction.Grey;
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        Initialize<int, TreacheryCard>(ref cardId, h.Game.StartingTreacheryCards.Items);
-    }
+    private TreacheryCard card;
 
-    protected override GreySelectedStartingCard ConfirmedResult
-    {
-
-        get
-        {
-            return new GreySelectedStartingCard(h.Game) { Initiator = h.Faction, Card = TreacheryCardManager.Lookup.Find(cardId) };
-        }
-    }
-
-    private void SelectCard(int selectedCardId)
-    {
-        cardId = selectedCardId;
-    }
+    protected override GreySelectedStartingCard ConfirmedResult => new GreySelectedStartingCard(Game) { Initiator = Faction, Card = card };
 }

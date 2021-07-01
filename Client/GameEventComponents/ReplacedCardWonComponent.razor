@@ -23,7 +23,7 @@
     {
         get
         {
-            return new ReplacedCardWon(h.Game) { Initiator = h.Faction, Passed = false };
+            return new ReplacedCardWon(Game) { Initiator = Faction, Passed = false };
         }
     }
 
@@ -31,7 +31,7 @@
     {
         get
         {
-            return new ReplacedCardWon(h.Game) { Initiator = h.Faction, Passed = true };
+            return new ReplacedCardWon(Game) { Initiator = Faction, Passed = true };
         }
     }
 

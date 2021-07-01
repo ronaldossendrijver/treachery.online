@@ -19,7 +19,7 @@
 
             <label for="toReplace">Faction</label>
             <select class="custom-select" @bind="toReplace" id="toReplace">
-                @foreach (var f in PlayerReplaced.ValidTargets(h.Game))
+                @foreach (var f in PlayerReplaced.ValidTargets(Game))
                 {
                     <option value="@f">@Skin.Current.Describe(f)</option>
                 }
@@ -44,14 +44,14 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
-        Initialize<Faction, Faction>(ref toReplace, PlayerReplaced.ValidTargets(h.Game));
+        Initialize<Faction, Faction>(ref toReplace, PlayerReplaced.ValidTargets(Game));
     }
 
     protected override PlayerReplaced ConfirmedResult
     {
         get
         {
-            return new PlayerReplaced(h.Game) { Initiator = h.Faction, ToReplace = toReplace };
+            return new PlayerReplaced(Game) { Initiator = Faction, ToReplace = toReplace };
         }
     }
 

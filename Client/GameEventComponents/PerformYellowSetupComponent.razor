@@ -9,7 +9,7 @@
 
 <div class="card p-1 mb-2 border-danger">
     <div class="card-header">
-        Distribute @(10 - forces.Sum(fl => fl.Value.AmountOfForces + fl.Value.AmountOfSpecialForces)) forces on @h.Game.Map.SietchTabr.ToString(), @h.Game.Map.FalseWallSouth.ToString(), and @h.Game.Map.FalseWallWest.ToString().
+        Distribute @(10 - forces.Sum(fl => fl.Value.AmountOfForces + fl.Value.AmountOfSpecialForces)) forces on @Game.Map.SietchTabr.ToString(), @Game.Map.FalseWallSouth.ToString(), and @Game.Map.FalseWallWest.ToString().
     </div>
     <div class="card-body">
 
@@ -17,10 +17,10 @@
             <thead>
                 <tr class="small">
                     <td>Location</td>
-                    <td colspan="3">@h.Player.ForceName<br /><kbd>click</kbd></td>
-                    @if (h.Player.HasSpecialForces)
+                    <td colspan="3">@Player.ForceName<br /><kbd>click</kbd></td>
+                    @if (Player.HasSpecialForces)
                     {
-                        <td colspan="3">@h.Player.SpecialForceName<br /><kbd>ctrl+click</kbd></td>
+                        <td colspan="3">@Player.SpecialForceName<br /><kbd>ctrl+click</kbd></td>
                     }
                 </tr>
             </thead>
@@ -35,7 +35,7 @@
                         <td>@Forces(l, false)</td>
                         <td class="p-0"><button type="button" @onclick="(e => ForceAmountButton(l, 1, false))" class="btn btn-primary btn-sm">+</button></td>
 
-                        @if (h.Player.HasSpecialForces)
+                        @if (Player.HasSpecialForces)
                         {
                             <td class="p-0"><button type="button" @onclick="(e => ForceAmountButton(l, -1, true))" class="btn btn-primary btn-sm">-</button></td>
                             <td>@Forces(l, true)</td>
@@ -61,7 +61,7 @@
     {
         get
         {
-            return new PerformYellowSetup(h.Game) { Initiator = h.Faction, ForceLocations = forces };
+            return new PerformYellowSetup(Game) { Initiator = Faction, ForceLocations = forces };
         }
     }
 
@@ -72,7 +72,7 @@
             MapDrawer.OnLocationSelected += HandleAddForce;
             MapDrawer.OnLocationSelectedWithShift += HandleRemoveForce;
 
-            if (h.Player.HasSpecialForces)
+            if (Player.HasSpecialForces)
             {
                 MapDrawer.OnLocationSelectedWithCtrlOrAlt += HandleAddSpecialForce;
                 MapDrawer.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleRemoveSpecialForce;
@@ -85,7 +85,7 @@
         MapDrawer.OnLocationSelected -= HandleAddForce;
         MapDrawer.OnLocationSelectedWithShift -= HandleRemoveForce;
 
-        if (h.Player.HasSpecialForces)
+        if (Player.HasSpecialForces)
         {
             MapDrawer.OnLocationSelectedWithCtrlOrAlt -= HandleAddSpecialForce;
             MapDrawer.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleRemoveSpecialForce;
@@ -129,9 +129,9 @@
         get
         {
             var result = new List<Location>();
-            result.Add(h.Game.Map.SietchTabr);
-            result.AddRange(h.Game.Map.FalseWallSouth.Locations);
-            result.AddRange(h.Game.Map.FalseWallWest.Locations);
+            result.Add(Game.Map.SietchTabr);
+            result.AddRange(Game.Map.FalseWallSouth.Locations);
+            result.AddRange(Game.Map.FalseWallWest.Locations);
             return result;
         }
     }

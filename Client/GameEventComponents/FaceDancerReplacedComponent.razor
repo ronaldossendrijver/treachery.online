@@ -11,7 +11,7 @@
     <Header>Replace a Face Dancer?</Header>
     <Body>
 
-        <SelectHeroComponent @bind-Value="dancer" Values="FaceDancerReplaced.ValidFaceDancers(h.Player)"/>
+        <SelectHeroComponent @bind-Value="dancer" Values="FaceDancerReplaced.ValidFaceDancers(Player)"/>
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
 
     </Body>
@@ -20,14 +20,17 @@
 
 @code {
 
+    protected override bool IsUrgent => true;
+    protected override Faction IsFactionSpecific => Faction.Purple;
+
     private IHero dancer;
 
     protected override void OnAfterRender(bool firstRender)
     {
-        //Initialize(ref dancer, FaceDancerReplaced.ValidFaceDancers(h.Player));
+        //Initialize(ref dancer, FaceDancerReplaced.ValidFaceDancers(Player));
     }
 
-    protected override FaceDancerReplaced ConfirmedResult => new FaceDancerReplaced(h.Game) { Initiator = h.Faction, Passed = false, SelectedDancer = dancer };
+    protected override FaceDancerReplaced ConfirmedResult => new FaceDancerReplaced(Game) { Initiator = Faction, Passed = false, SelectedDancer = dancer };
 
-    protected override FaceDancerReplaced PassedResult => new FaceDancerReplaced(h.Game) { Initiator = h.Faction, Passed = true };
+    protected override FaceDancerReplaced PassedResult => new FaceDancerReplaced(Game) { Initiator = Faction, Passed = true };
 }

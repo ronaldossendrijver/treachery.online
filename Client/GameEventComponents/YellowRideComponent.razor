@@ -32,11 +32,11 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Yellow;
 
-    override protected YellowRidesMonster ConfirmedResult => new YellowRidesMonster(h.Game) { Initiator = h.Faction, ForceLocations = forces, To = toLocation, Passed = false };
+    override protected YellowRidesMonster ConfirmedResult => new YellowRidesMonster(Game) { Initiator = Faction, ForceLocations = forces, To = toLocation, Passed = false };
 
-    override protected YellowRidesMonster PassedResult => new YellowRidesMonster(h.Game) { Initiator = h.Faction, Passed = true };
+    override protected YellowRidesMonster PassedResult => new YellowRidesMonster(Game) { Initiator = Faction, Passed = true };
 
-    protected override IEnumerable<Territory> ValidSources => YellowRidesMonster.ValidSources(h.Game);
+    protected override IEnumerable<Territory> ValidSources => YellowRidesMonster.ValidSources(Game);
 
-    protected override IEnumerable<Location> ValidTargets => YellowRidesMonster.ValidTargets(h.Game, h.Player);
+    protected override IEnumerable<Location> ValidTargets => YellowRidesMonster.ValidTargets(Game, Player);
 }

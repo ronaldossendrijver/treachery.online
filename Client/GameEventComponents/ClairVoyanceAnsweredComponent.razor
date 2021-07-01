@@ -8,10 +8,10 @@
 
 <GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-    <Header>@Skin.Current.Describe(h.Game.LatestClairvoyance.Initiator) questions you with @Skin.Current.Describe(TreacheryCardType.Clairvoyance)!</Header>
+    <Header>@Skin.Current.Describe(Game.LatestClairvoyance.Initiator) questions you with @Skin.Current.Describe(TreacheryCardType.Clairvoyance)!</Header>
     <Body>
 
-        <div class="font-italic bg-dark">@h.Game.LatestClairvoyance.GetQuestion()</div>
+        <div class="font-italic bg-dark">@Game.LatestClairvoyance.GetQuestion()</div>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@validationError" Pass="Pass" PassText="No" Other="Other" OtherText="I can't answer that..." />
 
@@ -23,9 +23,9 @@
 
     protected override bool IsUrgent => true;
 
-    protected override ClairVoyanceAnswered ConfirmedResult => new ClairVoyanceAnswered(h.Game) { Initiator = h.Faction, Answer = ClairVoyanceAnswer.Yes };
+    protected override ClairVoyanceAnswered ConfirmedResult => new ClairVoyanceAnswered(Game) { Initiator = Faction, Answer = ClairVoyanceAnswer.Yes };
 
-    protected override ClairVoyanceAnswered PassedResult => new ClairVoyanceAnswered(h.Game) { Initiator = h.Faction, Answer = ClairVoyanceAnswer.No };
+    protected override ClairVoyanceAnswered PassedResult => new ClairVoyanceAnswered(Game) { Initiator = Faction, Answer = ClairVoyanceAnswer.No };
 
-    protected override ClairVoyanceAnswered OtherResult => new ClairVoyanceAnswered(h.Game) { Initiator = h.Faction, Answer = ClairVoyanceAnswer.Unknown };
+    protected override ClairVoyanceAnswered OtherResult => new ClairVoyanceAnswered(Game) { Initiator = Faction, Answer = ClairVoyanceAnswer.Unknown };
 }

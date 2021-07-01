@@ -17,15 +17,15 @@
     {
         <div class="card-body">
 
-            @if (h.IsPlayer && (DealAccepted.AcceptableDeals(h.Game, h.Player).Any() || DealAccepted.CancellableDeals(h.Game, h.Player).Any()))
+            @if (h.IsPlayer && (DealAccepted.AcceptableDeals(Game, Player).Any() || DealAccepted.CancellableDeals(Game, Player).Any()))
             {
                 <label>Deal offers</label>
                 <table class="table table-striped table-sm">
 
-                    @foreach (var offer in DealAccepted.AcceptableDeals(h.Game, h.Player))
+                    @foreach (var offer in DealAccepted.AcceptableDeals(Game, Player))
                     {
                         var offerToShow = offer;
-                        var validity = offer.Acceptance(h.Faction).Validate();
+                        var validity = offer.Acceptance(Faction).Validate();
 
                         <tr>
                             <td><img width=24 src="@Skin.Current.GetImageURL(offer.Initiator)" /></td>
@@ -38,7 +38,7 @@
 
                     }
 
-                    @foreach (var offer in DealAccepted.CancellableDeals(h.Game, h.Player))
+                    @foreach (var offer in DealAccepted.CancellableDeals(Game, Player))
                     {
                         var offerToShow = offer;
 
@@ -56,12 +56,12 @@
                 </table>
             }
 
-            @if (DealAccepted.CurrentDeals(h.Game).Any())
+            @if (DealAccepted.CurrentDeals(Game).Any())
             {
                 <label>Current deals</label>
                 <table class="table table-striped table-sm">
 
-                    @foreach (var deal in DealAccepted.CurrentDeals(h.Game))
+                    @foreach (var deal in DealAccepted.CurrentDeals(Game))
                     {
                         <tr>
                             <td class="p-0">
@@ -69,7 +69,7 @@
                                 ⇒
                                 <img width=24 src="@Skin.Current.GetImageURL(deal.ConsumingFaction)" />
                             </td>
-                            <td class="text-break">@deal.DealContentsDescription(h.Game)</td>
+                            <td class="text-break">@deal.DealContentsDescription(Game)</td>
                         </tr>
                     }
 
@@ -84,7 +84,7 @@
 
     private async Task Accept(DealOffered offered)
     {
-        await Request(offered.Acceptance(h.Faction));
+        await Request(offered.Acceptance(Faction));
     }
 
     private async Task Cancel(DealOffered offered)

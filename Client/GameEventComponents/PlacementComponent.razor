@@ -43,7 +43,7 @@
     {
         get
         {
-            return PlacementEvent.TerritoriesWithAnyForcesNotInStorm(h.Game, h.Player);
+            return PlacementEvent.TerritoriesWithAnyForcesNotInStorm(Game, Player);
         }
     }
 
@@ -53,7 +53,7 @@
         {
             if (forces.Sum(kvp => kvp.Value.TotalAmountOfForces) > 0)
             {
-                return PlacementEvent.ValidTargets(h.Game, h.Player, forces).OrderByDescending(l => l.IsStronghold).ThenBy(l => l.Territory.Name).ThenBy(l => l.Name);
+                return PlacementEvent.ValidTargets(Game, Player, forces).OrderByDescending(l => l.IsStronghold).ThenBy(l => l.Territory.Name).ThenBy(l => l.Name);
             }
             else
             {

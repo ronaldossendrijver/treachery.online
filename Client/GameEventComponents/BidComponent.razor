@@ -12,12 +12,12 @@
 
     <div class="card-body">
 
-        @if (Karma.CanKarma(h.Game, h.Player))
+        @if (Karma.CanKarma(Game, Player))
         {
             <div>Use @Skin.Current.Describe(TreacheryCardType.Karma) to bid without limit or win immediately?</div> <InfoComponent Contents="@InfoMessage" />
             <select class="custom-select" @bind="karmaCardId" id="karamaCard">
                 <option value="-1">Don't use @Skin.Current.Describe(TreacheryCardType.Karma)</option>
-                @foreach (var v in Karma.ValidKarmaCards(h.Game, h.Player))
+                @foreach (var v in Karma.ValidKarmaCards(Game, Player))
                 {
                     <option value="@v.Id">@v</option>
                 }
@@ -30,7 +30,7 @@
 
             <div class="form-group col-auto">
 
-                @if (h.Player.Ally == Faction.None)
+                @if (Player.Ally == Faction.None)
                 {
                     <label class="mb-0" for="bidAmount">@Skin.Current.Describe(Concept.Resource)</label>
                 }
@@ -40,19 +40,19 @@
                 }
 
                 <select class="custom-select" @bind="amount" id="bidAmount">
-                    @foreach (var s in Bid.ValidAmounts(h.Player, karmaCardId > 0))
+                    @foreach (var s in Bid.ValidAmounts(Player, karmaCardId > 0))
                     {
                         <option value="@s">@s</option>
                     }
                 </select>
             </div>
 
-            @if (h.Player.Ally != Faction.None)
+            @if (Player.Ally != Faction.None)
             {
                 <div class="form-group col-auto">
                     <label class="mb-0" for="allyContributionAmount">Paid by your ally</label>
                     <select class="custom-select" @bind="allyContributionAmount" id="allyContributionAmount">
-                        @foreach (var s in Bid.ValidAllyAmounts(h.Game, h.Player))
+                        @foreach (var s in Bid.ValidAllyAmounts(Game, Player))
                         {
                             <option value="@s">@s</option>
                         }
@@ -60,12 +60,12 @@
                 </div>
             }
 
-            @if (h.Game.SpiceForBidsRedCanPay(h.Faction) > 0)
+            @if (Game.SpiceForBidsRedCanPay(Faction) > 0)
             {
                 <div class="form-group col-auto">
                     <label class="mb-0" for="redContributionAmount">Paid by @Skin.Current.Describe(Faction.Red)</label>
                     <select class="custom-select" @bind="redContributionAmount" id="redContributionAmount">
-                        @foreach (var s in Bid.ValidRedAmounts(h.Game, h.Player))
+                        @foreach (var s in Bid.ValidRedAmounts(Game, Player))
                         {
                             <option value="@s">@s</option>
                         }
@@ -98,16 +98,16 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
-        Initialize<int, int>(ref allyContributionAmount, Bid.ValidAllyAmounts(h.Game, h.Player));
-        Initialize<int, int>(ref redContributionAmount, Bid.ValidRedAmounts(h.Game, h.Player));
-        Initialize<int, int>(ref amount, Bid.ValidAmounts(h.Player, karmaCardId > 0));
-        Initialize<int, TreacheryCard>(ref karmaCardId, Karma.ValidKarmaCards(h.Game, h.Player), true, -1);
+        Initialize<int, int>(ref allyContributionAmount, Bid.ValidAllyAmounts(Game, Player));
+        Initialize<int, int>(ref redContributionAmount, Bid.ValidRedAmounts(Game, Player));
+        Initialize<int, int>(ref amount, Bid.ValidAmounts(Player, karmaCardId > 0));
+        Initialize<int, TreacheryCard>(ref karmaCardId, Karma.ValidKarmaCards(Game, Player), true, -1);
     }
 
     private async Task Autopass()
     {
-        if (h.Game.CurrentBid != null && h.Game.CurrentBid.TotalAmount + 1 > h.BidAutoPassThreshold ||
-            h.Game.CurrentBid == null && h.BidAutoPassThreshold == 0)
+        if (Game.CurrentBid != null && Game.CurrentBid.TotalAmount + 1 > h.BidAutoPassThreshold ||
+            Game.CurrentBid == null && h.BidAutoPassThreshold == 0)
         {
             await Pass();
         }
@@ -115,9 +115,9 @@
 
     protected override void OnParametersSet()
     {
-        int allyResources = h.Player.Ally == Faction.None ? 0 : h.Game.GetPermittedUseOfAllySpice(h.Faction);
-        int playerResources = h.Player.Resources;
-        int bidToDo = h.Game.CurrentBid != null ? h.Game.CurrentBid.TotalAmount + 1 : 1;
+        int allyResources = Player.Ally == Faction.None ? 0 : Game.GetPermittedUseOfAllySpice(Faction);
+        int playerResources = Player.Resources;
+        int bidToDo = Game.CurrentBid != null ? Game.CurrentBid.TotalAmount + 1 : 1;
         allyContributionAmount = Math.Min(bidToDo, allyResources);
         amount = Math.Min(bidToDo - allyContributionAmount, playerResources);
 
@@ -128,9 +128,9 @@
     {
         get
         {
-            return new Bid(h.Game)
+            return new Bid(Game)
             {
-                Initiator = h.Faction,
+                Initiator = Faction,
                 Passed = false,
                 Amount = amount,
                 KarmaBid = false,
@@ -145,7 +145,7 @@
     {
         get
         {
-            return new Bid(h.Game) { Initiator = h.Faction, Passed = false, KarmaBid = true, KarmaCard = TreacheryCardManager.Lookup.Find(karmaCardId) };
+            return new Bid(Game) { Initiator = Faction, Passed = false, KarmaBid = true, KarmaCard = TreacheryCardManager.Lookup.Find(karmaCardId) };
         }
     }
 
@@ -153,7 +153,7 @@
     {
         get
         {
-            return new Bid(h.Game) { Initiator = h.Faction, Passed = true, KarmaBid = false };
+            return new Bid(Game) { Initiator = Faction, Passed = true, KarmaBid = false };
         }
     }
 

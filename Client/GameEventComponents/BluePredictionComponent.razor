@@ -11,7 +11,7 @@
     <Header>Predict which faction will win the game.</Header>
     <Body>
 
-        <SelectFactionComponent @bind-Value="toWin" Values="BluePrediction.ValidTargets(h.Game, h.Player)" />
+        <SelectFactionComponent @bind-Value="toWin" Values="BluePrediction.ValidTargets(Game, Player)" />
 
         <NumberPickerComponent @bind-Value="turn" Min="1" Max="Game.MaximumNumberOfTurns" />
 
@@ -31,9 +31,9 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
-        //Initialize<int, int>(ref turn, BluePrediction.ValidTurns(h.Game));
-        //Initialize<Faction, Faction>(ref toWin, BluePrediction.ValidTargets(h.Game, h.Player));
+        //Initialize<int, int>(ref turn, BluePrediction.ValidTurns(Game));
+        //Initialize<Faction, Faction>(ref toWin, BluePrediction.ValidTargets(Game, Player));
     }
 
-    protected override BluePrediction ConfirmedResult => new BluePrediction(h.Game) { Initiator = h.Faction, ToWin = toWin, Turn = turn };
+    protected override BluePrediction ConfirmedResult => new BluePrediction(Game) { Initiator = Faction, ToWin = toWin, Turn = turn };
 }

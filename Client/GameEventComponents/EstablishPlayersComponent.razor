@@ -26,7 +26,7 @@
         <label class="mt-1 mb-0">Bots</label>
         @foreach (var rule in Game.GetRulesInGroup(RuleGroup.Bots))
         {
-            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="OnChangeRules" />
+            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" />
         }
 
         <SelectComponent Disabled="@Readonly" @bind-Value="@Ruleset" Values="Rulesets">
@@ -43,37 +43,37 @@
         <label class="mt-1 mb-0">Core Game, Advanced Rules</label>
         @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreAdvanced))
         {
-            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="OnChangeRules" />
+            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" />
         }
 
         <label class="mt-1 mb-0">Core Game, Exceptions to Basic Rules</label>
         @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreBasicExceptions))
         {
-            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="OnChangeRules" />
+            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" />
         }
 
         <label class="mt-1 mb-0">Core Game, Exceptions to Advanced Rules</label>
         @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreAdvancedExceptions))
         {
-            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="OnChangeRules" />
+            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" />
         }
 
         <label class="mt-1 mb-0">Ixians &amp; Tleilaxu Expansion</label>
         @foreach (var rule in Game.GetRulesInGroup(RuleGroup.ExpansionIxAndBtBasic))
         {
-            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="OnChangeRules" />
+            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" />
         }
 
         <label class="mt-1 mb-0">Ixians &amp; Tleilaxu Expansion, Advanced Rules</label>
         @foreach (var rule in Game.GetRulesInGroup(RuleGroup.ExpansionIxAndBtAdvanced))
         {
-            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="OnChangeRules" />
+            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" />
         }
 
         <label class="mt-1 mb-0">House Rules</label>
         @foreach (var rule in Game.GetRulesInGroup(RuleGroup.House))
         {
-            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="OnChangeRules" />
+            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" />
         }
 
     </Body>
@@ -81,6 +81,8 @@
 </GameEventComponentLayout>
 
 @code {
+
+    protected override bool IsUrgent => true;
 
     private GameInfo info
     {
@@ -116,12 +118,6 @@
             info.Rules.AddRange(Game.RulesetDefinition[info.Ruleset]);
         }
 
-        StateHasChanged();
-    }
-
-    private void OnChangeRules()
-    {
-        info.Ruleset = Game.DetermineRuleset(info.Rules.Where(r => Game.GetRuleGroup(r) != RuleGroup.Bots));
         StateHasChanged();
     }
 

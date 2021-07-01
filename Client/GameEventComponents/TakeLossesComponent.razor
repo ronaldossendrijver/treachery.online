@@ -9,24 +9,24 @@
 <div class="card p-1 mb-2 border-danger">
 
     <div class="card-header">
-        Please choose how to distribute a storm loss total of at least @TakeLosses.LossesToTake(h.Game) over your forces in @TakeLosses.LossLocation(h.Game).
+        Please choose how to distribute a storm loss total of at least @TakeLosses.LossesToTake(Game) over your forces in @TakeLosses.LossLocation(Game).
     </div>
 
     <div class="card-body">
 
-        <label class="mb-0" for="shipmentForceAmount">@h.Player.ForceName</label>
+        <label class="mb-0" for="shipmentForceAmount">@Player.ForceName</label>
         <select class="custom-select" @bind="forceAmount" id="shipmentForceAmount">
-            @foreach (var s in TakeLosses.ValidForceAmounts(h.Game, h.Player))
+            @foreach (var s in TakeLosses.ValidForceAmounts(Game, Player))
             {
                 <option value="@s">@s</option>
             }
         </select>
 
-        @if (h.Player.HasSpecialForces)
+        @if (Player.HasSpecialForces)
         {
-            <label class="mb-0" for="shipmentSpecialForceAmount">@(h.Player.SpecialForceName)</label>
+            <label class="mb-0" for="shipmentSpecialForceAmount">@(Player.SpecialForceName)</label>
             <select class="custom-select" @bind="specialForceAmount" id="shipmentSpecialForceAmount">
-                @foreach (var s in TakeLosses.ValidSpecialForceAmounts(h.Game, h.Player))
+                @foreach (var s in TakeLosses.ValidSpecialForceAmounts(Game, Player))
                 {
                     <option value="@s">@s</option>
                 }
@@ -53,9 +53,9 @@
     {
         get
         {
-            return new TakeLosses(h.Game)
+            return new TakeLosses(Game)
             {
-                Initiator = h.Faction,
+                Initiator = Faction,
                 ForceAmount = forceAmount,
                 SpecialForceAmount = specialForceAmount,
             };
@@ -64,7 +64,7 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
-        Initialize<int, int>(ref forceAmount, TakeLosses.ValidForceAmounts(h.Game, h.Player));
-        Initialize<int, int>(ref specialForceAmount, TakeLosses.ValidSpecialForceAmounts(h.Game, h.Player));
+        Initialize<int, int>(ref forceAmount, TakeLosses.ValidForceAmounts(Game, Player));
+        Initialize<int, int>(ref specialForceAmount, TakeLosses.ValidSpecialForceAmounts(Game, Player));
     }
 }

@@ -10,17 +10,17 @@
     <div class="card-header">Select forces or leaders to revive, or pass</div>
     <div class="card-body">
 
-        @if (h.Player.Faction != Faction.Purple && h.Game.IsPlaying(Faction.Purple))
+        @if (Player.Faction != Faction.Purple && Game.IsPlaying(Faction.Purple))
         {
             <div class="text-info small">Note: you can only revive once during your turn. If you want to request early leader revival from @Skin.Current.Describe(Faction.Purple), you need to do that first. Then, after you agree on a price, select the leader to revive from the drop down below.</div>
         }
 
-        @if (h.Player.Ally == Faction.Red)
+        @if (Player.Ally == Faction.Red)
         {
-            <div>@Skin.Current.Describe(Faction.Red) will pay for up to <span class="badge badge-primary badge-pill">@h.Game.RedWillPayForExtraRevival</span> forces.</div>
+            <div>@Skin.Current.Describe(Faction.Red) will pay for up to <span class="badge badge-primary badge-pill">@Game.RedWillPayForExtraRevival</span> forces.</div>
         }
 
-        <label class="mt-1 mb-0" for="revivalAmountOfForces">@h.Player.ForceName</label>
+        <label class="mt-1 mb-0" for="revivalAmountOfForces">@Player.ForceName</label>
         <select class="custom-select mt-0" @bind="amountOfForces" id="revivalAmountOfForces">
             @foreach (var s in ValidRevivalAmounts)
             {
@@ -28,9 +28,9 @@
             }
         </select>
 
-        @if (h.Player.HasSpecialForces)
+        @if (Player.HasSpecialForces)
         {
-            <label class="mt-1 mb-0" for="revivalAmountOfSpecialForces">@h.Player.SpecialForceName</label>
+            <label class="mt-1 mb-0" for="revivalAmountOfSpecialForces">@Player.SpecialForceName</label>
             <select class="custom-select mt-0" @bind="amountOfSpecialForces" id="revivalAmountOfSpecialForces">
                 @foreach (var s in ValidRevivalSpecialAmounts)
                 {
@@ -50,7 +50,7 @@
 
         <div class="mt-2">Revival cost for you: <span class="badge badge-primary badge-pill">@(CostOfRevival.TotalCostForPlayer)</span></div>
 
-        @if (h.Player.Ally == Faction.Red)
+        @if (Player.Ally == Faction.Red)
         {
             <div class="mt-0">Revival cost for @Skin.Current.Describe(Faction.Red): <span class="badge badge-primary badge-pill">@(CostOfRevival.CostForEmperor)</span></div>
         }
@@ -78,7 +78,7 @@
     {
         get
         {
-            return new Revival(h.Game) { Initiator = h.Faction, AmountOfForces = amountOfForces, AmountOfSpecialForces = amountOfSpecialForces, Hero = LeaderManager.HeroLookup.Find(hero) };
+            return new Revival(Game) { Initiator = Faction, AmountOfForces = amountOfForces, AmountOfSpecialForces = amountOfSpecialForces, Hero = LeaderManager.HeroLookup.Find(hero) };
         }
     }
 
@@ -86,7 +86,7 @@
     {
         get
         {
-            return Revival.ValidRevivalAmounts(h.Game, h.Player, false);
+            return Revival.ValidRevivalAmounts(Game, Player, false);
         }
     }
 
@@ -94,7 +94,7 @@
     {
         get
         {
-            return Revival.ValidRevivalAmounts(h.Game, h.Player, true);
+            return Revival.ValidRevivalAmounts(Game, Player, true);
         }
     }
 
@@ -102,7 +102,7 @@
     {
         get
         {
-            return Revival.DetermineCost(h.Game, h.Player, LeaderManager.HeroLookup.Find(hero), amountOfForces, amountOfSpecialForces);
+            return Revival.DetermineCost(Game, Player, LeaderManager.HeroLookup.Find(hero), amountOfForces, amountOfSpecialForces);
         }
     }
 
@@ -110,7 +110,7 @@
     {
         get
         {
-            return Revival.ValidRevivalHeroes(h.Game, h.Player);
+            return Revival.ValidRevivalHeroes(Game, Player);
         }
     }
 }

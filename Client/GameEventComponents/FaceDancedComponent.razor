@@ -12,20 +12,20 @@
     <Header>Reveal a Face Dancer?</Header>
     <Body>
 
-        @if (FaceDanced.MayCallFaceDancer(h.Game, h.Player))
+        @if (FaceDanced.MayCallFaceDancer(Game, Player))
         {
-            <div class="mb-2">If you decide to reveal, you may place up to <strong>@FaceDanced.MaximumNumberOfForces(h.Game, h.Player)</strong> forces in <strong>@h.Game.CurrentBattle.Territory</strong> from your reserves and/or from anywhere on the planet.</div>
+            <div class="mb-2">If you decide to reveal, you may place up to <strong>@FaceDanced.MaximumNumberOfForces(Game, Player)</strong> forces in <strong>@Game.CurrentBattle.Territory</strong> from your reserves and/or from anywhere on the planet.</div>
 
             <NumberPickerComponent @bind-Value="forcesFromReserve" Min="0" Max="Player.ForcesInReserve" SymbolSRC="@Skin.Current.GetFactionForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight" Label="From reserves:" />
 
-            @if (FaceDanced.ValidSourceLocations(h.Game, h.Player).Any())
+            @if (FaceDanced.ValidSourceLocations(Game, Player).Any())
             {
                 <label class="mt-2 mb-0">From somewhere on the planet:</label>
-                <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="forces" Locations="FaceDanced.ValidSourceLocations(h.Game, h.Player)" MaySelectFromStorm="true" AlwaysShowLocation="true" />
+                <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="forces" Locations="FaceDanced.ValidSourceLocations(Game, Player)" MaySelectFromStorm="true" AlwaysShowLocation="true" />
             }
 
             <label class="mt-2 mb-0">Select where to put your replacements:</label>
-            <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="targetForces" Locations="FaceDanced.ValidTargetLocations(h.Game)" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="@FaceDanced.MaximumNumberOfForces(h.Game, h.Player)"/>
+            <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="targetForces" Locations="FaceDanced.ValidTargetLocations(Game)" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="@FaceDanced.MaximumNumberOfForces(Game, Player)"/>
 
             <ButtonRowComponent Confirm="Confirm" ConfirmText="Reveal & Place Forces" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
         }
@@ -40,13 +40,16 @@
 
 @code {
 
+    protected override bool IsUrgent => true;
+    protected override Faction IsFactionSpecific => Faction.Purple;
+
     private Dictionary<Location, Battalion> forces = new Dictionary<Location, Battalion>();
     private Dictionary<Location, Battalion> targetForces = new Dictionary<Location, Battalion>();
     private int forcesFromReserve;
 
-    protected override FaceDanced ConfirmedResult => new FaceDanced(h.Game) { Initiator = h.Faction, FaceDancerCalled = true, ForceLocations = forces, ForcesFromReserve = forcesFromReserve, TargetForceLocations = targetForces };
+    protected override FaceDanced ConfirmedResult => new FaceDanced(Game) { Initiator = Faction, FaceDancerCalled = true, ForceLocations = forces, ForcesFromReserve = forcesFromReserve, TargetForceLocations = targetForces };
 
-    protected override FaceDanced PassedResult => new FaceDanced(h.Game) { Initiator = h.Faction, FaceDancerCalled = false };
+    protected override FaceDanced PassedResult => new FaceDanced(Game) { Initiator = Faction, FaceDancerCalled = false };
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -58,7 +61,7 @@
             MapDrawer.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleRemoveTargetForce;
         }
 
-        Initialize<int, int>(ref forcesFromReserve, FaceDanced.ValidForcesFromReserves(h.Player));
+        Initialize<int, int>(ref forcesFromReserve, FaceDanced.ValidForcesFromReserves(Player));
     }
 
     public void Dispose()
@@ -71,7 +74,7 @@
 
     private void HandleAddForce(object sender, Location l)
     {
-        if (FaceDanced.ValidSourceLocations(h.Game, h.Player).Contains(l))
+        if (FaceDanced.ValidSourceLocations(Game, Player).Contains(l))
         {
             ForceAmountButton(l, 1, false);
         }
@@ -79,7 +82,7 @@
 
     private void HandleAddTargetForce(object sender, Location l)
     {
-        if (FaceDanced.ValidTargetLocations(h.Game).Contains(l))
+        if (FaceDanced.ValidTargetLocations(Game).Contains(l))
         {
             TargetForceAmountButton(l, 1, false);
         }
@@ -87,7 +90,7 @@
 
     private void HandleRemoveForce(object sender, Location l)
     {
-        if (FaceDanced.ValidSourceLocations(h.Game, h.Player).Contains(l))
+        if (FaceDanced.ValidSourceLocations(Game, Player).Contains(l))
         {
             ForceAmountButton(l, -1, false);
         }
@@ -95,7 +98,7 @@
 
     private void HandleRemoveTargetForce(object sender, Location l)
     {
-        if (FaceDanced.ValidTargetLocations(h.Game).Contains(l))
+        if (FaceDanced.ValidTargetLocations(Game).Contains(l))
         {
             TargetForceAmountButton(l, -1, false);
         }

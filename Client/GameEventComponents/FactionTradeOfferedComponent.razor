@@ -5,44 +5,22 @@
 @using Treachery.Shared
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<FactionTradeOffered>
-@implements IDisposable
 
-<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
-    <div class="card-header">Offer to trade factions</div>
-    <div class="card-body">
-        <select class="custom-select" @bind="target">
-            @foreach (var f in h.Game.ValidTargets(h.Player))
-            {
-                <option value="@f">@Skin.Current.Describe(f)</option>
-            }
-        </select>
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-        <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
-        <div class="text-danger bg-dark">@validationError</div>
+    <Header>Offer to trade factions</Header>
+    <Body>
 
-    </div>
-</div>
+        <SelectFactionComponent @bind-Value="target" Values="Game.ValidTargets(Player)" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
 
 @code {
 
     private Faction target;
 
-    protected override FactionTradeOffered ConfirmedResult
-    {
-        get
-        {
-            return new FactionTradeOffered(h.Game) { Initiator = h.Faction, Target = target };
-        }
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        Initialize<Faction, Faction>(ref target, h.Game.ValidTargets(h.Player));
-    }
-
-    public void Dispose()
-    {
-
-    }
-
+    protected override FactionTradeOffered ConfirmedResult => new FactionTradeOffered(Game) { Initiator = Faction, Target = target };
 }

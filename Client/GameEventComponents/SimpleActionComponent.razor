@@ -51,7 +51,7 @@
     [Parameter]
     public bool Collapsible { get; set; } = false;
 
-    protected override GameEventType ConfirmedResult => new GameEventType() { Game = h.Game, Initiator = h.Faction };
+    protected override GameEventType ConfirmedResult => new GameEventType() { Game = Game, Initiator = Faction };
 
     private void Dismiss()
     {

@@ -11,13 +11,13 @@
     <div class="card-header">Call TREACHERY?</div>
     <div class="card-body">
 
-        @if (TreacheryCalled.MayCallTreachery(h.Game, h.Player))
+        @if (TreacheryCalled.MayCallTreachery(Game, Player))
         {
             <button class="btn btn-primary mt-1" @onclick="Confirm">Confirm</button>
             <div class="text-danger bg-dark">@validationError</div>
         }
 
-        @if (h.Faction == h.Game.AggressorBattleAction.Initiator || h.Faction == h.Game.DefenderBattleAction.Initiator)
+        @if (Faction == Game.AggressorBattleAction.Initiator || Faction == Game.DefenderBattleAction.Initiator)
         {
             <button class="btn btn-primary mt-1" @onclick="Pass">Pass</button>
         }
@@ -31,7 +31,7 @@
     {
         get
         {
-            return new TreacheryCalled(h.Game) { Initiator = h.Faction, TraitorCalled = true };
+            return new TreacheryCalled(Game) { Initiator = Faction, TraitorCalled = true };
         }
     }
 
@@ -39,7 +39,7 @@
     {
         get
         {
-            return new TreacheryCalled(h.Game) { Initiator = h.Faction, TraitorCalled = false };
+            return new TreacheryCalled(Game) { Initiator = Faction, TraitorCalled = false };
         }
     }
 

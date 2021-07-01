@@ -46,7 +46,7 @@
     {
         get
         {
-            return new Voice(h.Game) { Initiator = h.Faction, Must = mustUse, Type = type };
+            return new Voice(Game) { Initiator = Faction, Must = mustUse, Type = type };
         }
     }
 
@@ -60,7 +60,7 @@
     {
         get
         {
-            return Voice.ValidTypes(h.Game).OrderBy(t => Skin.Current.Describe(t));
+            return Voice.ValidTypes(Game).OrderBy(t => Skin.Current.Describe(t));
         }
     }
 }

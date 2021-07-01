@@ -9,7 +9,7 @@
 
 <div class="card p-1 mb-2 border-danger">
     <div class="card-header">
-        Set <span class="badge badge-primary badge-pill" style="@Color(h.Game.NextFactionToPerformCustomSetup)">@Skin.Current.Describe(h.Game.NextFactionToPerformCustomSetup)</span> initial @Skin.Current.Describe(Concept.Resource) and forces.
+        Set <span class="badge badge-primary badge-pill" style="@Color(Game.NextFactionToPerformCustomSetup)">@Skin.Current.Describe(Game.NextFactionToPerformCustomSetup)</span> initial @Skin.Current.Describe(Concept.Resource) and forces.
     </div>
     <div class="card-body">
 
@@ -67,7 +67,7 @@
     {
         get
         {
-            return new PerformSetup(h.Game) { Initiator = h.Faction, Passed = false, Resources = resources, ForceLocations = forces };
+            return new PerformSetup(Game) { Initiator = Faction, Passed = false, Resources = resources, ForceLocations = forces };
         }
     }
 
@@ -85,10 +85,10 @@
             }
         }
 
-        if (currentfaction != h.Game.NextFactionToPerformCustomSetup)
+        if (currentfaction != Game.NextFactionToPerformCustomSetup)
         {
             forces = new Dictionary<Location, Battalion>();
-            currentfaction = h.Game.NextFactionToPerformCustomSetup;
+            currentfaction = Game.NextFactionToPerformCustomSetup;
             StateHasChanged();
         }
 
@@ -111,7 +111,7 @@
     {
         get
         {
-            return h.Game.GetPlayer(h.Game.NextFactionToPerformCustomSetup);
+            return Game.GetPlayer(Game.NextFactionToPerformCustomSetup);
         }
     }
 
@@ -183,7 +183,7 @@
     {
         get
         {
-            return h.Game.Map.Locations.OrderBy(l => l.ToString());
+            return Game.Map.Locations.OrderBy(l => l.ToString());
         }
     }
 

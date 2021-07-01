@@ -4,21 +4,20 @@
 
 @using Treachery.Shared
 @using Treachery.Client.GenericComponents;
-
 @inherits GameEventComponent<Donated>
 
 <GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-    <Header>Bribe @(h.Faction == Faction.Red?"any":"a non-allied") faction</Header>
+    <Header>Bribe @(Faction == Faction.Red?"any":"a non-allied") faction</Header>
     <Body>
 
-        <SelectFactionComponent @bind-Value="target" Values="Donated.ValidTargets(h.Game, h.Player)" />
+        <SelectFactionComponent @bind-Value="target" Values="Donated.ValidTargets(Game, Player)" />
 
-        <NumberPickerComponent @bind-Value="resources" Min="Donated.MinAmount(h.Game, h.Player)" Max="Donated.MaxAmount(h.Game, h.Player)" SymbolSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400"/>
+        <NumberPickerComponent @bind-Value="resources" Min="Donated.MinAmount(Game, Player)" Max="Donated.MaxAmount(Game, Player)" SymbolSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400"/>
 
-        @if (h.Game.Applicable(Rule.CardsCanBeTraded))
+        @if (Game.Applicable(Rule.CardsCanBeTraded))
         {
-            <SelectComponent @bind-Value="card" Values="h.Player.TreacheryCards" AddEmptyValue="true" EmptyLabel="None">
+            <SelectComponent @bind-Value="card" Values="Player.TreacheryCards" AddEmptyValue="true" EmptyLabel="None">
                 <Label>Give one of your cards</Label>
             </SelectComponent>
         }
@@ -37,10 +36,10 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
-        Initialize<Faction, Faction>(ref target, Donated.ValidTargets(h.Game, h.Player));
-        Initialize<int, int>(ref resources, Donated.ValidAmounts(h.Game, h.Player));
-        //Initialize<TreacheryCard, TreacheryCard>(ref card, h.Player.TreacheryCards, true);
+        Initialize<Faction, Faction>(ref target, Donated.ValidTargets(Game, Player));
+        Initialize<int, int>(ref resources, Donated.ValidAmounts(Game, Player));
+        //Initialize<TreacheryCard, TreacheryCard>(ref card, Player.TreacheryCards, true);
     }
 
-    protected override Donated ConfirmedResult => new Donated(h.Game) { Initiator = h.Faction, Target = target, Resources = resources, Card = card };
+    protected override Donated ConfirmedResult => new Donated(Game) { Initiator = Faction, Target = target, Resources = resources, Card = card };
 }

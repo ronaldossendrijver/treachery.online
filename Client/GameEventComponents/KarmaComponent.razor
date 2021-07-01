@@ -17,7 +17,7 @@
 
             <label class="mb-0" for="karamaCard">Select a card to play</label>
             <select class="custom-select" @bind="cardId" id="karamaCard">
-                @foreach (var v in Karma.ValidKarmaCards(h.Game, h.Player))
+                @foreach (var v in Karma.ValidKarmaCards(Game, Player))
                 {
                     <option value="@v.Id">@v</option>
                 }
@@ -25,7 +25,7 @@
 
             <label class="mb-0" for="karamaCard">Select an advantage to prevent</label> <InfoComponent Contents="@InfoMessage" />
             <select class="custom-select" @bind="prevented" id="karamaPrevented">
-                @foreach (var v in Karma.ValidFactionAdvantages(h.Game, h.Player))
+                @foreach (var v in Karma.ValidFactionAdvantages(Game, Player))
                 {
                     <option value="@v">@Skin.Current.Describe(v)</option>
                 }
@@ -45,8 +45,8 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
-        Initialize<int, TreacheryCard>(ref cardId, Karma.ValidKarmaCards(h.Game, h.Player));
-        Initialize<FactionAdvantage, FactionAdvantage>(ref prevented, Karma.ValidFactionAdvantages(h.Game, h.Player));
+        Initialize<int, TreacheryCard>(ref cardId, Karma.ValidKarmaCards(Game, Player));
+        Initialize<FactionAdvantage, FactionAdvantage>(ref prevented, Karma.ValidFactionAdvantages(Game, Player));
     }
 
     protected override Karma ConfirmedResult
@@ -54,7 +54,7 @@
 
         get
         {
-            return new Karma(h.Game) { Initiator = h.Faction, Card = TreacheryCardManager.Lookup.Find(cardId), Prevented = prevented };
+            return new Karma(Game) { Initiator = Faction, Card = TreacheryCardManager.Lookup.Find(cardId), Prevented = prevented };
         }
     }
 

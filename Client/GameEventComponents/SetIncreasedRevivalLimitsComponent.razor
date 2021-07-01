@@ -28,7 +28,7 @@
 
     protected override void OnInitialized()
     {
-        factions.AddRange(h.Game.FactionsWithIncreasedRevivalLimits);
+        factions.AddRange(Game.FactionsWithIncreasedRevivalLimits);
     }
 
     private void OnChangeFactions()
@@ -40,7 +40,7 @@
     {
         get
         {
-            return new SetIncreasedRevivalLimits(h.Game) { Initiator = h.Faction, Factions = factions.ToArray() };
+            return new SetIncreasedRevivalLimits(Game) { Initiator = Faction, Factions = factions.ToArray() };
         }
     }
 
@@ -48,7 +48,7 @@
     {
         get
         {
-            return SetIncreasedRevivalLimits.ValidTargets(h.Game, h.Player);
+            return SetIncreasedRevivalLimits.ValidTargets(Game, Player);
         }
     }
 

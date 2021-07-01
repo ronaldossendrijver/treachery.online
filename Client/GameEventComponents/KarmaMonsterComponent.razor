@@ -32,7 +32,7 @@
     {
         get
         {
-            return new KarmaMonster(h.Game) { Initiator = h.Faction, Territory = h.Game.Map.TerritoryLookup.Find(targetId) };
+            return new KarmaMonster(Game) { Initiator = Faction, Territory = Game.Map.TerritoryLookup.Find(targetId) };
         }
     }
 
@@ -61,7 +61,7 @@
     {
         get
         {
-            return h.Game.Map.Territories.Where(t => !t.IsProtectedFromWorm);
+            return Game.Map.Territories.Where(t => !t.IsProtectedFromWorm);
         }
     }
 }

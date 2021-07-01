@@ -11,32 +11,32 @@
     <Header>Play @Support.GetCardTitle(TreacheryCardType.Clairvoyance)</Header>
     <Body>
 
-        <SelectComponent @bind-Value="target" Values="ClairVoyancePlayed.ValidTargets(h.Game, h.Player)">
+        <SelectComponent @bind-Value="target" Values="ClairVoyancePlayed.ValidTargets(Game, Player)">
             <Label>Target Faction</Label>
         </SelectComponent>
 
-        <SelectComponent @bind-Value="question" Values="ClairVoyancePlayed.ValidQuestions(h.Game, target)" ValueLabels="ClairVoyancePlayed.ValidQuestions(h.Game, target).Select(q => ToLabel(q))">
+        <SelectComponent @bind-Value="question" Values="ClairVoyancePlayed.ValidQuestions(Game, target)" ValueLabels="ClairVoyancePlayed.ValidQuestions(Game, target).Select(q => ToLabel(q))">
             <Label>Question</Label>
         </SelectComponent>
 
         @if (question == ClairvoyanceQuestion.CardTypeInBattle || question == ClairvoyanceQuestion.CardTypeAsWeaponInBattle || question == ClairvoyanceQuestion.CardTypeAsDefenseInBattle || question == ClairvoyanceQuestion.HasCardTypeInHand)
         {
-            <SelectComponent @bind-Value="questionParameterA" Values="Voice.ValidTypes(h.Game).Select(v => v.ToString())" ValueLabels="Voice.ValidTypes(h.Game)">
+            <SelectComponent @bind-Value="questionParameterA" Values="Voice.ValidTypes(Game).Select(v => v.ToString())" ValueLabels="Voice.ValidTypes(Game)">
                 <Label>Card Type</Label>
             </SelectComponent>
         }
         else if (question == ClairvoyanceQuestion.LeaderAsFacedancer || question == ClairvoyanceQuestion.LeaderAsTraitor || question == ClairvoyanceQuestion.LeaderInBattle)
         {
-            <SelectComponent @bind-Value="questionParameterA" Values="h.Game.TraitorsInPlay.OrderBy(l => l.Name).Select(l => l.Id).Select(v => v.ToString())" ValueLabels="h.Game.TraitorsInPlay.OrderBy(l => l.Name)">
+            <SelectComponent @bind-Value="questionParameterA" Values="Game.TraitorsInPlay.OrderBy(l => l.Name).Select(l => l.Id).Select(v => v.ToString())" ValueLabels="Game.TraitorsInPlay.OrderBy(l => l.Name)">
                 <Label>Leader</Label>
             </SelectComponent>
         }
         else if (question == ClairvoyanceQuestion.Prediction)
         {
-            <SelectComponent @bind-Value="questionParameterA" Values="h.Game.Players.Select(p => p.Faction).Select(v => v.ToString())" ValueLabels="h.Game.Players.Select(p => p.Faction)">
+            <SelectComponent @bind-Value="questionParameterA" Values="Game.Players.Select(p => p.Faction).Select(v => v.ToString())" ValueLabels="Game.Players.Select(p => p.Faction)">
                 <Label>Faction</Label>
             </SelectComponent>
-            <SelectComponent @bind-Value="questionParameterB" Values="BluePrediction.ValidTurns(h.Game).Select(v => v.ToString())">
+            <SelectComponent @bind-Value="questionParameterB" Values="BluePrediction.ValidTurns(Game).Select(v => v.ToString())">
                 <Label>Turn</Label>
             </SelectComponent>
         }
@@ -48,7 +48,7 @@
         }
         else if (question == ClairvoyanceQuestion.WillAttackX)
         {
-            <SelectComponent @bind-Value="questionParameterA" Values="h.Game.Map.Territories.Select(t => t.Id).Select(v => v.ToString())" ValueLabels="h.Game.Map.Territories">
+            <SelectComponent @bind-Value="questionParameterA" Values="Game.Map.Territories.Select(t => t.Id).Select(v => v.ToString())" ValueLabels="Game.Map.Territories">
                 <Label>Territory</Label>
             </SelectComponent>
         }
@@ -68,21 +68,21 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
-        Initialize<Faction, Faction>(ref target, ClairVoyancePlayed.ValidTargets(h.Game, h.Player));
-        Initialize<ClairvoyanceQuestion, ClairvoyanceQuestion>(ref question, ClairVoyancePlayed.ValidQuestions(h.Game, target));
+        Initialize<Faction, Faction>(ref target, ClairVoyancePlayed.ValidTargets(Game, Player));
+        Initialize<ClairvoyanceQuestion, ClairvoyanceQuestion>(ref question, ClairVoyancePlayed.ValidQuestions(Game, target));
 
         if (question == ClairvoyanceQuestion.CardTypeInBattle || question == ClairvoyanceQuestion.CardTypeAsWeaponInBattle || question == ClairvoyanceQuestion.CardTypeAsDefenseInBattle || question == ClairvoyanceQuestion.HasCardTypeInHand)
         {
-            Initialize<string, string>(ref questionParameterA, Voice.ValidTypes(h.Game).Select(v => v.ToString()));
+            Initialize<string, string>(ref questionParameterA, Voice.ValidTypes(Game).Select(v => v.ToString()));
         }
         else if (question == ClairvoyanceQuestion.LeaderAsFacedancer || question == ClairvoyanceQuestion.LeaderAsTraitor || question == ClairvoyanceQuestion.LeaderInBattle)
         {
-            Initialize<string, string>(ref questionParameterA, h.Game.TraitorsInPlay.OrderBy(l => l.Name).Select(l => l.Id).Select(v => v.ToString()));
+            Initialize<string, string>(ref questionParameterA, Game.TraitorsInPlay.OrderBy(l => l.Name).Select(l => l.Id).Select(v => v.ToString()));
         }
         else if (question == ClairvoyanceQuestion.Prediction)
         {
-            Initialize<string, string>(ref questionParameterA, h.Game.Players.Select(p => p.Faction).Select(v => v.ToString()));
-            Initialize<string, string>(ref questionParameterB, BluePrediction.ValidTurns(h.Game).Select(v => v.ToString()));
+            Initialize<string, string>(ref questionParameterA, Game.Players.Select(p => p.Faction).Select(v => v.ToString()));
+            Initialize<string, string>(ref questionParameterB, BluePrediction.ValidTurns(Game).Select(v => v.ToString()));
         }
         else if (question == ClairvoyanceQuestion.DialOfMoreThanXInBattle)
         {
@@ -90,11 +90,11 @@
         }
         else if (question == ClairvoyanceQuestion.WillAttackX)
         {
-            Initialize<string, string>(ref questionParameterA, h.Game.Map.Territories.Select(t => t.Id).Select(v => v.ToString()));
+            Initialize<string, string>(ref questionParameterA, Game.Map.Territories.Select(t => t.Id).Select(v => v.ToString()));
         }
     }
 
-    protected override ClairVoyancePlayed ConfirmedResult => new ClairVoyancePlayed(h.Game) { Initiator = h.Faction, Target = target, Question = question, QuestionParameter1 = questionParameterA, QuestionParameter2 = questionParameterB };
+    protected override ClairVoyancePlayed ConfirmedResult => new ClairVoyancePlayed(Game) { Initiator = Faction, Target = target, Question = question, QuestionParameter1 = questionParameterA, QuestionParameter2 = questionParameterB };
 
     private IEnumerable<float> ValidDials
     {

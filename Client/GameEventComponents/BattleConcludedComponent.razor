@@ -12,7 +12,7 @@
 
     <Body>
 
-        @if (h.Faction == h.Game.BattleWinner)
+        @if (Faction == Game.BattleWinner)
         {
             var maxReplacementForces = BattleConcluded.ValidMaxReplacementForceAmount(Game, Player);
             if (maxReplacementForces > 0)
@@ -45,9 +45,9 @@
                 }
             }
 
-            if (BattleConcluded.MayCaptureOrKill(h.Game, h.Player))
+            if (BattleConcluded.MayCaptureOrKill(Game, Player))
             {
-                <div>We caught <HeroComponent Value="h.Game.BlackVictim" />... What are your orders, capture or kill?</div>
+                <div>We caught <HeroComponent Value="Game.BlackVictim" />... What are your orders, capture or kill?</div>
 
                 <div class="custom-control custom-radio">
                     <input class="custom-control-input" @onchange="CaptureDecisionOnChange" type="radio" id="battleConcludedKillFalse" value="@CaptureDecision.Capture" checked="@(captureDecision == CaptureDecision.Capture)">
@@ -91,10 +91,10 @@
     protected override void OnAfterRender(bool firstRender)
     {
         Initialize<TechToken, TechToken>(ref stolenToken, Loser.TechTokens);
-        Initialize<int, int>(ref replacementAmount, BattleConcluded.ValidReplacementForceAmounts(h.Game, h.Player));
+        Initialize<int, int>(ref replacementAmount, BattleConcluded.ValidReplacementForceAmounts(Game, Player));
     }
 
-    protected override BattleConcluded ConfirmedResult => new BattleConcluded(h.Game) { Initiator = h.Faction, DiscardedCards = DetermineSelectedCards(), StolenToken = stolenToken, SpecialForceLossesReplaced = replacementAmount, CaptureDecision = captureDecision };
+    protected override BattleConcluded ConfirmedResult => new BattleConcluded(Game) { Initiator = Faction, DiscardedCards = DetermineSelectedCards(), StolenToken = stolenToken, SpecialForceLossesReplaced = replacementAmount, CaptureDecision = captureDecision };
 
     private IEnumerable<TreacheryCard> DetermineSelectedCards()
     {
@@ -116,7 +116,7 @@
         get
         {
             var action = MyBattleAction;
-            if (action != null && action.Hero is TreacheryCard && h.Game.BattleWinner == h.Faction && h.Player.TreacheryCards.Contains(action.Hero))
+            if (action != null && action.Hero is TreacheryCard && Game.BattleWinner == Faction && Player.TreacheryCards.Contains(action.Hero))
             {
                 return action.Hero as TreacheryCard;
             }
@@ -132,7 +132,7 @@
         get
         {
             var action = MyBattleAction;
-            if (action != null && h.Game.BattleWinner == h.Faction && h.Player.TreacheryCards.Contains(action.Weapon))
+            if (action != null && Game.BattleWinner == Faction && Player.TreacheryCards.Contains(action.Weapon))
             {
                 return action.Weapon;
             }
@@ -148,7 +148,7 @@
         get
         {
             var action = MyBattleAction;
-            if (action != null && h.Game.BattleWinner == h.Faction && h.Player.TreacheryCards.Contains(action.Defense))
+            if (action != null && Game.BattleWinner == Faction && Player.TreacheryCards.Contains(action.Defense))
             {
                 return action.Defense;
             }
@@ -163,9 +163,9 @@
     {
         get
         {
-            if (h.Game.AggressorBattleAction != null)
+            if (Game.AggressorBattleAction != null)
             {
-                return h.Game.AggressorBattleAction.Initiator == h.Faction ? h.Game.AggressorBattleAction : h.Game.DefenderBattleAction;
+                return Game.AggressorBattleAction.Initiator == Faction ? Game.AggressorBattleAction : Game.DefenderBattleAction;
             }
             else
             {
@@ -178,7 +178,7 @@
     {
         get
         {
-            return h.Game.GetPlayer(h.Game.BattleLoser);
+            return Game.GetPlayer(Game.BattleLoser);
         }
     }
 }

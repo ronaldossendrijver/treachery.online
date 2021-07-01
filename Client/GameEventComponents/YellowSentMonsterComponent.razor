@@ -13,7 +13,7 @@
 
         <label for="yellowSentMonsterTarget">To <kbd>click</kbd></label>
         <select class="custom-select" @bind="@targetId" id="yellowSentMonsterTarget">
-            @foreach (var f in YellowSentMonster.ValidTargets(h.Game))
+            @foreach (var f in YellowSentMonster.ValidTargets(Game))
             {
                 <option value="@f.Id">@f.Name</option>
             }
@@ -33,7 +33,7 @@
     {
         get
         {
-            return new YellowSentMonster(h.Game) { Initiator = h.Faction, Territory = h.Game.Map.TerritoryLookup.Find(targetId) };
+            return new YellowSentMonster(Game) { Initiator = Faction, Territory = Game.Map.TerritoryLookup.Find(targetId) };
         }
     }
 
@@ -44,7 +44,7 @@
             MapDrawer.OnLocationSelected += HandleLocationSelected;
         }
 
-        Initialize<int, Territory>(ref targetId, YellowSentMonster.ValidTargets(h.Game));
+        Initialize<int, Territory>(ref targetId, YellowSentMonster.ValidTargets(Game));
     }
 
     public void Dispose()
@@ -54,6 +54,6 @@
 
     private void HandleLocationSelected(object sender, Location l)
     {
-        SetIfValid<int, Territory>(ref targetId, YellowSentMonster.ValidTargets(h.Game), l.Territory);
+        SetIfValid<int, Territory>(ref targetId, YellowSentMonster.ValidTargets(Game), l.Territory);
     }
 }

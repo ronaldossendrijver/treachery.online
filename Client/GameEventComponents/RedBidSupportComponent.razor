@@ -46,7 +46,7 @@
         factions.AddRange(ValidTargets);
         foreach (var f in factions)
         {
-            amounts.Add(f, h.Game.SpiceForBidsRedCanPay(f));
+            amounts.Add(f, Game.SpiceForBidsRedCanPay(f));
         }
     }
 
@@ -64,7 +64,7 @@
     {
         get
         {
-            return new RedBidSupport(h.Game) { Initiator = h.Faction, Amounts = amounts };
+            return new RedBidSupport(Game) { Initiator = Faction, Amounts = amounts };
         }
     }
 
@@ -72,7 +72,7 @@
     {
         get
         {
-            return SetIncreasedRevivalLimits.ValidTargets(h.Game, h.Player).Where(f => f != h.Player.Ally);
+            return SetIncreasedRevivalLimits.ValidTargets(Game, Player).Where(f => f != Player.Ally);
         }
     }
 
@@ -85,7 +85,7 @@
     {
         get
         {
-            return Enumerable.Range(0, h.Player.Resources + 1);
+            return Enumerable.Range(0, Player.Resources + 1);
         }
     }
 }

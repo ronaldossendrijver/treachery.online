@@ -10,7 +10,7 @@
     <div class="card-header">Select which traitor to keep</div>
     <div class="card-body">
 
-        <SelectHeroComponent @bind-Value="traitor" Values="h.Player.Traitors" />
+        <SelectHeroComponent @bind-Value="traitor" Values="Player.Traitors" />
 
         <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
         <div class="text-danger bg-dark">@validationError</div>
@@ -26,7 +26,7 @@
     {
         get
         {
-            return new TraitorsSelected(h.Game) { Initiator = h.Faction, SelectedTraitor = traitor };
+            return new TraitorsSelected(Game) { Initiator = Faction, SelectedTraitor = traitor };
         }
     }
 }
