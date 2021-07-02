@@ -56,12 +56,11 @@
                 }
             }
         }
-
-        <NumberPickerComponent @bind-Value="forces" Min="0" Max="Battle.MaxForces(Game, Player, false)" SymbolSRC="@Skin.Current.GetFactionForceImageURL(Faction)" />
+        <NumberPickerComponent @bind-Value="forces" Min="0" Max="Battle.MaxForces(Game, Player, false)" SymbolSRC="@Skin.Current.GetFactionForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight"/>
 
         @if (Battle.MaxForces(Game, Player, true) > 0)
         {
-            <NumberPickerComponent @bind-Value="specialForces" Min="0" Max="Battle.MaxForces(Game, Player, true)" SymbolSRC="@Skin.Current.GetFactionSpecialForceImageURL(Faction)" />
+            <NumberPickerComponent @bind-Value="specialForces" Min="0" Max="Battle.MaxForces(Game, Player, true)" SymbolSRC="@Skin.Current.GetFactionSpecialForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight"/>
         }
 
         @if (Battle.MustPayForForcesInBattle(Game, Player))
@@ -83,21 +82,15 @@
 
         @if (Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah))
         {
-            <div>Should the @Skin.Current.Describe(Concept.Messiah) join the fight?</div>
-            <div class="custom-control custom-radio">
-                <input class="custom-control-input" @onchange="OnChange" type="radio" id="battleKwisatzHaderachNo" value="false" checked="@(!messiah)">
-                <label class="custom-control-label" for="battleKwisatzHaderachNo">No</label>
-            </div>
-            <div class="custom-control custom-radio">
-                <input class="custom-control-input" @onchange="OnChange" type="radio" id="battleKwisatzHaderachYes" value="true" checked="@(messiah)">
-                <label class="custom-control-label" for="battleKwisatzHaderachYes">Yes</label>
-            </div>
+            <RadioComponent @bind-Value="messiah" Values="@(new bool[] {false,true})" ValueLabels="@(new string[] {"No","Yes"})">
+                <Label>Should the @Skin.Current.Describe(Concept.Messiah) join the fight?</Label>
+            </RadioComponent>
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Battle!" ConfirmError="@Validation" />
 
         <div class="text-info small">Toggle <img src="@Skin.Current.Eye_URL" /> on the map to show/hide the battle wheel.</div>
-    
+
     </Body>
 
 </GameEventComponentLayout>
@@ -116,11 +109,11 @@
     private TreacheryCard defense;
     private TreacheryCard weapon;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    /*protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await DrawIfNeeded();
     }
-
+    
     private int lastforces;
     private int lastspecialForces;
     private int lastResources;
@@ -129,7 +122,7 @@
     private TreacheryCard lastdefense;
     private TreacheryCard lastweapon;
 
-    private async Task DrawIfNeeded()
+    private void DrawIfNeeded()
     {
         if (
             forces != lastforces ||
@@ -148,10 +141,11 @@
             lastdefense = defense;
             lastweapon = weapon;
 
-            h._battleUnderConstruction = (Battle)ConfirmedResult;
-            await MapDrawer.Draw();
+            //h._battleUnderConstruction = (Battle)ConfirmedResult;
+            //await MapDrawer.Draw();
         }
     }
+    */
 
     protected override void OnParametersSet()
     {

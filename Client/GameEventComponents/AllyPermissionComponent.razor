@@ -61,7 +61,7 @@
         {
             var permittedKarma = Game.GetPermittedUseOfAllyKarma(Player.Ally);
 
-            <SelectCardComponent @bind-Value="karmaCard" Values="Karma.ValidKarmaCards(Game, Player)">
+            <SelectCardComponent @bind-Value="karmaCard" Values="Karma.ValidKarmaCards(Game, Player)" Required="false">
                 <Label>Allow use of your @Skin.Current.Describe(TreacheryCardType.Karma) cards to ship at @Skin.Current.Describe(Faction.Orange) rates (currently: <strong>@(permittedKarma == null ? "no" : permittedKarma.Name)</strong>)?</Label>
             </SelectCardComponent>
         }

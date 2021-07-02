@@ -161,6 +161,19 @@ namespace Treachery.Shared
             return Enumerable.Range(0, maxRevivals + 1);
         }
 
+        public static int ValidMaxRevivals(Game g, Player p, bool specialForces)
+        {
+            var amountPaidByEmperor = p.Ally == Faction.Red ? g.RedWillPayForExtraRevival : 0;
+
+            if (!specialForces)
+            {
+                return Math.Min(g.GetRevivalLimit(p) + amountPaidByEmperor, p.ForcesKilled);
+            }
+            else
+            {
+                return Math.Min(p.Is(Faction.Grey) ? g.GetRevivalLimit(p) + amountPaidByEmperor : (g.FactionsThatRevivedSpecialForcesThisTurn.Contains(p.Faction) ? 0 : 1), p.SpecialForcesKilled);
+            }
+        }
 
 
         public static bool MayReviveWithDiscount(Game g, Player p)
@@ -231,28 +244,7 @@ namespace Treachery.Shared
             }
             else
             {
-                int priceOfSpecialForces = initiator.Is(Faction.Grey) ? 3 : 2;
-
-                int specialForcesPaidByEmperor = 0;
-                while (
-                    (specialForcesPaidByEmperor + 1) <= amountOfSpecialForces &&
-                    (specialForcesPaidByEmperor + 1) * priceOfSpecialForces <= emperorsSpice &&
-                    specialForcesPaidByEmperor + 1 <= amountPaidForByEmperor)
-                {
-                    specialForcesPaidByEmperor++;
-                }
-
-                int forcesPaidByEmperor = 0;
-                while (
-                    (forcesPaidByEmperor + 1) <= amountOfForces &&
-                    specialForcesPaidByEmperor * priceOfSpecialForces + (forcesPaidByEmperor + 1) * 2 <= emperorsSpice &&
-                    specialForcesPaidByEmperor + forcesPaidByEmperor + 1 <= amountPaidForByEmperor)
-                {
-                    forcesPaidByEmperor++;
-                }
-
-                int costForEmperor = specialForcesPaidByEmperor * priceOfSpecialForces + forcesPaidByEmperor * 2;
-                CostForEmperor = Math.Min(costForForceRevival, Math.Min(costForEmperor, emperorsSpice));
+                CostForEmperor = DetermineCostForEmperor(initiator.Faction, costForForceRevival, amountOfForces, amountOfSpecialForces, emperorsSpice, amountPaidForByEmperor);
             }
 
             CostForForceRevivalForPlayer = costForForceRevival - CostForEmperor;
@@ -276,6 +268,32 @@ namespace Treachery.Shared
             {
                 return CostForForceRevivalForPlayer + CostForEmperor;
             }
+        }
+
+        public static int DetermineCostForEmperor(Faction initiator, int totalCostForForceRevival, int amountOfForces, int amountOfSpecialForces, int emperorsSpice, int amountPaidForByEmperor)
+        {
+            int priceOfSpecialForces = initiator == Faction.Grey ? 3 : 2;
+
+            int specialForcesPaidByEmperor = 0;
+            while (
+                (specialForcesPaidByEmperor + 1) <= amountOfSpecialForces &&
+                (specialForcesPaidByEmperor + 1) * priceOfSpecialForces <= emperorsSpice &&
+                specialForcesPaidByEmperor + 1 <= amountPaidForByEmperor)
+            {
+                specialForcesPaidByEmperor++;
+            }
+
+            int forcesPaidByEmperor = 0;
+            while (
+                (forcesPaidByEmperor + 1) <= amountOfForces &&
+                specialForcesPaidByEmperor * priceOfSpecialForces + (forcesPaidByEmperor + 1) * 2 <= emperorsSpice &&
+                specialForcesPaidByEmperor + forcesPaidByEmperor + 1 <= amountPaidForByEmperor)
+            {
+                forcesPaidByEmperor++;
+            }
+
+            int costForEmperor = specialForcesPaidByEmperor * priceOfSpecialForces + forcesPaidByEmperor * 2;
+            return Math.Min(totalCostForForceRevival, Math.Min(costForEmperor, emperorsSpice));
         }
     }
 }

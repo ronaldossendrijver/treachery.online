@@ -9,26 +9,18 @@
 @inherits Component;
 @typeparam T
 
-<label class="mb-0" for="@Id">
-    @Label
-    <ClickHintComponent Button="@ButtonHint" Modifier="@ModifierHint" />
-</label>
+<label class="mb-0" for="@Id">@Label</label>
 
-<select class="custom-select form-control" @bind="@ValueAsString" disabled="@Disabled">
 
-    @if (AddEmptyValue)
-    {
-        <option value="">@EmptyLabel</option>
-    }
+@foreach (var valueAndLabel in Values.Zip(LabelsForValues, (v, l) => new { Value = v, Label = l }))
+{
+    string optionId = Id + "-" + GenerateId();
 
-    @Options
-
-    @foreach (var valueAndLabel in Values.Zip(LabelsForValues, (v, l) => new { Value = v, Label = l }))
-    {
-        <option value="@GetValueAsString(valueAndLabel.Value)">@valueAndLabel.Label</option>
-    }
-
-</select>
+    <div class="form-check mb-0">
+        <input class="form-check-input" type="radio" name="@Id" id="@optionId" value="@GetValueAsString(valueAndLabel.Value)" @onchange="OnChange" checked="@(valueAndLabel.Value.Equals(Value))">
+        <label class="form-check-label" for="@optionId">@valueAndLabel.Label</label>
+    </div>
+}
 
 @code {
 
@@ -40,13 +32,7 @@
     public IEnumerable ValueLabels { get; set; } = null;
 
     [Parameter]
-    public bool AddEmptyValue { get; set; } = false;
-
-    [Parameter]
     public string EmptyLabel { get; set; } = "";
-
-    [Parameter]
-    public RenderFragment Options { get; set; }
 
     [Parameter]
     public bool Disabled { get; set; } = false;
@@ -59,39 +45,6 @@
     }
 
     private string _valueAsString;
-    private string ValueAsString
-    {
-        get
-        {
-            return _valueAsString;
-        }
-
-        set
-        {
-            //Console.WriteLine("ValueAsString: {0} -> {1}", _valueAsString, value);
-            if (_valueAsString != value)
-            {
-                _valueAsString = value;
-                if (_valueAsString == "")
-                {
-                    Value = default(T);
-                }
-                else
-                {
-                    var foundValue = Values.FirstOrDefault(v => GetValueAsString(v) == _valueAsString);
-                    //Console.WriteLine("Foundvalue: {0}", foundValue);
-                    if (foundValue == null)
-                    {
-                        Value = default(T);
-                    }
-                    else
-                    {
-                        Value = foundValue;
-                    }
-                }
-            }
-        }
-    }
 
     private T _value;
 
@@ -104,11 +57,10 @@
         }
         set
         {
-            //Console.WriteLine("Value: {0} -> {1}", _value, value);
             if (_value == null && value != null || _value != null && !_value.Equals(value))
             {
                 _value = value;
-                ValueAsString = GetValueAsString(value);
+                _valueAsString = GetValueAsString(value);
                 ValueChanged.InvokeAsync(value);
             }
         }
@@ -121,12 +73,6 @@
     public RenderFragment Label { get; set; }
 
     [Parameter]
-    public ClickHintButton ButtonHint { get; set; } = ClickHintButton.None;
-
-    [Parameter]
-    public ClickHintModifier ModifierHint { get; set; } = ClickHintModifier.None;
-
-    [Parameter]
     public bool Required { get; set; } = true;
 
     protected override void OnParametersSet()
@@ -134,6 +80,33 @@
         if (Required && (object)Value == default)
         {
             Value = Values.FirstOrDefault();
+        }
+    }
+
+    private void OnChange(ChangeEventArgs args)
+    {
+        var value = (string)args.Value;
+
+        if (_valueAsString != value)
+        {
+            _valueAsString = value;
+            if (_valueAsString == "")
+            {
+                Value = default(T);
+            }
+            else
+            {
+                var foundValue = Values.FirstOrDefault(v => GetValueAsString(v) == _valueAsString);
+
+                if (foundValue == null)
+                {
+                    Value = default(T);
+                }
+                else
+                {
+                    Value = foundValue;
+                }
+            }
         }
     }
 

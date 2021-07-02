@@ -5,39 +5,23 @@
 @using Treachery.Shared
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<RequestPurpleRevival>
-@implements IDisposable
 
-<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
-    <div class="card-header">Request @Skin.Current.Describe(Faction.Purple) Revival of one of your leaders?</div>
-    <div class="card-body">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-        <SelectComponent @bind-Value="heroId" Values="RequestPurpleRevival.ValidTargets(Game, Player).Select(h => h.Id)" ValueLabels="RequestPurpleRevival.ValidTargets(Game, Player)" />
+    <Header>Request @Skin.Current.Describe(Faction.Purple) Revival of one of your leaders?</Header>
+    <Body>
 
-        <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Confirm</button>
-        <div class="text-danger bg-dark">@validationError</div>
+        <SelectHeroComponent @bind-Value="hero" Values="RequestPurpleRevival.ValidTargets(Game, Player)" />
 
-    </div>
-</div>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
 
 @code {
 
-    private int heroId;
+    private IHero hero;
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        Initialize<int, IHero>(ref heroId, RequestPurpleRevival.ValidTargets(Game, Player));
-    }
-
-    public void Dispose()
-    {
-
-    }
-
-    protected override RequestPurpleRevival ConfirmedResult
-    {
-        get
-        {
-            return new RequestPurpleRevival(Game) { Initiator = Faction, Hero = LeaderManager.HeroLookup.Find(heroId) };
-        }
-    }
+    protected override RequestPurpleRevival ConfirmedResult => new RequestPurpleRevival(Game) { Initiator = Faction, Hero = hero };
 }

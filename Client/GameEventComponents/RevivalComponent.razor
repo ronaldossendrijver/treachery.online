@@ -6,47 +6,35 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<Revival>
 
-<div class="card p-1 mb-2 border-danger">
-    <div class="card-header">Select forces or leaders to revive, or pass</div>
-    <div class="card-body">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
+
+    <Header>Select forces and/or leaders to revive</Header>
+    <Body>
 
         @if (Player.Faction != Faction.Purple && Game.IsPlaying(Faction.Purple))
         {
-            <div class="text-info small">Note: you can only revive once during your turn. If you want to request early leader revival from @Skin.Current.Describe(Faction.Purple), you need to do that first. Then, after you agree on a price, select the leader to revive from the drop down below.</div>
+            <div class="text-info small mb-1">Note: you can only revive once during your turn. If you want to request early leader revival from @Skin.Current.Describe(Faction.Purple), you need to do that first. Then, after you agree on a price, select the leader to revive from the drop down below.</div>
         }
 
         @if (Player.Ally == Faction.Red)
         {
-            <div>@Skin.Current.Describe(Faction.Red) will pay for up to <span class="badge badge-primary badge-pill">@Game.RedWillPayForExtraRevival</span> forces.</div>
+            <div>@Skin.Current.Describe(Concept.Resource) allowing, @Skin.Current.Describe(Faction.Red) will pay for up to <span class="badge badge-primary badge-pill">@Game.RedWillPayForExtraRevival</span> forces.</div>
         }
 
-        <label class="mt-1 mb-0" for="revivalAmountOfForces">@Player.ForceName</label>
-        <select class="custom-select mt-0" @bind="amountOfForces" id="revivalAmountOfForces">
-            @foreach (var s in ValidRevivalAmounts)
-            {
-                <option value="@s">@s</option>
-            }
-        </select>
-
-        @if (Player.HasSpecialForces)
+        @if (Revival.ValidMaxRevivals(Game, Player, false) > 0)
         {
-            <label class="mt-1 mb-0" for="revivalAmountOfSpecialForces">@Player.SpecialForceName</label>
-            <select class="custom-select mt-0" @bind="amountOfSpecialForces" id="revivalAmountOfSpecialForces">
-                @foreach (var s in ValidRevivalSpecialAmounts)
-                {
-                    <option value="@s">@s</option>
-                }
-            </select>
+            <NumberPickerComponent @bind-Value="amountOfForces" Min="0" Max="Revival.ValidMaxRevivals(Game, Player, false)" SymbolSRC="@Skin.Current.GetFactionForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight" />
         }
 
-        <label for="revivalLeader" class="mt-1 mb-0">Leader</label>
-        <select class="custom-select mt-0" @bind="hero" id="revivalLeader">
-            <option value="-1">None</option>
-            @foreach (var v in ValidRevivalHeroes)
-            {
-                <option value="@v.Id">@v</option>
-            }
-        </select>
+        @if (Revival.ValidMaxRevivals(Game, Player, true) > 0)
+        {
+            <NumberPickerComponent @bind-Value="amountOfSpecialForces" Min="0" Max="Revival.ValidMaxRevivals(Game, Player, true)" SymbolSRC="@Skin.Current.GetFactionForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight" />
+        }
+
+        @if (Revival.ValidRevivalHeroes(Game, Player).Any())
+        {
+            <SelectHeroComponent @bind-Value="hero" Values="Revival.ValidRevivalHeroes(Game, Player)" Required="false"/>
+        }
 
         <div class="mt-2">Revival cost for you: <span class="badge badge-primary badge-pill">@(CostOfRevival.TotalCostForPlayer)</span></div>
 
@@ -55,62 +43,19 @@
             <div class="mt-0">Revival cost for @Skin.Current.Describe(Faction.Red): <span class="badge badge-primary badge-pill">@(CostOfRevival.CostForEmperor)</span></div>
         }
 
-        <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
-        <div class="text-danger bg-dark">@validationError</div>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
-    </div>
-</div>
+    </Body>
+
+</GameEventComponentLayout>
 
 @code {
 
     private int amountOfForces;
     private int amountOfSpecialForces;
-    private int hero = -1;
+    private IHero hero;
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        Initialize<int, int>(ref amountOfForces, ValidRevivalAmounts);
-        Initialize<int, int>(ref amountOfSpecialForces, ValidRevivalSpecialAmounts);
-        Initialize<int, IHero>(ref hero, ValidRevivalHeroes, true, -1);
-    }
+    protected override Revival ConfirmedResult => new Revival(Game) { Initiator = Faction, AmountOfForces = amountOfForces, AmountOfSpecialForces = amountOfSpecialForces, Hero = hero };
 
-    protected override Revival ConfirmedResult
-    {
-        get
-        {
-            return new Revival(Game) { Initiator = Faction, AmountOfForces = amountOfForces, AmountOfSpecialForces = amountOfSpecialForces, Hero = LeaderManager.HeroLookup.Find(hero) };
-        }
-    }
-
-    private IEnumerable<int> ValidRevivalAmounts
-    {
-        get
-        {
-            return Revival.ValidRevivalAmounts(Game, Player, false);
-        }
-    }
-
-    private IEnumerable<int> ValidRevivalSpecialAmounts
-    {
-        get
-        {
-            return Revival.ValidRevivalAmounts(Game, Player, true);
-        }
-    }
-
-    private RevivalCost CostOfRevival
-    {
-        get
-        {
-            return Revival.DetermineCost(Game, Player, LeaderManager.HeroLookup.Find(hero), amountOfForces, amountOfSpecialForces);
-        }
-    }
-
-    private IEnumerable<IHero> ValidRevivalHeroes
-    {
-        get
-        {
-            return Revival.ValidRevivalHeroes(Game, Player);
-        }
-    }
+    private RevivalCost CostOfRevival => Revival.DetermineCost(Game, Player, hero, amountOfForces, amountOfSpecialForces);
 }

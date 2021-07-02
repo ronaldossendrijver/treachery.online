@@ -9,11 +9,16 @@
         {
             if (_id == null)
             {
-                _id = Guid.NewGuid().ToString();
+                _id = GenerateId();
             }
 
             return _id;
         }
+    }
+
+    protected string GenerateId()
+    {
+        return Guid.NewGuid().ToString();
     }
 
     protected string Color(Faction f)

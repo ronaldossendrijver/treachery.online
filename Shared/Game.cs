@@ -329,7 +329,12 @@ namespace Treachery.Shared
                     if (faction == Faction.Purple && Players.Count > 1) result.Add(typeof(SetIncreasedRevivalLimits));
                     break;
                 case Phase.Resurrection:
-                    if (IsPlaying(Faction.Purple) && faction != Faction.Purple && (Version <= 78 || !HasActedOrPassed.Contains(faction)) && ValidFreeRevivalHeroes(player).Any() && (Version < 50 || !Revival.NormallyRevivableHeroes(this, player).Any())) result.Add(typeof(RequestPurpleRevival));
+                    if (IsPlaying(Faction.Purple) && faction != Faction.Purple && 
+                        (Version <= 78 || !HasActedOrPassed.Contains(faction)) && 
+                        ValidFreeRevivalHeroes(player).Any() && 
+                        (Version < 50 || !Revival.NormallyRevivableHeroes(this, player).Any()) &&
+                        (Version < 102 || CurrentPurpleRevivalRequest == null)) result.Add(typeof(RequestPurpleRevival));
+
                     if (!HasActedOrPassed.Contains(faction) && HasSomethingToRevive(player)) result.Add(typeof(Revival));
                     if (faction == Faction.Purple && Players.Count > 1) result.Add(typeof(SetIncreasedRevivalLimits));
                     if (faction == Faction.Purple && (CurrentPurpleRevivalRequest != null || AllowedEarlyRevivals.Any())) result.Add(typeof(AcceptOrCancelPurpleRevival));

@@ -6,51 +6,27 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<SetIncreasedRevivalLimits>
 
-<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
-    <div class="card-header">Which factions may have their revival limit increased to 5?</div>
-    <div class="card-body">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-        @foreach (var faction in AllFactions)
-        {
-            <ChecklistItemComponent Value="@faction" Values="factions" style="@ColorTransparant(faction)" Callback="OnChangeFactions" />
-        }
+    <Header>Which factions may have their revival limit increased to 5?</Header>
+    <Body>
 
-        <button class="btn btn-primary mt-3" @onclick="Confirm" disabled="@(!Valid)">Confirm</button>
-        <div class="text-danger bg-dark">@validationError</div>
+        <SelectFactionComponent Selected="factions" Values="SetIncreasedRevivalLimits.ValidTargets(Game, Player)" OnChanged="StateHasChanged"/>
 
-    </div>
-</div>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
 
 @code {
 
     private List<Faction> factions = new List<Faction>();
-
 
     protected override void OnInitialized()
     {
         factions.AddRange(Game.FactionsWithIncreasedRevivalLimits);
     }
 
-    private void OnChangeFactions()
-    {
-        StateHasChanged();
-    }
-
-    protected override SetIncreasedRevivalLimits ConfirmedResult
-    {
-        get
-        {
-            return new SetIncreasedRevivalLimits(Game) { Initiator = Faction, Factions = factions.ToArray() };
-        }
-    }
-
-    private IEnumerable<Faction> AllFactions
-    {
-        get
-        {
-            return SetIncreasedRevivalLimits.ValidTargets(Game, Player);
-        }
-    }
-
-
+    protected override SetIncreasedRevivalLimits ConfirmedResult => new SetIncreasedRevivalLimits(Game) { Initiator = Faction, Factions = factions.ToArray() };
 }

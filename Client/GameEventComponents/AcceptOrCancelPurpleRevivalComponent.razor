@@ -14,17 +14,19 @@
 
         @if (Game.CurrentPurpleRevivalRequest != null)
         {
-            <div>@Skin.Current.Describe(Game.CurrentPurpleRevivalRequest.Initiator) have requested revival of <HeroComponent Value="Game.CurrentPurpleRevivalRequest.Hero" />. If you agree, set your price below.</div>
+            <div>@Skin.Current.Describe(Game.CurrentPurpleRevivalRequest.Initiator) have requested revival of <HeroComponent Value="Game.CurrentPurpleRevivalRequest.Hero" />. If you agree, set your price:</div>
             <NumberPickerComponent @bind-Value="price" Min="AcceptOrCancelPurpleRevival.MinAmount()" Max="AcceptOrCancelPurpleRevival.MaxAmount()" SymbolSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400" />
-            <button class="btn btn-primary" @onclick="Confirm" disabled=@(!Valid)>Confirm Offer</button>
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm offer" ConfirmError="@Validation" />
         }
+
+        <br/>
 
         @if (CurrentRevivalOfferValues.Any())
         {
             <SelectComponent @bind-Value="hero" Values="CurrentRevivalOfferValues" ValueLabels="CurrentRevivalOfferLabels">
                 <Label>Cancel an existing revival offer:</Label>
             </SelectComponent>
-            <button class="btn btn-primary" @onclick="Pass" disabled=@(!CurrentRevivalOfferValues.Contains(hero))>Cancel Offer</button>
+            <ButtonRowComponent Confirm="Pass" ConfirmText="Cancel offer" />
         }
 
     </Body>

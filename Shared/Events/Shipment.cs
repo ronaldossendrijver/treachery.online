@@ -187,16 +187,33 @@ namespace Treachery.Shared
             return Enumerable.Range(0, 1 + (specialForces ? p.SpecialForcesInReserve : p.ForcesInReserve));
         }
 
+        public static int ValidMaxNormalShipmentForces(Player p, bool specialForces)
+        {
+            return specialForces ? p.SpecialForcesInReserve : p.ForcesInReserve;
+        }
+
         public static IEnumerable<int> ValidShipmentBackForces(Player p, bool specialForces, Location source)
         {
             if (source == null) return new int[] { 0 };
             return Enumerable.Range(0, 1 + (specialForces ? p.SpecialForcesIn(source) : p.ForcesIn(source)));
         }
 
+        public static int ValidMaxShipmentBackForces(Player p, bool specialForces, Location source)
+        {
+            if (source == null) return 0;
+            return specialForces ? p.SpecialForcesIn(source) : p.ForcesIn(source);
+        }
+
         public static IEnumerable<int> ValidShipmentSiteToSiteForces(Player p, bool specialForces, Location source)
         {
             if (source == null) return new int[] { 0 };
             return Enumerable.Range(0, 1 + (specialForces ? p.SpecialForcesIn(source) : p.ForcesIn(source)));
+        }
+
+        public static int ValidMaxShipmentSiteToSiteForces(Player p, bool specialForces, Location source)
+        {
+            if (source == null) return 0;
+            return specialForces ? p.SpecialForcesIn(source) : p.ForcesIn(source);
         }
 
         public static IEnumerable<Location> ValidShipmentLocations(Game g, Player p)

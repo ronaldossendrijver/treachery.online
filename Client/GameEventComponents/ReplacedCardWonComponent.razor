@@ -6,33 +6,23 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<ReplacedCardWon>
 
-<div class="card p-1 mb-2 border-danger">
-    <div class="card-header">Replace the card you just won by discarding it and drawing a new card from the Treachery Card deck?</div>
-    <div class="card-body">
-        <div class="form-group">
-            <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Yes</button>
-            <div class="text-danger bg-dark">@validationError</div>
-            <button class="btn btn-primary mt-1" @onclick="Pass">No</button>
-        </div>
-    </div>
-</div>
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
+
+    <Header>Replace the card you just won by discarding it and drawing a new card from the Treachery Card deck?</Header>
+    <Body>
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError="@Validation" Pass="Pass" PassText="No" />
+
+    </Body>
+
+</GameEventComponentLayout>
 
 @code {
 
-    protected override ReplacedCardWon ConfirmedResult
-    {
-        get
-        {
-            return new ReplacedCardWon(Game) { Initiator = Faction, Passed = false };
-        }
-    }
+    protected override bool IsUrgent => true;
+    protected override Faction IsFactionSpecific => Faction.Grey;
 
-    protected override ReplacedCardWon PassedResult
-    {
-        get
-        {
-            return new ReplacedCardWon(Game) { Initiator = Faction, Passed = true };
-        }
-    }
+    protected override ReplacedCardWon ConfirmedResult => new ReplacedCardWon(Game) { Initiator = Faction, Passed = false };
 
+    protected override ReplacedCardWon PassedResult => new ReplacedCardWon(Game) { Initiator = Faction, Passed = true };
 }
