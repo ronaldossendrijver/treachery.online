@@ -7,35 +7,27 @@
 @inherits GameEventComponent<YellowSentMonster>
 @implements IDisposable
 
-<div class="card p-1 mb-2 border-danger">
-    <div class="card-header">Select where to send @Skin.Current.Describe(Concept.Monster)</div>
-    <div class="card-body">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle">
 
-        <label for="yellowSentMonsterTarget">To <kbd>click</kbd></label>
-        <select class="custom-select" @bind="@targetId" id="yellowSentMonsterTarget">
-            @foreach (var f in YellowSentMonster.ValidTargets(Game))
-            {
-                <option value="@f.Id">@f.Name</option>
-            }
-        </select>
+    <Header>Select where to make @Skin.Current.Describe(Concept.Monster) appear</Header>
+    <Body>
 
-        <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
-        <div class="text-danger bg-dark">@validationError</div>
+        <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="YellowSentMonster.ValidTargets(Game)"/>
 
-    </div>
-</div>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
 
 @code {
 
-    public int targetId = -1;
+    protected override bool IsUrgent => true;
+    protected override Faction IsFactionSpecific => Faction.Yellow;
 
-    protected override YellowSentMonster ConfirmedResult
-    {
-        get
-        {
-            return new YellowSentMonster(Game) { Initiator = Faction, Territory = Game.Map.TerritoryLookup.Find(targetId) };
-        }
-    }
+    public Territory target;
+
+    protected override YellowSentMonster ConfirmedResult => new YellowSentMonster(Game) { Initiator = Faction, Territory = target };
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -43,8 +35,6 @@
         {
             MapDrawer.OnLocationSelected += HandleLocationSelected;
         }
-
-        Initialize<int, Territory>(ref targetId, YellowSentMonster.ValidTargets(Game));
     }
 
     public void Dispose()
@@ -54,6 +44,6 @@
 
     private void HandleLocationSelected(object sender, Location l)
     {
-        SetIfValid<int, Territory>(ref targetId, YellowSentMonster.ValidTargets(Game), l.Territory);
+        SetIfValid(ref target, YellowSentMonster.ValidTargets(Game), l.Territory);
     }
 }

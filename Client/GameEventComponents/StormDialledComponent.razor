@@ -6,41 +6,23 @@
 @using Treachery.Shared
 @inherits GameEventComponent<StormDialled>
 
-<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-    <div class="card-header">
-        Please dial a number for determining storm movement
-    </div>
+    <Header></Header>
+    <Body>
 
-    <div class="card-body">
+        <NumberPickerComponent @bind-Value="amount" Min="StormDialled.ValidMinAmount(Game)" Max="StormDialled.ValidMaxAmount(Game)" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
-        <SelectComponent @bind-Value="amount" Values="StormDialled.ValidAmounts(Game)">
-            <Label>Amount to dial</Label>
-        </SelectComponent>
+    </Body>
 
-        <button class="btn btn-primary" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
-
-        <div class="text-danger bg-dark">@validationError</div>
-
-    </div>
-
-
-</div>
+</GameEventComponentLayout>
 
 @code {
 
+    protected override bool IsUrgent => true;
+
     private int amount;
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        Initialize<int, int>(ref amount, StormDialled.ValidAmounts(Game));
-    }
-
-    protected override StormDialled ConfirmedResult
-    {
-        get
-        {
-            return new StormDialled(Game) { Initiator = Faction, Amount = amount };
-        }
-    }
+        
+    protected override StormDialled ConfirmedResult => new StormDialled(Game) { Initiator = Faction, Amount = amount };
 }

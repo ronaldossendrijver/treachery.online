@@ -9,7 +9,7 @@
 
         <div style="width: @ImageSize; height: @ImageSize; background-image: @BackgroundImage; background-size: contain; background-repeat: no-repeat;">
             <div style="width: @ImageSize; height: @ImageSize; background-image: @ForegroundImage; background-size: contain; background-repeat: no-repeat; display:flex;">
-                <div style="width: @NumberSize; height: @NumberSize; margin: @NumberOffsetY 0 0 @NumberOffsetX; font-size: @FontSize; font-weight: bold; color: @NumberColor; line-height: 1.0; text-align:center; white-space:nowrap">
+                <div style="width: @NumberSize; margin: @NumberOffsetY 0 0 @NumberOffsetX; font-size: @FontSize; font-weight: bold; color: @NumberColor; line-height: 1.0; text-align:center; white-space:nowrap; background-image: @BehindNumberImage; background-position: -4px -1px; background-clip:border-box; background-size: @BehindNumberImageSize @BehindNumberImageSize; background-repeat: no-repeat;">
                     @Value
                 </div>
             </div>
@@ -44,7 +44,7 @@
             {
                 NumberPickerAlignment.Center => NumberBackground,
                 NumberPickerAlignment.BottomRight => "url('" + SymbolSRC + "')",
-                _ => "0px"
+                _ => ""
             };
         }
     }
@@ -57,7 +57,20 @@
             {
                 NumberPickerAlignment.Center => "url('" + SymbolSRC + "')",
                 NumberPickerAlignment.BottomRight => NumberBackground,
-                _ => "0px"
+                _ => ""
+            };
+        }
+    }
+
+    private string BehindNumberImage
+    {
+        get
+        {
+            return NumberAlignment switch
+            {
+                NumberPickerAlignment.Center => "url('" + BehindNumberSRC + "')",
+                NumberPickerAlignment.BottomRight => "url('" + BehindNumberSRC + "')",
+                _ => ""
             };
         }
     }
@@ -87,7 +100,10 @@
     public int Max { get; set; } = 10;
 
     [Parameter]
-    public string SymbolSRC { get; set; } = "#FF5400";
+    public string SymbolSRC { get; set; } = "";
+
+    [Parameter]
+    public string BehindNumberSRC { get; set; } = "";
 
     [Parameter]
     public string ArrowColor { get; set; } = "#FF5400";
@@ -226,6 +242,19 @@
             {
                 NumberPickerAlignment.Center => "" + ((int)(0.5f * Size)) + "px",
                 NumberPickerAlignment.BottomRight => "" + ((int)(0.3f * Size)) + "px",
+                _ => "0px"
+            };
+        }
+    }
+
+    private string BehindNumberImageSize
+    {
+        get
+        {
+            return NumberAlignment switch
+            {
+                NumberPickerAlignment.Center => "" + ((int)(0.7f * Size)) + "px",
+                NumberPickerAlignment.BottomRight => "" + ((int)(0.5f * Size)) + "px",
                 _ => "0px"
             };
         }

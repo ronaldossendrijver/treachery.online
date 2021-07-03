@@ -21,6 +21,8 @@
 
 @code {
 
+    protected override Faction IsFactionSpecific => Faction.Purple;
+
     private List<Faction> factions = new List<Faction>();
 
     protected override void OnInitialized()

@@ -22,19 +22,32 @@ namespace Treachery.Shared
 
         public override string Validate()
         {
-            if (!ValidAmounts(Game).Contains(Amount)) return "Invalid amount";
+            if (Amount < ValidMinAmount(Game) || Amount > ValidMaxAmount(Game)) return "Invalid amount";
 
             return "";
         }
 
-        public static IEnumerable<int> ValidAmounts(Game g)
+        public static int ValidMinAmount(Game g)
         {
-            if (g.CurrentTurn == 1) {
-                return Enumerable.Range(0, 21);
+            if (g.CurrentTurn == 1)
+            {
+                return 0;
             }
             else
             {
-                return Enumerable.Range(1, 3);
+                return 1;
+            }
+        }
+
+        public static int ValidMaxAmount(Game g)
+        {
+            if (g.CurrentTurn == 1)
+            {
+                return 20;
+            }
+            else
+            {
+                return 3;
             }
         }
 

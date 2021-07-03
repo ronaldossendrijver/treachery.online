@@ -21,6 +21,8 @@
 
 @code {
 
+    protected override Faction IsFactionSpecific => Faction.Purple;
+
     private IHero hero;
 
     protected override RequestPurpleRevival ConfirmedResult => new RequestPurpleRevival(Game) { Initiator = Faction, Hero = hero };

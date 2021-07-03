@@ -1,0 +1,21 @@
+﻿@using Treachery.Client.GenericComponents
+@inherits GameComponent
+
+<div class="card p-1 mb-2">
+    <div class="card-header">
+        Upload game results to <a href="https://dune.games" target="_blank">https://dune.games</a>?
+    </div>
+    <div class="card-body">
+        <button class="btn btn-primary mt-1" @onclick="ConfirmUpload">Ok</button>
+    </div>
+</div>
+
+@code {
+
+    private async Task ConfirmUpload()
+    {
+        await h.Host.UploadStatistics(h.Game);
+        h.StatisticsSent = true;
+        StateHasChanged();
+    }
+}

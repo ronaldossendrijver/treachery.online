@@ -6,65 +6,32 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<TakeLosses>
 
-<div class="card p-1 mb-2 border-danger">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-    <div class="card-header">
-        Please choose how to distribute a storm loss total of at least @TakeLosses.LossesToTake(Game) over your forces in @TakeLosses.LossLocation(Game).
-    </div>
+    <Header>Please choose how to distribute a storm loss total of at least @TakeLosses.LossesToTake(Game) over your forces in @TakeLosses.LossLocation(Game).</Header>
+    <Body>
 
-    <div class="card-body">
+        <NumberPickerComponent @bind-Value="forceAmount" Min="0" Max="TakeLosses.ValidMaxForceAmount(Game, Player)" SymbolSRC="@Skin.Current.GetFactionForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight" />
 
-        <label class="mb-0" for="shipmentForceAmount">@Player.ForceName</label>
-        <select class="custom-select" @bind="forceAmount" id="shipmentForceAmount">
-            @foreach (var s in TakeLosses.ValidForceAmounts(Game, Player))
-            {
-                <option value="@s">@s</option>
-            }
-        </select>
-
-        @if (Player.HasSpecialForces)
+        @if (TakeLosses.ValidMaxSpecialForceAmount(Game, Player) > 0)
         {
-            <label class="mb-0" for="shipmentSpecialForceAmount">@(Player.SpecialForceName)</label>
-            <select class="custom-select" @bind="specialForceAmount" id="shipmentSpecialForceAmount">
-                @foreach (var s in TakeLosses.ValidSpecialForceAmounts(Game, Player))
-                {
-                    <option value="@s">@s</option>
-                }
-            </select>
+            <NumberPickerComponent @bind-Value="specialForceAmount" Min="0" Max="TakeLosses.ValidMaxSpecialForceAmount(Game, Player)" SymbolSRC="@Skin.Current.GetFactionSpecialForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight" />
         }
 
         <p>Total selected value: <span class="badge badge-primary badge-pill">@(forceAmount + specialForceAmount)</span></p>
 
-        <div class="form-inline">
-            <button class="btn btn-primary mr-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
-        </div>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
-        <div class="text-danger bg-dark">@validationError</div>
+    </Body>
 
-    </div>
-</div>
+</GameEventComponentLayout>
 
 @code {
+
+    protected override bool IsUrgent => true;
 
     private int forceAmount;
     private int specialForceAmount;
 
-    protected override TakeLosses ConfirmedResult
-    {
-        get
-        {
-            return new TakeLosses(Game)
-            {
-                Initiator = Faction,
-                ForceAmount = forceAmount,
-                SpecialForceAmount = specialForceAmount,
-            };
-        }
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        Initialize<int, int>(ref forceAmount, TakeLosses.ValidForceAmounts(Game, Player));
-        Initialize<int, int>(ref specialForceAmount, TakeLosses.ValidSpecialForceAmounts(Game, Player));
-    }
+    protected override TakeLosses ConfirmedResult => new TakeLosses(Game) { Initiator = Faction, ForceAmount = forceAmount, SpecialForceAmount = specialForceAmount };
 }

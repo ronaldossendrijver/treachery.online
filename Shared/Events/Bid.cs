@@ -138,6 +138,18 @@ namespace Treachery.Shared
             }
         }
 
+        public static int ValidMaxAmount(Player p, bool usingKarma)
+        {
+            if (usingKarma)
+            {
+                return 50;
+            }
+            else
+            {
+                return p.Resources;
+            }
+        }
+
         public static IEnumerable<int> ValidAllyAmounts(Game g, Player p)
         {
             return Enumerable.Range(0, g.SpiceYourAllyCanPay(p) + 1);

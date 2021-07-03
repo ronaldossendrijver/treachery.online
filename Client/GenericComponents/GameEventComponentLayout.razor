@@ -1,4 +1,4 @@
-﻿<div class="card p-1 mb-2 @Border" style="@BackgroundStyle">
+﻿<div class="card @Width p-1 mb-2 @Border" style="@BackgroundStyle">
 
     <div class="card-header" style="@HeaderStyle">
         @Header
@@ -23,6 +23,9 @@
 
     [Parameter]
     public string Border { get; set; }
+
+    [Parameter]
+    public string Width { get; set; } = "w-100";
 
     [Parameter]
     public string BackgroundStyle { get; set; }

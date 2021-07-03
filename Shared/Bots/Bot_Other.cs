@@ -336,8 +336,8 @@ namespace Treachery.Shared
 
         protected virtual StormDialled DetermineStormDialled()
         {
-            var min = StormDialled.ValidAmounts(Game).Min();
-            var max = StormDialled.ValidAmounts(Game).Max();
+            var min = StormDialled.ValidMinAmount(Game);
+            var max = StormDialled.ValidMaxAmount(Game);
             return new StormDialled(Game) { Initiator = Faction, Amount = min + D(1, 1 + max - min) - 1 };
         }
 

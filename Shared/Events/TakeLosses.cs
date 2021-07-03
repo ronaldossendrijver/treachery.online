@@ -40,14 +40,14 @@ namespace Treachery.Shared
             return g.StormLossesToTake[0].Item1;
         }
 
-        public static IEnumerable<int> ValidForceAmounts(Game g, Player p)
+        public static int ValidMaxForceAmount(Game g, Player p)
         {
-            return Enumerable.Range(0, 1 + p.ForcesIn(LossLocation(g)));
+            return p.ForcesIn(LossLocation(g));
         }
 
-        public static IEnumerable<int> ValidSpecialForceAmounts(Game g, Player p)
+        public static int ValidMaxSpecialForceAmount(Game g, Player p)
         {
-            return Enumerable.Range(0, 1 + p.SpecialForcesIn(LossLocation(g)));
+            return p.SpecialForcesIn(LossLocation(g));
         }
 
 

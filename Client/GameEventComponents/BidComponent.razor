@@ -39,6 +39,8 @@
                     <label class="mb-0" for="bidAmount">Paid by you</label>
                 }
 
+                <NumberPickerComponent @bind-Value="amount" Min="0" Max="Bid.ValidMaxAmount(Player, karmaCardId > 0)" SymbolSRC="@Skin.Current.GetImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight" BehindNumberSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400" />
+
                 <select class="custom-select" @bind="amount" id="bidAmount">
                     @foreach (var s in Bid.ValidAmounts(Player, karmaCardId > 0))
                     {

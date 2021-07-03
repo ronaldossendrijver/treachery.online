@@ -6,27 +6,23 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<TraitorsSelected>
 
-<div class="card p-1 mb-2 border-primary">
-    <div class="card-header">Select which traitor to keep</div>
-    <div class="card-body">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
+
+    <Header>Select which leader to keep as your traitor</Header>
+    <Body>
 
         <SelectHeroComponent @bind-Value="traitor" Values="Player.Traitors" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
-        <button class="btn btn-primary mt-1" @onclick="Confirm" disabled=@(!Valid)>Ok</button>
-        <div class="text-danger bg-dark">@validationError</div>
+    </Body>
 
-    </div>
-</div>
+</GameEventComponentLayout>
 
 @code {
 
+    protected override bool IsUrgent => true;
+
     private IHero traitor;
 
-    protected override TraitorsSelected ConfirmedResult
-    {
-        get
-        {
-            return new TraitorsSelected(Game) { Initiator = Faction, SelectedTraitor = traitor };
-        }
-    }
+    protected override TraitorsSelected ConfirmedResult => new TraitorsSelected(Game) { Initiator = Faction, SelectedTraitor = traitor };
 }

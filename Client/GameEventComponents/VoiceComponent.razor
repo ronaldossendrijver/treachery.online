@@ -7,60 +7,29 @@
 @using System.Linq;
 @inherits GameEventComponent<Voice>
 
-<div class="card p-1 mb-2 border-danger">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-    <div class="card-header">Use Voice</div>
+    <Header>Use Voice</Header>
+    <Body>
 
-    <div class="card-body">
-
-        <div class="custom-control custom-radio">
-            <input class="custom-control-input" @onchange="OnChange" type="radio" id="voiceMustUse" value="true" checked="@(mustUse)">
-            <label class="custom-control-label" for="voiceMustUse">Force the use of...</label>
-        </div>
-
-        <div class="custom-control custom-radio">
-            <input class="custom-control-input" @onchange="OnChange" type="radio" id="voiceCantUse" value="false" checked="@(!mustUse)">
-            <label class="custom-control-label" for="voiceCantUse">Deny the use of...</label>
-        </div>
+        <RadioComponent @bind-Value="mustUse" Values="@(new bool[] {true,false})" ValueLabels="@(new string[] {"Force the use of...","Deny the use of..."})" />
 
         <SelectComponent @bind-Value="type" Values="ValidTypes" />
 
-        <button class="btn btn-primary" @onclick="Confirm" disabled=@(!Valid)>Confirm</button>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
-        <div class="text-danger bg-dark">@validationError</div>
+    </Body>
 
-    </div>
-</div>
+</GameEventComponentLayout>
 
 @code {
+
+    protected override Faction IsFactionSpecific => Faction.Blue;
 
     private bool mustUse = true;
     private TreacheryCardType type;
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        Initialize<TreacheryCardType, TreacheryCardType>(ref type, ValidTypes);
-    }
+    protected override Voice ConfirmedResult => new Voice(Game) { Initiator = Faction, Must = mustUse, Type = type };
 
-    protected override Voice ConfirmedResult
-    {
-        get
-        {
-            return new Voice(Game) { Initiator = Faction, Must = mustUse, Type = type };
-        }
-    }
-
-    private void OnChange(ChangeEventArgs args)
-    {
-        mustUse = Convert.ToBoolean(args.Value);
-        StateHasChanged();
-    }
-
-    private IEnumerable<TreacheryCardType> ValidTypes
-    {
-        get
-        {
-            return Voice.ValidTypes(Game).OrderBy(t => Skin.Current.Describe(t));
-        }
-    }
+    private IEnumerable<TreacheryCardType> ValidTypes => Voice.ValidTypes(Game).OrderBy(t => Skin.Current.Describe(t));
 }

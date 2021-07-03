@@ -196,7 +196,7 @@ namespace Treachery.Shared
 
         protected TakeLosses DetermineTakeLosses()
         {
-            int normalForces = Math.Min(TakeLosses.LossesToTake(Game), TakeLosses.ValidForceAmounts(Game, this).Max());
+            int normalForces = Math.Min(TakeLosses.LossesToTake(Game), TakeLosses.ValidMaxForceAmount(Game, this));
             int specialForces = TakeLosses.LossesToTake(Game) - normalForces;
             return new TakeLosses(Game) { Initiator = Faction, ForceAmount = normalForces, SpecialForceAmount = specialForces };
         }

@@ -5,47 +5,30 @@
 @using Treachery.Shared
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<TreacheryCalled>
-@implements IDisposable
 
-<div class="card p-1 mb-2 border-danger">
-    <div class="card-header">Call TREACHERY?</div>
-    <div class="card-body">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
+
+    <Header>Call TREACHERY?</Header>
+    <Body>
 
         @if (TreacheryCalled.MayCallTreachery(Game, Player))
         {
-            <button class="btn btn-primary mt-1" @onclick="Confirm">Confirm</button>
-            <div class="text-danger bg-dark">@validationError</div>
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
         }
-
-        @if (Faction == Game.AggressorBattleAction.Initiator || Faction == Game.DefenderBattleAction.Initiator)
+        else
         {
-            <button class="btn btn-primary mt-1" @onclick="Pass">Pass</button>
+            <ButtonRowComponent Pass="Pass" PassText="Pass" />
         }
 
-    </div>
-</div>
+    </Body>
+
+</GameEventComponentLayout>
 
 @code {
 
-    protected override TreacheryCalled ConfirmedResult
-    {
-        get
-        {
-            return new TreacheryCalled(Game) { Initiator = Faction, TraitorCalled = true };
-        }
-    }
+    protected override bool IsUrgent => true;
 
-    protected override TreacheryCalled PassedResult
-    {
-        get
-        {
-            return new TreacheryCalled(Game) { Initiator = Faction, TraitorCalled = false };
-        }
-    }
+    protected override TreacheryCalled ConfirmedResult => new TreacheryCalled(Game) { Initiator = Faction, TraitorCalled = true };
 
-    public void Dispose()
-    {
-
-    }
-
+    protected override TreacheryCalled PassedResult => new TreacheryCalled(Game) { Initiator = Faction, TraitorCalled = false };
 }
