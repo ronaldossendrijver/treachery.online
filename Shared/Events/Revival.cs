@@ -190,14 +190,29 @@ namespace Treachery.Shared
             if (hero == null) return 0;
 
             var price = hero.CostToRevive;
-            if (initiator.Is(Faction.Purple) && !purpleDiscountPrevented)
-            {
-                price = (int)Math.Ceiling(0.5 * price);
-            }
 
-            if (!NormallyRevivableHeroes(g, initiator).Contains(hero) && g.AllowedEarlyRevivals.ContainsKey(hero))
+            if (g.Version < 102)
             {
-                price = g.AllowedEarlyRevivals[hero];
+                if (initiator.Is(Faction.Purple) && !purpleDiscountPrevented)
+                {
+                    price = (int)Math.Ceiling(0.5 * price);
+                }
+                
+                if (!NormallyRevivableHeroes(g, initiator).Contains(hero) && g.AllowedEarlyRevivals.ContainsKey(hero))
+                {
+                    price = g.AllowedEarlyRevivals[hero];
+                }
+            }
+            else
+            {
+                if (initiator.Is(Faction.Purple) && !purpleDiscountPrevented)
+                {
+                    price = (int)Math.Ceiling(0.5 * price);
+                }
+                else if (!NormallyRevivableHeroes(g, initiator).Contains(hero) && g.AllowedEarlyRevivals.ContainsKey(hero))
+                {
+                    price = g.AllowedEarlyRevivals[hero];
+                }
             }
 
             return price;

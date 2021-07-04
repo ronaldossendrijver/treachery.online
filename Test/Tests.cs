@@ -37,12 +37,12 @@ namespace Treachery.Test
 
         private static string TestSpecialCases(Game g, GameEvent e)
         {
-            WriteSavegameIfApplicable(g, typeof(KarmaHandSwapInitiated));
+            //WriteSavegameIfApplicable(g, typeof(KarmaHandSwapInitiated));
             
-            if (e is OrangeDelay && g.GetPlayer(e.Initiator).HasKarma && g.GetPlayer(e.Initiator).Ally != Faction.None)
+            /*if (e is OrangeDelay && g.GetPlayer(e.Initiator).HasKarma && g.GetPlayer(e.Initiator).Ally != Faction.None)
             {
                 return "Guild with Karama!";
-            }
+            }*/
 
             /*
             if (e is Battle b && b.Weapon != null && g.LatestClairvoyanceQandA != null && g.LatestClairvoyanceBattle == g.CurrentBattle && g.LatestClairvoyanceQandA.Answer.Initiator == b.Initiator && 

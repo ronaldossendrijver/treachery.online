@@ -3,31 +3,27 @@
     <label class="mt-1">@Label</label>
 }
 
-<div class="container mb-1">
+<div style="display: inline-block; height: @ImageSize; margin: 4px 4px 0px 0px;">
 
-    <div class="row justify-content-start">
-
-        <div style="width: @ImageSize; height: @ImageSize; background-image: @BackgroundImage; background-size: contain; background-repeat: no-repeat;">
-            <div style="width: @ImageSize; height: @ImageSize; background-image: @ForegroundImage; background-size: contain; background-repeat: no-repeat; display:flex;">
-                <div style="width: @NumberSize; margin: @NumberOffsetY 0 0 @NumberOffsetX; font-size: @FontSize; font-weight: bold; color: @NumberColor; line-height: 1.0; text-align:center; white-space:nowrap; background-image: @BehindNumberImage; background-position: -4px -1px; background-clip:border-box; background-size: @BehindNumberImageSize @BehindNumberImageSize; background-repeat: no-repeat;">
-                    @Value
-                </div>
+    <div style="width: @ImageSize; height: @ImageSize; background-image: @BackgroundImage; background-size: contain; background-repeat: no-repeat; display: inline-grid; margin: -10px 0px 0px 0px;">
+        <div style="width: @ImageSize; height: @ImageSize; background-image: @ForegroundImage; background-size: contain; background-repeat: no-repeat; display:flex;">
+            <div style="width: @NumberSize; margin: @NumberOffsetY 0 0 @NumberOffsetX; font-size: @FontSize; font-weight: bold; color: @NumberColor; line-height: 1.0; text-align:center; white-space:nowrap; background-image: @BehindNumberImage; background-position: -3px -3px; background-clip:border-box; background-size: @BehindNumberImageSize @BehindNumberImageSize; background-repeat: no-repeat;">
+                @Value
             </div>
         </div>
+    </div>
 
-        <div style="margin: 0px 0px 0px 4px;">
-            <div @onclick="@Increase" style="margin: @ArrowOffsetY 0px 1px 0px; display:flex; flex-direction:column;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" height="@ArrowSize" fill="@IncreaseArrowColor" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z" />
-                </svg>
-            </div>
-            <div @onclick="@Decrease" style="margin: 1px 0px @ArrowOffsetY 0px; display:flex; flex-direction:column;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" height="@ArrowSize" fill="@DecreaseArrowColor" viewBox="0 0 16 16">
-                    <path transform="rotate(180,8,8)" fill-rule="evenodd" d="M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z" />
-                </svg>
-            </div>
+    <div style="margin: 0px 0px 0px 4px; display: inline-grid; transform: translateY(-4px);">
+        <div @onclick="@Increase" style="margin: @ArrowOffsetY 0px 1px 0px; display:flex; flex-direction:column;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" height="@ArrowSize" fill="@IncreaseArrowColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z" />
+            </svg>
         </div>
-
+        <div @onclick="@Decrease" style="margin: 1px 0px @ArrowOffsetY 0px; display:flex; flex-direction:column;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" height="@ArrowSize" fill="@DecreaseArrowColor" viewBox="0 0 16 16">
+                <path transform="rotate(180,8,8)" fill-rule="evenodd" d="M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z" />
+            </svg>
+        </div>
     </div>
 
 </div>
@@ -188,8 +184,60 @@
         {
             return NumberAlignment switch
             {
-                NumberPickerAlignment.Center => "" + ((int)(0.5f * Size)) + "px",
+                NumberPickerAlignment.Center => "" + ((int)(0.6f * Size)) + "px",
+                NumberPickerAlignment.BottomRight => "" + ((int)(0.55f * Size)) + "px",
+                _ => "0px"
+            };
+        }
+    }
+
+    private string NumberSize
+    {
+        get
+        {
+            return NumberAlignment switch
+            {
+                NumberPickerAlignment.Center => "" + ((int)(0.675f * Size)) + "px",
+                NumberPickerAlignment.BottomRight => "" + ((int)(0.65f * Size)) + "px",
+                _ => "0px"
+            };
+        }
+    }
+
+    private string NumberOffsetX
+    {
+        get
+        {
+            return NumberAlignment switch
+            {
+                NumberPickerAlignment.Center => "" + ((int)(0.175f * Size)) + "px",
                 NumberPickerAlignment.BottomRight => "" + ((int)(0.4f * Size)) + "px",
+                _ => "0px"
+            };
+        }
+    }
+
+    private string NumberOffsetY
+    {
+        get
+        {
+            return NumberAlignment switch
+            {
+                NumberPickerAlignment.Center => "" + ((int)(0.15f * Size)) + "px",
+                NumberPickerAlignment.BottomRight => "" + ((int)(0.425f * Size)) + "px",
+                _ => "0px"
+            };
+        }
+    }
+
+    private string BehindNumberImageSize
+    {
+        get
+        {
+            return NumberAlignment switch
+            {
+                NumberPickerAlignment.Center => "" + ((int)(0.8f * Size)) + "px",
+                NumberPickerAlignment.BottomRight => "" + ((int)(0.8f * Size)) + "px",
                 _ => "0px"
             };
         }
@@ -202,7 +250,7 @@
             return NumberAlignment switch
             {
                 NumberPickerAlignment.Center => 7.5f,
-                NumberPickerAlignment.BottomRight => 3.5f,
+                NumberPickerAlignment.BottomRight => 5f,
                 _ => 0
             };
         }
@@ -215,7 +263,7 @@
             return NumberAlignment switch
             {
                 NumberPickerAlignment.Center => 8,
-                NumberPickerAlignment.BottomRight => 12,
+                NumberPickerAlignment.BottomRight => 11,
                 _ => 0
             };
         }
@@ -228,63 +276,13 @@
             return NumberAlignment switch
             {
                 NumberPickerAlignment.Center => 8,
-                NumberPickerAlignment.BottomRight => 12,
+                NumberPickerAlignment.BottomRight => 11,
                 _ => 0
             };
         }
     }
 
-    private string NumberSize
-    {
-        get
-        {
-            return NumberAlignment switch
-            {
-                NumberPickerAlignment.Center => "" + ((int)(0.5f * Size)) + "px",
-                NumberPickerAlignment.BottomRight => "" + ((int)(0.3f * Size)) + "px",
-                _ => "0px"
-            };
-        }
-    }
 
-    private string BehindNumberImageSize
-    {
-        get
-        {
-            return NumberAlignment switch
-            {
-                NumberPickerAlignment.Center => "" + ((int)(0.7f * Size)) + "px",
-                NumberPickerAlignment.BottomRight => "" + ((int)(0.5f * Size)) + "px",
-                _ => "0px"
-            };
-        }
-    }
-
-    private string NumberOffsetY
-    {
-        get
-        {
-            return NumberAlignment switch
-            {
-                NumberPickerAlignment.Center => "" + ((int)(0.225f * Size)) + "px",
-                NumberPickerAlignment.BottomRight => "" + ((int)(0.53f * Size)) + "px",
-                _ => "0px"
-            };
-        }
-    }
-
-    private string NumberOffsetX
-    {
-        get
-        {
-            return NumberAlignment switch
-            {
-                NumberPickerAlignment.Center => "" + ((int)(0.25f * Size)) + "px",
-                NumberPickerAlignment.BottomRight => "" + ((int)(0.63f * Size)) + "px",
-                _ => "0px"
-            };
-        }
-    }
 
     private int ArrowSize => (int)(0.4f * Size);
 

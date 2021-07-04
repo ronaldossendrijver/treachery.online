@@ -150,22 +150,9 @@ namespace Treachery.Shared
             }
         }
 
-        public static IEnumerable<int> ValidAllyAmounts(Game g, Player p)
+        public static int ValidMaxAllyAmount(Game g, Player p)
         {
-            return Enumerable.Range(0, g.SpiceYourAllyCanPay(p) + 1);
-        }
-
-        public static IEnumerable<int> ValidRedAmounts(Game g, Player p)
-        {
-            var red = g.GetPlayer(Faction.Red);
-            if (red != null)
-            {
-                return Enumerable.Range(0, g.SpiceForBidsRedCanPay(p.Faction) + 1);
-            }
-            else
-            {
-                return new int[] { 0 };
-            }
+            return g.SpiceYourAllyCanPay(p);
         }
     }
 }
