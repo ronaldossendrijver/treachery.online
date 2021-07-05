@@ -138,3 +138,7 @@ canvas {
     font-family: Candara, sans-serif;
 }
 
+svg {
+    user-select: none;
+}
+

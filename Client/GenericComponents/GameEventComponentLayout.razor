@@ -1,12 +1,13 @@
 ﻿<div class="card @Width p-1 mb-2 @Border" style="@BackgroundStyle">
 
     <div class="card-header" style="@HeaderStyle">
-        @Header
 
         @if (Collapsible)
         {
             <CollapseButton @bind-Collapsed="Collapsed" />
         }
+
+        @Header
 
     </div>
 

@@ -18,21 +18,20 @@
             </SelectCardComponent>
         }
 
-        <div class="row">
+        @if (Player.Ally == Faction.None)
+        {
+            <SelectResourcesComponent @bind-Value="amount" Min="0" Max="Bid.ValidMaxAmount(Player, karmaCard != null)" />
+        }
+        else
+        {
+            <SelectResourcesFromFactionComponent @bind-Value="amount" Min="0" Max="Bid.ValidMaxAmount(Player, karmaCard != null)" Faction="Faction" />
+            <SelectResourcesFromFactionComponent @bind-Value="allyContributionAmount" Min="0" Max="Bid.ValidMaxAllyAmount(Game, Player)" Faction="Player.Ally" />
+        }
 
-            <NumberPickerComponent @bind-Value="amount" Min="0" Max="Bid.ValidMaxAmount(Player, karmaCard != null)" SymbolSRC="@Skin.Current.GetImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight" BehindNumberSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400" />
-
-            @if (Player.Ally != Faction.None)
-            {
-                <NumberPickerComponent @bind-Value="allyContributionAmount" Min="0" Max="Bid.ValidMaxAllyAmount(Game, Player)" SymbolSRC="@Skin.Current.GetImageURL(Player.Ally)" NumberAlignment="NumberPickerAlignment.BottomRight" BehindNumberSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400" />
-            }
-
-            @if (Game.SpiceForBidsRedCanPay(Faction) > 0)
-            {
-                <NumberPickerComponent @bind-Value="redContributionAmount" Min="0" Max="Game.SpiceForBidsRedCanPay(Faction)" SymbolSRC="@Skin.Current.GetImageURL(Faction.Red)" NumberAlignment="NumberPickerAlignment.BottomRight" BehindNumberSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400" />
-            }
-
-        </div>
+        @if (Game.SpiceForBidsRedCanPay(Faction) > 0)
+        {
+            <SelectResourcesFromFactionComponent @bind-Value="redContributionAmount" Min="0" Max="Game.SpiceForBidsRedCanPay(Faction)" Faction="Faction.Red" />
+        }
 
         <div class="mt-1 mb-2">Your bid: <span class="badge badge-primary badge-pill">@(amount + allyContributionAmount + redContributionAmount)</span></div>
 

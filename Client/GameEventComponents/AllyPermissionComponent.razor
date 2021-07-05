@@ -55,7 +55,7 @@
         }
 
         <label class="mt-2 mb-0">How much are you willing to pay for their bids and shipments (currently: <strong>@Game.GetPermittedUseOfAllySpice(Player.Ally)</strong>)? @(Faction == Faction.Red ? "Payments for bids flow back to you." : "")</label>
-        <NumberPickerComponent @bind-Value="spice" Min="0" Max="Player.Resources" SymbolSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400" />
+        <SelectResourcesComponent @bind-Value="spice" Min="0" Max="Player.Resources" />
 
         @if (Karma.CanKarma(Game, Player))
         {
@@ -69,7 +69,7 @@
         @if (Faction == Faction.Red)
         {
             <label class="mt-1 mb-0">How many revivals will you pay for them (currently: <strong>@(Game.RedWillPayForExtraRevival)</strong>)?</label>
-            <NumberPickerComponent @bind-Value="emperorWillPayForExtraRevival" Min="0" Max="3" SymbolSRC="@Skin.Current.GetFactionForceImageURL(Player.Ally)" />
+            <SelectForcesComponent @bind-Value="emperorWillPayForExtraRevival" Min="0" Max="3" Faction="Player.Ally" Special="false" />
         }
         else if (Faction == Faction.Orange)
         {

@@ -18,7 +18,7 @@
             if (maxReplacementForces > 0)
             {
                 <label for="replacementAmount">How many @Skin.Current.SpecialForceName_STR[Faction.Grey] losses should be exchanged with surviving @Skin.Current.ForceName_STR[Faction.Grey]?</label>
-                <NumberPickerComponent @bind-Value="replacementAmount" Min="0" Max="maxReplacementForces" SymbolSRC="@Skin.Current.GetFactionSpecialForceImageURL(Faction)" />
+                <SelectForcesComponent @bind-Value="replacementAmount" Min="0" Max="maxReplacementForces" Faction="Faction" Special="true" />
             }
 
             var discardableMercenary = DiscardableMercenaryAfterBattle;
@@ -48,19 +48,9 @@
             if (BattleConcluded.MayCaptureOrKill(Game, Player))
             {
                 <div>We caught <HeroComponent Value="Game.BlackVictim" />... What are your orders, capture or kill?</div>
-
-                <div class="custom-control custom-radio">
-                    <input class="custom-control-input" @onchange="CaptureDecisionOnChange" type="radio" id="battleConcludedKillFalse" value="@CaptureDecision.Capture" checked="@(captureDecision == CaptureDecision.Capture)">
-                    <label class="custom-control-label" for="battleConcludedKillFalse">Capture</label>
-                </div>
-                <div class="custom-control custom-radio">
-                    <input class="custom-control-input" @onchange="CaptureDecisionOnChange" type="radio" id="battleConcludedKillTrue" value="@CaptureDecision.Kill" checked="@(captureDecision == CaptureDecision.Kill)">
-                    <label class="custom-control-label" for="battleConcludedKillTrue">Kill to gain 2 @Skin.Current.Describe(Concept.Resource)</label>
-                </div>
-                <div class="custom-control custom-radio">
-                    <input class="custom-control-input" @onchange="CaptureDecisionOnChange" type="radio" id="battleConcludedKillNeither" value="@CaptureDecision.DontCapture" checked="@(captureDecision == CaptureDecision.DontCapture)">
-                    <label class="custom-control-label" for="battleConcludedKillNeither">Neither capture nor kill</label>
-                </div>
+                <RadioComponent @bind-Value="captureDecision" 
+                                Values="@(new CaptureDecision[] {CaptureDecision.Capture,CaptureDecision.Kill,CaptureDecision.DontCapture})" 
+                                ValueLabels="@(new string[] { "Capture", "Kill to gain 2 spice", "Neither capture nor kill" })" />
             }
 
             if (Loser.TechTokens.Count > 0)

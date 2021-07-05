@@ -11,17 +11,10 @@
     <Header>How much of your @Skin.Current.Describe(Concept.Resource) may non-allied factions use for bidding?</Header>
     <Body>
 
-        <table class="table table-borderless table-sm w-auto">
-            <tbody>
-                @foreach (var faction in amounts.Keys)
-                {
-                    <tr class="small bg-transparent">
-                        <td><img width=36 src="@Skin.Current.GetImageURL(faction)" /></td>
-                        <td><NumberPickerComponent @bind-Value="amounts[faction]" Min="0" Max="Player.Resources" SymbolSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400" OnChanged="StateHasChanged" /></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        @foreach (var faction in amounts.Keys)
+        {
+            <SelectResourcesFromFactionComponent @bind-Value="amounts[faction]" Min="0" Max="Player.Resources" Faction="faction" OnChanged="StateHasChanged"/>
+        }
 
         <div class="text-info small">Your contributions to opponent bids will flow back to you <i>at the end</i> of the bidding phase.</div>
 

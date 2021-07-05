@@ -8,20 +8,30 @@
 
 <div class="card p-0 mb-2" style="@(StatusBackground)">
 
-    <div class="card-header text-center bg-transparent border-bottom-0">
-        @if (h.Game != null)
-        {
-            <div class="@(StatusDescriptionClass)">@h.Status.Description</div>
-        }
-        else
-        {
-            <div class="@(StatusDescriptionClass)">Select an existing game to join or host one yourself...</div>
-        }
-    </div>
+    <div class="card-body text-center bg-transparent border-bottom-0">
 
+        @if (IsPhaseWithSequence)
+        {
+
+            <div class="row justify-content-center">
+
+            </div>
+        }
+
+        <div class="@(StatusDescriptionClass)">@h.Status.Description</div>
+
+    </div>
 </div>
 
 @code {
+
+    private bool IsPhaseWithSequence
+    {
+        get
+        {
+            return false;
+        }
+    }
 
     private string StatusBackground
     {

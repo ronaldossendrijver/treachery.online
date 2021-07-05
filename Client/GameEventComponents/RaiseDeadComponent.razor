@@ -11,9 +11,15 @@
     <Header>Use @Skin.Current.Describe(TreacheryCardType.RaiseDead) to revive up to five forces or one leader for free</Header>
     <Body>
 
-        <NumberPickerComponent @bind-Value="amountOfForces" Min="0" Max="RaiseDeadPlayed.ValidMaxAmount(Player, false)" SymbolSRC="@Skin.Current.GetFactionForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight" />
+        @if (RaiseDeadPlayed.ValidMaxAmount(Player, false) > 0)
+        {
+            <SelectForcesComponent @bind-Value="amountOfForces" Min="0" Max="RaiseDeadPlayed.ValidMaxAmount(Player, false)" Faction="Faction" Special="false" />
+        }
 
-        <NumberPickerComponent @bind-Value="amountOfSpecialForces" Min="0" Max="RaiseDeadPlayed.ValidMaxAmount(Player, true)" SymbolSRC="@Skin.Current.GetFactionSpecialForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight" />
+        @if (RaiseDeadPlayed.ValidMaxAmount(Player, true) > 0)
+        {
+            <SelectForcesComponent @bind-Value="amountOfSpecialForces" Min="0" Max="RaiseDeadPlayed.ValidMaxAmount(Player, true)" Faction="Faction" Special="true" />
+        }
 
         <SelectHeroComponent @bind-Value="hero" Values="Game.ValidFreeRevivalHeroes(Player)" />
 

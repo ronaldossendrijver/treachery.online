@@ -15,7 +15,7 @@
             <Label>Offer to whom (select none to offer to all)</Label>
         </SelectFactionComponent>
 
-        <NumberPickerComponent @bind-Value="price" Min="0" Max="20" SymbolSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400" Label="Price"/>
+        <SelectResourcesComponent @bind-Value="price" Min="0" Max="50" />
 
         <SelectComponent @bind-Value="type" Values="DealOffered.GetHumanDealTypes(Game, Player)">
             <Label>Type of Deal</Label>

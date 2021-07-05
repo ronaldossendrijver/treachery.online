@@ -56,16 +56,16 @@
                 }
             }
         }
-        <NumberPickerComponent @bind-Value="forces" Min="0" Max="Battle.MaxForces(Game, Player, false)" SymbolSRC="@Skin.Current.GetFactionForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight"/>
+        <SelectForcesComponent @bind-Value="forces" Min="0" Max="Battle.MaxForces(Game, Player, false)" Faction="Faction" Special="false" />
 
         @if (Battle.MaxForces(Game, Player, true) > 0)
         {
-            <NumberPickerComponent @bind-Value="specialForces" Min="0" Max="Battle.MaxForces(Game, Player, true)" SymbolSRC="@Skin.Current.GetFactionSpecialForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight"/>
+            <SelectForcesComponent @bind-Value="specialForces" Min="0" Max="Battle.MaxForces(Game, Player, true)" Faction="Faction" Special="true" />
         }
 
         @if (Battle.MustPayForForcesInBattle(Game, Player))
         {
-            <NumberPickerComponent @bind-Value="resources" Min="0" Max="Math.Min(Player.Resources, forces + specialForces)" SymbolSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400" />
+            <SelectResourcesComponent @bind-Value="resources" Min="0" Max="Math.Min(Player.Resources, forces + specialForces)" />
         }
 
         <SelectHeroComponent @bind-Value="hero" Values="Battle.ValidBattleHeroes(Game, Player)">

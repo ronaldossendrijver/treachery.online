@@ -13,7 +13,7 @@
 
         <SelectFactionComponent @bind-Value="toWin" Values="BluePrediction.ValidTargets(Game, Player)" />
 
-        <NumberPickerComponent @bind-Value="turn" Min="1" Max="Game.MaximumNumberOfTurns" />
+        <SelectNumberComponent @bind-Value="turn" Min="1" Max="Game.MaximumNumberOfTurns" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 

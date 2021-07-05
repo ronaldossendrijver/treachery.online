@@ -11,7 +11,7 @@
     <Header>Use @Skin.Current.Describe(TreacheryCardType.StormSpell)?</Header>
     <Body>
 
-        <NumberPickerComponent @bind-Value="nrOfSectors" Min="0" Max="10" Label="Number of sectors"/>
+        <SelectNumberComponent @bind-Value="nrOfSectors" Min="0" Max="10" Label="Number of sectors" />
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
     </Body>

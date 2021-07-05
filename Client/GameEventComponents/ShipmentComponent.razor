@@ -59,18 +59,18 @@
             <div class="text-danger bg-dark">Note: any of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
         }
 
-        <NumberPickerComponent @bind-Value="shipmentForceAmount" Min="0" Max="ValidShipmentForces" SymbolSRC="@Skin.Current.GetFactionForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight" />
+        <SelectForcesComponent @bind-Value="shipmentForceAmount" Min="0" Max="ValidShipmentForces" Faction="Faction" Special="false" />
 
         @if (Player.HasSpecialForcesToMove)
         {
-            <NumberPickerComponent @bind-Value="shipmentSpecialForceAmount" Min="0" Max="ValidShipmentSpecialForces" SymbolSRC="@Skin.Current.GetFactionSpecialForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight" />
+            <SelectForcesComponent @bind-Value="shipmentSpecialForceAmount" Min="0" Max="ValidShipmentSpecialForces" Faction="Faction" Special="false" />
         }
 
         <div>Total cost of shipment: <span class="badge badge-primary badge-pill">@Cost</span></div>
 
         @if (Player.Ally != Faction.None)
         {
-            <NumberPickerComponent @bind-Value="shipmentAllyContributionAmount" Min="0" Max="Game.SpiceYourAllyCanPay(Player)" SymbolSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400" Label="Amount paid by your ally"/>
+            <SelectResourcesFromFactionComponent @bind-Value="shipmentAllyContributionAmount" Min="0" Max="Game.SpiceYourAllyCanPay(Player)" Faction="Player.Ally" />
         }
 
         @if (Karma.CanKarmaShipment(Game, Player) && (Faction != Faction.Yellow || shipmentType == SHIPMENT_SITETOSITE))

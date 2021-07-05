@@ -11,8 +11,16 @@
     <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to revive forces or a leader</Header>
     <Body>
 
-        <NumberPickerComponent @bind-Value="amountOfForces" Min="0" Max="KarmaFreeRevival.ValidMaxAmount(Player, false)" SymbolSRC="@Skin.Current.GetFactionForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight" />
-        <NumberPickerComponent @bind-Value="amountOfSpecialForces" Min="0" Max="KarmaFreeRevival.ValidMaxAmount(Player, true)" SymbolSRC="@Skin.Current.GetFactionSpecialForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight" />
+        @if (KarmaFreeRevival.ValidMaxAmount(Player, false) > 0)
+        {
+            <SelectForcesComponent @bind-Value="amountOfForces" Min="0" Max="KarmaFreeRevival.ValidMaxAmount(Player, false)" Faction="Faction" Special="false" />
+        }
+
+        @if (KarmaFreeRevival.ValidMaxAmount(Player, true) > 0)
+        {
+            <SelectForcesComponent @bind-Value="amountOfSpecialForces" Min="0" Max="KarmaFreeRevival.ValidMaxAmount(Player, true)" Faction="Faction" Special="true" />
+        }
+
         <SelectHeroComponent @bind-Value="hero" Values="Game.ValidFreeRevivalHeroes(Player)" Required="false" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />

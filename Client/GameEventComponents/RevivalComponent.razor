@@ -23,17 +23,17 @@
 
         @if (Revival.ValidMaxRevivals(Game, Player, false) > 0)
         {
-            <NumberPickerComponent @bind-Value="amountOfForces" Min="0" Max="Revival.ValidMaxRevivals(Game, Player, false)" SymbolSRC="@Skin.Current.GetFactionForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight" />
+            <SelectForcesComponent @bind-Value="amountOfForces" Min="0" Max="Revival.ValidMaxRevivals(Game, Player, false)" Faction="Faction" Special="false" />
         }
 
         @if (Revival.ValidMaxRevivals(Game, Player, true) > 0)
         {
-            <NumberPickerComponent @bind-Value="amountOfSpecialForces" Min="0" Max="Revival.ValidMaxRevivals(Game, Player, true)" SymbolSRC="@Skin.Current.GetFactionForceImageURL(Faction)" NumberAlignment="NumberPickerAlignment.BottomRight" />
+            <SelectForcesComponent @bind-Value="amountOfSpecialForces" Min="0" Max="Revival.ValidMaxRevivals(Game, Player, true)" Faction="Faction" Special="true" />
         }
 
         @if (Revival.ValidRevivalHeroes(Game, Player).Any())
         {
-            <SelectHeroComponent @bind-Value="hero" Values="Revival.ValidRevivalHeroes(Game, Player)" Required="false"/>
+            <SelectHeroComponent @bind-Value="hero" Values="Revival.ValidRevivalHeroes(Game, Player)" Required="false" />
         }
 
         <div class="mt-2">Revival cost for you: <span class="badge badge-primary badge-pill">@(CostOfRevival.TotalCostForPlayer)</span></div>

@@ -7,21 +7,24 @@
 @inherits GameEventComponent<PerformSetup>
 @implements IDisposable
 
-<div class="card p-1 mb-2 border-danger">
-    <div class="card-header">
-        Set <span class="badge badge-primary badge-pill" style="@Color(Game.NextFactionToPerformCustomSetup)">@Skin.Current.Describe(Game.NextFactionToPerformCustomSetup)</span> initial @Skin.Current.Describe(Concept.Resource) and forces.
-    </div>
-    <div class="card-body">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
 
-        <NumberPickerComponent @bind-Value="resources" Min="0" Max="100" SymbolSRC="@Skin.Current.Harvester_URL" NumberBackgroundBorderColor="#FF5400" Label="@Skin.Current.Describe(Concept.Resource)" />
+    <Header>
+    Set <span class="badge badge-primary badge-pill" style="@Color(Game.NextFactionToPerformCustomSetup)">@Skin.Current.Describe(Game.NextFactionToPerformCustomSetup)</span> initial @Skin.Current.Describe(Concept.Resource) and forces.
+    </Header>
+
+    <Body>
+
+        <SelectResourcesComponent @bind-Value="resources" Min="0" Max="100" Label="@Skin.Current.Describe(Concept.Resource)"/>
 
         <label class="mt-1">Initial forces on planet:</label>
         <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="20" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
-    </div>
-</div>
+    </Body>
+
+</GameEventComponentLayout>
 
 @code {
 
