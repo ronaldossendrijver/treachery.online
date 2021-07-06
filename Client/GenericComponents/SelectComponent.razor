@@ -131,10 +131,15 @@
 
     protected override void OnParametersSet()
     {
-        if (Required && (object)Value == default)
+        if (Required && !Values.Contains(Value))
         {
             Value = Values.FirstOrDefault();
         }
+    }
+
+    private bool Equal(T a, T b)
+    {
+        return a == null && b == null || a != null && a.Equals(b);
     }
 
     private IEnumerable<string> LabelsForValues

@@ -12,6 +12,7 @@ namespace Treachery.Shared
         {
             CurrentMainPhase = MainPhase.Charity;
             CurrentReport = new Report(MainPhase.Charity);
+            HasActedOrPassed.Clear();
 
             Monsters.Clear();
             ResourceTechTokenIncome = false;
@@ -24,6 +25,7 @@ namespace Treachery.Shared
             {
                 if (!Prevented(FactionAdvantage.BlueCharity))
                 {
+                    HasActedOrPassed.Add(Faction.Blue);
                     benegesserit.Resources += 2;
                     CurrentReport.Add(Faction.Blue, "{0} claim 2 charity.", Faction.Blue);
                     RecentMilestones.Add(Milestone.CharityClaimed);
@@ -40,6 +42,8 @@ namespace Treachery.Shared
 
         public void HandleEvent(CharityClaimed e)
         {
+            HasActedOrPassed.Add(e.Initiator);
+
             int received = 2 - GetPlayer(e.Initiator).Resources;
             GetPlayer(e.Initiator).Resources = 2;
 

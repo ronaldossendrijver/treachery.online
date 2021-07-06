@@ -73,7 +73,8 @@
     {
         get
         {
-            if (Game.CurrentPhase == Phase.ClaimingCharity ||
+            if (Game.CurrentPhase == Phase.SelectingTraitors ||
+                Game.CurrentPhase == Phase.ClaimingCharity ||
                 Game.CurrentPhase == Phase.Resurrection) return Game.Players.Where(p => !Game.HasActedOrPassed.Contains(p.Faction)).Select(p => p.Faction);
 
             return null;
@@ -97,7 +98,7 @@
         }
     }
 
-    private string Worm => "background-image:url('art/worm.gif'); background-position: -20px -18px; background-size: 106px 106px; background-repeat:no-repeat; background-clip:border-box";
+    private string Worm => "background-image:url('art/worm.gif'); background-position: -20px -16px; background-size: 102px 102px; background-repeat:no-repeat; background-clip:border-box";
 
     private string StatusDescriptionClass
     {

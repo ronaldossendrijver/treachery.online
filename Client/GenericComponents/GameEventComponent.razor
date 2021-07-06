@@ -53,7 +53,20 @@
         }
     }
 
-    protected string Validation => ConfirmedResult.Validate();
+    protected string Validation
+    {
+        get
+        {
+            try
+            {
+                return ConfirmedResult.Validate();
+            }
+            catch (Exception)
+            {
+                return "Validation failed.";
+            }
+        }
+    }
 
     protected virtual GameEventType ConfirmedResult
     {
