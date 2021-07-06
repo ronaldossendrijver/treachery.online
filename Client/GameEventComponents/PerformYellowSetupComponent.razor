@@ -12,15 +12,18 @@
     <Header>Distribute @(10 - forces.Sum(fl => fl.Value.AmountOfForces + fl.Value.AmountOfSpecialForces)) forces on @Game.Map.SietchTabr.ToString(), @Game.Map.FalseWallSouth.ToString(), and @Game.Map.FalseWallWest.ToString().</Header>
     <Body>
 
-        <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="true" FixedMaxForces="10" FixedMaxSpecialForces="0" />
+        <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="true" FixedMaxForces="10" FixedMaxSpecialForces="10" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
-        <p>You may use the planet map:</p>
-        <div><ClickHintComponent Button="ClickHintButton.LMB" /> and <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.SHIFT" /> to add or remove @Player.ForceName.</div>
+        <div>You can use the planet map:</div>
+        <div>Add @Player.ForceName: <ClickHintComponent Button="ClickHintButton.LMB" /></div>
+        <div>Remove @Player.ForceName: <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.SHIFT" /></div>
+
         @if (Player.HasSpecialForces)
         {
-            <div><ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL" /> and <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL | ClickHintModifier.SHIFT" /> to add or remove @Player.SpecialForceName.</div>
+            <div>Add @Player.SpecialForceName: <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL" /> </div>
+            <div>Remove @Player.SpecialForceName: <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL | ClickHintModifier.SHIFT" /></div>
         }
 
     </Body>

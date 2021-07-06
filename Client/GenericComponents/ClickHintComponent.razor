@@ -1,13 +1,11 @@
-﻿<span>&nbsp;</span>
-
-@if ((Modifier & ClickHintModifier.SHIFT) > 0)
+﻿@if ((Modifier & ClickHintModifier.SHIFT) > 0)
 {
-    <span><kbd class="small">shift</kbd>&nbsp;+</span>
+    <span><kbd class="small">shift</kbd>+</span>
 }
 
 @if ((Modifier & ClickHintModifier.CTRL) > 0)
 {
-	<span><kbd class="small">ctrl</kbd>&nbsp;+</span>
+	<span><kbd class="small">ctrl</kbd>+</span>
 }
 
 @if ((Button & ClickHintButton.LMB) > 0)

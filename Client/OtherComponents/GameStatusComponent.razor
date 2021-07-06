@@ -6,47 +6,91 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameComponent
 
-<div class="card p-0 mb-2" style="@(StatusBackground)">
+<div class="card p-0 mb-2" style="background-color:#e8dba6ee;">
 
     <div class="card-body text-center bg-transparent border-bottom-0">
 
-        @if (IsPhaseWithSequence)
-        {
+        <div class="row justify-content-center">
 
-            <div class="row justify-content-center">
+            @{
+                var waitingFor = WaitingFor;
+                if (waitingFor != Faction.None)
+                {
+                    <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(waitingFor)" width="72" style="@Worm"/>
+                }
+                else
+                {
+                    var currentSequence = CurrentSequence;
+                    var currentFactionsToAct = CurrentFactionsToAct;
 
-            </div>
-        }
+                    if (currentSequence != null)
+                    {
+                        @foreach (var f in currentSequence)
+                        {
+                            <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(f.Faction)" width="@(f.HasTurn ? 72 : 48)" style="@(f.HasTurn ? Worm : "")"/>
+                        }
+                    }
+                    else if (currentFactionsToAct != null)
+                    {
+                        @foreach (var f in currentFactionsToAct)
+                        {
+                            <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(f)" width="48" />
+                        }
+                    }
+                }
+            }
+
+        </div>
 
         <div class="@(StatusDescriptionClass)">@h.Status.Description</div>
 
     </div>
+
 </div>
 
 @code {
 
-    private bool IsPhaseWithSequence
+    private IEnumerable<SequenceElement> CurrentSequence
     {
         get
         {
-            return false;
+            if (Game.CurrentPhase == Phase.Bidding) return Game.BidSequence.GetFactionsInSequence(Game);
+            if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.CurrentPhase != Phase.ShipmentAndMoveConcluded) return Game.ShipmentAndMoveSequence.GetFactionsInSequence(Game);
+            if (Game.CurrentMainPhase == MainPhase.Battle) return Game.BattleSequence.GetFactionsInSequence(Game);
+
+            return null;
         }
     }
 
-    private string StatusBackground
+    private IEnumerable<Faction> CurrentFactionsToAct
     {
         get
         {
-            if (h.Game == null || h.Status.WaitingForOthers)
+            if (Game.CurrentPhase == Phase.ClaimingCharity ||
+                Game.CurrentPhase == Phase.Resurrection) return Game.Players.Where(p => !Game.HasActedOrPassed.Contains(p.Faction)).Select(p => p.Faction);
+
+            return null;
+        }
+    }
+
+    private Faction WaitingFor
+    {
+        get
+        {
+            var att = GetAttribute(Game.CurrentPhase);
+
+            if (att != null && att.Urgent)
             {
-                return "background-image:url('art/worm.gif');background-size:contain;background-repeat:no-repeat;background-color:#e8dba6ee;background-clip:content-box";
+                return att.FactionSpecific;
             }
             else
             {
-                return "background-size:contain;background-repeat:no-repeat;background-color:#e8dba6ee;background-clip:content-box";
+                return Faction.None;
             }
         }
     }
+
+    private string Worm => "background-image:url('art/worm.gif'); background-position: -20px -18px; background-size: 106px 106px; background-repeat:no-repeat; background-clip:border-box";
 
     private string StatusDescriptionClass
     {
@@ -61,5 +105,14 @@
                 return "text-danger font-weight-bold";
             }
         }
+    }
+
+    public PhasePropertyAttribute GetAttribute(Phase p)
+    {
+        var type = typeof(Phase);
+        var member = type.GetMember(type.GetEnumName(p))[0];
+        var att = member.GetCustomAttributes(typeof(PhasePropertyAttribute), false).FirstOrDefault();
+        return (PhasePropertyAttribute)att;
+
     }
 }

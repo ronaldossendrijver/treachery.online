@@ -9,6 +9,7 @@ using System.Linq;
 
 namespace Treachery.Shared
 {
+    [GameEventProperty(true, Faction.Blue)]
     public class BlueAccompanies : GameEvent
     {
         public int _targetId;

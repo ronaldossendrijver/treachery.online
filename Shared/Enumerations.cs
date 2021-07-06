@@ -90,15 +90,29 @@ namespace Treachery.Shared
         AwaitingPlayers = 10,
         SelectingFactions = 29,
         TradingFactions = 30,
+
+        [PhaseProperty(true, Faction.Blue)]
         BluePredicting = 50,
+
+        [PhaseProperty(true, Faction.Black)]
         BlackMulligan = 60,
+
         SelectingTraitors = 65,
         PerformCustomSetup = 66,
+
+        [PhaseProperty(true, Faction.Yellow)]
         YellowSettingUp = 70,
+
+        [PhaseProperty(true, Faction.Blue)]
         BlueSettingUp = 90,
+
         MetheorAndStormSpell = 95,
+
+        [PhaseProperty(true, Faction.Grey)]
         HmsPlacement = 100,
+        [PhaseProperty(true, Faction.Grey)]
         HmsMovement = 101,
+
         DiallingStorm = 105,
         StormLosses = 110,
         Thumper = 115,
@@ -106,46 +120,96 @@ namespace Treachery.Shared
         HarvesterA = 125,
         BlowB = 130,
         HarvesterB = 135,
+
+        [PhaseProperty(true, Faction.Yellow)]
         YellowSendingMonsterA = 140,
+
         AllianceA = 150,
         YellowRidingMonsterA = 160,
         YellowSendingMonsterB = 170,
         AllianceB = 180,
+
+        [PhaseProperty(true, Faction.Yellow)]
         YellowRidingMonsterB = 190,
+
         BlowReport = 194,
         ClaimingCharity = 195,
+
+        [PhaseProperty(true, Faction.Grey)]
         GreySelectingCard = 196,
+        [PhaseProperty(true, Faction.Grey)]
         GreyRemovingCardFromBid = 197,
+        [PhaseProperty(true, Faction.Grey)]
         GreySwappingCard = 198,
+
         Bidding = 200,
         ReplacingCardJustWon = 201,
         WaitingForNextBiddingRound = 205,
         BiddingReport = 208,
         Resurrection = 210,
         NonOrangeShip = 220,
+
+        [PhaseProperty(true, Faction.Orange)]
         OrangeShip = 230,
+
+        [PhaseProperty(true, Faction.Blue)]
         BlueAccompaniesNonOrange = 240,
+        [PhaseProperty(true, Faction.Blue)]
         BlueAccompaniesOrange = 250,
+        [PhaseProperty(true, Faction.Blue)]
         BlueIntrudedByNonOrangeShip = 255,
+        [PhaseProperty(true, Faction.Blue)]
         BlueIntrudedByOrangeShip = 256,
+
         NonOrangeMove = 260,
+
+        [PhaseProperty(true, Faction.Orange)]
         OrangeMove = 270,
+
+        [PhaseProperty(true, Faction.Blue)]
         BlueIntrudedByNonOrangeMove = 280,
+        [PhaseProperty(true, Faction.Blue)]
         BlueIntrudedByOrangeMove = 290,
+        [PhaseProperty(true, Faction.Blue)]
         BlueIntrudedByCaravan = 295,
+        [PhaseProperty(true, Faction.Blue)]
         BlueIntrudedByYellowRidingMonsterA = 296,
+        [PhaseProperty(true, Faction.Blue)]
         BlueIntrudedByYellowRidingMonsterB = 297,
+
         ShipmentAndMoveConcluded = 299,
         BattlePhase = 300,
         CallTraitorOrPass = 310,
         BattleConclusion = 315,
+
+        [PhaseProperty(true, Faction.Purple)]
         Facedancing = 320,
+
         BattleReport = 330,
+
+        [PhaseProperty(true, Faction.Black)]
         PerformingKarmaHandSwap = 350,
+
         Clairvoyance = 360,
+
+        [PhaseProperty(true, Faction.Purple)]
         ReplacingFaceDancer = 395,
+
         TurnConcluded = 399,
         GameEnded = 400
+    }
+
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+    public class PhasePropertyAttribute : Attribute
+    {
+        public bool Urgent;
+        public Faction FactionSpecific;
+
+        public PhasePropertyAttribute(bool urgent, Faction factionSpecific)
+        {
+            Urgent = urgent;
+            FactionSpecific = factionSpecific;
+        }
     }
 
     public enum Milestone : int
