@@ -27,7 +27,14 @@
                     {
                         @foreach (var f in currentSequence)
                         {
-                            <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(f.Faction)" width="@(f.HasTurn ? 72 : 48)" style="@(f.HasTurn ? Worm : "")"/>
+                            if (Game.CurrentPhase == Phase.Bidding)
+                            {
+                                <NumberComponent Value="Game.GetPlayer(f.Faction).TreacheryCards.Count" Size="@(f.HasTurn ? 72 : 48)" SymbolSRC="@Skin.Current.GetImageURL(f.Faction)" NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black"/>
+                            }
+                            else
+                            {
+                                <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(f.Faction)" width="@(f.HasTurn ? 72 : 48)" style="@(f.HasTurn ? Worm : "")"/>
+                            }
                         }
                     }
                     else if (currentFactionsToAct != null)

@@ -4,7 +4,7 @@
     {
     }
 
-    public enum NumberPickerAlignment
+    public enum NumberAlignment
     {
         None = 0,
         Center = 10,

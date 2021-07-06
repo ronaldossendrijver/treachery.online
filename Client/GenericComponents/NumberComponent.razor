@@ -2,7 +2,7 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
 --->
 
-<div style="display: inline-block; position: relative; height: @SymbolSize; width: @TotalWidth; margin: 4px 4px 0px 0px;">
+<div style="display: inline-block; position: relative; height: @SymbolSize; width: @SymbolSize; margin: 4px 4px 0px 0px;">
 
     @if (DrawSymbolBackground)
     {
@@ -26,63 +26,12 @@
 
     <span style="position: absolute; left: @NumberBoxOffsetX; top:@NumberBoxOffsetY; width: @NumberBoxSize; font-size: @NumberFontSize; font-weight: bold; color: @NumberColor; line-height: 1.0; text-align:center; white-space:nowrap;">@Value</span>
 
-    <svg 
-         @onclick="@Increase" 
-         @onmouseover="e => MouseOver(true)"
-         @onmouseout="e => MouseOut(true)"
-         xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" height="@ArrowSize" fill="@IncreaseArrowColor" viewBox="0 0 16 16" style="position: absolute; left: @ArrowOffsetX; top: 3px; width: @ArrowSize; filter: @UpStyle;">
-        <path fill-rule="evenodd" d="M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z" />
-    </svg>
-
-    <svg 
-         @onclick="@Decrease" 
-         @onmouseover="e => MouseOver(false)"
-         @onmouseout="e => MouseOut(false)"
-         xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" height="@ArrowSize" fill="@DecreaseArrowColor" viewBox="0 0 16 16" style="position: absolute; left: @ArrowOffsetX; bottom: 3px; width: @ArrowSize; filter: @DownStyle;">
-        <path transform="rotate(180,8,8)" fill-rule="evenodd" d="M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z" />
-    </svg>
-
 </div>
 
 @code {
 
-    private int _value;
-
     [Parameter]
-    public int Value
-    {
-        get
-        {
-            return _value;
-        }
-        set
-        {
-            if (_value != value)
-            {
-                _value = value;
-                ValueChanged.InvokeAsync(value);
-                OnChanged?.Invoke();
-            }
-        }
-    }
-
-    [Parameter]
-    public EventCallback<int> ValueChanged { get; set; }
-
-    [Parameter]
-    public Action OnChanged { get; set; }
-
-    [Parameter]
-    public EventCallback OnUp { get; set; }
-
-    [Parameter]
-    public EventCallback OnDown { get; set; }
-
-    [Parameter]
-    public int Min { get; set; } = 0;
-
-    [Parameter]
-    public int Max { get; set; } = 10;
+    public int Value { get; set; }
 
     [Parameter]
     public string SymbolSRC { get; set; } = null;
@@ -109,82 +58,13 @@
     public string BehindNumberSRC { get; set; } = null;
 
     [Parameter]
-    public string ArrowColor { get; set; } = "#FF5400";
-
-    [Parameter]
-    public string DisabledColor { get; set; } = "#FF540080";
-
-    [Parameter]
-    public bool Disabled { get; set; } = false;
-
-    [Parameter]
     public int Size { get; set; } = 36;
 
-    protected override void OnParametersSet()
-    {
-        if (Value < Min || Value > Max) Value = Min;
-    }
-
-    private void Increase()
-    {
-        if (!Disabled && Value < Max)
-        {
-            Value++;
-            OnUp.InvokeAsync();
-        }
-    }
-
-    private void Decrease()
-    {
-        if (!Disabled && Value > Min)
-        {
-            Value--;
-            OnDown.InvokeAsync();
-        }
-    }
-
-    private bool MayIncrease => !Disabled && Value < Max;
-
-    private bool MayDecrease => !Disabled && Value > Min;
-
-    private bool _upHovered = false;
-    private bool _downHovered = false;
-
-    private void MouseOver(bool up)
-    {
-        if (up)
-        {
-            _upHovered = true;
-        }
-        else
-        {
-            _downHovered = true;
-        }
-    }
-
-    private void MouseOut(bool up)
-    {
-        if (up)
-        {
-            _upHovered = false;
-        }
-        else
-        {
-            _downHovered = false;
-        }
-    }
-
     private string SymbolSize => "" + Size + "px";
-
-    private string TotalWidth => "" + (1.5 * Size) + "px";
 
     private bool DrawSymbolBackground => SymbolBackgroundFillColor != null || SymbolBackgroundBorderColor != null;
 
     private bool DrawNumberBackground => NumberBackgroundFillColor != null || NumberBackgroundBorderColor != null;
-
-    private string IncreaseArrowColor => !Disabled && Value < Max ? ArrowColor : DisabledColor;
-
-    private string DecreaseArrowColor => !Disabled && Value > Min ? ArrowColor : DisabledColor;
 
     private string NumberBoxSize
     {
@@ -315,12 +195,4 @@
             };
         }
     }
-
-    private string ArrowSize => "" + (int)(0.4f * Size) + "px";
-
-    private string ArrowOffsetX => "" + (int)(1.1f * Size) + "px";
-
-    private string UpStyle => _upHovered && MayIncrease ? string.Format("brightness(150%) drop-shadow(1px 1px 1px {0})", ArrowColor) : "";
-
-    private string DownStyle => _downHovered && MayDecrease ? string.Format("brightness(150%) drop-shadow(1px 1px 1px {0})", ArrowColor) : "";
 }
