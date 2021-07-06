@@ -1,4 +1,4 @@
-﻿<div class="row ml-0 mt-2 mb-1 mr-0 justify-content-end">
+﻿<div class="row ml-0 mt-2 mb-1 mr-0 @Alignment">
 
     @if (Other.HasDelegate)
     {
@@ -17,7 +17,7 @@
 
 </div>
 
-<div class="text-danger text-right"><span class="bg-dark">@ConfirmError</span></div>
+<div class="text-danger @Alignment"><span class="bg-dark">@ConfirmError</span></div>
 
 @code {
 
@@ -42,4 +42,6 @@
     [Parameter]
     public string OtherText { get; set; } = "Other";
 
+    [Parameter]
+    public string Alignment { get; set; } = "justify-content-end";
 }

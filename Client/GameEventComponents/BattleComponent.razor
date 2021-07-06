@@ -56,6 +56,7 @@
                 }
             }
         }
+
         <SelectForcesComponent @bind-Value="forces" Min="0" Max="Battle.MaxForces(Game, Player, false)" Faction="Faction" Special="false" />
 
         @if (Battle.MaxForces(Game, Player, true) > 0)
@@ -65,20 +66,33 @@
 
         @if (Battle.MustPayForForcesInBattle(Game, Player))
         {
-            <SelectResourcesComponent @bind-Value="resources" Min="0" Max="Math.Min(Player.Resources, forces + specialForces)" />
+            <SelectResourcesComponent @bind-Value="resources" Min="0" Max="Player.Resources" />
         }
 
-        <SelectHeroComponent @bind-Value="hero" Values="Battle.ValidBattleHeroes(Game, Player)">
-            <Label>Hero</Label>
-        </SelectHeroComponent>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white" class="bi bi-arrow-right" viewBox="0 0 16 16" style="vertical-align: top">
+            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+        </svg>
 
-        <SelectCardComponent @bind-Value="weapon" Values="Weapons" Required="false">
-            <Label>Weapon</Label>
-        </SelectCardComponent>
+        <NumberComponent Value="ConfirmedResult.Dial(Game, Game.CurrentBattle.OpponentOf(Faction).Faction)" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
 
-        <SelectCardComponent @bind-Value="defense" Values="Defenses" Required="false">
-            <Label>Defense</Label>
-        </SelectCardComponent>
+        @if (Battle.ValidBattleHeroes(Game, Player).Any())
+        {
+            <SelectHeroComponent @bind-Value="hero" Values="Battle.ValidBattleHeroes(Game, Player)" />
+        }
+
+        @if (Weapons.Any())
+        {
+            <SelectCardComponent @bind-Value="weapon" Values="Weapons" Required="false">
+                <Label>Weapon</Label>
+            </SelectCardComponent>
+        }
+
+        @if (Defenses.Any())
+        {
+            <SelectCardComponent @bind-Value="defense" Values="Defenses" Required="false">
+                <Label>Defense</Label>
+            </SelectCardComponent>
+        }
 
         @if (Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah))
         {

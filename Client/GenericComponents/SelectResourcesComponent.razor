@@ -6,10 +6,15 @@
 
 @if (Label != "")
 {
-    <label class="mt-1 align-content-center">@Label</label>
+    <div class="row ml-0 justify-content-start">
+        <label class="align-self-center mr-2">@Label</label>
+        <NumberPickerComponent Disabled="@Disabled" @bind-Value="Value" Min="Min" Max="Max" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" />
+    </div>
 }
-
-<NumberPickerComponent Disabled="@Disabled" @bind-Value="Value" Min="Min" Max="Max" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" />
+else
+{
+    <NumberPickerComponent Disabled="@Disabled" @bind-Value="Value" Min="Min" Max="Max" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" />
+}
 
 @code {
 

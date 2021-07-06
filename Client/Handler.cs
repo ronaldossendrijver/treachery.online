@@ -41,7 +41,8 @@ namespace Treachery.Client
         public Battle _battleUnderConstruction = null;
         public Battle RevisedPlan = null;
         public int BidAutoPassThreshold = int.MaxValue;
-        public bool ResetAutopassSetting = true;
+        public bool Autopass = false;
+        public bool KeepAutopassSetting = false;
         public float CurrentEffectVolume = -1;
         public float CurrentChatVolume = -1;
         public bool StatisticsSent = false;
@@ -740,9 +741,9 @@ namespace Treachery.Client
 
         private void ResetAutopassThreshold()
         {
-            if (Game.RecentMilestones.Contains(Milestone.AuctionWon) && (ResetAutopassSetting || Game.CurrentPhase == Phase.BiddingReport))
+            if (Game.RecentMilestones.Contains(Milestone.AuctionWon) && (!KeepAutopassSetting || Game.CurrentPhase == Phase.BiddingReport))
             {
-                BidAutoPassThreshold = int.MaxValue;
+                Autopass = false;
             }
         }
 

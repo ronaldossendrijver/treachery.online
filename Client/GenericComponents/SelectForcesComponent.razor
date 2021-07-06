@@ -6,12 +6,20 @@
 
 @if (Label != "")
 {
-    <label class="mt-1 align-content-center">@Label</label>
-}
+    <div class="row ml-0 justify-content-start">
+        <label class="align-self-center mr-2">@Label</label>
+        <NumberPickerComponent Disabled="@Disabled" @bind-Value="@Value" OnDown="OnDown" OnUp="OnUp" Min="Min" Max="Max"
+                               SymbolSRC="@ForceSymbolSRC" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="black"
+                               NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
 
-<NumberPickerComponent Disabled="@Disabled" Value="@Value" OnDown="OnDown" OnUp="OnUp" Min="Min" Max="Max" 
-                       SymbolSRC="@ForceSymbolSRC" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="black" 
-                       NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black"/>
+    </div>
+}
+else
+{
+    <NumberPickerComponent Disabled="@Disabled" @bind-Value="@Value" OnDown="OnDown" OnUp="OnUp" Min="Min" Max="Max"
+                           SymbolSRC="@ForceSymbolSRC" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="black"
+                           NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
+}
 
 @code {
 

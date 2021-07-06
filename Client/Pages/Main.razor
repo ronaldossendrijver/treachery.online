@@ -61,11 +61,6 @@
             {
                 <GameStatusComponent h="@h" />
 
-                @if (h.Game.CurrentMainPhase == MainPhase.Bidding)
-                {
-                    <BiddingPanel h="h" />
-                }
-
                 @if (h.CurrentPhase == Phase.GameEnded)
                 {
                     <WinnerPanel h="h" />

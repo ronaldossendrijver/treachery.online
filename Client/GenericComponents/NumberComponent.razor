@@ -2,7 +2,7 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
 --->
 
-<div style="display: inline-block; position: relative; height: @SymbolSize; width: @SymbolSize; margin: 4px 4px 0px 0px;">
+<div style="display: inline-block; position: relative; height: @SymbolSize; width: @SymbolSize;">
 
     @if (DrawSymbolBackground)
     {
@@ -31,7 +31,7 @@
 @code {
 
     [Parameter]
-    public int Value { get; set; }
+    public float Value { get; set; }
 
     [Parameter]
     public string SymbolSRC { get; set; } = null;

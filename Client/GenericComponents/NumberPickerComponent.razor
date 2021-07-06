@@ -2,7 +2,7 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
 --->
 
-<div style="display: inline-block; position: relative; height: @SymbolSize; width: @TotalWidth; margin: 4px 4px 0px 0px;">
+<div style="display: inline-block; position: relative; height: @SymbolSize; width: @TotalWidth;">
 
     @if (DrawSymbolBackground)
     {
@@ -218,7 +218,7 @@
         {
             return NumberAlignment switch
             {
-                NumberAlignment.Center => "" + ((int)(0.18f * Size)) + "px",
+                NumberAlignment.Center => "" + ((int)(0.2f * Size)) + "px",
                 NumberAlignment.BottomRight => "" + ((int)(0.4f * Size)) + "px",
                 _ => "0px"
             };

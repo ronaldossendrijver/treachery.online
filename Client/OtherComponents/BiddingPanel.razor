@@ -4,7 +4,7 @@
 
 @using Treachery.Shared;
 @using Treachery.Client.GenericComponents;
-@inherits GameComponent
+@inherits GameEventComponent<Bid>
 
 @if (h.Game.CurrentMainPhase == MainPhase.Bidding || (h.Game.Version < 38 && h.CurrentPhase == Phase.Resurrection))
 {
@@ -12,67 +12,121 @@
 
         <div class="card-body">
 
-            <div><span class="badge badge-primary badge-pill">@h.Game.CardsOnAuction.Items.Count</span> cards left on auction.</div>
+            <table class="table table-borderless">
+                <tr>
+                    <td class="align-top" style="position:relative; width: 160px;">
+                        <img src="@CurrentCardImageSRC" width="160" data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(h.Game.CardsOnAuction.Top)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" />
 
-            @if (h.Game.CurrentBid != null)
-            {
-                <div>
-                    Current bid:
-                    <span class="badge badge-primary badge-pill">@(h.Game.CurrentBid.TotalAmount)</span> by
-                    <span class="badge badge-primary badge-pill" style="@Color(h.Game.CurrentBid.Initiator)">@Skin.Current.Describe(h.Game.CurrentBid.Initiator)</span>
-                </div>
-            }
-            else if (h.Game.CurrentPhase != Phase.BiddingReport)
-            {
-                <div>No bids yet.</div>
-            }
-
-            @if (h.CurrentPhase == Phase.Bidding && !h.Game.CardsOnAuction.IsEmpty && h.Game.HasBiddingPrescience(h.Player))
-            {
-                <div data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(h.Game.CardsOnAuction.Top)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">On auction: <span class="badge badge-primary badge-pill">@h.Game.CardsOnAuction.Top</span></div>
-            }
-
-            <h5 class="mt-2 mb-0">Bidding order &amp; Cards owned</h5>
-            <ul class="list-inline mb-1">
-                @{
-                    bool first = true;
-                    foreach (var p in PlayersInSequence)
-                    {
-                        if (first)
+                        @if (Game.CurrentBid != null)
                         {
-                            first = false;
-                            <li class="list-inline-item @(p.Item2 ? "font-weight-bolder" : "")">@Skin.Current.Describe(p.Item1.Faction) <span class="badge badge-primary badge-pill">@p.Item1.TreacheryCards.Count()</span></li>
+                            <div style="position: absolute; top: 60%; width: 160px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
+                                <img src="@Skin.Current.GetImageURL(Game.CurrentBid.Initiator)" width="36" style="vertical-align: top;" />
+                                <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="36" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
+                                <div style="font-size: 28px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">
+                                    Card @h.Game.CardNumber of @(h.Game.CardNumber + h.Game.CardsOnAuction.Items.Count - 1)
+                                </div>
+                            </div>
                         }
-                        else
+
+                    </td>
+
+                    <td class="align-top">
+
+                        @if (!h.IsObserver && h.Player.Faction != Faction.None)
                         {
-                            <li class="list-inline-item @(p.Item2 ? "font-weight-bolder" : "")">&rarr;&nbsp;@Skin.Current.Describe(p.Item1.Faction) <span class="badge badge-primary badge-pill">@p.Item1.TreacheryCards.Count()</span>&nbsp;</li>
+                            <CheckboxComponent @bind-Value="@h.Autopass">Auto-pass</CheckboxComponent>
+                            <CheckboxComponent @bind-Value="@h.KeepAutopassSetting">Repeat auto-pass every round</CheckboxComponent>
+                            <SelectResourcesComponent @bind-Value="@h.BidAutoPassThreshold" Min="0" Max="50" Label="Auto-pass bids when above:" />
+
+                            @if (CanBid)
+                            {
+                                <hr style="border-color:white"/>
+                            }
                         }
-                    }
-                }
-            </ul>
 
-            @if (!h.IsObserver && h.Player.Faction != Faction.None)
-            {
-                <label class="mb-0" for="bidAmount">Auto-pass bids when above:</label>
-                <select class="custom-select w-auto" @bind="@h.BidAutoPassThreshold" id="bidAmount">
-                    <option value="@int.MaxValue">Don't autopass</option>
-                    @foreach (var s in AutopassAmounts)
-                    {
-                        <option value="@s">@s</option>
-                    }
-                </select>
+                        @if (CanBid)
+                        {
+                            @if (Karma.CanKarma(Game, Player))
+                            {
+                                <SelectCardComponent @bind-Value="karmaCard" Values="Karma.ValidKarmaCards(Game, Player)" Required="false">
+                                    <Label>Use @Skin.Current.Describe(TreacheryCardType.Karma) to bid without limit or win immediately? <InfoComponent Contents="@InfoMessage" /></Label>
+                                </SelectCardComponent>
+                            }
 
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="resetAutopass" @bind="@h.ResetAutopassSetting">
-                    <label class="custom-control-label" for="resetAutopass">Reset auto-pass after each bidding round</label>
-                </div>
-            }
+                            @if (Player.Ally == Faction.None)
+                            {
+                                <SelectResourcesComponent @bind-Value="amount" Min="0" Max="Bid.ValidMaxAmount(Player, karmaCard != null)" />
+                            }
+                            else
+                            {
+                                <SelectResourcesFromFactionComponent @bind-Value="amount" Min="0" Max="Bid.ValidMaxAmount(Player, karmaCard != null)" Faction="Faction" />
+                                <SelectResourcesFromFactionComponent @bind-Value="allyContributionAmount" Min="0" Max="Bid.ValidMaxAllyAmount(Game, Player)" Faction="Player.Ally" />
+                            }
+
+                            @if (Game.SpiceForBidsRedCanPay(Faction) > 0)
+                            {
+                                <SelectResourcesFromFactionComponent @bind-Value="redContributionAmount" Min="0" Max="Game.SpiceForBidsRedCanPay(Faction)" Faction="Faction.Red" />
+                            }
+
+                            @if (karmaCard != null)
+                            {
+                                <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Pass="Pass" PassText="Pass" Other="Other" OtherText="Win immediately" Alignment="justify-content-start"/>
+                            }
+                            else
+                            {
+                                <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Pass="Pass" PassText="Pass" Alignment="justify-content-start"/>
+                            }
+                        }
+
+                    </td>
+                </tr>
+            </table>
 
         </div>
     </div>
 }
 
 @code {
+
+    protected override bool IsUrgent => true;
+
+    [Parameter]
+    public bool CanBid { get; set; }
+
+    private int amount;
+    private int allyContributionAmount;
+    private int redContributionAmount;
+    private TreacheryCard karmaCard;
+
+    private string BidLabel => "Bid " + (amount + allyContributionAmount + redContributionAmount);
+
+    private async Task Autopass()
+    {
+        if (Game.CurrentBid != null && h.Autopass && Game.CurrentBid.TotalAmount + 1 > h.BidAutoPassThreshold ||
+            Game.CurrentBid == null && h.Autopass && h.BidAutoPassThreshold == 0)
+        {
+            await Pass();
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        int allyResources = Player.Ally == Faction.None ? 0 : Game.GetPermittedUseOfAllySpice(Faction);
+        int playerResources = Player.Resources;
+        int bidToDo = Game.CurrentBid != null ? Game.CurrentBid.TotalAmount + 1 : 1;
+        allyContributionAmount = Math.Min(bidToDo, allyResources);
+        amount = Math.Min(bidToDo - allyContributionAmount, playerResources);
+
+        _ = Task.Delay(1000).ContinueWith(e => Autopass());
+    }
+
+    protected override Bid ConfirmedResult => new Bid(Game) { Initiator = Faction, Passed = false, Amount = amount, KarmaBid = false, KarmaCard = karmaCard, AllyContributionAmount = allyContributionAmount, RedContributionAmount = redContributionAmount };
+
+    protected override Bid OtherResult => new Bid(Game) { Initiator = Faction, Passed = false, KarmaBid = true, KarmaCard = karmaCard };
+
+    protected override Bid PassedResult => new Bid(Game) { Initiator = Faction, Passed = true, KarmaBid = false };
+
+    private string InfoMessage => Skin.Current.Format("If you use a {0} card to bid any amount of {1} you wish, that card will be set aside until someone outbids you and will be discarded only if you win the auction. If you instead use your {0} card to win immediately, it is immediately discarded.", TreacheryCardType.Karma, Concept.Resource);
 
     private IEnumerable<Tuple<Player, bool>> PlayersInSequence
     {
@@ -95,6 +149,8 @@
             return result;
         }
     }
+
+    private string CurrentCardImageSRC => Game.HasBiddingPrescience(Player) && Game.CardsOnAuction.Top != null ? Skin.Current.GetImageURL(Game.CardsOnAuction.Top) : Skin.Current.CardBack_TreacheryCard_URL;
 
     private IEnumerable<int> AutopassAmounts
     {
