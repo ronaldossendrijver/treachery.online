@@ -57,19 +57,22 @@
             }
         }
 
-        <SelectForcesComponent @bind-Value="forces" Min="0" Max="Battle.MaxForces(Game, Player, false)" Faction="Faction" Special="false" />
+        @if (Battle.MaxForces(Game, Player, false) > 0)
+        {
+            <SelectForcesComponent @bind-Value="forces" Min="0" Max="Battle.MaxForces(Game, Player, false)" Faction="Faction" Special="false" /> <span>&nbsp;</span>
+        }
 
         @if (Battle.MaxForces(Game, Player, true) > 0)
         {
-            <SelectForcesComponent @bind-Value="specialForces" Min="0" Max="Battle.MaxForces(Game, Player, true)" Faction="Faction" Special="true" />
+            <SelectForcesComponent @bind-Value="specialForces" Min="0" Max="Battle.MaxForces(Game, Player, true)" Faction="Faction" Special="true" /> <span>&nbsp;</span>
         }
 
         @if (Battle.MustPayForForcesInBattle(Game, Player))
         {
-            <SelectResourcesComponent @bind-Value="resources" Min="0" Max="Player.Resources" />
+            <SelectResourcesComponent @bind-Value="resources" Min="0" Max="Player.Resources" /> <span>&nbsp;</span>
         }
 
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white" class="bi bi-arrow-right" viewBox="0 0 16 16" style="vertical-align: top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white" class="bi bi-arrow-right" viewBox="0 0 16 16" style="vertical-align: super">
             <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
         </svg>
 
@@ -123,44 +126,6 @@
     private TreacheryCard defense;
     private TreacheryCard weapon;
 
-    /*protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await DrawIfNeeded();
-    }
-    
-    private int lastforces;
-    private int lastspecialForces;
-    private int lastResources;
-    private IHero lasthero;
-    private bool lastmessiah = false;
-    private TreacheryCard lastdefense;
-    private TreacheryCard lastweapon;
-
-    private void DrawIfNeeded()
-    {
-        if (
-            forces != lastforces ||
-            specialForces != lastspecialForces ||
-            resources != lastResources ||
-            hero != lasthero ||
-            messiah != lastmessiah ||
-            defense != lastdefense ||
-            weapon != lastweapon)
-        {
-            lastforces = forces;
-            lastspecialForces = specialForces;
-            lastResources = resources;
-            lasthero = hero;
-            lastmessiah = messiah;
-            lastdefense = defense;
-            lastweapon = weapon;
-
-            //h._battleUnderConstruction = (Battle)ConfirmedResult;
-            //await MapDrawer.Draw();
-        }
-    }
-    */
-
     protected override void OnParametersSet()
     {
         if (h.RevisedPlan != null)
@@ -182,7 +147,7 @@
         {
             Battle.DetermineForces(Game, Player, forces, specialForces, resources, out int forcesFull, out int forcesHalf, out int specialForcesFull, out int specialForcesHalf);
 
-            return new Battle(Game)
+            var result = new Battle(Game)
             {
                 Initiator = Faction,
                 Defense = defense,
@@ -194,6 +159,10 @@
                 SpecialForcesAtHalfStrength = specialForcesHalf,
                 Weapon = weapon
             };
+
+            h.RevisedPlan = result;
+
+            return result;
         }
     }
 
