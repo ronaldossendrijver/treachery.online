@@ -219,8 +219,8 @@ namespace Treachery.Shared
                     Price =
                         D(1, 3) +
                         (int)Math.Floor(0.1 * ResourcesIncludingAllyContribution) +
-                        (Ally == Faction.None ? 0 : 4) + 
-                        (int)Math.Ceiling(0.5 * Game.Players.Count(p => p.TreacheryCards.Count() < p.MaximumNumberOfCards)),
+                        (Ally == Faction.None ? 0 : 3) + 
+                        Game.Players.Count(p => p.TreacheryCards.Count() < p.MaximumNumberOfCards),
                     Text = "share bidding prescience (entire phase)"
                 };
             }

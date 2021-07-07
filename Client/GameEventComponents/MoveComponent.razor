@@ -35,15 +35,9 @@
 
             @if (Faction == Faction.Blue)
             {
-                <div>Move as fighters or advisors?</div>
-                <div class="custom-control custom-radio">
-                    <input class="custom-control-input" @onchange="AsAdvisorsOnChange" type="radio" id="moveAsAdvisorsNo" value="false" checked="@(!asAdvisors)">
-                    <label class="custom-control-label" for="moveAsAdvisorsNo">Fighters</label>
-                </div>
-                <div class="custom-control custom-radio">
-                    <input class="custom-control-input" @onchange="AsAdvisorsOnChange" type="radio" id="moveAsAdvisorsYes" value="true" checked="@(asAdvisors)">
-                    <label class="custom-control-label" for="moveAsAdvisorsYes">Advisors</label>
-                </div>
+                <RadioComponent @bind-Value="asAdvisors" Values="new bool[] { false, true }" ValueLabels="@(new string[] {"Fighters", "Advisors"})">
+                    <Label>Move as fighters or advisors?</Label>
+                </RadioComponent>
             }
 
             <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />

@@ -14,6 +14,13 @@
 
             @{
                 var waitingFor = WaitingFor;
+                var currentFactionsToAct = CurrentFactionsToAct;
+
+                if (waitingFor == Faction.None && currentFactionsToAct != null && currentFactionsToAct.Count() == 1)
+                {
+                    waitingFor = currentFactionsToAct.First();
+                }
+
                 if (waitingFor != Faction.None)
                 {
                     <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(waitingFor)" width="72" style="@Worm"/>
@@ -21,7 +28,7 @@
                 else
                 {
                     var currentSequence = CurrentSequence;
-                    var currentFactionsToAct = CurrentFactionsToAct;
+                    
 
                     if (currentSequence != null)
                     {
@@ -29,7 +36,9 @@
                         {
                             if (Game.CurrentPhase == Phase.Bidding)
                             {
-                                <NumberComponent Value="Game.GetPlayer(f.Faction).TreacheryCards.Count" Size="@(f.HasTurn ? 72 : 48)" SymbolSRC="@Skin.Current.GetImageURL(f.Faction)" NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black"/>
+                                <div class="d-inline-block p-2">
+                                    <NumberComponent Value="Game.GetPlayer(f.Faction).TreacheryCards.Count" Size="@(f.HasTurn ? 72 : 48)" SymbolSRC="@Skin.Current.GetImageURL(f.Faction)" NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
+                                </div>
                             }
                             else
                             {
@@ -63,7 +72,7 @@
         {
             if (Game.CurrentPhase == Phase.Bidding) return Game.BidSequence.GetFactionsInSequence(Game);
             if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.CurrentPhase != Phase.ShipmentAndMoveConcluded) return Game.ShipmentAndMoveSequence.GetFactionsInSequence(Game);
-            if (Game.CurrentMainPhase == MainPhase.Battle) return Game.BattleSequence.GetFactionsInSequence(Game);
+            if (Game.CurrentMainPhase == MainPhase.Battle && Game.Aggressor != null) return Game.BattleSequence.GetFactionsInSequence(Game);
 
             return null;
         }
@@ -121,6 +130,5 @@
         var member = type.GetMember(type.GetEnumName(p))[0];
         var att = member.GetCustomAttributes(typeof(PhasePropertyAttribute), false).FirstOrDefault();
         return (PhasePropertyAttribute)att;
-
     }
 }

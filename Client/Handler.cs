@@ -39,7 +39,6 @@ namespace Treachery.Client
         public Dictionary<int, string> _joinError = new Dictionary<int, string>();
         public int _gameinprogressHostId;
         public Battle _battleUnderConstruction = null;
-        public Battle RevisedPlan = null;
         public int BidAutoPassThreshold = int.MaxValue;
         public bool Autopass = false;
         public bool KeepAutopassSetting = false;
@@ -128,6 +127,26 @@ namespace Treachery.Client
             catch (Exception ex)
             {
                 _logger.LogError(ex.ToString());
+            }
+        }
+
+        private Battle RevisablePlan = null;
+        private BattleInitiated RevisablePlanBattle = null;
+        
+        public void SetRevisablePlan(Battle plan)
+        {
+            RevisablePlan = plan;
+            RevisablePlanBattle = Game.CurrentBattle;
+        }
+        public Battle GetRevisablePlan()
+        {
+            if (RevisablePlan != null && RevisablePlanBattle == Game.CurrentBattle)
+            {
+                return RevisablePlan;
+            }
+            else
+            {
+                return null;
             }
         }
 

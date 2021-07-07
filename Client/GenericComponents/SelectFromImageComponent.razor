@@ -3,6 +3,7 @@
 --->
 
 @using System.Collections.Generic;
+@using Treachery.Shared; 
 @typeparam T
 
 <label class="mt-1 mb-0">@Label</label>
@@ -59,10 +60,10 @@
     public IEnumerable<string> PopupHTMLs { get; set; } = null;
 
     [Parameter]
-    public string UnselectedFilter { get; set; } = "grayscale(100%) brightness(60%) contrast(90%)";
+    public string UnselectedFilter { get; set; } = "grayscale(100%) brightness(50%) contrast(80%)";
 
     [Parameter]
-    public string HoverFilter { get; set; } = "brightness(120%)";
+    public string HoverFilter { get; set; } = "brightness(130%)";
 
     [Parameter]
     public bool Required { get; set; } = true;
@@ -79,20 +80,26 @@
     protected override void OnParametersSet()
     {
         var nrOfValues = Values.Count();
-        if (ImageURLs == null) ImageURLs = new string[nrOfValues];
-        if (PopupHTMLs == null) PopupHTMLs = new string[nrOfValues];
+        if (ImageURLs == null || ImageURLs.Count() != nrOfValues) ImageURLs = new string[nrOfValues];
+        if (PopupHTMLs == null || PopupHTMLs.Count() != nrOfValues) PopupHTMLs = new string[nrOfValues];
+    }
 
-        if (Required && Equals(Value, default(T)))
+    protected override void OnAfterRender(bool firstRender)
+    {
+        //Console.WriteLine("Values: " + Skin.Current.Join(Values));
+        //Console.WriteLine("Value: " + Skin.Current.Describe(Value));
+
+        if (Selected == null && !Values.Contains(Value))
         {
-            if (Selected == null)
-            {
-                Value = Values.FirstOrDefault();
-            }
+            Value = Required ? Values.FirstOrDefault() : default;
+        }
+
+        /*
             else if (!Selected.Any() && Values.Any())
             {
                 Selected.Add(Values.FirstOrDefault());
             }
-        }
+        */
     }
 
     private void SwapSelection(T value)

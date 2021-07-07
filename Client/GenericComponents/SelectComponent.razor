@@ -129,11 +129,11 @@
     [Parameter]
     public bool Required { get; set; } = true;
 
-    protected override void OnParametersSet()
+    protected override void OnAfterRender(bool firstRender)
     {
-        if (Required && !Values.Contains(Value))
+        if (!Values.Contains(Value))
         {
-            Value = Values.FirstOrDefault();
+            Value = Required ? Values.FirstOrDefault() : default;
         }
     }
 

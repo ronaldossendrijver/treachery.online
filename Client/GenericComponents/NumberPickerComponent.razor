@@ -120,7 +120,7 @@
     [Parameter]
     public int Size { get; set; } = 36;
 
-    protected override void OnParametersSet()
+    protected override void OnAfterRender(bool firstRender)
     {
         if (Value < Min || Value > Max) Value = Min;
     }
@@ -277,15 +277,15 @@
         }
     }
 
-    private float NumberBackgroundRadius
+    private string NumberBackgroundRadius
     {
         get
         {
             return NumberAlignment switch
             {
-                NumberAlignment.Center => 7.5f,
-                NumberAlignment.BottomRight => 4.75f,
-                _ => 0
+                NumberAlignment.Center => "7.5px",
+                NumberAlignment.BottomRight => "4.75px",
+                _ => "0px"
             };
         }
     }

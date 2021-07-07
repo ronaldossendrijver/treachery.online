@@ -86,7 +86,7 @@ namespace Treachery.Client
                     {
                         return new GameStatus()
                         {
-                            Description = Skin.Current.Format("Your turn! Please decide which {0} cards to return to {1}.", Game.KarmaHandSwapNumberOfCards, Game.KarmaHandSwapTarget),
+                            Description = Skin.Current.Format("Please decide which {0} cards to return to {1}.", Game.KarmaHandSwapNumberOfCards, Game.KarmaHandSwapTarget),
                             WaitingForOthers = false
                         };
                     }
@@ -219,7 +219,7 @@ namespace Treachery.Client
                                         {
                                             return new GameStatus()
                                             {
-                                                Description = "Your turn! Please predict who will win the game and in which turn.",
+                                                Description = "Please predict who will win the game and in which turn.",
                                                 WaitingForOthers = false
                                             };
                                         }
@@ -240,7 +240,7 @@ namespace Treachery.Client
                                         {
                                             return new GameStatus()
                                             {
-                                                Description = "Your turn! If you drew two or more of your own leaders as traitors, you may draw a new set of traitors. Otherwise, pass.",
+                                                Description = "If you drew two or more of your own leaders as traitors, you may draw a new set of traitors. Otherwise, pass.",
                                                 WaitingForOthers = false
                                             };
                                         }
@@ -300,7 +300,7 @@ namespace Treachery.Client
                                         {
                                             return new GameStatus()
                                             {
-                                                Description = "Your turn! Please set up your initial force positions.",
+                                                Description = "Please set up your initial force positions.",
                                                 WaitingForOthers = false
                                             };
                                         }
@@ -321,7 +321,7 @@ namespace Treachery.Client
                                         {
                                             return new GameStatus()
                                             {
-                                                Description = "Your turn! Please select your initial force position.",
+                                                Description = "Please select your initial force position.",
                                                 WaitingForOthers = false
                                             };
                                         }
@@ -341,7 +341,7 @@ namespace Treachery.Client
                                         {
                                             return new GameStatus()
                                             {
-                                                Description = "Your turn! Please select your starting Treachery Card.",
+                                                Description = "Please select your starting Treachery Card.",
                                                 WaitingForOthers = false
                                             };
                                         }
@@ -368,7 +368,7 @@ namespace Treachery.Client
                                         {
                                             return new GameStatus()
                                             {
-                                                Description = "Your turn! Please position the Hidden Mobile Stronghold.",
+                                                Description = "Please position the Hidden Mobile Stronghold.",
                                                 WaitingForOthers = false
                                             };
                                         }
@@ -388,7 +388,7 @@ namespace Treachery.Client
                                         {
                                             return new GameStatus()
                                             {
-                                                Description = "Your turn! Please dial a number to determine storm movement.",
+                                                Description = "Please dial a number to determine storm movement.",
                                                 WaitingForOthers = false
                                             };
                                         }
@@ -408,7 +408,7 @@ namespace Treachery.Client
                                         {
                                             return new GameStatus()
                                             {
-                                                Description = "Your turn! You may move the Hidden Mobile Stronghold to a sector in an adjacent territory.",
+                                                Description = "You may move the Hidden Mobile Stronghold to a sector in an adjacent territory.",
                                                 WaitingForOthers = false
                                             };
                                         }
@@ -493,7 +493,7 @@ namespace Treachery.Client
                                     {
                                         return new GameStatus()
                                         {
-                                            Description = Skin.Current.Format("Your turn! Please select where to send {0}.", Concept.Monster),
+                                            Description = Skin.Current.Format("Please select where to send {0}.", Concept.Monster),
                                             WaitingForOthers = false
                                         };
                                     }
@@ -512,7 +512,7 @@ namespace Treachery.Client
                                     {
                                         return new GameStatus()
                                         {
-                                            Description = Skin.Current.Format("Your turn! Please select where to ride {0}.", Concept.Monster),
+                                            Description = Skin.Current.Format("Please select where to ride {0}.", Concept.Monster),
                                             WaitingForOthers = false
                                         };
                                     }
@@ -520,7 +520,7 @@ namespace Treachery.Client
                                     {
                                         return new GameStatus()
                                         {
-                                            Description = Skin.Current.Format("{0} are selecting where to ride {1}...", Faction.Yellow, Concept.Monster),
+                                            Description = Skin.Current.Format("{0} are selecting where to travel with {1}...", Faction.Yellow, Concept.Monster),
                                             WaitingForOthers = true
                                         };
                                     }
@@ -530,7 +530,7 @@ namespace Treachery.Client
                                     {
                                         return new GameStatus()
                                         {
-                                            Description = Skin.Current.Format("Your turn! You must decide what to do in response to an intrusion of {0}; be fighters or advisors?", Game.LastShippedOrMovedTo.Territory.Name),
+                                            Description = Skin.Current.Format("You must decide what to do in response to an intrusion of {0}; be fighters or advisors?", Game.LastShippedOrMovedTo.Territory.Name),
                                             WaitingForOthers = false
                                         };
                                     }
@@ -641,7 +641,7 @@ namespace Treachery.Client
                                         {
                                             return new GameStatus()
                                             {
-                                                Description = "Your turn! Remove one card from the auction and put in on top or on the bottom of the Treachery Card deck.",
+                                                Description = "Remove one card from the auction and put in on top or on the bottom of the Treachery Card deck.",
                                                 WaitingForOthers = false
                                             };
                                         }
@@ -661,7 +661,7 @@ namespace Treachery.Client
                                         {
                                             return new GameStatus()
                                             {
-                                                Description = "Your turn! You may swap the next card on auction with a card from your hand.",
+                                                Description = "You may swap the next card on auction with a card from your hand.",
                                                 WaitingForOthers = false
                                             };
                                         }
@@ -680,7 +680,7 @@ namespace Treachery.Client
                                     {
                                         return new GameStatus()
                                         {
-                                            Description = "Your turn! Please bid or pass.",
+                                            Description = "Please bid or pass.",
                                             WaitingForOthers = false
                                         };
                                     }
@@ -699,7 +699,7 @@ namespace Treachery.Client
                                         {
                                             return new GameStatus()
                                             {
-                                                Description = "Your turn! You may discard the card you just won and draw a new card instead.",
+                                                Description = "You may now discard the card you just won and draw a new card instead.",
                                                 WaitingForOthers = false
                                             };
                                         }
@@ -813,7 +813,7 @@ namespace Treachery.Client
                                         return new GameStatus()
                                         {
                                             Description = !Game.EveryoneButOneActedOrPassed && Game.Applicable(Rule.OrangeDetermineShipment) ?
-                                                "Your turn! Please decide to ship now or delay your turn and let other factions go first." :
+                                                "Please decide to ship now or delay your turn and let other factions go first." :
                                                 "Your turn! Please decide to ship forces or pass.",
                                             WaitingForOthers = false
                                         };
@@ -835,7 +835,7 @@ namespace Treachery.Client
                                     {
                                         return new GameStatus()
                                         {
-                                            Description = "Your turn! Please decide if you want to accompany the latest shipment.",
+                                            Description = "Please decide if you want to accompany the latest shipment.",
                                             WaitingForOthers = false
                                         };
                                     }
@@ -857,7 +857,7 @@ namespace Treachery.Client
                                     {
                                         return new GameStatus()
                                         {
-                                            Description = Skin.Current.Format("Your turn! You must decide what to do in response to an intrusion of {0}; become fighters or advisors?", Game.LastShippedOrMovedTo.Territory.Name),
+                                            Description = Skin.Current.Format("Please decide what to do in response to an intrusion of {0}; become fighters or advisors?", Game.LastShippedOrMovedTo.Territory.Name),
                                             WaitingForOthers = false
                                         };
                                     }
@@ -875,7 +875,7 @@ namespace Treachery.Client
                                     {
                                         return new GameStatus()
                                         {
-                                            Description = "Your turn! Please decide to move forces or pass.",
+                                            Description = "Please decide to move forces or pass.",
                                             WaitingForOthers = false
                                         };
                                     }
@@ -893,7 +893,7 @@ namespace Treachery.Client
                                     {
                                         return new GameStatus()
                                         {
-                                            Description = "Your turn! Please decide to move forces or pass.",
+                                            Description = "Please decide to move forces or pass.",
                                             WaitingForOthers = false
                                         };
                                     }
@@ -1100,7 +1100,7 @@ namespace Treachery.Client
                                 {
                                     return new GameStatus()
                                     {
-                                        Description = "Your turn! You may replace an unrevealed Face Dancer with a new one drawn from the Traitor Deck.",
+                                        Description = "You may replace an unrevealed Face Dancer with a new one drawn from the Traitor Deck.",
                                         WaitingForOthers = false
                                     };
                                 }

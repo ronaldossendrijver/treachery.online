@@ -128,16 +128,48 @@
 
     protected override void OnParametersSet()
     {
-        if (h.RevisedPlan != null)
+        var plan = h.GetRevisablePlan();
+        if (plan != null)
         {
-            forces = h.RevisedPlan.Forces + h.RevisedPlan.ForcesAtHalfStrength;
-            specialForces = h.RevisedPlan.SpecialForces + h.RevisedPlan.SpecialForcesAtHalfStrength;
-            resources = h.RevisedPlan.Cost(Game);
-            hero = h.RevisedPlan.Hero;
-            messiah = h.RevisedPlan.Messiah;
-            defense = h.RevisedPlan.Defense;
-            weapon = h.RevisedPlan.Weapon;
-            h.RevisedPlan = null;
+            forces = plan.Forces + plan.ForcesAtHalfStrength;
+            specialForces = plan.SpecialForces + plan.SpecialForcesAtHalfStrength;
+            resources = plan.Cost(Game);
+            hero = plan.Hero;
+            messiah = plan.Messiah;
+            defense = plan.Defense;
+            weapon = plan.Weapon;
+        }
+    }
+
+    private int lastforces;
+    private int lastspecialForces;
+    private int lastResources;
+    private IHero lasthero;
+    private bool lastmessiah = false;
+    private TreacheryCard lastdefense;
+    private TreacheryCard lastweapon;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (
+            forces != lastforces ||
+            specialForces != lastspecialForces ||
+            resources != lastResources ||
+            hero != lasthero ||
+            messiah != lastmessiah ||
+            defense != lastdefense ||
+            weapon != lastweapon)
+        {
+            lastforces = forces;
+            lastspecialForces = specialForces;
+            lastResources = resources;
+            lasthero = hero;
+            lastmessiah = messiah;
+            lastdefense = defense;
+            lastweapon = weapon;
+
+            h._battleUnderConstruction = ConfirmedResult;
+            await MapDrawer.Draw();
         }
     }
 
@@ -160,16 +192,10 @@
                 Weapon = weapon
             };
 
-            h.RevisedPlan = result;
+            h.SetRevisablePlan(result);
 
             return result;
         }
-    }
-
-    private void OnChange(ChangeEventArgs args)
-    {
-        messiah = Convert.ToBoolean(args.Value);
-        StateHasChanged();
     }
 
     private Faction Opponent

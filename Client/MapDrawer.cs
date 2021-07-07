@@ -65,7 +65,7 @@ namespace Treachery.Client
                     await DrawBattlePlans();
                     await DrawDisconnected();
                     await DrawOptions();
-                    await DrawCardOnAuction();
+                    //await DrawCardOnAuction();
                 }
             }
         }

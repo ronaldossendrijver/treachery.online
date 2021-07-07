@@ -13,7 +13,7 @@
 
     <Body>
 
-        <div>You're allied with <span class="badge badge-primary badge-pill" style="@Color(Player.Ally)">@Skin.Current.Describe(Player.Ally)</span></div>
+        <img class="align-self-center" width="32" src="@Skin.Current.GetImageURL(Player.Ally)"/>
 
         @if (Player.AlliedPlayer.IsBot)
         {

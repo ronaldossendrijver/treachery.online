@@ -59,11 +59,14 @@
             <div class="text-danger bg-dark">Note: any of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
         }
 
-        <SelectForcesComponent @bind-Value="shipmentForceAmount" Min="0" Max="ValidShipmentForces" Faction="Faction" Special="false" />
-
-        @if (Player.HasSpecialForcesToMove)
+        @if (ValidShipmentForces > 0)
         {
-            <SelectForcesComponent @bind-Value="shipmentSpecialForceAmount" Min="0" Max="ValidShipmentSpecialForces" Faction="Faction" Special="false" />
+            <SelectForcesComponent @bind-Value="shipmentForceAmount" Min="0" Max="ValidShipmentForces" Faction="Faction" Special="false" />
+        }
+
+        @if (ValidShipmentSpecialForces > 0)
+        {
+            <SelectForcesComponent @bind-Value="shipmentSpecialForceAmount" Min="0" Max="ValidShipmentSpecialForces" Faction="Faction" Special="true" />
         }
 
         <div>Total cost of shipment: <span class="badge badge-primary badge-pill">@Cost</span></div>
