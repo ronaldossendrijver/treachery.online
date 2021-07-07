@@ -7,13 +7,16 @@
 @inherits GameEventComponent<AllyPermission>
 @implements IDisposable
 
-<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
     <Header>Alliance Management</Header>
 
     <Body>
 
-        <img class="align-self-center" width="32" src="@Skin.Current.GetImageURL(Player.Ally)"/>
+        <div class="text-center mt-0 mb-1">
+            <img width="48" src="@Skin.Current.GetImageURL(Player.Ally)" />
+        </div>
+        
 
         @if (Player.AlliedPlayer.IsBot)
         {
@@ -62,7 +65,7 @@
             var permittedKarma = Game.GetPermittedUseOfAllyKarma(Player.Ally);
 
             <SelectCardComponent @bind-Value="karmaCard" Values="Karma.ValidKarmaCards(Game, Player)" Required="false">
-                <Label>Allow use of your @Skin.Current.Describe(TreacheryCardType.Karma) cards to ship at @Skin.Current.Describe(Faction.Orange) rates (currently: <strong>@(permittedKarma == null ? "no" : permittedKarma.Name)</strong>)?</Label>
+                <Label>Select a @Skin.Current.Describe(TreacheryCardType.Karma) card they may use to ship at @Skin.Current.Describe(Faction.Orange) rates (currently: <strong>@(permittedKarma == null ? "none" : permittedKarma.Name)</strong>)?</Label>
             </SelectCardComponent>
         }
 

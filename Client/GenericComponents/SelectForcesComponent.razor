@@ -4,22 +4,18 @@
 
 @using Treachery.Shared;
 
-@if (Label != "")
-{
-    <div class="row ml-0 justify-content-start">
-        <label class="align-self-center mr-2">@Label</label>
-        <NumberPickerComponent Disabled="@Disabled" @bind-Value="@Value" OnDown="OnDown" OnUp="OnUp" Min="Min" Max="Max"
-                               SymbolSRC="@ForceSymbolSRC" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="black"
-                               NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
+<div class="d-inline-block justify-content-start">
 
-    </div>
-}
-else
-{
+    @if (Label != "")
+    {
+        <label class="align-self-center mr-2">@Label</label>
+    }
+
     <NumberPickerComponent Disabled="@Disabled" @bind-Value="@Value" OnDown="OnDown" OnUp="OnUp" Min="Min" Max="Max"
-                           SymbolSRC="@ForceSymbolSRC" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="black"
-                           NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
-}
+                            SymbolSRC="@ForceSymbolSRC" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="black"
+                            NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
+</div>
+
 
 @code {
 
@@ -72,6 +68,55 @@ else
 
     [Parameter]
     public bool Special { get; set; } = false;
+
+    [Parameter]
+    public bool Inline { get; set; } = false;
+
+    private string DisplayClass
+    {
+        // 1 abc <label> <picker> def
+        // 
+        // 2 abc
+        //   <label>
+        //   <picker>
+        //   def
+        //
+        // 3 abc <picker> def
+        //
+        // 4 abc
+        //   <picker>
+        //   def
+
+        get
+        {
+            if (Label != "")
+            {
+                if (Inline)
+                {
+                    //1
+                    return "d-inline-block justify-content-start";
+                }
+                else
+                {
+                    //2
+                    return "row ml-0 mt-1 mb-1 justify-content-start";
+                }
+            }
+            else
+            {
+                if (Inline)
+                {
+                    //3
+                    return "d-inline-block";
+                }
+                else
+                {
+                    //4
+                    return "row ml-0 mt-1 mb-1";
+                }
+            }
+        }
+    }
 
     private string ForceSymbolSRC => Special ? Skin.Current.GetFactionSpecialForceImageURL(Faction) : Skin.Current.GetFactionForceImageURL(Faction);
 }

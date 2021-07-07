@@ -7,7 +7,7 @@
 @inherits GameEventComponent<PerformHmsPlacement>
 @implements IDisposable
 
-<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
     <Header>Position the Hidden Mobile Stronghold</Header>
     <Body>
@@ -43,6 +43,6 @@
 
     private void HandleLocationSelected(object sender, Location l)
     {
-        SetIfValid(ref target, Game.Map.Locations, l);
+        SetIfValid(ref target, PerformHmsPlacement.ValidLocations(Game, Player), l);
     }
 }

@@ -3,11 +3,15 @@
 --->
 
 @using System.Collections.Generic;
-@using Treachery.Shared; 
 @typeparam T
 
-<label class="mt-1 mb-0">@Label</label>
+@if (Label != null)
+{
+    <label class="d-block mt-1 mb-0">@Label</label>
+}
+
 <div>
+
     @foreach (var item in Values.Zip(ImageURLs, (v, i) => new { Value = v, Image = i }).Zip(PopupHTMLs, (v, h) => new { Value = v.Value, Image = v.Image, Popup = h }))
     {
         <img src="@item.Image"
@@ -17,6 +21,7 @@
              style="@DetermineFilter(item.Value)"
              class="img-fluid pr-1" width=@ImageWidth data-animation="true" data-content="@item.Popup" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
     }
+
 </div>
 
 @code {
@@ -60,7 +65,7 @@
     public IEnumerable<string> PopupHTMLs { get; set; } = null;
 
     [Parameter]
-    public string UnselectedFilter { get; set; } = "grayscale(100%) brightness(50%) contrast(80%)";
+    public string UnselectedFilter { get; set; } = "grayscale(50%) brightness(50%) contrast(80%)";
 
     [Parameter]
     public string HoverFilter { get; set; } = "brightness(130%)";

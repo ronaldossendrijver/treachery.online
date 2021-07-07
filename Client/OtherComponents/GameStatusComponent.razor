@@ -37,7 +37,7 @@
                             if (Game.CurrentPhase == Phase.Bidding)
                             {
                                 <div class="d-inline-block p-2">
-                                    <NumberComponent Value="Game.GetPlayer(f.Faction).TreacheryCards.Count" Size="@(f.HasTurn ? 72 : 48)" SymbolSRC="@Skin.Current.GetImageURL(f.Faction)" NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
+                                    <NumberComponent Value="Game.GetPlayer(f.Faction).TreacheryCards.Count" Size="@(f.HasTurn ? 48 : 32)" SymbolSRC="@Skin.Current.GetImageURL(f.Faction)" NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
                                 </div>
                             }
                             else

@@ -7,7 +7,7 @@
 @inherits GameEventComponent<Shipment>
 @implements IDisposable
 
-<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
     <Header>
 
@@ -50,38 +50,50 @@
             </SelectComponent>
         }
 
-        <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="shipmentTo" Values="ValidShipmentLocations.OrderByDescending(l => l.IsStronghold).ThenBy(l => l.Territory.Name).ThenBy(l => l.Name)">
-            <Label>To</Label>
-        </SelectComponent>
+        <div class="mt-1">
+            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="shipmentTo" Values="ValidShipmentLocations.OrderByDescending(l => l.IsStronghold).ThenBy(l => l.Territory.Name).ThenBy(l => l.Name)">
+                <Label>To</Label>
+            </SelectComponent>
+        </div>
 
         @if (shipmentType != SHIPMENT_BACK && Game.ContainsConflictingAlly(Player, shipmentTo))
         {
             <div class="text-danger bg-dark">Note: any of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
         }
 
-        @if (ValidShipmentForces > 0)
-        {
-            <SelectForcesComponent @bind-Value="shipmentForceAmount" Min="0" Max="ValidShipmentForces" Faction="Faction" Special="false" />
-        }
+        <div class="mt-1">
 
-        @if (ValidShipmentSpecialForces > 0)
-        {
-            <SelectForcesComponent @bind-Value="shipmentSpecialForceAmount" Min="0" Max="ValidShipmentSpecialForces" Faction="Faction" Special="true" />
-        }
+            @if (ValidShipmentForces > 0)
+            {
+                <SelectForcesComponent @bind-Value="shipmentForceAmount" Min="0" Max="ValidShipmentForces" Faction="Faction" Special="false" />
+            }
 
-        <div>Total cost of shipment: <span class="badge badge-primary badge-pill">@Cost</span></div>
+            @if (ValidShipmentSpecialForces > 0)
+            {
+                <SelectForcesComponent @bind-Value="shipmentSpecialForceAmount" Min="0" Max="ValidShipmentSpecialForces" Faction="Faction" Special="true" />
+            }
+
+        </div>
 
         @if (Player.Ally != Faction.None)
         {
-            <SelectResourcesFromFactionComponent @bind-Value="shipmentAllyContributionAmount" Min="0" Max="Game.SpiceYourAllyCanPay(Player)" Faction="Player.Ally" />
+            <div class="mt-1">
+                <SelectResourcesFromFactionComponent @bind-Value="shipmentAllyContributionAmount" Min="0" Max="Game.SpiceYourAllyCanPay(Player)" Faction="Player.Ally" />
+            </div>
         }
 
         @if (Karma.CanKarmaShipment(Game, Player) && (Faction != Faction.Yellow || shipmentType == SHIPMENT_SITETOSITE))
         {
-            <SelectCardComponent @bind-Value="karmaCard" Values="Karma.ValidKarmaCardsForShipment(Game, Player)" Required="false">
-                <Label>Use @Skin.Current.Describe(TreacheryCardType.Karma) to ship at @Skin.Current.Describe(Faction.Orange) rate?</Label>
-            </SelectCardComponent>
+            <div class="mt-1">
+
+
+                <SelectCardComponent @bind-Value="karmaCard" Values="Karma.ValidKarmaCardsForShipment(Game, Player)" Required="false">
+                    <Label>Use @Skin.Current.Describe(TreacheryCardType.Karma) to ship at @Skin.Current.Describe(Faction.Orange) rate?</Label>
+                </SelectCardComponent>
+            </div>
         }
+
+        <div class="mt-1 text-right">Total cost of shipment: <span class="badge badge-primary badge-pill">@Cost</span></div>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
 
@@ -246,11 +258,11 @@
             {
                 if (Faction == Faction.Orange)
                 {
-                    return new string[] { "Normal Shipment", "Site - to - site", "Back to reserves" };
+                    return new string[] { "Normal Shipment", "Site-to-site", "Back to reserves" };
                 }
                 else
                 {
-                    return new string[] { "Normal Shipment", "Site - to - site" };
+                    return new string[] { "Normal Shipment", "Site-to-site" };
                 }
             }
 

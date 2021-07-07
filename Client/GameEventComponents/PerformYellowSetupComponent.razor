@@ -7,7 +7,7 @@
 @inherits GameEventComponent<PerformYellowSetup>
 @implements IDisposable
 
-<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
     <Header>Distribute @(10 - forces.Sum(fl => fl.Value.AmountOfForces + fl.Value.AmountOfSpecialForces)) forces on @Game.Map.SietchTabr.ToString(), @Game.Map.FalseWallSouth.ToString(), and @Game.Map.FalseWallWest.ToString().</Header>
     <Body>

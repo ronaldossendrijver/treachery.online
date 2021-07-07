@@ -4,14 +4,17 @@
 
 @using Treachery.Shared;
 
-@if (Label != "")
-{
-    <label class="mt-1 align-content-center">@Label</label>
-}
+<div class="d-inline-block justify-content-start">
 
-<NumberPickerComponent Disabled="@Disabled" @bind-Value="Value" Min="Min" Max="Max"
-                       SymbolSRC="@Skin.Current.GetImageURL(Faction)" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" 
-                       NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="#FF5400" BehindNumberSRC="@Skin.Current.Harvester_URL"/>
+    @if (Label != "")
+    {
+        <label class="mt-1 align-content-center">@Label</label>
+    }
+
+    <NumberPickerComponent Disabled="@Disabled" @bind-Value="Value" Min="Min" Max="Max"
+                           SymbolSRC="@Skin.Current.GetImageURL(Faction)" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" 
+                           NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="#FF5400" BehindNumberSRC="@Skin.Current.Harvester_URL"/>
+</div>
 
 @code {
 

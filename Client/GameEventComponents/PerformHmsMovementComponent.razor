@@ -7,7 +7,7 @@
 @inherits GameEventComponent<PerformHmsMovement>
 @implements IDisposable
 
-<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
     <Header>Move the Hidden Mobile Stronghold one territory, or pass</Header>
     <Body>

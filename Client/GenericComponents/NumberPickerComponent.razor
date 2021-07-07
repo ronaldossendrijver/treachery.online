@@ -122,7 +122,8 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (Value < Min || Value > Max) Value = Min;
+        if (Value < Min) Value = Min;
+        else if (Value > Max) Value = Max;
     }
 
     private void Increase()
@@ -176,7 +177,7 @@
 
     private string SymbolSize => "" + Size + "px";
 
-    private string TotalWidth => "" + (1.5 * Size) + "px";
+    private string TotalWidth => "" + (1.5 * Size + 4) + "px";
 
     private bool DrawSymbolBackground => SymbolBackgroundFillColor != null || SymbolBackgroundBorderColor != null;
 

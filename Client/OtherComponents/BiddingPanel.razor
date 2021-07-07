@@ -14,12 +14,13 @@
 
             <table class="table table-borderless">
                 <tr>
+
                     <td class="align-top" style="position:relative; width: 160px;">
                         <img src="@CurrentCardImageSRC" width="160" data-animation="true" data-content="@CurrentCardHover" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" />
 
                         @if (Game.CurrentBid != null)
                         {
-                            <div style="position: absolute; top: 140px; width: 160px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
+                            <div style="position: absolute; top: 145px; width: 160px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
                                 <img src="@Skin.Current.GetImageURL(Game.CurrentBid.Initiator)" width="36" style="vertical-align: top;" />
                                 <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="36" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
                                 <div style="font-size: 28px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">
@@ -52,25 +53,31 @@
                         {
                             @if (Karma.CanKarma(Game, Player))
                             {
-                                <SelectCardComponent @bind-Value="karmaCard" Values="Karma.ValidKarmaCards(Game, Player)" Required="false">
-                                    <Label>Use @Skin.Current.Describe(TreacheryCardType.Karma) to bid without limit or win immediately? <InfoComponent Contents="@InfoMessage" /></Label>
-                                </SelectCardComponent>
+                                <div class="mt-1">
+                                    <SelectCardComponent @bind-Value="karmaCard" Values="Karma.ValidKarmaCards(Game, Player)" Required="false">
+                                        <Label>Use @Skin.Current.Describe(TreacheryCardType.Karma) to bid without limit or win immediately? <InfoComponent Contents="@InfoMessage" /></Label>
+                                    </SelectCardComponent>
+                                </div>
                             }
 
-                            @if (Player.Ally == Faction.None)
-                            {
-                                <SelectResourcesComponent @bind-Value="amount" Min="0" Max="Bid.ValidMaxAmount(Player, karmaCard != null)" />
-                            }
-                            else
-                            {
-                                <SelectResourcesFromFactionComponent @bind-Value="amount" Min="0" Max="Bid.ValidMaxAmount(Player, karmaCard != null)" Faction="Faction" />
-                                <SelectResourcesFromFactionComponent @bind-Value="allyContributionAmount" Min="0" Max="Bid.ValidMaxAllyAmount(Game, Player)" Faction="Player.Ally" />
-                            }
+                            <div class="mt-1">
 
-                            @if (Game.SpiceForBidsRedCanPay(Faction) > 0)
-                            {
-                                <SelectResourcesFromFactionComponent @bind-Value="redContributionAmount" Min="0" Max="Game.SpiceForBidsRedCanPay(Faction)" Faction="Faction.Red" />
-                            }
+                                @if (Player.Ally == Faction.None)
+                                {
+                                    <SelectResourcesComponent @bind-Value="amount" Min="0" Max="Bid.ValidMaxAmount(Player, karmaCard != null)" />
+                                }
+                                else
+                                {
+                                    <SelectResourcesFromFactionComponent @bind-Value="amount" Min="0" Max="Bid.ValidMaxAmount(Player, karmaCard != null)" Faction="Faction" />
+                                    <SelectResourcesFromFactionComponent @bind-Value="allyContributionAmount" Min="0" Max="Bid.ValidMaxAllyAmount(Game, Player)" Faction="Player.Ally" />
+                                }
+
+                                @if (Game.SpiceForBidsRedCanPay(Faction) > 0)
+                                {
+                                    <SelectResourcesFromFactionComponent @bind-Value="redContributionAmount" Min="0" Max="Game.SpiceForBidsRedCanPay(Faction)" Faction="Faction.Red" />
+                                }
+
+                            </div>
 
                             @if (karmaCard != null)
                             {

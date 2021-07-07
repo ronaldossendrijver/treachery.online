@@ -9,8 +9,10 @@
 @inherits Component;
 @typeparam T
 
-<label class="mb-0" for="@Id">@Label</label>
-
+@if (Label != null)
+{
+    <label class="mb-0" for="@Id">@Label</label>
+}
 
 @foreach (var valueAndLabel in Values.Zip(LabelsForValues, (v, l) => new { Value = v, Label = l }))
 {

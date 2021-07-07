@@ -13,13 +13,17 @@
 
         <SelectFactionComponent @bind-Value="target" Values="Donated.ValidTargets(Game, Player)" />
 
-        <SelectResourcesComponent @bind-Value="resources" Min="Donated.MinAmount(Game, Player)" Max="Donated.MaxAmount(Game, Player)" />
+        <div class="mt-1">
+            <SelectResourcesComponent @bind-Value="resources" Min="Donated.MinAmount(Game, Player)" Max="Donated.MaxAmount(Game, Player)" />
+        </div>
 
         @if (Game.Applicable(Rule.CardsCanBeTraded))
         {
-            <SelectComponent @bind-Value="card" Values="Player.TreacheryCards" AddEmptyValue="true" EmptyLabel="None">
-                <Label>Give one of your cards</Label>
-            </SelectComponent>
+            <div class="mt-1">
+                <SelectComponent @bind-Value="card" Values="Player.TreacheryCards" AddEmptyValue="true" EmptyLabel="None">
+                    <Label>Give one of your cards</Label>
+                </SelectComponent>
+            </div>
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />

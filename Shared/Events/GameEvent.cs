@@ -149,19 +149,6 @@ namespace Treachery.Shared
             return (GameEvent)MemberwiseClone();
         }
     }
-
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-    public class GameEventPropertyAttribute : Attribute
-    {
-        public bool Urgent;
-        public Faction FactionSpecific;
-
-        public GameEventPropertyAttribute(bool urgent, Faction factionSpecific)
-        {
-            Urgent = urgent;
-            FactionSpecific = factionSpecific;
-        }
-    }
 }
 
 

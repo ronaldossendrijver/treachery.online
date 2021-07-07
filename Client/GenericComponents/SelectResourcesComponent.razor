@@ -4,17 +4,16 @@
 
 @using Treachery.Shared;
 
-@if (Label != "")
-{
-    <div class="row ml-0 justify-content-start">
+<div class="d-inline-block justify-content-start">
+
+    @if (Label != "")
+    {
         <label class="align-self-center mr-2">@Label</label>
-        <NumberPickerComponent Disabled="@Disabled" @bind-Value="Value" Min="Min" Max="Max" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" />
-    </div>
-}
-else
-{
+    }
+    
     <NumberPickerComponent Disabled="@Disabled" @bind-Value="Value" Min="Min" Max="Max" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" />
-}
+    
+</div>
 
 @code {
 

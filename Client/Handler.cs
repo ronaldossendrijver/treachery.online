@@ -39,7 +39,7 @@ namespace Treachery.Client
         public Dictionary<int, string> _joinError = new Dictionary<int, string>();
         public int _gameinprogressHostId;
         public Battle _battleUnderConstruction = null;
-        public int BidAutoPassThreshold = int.MaxValue;
+        public int BidAutoPassThreshold = 0;
         public bool Autopass = false;
         public bool KeepAutopassSetting = false;
         public float CurrentEffectVolume = -1;

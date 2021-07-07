@@ -7,7 +7,7 @@
 @inherits GameEventComponent<KarmaMonster>
 @implements IDisposable
 
-<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
     <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to make @Skin.Current.Describe(Concept.Monster) appear in a territory of choice</Header>
     <Body>

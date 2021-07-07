@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<Battle>
 
-<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle">
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
     <Header>Plan your battle against @Skin.Current.Describe(Opponent) in @Game.CurrentBattle.Territory.Name.</Header>
 
@@ -57,26 +57,30 @@
             }
         }
 
-        @if (Battle.MaxForces(Game, Player, false) > 0)
-        {
-            <SelectForcesComponent @bind-Value="forces" Min="0" Max="Battle.MaxForces(Game, Player, false)" Faction="Faction" Special="false" /> <span>&nbsp;</span>
-        }
+        <div class="mt-1">
 
-        @if (Battle.MaxForces(Game, Player, true) > 0)
-        {
-            <SelectForcesComponent @bind-Value="specialForces" Min="0" Max="Battle.MaxForces(Game, Player, true)" Faction="Faction" Special="true" /> <span>&nbsp;</span>
-        }
+            @if (Battle.MaxForces(Game, Player, false) > 0)
+            {
+                <SelectForcesComponent @bind-Value="forces" Min="0" Max="Battle.MaxForces(Game, Player, false)" Faction="Faction" Special="false" /> <span>&nbsp;</span>
+            }
 
-        @if (Battle.MustPayForForcesInBattle(Game, Player))
-        {
-            <SelectResourcesComponent @bind-Value="resources" Min="0" Max="Player.Resources" /> <span>&nbsp;</span>
-        }
+            @if (Battle.MaxForces(Game, Player, true) > 0)
+            {
+                <SelectForcesComponent @bind-Value="specialForces" Min="0" Max="Battle.MaxForces(Game, Player, true)" Faction="Faction" Special="true" /> <span>&nbsp;</span>
+            }
 
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white" class="bi bi-arrow-right" viewBox="0 0 16 16" style="vertical-align: super">
-            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
-        </svg>
+            @if (Battle.MustPayForForcesInBattle(Game, Player))
+            {
+                <SelectResourcesComponent @bind-Value="resources" Min="0" Max="MaxResources" /> <span>&nbsp;</span>
+            }
 
-        <NumberComponent Value="ConfirmedResult.Dial(Game, Game.CurrentBattle.OpponentOf(Faction).Faction)" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white" class="bi bi-arrow-right" viewBox="0 0 16 16" style="vertical-align: super">
+                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+            </svg>
+
+            <NumberComponent Value="ConfirmedResult.Dial(Game, Game.CurrentBattle.OpponentOf(Faction).Faction)" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
+
+        </div>
 
         @if (Battle.ValidBattleHeroes(Game, Player).Any())
         {
@@ -219,6 +223,8 @@
             }
         }
     }
+
+    private int MaxResources => Math.Min(Player.Resources, forces + specialForces);
 
     private string GetTextForAspect(PrescienceAspect aspect, Battle plan)
     {
