@@ -1027,7 +1027,7 @@ namespace Treachery.Shared
             return result;
         }
 
-        public int DetermineMaximumMoveDistance(Player p, Battalion moved)
+        public int DetermineMaximumMoveDistance(Player p, IEnumerable<Battalion> moved)
         {
             bool hasOrnithopters = Applicable(Rule.MovementBonusRequiresOccupationBeforeMovement) ? FactionsWithOrnithoptersAtStartOfMovement.Contains(p.Faction) : OccupiesArrakeenOrCarthag(p);
 
@@ -1039,7 +1039,7 @@ namespace Treachery.Shared
             {
                 return 2;
             }
-            else if (p.Is(Faction.Grey) && !Prevented(FactionAdvantage.GreyCyborgExtraMove) && moved.AmountOfSpecialForces > 0)
+            else if (p.Is(Faction.Grey) && !Prevented(FactionAdvantage.GreyCyborgExtraMove) && moved.Any(b => b.AmountOfSpecialForces > 0))
             {
                 return 2;
             }

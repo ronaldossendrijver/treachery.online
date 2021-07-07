@@ -28,8 +28,6 @@
         {
             Collapsed = true;
         }
-
-        Initialize<Faction, Faction>(ref toReplace, PlayerReplaced.ValidTargets(Game));
     }
 
     protected override PlayerReplaced ConfirmedResult => new PlayerReplaced(Game) { Initiator = Faction, ToReplace = toReplace };

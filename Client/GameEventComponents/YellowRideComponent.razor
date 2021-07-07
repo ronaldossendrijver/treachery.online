@@ -38,5 +38,5 @@
 
     protected override IEnumerable<Territory> ValidSources => YellowRidesMonster.ValidSources(Game);
 
-    protected override IEnumerable<Location> ValidTargets => YellowRidesMonster.ValidTargets(Game, Player);
+    protected override IEnumerable<Location> ValidTargets => YellowRidesMonster.ValidTargets(Game, Player).OrderByDescending(l => l.IsStronghold).ThenBy(l => l.ToString());
 }

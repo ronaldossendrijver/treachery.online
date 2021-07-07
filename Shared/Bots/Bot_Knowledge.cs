@@ -273,7 +273,7 @@ namespace Treachery.Shared
             int willGetOrnithopters =
                 !onlyAdvisors && !Game.Applicable(Rule.MovementBonusRequiresOccupationBeforeMovement) && (from == Game.Map.Arrakeen || from == Game.Map.Carthag) ? 3 : 0;
 
-            int moveDistance = Math.Max(willGetOrnithopters, Game.DetermineMaximumMoveDistance(this, b));
+            int moveDistance = Math.Max(willGetOrnithopters, Game.DetermineMaximumMoveDistance(this, new Battalion[] { b }));
 
             var result = Game.Map.FindNeighbours(from, moveDistance, false, Faction, Game.SectorInStorm, null).Contains(to);
 

@@ -27,16 +27,5 @@
 
     private PrescienceAspect aspect;
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        Initialize<PrescienceAspect, PrescienceAspect>(ref aspect, Prescience.ValidAspects);
-    }
-
-    protected override Prescience ConfirmedResult
-    {
-        get
-        {
-            return new Prescience(Game) { Initiator = Faction, Aspect = aspect };
-        }
-    }
+    protected override Prescience ConfirmedResult => new Prescience(Game) { Initiator = Faction, Aspect = aspect };
 }

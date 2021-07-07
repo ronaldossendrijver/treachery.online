@@ -60,8 +60,6 @@
             MapDrawer.OnLocationSelectedWithCtrlOrAlt += HandleAddTargetForce;
             MapDrawer.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleRemoveTargetForce;
         }
-
-        Initialize<int, int>(ref forcesFromReserve, FaceDanced.ValidForcesFromReserves(Player));
     }
 
     public void Dispose()

@@ -53,8 +53,9 @@ namespace Treachery.Test
 
         private static string TestSpecialCases(Game g, GameEvent e)
         {
+            
             var p = g.GetPlayer(e.Initiator);
-
+            /*
             WriteSavegameIfApplicable(g, typeof(KarmaHandSwapInitiated));
             WriteSavegameIfApplicable(g, typeof(AmalPlayed));
             WriteSavegameIfApplicable(g, typeof(Caravan));
@@ -80,36 +81,38 @@ namespace Treachery.Test
             {
                 WriteSavegameIfApplicable(g, p, "01 Guild with ally and Karama and someone else who has Karama!");
             }
-
+            */
             if (e is Battle && e.Initiator == Faction.Grey)
             {
+                /*
                 if (Battle.AffectedByVoice(g, p, g.CurrentVoice) && Battle.AffectedByVoice(g, p, g.CurrentVoice) && g.Players.Any(p => p.HasKarma))
                 {
                     WriteSavegameIfApplicable(g, p, "02 Ix affected by voice while someone has Karama!");
                 }
-
+                */
                 if (!Battle.ValidBattleHeroes(g, p).Any() && p.TreacheryCards.Any(c => c.Type == TreacheryCardType.RaiseDead) && p.TreacheryCards.Any(c => c.IsWeapon || c.IsDefense))
                 {
                     WriteSavegameIfApplicable(g, p, "03 Ix without leaders but with ghola and with weapons or defenses");
                 }
             }
             
-
+            /*
             if (e is Bid && p.HasKarma && p.Ally == Faction.Red && p.AlliedPlayer.Resources > 10)
             {
                 WriteSavegameIfApplicable(g, p, "04 Karma holding Player to bid with rich Emperor as ally!");
             }
+            */
             
             if (e is FaceDanced && FaceDanced.MayCallFaceDancer(g, p) && p.ForcesInReserve > 0 && p.ForcesOnPlanet.Sum(fl => fl.Value.TotalAmountOfForces) > 0)
             {
                 WriteSavegameIfApplicable(g, p, "05 Face dance with both reserve and on planet forces!");
             }
-
+            /*
             if (e is KarmaFreeRevival && p.SpecialForcesKilled > 0 && p.Leaders.Any(l => !g.IsAlive(l)) && p.ForcesKilled > 0)
             {
                 WriteSavegameIfApplicable(g, p, "06 Emperor special karama!");
             }
-
+            */
             if (e is RaiseDeadPlayed && p.Faction == Faction.Purple && p.Leaders.Any(l => !g.IsAlive(l)) && p.ForcesKilled > 0)
             {
                 WriteSavegameIfApplicable(g, p, "07 Tlx Ghola!");
@@ -124,6 +127,7 @@ namespace Treachery.Test
             {
                 WriteSavegameIfApplicable(g, p, "09 Ix may use extra emp revivals!");
             }
+            
 
             /*
             if (e is Battle b && b.Weapon != null && g.LatestClairvoyanceQandA != null && g.LatestClairvoyanceBattle == g.CurrentBattle && g.LatestClairvoyanceQandA.Answer.Initiator == b.Initiator && 

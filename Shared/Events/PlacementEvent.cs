@@ -81,7 +81,7 @@ namespace Treachery.Shared
 
             foreach (var fl in forces.Where(b => b.Value.AmountOfForces + b.Value.AmountOfSpecialForces > 0))
             {
-                var target = ValidMoveToTargets(g, p, fl.Key, fl.Value);
+                var target = ValidMoveToTargets(g, p, fl.Key, forces.Select(f => f.Value));
 
                 if (result == null)
                 {
@@ -103,7 +103,7 @@ namespace Treachery.Shared
             }
         }
 
-        private static IEnumerable<Location> ValidMoveToTargets(Game g, Player p, Location from, Battalion moved)
+        private static IEnumerable<Location> ValidMoveToTargets(Game g, Player p, Location from, IEnumerable<Battalion> moved)
         {
             int maximumDistance = g.DetermineMaximumMoveDistance(p, moved);
             bool mayMoveIntoStorm = p.Faction == Faction.Yellow && g.Applicable(Rule.YellowMayMoveIntoStorm) && g.Applicable(Rule.YellowStormLosses);

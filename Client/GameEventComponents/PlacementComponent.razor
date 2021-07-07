@@ -22,9 +22,6 @@
             MapDrawer.OnLocationSelected += HandleLocationSelected;
             MapDrawer.OnLocationSelectedWithCtrlOrAlt += HandleLocationSelectedWithModifier;
         }
-
-        Initialize<Territory, Territory>(ref fromTerritory, ValidSources);
-        Initialize<Location, Location>(ref toLocation, ValidTargets);
     }
 
     public void Dispose()

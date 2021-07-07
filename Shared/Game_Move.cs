@@ -442,7 +442,7 @@ namespace Treachery.Shared
         {
             if (from == null || to == null) return false;
 
-            var max = DetermineMaximumMoveDistance(initiator, moved);
+            var max = DetermineMaximumMoveDistance(initiator, new Battalion[] { moved } );
             var targetsAvoidingStorm = Map.FindNeighbours(from, max, false, initiator.Faction, SectorInStorm, ForcesOnPlanet);
             var targetsIgnoringStorm = Map.FindNeighbours(from, max, true, initiator.Faction, SectorInStorm, ForcesOnPlanet);
             return !targetsAvoidingStorm.Contains(to) && targetsIgnoringStorm.Contains(to);
@@ -493,6 +493,7 @@ namespace Treachery.Shared
             }
 
             CurrentReport.Add(e.GetMessage());
+            if (Version >= 102) FlipBeneGesseritWhenAlone();
             DetermineNextShipmentAndMoveSubPhase(false, BGMayAccompany);
         }
 

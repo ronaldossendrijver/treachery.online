@@ -96,63 +96,64 @@
     {
         return values.Select(o => o.ToString()).ToList();
     }
-
-    protected bool Initialize<DisplayType, OriginalType>(ref DisplayType field, IEnumerable<OriginalType> values, bool allowDefaultValue = false, DisplayType defaultValue = default(DisplayType)/*, bool showLog = false*/)
-    {
-        if (allowDefaultValue && defaultValue.Equals(field))
-        {
-            return false;
-        }
-
-        object firstValidValue = defaultValue;
-        bool validValueFound = allowDefaultValue;
-        bool sameType = (typeof(OriginalType) == typeof(DisplayType));
-        bool useId = (typeof(DisplayType) == typeof(int)) && typeof(IIdentifiable).IsAssignableFrom(typeof(OriginalType));
-
-        foreach (var originalValue in values)
-        {
-            if (originalValue != null)
-            {
-                object displayValue = null;
-
-                if (sameType)
-                {
-                    displayValue = originalValue;
-                }
-                else if (useId)
-                {
-                    displayValue = ((IIdentifiable)originalValue).Id;
-                }
-                else
-                {
-                    displayValue = originalValue.ToString();
-                }
-
-                if (displayValue.Equals(field))
-                {
-                    //if (showLog) Console.WriteLine("The current value is valid; just return");
-                    return false;
-                }
-
-                if (!validValueFound)
-                {
-                    //This is the first valid value
-                    firstValidValue = displayValue;
-                    validValueFound = true;
-                }
-            }
-        }
-
-        if (validValueFound || allowDefaultValue)
-        {
-            //if (showLog) Console.WriteLine("field = (DisplayType)firstValidValue");
-            field = (DisplayType)firstValidValue;
-            StateHasChanged();
-            return true;
-        }
-
-        return false;
-    }
+    
+    //protected bool Initialize<DisplayType, OriginalType>(ref DisplayType field, IEnumerable<OriginalType> values, bool allowDefaultValue = false, DisplayType defaultValue = default(DisplayType)/*, bool showLog = false*/)
+    //{
+    //    if (allowDefaultValue && defaultValue.Equals(field))
+    //    {
+    //        return false;
+    //    }
+    //
+    //    object firstValidValue = defaultValue;
+    //    bool validValueFound = allowDefaultValue;
+    //    bool sameType = (typeof(OriginalType) == typeof(DisplayType));
+    //    bool useId = (typeof(DisplayType) == typeof(int)) && typeof(IIdentifiable).IsAssignableFrom(typeof(OriginalType));
+    //
+    //    foreach (var originalValue in values)
+    //    {
+    //        if (originalValue != null)
+    //        {
+    //            object displayValue = null;
+    //
+    //            if (sameType)
+    //            {
+    //                displayValue = originalValue;
+    //            }
+    //            else if (useId)
+    //            {
+    //                displayValue = ((IIdentifiable)originalValue).Id;
+    //            }
+    //            else
+    //            {
+    //                displayValue = originalValue.ToString();
+    //            }
+    //
+    //            if (displayValue.Equals(field))
+    //            {
+    //                //if (showLog) Console.WriteLine("The current value is valid; just return");
+    //                return false;
+    //            }
+    //
+    //            if (!validValueFound)
+    //            {
+    //                //This is the first valid value
+    //                firstValidValue = displayValue;
+    //                validValueFound = true;
+    //            }
+    //        }
+    //    }
+    //
+    //    if (validValueFound || allowDefaultValue)
+    //    {
+    //        //if (showLog) Console.WriteLine("field = (DisplayType)firstValidValue");
+    //        field = (DisplayType)firstValidValue;
+    //        StateHasChanged();
+    //        return true;
+    //    }
+    //
+    //    return false;
+    //}
+    
 
     protected void SetIfValid<DisplayType, OriginalType>(ref DisplayType field, IEnumerable<OriginalType> validValues, OriginalType newValue)
     {
