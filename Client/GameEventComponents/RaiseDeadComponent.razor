@@ -21,7 +21,7 @@
             <SelectForcesComponent @bind-Value="amountOfSpecialForces" Min="0" Max="RaiseDeadPlayed.ValidMaxAmount(Player, true)" Faction="Faction" Special="true" />
         }
 
-        <SelectHeroComponent @bind-Value="hero" Values="Game.ValidFreeRevivalHeroes(Player)" />
+        <SelectHeroComponent @bind-Value="hero" Values="Game.ValidFreeRevivalHeroes(Player)" Required="false"/>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 

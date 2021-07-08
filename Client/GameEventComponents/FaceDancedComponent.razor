@@ -21,7 +21,7 @@
             @if (FaceDanced.ValidSourceLocations(Game, Player).Any())
             {
                 <label class="mt-2 mb-0">From somewhere on the planet:</label>
-                <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="forces" Locations="FaceDanced.ValidSourceLocations(Game, Player)" MaySelectFromStorm="true" AlwaysShowLocation="true" />
+                <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="forces" Locations="FaceDanced.ValidSourceLocations(Game, Player)" MaySelectFromStorm="true" AlwaysShowLocation="true" AllowMultipleTerritories="true"/>
             }
 
             <label class="mt-2 mb-0">Select where to put your replacements:</label>

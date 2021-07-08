@@ -160,5 +160,10 @@ namespace Treachery.Shared
             }
         }
 
+        public static IEnumerable<Faction> AvailableFactions()
+        {
+            //return new Faction[] { Faction.Green, Faction.Black, Faction.Yellow, Faction.Red, Faction.Orange, Faction.Blue, Faction.Grey, Faction.Purple };
+            return new Faction[] { Faction.Green, Faction.Black, Faction.Yellow, Faction.Red, Faction.Orange, Faction.Blue, Faction.Grey, Faction.Purple };
+        }
     }
 }

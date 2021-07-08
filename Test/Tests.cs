@@ -102,17 +102,19 @@ namespace Treachery.Test
                 WriteSavegameIfApplicable(g, p, "04 Karma holding Player to bid with rich Emperor as ally!");
             }
             */
-            
+            /*
             if (e is FaceDanced && FaceDanced.MayCallFaceDancer(g, p) && p.ForcesInReserve > 0 && p.ForcesOnPlanet.Sum(fl => fl.Value.TotalAmountOfForces) > 0)
             {
                 WriteSavegameIfApplicable(g, p, "05 Face dance with both reserve and on planet forces!");
             }
+            */
             /*
             if (e is KarmaFreeRevival && p.SpecialForcesKilled > 0 && p.Leaders.Any(l => !g.IsAlive(l)) && p.ForcesKilled > 0)
             {
                 WriteSavegameIfApplicable(g, p, "06 Emperor special karama!");
             }
             */
+            /*
             if (e is RaiseDeadPlayed && p.Faction == Faction.Purple && p.Leaders.Any(l => !g.IsAlive(l)) && p.ForcesKilled > 0)
             {
                 WriteSavegameIfApplicable(g, p, "07 Tlx Ghola!");
@@ -127,7 +129,7 @@ namespace Treachery.Test
             {
                 WriteSavegameIfApplicable(g, p, "09 Ix may use extra emp revivals!");
             }
-            
+            */
 
             /*
             if (e is Battle b && b.Weapon != null && g.LatestClairvoyanceQandA != null && g.LatestClairvoyanceBattle == g.CurrentBattle && g.LatestClairvoyanceQandA.Answer.Initiator == b.Initiator && 
@@ -312,55 +314,55 @@ namespace Treachery.Test
             //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
             //rules.Add(Rule.FillWithBots);
             //rules.Add(Rule.BotsCannotAlly);
-            //var factions = Enumerations.GetValuesExceptDefault(typeof(Faction), Faction.None).ToList();
-            //int nrOfPlayers = 8;
+            //var factions = EstablishPlayers.AvailableFactions().ToList();
+            //int nrOfPlayers = factions.Count;
 
             //Expansion, advanced game, 8 players:
             var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
             rules.Add(Rule.FillWithBots);
             rules.Add(Rule.ExtraKaramaCards);
             rules.Add(Rule.AssistedNotekeeping);
-            var factions = Enumerations.GetValuesExceptDefault(typeof(Faction), Faction.None).ToList();
-            int nrOfPlayers = 8;
+            var factions = EstablishPlayers.AvailableFactions().ToList();
+            int nrOfPlayers = factions.Count;
 
             //Game to find a specific situation to test
             //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
             //rules.Add(Rule.FillWithBots);
             //rules.Add(Rule.ExtraKaramaCards);
             //var factions = new List<Faction>() { Faction.Black, Faction.Green, Faction.Yellow, Faction.Orange };
-            //int nrOfPlayers = 4;
+            //int nrOfPlayers = factions.Count;
 
             //Expansion, advanced game, 6 players:
             //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
             //rules.Add(Rule.FillWithBots);
             //rules.Add(Rule.BotsCannotAlly);
             //var factions = new List<Faction>() { Faction.Black, Faction.Green, Faction.Yellow, Faction.Red, Faction.Grey, Faction.Blue };
-            //int nrOfPlayers = 6;
+            //int nrOfPlayers = factions.Count;
 
             //Expansion, advanced game, 8 players:
             //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
             //rules.Add(Rule.FillWithBots);
             //var factions = new List<Faction>() { Faction.Black, Faction.Green, Faction.Grey, Faction.Red, Faction.Purple, Faction.Blue };
-            //int nrOfPlayers = 6;
+            //int nrOfPlayers = factions.Count;
 
             //Classic, basic game:
             //var rules = Game.RulesetDefinition[Ruleset.ServerClassic].ToList();
             //rules.Add(Rule.FillWithBots);
             //var factions = new List<Faction>() { Faction.Black, Faction.Green, Faction.Yellow, Faction.Red, Faction.Orange, Faction.Blue };
-            //int nrOfPlayers = 6;
+            //int nrOfPlayers = factions.Count;
 
             //Server Classic, advanced game:
             //var rules = Game.RulesetDefinition[Ruleset.ServerClassic].ToList();
             //rules.Add(Rule.FillWithBots);
             //var factions = new List<Faction>() { Faction.Black, Faction.Green, Faction.Yellow, Faction.Red, Faction.Orange, Faction.Blue };
-            //int nrOfPlayers = 6;
+            //int nrOfPlayers = factions.Count;
 
             //All rules enables:
             //var rules = Enumerations.GetValuesExceptDefault(typeof(Rule), Rule.None).ToList();
             //var factions = Enumerations.GetValuesExceptDefault(typeof(Faction), Faction.None).ToList();
             //rules.Remove(Rule.CustomInitialForcesAndResources);
             //rules.Remove(rules.Add(Rule.BotsCannotAlly));
-            //int nrOfPlayers = 8;
+            //int nrOfPlayers = factions.Count;
 
             /*rules.Add(Rule.RedBot);
             rules.Add(Rule.OrangeBot);

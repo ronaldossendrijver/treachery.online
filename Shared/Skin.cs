@@ -321,6 +321,10 @@ namespace Treachery.Shared
                 FactionForce.Blue => ForceName_STR[Faction.Blue],
                 FactionForce.Grey => ForceName_STR[Faction.Grey],
                 FactionForce.Purple => ForceName_STR[Faction.Purple],
+                FactionForce.Brown => ForceName_STR[Faction.Brown],
+                FactionForce.White => ForceName_STR[Faction.White],
+                FactionForce.Pink => ForceName_STR[Faction.Pink],
+                FactionForce.Cyan => ForceName_STR[Faction.Cyan],
                 _ => "-",
             };
         }
@@ -1489,7 +1493,33 @@ namespace Treachery.Shared
                 [1037] = "Hidar Fen Ajidica",
                 [1038] = "Master Zaaf",
                 [1039] = "Wykk",
-                [1040] = "Blin"
+                [1040] = "Blin",
+
+                [1041] = "Viscount Tull",
+                [1042] = "Duke Verdun",
+                [1043] = "Rajiv Londine",
+                [1044] = "Lady Jalma",
+                [1045] = "Frankos Aru",
+                [1046] = "Auditor",
+
+                [1047] = "Talis Balt",
+                [1048] = "Haloa Rund",
+                [1049] = "Flinto Kinnis",
+                [1050] = "Lady Helena",
+                [1051] = "Premier Ein Calimar",
+
+                [1052] = "Bindikk Narvi",
+                [1053] = "Rivvy Dinari",
+                [1054] = "Ilesa Ecaz",
+                [1055] = "Whitmore Bludd",
+                [1056] = "Sanya Ecaz",
+                [1057] = "Duke Vidal",
+
+                [1058] = "Vando Terboli",
+                [1059] = "Trin Kronos",
+                [1060] = "Hiir Resser",
+                [1061] = "Grieu Kronos",
+                [1062] = "Lupino Ord",
             },
 
             PersonImage_URL = new Dictionary<int, string>()
@@ -1533,7 +1563,30 @@ namespace Treachery.Shared
                 [1037] = DEFAULT_ART_LOCATION + "/art/person36.png",
                 [1038] = DEFAULT_ART_LOCATION + "/art/person37.png",
                 [1039] = DEFAULT_ART_LOCATION + "/art/person38.png",
-                [1040] = DEFAULT_ART_LOCATION + "/art/person39.png"
+                [1040] = DEFAULT_ART_LOCATION + "/art/person39.png",
+
+                [1041] = DEFAULT_ART_LOCATION + "/art/person1041.png",
+                [1042] = DEFAULT_ART_LOCATION + "/art/person1042.png",
+                [1043] = DEFAULT_ART_LOCATION + "/art/person1043.png",
+                [1044] = DEFAULT_ART_LOCATION + "/art/person1044.png",
+                [1045] = DEFAULT_ART_LOCATION + "/art/person1045.png",
+                [1046] = DEFAULT_ART_LOCATION + "/art/person1046.png",
+                [1047] = DEFAULT_ART_LOCATION + "/art/person1047.png",
+                [1048] = DEFAULT_ART_LOCATION + "/art/person1048.png",
+                [1049] = DEFAULT_ART_LOCATION + "/art/person1049.png",
+                [1050] = DEFAULT_ART_LOCATION + "/art/person1050.png",
+                [1051] = DEFAULT_ART_LOCATION + "/art/person1051.png",
+                [1052] = DEFAULT_ART_LOCATION + "/art/person1052.png",
+                [1053] = DEFAULT_ART_LOCATION + "/art/person1053.png",
+                [1054] = DEFAULT_ART_LOCATION + "/art/person1054.png",
+                [1055] = DEFAULT_ART_LOCATION + "/art/person1055.png",
+                [1056] = DEFAULT_ART_LOCATION + "/art/person1056.png",
+                [1057] = DEFAULT_ART_LOCATION + "/art/person1057.png",
+                [1058] = DEFAULT_ART_LOCATION + "/art/person1058.png",
+                [1059] = DEFAULT_ART_LOCATION + "/art/person1059.png",
+                [1060] = DEFAULT_ART_LOCATION + "/art/person1060.png",
+                [1061] = DEFAULT_ART_LOCATION + "/art/person1061.png",
+                [1062] = DEFAULT_ART_LOCATION + "/art/person1062.png",
             },
 
             TerritoryName_STR = new Dictionary<int, string>()
@@ -1593,7 +1646,12 @@ namespace Treachery.Shared
                 [Faction.Orange] = "Guild",
                 [Faction.Blue] = "Bene Gesserit",
                 [Faction.Grey] = "Ixian",
-                [Faction.Purple] = "Tleilaxu"
+                [Faction.Purple] = "Tleilaxu",
+
+                [Faction.Brown] = "CHOAM",
+                [Faction.White] = "Richesse",
+                [Faction.Pink] = "Ecaz",
+                [Faction.Cyan] = "Moritani"
             },
 
             FactionImage_URL = new Dictionary<Faction, string>()
@@ -1605,7 +1663,12 @@ namespace Treachery.Shared
                 [Faction.Orange] = DEFAULT_ART_LOCATION + "/art/faction5.svg",
                 [Faction.Blue] = DEFAULT_ART_LOCATION + "/art/faction6.svg",
                 [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7.svg",
-                [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8.svg"
+                [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8.svg",
+
+                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.svg",
+                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.svg",
+                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11.svg",
+                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12.svg"
             },
 
             FactionTableImage_URL = new Dictionary<Faction, string>()
@@ -1617,7 +1680,12 @@ namespace Treachery.Shared
                 [Faction.Orange] = DEFAULT_ART_LOCATION + "/art/faction5.svg",
                 [Faction.Blue] = DEFAULT_ART_LOCATION + "/art/faction6.svg",
                 [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7.svg",
-                [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8.svg"
+                [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8.svg",
+
+                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.svg",
+                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.svg",
+                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11.svg",
+                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12.svg"
             },
 
             FactionFacedownImage_URL = new Dictionary<Faction, string>()
@@ -1629,7 +1697,12 @@ namespace Treachery.Shared
                 [Faction.Orange] = DEFAULT_ART_LOCATION + "/art/faction5.svg",
                 [Faction.Blue] = DEFAULT_ART_LOCATION + "/art/faction6.svg",
                 [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7.svg",
-                [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8.svg"
+                [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8.svg",
+
+                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.svg",
+                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.svg",
+                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11.svg",
+                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12.svg"
             },
 
             FactionForceImage_URL = new Dictionary<Faction, string>()
@@ -1641,7 +1714,12 @@ namespace Treachery.Shared
                 { Faction.Orange, DEFAULT_ART_LOCATION + "/art/faction5force.svg" },
                 { Faction.Blue, DEFAULT_ART_LOCATION + "/art/faction6force.svg" },
                 { Faction.Grey, DEFAULT_ART_LOCATION + "/art/faction7force.svg" },
-                { Faction.Purple, DEFAULT_ART_LOCATION + "/art/faction8force.svg" }
+                { Faction.Purple, DEFAULT_ART_LOCATION + "/art/faction8force.svg" },
+
+                { Faction.Brown, DEFAULT_ART_LOCATION + "/art/faction9force.svg" },
+                { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10force.svg" },
+                { Faction.Pink, DEFAULT_ART_LOCATION + "/art/faction11force.svg" },
+                { Faction.Cyan, DEFAULT_ART_LOCATION + "/art/faction12force.svg" }
             },
 
             FactionSpecialForceImage_URL = new Dictionary<Faction, string>()
@@ -1676,7 +1754,13 @@ namespace Treachery.Shared
                 [Faction.Orange] = "#c85b20bb",
                 [Faction.Blue] = "#385884bb",
                 [Faction.Grey] = "#b0b079bb",
-                [Faction.Purple] = "#602d8bbb"
+                [Faction.Purple] = "#602d8bbb",
+
+                [Faction.Brown] = "#582d1bbb",
+                [Faction.White] = "#ffffe4bb",
+                [Faction.Pink] = "#ac65a9bb",
+                [Faction.Cyan] = "#28a4bcbb",
+
             },
 
             FactionColor = new Dictionary<Faction, string>()
@@ -1689,7 +1773,12 @@ namespace Treachery.Shared
                 [Faction.Orange] = "#c85b20",
                 [Faction.Blue] = "#385884",
                 [Faction.Grey] = "#b0b079",
-                [Faction.Purple] = "#602d8b"
+                [Faction.Purple] = "#602d8b",
+
+                [Faction.Brown] = "#582d1b",
+                [Faction.White] = "ffffe4",
+                [Faction.Pink] = "#ac65a9",
+                [Faction.Cyan] = "#28a4bc",
             },
 
             ForceName_STR = new Dictionary<Faction, string>()
@@ -1702,7 +1791,12 @@ namespace Treachery.Shared
                 [Faction.Orange] = "forces",
                 [Faction.Blue] = "fighters",
                 [Faction.Grey] = "suboids",
-                [Faction.Purple] = "forces"
+                [Faction.Purple] = "forces",
+
+                [Faction.Brown] = "forces",
+                [Faction.White] = "forces",
+                [Faction.Pink] = "forces",
+                [Faction.Cyan] = "forces"
             },
 
             SpecialForceName_STR = new Dictionary<Faction, string>()
@@ -1715,7 +1809,12 @@ namespace Treachery.Shared
                 [Faction.Orange] = "-",
                 [Faction.Blue] = "advisors",
                 [Faction.Grey] = "cyborgs",
-                [Faction.Purple] = "-"
+                [Faction.Purple] = "-",
+
+                [Faction.Brown] = "-",
+                [Faction.White] = "-",
+                [Faction.Pink] = "-",
+                [Faction.Cyan] = "-"
             },
 
             MusicGeneral_URL = DEFAULT_ART_LOCATION + "/art/101_-_Dune_-_DOS_-_Arrakis.mp3",

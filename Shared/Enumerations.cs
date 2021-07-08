@@ -39,8 +39,6 @@ namespace Treachery.Shared
 
             return result;
         }
-
-
     }
 
     public enum Faction : int
@@ -53,7 +51,11 @@ namespace Treachery.Shared
         Orange = 50,
         Blue = 60,
         Grey = 70,
-        Purple = 80
+        Purple = 80,
+        Brown = 90,
+        White = 100,
+        Pink = 110,
+        Cyan = 120
     }
 
     public enum TechToken : int
@@ -317,7 +319,11 @@ namespace Treachery.Shared
         Orange = 50,
         Blue = 60,
         Grey = 70,
-        Purple = 80
+        Purple = 80,
+        Brown = 90,
+        White = 100,
+        Pink = 110,
+        Cyan = 120
     }
 
     public enum FactionSpecialForce : int

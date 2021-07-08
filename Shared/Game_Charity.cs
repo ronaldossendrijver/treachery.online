@@ -20,14 +20,20 @@ namespace Treachery.Shared
             Allow(FactionAdvantage.YellowControlsMonster);
             Allow(FactionAdvantage.YellowProtectedFromMonster);
 
-            var benegesserit = GetPlayer(Faction.Blue);
-            if (benegesserit != null && Applicable(Rule.BlueAutoCharity))
+            var brown = GetPlayer(Faction.Brown);
+            if (brown != null)
+            {
+                int toCollect = Players.Count * 2;
+                CurrentReport.Add(Faction.Brown, "{0} collect {1} {2}.", Faction.Brown, toCollect, Concept.Resource);
+            }
+
+            var blue = GetPlayer(Faction.Blue);
+            if (blue != null && Applicable(Rule.BlueAutoCharity))
             {
                 if (!Prevented(FactionAdvantage.BlueCharity))
                 {
                     HasActedOrPassed.Add(Faction.Blue);
-                    benegesserit.Resources += 2;
-                    CurrentReport.Add(Faction.Blue, "{0} claim 2 charity.", Faction.Blue);
+                    GiveCharity(blue, 2);
                     RecentMilestones.Add(Milestone.CharityClaimed);
                 }
                 else
@@ -40,14 +46,27 @@ namespace Treachery.Shared
             Enter(Phase.ClaimingCharity);
         }
 
+        private void GiveCharity(Player to, int amount)
+        {
+            var brown = GetPlayer(Faction.Brown);
+
+            to.Resources += amount;
+            if (brown != null)
+            {
+                brown.Resources -= amount;
+                CurrentReport.Add(to.Faction, "{0} receive {1} charity from {2}.", to.Faction, amount, Faction.Brown);
+            }
+            else
+            {
+                CurrentReport.Add(to.Faction, "{0} claim {1} charity.", to.Faction, amount);
+            }
+        }
+
         public void HandleEvent(CharityClaimed e)
         {
             HasActedOrPassed.Add(e.Initiator);
 
-            int received = 2 - GetPlayer(e.Initiator).Resources;
-            GetPlayer(e.Initiator).Resources = 2;
-
-            CurrentReport.Add(e.Initiator, "{0} claim {1} charity.", e.Initiator, received);
+            GiveCharity(e.Player, 2 - e.Player.Resources);
 
             if (e.Initiator != Faction.Blue)
             {
