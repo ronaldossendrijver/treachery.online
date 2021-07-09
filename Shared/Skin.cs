@@ -261,6 +261,7 @@ namespace Treachery.Shared
             else if (value is DealType d) result = Describe(d);
             else if (value is WinMethod w) result = Describe(w);
             else if (value is Phase p) result = Describe(p);
+            else if (value is BrownEconomicsStatus bes) result = Describe(bes);
             else result = value.ToString();
 
             if (capitalize)
@@ -396,6 +397,18 @@ namespace Treachery.Shared
                 FactionAdvantage.GreyReplacingSpecialForces => Format("{0} replacing {1} lost in battle with {2}*", Faction.Grey, FactionSpecialForce.Grey, FactionForce.Grey),
                 FactionAdvantage.GreyAllyDiscardingCard => Format("{0} allowing their ally to replace a won card*", Faction.Grey),
                 FactionAdvantage.GreySwappingCard => Format("{0} replacing a treachery card during bidding*", Faction.Grey),
+
+                FactionAdvantage.BrownControllingCharity => Format("{0} receiving and giving {1} during {2}", Faction.Brown, Concept.Resource, MainPhase.Charity),
+                FactionAdvantage.BrownDiscarding => Format("{0} discarding a cards for {1} or discarding a {2} card for its special effect*", Faction.Brown, Concept.Resource, TreacheryCardType.Useless),
+                FactionAdvantage.BrownRevival => Format("{0} having unlimited force revival and reduced revival cost", Faction.Brown),
+                FactionAdvantage.BrownEconomics => Format("{0} playing their Economics token during {1}", Faction.Brown, MainPhase.Contemplate),
+                FactionAdvantage.BrownReceiveForcePayment => Format("{0} collecting {1} payment for forces for one battle", Faction.Brown, Concept.Resource),
+                FactionAdvantage.BrownAudit => Format(""),
+
+                FactionAdvantage.WhiteAuction => Format("{0} auctioning a card from their card cache", Faction.White),
+                FactionAdvantage.WhiteNofield => Format("{0} using a No-Field to ship", Faction.White),
+                FactionAdvantage.WhiteBlackMarket => Format("{0} selling a card from their hand", Faction.White),
+
                 _ => "Unknown",
             };
         }
@@ -441,6 +454,19 @@ namespace Treachery.Shared
                 Phase.BattleReport => "End of battle phase",
                 Phase.GameEnded=> "End of game",
                 _ => "unknown"
+            };
+        }
+
+        public string Describe(BrownEconomicsStatus p)
+        {
+            return p switch
+            {
+                BrownEconomicsStatus.Cancel => "Cancel",
+                BrownEconomicsStatus.CancelFlipped => "Cancel (flipped)",
+                BrownEconomicsStatus.Double => "Double",
+                BrownEconomicsStatus.DoubleFlipped => "Double (flipped)",
+                BrownEconomicsStatus.RemovedFromGame => "Removed from game",
+                _ => "None"
             };
         }
 
@@ -1863,7 +1889,11 @@ namespace Treachery.Shared
                 [Milestone.WeatherControlled] = DEFAULT_ART_LOCATION + "/art/thunder.mp3",
                 [Milestone.Storm] = DEFAULT_ART_LOCATION + "/art/thunder.mp3",
                 [Milestone.Voice] = DEFAULT_ART_LOCATION + "/art/voice.mp3",
-                [Milestone.Prescience] = DEFAULT_ART_LOCATION + "/art/clairvoyance.mp3"
+                [Milestone.Prescience] = DEFAULT_ART_LOCATION + "/art/clairvoyance.mp3",
+
+                [Milestone.ResourcesReceived] = DEFAULT_ART_LOCATION + "/art/bid.mp3",
+                [Milestone.Economics] = DEFAULT_ART_LOCATION + "/art/bribe.mp3",
+                [Milestone.CardTraded] = DEFAULT_ART_LOCATION + "/art/cardflip.mp3"
             },
 
             MapDimensions = new Point(4145, 4601),

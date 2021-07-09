@@ -455,7 +455,12 @@ namespace Treachery.Shared
         {
             get
             {
-                return Faction == Faction.Black ? 8 : 4;
+                return Faction switch
+                {
+                    Faction.Black => 8,
+                    Faction.Brown => 5,
+                    _ => 4
+                };
             }
         }
 

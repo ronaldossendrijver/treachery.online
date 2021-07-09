@@ -432,7 +432,7 @@ namespace Treachery.Shared
 
             int specialForcesToRevive = SpecialForcesKilled > 0 && !Game.FactionsThatRevivedSpecialForcesThisTurn.Contains(Faction) ? 1 : 0;
             int normalForcesToRevive = Math.Min(ForcesKilled, Game.FreeRevivals(this) - specialForcesToRevive);
-            int maxRevivals = ((Ally == Faction.Red) ? Game.RedWillPayForExtraRevival : 0) + Game.GetRevivalLimit(this);
+            int maxRevivals = ((Ally == Faction.Red) ? Game.RedWillPayForExtraRevival : 0) + Game.GetRevivalLimit(Game, this);
 
             while (
                 normalForcesToRevive + 1 + specialForcesToRevive <= maxRevivals &&

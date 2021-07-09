@@ -3,6 +3,7 @@
  */
 
 using System.Collections.Generic;
+using System;
 using System.Linq;
 
 namespace Treachery.Shared
@@ -94,8 +95,6 @@ namespace Treachery.Shared
         public Voice CurrentVoice { get; private set; } = null;
         public void HandleEvent(Voice e)
         {
-            MainPhaseMiddle();
-
             CurrentVoice = e;
 
             if (CurrentBattle != null)
@@ -116,8 +115,6 @@ namespace Treachery.Shared
         public Prescience CurrentPrescience { get; private set; } = null;
         public void HandleEvent(Prescience e)
         {
-            MainPhaseMiddle();
-
             CurrentPrescience = e;
             CurrentReport.Add(e.GetMessage());
             RecentMilestones.Add(Milestone.Prescience);
@@ -125,8 +122,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(Battle b)
         {
-            MainPhaseMiddle();
-
             if (b.Initiator == CurrentBattle.Initiator)
             {
                 AggressorBattleAction = b;
@@ -497,6 +492,8 @@ namespace Treachery.Shared
                 Allow(FactionAdvantage.BlackCallTraitorForAlly);
                 Allow(FactionAdvantage.BlackCaptureLeader);
             }
+
+            Allow(FactionAdvantage.BrownReceiveForcePayment);
         }
 
         private void HandleWinnerConclusion(BattleConcluded e)
@@ -755,7 +752,32 @@ namespace Treachery.Shared
 
             if (cost > 0)
             {
-                p.Resources -= cost;
+                int costForPlayer = cost - b.AllyContributionAmount;
+
+                if (costForPlayer > 0)
+                {
+                    p.Resources -= costForPlayer;
+
+                    var brown = GetPlayer(Faction.Brown);
+                    if (brown != null && p.Faction != Faction.Brown)
+                    {
+                        if (!Prevented(FactionAdvantage.BrownReceiveForcePayment))
+                        {
+                            int brownIncome = (int)Math.Floor(0.5 * costForPlayer);
+                            brown.Resources += brownIncome;
+                            CurrentReport.Add(Faction.Brown, "{0} receive {1}", Faction.Brown, brownIncome);
+                        }
+                        else
+                        {
+                            CurrentReport.Add(Faction.Brown, "{0} prevents {1}", Faction.Brown, FactionAdvantage.BrownReceiveForcePayment);
+                        }
+                    }
+                }
+
+                if (b.AllyContributionAmount > 0)
+                {
+                    p.AlliedPlayer.Resources -= b.AllyContributionAmount;
+                }
             }
         }
 

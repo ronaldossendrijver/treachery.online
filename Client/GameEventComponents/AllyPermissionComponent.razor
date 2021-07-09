@@ -16,7 +16,7 @@
         <div class="text-center mt-0 mb-1">
             <img width="48" src="@Skin.Current.GetImageURL(Player.Ally)" />
         </div>
-        
+
 
         @if (Player.AlliedPlayer.IsBot)
         {
@@ -57,7 +57,7 @@
             <div>They own <strong>@ally.Resources</strong> @Skin.Current.Describe(Concept.Resource).</div>
         }
 
-        <label class="mt-2 mb-0">How much are you willing to pay for their bids and shipments (currently: <strong>@Game.GetPermittedUseOfAllySpice(Player.Ally)</strong>)? @(Faction == Faction.Red ? "Payments for bids flow back to you." : "")</label>
+        <label class="mt-2 mb-0">How much are you willing to pay for their @(Faction == Faction.Brown ? "battles, " : "")bids and shipments (currently: <strong>@Game.GetPermittedUseOfAllySpice(Player.Ally)</strong>)? @(Faction == Faction.Red ? "Payments for bids flow back to you." : "")</label>
         <SelectResourcesComponent @bind-Value="spice" Min="0" Max="Player.Resources" />
 
         @if (Karma.CanKarma(Game, Player))

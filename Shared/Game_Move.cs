@@ -35,6 +35,7 @@ namespace Treachery.Shared
             Allow(FactionAdvantage.BlueAnnouncesBattle);
             Allow(FactionAdvantage.RedLetAllyReviveExtraForces);
             Allow(FactionAdvantage.PurpleReceiveRevive);
+            Allow(FactionAdvantage.BrownRevival);
             HasActedOrPassed.Clear();
             LastShippedOrMovedTo = null;
 
@@ -69,7 +70,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(OrangeDelay e)
         {
-            MainPhaseMiddle();
             BeginningOfShipmentAndMovePhase = false;
             CurrentReport.Add(e.GetMessage());
             Enter(EveryoneButOneActedOrPassed, Phase.ShipmentAndMoveConcluded, Phase.NonOrangeShip);
@@ -80,7 +80,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(Shipment s)
         {
-            MainPhaseMiddle();
             BeginningOfShipmentAndMovePhase = false;
             StormLossesToTake.Clear();
             ChosenDestinationsWithAllies.Clear();
@@ -258,8 +257,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(BlueAccompanies c)
         {
-            MainPhaseMiddle();
-
             var benegesserit = GetPlayer(c.Initiator);
             if (c.Accompanies && benegesserit.ForcesInReserve > 0)
             {
@@ -285,8 +282,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(Move m)
         {
-            MainPhaseMiddle();
-
             RecentMoves.Add(m);
 
             StormLossesToTake.Clear();
@@ -359,8 +354,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(Caravan e)
         {
-            MainPhaseMiddle();
-
             RecentMoves.Add(e);
 
             StormLossesToTake.Clear();
@@ -484,8 +477,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(BlueFlip e)
         {
-            MainPhaseMiddle();
-
             var initiator = GetPlayer(e.Initiator);
 
             if (Version < 77)

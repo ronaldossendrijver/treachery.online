@@ -134,6 +134,23 @@ namespace Treachery.Shared
             RecentMilestones.Add(Milestone.Amal);
         }
 
+        public void HandleEvent(BrownDiscarded e)
+        {
+            Discard(e.Card);
+            CurrentReport.Add(e.GetMessage());
+            if (e.Card.Type == TreacheryCardType.Useless)
+            {
+                e.Player.Resources += 2;
+            }
+            else
+            {
+                e.Player.Resources += 3;
+            }
+
+            RecentMilestones.Add(Milestone.ResourcesReceived);
+        }
+               
+        
         public int KarmaHmsMovesLeft { get; private set; } = 2;
         public void HandleEvent(KarmaHmsMovement e)
         {

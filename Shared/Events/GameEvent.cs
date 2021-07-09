@@ -80,7 +80,7 @@ namespace Treachery.Shared
                     {
                         Game.RecentMilestones.Clear();
                         ExecuteConcreteEvent();
-                        Game.AddEvent(this);
+                        Game.PerformPostEventTasks(this);
                     }
 
                     return result;
@@ -89,7 +89,7 @@ namespace Treachery.Shared
                 {
                     Game.RecentMilestones.Clear();
                     ExecuteConcreteEvent();
-                    Game.AddEvent(this);
+                    Game.PerformPostEventTasks(this);
                     return "";
                 }
             }

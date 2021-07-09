@@ -27,8 +27,6 @@ namespace Treachery.Shared
         public List<Faction> FactionsThatRevivedSpecialForcesThisTurn = new List<Faction>();
         public void HandleEvent(Revival r)
         {
-            MainPhaseMiddle();
-
             var initiator = GetPlayer(r.Initiator);
 
             //Payment
@@ -190,9 +188,9 @@ namespace Treachery.Shared
             CurrentReport.Add(e.GetMessage());
         }
 
-        public int GetRevivalLimit(Player p)
+        public int GetRevivalLimit(Game g, Player p)
         {
-            if (p.Is(Faction.Purple) || p.Is(Faction.Brown))
+            if (p.Is(Faction.Purple) || (p.Is(Faction.Brown) && !g.Prevented(FactionAdvantage.BrownRevival)))
             {
                 return 100;
             }
@@ -291,7 +289,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(RaiseDeadPlayed r)
         {
-            MainPhaseMiddle();
             RecentMilestones.Add(Milestone.RaiseDead);
             CurrentReport.Add(r.GetMessage());
             var player = GetPlayer(r.Initiator);
@@ -323,7 +320,6 @@ namespace Treachery.Shared
         public RequestPurpleRevival CurrentPurpleRevivalRequest = null;
         public void HandleEvent(RequestPurpleRevival e)
         {
-            MainPhaseMiddle();
             CurrentReport.Add(e.GetMessage());
             CurrentPurpleRevivalRequest = e;
         }
@@ -331,8 +327,6 @@ namespace Treachery.Shared
         public Dictionary<IHero, int> AllowedEarlyRevivals = new Dictionary<IHero, int>();
         public void HandleEvent(AcceptOrCancelPurpleRevival e)
         {
-            MainPhaseMiddle();
-
             CurrentReport.Add(e.GetMessage());
 
             if (AllowedEarlyRevivals.ContainsKey(e.Hero))

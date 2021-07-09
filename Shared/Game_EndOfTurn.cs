@@ -77,19 +77,52 @@ namespace Treachery.Shared
         private void EnterMentatPhase()
         {
             MainPhaseStart(MainPhase.Contemplate, Version >= 103);
-            AllowAllFactionAdvantages();
+            AllowAllPreventedFactionAdvantages();
+            HandleEconomics();
+
+            Enter(Version >= 103, Phase.Contemplate, ContinueMentatPhase);
+        }
+
+        private void ContinueMentatPhase()
+        {
             CheckNormalWin();
             CheckBeneGesseritPrediction();
             CheckFinalTurnWin();
             MainPhaseEnd();
         }
 
-        private void AllowAllFactionAdvantages()
+        public void HandleEvent(Economics e)
         {
-            foreach (var adv in Enumerations.GetValuesExceptDefault(typeof(FactionAdvantage), FactionAdvantage.None))
+            EconomicsStatus = e.Status;
+            CurrentReport.Add(e.GetMessage());
+            RecentMilestones.Add(Milestone.Economics);
+        }
+
+        private void HandleEconomics()
+        {
+            switch (EconomicsStatus)
             {
-                Allow(adv);
+                case BrownEconomicsStatus.Double: 
+                    EconomicsStatus = BrownEconomicsStatus.CancelFlipped;
+                    CurrentReport.Add("The Economics Token flips to Cancel.");
+                    RecentMilestones.Add(Milestone.Economics);
+                    break;
+                
+                case BrownEconomicsStatus.Cancel: 
+                    EconomicsStatus = BrownEconomicsStatus.DoubleFlipped;
+                    CurrentReport.Add("The Economics Token flips to Double.");
+                    RecentMilestones.Add(Milestone.Economics);
+                    break;
+
+                case BrownEconomicsStatus.DoubleFlipped:
+                case BrownEconomicsStatus.CancelFlipped:
+                    EconomicsStatus = BrownEconomicsStatus.RemovedFromGame;
+                    CurrentReport.Add("The Economics Token has been removed from the game.");
+                    RecentMilestones.Add(Milestone.Economics);
+                    break;
             }
+
+
         }
 
         private void AddBribesToPlayerResources()

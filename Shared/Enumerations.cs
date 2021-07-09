@@ -91,6 +91,16 @@ namespace Treachery.Shared
         End = 30
     }
 
+    public enum BrownEconomicsStatus : int
+    {
+        None = 0,
+        Double = 10,
+        DoubleFlipped = 20,
+        Cancel = 30,
+        CancelFlipped = 40,
+        RemovedFromGame = 50
+    }
+
     /// <summary>
     /// When adding a new phase, make sure you add it to Treachery.online.Client.Handler_GameStatus and Treachery.Shared.Skin
     /// </summary>
@@ -204,11 +214,15 @@ namespace Treachery.Shared
         [PhaseProperty(true, Faction.Black)]
         PerformingKarmaHandSwap = 350,
 
+        [PhaseProperty(true, Faction.Brown)]
+        TradingCards = 351,
+
         Clairvoyance = 360,
 
         [PhaseProperty(true, Faction.Purple)]
         ReplacingFaceDancer = 395,
 
+        Contemplate = 398,
         TurnConcluded = 399,
         GameEnded = 400
     }
@@ -260,7 +274,10 @@ namespace Treachery.Shared
         WeatherControlled = 2300,
         Storm = 2400,
         Voice = 2500,
-        Prescience = 2600
+        Prescience = 2600,
+        ResourcesReceived = 2700,
+        Economics = 2800,
+        CardTraded = 2900
     }
 
 
@@ -318,7 +335,18 @@ namespace Treachery.Shared
         GreyCyborgExtraMove = 133,
         GreyReplacingSpecialForces = 134, //*
         GreyAllyDiscardingCard = 135, //*
-        GreySwappingCard = 136 //*
+        GreySwappingCard = 136, //*
+
+        BrownControllingCharity = 140,
+        BrownDiscarding = 141,
+        BrownRevival = 142,
+        BrownEconomics = 143,
+        BrownReceiveForcePayment = 144,
+        BrownAudit = 145,
+
+        WhiteAuction = 150,
+        WhiteNofield = 151,
+        WhiteBlackMarket = 152
     }
 
     public enum FactionForce : int

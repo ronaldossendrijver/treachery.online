@@ -74,6 +74,9 @@ namespace Treachery.Client
                 case Phase.CollectionReport:
                     return Skin.Current.Format("End {0} and move to {1}", MainPhase.Collection, MainPhase.Contemplate);
 
+                case Phase.Contemplate:
+                    return Skin.Current.Format("Start checking for victories?");
+
                 case Phase.TurnConcluded:
                     return Skin.Current.Format("End this turn and start the next {0}?", MainPhase.Storm);
 
@@ -105,8 +108,7 @@ namespace Treachery.Client
                         };
                     }
                 }
-
-                if (Game.CurrentPhase == Phase.Clairvoyance)
+                else if (Game.CurrentPhase == Phase.Clairvoyance)
                 {
                     if (IAm(Game.LatestClairvoyance.Target))
                     {
@@ -125,8 +127,7 @@ namespace Treachery.Client
                         };
                     }
                 }
-
-                if (Game.CurrentPhase == Phase.StormLosses)
+                else if (Game.CurrentPhase == Phase.StormLosses)
                 {
                     if (IAm(Faction.Yellow))
                     {
@@ -141,6 +142,25 @@ namespace Treachery.Client
                         return new GameStatus()
                         {
                             Description = Skin.Current.Format("{0} are deciding which forces were killed by the storm in {1}...", Faction.Yellow, TakeLosses.LossLocation(Game)),
+                            WaitingForOthers = true
+                        };
+                    }
+                }
+                else if (Game.CurrentPhase == Phase.TradingCards)
+                {
+                    if (Faction == Faction.Brown || Player.Ally == Faction.Brown)
+                    {
+                        return new GameStatus()
+                        {
+                            Description = "You are currently trading cards with your ally...",
+                            WaitingForOthers = Game.CurrentCardTradeOffer.Initiator == Faction
+                        };
+                    }
+                    else
+                    {
+                        return new GameStatus()
+                        {
+                            Description = "{0} and their ally are currently trading cards...",
                             WaitingForOthers = true
                         };
                     }
@@ -1135,6 +1155,25 @@ namespace Treachery.Client
                                     return new GameStatus()
                                     {
                                         Description = Skin.Current.Format("{0} are thinking about replacing one of their Face Dancers...", Faction.Purple),
+                                        WaitingForOthers = true
+                                    };
+                                }
+                            
+                            case Phase.Contemplate:
+
+                                if (IsHost)
+                                {
+                                    return new GameStatus()
+                                    {
+                                        Description = Skin.Current.Format("You may now proceed with determining victories when ready.", Concept.Resource),
+                                        WaitingForOthers = false
+                                    };
+                                }
+                                else
+                                {
+                                    return new GameStatus()
+                                    {
+                                        Description = Skin.Current.Format("Waiting for the host to start determining victories..."),
                                         WaitingForOthers = true
                                     };
                                 }

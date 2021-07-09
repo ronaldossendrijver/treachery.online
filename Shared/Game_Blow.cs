@@ -27,7 +27,6 @@ namespace Treachery.Shared
         private bool ThumperUsed = false;
         public void HandleEvent(ThumperPlayed e)
         {
-            MainPhaseMiddle();
             DiscardTreacheryCard(GetPlayer(e.Initiator), TreacheryCardType.Thumper);
             CurrentReport.Add(e.GetMessage());
             RecentMilestones.Add(Milestone.Thumper);
@@ -216,8 +215,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(HarvesterPlayed e)
         {
-            MainPhaseMiddle();
-
             DiscardTreacheryCard(GetPlayer(e.Initiator), TreacheryCardType.Harvester);
             var lastResourceCard = CurrentPhase == Phase.HarvesterA ? LatestSpiceCardA : LatestSpiceCardB;
             int currentAmountOfSpice = ResourcesOnPlanet.ContainsKey(lastResourceCard.Location) ? ResourcesOnPlanet[lastResourceCard.Location] : 0;
@@ -318,7 +315,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(YellowSentMonster e)
         {
-            MainPhaseMiddle();
             CurrentReport.Add(e.GetMessage());
             Monsters.Add(e.Territory);
             PerformMonster(e.Territory);
@@ -381,7 +377,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(AllianceOffered e)
         {
-            MainPhaseMiddle();
             var matchingOffer = CurrentAllianceOffers.FirstOrDefault(x => x.Initiator == e.Target && x.Target == e.Initiator);
             if (matchingOffer != null)
             {
@@ -406,7 +401,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(AllianceBroken e)
         {
-            MainPhaseMiddle();
             CurrentReport.Add(e.GetMessage());
             BreakAlliance(e.Initiator);
         }
@@ -480,7 +474,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(YellowRidesMonster e)
         {
-            MainPhaseMiddle();
             Monsters.RemoveAt(0);
 
             if (!e.Passed)

@@ -15,6 +15,8 @@ namespace Treachery.Shared
         public bool GreyAllyMayReplaceCards { get; private set; } = false;
         public bool BlueAllyMayUseVoice { get; private set; } = false;
         public int RedWillPayForExtraRevival { get; private set; } = 0;
+        public bool WhiteAllyMayUseNoField { get; private set; } = false;
+        public int BrownWillPayForBattles { get; private set; } = 0;
         public bool YellowWillProtectFromShaiHulud { get; private set; } = false;
         public bool YellowAllowsThreeFreeRevivals { get; private set; } = false;
         public bool YellowSharesPrescience { get; private set; } = false;
@@ -58,6 +60,10 @@ namespace Treachery.Shared
                 case Faction.Blue:
                     BlueAllyMayUseVoice = e.BlueAllowsUseOfVoice;
                     break;
+
+                case Faction.White:
+                    WhiteAllyMayUseNoField = e.WhiteAllowsUseOfNoField;
+                    break;
             }
 
             Set(PermittedUseOfAllySpice, ally, e.PermittedResources);
@@ -72,6 +78,33 @@ namespace Treachery.Shared
             }
 
             dict.Add(key, value);
+        }
+
+        private int LastTurnCardWasTraded = -1;
+        public CardTraded CurrentCardTradeOffer = null;
+        private Phase PhaseBeforeCardTrade = Phase.None;
+
+        public void HandleEvent(CardTraded e)
+        {
+            CurrentReport.Add(e.GetMessage());
+
+            if (CurrentCardTradeOffer == null)
+            {
+                CurrentCardTradeOffer = e;
+                PhaseBeforeCardTrade = CurrentPhase;
+                Enter(Phase.TradingCards);
+            }
+            else
+            {
+                CurrentCardTradeOffer.Player.TreacheryCards.Add(e.Card);
+                e.Player.TreacheryCards.Remove(e.Card);
+                e.Player.TreacheryCards.Add(CurrentCardTradeOffer.Card);
+                CurrentCardTradeOffer.Player.TreacheryCards.Remove(CurrentCardTradeOffer.Card);
+                CurrentCardTradeOffer = null;
+                RecentMilestones.Add(Milestone.CardTraded);
+                LastTurnCardWasTraded = CurrentTurn;
+                Enter(PhaseBeforeCardTrade);
+            }
         }
 
         public TreacheryCard GetPermittedUseOfAllyKarma(Faction f)

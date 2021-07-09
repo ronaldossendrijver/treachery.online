@@ -24,11 +24,9 @@ namespace Treachery.Shared
         public bool AllyMayReviveAsPurple { get; set; }
         public bool AllyMayReplaceCards { get; set; }
         public bool GreenSharesPrescience { get; set; }
-
         public bool BlueAllowsUseOfVoice { get; set; }
-
+        public bool WhiteAllowsUseOfNoField { get; set; }
         public int PermittedResources { get; set; }
-
         public int _permittedKarmaCardId { get; set; }
 
         [JsonIgnore]

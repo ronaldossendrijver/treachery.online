@@ -51,7 +51,7 @@ namespace Treachery.Shared
 
             int emperorRevivals = (p.Ally == Faction.Red) ? Game.RedWillPayForExtraRevival : 0;
 
-            int limit = Game.GetRevivalLimit(p);
+            int limit = Game.GetRevivalLimit(Game, p);
 
             if (AmountOfForces + AmountOfSpecialForces > limit + emperorRevivals) return "You can't revive that much.";
             if (Game.Version >= 32 && Initiator != Faction.Grey && AmountOfSpecialForces > 1) return Skin.Current.Format("You can't revive more than one {0} per turn.", p.SpecialForce);
@@ -149,11 +149,11 @@ namespace Treachery.Shared
 
             if (!specialForces)
             {
-                return Math.Min(g.GetRevivalLimit(p) + amountPaidByEmperor, p.ForcesKilled);
+                return Math.Min(g.GetRevivalLimit(g, p) + amountPaidByEmperor, p.ForcesKilled);
             }
             else
             {
-                return Math.Min(p.Is(Faction.Grey) ? g.GetRevivalLimit(p) + amountPaidByEmperor : (g.FactionsThatRevivedSpecialForcesThisTurn.Contains(p.Faction) ? 0 : 1), p.SpecialForcesKilled);
+                return Math.Min(p.Is(Faction.Grey) ? g.GetRevivalLimit(g, p) + amountPaidByEmperor : (g.FactionsThatRevivedSpecialForcesThisTurn.Contains(p.Faction) ? 0 : 1), p.SpecialForcesKilled);
             }
         }
 
@@ -207,7 +207,7 @@ namespace Treachery.Shared
             int nrOfFreeRevivalsLeft = nrOfFreeRevivals - (amountOfSpecialForces - nrOfPaidSpecialForces);
             int nrOfPaidNormalForces = Math.Max(0, amountOfForces - nrOfFreeRevivalsLeft);
             int priceOfSpecialForces = initiator.Is(Faction.Grey) ? 3 : 2;
-            int priceOfNormalForces = initiator.Is(Faction.Brown) ? 1 : 2;
+            int priceOfNormalForces = initiator.Is(Faction.Brown) && !g.Prevented(FactionAdvantage.BrownRevival) ? 1 : 2;
 
             var cost = nrOfPaidSpecialForces * priceOfSpecialForces + nrOfPaidNormalForces * priceOfNormalForces;
 

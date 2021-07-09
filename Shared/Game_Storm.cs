@@ -45,8 +45,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(StormDialled e)
         {
-            MainPhaseMiddle();
-
             Dials.Add(e.Amount);
             HasActedOrPassed.Add(e.Initiator);
 
@@ -177,8 +175,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(PerformHmsMovement e)
         {
-            MainPhaseMiddle();
-
             var initiator = GetPlayer(e.Initiator);
             int collectionRate = initiator.AnyForcesIn(Map.HiddenMobileStronghold) * 2;
             CurrentReport.Add(e.GetMessage());
@@ -269,8 +265,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(MetheorPlayed e)
         {
-            MainPhaseMiddle();
-
             var player = GetPlayer(e.Initiator);
             var card = player.Card(TreacheryCardType.Metheor);
 
@@ -290,8 +284,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(StormSpellPlayed e)
         {
-            MainPhaseMiddle();
-
             DiscardTreacheryCard(GetPlayer(e.Initiator), TreacheryCardType.StormSpell);
             CurrentReport.Add(e.GetMessage());
             MoveStormAndDetermineNext(e.MoveAmount);
@@ -378,8 +370,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(TakeLosses e)
         {
-            MainPhaseMiddle();
-
             var player = GetPlayer(e.Initiator);
             player.KillForces(Shared.TakeLosses.LossLocation(this), e.ForceAmount, e.SpecialForceAmount, false);
             StormLossesToTake.RemoveAt(0);

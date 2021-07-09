@@ -35,6 +35,8 @@ namespace Treachery.Shared
         public int SpecialForces { get; set; }
         public int SpecialForcesAtHalfStrength { get; set; }
 
+        public int AllyContributionAmount { get; set; }
+
         public int _weaponCardId;
 
         [JsonIgnore]
@@ -325,13 +327,23 @@ namespace Treachery.Shared
         {
             if (Game.Applicable(Rule.AdvancedCombat))
             {
-                return new Message(Initiator, "{0} leader: {1}, dial: {2}, weapon: {3}, defense: {4}, {5}: {6}.",
-                    Initiator, Hero != null ? Hero.ToString() : "none", Dial(Game, Game.CurrentBattle.OpponentOf(Initiator).Faction), Weapon != null ? Weapon.ToString() : "none", Defense != null ? Defense.ToString() : "none", Concept.Resource, Cost(Game));
+                return new Message(Initiator, "{0} leader: {1}, dial: {2}, weapon: {3}, defense: {4}, {5}: {6}{7}.",
+                    Initiator, 
+                    Hero != null ? Hero.ToString() : "none", 
+                    Dial(Game, Game.CurrentBattle.OpponentOf(Initiator).Faction), 
+                    Weapon != null ? Weapon.ToString() : "none", Defense != null ? Defense.ToString() : "none", 
+                    Concept.Resource, 
+                    Cost(Game), 
+                    AllyContributionAmount > 0 ? string.Format(" ({0} from ally)", AllyContributionAmount) : "" );
             }
             else
             {
                 return new Message(Initiator, "{0} leader: {1}, dial: {2}, weapon: {3}, defense: {4}.",
-                    Initiator, Hero != null ? Hero.ToString() : "none", Dial(Game, Game.CurrentBattle.OpponentOf(Initiator).Faction), Weapon != null ? Weapon.ToString() : "none", Defense != null ? Defense.ToString() : "none");
+                    Initiator, 
+                    Hero != null ? Hero.ToString() : "none", 
+                    Dial(Game, Game.CurrentBattle.OpponentOf(Initiator).Faction), 
+                    Weapon != null ? Weapon.ToString() : "none", 
+                    Defense != null ? Defense.ToString() : "none");
             }
         }
 

@@ -20,6 +20,8 @@ namespace Treachery.Shared
         private void EnterBiddingPhase()
         {
             MainPhaseStart(MainPhase.Bidding);
+            Allow(FactionAdvantage.BrownControllingCharity);
+            Allow(FactionAdvantage.BlueCharity);
             BidSequence.Start(this, Version >= 50);
             ReceiveResourceTechIncome();
             GreySwappedCardOnBid = false;
@@ -65,8 +67,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(GreyRemovedCardFromAuction e)
         {
-            MainPhaseMiddle();
-
             CardsOnAuction.Items.Remove(e.Card);
 
             if (e.PutOnTop)
@@ -96,8 +96,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(GreySwappedCardOnBid e)
         {
-            MainPhaseMiddle();
-
             if (!e.Passed)
             {
                 GreySwappedCardOnBid = true;
@@ -178,8 +176,6 @@ namespace Treachery.Shared
         private Tuple<Player, TreacheryCard> CardUsedForKarmaBid = null;
         public void HandleEvent(Bid bid)
         {
-            MainPhaseMiddle();
-
             if (!bid.Passed)
             {
                 ReturnKarmaCardUsedForBid();
@@ -272,7 +268,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(RedBidSupport e)
         {
-            MainPhaseMiddle();
             PermittedUseOfRedSpice = e.Amounts;
             CurrentReport.Add(e.GetMessage());
         }
@@ -505,8 +500,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(ReplacedCardWon e)
         {
-            MainPhaseMiddle();
-
             if (!e.Passed)
             {
                 Discard(CardJustWon);
@@ -565,8 +558,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(KarmaHandSwapInitiated e)
         {
-            MainPhaseMiddle();
-
             KarmaHandSwapPausedPhase = CurrentPhase;
             Enter(Phase.PerformingKarmaHandSwap);
 
@@ -596,8 +587,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(KarmaHandSwap e)
         {
-            MainPhaseMiddle();
-
             var initiator = GetPlayer(e.Initiator);
             var victim = GetPlayer(KarmaHandSwapTarget);
 

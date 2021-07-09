@@ -148,14 +148,14 @@ namespace Treachery.Shared
                 if (result == "")
                 {
                     ExecuteConcreteEvent();
-                    Game.AddEvent(this);
+                    Game.PerformPostEventTasks(this);
                 }
                 return result;
             }
             else
             {
                 ExecuteConcreteEvent();
-                Game.AddEvent(this);
+                Game.PerformPostEventTasks(this);
                 return "";
             }
         }
