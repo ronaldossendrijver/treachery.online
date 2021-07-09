@@ -478,6 +478,21 @@ namespace Treachery.Shared
                 case Faction.Purple:
                     p.ForcesInReserve = 20;
                     break;
+
+                case Faction.Brown:
+                    p.ForcesInReserve = 20;
+                    break;
+                case Faction.White:
+                    p.ForcesInReserve = 20;
+                    break;
+
+                case Faction.Pink:
+                    p.ForcesInReserve = 20;
+                    break;
+                case Faction.Cyan:
+                    p.ForcesInReserve = 20;
+                    break;
+
             }
         }
 
@@ -533,6 +548,28 @@ namespace Treachery.Shared
                     p.Resources = 5;
                     p.ForcesInReserve = 20;
                     break;
+
+                case Faction.Brown:
+                    p.Resources = 2;
+                    p.ForcesInReserve = 20;
+                    break;
+
+                case Faction.White:
+                    p.Resources = 5;
+                    p.ForcesInReserve = 20;
+                    break;
+
+                case Faction.Pink:
+                    p.Resources = 13;
+                    p.ForcesInReserve = 17;
+                    p.ChangeForces(Map.ImperialBasin.MiddleLocation, 3);
+                    break;
+
+                case Faction.Cyan:
+                    p.Resources = 12;
+                    p.ForcesInReserve = 20;
+                    break;
+
             }
         }
 

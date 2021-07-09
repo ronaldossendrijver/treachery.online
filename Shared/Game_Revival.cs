@@ -14,14 +14,12 @@ namespace Treachery.Shared
 
         private void EnterRevivalPhase()
         {
+            MainPhaseStart(MainPhase.Resurrection);
+            HasActedOrPassed.Clear();
+            Enter(Phase.Resurrection);
             Allow(FactionAdvantage.BlackFreeCard);
             Allow(FactionAdvantage.RedReceiveBid);
             Allow(FactionAdvantage.GreyAllyDiscardingCard);
-            HasActedOrPassed.Clear();
-            CurrentMainPhase = MainPhase.Resurrection;
-            Enter(Phase.Resurrection);
-            CurrentReport = new Report(MainPhase.Resurrection);
-
             RevivalTechTokenIncome = false;
             FactionsThatTookFreeRevival.Clear();
         }
@@ -29,6 +27,8 @@ namespace Treachery.Shared
         public List<Faction> FactionsThatRevivedSpecialForcesThisTurn = new List<Faction>();
         public void HandleEvent(Revival r)
         {
+            MainPhaseMiddle();
+
             var initiator = GetPlayer(r.Initiator);
 
             //Payment
@@ -125,13 +125,13 @@ namespace Treachery.Shared
             }
         }
 
-        public void ReviveHero(IHero h)
+        private void ReviveHero(IHero h)
         {
             LeaderState[h].Revive();
             LeaderState[h].CurrentTerritory = null;
         }
 
-        public void ReviveGhola(Player initiator, Leader l)
+        private void ReviveGhola(Player initiator, Leader l)
         {
             LeaderState[l].Revive();
             LeaderState[l].CurrentTerritory = null;
@@ -165,6 +165,11 @@ namespace Treachery.Shared
                     case Faction.Blue: nrOfFreeRevivals = 1; break;
                     case Faction.Grey: nrOfFreeRevivals = 1; break;
                     case Faction.Purple: nrOfFreeRevivals = 2; break;
+
+                    case Faction.Brown: nrOfFreeRevivals = 0; break;
+                    case Faction.White: nrOfFreeRevivals = 2; break;
+                    case Faction.Pink: nrOfFreeRevivals = 2; break;
+                    case Faction.Cyan: nrOfFreeRevivals = 2; break;
                 }
 
                 if (player.Ally == Faction.Yellow && player.Ally == Faction.Yellow && YellowAllowsThreeFreeRevivals)
@@ -177,7 +182,7 @@ namespace Treachery.Shared
         }
 
 
-        public Faction[] FactionsWithIncreasedRevivalLimits = new Faction[] { };
+        public Faction[] FactionsWithIncreasedRevivalLimits { get; set; } = new Faction[] { };
 
         public void HandleEvent(SetIncreasedRevivalLimits e)
         {
@@ -187,7 +192,7 @@ namespace Treachery.Shared
 
         public int GetRevivalLimit(Player p)
         {
-            if (p.Is(Faction.Purple))
+            if (p.Is(Faction.Purple) || p.Is(Faction.Brown))
             {
                 return 100;
             }
@@ -286,6 +291,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(RaiseDeadPlayed r)
         {
+            MainPhaseMiddle();
             RecentMilestones.Add(Milestone.RaiseDead);
             CurrentReport.Add(r.GetMessage());
             var player = GetPlayer(r.Initiator);
@@ -317,6 +323,7 @@ namespace Treachery.Shared
         public RequestPurpleRevival CurrentPurpleRevivalRequest = null;
         public void HandleEvent(RequestPurpleRevival e)
         {
+            MainPhaseMiddle();
             CurrentReport.Add(e.GetMessage());
             CurrentPurpleRevivalRequest = e;
         }
@@ -324,6 +331,8 @@ namespace Treachery.Shared
         public Dictionary<IHero, int> AllowedEarlyRevivals = new Dictionary<IHero, int>();
         public void HandleEvent(AcceptOrCancelPurpleRevival e)
         {
+            MainPhaseMiddle();
+
             CurrentReport.Add(e.GetMessage());
 
             if (AllowedEarlyRevivals.ContainsKey(e.Hero))

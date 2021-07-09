@@ -12,7 +12,7 @@ namespace Treachery.Shared
     {
         protected KarmaFreeRevival DetermineKarmaFreeRevival()
         {
-            int specialForcesThatCanBeRevived = Math.Min(3, Revival.ValidRevivalAmounts(Game, this, true).Max());
+            int specialForcesThatCanBeRevived = Math.Min(3, Revival.ValidMaxRevivals(Game, this, true));
 
             if (LastTurn || ForcesKilled + specialForcesThatCanBeRevived >= 6)
             {
@@ -273,7 +273,7 @@ namespace Treachery.Shared
 
         protected virtual RaiseDeadPlayed DetermineRaiseDeadPlayed()
         {
-            int specialForcesThatCanBeRevived = Math.Min(5, Revival.ValidRevivalAmounts(Game, this, true).Max());
+            int specialForcesThatCanBeRevived = Math.Min(5, Revival.ValidMaxRevivals(Game, this, true));
 
             if (Game.CurrentTurn == Game.MaximumNumberOfTurns || Game.CurrentMainPhase > MainPhase.Resurrection && ForcesKilled + specialForcesThatCanBeRevived >= 7)
             {

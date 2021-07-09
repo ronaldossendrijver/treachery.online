@@ -19,9 +19,8 @@ namespace Treachery.Shared
 
         private void EnterBiddingPhase()
         {
+            MainPhaseStart(MainPhase.Bidding);
             BidSequence.Start(this, Version >= 50);
-            CurrentMainPhase = MainPhase.Bidding;
-            CurrentReport = new Report(MainPhase.Bidding);
             ReceiveResourceTechIncome();
             GreySwappedCardOnBid = false;
             DrawCardsOnAuction();
@@ -60,12 +59,14 @@ namespace Treachery.Shared
             }
             else
             {
-                Enter(Version >= 38, Phase.BiddingReport, EnterRevivalPhase);
+                EndBiddingPhase();
             }
         }
 
         public void HandleEvent(GreyRemovedCardFromAuction e)
         {
+            MainPhaseMiddle();
+
             CardsOnAuction.Items.Remove(e.Card);
 
             if (e.PutOnTop)
@@ -95,6 +96,8 @@ namespace Treachery.Shared
 
         public void HandleEvent(GreySwappedCardOnBid e)
         {
+            MainPhaseMiddle();
+
             if (!e.Passed)
             {
                 GreySwappedCardOnBid = true;
@@ -134,7 +137,7 @@ namespace Treachery.Shared
                 var drawnCard = CardsOnAuction.Draw();
                 Players[0].TreacheryCards.Add(drawnCard);
                 if (Version >= 41) GiveHarkonnenExtraCard(Players[0]);
-                Enter(Version >= 38, Phase.BiddingReport, EnterRevivalPhase);
+                EndBiddingPhase();
             }
             else
             {
@@ -160,7 +163,7 @@ namespace Treachery.Shared
             }
         }
 
-        public TreacheryCard CardSetAsideForBid(Player p)
+        public TreacheryCard GetCardSetAsideForBid(Player p)
         {
             if (CardUsedForKarmaBid != null && CardUsedForKarmaBid.Item1 == p)
             {
@@ -175,6 +178,8 @@ namespace Treachery.Shared
         private Tuple<Player, TreacheryCard> CardUsedForKarmaBid = null;
         public void HandleEvent(Bid bid)
         {
+            MainPhaseMiddle();
+
             if (!bid.Passed)
             {
                 ReturnKarmaCardUsedForBid();
@@ -267,6 +272,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(RedBidSupport e)
         {
+            MainPhaseMiddle();
             PermittedUseOfRedSpice = e.Amounts;
             CurrentReport.Add(e.GetMessage());
         }
@@ -307,7 +313,7 @@ namespace Treachery.Shared
                 TreacheryDeck.PutOnTop(CardsOnAuction.Draw());
             }
 
-            Enter(Version >= 38, Phase.BiddingReport, EnterRevivalPhase);
+            EndBiddingPhase();
         }
 
         private void WinByHighestBid()
@@ -499,6 +505,8 @@ namespace Treachery.Shared
 
         public void HandleEvent(ReplacedCardWon e)
         {
+            MainPhaseMiddle();
+
             if (!e.Passed)
             {
                 Discard(CardJustWon);
@@ -536,7 +544,8 @@ namespace Treachery.Shared
                     red.Resources += red.ResourcesAfterBidding;
                     red.ResourcesAfterBidding = 0;
                 }
-                Enter(Phase.BiddingReport);
+
+                EndBiddingPhase();
             }
         }
 
@@ -556,6 +565,8 @@ namespace Treachery.Shared
 
         public void HandleEvent(KarmaHandSwapInitiated e)
         {
+            MainPhaseMiddle();
+
             KarmaHandSwapPausedPhase = CurrentPhase;
             Enter(Phase.PerformingKarmaHandSwap);
 
@@ -585,6 +596,8 @@ namespace Treachery.Shared
 
         public void HandleEvent(KarmaHandSwap e)
         {
+            MainPhaseMiddle();
+
             var initiator = GetPlayer(e.Initiator);
             var victim = GetPlayer(KarmaHandSwapTarget);
 
@@ -607,6 +620,12 @@ namespace Treachery.Shared
 
             CurrentReport.Add(e.GetMessage());
             Enter(KarmaHandSwapPausedPhase);
+        }
+
+        private void EndBiddingPhase()
+        {
+            MainPhaseEnd();
+            Enter(Phase.BiddingReport);
         }
     }
 }

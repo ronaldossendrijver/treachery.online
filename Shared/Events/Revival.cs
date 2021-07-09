@@ -143,24 +143,6 @@ namespace Treachery.Shared
             return result;
         }
 
-        public static IEnumerable<int> ValidRevivalAmounts(Game g, Player p, bool specialForces)
-        {
-            int killedForces = specialForces ? p.SpecialForcesKilled : p.ForcesKilled;
-            var amountPaidByEmperor = p.Ally == Faction.Red ? g.RedWillPayForExtraRevival : 0;
-
-            int maxRevivals;
-            if (!specialForces)
-            {
-                maxRevivals = Math.Min(g.GetRevivalLimit(p) + amountPaidByEmperor, killedForces);
-            }
-            else
-            {
-                maxRevivals = Math.Min(p.Is(Faction.Grey) ? g.GetRevivalLimit(p) + amountPaidByEmperor : (g.FactionsThatRevivedSpecialForcesThisTurn.Contains(p.Faction)? 0 : 1), killedForces);
-            }
-
-            return Enumerable.Range(0, maxRevivals + 1);
-        }
-
         public static int ValidMaxRevivals(Game g, Player p, bool specialForces)
         {
             var amountPaidByEmperor = p.Ally == Faction.Red ? g.RedWillPayForExtraRevival : 0;
@@ -225,7 +207,7 @@ namespace Treachery.Shared
             int nrOfFreeRevivalsLeft = nrOfFreeRevivals - (amountOfSpecialForces - nrOfPaidSpecialForces);
             int nrOfPaidNormalForces = Math.Max(0, amountOfForces - nrOfFreeRevivalsLeft);
             int priceOfSpecialForces = initiator.Is(Faction.Grey) ? 3 : 2;
-            int priceOfNormalForces = 2;
+            int priceOfNormalForces = initiator.Is(Faction.Brown) ? 1 : 2;
 
             var cost = nrOfPaidSpecialForces * priceOfSpecialForces + nrOfPaidNormalForces * priceOfNormalForces;
 

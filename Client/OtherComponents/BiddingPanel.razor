@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<Bid>
 
-@if (h.Game.CurrentMainPhase == MainPhase.Bidding || (h.Game.Version < 38 && h.CurrentPhase == Phase.Resurrection))
+@if (h.Game.CurrentPhase == Phase.Bidding)
 {
     <div class="card p-1 mb-2 border-white" style="background-image:url('@Skin.Current.PanelBackground_Bidding_URL');background-size:cover;background-repeat:no-repeat">
 
@@ -15,12 +15,13 @@
             <table class="table table-borderless">
                 <tr>
 
-                    <td class="align-top" style="position:relative; width: 160px;">
-                        <img src="@CurrentCardImageSRC" width="160" data-animation="true" data-content="@CurrentCardHover" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" />
+                    <td class="align-top" style="position:relative; width: 200px;">
+
+                        <img src="@CurrentCardImageSRC" width="200" data-animation="true" data-content="@CurrentCardHover" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" />
 
                         @if (Game.CurrentBid != null)
                         {
-                            <div style="position: absolute; top: 145px; width: 160px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
+                            <div style="position: absolute; top: 180px; width: 200px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
                                 <img src="@Skin.Current.GetImageURL(Game.CurrentBid.Initiator)" width="36" style="vertical-align: top;" />
                                 <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="36" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
                                 <div style="font-size: 28px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">

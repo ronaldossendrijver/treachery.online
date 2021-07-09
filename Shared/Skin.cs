@@ -16,8 +16,9 @@ namespace Treachery.Shared
         #region Attributes
 
         public const int CurrentVersion = 2;
-        public const string DEFAULT_ART_LOCATION = "https://treachery.online";
-        //public const string DEFAULT_ART_LOCATION = ".";
+
+        //public const string DEFAULT_ART_LOCATION = "https://treachery.online";
+        public const string DEFAULT_ART_LOCATION = ".";
 
         public string Description = null;
         public int Version;
@@ -1649,7 +1650,7 @@ namespace Treachery.Shared
                 [Faction.Purple] = "Tleilaxu",
 
                 [Faction.Brown] = "CHOAM",
-                [Faction.White] = "Richesse",
+                [Faction.White] = "Richese",
                 [Faction.Pink] = "Ecaz",
                 [Faction.Cyan] = "Moritani"
             },

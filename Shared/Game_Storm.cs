@@ -18,10 +18,9 @@ namespace Treachery.Shared
 
         private void EnterStormPhase()
         {
+            MainPhaseStart(MainPhase.Storm, CurrentTurn > 1);
             FactionsThatRevivedSpecialForcesThisTurn.Clear();
             StormLossesToTake.Clear();
-            CurrentMainPhase = MainPhase.Storm;
-            CurrentReport = new Report(MainPhase.Storm);
             CurrentTurn++;
 
             if (CurrentTurn == 1)
@@ -46,6 +45,8 @@ namespace Treachery.Shared
 
         public void HandleEvent(StormDialled e)
         {
+            MainPhaseMiddle();
+
             Dials.Add(e.Amount);
             HasActedOrPassed.Add(e.Initiator);
 
@@ -88,7 +89,7 @@ namespace Treachery.Shared
                 }
             }
 
-            Enter(IsPlaying(Faction.Grey) || Applicable(Rule.HMSwithoutGrey), Phase.HmsPlacement, EnterSpiceBlowPhase);
+            Enter(IsPlaying(Faction.Grey) || Applicable(Rule.HMSwithoutGrey), Phase.HmsPlacement, EndStormPhase);
         }
 
         private void MoveHMSBeforeDiallingStorm()
@@ -170,12 +171,14 @@ namespace Treachery.Shared
         {
             Map.HiddenMobileStronghold.PointAt(e.Target);
             CurrentReport.Add(e.GetMessage());
-            EnterSpiceBlowPhase();
+            EndStormPhase();
             RecentMilestones.Add(Milestone.HmsMovement);
         }
 
         public void HandleEvent(PerformHmsMovement e)
         {
+            MainPhaseMiddle();
+
             var initiator = GetPlayer(e.Initiator);
             int collectionRate = initiator.AnyForcesIn(Map.HiddenMobileStronghold) * 2;
             CurrentReport.Add(e.GetMessage());
@@ -266,6 +269,8 @@ namespace Treachery.Shared
 
         public void HandleEvent(MetheorPlayed e)
         {
+            MainPhaseMiddle();
+
             var player = GetPlayer(e.Initiator);
             var card = player.Card(TreacheryCardType.Metheor);
 
@@ -285,10 +290,12 @@ namespace Treachery.Shared
 
         public void HandleEvent(StormSpellPlayed e)
         {
+            MainPhaseMiddle();
+
             DiscardTreacheryCard(GetPlayer(e.Initiator), TreacheryCardType.StormSpell);
             CurrentReport.Add(e.GetMessage());
             MoveStormAndDetermineNext(e.MoveAmount);
-            EnterSpiceBlowPhase();
+            EndStormPhase();
         }
 
 
@@ -296,7 +303,7 @@ namespace Treachery.Shared
         {
             CurrentReport.Add("The storm moves {0} sectors.", NextStormMoves);
             MoveStormAndDetermineNext(NextStormMoves);
-            EnterSpiceBlowPhase();
+            EndStormPhase();
         }
 
         private void MoveStormAndDetermineNext(int amount)
@@ -371,18 +378,19 @@ namespace Treachery.Shared
 
         public void HandleEvent(TakeLosses e)
         {
+            MainPhaseMiddle();
+
             var player = GetPlayer(e.Initiator);
             player.KillForces(Shared.TakeLosses.LossLocation(this), e.ForceAmount, e.SpecialForceAmount, false);
             StormLossesToTake.RemoveAt(0);
+            CurrentReport.Add(e.GetMessage());
 
             if (PhaseBeforeStormLoss == Phase.BlowA)
             {
-                CurrentReport.Add(e.GetMessage());
-                Enter(StormLossesToTake.Count > 0, Phase.StormLosses, EnterSpiceBlowPhase);
+                Enter(StormLossesToTake.Count > 0, Phase.StormLosses, EndStormPhase);
             }
             else
             {
-                CurrentReport.Add(e.GetMessage());
                 Enter(PhaseBeforeStormLoss);
                 DetermineNextShipmentAndMoveSubPhase(intrusionCausedBeforeStormLoss, bgMayAccompanyBeforeStormLoss);
             }
@@ -418,7 +426,22 @@ namespace Treachery.Shared
                 return l.Territory.IsProtectedFromStorm && !(l == Map.Arrakeen || l.Territory == Map.ImperialBasin || l == Map.Carthag);
             }
         }
-        #endregion StormPhase
 
+        private void EndStormPhase()
+        {
+            MainPhaseEnd();
+
+            if (StormLossesToTake.Count > 0)
+            {
+                PhaseBeforeStormLoss = Phase.BlowA;
+                Enter(Phase.StormLosses);
+            }
+            else
+            {
+                Enter(Version >= 103, Phase.StormReport, EnterSpiceBlowPhase);
+            }
+        }
+
+        #endregion StormPhase
     }
 }

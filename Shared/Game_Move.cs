@@ -19,9 +19,8 @@ namespace Treachery.Shared
 
         private void EnterShipmentAndMovePhase()
         {
+            MainPhaseStart(MainPhase.ShipmentAndMove);
             FactionsWithOrnithoptersAtStartOfMovement = Players.Where(p => OccupiesArrakeenOrCarthag(p)).Select(p => p.Faction).ToList();
-            CurrentMainPhase = MainPhase.ShipmentAndMove;
-            CurrentReport = new Report(MainPhase.ShipmentAndMove);
             RecentMoves.Clear();
             ReceiveGraveyardTechIncome();
             BeginningOfShipmentAndMovePhase = true;
@@ -70,6 +69,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(OrangeDelay e)
         {
+            MainPhaseMiddle();
             BeginningOfShipmentAndMovePhase = false;
             CurrentReport.Add(e.GetMessage());
             Enter(EveryoneButOneActedOrPassed, Phase.ShipmentAndMoveConcluded, Phase.NonOrangeShip);
@@ -80,6 +80,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(Shipment s)
         {
+            MainPhaseMiddle();
             BeginningOfShipmentAndMovePhase = false;
             StormLossesToTake.Clear();
             ChosenDestinationsWithAllies.Clear();
@@ -206,11 +207,6 @@ namespace Treachery.Shared
             initiator.ShipForces(s.To, s.ForceAmount);
             initiator.ShipSpecialForces(s.To, s.SpecialForceAmount);
 
-            /*if (initiator.Faction != Faction.Blue && initiator.SpecialForcesIn(s.To) > 0)
-            {
-                initiator.FlipForces(s.To, true);
-            }*/
-
             if (initiator.Is(Faction.Yellow) && IsInStorm(s.To))
             {
                 int killCount;
@@ -252,7 +248,7 @@ namespace Treachery.Shared
                    (p.Ally == Faction.Orange && OrangeAllyMayShipAsGuild && !Prevented(FactionAdvantage.OrangeShipmentsDiscountAlly));
         }
 
-        public bool BlueMustBeFighterIn(Location l)
+        private bool BlueMustBeFighterIn(Location l)
         {
             if (l == null) return true;
 
@@ -262,6 +258,8 @@ namespace Treachery.Shared
 
         public void HandleEvent(BlueAccompanies c)
         {
+            MainPhaseMiddle();
+
             var benegesserit = GetPlayer(c.Initiator);
             if (c.Accompanies && benegesserit.ForcesInReserve > 0)
             {
@@ -287,6 +285,8 @@ namespace Treachery.Shared
 
         public void HandleEvent(Move m)
         {
+            MainPhaseMiddle();
+
             RecentMoves.Add(m);
 
             StormLossesToTake.Clear();
@@ -355,9 +355,12 @@ namespace Treachery.Shared
                 bgPlayer.ForcesIn(territory) > 0;
         }
 
-        public Phase PausedPhase { get; set; }
+        private Phase PausedPhase { get; set; }
+
         public void HandleEvent(Caravan e)
         {
+            MainPhaseMiddle();
+
             RecentMoves.Add(e);
 
             StormLossesToTake.Clear();
@@ -438,7 +441,7 @@ namespace Treachery.Shared
             }
         }
 
-        public bool MustMoveThroughStorm(Player initiator, Location from, Location to, Battalion moved)
+        private bool MustMoveThroughStorm(Player initiator, Location from, Location to, Battalion moved)
         {
             if (from == null || to == null) return false;
 
@@ -481,6 +484,8 @@ namespace Treachery.Shared
 
         public void HandleEvent(BlueFlip e)
         {
+            MainPhaseMiddle();
+
             var initiator = GetPlayer(e.Initiator);
 
             if (Version < 77)
@@ -495,13 +500,6 @@ namespace Treachery.Shared
             CurrentReport.Add(e.GetMessage());
             if (Version >= 102) FlipBeneGesseritWhenAlone();
             DetermineNextShipmentAndMoveSubPhase(false, BGMayAccompany);
-        }
-
-        public void HandleEvent(BlueBattleAnnouncement e)
-        {
-            var initiator = GetPlayer(e.Initiator);
-            initiator.FlipForces(e.Territory, false);
-            CurrentReport.Add(e.GetMessage());
         }
 
         private void DetermineNextShipmentAndMoveSubPhase(bool intrusionCaused, bool bgMayAccompany)
@@ -659,6 +657,7 @@ namespace Treachery.Shared
 
         private void ConcludeShipmentAndMove()
         {
+            MainPhaseEnd();
             Enter(Phase.ShipmentAndMoveConcluded);
             ReceiveShipsTechIncome();
         }

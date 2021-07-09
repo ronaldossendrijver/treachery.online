@@ -10,8 +10,7 @@ namespace Treachery.Shared
 
         private void EnterCharityPhase()
         {
-            CurrentMainPhase = MainPhase.Charity;
-            CurrentReport = new Report(MainPhase.Charity);
+            MainPhaseStart(MainPhase.Charity);
             HasActedOrPassed.Clear();
 
             Monsters.Clear();

@@ -83,6 +83,14 @@ namespace Treachery.Shared
         Ended = 110
     }
 
+    public enum MainPhaseMoment : int
+    {
+        None = 0,
+        Start = 10,
+        Middle = 20,
+        End = 30
+    }
+
     /// <summary>
     /// When adding a new phase, make sure you add it to Treachery.online.Client.Handler_GameStatus and Treachery.Shared.Skin
     /// </summary>
@@ -117,6 +125,8 @@ namespace Treachery.Shared
 
         DiallingStorm = 105,
         StormLosses = 110,
+        StormReport = 113,
+
         Thumper = 115,
         BlowA = 120,
         HarvesterA = 125,
@@ -188,6 +198,8 @@ namespace Treachery.Shared
         Facedancing = 320,
 
         BattleReport = 330,
+
+        CollectionReport = 340,
 
         [PhaseProperty(true, Faction.Black)]
         PerformingKarmaHandSwap = 350,

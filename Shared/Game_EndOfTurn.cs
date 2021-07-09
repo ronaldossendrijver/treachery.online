@@ -15,12 +15,12 @@ namespace Treachery.Shared
 
         private void EnterSpiceCollectionPhase()
         {
-            CurrentMainPhase = MainPhase.Contemplate;
-            CurrentReport = new Report(MainPhase.Contemplate);
+            MainPhaseStart(MainPhase.Collection);
             CallHeroesHome();
             CollectResourcesFromTerritories();
             CollectResourcesFromStrongholds();
-            EnterMentatPhase();
+            MainPhaseEnd();
+            Enter(Version >= 103, Phase.CollectionReport, EnterMentatPhase);
         }
 
         private void CollectResourcesFromStrongholds()
@@ -76,10 +76,12 @@ namespace Treachery.Shared
 
         private void EnterMentatPhase()
         {
+            MainPhaseStart(MainPhase.Contemplate, Version >= 103);
             AllowAllFactionAdvantages();
             CheckNormalWin();
             CheckBeneGesseritPrediction();
             CheckFinalTurnWin();
+            MainPhaseEnd();
         }
 
         private void AllowAllFactionAdvantages()

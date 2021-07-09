@@ -23,9 +23,8 @@ namespace Treachery.Shared
 
         private void EnterBattlePhase()
         {
-            CurrentMainPhase = MainPhase.Battle;
+            MainPhaseStart(MainPhase.Battle);
             NrOfBattlesFought = 0;
-            CurrentReport = new Report(MainPhase.Battle);
             if (KarmaHmsMovesLeft != 2) KarmaHmsMovesLeft = 0;
             AllowMovePhaseFactionAdvantages();
             ResetBattle();
@@ -95,6 +94,8 @@ namespace Treachery.Shared
         public Voice CurrentVoice { get; private set; } = null;
         public void HandleEvent(Voice e)
         {
+            MainPhaseMiddle();
+
             CurrentVoice = e;
 
             if (CurrentBattle != null)
@@ -115,6 +116,8 @@ namespace Treachery.Shared
         public Prescience CurrentPrescience { get; private set; } = null;
         public void HandleEvent(Prescience e)
         {
+            MainPhaseMiddle();
+
             CurrentPrescience = e;
             CurrentReport.Add(e.GetMessage());
             RecentMilestones.Add(Milestone.Prescience);
@@ -122,6 +125,8 @@ namespace Treachery.Shared
 
         public void HandleEvent(Battle b)
         {
+            MainPhaseMiddle();
+
             if (b.Initiator == CurrentBattle.Initiator)
             {
                 AggressorBattleAction = b;
@@ -453,7 +458,9 @@ namespace Treachery.Shared
         {
             GreenKarma = false;
             if (!Applicable(Rule.FullPhaseKarma)) AllowPreventedBattleFactionAdvantages();
+            if (Aggressor == null) MainPhaseEnd();
             Enter(Phase.BattleReport);
+
         }
 
         private void AllowPreventedBattleFactionAdvantages()

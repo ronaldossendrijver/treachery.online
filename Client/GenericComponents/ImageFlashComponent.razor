@@ -14,7 +14,7 @@
     {
         <JsPanel Width="@WindowWidth" Height="@WindowHeight" HeaderShown="false" ShadowHeight="0" Autoclose="@TimeString" Theme="@JsPanelTheme.TRANSPARANT" Position="JsPanel.PanelPosition.Center" ContentOverflow="hidden" Resizable="false">
 
-            <div class="row m-0 p-0 w-100 justify-content-center">
+            <div class="row m-0 p-0 w-100 justify-content-center" @onclick="Hide">
 
                 @foreach (var img in imgToShow)
                 {

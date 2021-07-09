@@ -233,8 +233,12 @@
         var existingSkinData = await Browser.LoadStringSetting("treachery.online;setting.skin");
         if (existingSkinData != null && existingSkinData.Length > 0)
         {
-            Skin.Current = Support.LoadSkin(existingSkinData);
-            await Skin.Current.ValidateAndFix(Browser.UrlExists);
+            var existingSkin = Support.LoadSkin(existingSkinData);
+            var issues = await existingSkin.ValidateAndFix(Browser.UrlExists);
+            if (!issues.Any())
+            {
+                Skin.Current = existingSkin;
+            }
         }
     }
 

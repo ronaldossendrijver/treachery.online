@@ -36,11 +36,11 @@
             <SelectHeroComponent @bind-Value="hero" Values="Revival.ValidRevivalHeroes(Game, Player)" Required="false" />
         }
 
-        <div class="mt-2">Revival cost for you: <span class="badge badge-primary badge-pill">@(CostOfRevival.TotalCostForPlayer)</span></div>
+        <div class="mt-1 text-right">Revival cost for you: <span class="badge badge-primary badge-pill">@(CostOfRevival.TotalCostForPlayer)</span></div>
 
         @if (Player.Ally == Faction.Red)
         {
-            <div class="mt-0">Revival cost for @Skin.Current.Describe(Faction.Red): <span class="badge badge-primary badge-pill">@(CostOfRevival.CostForEmperor)</span></div>
+            <div class="mt-1 text-right">Revival cost for @Skin.Current.Describe(Faction.Red): <span class="badge badge-primary badge-pill">@(CostOfRevival.CostForEmperor)</span></div>
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />

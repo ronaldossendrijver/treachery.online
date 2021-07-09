@@ -29,6 +29,9 @@ namespace Treachery.Client
                 case Phase.MetheorAndStormSpell:
                     return Skin.Current.Format("Continue with the {0} phase?", MainPhase.Storm);
 
+                case Phase.StormReport:
+                    return Skin.Current.Format("End {0} and start {1}?", MainPhase.Storm, MainPhase.Blow);
+
                 case Phase.Thumper:
                     return Skin.Current.Format("Continue with the {0} phase?", MainPhase.Blow);
 
@@ -67,6 +70,9 @@ namespace Treachery.Client
                     {
                         return "Continue with the next Battle?";
                     }
+
+                case Phase.CollectionReport:
+                    return Skin.Current.Format("End {0} and move to {1}", MainPhase.Collection, MainPhase.Contemplate);
 
                 case Phase.TurnConcluded:
                     return Skin.Current.Format("End this turn and start the next {0}?", MainPhase.Storm);
@@ -439,6 +445,26 @@ namespace Treachery.Client
                                             WaitingForOthers = true
                                         };
                                     }
+
+                                case Phase.StormReport:
+
+                                    var reportName = Game.CurrentTurn == 1 ? Skin.Current.Format("{0} and First {1}", MainPhase.Setup, MainPhase.Storm) : Skin.Current.Describe(MainPhase.Storm);
+                                    if (IsHost)
+                                    {
+                                        return new GameStatus()
+                                        {
+                                            Description = Skin.Current.Format("Factions may now review the {0} report... As host, you can skip to the next step when ready.", reportName),
+                                            WaitingForOthers = false
+                                        };
+                                    }
+                                    else
+                                    {
+                                        return new GameStatus()
+                                        {
+                                            Description = Skin.Current.Format("Factions may now review the {0} report...", reportName),
+                                            WaitingForOthers = true
+                                        };
+                                    }
                             }
                         }
                         break;
@@ -473,7 +499,7 @@ namespace Treachery.Client
                                         {
                                             return new GameStatus()
                                             {
-                                                Description = Skin.Current.Format("Factions may now review the {0} report... As host, you can skip to the next step when ready.", MainPhase.Setup),
+                                                Description = Skin.Current.Format("You may now continue to the first {0} blow when ready.", Concept.Resource),
                                                 WaitingForOthers = false
                                             };
                                         }
@@ -481,7 +507,7 @@ namespace Treachery.Client
                                         {
                                             return new GameStatus()
                                             {
-                                                Description = Skin.Current.Format("Factions may now review the {0} report...", MainPhase.Setup),
+                                                Description = Skin.Current.Format("Waiting for the host to perform the first {0} blow.....", Concept.Resource),
                                                 WaitingForOthers = true
                                             };
                                         }

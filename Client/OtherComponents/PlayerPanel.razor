@@ -134,7 +134,7 @@
                         }
 
                         <!-- Cards -->
-                        @if (ShownPlayer.TreacheryCards.Count == 0 && h.Game.CardSetAsideForBid(Player) == null)
+                        @if (ShownPlayer.TreacheryCards.Count == 0 && h.Game.GetCardSetAsideForBid(Player) == null)
                         {
                             <div>You don't own any treachery cards.</div>
                         }
@@ -149,9 +149,9 @@
                                     </div>
                                 }
 
-                                @if (h.Game.CardSetAsideForBid(Player) != null)
+                                @if (h.Game.GetCardSetAsideForBid(Player) != null)
                                 {
-                                    var v = h.Game.CardSetAsideForBid(Player);
+                                    var v = h.Game.GetCardSetAsideForBid(Player);
                                     <div class="card bg-transparent">
                                         <img src="@Skin.Current.GetImageURL(v)" class="img-fluid" data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(v)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover">
                                     </div>

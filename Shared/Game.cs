@@ -11,7 +11,7 @@ namespace Treachery.Shared
     public partial class Game
     {
         public const int LowestSupportedVersion = 68;
-        public const int LatestVersion = 102;
+        public const int LatestVersion = 103;
 
         public bool BotInfologging = false;
 
@@ -33,6 +33,7 @@ namespace Treachery.Shared
         public IList<Game> States { get; set; } = new List<Game>();
         public int CurrentTurn { get; set; } = 0;
         public MainPhase CurrentMainPhase { get; set; } = MainPhase.Started;
+        public MainPhaseMoment CurrentMoment { get; set; } = MainPhaseMoment.None;
         public Phase CurrentPhase { get; set; } = Phase.None;
         public IList<Faction> HasActedOrPassed { get; set; } = new List<Faction>();
         public IList<Player> Players { get; set; } = new List<Player>();
@@ -183,6 +184,9 @@ namespace Treachery.Shared
                 case Phase.MetheorAndStormSpell:
                     result.Add(typeof(EndPhase));
                     break;
+                case Phase.StormReport:
+                    result.Add(typeof(EndPhase));
+                    break;
                 case Phase.Thumper:
                     result.Add(typeof(EndPhase));
                     break;
@@ -213,6 +217,9 @@ namespace Treachery.Shared
                     result.Add(typeof(EndPhase));
                     break;
                 case Phase.BattleReport:
+                    result.Add(typeof(EndPhase));
+                    break;
+                case Phase.CollectionReport:
                     result.Add(typeof(EndPhase));
                     break;
                 case Phase.TurnConcluded:
@@ -605,6 +612,10 @@ namespace Treachery.Shared
                     EnterNormalStormPhase();
                     break;
 
+                case Phase.StormReport:
+                    EnterSpiceBlowPhase();
+                    break;
+
                 case Phase.Thumper:
                     EnterBlowA();
                     break;
@@ -648,6 +659,10 @@ namespace Treachery.Shared
                     Enter(Aggressor != null, Phase.BattlePhase, EnterSpiceCollectionPhase);
                     break;
 
+                case Phase.CollectionReport:
+                    EnterMentatPhase();
+                    break;
+
                 case Phase.TurnConcluded:
                     AddBribesToPlayerResources();
                     EnterStormPhase();
@@ -665,6 +680,23 @@ namespace Treachery.Shared
         #endregion EventHandling
 
         #region PhaseTransitions
+
+        private void MainPhaseStart(MainPhase phase, bool clearReport = true)
+        {
+            CurrentMainPhase = phase;
+            CurrentMoment = MainPhaseMoment.Start;
+            if (clearReport) CurrentReport = new Report(phase);
+        }
+
+        private void MainPhaseMiddle()
+        {
+            CurrentMoment = MainPhaseMoment.Middle;
+        }
+
+        private void MainPhaseEnd()
+        {
+            CurrentMoment = MainPhaseMoment.End;
+        }
 
         private void Enter(Phase phase)
         {

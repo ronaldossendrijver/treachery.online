@@ -10,6 +10,13 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
+        public void HandleEvent(BlueBattleAnnouncement e)
+        {
+            var initiator = GetPlayer(e.Initiator);
+            initiator.FlipForces(e.Territory, false);
+            CurrentReport.Add(e.GetMessage());
+        }
+
         public void HandleEvent(Donated e)
         {
             var initiator = GetPlayer(e.Initiator);
