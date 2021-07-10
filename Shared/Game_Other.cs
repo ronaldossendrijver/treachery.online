@@ -181,6 +181,29 @@ namespace Treachery.Shared
             }
         }
 
+        public void HandleEvent(KarmaBrownDiscard e)
+        {
+            RecentMilestones.Add(Milestone.Discard);
+            CurrentReport.Add(e.GetMessage());
+
+            foreach (var card in e.Cards)
+            {
+                Discard(e.Player, card);
+            }
+
+            e.Player.Resources += e.Cards.Count() * 3;
+            e.Player.SpecialKarmaPowerUsed = true;
+        }
+
+        public void HandleEvent(KarmaWhiteBuy e)
+        {
+            RecentMilestones.Add(Milestone.AuctionWon);
+            CurrentReport.Add(e.GetMessage());
+            e.Player.TreacheryCards.Add(e.Card);
+            WhiteDeck.Items.Remove(e.Card);
+            e.Player.SpecialKarmaPowerUsed = true;
+        }
+
         public void HandleEvent(KarmaFreeRevival e)
         {
             RecentMilestones.Add(Milestone.Revival);

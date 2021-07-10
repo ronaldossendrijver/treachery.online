@@ -1,0 +1,29 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<KarmaBrownDiscard>
+
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to discard any cards from your hand to gain 3 @Skin.Current.Describe(Concept.Resource) each</Header>
+    <Body>
+
+        <SelectCardComponent Selected="selectedCards" Values="Player.TreacheryCards" OnChanged="StateHasChanged" />
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override Faction IsFactionSpecific => Faction.Brown;
+
+    private List<TreacheryCard> selectedCards = new List<TreacheryCard>();
+
+    protected override KarmaBrownDiscard ConfirmedResult => new KarmaBrownDiscard(Game) { Initiator = Faction, Cards = selectedCards };
+}

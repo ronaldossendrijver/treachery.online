@@ -277,7 +277,8 @@ namespace Treachery.Shared
         Prescience = 2600,
         ResourcesReceived = 2700,
         Economics = 2800,
-        CardTraded = 2900
+        CardTraded = 2900,
+        Discard = 3000
     }
 
 

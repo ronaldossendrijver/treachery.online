@@ -4,6 +4,7 @@
 
 using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -246,6 +247,8 @@ namespace Treachery.Shared
             string result;
 
             if (value == null) result = "";
+            //(value.GetType().GetGenericTypeDefinition() == typeof(IEnumerable<>))
+            else if (value is IEnumerable ienum) result = Join(Enumerable.Cast<object>(ienum));
             else if (value is MessagePart part) result = Describe(part);
             else if (value is Concept c) result = Describe(c);
             else if (value is Faction faction) result = Describe(faction);
@@ -1893,7 +1896,8 @@ namespace Treachery.Shared
 
                 [Milestone.ResourcesReceived] = DEFAULT_ART_LOCATION + "/art/bid.mp3",
                 [Milestone.Economics] = DEFAULT_ART_LOCATION + "/art/bribe.mp3",
-                [Milestone.CardTraded] = DEFAULT_ART_LOCATION + "/art/cardflip.mp3"
+                [Milestone.CardTraded] = DEFAULT_ART_LOCATION + "/art/cardflip.mp3",
+                [Milestone.Discard] = DEFAULT_ART_LOCATION + "/art/cardflip.mp3"
             },
 
             MapDimensions = new Point(4145, 4601),

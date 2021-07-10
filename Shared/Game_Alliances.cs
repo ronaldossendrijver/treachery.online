@@ -96,6 +96,15 @@ namespace Treachery.Shared
             }
             else
             {
+                if (CurrentCardTradeOffer.Player.TreacheryCards.Count > 1 || e.Player.TreacheryCards.Count > 1)
+                {
+                    foreach (var p in Players.Where(pl => pl != CurrentCardTradeOffer.Player && pl != e.Player))
+                    {
+                        UnregisterKnown(p, CurrentCardTradeOffer.Player.TreacheryCards);
+                        UnregisterKnown(p, e.Player.TreacheryCards);
+                    }
+                }
+
                 CurrentCardTradeOffer.Player.TreacheryCards.Add(e.Card);
                 e.Player.TreacheryCards.Remove(e.Card);
                 e.Player.TreacheryCards.Add(CurrentCardTradeOffer.Card);

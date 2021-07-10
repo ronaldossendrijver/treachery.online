@@ -1,0 +1,28 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<KarmaWhiteBuy>
+
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to buy one of your special Treachery cards for 3 @Skin.Current.Describe(Concept.Resource)</Header>
+    <Body>
+
+        <SelectCardComponent @bind-Value="card" Values="Game.WhiteDeck.Items" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    private TreacheryCard card;
+
+    protected override KarmaWhiteBuy ConfirmedResult => new KarmaWhiteBuy(Game) { Initiator = Faction, Card = card };
+
+    private string InfoMessage => "Prevention of an advantages with a * cannot be done automatically and must be done verbally between players. This might require an undo-action by the host after the action you want to prevent has occured.";
+}

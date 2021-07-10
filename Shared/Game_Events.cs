@@ -376,6 +376,22 @@ namespace Treachery.Shared
                     result.Add(typeof(KarmaHandSwapInitiated));
                 }
 
+                if (faction == Faction.Brown &&
+                    !player.SpecialKarmaPowerUsed &&
+                    player.Has(TreacheryCardType.Karma) &&
+                    Applicable(Rule.AdvancedKarama))
+                {
+                    result.Add(typeof(KarmaBrownDiscard));
+                }
+
+                if (faction == Faction.White &&
+                    !player.SpecialKarmaPowerUsed &&
+                    player.Has(TreacheryCardType.Karma) &&
+                    Applicable(Rule.AdvancedKarama))
+                {
+                    result.Add(typeof(KarmaWhiteBuy));
+                }
+
                 if (faction == Faction.Red &&
                     !player.SpecialKarmaPowerUsed &&
                     player.Has(TreacheryCardType.Karma) &&

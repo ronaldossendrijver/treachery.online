@@ -45,6 +45,7 @@ namespace Treachery.Shared
         public PlayerSequence TechTokenSequence { get; set; }
         public Deck<TreacheryCard> TreacheryDeck { get; set; }
         public Deck<TreacheryCard> TreacheryDiscardPile { get; set; }
+        public Deck<TreacheryCard> WhiteDeck { get; set; }
         public Deck<ResourceCard> ResourceCardDeck { get; set; }
         public Deck<ResourceCard> ResourceCardDiscardPileA { get; set; }
         public Deck<ResourceCard> ResourceCardDiscardPileB { get; set; }
