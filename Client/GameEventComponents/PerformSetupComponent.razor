@@ -18,7 +18,7 @@
         <SelectResourcesComponent @bind-Value="resources" Min="0" Max="100" Label="@Skin.Current.Describe(Concept.Resource)" />
 
         <label class="mt-1">Initial forces on planet:</label>
-        <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="20" />
+        <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="20" AllowMultipleTerritories="true"/>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 

@@ -113,7 +113,7 @@ namespace Treachery.Shared
         public int MONSTERTOKEN_RADIUS = 100;
 
         //Force tokens
-        public string FORCETOKEN_FONT = "normal normal bolder 85px Calibri, sans-serif";
+        public string FORCETOKEN_FONT = "normal normal bolder 85px Calibri, Tahoma, sans-serif";
         public string FORCETOKEN_FONTCOLOR = "white";
         public string FORCETOKEN_SPECIAL_FONTCOLOR = "gold";
         public string FORCETOKEN_FONT_BORDERCOLOR = "black";
@@ -125,7 +125,7 @@ namespace Treachery.Shared
         public int FORCETOKEN_RADIUS = 60;
 
         //Spice tokens
-        public string RESOURCETOKEN_FONT = "normal normal bolder 85px Calibri, sans-serif";
+        public string RESOURCETOKEN_FONT = "normal normal bolder 85px Calibri, Tahoma, sans-serif";
         public string RESOURCETOKEN_FONTCOLOR = "white";
         public string RESOURCETOKEN_FONT_BORDERCOLOR = "black";
         public int RESOURCETOKEN_FONT_BORDERWIDTH = 3;
@@ -141,14 +141,14 @@ namespace Treachery.Shared
         public string STORM_PRESCIENCE_OVERLAY_COLOR = "rgba(255,100,100,0.2)";
 
         //Card piles
-        public string CARDPILE_FONT = "normal normal normal 140px Advokat, Calibri, sans-serif";
+        public string CARDPILE_FONT = "normal normal normal 140px Advokat, Calibri, Tahoma, sans-serif";
         public string CARDPILE_FONTCOLOR = "white";
         public string CARDPILE_FONT_BORDERCOLOR = "black";
         public int CARDPILE_FONT_BORDERWIDTH = 3;
 
         //Phases
-        public string PHASE_FONT = "normal normal bold 90px Advokat, Calibri, sans-serif";
-        public string PHASE_ACTIVE_FONT = "normal normal normal 130px Advokat, Calibri, sans-serif";
+        public string PHASE_FONT = "normal normal bold 90px Advokat, Calibri, Tahoma, sans-serif";
+        public string PHASE_ACTIVE_FONT = "normal normal normal 130px Advokat, Calibri, Tahoma, sans-serif";
         public string PHASE_FONTCOLOR = "white";
         public string PHASE_ACTIVE_FONTCOLOR = "rgb(231,191,60)";
         public string PHASE_FONT_BORDERCOLOR = "black";
@@ -156,7 +156,7 @@ namespace Treachery.Shared
         public int PHASE_ACTIVE_FONT_BORDERWIDTH = 3;
 
         //Player names
-        public string PLAYERNAME_FONT = "normal normal bold 95px Advokat, Calibri, sans-serif";
+        public string PLAYERNAME_FONT = "normal normal bold 95px Advokat, Calibri, Tahoma, sans-serif";
         public string PLAYERNAME_FONTCOLOR = "white";
         public string PLAYERNAME_FONT_BORDERCOLOR = "black";
         public int PLAYERNAME_FONT_BORDERWIDTH = 3;
@@ -165,7 +165,7 @@ namespace Treachery.Shared
         public string TABLEPOSITION_BACKGROUNDCOLOR = "rgb(231,191,60)";
 
         //Turns
-        public string TURN_FONT = "normal normal normal 130px Advokat, Calibri, sans-serif";
+        public string TURN_FONT = "normal normal normal 130px Advokat, Calibri, Tahoma, sans-serif";
         public string TURN_FONT_COLOR = "white";
         public string TURN_FONT_BORDERCOLOR = "black";
         public int TURN_FONT_BORDERWIDTH = 3;
@@ -182,11 +182,11 @@ namespace Treachery.Shared
         public string SHADOW_LIGHT = "#505050";
 
         //General
-        public string GAMEVERSION_FONT = "normal normal normal 16px Advokat, Calibri, sans-serif;";
-        public string PLAYEDCARD_MESSAGE_FONT = "normal normal normal 16px Calibri, sans-serif";
-        public string FACTION_INFORMATIONCARDSTYLE = "font: normal normal normal 14px Calibri, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; line-height: 95%; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;";
-        public string TRACKER_FONT = "normal normal normal 12px Calibri, sans-serif;";
-        public string JSPANEL_DEFAULTSTYLE = "font-family: Calibri, sans-serif";
+        public string GAMEVERSION_FONT = "normal normal normal 16px Advokat, Calibri, Tahoma, sans-serif;";
+        public string PLAYEDCARD_MESSAGE_FONT = "normal normal normal 16px Calibri, Tahoma, sans-serif";
+        public string FACTION_INFORMATIONCARDSTYLE = "font: normal normal normal 14px Calibri, Tahoma, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; line-height: 95%; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;";
+        public string TRACKER_FONT = "normal normal normal 12px Calibri, Tahoma, sans-serif;";
+        public string JSPANEL_DEFAULTSTYLE = "font-family: Calibri, Tahoma, sans-serif";
 
         #endregion Attributes
 
@@ -247,8 +247,7 @@ namespace Treachery.Shared
             string result;
 
             if (value == null) result = "";
-            //(value.GetType().GetGenericTypeDefinition() == typeof(IEnumerable<>))
-            else if (value is IEnumerable ienum) result = Join(Enumerable.Cast<object>(ienum));
+            else if (value is string str) result = str;
             else if (value is MessagePart part) result = Describe(part);
             else if (value is Concept c) result = Describe(c);
             else if (value is Faction faction) result = Describe(faction);
@@ -265,6 +264,7 @@ namespace Treachery.Shared
             else if (value is WinMethod w) result = Describe(w);
             else if (value is Phase p) result = Describe(p);
             else if (value is BrownEconomicsStatus bes) result = Describe(bes);
+            else if (value is IEnumerable ienum) result = Join(Enumerable.Cast<object>(ienum));
             else result = value.ToString();
 
             if (capitalize)
@@ -1929,7 +1929,7 @@ namespace Treachery.Shared
             MONSTERTOKEN_RADIUS = 100,
 
             //Force tokens
-            FORCETOKEN_FONT = "normal normal bolder 85px Calibri, sans-serif",
+            FORCETOKEN_FONT = "normal normal bolder 85px Calibri, Tahoma, sans-serif",
             FORCETOKEN_FONTCOLOR = "white",
             FORCETOKEN_SPECIAL_FONTCOLOR = "gold",
             FORCETOKEN_FONT_BORDERCOLOR = "black",
@@ -1941,7 +1941,7 @@ namespace Treachery.Shared
             FORCETOKEN_RADIUS = 60,
 
             //Spice tokens
-            RESOURCETOKEN_FONT = "normal normal bolder 85px Calibri, sans-serif",
+            RESOURCETOKEN_FONT = "normal normal bolder 85px Calibri, Tahoma, sans-serif",
             RESOURCETOKEN_FONTCOLOR = "white",
             RESOURCETOKEN_FONT_BORDERCOLOR = "black",
             RESOURCETOKEN_FONT_BORDERWIDTH = 3,
@@ -1957,14 +1957,14 @@ namespace Treachery.Shared
             STORM_PRESCIENCE_OVERLAY_COLOR = "rgba(255,100,100,0.2)",
 
             //Card piles
-            CARDPILE_FONT = "normal normal normal 140px Advokat, Calibri, sans-serif",
+            CARDPILE_FONT = "normal normal normal 140px Advokat, Calibri, Tahoma, sans-serif",
             CARDPILE_FONTCOLOR = "white",
             CARDPILE_FONT_BORDERCOLOR = "black",
             CARDPILE_FONT_BORDERWIDTH = 3,
 
             //Phases
-            PHASE_FONT = "normal normal bold 90px Advokat, Calibri, sans-serif",
-            PHASE_ACTIVE_FONT = "normal normal normal 130px Advokat, Calibri, sans-serif",
+            PHASE_FONT = "normal normal bold 90px Advokat, Calibri, Tahoma, sans-serif",
+            PHASE_ACTIVE_FONT = "normal normal normal 130px Advokat, Calibri, Tahoma, sans-serif",
             PHASE_FONTCOLOR = "white",
             PHASE_ACTIVE_FONTCOLOR = "rgb(231,191,60)",
             PHASE_FONT_BORDERCOLOR = "black",
@@ -1972,7 +1972,7 @@ namespace Treachery.Shared
             PHASE_ACTIVE_FONT_BORDERWIDTH = 3,
 
             //Player names
-            PLAYERNAME_FONT = "normal normal bold 95px Advokat, Calibri, sans-serif",
+            PLAYERNAME_FONT = "normal normal bold 95px Advokat, Calibri, Tahoma, sans-serif",
             PLAYERNAME_FONTCOLOR = "white",
             PLAYERNAME_FONT_BORDERCOLOR = "black",
             PLAYERNAME_FONT_BORDERWIDTH = 3,
@@ -1980,13 +1980,13 @@ namespace Treachery.Shared
             TABLEPOSITION_BACKGROUNDCOLOR = "rgb(231,191,60)",
 
             //Turns
-            TURN_FONT = "normal normal normal 130px Advokat, Calibri, sans-serif",
+            TURN_FONT = "normal normal normal 130px Advokat, Calibri, Tahoma, sans-serif",
             TURN_FONT_COLOR = "white",
             TURN_FONT_BORDERCOLOR = "black",
             TURN_FONT_BORDERWIDTH = 3,
 
             //Wheel
-            WHEEL_FONT = "normal normal normal 200px Advokat, Calibri, sans-serif",
+            WHEEL_FONT = "normal normal normal 200px Advokat, Calibri, Tahoma, sans-serif",
             WHEEL_FONTCOLOR = "black",
             WHEEL_FONT_AGGRESSOR_BORDERCOLOR = "white",
             WHEEL_FONT_DEFENDER_BORDERCOLOR = "white",
@@ -1997,11 +1997,11 @@ namespace Treachery.Shared
             SHADOW_LIGHT = "#505050",
 
             //General
-            GAMEVERSION_FONT = "normal normal normal 16px Advokat, Calibri, sans-serif;",
-            PLAYEDCARD_MESSAGE_FONT = "normal normal normal 16px Calibri, sans-serif",
-            FACTION_INFORMATIONCARDSTYLE = "font: normal normal normal 14px Calibri, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; line-height: 95%; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;",
-            TRACKER_FONT = "normal normal normal 12px Calibri, sans-serif;",
-            JSPANEL_DEFAULTSTYLE = "font-family: Calibri, sans-serif"
+            GAMEVERSION_FONT = "normal normal normal 16px Advokat, Calibri, Tahoma, sans-serif;",
+            PLAYEDCARD_MESSAGE_FONT = "normal normal normal 16px Calibri, Tahoma, sans-serif",
+            FACTION_INFORMATIONCARDSTYLE = "font: normal normal normal 14px Calibri, Tahoma, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; line-height: 95%; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;",
+            TRACKER_FONT = "normal normal normal 12px Calibri, Tahoma, sans-serif;",
+            JSPANEL_DEFAULTSTYLE = "font-family: Calibri, Tahoma, sans-serif"
 
         };
 

@@ -75,7 +75,7 @@
 
         </div>
 
-        @if (Player.Ally != Faction.None)
+        @if (Player.Ally != Faction.None && Cost > 0)
         {
             <div class="mt-1">
                 <SelectResourcesFromFactionComponent @bind-Value="shipmentAllyContributionAmount" Min="0" Max="Game.SpiceYourAllyCanPay(Player)" Faction="Player.Ally" />
@@ -85,8 +85,6 @@
         @if (Karma.CanKarmaShipment(Game, Player) && (Faction != Faction.Yellow || shipmentType == SHIPMENT_SITETOSITE))
         {
             <div class="mt-1">
-
-
                 <SelectCardComponent @bind-Value="karmaCard" Values="Karma.ValidKarmaCardsForShipment(Game, Player)" Required="false">
                     <Label>Use @Skin.Current.Describe(TreacheryCardType.Karma) to ship at @Skin.Current.Describe(Faction.Orange) rate?</Label>
                 </SelectCardComponent>

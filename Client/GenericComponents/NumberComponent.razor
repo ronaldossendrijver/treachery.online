@@ -98,8 +98,8 @@
         {
             return NumberAlignment switch
             {
-                NumberAlignment.Center => "" + ((int)(0.18f * Size)) + "px",
-                NumberAlignment.BottomRight => "" + ((int)(0.4f * Size)) + "px",
+                NumberAlignment.Center => "" + ((int)(0.225f * Size)) + "px",
+                NumberAlignment.BottomRight => "" + ((int)(0.45f * Size)) + "px",
                 _ => "0px"
             };
         }
@@ -111,7 +111,7 @@
         {
             return NumberAlignment switch
             {
-                NumberAlignment.Center => "" + Size + "px",
+                NumberAlignment.Center => "" + ((int)(1.2 * Size)) + "px",
                 NumberAlignment.BottomRight => "" + ((int)(0.7 * Size)) + "px",
                 _ => "0px"
             };
@@ -124,7 +124,7 @@
         {
             return NumberAlignment switch
             {
-                NumberAlignment.Center => "0px",
+                NumberAlignment.Center => "" + ((int)(-0.1 * Size)) + "px",
                 NumberAlignment.BottomRight => "" + ((int)(0.35f * Size)) + "px",
                 _ => "0px"
             };
@@ -137,7 +137,7 @@
         {
             return NumberAlignment switch
             {
-                NumberAlignment.Center => "0px",
+                NumberAlignment.Center => "" + ((int)(-0.1 * Size)) + "px",
                 NumberAlignment.BottomRight => "" + ((int)(0.35f * Size)) + "px",
                 _ => "0px"
             };
@@ -150,8 +150,8 @@
         {
             return NumberAlignment switch
             {
-                NumberAlignment.Center => "" + ((int)(0.55f * Size)) + "px",
-                NumberAlignment.BottomRight => "" + ((int)(0.5f * Size)) + "px",
+                NumberAlignment.Center => "" + ((int)(0.5f * Size)) + "px",
+                NumberAlignment.BottomRight => "" + ((int)(0.45f * Size)) + "px",
                 _ => "0px"
             };
         }
