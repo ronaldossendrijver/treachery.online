@@ -107,19 +107,8 @@ namespace Treachery.Shared
         {
             int maximumDistance = g.DetermineMaximumMoveDistance(p, moved);
             bool mayMoveIntoStorm = p.Faction == Faction.Yellow && g.Applicable(Rule.YellowMayMoveIntoStorm) && g.Applicable(Rule.YellowStormLosses);
-            var neighbours = g.Map.FindNeighbours(from, maximumDistance, mayMoveIntoStorm, p.Faction, g.SectorInStorm, g.ForcesOnPlanet);
-
+            var neighbours = g.Map.FindNeighbours(from, maximumDistance, mayMoveIntoStorm, p.Faction, g.SectorInStorm, g.ForcesOnPlanet, g.CurrentBlockedTerritories);
             return neighbours;
-
-            /*if (g.Version <= 85 || p.Ally == Faction.None)
-            {
-                return neighbours;
-            }
-            else
-            {
-                var ally = p.AlliedPlayer;
-                return neighbours.Where(l => l == g.Map.PolarSink || ally.AnyForcesIn(l.Territory) == 0);
-            }*/
         }
 
         public static IEnumerable<Territory> TerritoriesWithAnyForcesNotInStorm(Game g, Player p)

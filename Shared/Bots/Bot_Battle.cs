@@ -682,12 +682,12 @@ namespace Treachery.Shared
             if (highest)
             {
                 safeHero = safeLeaders.OrderByDescending(l => l.ValueInCombatAgainst(highestOpponentLeader)).FirstOrDefault();
-                unsafeHero = Battle.ValidBattleHeroes(Game, this).OrderByDescending(l => l.ValueInCombatAgainst(highestOpponentLeader)).FirstOrDefault();
+                unsafeHero = Battle.ValidBattleHeroes(Game, this).OrderByDescending(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader)).FirstOrDefault();
             }
             else
             {
-                safeHero = safeLeaders.OrderBy(l => l.ValueInCombatAgainst(highestOpponentLeader)).FirstOrDefault();
-                unsafeHero = Battle.ValidBattleHeroes(Game, this).OrderBy(l => l.ValueInCombatAgainst(highestOpponentLeader)).FirstOrDefault();
+                safeHero = safeLeaders.OrderBy(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader)).FirstOrDefault();
+                unsafeHero = Battle.ValidBattleHeroes(Game, this).OrderBy(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader)).FirstOrDefault();
             }
 
             if (safeHero == null ||

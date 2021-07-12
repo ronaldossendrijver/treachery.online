@@ -397,9 +397,13 @@ namespace Treachery.Shared
 
         private int HeroRevivalPenalty(IHero h)
         {
-            if (Others.SelectMany(p => p.Traitors).Contains(h) || Others.SelectMany(p => p.FaceDancers).Contains(h))
+            if (h.HeroType == HeroType.Messiah || h.HeroType == HeroType.Auditor)
             {
-                return -10;
+                return 20;
+            }
+            else if (KnownNonTraitors.Contains(h))
+            {
+                return 10;
             }
             else
             {

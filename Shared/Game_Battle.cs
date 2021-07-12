@@ -587,7 +587,7 @@ namespace Treachery.Shared
                 var winnerGambit = WinnerBattleAction;
                 int winnerForcesLost = winnerGambit.Forces + winnerGambit.ForcesAtHalfStrength + e.SpecialForceLossesReplaced;
                 int winnerSpecialForcesLost = winnerGambit.SpecialForces + winnerGambit.SpecialForcesAtHalfStrength - e.SpecialForceLossesReplaced;
-                TakeLosses(CurrentBattle.Territory, winner, winnerForcesLost, winnerSpecialForcesLost);
+                HandleLosses(CurrentBattle.Territory, winner, winnerForcesLost, winnerSpecialForcesLost);
             }
         }
 
@@ -857,7 +857,7 @@ namespace Treachery.Shared
             {
                 int winnerForcesLost = winnerGambit.Forces + winnerGambit.ForcesAtHalfStrength;
                 int winnerSpecialForcesLost = winnerGambit.SpecialForces + winnerGambit.SpecialForcesAtHalfStrength;
-                TakeLosses(territory, winner, winnerForcesLost, winnerSpecialForcesLost);
+                HandleLosses(territory, winner, winnerForcesLost, winnerSpecialForcesLost);
             }
             else
             {
@@ -865,7 +865,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void TakeLosses(Territory territory, Player player, int forcesLost, int specialForcesLost)
+        private void HandleLosses(Territory territory, Player player, int forcesLost, int specialForcesLost)
         {
             bool hadMessiahBeforeLosses = player.MessiahAvailable;
 
@@ -1049,7 +1049,7 @@ namespace Treachery.Shared
 
             //Get all living leaders from the opponent that haven't fought in another territory this turn
             Deck<Leader> availableLeaders = new Deck<Leader>(
-                victim.Leaders.Where(l => LeaderState[l].Alive && CanJoinCurrentBattle(l)), Random);
+                victim.Leaders.Where(l => l.HeroType != HeroType.Auditor && LeaderState[l].Alive && CanJoinCurrentBattle(l)), Random);
 
             if (!availableLeaders.IsEmpty)
             {

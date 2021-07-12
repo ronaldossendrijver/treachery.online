@@ -126,6 +126,15 @@ namespace Treachery.Shared
                 }
             }
 
+            if (p.Faction == Faction.Brown)
+            {
+                var auditor = p.Leaders.FirstOrDefault(l => l.HeroType == HeroType.Auditor);
+                if (auditor != null && !g.IsAlive(auditor) && !result.Contains(auditor))
+                {
+                    result.Add(auditor);
+                }
+            }
+
             return result;
         }
 
@@ -133,7 +142,7 @@ namespace Treachery.Shared
         {
             var result = new List<IHero>();
 
-            result.AddRange(p.Leaders.Where(l => !g.LeaderState[l].Alive));
+            result.AddRange(p.Leaders.Where(l => !g.LeaderState[l].Alive && l.HeroType != HeroType.Auditor));
 
             if (p.Is(Faction.Green) && !g.IsAlive(LeaderManager.Messiah))
             {

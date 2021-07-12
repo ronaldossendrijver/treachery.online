@@ -8,7 +8,7 @@
 
 <GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Please choose how to distribute a storm loss total of at least @TakeLosses.LossesToTake(Game) over your forces in @TakeLosses.LossLocation(Game).</Header>
+    <Header>Please choose how to distribute a storm loss total of at least @TakeLosses.LossesToTake(Game) over your forces in @TakeLosses.LossesToTake(Game).Location</Header>
     <Body>
 
         @if (TakeLosses.ValidMaxForceAmount(Game, Player) > 0)
@@ -19,6 +19,11 @@
         @if (TakeLosses.ValidMaxSpecialForceAmount(Game, Player) > 0)
         {
             <SelectForcesComponent @bind-Value="specialForceAmount" Min="0" Max="TakeLosses.ValidMaxSpecialForceAmount(Game, Player)" Faction="Faction" Special="true" />
+        }
+
+        @if (Faction == Faction.Brown && TakeLosses.ValidUselessCardToPreventLosses(Game, Player) != null)
+        {
+            <RadioComponent @bind-Value="useUseless" Values="new bool[] { true, false }" ValueLabels="@(new string[] { "yes", "no" })" />
         }
 
         <p>Total selected value: <span class="badge badge-primary badge-pill">@(forceAmount + specialForceAmount)</span></p>
@@ -35,6 +40,7 @@
 
     private int forceAmount;
     private int specialForceAmount;
+    private bool useUseless = false;
 
-    protected override TakeLosses ConfirmedResult => new TakeLosses(Game) { Initiator = Faction, ForceAmount = forceAmount, SpecialForceAmount = specialForceAmount };
+    protected override TakeLosses ConfirmedResult => new TakeLosses(Game) { Initiator = Faction, ForceAmount = forceAmount, SpecialForceAmount = specialForceAmount, UseUselessCard = useUseless };
 }

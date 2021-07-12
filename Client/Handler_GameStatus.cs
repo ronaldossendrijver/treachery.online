@@ -136,7 +136,7 @@ namespace Treachery.Client
                     {
                         return new GameStatus()
                         {
-                            Description = Skin.Current.Format("Please decide which forces were killed by the storm in {0}.", TakeLosses.LossLocation(Game)),
+                            Description = Skin.Current.Format("Please decide which forces were killed by the storm in {0}.", TakeLosses.LossesToTake(Game).Location),
                             WaitingForOthers = false
                         };
                     }
@@ -144,7 +144,7 @@ namespace Treachery.Client
                     {
                         return new GameStatus()
                         {
-                            Description = Skin.Current.Format("{0} are deciding which forces were killed by the storm in {1}...", Faction.Yellow, TakeLosses.LossLocation(Game)),
+                            Description = Skin.Current.Format("{0} are deciding which forces were killed by the storm in {1}...", Faction.Yellow, TakeLosses.LossesToTake(Game).Location),
                             WaitingForOthers = true
                         };
                     }

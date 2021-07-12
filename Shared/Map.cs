@@ -1801,10 +1801,10 @@ namespace Treachery.Shared
             Locations[13].Neighbours.Add(Locations[16]);
         }
 
-        public List<Location> FindNeighbours(Location start, int distance, bool ignoreStorm, Faction f, int sectorInStorm, Dictionary<Location, List<Battalion>> forceLocations)
+        public List<Location> FindNeighbours(Location start, int distance, bool ignoreStorm, Faction f, int sectorInStorm, Dictionary<Location, List<Battalion>> forceLocations, List<Territory> blockedTerritories)
         {
             List<Location> neighbours = new List<Location>();
-            FindNeighbours(neighbours, start, null, 0, distance, ignoreStorm, f, sectorInStorm, forceLocations);
+            FindNeighbours(neighbours, start, null, 0, distance, ignoreStorm, f, sectorInStorm, forceLocations, blockedTerritories);
             neighbours.Remove(start);
             return neighbours;
         }
@@ -1817,7 +1817,7 @@ namespace Treachery.Shared
             return neighbours;
         }
 
-        private void FindNeighbours(List<Location> found, Location current, Location previous, int currentDistance, int maxDistance, bool ignoreStorm, Faction f, int sectorInStorm, Dictionary<Location, List<Battalion>> forceLocations)
+        private void FindNeighbours(List<Location> found, Location current, Location previous, int currentDistance, int maxDistance, bool ignoreStorm, Faction f, int sectorInStorm, Dictionary<Location, List<Battalion>> forceLocations, List<Territory> blockedTerritories)
         {
             if (!found.Contains(current))
             {
@@ -1830,13 +1830,16 @@ namespace Treachery.Shared
                 {
                     if (ignoreStorm || neighbour.Sector != sectorInStorm)
                     {
-                        if (!neighbour.IsStronghold || forceLocations == null || !forceLocations.ContainsKey(neighbour) || forceLocations[neighbour].Any(b => b.Faction == f) || forceLocations[neighbour].Count(b => b.Faction != f && b.CanOccupy) < 2)
+                        if (blockedTerritories == null || !blockedTerritories.Any(t => t == neighbour.Territory))
                         {
-                            int distance = (current.Territory == neighbour.Territory) ? 0 : 1;
-
-                            if (currentDistance + distance <= maxDistance)
+                            if (!neighbour.IsStronghold || forceLocations == null || !forceLocations.ContainsKey(neighbour) || forceLocations[neighbour].Any(b => b.Faction == f) || forceLocations[neighbour].Count(b => b.Faction != f && b.CanOccupy) < 2)
                             {
-                                FindNeighbours(found, neighbour, current, currentDistance + distance, maxDistance, ignoreStorm, f, sectorInStorm, forceLocations);
+                                int distance = (current.Territory == neighbour.Territory) ? 0 : 1;
+
+                                if (currentDistance + distance <= maxDistance)
+                                {
+                                    FindNeighbours(found, neighbour, current, currentDistance + distance, maxDistance, ignoreStorm, f, sectorInStorm, forceLocations, blockedTerritories);
+                                }
                             }
                         }
                     }

@@ -123,7 +123,7 @@ namespace Treachery.Shared
                     if (player.Has(TreacheryCardType.Harvester)) result.Add(typeof(HarvesterPlayed));
                     break;
                 case Phase.StormLosses:
-                    if (faction == Faction.Yellow) result.Add(typeof(TakeLosses));
+                    if (faction == TakeLosses.LossesToTake(this).Faction) result.Add(typeof(TakeLosses));
                     break;
                 case Phase.YellowSendingMonsterA:
                 case Phase.YellowSendingMonsterB:
@@ -343,7 +343,7 @@ namespace Treachery.Shared
                 result.Add(typeof(HideSecrets));
             }
 
-            if (!Prevented(FactionAdvantage.BrownDiscarding) && (CurrentMoment == MainPhaseMoment.Start || CurrentMoment == MainPhaseMoment.End) && BrownDiscarded.ValidCards(this,player).Any())
+            if (faction == Faction.Brown && !Prevented(FactionAdvantage.BrownDiscarding) && (CurrentMoment == MainPhaseMoment.Start || CurrentMoment == MainPhaseMoment.End) && BrownDiscarded.ValidCards(this,player).Any())
             {
                 result.Add(typeof(BrownDiscarded));
             }

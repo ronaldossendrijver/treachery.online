@@ -212,7 +212,7 @@ namespace Treachery.Shared
                 if (!Prevented(FactionAdvantage.YellowProtectedFromStorm) && Applicable(Rule.YellowStormLosses))
                 {
                     killCount = 0;
-                    StormLossesToTake.Add(new Tuple<Location, int>(s.To, LossesToTake(s.ForceAmount, s.SpecialForceAmount)));
+                    StormLossesToTake.Add(new LossToTake() { Location = s.To, Amount = LossesToTake(s.ForceAmount, s.SpecialForceAmount), Faction = Faction.Yellow });
                 }
                 else
                 {
@@ -412,7 +412,7 @@ namespace Treachery.Shared
                     killCount = 0;
                     initiator.MoveForces(from, to, battalion.AmountOfForces);
                     initiator.MoveSpecialForces(from, to, battalion.AmountOfSpecialForces);
-                    StormLossesToTake.Add(new Tuple<Location, int>(to, LossesToTake(battalion)));
+                    StormLossesToTake.Add(new LossToTake() { Location = to, Amount = LossesToTake(battalion), Faction = battalion.Faction });
                 }
                 else
                 {
@@ -439,8 +439,8 @@ namespace Treachery.Shared
             if (from == null || to == null) return false;
 
             var max = DetermineMaximumMoveDistance(initiator, new Battalion[] { moved } );
-            var targetsAvoidingStorm = Map.FindNeighbours(from, max, false, initiator.Faction, SectorInStorm, ForcesOnPlanet);
-            var targetsIgnoringStorm = Map.FindNeighbours(from, max, true, initiator.Faction, SectorInStorm, ForcesOnPlanet);
+            var targetsAvoidingStorm = Map.FindNeighbours(from, max, false, initiator.Faction, SectorInStorm, ForcesOnPlanet, CurrentBlockedTerritories);
+            var targetsIgnoringStorm = Map.FindNeighbours(from, max, true, initiator.Faction, SectorInStorm, ForcesOnPlanet, CurrentBlockedTerritories);
             return !targetsAvoidingStorm.Contains(to) && targetsIgnoringStorm.Contains(to);
         }
 
@@ -651,6 +651,14 @@ namespace Treachery.Shared
             MainPhaseEnd();
             Enter(Phase.ShipmentAndMoveConcluded);
             ReceiveShipsTechIncome();
+            CurrentBlockedTerritories.Clear();
+        }
+
+        public List<Territory> CurrentBlockedTerritories = new List<Territory>();
+        public void HandleEvent(BrownMovePrevention e)
+        {
+            CurrentReport.Add(e);
+            CurrentBlockedTerritories.Add(e.Territory);
         }
 
         private void ReceiveShipsTechIncome()

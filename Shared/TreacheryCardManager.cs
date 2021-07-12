@@ -15,6 +15,14 @@ namespace Treachery.Shared
         private static readonly List<TreacheryCard> Items = new List<TreacheryCard>();
         public static IFetcher<TreacheryCard> Lookup = new TreacheryCardFetcher();
 
+        public const int CARD_BALISET = 28;
+        public const int CARD_JUBBACLOAK = 29;
+        public const int CARD_KULON = 30;
+        public const int CARD_LALALA = 31;
+        public const int CARD_TRIPTOGAMONT = 32;
+        public const int CARD_KULLWAHAD = 46;
+
+
         static TreacheryCardManager()
         {
             Initialize();
@@ -51,11 +59,11 @@ namespace Treachery.Shared
             Items.Add(new TreacheryCard(25, 25, TreacheryCardType.Clairvoyance, Rule.None));
             Items.Add(new TreacheryCard(26, 25, TreacheryCardType.Clairvoyance, Rule.None));
             Items.Add(new TreacheryCard(27, 27, TreacheryCardType.StormSpell, Rule.None));
-            Items.Add(new TreacheryCard(28, 28, TreacheryCardType.Useless, Rule.None));
-            Items.Add(new TreacheryCard(29, 29, TreacheryCardType.Useless, Rule.None));
-            Items.Add(new TreacheryCard(30, 30, TreacheryCardType.Useless, Rule.None));
-            Items.Add(new TreacheryCard(31, 31, TreacheryCardType.Useless, Rule.None));
-            Items.Add(new TreacheryCard(32, 32, TreacheryCardType.Useless, Rule.None));
+            Items.Add(new TreacheryCard(CARD_BALISET, CARD_BALISET, TreacheryCardType.Useless, Rule.None));
+            Items.Add(new TreacheryCard(CARD_JUBBACLOAK, CARD_JUBBACLOAK, TreacheryCardType.Useless, Rule.None));
+            Items.Add(new TreacheryCard(CARD_KULON, CARD_KULON, TreacheryCardType.Useless, Rule.None));
+            Items.Add(new TreacheryCard(CARD_LALALA, CARD_LALALA, TreacheryCardType.Useless, Rule.None));
+            Items.Add(new TreacheryCard(CARD_TRIPTOGAMONT, CARD_TRIPTOGAMONT, TreacheryCardType.Useless, Rule.None));
 
             //Grey & Purple Expansion Treachery Cards
             Items.Add(new TreacheryCard(33, 33, TreacheryCardType.ProjectileAndPoison, Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS));
@@ -71,7 +79,7 @@ namespace Treachery.Shared
             Items.Add(new TreacheryCard(43, 41, TreacheryCardType.Harvester, Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal));
             Items.Add(new TreacheryCard(44, 42, TreacheryCardType.Thumper, Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal));
             Items.Add(new TreacheryCard(45, 43, TreacheryCardType.Amal, Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal));
-            Items.Add(new TreacheryCard(46, 44, TreacheryCardType.Useless, Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal));
+            Items.Add(new TreacheryCard(CARD_KULLWAHAD, 44, TreacheryCardType.Useless, Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal));
 
             //3 extra karma cards
             Items.Add(new TreacheryCard(100, 23, TreacheryCardType.Karma, Rule.ExtraKaramaCards));

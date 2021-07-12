@@ -332,7 +332,7 @@ namespace Treachery.Shared
                     {
                         if (!Prevented(FactionAdvantage.YellowProtectedFromStorm))
                         {
-                            StormLossesToTake.Add(new Tuple<Location, int>(l.Key, LossesToTake(battalion)));
+                            StormLossesToTake.Add(new LossToTake() { Location = l.Key, Amount = LossesToTake(battalion), Faction = battalion.Faction });
                         }
                         else
                         {
@@ -340,6 +340,10 @@ namespace Treachery.Shared
                             player.KillAllForces(l.Key, false);
                             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.YellowProtectedFromStorm);
                         }
+                    }
+                    else if (battalion.Is(Faction.Brown) && !Prevented(FactionAdvantage.BrownDiscarding))
+                    {
+                        StormLossesToTake.Add(new LossToTake() { Location = l.Key, Amount = battalion.TotalAmountOfForces, Faction = battalion.Faction });
                     }
                     else
                     {
@@ -371,18 +375,28 @@ namespace Treachery.Shared
         public void HandleEvent(TakeLosses e)
         {
             var player = GetPlayer(e.Initiator);
-            player.KillForces(Shared.TakeLosses.LossLocation(this), e.ForceAmount, e.SpecialForceAmount, false);
-            StormLossesToTake.RemoveAt(0);
-            CurrentReport.Add(e);
 
-            if (PhaseBeforeStormLoss == Phase.BlowA)
+            if (e.UseUselessCard)
             {
-                Enter(StormLossesToTake.Count > 0, Phase.StormLosses, EndStormPhase);
+                var card = TakeLosses.ValidUselessCardToPreventLosses(this, e.Player);
+                CurrentReport.Add(e.Initiator, "{0} use a {1} card to prevent losing forces.", e.Initiator, TreacheryCardType.Useless);
+                Discard(e.Player, card);
             }
             else
             {
-                Enter(PhaseBeforeStormLoss);
-                DetermineNextShipmentAndMoveSubPhase(intrusionCausedBeforeStormLoss, bgMayAccompanyBeforeStormLoss);
+                player.KillForces(Shared.TakeLosses.LossesToTake(this).Location, e.ForceAmount, e.SpecialForceAmount, false);
+                StormLossesToTake.RemoveAt(0);
+                CurrentReport.Add(e);
+
+                if (PhaseBeforeStormLoss == Phase.BlowA)
+                {
+                    Enter(StormLossesToTake.Count > 0, Phase.StormLosses, EndStormPhase);
+                }
+                else
+                {
+                    Enter(PhaseBeforeStormLoss);
+                    DetermineNextShipmentAndMoveSubPhase(intrusionCausedBeforeStormLoss, bgMayAccompanyBeforeStormLoss);
+                }
             }
         }
 
@@ -403,7 +417,7 @@ namespace Treachery.Shared
             }
         }
 
-        public List<Tuple<Location, int>> StormLossesToTake = new List<Tuple<Location, int>>();
+        public List<LossToTake> StormLossesToTake = new List<LossToTake>();
 
         public bool IsProtectedFromStorm(Location l)
         {
@@ -433,5 +447,12 @@ namespace Treachery.Shared
         }
 
         #endregion StormPhase
+    }
+
+    public class LossToTake
+    {
+        public Faction Faction;
+        public Location Location;
+        public int Amount;
     }
 }
