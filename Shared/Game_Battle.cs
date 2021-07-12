@@ -108,7 +108,7 @@ namespace Treachery.Shared
                 }
             }
 
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             RecentMilestones.Add(Milestone.Voice);
         }
 
@@ -116,7 +116,7 @@ namespace Treachery.Shared
         public void HandleEvent(Prescience e)
         {
             CurrentPrescience = e;
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             RecentMilestones.Add(Milestone.Prescience);
         }
 
@@ -216,9 +216,10 @@ namespace Treachery.Shared
         public void HandleEvent(PoisonToothCancelled e)
         {
             PoisonToothCancelled = true;
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
         }
 
+        public IList<TreacheryCard> AuditedCards;
         public void HandleEvent(TreacheryCalled e)
         {
             if (AggressorBattleAction.By(e.Initiator) || (e.By(Faction.Black) && Allies(AggressorBattleAction.Initiator, Faction.Black)))
@@ -226,7 +227,7 @@ namespace Treachery.Shared
                 AggressorTraitorAction = e;
                 if (e.TraitorCalled)
                 {
-                    CurrentReport.Add(e.GetMessage());
+                    CurrentReport.Add(e);
                     RecentMilestones.Add(Milestone.TreacheryCalled);
                     e.Player.RevealedTraitors.Add(DefenderBattleAction.Hero);
                 }
@@ -237,7 +238,7 @@ namespace Treachery.Shared
                 DefenderTraitorAction = e;
                 if (e.TraitorCalled)
                 {
-                    CurrentReport.Add(e.GetMessage());
+                    CurrentReport.Add(e);
                     RecentMilestones.Add(Milestone.TreacheryCalled);
                     e.Player.RevealedTraitors.Add(AggressorBattleAction.Hero);
                 }
@@ -249,8 +250,76 @@ namespace Treachery.Shared
                 ResolveBattle(CurrentBattle, AggressorBattleAction, DefenderBattleAction, AggressorTraitorAction, DefenderTraitorAction);
                 CaptureLeaderIfApplicable(e);
                 FlipBeneGesseritWhenAlone();
-                Enter(Version < 43 || BattleWinner != Faction.None, Phase.BattleConclusion, FinishBattle);
+                DetermineAudit();
             }
+        }
+
+        private void DetermineAudit()
+        {
+            if (Auditee != null)
+            {
+                var auditableCards = new Deck<TreacheryCard>(AuditCancelled.GetCardsThatMayBeAudited(this), Random);
+
+                if (auditableCards.Items.Count > 0)
+                {
+                    var nrOfAuditedCards = AuditCancelled.GetNumberOfCardsThatMayBeAudited(this);
+                    AuditedCards = new List<TreacheryCard>();
+                    auditableCards.Shuffle();
+                    for (int i = 0; i < nrOfAuditedCards; i++)
+                    {
+                        AuditedCards.Add(auditableCards.Draw());
+                    }
+
+                    Enter(Phase.AvoidingAudit);
+                }
+                else
+                {
+                    CurrentReport.Add(Auditee.Faction, "{0} don't have any cards to audit", Auditee.Faction);
+                    Enter(BattleWinner != Faction.None, Phase.BattleConclusion, FinishBattle);
+                }
+            }
+            else
+            {
+                Enter(BattleWinner != Faction.None, Phase.BattleConclusion, FinishBattle);
+            }
+        }
+
+        public Player Auditee
+        {
+            get
+            {
+                if (Applicable(Rule.BrownAuditor) && !Prevented(FactionAdvantage.BrownAudit))
+                {
+                    if (AggressorBattleAction.Hero != null && AggressorBattleAction.Hero.HeroType == HeroType.Auditor) {
+
+                        return DefenderBattleAction.Player;
+                    }
+                    else if (DefenderBattleAction.Hero != null && DefenderBattleAction.Hero.HeroType == HeroType.Auditor)
+                    {
+                        return AggressorBattleAction.Player;
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        public void HandleEvent(AuditCancelled e)
+        {
+            CurrentReport.Add(e.GetDynamicMessage());
+            Enter(!e.Cancelled, Phase.Auditing, BattleWinner != Faction.None, Phase.BattleConclusion, FinishBattle);
+        }
+
+        public void HandleEvent(Audited e)
+        {
+            CurrentReport.Add(e);
+            
+            foreach (var card in AuditedCards)
+            {
+                RegisterKnown(e.Player, card);
+            }
+
+            Enter(BattleWinner != Faction.None, Phase.BattleConclusion, FinishBattle);
         }
 
         private void CaptureLeaderIfApplicable(TreacheryCalled e)
@@ -455,7 +524,6 @@ namespace Treachery.Shared
             if (!Applicable(Rule.FullPhaseKarma)) AllowPreventedBattleFactionAdvantages();
             if (Aggressor == null) MainPhaseEnd();
             Enter(Phase.BattleReport);
-
         }
 
         private void AllowPreventedBattleFactionAdvantages()
@@ -765,7 +833,7 @@ namespace Treachery.Shared
                         {
                             int brownIncome = (int)Math.Floor(0.5 * costForPlayer);
                             brown.Resources += brownIncome;
-                            CurrentReport.Add(Faction.Brown, "{0} receive {1}", Faction.Brown, brownIncome);
+                            CurrentReport.Add(Faction.Brown, "{0} receive {1} from supported forces", Faction.Brown, brownIncome);
                         }
                         else
                         {

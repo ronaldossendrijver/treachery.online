@@ -461,6 +461,11 @@ namespace Treachery.Client
             return p != null && p.Faction == f;
         }
 
+        public bool IAm(Player p)
+        {
+            return Player == p;
+        }
+
         private async Task HandleLoadGame(string stateData, string targetPlayerName, string skinData)
         {
             Support.LogDuration("HandleLoadGame-Start");

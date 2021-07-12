@@ -22,7 +22,7 @@ namespace Treachery.Shared
             };
         }
 
-        protected virtual TreacheryCalled DetermineTreachery()
+        protected virtual TreacheryCalled DetermineTreacheryCalled()
         {
             if (Faction != Game.CurrentBattle.Initiator && Faction != Game.CurrentBattle.Target && !TreacheryCalled.MayCallTreachery(Game, this))
             {
@@ -32,6 +32,16 @@ namespace Treachery.Shared
             {
                 return new TreacheryCalled(Game) { Initiator = Faction, TraitorCalled = TreacheryCalled.MayCallTreachery(Game, this) };
             }
+        }
+
+        protected virtual AuditCancelled DetermineAuditCancelled()
+        {
+            return new AuditCancelled(Game) { Initiator = Faction, Cancelled = false };
+        }
+
+        protected virtual Audited DetermineAudited()
+        {
+            return new Audited(Game) { Initiator = Faction };
         }
 
         protected virtual BattleConcluded DetermineBattleConcluded()

@@ -86,7 +86,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(CardTraded e)
         {
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
 
             if (CurrentCardTradeOffer == null)
             {

@@ -28,7 +28,7 @@ namespace Treachery.Shared
         public void HandleEvent(ThumperPlayed e)
         {
             DiscardTreacheryCard(GetPlayer(e.Initiator), TreacheryCardType.Thumper);
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             RecentMilestones.Add(Milestone.Thumper);
             ThumperUsed = true;
             EnterBlowA();
@@ -224,7 +224,7 @@ namespace Treachery.Shared
                 ChangeSpiceOnPlanet(lastResourceCard.Location, currentAmountOfSpice);
             }
 
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             MoveToNextPhaseAfterResourceBlow();
             RecentMilestones.Add(Milestone.Harvester);
         }
@@ -315,7 +315,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(YellowSentMonster e)
         {
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             Monsters.Add(e.Territory);
             PerformMonster(e.Territory);
             Enter(CurrentPhase == Phase.YellowSendingMonsterA, Phase.BlowA, Phase.BlowB);
@@ -394,14 +394,14 @@ namespace Treachery.Shared
             }
             else
             {
-                CurrentReport.Add(e.GetMessage());
+                CurrentReport.Add(e);
                 CurrentAllianceOffers.Add(e);
             }
         }
 
         public void HandleEvent(AllianceBroken e)
         {
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             BreakAlliance(e.Initiator);
         }
 

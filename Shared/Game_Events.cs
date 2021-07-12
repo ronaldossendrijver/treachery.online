@@ -10,7 +10,6 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        #region EventValidity
         public IList<Type> GetApplicableEvents(Player player, bool isHost)
         {
             List<Type> result = new List<Type>();
@@ -117,7 +116,7 @@ namespace Treachery.Shared
                     break;
                 case Phase.Thumper:
                     if (player.Has(TreacheryCardType.Thumper) && CurrentTurn > 1) result.Add(typeof(ThumperPlayed));
-                    if (player.Has(TreacheryCardType.Amal)) result.Add(typeof(AmalPlayed));
+                    if (Version < 103 && player.Has(TreacheryCardType.Amal)) result.Add(typeof(AmalPlayed));
                     break;
                 case Phase.HarvesterA:
                 case Phase.HarvesterB:
@@ -145,23 +144,23 @@ namespace Treachery.Shared
                     if (!isHost && faction == Faction.Green) result.Add(typeof(EndPhase));
                     //if (player.Resources <= 1 && !(faction == Faction.Blue && !Prevented(FactionAdvantage.BlueCharity) && Applicable(Rule.BlueAutoCharity))) result.Add(typeof(CharityClaimed));
                     if (player.Resources <= 1 && !HasActedOrPassed.Contains(faction)) result.Add(typeof(CharityClaimed));
-                    if (player.Has(TreacheryCardType.Amal) && (Version <= 82 || HasActedOrPassed.Count == 0)) result.Add(typeof(AmalPlayed));
+                    if (Version < 103 && player.Has(TreacheryCardType.Amal) && (Version <= 82 || HasActedOrPassed.Count == 0)) result.Add(typeof(AmalPlayed));
                     break;
                 case Phase.Bidding:
                     if (player == BidSequence.CurrentPlayer)
                     {
                         result.Add(typeof(Bid));
                     }
-                    if (player.Has(TreacheryCardType.Amal) && CardNumber == 1 && !Bids.Any()) result.Add(typeof(AmalPlayed));
+                    if (Version < 103 && player.Has(TreacheryCardType.Amal) && CardNumber == 1 && !Bids.Any()) result.Add(typeof(AmalPlayed));
                     if (faction == Faction.Red && Applicable(Rule.RedSupportingNonAllyBids)) result.Add(typeof(RedBidSupport));
                     break;
                 case Phase.GreyRemovingCardFromBid:
                     if (faction == Faction.Grey) result.Add(typeof(GreyRemovedCardFromAuction));
-                    if (player.Has(TreacheryCardType.Amal)) result.Add(typeof(AmalPlayed));
+                    if (Version < 103 && player.Has(TreacheryCardType.Amal)) result.Add(typeof(AmalPlayed));
                     break;
                 case Phase.GreySwappingCard:
                     if (faction == Faction.Grey) result.Add(typeof(GreySwappedCardOnBid));
-                    if (player.Has(TreacheryCardType.Amal)) result.Add(typeof(AmalPlayed));
+                    if (Version < 103 && player.Has(TreacheryCardType.Amal)) result.Add(typeof(AmalPlayed));
                     break;
                 case Phase.ReplacingCardJustWon:
                     if (player.Ally == Faction.Grey) result.Add(typeof(ReplacedCardWon));
@@ -183,7 +182,7 @@ namespace Treachery.Shared
                     if (!HasActedOrPassed.Contains(faction) && HasSomethingToRevive(player)) result.Add(typeof(Revival));
                     if (faction == Faction.Purple && Players.Count > 1) result.Add(typeof(SetIncreasedRevivalLimits));
                     if (faction == Faction.Purple && (CurrentPurpleRevivalRequest != null || AllowedEarlyRevivals.Any())) result.Add(typeof(AcceptOrCancelPurpleRevival));
-                    if (player.Has(TreacheryCardType.Amal) && (Version <= 82 || HasActedOrPassed.Count == 0)) result.Add(typeof(AmalPlayed));
+                    if (Version < 103 && player.Has(TreacheryCardType.Amal) && (Version <= 82 || HasActedOrPassed.Count == 0)) result.Add(typeof(AmalPlayed));
                     break;
                 case Phase.OrangeShip:
                     if (faction == Faction.Orange)
@@ -192,8 +191,8 @@ namespace Treachery.Shared
                         result.Add(typeof(Shipment));
                         if (player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Caravan)) result.Add(typeof(Caravan));
                     }
-                    if (Version <= 96 && player.Has(TreacheryCardType.Amal) && HasActedOrPassed.Count == 0) result.Add(typeof(AmalPlayed));
-                    if (Version >= 97 && player.Has(TreacheryCardType.Amal) && BeginningOfShipmentAndMovePhase) result.Add(typeof(AmalPlayed));
+                    if (Version < 103 && Version <= 96 && player.Has(TreacheryCardType.Amal) && HasActedOrPassed.Count == 0) result.Add(typeof(AmalPlayed));
+                    if (Version < 103 && Version >= 97 && player.Has(TreacheryCardType.Amal) && BeginningOfShipmentAndMovePhase) result.Add(typeof(AmalPlayed));
                     break;
                 case Phase.BlueAccompaniesOrange:
                     if (faction == Faction.Blue) result.Add(typeof(BlueAccompanies));
@@ -207,8 +206,8 @@ namespace Treachery.Shared
                         result.Add(typeof(Shipment));
                         if (player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Caravan)) result.Add(typeof(Caravan));
                     }
-                    if (Version <= 96 && player.Has(TreacheryCardType.Amal) && HasActedOrPassed.Count == 0) result.Add(typeof(AmalPlayed));
-                    if (Version >= 97 && player.Has(TreacheryCardType.Amal) && BeginningOfShipmentAndMovePhase) result.Add(typeof(AmalPlayed));
+                    if (Version < 103 && Version <= 96 && player.Has(TreacheryCardType.Amal) && HasActedOrPassed.Count == 0) result.Add(typeof(AmalPlayed));
+                    if (Version < 103 && Version >= 97 && player.Has(TreacheryCardType.Amal) && BeginningOfShipmentAndMovePhase) result.Add(typeof(AmalPlayed));
                     break;
                 case Phase.OrangeMove:
                     if (faction == Faction.Orange)
@@ -234,7 +233,7 @@ namespace Treachery.Shared
                     if (faction == Faction.Blue) result.Add(typeof(BlueFlip));
                     break;
                 case Phase.ShipmentAndMoveConcluded:
-                    if (player.Has(TreacheryCardType.Amal)) result.Add(typeof(AmalPlayed));
+                    if (Version < 103 && player.Has(TreacheryCardType.Amal)) result.Add(typeof(AmalPlayed));
                     break;
 
                 case Phase.BattlePhase:
@@ -272,7 +271,7 @@ namespace Treachery.Shared
                             result.Add(typeof(Prescience));
                         }
 
-                        if (player.Has(TreacheryCardType.Amal) && NrOfBattlesFought == 0) result.Add(typeof(AmalPlayed));
+                        if (Version < 103 && player.Has(TreacheryCardType.Amal) && NrOfBattlesFought == 0) result.Add(typeof(AmalPlayed));
                     }
                     break;
 
@@ -303,21 +302,29 @@ namespace Treachery.Shared
                     }
                     break;
 
+                case Phase.AvoidingAudit:
+                    if (player == Auditee) result.Add(typeof(AuditCancelled));
+                    break;
+
+                case Phase.Auditing:
+                    if (faction == Faction.Brown) result.Add(typeof(Audited));
+                    break;
+
                 case Phase.Facedancing:
                     if (faction == Faction.Purple) result.Add(typeof(FaceDanced));
                     break;
 
                 case Phase.BattleReport:
-                    if (player.Has(TreacheryCardType.Amal) && Aggressor == null) result.Add(typeof(AmalPlayed));
+                    if (Version < 103 && player.Has(TreacheryCardType.Amal) && Aggressor == null) result.Add(typeof(AmalPlayed));
                     break;
 
                 case Phase.ReplacingFaceDancer:
                     if (faction == Faction.Purple) result.Add(typeof(FaceDancerReplaced));
                     break;
 
-                case Phase.TurnConcluded:
-                    if (player.Has(TreacheryCardType.Amal)) result.Add(typeof(AmalPlayed));
-                    if (faction == Faction.Brown && !Prevented(FactionAdvantage.BrownEconomics) && EconomicsStatus == BrownEconomicsStatus.None) result.Add(typeof(Economics));
+                case Phase.Contemplate:
+                    if (Version < 103 && player.Has(TreacheryCardType.Amal)) result.Add(typeof(AmalPlayed));
+                    if (faction == Faction.Brown && !Prevented(FactionAdvantage.BrownEconomics) && EconomicsStatus == BrownEconomicsStatus.None) result.Add(typeof(BrownEconomics));
                     break;
 
                 case Phase.PerformingKarmaHandSwap:
@@ -336,13 +343,19 @@ namespace Treachery.Shared
                 result.Add(typeof(HideSecrets));
             }
 
-            if (!Prevented(FactionAdvantage.BrownDiscarding) && (CurrentMoment == MainPhaseMoment.Start || CurrentMoment == MainPhaseMoment.End))
+            if (!Prevented(FactionAdvantage.BrownDiscarding) && (CurrentMoment == MainPhaseMoment.Start || CurrentMoment == MainPhaseMoment.End) && BrownDiscarded.ValidCards(this,player).Any())
             {
                 result.Add(typeof(BrownDiscarded));
             }
 
+            if (!result.Contains(typeof(AmalPlayed)) && player.Has(TreacheryCardType.Amal) && (CurrentMoment == MainPhaseMoment.Start || CurrentMoment == MainPhaseMoment.End))
+            {
+                result.Add(typeof(AmalPlayed));
+            }
+
             if (
                 (faction == Faction.Brown && player.Ally != Faction.None || player.Ally == Faction.Brown) && 
+                player.AlliedPlayer.TreacheryCards.Count > 0 &&
                 LastTurnCardWasTraded < CurrentTurn &&
                 (CurrentCardTradeOffer == null || CurrentCardTradeOffer.Initiator != faction))
             {
@@ -461,89 +474,5 @@ namespace Treachery.Shared
         {
             return AppDomain.CurrentDomain.GetAssemblies().SelectMany(ass => ass.GetTypes().Where(t => t.IsSubclassOf(typeof(GameEvent))).Distinct());
         }
-
-
-        public void HandleEvent(EndPhase e)
-        {
-            switch (CurrentPhase)
-            {
-                case Phase.SelectingFactions:
-                    AssignFactionsAndEnterFactionTrade();
-                    break;
-
-                case Phase.TradingFactions:
-                    EnterSetupPhase();
-                    break;
-
-                case Phase.MetheorAndStormSpell:
-                    EnterNormalStormPhase();
-                    break;
-
-                case Phase.StormReport:
-                    EnterSpiceBlowPhase();
-                    break;
-
-                case Phase.Thumper:
-                    EnterBlowA();
-                    break;
-
-                case Phase.HarvesterA:
-                case Phase.HarvesterB:
-                    MoveToNextPhaseAfterResourceBlow();
-                    break;
-
-                case Phase.AllianceA:
-                case Phase.AllianceB:
-                    EndNexus();
-                    break;
-
-                case Phase.BlowReport:
-                    EnterCharityPhase();
-                    break;
-
-                case Phase.ClaimingCharity:
-                    EnterBiddingPhase();
-                    break;
-
-                case Phase.WaitingForNextBiddingRound:
-                    PutNextCardOnAuction();
-                    break;
-
-                case Phase.BiddingReport:
-                    EnterRevivalPhase();
-                    break;
-
-                case Phase.Resurrection:
-                    EnterShipmentAndMovePhase();
-                    break;
-
-                case Phase.ShipmentAndMoveConcluded:
-                    EnterBattlePhase();
-                    break;
-
-                case Phase.BattleReport:
-                    ResetBattle();
-                    Enter(Aggressor != null, Phase.BattlePhase, EnterSpiceCollectionPhase);
-                    break;
-
-                case Phase.CollectionReport:
-                    EnterMentatPhase();
-                    break;
-
-                case Phase.TurnConcluded:
-                    AddBribesToPlayerResources();
-                    EnterStormPhase();
-                    break;
-            }
-        }
-
-        public event EventHandler<ChatMessage> MessageHandler;
-
-        public void SendMessage(ChatMessage message)
-        {
-            MessageHandler?.Invoke(this, message);
-        }
-
-        #endregion EventHandling
     }
 }

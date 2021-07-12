@@ -279,6 +279,30 @@
         {
             <PlayerReplacedComponent h="@h" />
         }
+        else if (a == typeof(BrownDiscarded))
+        {
+            <BrownDiscardedComponent h="@h" />
+        }
+        else if (a == typeof(BrownEconomics))
+        {
+            <BrownEconomicsComponent h="@h" />
+        }
+        else if (a == typeof(CardTraded))
+        {
+            <CardTradedComponent h="@h" />
+        }
+        else if (a == typeof(KarmaBrownDiscard))
+        {
+            <KarmaBrownDiscardComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)"/>
+        }
+        else if (a == typeof(AuditCancelled))
+        {
+            <AuditCancelledComponent h="@h" />
+        }
+        else if (a == typeof(Audited))
+        {
+            <AuditedComponent h="@h" />
+        }
     }
 
     @if (DealAccepted.CurrentDeals(h.Game).Any() || h.IsPlayer && (DealAccepted.AcceptableDeals(h.Game, h.Player).Any() || DealAccepted.CancellableDeals(h.Game, h.Player).Any()))

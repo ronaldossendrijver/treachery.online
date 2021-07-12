@@ -70,6 +70,8 @@ namespace Treachery.Shared
 
         public TreacheryCardType Type { get; private set; }
 
+        public HeroType HeroType => HeroType.Mercenary;
+
         public virtual string Name
         {
             get

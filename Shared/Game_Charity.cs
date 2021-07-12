@@ -25,6 +25,7 @@ namespace Treachery.Shared
                 if (brown != null)
                 {
                     int toCollect = Players.Count * 2 * CurrentCharityMultiplier;
+                    brown.Resources += toCollect;
                     CurrentReport.Add(Faction.Brown, "{0} collect {1} {2}.", Faction.Brown, toCollect, Concept.Resource);
                 }
             }

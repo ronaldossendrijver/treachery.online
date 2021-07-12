@@ -36,6 +36,11 @@ namespace Treachery.Shared
             Messages.AddLast(m);
         }
 
+        public void Add(GameEvent e)
+        {
+            Messages.AddLast(e.GetMessage());
+        }
+
         public string Title => Skin.Current.Format("{0} Report", About);
     }
 

@@ -202,6 +202,11 @@ namespace Treachery.Shared
         ShipmentAndMoveConcluded = 299,
         BattlePhase = 300,
         CallTraitorOrPass = 310,
+        AvoidingAudit = 312,
+
+        [PhaseProperty(true, Faction.Brown)]
+        Auditing = 313,
+        
         BattleConclusion = 315,
 
         [PhaseProperty(true, Faction.Purple)]
@@ -382,10 +387,21 @@ namespace Treachery.Shared
         BasicGame = 10,
         AdvancedGameWithoutPayingForBattles = 20,
         AdvancedGame = 30,
+
         ExpansionBasicGame = 110,
         ExpansionAdvancedGameWithoutPayingForBattles = 120,
         ExpansionAdvancedGame = 130,
+
         ServerClassic = 140,
+
+        Expansion2BasicGame = 150,
+        Expansion2AdvancedGameWithoutPayingForBattles = 160,
+        Expansion2AdvancedGame = 170,
+
+        AllExpansionsBasicGame = 180,
+        AllExpansionsAdvancedGameWithoutPayingForBattles = 190,
+        AllExpansionsAdvancedGame = 200,
+
         Custom = 1000
     }
 
@@ -435,6 +451,14 @@ namespace Treachery.Shared
         GreyAndPurpleExpansionGreySwappingCardOnBid = 300,
         GreyAndPurpleExpansionPurpleGholas = 301,
 
+        //Expansion 2
+        BrownAndWhiteLeaderSkills = 400,
+        BrownAndWhiteStrongholdBonus = 401,
+
+        //Expansion 2, Advanced Game
+        BrownAuditor = 500,
+        WhiteBlackMarket = 501, 
+
         //Bots
         FillWithBots = 998,
         OrangeBot = 1000,
@@ -477,6 +501,10 @@ namespace Treachery.Shared
         ExpansionIxAndBtBasicExceptions = 201,
         ExpansionIxAndBtAdvanced = 210,
         ExpansionIxAndBtAdvancedExceptions = 211,
+        ExpansionBrownAndWhiteBasic = 300,
+        ExpansionBrownAndWhiteBasicExceptions = 301,
+        ExpansionBrownAndWhiteAdvanced = 310,
+        ExpansionBrownAndWhiteAdvancedExceptions = 311,
         House = 1000,
         Bots = 2000
     }
@@ -535,5 +563,15 @@ namespace Treachery.Shared
         OrangeSpecial = 40,
         Forfeit = 50,
         Timeout = 60
+    }
+
+    public enum HeroType : int
+    {
+        None = 0,
+        Normal = 10,
+        Messiah = 20,
+        Mercenary = 30,
+        Auditor = 40,
+        InitiallyUnclaimed = 50
     }
 }

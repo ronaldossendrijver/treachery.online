@@ -1,0 +1,35 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<CardTraded>
+
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Trade one of your cards with your ally?</Header>
+    <Body>
+        
+        <SelectCardComponent @bind-Value="card" Values="CardTraded.ValidCards(Player)" Required="true" />
+
+        @if (Player.AlliedPlayer.IsBot)
+        {
+            <div class="mt-1">Because you're playing with a Bot, you may select one of their cards to receive in return</div>
+            <SelectCardComponent @bind-Value="card" Values="CardTraded.ValidCards(Player.AlliedPlayer)" Required="true" />
+        }
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override bool IsUrgent => false;
+    protected override Faction IsFactionSpecific => Faction.Brown;
+
+    private TreacheryCard card;
+
+    protected override CardTraded ConfirmedResult => new CardTraded(Game) { Initiator = Faction, Target = Player.Ally, Card = card };
+}

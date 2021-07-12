@@ -27,14 +27,14 @@ namespace Treachery.Shared
             }
             else
             {
-                CurrentReport.Add(e.GetMessage());
+                CurrentReport.Add(e);
                 DealOffers.Add(e);
             }
         }
 
         public void HandleEvent(DealAccepted e)
         {
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             var offer = DealOffers.FirstOrDefault(offer => offer.IsAcceptedBy(e));
 
             if (offer != null)

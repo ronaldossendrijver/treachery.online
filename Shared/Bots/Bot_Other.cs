@@ -54,7 +54,7 @@ namespace Treachery.Shared
                         return new KarmaHandSwapInitiated(Game) { Initiator = Faction, Target = bestOpponentToSwapWith.Faction };
                     }
 
-                    bestOpponentToSwapWith = Opponents.OrderByDescending(o => o.TreacheryCards.Count == 4).FirstOrDefault();
+                    bestOpponentToSwapWith = Opponents.FirstOrDefault(o => o.TreacheryCards.Count == 4);
                     LogInfo("opponent with 4 cards: " + bestOpponentToSwapWith);
 
                     if (bestOpponentToSwapWith != null && CardsPlayerHas(bestOpponentToSwapWith).Count(c => CardQuality(c) < 3) <= 2)

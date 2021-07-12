@@ -14,7 +14,7 @@ namespace Treachery.Shared
         {
             var initiator = GetPlayer(e.Initiator);
             initiator.FlipForces(e.Territory, false);
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
         }
 
         public void HandleEvent(Donated e)
@@ -37,7 +37,7 @@ namespace Treachery.Shared
                 }
             }
 
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             RecentMilestones.Add(Milestone.Bribe);
         }
 
@@ -100,7 +100,7 @@ namespace Treachery.Shared
             if (card != null)
             {
                 Discard(card);
-                CurrentReport.Add(e.GetMessage());
+                CurrentReport.Add(e);
                 RecentMilestones.Add(Milestone.Clairvoyance);
             }
 
@@ -117,14 +117,14 @@ namespace Treachery.Shared
         public void HandleEvent(ClairVoyanceAnswered e)
         {
             LatestClairvoyanceQandA = new ClairVoyanceQandA(LatestClairvoyance, e);
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             Enter(phasePausedByClairvoyance);
         }
 
         public void HandleEvent(AmalPlayed e)
         {
             DiscardTreacheryCard(GetPlayer(e.Initiator), TreacheryCardType.Amal);
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             foreach (var p in Players)
             {
                 int resourcesPaid = (int)Math.Ceiling(0.5 * p.Resources);
@@ -137,7 +137,7 @@ namespace Treachery.Shared
         public void HandleEvent(BrownDiscarded e)
         {
             Discard(e.Card);
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             if (e.Card.Type == TreacheryCardType.Useless)
             {
                 e.Player.Resources += 2;
@@ -156,7 +156,7 @@ namespace Treachery.Shared
         {
             var initiator = GetPlayer(e.Initiator);
             int collectionRate = initiator.AnyForcesIn(Map.HiddenMobileStronghold) * 2;
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
 
             if (!initiator.SpecialKarmaPowerUsed)
             {
@@ -184,7 +184,7 @@ namespace Treachery.Shared
         public void HandleEvent(KarmaBrownDiscard e)
         {
             RecentMilestones.Add(Milestone.Discard);
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
 
             foreach (var card in e.Cards)
             {
@@ -198,7 +198,7 @@ namespace Treachery.Shared
         public void HandleEvent(KarmaWhiteBuy e)
         {
             RecentMilestones.Add(Milestone.AuctionWon);
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             e.Player.TreacheryCards.Add(e.Card);
             WhiteDeck.Items.Remove(e.Card);
             e.Player.SpecialKarmaPowerUsed = true;
@@ -207,7 +207,7 @@ namespace Treachery.Shared
         public void HandleEvent(KarmaFreeRevival e)
         {
             RecentMilestones.Add(Milestone.Revival);
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             var initiator = GetPlayer(e.Initiator);
 
             DiscardTreacheryCard(initiator, TreacheryCardType.Karma);
@@ -234,7 +234,7 @@ namespace Treachery.Shared
             var initiator = GetPlayer(e.Initiator);
             DiscardTreacheryCard(initiator, TreacheryCardType.Karma);
             initiator.SpecialKarmaPowerUsed = true;
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             RecentMilestones.Add(Milestone.Karma);
             NumberOfMonsters++;
             ProcessMonsterCard(e.Territory);
@@ -251,7 +251,7 @@ namespace Treachery.Shared
             var initiator = GetPlayer(e.Initiator);
             DiscardTreacheryCard(initiator, TreacheryCardType.Karma);
             initiator.SpecialKarmaPowerUsed = true;
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             RecentMilestones.Add(Milestone.Karma);
             GreenKarma = true;
         }
@@ -259,7 +259,7 @@ namespace Treachery.Shared
         public void HandleEvent(Karma e)
         {
             Discard(e.Card);
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             RecentMilestones.Add(Milestone.Karma);
 
             if (e.Prevented != FactionAdvantage.None)

@@ -23,5 +23,7 @@ namespace Treachery.Shared
         public bool IsFaceDancer(IHero hero);
 
         public bool Is(Faction f);
+
+        public HeroType HeroType { get; }
     }
 }

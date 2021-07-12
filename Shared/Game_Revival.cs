@@ -185,7 +185,7 @@ namespace Treachery.Shared
         public void HandleEvent(SetIncreasedRevivalLimits e)
         {
             FactionsWithIncreasedRevivalLimits = e.Factions;
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
         }
 
         public int GetRevivalLimit(Game g, Player p)
@@ -320,14 +320,14 @@ namespace Treachery.Shared
         public RequestPurpleRevival CurrentPurpleRevivalRequest = null;
         public void HandleEvent(RequestPurpleRevival e)
         {
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             CurrentPurpleRevivalRequest = e;
         }
 
         public Dictionary<IHero, int> AllowedEarlyRevivals = new Dictionary<IHero, int>();
         public void HandleEvent(AcceptOrCancelPurpleRevival e)
         {
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
 
             if (AllowedEarlyRevivals.ContainsKey(e.Hero))
             {

@@ -168,7 +168,7 @@ namespace Treachery.Shared
         public void HandleEvent(PerformHmsPlacement e)
         {
             Map.HiddenMobileStronghold.PointAt(e.Target);
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             EndStormPhase();
             RecentMilestones.Add(Milestone.HmsMovement);
         }
@@ -177,7 +177,7 @@ namespace Treachery.Shared
         {
             var initiator = GetPlayer(e.Initiator);
             int collectionRate = initiator.AnyForcesIn(Map.HiddenMobileStronghold) * 2;
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
 
             var currentLocation = Map.HiddenMobileStronghold.AttachedToLocation;
             CollectSpiceFrom(e.Initiator, currentLocation, collectionRate);
@@ -271,7 +271,7 @@ namespace Treachery.Shared
             RecentMilestones.Add(Milestone.MetheorUsed);
             ShieldWallDestroyed = true;
             player.TreacheryCards.Remove(card);
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
 
             foreach (var p in Players)
             {
@@ -285,7 +285,7 @@ namespace Treachery.Shared
         public void HandleEvent(StormSpellPlayed e)
         {
             DiscardTreacheryCard(GetPlayer(e.Initiator), TreacheryCardType.StormSpell);
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             MoveStormAndDetermineNext(e.MoveAmount);
             EndStormPhase();
         }
@@ -373,7 +373,7 @@ namespace Treachery.Shared
             var player = GetPlayer(e.Initiator);
             player.KillForces(Shared.TakeLosses.LossLocation(this), e.ForceAmount, e.SpecialForceAmount, false);
             StormLossesToTake.RemoveAt(0);
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
 
             if (PhaseBeforeStormLoss == Phase.BlowA)
             {

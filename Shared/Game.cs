@@ -13,7 +13,7 @@ namespace Treachery.Shared
         public const int LowestSupportedVersion = 68;
         public const int LatestVersion = 103;
 
-        public bool BotInfologging = false;
+        public bool BotInfologging = true;
 
         #region GameState
 
@@ -144,7 +144,92 @@ namespace Treachery.Shared
                 return History.Count;
             }
         }
-        
+
+        public void HandleEvent(EndPhase e)
+        {
+            switch (CurrentPhase)
+            {
+                case Phase.SelectingFactions:
+                    AssignFactionsAndEnterFactionTrade();
+                    break;
+
+                case Phase.TradingFactions:
+                    EnterSetupPhase();
+                    break;
+
+                case Phase.MetheorAndStormSpell:
+                    EnterNormalStormPhase();
+                    break;
+
+                case Phase.StormReport:
+                    EnterSpiceBlowPhase();
+                    break;
+
+                case Phase.Thumper:
+                    EnterBlowA();
+                    break;
+
+                case Phase.HarvesterA:
+                case Phase.HarvesterB:
+                    MoveToNextPhaseAfterResourceBlow();
+                    break;
+
+                case Phase.AllianceA:
+                case Phase.AllianceB:
+                    EndNexus();
+                    break;
+
+                case Phase.BlowReport:
+                    EnterCharityPhase();
+                    break;
+
+                case Phase.ClaimingCharity:
+                    EnterBiddingPhase();
+                    break;
+
+                case Phase.WaitingForNextBiddingRound:
+                    PutNextCardOnAuction();
+                    break;
+
+                case Phase.BiddingReport:
+                    EnterRevivalPhase();
+                    break;
+
+                case Phase.Resurrection:
+                    EnterShipmentAndMovePhase();
+                    break;
+
+                case Phase.ShipmentAndMoveConcluded:
+                    EnterBattlePhase();
+                    break;
+
+                case Phase.BattleReport:
+                    ResetBattle();
+                    Enter(Aggressor != null, Phase.BattlePhase, EnterSpiceCollectionPhase);
+                    break;
+
+                case Phase.CollectionReport:
+                    EnterMentatPhase();
+                    break;
+
+                case Phase.Contemplate:
+                    ContinueMentatPhase();
+                    break;
+
+                case Phase.TurnConcluded:
+                    AddBribesToPlayerResources();
+                    EnterStormPhase();
+                    break;
+            }
+        }
+
+        public event EventHandler<ChatMessage> MessageHandler;
+
+        public void SendMessage(ChatMessage message)
+        {
+            MessageHandler?.Invoke(this, message);
+        }
+
         #endregion EventHandling
 
         #region PhaseTransitions

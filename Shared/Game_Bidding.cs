@@ -81,7 +81,7 @@ namespace Treachery.Shared
             RegisterKnown(Faction.Grey, e.Card);
             CardsOnAuction.Shuffle();
             RecentMilestones.Add(Milestone.Shuffled);
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             Enter(GreyMaySwapCardOnBid, Phase.GreySwappingCard, StartAuction);
         }
 
@@ -113,7 +113,7 @@ namespace Treachery.Shared
                 RecentMilestones.Add(Milestone.CardOnBidSwapped);
             }
 
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
 
             if (CardNumber == 1)
             {
@@ -269,7 +269,7 @@ namespace Treachery.Shared
         public void HandleEvent(RedBidSupport e)
         {
             PermittedUseOfRedSpice = e.Amounts;
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
         }
 
         private void LogBid(Player initiator, MessagePart redIncome)
@@ -510,7 +510,7 @@ namespace Treachery.Shared
                 RecentMilestones.Add(Milestone.CardWonSwapped);
             }
 
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             WaitForNextCardToBePutOnAuction();
         }
 
@@ -581,7 +581,7 @@ namespace Treachery.Shared
                 initiator.TreacheryCards.Add(card);
             }
 
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             RecentMilestones.Add(Milestone.Karma);
         }
 
@@ -607,7 +607,7 @@ namespace Treachery.Shared
                 RegisterKnown(initiator, returned);
             }
 
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             Enter(KarmaHandSwapPausedPhase);
         }
 

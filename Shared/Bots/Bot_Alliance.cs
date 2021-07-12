@@ -319,6 +319,23 @@ namespace Treachery.Shared
             return null;
         }
 
+        protected virtual CardTraded DetermineCardTraded()
+        {
+            if (Game.CurrentCardTradeOffer != null)
+            {
+                if (Game.CurrentCardTradeOffer.ReturnedCard != null)
+                {
+                    return new CardTraded(Game) { Initiator = Faction, Card = Game.CurrentCardTradeOffer.ReturnedCard };
+                }
+                else
+                {
+                    return new CardTraded(Game) { Initiator = Faction, Card = TreacheryCards.OrderBy(c => CardQuality(c)).FirstOrDefault() };
+                }
+            }
+
+            return null;
+        }
+
     }
 
 }

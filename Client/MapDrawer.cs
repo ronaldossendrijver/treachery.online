@@ -629,7 +629,7 @@ namespace Treachery.Client
             {
                 int posX = Skin.Current.MapDimensions.X;
                 int posY = 40;
-                foreach (var phase in Enumerations.GetValues<MainPhase>(typeof(MainPhase)).Where(p => p >= MainPhase.Storm && p <= MainPhase.Contemplate && p != MainPhase.Collection))
+                foreach (var phase in Enumerations.GetValues<MainPhase>(typeof(MainPhase)).Where(p => p >= MainPhase.Storm && p <= MainPhase.Contemplate))
                 {
                     if (phase == h.Game.CurrentMainPhase)
                     {

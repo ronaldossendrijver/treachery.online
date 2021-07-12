@@ -91,10 +91,10 @@ namespace Treachery.Shared
             MainPhaseEnd();
         }
 
-        public void HandleEvent(Economics e)
+        public void HandleEvent(BrownEconomics e)
         {
             EconomicsStatus = e.Status;
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             RecentMilestones.Add(Milestone.Economics);
         }
 
@@ -185,7 +185,7 @@ namespace Treachery.Shared
                 if (!player.KnownNonTraitors.Contains(leader)) player.KnownNonTraitors.Add(leader);
             }
 
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             Enter(Phase.TurnConcluded);
         }
 

@@ -61,6 +61,9 @@ namespace Treachery.Client
                 case Phase.ShipmentAndMoveConcluded:
                     return Skin.Current.Format("End {0}?", MainPhase.ShipmentAndMove);
 
+                case Phase.Auditing:
+                    return "Finish audit?";
+
                 case Phase.BattleReport:
                     if (Game.Aggressor == null)
                     {
@@ -1077,6 +1080,42 @@ namespace Treachery.Client
                                         }
                                     }
 
+                                case Phase.AvoidingAudit:
+                                    if (IAm(Game.Auditee))
+                                    {
+                                        return new GameStatus()
+                                        {
+                                            Description = "Do you wish to avoid being audited?",
+                                            WaitingForOthers = false
+                                        };
+                                    }
+                                    else
+                                    {
+                                        return new GameStatus()
+                                        {
+                                            Description = Skin.Current.Format("{0} are thinking about avoiding a scheduled audit...", Game.Auditee.Faction),
+                                            WaitingForOthers = true
+                                        };
+                                    }
+
+                                case Phase.Auditing:
+                                    if (IAm(Faction.Brown))
+                                    {
+                                        return new GameStatus()
+                                        {
+                                            Description = "Conclude the audit when done inspecting your opponents cards.",
+                                            WaitingForOthers = false
+                                        };
+                                    }
+                                    else
+                                    {
+                                        return new GameStatus()
+                                        {
+                                            Description = Skin.Current.Format("Waiting for {0} to finish their audit...", Faction.Brown),
+                                            WaitingForOthers = true
+                                        };
+                                    }
+
                                 case Phase.BattleConclusion:
                                     if (IAm(Game.BattleWinner))
                                     {
@@ -1133,6 +1172,32 @@ namespace Treachery.Client
                                     }
 
                             }
+                        }
+                        break;
+
+                    case MainPhase.Collection:
+
+                        switch (CurrentPhase)
+                        {
+                            case Phase.CollectionReport:
+
+                                if (IsHost)
+                                {
+                                    return new GameStatus()
+                                    {
+                                        Description = Skin.Current.Format("Please move to {1} when all factions are done reviewing the {0} Report.", MainPhase.Collection, MainPhase.Contemplate),
+                                        WaitingForOthers = false
+                                    };
+                                }
+                                else
+                                {
+                                    return new GameStatus()
+                                    {
+                                        Description = Skin.Current.Format("Factions may review the {0} report until the host moves to {1}...", MainPhase.Collection, MainPhase.Contemplate),
+                                        WaitingForOthers = true
+                                    };
+                                }
+
                         }
                         break;
 

@@ -33,7 +33,7 @@ namespace Treachery.Client
             HostParticipates = true,
             Ruleset = Ruleset.BasicGame,
             Rules = new List<Rule>(),
-            FactionsInPlay = new List<Faction> { Faction.Green, Faction.Black, Faction.Yellow, Faction.Red, Faction.Orange, Faction.Blue, Faction.Grey, Faction.Purple }
+            FactionsInPlay = EstablishPlayers.AvailableFactions().ToList()
         };
 
         public Host(string hostName, string gamePassword, Handler h, string loadedGameData, Game loadedGame)

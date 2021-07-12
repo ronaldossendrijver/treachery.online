@@ -125,6 +125,12 @@ namespace Treachery.Server
         public async Task RequestStormDialled(int hostID, StormDialled e) { await Request(hostID, e); }
         public async Task RequestHideSecrets(int hostID, HideSecrets e) { await Request(hostID, e); }
         public async Task RequestPlayerReplaced(int hostID, PlayerReplaced e) { await Request(hostID, e); }
+        public async Task RequestBrownDiscarded(int hostID, BrownDiscarded e) { await Request(hostID, e); }
+        public async Task RequestBrownEconomics(int hostID, BrownEconomics e) { await Request(hostID, e); }
+        public async Task RequestCardTraded(int hostID, CardTraded e) { await Request(hostID, e); }
+        public async Task RequestKarmaBrownDiscard(int hostID, KarmaBrownDiscard e) { await Request(hostID, e); }
+        public async Task RequestAuditCancelled(int hostID, AuditCancelled e) { await Request(hostID, e); }
+        public async Task RequestAudited(int hostID, Audited e) { await Request(hostID, e); }
 
         private async Task Request<GameEventType>(int hostID, GameEventType e) where GameEventType : GameEvent
         {

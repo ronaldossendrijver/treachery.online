@@ -1,0 +1,29 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<BrownDiscarded>
+
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>You may discard duplicate cards for 3 and @Skin.Current.Describe(TreacheryCardType.Useless) cards for 2 @Skin.Current.Describe(Concept.Resource) each</Header>
+    <Body>
+
+        <SelectCardComponent @bind-Value="card" Values="BrownDiscarded.ValidCards(Game, Player)" Required="true" />
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override Faction IsFactionSpecific => Faction.Brown;
+
+    private TreacheryCard card;
+
+    protected override BrownDiscarded ConfirmedResult => new BrownDiscarded(Game) { Initiator = Faction, Card = card };
+}

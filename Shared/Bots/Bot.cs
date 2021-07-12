@@ -80,13 +80,15 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(Prescience))) action = DeterminePrescience();
                 if (action == null && possibleEvents.Contains(typeof(ClairVoyancePlayed))) action = DetermineClairvoyance();
                 if (action == null && possibleEvents.Contains(typeof(Battle))) action = DetermineBattle(true);
-                if (action == null && possibleEvents.Contains(typeof(TreacheryCalled))) action = DetermineTreachery();
+                if (action == null && possibleEvents.Contains(typeof(TreacheryCalled))) action = DetermineTreacheryCalled();
                 if (action == null && possibleEvents.Contains(typeof(BattleConcluded))) action = DetermineBattleConcluded();
                 if (action == null && possibleEvents.Contains(typeof(FaceDanced))) action = DetermineFaceDanced();
                 if (action == null && possibleEvents.Contains(typeof(FaceDancerReplaced))) action = DetermineFaceDancerReplaced();
                 if (action == null && possibleEvents.Contains(typeof(MulliganPerformed))) action = DetermineMulliganPerformed();
                 if (action == null && possibleEvents.Contains(typeof(ReplacedCardWon))) action = DetermineReplacedCardWon();
                 if (action == null && possibleEvents.Contains(typeof(DealAccepted))) action = DetermineDealAccepted();
+                if (action == null && possibleEvents.Contains(typeof(Audited))) action = DetermineAudited();
+                if (action == null && possibleEvents.Contains(typeof(AuditCancelled))) action = DetermineAuditCancelled();
 
                 //Blue
                 if (action == null && possibleEvents.Contains(typeof(BluePrediction))) action = DetermineBluePrediction();

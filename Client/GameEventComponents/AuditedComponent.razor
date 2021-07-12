@@ -1,0 +1,33 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<Audited>
+
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Perform your audit, confirm when finished</Header>
+    <Body>
+
+        <div>
+            @foreach (var c in Game.AuditedCards)
+            {
+                <img class="p-1" width="100" src="@Skin.Current.GetImageURL(c)" data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(c)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover">
+            }
+        </div>
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override bool IsUrgent => true;
+    protected override Faction IsFactionSpecific => Faction.Brown;
+
+    protected override Audited ConfirmedResult => new Audited(Game) { Initiator = Faction };
+}

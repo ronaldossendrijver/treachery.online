@@ -504,6 +504,10 @@ namespace Treachery.Shared
                     Faction.Blue => FactionForce.Blue,
                     Faction.Grey => FactionForce.Grey,
                     Faction.Purple => FactionForce.Purple,
+                    Faction.Brown => FactionForce.Brown,
+                    Faction.White => FactionForce.White,
+                    Faction.Pink => FactionForce.Pink,
+                    Faction.Cyan => FactionForce.Cyan,
                     _ => FactionForce.None,
                 };
             }
@@ -524,9 +528,23 @@ namespace Treachery.Shared
             }
         }
 
-        public void AssignLeaders()
+        public void AssignLeaders(Game g)
         {
-            Leaders = LeaderManager.GetLeaders(Faction).ToList();
+            switch (Faction)
+            {
+                case Faction.Brown:
+                    Leaders = LeaderManager.GetLeaders(Faction).Where(l => g.Applicable(Rule.BrownAuditor) || l.HeroType != HeroType.Auditor).ToList();
+                    break;
+
+                case Faction.Pink:
+                    Leaders = LeaderManager.GetLeaders(Faction).Where(l => l.HeroType != HeroType.InitiallyUnclaimed).ToList();
+                    break;
+
+                default:
+                    Leaders = LeaderManager.GetLeaders(Faction).ToList();
+                    break;
+            }
+            
         }
 
         public override string ToString()
@@ -595,31 +613,11 @@ namespace Treachery.Shared
             }
         }
 
-        public bool HasKarma
-        {
-            get
-            {
-                return Karma.ValidKarmaCards(Game, this).Any();
-            }
-        }
+        public bool HasKarma => Karma.ValidKarmaCards(Game, this).Any();
 
-        public string ForceName
-        {
-            get
-            {
-                return Skin.Current.Describe(Force, true);
-            }
-        }
+        public string ForceName => Skin.Current.Describe(Force, true);
 
-        public string SpecialForceName
-        {
-            get
-            {
-                return Skin.Current.Describe(SpecialForce, true);
-            }
-        }
-
-
+        public string SpecialForceName => Skin.Current.Describe(SpecialForce, true);
 
         public object Clone()
         {

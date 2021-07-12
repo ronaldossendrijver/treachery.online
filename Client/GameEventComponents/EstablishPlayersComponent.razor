@@ -84,14 +84,7 @@
 
     protected override bool IsUrgent => true;
 
-    private GameInfo info
-    {
-
-        get
-        {
-            return h.Host.GameBeingEstablished;
-        }
-    }
+    private GameInfo info => h.Host.GameBeingEstablished;
 
     private Ruleset Ruleset
     {
@@ -168,21 +161,9 @@
         }
     }
 
-    private IEnumerable<string> Players
-    {
-        get
-        {
-            return h.Host.JoinedPlayers.Where(p => info.HostParticipates || p != h.PlayerName);
-        }
-    }
+    private IEnumerable<string> Players => h.Host.JoinedPlayers.Where(p => info.HostParticipates || p != h.PlayerName);
 
-    private IEnumerable<Ruleset> Rulesets
-    {
-        get
-        {
-            return Enumerations.GetValuesExceptDefault(typeof(Ruleset), Ruleset.None);
-        }
-    }
+    private IEnumerable<Ruleset> Rulesets => EstablishPlayers.AvailableRulesets();
 
     private string StyleDef(Faction f)
     {

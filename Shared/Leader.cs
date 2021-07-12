@@ -32,6 +32,8 @@ namespace Treachery.Shared
 
         public int Value { get; set; }
 
+        public HeroType HeroType { get; set; }
+
         public int ValueInCombatAgainst(IHero opposingHero)
         {
             if (Value == VARIABLEVALUE)

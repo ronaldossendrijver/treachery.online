@@ -71,7 +71,7 @@ namespace Treachery.Shared
         public void HandleEvent(OrangeDelay e)
         {
             BeginningOfShipmentAndMovePhase = false;
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             Enter(EveryoneButOneActedOrPassed, Phase.ShipmentAndMoveConcluded, Phase.NonOrangeShip);
         }
 
@@ -488,7 +488,7 @@ namespace Treachery.Shared
                 initiator.FlipForces(LastShippedOrMovedTo.Territory, e.AsAdvisors);
             }
 
-            CurrentReport.Add(e.GetMessage());
+            CurrentReport.Add(e);
             if (Version >= 102) FlipBeneGesseritWhenAlone();
             DetermineNextShipmentAndMoveSubPhase(false, BGMayAccompany);
         }

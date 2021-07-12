@@ -41,6 +41,8 @@ namespace Treachery.Shared
             }
         }
 
+        public HeroType HeroType => HeroType.Messiah;
+
         public bool Is(Faction f)
         {
             return Faction == f;

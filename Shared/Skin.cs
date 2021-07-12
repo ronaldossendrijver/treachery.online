@@ -424,11 +424,22 @@ namespace Treachery.Shared
                 Ruleset.BasicGame => "Standard Dune - Basic",
                 Ruleset.AdvancedGame => "Standard Dune - Advanced",
                 Ruleset.AdvancedGameWithoutPayingForBattles => "Standard Dune - Advanced without Advanced Combat",
+
                 Ruleset.ExpansionBasicGame => "Expansion - Basic",
                 Ruleset.ExpansionAdvancedGame => "Expansion - Advanced",
                 Ruleset.ExpansionAdvancedGameWithoutPayingForBattles => "Expansion - Advanced without Advanced Combat",
+
+                Ruleset.Expansion2BasicGame => "Expansion 2 - Basic",
+                Ruleset.Expansion2AdvancedGame => "Expansion 2 - Advanced",
+                Ruleset.Expansion2AdvancedGameWithoutPayingForBattles => "Expansion 2 - Advanced without Advanced Combat",
+
+                Ruleset.AllExpansionsBasicGame => "Both Expansions - Basic",
+                Ruleset.AllExpansionsAdvancedGame => "Both Expansions - Advanced",
+                Ruleset.AllExpansionsAdvancedGameWithoutPayingForBattles => "Both Expansions - Advanced without Advanced Combat",
+
                 Ruleset.ServerClassic => "Server Classic",
                 Ruleset.Custom => "Custom",
+
                 _ => "unknown rule set",
             };
         }
