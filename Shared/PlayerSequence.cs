@@ -91,7 +91,7 @@ namespace Treachery.Shared
             return string.Format(string.Join("->", Players.OrderBy(p => p.PositionAtTable).Select(p => string.Format("{0} ({1})", p.Name, p.PositionAtTable))) + ", Current: {0}", Current);
         }
 
-        public IEnumerable<SequenceElement> GetFactionsInSequence(Game g)
+        public IEnumerable<SequenceElement> GetPlayersInSequence(Game g)
         {
             var result = new List<SequenceElement>();
             for (int i = 0; i < g.MaximumNumberOfPlayers; i++)
@@ -100,7 +100,7 @@ namespace Treachery.Shared
                 var playerAtPosition = Players.FirstOrDefault(p => p.PositionAtTable == (RoundStartedAt + i) % g.MaximumNumberOfPlayers);
                 if (playerAtPosition != null)
                 {
-                    var elt = new SequenceElement() { Faction = playerAtPosition.Faction, HasTurn = pos == Current };
+                    var elt = new SequenceElement() { Player = playerAtPosition, HasTurn = pos == Current };
                     result.Add(elt);
                 }
             }
@@ -110,7 +110,7 @@ namespace Treachery.Shared
 
     public class SequenceElement
     {
-        public Faction Faction;
+        public Player Player;
         public bool HasTurn;
     }
 }

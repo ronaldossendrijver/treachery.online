@@ -29,28 +29,18 @@
                 {
                     var currentSequence = CurrentSequence;
                     
-
                     if (currentSequence != null)
                     {
                         @foreach (var f in currentSequence)
                         {
-                            if (Game.CurrentPhase == Phase.Bidding)
-                            {
-                                <div class="d-inline-block p-2">
-                                    <NumberComponent Value="Game.GetPlayer(f.Faction).TreacheryCards.Count" Size="@(f.HasTurn ? 48 : 32)" SymbolSRC="@Skin.Current.GetImageURL(f.Faction)" NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
-                                </div>
-                            }
-                            else
-                            {
-                                <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(f.Faction)" width="@(f.HasTurn ? 72 : 48)" style="@(f.HasTurn ? Worm : "")"/>
-                            }
+                            <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(f.Player.Faction)" width="@(f.HasTurn ? 72 : 48)" style="@(f.HasTurn ? Worm : "filter:drop-shadow(2px 2px 2px black)")"/>
                         }
                     }
                     else if (currentFactionsToAct != null)
                     {
                         @foreach (var f in currentFactionsToAct)
                         {
-                            <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(f)" width="48" />
+                            <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(f)" width="48" style="filter:drop-shadow(2px 2px 2px black)" />
                         }
                     }
                 }
@@ -70,9 +60,9 @@
     {
         get
         {
-            if (Game.CurrentPhase == Phase.Bidding) return Game.BidSequence.GetFactionsInSequence(Game);
-            if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.CurrentPhase != Phase.ShipmentAndMoveConcluded) return Game.ShipmentAndMoveSequence.GetFactionsInSequence(Game);
-            if (Game.CurrentMainPhase == MainPhase.Battle && Game.Aggressor != null) return Game.BattleSequence.GetFactionsInSequence(Game);
+            //if (Game.CurrentPhase == Phase.Bidding) return Game.BidSequence.GetFactionsInSequence(Game);
+            if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.CurrentPhase != Phase.ShipmentAndMoveConcluded) return Game.ShipmentAndMoveSequence.GetPlayersInSequence(Game);
+            if (Game.CurrentMainPhase == MainPhase.Battle && Game.Aggressor != null) return Game.BattleSequence.GetPlayersInSequence(Game);
 
             return null;
         }
@@ -107,7 +97,7 @@
         }
     }
 
-    private string Worm => "background-image:url('art/worm.gif'); background-position: -20px -16px; background-size: 102px 102px; background-repeat:no-repeat; background-clip:border-box";
+    private string Worm => "background-image:url('art/worm.gif'); background-position: -18px -14px; background-size: 100px 100px; background-repeat:no-repeat; background-clip:border-box; filter:drop-shadow(2px 2px 2px black)";
 
     private string StatusDescriptionClass
     {

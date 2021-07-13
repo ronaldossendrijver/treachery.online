@@ -19,20 +19,31 @@
 
                         <img src="@CurrentCardImageSRC" width="200" data-animation="true" data-content="@CurrentCardHover" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" />
 
-                        @if (Game.CurrentBid != null)
-                        {
-                            <div style="position: absolute; top: 190px; width: 200px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
-                                <img src="@Skin.Current.GetImageURL(Game.CurrentBid.Initiator)" width="36" style="vertical-align: top;" />
-                                <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="36" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
-                                <div style="font-size: 28px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">
-                                    Card @h.Game.CardNumber of @(h.Game.CardNumber + h.Game.CardsOnAuction.Items.Count - 1)
-                                </div>
+                        <div style="position: absolute; top: 185px; width: 200px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
+                            <div style="font-size: 30px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">
+                                Card @h.Game.CardNumber of @(h.Game.CardNumber + h.Game.CardsOnAuction.Items.Count - 1)
                             </div>
-                        }
+                            @if (Game.CurrentBid != null)
+                            {
+                                <img src="@Skin.Current.GetImageURL(Game.CurrentBid.Initiator)" width="48" style="vertical-align: top;" />
+                                <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="48" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
+                            }
+                        </div>
 
                     </td>
 
                     <td class="align-top">
+
+                        <div class="row justify-content-start">
+                            @foreach (var se in Game.BidSequence.GetPlayersInSequence(Game))
+                            {
+                                <div class="d-inline-block p-2" style="filter:drop-shadow(2px 2px 2px black)">
+                                    <NumberComponent Value="se.Player.TreacheryCards.Count" Size="@(se.HasTurn ? 48 : 32)" 
+                                                     SymbolSRC="@Skin.Current.GetImageURL(se.Player.Faction)" 
+                                                     NumberColor="@(se.Player.MayBidOnCards ? "black" : "red")" NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
+                                </div>
+                            }
+                        </div>
 
                         @if (!h.IsObserver && h.Player.Faction != Faction.None)
                         {
@@ -102,8 +113,29 @@
 
     protected override bool IsUrgent => true;
 
+    private bool _canBid = false;
+
     [Parameter]
-    public bool CanBid { get; set; }
+    public bool CanBid
+    {
+        get
+        {
+            return _canBid;
+        }
+        set
+        {
+            if (!_canBid && value)
+            {
+                if (Game.CurrentBid != null && h.Autopass && Game.CurrentBid.TotalAmount + 1 > h.BidAutoPassThreshold ||
+                    Game.CurrentBid == null && h.Autopass && h.BidAutoPassThreshold == 0)
+                {
+                    _ = Task.Delay(500).ContinueWith(e => Pass());
+                }
+            }
+
+            _canBid = value;
+        }
+    }
 
     private int amount;
     private int allyContributionAmount;
@@ -119,15 +151,6 @@
         int bidToDo = Game.CurrentBid != null ? Game.CurrentBid.TotalAmount + 1 : 1;
         allyContributionAmount = Math.Min(bidToDo, allyResources);
         amount = Math.Min(bidToDo - allyContributionAmount, playerResources);
-
-        if (CanBid)
-        {
-            if (Game.CurrentBid != null && h.Autopass && Game.CurrentBid.TotalAmount + 1 > h.BidAutoPassThreshold ||
-                Game.CurrentBid == null && h.Autopass && h.BidAutoPassThreshold == 0)
-            {
-                _ = Task.Delay(500).ContinueWith(e => Pass());
-            }
-        }
     }
 
     protected override Bid ConfirmedResult => new Bid(Game) { Initiator = Faction, Passed = false, Amount = amount, KarmaBid = false, KarmaCard = karmaCard, AllyContributionAmount = allyContributionAmount, RedContributionAmount = redContributionAmount };
