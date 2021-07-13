@@ -749,15 +749,15 @@ namespace Treachery.Client
         {
             if (Game.Players.Any(p => p.IsBot))
             {
-                int botDelay = 1500;
+                int botDelay = 1000;
                 if (Game.CurrentPhase == Phase.Clairvoyance || Game.CurrentPhase == Phase.OrangeMove || Game.CurrentPhase == Phase.NonOrangeMove || Game.CurrentPhase == Phase.OrangeShip || Game.CurrentPhase == Phase.NonOrangeShip) botDelay = 4000;
-                else if (Game.CurrentPhase == Phase.Resurrection || Game.CurrentPhase == Phase.BluePredicting || Game.CurrentPhase == Phase.BlueAccompaniesNonOrange || Game.CurrentPhase == Phase.BlueAccompaniesOrange || Game.CurrentPhase == Phase.BlueIntrudedByNonOrangeShip || Game.CurrentPhase == Phase.BlueIntrudedByNonOrangeMove || Game.CurrentPhase == Phase.BlueIntrudedByCaravan || Game.CurrentPhase == Phase.BlueIntrudedByOrangeShip || Game.CurrentPhase == Phase.BlueIntrudedByOrangeMove || Game.CurrentPhase == Phase.HmsMovement || Game.CurrentPhase == Phase.HmsPlacement) botDelay = 3000;
+                else if (Game.CurrentPhase == Phase.Resurrection || Game.CurrentPhase == Phase.BluePredicting || Game.CurrentPhase == Phase.BlueAccompaniesNonOrange || Game.CurrentPhase == Phase.BlueAccompaniesOrange || Game.CurrentPhase == Phase.BlueIntrudedByNonOrangeShip || Game.CurrentPhase == Phase.BlueIntrudedByNonOrangeMove || Game.CurrentPhase == Phase.BlueIntrudedByCaravan || Game.CurrentPhase == Phase.BlueIntrudedByOrangeShip || Game.CurrentPhase == Phase.BlueIntrudedByOrangeMove || Game.CurrentPhase == Phase.HmsMovement || Game.CurrentPhase == Phase.HmsPlacement) botDelay = 2000;
                 else if (Game.CurrentPhase == Phase.YellowRidingMonsterA || Game.CurrentPhase == Phase.YellowRidingMonsterB || Game.CurrentPhase == Phase.YellowSendingMonsterA || Game.CurrentPhase == Phase.YellowSendingMonsterB) botDelay = 4000;
                 else if (Game.CurrentPhase == Phase.Clairvoyance) botDelay = 4000;
                 else if (Game.CurrentPhase == Phase.HarvesterA || Game.CurrentPhase == Phase.HarvesterB || Game.CurrentPhase == Phase.Thumper) botDelay = 4000;
                 else if (Game.CurrentPhase == Phase.PerformingKarmaHandSwap) botDelay = 10000;
                 else if (Game.CurrentPhase == Phase.BattlePhase) botDelay = 4000;
-                else if (Game.CurrentPhase == Phase.CallTraitorOrPass || Game.CurrentPhase == Phase.BattleConclusion || Game.CurrentPhase == Phase.Facedancing) botDelay = 12000;
+                else if (Game.CurrentPhase == Phase.CallTraitorOrPass || Game.CurrentPhase == Phase.BattleConclusion || Game.CurrentPhase == Phase.Facedancing) botDelay = 10000;
 
                 _ = Task.Delay(botDelay).ContinueWith(e => PerformBotEvent());
             }
