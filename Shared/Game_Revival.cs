@@ -49,7 +49,7 @@ namespace Treachery.Shared
 
             //Register free revival
             bool usesFreeRevival = false;
-            if (r.AmountOfForces + r.AmountOfSpecialForces > 0 && !FactionsThatTookFreeRevival.Contains(r.Initiator))
+            if (r.AmountOfForces + r.AmountOfSpecialForces > 0 && FreeRevivals(initiator) > 0)
             {
                 usesFreeRevival = true;
                 FactionsThatTookFreeRevival.Add(r.Initiator);
@@ -145,7 +145,7 @@ namespace Treachery.Shared
         public List<Faction> FactionsThatTookFreeRevival = new List<Faction>();
         public int FreeRevivals(Player player)
         {
-            if (FactionsThatTookFreeRevival.Contains(player.Faction))
+            if (FactionsThatTookFreeRevival.Contains(player.Faction) || FreeRevivalPrevented(player.Faction))
             {
                 return 0;
             }
@@ -342,5 +342,18 @@ namespace Treachery.Shared
             CurrentPurpleRevivalRequest = null;
         }
 
+        private bool FreeRevivalPrevented(Faction f)
+        {
+            return CurrentFreeRevivalPrevention != null && CurrentFreeRevivalPrevention.Target == f;
+        }
+
+        public BrownFreeRevivalPrevention CurrentFreeRevivalPrevention { get; set; } = null;
+        public void HandleEvent(BrownFreeRevivalPrevention e)
+        {
+            CurrentReport.Add(e);
+            Discard(e.CardUsed());
+            CurrentFreeRevivalPrevention = e;
+            RecentMilestones.Add(Milestone.SpecialUselessPlayed);
+        }
     }
 }

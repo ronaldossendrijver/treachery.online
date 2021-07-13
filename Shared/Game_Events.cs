@@ -328,7 +328,11 @@ namespace Treachery.Shared
                     break;
 
                 case Phase.PerformingKarmaHandSwap:
-                    if (faction == Faction.Black) result.Add(typeof(KarmaHandSwap));
+                    if (faction == Faction.Black && !KarmaPrevented(faction)) result.Add(typeof(KarmaHandSwap));
+                    break;
+
+                case Phase.TradingCards:
+                    if (faction == CurrentCardTradeOffer.Target) result.Add(typeof(CardTraded));
                     break;
 
                 case Phase.Clairvoyance:
@@ -342,28 +346,53 @@ namespace Treachery.Shared
             {
                 result.Add(typeof(HideSecrets));
             }
+                       
 
-            if (faction == Faction.Brown && !Prevented(FactionAdvantage.BrownDiscarding) && (CurrentMoment == MainPhaseMoment.Start || CurrentMoment == MainPhaseMoment.End) && BrownDiscarded.ValidCards(this,player).Any())
+            if (CurrentPhase != Phase.Clairvoyance && CurrentPhase != Phase.TradingCards && CurrentPhase != Phase.PerformingKarmaHandSwap && CurrentPhase > Phase.TradingFactions && CurrentPhase < Phase.GameEnded)
             {
-                result.Add(typeof(BrownDiscarded));
-            }
+                if (faction == Faction.Brown && !Prevented(FactionAdvantage.BrownDiscarding) && (CurrentMoment == MainPhaseMoment.Start || CurrentMoment == MainPhaseMoment.End) && BrownDiscarded.ValidCards(this, player).Any())
+                {
+                    result.Add(typeof(BrownDiscarded));
+                }
 
-            if (!result.Contains(typeof(AmalPlayed)) && player.Has(TreacheryCardType.Amal) && (CurrentMoment == MainPhaseMoment.Start || CurrentMoment == MainPhaseMoment.End))
-            {
-                result.Add(typeof(AmalPlayed));
-            }
+                if (!result.Contains(typeof(AmalPlayed)) && player.Has(TreacheryCardType.Amal) && (CurrentMoment == MainPhaseMoment.Start || CurrentMoment == MainPhaseMoment.End))
+                {
+                    result.Add(typeof(AmalPlayed));
+                }
 
-            if (
-                (faction == Faction.Brown && player.Ally != Faction.None || player.Ally == Faction.Brown) && 
-                player.AlliedPlayer.TreacheryCards.Count > 0 &&
-                LastTurnCardWasTraded < CurrentTurn &&
-                (CurrentCardTradeOffer == null || CurrentCardTradeOffer.Initiator != faction))
-            {
-                result.Add(typeof(CardTraded));
-            }
+                if (CurrentMainPhase == MainPhase.ShipmentAndMove && BrownMovePrevention.CanBePlayedBy(this, player))
+                {
+                    result.Add(typeof(BrownMovePrevention));
+                }
 
-            if (CurrentPhase != Phase.Clairvoyance && CurrentPhase > Phase.TradingFactions && CurrentPhase < Phase.GameEnded)
-            {
+                if (BrownKarmaPrevention.CanBePlayedBy(this, player))
+                {
+                    result.Add(typeof(BrownKarmaPrevention));
+                }
+
+                if (CurrentMainPhase == MainPhase.ShipmentAndMove && BrownExtraMove.CanBePlayedBy(this, player))
+                {
+                    result.Add(typeof(BrownExtraMove));
+                }
+
+                if (CurrentMainPhase == MainPhase.Resurrection && BrownFreeRevivalPrevention.CanBePlayedBy(this, player))
+                {
+                    result.Add(typeof(BrownFreeRevivalPrevention));
+                }
+
+                if (CurrentMainPhase == MainPhase.Contemplate && BrownRemoveForce.CanBePlayedBy(this, player))
+                {
+                    result.Add(typeof(BrownRemoveForce));
+                }
+
+                if (
+                    (faction == Faction.Brown && player.Ally != Faction.None || player.Ally == Faction.Brown) &&
+                    player.AlliedPlayer.TreacheryCards.Count > 0 &&
+                    LastTurnCardWasTraded < CurrentTurn)
+                {
+                    result.Add(typeof(CardTraded));
+                }
+
                 if (player.Has(TreacheryCardType.RaiseDead))
                 {
                     result.Add(typeof(RaiseDeadPlayed));
@@ -374,13 +403,14 @@ namespace Treachery.Shared
                     result.Add(typeof(ClairVoyancePlayed));
                 }
 
-                if (player.HasKarma)
+                if (player.HasKarma && !KarmaPrevented(faction))
                 {
                     result.Add(typeof(Karma));
                 }
 
                 if (Players.Count > 1 &&
                     faction == Faction.Black &&
+                    !KarmaPrevented(faction) &&
                     !player.SpecialKarmaPowerUsed &&
                     player.Has(TreacheryCardType.Karma) &&
                     CurrentMainPhase == MainPhase.Bidding &&
@@ -390,6 +420,7 @@ namespace Treachery.Shared
                 }
 
                 if (faction == Faction.Brown &&
+                    !KarmaPrevented(faction) &&
                     !player.SpecialKarmaPowerUsed &&
                     player.Has(TreacheryCardType.Karma) &&
                     Applicable(Rule.AdvancedKarama))
@@ -398,6 +429,7 @@ namespace Treachery.Shared
                 }
 
                 if (faction == Faction.White &&
+                    !KarmaPrevented(faction) &&
                     !player.SpecialKarmaPowerUsed &&
                     player.Has(TreacheryCardType.Karma) &&
                     Applicable(Rule.AdvancedKarama))
@@ -406,6 +438,7 @@ namespace Treachery.Shared
                 }
 
                 if (faction == Faction.Red &&
+                    !KarmaPrevented(faction) &&
                     !player.SpecialKarmaPowerUsed &&
                     player.Has(TreacheryCardType.Karma) &&
                     CurrentMainPhase == MainPhase.Resurrection &&
@@ -415,7 +448,7 @@ namespace Treachery.Shared
                 }
 
                 if (faction == Faction.Grey &&
-                    (!player.SpecialKarmaPowerUsed && player.Has(TreacheryCardType.Karma) || KarmaHmsMovesLeft == 1) &&
+                    (!KarmaPrevented(faction) && !player.SpecialKarmaPowerUsed && player.Has(TreacheryCardType.Karma) || KarmaHmsMovesLeft == 1) &&
                     CurrentMainPhase == MainPhase.ShipmentAndMove &&
                     player == ShipmentAndMoveSequence.CurrentPlayer &&
                     player.AnyForcesIn(Map.HiddenMobileStronghold) > 0 &&
@@ -425,15 +458,20 @@ namespace Treachery.Shared
                 }
 
                 if (faction == Faction.Yellow && CurrentMainPhase == MainPhase.Blow && CurrentTurn > 1 &&
-                    !player.SpecialKarmaPowerUsed && player.Has(TreacheryCardType.Karma)
-                    && Applicable(Rule.AdvancedKarama))
+                    !KarmaPrevented(faction) &&
+                    !player.SpecialKarmaPowerUsed && 
+                    player.Has(TreacheryCardType.Karma) && 
+                    Applicable(Rule.AdvancedKarama))
                 {
                     result.Add(typeof(KarmaMonster));
                 }
 
                 if (faction == Faction.Green && CurrentMainPhase == MainPhase.Battle &&
-                    CurrentBattle != null && CurrentBattle.IsInvolved(player) &&
-                    !player.SpecialKarmaPowerUsed && player.Has(TreacheryCardType.Karma) &&
+                    CurrentBattle != null && 
+                    CurrentBattle.IsInvolved(player) &&
+                    !KarmaPrevented(faction) &&
+                    !player.SpecialKarmaPowerUsed && 
+                    player.Has(TreacheryCardType.Karma) &&
                     Applicable(Rule.AdvancedKarama))
                 {
                     result.Add(typeof(KarmaPrescience));
@@ -446,11 +484,6 @@ namespace Treachery.Shared
                     result.Add(typeof(BlueBattleAnnouncement));
                 }
 
-                if (player.Ally != Faction.None)
-                {
-                    result.Add(typeof(AllyPermission));
-                }
-
                 if (Players.Count > 1 &&
                     Donated.ValidTargets(this, player).Any() &&
                     player.Resources > 0 &&
@@ -460,6 +493,11 @@ namespace Treachery.Shared
                 {
                     result.Add(typeof(Donated));
                 }
+            }
+
+            if (player.Ally != Faction.None)
+            {
+                result.Add(typeof(AllyPermission));
             }
 
             if (CurrentMainPhase > MainPhase.Setup && CurrentPhase < Phase.GameEnded)

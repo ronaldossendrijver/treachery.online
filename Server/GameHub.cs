@@ -131,6 +131,11 @@ namespace Treachery.Server
         public async Task RequestKarmaBrownDiscard(int hostID, KarmaBrownDiscard e) { await Request(hostID, e); }
         public async Task RequestAuditCancelled(int hostID, AuditCancelled e) { await Request(hostID, e); }
         public async Task RequestAudited(int hostID, Audited e) { await Request(hostID, e); }
+        public async Task RequestBrownMovePrevention(int hostID, BrownMovePrevention e) { await Request(hostID, e); }
+        public async Task RequestBrownKarmaPrevention(int hostID, BrownKarmaPrevention e) { await Request(hostID, e); }
+        public async Task RequestBrownExtraMove(int hostID, BrownExtraMove e) { await Request(hostID, e); }
+        public async Task RequestBrownFreeRevivalPrevention(int hostID, BrownFreeRevivalPrevention e) { await Request(hostID, e); }
+        public async Task RequestBrownRemoveForce(int hostID, BrownRemoveForce e) { await Request(hostID, e); }
 
         private async Task Request<GameEventType>(int hostID, GameEventType e) where GameEventType : GameEvent
         {

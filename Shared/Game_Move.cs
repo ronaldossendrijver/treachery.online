@@ -32,6 +32,7 @@ namespace Treachery.Shared
             }
 
             ShipsTechTokenIncome = false;
+            CurrentFreeRevivalPrevention = null;
             Allow(FactionAdvantage.BlueAnnouncesBattle);
             Allow(FactionAdvantage.RedLetAllyReviveExtraForces);
             Allow(FactionAdvantage.PurpleReceiveRevive);
@@ -81,6 +82,7 @@ namespace Treachery.Shared
         public void HandleEvent(Shipment s)
         {
             BeginningOfShipmentAndMovePhase = false;
+            CurrentBlockedTerritories.Clear();
             StormLossesToTake.Clear();
             ChosenDestinationsWithAllies.Clear();
 
@@ -651,14 +653,25 @@ namespace Treachery.Shared
             MainPhaseEnd();
             Enter(Phase.ShipmentAndMoveConcluded);
             ReceiveShipsTechIncome();
-            CurrentBlockedTerritories.Clear();
+            BrownHasExtraMove = false;
         }
 
         public List<Territory> CurrentBlockedTerritories = new List<Territory>();
         public void HandleEvent(BrownMovePrevention e)
         {
             CurrentReport.Add(e);
+            Discard(e.CardUsed());
             CurrentBlockedTerritories.Add(e.Territory);
+            RecentMilestones.Add(Milestone.SpecialUselessPlayed);
+        }
+
+        private bool BrownHasExtraMove { get; set; } = false;
+        public void HandleEvent(BrownExtraMove e)
+        {
+            CurrentReport.Add(e);
+            Discard(e.CardUsed());
+            BrownHasExtraMove = true;
+            RecentMilestones.Add(Milestone.SpecialUselessPlayed);
         }
 
         private void ReceiveShipsTechIncome()

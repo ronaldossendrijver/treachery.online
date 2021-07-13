@@ -323,14 +323,18 @@ namespace Treachery.Shared
         {
             if (Game.CurrentCardTradeOffer != null)
             {
-                if (Game.CurrentCardTradeOffer.ReturnedCard != null)
+                CardTraded result;
+
+                if (Game.CurrentCardTradeOffer.RequestedCard != null)
                 {
-                    return new CardTraded(Game) { Initiator = Faction, Card = Game.CurrentCardTradeOffer.ReturnedCard };
+                    result = new CardTraded(Game) { Initiator = Faction, Target = Game.CurrentCardTradeOffer.Initiator, Card = Game.CurrentCardTradeOffer.RequestedCard, RequestedCard = null };
                 }
                 else
                 {
-                    return new CardTraded(Game) { Initiator = Faction, Card = TreacheryCards.OrderBy(c => CardQuality(c)).FirstOrDefault() };
+                    result = new CardTraded(Game) { Initiator = Faction, Target = Game.CurrentCardTradeOffer.Initiator, Card = TreacheryCards.OrderBy(c => CardQuality(c)).FirstOrDefault(), RequestedCard = null };
                 }
+
+                return result;
             }
 
             return null;

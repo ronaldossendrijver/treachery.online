@@ -98,6 +98,24 @@ namespace Treachery.Shared
             RecentMilestones.Add(Milestone.Economics);
         }
 
+        public void HandleEvent(BrownRemoveForce e)
+        {
+            CurrentReport.Add(e);
+            Discard(e.CardUsed());
+            var target = GetPlayer(e.Target);
+            
+            if (e.SpecialForce)
+            {
+                target.SpecialForcesToReserves(e.Location, 1);
+            }
+            else
+            {
+                target.ForcesToReserves(e.Location, 1);
+            }
+
+            RecentMilestones.Add(Milestone.SpecialUselessPlayed);
+        }
+
         private void HandleEconomics()
         {
             switch (EconomicsStatus)

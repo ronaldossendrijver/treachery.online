@@ -55,47 +55,38 @@ namespace Treachery.Test
         {
             
             var p = g.GetPlayer(e.Initiator);
+            
+            WriteSavegameIfApplicable(g, typeof(BrownExtraMove));
+            WriteSavegameIfApplicable(g, typeof(BrownFreeRevivalPrevention));
+            WriteSavegameIfApplicable(g, typeof(BrownRemoveForce));
+
             /*
-            WriteSavegameIfApplicable(g, typeof(KarmaHandSwapInitiated));
-            WriteSavegameIfApplicable(g, typeof(AmalPlayed));
-            WriteSavegameIfApplicable(g, typeof(Caravan));
-            WriteSavegameIfApplicable(g, typeof(ClairVoyancePlayed));
-            WriteSavegameIfApplicable(g, typeof(GreySelectedStartingCard));
-            WriteSavegameIfApplicable(g, typeof(GreyRemovedCardFromAuction));
-            WriteSavegameIfApplicable(g, typeof(GreySwappedCardOnBid));
-            WriteSavegameIfApplicable(g, typeof(ReplacedCardWon));
-            WriteSavegameIfApplicable(g, typeof(KarmaMonster));
-            WriteSavegameIfApplicable(g, typeof(KarmaHmsMovement));
-            WriteSavegameIfApplicable(g, typeof(KarmaPrescience));
-            WriteSavegameIfApplicable(g, typeof(StormSpellPlayed));
-            WriteSavegameIfApplicable(g, typeof(MetheorPlayed));
             WriteSavegameIfApplicable(g, typeof(PerformHmsMovement));
             WriteSavegameIfApplicable(g, typeof(PerformHmsPlacement));
             WriteSavegameIfApplicable(g, typeof(PoisonToothCancelled));
             WriteSavegameIfApplicable(g, typeof(TakeLosses));
             WriteSavegameIfApplicable(g, typeof(YellowRidesMonster));
             WriteSavegameIfApplicable(g, typeof(YellowSentMonster));
-
-
-            if (e is OrangeDelay && p.HasKarma && p.Ally != Faction.None && g.Players.Any(p => p.Faction != Faction.Orange && p.HasKarma))
-            {
-                WriteSavegameIfApplicable(g, p, "01 Guild with ally and Karama and someone else who has Karama!");
-            }
             */
-            if (e is Battle && e.Initiator == Faction.Grey)
+
+            var brown = g.GetPlayer(Faction.Brown);
+            if (brown != null)
             {
-                /*
-                if (Battle.AffectedByVoice(g, p, g.CurrentVoice) && Battle.AffectedByVoice(g, p, g.CurrentVoice) && g.Players.Any(p => p.HasKarma))
+                if (e is Move m && e.Initiator != Faction.Brown && brown.AnyForcesIn(m.To) > 0 && brown.TreacheryCards.Any(c => c.Id == TreacheryCardManager.CARD_BALISET))
                 {
-                    WriteSavegameIfApplicable(g, p, "02 Ix affected by voice while someone has Karama!");
+                    WriteSavegameIfApplicable(g, p, "01 Brown has Baliset and player moves to Brown");
                 }
-                */
-                if (!Battle.ValidBattleHeroes(g, p).Any() && p.TreacheryCards.Any(c => c.Type == TreacheryCardType.RaiseDead) && p.TreacheryCards.Any(c => c.IsWeapon || c.IsDefense))
+
+                if (e is KarmaHandSwapInitiated k && e.Initiator != Faction.Brown && brown.TreacheryCards.Any(c => c.Id == TreacheryCardManager.CARD_KULLWAHAD))
                 {
-                    WriteSavegameIfApplicable(g, p, "03 Ix without leaders but with ghola and with weapons or defenses");
+                    WriteSavegameIfApplicable(g, p, "02 Brown has Kull Wahad and player uses Karama");
+                }
+
+                if (e is TakeLosses && e.Initiator == Faction.Brown && brown.TreacheryCards.Any(c => c.Id == TreacheryCardManager.CARD_JUBBACLOAK))
+                {
+                    WriteSavegameIfApplicable(g, p, "03 Brown has Jubba Cloak and was hit by storm");
                 }
             }
-            
             /*
             if (e is Bid && p.HasKarma && p.Ally == Faction.Red && p.AlliedPlayer.Resources > 10)
             {
@@ -306,7 +297,7 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 500;
+            int nrOfGames = 1000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
@@ -318,19 +309,20 @@ namespace Treachery.Test
             //int nrOfPlayers = factions.Count;
 
             //Expansion, advanced game, 8 players:
+            //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
+            //rules.Add(Rule.FillWithBots);
+            //rules.Add(Rule.ExtraKaramaCards);
+            //rules.Add(Rule.AssistedNotekeeping);
+            //var factions = EstablishPlayers.AvailableFactions().ToList();
+            //int nrOfPlayers = factions.Count;
+
+            //Game to find a specific situation to test
             var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
             rules.Add(Rule.FillWithBots);
             rules.Add(Rule.ExtraKaramaCards);
             rules.Add(Rule.AssistedNotekeeping);
-            var factions = EstablishPlayers.AvailableFactions().ToList();
+            var factions = new List<Faction>() { Faction.Black, Faction.Green, Faction.Red, Faction.Brown };
             int nrOfPlayers = factions.Count;
-
-            //Game to find a specific situation to test
-            //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
-            //rules.Add(Rule.FillWithBots);
-            //rules.Add(Rule.ExtraKaramaCards);
-            //var factions = new List<Faction>() { Faction.Black, Faction.Green, Faction.Yellow, Faction.Orange };
-            //int nrOfPlayers = factions.Count;
 
             //Expansion, advanced game, 6 players:
             //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();

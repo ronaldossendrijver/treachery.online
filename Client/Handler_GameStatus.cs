@@ -144,7 +144,7 @@ namespace Treachery.Client
                     {
                         return new GameStatus()
                         {
-                            Description = Skin.Current.Format("{0} are deciding which forces were killed by the storm in {1}...", Faction.Yellow, TakeLosses.LossesToTake(Game).Location),
+                            Description = Skin.Current.Format("{0} are deciding which forces were killed by the storm in {1}...", TakeLosses.LossesToTake(Game).Faction, TakeLosses.LossesToTake(Game).Location),
                             WaitingForOthers = true
                         };
                     }
@@ -153,11 +153,22 @@ namespace Treachery.Client
                 {
                     if (Faction == Faction.Brown || Player.Ally == Faction.Brown)
                     {
-                        return new GameStatus()
+                        if (Game.CurrentCardTradeOffer.Initiator == Faction)
                         {
-                            Description = "You are currently trading cards with your ally...",
-                            WaitingForOthers = Game.CurrentCardTradeOffer.Initiator == Faction
-                        };
+                            return new GameStatus()
+                            {
+                                Description = "You are waiting for your ally to select a card in return ...",
+                                WaitingForOthers = true
+                            };
+                        }
+                        else
+                        {
+                            return new GameStatus()
+                            {
+                                Description = "Please select a card in return...",
+                                WaitingForOthers = false
+                            };
+                        }
                     }
                     else
                     {

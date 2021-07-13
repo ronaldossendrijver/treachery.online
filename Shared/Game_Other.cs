@@ -384,5 +384,19 @@ namespace Treachery.Shared
             GetPlayer(e.ToReplace).IsBot = !GetPlayer(e.ToReplace).IsBot;
             CurrentReport.Add(e.ToReplace, "{0} will now be played by a {1}.", e.ToReplace, GetPlayer(e.ToReplace).IsBot? "Bot" : "Human");
         }
+
+        public bool KarmaPrevented(Faction f)
+        {
+            return CurrentKarmaPrevention != null && CurrentKarmaPrevention.Target == f;
+        }
+
+        public BrownKarmaPrevention CurrentKarmaPrevention { get; set; } = null;
+        public void HandleEvent(BrownKarmaPrevention e)
+        {
+            CurrentReport.Add(e);
+            Discard(e.CardUsed());
+            CurrentKarmaPrevention = e;
+            RecentMilestones.Add(Milestone.SpecialUselessPlayed);
+        }
     }
 }

@@ -69,7 +69,7 @@
         }
         else if (a == typeof(MetheorPlayed))
         {
-            <SimpleActionComponent GameEventType="MetheorPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Metheor)" title="@Support.GetCardTitle(TreacheryCardType.Metheor)" Alert="false" />
+            <SimpleActionComponent GameEventType="MetheorPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Metheor)" Title="@Support.GetCardTitle(TreacheryCardType.Metheor)" Alert="false" />
         }
         else if (a == typeof(TakeLosses))
         {
@@ -89,11 +89,11 @@
         }
         else if (a == typeof(AllianceBroken))
         {
-            <SimpleActionComponent GameEventType="AllianceBroken" h="@h" title="Break your current alliance?" Alert="false" />
+            <SimpleActionComponent GameEventType="AllianceBroken" h="@h" Title="Break your current alliance?" Alert="false" />
         }
         else if (a == typeof(CharityClaimed))
         {
-            <SimpleActionComponent GameEventType="CharityClaimed" h="@h" title="Claim Charity?" Alert="false" />
+            <SimpleActionComponent GameEventType="CharityClaimed" h="@h" Title="Claim Charity?" Alert="false" />
         }
         else if (a == typeof(Revival))
         {
@@ -105,7 +105,7 @@
         }
         else if (a == typeof(OrangeDelay))
         {
-            <SimpleActionComponent GameEventType="OrangeDelay" h="@h" title="Delay your turn?" Alert="true" />
+            <SimpleActionComponent GameEventType="OrangeDelay" h="@h" Title="Delay your turn?" Alert="true" />
         }
         else if (a == typeof(BlueAccompanies))
         {
@@ -145,7 +145,7 @@
         }
         else if (a == typeof(BattleRevision))
         {
-            <SimpleActionComponent GameEventType="BattleRevision" h="@h" title="Change your battle plan?" Alert="false" />
+            <SimpleActionComponent GameEventType="BattleRevision" h="@h" Title="Change your battle plan?" Alert="false" />
         }
         else if (a == typeof(TreacheryCalled))
         {
@@ -229,7 +229,7 @@
         }
         else if (a == typeof(AmalPlayed))
         {
-            <SimpleActionComponent GameEventType="AmalPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Amal)" title="@Support.GetCardTitle(TreacheryCardType.Amal)" Alert="false" Collapsible="true" />
+            <SimpleActionComponent GameEventType="AmalPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Amal)" Title="@Support.GetCardTitle(TreacheryCardType.Amal)" Alert="false" Collapsible="true" />
         }
         else if (a == typeof(GreyRemovedCardFromAuction))
         {
@@ -253,11 +253,11 @@
         }
         else if (a == typeof(HarvesterPlayed))
         {
-            <SimpleActionComponent GameEventType="HarvesterPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Harvester)" title="@Support.GetCardTitle(TreacheryCardType.Harvester)" Alert="false" />
+            <SimpleActionComponent GameEventType="HarvesterPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Harvester)" Title="@Support.GetCardTitle(TreacheryCardType.Harvester)" Alert="false" />
         }
         else if (a == typeof(PoisonToothCancelled))
         {
-            <SimpleActionComponent GameEventType="PoisonToothCancelled" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.PoisonTooth)" title="Cancel Poison Tooth?" Alert="false" />
+            <SimpleActionComponent GameEventType="PoisonToothCancelled" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.PoisonTooth)" Title="Cancel Poison Tooth?" Alert="false" />
         }
         else if (a == typeof(ReplacedCardWon))
         {
@@ -265,7 +265,7 @@
         }
         else if (a == typeof(ThumperPlayed))
         {
-            <SimpleActionComponent GameEventType="ThumperPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Thumper)" title="@Support.GetCardTitle(TreacheryCardType.Thumper)" Alert="false" />
+            <SimpleActionComponent GameEventType="ThumperPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Thumper)" Title="@Support.GetCardTitle(TreacheryCardType.Thumper)" Alert="false" />
         }
         else if (a == typeof(HideSecrets))
         {
@@ -293,7 +293,7 @@
         }
         else if (a == typeof(KarmaBrownDiscard))
         {
-            <KarmaBrownDiscardComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)"/>
+            <KarmaBrownDiscardComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
         }
         else if (a == typeof(AuditCancelled))
         {
@@ -302,6 +302,26 @@
         else if (a == typeof(Audited))
         {
             <AuditedComponent h="@h" />
+        }
+        else if (a == typeof(BrownExtraMove))
+        {
+            <SimpleActionComponent GameEventType="BrownExtraMove" h="@h" BackgroundImage="@Skin.Current.GetImageURL(BrownExtraMove.CardToUse(h.Player))" Title="@Skin.Current.Format("Use {0} to be able to move your forces one extra territory?", BrownExtraMove.CardToUse(h.Player))" Alert="false" Collapsible="true" />
+        }
+        else if (a == typeof(BrownMovePrevention))
+        {
+            <BrownMovePreventionComponent h="@h" />
+        }
+        else if (a == typeof(BrownKarmaPrevention))
+        {
+            <BrownKarmaPreventionComponent h="@h" />
+        }
+        else if (a == typeof(BrownFreeRevivalPrevention))
+        {
+            <BrownFreeRevivalPreventionComponent h="@h" />
+        }
+        else if (a == typeof(BrownRemoveForce))
+        {
+            <BrownRemoveForceComponent h="@h" />
         }
     }
 

@@ -8,7 +8,7 @@
 
 <GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Please choose how to distribute a storm loss total of at least @TakeLosses.LossesToTake(Game) over your forces in @TakeLosses.LossesToTake(Game).Location</Header>
+    <Header>Please choose how to distribute a storm loss total of at least <strong>@TakeLosses.LossesToTake(Game).Amount</strong> over your forces in <strong>@TakeLosses.LossesToTake(Game).Location</strong></Header>
     <Body>
 
         @if (TakeLosses.ValidMaxForceAmount(Game, Player) > 0)
@@ -21,14 +21,16 @@
             <SelectForcesComponent @bind-Value="specialForceAmount" Min="0" Max="TakeLosses.ValidMaxSpecialForceAmount(Game, Player)" Faction="Faction" Special="true" />
         }
 
-        @if (Faction == Faction.Brown && TakeLosses.ValidUselessCardToPreventLosses(Game, Player) != null)
-        {
-            <RadioComponent @bind-Value="useUseless" Values="new bool[] { true, false }" ValueLabels="@(new string[] { "yes", "no" })" />
-        }
-
         <p>Total selected value: <span class="badge badge-primary badge-pill">@(forceAmount + specialForceAmount)</span></p>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+        @if (Faction == Faction.Brown && TakeLosses.ValidUselessCardToPreventLosses(Game, Player) != null)
+        {
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" Other="Other" OtherText="@(UseUselessLabel)" />
+        }
+        else
+        {
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+        }
 
     </Body>
 
@@ -40,7 +42,10 @@
 
     private int forceAmount;
     private int specialForceAmount;
-    private bool useUseless = false;
 
-    protected override TakeLosses ConfirmedResult => new TakeLosses(Game) { Initiator = Faction, ForceAmount = forceAmount, SpecialForceAmount = specialForceAmount, UseUselessCard = useUseless };
+    protected override TakeLosses ConfirmedResult => new TakeLosses(Game) { Initiator = Faction, ForceAmount = forceAmount, SpecialForceAmount = specialForceAmount, UseUselessCard = false };
+
+    protected override TakeLosses OtherResult => new TakeLosses(Game) { Initiator = Faction, ForceAmount = forceAmount, SpecialForceAmount = specialForceAmount, UseUselessCard = true };
+
+    private string UseUselessLabel => Skin.Current.Format("Use {0}", TakeLosses.ValidUselessCardToPreventLosses(Game, Player));
 }

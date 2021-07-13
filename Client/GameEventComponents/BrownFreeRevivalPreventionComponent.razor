@@ -1,0 +1,29 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<BrownFreeRevivalPrevention>
+
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Use @Skin.Current.Describe(BrownFreeRevivalPrevention.CardToUse(Player)) to prevent a faction from taking Free Revival?</Header>
+
+    <Body>
+        <SelectFactionComponent @bind-Value="target" Values="Game.ValidTargets(Player)" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+    </Body>
+
+</GameEventComponentLayout>
+
+@code { 
+
+    protected override Faction IsFactionSpecific => Faction.Brown;
+
+    protected override string Background => Skin.Current.GetImageURL(BrownFreeRevivalPrevention.CardToUse(Player));
+
+    private Faction target;
+
+    protected override BrownFreeRevivalPrevention ConfirmedResult => new BrownFreeRevivalPrevention(Game) { Initiator = Faction, Target = target };
+}

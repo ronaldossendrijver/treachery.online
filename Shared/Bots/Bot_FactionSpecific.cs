@@ -198,14 +198,15 @@ namespace Treachery.Shared
         {
             int normalForces = Math.Min(TakeLosses.LossesToTake(Game).Amount, TakeLosses.ValidMaxForceAmount(Game, this));
             int specialForces = TakeLosses.LossesToTake(Game).Amount - normalForces;
-            return new TakeLosses(Game) { Initiator = Faction, ForceAmount = normalForces, SpecialForceAmount = specialForces };
+            bool useUseless = TakeLosses.ValidUselessCardToPreventLosses(Game, this) != null;
+            return new TakeLosses(Game) { Initiator = Faction, ForceAmount = normalForces, SpecialForceAmount = specialForces, UseUselessCard = useUseless };
         }
 
         protected PerformYellowSetup DeterminePerformYellowSetup()
         {
             var forceLocations = new Dictionary<Location, Battalion>();
             forceLocations.Add(Game.Map.FalseWallSouth.MiddleLocation, new Battalion() { Faction = Faction, AmountOfForces = 3 + D(1, 4), AmountOfSpecialForces = SpecialForcesInReserve > 0 ? 1 : 0 });
-            //forceLocations.Add(Game.Map.SietchTabr, new Battalion() { Faction = Faction, AmountOfForces = Math.Min(10 - forceLocations.Sum(kvp => kvp.Value.TotalAmountOfForces), 1 + D(1, 4)), AmountOfSpecialForces = 0 });
+
             int forcesLeft = 10 - forceLocations.Sum(kvp => kvp.Value.TotalAmountOfForces);
 
             if (forcesLeft > 0)

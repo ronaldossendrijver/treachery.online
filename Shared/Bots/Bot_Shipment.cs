@@ -299,7 +299,11 @@ namespace Treachery.Shared
 
         protected virtual void UseKarmaIfApplicable(Shipment shipment)
         {
-            if ((Faction != Faction.Black || SpecialKarmaPowerUsed) && !Game.MayShipAsGuild(this) && Shipment.DetermineCost(Game, this, shipment) > 7 && HasKarma)
+            if (
+                HasKarma && !Game.KarmaPrevented(Faction) &&
+                (Faction != Faction.Black || SpecialKarmaPowerUsed) && 
+                !Game.MayShipAsGuild(this) && 
+                Shipment.DetermineCost(Game, this, shipment) > 7)
             {
                 shipment.KarmaShipment = true;
                 shipment.KarmaCard = Karma.ValidKarmaCards(Game, this).FirstOrDefault();

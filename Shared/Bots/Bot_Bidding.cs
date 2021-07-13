@@ -26,7 +26,7 @@ namespace Treachery.Shared
             bool thisCardIsPerfect = isKnownCard && CardQuality(Game.CardsOnAuction.Top) == 5;
             int resourcesToKeep = thisCardIsPerfect ? Param.Bidding_ResourcesToKeepWhenCardIsPerfect : Param.Bidding_ResourcesToKeepWhenCardIsntPerfect;
             int resourcesAvailable = Math.Max(0, ResourcesIncludingAllyAndRedContribution - resourcesToKeep);
-            bool couldUseKarmaForBid = Ally != Faction.Red && (SpecialKarmaPowerUsed || !Param.Karma_SaveCardToUseSpecialKarmaAbility);
+            bool couldUseKarmaForBid = !Game.KarmaPrevented(Faction) && Ally != Faction.Red && (SpecialKarmaPowerUsed || !Param.Karma_SaveCardToUseSpecialKarmaAbility);
             var karmaCardToUseForBidding = couldUseKarmaForBid && (currentBid > 4 || resourcesAvailable <= currentBid) ? TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma || MayUseUselessAsKarma && c.Type == TreacheryCardType.Useless) : null;
             int karmaWorth = (karmaCardToUseForBidding == null ? 0 : 8);
             int maximumIWillSpend = D(1, resourcesAvailable + karmaWorth);

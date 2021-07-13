@@ -1,0 +1,63 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<BrownRemoveForce>
+@implements IDisposable
+
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Use @Skin.Current.Describe(BrownRemoveForce.CardToUse(Player)) to force a player to send 1 force to their reserves?</Header>
+
+    <Body>
+
+        <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="location" Values="BrownRemoveForce.ValidLocations(Game)">
+            <Label>From</Label>
+        </SelectComponent>
+
+        <SelectFactionComponent @bind-Value="target" Values="BrownRemoveForce.ValidFactions(Game, Player, location)" />
+
+        <SelectFromImageComponent @bind-Value="special" Values="ForceChoices" ImageURLs="ImageURLs" ImageWidth="40" Required="true" />
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override Faction IsFactionSpecific => Faction.Brown;
+
+    protected override string Background => Skin.Current.GetImageURL(BrownRemoveForce.CardToUse(Player));
+
+    private Location location;
+    private Faction target;
+    private bool special;
+
+    protected override BrownRemoveForce ConfirmedResult => new BrownRemoveForce(Game) { Initiator = Faction, Location = location, Target = target, SpecialForce = special };
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            MapDrawer.OnLocationSelected += HandleLocationSelected;
+        }
+    }
+
+    public void Dispose()
+    {
+        MapDrawer.OnLocationSelected -= HandleLocationSelected;
+    }
+
+    private IEnumerable<bool> ForceChoices => BrownRemoveForce.ValidSpecialForceChoices(Game, Player, location, target);
+
+    private IEnumerable<string> ImageURLs => BrownRemoveForce.ValidSpecialForceChoices(Game, Player, location, target).Select(special => special ? Skin.Current.GetFactionSpecialForceImageURL(target) : Skin.Current.GetFactionForceImageURL(target));
+
+    private void HandleLocationSelected(object sender, Location l)
+    {
+        SetIfValid(ref location, BrownRemoveForce.ValidLocations(Game), l);
+    }
+}

@@ -379,24 +379,26 @@ namespace Treachery.Shared
             if (e.UseUselessCard)
             {
                 var card = TakeLosses.ValidUselessCardToPreventLosses(this, e.Player);
-                CurrentReport.Add(e.Initiator, "{0} use a {1} card to prevent losing forces.", e.Initiator, TreacheryCardType.Useless);
+                CurrentReport.Add(e.Initiator, "{0} use a {1} card to prevent losing forces in {2}.", e.Initiator, TreacheryCardType.Useless, StormLossesToTake[0].Location); 
+                StormLossesToTake.RemoveAt(0);
                 Discard(e.Player, card);
+                RecentMilestones.Add(Milestone.SpecialUselessPlayed);
             }
             else
             {
-                player.KillForces(Shared.TakeLosses.LossesToTake(this).Location, e.ForceAmount, e.SpecialForceAmount, false);
+                player.KillForces(TakeLosses.LossesToTake(this).Location, e.ForceAmount, e.SpecialForceAmount, false);
                 StormLossesToTake.RemoveAt(0);
                 CurrentReport.Add(e);
+            }
 
-                if (PhaseBeforeStormLoss == Phase.BlowA)
-                {
-                    Enter(StormLossesToTake.Count > 0, Phase.StormLosses, EndStormPhase);
-                }
-                else
-                {
-                    Enter(PhaseBeforeStormLoss);
-                    DetermineNextShipmentAndMoveSubPhase(intrusionCausedBeforeStormLoss, bgMayAccompanyBeforeStormLoss);
-                }
+            if (PhaseBeforeStormLoss == Phase.BlowA)
+            {
+                Enter(StormLossesToTake.Count > 0, Phase.StormLosses, EndStormPhase);
+            }
+            else
+            {
+                Enter(PhaseBeforeStormLoss);
+                DetermineNextShipmentAndMoveSubPhase(intrusionCausedBeforeStormLoss, bgMayAccompanyBeforeStormLoss);
             }
         }
 

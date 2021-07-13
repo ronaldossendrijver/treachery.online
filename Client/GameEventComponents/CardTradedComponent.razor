@@ -10,13 +10,13 @@
 
     <Header>Trade one of your cards with your ally?</Header>
     <Body>
-        
+
         <SelectCardComponent @bind-Value="card" Values="CardTraded.ValidCards(Player)" Required="true" />
 
         @if (Player.AlliedPlayer.IsBot)
         {
-            <div class="mt-1">Because you're playing with a Bot, you may select one of their cards to receive in return</div>
-            <SelectCardComponent @bind-Value="card" Values="CardTraded.ValidCards(Player.AlliedPlayer)" Required="true" />
+            <div class="mt-1">Because you're playing with a Bot, you may select one of their cards to receive in return:</div>
+            <SelectCardComponent @bind-Value="returnCard" Values="CardTraded.ValidCards(Player.AlliedPlayer)" Required="false" />
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
@@ -30,6 +30,7 @@
     protected override Faction IsFactionSpecific => Faction.Brown;
 
     private TreacheryCard card;
+    private TreacheryCard returnCard;
 
-    protected override CardTraded ConfirmedResult => new CardTraded(Game) { Initiator = Faction, Target = Player.Ally, Card = card };
+    protected override CardTraded ConfirmedResult => new CardTraded(Game) { Initiator = Faction, Target = Player.Ally, Card = card, RequestedCard = returnCard };
 }

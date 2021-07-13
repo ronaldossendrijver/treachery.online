@@ -39,7 +39,12 @@ namespace Treachery.Shared
 
         public static bool CanBePlayedBy(Game g, Player p)
         {
-            return p.Faction == Faction.Brown && !g.Prevented(FactionAdvantage.BrownDiscarding) && p.TreacheryCards.Any(c => c.Id == TreacheryCardManager.CARD_BALISET);
+            return p.Faction == Faction.Brown && !g.Prevented(FactionAdvantage.BrownDiscarding) && CardToUse(p) != null;
+        }
+
+        public static TreacheryCard CardToUse(Player p)
+        {
+            return p.TreacheryCards.FirstOrDefault(c => c.Id == TreacheryCardManager.CARD_BALISET);
         }
 
         protected override void ExecuteConcreteEvent()
@@ -51,5 +56,7 @@ namespace Treachery.Shared
         {
             return new Message(Initiator, "{0} use a {1} card to prevent forces moving into {2}.", Initiator, TreacheryCardType.Useless, Territory);
         }
+
+        public TreacheryCard CardUsed() => CardToUse(Player);
     }
 }

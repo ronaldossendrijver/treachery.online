@@ -1,0 +1,29 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<BrownKarmaPrevention>
+
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Use @Skin.Current.Describe(BrownKarmaPrevention.CardToUse(Player)) to prevent a faction from playing @Skin.Current.Describe(TreacheryCardType.Karma) this phase?</Header>
+
+    <Body>
+        <SelectFactionComponent @bind-Value="target" Values="Game.ValidTargets(Player)" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+    </Body>
+
+</GameEventComponentLayout>
+
+@code { 
+
+    protected override Faction IsFactionSpecific => Faction.Brown;
+
+    protected override string Background => Skin.Current.GetImageURL(BrownKarmaPrevention.CardToUse(Player));
+
+    private Faction target;
+
+    protected override BrownKarmaPrevention ConfirmedResult => new BrownKarmaPrevention(Game) { Initiator = Faction, Target = target };
+}

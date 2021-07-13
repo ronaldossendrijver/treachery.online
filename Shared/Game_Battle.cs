@@ -829,9 +829,10 @@ namespace Treachery.Shared
                     var brown = GetPlayer(Faction.Brown);
                     if (brown != null && p.Faction != Faction.Brown)
                     {
-                        if (!Prevented(FactionAdvantage.BrownReceiveForcePayment))
+                        int brownIncome = (int)Math.Floor(0.5 * costForPlayer);
+
+                        if (brownIncome > 0 && !Prevented(FactionAdvantage.BrownReceiveForcePayment))
                         {
-                            int brownIncome = (int)Math.Floor(0.5 * costForPlayer);
                             brown.Resources += brownIncome;
                             CurrentReport.Add(Faction.Brown, "{0} receive {1} from supported forces", Faction.Brown, brownIncome);
                         }

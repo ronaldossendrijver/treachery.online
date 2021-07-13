@@ -13,7 +13,7 @@ namespace Treachery.Shared
         public const int LowestSupportedVersion = 68;
         public const int LatestVersion = 103;
 
-        public bool BotInfologging = true;
+        public bool BotInfologging = false;
 
         #region GameState
 
@@ -239,6 +239,7 @@ namespace Treachery.Shared
             CurrentMainPhase = phase;
             CurrentMoment = MainPhaseMoment.Start;
             if (clearReport) CurrentReport = new Report(phase);
+            CurrentKarmaPrevention = null;
         }
 
         private void MainPhaseMiddle()
@@ -616,21 +617,24 @@ namespace Treachery.Shared
         public int DetermineMaximumMoveDistance(Player p, IEnumerable<Battalion> moved)
         {
             bool hasOrnithopters = Applicable(Rule.MovementBonusRequiresOccupationBeforeMovement) ? FactionsWithOrnithoptersAtStartOfMovement.Contains(p.Faction) : OccupiesArrakeenOrCarthag(p);
+            int brownExtraMoveBonus = p.Faction == Faction.Brown && BrownHasExtraMove ? 1 : 0;
+
+            int result = 1;
 
             if (hasOrnithopters)
             {
-                return 3;
+                result = 3;
             }
             else if (p.Is(Faction.Yellow) && !Prevented(FactionAdvantage.YellowExtraMove))
             {
-                return 2;
+                result = 2;
             }
             else if (p.Is(Faction.Grey) && !Prevented(FactionAdvantage.GreyCyborgExtraMove) && moved.Any(b => b.AmountOfSpecialForces > 0))
             {
-                return 2;
+                result = 2;
             }
 
-            return 1;
+            return result + brownExtraMoveBonus;
         }
 
         public IEnumerable<Location> LocationsWithAnyForcesNotInStorm(Player p)

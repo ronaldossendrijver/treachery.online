@@ -36,7 +36,14 @@ namespace Treachery.Shared
 
         public static LossToTake LossesToTake(Game g)
         {
-            return g.StormLossesToTake[0];
+            if (g.StormLossesToTake.Count > 0)
+            {
+                return g.StormLossesToTake[0];
+            }
+            else
+            {
+                return new LossToTake();
+            }
         }
 
         public static int ValidMaxForceAmount(Game g, Player p)

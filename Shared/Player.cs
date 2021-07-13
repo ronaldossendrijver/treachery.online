@@ -204,6 +204,26 @@ namespace Treachery.Shared
             ForcesOnPlanet.Remove(location);
         }
 
+        public void ForcesToReserves(Location location, int amount)
+        {
+            ForcesInReserve += amount;
+            ChangeForces(location, -amount);
+        }
+
+        public void SpecialForcesToReserves(Location location, int amount)
+        {
+            if (Faction == Faction.Blue)
+            {
+                ForcesInReserve += amount;
+            }
+            else
+            {
+                SpecialForcesInReserve += amount;
+            }
+
+            ChangeSpecialForces(location, -amount);
+        }
+
         public void ForcesToReserves(Territory t)
         {
             foreach (var l in t.Locations.Where(l => AnyForcesIn(l) > 0))

@@ -283,7 +283,8 @@ namespace Treachery.Shared
         ResourcesReceived = 2700,
         Economics = 2800,
         CardTraded = 2900,
-        Discard = 3000
+        Discard = 3000,
+        SpecialUselessPlayed = 3100
     }
 
 

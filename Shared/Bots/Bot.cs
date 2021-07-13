@@ -89,6 +89,7 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(DealAccepted))) action = DetermineDealAccepted();
                 if (action == null && possibleEvents.Contains(typeof(Audited))) action = DetermineAudited();
                 if (action == null && possibleEvents.Contains(typeof(AuditCancelled))) action = DetermineAuditCancelled();
+                if (action == null && possibleEvents.Contains(typeof(CardTraded))) action = DetermineCardTraded();
 
                 //Blue
                 if (action == null && possibleEvents.Contains(typeof(BluePrediction))) action = DetermineBluePrediction();

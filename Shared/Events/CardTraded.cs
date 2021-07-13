@@ -12,7 +12,7 @@ namespace Treachery.Shared
     {
         public int _cardId;
         public Faction Target;
-        public int _returnedCardId;
+        public int _requestedCardId;
 
         public CardTraded(Game game) : base(game)
         {
@@ -36,15 +36,15 @@ namespace Treachery.Shared
         }
 
         [JsonIgnore]
-        public TreacheryCard ReturnedCard
+        public TreacheryCard RequestedCard
         {
             get
             {
-                return TreacheryCardManager.Get(_returnedCardId);
+                return TreacheryCardManager.Get(_requestedCardId);
             }
             set
             {
-                _returnedCardId = TreacheryCardManager.GetId(value);
+                _requestedCardId = TreacheryCardManager.GetId(value);
             }
         }
 
@@ -52,8 +52,12 @@ namespace Treachery.Shared
         {
             if (!ValidCards(Player).Contains(Card)) return "Invalid card";
             if (!Player.AlliedPlayer.TreacheryCards.Any()) return "Your ally does not have cards to trade";
-            if (Card != null && !Player.AlliedPlayer.IsBot) return "You can only select a card from a Bot ally";
-            if (Card != null && !ValidCards(Game.GetPlayer(Target)).Contains(Card)) return "Invalid return card";
+
+            var targetPlayer = Game.GetPlayer(Target);
+            if (targetPlayer == null) return "Invalid targte player";
+
+            if (RequestedCard != null && !Player.AlliedPlayer.IsBot) return "You can only select a card from a Bot ally";
+            if (RequestedCard != null && !ValidCards(Game.GetPlayer(Target)).Contains(RequestedCard)) return "Invalid requested card";
 
             return "";
         }
