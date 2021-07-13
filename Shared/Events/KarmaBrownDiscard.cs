@@ -35,6 +35,9 @@ namespace Treachery.Shared
 
         public override string Validate()
         {
+            var karmaCardToUse = Player.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
+            if (karmaCardToUse == null) return string.Format("You don't have a {0} card", TreacheryCardType.Karma);
+            if (Cards.Contains(karmaCardToUse)) return string.Format("You can't select the {0} you need to play to use this power", TreacheryCardType.Karma);
             return "";
         }
 
@@ -46,6 +49,12 @@ namespace Treachery.Shared
         public override Message GetMessage()
         {
             return new Message(Initiator, "Using {0}, {1} discard {2} to gain {3}.", TreacheryCardType.Karma, Initiator, Cards, Cards.Count() * 3);
+        }
+
+        public static IEnumerable<TreacheryCard> ValidCards(Player p)
+        {
+            var karmaCardToUse = p.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
+            return p.TreacheryCards.Where(c => c != karmaCardToUse);
         }
     }
 }

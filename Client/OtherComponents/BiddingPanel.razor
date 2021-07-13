@@ -21,7 +21,7 @@
 
                         @if (Game.CurrentBid != null)
                         {
-                            <div style="position: absolute; top: 180px; width: 200px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
+                            <div style="position: absolute; top: 190px; width: 200px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
                                 <img src="@Skin.Current.GetImageURL(Game.CurrentBid.Initiator)" width="36" style="vertical-align: top;" />
                                 <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="36" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
                                 <div style="font-size: 28px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">
@@ -112,15 +112,6 @@
 
     private string BidLabel => "Bid " + (amount + allyContributionAmount + redContributionAmount);
 
-    private async Task Autopass()
-    {
-        if (Game.CurrentBid != null && h.Autopass && Game.CurrentBid.TotalAmount + 1 > h.BidAutoPassThreshold ||
-            Game.CurrentBid == null && h.Autopass && h.BidAutoPassThreshold == 0)
-        {
-            await Pass();
-        }
-    }
-
     protected override void OnParametersSet()
     {
         int allyResources = Player.Ally == Faction.None ? 0 : Game.GetPermittedUseOfAllySpice(Faction);
@@ -129,7 +120,14 @@
         allyContributionAmount = Math.Min(bidToDo, allyResources);
         amount = Math.Min(bidToDo - allyContributionAmount, playerResources);
 
-        _ = Task.Delay(1000).ContinueWith(e => Autopass());
+        if (CanBid)
+        {
+            if (Game.CurrentBid != null && h.Autopass && Game.CurrentBid.TotalAmount + 1 > h.BidAutoPassThreshold ||
+                Game.CurrentBid == null && h.Autopass && h.BidAutoPassThreshold == 0)
+            {
+                _ = Task.Delay(500).ContinueWith(e => Pass());
+            }
+        }
     }
 
     protected override Bid ConfirmedResult => new Bid(Game) { Initiator = Faction, Passed = false, Amount = amount, KarmaBid = false, KarmaCard = karmaCard, AllyContributionAmount = allyContributionAmount, RedContributionAmount = redContributionAmount };

@@ -25,6 +25,7 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(SetIncreasedRevivalLimits))) action = DetermineSetIncreasedRevivalLimits();
                 if (action == null && possibleEvents.Contains(typeof(Voice))) action = DetermineVoice();
                 if (action == null && possibleEvents.Contains(typeof(DealOffered))) action = DetermineDealOffered();
+                if (action == null && possibleEvents.Contains(typeof(DealAccepted))) action = DetermineDealAccepted();
                 if (action == null && possibleEvents.Contains(typeof(AcceptOrCancelPurpleRevival))) action = DetermineAcceptOrCancelPurpleRevival();
                 if (action == null && possibleEvents.Contains(typeof(RequestPurpleRevival))) action = DetermineRequestPurpleRevival();
             }
@@ -86,7 +87,6 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(FaceDancerReplaced))) action = DetermineFaceDancerReplaced();
                 if (action == null && possibleEvents.Contains(typeof(MulliganPerformed))) action = DetermineMulliganPerformed();
                 if (action == null && possibleEvents.Contains(typeof(ReplacedCardWon))) action = DetermineReplacedCardWon();
-                if (action == null && possibleEvents.Contains(typeof(DealAccepted))) action = DetermineDealAccepted();
                 if (action == null && possibleEvents.Contains(typeof(Audited))) action = DetermineAudited();
                 if (action == null && possibleEvents.Contains(typeof(AuditCancelled))) action = DetermineAuditCancelled();
                 if (action == null && possibleEvents.Contains(typeof(CardTraded))) action = DetermineCardTraded();

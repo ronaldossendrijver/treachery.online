@@ -53,7 +53,7 @@ namespace Treachery.Shared
             Enter(Phase.ClaimingCharity);
         }
 
-        private int CurrentCharityMultiplier => EconomicsStatus == BrownEconomicsStatus.Double || EconomicsStatus == BrownEconomicsStatus.DoubleFlipped ? 2 : 1;
+        private int CurrentCharityMultiplier => EconomicsStatus == BrownEconomicsStatus.Double || EconomicsStatus == BrownEconomicsStatus.DoubleFlipped ? 2 : 0;
 
         private void GiveCharity(Player to, int amount)
         {

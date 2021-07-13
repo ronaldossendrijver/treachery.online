@@ -29,6 +29,7 @@ namespace Treachery.Shared
 
         public override string Validate()
         {
+            if (!ValidTerritories(Game, Player).Contains(Territory)) return "Invalid territory.";
             return "";
         }
 

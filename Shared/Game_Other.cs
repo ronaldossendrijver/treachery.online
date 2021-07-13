@@ -184,8 +184,9 @@ namespace Treachery.Shared
         public void HandleEvent(KarmaBrownDiscard e)
         {
             RecentMilestones.Add(Milestone.Discard);
+            DiscardTreacheryCard(e.Player, TreacheryCardType.Karma); 
             CurrentReport.Add(e);
-
+            
             foreach (var card in e.Cards)
             {
                 Discard(e.Player, card);
@@ -198,6 +199,7 @@ namespace Treachery.Shared
         public void HandleEvent(KarmaWhiteBuy e)
         {
             RecentMilestones.Add(Milestone.AuctionWon);
+            DiscardTreacheryCard(e.Player, TreacheryCardType.Karma);
             CurrentReport.Add(e);
             e.Player.TreacheryCards.Add(e.Card);
             WhiteDeck.Items.Remove(e.Card);

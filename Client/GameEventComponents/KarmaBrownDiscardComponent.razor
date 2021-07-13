@@ -11,7 +11,7 @@
     <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to discard any cards from your hand to gain 3 @Skin.Current.Describe(Concept.Resource) each</Header>
     <Body>
 
-        <SelectCardComponent Selected="selectedCards" Values="Player.TreacheryCards" OnChanged="StateHasChanged" />
+        <SelectCardComponent Selected="selectedCards" Values="KarmaBrownDiscard.ValidCards(Player)" OnChanged="StateHasChanged" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 

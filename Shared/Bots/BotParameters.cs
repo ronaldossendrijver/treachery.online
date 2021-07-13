@@ -41,7 +41,7 @@ namespace Treachery.Shared
             Shipment_ExpectedStormMovesWhenUnknown = 3,
             Battle_MaximumUnsupportedForces = 6,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.1f,
-            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.4f,
+            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.5f,
             Battle_DialShortageThresholdForThrowing = 7
         };
 
@@ -60,7 +60,7 @@ namespace Treachery.Shared
             Shipment_DialForExtraForcesToShip = 2,
             Battle_MaximumUnsupportedForces = 6,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.1f,
-            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.45f,
+            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
             Battle_DialShortageThresholdForThrowing = 4
         };
 
@@ -79,7 +79,7 @@ namespace Treachery.Shared
             Shipment_DialForExtraForcesToShip = 8,
             Battle_MaximumUnsupportedForces = 20,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.2f,
-            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.4f,
+            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
             Battle_DialShortageThresholdForThrowing = 4
         };
 
@@ -98,7 +98,7 @@ namespace Treachery.Shared
             Shipment_DialForExtraForcesToShip = 8,
             Battle_MaximumUnsupportedForces = 2,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.1f,
-            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
+            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.8f,
             Battle_DialShortageThresholdForThrowing = 4
         };
 
@@ -117,7 +117,7 @@ namespace Treachery.Shared
             Shipment_DialForExtraForcesToShip = 6,
             Battle_MaximumUnsupportedForces = 0,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.4f,
-            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
+            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.8f,
             Battle_DialShortageThresholdForThrowing = 4
         };
 
@@ -136,7 +136,7 @@ namespace Treachery.Shared
             Shipment_DialForExtraForcesToShip = 4,
             Battle_MaximumUnsupportedForces = 2,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.9f,
-            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.3f,
+            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
             Battle_DialShortageThresholdForThrowing = 5
         };
 
@@ -155,7 +155,7 @@ namespace Treachery.Shared
             Shipment_DialForExtraForcesToShip = 6,
             Battle_MaximumUnsupportedForces = 2,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.7f,
-            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.4f,
+            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.5f,
             Battle_DialShortageThresholdForThrowing = 7
         };
 
@@ -193,7 +193,7 @@ namespace Treachery.Shared
             Shipment_DialForExtraForcesToShip = 8,
             Battle_MaximumUnsupportedForces = 2,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.1f,
-            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
+            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.8f,
             Battle_DialShortageThresholdForThrowing = 4
         };
 
@@ -212,7 +212,7 @@ namespace Treachery.Shared
             Shipment_DialForExtraForcesToShip = 6,
             Battle_MaximumUnsupportedForces = 2,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.7f,
-            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.35f,
+            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
             Battle_DialShortageThresholdForThrowing = 7
         };
 
@@ -231,7 +231,7 @@ namespace Treachery.Shared
             Shipment_DialForExtraForcesToShip = 6,
             Battle_MaximumUnsupportedForces = 2,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.7f,
-            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.35f,
+            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
             Battle_DialShortageThresholdForThrowing = 7
         };
 
@@ -250,7 +250,7 @@ namespace Treachery.Shared
             Shipment_DialForExtraForcesToShip = 6,
             Battle_MaximumUnsupportedForces = 2,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.7f,
-            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.35f,
+            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
             Battle_DialShortageThresholdForThrowing = 7
         };
 
