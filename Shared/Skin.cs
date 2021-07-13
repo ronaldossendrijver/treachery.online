@@ -257,6 +257,7 @@ namespace Treachery.Shared
             else if (value is FactionAdvantage factionadvantage) result = Describe(factionadvantage);
             else if (value is TreacheryCardType tct) result = Describe(tct);
             else if (value is Ruleset r) result = Describe(r);
+            else if (value is RuleGroup rg) result = Describe(rg);
             else if (value is Rule rule) result = Describe(rule);
             else if (value is MainPhase m) result = Describe(m);
             else if (value is TechToken tt) result = Describe(tt);
@@ -444,6 +445,27 @@ namespace Treachery.Shared
                 _ => "unknown rule set",
             };
         }
+
+        public string Describe(RuleGroup s)
+        {
+            return s switch
+            {
+                RuleGroup.CoreAdvanced => "Core Game, Advanced Rules",
+                RuleGroup.CoreBasicExceptions => "Core Game, Exceptions to Basic Rules",
+                RuleGroup.CoreAdvancedExceptions => "Core Game, Exceptions to Advanced Rules",
+                
+                RuleGroup.ExpansionIxAndBtBasic => "Ixians & Tleilaxu Expansion",
+                RuleGroup.ExpansionIxAndBtAdvanced => "Tleilaxu Expansion, Advanced Rules",
+                
+                RuleGroup.ExpansionBrownAndWhiteBasic => "CHOAM & Richese Expansion",
+                RuleGroup.ExpansionBrownAndWhiteAdvanced => "CHOAM Richese, Advanced Rules",
+                
+                RuleGroup.House => "House Rules",
+
+                _ => "unknown rule group",
+            };
+        }
+
         public string Describe(WinMethod m)
         {
             return m switch
@@ -513,6 +535,7 @@ namespace Treachery.Shared
                 Rule.HMSwithoutGrey => Format("Use the {0} if {1} are not in play", "Hidden Mobile Stronghold", Faction.Grey),
                 Rule.SSW => Format("SSW: {0} counts for victory after fourth {1}", "Shield Wall", Concept.Monster),
                 Rule.BlackMulligan => Format("{0} mulligan traitors when they drew > 1 of their own", Faction.Black),
+                
                 Rule.GreyAndPurpleExpansionTechTokens => Format("Tech Tokens"),
                 Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal => Format("Treachery Cards: all except {0}, {1} and {2}", TreacheryCardType.ProjectileAndPoison, TreacheryCardType.ShieldAndAntidote, TreacheryCardType.Amal),
                 Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS => Format("Treachery Cards: {0} and {1}", TreacheryCardType.ProjectileAndPoison, TreacheryCardType.ShieldAndAntidote),
@@ -521,6 +544,12 @@ namespace Treachery.Shared
                 Rule.GreyAndPurpleExpansionSandTrout => Describe(Concept.BabyMonster),
                 Rule.GreyAndPurpleExpansionPurpleGholas => Format("{0} may revive leaders as Gholas", Faction.Purple),
                 Rule.GreyAndPurpleExpansionGreySwappingCardOnBid => Format("{0} may swap one card on bid with on card from their hand", Faction.Grey),
+
+                Rule.BrownAndWhiteLeaderSkills => "Leader Skills",
+                Rule.BrownAndWhiteStrongholdBonus => "Stronghold Bonus",
+                Rule.BrownAuditor => Format("{0} gains the Auditor leader", Faction.Brown),
+                Rule.WhiteBlackMarket => Format("{0} Black Market bidding", Faction.White),
+
                 Rule.ExtraKaramaCards => Format("Add three extra {0} cards to the game", TreacheryCardType.Karma),
                 Rule.FullPhaseKarma => Format("Full phase {0} (instead of single instance)", TreacheryCardType.Karma),
                 Rule.YellowMayMoveIntoStorm => Format("{0} may move into storm", Faction.Yellow),

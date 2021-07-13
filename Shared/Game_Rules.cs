@@ -431,6 +431,14 @@ namespace Treachery.Shared
                 case Rule.GreyAndPurpleExpansionGreySwappingCardOnBid:
                 case Rule.GreyAndPurpleExpansionPurpleGholas:
                     return RuleGroup.ExpansionIxAndBtAdvanced;
+
+                case Rule.BrownAndWhiteLeaderSkills:
+                case Rule.BrownAndWhiteStrongholdBonus:
+                    return RuleGroup.ExpansionBrownAndWhiteBasic;
+
+                case Rule.BrownAuditor:
+                case Rule.WhiteBlackMarket:
+                    return RuleGroup.ExpansionBrownAndWhiteAdvanced;
             }
 
             return RuleGroup.None;

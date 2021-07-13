@@ -40,40 +40,16 @@
             <div class="text-info mt-2 mb-1">You can enable or disable individual rules below.</div>
         }
 
-        <label class="mt-1 mb-0">Core Game, Advanced Rules</label>
-        @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreAdvanced))
+        @foreach (var rulegroup in RuleGroups)
         {
-            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" />
-        }
-
-        <label class="mt-1 mb-0">Core Game, Exceptions to Basic Rules</label>
-        @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreBasicExceptions))
-        {
-            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" />
-        }
-
-        <label class="mt-1 mb-0">Core Game, Exceptions to Advanced Rules</label>
-        @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreAdvancedExceptions))
-        {
-            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" />
-        }
-
-        <label class="mt-1 mb-0">Ixians &amp; Tleilaxu Expansion</label>
-        @foreach (var rule in Game.GetRulesInGroup(RuleGroup.ExpansionIxAndBtBasic))
-        {
-            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" />
-        }
-
-        <label class="mt-1 mb-0">Ixians &amp; Tleilaxu Expansion, Advanced Rules</label>
-        @foreach (var rule in Game.GetRulesInGroup(RuleGroup.ExpansionIxAndBtAdvanced))
-        {
-            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" />
-        }
-
-        <label class="mt-1 mb-0">House Rules</label>
-        @foreach (var rule in Game.GetRulesInGroup(RuleGroup.House))
-        {
-            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" />
+            if (Game.GetRulesInGroup(rulegroup).Any())
+            {
+                <label class="mt-1 mb-0">@Skin.Current.Describe(rulegroup)</label>
+                @foreach (var rule in Game.GetRulesInGroup(rulegroup))
+                {
+                    <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" />
+                }
+            }
         }
 
     </Body>
@@ -164,6 +140,8 @@
     private IEnumerable<string> Players => h.Host.JoinedPlayers.Where(p => info.HostParticipates || p != h.PlayerName);
 
     private IEnumerable<Ruleset> Rulesets => EstablishPlayers.AvailableRulesets();
+
+    private IEnumerable<RuleGroup> RuleGroups => EstablishPlayers.AvailableRuleGroups();
 
     private string StyleDef(Faction f)
     {

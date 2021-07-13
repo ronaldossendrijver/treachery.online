@@ -297,16 +297,16 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 1000;
+            int nrOfGames = 5000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
-            //Expansion, advanced game, 8 players:
-            //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
-            //rules.Add(Rule.FillWithBots);
-            //rules.Add(Rule.BotsCannotAlly);
-            //var factions = EstablishPlayers.AvailableFactions().ToList();
-            //int nrOfPlayers = factions.Count;
+            //Expansion, advanced game, all expansions, all factions:
+            var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
+            rules.Add(Rule.FillWithBots);
+            rules.Add(Rule.BotsCannotAlly);
+            var factions = EstablishPlayers.AvailableFactions().ToList();
+            int nrOfPlayers = factions.Count;
 
             //Expansion, advanced game, 8 players:
             //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
@@ -317,12 +317,12 @@ namespace Treachery.Test
             //int nrOfPlayers = factions.Count;
 
             //Game to find a specific situation to test
-            var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
-            rules.Add(Rule.FillWithBots);
-            rules.Add(Rule.ExtraKaramaCards);
-            rules.Add(Rule.AssistedNotekeeping);
-            var factions = new List<Faction>() { Faction.Black, Faction.Green, Faction.Red, Faction.Brown };
-            int nrOfPlayers = factions.Count;
+            //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
+            //rules.Add(Rule.FillWithBots);
+            //rules.Add(Rule.ExtraKaramaCards);
+            //rules.Add(Rule.AssistedNotekeeping);
+            //var factions = new List<Faction>() { Faction.Black, Faction.Green, Faction.Red, Faction.Brown };
+            //int nrOfPlayers = factions.Count;
 
             //Expansion, advanced game, 6 players:
             //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
