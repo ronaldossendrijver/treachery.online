@@ -191,9 +191,10 @@ namespace Treachery.Shared
                         break;
 
                     case ClairvoyanceQuestion.CardTypeInBattle:
+                        var askedTypeCardTypeInBattle = (TreacheryCardType)Game.LatestClairvoyance.Parameter1;
                         answer = Answer(Game.CurrentBattle != null && Game.CurrentBattle.PlanOf(this) != null &&
-                           ((Game.CurrentBattle.PlanOf(this).Defense != null && Game.CurrentBattle.PlanOf(this).Defense.Type == (TreacheryCardType)Game.LatestClairvoyance.Parameter1) ||
-                            (Game.CurrentBattle.PlanOf(this).Weapon != null && Game.CurrentBattle.PlanOf(this).Weapon.Type == (TreacheryCardType)Game.LatestClairvoyance.Parameter1) ||
+                           ((Game.CurrentBattle.PlanOf(this).Defense != null && Covers(Game.CurrentBattle.PlanOf(this).Defense.Type, Game.LatestClairvoyance.Parameter1)) ||
+                            (Game.CurrentBattle.PlanOf(this).Weapon != null && Covers(Game.CurrentBattle.PlanOf(this).Weapon.Type, Game.LatestClairvoyance.Parameter1)) ||
                             (Game.CurrentBattle.PlanOf(this).Hero != null && Game.CurrentBattle.PlanOf(this).Hero is TreacheryCard && (TreacheryCardType)Game.LatestClairvoyance.Parameter1 == TreacheryCardType.Mercenary)));
 
                         if (Game.CurrentBattle != null && (Game.CurrentBattle.Initiator == Faction || Game.CurrentBattle.Target == Faction))
@@ -237,7 +238,7 @@ namespace Treachery.Shared
                         break;
 
                     case ClairvoyanceQuestion.HasCardTypeInHand:
-                        answer = Answer(TreacheryCards.Any(c => c.Type == (TreacheryCardType)Game.LatestClairvoyance.Parameter1));
+                        answer = Answer(TreacheryCards.Any(c => Covers(c.Type, Game.LatestClairvoyance.Parameter1)));
                         break;
 
                     case ClairvoyanceQuestion.LeaderAsFacedancer:
@@ -264,6 +265,11 @@ namespace Treachery.Shared
             }
 
             return new ClairVoyanceAnswered(Game) { Initiator = Faction, Answer = answer };
+        }
+
+        private bool Covers(TreacheryCardType typeToCheck, object coveredByType)
+        {
+            return Voice.IsVoicedBy(Game, true, typeToCheck, (TreacheryCardType)coveredByType) || Voice.IsVoicedBy(Game, false, typeToCheck, (TreacheryCardType)coveredByType);
         }
 
         private ClairVoyanceAnswer Answer(bool value)

@@ -162,27 +162,28 @@ namespace Treachery.Shared
 
         public static IEnumerable<Faction> AvailableFactions()
         {
-            return new Faction[] { Faction.Green, Faction.Black, Faction.Yellow, Faction.Red, Faction.Orange, Faction.Blue, Faction.Grey, Faction.Purple, Faction.Brown };
-            //return new Faction[] { Faction.Green, Faction.Black, Faction.Yellow, Faction.Red, Faction.Orange, Faction.Blue, Faction.Grey, Faction.Purple };
+            //return new Faction[] { Faction.Green, Faction.Black, Faction.Yellow, Faction.Red, Faction.Orange, Faction.Blue, Faction.Grey, Faction.Purple, Faction.Brown };
+            return new Faction[] { Faction.Green, Faction.Black, Faction.Yellow, Faction.Red, Faction.Orange, Faction.Blue, Faction.Grey, Faction.Purple };
         }
 
         public static IEnumerable<Ruleset> AvailableRulesets()
         {
-            return Enumerations.GetValuesExceptDefault(typeof(Ruleset), Ruleset.None);
+            //return Enumerations.GetValuesExceptDefault(typeof(Ruleset), Ruleset.None);
             
-            /*return new Ruleset[] { 
+            return new Ruleset[] { 
                 Ruleset.BasicGame, 
                 Ruleset.AdvancedGame, 
                 Ruleset.ExpansionBasicGame, 
                 Ruleset.ExpansionAdvancedGame, 
                 Ruleset.ServerClassic, 
-                Ruleset.Custom };*/
+                Ruleset.Custom 
+            };
             
         }
 
         public static IEnumerable<RuleGroup> AvailableRuleGroups()
         {
-            return new RuleGroup[]
+            /*return new RuleGroup[]
             {
                 RuleGroup.CoreAdvanced,
                 RuleGroup.CoreBasicExceptions,
@@ -195,9 +196,9 @@ namespace Treachery.Shared
                 RuleGroup.ExpansionBrownAndWhiteAdvanced,
 
                 RuleGroup.House,
-            };
+            };*/
 
-            /*
+            
             return new RuleGroup[]
             {
                 RuleGroup.CoreAdvanced,
@@ -209,7 +210,7 @@ namespace Treachery.Shared
 
                 RuleGroup.House,
             };
-            */
+            
         }
 
     }

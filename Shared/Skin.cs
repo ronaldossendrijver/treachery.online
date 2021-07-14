@@ -1787,7 +1787,7 @@ namespace Treachery.Shared
                 { Faction.Grey, DEFAULT_ART_LOCATION + "/art/faction7force.svg" },
                 { Faction.Purple, DEFAULT_ART_LOCATION + "/art/faction8force.svg" },
 
-                { Faction.Brown, DEFAULT_ART_LOCATION + "/art/faction9force.svg" },
+                { Faction.Brown, DEFAULT_ART_LOCATION + "/art/faction9force.png" },
                 { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10force.svg" },
                 { Faction.Pink, DEFAULT_ART_LOCATION + "/art/faction11force.svg" },
                 { Faction.Cyan, DEFAULT_ART_LOCATION + "/art/faction12force.svg" }
