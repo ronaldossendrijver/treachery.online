@@ -126,23 +126,11 @@ namespace Treachery.Shared
             }
         }
 
-        public static IEnumerable<int> ValidAmounts(Player p, bool usingKarma)
-        {
-            if (usingKarma)
-            {
-                return Enumerable.Range(0, 100);
-            }
-            else
-            {
-                return Enumerable.Range(0, p.Resources + 1);
-            }
-        }
-
         public static int ValidMaxAmount(Player p, bool usingKarma)
         {
             if (usingKarma)
             {
-                return 50;
+                return 100;
             }
             else
             {

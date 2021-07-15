@@ -40,7 +40,6 @@ namespace Treachery.Shared
         public Report CurrentReport { get; set; }
         public PlayerSequence ShipmentAndMoveSequence { get; set; }
         public PlayerSequence BattleSequence { get; set; }
-        public PlayerSequence BidSequence { get; set; }
         public PlayerSequence CheckWinSequence { get; set; }
         public PlayerSequence TechTokenSequence { get; set; }
         public Deck<TreacheryCard> TreacheryDeck { get; set; }

@@ -10,10 +10,15 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
+        public PlayerSequence BidSequence { get; set; }
+        public PlayerSequence BlackMarketBidSequence { get; set; }
+        public PlayerSequence WhiteBidSequence { get; set; }
         public Deck<TreacheryCard> CardsOnAuction { get; private set; }
         public int CardNumber { get; private set; }
         public Bid CurrentBid { get; private set; } = null;
+        public BlackMarketBid CurrentBlackMarketBid { get; private set; } = null;
         public Dictionary<Faction, Bid> Bids { get; private set; } = new Dictionary<Faction, Bid>();
+        public Dictionary<Faction, BlackMarketBid> BlackMarketBids { get; private set; } = new Dictionary<Faction, BlackMarketBid>();
         private Faction FirstFactionToBid { get; set; }
         private bool GreySwappedCardOnBid { get; set; }
 
@@ -22,9 +27,98 @@ namespace Treachery.Shared
             MainPhaseStart(MainPhase.Bidding);
             Allow(FactionAdvantage.BrownControllingCharity);
             Allow(FactionAdvantage.BlueCharity);
-            BidSequence.Start(this, Version >= 50);
             ReceiveResourceTechIncome();
             GreySwappedCardOnBid = false;
+
+            var white = GetPlayer(Faction.White);
+            Enter(white != null && !Prevented(FactionAdvantage.WhiteBlackMarket) && white.TreacheryCards.Count > 0 && Players.Count > 1, Phase.BlackMarketAnnouncement, EnterRegularBidding);
+        }
+
+        public TreacheryCard BlackMarketCardOnAuction;
+        public AuctionType BlackMarketAuctionType;
+        public void HandleEvent(WhiteAnnouncesBlackMarket e)
+        {
+            CurrentReport.Add(e);
+
+            if (!e.Passed)
+            {
+                Enter(Phase.BlackMarketBidding);
+                BlackMarketCardOnAuction = e.Card;
+                BlackMarketAuctionType = e.AuctionType;
+                BlackMarketBidSequence = new PlayerSequence(Players, e.AuctionType == AuctionType.OnceAround ? e.Direction : 1);
+                CurrentBlackMarketBid = null;
+                BlackMarketBids.Clear();
+                BlackMarketBidSequence.Start(this, Version >= 50);
+                SkipPlayersThatCantBid(BlackMarketBidSequence);
+                FirstFactionToBid = BlackMarketBidSequence.CurrentFaction;
+
+
+            }
+            else
+            {
+                EnterRegularBidding();
+            }
+        }
+
+        public void HandleEvent(BlackMarketBid bid)
+        {
+
+            BlackMarketBidSequence.NextPlayer(this, Version >= 50);
+            SkipPlayersThatCantBid(BlackMarketBidSequence);
+
+            if (Bids.ContainsKey(bid.Initiator))
+            {
+                Bids.Remove(bid.Initiator);
+            }
+
+            BlackMarketBids.Add(bid.Initiator, bid);
+
+            if (bid.Passed)
+            {
+                switch (BlackMarketAuctionType)
+                {
+                    case AuctionType.Normal:
+
+                        if (CurrentBlackMarketBid != null && BlackMarketBidSequence.CurrentFaction == CurrentBlackMarketBid.Initiator)
+                        {
+                            //WinByHighestBidBlackMarket();
+                        }
+                        else if (CurrentBlackMarketBid == null && FirstFactionToBid == BlackMarketBidSequence.CurrentFaction)
+                        {
+                            //EveryonePassedBlackMarket();
+                        }
+
+                        break;
+
+                    case AuctionType.OnceAround:
+
+                        if (Players.Count(p => p.MayBidOnCards) == BlackMarketBids.Count)
+                        {
+                            //FinishOnceAroundBlackMarket();
+                        }
+
+                        break;
+
+                    case AuctionType.Silent:
+
+                        if (Players.Count(p => p.MayBidOnCards) == BlackMarketBids.Count)
+                        {
+                            //FinishSilentBidBlackMarket();
+                        }
+
+                        break;
+                }
+            }
+            else
+            {
+                CurrentBlackMarketBid = bid;
+                RecentMilestones.Add(Milestone.Bid);
+            }
+        }
+
+        private void EnterRegularBidding()
+        {
+            BidSequence.Start(this, Version >= 50);
             DrawCardsOnAuction();
         }
 
@@ -142,7 +236,7 @@ namespace Treachery.Shared
                 CurrentBid = null;
                 Bids.Clear();
                 BidSequence.Start(this, Version >= 50);
-                SkipPlayersThatCantBid();
+                SkipPlayersThatCantBid(BidSequence);
                 FirstFactionToBid = BidSequence.CurrentFaction;
             }
         }
@@ -187,7 +281,7 @@ namespace Treachery.Shared
             }
 
             BidSequence.NextPlayer(this, Version >= 50);
-            SkipPlayersThatCantBid();
+            SkipPlayersThatCantBid(BidSequence);
 
             if (Bids.ContainsKey(bid.Initiator))
             {
@@ -362,12 +456,12 @@ namespace Treachery.Shared
             FinishBid(initiator, newCard);
         }
 
-        private void SkipPlayersThatCantBid()
+        private void SkipPlayersThatCantBid(PlayerSequence sequence)
         {
             for (int i = 0; i < Players.Count; i++)
             {
-                if (BidSequence.CurrentPlayer.MayBidOnCards) break;
-                BidSequence.NextPlayer(this, Version >= 50);
+                if (sequence.CurrentPlayer.MayBidOnCards) break;
+                sequence.NextPlayer(this, Version >= 50);
             }
         }
 
@@ -549,7 +643,7 @@ namespace Treachery.Shared
         {
             Enter(Phase.Bidding);
             BidSequence.NextRound(this, Version >= 50);
-            SkipPlayersThatCantBid();
+            SkipPlayersThatCantBid(BidSequence);
             FirstFactionToBid = BidSequence.CurrentFaction;
         }
 

@@ -1378,6 +1378,7 @@ namespace Treachery.Shared
                 [TreacheryCardType.Flight] = "Flight",
                 [TreacheryCardType.SearchDiscarded] = "SearchDiscarded",
                 [TreacheryCardType.TakeDiscarded] = "TakeDiscarded",
+                [TreacheryCardType.Residual] = "Residual",
                 [TreacheryCardType.Rockmelter] = "Rockmelter"
             },
 
@@ -1428,7 +1429,7 @@ namespace Treachery.Shared
                 [48] = "Portable Snooper",
                 [49] = "Ornithopter",
                 [50] = "Nullentropy",
-                [51] = "Demuta Drug",
+                [51] = "Semuta Drug",
                 [52] = "Residual Poison",
                 [53] = "Stone Burner",
             },

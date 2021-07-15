@@ -183,6 +183,11 @@ namespace Treachery.Shared
 
             Map.CorrectForPreVersion46IssueWithHMS = IsPlaying(Faction.Grey) && Version < 46;
 
+            if (IsPlaying(Faction.White))
+            {
+                WhiteDeck = TreacheryCardManager.CreateAndShuffleWhiteDeck(this, Random);
+            }
+
             DeterminePositionsAtTable();
             BidSequence = new PlayerSequence(Players);
             ShipmentAndMoveSequence = new PlayerSequence(Players);

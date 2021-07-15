@@ -229,7 +229,13 @@ namespace Treachery.Shared
 
         Contemplate = 398,
         TurnConcluded = 399,
-        GameEnded = 400
+        GameEnded = 400,
+
+        [PhaseProperty(true, Faction.White)]
+        BlackMarketAnnouncement = 500,
+
+        BlackMarketBidding = 501,
+
     }
 
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
@@ -455,6 +461,7 @@ namespace Treachery.Shared
         //Expansion 2
         BrownAndWhiteLeaderSkills = 400,
         BrownAndWhiteStrongholdBonus = 401,
+        WhiteTreacheryCards = 402,
 
         //Expansion 2, Advanced Game
         BrownAuditor = 500,
@@ -551,7 +558,8 @@ namespace Treachery.Shared
         Flight = 220,
         SearchDiscarded = 230,
         TakeDiscarded = 240,
-        Rockmelter = 250
+        Residual = 250,
+        Rockmelter = 260
     }
 
     public enum Concept : int
@@ -583,5 +591,13 @@ namespace Treachery.Shared
         Mercenary = 30,
         Auditor = 40,
         InitiallyUnclaimed = 50
+    }
+
+    public enum AuctionType : int
+    {
+        None = 0,
+        Normal = 10,
+        OnceAround = 20,
+        Silent = 30
     }
 }

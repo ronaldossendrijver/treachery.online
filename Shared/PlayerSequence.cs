@@ -16,14 +16,12 @@ namespace Treachery.Shared
 
         public int Current { get; set; }
 
-        public PlayerSequence()
-        {
+        private int _direction;
 
-        }
-
-        public PlayerSequence(IEnumerable<Player> players)
+        public PlayerSequence(IEnumerable<Player> players, int direction = 1)
         {
             Players = players.ToList();
+            _direction = direction;
         }
 
         public void Start(Game game, bool ignorePlayersThatCantBid)
@@ -33,39 +31,21 @@ namespace Treachery.Shared
             RoundStartedAt = Current;
         }
 
-        public Player CurrentPlayer
-        {
-            get
-            {
-                return Players.Where(p => p.PositionAtTable == Current).Single();
-            }
-        }
+        public Player CurrentPlayer => Players.Where(p => p.PositionAtTable == Current).Single();
 
-        public Player RoundStartedAtPlayer
-        {
-            get
-            {
-                return Players.Where(p => p.PositionAtTable == RoundStartedAt).Single();
-            }
-        }
+        public Player RoundStartedAtPlayer => Players.Where(p => p.PositionAtTable == RoundStartedAt).Single();
 
-        public Faction CurrentFaction
-        {
-            get
-            {
-                return CurrentPlayer.Faction;
-            }
-        }
+        public Faction CurrentFaction => CurrentPlayer.Faction;
 
         public void NextRound(Game game, bool ignorePlayersThatCantBid)
         {
-            Current = FindNearestPlayerPosition(game, RoundStartedAt + 1, ignorePlayersThatCantBid);
+            Current = FindNearestPlayerPosition(game, RoundStartedAt + _direction, ignorePlayersThatCantBid);
             RoundStartedAt = Current;
         }
 
         public void NextPlayer(Game game, bool ignorePlayersThatCantBid)
         {
-            Current = FindNearestPlayerPosition(game, Current + 1, ignorePlayersThatCantBid);
+            Current = FindNearestPlayerPosition(game, Current + _direction, ignorePlayersThatCantBid);
         }
 
         private int FindNearestPlayerPosition(Game game, int positionToStartLooking, bool ignorePlayersThatCantBid)
@@ -79,7 +59,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    position = (position + 1) % game.MaximumNumberOfPlayers;
+                    position = (position + _direction) % game.MaximumNumberOfPlayers;
                 }
             }
 
@@ -97,7 +77,7 @@ namespace Treachery.Shared
             for (int i = 0; i < g.MaximumNumberOfPlayers; i++)
             {
                 int pos = (RoundStartedAt + i) % g.MaximumNumberOfPlayers;
-                var playerAtPosition = Players.FirstOrDefault(p => p.PositionAtTable == (RoundStartedAt + i) % g.MaximumNumberOfPlayers);
+                var playerAtPosition = Players.FirstOrDefault(p => p.PositionAtTable == (RoundStartedAt + _direction * i) % g.MaximumNumberOfPlayers);
                 if (playerAtPosition != null)
                 {
                     var elt = new SequenceElement() { Player = playerAtPosition, HasTurn = pos == Current };

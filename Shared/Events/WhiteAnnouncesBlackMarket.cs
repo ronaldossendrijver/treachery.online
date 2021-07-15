@@ -8,15 +8,18 @@ using System.Linq;
 
 namespace Treachery.Shared
 {
-    public class BrownDiscarded : GameEvent
+    public class WhiteAnnouncesBlackMarket : GameEvent
     {
         public int _cardId;
-        
-        public BrownDiscarded(Game game) : base(game)
+        public bool Passed;
+        public AuctionType AuctionType;
+        public int Direction;
+
+        public WhiteAnnouncesBlackMarket(Game game) : base(game)
         {
         }
 
-        public BrownDiscarded()
+        public WhiteAnnouncesBlackMarket()
         {
         }
 
@@ -35,7 +38,7 @@ namespace Treachery.Shared
 
         public override string Validate()
         {
-            if (!ValidCards(Game, Player).Contains(Card)) return "Invalid card";
+            if (!ValidCards(Player).Contains(Card)) return "Invalid card";
 
             return "";
         }
@@ -47,20 +50,19 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            if (Card.Type == TreacheryCardType.Useless)
+            if (!Passed)
             {
-                return new Message(Initiator, "{0} receive 2 by discarding a {1} card.", Initiator, TreacheryCardType.Useless);
+                return new Message(Initiator, "{0} put a card on the black market using {1}", Initiator, AuctionType);
             }
             else
             {
-                return new Message(Initiator, "{0} receive 3 by discarding a duplicate {1}.", Initiator, Card);
+                return new Message(Initiator, "{0} don't put a card on the black market", Initiator);
             }
         }
 
-        public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)
+        public static IEnumerable<TreacheryCard> ValidCards(Player p)
         {
-            return p.TreacheryCards.Where(c => c.Type == TreacheryCardType.Useless ||
-                (c.Type != TreacheryCardType.Projectile || c.Type != TreacheryCardType.Poison) && p.TreacheryCards.Count(toCount => toCount.Type == c.Type) > 1);
+            return p.TreacheryCards;
         }
     }
 }
