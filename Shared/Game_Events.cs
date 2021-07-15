@@ -156,11 +156,11 @@ namespace Treachery.Shared
                     break;
                 case Phase.GreyRemovingCardFromBid:
                     if (faction == Faction.Grey) result.Add(typeof(GreyRemovedCardFromAuction));
-                    if (Version < 103 && player.Has(TreacheryCardType.Amal)) result.Add(typeof(AmalPlayed));
+                    if (Version < 103 && player.Has(TreacheryCardType.Amal) && CardNumber == 1 && !Bids.Any()) result.Add(typeof(AmalPlayed));
                     break;
                 case Phase.GreySwappingCard:
                     if (faction == Faction.Grey) result.Add(typeof(GreySwappedCardOnBid));
-                    if (Version < 103 && player.Has(TreacheryCardType.Amal)) result.Add(typeof(AmalPlayed));
+                    if (Version < 103 && player.Has(TreacheryCardType.Amal) && CardNumber == 1 && !Bids.Any()) result.Add(typeof(AmalPlayed));
                     break;
                 case Phase.ReplacingCardJustWon:
                     if (player.Ally == Faction.Grey) result.Add(typeof(ReplacedCardWon));

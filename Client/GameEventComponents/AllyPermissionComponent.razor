@@ -70,6 +70,10 @@
                 <Label>Select a @Skin.Current.Describe(TreacheryCardType.Karma) card they may use to ship at @Skin.Current.Describe(Faction.Orange) rates (currently: <strong>@(permittedKarma == null ? "none" : permittedKarma.Name)</strong>)?</Label>
             </SelectCardComponent>
         }
+        else
+        {
+            karmaCard = null;
+        }
 
         @if (Faction == Faction.Red)
         {

@@ -78,6 +78,11 @@
                 <SelectResourcesFromFactionComponent @bind-Value="resourcesFromAlly" Min="0" Max="MaxAllyResources" Faction="Player.Ally" />
             }
         }
+        else
+        {
+            resources = 0;
+            resourcesFromAlly = 0;
+        }
 
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white" class="bi bi-arrow-right" viewBox="0 0 16 16" style="vertical-align: super">
             <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
@@ -91,12 +96,20 @@
         {
             <SelectHeroComponent @bind-Value="hero" Values="Battle.ValidBattleHeroes(Game, Player)" />
         }
+        else
+        {
+            hero = null;
+        }
 
         @if (Weapons.Any())
         {
             <SelectCardComponent @bind-Value="weapon" Values="Weapons" Required="false">
                 <Label>Weapon</Label>
             </SelectCardComponent>
+        }
+        else
+        {
+            weapon = null;
         }
 
         @if (Defenses.Any())
@@ -105,12 +118,20 @@
                 <Label>Defense</Label>
             </SelectCardComponent>
         }
+        else
+        {
+            defense = null;
+        }
 
         @if (Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah))
         {
             <RadioComponent @bind-Value="messiah" Values="@(new bool[] {false,true})" ValueLabels="@(new string[] {"No","Yes"})">
                 <Label>Should the @Skin.Current.Describe(Concept.Messiah) join the fight?</Label>
             </RadioComponent>
+        }
+        else
+        {
+            messiah = false;
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Battle!" ConfirmError="@Validation" />
@@ -161,7 +182,7 @@
     private TreacheryCard lastdefense;
     private TreacheryCard lastweapon;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnAfterRender(bool firstRender)
     {
         if (
             forces != lastforces ||
@@ -183,7 +204,7 @@
             lastweapon = weapon;
 
             h._battleUnderConstruction = ConfirmedResult;
-            await MapDrawer.Draw();
+            Task.Delay(200).ContinueWith(e => MapDrawer.Draw());
         }
     }
 

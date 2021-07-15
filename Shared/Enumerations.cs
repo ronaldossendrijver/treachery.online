@@ -542,7 +542,16 @@ namespace Treachery.Shared
         Amal = 140,
         ArtilleryStrike = 150,
         Thumper = 160,
-        Harvester = 170
+        Harvester = 170,
+
+        Distrans = 180,
+        Juice = 190,
+        MirrorWeapon = 200,
+        PortableAntidote = 210,
+        Flight = 220,
+        SearchDiscarded = 230,
+        TakeDiscarded = 240,
+        Rockmelter = 250
     }
 
     public enum Concept : int

@@ -55,7 +55,7 @@ namespace Treachery.Shared
         public void StartDeal(Deal deal)
         {
             Deals.Add(deal);
-            CurrentReport.Add(new Message("Deal: {0}", deal.ToString(this)));
+            //CurrentReport.Add(new Message("Deal: {0}", deal.ToString(this)));
         }
 
         public bool HasDeal(Faction f, DealType type)

@@ -1370,6 +1370,15 @@ namespace Treachery.Shared
                 [TreacheryCardType.Harvester] = "Harvester",
                 [TreacheryCardType.Thumper] = "Thumper",
                 [TreacheryCardType.Amal] = "Amal",
+
+                [TreacheryCardType.Distrans] = "Distrans",
+                [TreacheryCardType.Juice] = "Juice",
+                [TreacheryCardType.MirrorWeapon] = "MirrorWeapon",
+                [TreacheryCardType.PortableAntidote] = "PortableAntidote",
+                [TreacheryCardType.Flight] = "Flight",
+                [TreacheryCardType.SearchDiscarded] = "SearchDiscarded",
+                [TreacheryCardType.TakeDiscarded] = "TakeDiscarded",
+                [TreacheryCardType.Rockmelter] = "Rockmelter"
             },
 
             TreacheryCardName_STR = new Dictionary<int, string>
@@ -1399,6 +1408,7 @@ namespace Treachery.Shared
                 [30] = "Kulon",
                 [31] = "La La La",
                 [32] = "Trip to Gamont",
+
                 [33] = "Poison Blade",
                 [34] = "Hunter-Seeker",
                 [35] = "Basilia Weapon",
@@ -1410,7 +1420,17 @@ namespace Treachery.Shared
                 [41] = "Harvester",
                 [42] = "Thumper",
                 [43] = "Amal",
-                [44] = "Kull Wahad"
+                [44] = "Kull Wahad",
+
+                [45] = "Distrans",
+                [46] = "Juice Of Sapho",
+                [47] = "Mirror Weapon",
+                [48] = "Portable Snooper",
+                [49] = "Ornithopter",
+                [50] = "Nullentropy",
+                [51] = "Demuta Drug",
+                [52] = "Residual Poison",
+                [53] = "Stone Burner",
             },
 
             TreacheryCardDescription_STR = new Dictionary<int, string>
@@ -1440,6 +1460,7 @@ namespace Treachery.Shared
                 [30] = "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
                 [31] = "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
                 [32] = "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
+
                 [33] = "Play as part of your Battle Plan. This weapon counts as both projectile and poison. You may keep this card if you win this battle.",
                 [34] = "Weapon - Projectile - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Shield. You may keep this card if you win the battle.",
                 [35] = "Weapon - Poison - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Snooper. You may keep this card if you win the battle.",
@@ -1451,7 +1472,17 @@ namespace Treachery.Shared
                 [41] = "Play just after a spice blow comes up. Doubles the Spice blow. Place double the amount of spice in the territory.",
                 [42] = "Play at beginning of Spice Blow Phase instead of revealing the Spice Blow card. Causes a Shai-Hulud to appear. Play proceeds as though Shai-Hulud has been revealed.",
                 [43] = "At the beginning of any phase, cause all players to discard half of the spice behind their shields, rounded up, to the Spice Bank.",
-                [44] = "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan."
+                [44] = "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
+
+                [45] = "",
+                [46] = "",
+                [47] = "",
+                [48] = "",
+                [49] = "",
+                [50] = "",
+                [51] = "",
+                [52] = "",
+                [53] = "",
             },
 
             TechTokenDescription_STR = new Dictionary<TechToken, string>
@@ -1499,7 +1530,17 @@ namespace Treachery.Shared
                 [41] = DEFAULT_ART_LOCATION + "/art/Harvester.gif",
                 [42] = DEFAULT_ART_LOCATION + "/art/Thumper.gif",
                 [43] = DEFAULT_ART_LOCATION + "/art/Amal.gif",
-                [44] = DEFAULT_ART_LOCATION + "/art/KullWahad.gif"
+                [44] = DEFAULT_ART_LOCATION + "/art/KullWahad.gif",
+
+                [45] = DEFAULT_ART_LOCATION + "/art/Distrans.gif",
+                [46] = DEFAULT_ART_LOCATION + "/art/JuiceOfSapho.gif",
+                [47] = DEFAULT_ART_LOCATION + "/art/MirrorWeapon.gif",
+                [48] = DEFAULT_ART_LOCATION + "/art/PortableSnooper.gif",
+                [49] = DEFAULT_ART_LOCATION + "/art/Ornithopter.gif",
+                [50] = DEFAULT_ART_LOCATION + "/art/Nullentropy.gif",
+                [51] = DEFAULT_ART_LOCATION + "/art/DemutaDrug.gif",
+                [52] = DEFAULT_ART_LOCATION + "/art/ResidualPoison.gif",
+                [53] = DEFAULT_ART_LOCATION + "/art/StoneBurner.gif",
             },
 
             ResourceCardImage_URL = new Dictionary<int, string>()

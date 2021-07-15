@@ -36,11 +36,11 @@ namespace Treachery.Shared
         {
             if (Cancelled)
             {
-                return new Message(Initiator, "{0} paid a bribe to cancel an audit.", Initiator);
+                return new Message(Initiator, "{0} pay {1} to cancel an audit.", Initiator, Faction.Brown);
             }
             else
             {
-                return new Message(Initiator, "{0} don't pay a bribe to cancel an audit", Initiator);
+                return new Message(Initiator, "{0} don't pay to cancel an audit", Initiator);
             }
         }
 
@@ -48,12 +48,17 @@ namespace Treachery.Shared
         {
             if (Cancelled)
             {
-                return new Message(Initiator, "{0} bribe {1} for {2} to cancel the audit.", Initiator, Faction.Brown, Cost(Game));
+                return new Message(Initiator, "{0} pay {1} {2} to cancel an audit of {3} cards.", Initiator, Faction.Brown, Cost(Game), GetNumberOfCardsThatMayBeAudited(Game));
             }
             else
             {
                 return new Message(Initiator, "{0} don't cancel an audit targeting {1} of their cards.", Initiator, GetNumberOfCardsThatMayBeAudited(Game));
             }
+        }
+
+        public int Cost()
+        {
+            return Cost(Game);
         }
 
         public static int Cost(Game g)

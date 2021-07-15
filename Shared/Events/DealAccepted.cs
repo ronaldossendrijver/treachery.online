@@ -51,7 +51,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} accept the {1} offer for {2}: {3}", 
+            return new Message(Initiator, "{0} accept {1} offer for {2}: {3}", 
                 Initiator, 
                 BoundFaction, 
                 Price, 

@@ -12,12 +12,9 @@
     <Header>Accompany the latest shipment?</Header>
     <Body>
 
-        @if (Player.ForcesInReserve > 0 && Game.Applicable(Rule.BlueAccompaniesToShipmentLocation))
-        {
-            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="BlueAccompanies.ValidTargets(Game, Player)">
-                <Label>To</Label>
-            </SelectComponent>
-        }
+        <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="BlueAccompanies.ValidTargets(Game, Player)">
+            <Label>To</Label>
+        </SelectComponent>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError="@Validation" Pass="Pass" PassText="No" />
 

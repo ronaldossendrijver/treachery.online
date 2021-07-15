@@ -339,7 +339,9 @@ namespace Treachery.Shared
         {
             var initiator = GetPlayer(bid.Initiator);
             var card = bid.GetKarmaCard();
+
             Discard(card);
+
             if (card.Type == TreacheryCardType.Karma)
             {
                 CurrentReport.Add(bid.Initiator, "Card {2} won by {0} using {1}.", bid.Initiator, TreacheryCardType.Karma, CardNumber);
@@ -348,6 +350,7 @@ namespace Treachery.Shared
             {
                 CurrentReport.Add(bid.Initiator, "Card {2} won by {0} using {1} for {3}.", bid.Initiator, card, CardNumber, TreacheryCardType.Karma);
             }
+
             RecentMilestones.Add(Milestone.AuctionWon);
             RecentMilestones.Add(Milestone.Karma);
 

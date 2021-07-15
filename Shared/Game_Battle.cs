@@ -307,6 +307,12 @@ namespace Treachery.Shared
         public void HandleEvent(AuditCancelled e)
         {
             CurrentReport.Add(e.GetDynamicMessage());
+            if (e.Cancelled)
+            {
+                e.Player.Resources -= e.Cost();
+                GetPlayer(Faction.Brown).Resources += e.Cost();
+            }
+
             Enter(!e.Cancelled, Phase.Auditing, BattleWinner != Faction.None, Phase.BattleConclusion, FinishBattle);
         }
 

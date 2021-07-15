@@ -17,16 +17,16 @@
 
                     <td class="align-top" style="position:relative; width: 200px;">
 
-                        <img src="@CurrentCardImageSRC" width="200" data-animation="true" data-content="@CurrentCardHover" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" />
+                        <img src="@CurrentCardImageSRC" width="180" data-animation="true" data-content="@CurrentCardHover" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" />
 
-                        <div style="position: absolute; top: 185px; width: 200px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
-                            <div style="font-size: 30px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">
+                        <div style="position: absolute; top: 165px; width: 180px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
+                            <div style="font-size: 28px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">
                                 Card @h.Game.CardNumber of @(h.Game.CardNumber + h.Game.CardsOnAuction.Items.Count - 1)
                             </div>
                             @if (Game.CurrentBid != null)
                             {
-                                <img src="@Skin.Current.GetImageURL(Game.CurrentBid.Initiator)" width="48" style="vertical-align: top;" />
-                                <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="48" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
+                                <img src="@Skin.Current.GetImageURL(Game.CurrentBid.Initiator)" width="42" style="vertical-align: top;" />
+                                <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="42" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
                             }
                         </div>
 
@@ -37,8 +37,8 @@
                         <div class="row justify-content-start">
                             @foreach (var se in Game.BidSequence.GetPlayersInSequence(Game))
                             {
-                                <div class="d-inline-block p-2" style="filter:drop-shadow(2px 2px 2px black)">
-                                    <NumberComponent Value="se.Player.TreacheryCards.Count" Size="@(se.HasTurn ? 48 : 32)" 
+                                <div class="d-inline-block pl-1" style="filter:drop-shadow(2px 2px 2px black)">
+                                    <NumberComponent Value="se.Player.TreacheryCards.Count" Size="@(se.HasTurn ? 36 : 28)" 
                                                      SymbolSRC="@Skin.Current.GetImageURL(se.Player.Faction)" 
                                                      NumberColor="@(se.Player.MayBidOnCards ? "black" : "red")" NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
                                 </div>
@@ -63,13 +63,17 @@
 
                         @if (CanBid)
                         {
-                            @if (Karma.CanKarma(Game, Player))
+                            if (Karma.CanKarma(Game, Player))
                             {
                                 <div class="mt-1">
                                     <SelectCardComponent @bind-Value="karmaCard" Values="Karma.ValidKarmaCards(Game, Player)" Required="false">
                                         <Label>Use @Skin.Current.Describe(TreacheryCardType.Karma) to bid without limit or win immediately? <InfoComponent Contents="@InfoMessage" /></Label>
                                     </SelectCardComponent>
                                 </div>
+                            }
+                            else
+                            {
+                                karmaCard = null;
                             }
 
                             <div class="mt-1">

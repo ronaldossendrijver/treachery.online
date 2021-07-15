@@ -42,12 +42,20 @@
         {
             <RadioComponent @bind-Value="shipmentType" Values="@ValidShipmentTypes" ValueLabels="@ValidShipmentTypeLabels" />
         }
+        else
+        {
+            shipmentType = SHIPMENT_NORMAL;
+        }
 
         @if (shipmentType == SHIPMENT_SITETOSITE)
         {
             <SelectComponent ButtonHint="ClickHintButton.LMB" ModifierHint="ClickHintModifier.CTRL" @bind-Value="shipmentFrom" Values="ValidSourceLocations">
                 <Label>From</Label>
             </SelectComponent>
+        }
+        else
+        {
+            shipmentFrom = null;
         }
 
         <div class="mt-1">
@@ -89,6 +97,10 @@
                     <Label>Use @Skin.Current.Describe(TreacheryCardType.Karma) to ship at @Skin.Current.Describe(Faction.Orange) rate?</Label>
                 </SelectCardComponent>
             </div>
+        }
+        else
+        {
+            karmaCard = null;
         }
 
         <div class="mt-1 text-right">Total cost of shipment: <span class="badge badge-primary badge-pill">@Cost</span></div>

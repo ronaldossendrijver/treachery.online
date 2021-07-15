@@ -15,10 +15,18 @@
         {
             <SelectForcesComponent @bind-Value="amountOfForces" Min="0" Max="RaiseDeadPlayed.ValidMaxAmount(Player, false)" Faction="Faction" Special="false" />
         }
+        else
+        {
+            amountOfForces = 0;
+        }
 
         @if (RaiseDeadPlayed.ValidMaxAmount(Player, true) > 0)
         {
             <SelectForcesComponent @bind-Value="amountOfSpecialForces" Min="0" Max="RaiseDeadPlayed.ValidMaxAmount(Player, true)" Faction="Faction" Special="true" />
+        }
+        else
+        {
+            amountOfSpecialForces = 0;
         }
 
         <SelectHeroComponent @bind-Value="hero" Values="Game.ValidFreeRevivalHeroes(Player)" Required="false"/>
