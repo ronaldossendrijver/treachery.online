@@ -695,6 +695,67 @@ namespace Treachery.Client
                         {
                             switch (CurrentPhase)
                             {
+                                case Phase.BlackMarketAnnouncement:
+                                    {
+                                        if (IAm(Faction.White))
+                                        {
+                                            return new GameStatus()
+                                            {
+                                                Description = "You may now select a card to sell on the Black Markt, or pass.",
+                                                WaitingForOthers = false
+                                            };
+                                        }
+                                        else
+                                        {
+                                            return new GameStatus()
+                                            {
+                                                Description = Skin.Current.Format("{0} are thinking about selling one of their cards on the Black Market...", Faction.White),
+                                                WaitingForOthers = true
+                                            };
+                                        }
+                                    }
+
+                                case Phase.BlackMarketBidding:
+
+                                    if (Game.BlackMarketAuctionType != AuctionType.Silent)
+                                    {
+                                        if (Player == Game.BlackMarketBidSequence.CurrentPlayer)
+                                        {
+                                            return new GameStatus()
+                                            {
+                                                Description = "Please bid or pass.",
+                                                WaitingForOthers = false
+                                            };
+                                        }
+                                        else
+                                        {
+                                            return new GameStatus()
+                                            {
+                                                Description = Skin.Current.Format("{0} are thinking about their bid...", Game.BlackMarketBidSequence.CurrentFaction),
+                                                WaitingForOthers = true
+                                            };
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (!Game.BlackMarketBids.Keys.Contains(Faction))
+                                        {
+                                            return new GameStatus()
+                                            {
+                                                Description = "Please bid or pass.",
+                                                WaitingForOthers = false
+                                            };
+                                        }
+                                        else
+                                        {
+                                            return new GameStatus()
+                                            {
+                                                Description = "Factions are thinking about their bids...",
+                                                WaitingForOthers = true
+                                            };
+                                        }
+                                    }
+
                                 case Phase.GreyRemovingCardFromBid:
                                     {
                                         if (IAm(Faction.Grey))
@@ -1379,7 +1440,8 @@ namespace Treachery.Client
 
         public bool HighlightPlayer(Player p)
         {
-            return Game.CurrentMainPhase == MainPhase.Bidding && p == Game.BidSequence.CurrentPlayer ||
+            return Game.CurrentPhase == Phase.Bidding && p == Game.BidSequence.CurrentPlayer ||
+                   Game.CurrentPhase == Phase.BlackMarketBidding && Game.BlackMarketAuctionType != AuctionType.Silent && p == Game.BlackMarketBidSequence.CurrentPlayer ||
                    (Game.CurrentPhase == Phase.OrangeMove || Game.CurrentPhase == Phase.OrangeShip) && p.Faction == Faction.Orange ||
                    (Game.CurrentPhase == Phase.NonOrangeMove || Game.CurrentPhase == Phase.NonOrangeShip) && p == Game.ShipmentAndMoveSequence.CurrentPlayer ||
                    (Game.CurrentPhase == Phase.BlueAccompaniesOrange || Game.CurrentPhase == Phase.BlueAccompaniesNonOrange || Game.CurrentPhase == Phase.BlueIntrudedByOrangeMove || Game.CurrentPhase == Phase.BlueIntrudedByNonOrangeMove || Game.CurrentPhase == Phase.BlueIntrudedByOrangeShip || Game.CurrentPhase == Phase.BlueIntrudedByNonOrangeShip) && p.Faction == Faction.Blue ||

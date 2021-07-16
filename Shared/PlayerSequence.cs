@@ -24,16 +24,20 @@ namespace Treachery.Shared
             _direction = direction;
         }
 
-        public void Start(Game game, bool ignorePlayersThatCantBid)
+        public void Start(Player p)
         {
-            var startLooking = (int)Math.Ceiling((float)game.SectorInStorm * game.MaximumNumberOfPlayers / Map.NUMBER_OF_SECTORS) % game.MaximumNumberOfPlayers;
-            Current = FindNearestPlayerPosition(game, startLooking, ignorePlayersThatCantBid);
+            Current = p.PositionAtTable;
             RoundStartedAt = Current;
         }
 
-        public Player CurrentPlayer => Players.Where(p => p.PositionAtTable == Current).Single();
-
-        public Player RoundStartedAtPlayer => Players.Where(p => p.PositionAtTable == RoundStartedAt).Single();
+        public void Start(Game game, bool ignorePlayersThatCantBid)
+        {
+            var startLookingInSector = (int)Math.Ceiling((float)game.SectorInStorm * game.MaximumNumberOfPlayers / Map.NUMBER_OF_SECTORS) % game.MaximumNumberOfPlayers;
+            Current = FindNearestPlayerPosition(game, startLookingInSector, ignorePlayersThatCantBid);
+            RoundStartedAt = Current;
+        }
+             
+        public Player CurrentPlayer => Players.Where(p => p.PositionAtTable == Current).SingleOrDefault();
 
         public Faction CurrentFaction => CurrentPlayer.Faction;
 
@@ -48,6 +52,7 @@ namespace Treachery.Shared
             Current = FindNearestPlayerPosition(game, Current + _direction, ignorePlayersThatCantBid);
         }
 
+        //Returns a position number at the table occupied by a player nearest to the indicated position. The number of positions is zero based and depends on the Maximum number of players selected at game start.
         private int FindNearestPlayerPosition(Game game, int positionToStartLooking, bool ignorePlayersThatCantBid)
         {
             int position = positionToStartLooking % game.MaximumNumberOfPlayers;

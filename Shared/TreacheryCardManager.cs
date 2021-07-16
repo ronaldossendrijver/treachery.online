@@ -106,11 +106,9 @@ namespace Treachery.Shared
             return result;
         }
 
-        public static Deck<TreacheryCard> CreateAndShuffleWhiteDeck(Game g, Random random)
+        public static List<TreacheryCard> CreateWhiteCache(Game g)
         {
-            var result = new Deck<TreacheryCard>(GetCardsInPlay(g, Rule.WhiteTreacheryCards), random);
-            result.Shuffle();
-            return result;
+            return GetCardsInPlay(g, Rule.WhiteTreacheryCards).ToList();
         }
 
         public static IEnumerable<TreacheryCard> GetCardsInPlay(Game g)

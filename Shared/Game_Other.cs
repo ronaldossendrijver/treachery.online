@@ -202,7 +202,7 @@ namespace Treachery.Shared
             DiscardTreacheryCard(e.Player, TreacheryCardType.Karma);
             CurrentReport.Add(e);
             e.Player.TreacheryCards.Add(e.Card);
-            WhiteDeck.Items.Remove(e.Card);
+            WhiteCache.Remove(e.Card);
             e.Player.SpecialKarmaPowerUsed = true;
         }
 

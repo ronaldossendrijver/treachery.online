@@ -136,6 +136,10 @@ namespace Treachery.Server
         public async Task RequestBrownExtraMove(int hostID, BrownExtraMove e) { await Request(hostID, e); }
         public async Task RequestBrownFreeRevivalPrevention(int hostID, BrownFreeRevivalPrevention e) { await Request(hostID, e); }
         public async Task RequestBrownRemoveForce(int hostID, BrownRemoveForce e) { await Request(hostID, e); }
+        public async Task RequestWhiteAnnouncesBlackMarket(int hostID, WhiteAnnouncesBlackMarket e) { await Request(hostID, e); }
+        public async Task RequestBlackMarketBid(int hostID, BlackMarketBid e) { await Request(hostID, e); }
+        public async Task RequestWhiteAnnouncesAuction(int hostID, WhiteAnnouncesAuction e) { await Request(hostID, e); }
+        public async Task RequestWhiteSpecifiesAuction(int hostID, WhiteSpecifiesAuction e) { await Request(hostID, e); }
 
         private async Task Request<GameEventType>(int hostID, GameEventType e) where GameEventType : GameEvent
         {

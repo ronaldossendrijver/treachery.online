@@ -16,11 +16,15 @@ namespace Treachery.Shared
         public Deck<TreacheryCard> CardsOnAuction { get; private set; }
         public int CardNumber { get; private set; }
         public Bid CurrentBid { get; private set; } = null;
-        public BlackMarketBid CurrentBlackMarketBid { get; private set; } = null;
+        public BlackMarketBid BlackMarketCurrentBid { get; private set; } = null;
         public Dictionary<Faction, Bid> Bids { get; private set; } = new Dictionary<Faction, Bid>();
         public Dictionary<Faction, BlackMarketBid> BlackMarketBids { get; private set; } = new Dictionary<Faction, BlackMarketBid>();
         private Faction FirstFactionToBid { get; set; }
         private bool GreySwappedCardOnBid { get; set; }
+        private bool CardWasSoldOnBlackMarket { get; set; }
+        public Deck<TreacheryCard> BlackMarketCardsOnAuction;
+        public AuctionType BlackMarketAuctionType;
+        public AuctionType AuctionType;
 
         private void EnterBiddingPhase()
         {
@@ -29,13 +33,13 @@ namespace Treachery.Shared
             Allow(FactionAdvantage.BlueCharity);
             ReceiveResourceTechIncome();
             GreySwappedCardOnBid = false;
+            CardWasSoldOnBlackMarket = false;
+            AuctionType = AuctionType.Normal;
 
             var white = GetPlayer(Faction.White);
-            Enter(white != null && !Prevented(FactionAdvantage.WhiteBlackMarket) && white.TreacheryCards.Count > 0 && Players.Count > 1, Phase.BlackMarketAnnouncement, EnterRegularBidding);
+            Enter(white != null && !Prevented(FactionAdvantage.WhiteBlackMarket) && white.TreacheryCards.Count > 0 && Players.Count > 1, Phase.BlackMarketAnnouncement, EnterWhiteBidding);
         }
 
-        public TreacheryCard BlackMarketCardOnAuction;
-        public AuctionType BlackMarketAuctionType;
         public void HandleEvent(WhiteAnnouncesBlackMarket e)
         {
             CurrentReport.Add(e);
@@ -43,28 +47,39 @@ namespace Treachery.Shared
             if (!e.Passed)
             {
                 Enter(Phase.BlackMarketBidding);
-                BlackMarketCardOnAuction = e.Card;
+                BlackMarketCardsOnAuction = new Deck<TreacheryCard>(Random);
+                BlackMarketCardsOnAuction.PutOnTop(e.Card);
+                e.Player.TreacheryCards.Remove(e.Card);
                 BlackMarketAuctionType = e.AuctionType;
-                BlackMarketBidSequence = new PlayerSequence(Players, e.AuctionType == AuctionType.OnceAround ? e.Direction : 1);
-                CurrentBlackMarketBid = null;
-                BlackMarketBids.Clear();
-                BlackMarketBidSequence.Start(this, Version >= 50);
+
+                if (e.AuctionType == AuctionType.Normal)
+                {
+                    BlackMarketBidSequence = new PlayerSequence(Players);
+                    BlackMarketBidSequence.Start(this, true);
+                }
+                else if (e.AuctionType == AuctionType.OnceAround)
+                {
+                    BlackMarketBidSequence = new PlayerSequence(Players, e.Direction);
+                    BlackMarketBidSequence.Start(e.Player);
+                    BlackMarketBidSequence.NextPlayer(this, true);
+                }
+
                 SkipPlayersThatCantBid(BlackMarketBidSequence);
+                BlackMarketBids.Clear();
+                BlackMarketCurrentBid = null;
                 FirstFactionToBid = BlackMarketBidSequence.CurrentFaction;
-
-
             }
             else
             {
-                EnterRegularBidding();
+                EnterWhiteBidding();
             }
         }
 
         public void HandleEvent(BlackMarketBid bid)
         {
-
             BlackMarketBidSequence.NextPlayer(this, Version >= 50);
             SkipPlayersThatCantBid(BlackMarketBidSequence);
+            RecentMilestones.Add(Milestone.Bid);
 
             if (Bids.ContainsKey(bid.Initiator))
             {
@@ -73,47 +88,90 @@ namespace Treachery.Shared
 
             BlackMarketBids.Add(bid.Initiator, bid);
 
-            if (bid.Passed)
+            if (!bid.Passed)
             {
-                switch (BlackMarketAuctionType)
-                {
-                    case AuctionType.Normal:
+                BlackMarketCurrentBid = bid;
+            }
 
-                        if (CurrentBlackMarketBid != null && BlackMarketBidSequence.CurrentFaction == CurrentBlackMarketBid.Initiator)
+            switch (BlackMarketAuctionType)
+            {
+                case AuctionType.Normal:
+
+                    if (bid.Passed)
+                    {
+                        if (BlackMarketCurrentBid != null && BlackMarketBidSequence.CurrentFaction == BlackMarketCurrentBid.Initiator)
                         {
-                            //WinByHighestBidBlackMarket();
+                            WinByHighestBid(
+                                BlackMarketCurrentBid.Player, 
+                                BlackMarketCurrentBid.Amount, 
+                                BlackMarketCurrentBid.AllyContributionAmount, 
+                                BlackMarketCurrentBid.RedContributionAmount,
+                                BlackMarketCurrentBid.Player.Faction != Faction.White ? Faction.White : Faction.Red, 
+                                BlackMarketCardsOnAuction);
+
+                            CardWasSoldOnBlackMarket = true;
+                            EnterWhiteBidding();
                         }
-                        else if (CurrentBlackMarketBid == null && FirstFactionToBid == BlackMarketBidSequence.CurrentFaction)
+                        else if (BlackMarketCurrentBid == null && FirstFactionToBid == BlackMarketBidSequence.CurrentFaction)
                         {
-                            //EveryonePassedBlackMarket();
+                            CurrentReport.Add("Card not sold as no faction bid on it.");
+                            EnterWhiteBidding();
                         }
+                    }
 
-                        break;
+                    break;
 
-                    case AuctionType.OnceAround:
+                case AuctionType.OnceAround:
+                case AuctionType.Silent:
 
-                        if (Players.Count(p => p.MayBidOnCards) == BlackMarketBids.Count)
+                    if (Players.Count(p => p.MayBidOnCards) == BlackMarketBids.Count)
+                    {
+                        var highestBid = BlackMarketBids.Where(bid => !bid.Value.Passed).OrderByDescending(bid => bid.Value.TotalAmount).FirstOrDefault().Value;
+                        if (highestBid != null && highestBid.TotalAmount > 0)
                         {
-                            //FinishOnceAroundBlackMarket();
+                            WinByHighestBid(highestBid.Player, BlackMarketCurrentBid.Amount, highestBid.AllyContributionAmount, highestBid.RedContributionAmount, Faction.White, BlackMarketCardsOnAuction);
+                            CardWasSoldOnBlackMarket = true;
+                            EnterWhiteBidding();
                         }
-
-                        break;
-
-                    case AuctionType.Silent:
-
-                        if (Players.Count(p => p.MayBidOnCards) == BlackMarketBids.Count)
+                        else
                         {
-                            //FinishSilentBidBlackMarket();
+                            CurrentReport.Add("Card not sold as no faction bid on it.");
+                            EnterWhiteBidding();
                         }
+                    }
 
-                        break;
-                }
+                    break;
+            }
+        }
+
+        private WhiteAnnouncesAuction AnnouncedWhiteAuction;
+        private void EnterWhiteBidding()
+        {
+            int numberOfCardsToSell = PlayersThatCanBid.Count();
+
+            if (CardWasSoldOnBlackMarket)
+            {
+                numberOfCardsToSell--;
+            }
+
+            AnnouncedWhiteAuction = null;
+
+            if (numberOfCardsToSell == 0)
+            {
+                CurrentReport.Add("Bidding is skipped because no faction is able to buy cards");
+                EndBiddingPhase();
             }
             else
             {
-                CurrentBlackMarketBid = bid;
-                RecentMilestones.Add(Milestone.Bid);
+                Enter(IsPlaying(Faction.White) && WhiteCache.Count > 0, Phase.WhiteAnnouncingAuction, EnterRegularBidding);
             }
+        }
+
+        public void HandleEvent(WhiteAnnouncesAuction e)
+        {
+            CurrentReport.Add(e);
+            AnnouncedWhiteAuction = e;
+            Enter(e.First, Phase.WhiteSpecifyingAuction, EnterRegularBidding);
         }
 
         private void EnterRegularBidding()
@@ -127,6 +185,16 @@ namespace Treachery.Shared
             CardsOnAuction = new Deck<TreacheryCard>(Random);
             CardNumber = 1;
             int numberOfCardsToDraw = PlayersThatCanBid.Count();
+
+            if (CardWasSoldOnBlackMarket)
+            {
+                numberOfCardsToDraw--;
+            }
+
+            if (IsPlaying(Faction.White))
+            {
+                numberOfCardsToDraw--;
+            }
 
             if (numberOfCardsToDraw > 0 && IsPlaying(Faction.Grey))
             {
@@ -149,14 +217,32 @@ namespace Treachery.Shared
                 }
             }
 
-            if (!CardsOnAuction.IsEmpty)
+            if (AnnouncedWhiteAuction != null && AnnouncedWhiteAuction.First)
+            {
+                Enter(Phase.WhiteSpecifyingAuction);
+            }
+            else
+            {
+                Enter(IsPlaying(Faction.Grey) && !Prevented(FactionAdvantage.GreySelectingCardsOnAuction), Phase.GreyRemovingCardFromBid, StartAuction);
+            }
+        }
+
+        //This could happen before starting normal bidding or right after normal bidding
+        public void HandleEvent(WhiteSpecifiesAuction e)
+        {
+            CardsOnAuction.PutOnTop(e.Card);
+            WhiteCache.Remove(e.Card);
+
+            if (AnnouncedWhiteAuction.First)
             {
                 Enter(IsPlaying(Faction.Grey) && !Prevented(FactionAdvantage.GreySelectingCardsOnAuction), Phase.GreyRemovingCardFromBid, StartAuction);
             }
             else
             {
-                EndBiddingPhase();
+                WaitForNextCardToBePutOnAuction();
             }
+
+            AnnouncedWhiteAuction = null;
         }
 
         public void HandleEvent(GreyRemovedCardFromAuction e)
@@ -295,7 +381,8 @@ namespace Treachery.Shared
                 if (bid.KarmaBid)
                 {
                     //Immediate Karma
-                    WinWithKarma(bid);
+                    var card = WinWithKarma(bid, CardsOnAuction);
+                    FinishBid(bid.Player, card);
                 }
                 else if (CurrentBid != null && BidSequence.CurrentFaction == CurrentBid.Initiator)
                 {
@@ -303,11 +390,13 @@ namespace Treachery.Shared
                     {
                         //Karma was used to bid any amount
                         ReturnKarmaCardUsedForBid();
-                        WinWithKarma(CurrentBid);
+                        var card = WinWithKarma(CurrentBid, CardsOnAuction);
+                        FinishBid(CurrentBid.Player, card);
                     }
                     else
                     {
-                        WinByHighestBid();
+                        var card = WinByHighestBid(CurrentBid.Player, CurrentBid.Amount, CurrentBid.AllyContributionAmount, CurrentBid.RedContributionAmount, Faction.Red, CardsOnAuction);
+                        FinishBid(CurrentBid.Player, card);
                     }
                 }
                 else if (CurrentBid == null && FirstFactionToBid == BidSequence.CurrentFaction)
@@ -317,7 +406,8 @@ namespace Treachery.Shared
             }
             else if (BidSequence.CurrentFaction == bid.Initiator)
             {
-                BidByOnlyPlayer(bid);
+                var card = BidByOnlyPlayer(bid, Faction.Red, CardsOnAuction);
+                FinishBid(CurrentBid.Player, card);
             }
             else
             {
@@ -344,20 +434,20 @@ namespace Treachery.Shared
             }
         }
 
-        private void BidByOnlyPlayer(Bid bid)
+        private TreacheryCard BidByOnlyPlayer(Bid bid, Faction paymentReceiver, Deck<TreacheryCard> toDrawFrom)
         {
             CurrentBid = bid;
-            var initiator = GetPlayer(CurrentBid.Initiator);
-            var redIncomeMessage = new MessagePart("");
-            PayForCard(initiator, ref redIncomeMessage);
-            LogBid(initiator, redIncomeMessage);
+            var winner = GetPlayer(CurrentBid.Initiator);
+            var receiverIncomeMessage = new MessagePart("");
+            PayForCard(winner, CurrentBid.Amount, CurrentBid.AllyContributionAmount, CurrentBid.RedContributionAmount, paymentReceiver, ref receiverIncomeMessage);
+            LogBid(winner, receiverIncomeMessage);
             RecentMilestones.Add(Milestone.AuctionWon);
-            var card = CardsOnAuction.Draw();
+            var card = toDrawFrom.Draw();
             RegisterWonCardAsKnown(card);
-            initiator.TreacheryCards.Add(card);
-            CurrentReport.Add(Faction.None, initiator.Faction, "You won: {0}.", card);
-            GiveHarkonnenExtraCard(initiator);
-            FinishBid(initiator, card);
+            winner.TreacheryCards.Add(card);
+            CurrentReport.Add(Faction.None, winner.Faction, "You won: {0}.", card);
+            GiveHarkonnenExtraCard(winner);
+            return card;
         }
 
         public void HandleEvent(RedBidSupport e)
@@ -405,20 +495,19 @@ namespace Treachery.Shared
             EndBiddingPhase();
         }
 
-        private void WinByHighestBid()
+        private TreacheryCard WinByHighestBid(Player winner, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, Faction paymentReceiver, Deck<TreacheryCard> toDrawFrom)
         {
             //The current bid is from this player, everyone passed after that, so the auction for this card is finished
-            var initiator = GetPlayer(CurrentBid.Initiator);
-            var redIncomeMessage = new MessagePart("");
-            PayForCard(initiator, ref redIncomeMessage);
-            LogBid(initiator, redIncomeMessage);
+            var receiverIncomeMessage = new MessagePart("");
+            PayForCard(winner, bidAmount, bidAllyContributionAmount, bidRedContributionAmount, paymentReceiver, ref receiverIncomeMessage);
+            LogBid(winner, receiverIncomeMessage);
             RecentMilestones.Add(Milestone.AuctionWon);
-            var card = CardsOnAuction.Draw();
+            var card = toDrawFrom.Draw();
             RegisterWonCardAsKnown(card);
-            initiator.TreacheryCards.Add(card);
-            CurrentReport.Add(Faction.None, initiator.Faction, "You won: {0}.", card);
-            GiveHarkonnenExtraCard(initiator);
-            FinishBid(initiator, card);
+            winner.TreacheryCards.Add(card);
+            CurrentReport.Add(Faction.None, winner.Faction, "You won: {0}.", card);
+            GiveHarkonnenExtraCard(winner);
+            return card;
         }
 
         private void RegisterWonCardAsKnown(TreacheryCard card)
@@ -429,31 +518,31 @@ namespace Treachery.Shared
             }
         }
 
-        private void WinWithKarma(Bid bid)
+        private TreacheryCard WinWithKarma(Bid bid, Deck<TreacheryCard> toDrawFrom)
         {
-            var initiator = GetPlayer(bid.Initiator);
-            var card = bid.GetKarmaCard();
+            var winner = GetPlayer(bid.Initiator);
+            var karmaCard = bid.GetKarmaCard();
 
-            Discard(card);
+            Discard(karmaCard);
 
-            if (card.Type == TreacheryCardType.Karma)
+            if (karmaCard.Type == TreacheryCardType.Karma)
             {
                 CurrentReport.Add(bid.Initiator, "Card {2} won by {0} using {1}.", bid.Initiator, TreacheryCardType.Karma, CardNumber);
             }
             else
             {
-                CurrentReport.Add(bid.Initiator, "Card {2} won by {0} using {1} for {3}.", bid.Initiator, card, CardNumber, TreacheryCardType.Karma);
+                CurrentReport.Add(bid.Initiator, "Card {2} won by {0} using {1} for {3}.", bid.Initiator, karmaCard, CardNumber, TreacheryCardType.Karma);
             }
 
             RecentMilestones.Add(Milestone.AuctionWon);
             RecentMilestones.Add(Milestone.Karma);
 
-            var newCard = CardsOnAuction.Draw();
-            initiator.TreacheryCards.Add(newCard);
-            RegisterWonCardAsKnown(newCard);
-            CurrentReport.Add(Faction.None, initiator.Faction, "You won: {0}.", newCard);
-            GiveHarkonnenExtraCard(initiator);
-            FinishBid(initiator, newCard);
+            var card = toDrawFrom.Draw();
+            winner.TreacheryCards.Add(card);
+            RegisterWonCardAsKnown(card);
+            CurrentReport.Add(Faction.None, winner.Faction, "You won: {0}.", card);
+            GiveHarkonnenExtraCard(winner);
+            return card;
         }
 
         private void SkipPlayersThatCantBid(PlayerSequence sequence)
@@ -465,44 +554,45 @@ namespace Treachery.Shared
             }
         }
 
-        private void PayForCard(Player initiator, ref MessagePart message)
+        private void PayForCard(Player initiator, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, Faction paymentReceiver, ref MessagePart message)
         {
-            initiator.Resources -= CurrentBid.Amount;
+            initiator.Resources -= bidAmount;
 
-            if (CurrentBid.AllyContributionAmount > 0)
+            if (bidAllyContributionAmount > 0)
             {
-                GetPlayer(initiator.Ally).Resources -= CurrentBid.AllyContributionAmount;
-                if (Version >= 76) DecreasePermittedUseOfAllySpice(initiator.Faction, CurrentBid.AllyContributionAmount);
+                GetPlayer(initiator.Ally).Resources -= bidAllyContributionAmount;
+                if (Version >= 76) DecreasePermittedUseOfAllySpice(initiator.Faction, bidAllyContributionAmount);
             }
 
-            if (CurrentBid.RedContributionAmount > 0)
+            if (bidRedContributionAmount > 0)
             {
-                GetPlayer(Faction.Red).Resources -= CurrentBid.RedContributionAmount;
+                GetPlayer(Faction.Red).Resources -= bidRedContributionAmount;
             }
 
-            var emperor = GetPlayer(Faction.Red);
-            if (emperor != null && CurrentBid.Initiator != Faction.Red)
+            var receiver = GetPlayer(paymentReceiver);
+            
+            if (receiver != null && initiator.Faction != paymentReceiver)
             {
-                if (!Prevented(FactionAdvantage.RedReceiveBid))
+                if (paymentReceiver != Faction.Red || !Prevented(FactionAdvantage.RedReceiveBid))
                 {
-                    if (CurrentBid.RedContributionAmount > 0)
+                    if (bidRedContributionAmount > 0)
                     {
-                        var redProfit = CurrentBid.Amount + CurrentBid.AllyContributionAmount;
-                        var redProfitAfterBidding = CurrentBid.RedContributionAmount;
-                        message = new MessagePart(" {0} receives {1} immediately and {2} at the end of the bidding phase.", Faction.Red, redProfit, redProfitAfterBidding);
-                        emperor.Resources += redProfit;
-                        emperor.ResourcesAfterBidding += redProfitAfterBidding;
+                        var receiverProfit = bidAmount + bidAllyContributionAmount;
+                        var receiverProfitAfterBidding = bidRedContributionAmount;
+                        message = new MessagePart(" {0} receive {1} immediately and {2} at the end of the bidding phase.", receiver, receiverProfit, receiverProfitAfterBidding);
+                        receiver.Resources += receiverProfit;
+                        receiver.ResourcesAfterBidding += receiverProfitAfterBidding;
                     }
                     else
                     {
-                        var redProfit = CurrentBid.TotalAmount;
-                        message = new MessagePart(" {0} receives {1}.", Faction.Red, redProfit);
-                        emperor.Resources += redProfit;
+                        var receiverProfit = bidAmount + bidAllyContributionAmount + bidRedContributionAmount;
+                        message = new MessagePart(" {0} receive {1}.", paymentReceiver, receiverProfit);
+                        receiver.Resources += receiverProfit;
                     }
                 }
                 else
                 {
-                    message = new MessagePart(" {0} prevents {1} from receiving {2} for this card.", TreacheryCardType.Karma, Faction.Red, Concept.Resource);
+                    message = new MessagePart(" {0} prevents {1} from receiving {2} for this card.", TreacheryCardType.Karma, paymentReceiver, Concept.Resource);
                     if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.RedReceiveBid);
                 }
             }
@@ -613,29 +703,14 @@ namespace Treachery.Shared
 
         private void WaitForNextCardToBePutOnAuction()
         {
-            CardNumber++;
-
             if (!CardsOnAuction.IsEmpty)
             {
-                if (Version >= 46)
-                {
-                    Enter(GreyMaySwapCardOnBid, Phase.GreySwappingCard, IsPlaying(Faction.Green) && Version > 14, Phase.WaitingForNextBiddingRound, PutNextCardOnAuction);
-                }
-                else
-                {
-                    Enter(IsPlaying(Faction.Green) && Version > 14 || GreyMaySwapCardOnBid, Phase.WaitingForNextBiddingRound, PutNextCardOnAuction);
-                }
+                CardNumber++;
+                Enter(GreyMaySwapCardOnBid, Phase.GreySwappingCard, IsPlaying(Faction.Green), Phase.WaitingForNextBiddingRound, PutNextCardOnAuction);
             }
             else
             {
-                var red = GetPlayer(Faction.Red);
-                if (red != null)
-                {
-                    red.Resources += red.ResourcesAfterBidding;
-                    red.ResourcesAfterBidding = 0;
-                }
-
-                EndBiddingPhase();
+                Enter(AnnouncedWhiteAuction != null && !AnnouncedWhiteAuction.First, Phase.WhiteSpecifyingAuction, EndBiddingPhase);
             }
         }
 
@@ -710,6 +785,13 @@ namespace Treachery.Shared
 
         private void EndBiddingPhase()
         {
+            var red = GetPlayer(Faction.Red);
+            if (red != null)
+            {
+                red.Resources += red.ResourcesAfterBidding;
+                red.ResourcesAfterBidding = 0;
+            }
+
             MainPhaseEnd();
             Enter(Phase.BiddingReport);
         }

@@ -35,7 +35,7 @@ namespace Treachery.Shared
         public override string Validate()
         {
             if (Player.Resources < 3) return Skin.Current.Format("You can't pay 3 {0}", Concept.Resource);
-            if (!Game.WhiteDeck.Items.Contains(Card)) return "Invalid card";
+            if (!Game.WhiteCache.Contains(Card)) return "Invalid card";
 
             return "";
         }

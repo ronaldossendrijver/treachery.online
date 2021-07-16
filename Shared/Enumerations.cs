@@ -235,7 +235,8 @@ namespace Treachery.Shared
         BlackMarketAnnouncement = 500,
 
         BlackMarketBidding = 501,
-
+        WhiteAnnouncingAuction = 505,
+        WhiteSpecifyingAuction = 506,
     }
 
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]

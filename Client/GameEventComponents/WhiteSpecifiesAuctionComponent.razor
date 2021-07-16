@@ -1,0 +1,44 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<WhiteSpecifiesAuction>
+
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Select a card to put on the Black Market, or pass</Header>
+    <Body>
+
+        <SelectCardComponent @bind-Value="card" Values="WhiteSpecifiesAuction.ValidCards(Game)" Required="true" />
+
+        <RadioComponent @bind-Value="auctionType" Values="new AuctionType[] { AuctionType.Normal, AuctionType.OnceAround, AuctionType.Silent }" ValueLabels="@(new string[] { "Normal", "Once Around", "Silent"})">
+            <Label>Type of auction</Label>
+        </RadioComponent>
+
+        @if (auctionType == AuctionType.OnceAround)
+        {
+            <RadioComponent @bind-Value="direction" Values="new int[] { 1, -1 }" ValueLabels="@(new string[] { "Counter-clockwise", "Clockwise"})">
+                <Label>Bidding direction</Label>
+            </RadioComponent>
+        }
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override bool IsUrgent => true;
+
+    protected override Faction IsFactionSpecific => Faction.White;
+
+    private TreacheryCard card;
+    private AuctionType auctionType = AuctionType.Normal;
+    private int direction = 1;
+
+    protected override WhiteSpecifiesAuction ConfirmedResult => new WhiteSpecifiesAuction(Game) { Initiator = Faction, Card = card, AuctionType = auctionType, Direction = direction };
+}

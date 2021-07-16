@@ -15,18 +15,18 @@
             <table class="table table-borderless">
                 <tr>
 
-                    <td class="align-top" style="position:relative; width: 200px;">
+                    <td class="align-top" style="position:relative; width: 150px;">
 
-                        <img src="@CurrentCardImageSRC" width="180" data-animation="true" data-content="@CurrentCardHover" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" />
+                        <img src="@CurrentCardImageSRC" width="150" data-animation="true" data-content="@CurrentCardHover" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" />
 
-                        <div style="position: absolute; top: 165px; width: 180px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
-                            <div style="font-size: 28px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">
+                        <div style="position: absolute; top: 135px; width: 150px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
+                            <div style="font-size: 24px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">
                                 Card @h.Game.CardNumber of @(h.Game.CardNumber + h.Game.CardsOnAuction.Items.Count - 1)
                             </div>
                             @if (Game.CurrentBid != null)
                             {
-                                <img src="@Skin.Current.GetImageURL(Game.CurrentBid.Initiator)" width="42" style="vertical-align: top;" />
-                                <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="42" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
+                                <img src="@Skin.Current.GetImageURL(Game.CurrentBid.Initiator)" width="36" style="vertical-align: top;" />
+                                <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="36" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
                             }
                         </div>
 
@@ -35,7 +35,7 @@
                     <td class="align-top">
 
                         <div class="row justify-content-start">
-                            @foreach (var se in Game.BidSequence.GetPlayersInSequence(Game))
+                            @foreach (var se in PlayersToBid)
                             {
                                 <div class="d-inline-block pl-1" style="filter:drop-shadow(2px 2px 2px black)">
                                     <NumberComponent Value="se.Player.TreacheryCards.Count" Size="@(se.HasTurn ? 36 : 28)" 
@@ -165,37 +165,21 @@
 
     private string InfoMessage => Skin.Current.Format("If you use a {0} card to bid any amount of {1} you wish, that card will be set aside until someone outbids you and will be discarded only if you win the auction. If you instead use your {0} card to win immediately, it is immediately discarded.", TreacheryCardType.Karma, Concept.Resource);
 
-    private IEnumerable<Tuple<Player, bool>> PlayersInSequence
+    private string CurrentCardImageSRC => (Game.HasBiddingPrescience(Player) || Game.WhiteCache.Contains(Game.CardsOnAuction.Top)) && Game.CardsOnAuction.Top != null ? Skin.Current.GetImageURL(Game.CardsOnAuction.Top) : Skin.Current.CardBack_TreacheryCard_URL;
+
+    private string CurrentCardHover => (Game.HasBiddingPrescience(Player) || Game.WhiteCache.Contains(Game.CardsOnAuction.Top)) && Game.CardsOnAuction.Top != null ? Support.GetTreacheryCardHoverHTML(h.Game.CardsOnAuction.Top) : "";
+
+    private IEnumerable<SequenceElement> PlayersToBid
     {
         get
         {
-            var players = h.Game.BidSequence.Players;
-            var result = new List<Tuple<Player, bool>>();
-            int currentPlayerPosition = h.Game.BidSequence.RoundStartedAt;
-
-            for (int i = 0; i < h.Game.MaximumNumberOfPlayers; i++)
+            return (Game.AuctionType) switch
             {
-                var player = players.SingleOrDefault(p => p.PositionAtTable == currentPlayerPosition);
-                if (player != null)
-                {
-                    result.Add(new Tuple<Player, bool>(player, player.PositionAtTable == h.Game.BidSequence.Current));
-                }
-                currentPlayerPosition = (currentPlayerPosition + 1) % h.Game.MaximumNumberOfPlayers;
-            }
-
-            return result;
-        }
-    }
-
-    private string CurrentCardImageSRC => Game.HasBiddingPrescience(Player) && Game.CardsOnAuction.Top != null ? Skin.Current.GetImageURL(Game.CardsOnAuction.Top) : Skin.Current.CardBack_TreacheryCard_URL;
-
-    private string CurrentCardHover => Game.HasBiddingPrescience(Player) && Game.CardsOnAuction.Top != null ? Support.GetTreacheryCardHoverHTML(h.Game.CardsOnAuction.Top) : "";
-
-    private IEnumerable<int> AutopassAmounts
-    {
-        get
-        {
-            return Enumerable.Range(0, 100);
+                AuctionType.Normal => Game.BidSequence.GetPlayersInSequence(Game),
+                AuctionType.OnceAround => Game.BidSequence.GetPlayersInSequence(Game),
+                AuctionType.Silent => Game.Players.Select(p => new SequenceElement() { Player = p, HasTurn = p.MayBidOnCards && !Game.Bids.Keys.Contains(p.Faction) }),
+                _ => new SequenceElement[] { }
+            };
         }
     }
 }

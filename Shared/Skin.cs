@@ -1539,7 +1539,7 @@ namespace Treachery.Shared
                 [48] = DEFAULT_ART_LOCATION + "/art/PortableSnooper.gif",
                 [49] = DEFAULT_ART_LOCATION + "/art/Ornithopter.gif",
                 [50] = DEFAULT_ART_LOCATION + "/art/Nullentropy.gif",
-                [51] = DEFAULT_ART_LOCATION + "/art/DemutaDrug.gif",
+                [51] = DEFAULT_ART_LOCATION + "/art/SemutaDrug.gif",
                 [52] = DEFAULT_ART_LOCATION + "/art/ResidualPoison.gif",
                 [53] = DEFAULT_ART_LOCATION + "/art/StoneBurner.gif",
             },

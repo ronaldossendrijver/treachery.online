@@ -142,9 +142,19 @@ namespace Treachery.Shared
                     break;
                 case Phase.ClaimingCharity:
                     if (!isHost && faction == Faction.Green) result.Add(typeof(EndPhase));
-                    //if (player.Resources <= 1 && !(faction == Faction.Blue && !Prevented(FactionAdvantage.BlueCharity) && Applicable(Rule.BlueAutoCharity))) result.Add(typeof(CharityClaimed));
                     if (player.Resources <= 1 && !HasActedOrPassed.Contains(faction)) result.Add(typeof(CharityClaimed));
                     if (Version < 103 && player.Has(TreacheryCardType.Amal) && (Version <= 82 || HasActedOrPassed.Count == 0)) result.Add(typeof(AmalPlayed));
+                    break;
+                case Phase.BlackMarketAnnouncement:
+                    if (faction == Faction.White) result.Add(typeof(WhiteAnnouncesBlackMarket));
+                    break;
+                case Phase.BlackMarketBidding:
+                    if (BlackMarketAuctionType == AuctionType.Silent && !BlackMarketBids.ContainsKey(faction) ||
+                        BlackMarketAuctionType != AuctionType.Silent && player == BlackMarketBidSequence.CurrentPlayer)
+                    {
+                        result.Add(typeof(BlackMarketBid));
+                    }
+                    if (faction == Faction.Red && Applicable(Rule.RedSupportingNonAllyBids)) result.Add(typeof(RedBidSupport));
                     break;
                 case Phase.Bidding:
                     if (player == BidSequence.CurrentPlayer)

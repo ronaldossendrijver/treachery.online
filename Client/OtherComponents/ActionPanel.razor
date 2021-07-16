@@ -6,17 +6,19 @@
     <AwaitingGameComponent h="@h" />
 }
 
-@foreach (var a in h.Actions)
+@if (h.Actions.Contains(typeof(EstablishPlayers)))
 {
-    if (a == typeof(EstablishPlayers))
-    {
-        <EstablishPlayersComponent h="@h" />
-    }
+    <EstablishPlayersComponent h="@h" />
 }
 
-@if (h.Game.CurrentMainPhase == MainPhase.Bidding)
+@if (h.Game.CurrentPhase == Phase.Bidding)
 {
-    <BiddingPanel h="h" CanBid="h.Actions.Contains(typeof(Bid))"/>
+    <BiddingPanel h="h" CanBid="h.Actions.Contains(typeof(Bid))" />
+}
+
+@if (h.Game.CurrentPhase == Phase.BlackMarketBidding)
+{
+    <BlackMarketBiddingPanel h="h" CanBid="h.Actions.Contains(typeof(BlackMarketBid))" />
 }
 
 <div class="card-columns">
@@ -230,6 +232,10 @@
         else if (a == typeof(AmalPlayed))
         {
             <SimpleActionComponent GameEventType="AmalPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Amal)" Title="@Support.GetCardTitle(TreacheryCardType.Amal)" Alert="false" Collapsible="true" />
+        }
+        else if (a == typeof(WhiteAnnouncesBlackMarket))
+        {
+            <WhiteAnnouncesBlackMarketComponent h="@h" />
         }
         else if (a == typeof(GreyRemovedCardFromAuction))
         {

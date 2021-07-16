@@ -8,18 +8,17 @@ using System.Linq;
 
 namespace Treachery.Shared
 {
-    public class WhiteAnnouncesBlackMarket : GameEvent
+    public class WhiteSpecifiesAuction : GameEvent
     {
         public int _cardId;
-        public bool Passed;
         public AuctionType AuctionType;
         public int Direction;
 
-        public WhiteAnnouncesBlackMarket(Game game) : base(game)
+        public WhiteSpecifiesAuction(Game game) : base(game)
         {
         }
 
-        public WhiteAnnouncesBlackMarket()
+        public WhiteSpecifiesAuction()
         {
         }
 
@@ -38,7 +37,7 @@ namespace Treachery.Shared
 
         public override string Validate()
         {
-            if (!ValidCards(Player).Contains(Card)) return "Invalid card";
+            if (!ValidCards(Game).Contains(Card)) return "Invalid card";
 
             return "";
         }
@@ -63,19 +62,12 @@ namespace Treachery.Shared
                 }
             }
 
-            if (!Passed)
-            {
-                return new Message(Initiator, "{0} put a card on the black market by {1} auction{2}", Initiator, AuctionType, directionText);
-            }
-            else
-            {
-                return new Message(Initiator, "{0} don't put a card on the black market", Initiator);
-            }
+            return new Message(Initiator, "{0} put {1} on {1} auction{2}", Initiator, Card, AuctionType, directionText);
         }
 
-        public static IEnumerable<TreacheryCard> ValidCards(Player p)
+        public static IEnumerable<TreacheryCard> ValidCards(Game g)
         {
-            return p.TreacheryCards;
+            return g.WhiteCache;
         }
     }
 }

@@ -1,0 +1,123 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared;
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<BlackMarketBid>
+
+@if (h.Game.CurrentPhase == Phase.BlackMarketBidding)
+{
+    <div class="card p-1 mb-2 border-white" style="background-image:url('@Skin.Current.PanelBackground_Bidding_URL');background-size:cover;background-repeat:no-repeat">
+
+        <div class="card-body">
+
+            <table class="table table-borderless">
+                <tr>
+
+                    <td class="align-top" style="position:relative; width: 150px;">
+
+                        <img src="@CurrentCardImageSRC" width="150" data-animation="true" data-content="@CurrentCardHover" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" />
+
+                        <div style="position: absolute; top: 135px; width: 150px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
+                            @if (Game.BlackMarketAuctionType != AuctionType.Silent && Game.BlackMarketCurrentBid != null)
+                            {
+                                <img src="@Skin.Current.GetImageURL(Game.BlackMarketCurrentBid.Initiator)" width="36" style="vertical-align: top;" />
+                                <NumberComponent Value="Game.BlackMarketCurrentBid.TotalAmount" Size="36" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
+                            }
+                        </div>
+
+                    </td>
+
+                    <td class="align-top">
+
+                        <div class="row justify-content-start">
+                            @foreach (var se in PlayersToBid)
+                            {
+                                <div class="d-inline-block pl-1" style="filter:drop-shadow(2px 2px 2px black)">
+                                    <NumberComponent Value="se.Player.TreacheryCards.Count" Size="@(se.HasTurn ? 36 : 28)" 
+                                                     SymbolSRC="@Skin.Current.GetImageURL(se.Player.Faction)" 
+                                                     NumberColor="@(se.Player.MayBidOnCards ? "black" : "red")" NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
+                                </div>
+                            }
+                        </div>
+
+                        @if (CanBid)
+                        {
+                            <div class="mt-1">
+
+                                @if (Player.Ally == Faction.None)
+                                {
+                                    <SelectResourcesComponent @bind-Value="amount" Min="0" Max="BlackMarketBid.ValidMaxAmount(Player)" />
+                                }
+                                else
+                                {
+                                    <SelectResourcesFromFactionComponent @bind-Value="amount" Min="0" Max="BlackMarketBid.ValidMaxAmount(Player)" Faction="Faction" />
+                                    <SelectResourcesFromFactionComponent @bind-Value="allyContributionAmount" Min="0" Max="BlackMarketBid.ValidMaxAllyAmount(Game, Player)" Faction="Player.Ally" />
+                                }
+
+                                @if (Game.SpiceForBidsRedCanPay(Faction) > 0)
+                                {
+                                    <SelectResourcesFromFactionComponent @bind-Value="redContributionAmount" Min="0" Max="Game.SpiceForBidsRedCanPay(Faction)" Faction="Faction.Red" />
+                                }
+
+                            </div>
+
+                            <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Pass="Pass" PassText="Pass" Alignment="justify-content-start" />
+                        }
+
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+    </div>
+}
+
+@code {
+
+    protected override bool IsUrgent => true;
+
+    [Parameter]
+    public bool CanBid { get; set; } = false;
+
+    private int amount;
+    private int allyContributionAmount;
+    private int redContributionAmount;
+
+    private string BidLabel => "Bid " + (amount + allyContributionAmount + redContributionAmount);
+
+    protected override void OnParametersSet()
+    {
+        if (Game.BlackMarketAuctionType != AuctionType.Silent)
+        {
+            int allyResources = Player.Ally == Faction.None ? 0 : Game.GetPermittedUseOfAllySpice(Faction);
+            int playerResources = Player.Resources;
+            int bidToDo = Game.BlackMarketCurrentBid != null ? Game.BlackMarketCurrentBid.TotalAmount + 1 : 1;
+            allyContributionAmount = Math.Min(bidToDo, allyResources);
+            amount = Math.Min(bidToDo - allyContributionAmount, playerResources);
+        }
+    }
+
+    protected override BlackMarketBid ConfirmedResult => new BlackMarketBid(Game) { Initiator = Faction, Passed = false, Amount = amount, AllyContributionAmount = allyContributionAmount, RedContributionAmount = redContributionAmount };
+
+    protected override BlackMarketBid PassedResult => new BlackMarketBid(Game) { Initiator = Faction, Passed = true };
+
+    private string CurrentCardImageSRC => Game.HasBiddingPrescience(Player) && Game.BlackMarketCardsOnAuction.Top != null ? Skin.Current.GetImageURL(Game.BlackMarketCardsOnAuction.Top) : Skin.Current.CardBack_TreacheryCard_URL;
+
+    private string CurrentCardHover => Game.HasBiddingPrescience(Player) && Game.BlackMarketCardsOnAuction.Top != null ? Support.GetTreacheryCardHoverHTML(h.Game.BlackMarketCardsOnAuction.Top) : "";
+
+    private IEnumerable<SequenceElement> PlayersToBid
+    {
+        get
+        {
+            return (Game.BlackMarketAuctionType) switch
+            {
+                AuctionType.Normal => Game.BlackMarketBidSequence.GetPlayersInSequence(Game),
+                AuctionType.OnceAround => Game.BlackMarketBidSequence.GetPlayersInSequence(Game),
+                AuctionType.Silent => Game.Players.Select(p => new SequenceElement() { Player = p, HasTurn = p.MayBidOnCards && !Game.BlackMarketBids.Keys.Contains(p.Faction) }),
+                _ => new SequenceElement[] { }
+            };
+        }
+    }
+}
