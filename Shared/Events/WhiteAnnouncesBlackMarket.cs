@@ -38,6 +38,8 @@ namespace Treachery.Shared
 
         public override string Validate()
         {
+            if (Passed) return "";
+
             if (!ValidCards(Player).Contains(Card)) return "Invalid card";
 
             return "";

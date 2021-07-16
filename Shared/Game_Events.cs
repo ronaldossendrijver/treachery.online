@@ -156,6 +156,12 @@ namespace Treachery.Shared
                     }
                     if (faction == Faction.Red && Applicable(Rule.RedSupportingNonAllyBids)) result.Add(typeof(RedBidSupport));
                     break;
+                case Phase.WhiteAnnouncingAuction:
+                    if (faction == Faction.White) result.Add(typeof(WhiteAnnouncesAuction));
+                    break;
+                case Phase.WhiteSpecifyingAuction:
+                    if (faction == Faction.White) result.Add(typeof(WhiteSpecifiesAuction));
+                    break;
                 case Phase.Bidding:
                     if (player == BidSequence.CurrentPlayer)
                     {

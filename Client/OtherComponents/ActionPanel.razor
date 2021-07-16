@@ -329,6 +329,14 @@
         {
             <BrownRemoveForceComponent h="@h" />
         }
+        else if (a == typeof(WhiteAnnouncesAuction))
+        {
+            <WhiteAnnouncesAuctionComponent h="@h" />
+        }
+        else if (a == typeof(WhiteSpecifiesAuction))
+        {
+            <WhiteSpecifiesAuctionComponent h="@h" />
+        }
     }
 
     @if (DealAccepted.CurrentDeals(h.Game).Any() || h.IsPlayer && (DealAccepted.AcceptableDeals(h.Game, h.Player).Any() || DealAccepted.CancellableDeals(h.Game, h.Player).Any()))

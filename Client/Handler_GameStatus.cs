@@ -756,6 +756,47 @@ namespace Treachery.Client
                                         }
                                     }
 
+                                case Phase.WhiteAnnouncingAuction:
+                                    {
+                                        if (IAm(Faction.White))
+                                        {
+                                            return new GameStatus()
+                                            {
+                                                Description = "Please announce if you will auction a card from your cache First or Last.",
+                                                WaitingForOthers = false
+                                            };
+                                        }
+                                        else
+                                        {
+                                            return new GameStatus()
+                                            {
+                                                Description = Skin.Current.Format("{0} are deciding to auction a card from their cache First or Last...", Faction.White),
+                                                WaitingForOthers = true
+                                            };
+                                        }
+                                    }
+
+                                case Phase.WhiteSpecifyingAuction:
+                                    {
+                                        if (IAm(Faction.White))
+                                        {
+                                            return new GameStatus()
+                                            {
+                                                Description = "Select a card from your cache to sell and select the type of auction.",
+                                                WaitingForOthers = false
+                                            };
+                                        }
+                                        else
+                                        {
+                                            return new GameStatus()
+                                            {
+                                                Description = Skin.Current.Format("{0} are deciding which card from their cache to sell and by which type of auction...", Faction.White),
+                                                WaitingForOthers = true
+                                            };
+                                        }
+                                    }
+
+
                                 case Phase.GreyRemovingCardFromBid:
                                     {
                                         if (IAm(Faction.Grey))
