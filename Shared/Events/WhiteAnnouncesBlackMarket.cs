@@ -53,7 +53,7 @@ namespace Treachery.Shared
         public override Message GetMessage()
         {
             string directionText = "";
-            if (AuctionType == AuctionType.OnceAround)
+            if (AuctionType == AuctionType.BlackMarketOnceAround)
             {
                 if (Direction == 1)
                 {

@@ -50,7 +50,7 @@ namespace Treachery.Shared
         public override Message GetMessage()
         {
             string directionText = "";
-            if (AuctionType == AuctionType.OnceAround)
+            if (AuctionType == AuctionType.WhiteOnceAround)
             {
                 if (Direction == 1)
                 {
@@ -62,7 +62,7 @@ namespace Treachery.Shared
                 }
             }
 
-            return new Message(Initiator, "{0} put {1} on {1} auction{2}", Initiator, Card, AuctionType, directionText);
+            return new Message(Initiator, "{0} put {1} on {2} auction{3}", Initiator, Card, AuctionType, directionText);
         }
 
         public static IEnumerable<TreacheryCard> ValidCards(Game g)

@@ -35,7 +35,7 @@
                     <td class="align-top">
 
                         <div class="row justify-content-start">
-                            @foreach (var se in PlayersToBid)
+                            @foreach (var se in Bid.PlayersToBid(Game))
                             {
                                 <div class="d-inline-block pl-1" style="filter:drop-shadow(2px 2px 2px black)">
                                     <NumberComponent Value="se.Player.TreacheryCards.Count" Size="@(se.HasTurn ? 36 : 28)" 
@@ -63,10 +63,10 @@
 
                         @if (CanBid)
                         {
-                            if (Karma.CanKarma(Game, Player))
+                            if (Bid.CanKarma(Game, Player))
                             {
                                 <div class="mt-1">
-                                    <SelectCardComponent @bind-Value="karmaCard" Values="Karma.ValidKarmaCards(Game, Player)" Required="false">
+                                    <SelectCardComponent @bind-Value="karmaCard" Values="Bid.ValidKarmaCards(Game, Player)" Required="false">
                                         <Label>Use @Skin.Current.Describe(TreacheryCardType.Karma) to bid without limit or win immediately? <InfoComponent Contents="@InfoMessage" /></Label>
                                     </SelectCardComponent>
                                 </div>
@@ -150,11 +150,14 @@
 
     protected override void OnParametersSet()
     {
-        int allyResources = Player.Ally == Faction.None ? 0 : Game.GetPermittedUseOfAllySpice(Faction);
-        int playerResources = Player.Resources;
-        int bidToDo = Game.CurrentBid != null ? Game.CurrentBid.TotalAmount + 1 : 1;
-        allyContributionAmount = Math.Min(bidToDo, allyResources);
-        amount = Math.Min(bidToDo - allyContributionAmount, playerResources);
+        if (Game.CurrentAuctionType != AuctionType.WhiteSilent)
+        {
+            int allyResources = Player.Ally == Faction.None ? 0 : Game.GetPermittedUseOfAllySpice(Faction);
+            int playerResources = Player.Resources;
+            int bidToDo = Game.CurrentBid != null ? Game.CurrentBid.TotalAmount + 1 : 1;
+            allyContributionAmount = Math.Min(bidToDo, allyResources);
+            amount = Math.Min(bidToDo - allyContributionAmount, playerResources);
+        }
     }
 
     protected override Bid ConfirmedResult => new Bid(Game) { Initiator = Faction, Passed = false, Amount = amount, KarmaBid = false, KarmaCard = karmaCard, AllyContributionAmount = allyContributionAmount, RedContributionAmount = redContributionAmount };
@@ -169,17 +172,5 @@
 
     private string CurrentCardHover => (Game.HasBiddingPrescience(Player) || Game.WhiteCache.Contains(Game.CardsOnAuction.Top)) && Game.CardsOnAuction.Top != null ? Support.GetTreacheryCardHoverHTML(h.Game.CardsOnAuction.Top) : "";
 
-    private IEnumerable<SequenceElement> PlayersToBid
-    {
-        get
-        {
-            return (Game.AuctionType) switch
-            {
-                AuctionType.Normal => Game.BidSequence.GetPlayersInSequence(Game),
-                AuctionType.OnceAround => Game.BidSequence.GetPlayersInSequence(Game),
-                AuctionType.Silent => Game.Players.Select(p => new SequenceElement() { Player = p, HasTurn = p.MayBidOnCards && !Game.Bids.Keys.Contains(p.Faction) }),
-                _ => new SequenceElement[] { }
-            };
-        }
-    }
+
 }

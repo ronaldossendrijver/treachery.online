@@ -148,28 +148,9 @@ namespace Treachery.Shared
                 (p.Is(Faction.Blue) && c.Type == TreacheryCardType.Useless && g.Applicable(Rule.BlueWorthlessAsKarma)));
         }
 
-        public static IEnumerable<TreacheryCard> ValidKarmaCardsForShipment(Game g, Player p)
-        {
-            var result = ValidKarmaCards(g, p).ToList();
-
-            if (g.GetPermittedUseOfAllyKarma(p.Faction) != null)
-            {
-                result.Add(g.GetPermittedUseOfAllyKarma(p.Faction));
-            }
-
-            return result;
-        }
-
         public static bool CanKarma(Game g, Player p)
         {
-            return
-                p.TreacheryCards.Any(c => c.Type == TreacheryCardType.Karma ||
-                (p.Is(Faction.Blue) && c.Type == TreacheryCardType.Useless && g.Applicable(Rule.BlueWorthlessAsKarma)));
-        }
-
-        public static bool CanKarmaShipment(Game g, Player p)
-        {
-            return ValidKarmaCardsForShipment(g, p).Any();
+            return ValidKarmaCards(g, p).Any();
         }
     }
 }

@@ -2,9 +2,11 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
+using System;
+using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using System.Linq;
+
 
 namespace Treachery.Shared
 {
@@ -83,7 +85,11 @@ namespace Treachery.Shared
 
         public override string Validate()
         {
-            if (Passed || KarmaBid) return "";
+            if (Passed) return "";
+
+            if (KarmaBid && !CanKarma(Game, Player)) return Skin.Current.Format("You can't use {0} for this bid", TreacheryCardType.Karma); 
+
+            if (KarmaBid) return "";
 
             var p = Game.GetPlayer(Initiator);
 
@@ -141,6 +147,42 @@ namespace Treachery.Shared
         public static int ValidMaxAllyAmount(Game g, Player p)
         {
             return g.SpiceYourAllyCanPay(p);
+        }
+
+        public static IEnumerable<SequenceElement> PlayersToBid(Game g)
+        {
+            switch (g.CurrentAuctionType)
+            {
+                case AuctionType.Normal:
+                case AuctionType.WhiteNormal:
+                case AuctionType.WhiteOnceAround:
+                    return g.BidSequence.GetPlayersInSequence(g);
+
+                case AuctionType.WhiteSilent:
+                    return g.Players.Select(p => new SequenceElement() { Player = p, HasTurn = p.MayBidOnCards && !g.Bids.Keys.Contains(p.Faction) });
+
+                default:
+                    return new SequenceElement[] { };
+            };
+        }
+
+        public static IEnumerable<TreacheryCard> ValidKarmaCards(Game g, Player p)
+        {
+            if (g.CurrentAuctionType == AuctionType.Normal)
+            {
+                return
+                    p.TreacheryCards.Where(c => c.Type == TreacheryCardType.Karma ||
+                    (p.Is(Faction.Blue) && c.Type == TreacheryCardType.Useless && g.Applicable(Rule.BlueWorthlessAsKarma)));
+            }
+            else
+            {
+                return Array.Empty<TreacheryCard>();
+            }
+        }
+
+        public static bool CanKarma(Game g, Player p)
+        {
+            return ValidKarmaCards(g, p).Any();
         }
     }
 }

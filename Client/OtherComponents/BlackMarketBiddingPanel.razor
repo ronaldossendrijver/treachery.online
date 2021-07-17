@@ -20,7 +20,7 @@
                         <img src="@CurrentCardImageSRC" width="150" data-animation="true" data-content="@CurrentCardHover" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" />
 
                         <div style="position: absolute; top: 135px; width: 150px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
-                            @if (Game.BlackMarketAuctionType != AuctionType.Silent && Game.BlackMarketCurrentBid != null)
+                            @if (Game.CurrentAuctionType != AuctionType.BlackMarketSilent && Game.BlackMarketCurrentBid != null)
                             {
                                 <img src="@Skin.Current.GetImageURL(Game.BlackMarketCurrentBid.Initiator)" width="36" style="vertical-align: top;" />
                                 <NumberComponent Value="Game.BlackMarketCurrentBid.TotalAmount" Size="36" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
@@ -32,7 +32,7 @@
                     <td class="align-top">
 
                         <div class="row justify-content-start">
-                            @foreach (var se in PlayersToBid)
+                            @foreach (var se in BlackMarketBid.PlayersToBid(Game))
                             {
                                 <div class="d-inline-block pl-1" style="filter:drop-shadow(2px 2px 2px black)">
                                     <NumberComponent Value="se.Player.TreacheryCards.Count" Size="@(se.HasTurn ? 36 : 28)" 
@@ -89,7 +89,7 @@
 
     protected override void OnParametersSet()
     {
-        if (Game.BlackMarketAuctionType != AuctionType.Silent)
+        if (Game.CurrentAuctionType != AuctionType.BlackMarketSilent)
         {
             int allyResources = Player.Ally == Faction.None ? 0 : Game.GetPermittedUseOfAllySpice(Faction);
             int playerResources = Player.Resources;
@@ -106,18 +106,4 @@
     private string CurrentCardImageSRC => Game.HasBiddingPrescience(Player) && Game.BlackMarketCardsOnAuction.Top != null ? Skin.Current.GetImageURL(Game.BlackMarketCardsOnAuction.Top) : Skin.Current.CardBack_TreacheryCard_URL;
 
     private string CurrentCardHover => Game.HasBiddingPrescience(Player) && Game.BlackMarketCardsOnAuction.Top != null ? Support.GetTreacheryCardHoverHTML(h.Game.BlackMarketCardsOnAuction.Top) : "";
-
-    private IEnumerable<SequenceElement> PlayersToBid
-    {
-        get
-        {
-            return (Game.BlackMarketAuctionType) switch
-            {
-                AuctionType.Normal => Game.BlackMarketBidSequence.GetPlayersInSequence(Game),
-                AuctionType.OnceAround => Game.BlackMarketBidSequence.GetPlayersInSequence(Game),
-                AuctionType.Silent => Game.Players.Select(p => new SequenceElement() { Player = p, HasTurn = p.MayBidOnCards && !Game.BlackMarketBids.Keys.Contains(p.Faction) }),
-                _ => new SequenceElement[] { }
-            };
-        }
-    }
 }

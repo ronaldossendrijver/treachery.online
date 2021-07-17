@@ -23,8 +23,7 @@ namespace Treachery.Shared
         private bool GreySwappedCardOnBid { get; set; }
         private bool CardWasSoldOnBlackMarket { get; set; }
         public Deck<TreacheryCard> BlackMarketCardsOnAuction;
-        public AuctionType BlackMarketAuctionType;
-        public AuctionType AuctionType;
+        public AuctionType CurrentAuctionType;
 
         private void EnterBiddingPhase()
         {
@@ -34,7 +33,7 @@ namespace Treachery.Shared
             ReceiveResourceTechIncome();
             GreySwappedCardOnBid = false;
             CardWasSoldOnBlackMarket = false;
-            AuctionType = AuctionType.Normal;
+            CurrentAuctionType = AuctionType.Normal;
 
             var white = GetPlayer(Faction.White);
             Enter(white != null && !Prevented(FactionAdvantage.WhiteBlackMarket) && white.TreacheryCards.Count > 0 && Players.Count > 1, Phase.BlackMarketAnnouncement, EnterWhiteBidding);
@@ -50,14 +49,14 @@ namespace Treachery.Shared
                 BlackMarketCardsOnAuction = new Deck<TreacheryCard>(Random);
                 BlackMarketCardsOnAuction.PutOnTop(e.Card);
                 e.Player.TreacheryCards.Remove(e.Card);
-                BlackMarketAuctionType = e.AuctionType;
+                CurrentAuctionType = e.AuctionType;
 
-                if (e.AuctionType == AuctionType.Normal)
+                if (e.AuctionType == AuctionType.BlackMarketNormal)
                 {
                     BlackMarketBidSequence = new PlayerSequence(Players);
                     BlackMarketBidSequence.Start(this, true);
                 }
-                else if (e.AuctionType == AuctionType.OnceAround)
+                else if (e.AuctionType == AuctionType.BlackMarketOnceAround)
                 {
                     BlackMarketBidSequence = new PlayerSequence(Players, e.Direction);
                     BlackMarketBidSequence.Start(e.Player);
@@ -93,9 +92,9 @@ namespace Treachery.Shared
                 BlackMarketCurrentBid = bid;
             }
 
-            switch (BlackMarketAuctionType)
+            switch (CurrentAuctionType)
             {
-                case AuctionType.Normal:
+                case AuctionType.BlackMarketNormal:
 
                     if (bid.Passed)
                     {
@@ -121,8 +120,8 @@ namespace Treachery.Shared
 
                     break;
 
-                case AuctionType.OnceAround:
-                case AuctionType.Silent:
+                case AuctionType.BlackMarketOnceAround:
+                case AuctionType.BlackMarketSilent:
 
                     if (Players.Count(p => p.MayBidOnCards) == BlackMarketBids.Count)
                     {
@@ -230,8 +229,10 @@ namespace Treachery.Shared
         //This could happen before starting normal bidding or right after normal bidding
         public void HandleEvent(WhiteSpecifiesAuction e)
         {
+            CurrentReport.Add(e);
             CardsOnAuction.PutOnTop(e.Card);
             WhiteCache.Remove(e.Card);
+            CurrentAuctionType = e.AuctionType;
 
             if (AnnouncedWhiteAuction.First)
             {
@@ -658,6 +659,8 @@ namespace Treachery.Shared
             CardJustWon = card;
             CurrentBid = null;
             Bids.Clear();
+            CurrentAuctionType = AuctionType.Normal;
+
             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreenBiddingPrescience);
 
             if (winner.Ally == Faction.Grey && GreyAllyMayReplaceCards)

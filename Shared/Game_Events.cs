@@ -149,8 +149,8 @@ namespace Treachery.Shared
                     if (faction == Faction.White) result.Add(typeof(WhiteAnnouncesBlackMarket));
                     break;
                 case Phase.BlackMarketBidding:
-                    if (BlackMarketAuctionType == AuctionType.Silent && !BlackMarketBids.ContainsKey(faction) ||
-                        BlackMarketAuctionType != AuctionType.Silent && player == BlackMarketBidSequence.CurrentPlayer)
+                    if (CurrentAuctionType == AuctionType.BlackMarketSilent && !BlackMarketBids.ContainsKey(faction) ||
+                        CurrentAuctionType != AuctionType.BlackMarketSilent && player == BlackMarketBidSequence.CurrentPlayer)
                     {
                         result.Add(typeof(BlackMarketBid));
                     }

@@ -90,10 +90,10 @@
             </div>
         }
 
-        @if (Karma.CanKarmaShipment(Game, Player) && (Faction != Faction.Yellow || shipmentType == SHIPMENT_SITETOSITE))
+        @if (Shipment.CanKarma(Game, Player) && (Faction != Faction.Yellow || shipmentType == SHIPMENT_SITETOSITE))
         {
             <div class="mt-1">
-                <SelectCardComponent @bind-Value="karmaCard" Values="Karma.ValidKarmaCardsForShipment(Game, Player)" Required="false">
+                <SelectCardComponent @bind-Value="karmaCard" Values="Shipment.ValidKarmaCards(Game, Player)" Required="false">
                     <Label>Use @Skin.Current.Describe(TreacheryCardType.Karma) to ship at @Skin.Current.Describe(Faction.Orange) rate?</Label>
                 </SelectCardComponent>
             </div>

@@ -13,11 +13,11 @@
 
         <SelectCardComponent @bind-Value="card" Values="WhiteSpecifiesAuction.ValidCards(Game)" Required="true" />
 
-        <RadioComponent @bind-Value="auctionType" Values="new AuctionType[] { AuctionType.Normal, AuctionType.OnceAround, AuctionType.Silent }" ValueLabels="@(new string[] { "Normal", "Once Around", "Silent"})">
+        <RadioComponent @bind-Value="auctionType" Values="new AuctionType[] { AuctionType.WhiteNormal, AuctionType.WhiteOnceAround, AuctionType.WhiteSilent }" ValueLabels="@(new string[] { "Normal", "Once Around", "Silent"})">
             <Label>Type of auction</Label>
         </RadioComponent>
 
-        @if (auctionType == AuctionType.OnceAround)
+        @if (auctionType == AuctionType.WhiteOnceAround)
         {
             <RadioComponent @bind-Value="direction" Values="new int[] { 1, -1 }" ValueLabels="@(new string[] { "Counter-clockwise", "Clockwise"})">
                 <Label>Bidding direction</Label>

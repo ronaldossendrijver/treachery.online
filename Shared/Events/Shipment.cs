@@ -391,5 +391,22 @@ namespace Treachery.Shared
         {
             return DetermineCost(Game, Player, ForceAmount + SpecialForceAmount, To, UsingKarma(Game), IsBackToReserves) - AllyContributionAmount;
         }
+
+        public static IEnumerable<TreacheryCard> ValidKarmaCards(Game g, Player p)
+        {
+            var result = ValidKarmaCards(g, p).ToList();
+
+            if (g.GetPermittedUseOfAllyKarma(p.Faction) != null)
+            {
+                result.Add(g.GetPermittedUseOfAllyKarma(p.Faction));
+            }
+
+            return result;
+        }
+
+        public static bool CanKarma(Game g, Player p)
+        {
+            return ValidKarmaCards(g, p).Any();
+        }
     }
 }

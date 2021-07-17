@@ -2,7 +2,10 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
+using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
+
 
 namespace Treachery.Shared
 {
@@ -78,5 +81,21 @@ namespace Treachery.Shared
         {
             return g.SpiceYourAllyCanPay(p);
         }
+
+        public static IEnumerable<SequenceElement> PlayersToBid(Game g)
+        {
+            switch (g.CurrentAuctionType)
+            {
+                case AuctionType.BlackMarketNormal:
+                case AuctionType.BlackMarketOnceAround:
+                    return g.BlackMarketBidSequence.GetPlayersInSequence(g);
+
+                case AuctionType.BlackMarketSilent:
+                    return g.Players.Select(p => new SequenceElement() { Player = p, HasTurn = p.MayBidOnCards && !g.BlackMarketBids.Keys.Contains(p.Faction) });
+
+                default: return new SequenceElement[] { };
+            }
+        }
     }
+
 }

@@ -598,7 +598,11 @@ namespace Treachery.Shared
     {
         None = 0,
         Normal = 10,
-        OnceAround = 20,
-        Silent = 30
+        BlackMarketNormal = 20,
+        BlackMarketOnceAround = 30,
+        BlackMarketSilent = 40,
+        WhiteNormal = 50,
+        WhiteOnceAround = 60,
+        WhiteSilent = 70
     }
 }
