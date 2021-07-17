@@ -10,7 +10,7 @@ namespace Treachery.Shared
 {
     public partial class Player
     {
-        protected virtual Bid DetermineBid()
+        protected virtual Bid DetermineBid(bool mayUseKarma)
         {
             LogInfo("DetermineBid()");
 
@@ -26,7 +26,7 @@ namespace Treachery.Shared
             bool thisCardIsPerfect = isKnownCard && CardQuality(Game.CardsOnAuction.Top) == 5;
             int resourcesToKeep = thisCardIsPerfect ? Param.Bidding_ResourcesToKeepWhenCardIsPerfect : Param.Bidding_ResourcesToKeepWhenCardIsntPerfect;
             int resourcesAvailable = Math.Max(0, ResourcesIncludingAllyAndRedContribution - resourcesToKeep);
-            bool couldUseKarmaForBid = !Game.KarmaPrevented(Faction) && Ally != Faction.Red && (SpecialKarmaPowerUsed || !Param.Karma_SaveCardToUseSpecialKarmaAbility);
+            bool couldUseKarmaForBid = mayUseKarma && !Game.KarmaPrevented(Faction) && Ally != Faction.Red && (SpecialKarmaPowerUsed || !Param.Karma_SaveCardToUseSpecialKarmaAbility);
             var karmaCardToUseForBidding = couldUseKarmaForBid && (currentBid > 4 || resourcesAvailable <= currentBid) ? TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma || MayUseUselessAsKarma && c.Type == TreacheryCardType.Useless) : null;
             int karmaWorth = (karmaCardToUseForBidding == null ? 0 : 8);
             int maximumIWillSpend = D(1, resourcesAvailable + karmaWorth);
@@ -116,7 +116,7 @@ namespace Treachery.Shared
                 c.Type == TreacheryCardType.WeirdingWay ||
                 c.Type == TreacheryCardType.ArtilleryStrike ||
                 c.Type == TreacheryCardType.PoisonTooth ||
-                c.Type == TreacheryCardType.Amal || 
+                c.Type == TreacheryCardType.Amal ||
                 c.IsProjectileWeapon && !TreacheryCards.Any(c => c.IsProjectileWeapon) ||
                 c.IsPoisonWeapon && !TreacheryCards.Any(c => c.IsPoisonWeapon && c.Type != TreacheryCardType.Chemistry) ||
                 c.IsProjectileDefense && !TreacheryCards.Any(c => c.IsProjectileDefense && c.Type != TreacheryCardType.WeirdingWay) ||
@@ -124,6 +124,19 @@ namespace Treachery.Shared
                 c.Type == TreacheryCardType.Karma && (Faction == Faction.Black || TreacheryCards.Count() < MaximumNumberOfCards - 1) ||
                 c.Type == TreacheryCardType.Mercenary && Leaders.Count(l => Game.IsAlive(l)) <= 1 ||
                 c.Type == TreacheryCardType.RaiseDead && ForcesKilled > 7;
+        }
+
+        protected virtual BlackMarketBid DetermineBlackMarketBid()
+        {
+            var bid = DetermineBid(false);
+            if (bid == null)
+            {
+                return null;
+            }
+            else
+            {
+                return new BlackMarketBid(Game) { Initiator = Faction, Amount = bid.Amount, AllyContributionAmount = bid.AllyContributionAmount, RedContributionAmount = bid.RedContributionAmount, Passed = bid.Passed };
+            }
         }
     }
 }

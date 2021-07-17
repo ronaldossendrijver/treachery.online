@@ -69,7 +69,8 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(AllianceOffered))) action = DetermineAllianceOffered();
                 if (action == null && possibleEvents.Contains(typeof(AllyPermission))) action = DetermineAlliancePermissions();
                 if (action == null && possibleEvents.Contains(typeof(CharityClaimed))) action = new CharityClaimed(Game) { Initiator = Faction };
-                if (action == null && possibleEvents.Contains(typeof(Bid))) action = DetermineBid();
+                if (action == null && possibleEvents.Contains(typeof(BlackMarketBid))) action = DetermineBlackMarketBid();
+                if (action == null && possibleEvents.Contains(typeof(Bid))) action = DetermineBid(true);
                 if (action == null && possibleEvents.Contains(typeof(Revival))) action = DetermineRevival();
                 if (action == null && possibleEvents.Contains(typeof(OrangeDelay))) action = DetermineDelay();
                 if (action == null && possibleEvents.Contains(typeof(RaiseDeadPlayed))) action = DetermineRaiseDeadPlayed();
@@ -116,6 +117,11 @@ namespace Treachery.Shared
 
                 //Red
                 if (action == null && possibleEvents.Contains(typeof(KarmaFreeRevival))) action = DetermineKarmaFreeRevival();
+
+                //White
+                if (action == null && possibleEvents.Contains(typeof(WhiteAnnouncesBlackMarket))) action = DetermineWhiteAnnouncesBlackMarket();
+                if (action == null && possibleEvents.Contains(typeof(WhiteAnnouncesAuction))) action = DetermineWhiteAnnouncesAuction();
+                if (action == null && possibleEvents.Contains(typeof(WhiteSpecifiesAuction))) action = DetermineWhiteSpecifiesAuction();
 
                 Speak();
             }

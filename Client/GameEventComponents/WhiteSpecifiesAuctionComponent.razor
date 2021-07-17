@@ -37,7 +37,7 @@
     protected override Faction IsFactionSpecific => Faction.White;
 
     private TreacheryCard card;
-    private AuctionType auctionType = AuctionType.Normal;
+    private AuctionType auctionType = AuctionType.WhiteNormal;
     private int direction = 1;
 
     protected override WhiteSpecifiesAuction ConfirmedResult => new WhiteSpecifiesAuction(Game) { Initiator = Faction, Card = card, AuctionType = auctionType, Direction = direction };

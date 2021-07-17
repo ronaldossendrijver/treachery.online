@@ -867,6 +867,35 @@ namespace Treachery.Shared
         }
 
         #endregion Purple
+
+        #region White
+
+        protected virtual WhiteAnnouncesBlackMarket DetermineWhiteAnnouncesBlackMarket()
+        {
+            var card = TreacheryCards.FirstOrDefault(c => CardQuality(c) < 4);
+            if (card != null)
+            {
+                return new WhiteAnnouncesBlackMarket(Game) { Initiator = Faction, Passed = false, Card = card, AuctionType = D(1, 2) > 1 ? AuctionType.WhiteSilent : AuctionType.WhiteOnceAround, Direction = D(1, 2) > 1 ? 1 : -1 };
+            }
+            else
+            {
+                return new WhiteAnnouncesBlackMarket(Game) { Initiator = Faction, Passed = true };
+            }
+        }
+
+        protected virtual WhiteAnnouncesAuction DetermineWhiteAnnouncesAuction()
+        {
+            return new WhiteAnnouncesAuction(Game) { Initiator = Faction, First = D(1, 2) > 1 };
+        }
+
+        protected virtual WhiteSpecifiesAuction DetermineWhiteSpecifiesAuction()
+        {
+            var toAuction = new Deck<TreacheryCard>(Game.WhiteCache, random);
+            toAuction.Shuffle();
+            return new WhiteSpecifiesAuction(Game) { Initiator = Faction, Card = toAuction.Draw(), AuctionType = D(1,2) > 1 ? AuctionType.WhiteSilent : AuctionType.WhiteOnceAround, Direction = D(1,2) > 1 ? 1 : -1 };
+        }
+
+        #endregion White
     }
 
     public class VoicePlan

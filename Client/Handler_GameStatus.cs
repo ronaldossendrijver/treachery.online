@@ -719,7 +719,7 @@ namespace Treachery.Client
 
                                     if (Game.CurrentAuctionType != AuctionType.BlackMarketSilent)
                                     {
-                                        if (Player == Game.BlackMarketBidSequence.CurrentPlayer)
+                                        if (Player == Game.BidSequence.CurrentPlayer)
                                         {
                                             return new GameStatus()
                                             {
@@ -731,7 +731,7 @@ namespace Treachery.Client
                                         {
                                             return new GameStatus()
                                             {
-                                                Description = Skin.Current.Format("{0} are thinking about their bid...", Game.BlackMarketBidSequence.CurrentFaction),
+                                                Description = Skin.Current.Format("{0} are thinking about their bid...", Game.BidSequence.CurrentFaction),
                                                 WaitingForOthers = true
                                             };
                                         }
@@ -1482,7 +1482,7 @@ namespace Treachery.Client
         public bool HighlightPlayer(Player p)
         {
             return Game.CurrentPhase == Phase.Bidding && Game.CurrentAuctionType != AuctionType.WhiteSilent && p == Game.BidSequence.CurrentPlayer ||
-                   Game.CurrentPhase == Phase.BlackMarketBidding && Game.CurrentAuctionType != AuctionType.BlackMarketSilent && p == Game.BlackMarketBidSequence.CurrentPlayer ||
+                   Game.CurrentPhase == Phase.BlackMarketBidding && Game.CurrentAuctionType != AuctionType.BlackMarketSilent && p == Game.BidSequence.CurrentPlayer ||
                    (Game.CurrentPhase == Phase.OrangeMove || Game.CurrentPhase == Phase.OrangeShip) && p.Faction == Faction.Orange ||
                    (Game.CurrentPhase == Phase.NonOrangeMove || Game.CurrentPhase == Phase.NonOrangeShip) && p == Game.ShipmentAndMoveSequence.CurrentPlayer ||
                    (Game.CurrentPhase == Phase.BlueAccompaniesOrange || Game.CurrentPhase == Phase.BlueAccompaniesNonOrange || Game.CurrentPhase == Phase.BlueIntrudedByOrangeMove || Game.CurrentPhase == Phase.BlueIntrudedByNonOrangeMove || Game.CurrentPhase == Phase.BlueIntrudedByOrangeShip || Game.CurrentPhase == Phase.BlueIntrudedByNonOrangeShip) && p.Faction == Faction.Blue ||

@@ -150,7 +150,7 @@ namespace Treachery.Shared
                     break;
                 case Phase.BlackMarketBidding:
                     if (CurrentAuctionType == AuctionType.BlackMarketSilent && !BlackMarketBids.ContainsKey(faction) ||
-                        CurrentAuctionType != AuctionType.BlackMarketSilent && player == BlackMarketBidSequence.CurrentPlayer)
+                        CurrentAuctionType != AuctionType.BlackMarketSilent && player == BidSequence.CurrentPlayer)
                     {
                         result.Add(typeof(BlackMarketBid));
                     }
