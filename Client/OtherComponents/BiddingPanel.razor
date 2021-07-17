@@ -38,7 +38,7 @@
                             @foreach (var se in Bid.PlayersToBid(Game))
                             {
                                 <div class="d-inline-block pl-1" style="filter:drop-shadow(2px 2px 2px black)">
-                                    <NumberComponent Value="se.Player.TreacheryCards.Count" Size="@(se.HasTurn ? 36 : 28)" 
+                                    <NumberComponent Value="se.Player.TreacheryCards.Count" Size="@(se.HasTurn ? 42 : 28)" 
                                                      SymbolSRC="@Skin.Current.GetImageURL(se.Player.Faction)" 
                                                      NumberColor="@(se.Player.MayBidOnCards ? "black" : "red")" NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
                                 </div>

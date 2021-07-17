@@ -68,6 +68,8 @@ namespace Treachery.Shared
 
             try
             {
+                var momentJustBeforeEvent = Game.CurrentMoment;
+
                 if (performValidation)
                 {
                     if (!IsApplicable(isHost))
@@ -80,7 +82,7 @@ namespace Treachery.Shared
                     {
                         Game.RecentMilestones.Clear();
                         ExecuteConcreteEvent();
-                        Game.PerformPostEventTasks(this);
+                        Game.PerformPostEventTasks(this, momentJustBeforeEvent != MainPhaseMoment.Start && Game.CurrentMoment == MainPhaseMoment.Start);
                     }
 
                     return result;
@@ -89,7 +91,7 @@ namespace Treachery.Shared
                 {
                     Game.RecentMilestones.Clear();
                     ExecuteConcreteEvent();
-                    Game.PerformPostEventTasks(this);
+                    Game.PerformPostEventTasks(this, momentJustBeforeEvent != MainPhaseMoment.Start && Game.CurrentMoment == MainPhaseMoment.Start);
                     return "";
                 }
             }

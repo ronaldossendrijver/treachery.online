@@ -11,7 +11,7 @@ namespace Treachery.Shared
     public partial class Game
     {
         public const int LowestSupportedVersion = 68;
-        public const int LatestVersion = 104;
+        public const int LatestVersion = 105;
 
         public bool BotInfologging = false;
 
@@ -44,7 +44,7 @@ namespace Treachery.Shared
         public PlayerSequence TechTokenSequence { get; set; }
         public Deck<TreacheryCard> TreacheryDeck { get; set; }
         public Deck<TreacheryCard> TreacheryDiscardPile { get; set; }
-        public List<TreacheryCard> WhiteCache { get; set; }
+        public List<TreacheryCard> WhiteCache { get; set; } = new List<TreacheryCard>();
         public Deck<ResourceCard> ResourceCardDeck { get; set; }
         public Deck<ResourceCard> ResourceCardDiscardPileA { get; set; }
         public Deck<ResourceCard> ResourceCardDiscardPileB { get; set; }
@@ -90,9 +90,9 @@ namespace Treachery.Shared
 
         #region EventHandling
 
-        public void PerformPostEventTasks(GameEvent e)
+        public void PerformPostEventTasks(GameEvent e, bool justEnteredStartOfPhase)
         {
-            if (!(e is AllyPermission) && !(e is DealOffered) && !(e is DealAccepted)) MainPhaseMiddle();
+            if (!justEnteredStartOfPhase &&!(e is AllyPermission) && !(e is DealOffered) && !(e is DealAccepted)) MainPhaseMiddle();
             History.Add(e);
             States.Add(Clone());
         }

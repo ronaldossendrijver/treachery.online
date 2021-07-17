@@ -48,7 +48,7 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender && h.Game.EventCount != afterEventId) {
+        if (h.Game.EventCount != afterEventId) {
 
             afterEventId = h.Game.EventCount;
             imgToShow = DetermineFlash(h.Game);

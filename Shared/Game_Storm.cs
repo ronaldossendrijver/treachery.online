@@ -18,10 +18,10 @@ namespace Treachery.Shared
 
         private void EnterStormPhase()
         {
+            CurrentTurn++;
             MainPhaseStart(MainPhase.Storm, CurrentTurn > 1);
             FactionsThatRevivedSpecialForcesThisTurn.Clear();
             StormLossesToTake.Clear();
-            CurrentTurn++;
 
             if (CurrentTurn == 1)
             {

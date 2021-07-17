@@ -633,6 +633,7 @@ namespace Treachery.Client
                 {
                     if (phase == h.Game.CurrentMainPhase)
                     {
+                        //var text = (h.Game.CurrentMoment == MainPhaseMoment.Start ? "*" : "") + Skin.Current.Describe(phase) + (h.Game.CurrentMoment == MainPhaseMoment.End ? "*" : "") + "(" + h.Game.CurrentMoment + ")";
                         posY += 90;
                         await DrawText(posX, posY, Skin.Current.Describe(phase), Skin.Current.PHASE_ACTIVE_FONT, TextAlign.Right, Skin.Current.PHASE_ACTIVE_FONTCOLOR, Skin.Current.PHASE_ACTIVE_FONT_BORDERWIDTH, Skin.Current.PHASE_FONT_BORDERCOLOR);
                         posY += 40;

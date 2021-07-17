@@ -41,7 +41,6 @@ namespace Treachery.Shared
             LastShippedOrMovedTo = null;
 
             ShipmentAndMoveSequence.Start(this, false);
-
             if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && OrangeDeterminesMoveMoment)
             {
                 ShipmentAndMoveSequence.NextPlayer(this, false);
