@@ -14,6 +14,7 @@ namespace Treachery.Shared
         public PlayerSequence BlackMarketBidSequence { get; set; }
         public PlayerSequence WhiteBidSequence { get; set; }
         public Deck<TreacheryCard> CardsOnAuction { get; private set; }
+        public AuctionType CurrentAuctionType;
         public int CardNumber { get; private set; }
         public Bid CurrentBid { get; private set; } = null;
         public BlackMarketBid BlackMarketCurrentBid { get; private set; } = null;
@@ -22,8 +23,7 @@ namespace Treachery.Shared
         private Faction FirstFactionToBid { get; set; }
         private bool GreySwappedCardOnBid { get; set; }
         private bool CardWasSoldOnBlackMarket { get; set; }
-        public Deck<TreacheryCard> BlackMarketCardsOnAuction;
-        public AuctionType CurrentAuctionType;
+        
 
         private void EnterBiddingPhase()
         {
@@ -46,8 +46,8 @@ namespace Treachery.Shared
             if (!e.Passed)
             {
                 Enter(Phase.BlackMarketBidding);
-                BlackMarketCardsOnAuction = new Deck<TreacheryCard>(Random);
-                BlackMarketCardsOnAuction.PutOnTop(e.Card);
+                CardsOnAuction = new Deck<TreacheryCard>(Random);
+                CardsOnAuction.PutOnTop(e.Card);
                 e.Player.TreacheryCards.Remove(e.Card);
                 CurrentAuctionType = e.AuctionType;
 
@@ -106,7 +106,7 @@ namespace Treachery.Shared
                                 BlackMarketCurrentBid.AllyContributionAmount, 
                                 BlackMarketCurrentBid.RedContributionAmount,
                                 BlackMarketCurrentBid.Player.Faction != Faction.White ? Faction.White : Faction.Red, 
-                                BlackMarketCardsOnAuction);
+                                CardsOnAuction);
 
                             CardWasSoldOnBlackMarket = true;
                             EnterWhiteBidding();
@@ -128,7 +128,7 @@ namespace Treachery.Shared
                         var highestBid = BlackMarketBids.Where(bid => !bid.Value.Passed).OrderByDescending(bid => bid.Value.TotalAmount).FirstOrDefault().Value;
                         if (highestBid != null && highestBid.TotalAmount > 0)
                         {
-                            WinByHighestBid(highestBid.Player, BlackMarketCurrentBid.Amount, highestBid.AllyContributionAmount, highestBid.RedContributionAmount, Faction.White, BlackMarketCardsOnAuction);
+                            WinByHighestBid(highestBid.Player, BlackMarketCurrentBid.Amount, highestBid.AllyContributionAmount, highestBid.RedContributionAmount, Faction.White, CardsOnAuction);
                             CardWasSoldOnBlackMarket = true;
                             EnterWhiteBidding();
                         }

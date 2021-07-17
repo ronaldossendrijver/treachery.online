@@ -103,7 +103,7 @@
 
     protected override BlackMarketBid PassedResult => new BlackMarketBid(Game) { Initiator = Faction, Passed = true };
 
-    private string CurrentCardImageSRC => Game.HasBiddingPrescience(Player) && Game.BlackMarketCardsOnAuction.Top != null ? Skin.Current.GetImageURL(Game.BlackMarketCardsOnAuction.Top) : Skin.Current.CardBack_TreacheryCard_URL;
+    private string CurrentCardImageSRC => Game.HasBiddingPrescience(Player) && Game.CardsOnAuction.Top != null ? Skin.Current.GetImageURL(Game.CardsOnAuction.Top) : Skin.Current.CardBack_TreacheryCard_URL;
 
-    private string CurrentCardHover => Game.HasBiddingPrescience(Player) && Game.BlackMarketCardsOnAuction.Top != null ? Support.GetTreacheryCardHoverHTML(h.Game.BlackMarketCardsOnAuction.Top) : "";
+    private string CurrentCardHover => Game.HasBiddingPrescience(Player) && Game.CardsOnAuction.Top != null ? Support.GetTreacheryCardHoverHTML(h.Game.CardsOnAuction.Top) : "";
 }
