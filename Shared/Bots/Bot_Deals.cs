@@ -34,7 +34,7 @@ namespace Treachery.Shared
 
             DealAccepted result = null;
 
-            if (Game.CurrentMainPhase <= MainPhase.Bidding)
+            if (Game.CurrentPhase == Phase.Bidding)
             {
                 if (!Game.HasBiddingPrescience(this) && !(Ally != Faction.None && Game.HasBiddingPrescience(AlliedPlayer)))
                 {

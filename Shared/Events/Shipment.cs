@@ -394,7 +394,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<TreacheryCard> ValidKarmaCards(Game g, Player p)
         {
-            var result = ValidKarmaCards(g, p).ToList();
+            var result = Karma.ValidKarmaCards(g, p).ToList();
 
             if (g.GetPermittedUseOfAllyKarma(p.Faction) != null)
             {
