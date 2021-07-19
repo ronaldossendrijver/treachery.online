@@ -170,9 +170,7 @@ namespace Treachery.Shared
         {
             if (g.CurrentAuctionType == AuctionType.Normal)
             {
-                return
-                    p.TreacheryCards.Where(c => c.Type == TreacheryCardType.Karma ||
-                    (p.Is(Faction.Blue) && c.Type == TreacheryCardType.Useless && g.Applicable(Rule.BlueWorthlessAsKarma)));
+                return Karma.ValidKarmaCards(g, p);
             }
             else
             {

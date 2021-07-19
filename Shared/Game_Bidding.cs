@@ -21,7 +21,9 @@ namespace Treachery.Shared
         private Faction FirstFactionToBid { get; set; }
         private bool GreySwappedCardOnBid { get; set; }
         private bool CardWasSoldOnBlackMarket { get; set; }
-        
+        private bool WhiteAuctionHappensFirst { get; set; }
+        private bool RegularBiddingHasHappened { get; set; }
+        private bool WhiteAuctionShouldStillHappen { get; set; }
 
         private void EnterBiddingPhase()
         {
@@ -31,6 +33,8 @@ namespace Treachery.Shared
             ReceiveResourceTechIncome();
             GreySwappedCardOnBid = false;
             CardWasSoldOnBlackMarket = false;
+            RegularBiddingHasHappened = false;
+            WhiteAuctionShouldStillHappen = false;
             CurrentAuctionType = AuctionType.None;
 
             var white = GetPlayer(Faction.White);
@@ -126,7 +130,7 @@ namespace Treachery.Shared
             }
         }
 
-        private WhiteAnnouncesAuction AnnouncedWhiteAuction;
+        //private WhiteAnnouncesAuction AnnouncedWhiteAuction { get; set; } = null;
         private void EnterWhiteBidding()
         {
             int numberOfCardsToSell = PlayersThatCanBid.Count();
@@ -135,8 +139,6 @@ namespace Treachery.Shared
             {
                 numberOfCardsToSell--;
             }
-
-            AnnouncedWhiteAuction = null;
 
             if (numberOfCardsToSell == 0)
             {
@@ -152,12 +154,15 @@ namespace Treachery.Shared
         public void HandleEvent(WhiteAnnouncesAuction e)
         {
             CurrentReport.Add(e);
-            AnnouncedWhiteAuction = e;
+            WhiteAuctionHappensFirst = e.First;
+            //AnnouncedWhiteAuction = e;
+            if (!e.First) WhiteAuctionShouldStillHappen = true;
             Enter(e.First, Phase.WhiteSpecifyingAuction, DrawCardsForRegularBidding);
         }
 
         private void DrawCardsForRegularBidding()
         {
+            RegularBiddingHasHappened = true;
             CardsOnAuction = new Deck<TreacheryCard>(Random);
             CardNumber = 1;
             int numberOfCardsToDraw = PlayersThatCanBid.Count();
@@ -194,35 +199,18 @@ namespace Treachery.Shared
             }
 
             StartBidSequenceAndAuctionType(AuctionType.Normal);
-
-            /*if (AnnouncedWhiteAuction != null && AnnouncedWhiteAuction.First)
-            {
-                Enter(Phase.WhiteSpecifyingAuction);
-            }
-            else
-            {*/
             Enter(IsPlaying(Faction.Grey) && !Prevented(FactionAdvantage.GreySelectingCardsOnAuction), Phase.GreyRemovingCardFromBid, StartBiddingRound);
-            //}
         }
 
         //This could happen before starting normal bidding or right after normal bidding
         public void HandleEvent(WhiteSpecifiesAuction e)
         {
+            WhiteAuctionShouldStillHappen = false;
             CurrentReport.Add(e);
             CardsOnAuction.PutOnTop(e.Card);
             WhiteCache.Remove(e.Card);
             StartBidSequenceAndAuctionType(e.AuctionType, e.Player, e.Direction);
-
-            if (AnnouncedWhiteAuction.First)
-            {
-                Enter(IsPlaying(Faction.Grey) && !Prevented(FactionAdvantage.GreySelectingCardsOnAuction), Phase.GreyRemovingCardFromBid, StartBiddingRound);
-            }
-            else
-            {
-                WaitForNextCardToBePutOnAuction();
-            }
-
-            AnnouncedWhiteAuction = null;
+            StartBiddingRound();
         }
 
         private void StartBidSequenceAndAuctionType(AuctionType auctionType, Player whitePlayer = null, int direction = 1)
@@ -368,7 +356,7 @@ namespace Treachery.Shared
                 }
             }
 
-            BidSequence.NextPlayer(this, Version >= 50);
+            BidSequence.NextPlayer(this, true);
             SkipPlayersThatCantBid(BidSequence);
 
             if (Bids.ContainsKey(bid.Initiator))
@@ -377,6 +365,22 @@ namespace Treachery.Shared
             }
 
             Bids.Add(bid.Initiator, bid);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             if (bid.Passed || bid.KarmaBid)
             {
@@ -416,6 +420,40 @@ namespace Treachery.Shared
                 CurrentBid = bid;
                 RecentMilestones.Add(Milestone.Bid);
             }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
 
         private void SetAsideKarmaCardUsedForBid(Bid bid)
@@ -675,7 +713,7 @@ namespace Treachery.Shared
                     if (Prevented(FactionAdvantage.GreyAllyDiscardingCard))
                     {
                         if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyAllyDiscardingCard);
-                        WaitForNextCardToBePutOnAuction();
+                        DetermineNextCardToBePutOnAuction();
                     }
                     else
                     {
@@ -685,7 +723,7 @@ namespace Treachery.Shared
             }
             else
             {
-                WaitForNextCardToBePutOnAuction();
+                DetermineNextCardToBePutOnAuction();
             }
         }
 
@@ -702,10 +740,10 @@ namespace Treachery.Shared
             }
 
             CurrentReport.Add(e);
-            WaitForNextCardToBePutOnAuction();
+            DetermineNextCardToBePutOnAuction();
         }
 
-        private void WaitForNextCardToBePutOnAuction()
+        private void DetermineNextCardToBePutOnAuction()
         {
             if (!CardsOnAuction.IsEmpty)
             {
@@ -714,7 +752,23 @@ namespace Treachery.Shared
             }
             else
             {
-                Enter(AnnouncedWhiteAuction != null && !AnnouncedWhiteAuction.First, Phase.WhiteSpecifyingAuction, EndBiddingPhase);
+                //there are no more cards on auction
+
+                if (RegularBiddingHasHappened)
+                {
+                    if (WhiteAuctionShouldStillHappen)
+                    {
+                        Enter(Phase.WhiteSpecifyingAuction);
+                    }
+                    else
+                    {
+                        EndBiddingPhase();
+                    }
+                }
+                else
+                {
+                    DrawCardsForRegularBidding();
+                }
             }
         }
 
