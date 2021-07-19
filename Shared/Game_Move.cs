@@ -430,9 +430,10 @@ namespace Treachery.Shared
             {
                 initiator.MoveForces(from, to, battalion.AmountOfForces);
                 initiator.MoveSpecialForces(from, to, battalion.AmountOfSpecialForces);
-                totalNumberOfForces += battalion.AmountOfForces;
-                totalNumberOfSpecialForces += battalion.AmountOfSpecialForces;
             }
+
+            totalNumberOfForces += battalion.AmountOfForces;
+            totalNumberOfSpecialForces += battalion.AmountOfSpecialForces;
         }
 
         private bool MustMoveThroughStorm(Player initiator, Location from, Location to, Battalion moved)

@@ -29,7 +29,7 @@ namespace Treachery.Shared
         {
             get
             {
-                return ParseForceLocations(Game, _targetForceLocations);
+                return ParseForceLocations(Game, Player.Faction, _targetForceLocations);
             }
             set
             {

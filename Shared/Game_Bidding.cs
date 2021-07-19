@@ -12,7 +12,7 @@ namespace Treachery.Shared
     {
         public PlayerSequence BidSequence { get; set; }
         public Deck<TreacheryCard> CardsOnAuction { get; private set; }
-        public AuctionType CurrentAuctionType;
+        public AuctionType CurrentAuctionType { get; private set; }
         public int CardNumber { get; private set; }
         public Bid CurrentBid { get; private set; } = null;
         public BlackMarketBid BlackMarketCurrentBid { get; private set; } = null;
@@ -31,7 +31,7 @@ namespace Treachery.Shared
             ReceiveResourceTechIncome();
             GreySwappedCardOnBid = false;
             CardWasSoldOnBlackMarket = false;
-            CurrentAuctionType = AuctionType.Normal;
+            CurrentAuctionType = AuctionType.None;
 
             var white = GetPlayer(Faction.White);
             Enter(white != null && !Prevented(FactionAdvantage.WhiteBlackMarket) && white.TreacheryCards.Count > 0 && Players.Count > 1, Phase.BlackMarketAnnouncement, EnterWhiteBidding);
@@ -47,24 +47,9 @@ namespace Treachery.Shared
                 CardsOnAuction = new Deck<TreacheryCard>(Random);
                 CardsOnAuction.PutOnTop(e.Card);
                 e.Player.TreacheryCards.Remove(e.Card);
-                CurrentAuctionType = e.AuctionType;
-
-                if (e.AuctionType == AuctionType.BlackMarketNormal)
-                {
-                    BidSequence = new PlayerSequence(Players);
-                    BidSequence.Start(this, true);
-                }
-                else if (e.AuctionType == AuctionType.BlackMarketOnceAround)
-                {
-                    BidSequence = new PlayerSequence(Players, e.Direction);
-                    BidSequence.Start(e.Player);
-                    BidSequence.NextPlayer(this, true);
-                }
-
-                SkipPlayersThatCantBid(BidSequence);
                 BlackMarketBids.Clear();
                 BlackMarketCurrentBid = null;
-                FirstFactionToBid = BidSequence.CurrentFaction;
+                StartBidSequenceAndAuctionType(e.AuctionType, e.Player, e.Direction);
             }
             else
             {
@@ -78,9 +63,9 @@ namespace Treachery.Shared
             SkipPlayersThatCantBid(BidSequence);
             RecentMilestones.Add(Milestone.Bid);
 
-            if (Bids.ContainsKey(bid.Initiator))
+            if (BlackMarketBids.ContainsKey(bid.Initiator))
             {
-                Bids.Remove(bid.Initiator);
+                BlackMarketBids.Remove(bid.Initiator);
             }
 
             BlackMarketBids.Add(bid.Initiator, bid);
@@ -160,7 +145,7 @@ namespace Treachery.Shared
             }
             else
             {
-                Enter(IsPlaying(Faction.White) && WhiteCache.Count > 0, Phase.WhiteAnnouncingAuction, EnterRegularBidding);
+                Enter(IsPlaying(Faction.White) && WhiteCache.Count > 0, Phase.WhiteAnnouncingAuction, DrawCardsForRegularBidding);
             }
         }
 
@@ -168,10 +153,10 @@ namespace Treachery.Shared
         {
             CurrentReport.Add(e);
             AnnouncedWhiteAuction = e;
-            Enter(e.First, Phase.WhiteSpecifyingAuction, EnterRegularBidding);
+            Enter(e.First, Phase.WhiteSpecifyingAuction, DrawCardsForRegularBidding);
         }
 
-        private void EnterRegularBidding()
+        private void DrawCardsForRegularBidding()
         {
             CardsOnAuction = new Deck<TreacheryCard>(Random);
             CardNumber = 1;
@@ -208,14 +193,16 @@ namespace Treachery.Shared
                 }
             }
 
-            if (AnnouncedWhiteAuction != null && AnnouncedWhiteAuction.First)
+            StartBidSequenceAndAuctionType(AuctionType.Normal);
+
+            /*if (AnnouncedWhiteAuction != null && AnnouncedWhiteAuction.First)
             {
                 Enter(Phase.WhiteSpecifyingAuction);
             }
             else
-            {
-                Enter(IsPlaying(Faction.Grey) && !Prevented(FactionAdvantage.GreySelectingCardsOnAuction), Phase.GreyRemovingCardFromBid, StartAuction);
-            }
+            {*/
+            Enter(IsPlaying(Faction.Grey) && !Prevented(FactionAdvantage.GreySelectingCardsOnAuction), Phase.GreyRemovingCardFromBid, StartBiddingRound);
+            //}
         }
 
         //This could happen before starting normal bidding or right after normal bidding
@@ -224,23 +211,11 @@ namespace Treachery.Shared
             CurrentReport.Add(e);
             CardsOnAuction.PutOnTop(e.Card);
             WhiteCache.Remove(e.Card);
-            CurrentAuctionType = e.AuctionType;
-
-            if (e.AuctionType == AuctionType.WhiteNormal)
-            {
-                BidSequence = new PlayerSequence(Players);
-                BidSequence.Start(this, true);
-            }
-            else if (e.AuctionType == AuctionType.WhiteOnceAround)
-            {
-                BidSequence = new PlayerSequence(Players, e.Direction);
-                BidSequence.Start(e.Player);
-                BidSequence.NextPlayer(this, true);
-            }
+            StartBidSequenceAndAuctionType(e.AuctionType, e.Player, e.Direction);
 
             if (AnnouncedWhiteAuction.First)
             {
-                Enter(IsPlaying(Faction.Grey) && !Prevented(FactionAdvantage.GreySelectingCardsOnAuction), Phase.GreyRemovingCardFromBid, StartAuction);
+                Enter(IsPlaying(Faction.Grey) && !Prevented(FactionAdvantage.GreySelectingCardsOnAuction), Phase.GreyRemovingCardFromBid, StartBiddingRound);
             }
             else
             {
@@ -248,6 +223,31 @@ namespace Treachery.Shared
             }
 
             AnnouncedWhiteAuction = null;
+        }
+
+        private void StartBidSequenceAndAuctionType(AuctionType auctionType, Player whitePlayer = null, int direction = 1)
+        {
+            if (
+                (auctionType == AuctionType.Normal || auctionType == AuctionType.WhiteNormal) && 
+                (CurrentAuctionType != AuctionType.BlackMarketNormal || CurrentAuctionType != AuctionType.Normal || CurrentAuctionType != AuctionType.WhiteNormal))
+            {
+                //We want to start normal bidding and the previous auction type was not normal bidding
+                BidSequence.Start(this, true);
+                SkipPlayersThatCantBid(BidSequence);
+            }
+            else if (auctionType == AuctionType.BlackMarketNormal)
+            {
+                BidSequence.Start(this, true);
+                SkipPlayersThatCantBid(BidSequence);
+            }
+            else if (auctionType == AuctionType.BlackMarketOnceAround || auctionType == AuctionType.WhiteOnceAround)
+            {
+                BidSequence.Start(whitePlayer, direction);
+                BidSequence.NextPlayer(this, true);
+            }
+
+            FirstFactionToBid = BidSequence.CurrentFaction;
+            CurrentAuctionType = auctionType;
         }
 
         public void HandleEvent(GreyRemovedCardFromAuction e)
@@ -267,7 +267,7 @@ namespace Treachery.Shared
             CardsOnAuction.Shuffle();
             RecentMilestones.Add(Milestone.Shuffled);
             CurrentReport.Add(e);
-            Enter(GreyMaySwapCardOnBid, Phase.GreySwappingCard, StartAuction);
+            Enter(GreyMaySwapCardOnBid, Phase.GreySwappingCard, StartBiddingRound);
         }
 
         private bool GreyMaySwapCardOnBid
@@ -302,15 +302,15 @@ namespace Treachery.Shared
 
             if (CardNumber == 1)
             {
-                StartAuction();
+                StartBiddingRound();
             }
-            else if (Version >= 46)
+            else
             {
-                Enter(IsPlaying(Faction.Green) && Version > 14, Phase.WaitingForNextBiddingRound, PutNextCardOnAuction);
+                Enter(IsPlaying(Faction.Green), Phase.WaitingForNextBiddingRound, PutNextCardOnAuction);
             }
         }
 
-        private void StartAuction()
+        private void StartBiddingRound()
         {
             Enter(Phase.Bidding);
 
@@ -319,22 +319,13 @@ namespace Treachery.Shared
                 CurrentReport.Add(Players[0].Faction, "{0} are playing alone and therefore win the auction.", Players[0].Faction);
                 var drawnCard = CardsOnAuction.Draw();
                 Players[0].TreacheryCards.Add(drawnCard);
-                if (Version >= 41) GiveHarkonnenExtraCard(Players[0]);
+                GiveHarkonnenExtraCard(Players[0]);
                 EndBiddingPhase();
             }
             else
             {
                 CurrentBid = null;
                 Bids.Clear();
-
-                if (CurrentAuctionType == AuctionType.Normal)
-                {
-                    BidSequence = new PlayerSequence(Players);
-                    BidSequence.Start(this, true);
-                    SkipPlayersThatCantBid(BidSequence);
-                }
-                
-                FirstFactionToBid = BidSequence.CurrentFaction;
             }
         }
 
@@ -670,7 +661,6 @@ namespace Treachery.Shared
             CardJustWon = card;
             CurrentBid = null;
             Bids.Clear();
-            CurrentAuctionType = AuctionType.Normal;
 
             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreenBiddingPrescience);
 
@@ -731,7 +721,7 @@ namespace Treachery.Shared
         private void PutNextCardOnAuction()
         {
             Enter(Phase.Bidding);
-            BidSequence.NextRound(this, Version >= 50);
+            BidSequence.NextRound(this, true);
             SkipPlayersThatCantBid(BidSequence);
             FirstFactionToBid = BidSequence.CurrentFaction;
         }

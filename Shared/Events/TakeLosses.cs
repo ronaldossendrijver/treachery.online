@@ -2,7 +2,7 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
-using System.Collections.Generic;
+using System;
 using System.Linq;
 
 namespace Treachery.Shared
@@ -36,8 +36,10 @@ namespace Treachery.Shared
 
         public static LossToTake LossesToTake(Game g)
         {
+            Console.WriteLine("Losses to take: " + g.StormLossesToTake.Count);
             if (g.StormLossesToTake.Count > 0)
             {
+                Console.WriteLine("First loss to take: " + g.StormLossesToTake[0].Faction);
                 return g.StormLossesToTake[0];
             }
             else

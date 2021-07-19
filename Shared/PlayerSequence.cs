@@ -16,22 +16,23 @@ namespace Treachery.Shared
 
         public int Current { get; set; }
 
-        private int _direction;
+        private int _direction = 1;
 
-        public PlayerSequence(IEnumerable<Player> players, int direction = 1)
+        public PlayerSequence(IEnumerable<Player> players)
         {
             Players = players.ToList();
-            _direction = direction;
         }
 
-        public void Start(Player p)
+        public void Start(Player p, int direction = 1)
         {
+            _direction = direction;
             Current = p.PositionAtTable;
             RoundStartedAt = Current;
         }
 
-        public void Start(Game game, bool ignorePlayersThatCantBid)
+        public void Start(Game game, bool ignorePlayersThatCantBid, int direction = 1)
         {
+            _direction = direction;
             var startLookingInSector = (int)Math.Ceiling((float)game.SectorInStorm * game.MaximumNumberOfPlayers / Map.NUMBER_OF_SECTORS) % game.MaximumNumberOfPlayers;
             Current = FindNearestPlayerPosition(game, startLookingInSector, ignorePlayersThatCantBid);
             RoundStartedAt = Current;

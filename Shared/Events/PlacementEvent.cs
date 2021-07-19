@@ -31,7 +31,7 @@ namespace Treachery.Shared
         {
             get
             {
-                return ParseForceLocations(Game, _forceLocations);
+                return ParseForceLocations(Game, Player.Faction, _forceLocations);
             }
             set
             {
@@ -46,7 +46,7 @@ namespace Treachery.Shared
             return string.Join(',', forceLocations.Select(x => g.Map.LocationLookup.GetId(x.Key) + ":" + x.Value.AmountOfForces + "|" + x.Value.AmountOfSpecialForces));
         }
 
-        protected static Dictionary<Location, Battalion> ParseForceLocations(Game g, string forceLocations)
+        protected static Dictionary<Location, Battalion> ParseForceLocations(Game g, Faction f, string forceLocations)
         {
             var result = new Dictionary<Location, Battalion>();
             if (forceLocations != null && forceLocations.Length > 0)
@@ -58,7 +58,7 @@ namespace Treachery.Shared
                     var amounts = locationAndAmounts[1].Split('|');
                     var amountOfNormalForces = Convert.ToInt32(amounts[0]);
                     var amountOfNormalSpecialForces = Convert.ToInt32(amounts[1]);
-                    result.Add(location, new Battalion() { Faction = Faction.None, AmountOfForces = amountOfNormalForces, AmountOfSpecialForces = amountOfNormalSpecialForces });
+                    result.Add(location, new Battalion() { Faction = f, AmountOfForces = amountOfNormalForces, AmountOfSpecialForces = amountOfNormalSpecialForces });
                 }
             }
 
