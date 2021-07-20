@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace Treachery.Shared
 {
-    public class Bid : GameEvent
+    public class Bid : GameEvent, IBid
     {
         public int Amount { get; set; }
 
@@ -86,15 +86,17 @@ namespace Treachery.Shared
         public override string Validate()
         {
             if (Passed) return "";
-
-            if (KarmaBid && !CanKarma(Game, Player)) return Skin.Current.Format("You can't use {0} for this bid", TreacheryCardType.Karma); 
+            
+            bool isSpecialAuction = Game.CurrentAuctionType == AuctionType.WhiteOnceAround || Game.CurrentAuctionType == AuctionType.WhiteSilent;
+            if (KarmaBid && isSpecialAuction) return Skin.Current.Format("You can't use {0} in Once Around or Silent bidding", TreacheryCardType.Karma);
+            
+            if (KarmaBid && !CanKarma(Game, Player)) return Skin.Current.Format("You can't use {0} for this bid", TreacheryCardType.Karma);
 
             if (KarmaBid) return "";
 
             var p = Game.GetPlayer(Initiator);
-
-            if (TotalAmount < 1) return "Bid must be higher than 0.";
-            if (Game.CurrentBid != null && TotalAmount <= Game.CurrentBid.TotalAmount) return "Bid not high enough.";
+            if (TotalAmount < 1 && Game.CurrentAuctionType != AuctionType.WhiteSilent) return "Bid must be higher than 0.";
+            if (Game.CurrentBid != null && TotalAmount <= Game.CurrentBid.TotalAmount && Game.CurrentAuctionType != AuctionType.WhiteSilent) return "Bid not high enough.";
 
             var ally = Game.GetPlayer(p.Ally);
             if (AllyContributionAmount > 0 && AllyContributionAmount > ally.Resources) return "Your ally can't pay that much.";
@@ -102,7 +104,7 @@ namespace Treachery.Shared
             var red = Game.GetPlayer(Faction.Red);
             if (RedContributionAmount > 0 && RedContributionAmount > red.Resources) return Skin.Current.Format("{0} can't pay that much.", Faction.Red);
 
-            if (!UsingKarmaToRemoveBidLimit && Amount > Player.Resources) return "You can't pay that much.";
+            if (!UsingKarmaToRemoveBidLimit && Amount > Player.Resources) return string.Format("You can't pay {0}.", Amount);
             if (KarmaCard != null && !Karma.ValidKarmaCards(Game, p).Contains(KarmaCard)) return Skin.Current.Format("Invalid {0} card.", TreacheryCardType.Karma);
 
             return "";
@@ -123,7 +125,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    return new Message(Initiator, "{0} bid {1}.", Initiator, TotalAmount);
+                    return new Message(Initiator, "{0} bid.", Initiator);
                 }
             }
             else

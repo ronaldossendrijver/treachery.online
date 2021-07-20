@@ -127,7 +127,7 @@ namespace Treachery.Shared
 
         public static int GetMaximumNumberOfPlayers()
         {
-            return 8;
+            return AvailableFactions().Count();
         }
 
         public static int GetMaximumNumberOfTurns()

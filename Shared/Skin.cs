@@ -266,6 +266,7 @@ namespace Treachery.Shared
             else if (value is WinMethod w) result = Describe(w);
             else if (value is Phase p) result = Describe(p);
             else if (value is BrownEconomicsStatus bes) result = Describe(bes);
+            else if (value is AuctionType at) result = Describe(at);
             else if (value is IEnumerable ienum) result = Join(Enumerable.Cast<object>(ienum));
             else result = value.ToString();
 
@@ -503,6 +504,21 @@ namespace Treachery.Shared
                 BrownEconomicsStatus.Double => "Double",
                 BrownEconomicsStatus.DoubleFlipped => "Double (flipped)",
                 BrownEconomicsStatus.RemovedFromGame => "Removed from game",
+                _ => "None"
+            };
+        }
+
+        public string Describe(AuctionType t)
+        {
+            return t switch
+            {
+                AuctionType.Normal => "Normal",
+                AuctionType.BlackMarketNormal => "Normal",
+                AuctionType.BlackMarketSilent => "Silent",
+                AuctionType.BlackMarketOnceAround => "Once Around",
+                AuctionType.WhiteNormal => Format("Normal {0}", Faction.White),
+                AuctionType.WhiteSilent => Format("Silent {0}", Faction.White),
+                AuctionType.WhiteOnceAround => Format("Once Around {0}", Faction.White),
                 _ => "None"
             };
         }

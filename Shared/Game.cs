@@ -13,7 +13,7 @@ namespace Treachery.Shared
         public const int LowestSupportedVersion = 68;
         public const int LatestVersion = 106;
 
-        public bool BotInfologging = false;
+        public bool BotInfologging = true;
 
         #region GameState
 
@@ -736,10 +736,13 @@ namespace Treachery.Shared
 
         public bool HasBiddingPrescience(Player p)
         {
+            bool isPubliclyKnown = CurrentAuctionType == AuctionType.WhiteNormal || CurrentAuctionType == AuctionType.WhiteOnceAround || CurrentAuctionType == AuctionType.WhiteSilent;
+
             return
-                p != null &&
+                isPubliclyKnown ||
+                (p != null &&
                 !Prevented(FactionAdvantage.GreenBiddingPrescience) &&
-                (p.Faction == Faction.Green || (p.Ally == Faction.Green && GreenSharesPrescience) || HasDeal(p.Faction, DealType.ShareBiddingPrescience));
+                (p.Faction == Faction.Green || (p.Ally == Faction.Green && GreenSharesPrescience) || HasDeal(p.Faction, DealType.ShareBiddingPrescience)));
         }
 
         public Player GetPlayer(string name)

@@ -36,10 +36,8 @@ namespace Treachery.Shared
 
         public static LossToTake LossesToTake(Game g)
         {
-            Console.WriteLine("Losses to take: " + g.StormLossesToTake.Count);
             if (g.StormLossesToTake.Count > 0)
             {
-                Console.WriteLine("First loss to take: " + g.StormLossesToTake[0].Faction);
                 return g.StormLossesToTake[0];
             }
             else

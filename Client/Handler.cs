@@ -734,6 +734,7 @@ namespace Treachery.Client
 
             if (IsHost)
             {
+                await SaveGame();
                 PerformBotAction();
             }
 
@@ -778,6 +779,11 @@ namespace Treachery.Client
                 await Browser.SaveSetting(string.Format("treachery.online;currentgame;{0};hostid", PlayerName.ToLower().Trim()), HostProxy.HostID);
                 await Browser.SaveSetting(string.Format("treachery.online;currentgame;{0};time", PlayerName.ToLower().Trim()), DateTime.Now);
             }
+        }
+
+        private async Task SaveGame()
+        {
+            await Browser.SaveSetting(string.Format("treachery.online;latestgame;{0}", PlayerName.ToLower().Trim()), GameState.GetStateAsString(Game));
         }
 
         public async Task ConfirmPlayername(string name)

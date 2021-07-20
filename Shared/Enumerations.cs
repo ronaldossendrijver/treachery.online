@@ -235,8 +235,15 @@ namespace Treachery.Shared
         BlackMarketAnnouncement = 500,
 
         BlackMarketBidding = 501,
+
+        [PhaseProperty(true, Faction.White)]
         WhiteAnnouncingAuction = 505,
+
+        [PhaseProperty(true, Faction.White)]
         WhiteSpecifyingAuction = 506,
+
+        [PhaseProperty(true, Faction.White)]
+        WhiteKeepingUnsoldCard = 507,
     }
 
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]

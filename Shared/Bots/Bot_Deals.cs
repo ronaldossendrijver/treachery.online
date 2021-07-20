@@ -232,6 +232,7 @@ namespace Treachery.Shared
         {
             if (Faction == Faction.Green &&
                 Game.CurrentMainPhase == MainPhase.Bidding &&
+                Game.CurrentAuctionType == AuctionType.Normal &&
                 Game.HasBiddingPrescience(this) &&
                 !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal.Type == DealType.ShareBiddingPrescience && deal.EndPhase == Phase.Bidding))
             {

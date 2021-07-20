@@ -56,16 +56,16 @@ namespace Treachery.Shared
         //Returns a position number at the table occupied by a player nearest to the indicated position. The number of positions is zero based and depends on the Maximum number of players selected at game start.
         private int FindNearestPlayerPosition(Game game, int positionToStartLooking, bool ignorePlayersThatCantBid)
         {
-            int position = positionToStartLooking % game.MaximumNumberOfPlayers;
+            int position = (game.MaximumNumberOfPlayers + positionToStartLooking) % game.MaximumNumberOfPlayers;
             for (int i = 0; i < game.MaximumNumberOfPlayers; i++)
             {
-                if (Players.Any(p => p.PositionAtTable == position && (!ignorePlayersThatCantBid || p.MayBidOnCards)))
+                if (Players.Any(p => p.PositionAtTable == (position % game.MaximumNumberOfPlayers) && (!ignorePlayersThatCantBid || p.MayBidOnCards)))
                 {
                     return position;
                 }
                 else
                 {
-                    position = (position + _direction) % game.MaximumNumberOfPlayers;
+                    position = (game.MaximumNumberOfPlayers + position + _direction) % game.MaximumNumberOfPlayers;
                 }
             }
 

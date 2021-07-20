@@ -10,7 +10,7 @@ namespace Treachery.Shared
 {
     public partial class Player
     {
-        protected virtual Bid DetermineBid(bool mayUseKarma)
+        protected virtual Bid DetermineBid()
         {
             LogInfo("DetermineBid()");
 
@@ -26,10 +26,11 @@ namespace Treachery.Shared
             bool thisCardIsPerfect = isKnownCard && CardQuality(Game.CardsOnAuction.Top) == 5;
             int resourcesToKeep = thisCardIsPerfect ? Param.Bidding_ResourcesToKeepWhenCardIsPerfect : Param.Bidding_ResourcesToKeepWhenCardIsntPerfect;
             int resourcesAvailable = Math.Max(0, ResourcesIncludingAllyAndRedContribution - resourcesToKeep);
-            bool couldUseKarmaForBid = mayUseKarma && !Game.KarmaPrevented(Faction) && Ally != Faction.Red && (SpecialKarmaPowerUsed || !Param.Karma_SaveCardToUseSpecialKarmaAbility);
+            bool couldUseKarmaForBid = Game.CurrentAuctionType == AuctionType.Normal && !Game.KarmaPrevented(Faction) && Ally != Faction.Red && (SpecialKarmaPowerUsed || !Param.Karma_SaveCardToUseSpecialKarmaAbility);
             var karmaCardToUseForBidding = couldUseKarmaForBid && (currentBid > 4 || resourcesAvailable <= currentBid) ? TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma || MayUseUselessAsKarma && c.Type == TreacheryCardType.Useless) : null;
             int karmaWorth = (karmaCardToUseForBidding == null ? 0 : 8);
             int maximumIWillSpend = D(1, resourcesAvailable + karmaWorth);
+            int amountToBidInSilentOrOnceAround = D(1, resourcesAvailable);
 
             LogInfo("currentBidIsFromAlly: {0}, thisCardIsUseless: {1}, thisCardIsCrappy: {2}, resourcesAvailable:, {3}, karmaWorth: {4}, maximumIWillSpend: {5}, karmaCardToUseForBidding: {6}.",
                 currentBidIsFromAlly, thisCardIsUseless, thisCardIsCrappy, resourcesAvailable, karmaWorth, maximumIWillSpend, karmaCardToUseForBidding);
@@ -39,6 +40,21 @@ namespace Treachery.Shared
                 LogInfo("currentBidIsFromAlly or thisCardIsUseless or thisCardIsCrappy");
                 return PassedBid();
             }
+            else if (Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent)
+            {
+                return CreateBidUsingAllyAndRedSpice(D(1, amountToBidInSilentOrOnceAround), 0, null);
+            }
+            else if (Game.CurrentAuctionType == AuctionType.BlackMarketOnceAround || Game.CurrentAuctionType == AuctionType.WhiteOnceAround)
+            {
+                if (amountToBidInSilentOrOnceAround > currentBid)
+                {
+                    return CreateBidUsingAllyAndRedSpice(amountToBidInSilentOrOnceAround, 0, null);
+                }
+                else
+                {
+                    return PassedBid();
+                }
+            }            
             else if (currentBid == 0 && ResourcesIncludingAllyAndRedContribution > 0)
             {
                 LogInfo("always bid at least 1 if possible");
@@ -128,15 +144,8 @@ namespace Treachery.Shared
 
         protected virtual BlackMarketBid DetermineBlackMarketBid()
         {
-            var bid = DetermineBid(false);
-            if (bid == null)
-            {
-                return null;
-            }
-            else
-            {
-                return new BlackMarketBid(Game) { Initiator = Faction, Amount = bid.Amount, AllyContributionAmount = bid.AllyContributionAmount, RedContributionAmount = bid.RedContributionAmount, Passed = bid.Passed };
-            }
+            var bid = DetermineBid();
+            return new BlackMarketBid(Game) { Initiator = Faction, Amount = bid.Amount, AllyContributionAmount = bid.AllyContributionAmount, RedContributionAmount = bid.RedContributionAmount, Passed = bid.Passed };
         }
     }
 }

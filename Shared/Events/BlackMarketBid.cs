@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace Treachery.Shared
 {
-    public class BlackMarketBid : GameEvent
+    public class BlackMarketBid : GameEvent, IBid
     {
         public int Amount { get; set; }
 
@@ -43,8 +43,8 @@ namespace Treachery.Shared
 
             var p = Game.GetPlayer(Initiator);
 
-            //if (TotalAmount < 1) return "Bid must be higher than 0.";
-            if (Game.CurrentBid != null && TotalAmount <= Game.CurrentBid.TotalAmount) return "Bid not high enough.";
+            if (Game.CurrentAuctionType != AuctionType.BlackMarketSilent && TotalAmount < 1) return "Bid must be higher than 0.";
+            if (Game.CurrentAuctionType != AuctionType.BlackMarketSilent && Game.CurrentBid != null && TotalAmount <= Game.CurrentBid.TotalAmount) return "Bid not high enough.";
 
             var ally = Game.GetPlayer(p.Ally);
             if (AllyContributionAmount > 0 && AllyContributionAmount > ally.Resources) return "Your ally can't pay that much.";
@@ -64,7 +64,7 @@ namespace Treachery.Shared
         {
             if (!Passed)
             {
-                return new Message(Initiator, "{0} bid {1}.", Initiator, TotalAmount);
+                return new Message(Initiator, "{0} bid.", Initiator);
             }
             else
             {
@@ -91,7 +91,7 @@ namespace Treachery.Shared
                     return g.BidSequence.GetPlayersInSequence(g);
 
                 case AuctionType.BlackMarketSilent:
-                    return g.Players.Select(p => new SequenceElement() { Player = p, HasTurn = p.MayBidOnCards && !g.BlackMarketBids.Keys.Contains(p.Faction) });
+                    return g.Players.Select(p => new SequenceElement() { Player = p, HasTurn = p.MayBidOnCards && !g.Bids.Keys.Contains(p.Faction) });
 
                 default: return new SequenceElement[] { };
             }

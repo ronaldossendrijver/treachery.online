@@ -738,7 +738,7 @@ namespace Treachery.Client
                                     }
                                     else
                                     {
-                                        if (!Game.BlackMarketBids.Keys.Contains(Faction))
+                                        if (Player.MayBidOnCards && !Game.Bids.Keys.Contains(Faction))
                                         {
                                             return new GameStatus()
                                             {
@@ -796,6 +796,25 @@ namespace Treachery.Client
                                         }
                                     }
 
+                                case Phase.WhiteKeepingUnsoldCard:
+                                    {
+                                        if (IAm(Faction.White))
+                                        {
+                                            return new GameStatus()
+                                            {
+                                                Description = "Please decide if you wish to keep this unsold card.",
+                                                WaitingForOthers = false
+                                            };
+                                        }
+                                        else
+                                        {
+                                            return new GameStatus()
+                                            {
+                                                Description = Skin.Current.Format("{0} are deciding whether to keep the unsold card...", Faction.White),
+                                                WaitingForOthers = true
+                                            };
+                                        }
+                                    }
 
                                 case Phase.GreyRemovingCardFromBid:
                                     {
@@ -838,21 +857,44 @@ namespace Treachery.Client
                                     }
 
                                 case Phase.Bidding:
-                                    if (Player == Game.BidSequence.CurrentPlayer)
+
+                                    if (Game.CurrentAuctionType != AuctionType.WhiteSilent)
                                     {
-                                        return new GameStatus()
+                                        if (Player == Game.BidSequence.CurrentPlayer)
                                         {
-                                            Description = "Please bid or pass.",
-                                            WaitingForOthers = false
-                                        };
+                                            return new GameStatus()
+                                            {
+                                                Description = "Please bid or pass.",
+                                                WaitingForOthers = false
+                                            };
+                                        }
+                                        else
+                                        {
+                                            return new GameStatus()
+                                            {
+                                                Description = Skin.Current.Format("{0} are thinking about their bid...", Game.BidSequence.CurrentFaction),
+                                                WaitingForOthers = true
+                                            };
+                                        }
                                     }
                                     else
                                     {
-                                        return new GameStatus()
+                                        if (Player.MayBidOnCards && !Game.Bids.Keys.Contains(Faction))
                                         {
-                                            Description = Skin.Current.Format("{0} are thinking about their bid...", Game.BidSequence.CurrentFaction),
-                                            WaitingForOthers = true
-                                        };
+                                            return new GameStatus()
+                                            {
+                                                Description = "Please bid or pass.",
+                                                WaitingForOthers = false
+                                            };
+                                        }
+                                        else
+                                        {
+                                            return new GameStatus()
+                                            {
+                                                Description = "Factions are thinking about their bids...",
+                                                WaitingForOthers = true
+                                            };
+                                        }
                                     }
 
                                 case Phase.ReplacingCardJustWon:

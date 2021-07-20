@@ -149,7 +149,7 @@ namespace Treachery.Shared
                     if (faction == Faction.White) result.Add(typeof(WhiteAnnouncesBlackMarket));
                     break;
                 case Phase.BlackMarketBidding:
-                    if (CurrentAuctionType == AuctionType.BlackMarketSilent && !BlackMarketBids.ContainsKey(faction) ||
+                    if (CurrentAuctionType == AuctionType.BlackMarketSilent && !Bids.ContainsKey(faction) && player.MayBidOnCards ||
                         CurrentAuctionType != AuctionType.BlackMarketSilent && player == BidSequence.CurrentPlayer)
                     {
                         result.Add(typeof(BlackMarketBid));
@@ -163,12 +163,16 @@ namespace Treachery.Shared
                     if (faction == Faction.White) result.Add(typeof(WhiteSpecifiesAuction));
                     break;
                 case Phase.Bidding:
-                    if (player == BidSequence.CurrentPlayer)
+                    if (CurrentAuctionType == AuctionType.WhiteSilent && !Bids.ContainsKey(faction) && player.MayBidOnCards ||
+                        CurrentAuctionType != AuctionType.WhiteSilent && player == BidSequence.CurrentPlayer)
                     {
                         result.Add(typeof(Bid));
                     }
                     if (Version < 103 && player.Has(TreacheryCardType.Amal) && CardNumber == 1 && !Bids.Any()) result.Add(typeof(AmalPlayed));
                     if (faction == Faction.Red && Applicable(Rule.RedSupportingNonAllyBids)) result.Add(typeof(RedBidSupport));
+                    break;
+                case Phase.WhiteKeepingUnsoldCard:
+                    if (faction == Faction.White) result.Add(typeof(WhiteKeepsUnsoldCard));
                     break;
                 case Phase.GreyRemovingCardFromBid:
                     if (faction == Faction.Grey) result.Add(typeof(GreyRemovedCardFromAuction));

@@ -39,6 +39,8 @@ namespace Treachery.Shared
         {
             if (!ValidCards(Game).Contains(Card)) return "Invalid card";
 
+            if (AuctionType != AuctionType.WhiteNormal && AuctionType != AuctionType.WhiteOnceAround && AuctionType != AuctionType.WhiteSilent) return "Invalid auction type";
+
             return "";
         }
 

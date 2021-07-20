@@ -40,6 +40,7 @@ namespace Treachery.Shared
         {
             if (Passed) return "";
 
+            if (AuctionType != AuctionType.BlackMarketNormal && AuctionType != AuctionType.BlackMarketOnceAround && AuctionType != AuctionType.BlackMarketSilent) return "Invalid auction type";
             if (!ValidCards(Player).Contains(Card)) return "Invalid card";
 
             return "";

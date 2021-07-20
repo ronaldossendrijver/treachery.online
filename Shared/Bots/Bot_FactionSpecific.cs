@@ -875,7 +875,7 @@ namespace Treachery.Shared
             var card = TreacheryCards.FirstOrDefault(c => CardQuality(c) < 4);
             if (card != null)
             {
-                return new WhiteAnnouncesBlackMarket(Game) { Initiator = Faction, Passed = false, Card = card, AuctionType = D(1, 2) > 1 ? AuctionType.WhiteSilent : AuctionType.WhiteOnceAround, Direction = D(1, 2) > 1 ? 1 : -1 };
+                return new WhiteAnnouncesBlackMarket(Game) { Initiator = Faction, Passed = false, Card = card, AuctionType = D(1, 2) > 1 ? AuctionType.BlackMarketSilent : AuctionType.BlackMarketOnceAround, Direction = D(1, 2) > 1 ? 1 : -1 };
             }
             else
             {
@@ -893,6 +893,11 @@ namespace Treachery.Shared
             var toAuction = new Deck<TreacheryCard>(Game.WhiteCache, random);
             toAuction.Shuffle();
             return new WhiteSpecifiesAuction(Game) { Initiator = Faction, Card = toAuction.Draw(), AuctionType = D(1,2) > 1 ? AuctionType.WhiteSilent : AuctionType.WhiteOnceAround, Direction = D(1,2) > 1 ? 1 : -1 };
+        }
+
+        protected virtual WhiteKeepsUnsoldCard DetermineWhiteKeepsUnsoldCard()
+        {
+            return new WhiteKeepsUnsoldCard(Game) { Initiator = Faction, Passed = false };
         }
 
         #endregion White

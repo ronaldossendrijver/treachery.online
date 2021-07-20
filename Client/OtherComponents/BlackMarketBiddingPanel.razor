@@ -20,10 +20,10 @@
                         <img src="@CurrentCardImageSRC" width="150" data-animation="true" data-content="@CurrentCardHover" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" />
 
                         <div style="position: absolute; top: 135px; width: 150px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
-                            @if (Game.CurrentAuctionType != AuctionType.BlackMarketSilent && Game.BlackMarketCurrentBid != null)
+                            @if (Game.CurrentAuctionType != AuctionType.BlackMarketSilent && Game.CurrentBid != null)
                             {
-                                <img src="@Skin.Current.GetImageURL(Game.BlackMarketCurrentBid.Initiator)" width="36" style="vertical-align: top;" />
-                                <NumberComponent Value="Game.BlackMarketCurrentBid.TotalAmount" Size="36" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
+                                <img src="@Skin.Current.GetImageURL(Game.CurrentBid.Initiator)" width="36" style="vertical-align: top;" />
+                                <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="36" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
                             }
                         </div>
 
@@ -93,7 +93,7 @@
         {
             int allyResources = Player.Ally == Faction.None ? 0 : Game.GetPermittedUseOfAllySpice(Faction);
             int playerResources = Player.Resources;
-            int bidToDo = Game.BlackMarketCurrentBid != null ? Game.BlackMarketCurrentBid.TotalAmount + 1 : 1;
+            int bidToDo = Game.CurrentBid != null ? Game.CurrentBid.TotalAmount + 1 : 1;
             allyContributionAmount = Math.Min(bidToDo, allyResources);
             amount = Math.Min(bidToDo - allyContributionAmount, playerResources);
         }
