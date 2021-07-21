@@ -393,7 +393,8 @@ namespace Treachery.Shared
         Yellow = 10,
         Red = 20,
         Blue = 30,
-        Grey = 40
+        Grey = 40,
+        White = 50
     }
 
     public enum Ruleset : int

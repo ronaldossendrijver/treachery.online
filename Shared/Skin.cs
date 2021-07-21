@@ -345,6 +345,7 @@ namespace Treachery.Shared
                 FactionSpecialForce.Yellow => SpecialForceName_STR[Faction.Yellow],
                 FactionSpecialForce.Blue => SpecialForceName_STR[Faction.Blue],
                 FactionSpecialForce.Grey => SpecialForceName_STR[Faction.Grey],
+                FactionSpecialForce.White => SpecialForceName_STR[Faction.White],
                 _ => "-",
             };
         }
@@ -1856,7 +1857,8 @@ namespace Treachery.Shared
                 { Faction.Yellow, DEFAULT_ART_LOCATION + "/art/faction3specialforce.svg" },
                 { Faction.Red, DEFAULT_ART_LOCATION + "/art/faction4specialforce.svg" },
                 { Faction.Blue, DEFAULT_ART_LOCATION + "/art/faction6specialforce.svg" },
-                { Faction.Grey, DEFAULT_ART_LOCATION + "/art/faction7specialforce.svg" }
+                { Faction.Grey, DEFAULT_ART_LOCATION + "/art/faction7specialforce.svg" },
+                { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10force.svg" }
             },
 
             TechTokenName_STR = new Dictionary<TechToken, string>()
@@ -1941,7 +1943,7 @@ namespace Treachery.Shared
                 [Faction.Purple] = "-",
 
                 [Faction.Brown] = "-",
-                [Faction.White] = "-",
+                [Faction.White] = "No-Field",
                 [Faction.Pink] = "-",
                 [Faction.Cyan] = "-"
             },

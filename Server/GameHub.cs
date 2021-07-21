@@ -141,6 +141,9 @@ namespace Treachery.Server
         public async Task RequestWhiteAnnouncesAuction(int hostID, WhiteAnnouncesAuction e) { await Request(hostID, e); }
         public async Task RequestWhiteSpecifiesAuction(int hostID, WhiteSpecifiesAuction e) { await Request(hostID, e); }
         public async Task RequestWhiteKeepsUnsoldCard(int hostID, WhiteKeepsUnsoldCard e) { await Request(hostID, e); }
+        public async Task RequestWhiteRevealedNoField(int hostID, WhiteRevealedNoField e) { await Request(hostID, e); }
+
+        
 
         private async Task Request<GameEventType>(int hostID, GameEventType e) where GameEventType : GameEvent
         {

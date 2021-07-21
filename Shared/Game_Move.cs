@@ -16,6 +16,8 @@ namespace Treachery.Shared
         public List<PlacementEvent> RecentMoves = new List<PlacementEvent>();
         private List<Faction> FactionsWithOrnithoptersAtStartOfMovement;
         private bool BeginningOfShipmentAndMovePhase;
+        public int CurrentNoFieldValue { get; private set; } = -1;
+        public int LatestRevealedNoFieldValue { get; private set; } = -1;
 
         private void EnterShipmentAndMovePhase()
         {
@@ -94,6 +96,11 @@ namespace Treachery.Shared
 
             if (!s.Passed)
             {
+                if (s.IsNoField)
+                {
+                    CurrentNoFieldValue = s.NoFieldValue;
+                }
+
                 if (ContainsConflictingAlly(initiator, s.To))
                 {
                     ChosenDestinationsWithAllies.Add(s.To.Territory);

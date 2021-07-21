@@ -10,6 +10,15 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
+        public void HandleEvent(WhiteRevealedNoField e)
+        {
+            CurrentReport.Add(e);
+            LatestRevealedNoFieldValue = CurrentNoFieldValue;
+            var noFieldLocation = e.Player.ForcesOnPlanet.FirstOrDefault(kvp => kvp.Value.AmountOfSpecialForces > 0).Key;
+            e.Player.ForcesToReserves(noFieldLocation);
+            e.Player.ShipForces(noFieldLocation, Math.Min(e.Player.ForcesInReserve, CurrentNoFieldValue));
+        }
+
         public void HandleEvent(BlueBattleAnnouncement e)
         {
             var initiator = GetPlayer(e.Initiator);

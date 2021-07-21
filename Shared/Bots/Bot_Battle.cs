@@ -551,6 +551,7 @@ namespace Treachery.Shared
         private ClairVoyanceQandA RulingDefenseClairvoyanceForThisBattle => Game.LatestClairvoyance != null && Game.LatestClairvoyanceQandA != null && Game.LatestClairvoyanceQandA.Answer.Initiator == Faction && Game.LatestClairvoyanceBattle != null && Game.LatestClairvoyanceBattle == Game.CurrentBattle && 
             (Game.LatestClairvoyanceQandA.Question.Question == ClairvoyanceQuestion.CardTypeAsDefenseInBattle || Game.LatestClairvoyanceQandA.Question.Question == ClairvoyanceQuestion.CardTypeInBattle) ? Game.LatestClairvoyanceQandA : null;
 
+
         protected float ChanceOfEnemyLeaderDying(Player opponent, VoicePlan voicePlan, Prescience prescience, out TreacheryCard mostEffectiveWeapon, out bool enemyCanDefendPoisonTooth)
         {
             enemyCanDefendPoisonTooth = false;

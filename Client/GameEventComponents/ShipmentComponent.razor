@@ -79,6 +79,13 @@
             @if (ValidShipmentSpecialForces > 0)
             {
                 <SelectForcesComponent @bind-Value="shipmentSpecialForceAmount" Min="0" Max="ValidShipmentSpecialForces" Faction="Faction" Special="true" />
+
+                @if (Faction == Faction.White && shipmentSpecialForceAmount > 0)
+                {
+                    <RadioComponent @bind-Value="nofieldValue" Values="Shipment.ValidNoFieldValues(Game)">
+                        <Label>Number of forces under the No-Field</Label>
+                    </RadioComponent>
+                }
             }
 
         </div>
@@ -126,7 +133,7 @@
     private Location shipmentFrom;
     private Location shipmentTo;
     private int shipmentAllyContributionAmount;
-
+    private int nofieldValue;
 
     protected override Shipment ConfirmedResult
     {
@@ -140,6 +147,7 @@
                 Initiator = Faction,
                 ForceAmount = direction * shipmentForceAmount,
                 SpecialForceAmount = direction * shipmentSpecialForceAmount,
+                NoFieldValue = nofieldValue,
                 From = from,
                 To = shipmentTo,
                 Passed = false,

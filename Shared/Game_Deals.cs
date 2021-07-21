@@ -52,6 +52,7 @@ namespace Treachery.Shared
 
         public List<Deal> Deals = new List<Deal>();
 
+
         public void StartDeal(Deal deal)
         {
             Deals.Add(deal);

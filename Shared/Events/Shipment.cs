@@ -32,6 +32,8 @@ namespace Treachery.Shared
 
         public int SpecialForceAmount { get; set; }
 
+        public int NoFieldValue { get; set; }
+
         public bool Passed { get; set; }
 
         public int _karmaCardId;
@@ -67,35 +69,12 @@ namespace Treachery.Shared
 
         public TreacheryCard GetKarmaCard(Game g, Player p)
         {
-            if (g.Version >= 38)
-            {
-                return KarmaCard;
-            }
-            else
-            {
-                //needed for older versions (<38) that did not have the karmaCardId
-                if (p.Is(Faction.Blue))
-                {
-                    return p.TreacheryCards.FirstOrDefault(x => x.Type == TreacheryCardType.Karma || x.Type == TreacheryCardType.Useless);
-                }
-                else
-                {
-                    return p.TreacheryCards.FirstOrDefault(x => x.Type == TreacheryCardType.Karma);
-                }
-            }
+            return KarmaCard;
         }
 
         public bool UsingKarma(Game g)
         {
-            if (g.Version >= 38)
-            {
-                return KarmaCard != null;
-            }
-            else
-            {
-                //To be removed later on
-                return KarmaShipment;
-            }
+            return KarmaCard != null;
         }
 
         //To be removed later on
@@ -104,22 +83,10 @@ namespace Treachery.Shared
         public int AllyContributionAmount { get; set; }
 
         [JsonIgnore]
-        public bool IsSiteToSite
-        {
-            get
-            {
-                return From != null;
-            }
-        }
+        public bool IsSiteToSite => From != null;
 
         [JsonIgnore]
-        public bool IsBackToReserves
-        {
-            get
-            {
-                return ForceAmount + SpecialForceAmount < 0;
-            }
-        }
+        public bool IsBackToReserves => ForceAmount + SpecialForceAmount < 0;
 
         public override string Validate()
         {
@@ -139,6 +106,8 @@ namespace Treachery.Shared
             if (From == null && SpecialForceAmount > p.SpecialForcesInReserve) return Skin.Current.Format("Not enough {0} in reserve.", p.SpecialForce);
             if (From != null && ForceAmount > p.ForcesIn(From)) return Skin.Current.Format("Not enough {0} for site-to-site shipment.", p.Force);
             if (From != null && SpecialForceAmount > p.SpecialForcesIn(From)) return Skin.Current.Format("Not enough {0} for site-to-site shipment.", p.SpecialForce);
+            if (p.Faction == Faction.White && ForceAmount > 0 && SpecialForceAmount > 0) return "You can't do both normal and No-Field shipment.";
+            if (p.Faction == Faction.White && SpecialForceAmount > 0 && !ValidNoFieldValues(Game).Contains(NoFieldValue)) return "Invalid No-Field value.";
 
             return "";
         }
@@ -150,7 +119,7 @@ namespace Treachery.Shared
                 return 0;
             }
 
-            return DetermineCost(g, p, Math.Abs(s.ForceAmount) + Math.Abs(s.SpecialForceAmount), s.To, s.UsingKarma(g), s.IsBackToReserves);
+            return DetermineCost(g, p, Math.Abs(s.ForceAmount), Math.Abs(s.SpecialForceAmount), s.To, s.UsingKarma(g), s.IsBackToReserves);
         }
 
         public static bool ShipsForFree(Game g, Player p, Location to)
@@ -158,8 +127,12 @@ namespace Treachery.Shared
             return p.Is(Faction.Yellow) && YellowSpawnLocations(g, p).Contains(to);
         }
 
-        public static int DetermineCost(Game g, Player p, int amount, Location to, bool karamaShipment, bool backToReserves)
+        public static int DetermineCost(Game g, Player p, int amountOfNormalForces, int amountOfSpecialForces, Location to, bool karamaShipment, bool backToReserves)
         {
+            if (p.Faction == Faction.White && amountOfSpecialForces > 0) return 1;
+
+            int amount = amountOfNormalForces + amountOfSpecialForces;
+
             if (backToReserves)
             {
                 return (int)Math.Ceiling(0.5 * amount);
@@ -182,20 +155,23 @@ namespace Treachery.Shared
             }
         }
 
-        public static IEnumerable<int> ValidNormalShipmentForces(Player p, bool specialForces)
-        {
-            return Enumerable.Range(0, 1 + (specialForces ? p.SpecialForcesInReserve : p.ForcesInReserve));
-        }
-
         public static int ValidMaxNormalShipmentForces(Player p, bool specialForces)
         {
-            return specialForces ? p.SpecialForcesInReserve : p.ForcesInReserve;
-        }
-
-        public static IEnumerable<int> ValidShipmentBackForces(Player p, bool specialForces, Location source)
-        {
-            if (source == null) return new int[] { 0 };
-            return Enumerable.Range(0, 1 + (specialForces ? p.SpecialForcesIn(source) : p.ForcesIn(source)));
+            if (p.Faction != Faction.White)
+            {
+                return specialForces ? p.SpecialForcesInReserve : p.ForcesInReserve;
+            }
+            else
+            {
+                if (specialForces)
+                {
+                    return p.NoFieldIsActive ? 0 : 1;
+                }
+                else
+                {
+                    return p.ForcesInReserve;
+                }
+            }
         }
 
         public static int ValidMaxShipmentBackForces(Player p, bool specialForces, Location source)
@@ -204,15 +180,10 @@ namespace Treachery.Shared
             return specialForces ? p.SpecialForcesIn(source) : p.ForcesIn(source);
         }
 
-        public static IEnumerable<int> ValidShipmentSiteToSiteForces(Player p, bool specialForces, Location source)
-        {
-            if (source == null) return new int[] { 0 };
-            return Enumerable.Range(0, 1 + (specialForces ? p.SpecialForcesIn(source) : p.ForcesIn(source)));
-        }
-
         public static int ValidMaxShipmentSiteToSiteForces(Player p, bool specialForces, Location source)
         {
             if (source == null) return 0;
+
             return specialForces ? p.SpecialForcesIn(source) : p.ForcesIn(source);
         }
 
@@ -244,6 +215,15 @@ namespace Treachery.Shared
                 l.Sector != g.SectorInStorm &&
                 (l != g.Map.HiddenMobileStronghold || p.Is(Faction.Grey)) &&
                 IsNotFull(g, p, l));
+        }
+
+        public static IEnumerable<int> ValidNoFieldValues(Game g)
+        {
+            var result = new List<int>();
+            if (g.LatestRevealedNoFieldValue != 0) result.Add(0);
+            if (g.LatestRevealedNoFieldValue != 3) result.Add(3);
+            if (g.LatestRevealedNoFieldValue != 5) result.Add(5);
+            return result;
         }
 
         private static bool IsNotFull(Game g, Player p, Location l)
@@ -379,6 +359,9 @@ namespace Treachery.Shared
             }
         }
 
+        [JsonIgnore]
+        public bool IsNoField => Initiator == Faction.White && SpecialForceAmount > 0;
+
         public int DetermineOrangeProfits(Game game)
         {
             var initiator = Player;
@@ -389,7 +372,7 @@ namespace Treachery.Shared
 
         public int DetermineCostToInitiator()
         {
-            return DetermineCost(Game, Player, ForceAmount + SpecialForceAmount, To, UsingKarma(Game), IsBackToReserves) - AllyContributionAmount;
+            return DetermineCost(Game, Player, this) - AllyContributionAmount;
         }
 
         public static IEnumerable<TreacheryCard> ValidKarmaCards(Game g, Player p)

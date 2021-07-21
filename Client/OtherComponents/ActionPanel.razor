@@ -341,6 +341,10 @@
         {
             <WhiteKeepsUnsoldCardComponent h="@h" />
         }
+        else if (a == typeof(WhiteRevealedNoField))
+        {
+            <SimpleActionComponent GameEventType="WhiteRevealedNoField" h="@h" Title="Reveal your currently active No-Field?" />
+        }
     }
 
     @if (DealAccepted.CurrentDeals(h.Game).Any() || h.IsPlayer && (DealAccepted.AcceptableDeals(h.Game, h.Player).Any() || DealAccepted.CancellableDeals(h.Game, h.Player).Any()))

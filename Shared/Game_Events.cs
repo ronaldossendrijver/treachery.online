@@ -366,10 +366,14 @@ namespace Treachery.Shared
             {
                 result.Add(typeof(HideSecrets));
             }
-                       
 
             if (CurrentPhase != Phase.Clairvoyance && CurrentPhase != Phase.TradingCards && CurrentPhase != Phase.PerformingKarmaHandSwap && CurrentPhase > Phase.TradingFactions && CurrentPhase < Phase.GameEnded)
             {
+                if (CurrentMainPhase < MainPhase.Battle && player.NoFieldIsActive)
+                {
+                    result.Add(typeof(WhiteRevealedNoField));
+                }
+
                 if (faction == Faction.Brown && !Prevented(FactionAdvantage.BrownDiscarding) && (CurrentMoment == MainPhaseMoment.Start || CurrentMoment == MainPhaseMoment.End) && BrownDiscarded.ValidCards(this, player).Any())
                 {
                     result.Add(typeof(BrownDiscarded));
