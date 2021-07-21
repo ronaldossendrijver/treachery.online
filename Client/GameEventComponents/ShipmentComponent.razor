@@ -69,26 +69,46 @@
             <div class="text-danger bg-dark">Note: any of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
         }
 
-        <div class="mt-1">
+        @if (Faction == Faction.White && !Game.Prevented(FactionAdvantage.WhiteNofield) || Player.Ally == Faction.White && Game.WhiteAllyMayUseNoField)
+        {
+            var validNoFieldValues = new List<int>();
+            validNoFieldValues.Add(-1);
+            validNoFieldValues.AddRange(Shipment.ValidNoFieldValues(Game));
 
-            @if (ValidShipmentForces > 0)
-            {
-                <SelectForcesComponent @bind-Value="shipmentForceAmount" Min="0" Max="ValidShipmentForces" Faction="Faction" Special="false" />
-            }
+            var validNoFieldValueLabels = new List<string>();
+            validNoFieldValueLabels.Add("Don't use a No-Field");
+            validNoFieldValueLabels.AddRange(Shipment.ValidNoFieldValues(Game).Select(v => v.ToString()));
 
-            @if (ValidShipmentSpecialForces > 0)
-            {
-                <SelectForcesComponent @bind-Value="shipmentSpecialForceAmount" Min="0" Max="ValidShipmentSpecialForces" Faction="Faction" Special="true" />
+            <RadioComponent @bind-Value="nofieldValue" Values="validNoFieldValues" ValueLabels="validNoFieldValueLabels">
+                <Label>Use a @Skin.Current.Describe(Faction.White) No-Field for this shipment?</Label>
+            </RadioComponent>
+        }
+        else
+        {
+            nofieldValue = -1;
+        }
 
-                @if (Faction == Faction.White && shipmentSpecialForceAmount > 0)
+        @if (!(Faction == Faction.White && nofieldValue >= 0))
+        {
+            <div class="mt-1">
+
+                @if (ValidShipmentForces > 0)
                 {
-                    <RadioComponent @bind-Value="nofieldValue" Values="Shipment.ValidNoFieldValues(Game)">
-                        <Label>Number of forces under the No-Field</Label>
-                    </RadioComponent>
+                    <SelectForcesComponent @bind-Value="shipmentForceAmount" Min="0" Max="ValidShipmentForces" Faction="Faction" Special="false" />
                 }
-            }
 
-        </div>
+                @if (ValidShipmentSpecialForces > 0)
+                {
+                    <SelectForcesComponent @bind-Value="shipmentSpecialForceAmount" Min="0" Max="ValidShipmentSpecialForces" Faction="Faction" Special="true" />
+                }
+
+            </div>
+        }
+        else
+        {
+            shipmentForceAmount = 0;
+            shipmentSpecialForceAmount = 1;
+        }
 
         @if (Player.Ally != Faction.None && Cost > 0)
         {
@@ -133,7 +153,7 @@
     private Location shipmentFrom;
     private Location shipmentTo;
     private int shipmentAllyContributionAmount;
-    private int nofieldValue;
+    private int nofieldValue = -1;
 
     protected override Shipment ConfirmedResult
     {
@@ -218,7 +238,7 @@
         {
             switch (shipmentType)
             {
-                case SHIPMENT_NORMAL: return Shipment.ValidMaxNormalShipmentForces(Player, false);
+                case SHIPMENT_NORMAL: return Shipment.ValidMaxNormalShipmentForces(Player, false, nofieldValue);
                 case SHIPMENT_SITETOSITE: return Shipment.ValidMaxShipmentSiteToSiteForces(Player, false, shipmentFrom);
                 case SHIPMENT_BACK: return Shipment.ValidMaxShipmentBackForces(Player, false, shipmentTo);
             }
@@ -233,7 +253,7 @@
         {
             switch (shipmentType)
             {
-                case SHIPMENT_NORMAL: return Shipment.ValidMaxNormalShipmentForces(Player, true);
+                case SHIPMENT_NORMAL: return Shipment.ValidMaxNormalShipmentForces(Player, true, nofieldValue);
                 case SHIPMENT_SITETOSITE: return Shipment.ValidMaxShipmentSiteToSiteForces(Player, true, shipmentFrom);
                 case SHIPMENT_BACK: return Shipment.ValidMaxShipmentBackForces(Player, true, shipmentTo);
             }

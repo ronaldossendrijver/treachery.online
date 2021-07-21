@@ -133,6 +133,7 @@ namespace Treachery.Shared
 
             if (AggressorBattleAction != null && DefenderBattleAction != null)
             {
+                RevealNoFields();
                 if (Version < 43) DiscardOneTimeCardsUsedInBattle(null, null);
                 CurrentReport.Add(AggressorBattleAction.GetBattlePlanMessage());
                 CurrentReport.Add(DefenderBattleAction.GetBattlePlanMessage());
@@ -151,6 +152,19 @@ namespace Treachery.Shared
                         DefenderTraitorAction = new TreacheryCalled(this) { Initiator = Faction.Purple, TraitorCalled = false };
                     }
                 }
+            }
+        }
+
+        private void RevealNoFields()
+        {
+            if (AggressorBattleAction.Initiator == Faction.White && AggressorBattleAction.Player.SpecialForcesIn(CurrentBattle.Territory) > 0)
+            {
+                RevealCurrentNoField(AggressorBattleAction.Player);
+            }
+
+            if (DefenderBattleAction.Initiator == Faction.White && DefenderBattleAction.Player.SpecialForcesIn(CurrentBattle.Territory) > 0)
+            {
+                RevealCurrentNoField(DefenderBattleAction.Player);
             }
         }
 

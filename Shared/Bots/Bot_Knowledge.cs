@@ -525,12 +525,12 @@ namespace Treachery.Shared
                 bool opponentMayUseWorthlessAsKarma = player.Faction == Faction.Blue && Game.Applicable(Rule.BlueWorthlessAsKarma);
                 bool hasKarma = CardsPlayerHas(player).Any(c => c.Type == TreacheryCardType.Karma || (opponentMayUseWorthlessAsKarma && c.Type == TreacheryCardType.Karma));
 
-                while (specialForces + 1 <= player.SpecialForcesInReserve && Shipment.DetermineCost(Game, player, specialForces + normalForces + 1, to.MiddleLocation, hasKarma, false) <= opponentResources)
+                while (specialForces + 1 <= player.SpecialForcesInReserve && Shipment.DetermineCost(Game, player, normalForces, specialForces + 1, to.MiddleLocation, hasKarma, false) <= opponentResources)
                 {
                     specialForces++;
                 }
 
-                while (normalForces + 1 <= player.ForcesInReserve && Shipment.DetermineCost(Game, player, specialForces + normalForces + 1, to.MiddleLocation, hasKarma, false) <= opponentResources)
+                while (normalForces + 1 <= player.ForcesInReserve && Shipment.DetermineCost(Game, player, normalForces + 1, specialForces, to.MiddleLocation, hasKarma, false) <= opponentResources)
                 {
                     normalForces++;
                 }

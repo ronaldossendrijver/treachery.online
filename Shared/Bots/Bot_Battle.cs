@@ -34,6 +34,11 @@ namespace Treachery.Shared
             }
         }
 
+        public bool HasNoFieldIn(Territory territory)
+        {
+            return Faction == Faction.White && SpecialForcesIn(territory) > 0;
+        }
+
         protected virtual AuditCancelled DetermineAuditCancelled()
         {
             return new AuditCancelled(Game) { Initiator = Faction, Cancelled = false };
@@ -197,9 +202,9 @@ namespace Treachery.Shared
                     Initiator = Faction,
                     Hero = lowestAvailableHero,
                     Forces = 0,
-                    ForcesAtHalfStrength = Battle.ValidBattleForces(Game, this).Max(),
+                    ForcesAtHalfStrength = Battle.MaxForces(Game, this, false),
                     SpecialForces = 0,
-                    SpecialForcesAtHalfStrength = Battle.ValidBattleSpecialForces(Game, this).Max(),
+                    SpecialForcesAtHalfStrength = Battle.MaxForces(Game, this, true),
                     Defense = uselessAsDefense,
                     Weapon = uselessAsWeapon
                 };
@@ -210,9 +215,9 @@ namespace Treachery.Shared
                 {
                     Initiator = Faction,
                     Hero = lowestAvailableHero,
-                    Forces = Battle.ValidBattleForces(Game, this).Max(),
+                    Forces = Battle.MaxForces(Game, this, false),
                     ForcesAtHalfStrength = 0,
-                    SpecialForces = Battle.ValidBattleSpecialForces(Game, this).Max(),
+                    SpecialForces = Battle.MaxForces(Game, this, true),
                     SpecialForcesAtHalfStrength = 0,
                     Defense = uselessAsDefense,
                     Weapon = uselessAsWeapon

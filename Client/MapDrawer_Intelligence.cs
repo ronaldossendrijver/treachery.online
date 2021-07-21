@@ -272,7 +272,7 @@ namespace Treachery.Client
                         {
                             result += string.Format("<div class=\"col p-0\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
                                 Skin.Current.GetFactionSpecialForceImageURL(p.Faction),
-                                b.AmountOfSpecialForces);
+                                b.Faction == Faction.White ? "?" : "" + b.AmountOfSpecialForces);
                         }
                     }
                 }

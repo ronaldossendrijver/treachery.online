@@ -28,11 +28,16 @@ namespace Treachery.Shared
             Game.HandleEvent(this);
         }
 
-        public static IEnumerable<PrescienceAspect> ValidAspects
+        public static IEnumerable<PrescienceAspect> ValidAspects(Game g, Player p)
         {
-            get
+            var opponent = g.CurrentBattle.OpponentOf(p);
+            if (opponent.HasNoFieldIn(g.CurrentBattle.Territory))
             {
-                return Enumerations.GetValuesExceptDefault(typeof(PrescienceAspect), PrescienceAspect.None);
+                return new PrescienceAspect[] { PrescienceAspect.Leader, PrescienceAspect.Weapon, PrescienceAspect.Defense };
+            }
+            else
+            {
+                return new PrescienceAspect[] { PrescienceAspect.Dial, PrescienceAspect.Leader, PrescienceAspect.Weapon, PrescienceAspect.Defense };
             }
         }
 

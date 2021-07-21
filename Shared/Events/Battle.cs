@@ -283,8 +283,8 @@ namespace Treachery.Shared
         {
             var p = Player;
             if (Game.Version >= 56 && (Forces < 0 || ForcesAtHalfStrength < 0 || SpecialForces < 0 || SpecialForcesAtHalfStrength < 0)) return string.Format("Invalid number of forces {0} {1} {2} {3}.", Forces, ForcesAtHalfStrength, SpecialForces, SpecialForcesAtHalfStrength);
-            if (Forces + ForcesAtHalfStrength > p.ForcesIn(Game.CurrentBattle.Territory)) return Skin.Current.Format("Too many {0} selected.", p.Force);
-            if (SpecialForces + SpecialForcesAtHalfStrength > p.SpecialForcesIn(Game.CurrentBattle.Territory)) return Skin.Current.Format("Too many {0} selected.", p.SpecialForce);
+            if (Forces + ForcesAtHalfStrength > MaxForces(Game, p, false)) return Skin.Current.Format("Too many {0} selected.", p.Force);
+            if (SpecialForces + SpecialForcesAtHalfStrength > MaxForces(Game, p, true)) return Skin.Current.Format("Too many {0} selected.", p.SpecialForce);
             int cost = Cost(Game, p, Forces, SpecialForces);
             if (cost > p.Resources) return Skin.Current.Format("You can't pay {0} {1} to fight with {2} forces at full strength.", cost, Concept.Resource, Forces + SpecialForces);
             if (Hero == null && ValidBattleHeroes(Game, p).Any()) return "You must select a hero.";
@@ -298,7 +298,6 @@ namespace Treachery.Shared
             if (Defense == null && Weapon != null && Weapon.Type == TreacheryCardType.Chemistry) return Skin.Current.Format("You can't use {0} as weapon without using a defense.", TreacheryCardType.Chemistry);
             if (!ValidWeapons(Game, p, Defense, true).Contains(Weapon)) return "Invalid weapon";
             if (!ValidDefenses(Game, p, Weapon, true).Contains(Defense)) return "Invalid defense";
-            //if (Hero != null && Weapon == null && Defense == null && AffectedByVoice(Game, Player, Game.CurrentVoice) && Game.CurrentVoice.Must && Game.CurrentVoice.Type == TreacheryCardType.Useless && p.TreacheryCards.Any(c => c.Type == TreacheryCardType.Useless)) return Skin.Current.Format("You must use a {0} card.", TreacheryCardType.Useless);
 
             if (Hero != null &&
                 AffectedByVoice(Game, Player, Game.CurrentVoice) &&
@@ -347,36 +346,6 @@ namespace Treachery.Shared
             }
         }
 
-        public static IEnumerable<int> ValidBattleForces(Game g, Player p)
-        {
-            return ValidBattleForces(p, g.CurrentBattle.Territory, false);
-        }
-
-        public static IEnumerable<int> ValidBattleSpecialForces(Game g, Player p)
-        {
-            return ValidBattleForces(p, g.CurrentBattle.Territory, true);
-        }
-
-        public static IEnumerable<int> ValidBattleForces(Player p, Territory t, bool specialForces)
-        {
-            if (t == null)
-            {
-                return new int[] { 0 };
-            }
-
-            int max;
-            if (!specialForces)
-            {
-                max = p.ForcesIn(t);
-            }
-            else
-            {
-                max = p.SpecialForcesIn(t);
-            }
-
-            return Enumerable.Range(0, max + 1);
-        }
-
         public static int MaxForces(Game g, Player p, bool specialForces)
         {
             if (g.CurrentBattle.Territory == null)
@@ -386,11 +355,26 @@ namespace Treachery.Shared
 
             if (!specialForces)
             {
-                return p.ForcesIn(g.CurrentBattle.Territory);
+                if (p.Faction == Faction.White && p.SpecialForcesIn(g.CurrentBattle.Territory) > 0)
+                {
+                    return Math.Min(p.ForcesInReserve, g.CurrentNoFieldValue) + p.ForcesIn(g.CurrentBattle.Territory);
+                }
+                else
+                {
+                    return p.ForcesIn(g.CurrentBattle.Territory);
+                }
             }
             else
             {
-                return p.SpecialForcesIn(g.CurrentBattle.Territory);
+                if (p.Faction != Faction.White)
+                {
+                    return p.SpecialForcesIn(g.CurrentBattle.Territory);
+                }
+                else
+                {
+                    return 0;
+                }
+                
             }
         }
 

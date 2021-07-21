@@ -590,20 +590,22 @@ namespace Treachery.Client
             var fontcolor = threatened ? "red" : Skin.Current.FORCETOKEN_FONTCOLOR;
             var bordercolor = threatened ? "yellow" : Skin.Current.FORCETOKEN_FONT_BORDERCOLOR;
 
+            string numberOfForces = faction == Faction.White && special ? "?" : AmountOfForces.ToString();
+
             if (img.Available)
             {
                 for (int i = 0; i < AmountOfForces; i++)
                 {
                     await DrawImageSimple(img.Value, x - i * 3 - Skin.Current.FORCETOKEN_RADIUS, y - i * 5 - Skin.Current.FORCETOKEN_RADIUS, Skin.Current.FORCETOKEN_RADIUS * 2, Skin.Current.FORCETOKEN_RADIUS * 2);
                 }
-                await DrawText(x + 30, y + 50, AmountOfForces.ToString(), Skin.Current.FORCETOKEN_FONT, TextAlign.Center, fontcolor, Skin.Current.FORCETOKEN_FONT_BORDERWIDTH, bordercolor);
+                await DrawText(x + 30, y + 50, numberOfForces, Skin.Current.FORCETOKEN_FONT, TextAlign.Center, fontcolor, Skin.Current.FORCETOKEN_FONT_BORDERWIDTH, bordercolor);
             }
             else
             {
                 if (!special)
                 {
                     await DrawToken(x, y, Skin.Current.FORCETOKEN_RADIUS, color, Skin.Current.FORCETOKEN_BORDERCOLOR, BORDER_SOLID, Skin.Current.FORCETOKEN_BORDERWIDTH);
-                    await DrawText(x, y + 25, AmountOfForces.ToString(), Skin.Current.FORCETOKEN_FONT, TextAlign.Center, fontcolor, Skin.Current.FORCETOKEN_FONT_BORDERWIDTH, bordercolor);
+                    await DrawText(x, y + 25, numberOfForces, Skin.Current.FORCETOKEN_FONT, TextAlign.Center, fontcolor, Skin.Current.FORCETOKEN_FONT_BORDERWIDTH, bordercolor);
                 }
                 else
                 {
@@ -616,7 +618,7 @@ namespace Treachery.Client
                         await DrawToken(x, y, Skin.Current.FORCETOKEN_RADIUS, color, Skin.Current.FORCETOKEN_SPECIAL_BORDERCOLOR, BORDER_SOLID, Skin.Current.FORCETOKEN_SPECIAL_BORDERWIDTH);
                     }
 
-                    await DrawText(x, y + 25, AmountOfForces.ToString(), Skin.Current.FORCETOKEN_FONT, TextAlign.Center, Skin.Current.FORCETOKEN_SPECIAL_FONTCOLOR, Skin.Current.FORCETOKEN_FONT_BORDERWIDTH, bordercolor);
+                    await DrawText(x, y + 25, numberOfForces, Skin.Current.FORCETOKEN_FONT, TextAlign.Center, Skin.Current.FORCETOKEN_SPECIAL_FONTCOLOR, Skin.Current.FORCETOKEN_FONT_BORDERWIDTH, bordercolor);
                 }
             }
         }

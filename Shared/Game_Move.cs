@@ -117,9 +117,13 @@ namespace Treachery.Shared
                 {
                     PerformRetreatShipment(s, initiator);
                 }
+                else if (s.IsNoField)
+                {
+                    PerformNormalShipment(initiator, s.To, 0, 1, false);
+                }
                 else
                 {
-                    PerformNormalShipment(s, initiator);
+                    PerformNormalShipment(initiator, s.To, s.ForceAmount, s.SpecialForceAmount, s.IsSiteToSite);
                 }
 
                 if (s.Initiator != Faction.Yellow)
@@ -208,23 +212,23 @@ namespace Treachery.Shared
             initiator.MoveSpecialForces(s.From, s.To, s.SpecialForceAmount);
         }
 
-        private void PerformNormalShipment(Shipment s, Player initiator)
+        private void PerformNormalShipment(Player initiator, Location to, int forceAmount, int specialForceAmount, bool isSiteToSite)
         {
-            BGMayAccompany = BlueMayAccompany(s);
-            initiator.ShipForces(s.To, s.ForceAmount);
-            initiator.ShipSpecialForces(s.To, s.SpecialForceAmount);
+            BGMayAccompany = (forceAmount > 0 || specialForceAmount > 0) && initiator.Faction != Faction.Yellow && initiator.Faction != Faction.Blue;
+            initiator.ShipForces(to, forceAmount);
+            initiator.ShipSpecialForces(to, specialForceAmount);
 
-            if (initiator.Is(Faction.Yellow) && IsInStorm(s.To))
+            if (initiator.Is(Faction.Yellow) && IsInStorm(to))
             {
                 int killCount;
                 if (!Prevented(FactionAdvantage.YellowProtectedFromStorm) && Applicable(Rule.YellowStormLosses))
                 {
                     killCount = 0;
-                    StormLossesToTake.Add(new LossToTake() { Location = s.To, Amount = LossesToTake(s.ForceAmount, s.SpecialForceAmount), Faction = Faction.Yellow });
+                    StormLossesToTake.Add(new LossToTake() { Location = to, Amount = LossesToTake(forceAmount, specialForceAmount), Faction = Faction.Yellow });
                 }
                 else
                 {
-                    killCount = initiator.KillForces(s.To, s.ForceAmount, s.SpecialForceAmount, false);
+                    killCount = initiator.KillForces(to, forceAmount, specialForceAmount, false);
                 }
 
                 if (killCount > 0)
@@ -233,15 +237,10 @@ namespace Treachery.Shared
                 }
             }
 
-            if (initiator.Faction != Faction.Yellow && initiator.Faction != Faction.Orange && !s.IsSiteToSite)
+            if (initiator.Faction != Faction.Yellow && initiator.Faction != Faction.Orange && !isSiteToSite)
             {
                 ShipsTechTokenIncome = true;
             }
-        }
-
-        private bool BlueMayAccompany(Shipment s)
-        {
-            return (s.ForceAmount > 0 || s.SpecialForceAmount > 0) && s.Initiator != Faction.Yellow && s.Initiator != Faction.Blue;
         }
 
         public bool MayShipAsGuild(Player p)

@@ -32,7 +32,7 @@ namespace Treachery.Shared
 
         public int SpecialForceAmount { get; set; }
 
-        public int NoFieldValue { get; set; }
+        public int NoFieldValue { get; set; } = -1;
 
         public bool Passed { get; set; }
 
@@ -155,23 +155,10 @@ namespace Treachery.Shared
             }
         }
 
-        public static int ValidMaxNormalShipmentForces(Player p, bool specialForces)
+        public static int ValidMaxNormalShipmentForces(Player p, bool specialForces, int usedNoField)
         {
-            if (p.Faction != Faction.White)
-            {
-                return specialForces ? p.SpecialForcesInReserve : p.ForcesInReserve;
-            }
-            else
-            {
-                if (specialForces)
-                {
-                    return p.NoFieldIsActive ? 0 : 1;
-                }
-                else
-                {
-                    return p.ForcesInReserve;
-                }
-            }
+            int noFieldMax = usedNoField == -1 ? int.MaxValue : usedNoField;
+            return specialForces ? Math.Min(p.SpecialForcesInReserve, noFieldMax): Math.Min(p.ForcesInReserve, noFieldMax);
         }
 
         public static int ValidMaxShipmentBackForces(Player p, bool specialForces, Location source)
@@ -360,7 +347,7 @@ namespace Treachery.Shared
         }
 
         [JsonIgnore]
-        public bool IsNoField => Initiator == Faction.White && SpecialForceAmount > 0;
+        public bool IsNoField => NoFieldValue >= 0;
 
         public int DetermineOrangeProfits(Game game)
         {

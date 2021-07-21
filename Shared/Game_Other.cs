@@ -12,11 +12,18 @@ namespace Treachery.Shared
     {
         public void HandleEvent(WhiteRevealedNoField e)
         {
-            CurrentReport.Add(e);
+            RevealCurrentNoField(e.Player);
+        }
+
+        private void RevealCurrentNoField(Player player)
+        {
             LatestRevealedNoFieldValue = CurrentNoFieldValue;
-            var noFieldLocation = e.Player.ForcesOnPlanet.FirstOrDefault(kvp => kvp.Value.AmountOfSpecialForces > 0).Key;
-            e.Player.ForcesToReserves(noFieldLocation);
-            e.Player.ShipForces(noFieldLocation, Math.Min(e.Player.ForcesInReserve, CurrentNoFieldValue));
+            var noFieldLocation = player.ForcesOnPlanet.FirstOrDefault(kvp => kvp.Value.AmountOfSpecialForces > 0).Key;
+            player.ForcesToReserves(noFieldLocation);
+            int nrOfForces = Math.Min(player.ForcesInReserve, CurrentNoFieldValue);
+            player.ShipForces(noFieldLocation, nrOfForces);
+            CurrentReport.Add(player.Faction, "{0} reveal {1} forces under the No-Field of value {2} in {3}", player.Faction, nrOfForces, CurrentNoFieldValue, noFieldLocation);
+            CurrentNoFieldValue = -1;
         }
 
         public void HandleEvent(BlueBattleAnnouncement e)
