@@ -738,7 +738,7 @@ namespace Treachery.Client
                                     }
                                     else
                                     {
-                                        if (Player.MayBidOnCards && !Game.Bids.Keys.Contains(Faction))
+                                        if (Player.HasRoomForCards && !Game.Bids.Keys.Contains(Faction))
                                         {
                                             return new GameStatus()
                                             {
@@ -879,7 +879,7 @@ namespace Treachery.Client
                                     }
                                     else
                                     {
-                                        if (Player.MayBidOnCards && !Game.Bids.Keys.Contains(Faction))
+                                        if (Player.HasRoomForCards && !Game.Bids.Keys.Contains(Faction))
                                         {
                                             return new GameStatus()
                                             {

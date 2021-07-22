@@ -20,9 +20,7 @@
         @if (Game.Applicable(Rule.CardsCanBeTraded))
         {
             <div class="mt-1">
-                <SelectComponent @bind-Value="card" Values="Player.TreacheryCards" AddEmptyValue="true" EmptyLabel="None">
-                    <Label>Give one of your cards</Label>
-                </SelectComponent>
+                <SelectCardComponent @bind-Value="card" Values="Player.TreacheryCards" Required="false" />
             </div>
         }
         else

@@ -14,7 +14,7 @@ namespace Treachery.Shared
         {
             LogInfo("DetermineBid()");
 
-            var otherPlayers = Game.Players.Where(p => p != this && p.MayBidOnCards);
+            var otherPlayers = Game.Players.Where(p => p != this && p.HasRoomForCards);
             var biddingPlayers = otherPlayers.Where(p => p.TreacheryCards.Count() < p.MaximumNumberOfCards);
             int maxBidOfOtherPlayer = !biddingPlayers.Any() ? 0 : biddingPlayers.Max(p => p.Resources);
 

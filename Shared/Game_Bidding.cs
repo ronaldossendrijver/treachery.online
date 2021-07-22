@@ -110,7 +110,7 @@ namespace Treachery.Shared
                 case AuctionType.BlackMarketOnceAround:
                 case AuctionType.BlackMarketSilent:
 
-                    if (Players.Count(p => p.MayBidOnCards) == Bids.Count)
+                    if (Players.Count(p => p.HasRoomForCards) == Bids.Count)
                     {
                         var highestBid = DetermineHighestBid(Bids);
                         if (highestBid != null && highestBid.TotalAmount > 0)
@@ -121,7 +121,8 @@ namespace Treachery.Shared
                             }
                                                         
                             WinByHighestBid(
-                                highestBid.Player, CurrentBid.Amount, 
+                                highestBid.Player,
+                                highestBid.Amount, 
                                 highestBid.AllyContributionAmount, 
                                 highestBid.RedContributionAmount, 
                                 highestBid.Initiator != Faction.White ? Faction.White : Faction.Red, 
@@ -435,7 +436,7 @@ namespace Treachery.Shared
                 case AuctionType.WhiteOnceAround:
                 case AuctionType.WhiteSilent:
 
-                    if (Players.Count(p => p.MayBidOnCards) == Bids.Count)
+                    if (Players.Count(p => p.HasRoomForCards) == Bids.Count)
                     {
                         var highestBid = DetermineHighestBid(Bids);
                         if (highestBid != null && highestBid.TotalAmount > 0)
@@ -445,14 +446,21 @@ namespace Treachery.Shared
                                 CurrentReport.Add(string.Join(", ", Bids.Select(b => Skin.Current.Format("{0} bid {1}", b.Key, b.Value.TotalAmount))));
                             }
 
-                            var card = WinByHighestBid(highestBid.Player, CurrentBid.Amount, highestBid.AllyContributionAmount, highestBid.RedContributionAmount, highestBid.Initiator != Faction.White ? Faction.White : Faction.Red, CardsOnAuction);
+                            var card = WinByHighestBid(
+                                highestBid.Player, 
+                                highestBid.Amount, 
+                                highestBid.AllyContributionAmount, 
+                                highestBid.RedContributionAmount, 
+                                highestBid.Initiator != Faction.White ? Faction.White : Faction.Red, 
+                                CardsOnAuction);
+
                             FinishBid(highestBid.Player, card);
                         }
                         else
                         {
                             CurrentReport.Add("Card not sold as no faction bid on it.");
                             var white = GetPlayer(Faction.White);
-                            if (white.MayBidOnCards)
+                            if (white.HasRoomForCards)
                             {
                                 Enter(Phase.WhiteKeepingUnsoldCard);
                             }
@@ -538,22 +546,22 @@ namespace Treachery.Shared
             {
                 if (bidRedContributionAmount > 0)
                 {
-                    CurrentReport.Add(initiator.Faction, "Card {0} won by {1} for {2}, of which {3} paid {4} and {5} paid {6}.{7}", CardNumber, initiator.Faction, bidTotalAmount, initiator.Ally, bidAllyContributionAmount, Faction.Red, bidRedContributionAmount, redIncome);
+                    CurrentReport.Add(initiator.Faction, "Card {0} won by {1} for {2}, of which {3} paid {4} and {5} paid {6}.{7}", cardNumberText, initiator.Faction, bidTotalAmount, initiator.Ally, bidAllyContributionAmount, Faction.Red, bidRedContributionAmount, redIncome);
                 }
                 else
                 {
-                    CurrentReport.Add(initiator.Faction, "Card {0} won by {1} for {2}, of which {3} paid {4}.{5}", CardNumber, initiator.Faction, bidTotalAmount, initiator.Ally, bidAllyContributionAmount, redIncome);
+                    CurrentReport.Add(initiator.Faction, "Card {0} won by {1} for {2}, of which {3} paid {4}.{5}", cardNumberText, initiator.Faction, bidTotalAmount, initiator.Ally, bidAllyContributionAmount, redIncome);
                 }
             }
             else
             {
                 if (bidRedContributionAmount > 0)
                 {
-                    CurrentReport.Add(initiator.Faction, "Card {0} won by {1} for {2}, of which {3} paid {4}.{5}", CardNumber, initiator.Faction, bidTotalAmount, Faction.Red, bidRedContributionAmount, redIncome);
+                    CurrentReport.Add(initiator.Faction, "Card {0} won by {1} for {2}, of which {3} paid {4}.{5}", cardNumberText, initiator.Faction, bidTotalAmount, Faction.Red, bidRedContributionAmount, redIncome);
                 }
                 else
                 {
-                    CurrentReport.Add(initiator.Faction, "Card {0} won by {1} for {2}.{3}", CardNumber, initiator.Faction, bidAmount, redIncome);
+                    CurrentReport.Add(initiator.Faction, "Card {0} won by {1} for {2}.{3}", cardNumberText, initiator.Faction, bidAmount, redIncome);
                 }
             }
         }
@@ -573,7 +581,6 @@ namespace Treachery.Shared
 
         private TreacheryCard WinByHighestBid(Player winner, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, Faction paymentReceiver, Deck<TreacheryCard> toDrawFrom)
         {
-            //The current bid is from this player, everyone passed after that, so the auction for this card is finished
             var receiverIncomeMessage = new MessagePart("");
             PayForCard(winner, bidAmount, bidAllyContributionAmount, bidRedContributionAmount, paymentReceiver, ref receiverIncomeMessage);
             LogBid(winner, bidAmount, bidAllyContributionAmount, bidRedContributionAmount, receiverIncomeMessage);
@@ -625,7 +632,7 @@ namespace Treachery.Shared
         {
             for (int i = 0; i < Players.Count; i++)
             {
-                if (sequence.CurrentPlayer.MayBidOnCards) break;
+                if (sequence.CurrentPlayer.HasRoomForCards) break;
                 sequence.NextPlayer(this, Version >= 50);
             }
         }
@@ -815,7 +822,7 @@ namespace Treachery.Shared
             FirstFactionToBid = BidSequence.CurrentFaction;
         }
 
-        public IEnumerable<Player> PlayersThatCanBid => Players.Where(p => p.MayBidOnCards);
+        public IEnumerable<Player> PlayersThatCanBid => Players.Where(p => p.HasRoomForCards);
 
         public int KarmaHandSwapNumberOfCards;
         public Faction KarmaHandSwapTarget;

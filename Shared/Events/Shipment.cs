@@ -107,7 +107,9 @@ namespace Treachery.Shared
             if (From != null && ForceAmount > p.ForcesIn(From)) return Skin.Current.Format("Not enough {0} for site-to-site shipment.", p.Force);
             if (From != null && SpecialForceAmount > p.SpecialForcesIn(From)) return Skin.Current.Format("Not enough {0} for site-to-site shipment.", p.SpecialForce);
             if (p.Faction == Faction.White && ForceAmount > 0 && SpecialForceAmount > 0) return "You can't do both normal and No-Field shipment.";
-            if (p.Faction == Faction.White && SpecialForceAmount > 0 && !ValidNoFieldValues(Game).Contains(NoFieldValue)) return "Invalid No-Field value.";
+            if (!(p.Faction == Faction.White && !Game.Prevented(FactionAdvantage.WhiteNofield)) && !(p.Ally == Faction.White && Game.WhiteAllyMayUseNoField)) return "You can't use a No-Field";
+            if (p.Faction == Faction.White && SpecialForceAmount > 0 && !ValidNoFieldValues(Game, Player).Contains(NoFieldValue)) return "Invalid No-Field value.";
+            
 
             return "";
         }
@@ -119,7 +121,7 @@ namespace Treachery.Shared
                 return 0;
             }
 
-            return DetermineCost(g, p, Math.Abs(s.ForceAmount), Math.Abs(s.SpecialForceAmount), s.To, s.UsingKarma(g), s.IsBackToReserves);
+            return DetermineCost(g, p, Math.Abs(s.ForceAmount), Math.Abs(s.SpecialForceAmount), s.To, s.UsingKarma(g), s.IsBackToReserves, s.IsNoField);
         }
 
         public static bool ShipsForFree(Game g, Player p, Location to)
@@ -127,9 +129,9 @@ namespace Treachery.Shared
             return p.Is(Faction.Yellow) && YellowSpawnLocations(g, p).Contains(to);
         }
 
-        public static int DetermineCost(Game g, Player p, int amountOfNormalForces, int amountOfSpecialForces, Location to, bool karamaShipment, bool backToReserves)
+        public static int DetermineCost(Game g, Player p, int amountOfNormalForces, int amountOfSpecialForces, Location to, bool karamaShipment, bool backToReserves, bool noField)
         {
-            if (p.Faction == Faction.White && amountOfSpecialForces > 0) return 1;
+            if (noField) return 1;
 
             int amount = amountOfNormalForces + amountOfSpecialForces;
 
@@ -204,12 +206,15 @@ namespace Treachery.Shared
                 IsNotFull(g, p, l));
         }
 
-        public static IEnumerable<int> ValidNoFieldValues(Game g)
+        public static IEnumerable<int> ValidNoFieldValues(Game g, Player p)
         {
             var result = new List<int>();
-            if (g.LatestRevealedNoFieldValue != 0) result.Add(0);
-            if (g.LatestRevealedNoFieldValue != 3) result.Add(3);
-            if (g.LatestRevealedNoFieldValue != 5) result.Add(5);
+            if (p.Faction == Faction.White && !g.Prevented(FactionAdvantage.WhiteNofield) || p.Ally == Faction.White && g.WhiteAllyMayUseNoField)
+            {
+                if (p.Faction == Faction.White && g.LatestRevealedNoFieldValue != 0) result.Add(0);
+                if (g.LatestRevealedNoFieldValue != 3) result.Add(3);
+                if (g.LatestRevealedNoFieldValue != 5) result.Add(5);
+            }
             return result;
         }
 

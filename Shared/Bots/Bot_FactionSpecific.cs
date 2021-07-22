@@ -722,7 +722,7 @@ namespace Treachery.Shared
             {
                 aspect = PrescienceAspect.Defense;
             }
-            else if (maxForceStrengthInBattle > 2)
+            else if (maxForceStrengthInBattle > 2 && Prescience.ValidAspects(Game, this).Contains(PrescienceAspect.Dial))
             {
                 aspect = PrescienceAspect.Dial;
             }

@@ -486,7 +486,7 @@ namespace Treachery.Shared
             }
         }
 
-        public bool MayBidOnCards
+        public bool HasRoomForCards
         {
             get
             {
@@ -545,6 +545,7 @@ namespace Treachery.Shared
                     Faction.Yellow => FactionSpecialForce.Yellow,
                     Faction.Blue => FactionSpecialForce.Blue,
                     Faction.Grey => FactionSpecialForce.Grey,
+                    Faction.White => FactionSpecialForce.White,
                     _ => FactionSpecialForce.None,
                 };
             }

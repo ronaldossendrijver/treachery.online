@@ -73,11 +73,11 @@
         {
             var validNoFieldValues = new List<int>();
             validNoFieldValues.Add(-1);
-            validNoFieldValues.AddRange(Shipment.ValidNoFieldValues(Game));
+            validNoFieldValues.AddRange(Shipment.ValidNoFieldValues(Game, Player));
 
             var validNoFieldValueLabels = new List<string>();
             validNoFieldValueLabels.Add("Don't use a No-Field");
-            validNoFieldValueLabels.AddRange(Shipment.ValidNoFieldValues(Game).Select(v => v.ToString()));
+            validNoFieldValueLabels.AddRange(Shipment.ValidNoFieldValues(Game, Player).Select(v => v.ToString()));
 
             <RadioComponent @bind-Value="nofieldValue" Values="validNoFieldValues" ValueLabels="validNoFieldValueLabels">
                 <Label>Use a @Skin.Current.Describe(Faction.White) No-Field for this shipment?</Label>
@@ -97,7 +97,7 @@
                     <SelectForcesComponent @bind-Value="shipmentForceAmount" Min="0" Max="ValidShipmentForces" Faction="Faction" Special="false" />
                 }
 
-                @if (ValidShipmentSpecialForces > 0)
+                @if (ValidShipmentSpecialForces > 0 && Faction != Faction.White)
                 {
                     <SelectForcesComponent @bind-Value="shipmentSpecialForceAmount" Min="0" Max="ValidShipmentSpecialForces" Faction="Faction" Special="true" />
                 }

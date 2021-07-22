@@ -332,6 +332,8 @@ namespace Treachery.Shared
                     {
                         if (!ProtectedFromMonster(p))
                         {
+                            RevealCurrentNoField(p);
+
                             CurrentReport.Add("{3} devours {0} {1} forces in {2}.", p.AnyForcesIn(l), p.Faction, l, Concept.Monster);
                             p.KillAllForces(l, false);
 

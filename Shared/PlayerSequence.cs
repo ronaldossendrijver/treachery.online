@@ -59,7 +59,7 @@ namespace Treachery.Shared
             int position = (game.MaximumNumberOfPlayers + positionToStartLooking) % game.MaximumNumberOfPlayers;
             for (int i = 0; i < game.MaximumNumberOfPlayers; i++)
             {
-                if (Players.Any(p => p.PositionAtTable == (position % game.MaximumNumberOfPlayers) && (!ignorePlayersThatCantBid || p.MayBidOnCards)))
+                if (Players.Any(p => p.PositionAtTable == (position % game.MaximumNumberOfPlayers) && (!ignorePlayersThatCantBid || p.HasRoomForCards)))
                 {
                     return position;
                 }

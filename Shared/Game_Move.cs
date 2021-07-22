@@ -98,6 +98,7 @@ namespace Treachery.Shared
             {
                 if (s.IsNoField)
                 {
+                    RevealCurrentNoField(GetPlayer(Faction.White));
                     CurrentNoFieldValue = s.NoFieldValue;
                 }
 

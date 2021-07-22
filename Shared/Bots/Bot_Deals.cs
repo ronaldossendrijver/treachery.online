@@ -55,11 +55,11 @@ namespace Treachery.Shared
                     biddingPrescienceDeal = DealAccepted.AcceptableDeals(Game, this).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.Bidding && d.Price <= Resources);
                     LogInfo("biddingPrescienceOfferOneCard: {0}", biddingPrescienceDeal);
                     int maxPriceToPay = 0;
-                    if (Faction == Faction.Red && MayBidOnCards && ResourcesIncludingAllyContribution > 12)
+                    if (Faction == Faction.Red && HasRoomForCards && ResourcesIncludingAllyContribution > 12)
                     {
                         maxPriceToPay = 2;
                     }
-                    else if ((Faction == Faction.Red || ResourcesIncludingAllyContribution > 8) && MayBidOnCards)
+                    else if ((Faction == Faction.Red || ResourcesIncludingAllyContribution > 8) && HasRoomForCards)
                     {
                         maxPriceToPay = 1;
                     }

@@ -129,6 +129,12 @@
                 Allow use of Voice (currently: <strong>@(Game.BlueAllyMayUseVoice ? "yes" : "no")</strong>)
             </CheckboxComponent>
         }
+        else if (Faction == Faction.White)
+        {
+            <CheckboxComponent @bind-Value="whiteAllyMayUseNoField">
+                Allow shipment by No-Field (currently: <strong>@(Game.WhiteAllyMayUseNoField ? "yes" : "no")</strong>)
+            </CheckboxComponent>
+        }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
@@ -147,6 +153,8 @@
     private bool fremenShareStormPrescience;
     private bool greenSharePrescience;
     private bool blueAllyMayUseVoice;
+    private bool whiteAllyMayUseNoField;
+
     private int spice;
     private TreacheryCard karmaCard;
 
@@ -163,6 +171,7 @@
         fremenShareStormPrescience = Game.YellowSharesPrescience;
         greenSharePrescience = Game.GreenSharesPrescience;
         blueAllyMayUseVoice = Game.BlueAllyMayUseVoice;
+        whiteAllyMayUseNoField = Game.WhiteAllyMayUseNoField;
     }
 
     public void Dispose()
@@ -182,6 +191,7 @@
                 YellowSharesPrescience = fremenShareStormPrescience,
                 GreenSharesPrescience = greenSharePrescience,
                 BlueAllowsUseOfVoice = blueAllyMayUseVoice,
+                WhiteAllowsUseOfNoField = whiteAllyMayUseNoField,
                 AllyMayShipAsOrange = guildAllyMayShipAsGuild,
                 AllyMayReviveAsPurple = purpleAllyMyReviveAsPurple,
                 AllyMayReplaceCards = greyAllyMayReplace,

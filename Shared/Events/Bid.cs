@@ -161,7 +161,7 @@ namespace Treachery.Shared
                     return g.BidSequence.GetPlayersInSequence(g);
 
                 case AuctionType.WhiteSilent:
-                    return g.Players.Select(p => new SequenceElement() { Player = p, HasTurn = p.MayBidOnCards && !g.Bids.Keys.Contains(p.Faction) });
+                    return g.Players.Select(p => new SequenceElement() { Player = p, HasTurn = p.HasRoomForCards && !g.Bids.Keys.Contains(p.Faction) });
 
                 default:
                     return new SequenceElement[] { };

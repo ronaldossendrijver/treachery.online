@@ -277,6 +277,7 @@ namespace Treachery.Shared
             {
                 foreach (var location in Map.ShieldWall.Locations.Where(l => p.AnyForcesIn(l) > 0))
                 {
+                    RevealCurrentNoField(p, location);
                     p.KillAllForces(location, false);
                 }
             }
@@ -347,6 +348,7 @@ namespace Treachery.Shared
                     }
                     else
                     {
+                        RevealCurrentNoField(player, l.Key);
                         killCount += player.AnyForcesIn(l.Key);
                         player.KillAllForces(l.Key, false);
                     }

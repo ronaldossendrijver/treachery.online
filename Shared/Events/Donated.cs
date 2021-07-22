@@ -47,7 +47,7 @@ namespace Treachery.Shared
             if (Initiator != Faction.Red && Target == p.Ally) return "You can't bribe your ally";
 
             var targetPlayer = Game.GetPlayer(Target);
-            if (Card != null && !targetPlayer.MayBidOnCards) return "Target faction's hand is full";
+            if (Card != null && !targetPlayer.HasRoomForCards) return "Target faction's hand is full";
 
             return "";
         }

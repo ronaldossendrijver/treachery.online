@@ -758,7 +758,7 @@ namespace Treachery.Client
                         var y = position.Y + Skin.Current.PlayerTokenRadius;
                         string bidText = "";
                         string bidColor = "white";
-                        if (!p.MayBidOnCards)
+                        if (!p.HasRoomForCards)
                         {
                             bidText = "FULL";
                             bidColor = "rgb(200,200,200)";

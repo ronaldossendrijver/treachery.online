@@ -86,16 +86,17 @@ namespace Treachery.Shared
 
         public void HandleEvent(CardTraded e)
         {
-            CurrentReport.Add(e);
-
             if (CurrentCardTradeOffer == null)
             {
+                CurrentReport.Add(e);
                 CurrentCardTradeOffer = e;
                 PhaseBeforeCardTrade = CurrentPhase;
                 Enter(Phase.TradingCards);
             }
             else
             {
+                CurrentReport.Add(e.Initiator, "{0} and {1} trade a card.", e.Initiator, CurrentCardTradeOffer.Initiator);
+
                 if (CurrentCardTradeOffer.Player.TreacheryCards.Count > 1 || e.Player.TreacheryCards.Count > 1)
                 {
                     foreach (var p in Players.Where(pl => pl != CurrentCardTradeOffer.Player && pl != e.Player))

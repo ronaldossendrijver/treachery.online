@@ -15,15 +15,33 @@ namespace Treachery.Shared
             RevealCurrentNoField(e.Player);
         }
 
-        private void RevealCurrentNoField(Player player)
+        private void RevealCurrentNoField(Player player, Location inLocation = null)
         {
-            LatestRevealedNoFieldValue = CurrentNoFieldValue;
-            var noFieldLocation = player.ForcesOnPlanet.FirstOrDefault(kvp => kvp.Value.AmountOfSpecialForces > 0).Key;
-            player.ForcesToReserves(noFieldLocation);
-            int nrOfForces = Math.Min(player.ForcesInReserve, CurrentNoFieldValue);
-            player.ShipForces(noFieldLocation, nrOfForces);
-            CurrentReport.Add(player.Faction, "{0} reveal {1} forces under the No-Field of value {2} in {3}", player.Faction, nrOfForces, CurrentNoFieldValue, noFieldLocation);
-            CurrentNoFieldValue = -1;
+            if (player != null && player.Faction == Faction.White)
+            {
+                var noFieldLocation = player.ForcesOnPlanet.FirstOrDefault(kvp => kvp.Value.AmountOfSpecialForces > 0).Key;
+
+                if (noFieldLocation != null)
+                {
+                    if (inLocation == null || inLocation == noFieldLocation)
+                    {
+                        LatestRevealedNoFieldValue = CurrentNoFieldValue;
+                        player.ForcesToReserves(noFieldLocation);
+                        int nrOfForces = Math.Min(player.ForcesInReserve, CurrentNoFieldValue);
+                        player.ShipForces(noFieldLocation, nrOfForces);
+                        CurrentReport.Add(player.Faction, "{0} reveal {1} forces under the No-Field of value {2} in {3}", player.Faction, nrOfForces, CurrentNoFieldValue, noFieldLocation);
+                        CurrentNoFieldValue = -1;
+                    }
+                }
+            }
+        }
+
+        private void RevealCurrentNoField(Player player, Territory inTerritory)
+        {
+            foreach (var l in inTerritory.Locations)
+            {
+                RevealCurrentNoField(player, l);
+            }
         }
 
         public void HandleEvent(BlueBattleAnnouncement e)
@@ -55,6 +73,24 @@ namespace Treachery.Shared
 
             CurrentReport.Add(e);
             RecentMilestones.Add(Milestone.Bribe);
+        }
+
+        public void HandleEvent(WhiteGaveCard e)
+        {
+            var initiator = GetPlayer(e.Initiator);
+            var target = initiator.AlliedPlayer;
+
+            initiator.TreacheryCards.Remove(e.Card);
+            RegisterKnown(initiator, e.Card);
+            target.TreacheryCards.Add(e.Card);
+
+            foreach (var p in Players.Where(p => p != initiator && p != target))
+            {
+                UnregisterKnown(p, initiator.TreacheryCards);
+                UnregisterKnown(p, target.TreacheryCards);
+            }
+
+            CurrentReport.Add(e);
         }
 
         private void ExchangeResourcesInBribe(Player from, Player target, int amount)
