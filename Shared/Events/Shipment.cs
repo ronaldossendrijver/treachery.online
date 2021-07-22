@@ -32,7 +32,22 @@ namespace Treachery.Shared
 
         public int SpecialForceAmount { get; set; }
 
-        public int NoFieldValue { get; set; } = -1;
+        //This is needed for compatibility with pre-exp2 game versions where _noFieldValue is 0 by default.
+        public int _noFieldValue;
+
+        [JsonIgnore]
+        public int NoFieldValue
+        {
+            get
+            {
+                return _noFieldValue - 1;
+            }
+
+            set
+            {
+                _noFieldValue = value + 1;
+            }
+        }
 
         public bool Passed { get; set; }
 
@@ -110,6 +125,11 @@ namespace Treachery.Shared
             if (NoFieldValue >= 0 && !(p.Faction == Faction.White && !Game.Prevented(FactionAdvantage.WhiteNofield)) && !(p.Ally == Faction.White && Game.WhiteAllyMayUseNoField)) return "You can't use a No-Field";
             if (p.Faction == Faction.White && SpecialForceAmount > 0 && !ValidNoFieldValues(Game, Player).Contains(NoFieldValue)) return "Invalid No-Field value.";
             
+            if (IsNoField && p.Faction != Faction.White)
+            {
+                int forcesToShip = Math.Min(NoFieldValue, p.ForcesInReserve + p.SpecialForcesInReserve);
+                if (ForceAmount + SpecialForceAmount != forcesToShip) return string.Format("Using a No-Field of {0}, you must select {1} forces to ship", NoFieldValue, forcesToShip);
+            }
 
             return "";
         }
@@ -209,7 +229,8 @@ namespace Treachery.Shared
         public static IEnumerable<int> ValidNoFieldValues(Game g, Player p)
         {
             var result = new List<int>();
-            if (p.Faction == Faction.White && !g.Prevented(FactionAdvantage.WhiteNofield) || p.Ally == Faction.White && g.WhiteAllyMayUseNoField)
+            if (p.Faction == Faction.White && !g.Prevented(FactionAdvantage.WhiteNofield) || 
+                p.Ally == Faction.White && g.WhiteAllyMayUseNoField)
             {
                 if (p.Faction == Faction.White && g.LatestRevealedNoFieldValue != 0) result.Add(0);
                 if (g.LatestRevealedNoFieldValue != 3) result.Add(3);

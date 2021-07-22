@@ -77,9 +77,7 @@ namespace Treachery.Shared
                 int nrOfSpecialForces = 0;
                 DetermineValidForcesInShipment(forcesNeededForCollection, false, safeLocationWithMostUnclaimedResources.Key, Faction.Black, ForcesInReserve, 0, ref nrOfForces, ref nrOfSpecialForces, 0, 99, false);
 
-                var shipment = new Shipment(Game) { Initiator = Faction, ForceAmount = nrOfForces, SpecialForceAmount = nrOfSpecialForces, Passed = false, From = null, KarmaCard = null, KarmaShipment = false, To = safeLocationWithMostUnclaimedResources.Key };
-                UseKarmaIfApplicable(shipment);
-                UseAllyResources(shipment);
+                var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, safeLocationWithMostUnclaimedResources.Key, true, true);
 
                 if (shipment.IsValid)
                 {
@@ -93,6 +91,33 @@ namespace Treachery.Shared
             }
         }
 
+        private Shipment ConstructShipment(int nrOfForces, int nrOfSpecialForces, Location location, bool useKarma, bool useAllyResources)
+        {
+            int usableNoField = Shipment.ValidNoFieldValues(Game, this).OrderByDescending(v => v).FirstOrDefault(v => v >= nrOfForces + nrOfSpecialForces + 1 - D(1, 3));
+            Shipment result;
+            if (Shipment.ValidNoFieldValues(Game, this).Contains(usableNoField))
+            {
+                result = new Shipment(Game) { 
+                    Initiator = Faction, 
+                    ForceAmount = Faction == Faction.White ? 0 : nrOfForces,  
+                    SpecialForceAmount = Faction == Faction.White ? 1 : nrOfSpecialForces, 
+                    Passed = false, 
+                    From = null, 
+                    KarmaCard = null, 
+                    KarmaShipment = false, 
+                    NoFieldValue = usableNoField,
+                    To = location };
+            }
+            else
+            {
+                result = new Shipment(Game) { Initiator = Faction, ForceAmount = nrOfForces, SpecialForceAmount = nrOfSpecialForces, Passed = false, From = null, KarmaCard = null, KarmaShipment = false, To = location };
+                if (useKarma) UseKarmaIfApplicable(result);
+            }
+
+            if (useAllyResources) UseAllyResources(result);
+            return result;
+        }
+
         protected virtual void DetermineShipment_BackToReserves()
         {
             LogInfo("DetermineShipment_BackToReserves()");
@@ -100,7 +125,7 @@ namespace Treachery.Shared
             var battaltionToEvacuate = BiggestBattalionInSpicelessNonStrongholdLocationNotNearStrongholdAndSpice;
             if (battaltionToEvacuate.Key != null)
             {
-                var shipment = new Shipment(Game) { Initiator = Faction, ForceAmount = -battaltionToEvacuate.Value.AmountOfForces, SpecialForceAmount = -battaltionToEvacuate.Value.AmountOfSpecialForces, Passed = false, From = null, KarmaCard = null, KarmaShipment = false, To = battaltionToEvacuate.Key };
+                var shipment = ConstructShipment(-battaltionToEvacuate.Value.AmountOfForces, -battaltionToEvacuate.Value.AmountOfSpecialForces, battaltionToEvacuate.Key, false, true);
                 if (shipment.IsValid)
                 {
                     decidedShipmentAction = ShipmentDecision.BackToReserves;
@@ -127,9 +152,7 @@ namespace Treachery.Shared
                 int specialForces = 0;
                 if (DetermineValidForcesInShipment(dialNeeded + extraForces, true, Game.Map.HiddenMobileStronghold, opponent.Faction, ForcesInReserve, SpecialForcesInReserve, ref forces, ref specialForces, minResourcesToKeep, maxUnsupportedForces, !(Faction == Faction.Red && opponent.Faction == Faction.Yellow)) <= riskAppitite)
                 {
-                    var shipment = new Shipment(Game) { Initiator = Faction, ForceAmount = forces, SpecialForceAmount = specialForces, Passed = false, From = null, KarmaCard = null, KarmaShipment = false, To = Game.Map.HiddenMobileStronghold };
-                    UseKarmaIfApplicable(shipment);
-                    UseAllyResources(shipment);
+                    var shipment = ConstructShipment(forces, specialForces, Game.Map.HiddenMobileStronghold, true, true);
 
                     if (shipment.IsValid)
                     {
@@ -162,7 +185,7 @@ namespace Treachery.Shared
                 nrOfForces = Math.Min(ForcesInReserve, 6 - Math.Min(6, 2 * nrOfSpecialForces));
             }
 
-            var shipment = new Shipment(Game) { Initiator = Faction, ForceAmount = nrOfForces, SpecialForceAmount = nrOfSpecialForces, Passed = false, From = null, KarmaCard = null, KarmaShipment = false, To = Game.Map.PolarSink };
+            var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, Game.Map.PolarSink, false, false );
 
             if (shipment.IsValid)
             {
@@ -196,7 +219,7 @@ namespace Treachery.Shared
                 int nrOfSpecialForces = 0;
                 if (DetermineValidForcesInShipment(forcesToRally, false, safeLocationWithMostResources.Key, Faction.Black, ForcesInReserve, SpecialForcesInReserve, ref nrOfForces, ref nrOfSpecialForces, 0, 99, false) <= 3)
                 {
-                    var shipment = new Shipment(Game) { Initiator = Faction, ForceAmount = nrOfForces, SpecialForceAmount = nrOfSpecialForces, Passed = false, From = null, KarmaCard = null, KarmaShipment = false, To = safeLocationWithMostResources.Key };
+                    var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, safeLocationWithMostResources.Key, false, false);
 
                     if (shipment.IsValid)
                     {
@@ -272,9 +295,7 @@ namespace Treachery.Shared
                     int nrOfSpecialForces = 0;
                     DetermineValidForcesInShipment(forcesNeededForCollection + TotalMaxDialOfOpponents(richestSafeLocationWithUnclaimedResourcesNearShippableStronghold.Key.Territory), false, shippableStrongholdNearRichestLocation, Faction.Black, ForcesInReserve, SpecialForcesInReserve, ref nrOfForces, ref nrOfSpecialForces, 0, 99, Faction == Faction.Grey);
 
-                    var shipment = new Shipment(Game) { Initiator = Faction, ForceAmount = nrOfForces, SpecialForceAmount = nrOfSpecialForces, Passed = false, From = null, KarmaCard = null, KarmaShipment = false, To = shippableStrongholdNearRichestLocation };
-                    UseKarmaIfApplicable(shipment);
-                    UseAllyResources(shipment);
+                    var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, shippableStrongholdNearRichestLocation, true, true);
 
                     LogInfo("decidedShipment: {0}", shipment.GetMessage());
 
@@ -301,7 +322,7 @@ namespace Treachery.Shared
         {
             if (
                 HasKarma && !Game.KarmaPrevented(Faction) &&
-                (Faction != Faction.Black || SpecialKarmaPowerUsed) && 
+                ((Faction != Faction.Black || Faction != Faction.Red) || SpecialKarmaPowerUsed) && 
                 !Game.MayShipAsGuild(this) && 
                 Shipment.DetermineCost(Game, this, shipment) > 7)
             {
@@ -338,9 +359,7 @@ namespace Treachery.Shared
                 int nrOfSpecialForces = 0;
                 if (DetermineValidForcesInShipment(dialNeeded, true, mostThreatenedStrongholdWithFiveOrLessOpponentForces.Location, opponentFaction, ForcesInReserve, SpecialForcesInReserve, ref nrOfForces, ref nrOfSpecialForces, 0, 0, true) <= shortageToAccept)
                 {
-                    var shipment = new Shipment(Game) { Initiator = Faction, ForceAmount = nrOfForces, SpecialForceAmount = nrOfSpecialForces, Passed = false, From = null, KarmaCard = null, KarmaShipment = false, To = mostThreatenedStrongholdWithFiveOrLessOpponentForces.Location }; ;
-                    UseKarmaIfApplicable(shipment);
-                    UseAllyResources(shipment);
+                    var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, mostThreatenedStrongholdWithFiveOrLessOpponentForces.Location, true, true);
 
                     if (shipment.IsValid)
                     {
@@ -388,9 +407,7 @@ namespace Treachery.Shared
 
                 DetermineValidForcesInShipment(MakeEvenIfEfficientForShipping(weakestEnemyStronghold.DialNeeded + extraForces), true, weakestEnemyStronghold.Stronghold, weakestEnemyStronghold.Opponent, ForcesInReserve, SpecialForcesInReserve, ref nrOfForces, ref nrOfSpecialForces, minResourcesToKeep, maxUnsupportedForces, !(Faction == Faction.Red && weakestEnemyStronghold.Opponent == Faction.Yellow));
 
-                var shipment = new Shipment(Game) { Initiator = Faction, ForceAmount = nrOfForces, SpecialForceAmount = nrOfSpecialForces, Passed = false, From = null, KarmaCard = null, KarmaShipment = false, To = weakestEnemyStronghold.Stronghold };
-                UseKarmaIfApplicable(shipment);
-                UseAllyResources(shipment);
+                var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, weakestEnemyStronghold.Stronghold, true, true);
 
                 if (shipment.IsValid)
                 {
@@ -427,8 +444,7 @@ namespace Treachery.Shared
 
                 DetermineValidForcesInShipment(0.5f, true, targetOfDummyAttack, OccupyingOpponentIn(targetOfDummyAttack.Territory).Faction, ForcesInReserve, SpecialForcesInReserve, ref nrOfForces, ref nrOfSpecialForces, minResourcesToKeep, 1, false);
 
-                var shipment = new Shipment(Game) { Initiator = Faction, ForceAmount = nrOfForces, SpecialForceAmount = nrOfSpecialForces, Passed = false, From = null, KarmaCard = null, KarmaShipment = false, To = targetOfDummyAttack };
-                UseAllyResources(shipment);
+                var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, targetOfDummyAttack, false, true);
 
                 if (shipment.IsValid)
                 {
@@ -484,9 +500,7 @@ namespace Treachery.Shared
                 int nrOfSpecialForces = 0;
                 DetermineValidForcesInShipment(dialNeeded, false, unoccupiedStronghold, Faction.Yellow, ForcesInReserve, SpecialForcesInReserve, ref nrOfForces, ref nrOfSpecialForces, minResourcesToKeep, maxUnsupportedForces, true);
 
-                var shipment = new Shipment(Game) { Initiator = Faction, ForceAmount = nrOfForces, SpecialForceAmount = nrOfSpecialForces, Passed = false, From = null, KarmaCard = null, KarmaShipment = false, To = unoccupiedStronghold };
-                UseKarmaIfApplicable(shipment);
-                UseAllyResources(shipment);
+                var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, unoccupiedStronghold, true, true);
 
                 if (shipment.IsValid)
                 {
@@ -512,9 +526,7 @@ namespace Treachery.Shared
                 if (ValidShipmentLocations.Where(l => AllyNotIn(l.Territory)).Contains(Game.Map.HabbanyaSietch))
                 {
                     DetermineValidForcesInShipment(99, true, Game.Map.HabbanyaSietch, Faction.Black, ForcesInReserve, SpecialForcesInReserve, ref nrOfForces, ref nrOfSpecialForces, 0, 99, true);
-                    var shipment = new Shipment(Game) { Initiator = Faction, ForceAmount = nrOfForces, SpecialForceAmount = nrOfSpecialForces, Passed = false, From = null, KarmaCard = null, KarmaShipment = false, To = Game.Map.HabbanyaSietch };
-                    UseKarmaIfApplicable(shipment);
-                    UseAllyResources(shipment);
+                    var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, Game.Map.HabbanyaSietch, true, true);
 
                     if (shipment.IsValid)
                     {
@@ -530,7 +542,7 @@ namespace Treachery.Shared
                 if (ValidShipmentLocations.Where(l => AllyNotIn(l.Territory)).Contains(Game.Map.SietchTabr))
                 {
                     DetermineValidForcesInShipment(99, true, Game.Map.SietchTabr, Faction.Black, ForcesInReserve, SpecialForcesInReserve, ref nrOfForces, ref nrOfSpecialForces, 0, 99, true);
-                    var shipment = new Shipment(Game) { Initiator = Faction, ForceAmount = nrOfForces, SpecialForceAmount = nrOfSpecialForces, Passed = false, From = null, KarmaCard = null, KarmaShipment = false, To = Game.Map.SietchTabr };
+                    var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, Game.Map.SietchTabr, true, true);
                     UseKarmaIfApplicable(shipment);
                     UseAllyResources(shipment);
 
@@ -577,9 +589,7 @@ namespace Treachery.Shared
                 int nrOfSpecialForces = 0;
                 if (DetermineValidForcesInShipment(dialNeededMadeEfficient, true, weakestShippableLocationOfWinningOpponent.Stronghold, opponent.Faction, ForcesInReserve, SpecialForcesInReserve, ref nrOfForces, ref nrOfSpecialForces, minResourcesToKeep, maxUnsupportedForces, !(Faction == Faction.Red && opponent.Faction == Faction.Yellow)) <= riskAppetite)
                 {
-                    var shipment = new Shipment(Game) { Initiator = Faction, ForceAmount = nrOfForces, SpecialForceAmount = nrOfSpecialForces, Passed = false, From = null, KarmaCard = null, KarmaShipment = false, To = weakestShippableLocationOfWinningOpponent.Stronghold };
-                    UseKarmaIfApplicable(shipment);
-                    UseAllyResources(shipment);
+                    var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, weakestShippableLocationOfWinningOpponent.Stronghold, true, true);
 
                     if (shipment.IsValid)
                     {

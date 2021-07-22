@@ -21,6 +21,8 @@
 
 @code {
 
+    protected override Faction IsFactionSpecific => Faction.White;
+
     private TreacheryCard card;
 
     protected override WhiteGaveCard ConfirmedResult => new WhiteGaveCard(Game) { Initiator = Faction, Card = card };

@@ -133,13 +133,19 @@
         }
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
+    {
+        _ = Task.Delay(200).ContinueWith(e => LoadRecentGame());
+    }
+
+    private async Task LoadRecentGame()
     {
         recentGameData = await Browser.LoadSetting<string>(string.Format("treachery.online;latestgame;{0}", h.PlayerName.ToLower().Trim()));
         if (recentGameData != default)
         {
             var state = GameState.Load(recentGameData);
             var message = Game.TryLoad(state, false, true, ref recentGame);
+            StateHasChanged();
         }
     }
 

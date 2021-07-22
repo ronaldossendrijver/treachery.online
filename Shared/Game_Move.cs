@@ -100,6 +100,13 @@ namespace Treachery.Shared
                 {
                     RevealCurrentNoField(GetPlayer(Faction.White));
                     CurrentNoFieldValue = s.NoFieldValue;
+
+                    if (s.Initiator != Faction.White)
+                    {
+                        //Immediately reveal No-Field
+                        LatestRevealedNoFieldValue = s.NoFieldValue;
+                        CurrentNoFieldValue = -1;
+                    }
                 }
 
                 if (ContainsConflictingAlly(initiator, s.To))
@@ -118,7 +125,7 @@ namespace Treachery.Shared
                 {
                     PerformRetreatShipment(s, initiator);
                 }
-                else if (s.IsNoField)
+                else if (s.IsNoField && s.Initiator == Faction.White)
                 {
                     PerformNormalShipment(initiator, s.To, 0, 1, false);
                 }

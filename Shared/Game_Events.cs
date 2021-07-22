@@ -263,7 +263,7 @@ namespace Treachery.Shared
                             result.Add(typeof(BattleInitiated));
                         }
 
-                        if (CurrentBattle != null && player == Aggressor && AggressorBattleAction == null)
+                        if (CurrentBattle != null && faction == CurrentBattle.Aggressor && AggressorBattleAction == null)
                         {
                             result.Add(typeof(Battle));
                         }
@@ -272,7 +272,7 @@ namespace Treachery.Shared
                             result.Add(typeof(Battle));
                         }
 
-                        if (CurrentBattle != null && player == Aggressor && AggressorBattleAction != null)
+                        if (CurrentBattle != null && faction == CurrentBattle.Aggressor && AggressorBattleAction != null)
                         {
                             result.Add(typeof(BattleRevision));
                         }
@@ -297,7 +297,7 @@ namespace Treachery.Shared
 
                 case Phase.CallTraitorOrPass:
                     if (AggressorBattleAction != null && DefenderBattleAction != null &&
-                            (AggressorTraitorAction == null && player == Aggressor ||
+                            (AggressorTraitorAction == null && faction == CurrentBattle.Aggressor ||
                              AggressorTraitorAction == null && faction == Faction.Black && GetPlayer(AggressorBattleAction.Initiator).Ally == Faction.Black && player.Traitors.Contains(DefenderBattleAction.Hero) ||
                              DefenderTraitorAction == null && faction == CurrentBattle.Target ||
                              DefenderTraitorAction == null && faction == Faction.Black && GetPlayer(DefenderBattleAction.Initiator).Ally == Faction.Black && player.Traitors.Contains(AggressorBattleAction.Hero)))
