@@ -178,6 +178,22 @@ namespace Treachery.Shared
             }
         }
 
+        public bool IsRockmelter
+        {
+            get
+            {
+                return Type == TreacheryCardType.Rockmelter;
+            }
+        }
+
+        public bool IsPortableAntidote
+        {
+            get
+            {
+                return Type == TreacheryCardType.PortableAntidote;
+            }
+        }
+
         public bool IsWeapon => IsLaser || IsPoisonWeapon || IsProjectileWeapon || IsPoisonTooth || IsArtillery;
 
         public bool IsDefense => IsPoisonDefense || IsProjectileDefense;

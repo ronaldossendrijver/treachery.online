@@ -175,6 +175,8 @@ namespace Treachery.Shared
 
                 if (AggressorBattleAction.Weapon != null && (
                 AggressorBattleAction.Weapon.IsArtillery ||
+                AggressorBattleAction.Weapon.IsRockmelter ||
+                AggressorBattleAction.Weapon.IsPortableAntidote ||
                 AggressorBattleAction.Weapon.IsPoisonTooth && !PoisonToothCancelled
                 ))
                 {
@@ -192,6 +194,8 @@ namespace Treachery.Shared
 
                 if (DefenderBattleAction.Weapon != null && (
                     DefenderBattleAction.Weapon.IsArtillery ||
+                    DefenderBattleAction.Weapon.IsRockmelter ||
+                    DefenderBattleAction.Weapon.IsPortableAntidote ||
                     DefenderBattleAction.Weapon.IsPoisonTooth && !PoisonToothCancelled
                     ))
                 {
@@ -249,12 +253,25 @@ namespace Treachery.Shared
 
             if (AggressorTraitorAction != null && DefenderTraitorAction != null)
             {
-                if (Version >= 43) DiscardOneTimeCardsUsedInBattle(AggressorTraitorAction, DefenderTraitorAction);
-                ResolveBattle(CurrentBattle, AggressorBattleAction, DefenderBattleAction, AggressorTraitorAction, DefenderTraitorAction);
-                CaptureLeaderIfApplicable(e);
-                FlipBeneGesseritWhenAlone();
-                DetermineAudit();
+                Enter(AggressorBattleAction.HasRockMelter || DefenderBattleAction.HasRockMelter, Phase.MeltingRock, HandleRevealedBattlePlans); 
             }
+        }
+
+        private bool RockMelterWasUsedToKill { get; set; }
+        public void HandleEvent(RockWasMelted e)
+        {
+            CurrentReport.Add(e);
+            RockMelterWasUsedToKill = e.Kill;
+            HandleRevealedBattlePlans();
+        }
+
+        private void HandleRevealedBattlePlans()
+        {
+            if (Version >= 43) DiscardOneTimeCardsUsedInBattle(AggressorTraitorAction, DefenderTraitorAction);
+            ResolveBattle(CurrentBattle, AggressorBattleAction, DefenderBattleAction, AggressorTraitorAction, DefenderTraitorAction);
+            CaptureLeaderIfApplicable(e);
+            FlipBeneGesseritWhenAlone();
+            DetermineAudit();
         }
 
         private void DetermineAudit()
@@ -331,9 +348,9 @@ namespace Treachery.Shared
             Enter(BattleWinner != Faction.None, Phase.BattleConclusion, FinishBattle);
         }
 
-        private void CaptureLeaderIfApplicable(TreacheryCalled e)
+        private void CaptureLeaderIfApplicable()
         {
-            if (BattleWinner == Faction.Black && (Version >= 40 || e.By(Faction.Black)) && Applicable(Rule.BlackCapturesOrKillsLeaders))
+            if (BattleWinner == Faction.Black && Applicable(Rule.BlackCapturesOrKillsLeaders))
             {
                 if (!Prevented(FactionAdvantage.BlackCaptureLeader))
                 {
@@ -739,14 +756,15 @@ namespace Treachery.Shared
         {
             bool poisonToothUsed = !PoisonToothCancelled && (agg.HasPoisonTooth || def.HasPoisonTooth);
             bool artilleryUsed = agg.HasArtillery || def.HasArtillery;
+            bool rockMelterUsed = agg.HasRockMelter || def.HasRockMelter;
 
             var aggHeroKilled = false;
             var aggHeroCauseOfDeath = TreacheryCardType.None;
-            DetermineCauseOfDeath(agg, def, aggHero, poisonToothUsed, artilleryUsed, ref aggHeroKilled, ref aggHeroCauseOfDeath);
+            DetermineCauseOfDeath(agg, def, aggHero, poisonToothUsed, artilleryUsed, RockMelterIsUsedToKill, ref aggHeroKilled, ref aggHeroCauseOfDeath);
 
             bool defHeroKilled = false;
             var defHeroCauseOfDeath = TreacheryCardType.None;
-            DetermineCauseOfDeath(def, agg, defHero, poisonToothUsed, artilleryUsed, ref defHeroKilled, ref defHeroCauseOfDeath);
+            DetermineCauseOfDeath(def, agg, defHero, poisonToothUsed, artilleryUsed, RockMelterIsUsedToKill, ref defHeroKilled, ref defHeroCauseOfDeath);
 
             int aggHeroEffectiveStrength = (aggHero != null && !artilleryUsed) ? aggHero.ValueInCombatAgainst(defHero) : 0;
             int aggHeroContribution = !aggHeroKilled ? aggHeroEffectiveStrength : 0;

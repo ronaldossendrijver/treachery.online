@@ -157,6 +157,8 @@ namespace Treachery.Shared
             }
         }
 
+        public bool HasRockMelter => Weapon != null && Weapon.IsRockmelter;
+
         public static float DetermineSpecialForceStrength(Game g, Faction player, Faction opponent)
         {
             if (player == Faction.Yellow && g.Prevented(FactionAdvantage.YellowSpecialForceBonus))
