@@ -11,7 +11,7 @@ namespace Treachery.Shared
     public partial class Game
     {
         public const int LowestSupportedVersion = 68;
-        public const int LatestVersion = 106;
+        public const int LatestVersion = 107;
 
         public bool BotInfologging = true;
 
@@ -417,12 +417,17 @@ namespace Treachery.Shared
             {
                 LeaderState[l].Kill();
 
-                if (Version >= 46)
+                var black = GetPlayer(Faction.Black);
+                if (black != null)
                 {
-                    ReturnGholaToOriginalFaction(l);
+                    ReturnCapturedLeaders(black, l);
                 }
+
+                ReturnGholaToOriginalFaction(l);
             }
         }
+
+        
 
         private void ReturnGholaToOriginalFaction(IHero l)
         {

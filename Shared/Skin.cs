@@ -1389,14 +1389,14 @@ namespace Treachery.Shared
                 [TreacheryCardType.Amal] = "Amal",
 
                 [TreacheryCardType.Distrans] = "Distrans",
-                [TreacheryCardType.Juice] = "Juice",
-                [TreacheryCardType.MirrorWeapon] = "MirrorWeapon",
-                [TreacheryCardType.PortableAntidote] = "PortableAntidote",
-                [TreacheryCardType.Flight] = "Flight",
-                [TreacheryCardType.SearchDiscarded] = "SearchDiscarded",
-                [TreacheryCardType.TakeDiscarded] = "TakeDiscarded",
-                [TreacheryCardType.Residual] = "Residual",
-                [TreacheryCardType.Rockmelter] = "Rockmelter"
+                [TreacheryCardType.Juice] = "Juice Of Sapho",
+                [TreacheryCardType.MirrorWeapon] = "Mirror Weapon",
+                [TreacheryCardType.PortableAntidote] = "Portable Snooper",
+                [TreacheryCardType.Flight] = "Ornithopter",
+                [TreacheryCardType.SearchDiscarded] = "Nullentropy",
+                [TreacheryCardType.TakeDiscarded] = "Semuta Drug",
+                [TreacheryCardType.Residual] = "Residual Poison",
+                [TreacheryCardType.Rockmelter] = "Stone Burner"
             },
 
             TreacheryCardName_STR = new Dictionary<int, string>

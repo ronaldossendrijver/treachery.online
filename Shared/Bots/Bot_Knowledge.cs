@@ -92,7 +92,9 @@ namespace Treachery.Shared
             if (c.Type == TreacheryCardType.Useless) return 0;
 
             if (c.Type == TreacheryCardType.Thumper ||
-                c.Type == TreacheryCardType.Harvester) return 1;
+                c.Type == TreacheryCardType.Harvester ||
+                c.Type == TreacheryCardType.Flight ||
+                c.Type == TreacheryCardType.Juice) return 1;
 
             if (c.Type == TreacheryCardType.ProjectileAndPoison) return 5;
             if (c.Type == TreacheryCardType.ShieldAndAntidote) return 5;

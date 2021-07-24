@@ -324,6 +324,19 @@ namespace Treachery.Shared
 
             return result;
         }
-    }
 
+        protected virtual FlightUsed DetermineFlightUsed()
+        {
+            LogInfo("DetermineFlightUsed()");
+
+            if (ForcesOnPlanet.Count(kvp => !kvp.Key.IsStronghold) > 1 && ForcesOnPlanet.Where(kvp => !kvp.Key.IsStronghold).Sum(lwf => lwf.Value.TotalAmountOfForces) > 3)
+            {
+                return new FlightUsed(Game) { Initiator = Faction, MoveThreeTerritories = false };
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
 }

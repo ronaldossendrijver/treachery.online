@@ -879,14 +879,17 @@ namespace Treachery.Shared
                     {
                         int brownIncome = (int)Math.Floor(0.5 * costForPlayer);
 
-                        if (brownIncome > 0 && !Prevented(FactionAdvantage.BrownReceiveForcePayment))
+                        if (brownIncome > 0)
                         {
-                            brown.Resources += brownIncome;
-                            CurrentReport.Add(Faction.Brown, "{0} receive {1} from supported forces", Faction.Brown, brownIncome);
-                        }
-                        else
-                        {
-                            CurrentReport.Add(Faction.Brown, "{0} prevents {1}", Faction.Brown, FactionAdvantage.BrownReceiveForcePayment);
+                            if (!Prevented(FactionAdvantage.BrownReceiveForcePayment))
+                            {
+                                brown.Resources += brownIncome;
+                                CurrentReport.Add(Faction.Brown, "{0} receive {1} from supported forces", Faction.Brown, brownIncome);
+                            }
+                            else
+                            {
+                                CurrentReport.Add(Faction.Brown, "{0} prevents {1}", Faction.Brown, FactionAdvantage.BrownReceiveForcePayment);
+                            }
                         }
                     }
                 }
