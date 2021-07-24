@@ -106,97 +106,32 @@ namespace Treachery.Shared
             return Id.GetHashCode();
         }
 
-        public bool IsPoisonWeapon
-        {
-            get
-            {
-                return Type == TreacheryCardType.Poison || Type == TreacheryCardType.Chemistry || Type == TreacheryCardType.ProjectileAndPoison;
-            }
-        }
+        public bool IsPoisonWeapon => Type == TreacheryCardType.Poison || Type == TreacheryCardType.Chemistry || Type == TreacheryCardType.ProjectileAndPoison;
 
-        public bool IsProjectileWeapon
-        {
-            get
-            {
-                return Type == TreacheryCardType.Projectile || Type == TreacheryCardType.WeirdingWay || Type == TreacheryCardType.ProjectileAndPoison;
-            }
-        }
+        public bool IsProjectileWeapon => Type == TreacheryCardType.Projectile || Type == TreacheryCardType.WeirdingWay || Type == TreacheryCardType.ProjectileAndPoison;
 
-        public bool IsPoisonDefense
-        {
-            get
-            {
-                return Type == TreacheryCardType.Chemistry || Type == TreacheryCardType.Antidote || Type == TreacheryCardType.ShieldAndAntidote;
-            }
-        }
+        public bool IsPoisonDefense => Type == TreacheryCardType.Chemistry || Type == TreacheryCardType.Antidote || Type == TreacheryCardType.ShieldAndAntidote || Type == TreacheryCardType.PortableAntidote;
 
-        public bool IsNonAntidotePoisonDefense
-        {
-            get
-            {
-                return Type == TreacheryCardType.Chemistry;
-            }
-        }
+        public bool IsNonAntidotePoisonDefense => Type == TreacheryCardType.Chemistry;
 
-        public bool IsShield
-        {
-            get
-            {
-                return Type == TreacheryCardType.Shield || Type == TreacheryCardType.ShieldAndAntidote;
-            }
-        }
+        public bool IsShield => Type == TreacheryCardType.Shield || Type == TreacheryCardType.ShieldAndAntidote;
 
-        public bool IsProjectileDefense
-        {
-            get
-            {
-                return Type == TreacheryCardType.Shield || Type == TreacheryCardType.WeirdingWay || Type == TreacheryCardType.ShieldAndAntidote;
-            }
-        }
+        public bool IsProjectileDefense => Type == TreacheryCardType.Shield || Type == TreacheryCardType.WeirdingWay || Type == TreacheryCardType.ShieldAndAntidote;
 
-        public bool IsLaser
-        {
-            get
-            {
-                return Type == TreacheryCardType.Laser;
-            }
-        }
+        public bool IsLaser => Type == TreacheryCardType.Laser;
 
-        public bool IsPoisonTooth
-        {
-            get
-            {
-                return Type == TreacheryCardType.PoisonTooth;
-            }
-        }
+        public bool IsPoisonTooth => Type == TreacheryCardType.PoisonTooth;
 
-        public bool IsArtillery
-        {
-            get
-            {
-                return Type == TreacheryCardType.ArtilleryStrike;
-            }
-        }
+        public bool IsArtillery => Type == TreacheryCardType.ArtilleryStrike;
 
-        public bool IsRockmelter
-        {
-            get
-            {
-                return Type == TreacheryCardType.Rockmelter;
-            }
-        }
+        public bool IsRockmelter => Type == TreacheryCardType.Rockmelter;
 
-        public bool IsPortableAntidote
-        {
-            get
-            {
-                return Type == TreacheryCardType.PortableAntidote;
-            }
-        }
+        public bool IsPortableAntidote => Type == TreacheryCardType.PortableAntidote;
 
-        public bool IsWeapon => IsLaser || IsPoisonWeapon || IsProjectileWeapon || IsPoisonTooth || IsArtillery;
+        public bool IsWeapon => IsLaser || IsPoisonWeapon || IsProjectileWeapon || IsPoisonTooth || IsArtillery || IsRockmelter;
 
         public bool IsDefense => IsPoisonDefense || IsProjectileDefense;
+
         public bool IsUseless => Type == TreacheryCardType.Useless;
 
         public bool CounteredBy(TreacheryCard c)

@@ -157,6 +157,11 @@
     private TreacheryCard defense;
     private TreacheryCard weapon;
 
+    protected override void OnInitialized()
+    {
+        MapDrawer.ShowWheelsAndHMS = true;
+    }
+
     protected override void OnParametersSet()
     {
         var plan = h.GetRevisablePlan();

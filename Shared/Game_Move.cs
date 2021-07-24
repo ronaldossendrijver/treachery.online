@@ -168,7 +168,7 @@ namespace Treachery.Shared
 
         private void PayForShipment(Shipment s, Player initiator)
         {
-            var costToInitiator = s.DetermineCostToInitiator();
+            var costToInitiator = s.DetermineCostToInitiator(this);
             initiator.Resources -= costToInitiator;
 
             if (s.UsingKarma(this))
@@ -295,6 +295,7 @@ namespace Treachery.Shared
             DetermineNextShipmentAndMoveSubPhase(false, BGMayAccompany);
         }
 
+        private bool MayPerformExtraMove { get; set; }
         public void HandleEvent(Move m)
         {
             RecentMoves.Add(m);
@@ -337,6 +338,9 @@ namespace Treachery.Shared
                 FlipBeneGesseritWhenAlone();
             }
 
+            MayPerformExtraMove = (CurrentFlightUsed != null && CurrentFlightUsed.ExtraMove);
+            CurrentFlightUsed = null;
+
             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.YellowExtraMove);
             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyCyborgExtraMove);
         }
@@ -375,7 +379,7 @@ namespace Treachery.Shared
             var initiator = GetPlayer(e.Initiator);
             var card = initiator.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Caravan);
 
-            DiscardTreacheryCard(initiator, TreacheryCardType.Caravan);
+            Discard(initiator, TreacheryCardType.Caravan);
             PerformMoveFromLocations(initiator, e.ForceLocations, e.To, e.Initiator != Faction.Blue || e.AsAdvisors, true);
 
             if (ContainsConflictingAlly(initiator, e.To))
@@ -388,6 +392,8 @@ namespace Treachery.Shared
                 PausedPhase = CurrentPhase;
                 Enter(Phase.BlueIntrudedByCaravan);
             }
+
+            CurrentFlightUsed = null;
 
             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.YellowExtraMove);
             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyCyborgExtraMove);
@@ -448,6 +454,14 @@ namespace Treachery.Shared
 
             totalNumberOfForces += battalion.AmountOfForces;
             totalNumberOfSpecialForces += battalion.AmountOfSpecialForces;
+        }
+
+        private FlightUsed CurrentFlightUsed = null;
+        public void HandleEvent(FlightUsed e)
+        {
+            CurrentReport.Add(e);
+            Discard(e.Player, TreacheryCardType.Flight);
+            CurrentFlightUsed = e;
         }
 
         private bool MustMoveThroughStorm(Player initiator, Location from, Location to, Battalion moved)
@@ -643,10 +657,18 @@ namespace Treachery.Shared
 
         private void DetermineNextSubPhaseAfterNonOrangeMove()
         {
-            Enter(
-                EveryoneActedOrPassed, ConcludeShipmentAndMove,
-                IsPlaying(Faction.Orange) && !HasActedOrPassed.Any(p => p == Faction.Orange) && OrangeDeterminesMoveMoment, Phase.OrangeShip,
-                Phase.NonOrangeShip);
+            if (MayPerformExtraMove)
+            {
+                MayPerformExtraMove = false;
+                Enter(Phase.NonOrangeMove);
+            }
+            else
+            {
+                Enter(
+                    EveryoneActedOrPassed, ConcludeShipmentAndMove,
+                    IsPlaying(Faction.Orange) && !HasActedOrPassed.Any(p => p == Faction.Orange) && OrangeDeterminesMoveMoment, Phase.OrangeShip,
+                    Phase.NonOrangeShip);
+            }
         }
 
         private bool OrangeDeterminesMoveMoment
@@ -659,7 +681,15 @@ namespace Treachery.Shared
 
         private void DetermineNextSubPhaseAfterOrangeMove()
         {
-            Enter(!EveryoneActedOrPassed, Phase.NonOrangeShip, ConcludeShipmentAndMove);
+            if (MayPerformExtraMove)
+            {
+                MayPerformExtraMove = false;
+                Enter(Phase.OrangeMove);
+            }
+            else
+            {
+                Enter(!EveryoneActedOrPassed, Phase.NonOrangeShip, ConcludeShipmentAndMove);
+            }
         }
 
         private void ConcludeShipmentAndMove()

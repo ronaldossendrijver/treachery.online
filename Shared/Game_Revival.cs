@@ -292,7 +292,7 @@ namespace Treachery.Shared
             RecentMilestones.Add(Milestone.RaiseDead);
             CurrentReport.Add(r.GetMessage());
             var player = GetPlayer(r.Initiator);
-            DiscardTreacheryCard(player, TreacheryCardType.RaiseDead);
+            Discard(player, TreacheryCardType.RaiseDead);
 
             var purple = GetPlayer(Faction.Purple);
             if (purple != null)

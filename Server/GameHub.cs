@@ -143,6 +143,9 @@ namespace Treachery.Server
         public async Task RequestWhiteKeepsUnsoldCard(int hostID, WhiteKeepsUnsoldCard e) { await Request(hostID, e); }
         public async Task RequestWhiteRevealedNoField(int hostID, WhiteRevealedNoField e) { await Request(hostID, e); }
         public async Task RequestWhiteGaveCard(int hostID, WhiteGaveCard e) { await Request(hostID, e); }
+        public async Task RequestRockWasMelted(int hostID, RockWasMelted e) { await Request(hostID, e); }
+        public async Task RequestResidualPlayed(int hostID, ResidualPlayed e) { await Request(hostID, e); }
+        public async Task RequestFlightUsed(int hostID, FlightUsed e) { await Request(hostID, e); }
 
 
         private async Task Request<GameEventType>(int hostID, GameEventType e) where GameEventType : GameEvent

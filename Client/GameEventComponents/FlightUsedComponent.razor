@@ -1,0 +1,23 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<FlightUsed>
+
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Use @Skin.Current.Describe(TreacheryCardType.Flight) to be able to move 3 territories once OR move 2 different force groups?</Header>
+    <Body>
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="move 3 territories" ConfirmError="@Validation" Other="Other" OtherText="move 2 different groups"/>
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override FlightUsed ConfirmedResult => new FlightUsed(Game) { Initiator = Faction, MoveThreeTerritories = true };
+
+    protected override FlightUsed OtherResult => new FlightUsed(Game) { Initiator = Faction, MoveThreeTerritories = false };
+}

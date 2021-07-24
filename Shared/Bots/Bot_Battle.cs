@@ -90,8 +90,8 @@ namespace Treachery.Shared
                 return ConstructLostBattleMinimizingLosses(opponent);
             }
 
-            int forcesAvailable = ForcesIn(Game.CurrentBattle.Territory);
-            int specialForcesAvailable = SpecialForcesIn(Game.CurrentBattle.Territory);
+            int forcesAvailable = Battle.MaxForces(Game, this, false);
+            int specialForcesAvailable = Battle.MaxForces(Game, this, true);
 
             var dialNeeded = GetDialNeeded(
                 IWillBeAggressorAgainst(opponent),
@@ -163,6 +163,21 @@ namespace Treachery.Shared
                 return ConstructLostBattleMinimizingLosses(opponent);
             }
         }
+
+        /*private int DetermineAvailableForcesForBattle(Game game, Player player, Territory t, bool special)
+        {
+            if (player.Faction == Faction.White)
+            {
+                if (special)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return 
+                }
+            }
+        }*/
 
         private void UseArtilleryStrikeOrPoisonToothIfApplicable(bool enemyCanDefendPoisonTooth, ref float myHeroSurviving, ref float enemyHeroSurviving, ref TreacheryCard defense, ref TreacheryCard weapon)
         {
@@ -843,6 +858,29 @@ namespace Treachery.Shared
             return
                 (myWeapon != null && myWeapon.IsLaser && enemyDefense != null && enemyDefense.IsShield) ||
                 (enemyWeapon != null && enemyWeapon.IsLaser && myDefense != null && myDefense.IsShield);
+        }
+
+        protected RockWasMelted DetermineRockWasMelted()
+        {
+            var myPlan = Game.CurrentBattle.PlanOf(this);
+            var opponent = Game.CurrentBattle.OpponentOf(this);
+            var opponentPlan = Game.CurrentBattle.PlanOf(opponent);
+
+            bool kill;
+            if (Game.Aggressor == this) {
+                kill = myPlan.Dial(Game, opponent.Faction) >= opponentPlan.Dial(Game, Faction);
+            }
+            else
+            {
+                kill = myPlan.Dial(Game, opponent.Faction) > opponentPlan.Dial(Game, Faction);
+            }
+
+            return new RockWasMelted(Game) { Initiator = Faction, Kill = kill };
+        }
+
+        protected ResidualPlayed DetermineResidualPlayed()
+        {
+            return new ResidualPlayed(Game) { Initiator = Faction };
         }
     }
 

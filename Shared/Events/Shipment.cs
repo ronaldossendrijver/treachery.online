@@ -141,7 +141,7 @@ namespace Treachery.Shared
                 return 0;
             }
 
-            return DetermineCost(g, p, Math.Abs(s.ForceAmount), Math.Abs(s.SpecialForceAmount), s.To, s.UsingKarma(g), s.IsBackToReserves, s.IsNoField);
+            return DetermineCost(g, p, Math.Abs(s.ForceAmount) + Math.Abs(s.SpecialForceAmount), s.To, s.UsingKarma(g), s.IsBackToReserves, s.IsNoField);
         }
 
         public static bool ShipsForFree(Game g, Player p, Location to)
@@ -149,15 +149,18 @@ namespace Treachery.Shared
             return p.Is(Faction.Yellow) && YellowSpawnLocations(g, p).Contains(to);
         }
 
-        public static int DetermineCost(Game g, Player p, int amountOfNormalForces, int amountOfSpecialForces, Location to, bool karamaShipment, bool backToReserves, bool noField)
+        public static int DetermineCost(Game g, Player p, int amount, Location to, bool karamaShipment, bool backToReserves, bool noField)
         {
-            if (noField) return 1;
+            //Console.WriteLine("{0} ships {1} to {2}, karama: {3}, backToReserves: {4}, noField: {5}", p, amount, to, karamaShipment, backToReserves, noField);
 
-            int amount = amountOfNormalForces + amountOfSpecialForces;
+            if (noField)
+            {
+                return 1;
+            }
 
             if (backToReserves)
             {
-                return (int)Math.Ceiling(0.5 * amount);
+                return (int)Math.Ceiling(0.5f * amount);
             }
             else
             {
@@ -379,13 +382,21 @@ namespace Treachery.Shared
         {
             var initiator = Player;
             return
-                DetermineCostToInitiator() +
+                DetermineCostToInitiator(game) +
                 ((initiator.Ally != Faction.Orange || game.Applicable(Rule.OrangeShipmentContributionsFlowBack)) ? AllyContributionAmount : 0);
         }
 
-        public int DetermineCostToInitiator()
+        public int DetermineCostToInitiator(Game g)
         {
-            return DetermineCost(Game, Player, this) - AllyContributionAmount;
+            //return DetermineCost(Game, Player, ForceAmount + SpecialForceAmount, To, UsingKarma(Game), IsBackToReserves, IsNoField) - AllyContributionAmount;
+            if (g.Version <= 106)
+            {
+                return DetermineCost(Game, Player, ForceAmount + SpecialForceAmount, To, UsingKarma(Game), IsBackToReserves, IsNoField) - AllyContributionAmount;
+            }
+            else
+            {
+                return DetermineCost(Game, Player, this) - AllyContributionAmount;
+            }
         }
 
         public static IEnumerable<TreacheryCard> ValidKarmaCards(Game g, Player p)

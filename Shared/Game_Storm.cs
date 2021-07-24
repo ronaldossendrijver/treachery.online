@@ -285,7 +285,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(StormSpellPlayed e)
         {
-            DiscardTreacheryCard(GetPlayer(e.Initiator), TreacheryCardType.StormSpell);
+            Discard(GetPlayer(e.Initiator), TreacheryCardType.StormSpell);
             CurrentReport.Add(e);
             MoveStormAndDetermineNext(e.MoveAmount);
             EndStormPhase();

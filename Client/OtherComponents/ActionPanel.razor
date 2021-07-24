@@ -203,7 +203,7 @@
         }
         else if (a == typeof(KarmaPrescience))
         {
-            <SimpleActionComponent GameEventType="KarmaPrescience" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" Title="@KarmaPrescienceTitle" Alert="false" Collapsible="false" />
+            <SimpleActionComponent GameEventType="KarmaPrescience" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" Title="@Skin.Current.Format("Use {0} to see the entire enemy battle plan", TreacheryCardType.Karma)" Alert="false" Collapsible="false" />
         }
         else if (a == typeof(Karma))
         {
@@ -349,6 +349,18 @@
         {
             <SimpleActionComponent GameEventType="WhiteRevealedNoField" h="@h" Title="Reveal your currently active No-Field?" />
         }
+        else if (a == typeof(ResidualPlayed))
+        {
+            <SimpleActionComponent GameEventType="ResidualPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Residual)" Title="@Skin.Current.Format("Use {0} to kill a random available opponent leader?", TreacheryCardType.Residual)" />
+        }
+        else if (a == typeof(FlightUsed))
+        {
+            <FlightUsedComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Flight)" />
+        }
+        else if (a == typeof(RockWasMelted))
+        {
+            <RockWasMeltedComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Rockmelter)" />
+        }
     }
 
     @if (DealAccepted.CurrentDeals(h.Game).Any() || h.IsPlayer && (DealAccepted.AcceptableDeals(h.Game, h.Player).Any() || DealAccepted.CancellableDeals(h.Game, h.Player).Any()))
@@ -377,13 +389,4 @@
 
     [Parameter]
     public Handler h { get; set; }
-
-    private string KarmaPrescienceTitle
-    {
-        get
-        {
-            return Skin.Current.Format("Use {0} to see the entire enemy battle plan", TreacheryCardType.Karma);
-        }
-    }
-
 }

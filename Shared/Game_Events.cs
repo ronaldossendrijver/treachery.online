@@ -234,6 +234,7 @@ namespace Treachery.Shared
                     {
                         result.Add(typeof(Move));
                         if (player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Caravan)) result.Add(typeof(Caravan));
+                        if (FlightUsed.IsAvailable(player)) result.Add(typeof(FlightUsed));
                     }
                     break;
                 case Phase.NonOrangeMove:
@@ -241,6 +242,7 @@ namespace Treachery.Shared
                     {
                         result.Add(typeof(Move));
                         if (player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Caravan)) result.Add(typeof(Caravan));
+                        if (FlightUsed.IsAvailable(player)) result.Add(typeof(FlightUsed));
                     }
                     break;
                 case Phase.BlueIntrudedByOrangeShip:
@@ -291,8 +293,19 @@ namespace Treachery.Shared
                             result.Add(typeof(Prescience));
                         }
 
+                        if (CurrentBattle != null && CurrentBattle.IsAggressorOrDefender(player) && ResidualPlayed.MayPlay(player))
+                        {
+                            result.Add(typeof(ResidualPlayed));
+                        }
+
                         if (Version < 103 && player.Has(TreacheryCardType.Amal) && NrOfBattlesFought == 0) result.Add(typeof(AmalPlayed));
                     }
+                    break;
+
+                case Phase.MeltingRock:
+
+                    var myPlan = CurrentBattle.PlanOf(faction);
+                    if (myPlan != null && myPlan.HasRockMelter) result.Add(typeof(RockWasMelted));
                     break;
 
                 case Phase.CallTraitorOrPass:

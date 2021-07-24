@@ -226,6 +226,26 @@ namespace Treachery.Shared
             CurrentReport.Add(e);
         }
 
+        public void HandleEvent(ResidualPlayed e)
+        {
+            Discard(e.Player, TreacheryCardType.Residual);
+
+            var opponent = CurrentBattle.OpponentOf(e.Initiator);
+            var leadersToKill = new Deck<IHero>(Battle.ValidBattleHeroes(this, opponent), Random);
+            leadersToKill.Shuffle();
+
+            if (!leadersToKill.IsEmpty)
+            {
+                var toKill = leadersToKill.Draw();
+                KillHero(toKill);
+                CurrentReport.Add(e);
+            }
+            else
+            {
+                CurrentReport.Add(opponent.Faction, "{0} have no available leaders to kill");
+            }
+        }
+
         public IList<TreacheryCard> AuditedCards;
         public void HandleEvent(TreacheryCalled e)
         {
@@ -269,7 +289,7 @@ namespace Treachery.Shared
         {
             if (Version >= 43) DiscardOneTimeCardsUsedInBattle(AggressorTraitorAction, DefenderTraitorAction);
             ResolveBattle(CurrentBattle, AggressorBattleAction, DefenderBattleAction, AggressorTraitorAction, DefenderTraitorAction);
-            CaptureLeaderIfApplicable(e);
+            CaptureLeaderIfApplicable();
             FlipBeneGesseritWhenAlone();
             DetermineAudit();
         }
@@ -760,20 +780,20 @@ namespace Treachery.Shared
 
             var aggHeroKilled = false;
             var aggHeroCauseOfDeath = TreacheryCardType.None;
-            DetermineCauseOfDeath(agg, def, aggHero, poisonToothUsed, artilleryUsed, RockMelterIsUsedToKill, ref aggHeroKilled, ref aggHeroCauseOfDeath);
+            DetermineCauseOfDeath(agg, def, aggHero, poisonToothUsed, artilleryUsed, rockMelterUsed && RockMelterWasUsedToKill, ref aggHeroKilled, ref aggHeroCauseOfDeath);
 
             bool defHeroKilled = false;
             var defHeroCauseOfDeath = TreacheryCardType.None;
-            DetermineCauseOfDeath(def, agg, defHero, poisonToothUsed, artilleryUsed, RockMelterIsUsedToKill, ref defHeroKilled, ref defHeroCauseOfDeath);
+            DetermineCauseOfDeath(def, agg, defHero, poisonToothUsed, artilleryUsed, rockMelterUsed && RockMelterWasUsedToKill, ref defHeroKilled, ref defHeroCauseOfDeath);
 
-            int aggHeroEffectiveStrength = (aggHero != null && !artilleryUsed) ? aggHero.ValueInCombatAgainst(defHero) : 0;
+            int aggHeroEffectiveStrength = (aggHero != null && !artilleryUsed && !rockMelterUsed) ? aggHero.ValueInCombatAgainst(defHero) : 0;
             int aggHeroContribution = !aggHeroKilled ? aggHeroEffectiveStrength : 0;
 
-            int defHeroEffectiveStrength = (defHero != null && !artilleryUsed) ? defHero.ValueInCombatAgainst(aggHero) : 0;
+            int defHeroEffectiveStrength = (defHero != null && !artilleryUsed && !rockMelterUsed) ? defHero.ValueInCombatAgainst(aggHero) : 0;
             int defHeroContribution = (defHero != null && !defHeroKilled) ? defHeroEffectiveStrength : 0;
 
-            var aggMessiahContribution = aggressor.Is(Faction.Green) && agg.Messiah && agg.Hero != null && !aggHeroKilled && !artilleryUsed ? 2 : 0;
-            var defMessiahContribution = defender.Is(Faction.Green) && def.Messiah && def.Hero != null && !defHeroKilled && !artilleryUsed ? 2 : 0;
+            var aggMessiahContribution = aggressor.Is(Faction.Green) && agg.Messiah && agg.Hero != null && !aggHeroKilled && !artilleryUsed && !rockMelterUsed ? 2 : 0;
+            var defMessiahContribution = defender.Is(Faction.Green) && def.Messiah && def.Hero != null && !defHeroKilled && !artilleryUsed && !rockMelterUsed ? 2 : 0;
 
             float aggForceDial = agg.Dial(this, defender.Faction);
             float defForceDial = def.Dial(this, aggressor.Faction);
@@ -808,8 +828,9 @@ namespace Treachery.Shared
             ProcessLoserLosses(territory, loser, loserGambit);
         }
 
-        private void DetermineCauseOfDeath(Battle wheel, Battle opponent, IHero theHero, bool poisonToothUsed, bool artilleryUsed, ref bool heroDies, ref TreacheryCardType causeOfDeath)
+        private void DetermineCauseOfDeath(Battle wheel, Battle opponent, IHero theHero, bool poisonToothUsed, bool artilleryUsed, bool rockMelterWasUsedToKill, ref bool heroDies, ref TreacheryCardType causeOfDeath)
         {
+            DetermineDeathBy(theHero, TreacheryCardType.Rockmelter, rockMelterWasUsedToKill, ref heroDies, ref causeOfDeath);
             DetermineDeathBy(theHero, TreacheryCardType.ArtilleryStrike, artilleryUsed && !wheel.HasShield, ref heroDies, ref causeOfDeath);
             DetermineDeathBy(theHero, TreacheryCardType.PoisonTooth, poisonToothUsed && !wheel.HasNonAntidotePoisonDefense, ref heroDies, ref causeOfDeath);
             DetermineDeathBy(theHero, TreacheryCardType.Laser, opponent.HasLaser, ref heroDies, ref causeOfDeath);

@@ -333,7 +333,7 @@ namespace Treachery.Shared
 
         protected virtual void UseAllyResources(Shipment shipment)
         {
-            shipment.AllyContributionAmount = Math.Min(shipment.DetermineCostToInitiator(), Game.GetPermittedUseOfAllySpice(Faction));
+            shipment.AllyContributionAmount = Math.Min(shipment.DetermineCostToInitiator(Game), Game.GetPermittedUseOfAllySpice(Faction));
         }
 
         protected virtual void DetermineShipment_StrengthenWeakestThreatenedStronghold(int extraForces, float shortageToAccept, bool takeReinforcementsIntoAccount)

@@ -30,11 +30,11 @@ namespace Treachery.Shared
         {
             if (Kill)
             {
-                return new Message(Initiator, "{0} use {1} to kill both leaders.", Initiator, TreacheryCardType.Rockmelter);
+                return new Message(Initiator, "{0} use a {1} to kill both leaders.", Initiator, TreacheryCardType.Rockmelter);
             }
             else
             {
-                return new Message(Initiator, "{0} use {1} to not count leader strength.", Initiator, TreacheryCardType.Rockmelter);
+                return new Message(Initiator, "{0} use a {1} to reduce both leaders to 0 strength.", Initiator, TreacheryCardType.Rockmelter);
             }
         }
 

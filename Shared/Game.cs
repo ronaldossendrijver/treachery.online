@@ -615,7 +615,10 @@ namespace Treachery.Shared
 
         public int DetermineMaximumMoveDistance(Player p, IEnumerable<Battalion> moved)
         {
-            bool hasOrnithopters = Applicable(Rule.MovementBonusRequiresOccupationBeforeMovement) ? FactionsWithOrnithoptersAtStartOfMovement.Contains(p.Faction) : OccupiesArrakeenOrCarthag(p);
+            bool hasOrnithopters = 
+                (Applicable(Rule.MovementBonusRequiresOccupationBeforeMovement) ? FactionsWithOrnithoptersAtStartOfMovement.Contains(p.Faction) : OccupiesArrakeenOrCarthag(p)) ||
+                CurrentFlightUsed != null && CurrentFlightUsed.MoveThreeTerritories;
+
             int brownExtraMoveBonus = p.Faction == Faction.Brown && BrownHasExtraMove ? 1 : 0;
 
             int result = 1;
@@ -755,7 +758,7 @@ namespace Treachery.Shared
             return Skin.Current.Format("Players: {0}, Phase: {1}", Players.Count, CurrentPhase);
         }
 
-        private TreacheryCard DiscardTreacheryCard(Player player, TreacheryCardType cardType)
+        private TreacheryCard Discard(Player player, TreacheryCardType cardType)
         {
             TreacheryCard card = null;
             if (cardType == TreacheryCardType.Karma && player.Is(Faction.Blue))

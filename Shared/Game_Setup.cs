@@ -493,7 +493,6 @@ namespace Treachery.Shared
                     break;
                 case Faction.White:
                     p.ForcesInReserve = 20;
-                    p.SpecialForcesInReserve = 100;
                     break;
 
                 case Faction.Pink:
@@ -567,7 +566,6 @@ namespace Treachery.Shared
                 case Faction.White:
                     p.Resources = 5;
                     p.ForcesInReserve = 20;
-                    p.SpecialForcesInReserve = 100;
                     break;
 
                 case Faction.Pink:

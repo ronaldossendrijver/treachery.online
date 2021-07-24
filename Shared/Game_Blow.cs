@@ -27,7 +27,7 @@ namespace Treachery.Shared
         private bool ThumperUsed = false;
         public void HandleEvent(ThumperPlayed e)
         {
-            DiscardTreacheryCard(GetPlayer(e.Initiator), TreacheryCardType.Thumper);
+            Discard(GetPlayer(e.Initiator), TreacheryCardType.Thumper);
             CurrentReport.Add(e);
             RecentMilestones.Add(Milestone.Thumper);
             ThumperUsed = true;
@@ -215,7 +215,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(HarvesterPlayed e)
         {
-            DiscardTreacheryCard(GetPlayer(e.Initiator), TreacheryCardType.Harvester);
+            Discard(GetPlayer(e.Initiator), TreacheryCardType.Harvester);
             var lastResourceCard = CurrentPhase == Phase.HarvesterA ? LatestSpiceCardA : LatestSpiceCardB;
             int currentAmountOfSpice = ResourcesOnPlanet.ContainsKey(lastResourceCard.Location) ? ResourcesOnPlanet[lastResourceCard.Location] : 0;
 

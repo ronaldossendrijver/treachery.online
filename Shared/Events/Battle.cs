@@ -350,7 +350,7 @@ namespace Treachery.Shared
 
         public static int MaxForces(Game g, Player p, bool specialForces)
         {
-            if (g.CurrentBattle.Territory == null)
+            if (g.CurrentBattle == null || g.CurrentBattle.Territory == null)
             {
                 return 0;
             }
