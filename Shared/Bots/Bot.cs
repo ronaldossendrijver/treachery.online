@@ -93,6 +93,11 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(CardTraded))) action = DetermineCardTraded();
                 if (action == null && possibleEvents.Contains(typeof(RockWasMelted))) action = DetermineRockWasMelted();
                 if (action == null && possibleEvents.Contains(typeof(ResidualPlayed))) action = DetermineResidualPlayed();
+                if (action == null && possibleEvents.Contains(typeof(FlightUsed))) action = DetermineFlightUsed();
+                if (action == null && possibleEvents.Contains(typeof(DistransUsed))) action = DetermineDistransUsed();
+                if (action == null && possibleEvents.Contains(typeof(DiscardedSearchedAnnounced))) action = DetermineDiscardedSearchedAnnounced();
+                if (action == null && possibleEvents.Contains(typeof(DiscardedSearched))) action = DetermineDiscardedSearched();
+                if (action == null && possibleEvents.Contains(typeof(DiscardedTaken))) action = DetermineDiscardedTaken();
 
                 //Blue
                 if (action == null && possibleEvents.Contains(typeof(BluePrediction))) action = DetermineBluePrediction();

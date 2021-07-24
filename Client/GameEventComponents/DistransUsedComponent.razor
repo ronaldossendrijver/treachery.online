@@ -1,0 +1,35 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<DistransUsed>
+
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Use @Skin.Current.Describe(TreacheryCardType.Distrans)?</Header>
+    <Body>
+
+        <SelectFactionComponent @bind-Value="target" Values="DistransUsed.ValidTargets(Game, Player)" />
+
+        <SelectCardComponent @bind-Value="card" Values="DistransUsed.ValidCards(Game, Player)" Required="true" />
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    private Faction target;
+    private TreacheryCard card;
+
+    protected override void OnInitialized()
+    {
+        BackgroundImage = Support.GetCardImage(TreacheryCardType.Distrans);
+    }
+
+    protected override DistransUsed ConfirmedResult => new DistransUsed(Game) { Initiator = Faction, Target = target, Card = card };
+}

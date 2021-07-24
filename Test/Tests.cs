@@ -305,7 +305,7 @@ namespace Treachery.Test
             //Expansion, advanced game, all expansions, all factions:
             var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
             rules.Add(Rule.FillWithBots);
-            rules.Add(Rule.BotsCannotAlly);
+            //rules.Add(Rule.BotsCannotAlly);
             var factions = EstablishPlayers.AvailableFactions().ToList();
             int nrOfPlayers = factions.Count;
 

@@ -146,7 +146,11 @@ namespace Treachery.Server
         public async Task RequestRockWasMelted(int hostID, RockWasMelted e) { await Request(hostID, e); }
         public async Task RequestResidualPlayed(int hostID, ResidualPlayed e) { await Request(hostID, e); }
         public async Task RequestFlightUsed(int hostID, FlightUsed e) { await Request(hostID, e); }
-
+        public async Task RequestDistransUsed(int hostID, DistransUsed e) { await Request(hostID, e); }
+        public async Task RequestDiscardedTaken(int hostID, DiscardedTaken e) { await Request(hostID, e); }
+        public async Task RequestDiscardedSearchedAnnounced(int hostID, DiscardedSearchedAnnounced e) { await Request(hostID, e); }
+        public async Task RequestDiscardedSearched(int hostID, DiscardedSearched e) { await Request(hostID, e); }
+        
 
         private async Task Request<GameEventType>(int hostID, GameEventType e) where GameEventType : GameEvent
         {

@@ -17,8 +17,12 @@
 
 @code {
 
+    protected override void OnInitialized()
+    {
+        BackgroundImage = Support.GetCardImage(TreacheryCardType.Rockmelter);
+    }
+
     protected override bool IsUrgent => true;
-    protected override Faction IsFactionSpecific => Faction.Blue;
 
     protected override RockWasMelted ConfirmedResult => new RockWasMelted(Game) { Initiator = Faction, Kill = true };
 

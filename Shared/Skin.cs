@@ -267,6 +267,7 @@ namespace Treachery.Shared
             else if (value is Phase p) result = Describe(p);
             else if (value is BrownEconomicsStatus bes) result = Describe(bes);
             else if (value is AuctionType at) result = Describe(at);
+            else if (value is JuiceType jt) result = Describe(jt);
             else if (value is IEnumerable ienum) result = Join(Enumerable.Cast<object>(ienum));
             else result = value.ToString();
 
@@ -520,6 +521,17 @@ namespace Treachery.Shared
                 AuctionType.WhiteNormal => Format("Normal {0}", Faction.White),
                 AuctionType.WhiteSilent => Format("Silent {0}", Faction.White),
                 AuctionType.WhiteOnceAround => Format("Once Around {0}", Faction.White),
+                _ => "None"
+            };
+        }
+
+        public string Describe(JuiceType jt)
+        {
+            return jt switch
+            {
+                JuiceType.Aggressor => "Be considered aggressor in this battle",
+                JuiceType.GoFirst => "Go first in this phase or action",
+                JuiceType.GoLast => "Go last in this phase or action",
                 _ => "None"
             };
         }

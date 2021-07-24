@@ -1,0 +1,32 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<DiscardedTaken>
+
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Use @Skin.Current.Describe(TreacheryCardType.TakeDiscarded)?</Header>
+    <Body>
+
+        <SelectCardComponent @bind-Value="card" Values="DiscardedTaken.ValidCards(Game, Player)" Required="true" />
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    private TreacheryCard card;
+
+    protected override void OnInitialized()
+    {
+        BackgroundImage = Support.GetCardImage(TreacheryCardType.TakeDiscarded);
+    }
+
+    protected override DiscardedTaken ConfirmedResult => new DiscardedTaken(Game) { Initiator = Faction, Card = card };
+}

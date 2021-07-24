@@ -115,6 +115,13 @@
             else if (latestEvent is AmalPlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Amal));
             else if (latestEvent is HarvesterPlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Harvester));
             else if (latestEvent is ThumperPlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Thumper));
+            else if (latestEvent is ResidualPlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Residual));
+            else if (latestEvent is FlightUsed) result.Add(CardInfo(latestEvent, TreacheryCardType.Flight));
+            else if (latestEvent is DistransUsed) result.Add(CardInfo(latestEvent, TreacheryCardType.Distrans));
+            else if (latestEvent is PortableAntidoteUsed) result.Add(CardInfo(latestEvent, TreacheryCardType.PortableAntidote));
+            else if (latestEvent is DiscardedTaken) result.Add(CardInfo(latestEvent, TreacheryCardType.TakeDiscarded));
+            else if (latestEvent is DiscardedSearched) result.Add(CardInfo(latestEvent, TreacheryCardType.SearchDiscarded));
+            else if (latestEvent is JuicePlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Juice));
         }
 
         int nrOfSpiceBlows = g.RecentMilestones.Count(m => m == Milestone.Resource);

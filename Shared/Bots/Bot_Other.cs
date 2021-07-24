@@ -401,6 +401,27 @@ namespace Treachery.Shared
             }
         }
 
+        protected DistransUsed DetermineDistransUsed()
+        {
+            var worstCard = DistransUsed.ValidCards(Game, this).OrderBy(c => CardQuality(c)).FirstOrDefault();
+            if (worstCard != null && CardQuality(worstCard) <= 1)
+            {
+                var target = DistransUsed.ValidTargets(Game, this)
+                    .Where(f => f != Ally && (!Game.Applicable(Rule.BlueWorthlessAsKarma) || f != Faction.Blue))
+                    .Select(f => Game.GetPlayer(f))
+                    .OrderByDescending(p => Game.NumberOfVictoryPoints(p, true))
+                    .FirstOrDefault();
+
+                if (target != null) {
+
+                    return new DistransUsed(Game) { Initiator = Faction, Card = worstCard, Target = target.Faction };
+                }
+            }
+
+            return null;
+        }
+
+
         private int HeroRevivalPenalty(IHero h)
         {
             if (h.HeroType == HeroType.Messiah || h.HeroType == HeroType.Auditor)
@@ -462,5 +483,35 @@ namespace Treachery.Shared
                 return null;
             }
         }
+
+
+        public DiscardedSearchedAnnounced DetermineDiscardedSearchedAnnounced()
+        {
+            var cardToSearch = DiscardedSearched.ValidCards(Game).OrderByDescending(c => CardQuality(c)).FirstOrDefault();
+            if (cardToSearch != null && CardQuality(cardToSearch) >= 4)
+            {
+                return new DiscardedSearchedAnnounced(Game) { Initiator = Faction };
+            }
+
+            return null;
+        }
+
+        public DiscardedSearched DetermineDiscardedSearched()
+        {
+            var cardToSearch = DiscardedSearched.ValidCards(Game).OrderByDescending(c => CardQuality(c)).FirstOrDefault();
+            return new DiscardedSearched(Game) { Initiator = Faction, Card = cardToSearch };
+        }
+
+        public DiscardedTaken DetermineDiscardedTaken()
+        {
+            var cardToTake = DiscardedTaken.ValidCards(Game, this).OrderByDescending(c => CardQuality(c)).FirstOrDefault();
+            if (cardToTake != null && CardQuality(cardToTake) >= 4)
+            {
+                return new DiscardedTaken(Game) { Initiator = Faction, Card = cardToTake};
+            }
+
+            return null;
+        }
     }
+
 }

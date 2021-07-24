@@ -93,6 +93,7 @@ namespace Treachery.Shared
         public void PerformPostEventTasks(GameEvent e, bool justEnteredStartOfPhase)
         {
             if (!justEnteredStartOfPhase &&!(e is AllyPermission) && !(e is DealOffered) && !(e is DealAccepted)) MainPhaseMiddle();
+            RecentlyDiscarded.Clear();
             History.Add(e);
             States.Add(Clone());
         }
@@ -763,6 +764,7 @@ namespace Treachery.Shared
             return Skin.Current.Format("Players: {0}, Phase: {1}", Players.Count, CurrentPhase);
         }
 
+
         private TreacheryCard Discard(Player player, TreacheryCardType cardType)
         {
             TreacheryCard card = null;
@@ -777,8 +779,7 @@ namespace Treachery.Shared
 
             if (card != null)
             {
-                player.TreacheryCards.Remove(card);
-                TreacheryDiscardPile.PutOnTop(card);
+                Discard(player, card);
             }
             else
             {
@@ -794,7 +795,8 @@ namespace Treachery.Shared
             Discard(player, card);
             RegisterKnown(card);
         }
-        
+
+        public List<TreacheryCard> RecentlyDiscarded { get; private set; } = new List<TreacheryCard>();
         private void Discard(Player player, TreacheryCard card)
         {
             if (player != null && card != null)
@@ -803,6 +805,7 @@ namespace Treachery.Shared
                 player.TreacheryCards.Remove(card);
                 TreacheryDiscardPile.PutOnTop(card);
                 RegisterKnown(card);
+                RecentlyDiscarded.Add(card);
             }
         }
 

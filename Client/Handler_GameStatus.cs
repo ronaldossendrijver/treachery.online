@@ -130,6 +130,25 @@ namespace Treachery.Client
                         };
                     }
                 }
+                else if (Game.CurrentPhase == Phase.SearchingDiscarded)
+                {
+                    if (DiscardedSearched.CanBePlayed(Player))
+                    {
+                        return new GameStatus()
+                        {
+                            Description = "Please select a card from the treachery discard pile to take...",
+                            WaitingForOthers = false
+                        };
+                    }
+                    else
+                    {
+                        return new GameStatus()
+                        {
+                            Description = "Waiting for a card to be searched from the treachery discard pile...",
+                            WaitingForOthers = true
+                        };
+                    }
+                }
                 else if (Game.CurrentPhase == Phase.StormLosses)
                 {
                     if (IAm(Faction.Yellow))

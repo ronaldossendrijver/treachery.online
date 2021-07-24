@@ -227,6 +227,9 @@ namespace Treachery.Shared
 
         Clairvoyance = 360,
 
+        [PhaseProperty(true, Faction.None)]
+        SearchingDiscarded = 370,
+
         [PhaseProperty(true, Faction.Purple)]
         ReplacingFaceDancer = 395,
 
@@ -615,5 +618,13 @@ namespace Treachery.Shared
         WhiteNormal = 50,
         WhiteOnceAround = 60,
         WhiteSilent = 70
+    }
+
+    public enum JuiceType : int
+    {
+        None = 0,
+        Aggressor = 10,
+        GoFirst = 20,
+        GoLast = 30
     }
 }

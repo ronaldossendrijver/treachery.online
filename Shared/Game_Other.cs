@@ -75,22 +75,61 @@ namespace Treachery.Shared
             RecentMilestones.Add(Milestone.Bribe);
         }
 
-        public void HandleEvent(WhiteGaveCard e)
+        public void HandleEvent(DistransUsed e)
         {
             var initiator = GetPlayer(e.Initiator);
-            var target = initiator.AlliedPlayer;
+            var target = GetPlayer(e.Target);
+
+            Discard(initiator, TreacheryCardType.Distrans);
 
             initiator.TreacheryCards.Remove(e.Card);
             RegisterKnown(initiator, e.Card);
             target.TreacheryCards.Add(e.Card);
 
-            foreach (var p in Players.Where(p => p != initiator && p != target))
+            if (initiator.TreacheryCards.Any())
             {
-                UnregisterKnown(p, initiator.TreacheryCards);
-                UnregisterKnown(p, target.TreacheryCards);
+                foreach (var p in Players.Where(p => p != initiator && p != target))
+                {
+                    UnregisterKnown(p, initiator.TreacheryCards);
+                    UnregisterKnown(p, target.TreacheryCards);
+                }
             }
 
             CurrentReport.Add(e);
+        }
+
+        public void HandleEvent(DiscardedTaken e)
+        {
+            CurrentReport.Add(e);
+            RecentlyDiscarded.Remove(e.Card);
+            e.Player.TreacheryCards.Add(e.Card);
+            Discard(e.Player, TreacheryCardType.TakeDiscarded);
+            RecentMilestones.Add(Milestone.CardWonSwapped);
+        }
+
+        private Phase PhaseBeforeSearchingDiscarded { get; set; }
+        public void HandleEvent(DiscardedSearchedAnnounced e)
+        {
+            CurrentReport.Add(e);
+            PhaseBeforeSearchingDiscarded = CurrentPhase;
+            e.Player.Resources -= 2;
+            Enter(Phase.SearchingDiscarded);
+            RecentMilestones.Add(Milestone.CardWonSwapped);
+        }
+
+        public void HandleEvent(DiscardedSearched e)
+        {
+            CurrentReport.Add(e);
+            TreacheryDiscardPile.Items.Remove(e.Card);
+            e.Player.TreacheryCards.Add(e.Card);
+            foreach (var p in Players)
+            {
+                UnregisterKnown(p, TreacheryDiscardPile.Items);
+            }
+            TreacheryDiscardPile.Shuffle();
+            Discard(e.Player, TreacheryCardType.SearchDiscarded);
+            Enter(PhaseBeforeSearchingDiscarded);
+            RecentMilestones.Add(Milestone.Shuffled);
         }
 
         private void ExchangeResourcesInBribe(Player from, Player target, int amount)
@@ -451,6 +490,12 @@ namespace Treachery.Shared
             Discard(e.CardUsed());
             CurrentKarmaPrevention = e;
             RecentMilestones.Add(Milestone.SpecialUselessPlayed);
+        }
+
+        public void HandleEvent(JuicePlayed e)
+        {
+
+
         }
     }
 }

@@ -176,6 +176,24 @@ namespace Treachery.Shared
             return result;
         }
 
+        public void HandleEvent(WhiteGaveCard e)
+        {
+            var initiator = GetPlayer(e.Initiator);
+            var target = initiator.AlliedPlayer;
+
+            initiator.TreacheryCards.Remove(e.Card);
+            RegisterKnown(initiator, e.Card);
+            target.TreacheryCards.Add(e.Card);
+
+            foreach (var p in Players.Where(p => p != initiator && p != target))
+            {
+                UnregisterKnown(p, initiator.TreacheryCards);
+                UnregisterKnown(p, target.TreacheryCards);
+            }
+
+            CurrentReport.Add(e);
+        }
+
         private bool Allies(Faction a, Faction b)
         {
             var player = GetPlayer(a);

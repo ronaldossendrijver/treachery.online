@@ -309,6 +309,7 @@ namespace Treachery.Shared
                     break;
 
                 case Phase.CallTraitorOrPass:
+
                     if (AggressorBattleAction != null && DefenderBattleAction != null &&
                             (AggressorTraitorAction == null && faction == CurrentBattle.Aggressor ||
                              AggressorTraitorAction == null && faction == Faction.Black && GetPlayer(AggressorBattleAction.Initiator).Ally == Faction.Black && player.Traitors.Contains(DefenderBattleAction.Hero) ||
@@ -317,8 +318,13 @@ namespace Treachery.Shared
                     {
                         result.Add(typeof(TreacheryCalled));
                     }
+
                     if (faction == AggressorBattleAction.Initiator && AggressorBattleAction.Weapon != null && AggressorBattleAction.Weapon.Type == TreacheryCardType.PoisonTooth && !PoisonToothCancelled) result.Add(typeof(PoisonToothCancelled));
+
                     if (faction == DefenderBattleAction.Initiator && DefenderBattleAction.Weapon != null && DefenderBattleAction.Weapon.Type == TreacheryCardType.PoisonTooth && !PoisonToothCancelled) result.Add(typeof(PoisonToothCancelled));
+
+                    if (PortableAntidoteUsed.CanBePlayed(this, player)) result.Add(typeof(PortableAntidoteUsed));
+
                     break;
 
                 case Phase.BattleConclusion:
@@ -371,6 +377,10 @@ namespace Treachery.Shared
                 case Phase.Clairvoyance:
                     if (faction == LatestClairvoyance.Target) result.Add(typeof(ClairVoyanceAnswered));
                     break;
+
+                case Phase.SearchingDiscarded:
+                    if (DiscardedSearched.CanBePlayed(player)) result.Add(typeof(DiscardedSearched));
+                    break;
             }
 
             //Events that are (amost) always valid
@@ -380,7 +390,12 @@ namespace Treachery.Shared
                 result.Add(typeof(HideSecrets));
             }
 
-            if (CurrentPhase != Phase.Clairvoyance && CurrentPhase != Phase.TradingCards && CurrentPhase != Phase.PerformingKarmaHandSwap && CurrentPhase > Phase.TradingFactions && CurrentPhase < Phase.GameEnded)
+            if (CurrentPhase != Phase.Clairvoyance && 
+                CurrentPhase != Phase.TradingCards &&
+                CurrentPhase != Phase.SearchingDiscarded &&
+                CurrentPhase != Phase.PerformingKarmaHandSwap && 
+                CurrentPhase > Phase.TradingFactions && 
+                CurrentPhase < Phase.GameEnded)
             {
                 if (CurrentMainPhase < MainPhase.Battle && player.NoFieldIsActive)
                 {
@@ -395,6 +410,16 @@ namespace Treachery.Shared
                 if (!result.Contains(typeof(AmalPlayed)) && player.Has(TreacheryCardType.Amal) && (CurrentMoment == MainPhaseMoment.Start || CurrentMoment == MainPhaseMoment.End))
                 {
                     result.Add(typeof(AmalPlayed));
+                }
+
+                if (DiscardedTaken.CanBePlayed(this, player))
+                {
+                    result.Add(typeof(DiscardedTaken));
+                }
+
+                if (CurrentPhase != Phase.SearchingDiscarded && DiscardedSearched.CanBePlayed(player))
+                {
+                    result.Add(typeof(DiscardedSearchedAnnounced));
                 }
 
                 if (CurrentMainPhase == MainPhase.ShipmentAndMove && BrownMovePrevention.CanBePlayedBy(this, player))
@@ -534,6 +559,11 @@ namespace Treachery.Shared
                 if (faction == Faction.White && player.Ally != Faction.None && WhiteGaveCard.ValidCards(this, player).Any() && player.AlliedPlayer.HasRoomForCards)
                 {
                     result.Add(typeof(WhiteGaveCard));
+                }
+
+                if (DistransUsed.CanBePlayed(this, player))
+                {
+                    result.Add(typeof(DistransUsed));
                 }
             }
 

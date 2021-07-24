@@ -226,6 +226,13 @@ namespace Treachery.Shared
             CurrentReport.Add(e);
         }
 
+        public void HandleEvent(PortableAntidoteUsed e)
+        {
+            CurrentReport.Add(e);
+            var plan = CurrentBattle.PlanOf(e.Initiator);
+            plan.Defense = e.Player.Card(TreacheryCardType.PortableAntidote);
+        }
+
         public void HandleEvent(ResidualPlayed e)
         {
             Discard(e.Player, TreacheryCardType.Residual);

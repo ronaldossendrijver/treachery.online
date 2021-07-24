@@ -355,11 +355,27 @@
         }
         else if (a == typeof(FlightUsed))
         {
-            <FlightUsedComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Flight)" />
+            <FlightUsedComponent h="@h" />
         }
         else if (a == typeof(RockWasMelted))
         {
-            <RockWasMeltedComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Rockmelter)" />
+            <RockWasMeltedComponent h="@h" />
+        }
+        else if (a == typeof(DistransUsed))
+        {
+            <DistransUsedComponent h="@h" />
+        }
+        else if (a == typeof(DiscardedTaken))
+        {
+            <DiscardedTakenComponent h="@h" />
+        }
+        else if (a == typeof(DiscardedSearchedAnnounced))
+        {
+            <SimpleActionComponent GameEventType="DiscardedSearchedAnnounced" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.SearchDiscarded)" Title="@Skin.Current.Format("Use {0} to pay 2 and search and take a card from the treachery discard pile?", TreacheryCardType.SearchDiscarded)" />
+        }
+        else if (a == typeof(DiscardedSearched))
+        {
+            <DiscardedSearchedComponent h="@h" />
         }
     }
 
