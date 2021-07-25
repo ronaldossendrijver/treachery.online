@@ -126,23 +126,32 @@ namespace Treachery.Shared
 
         public bool IsRockmelter => Type == TreacheryCardType.Rockmelter;
 
+        public bool IsMirrorWeapon => Type == TreacheryCardType.MirrorWeapon;
+
         public bool IsPortableAntidote => Type == TreacheryCardType.PortableAntidote;
 
-        public bool IsWeapon => IsLaser || IsPoisonWeapon || IsProjectileWeapon || IsPoisonTooth || IsArtillery || IsRockmelter;
+        public bool IsWeapon => IsLaser || IsPoisonWeapon || IsProjectileWeapon || IsPoisonTooth || IsArtillery || IsRockmelter || IsMirrorWeapon;
 
         public bool IsDefense => IsPoisonDefense || IsProjectileDefense;
 
         public bool IsUseless => Type == TreacheryCardType.Useless;
 
-        public bool CounteredBy(TreacheryCard c)
+        public bool CounteredBy(TreacheryCard defense, TreacheryCard combinedWithWeapon)
         {
-            return
-                Type == TreacheryCardType.PoisonTooth && c.IsNonAntidotePoisonDefense ||
-                Type == TreacheryCardType.Poison && c.IsPoisonDefense ||
-                Type == TreacheryCardType.Chemistry && c.IsPoisonDefense ||
-                Type == TreacheryCardType.Projectile && c.IsProjectileDefense ||
-                Type == TreacheryCardType.WeirdingWay && c.IsProjectileDefense ||
-                Type == TreacheryCardType.ProjectileAndPoison && c.Type == TreacheryCardType.ShieldAndAntidote;
+            if (Type == TreacheryCardType.MirrorWeapon)
+            {
+                return combinedWithWeapon == null || combinedWithWeapon.CounteredBy(defense, combinedWithWeapon);
+            }
+            else
+            {
+                return
+                    Type == TreacheryCardType.PoisonTooth && defense.IsNonAntidotePoisonDefense ||
+                    Type == TreacheryCardType.Poison && defense.IsPoisonDefense ||
+                    Type == TreacheryCardType.Chemistry && defense.IsPoisonDefense ||
+                    Type == TreacheryCardType.Projectile && defense.IsProjectileDefense ||
+                    Type == TreacheryCardType.WeirdingWay && defense.IsProjectileDefense ||
+                    Type == TreacheryCardType.ProjectileAndPoison && defense.Type == TreacheryCardType.ShieldAndAntidote;
+            }
         }
 
         public int CompareTo(TreacheryCard other)

@@ -157,6 +157,27 @@ namespace Treachery.Shared
             }
         }
 
+        [JsonIgnore]
+        public TreacheryCard OriginalWeapon { get; set; } = null;
+
+        public void ActivateMirrorWeapon(TreacheryCard mirroredWeapon)
+        {
+            if (Weapon != null && Weapon.Type == TreacheryCardType.MirrorWeapon)
+            {
+                OriginalWeapon = Weapon;
+                Weapon = mirroredWeapon;
+            }
+        }
+
+        public void DeactivateMirrorWeapon()
+        {
+            if (OriginalWeapon != null)
+            {
+                Weapon = OriginalWeapon;
+                OriginalWeapon = null;
+            }
+        }
+
         public bool HasRockMelter => Weapon != null && Weapon.IsRockmelter;
 
         public static float DetermineSpecialForceStrength(Game g, Faction player, Faction opponent)

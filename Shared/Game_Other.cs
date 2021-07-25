@@ -508,10 +508,11 @@ namespace Treachery.Shared
             RecentMilestones.Add(Milestone.SpecialUselessPlayed);
         }
 
+        public JuicePlayed CurrentJuice { get; set; }
         public void HandleEvent(JuicePlayed e)
         {
-
-
+            CurrentReport.Add(e);
+            CurrentJuice = e;
         }
     }
 }

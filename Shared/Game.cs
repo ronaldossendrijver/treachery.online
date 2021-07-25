@@ -244,6 +244,7 @@ namespace Treachery.Shared
             CurrentMoment = MainPhaseMoment.Start;
             if (clearReport) CurrentReport = new Report(phase);
             CurrentKarmaPrevention = null;
+            CurrentJuice = null;
         }
 
         private void MainPhaseMiddle()

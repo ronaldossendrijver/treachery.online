@@ -294,11 +294,10 @@ namespace Treachery.Test
             forcesOnPlanet = countForcesOnPlanet;
         }
 
-
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 100;
+            int nrOfGames = 5000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
