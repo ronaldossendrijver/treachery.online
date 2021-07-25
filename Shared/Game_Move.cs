@@ -39,9 +39,15 @@ namespace Treachery.Shared
             Allow(FactionAdvantage.RedLetAllyReviveExtraForces);
             Allow(FactionAdvantage.PurpleReceiveRevive);
             Allow(FactionAdvantage.BrownRevival);
+            
             HasActedOrPassed.Clear();
             LastShippedOrMovedTo = null;
 
+            Enter(Version >= 107, Phase.BeginningOfShipAndMove, StartShipAndMoveSequence);
+        }
+
+        private void StartShipAndMoveSequence()
+        {
             ShipmentAndMoveSequence.Start(this, false);
             if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && OrangeDeterminesMoveMoment)
             {

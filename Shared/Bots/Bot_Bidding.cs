@@ -137,7 +137,7 @@ namespace Treachery.Shared
                 c.IsPoisonWeapon && !TreacheryCards.Any(c => c.IsPoisonWeapon && c.Type != TreacheryCardType.Chemistry) ||
                 c.IsProjectileDefense && !TreacheryCards.Any(c => c.IsProjectileDefense && c.Type != TreacheryCardType.WeirdingWay) ||
                 c.IsPoisonDefense && !TreacheryCards.Any(c => c.IsPoisonDefense) ||
-                c.Type == TreacheryCardType.Karma && (Faction == Faction.Black || TreacheryCards.Count() < MaximumNumberOfCards - 1) ||
+                c.Type == TreacheryCardType.Karma ||
                 c.Type == TreacheryCardType.Mercenary && Leaders.Count(l => Game.IsAlive(l)) <= 1 ||
                 c.Type == TreacheryCardType.RaiseDead && ForcesKilled > 7;
         }

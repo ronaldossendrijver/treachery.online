@@ -135,7 +135,7 @@
 
     protected override void OnInitialized()
     {
-        _ = Task.Delay(200).ContinueWith(e => LoadRecentGame());
+        Task.Delay(200).ContinueWith(e => LoadRecentGame());
     }
 
     private async Task LoadRecentGame()

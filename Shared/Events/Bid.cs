@@ -184,5 +184,11 @@ namespace Treachery.Shared
         {
             return ValidKarmaCards(g, p).Any();
         }
+
+        public static bool MayBePlayed(Game game, Player player)
+        {
+            return game.CurrentAuctionType == AuctionType.WhiteSilent && !game.Bids.ContainsKey(player.Faction) && player.HasRoomForCards ||
+                   game.CurrentAuctionType != AuctionType.WhiteSilent && player == game.BidSequence.CurrentPlayer;
+        }
     }
 }

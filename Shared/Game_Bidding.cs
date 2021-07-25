@@ -112,14 +112,14 @@ namespace Treachery.Shared
 
                     if (Players.Count(p => p.HasRoomForCards) == Bids.Count)
                     {
+                        if (CurrentAuctionType == AuctionType.BlackMarketSilent)
+                        {
+                            CurrentReport.Add(string.Join(", ", Bids.Select(b => Skin.Current.Format("{0} bid {1}", b.Key, b.Value.TotalAmount))));
+                        }
+
                         var highestBid = DetermineHighestBid(Bids);
                         if (highestBid != null && highestBid.TotalAmount > 0)
                         {
-                            if (CurrentAuctionType == AuctionType.BlackMarketSilent)
-                            {
-                                CurrentReport.Add(string.Join(", ", Bids.Select(b => Skin.Current.Format("{0} bid {1}", b.Key, b.Value.TotalAmount))));
-                            }
-                                                        
                             WinByHighestBid(
                                 highestBid.Player,
                                 highestBid.Amount, 
@@ -438,14 +438,14 @@ namespace Treachery.Shared
 
                     if (Players.Count(p => p.HasRoomForCards) == Bids.Count)
                     {
+                        if (CurrentAuctionType == AuctionType.WhiteSilent)
+                        {
+                            CurrentReport.Add(string.Join(", ", Bids.Select(b => Skin.Current.Format("{0} bid {1}", b.Key, b.Value.TotalAmount))));
+                        }
+
                         var highestBid = DetermineHighestBid(Bids);
                         if (highestBid != null && highestBid.TotalAmount > 0)
                         {
-                            if (CurrentAuctionType == AuctionType.WhiteSilent)
-                            {
-                                CurrentReport.Add(string.Join(", ", Bids.Select(b => Skin.Current.Format("{0} bid {1}", b.Key, b.Value.TotalAmount))));
-                            }
-
                             var card = WinByHighestBid(
                                 highestBid.Player, 
                                 highestBid.Amount, 

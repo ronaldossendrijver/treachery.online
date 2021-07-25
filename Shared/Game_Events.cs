@@ -54,6 +54,7 @@ namespace Treachery.Shared
                 case Phase.WaitingForNextBiddingRound:
                 case Phase.BiddingReport:
                 case Phase.Resurrection:
+                case Phase.BeginningOfShipAndMove:
                 case Phase.ShipmentAndMoveConcluded:
                 case Phase.BattleReport:
                 case Phase.CollectionReport:
@@ -149,8 +150,7 @@ namespace Treachery.Shared
                     if (faction == Faction.White) result.Add(typeof(WhiteAnnouncesBlackMarket));
                     break;
                 case Phase.BlackMarketBidding:
-                    if (CurrentAuctionType == AuctionType.BlackMarketSilent && !Bids.ContainsKey(faction) && player.HasRoomForCards ||
-                        CurrentAuctionType != AuctionType.BlackMarketSilent && player == BidSequence.CurrentPlayer)
+                    if (BlackMarketBid.MayBePlayed(this, player))
                     {
                         result.Add(typeof(BlackMarketBid));
                     }
@@ -163,8 +163,7 @@ namespace Treachery.Shared
                     if (faction == Faction.White) result.Add(typeof(WhiteSpecifiesAuction));
                     break;
                 case Phase.Bidding:
-                    if (CurrentAuctionType == AuctionType.WhiteSilent && !Bids.ContainsKey(faction) && player.HasRoomForCards ||
-                        CurrentAuctionType != AuctionType.WhiteSilent && player == BidSequence.CurrentPlayer)
+                    if (Bid.MayBePlayed(this, player))
                     {
                         result.Add(typeof(Bid));
                     }
@@ -417,7 +416,7 @@ namespace Treachery.Shared
                     result.Add(typeof(DiscardedTaken));
                 }
 
-                if (CurrentPhase != Phase.SearchingDiscarded && DiscardedSearched.CanBePlayed(player))
+                if (CurrentPhase != Phase.SearchingDiscarded && DiscardedSearchedAnnounced.CanBePlayed(this, player))
                 {
                     result.Add(typeof(DiscardedSearchedAnnounced));
                 }

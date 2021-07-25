@@ -487,10 +487,13 @@ namespace Treachery.Shared
 
         public DiscardedSearchedAnnounced DetermineDiscardedSearchedAnnounced()
         {
-            var cardToSearch = DiscardedSearched.ValidCards(Game).OrderByDescending(c => CardQuality(c)).FirstOrDefault();
-            if (cardToSearch != null && CardQuality(cardToSearch) >= 4)
+            if (Game.CurrentMainPhase == MainPhase.Contemplate)
             {
-                return new DiscardedSearchedAnnounced(Game) { Initiator = Faction };
+                var cardToSearch = DiscardedSearched.ValidCards(Game).OrderByDescending(c => CardQuality(c)).FirstOrDefault();
+                if (cardToSearch != null && CardQuality(cardToSearch) >= 4)
+                {
+                    return new DiscardedSearchedAnnounced(Game) { Initiator = Faction };
+                }
             }
 
             return null;

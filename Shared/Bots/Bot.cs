@@ -28,6 +28,7 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(DealAccepted))) action = DetermineDealAccepted();
                 if (action == null && possibleEvents.Contains(typeof(AcceptOrCancelPurpleRevival))) action = DetermineAcceptOrCancelPurpleRevival();
                 if (action == null && possibleEvents.Contains(typeof(RequestPurpleRevival))) action = DetermineRequestPurpleRevival();
+                if (action == null && possibleEvents.Contains(typeof(DistransUsed))) action = DetermineDistransUsed();
             }
             catch (Exception e)
             {
@@ -94,7 +95,6 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(RockWasMelted))) action = DetermineRockWasMelted();
                 if (action == null && possibleEvents.Contains(typeof(ResidualPlayed))) action = DetermineResidualPlayed();
                 if (action == null && possibleEvents.Contains(typeof(FlightUsed))) action = DetermineFlightUsed();
-                if (action == null && possibleEvents.Contains(typeof(DistransUsed))) action = DetermineDistransUsed();
                 if (action == null && possibleEvents.Contains(typeof(DiscardedSearchedAnnounced))) action = DetermineDiscardedSearchedAnnounced();
                 if (action == null && possibleEvents.Contains(typeof(DiscardedSearched))) action = DetermineDiscardedSearched();
                 if (action == null && possibleEvents.Contains(typeof(DiscardedTaken))) action = DetermineDiscardedTaken();

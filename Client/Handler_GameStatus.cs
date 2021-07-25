@@ -1012,6 +1012,24 @@ namespace Treachery.Client
                         {
                             switch (CurrentPhase)
                             {
+                                case Phase.BeginningOfShipAndMove:
+                                    if (IsHost)
+                                    {
+                                        return new GameStatus()
+                                        {
+                                            Description = "Start the ship & move sequence when all factions are ready.",
+                                            WaitingForOthers = false
+                                        };
+                                    }
+                                    else
+                                    {
+                                        return new GameStatus()
+                                        {
+                                            Description = "The host is waiting for everyone to be ready to start the ship & move sequence...",
+                                            WaitingForOthers = true
+                                        };
+                                    }
+
                                 case Phase.NonOrangeShip:
                                     if (Game.ShipmentAndMoveSequence.CurrentPlayer == Player)
                                     {

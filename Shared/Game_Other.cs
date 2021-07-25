@@ -80,6 +80,8 @@ namespace Treachery.Shared
             var initiator = GetPlayer(e.Initiator);
             var target = GetPlayer(e.Target);
 
+            bool targetHadRoomForCards = target.HasRoomForCards;
+
             Discard(initiator, TreacheryCardType.Distrans);
 
             initiator.TreacheryCards.Remove(e.Card);
@@ -96,6 +98,20 @@ namespace Treachery.Shared
             }
 
             CurrentReport.Add(e);
+
+            CheckIfBiddingForPlayerShouldBeSkipped(target, targetHadRoomForCards);
+        }
+
+        private void CheckIfBiddingForPlayerShouldBeSkipped(Player player, bool hadRoomForCards)
+        {
+            if (CurrentPhase == Phase.BlackMarketBidding && hadRoomForCards && !player.HasRoomForCards && BlackMarketBid.MayBePlayed(this, player))
+            {
+                HandleEvent(new Bid(this) { Initiator = player.Faction, Passed = true });
+            }
+            else if (CurrentPhase == Phase.Bidding && hadRoomForCards && !player.HasRoomForCards && Bid.MayBePlayed(this, player))
+            {
+                HandleEvent(new Bid(this) { Initiator = player.Faction, Passed = true });
+            }
         }
 
         public void HandleEvent(DiscardedTaken e)

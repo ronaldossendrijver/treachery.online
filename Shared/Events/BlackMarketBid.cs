@@ -96,6 +96,12 @@ namespace Treachery.Shared
                 default: return new SequenceElement[] { };
             }
         }
+
+        public static bool MayBePlayed(Game game, Player player)
+        {
+            return game.CurrentAuctionType == AuctionType.BlackMarketSilent && !game.Bids.ContainsKey(player.Faction) && player.HasRoomForCards ||
+                   game.CurrentAuctionType != AuctionType.BlackMarketSilent && player == game.BidSequence.CurrentPlayer;
+        }
     }
 
 }

@@ -169,6 +169,9 @@ namespace Treachery.Shared
         WaitingForNextBiddingRound = 205,
         BiddingReport = 208,
         Resurrection = 210,
+
+        BeginningOfShipAndMove = 219,
+
         NonOrangeShip = 220,
 
         [PhaseProperty(true, Faction.Orange)]

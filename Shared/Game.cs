@@ -199,6 +199,10 @@ namespace Treachery.Shared
                     EnterShipmentAndMovePhase();
                     break;
 
+                case Phase.BeginningOfShipAndMove:
+                    StartShipAndMoveSequence();
+                    break;
+
                 case Phase.ShipmentAndMoveConcluded:
                     EnterBattlePhase();
                     break;

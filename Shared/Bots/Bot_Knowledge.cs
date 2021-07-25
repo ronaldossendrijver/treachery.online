@@ -99,6 +99,7 @@ namespace Treachery.Shared
             if (c.Type == TreacheryCardType.ProjectileAndPoison) return 5;
             if (c.Type == TreacheryCardType.ShieldAndAntidote) return 5;
             if (c.Type == TreacheryCardType.Laser) return 5;
+            if (c.Type == TreacheryCardType.Karma && Faction == Faction.Black && !SpecialKarmaPowerUsed) return 5;
 
             if (c.Type == TreacheryCardType.Chemistry) return 4;
             if (c.Type == TreacheryCardType.WeirdingWay) return 4;

@@ -298,7 +298,7 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 2000;
+            int nrOfGames = 100;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
@@ -809,6 +809,45 @@ namespace Treachery.Test
             return (new Random()).Next();
         }
 
+        [TestMethod]
+        public void TestShuffleMethod()
+        {
+            int[] counters = new int[100];
+
+            for (int run = 0; run < 100000; run++)
+            {
+                var deck = new Deck<int>(Enumerable.Range(0, 100), new Random());
+                deck.Shuffle();
+                counters[deck.Draw()]++;
+            }
+
+            Console.WriteLine("Average times any item is on top: {0}", counters.Average());
+            Console.WriteLine("Standard deviation in the times any item is on top: {0}", CalculateStandardDeviation(counters.Select(c => (double)c)));
+
+            for (int i = 0; i < 100; i++)
+            {
+                Console.WriteLine("Times {0} was on top: {1}", i, counters[i]);
+            }
+        }
+
+        private double CalculateStandardDeviation(IEnumerable<double> values)
+        {
+            double standardDeviation = 0;
+
+            if (values.Any())
+            {
+                // Compute the average.     
+                double avg = values.Average();
+
+                // Perform the Sum of (value-avg)_2_2.      
+                double sum = values.Sum(d => Math.Pow(d - avg, 2));
+
+                // Put it all together.      
+                standardDeviation = Math.Sqrt((sum) / (values.Count() - 1));
+            }
+
+            return standardDeviation;
+        }
 
         [TestMethod]
         public void DetermineBias()

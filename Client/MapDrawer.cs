@@ -746,6 +746,7 @@ namespace Treachery.Client
         #endregion
 
         #region Bids
+        
         private static async Task DrawBids()
         {
             if (h.Game.CurrentPhase == Phase.Bidding)
@@ -766,7 +767,7 @@ namespace Treachery.Client
                         else if (h.Game.Bids.ContainsKey(p.Faction))
                         {
                             var bid = h.Game.Bids[p.Faction];
-                            bidText = bid.Passed ? "PASS" : string.Format("BID {0}", bid.TotalAmount);
+                            bidText = DetermineBidText(bid);
                             bidColor = bid.Passed ? "rgb(255,200,200)" : "rgb(200,255,200)";
                         }
 
@@ -775,6 +776,19 @@ namespace Treachery.Client
                 }
             }
         }
+
+        private static string DetermineBidText(IBid bid)
+        {
+            if (h.Game.CurrentAuctionType != AuctionType.BlackMarketSilent && h.Game.CurrentAuctionType != AuctionType.WhiteSilent)
+            {
+                return bid.Passed ? "PASS" : string.Format("BID {0}", bid.TotalAmount);
+            }
+            else
+            {
+                return "READY";
+            }
+        }
+
         #endregion
 
         #region Tanks
