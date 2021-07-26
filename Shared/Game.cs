@@ -212,7 +212,7 @@ namespace Treachery.Shared
 
                 case Phase.BattleReport:
                     ResetBattle();
-                    Enter(Aggressor != null, Phase.BattlePhase, EnterSpiceCollectionPhase);
+                    Enter(NextPlayerToBattle != null, Phase.BattlePhase, EnterSpiceCollectionPhase);
                     break;
 
                 case Phase.CollectionReport:

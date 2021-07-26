@@ -629,6 +629,7 @@ namespace Treachery.Shared
     {
         None = 0,
         GoFirst = 10,
-        GoLast = 20
+        GoLast = 20,
+        Aggressor = 30
     }
 }

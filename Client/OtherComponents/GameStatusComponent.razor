@@ -85,7 +85,7 @@
         {
             //if (Game.CurrentPhase == Phase.Bidding) return Game.BidSequence.GetFactionsInSequence(Game);
             if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.CurrentPhase != Phase.ShipmentAndMoveConcluded) return Game.ShipmentAndMoveSequence.GetPlayersInSequence();
-            if (Game.CurrentMainPhase == MainPhase.Battle && Game.Aggressor != null) return Game.BattleSequence.GetPlayersInSequence();
+            if (Game.CurrentMainPhase == MainPhase.Battle && Game.NextPlayerToBattle != null) return Game.BattleSequence.GetPlayersInSequence();
 
             return null;
         }

@@ -34,9 +34,14 @@ namespace Treachery.Shared
             return new Message(Initiator, "{0} use {1} to {2}.", Initiator, TreacheryCardType.Juice, Type);
         }
 
-        public static IEnumerable<JuiceType> ValidTypes(Game g)
+        public static IEnumerable<JuiceType> ValidTypes(Game g, Player p)
         {
             var result = new List<JuiceType>();
+
+            if (g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(p))
+            {
+                result.Add(JuiceType.Aggressor);
+            }
 
             if (g.CurrentMainPhase == MainPhase.Bidding ||
                 g.CurrentMainPhase == MainPhase.ShipmentAndMove && !g.HasActedOrPassed.Any() ||
@@ -47,6 +52,7 @@ namespace Treachery.Shared
             }
 
             result.Add(JuiceType.GoLast);
+
             return result;
         }
 

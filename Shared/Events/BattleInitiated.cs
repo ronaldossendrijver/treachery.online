@@ -30,6 +30,22 @@ namespace Treachery.Shared
         }
 
         [JsonIgnore]
+        public Player EffectiveAggressor
+        {
+            get
+            {
+                if (Game.IsAggressorByJuice(Defender))
+                {
+                    return Defender;
+                }
+                else
+                {
+                    return Player;
+                }
+            }
+        }
+
+        [JsonIgnore]
         public Player Defender
         {
             get

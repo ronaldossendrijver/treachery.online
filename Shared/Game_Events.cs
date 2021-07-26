@@ -260,7 +260,7 @@ namespace Treachery.Shared
 
                 case Phase.BattlePhase:
                     {
-                        if (CurrentBattle == null && player == Aggressor)
+                        if (CurrentBattle == null && player == NextPlayerToBattle)
                         {
                             result.Add(typeof(BattleInitiated));
                         }
@@ -354,7 +354,7 @@ namespace Treachery.Shared
                     break;
 
                 case Phase.BattleReport:
-                    if (Version < 103 && player.Has(TreacheryCardType.Amal) && Aggressor == null) result.Add(typeof(AmalPlayed));
+                    if (Version < 103 && player.Has(TreacheryCardType.Amal) && NextPlayerToBattle == null) result.Add(typeof(AmalPlayed));
                     break;
 
                 case Phase.ReplacingFaceDancer:

@@ -56,10 +56,8 @@ namespace Treachery.Test
             
             var p = g.GetPlayer(e.Initiator);
             
-            WriteSavegameIfApplicable(g, typeof(DistransUsed));
-            WriteSavegameIfApplicable(g, typeof(BrownFreeRevivalPrevention));
-            WriteSavegameIfApplicable(g, typeof(BrownRemoveForce));
-
+            WriteSavegameIfApplicable(g, typeof(PortableAntidoteUsed));
+            WriteSavegameIfApplicable(g, typeof(RockWasMelted));
             
             /*
             var brown = g.GetPlayer(Faction.Brown);
@@ -516,7 +514,11 @@ namespace Treachery.Test
                 if (evt != null)
                 {
                     var result = evt.Execute(performTests, true);
-                    if (performTests) Assert.AreEqual("", result);
+                    if (performTests)
+                    {
+                        if (result != "") File.WriteAllText("error.json", GameState.GetStateAsString(game));
+                        Assert.AreEqual("", result);
+                    }
                     return evt;
                 }
             }

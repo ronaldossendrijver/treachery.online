@@ -1125,7 +1125,7 @@ namespace Treachery.Client
                                 case Phase.BattlePhase:
                                     if (Game.CurrentBattle == null)
                                     {
-                                        var iAmAggressor = (Game.Aggressor == Player);
+                                        var iAmAggressor = (Game.CurrentBattle?.EffectiveAggressor == Player);
 
                                         if (iAmAggressor)
                                         {
@@ -1139,7 +1139,7 @@ namespace Treachery.Client
                                         {
                                             return new GameStatus()
                                             {
-                                                Description = Skin.Current.Format("{0} are Aggressors! They are deciding whom and where to battle...", Game.Aggressor.Faction),
+                                                Description = Skin.Current.Format("{0} are Aggressors! They are deciding whom and where to battle...", Game.CurrentBattle?.EffectiveAggressor),
                                                 WaitingForOthers = true
                                             };
                                         }
@@ -1541,7 +1541,7 @@ namespace Treachery.Client
                    (Game.CurrentPhase == Phase.OrangeMove || Game.CurrentPhase == Phase.OrangeShip) && p.Faction == Faction.Orange ||
                    (Game.CurrentPhase == Phase.NonOrangeMove || Game.CurrentPhase == Phase.NonOrangeShip) && p == Game.ShipmentAndMoveSequence.CurrentPlayer ||
                    (Game.CurrentPhase == Phase.BlueAccompaniesOrange || Game.CurrentPhase == Phase.BlueAccompaniesNonOrange || Game.CurrentPhase == Phase.BlueIntrudedByOrangeMove || Game.CurrentPhase == Phase.BlueIntrudedByNonOrangeMove || Game.CurrentPhase == Phase.BlueIntrudedByOrangeShip || Game.CurrentPhase == Phase.BlueIntrudedByNonOrangeShip) && p.Faction == Faction.Blue ||
-                   (Game.CurrentMainPhase == MainPhase.Battle) && p == Game.Aggressor;
+                   (Game.CurrentMainPhase == MainPhase.Battle) && p == Game.CurrentBattle?.EffectiveAggressor;
         }
     }
 }

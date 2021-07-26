@@ -105,7 +105,10 @@ namespace Treachery.Shared
                 out IHero hero,
                 out bool messiah,
                 out bool isTraitor,
-                out bool lasgunShield);
+                out bool lasgunShield,
+                out bool stoneBurner);
+
+            if (stoneBurner) dialNeeded = 0;
 
             LogInfo("AGAINST {0} in {1}, WITH {2} + {3} as WEAP + {4} as DEF, I need a force dial of {5}", opponent, Game.CurrentBattle.Territory, hero, weapon, defense, dialNeeded);
 
@@ -389,6 +392,12 @@ namespace Treachery.Shared
             if (chosenWeapon != null && chosenWeapon.Type == TreacheryCardType.ArtilleryStrike)
             {
                 mostEffectiveDefense = availableDefenses.FirstOrDefault(def => def.IsShield);
+                return 0;
+            }
+
+            if (chosenWeapon != null && chosenWeapon.Type == TreacheryCardType.Rockmelter)
+            {
+                mostEffectiveDefense = null;
                 return 0;
             }
 
@@ -732,12 +741,12 @@ namespace Treachery.Shared
             var prescience = Prescience.MayUsePrescience(Game, this) ? BestPrescience(opponent, strength) : null;
 
             //More could be done with the information obtained in the below call
-            return GetDialNeeded(IWillBeAggressorAgainst(opponent), opponent, territory, voicePlan, prescience, takeReinforcementsIntoAccount, out _, out _, out _, out _, out _, out _);
+            return GetDialNeeded(IWillBeAggressorAgainst(opponent), opponent, territory, voicePlan, prescience, takeReinforcementsIntoAccount, out _, out _, out _, out _, out _, out _, out _);
         }
 
         protected float GetDialNeeded(
             bool iAmAggressor, Player opponent, Territory territory, VoicePlan voicePlan, Prescience prescience, bool takeReinforcementsIntoAccount,
-            out TreacheryCard bestDefense, out TreacheryCard bestWeapon, out IHero hero, out bool messiah, out bool isTraitor, out bool lasgunShieldDetected)
+            out TreacheryCard bestDefense, out TreacheryCard bestWeapon, out IHero hero, out bool messiah, out bool isTraitor, out bool lasgunShieldDetected, out bool stoneBurnerDetected)
         {
             bool enemyCanDefendPoisonTooth = false;
             float chanceOfMyHeroSurviving;
@@ -757,6 +766,8 @@ namespace Treachery.Shared
                 bestDefense,
                 (prescience != null && prescience.Aspect == PrescienceAspect.Weapon && opponentPlan != null) ? opponentPlan.Weapon : null,
                 (prescience != null && prescience.Aspect == PrescienceAspect.Defense && opponentPlan != null) ? opponentPlan.Defense : null);
+
+            stoneBurnerDetected = bestWeapon != null && bestWeapon.IsRockmelter || (prescience != null && prescience.Aspect == PrescienceAspect.Weapon && opponentPlan != null && opponentPlan.Weapon != null && opponentPlan.Weapon.IsRockmelter);
 
             int myMessiahBonus = 0;
             if (Battle.MessiahAvailableForBattle(Game, this) && !lasgunShieldDetected)
@@ -866,16 +877,7 @@ namespace Treachery.Shared
             var opponent = Game.CurrentBattle.OpponentOf(this);
             var opponentPlan = Game.CurrentBattle.PlanOf(opponent);
 
-            bool kill;
-            if (Game.Aggressor == this) {
-                kill = myPlan.Dial(Game, opponent.Faction) >= opponentPlan.Dial(Game, Faction);
-            }
-            else
-            {
-                kill = myPlan.Dial(Game, opponent.Faction) > opponentPlan.Dial(Game, Faction);
-            }
-
-            return new RockWasMelted(Game) { Initiator = Faction, Kill = kill };
+            return new RockWasMelted(Game) { Initiator = Faction, Kill = opponentPlan.Hero != null && (myPlan.Hero == null || myPlan.Hero.Value < opponentPlan.Hero.Value) };
         }
 
         protected ResidualPlayed DetermineResidualPlayed()

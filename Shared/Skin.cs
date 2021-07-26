@@ -531,6 +531,7 @@ namespace Treachery.Shared
             {
                 JuiceType.GoFirst => "be considered first in storm order",
                 JuiceType.GoLast => "be considered last in storm order",
+                JuiceType.Aggressor => "be considered aggressor in this battle",
                 _ => "None"
             };
         }

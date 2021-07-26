@@ -29,7 +29,7 @@ namespace Treachery.Shared
             if (KarmaHmsMovesLeft != 2) KarmaHmsMovesLeft = 0;
             AllowMovePhaseFactionAdvantages();
             ResetBattle();
-            Enter(Aggressor == null, EnterSpiceCollectionPhase, Version >= 107, Phase.BeginningOfBattle, Phase.BattlePhase);
+            Enter(NextPlayerToBattle == null, EnterSpiceCollectionPhase, Version >= 107, Phase.BeginningOfBattle, Phase.BattlePhase);
         }
 
         private void AllowMovePhaseFactionAdvantages()
@@ -48,7 +48,7 @@ namespace Treachery.Shared
             Allow(FactionAdvantage.GreyCyborgExtraMove);
         }
 
-        public Player Aggressor
+        public Player NextPlayerToBattle
         {
             get
             {
@@ -575,7 +575,8 @@ namespace Treachery.Shared
         {
             GreenKarma = false;
             if (!Applicable(Rule.FullPhaseKarma)) AllowPreventedBattleFactionAdvantages();
-            if (Aggressor == null) MainPhaseEnd();
+            if (NextPlayerToBattle == null) MainPhaseEnd();
+            if (CurrentJuice != null && CurrentJuice.Type == JuiceType.Aggressor) CurrentJuice = null;
             Enter(Phase.BattleReport);
         }
 
@@ -799,11 +800,11 @@ namespace Treachery.Shared
             agg.DeactivateMirrorWeapon();
             def.DeactivateMirrorWeapon();
 
-            int aggHeroEffectiveStrength = (aggHero != null && !artilleryUsed && !rockMelterUsed) ? aggHero.ValueInCombatAgainst(defHero) : 0;
-            int aggHeroContribution = !aggHeroKilled ? aggHeroEffectiveStrength : 0;
+            int aggHeroEffectiveStrength = (aggHero != null && !artilleryUsed) ? aggHero.ValueInCombatAgainst(defHero) : 0;
+            int aggHeroContribution = !aggHeroKilled && !rockMelterUsed ? aggHeroEffectiveStrength : 0;
 
-            int defHeroEffectiveStrength = (defHero != null && !artilleryUsed && !rockMelterUsed) ? defHero.ValueInCombatAgainst(aggHero) : 0;
-            int defHeroContribution = (defHero != null && !defHeroKilled) ? defHeroEffectiveStrength : 0;
+            int defHeroEffectiveStrength = (defHero != null && !artilleryUsed) ? defHero.ValueInCombatAgainst(aggHero) : 0;
+            int defHeroContribution = !defHeroKilled && !rockMelterUsed ? defHeroEffectiveStrength : 0;
 
             var aggMessiahContribution = aggressor.Is(Faction.Green) && agg.Messiah && agg.Hero != null && !aggHeroKilled && !artilleryUsed && !rockMelterUsed ? 2 : 0;
             var defMessiahContribution = defender.Is(Faction.Green) && def.Messiah && def.Hero != null && !defHeroKilled && !artilleryUsed && !rockMelterUsed ? 2 : 0;
@@ -825,7 +826,16 @@ namespace Treachery.Shared
             float aggTotal = aggForceDial + aggHeroContribution + aggMessiahContribution;
             float defTotal = defForceDial + defHeroContribution + defMessiahContribution;
 
-            var winner = (aggTotal >= defTotal) ? aggressor : defender;
+            Player winner;
+            if (IsAggressorByJuice(defender))
+            {
+                winner = (defTotal >= aggTotal) ? defender : aggressor;
+            }
+            else
+            {
+                winner = (aggTotal >= defTotal) ? aggressor : defender;
+            }
+
             var winnerBattlePlan = (winner == aggressor) ? agg : def;
 
             var loser = (aggTotal >= defTotal) ? defender : aggressor;
@@ -844,12 +854,26 @@ namespace Treachery.Shared
                 KillLeaderInBattle(defHero, aggHero, defHeroCauseOfDeath, winner, defHeroEffectiveStrength);
             }
 
-            CurrentReport.Add(aggressor.Faction, "{0} (aggressor) strength: {1}.", aggressor.Faction, aggTotal);
-            CurrentReport.Add(defender.Faction, "{0} (defending) strength: {1}.", defender.Faction, defTotal);
+            if (IsAggressorByJuice(defender))
+            {
+                CurrentReport.Add(aggressor.Faction, "{0} (defending) strength: {1}.", aggressor.Faction, aggTotal);
+                CurrentReport.Add(defender.Faction, "{0} (aggressor due to {2}) strength: {1}.", defender.Faction, defTotal, TreacheryCardType.Juice);
+            }
+            else
+            {
+                CurrentReport.Add(aggressor.Faction, "{0} (aggressor) strength: {1}.", aggressor.Faction, aggTotal);
+                CurrentReport.Add(defender.Faction, "{0} (defending) strength: {1}.", defender.Faction, defTotal);
+            }
+
             CurrentReport.Add(winner.Faction, "{0} WIN THE BATTLE.", winner.Faction);
 
             ProcessWinnerLosses(territory, winner, winnerBattlePlan);
             ProcessLoserLosses(territory, loser, loserBattlePlan);
+        }
+
+        public bool IsAggressorByJuice(Player p)
+        {
+            return CurrentJuice != null && CurrentJuice.Type == JuiceType.Aggressor && CurrentJuice.Player == p;
         }
 
         private void DetermineCauseOfDeath(Battle wheel, Battle opponent, IHero theHero, bool poisonToothUsed, bool artilleryUsed, bool rockMelterWasUsedToKill, ref bool heroDies, ref TreacheryCardType causeOfDeath)

@@ -12,7 +12,7 @@
 
     <Body>
 
-        <div class="text-warning">@(h.IAm(Game.CurrentBattle.Aggressor) ? "You are aggressor." : Skin.Current.Format("Aggressor: {0}.", Game.CurrentBattle.Aggressor))</div>
+        <div class="text-warning">@(h.IAm(Game.CurrentBattle.EffectiveAggressor) ? "You are aggressor." : Skin.Current.Format("Aggressor: {0}.", Game.CurrentBattle.EffectiveAggressor.Faction))</div>
 
         @if (Game.CurrentVoice != null)
         {
