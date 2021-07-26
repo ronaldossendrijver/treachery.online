@@ -626,8 +626,7 @@ namespace Treachery.Shared
     public enum JuiceType : int
     {
         None = 0,
-        Aggressor = 10,
-        GoFirst = 20,
-        GoLast = 30
+        GoFirst = 10,
+        GoLast = 20
     }
 }

@@ -10,193 +10,122 @@ namespace Treachery.Client
 {
     public partial class Handler
     {
-        public string NextPhase()
-        {
-            switch (CurrentPhase)
-            {
-                case Phase.AwaitingPlayers:
-                    return "Start the game with the currently joined players?";
-
-                case Phase.SelectingFactions:
-                    return "Continue with random assignment of factions to players who haven't selected a faction?";
-
-                case Phase.TradingFactions:
-                    return "Continue the game with currently assigned factions?";
-
-                case Phase.BlackMulligan:
-                    return "Proceed to selecting traitors?";
-
-                case Phase.MetheorAndStormSpell:
-                    return Skin.Current.Format("Continue with the {0} phase?", MainPhase.Storm);
-
-                case Phase.StormReport:
-                    return Skin.Current.Format("End {0} and start {1}?", MainPhase.Storm, MainPhase.Blow);
-
-                case Phase.Thumper:
-                    return Skin.Current.Format("Continue with the {0} phase?", MainPhase.Blow);
-
-                case Phase.HarvesterA:
-                case Phase.HarvesterB:
-                    return Skin.Current.Format("Continue with the {0} phase?", MainPhase.Blow);
-
-                case Phase.AllianceA:
-                case Phase.AllianceB:
-                    return "End Nexus?";
-
-                case Phase.BlowReport:
-                    return Skin.Current.Format("End {0} and start {1}?", MainPhase.Blow, MainPhase.Charity);
-
-                case Phase.BiddingReport:
-                    return Skin.Current.Format("End the {0} phase and start {1}?", MainPhase.Bidding, MainPhase.Resurrection);
-
-                case Phase.ClaimingCharity:
-                    return Skin.Current.Format("End {0} and start {1}?", MainPhase.Charity, MainPhase.Bidding);
-
-                case Phase.WaitingForNextBiddingRound:
-                    return Skin.Current.Format("Put next card on auction?");
-
-                case Phase.Resurrection:
-                    return Skin.Current.Format("End {0} and start {1}", MainPhase.Resurrection, MainPhase.ShipmentAndMove);
-
-                case Phase.ShipmentAndMoveConcluded:
-                    return Skin.Current.Format("End {0}?", MainPhase.ShipmentAndMove);
-
-                case Phase.Auditing:
-                    return "Finish audit?";
-
-                case Phase.BattleReport:
-                    if (Game.Aggressor == null)
-                    {
-                        return Skin.Current.Format("End the {0} phase and continue with {1}?", MainPhase.Battle, MainPhase.Collection);
-                    }
-                    else
-                    {
-                        return "Continue with the next Battle?";
-                    }
-
-                case Phase.CollectionReport:
-                    return Skin.Current.Format("End {0} and move to {1}", MainPhase.Collection, MainPhase.Contemplate);
-
-                case Phase.Contemplate:
-                    return Skin.Current.Format("Start checking for victories?");
-
-                case Phase.TurnConcluded:
-                    return Skin.Current.Format("End this turn and start the next {0}?", MainPhase.Storm);
-
-                default:
-                    return "Move to the next step?";
-            }
-        }
-
         public GameStatus Status
         {
             get
             {
-                if (Game.CurrentPhase == Phase.PerformingKarmaHandSwap)
+                switch (Game.CurrentPhase)
                 {
-                    if (IAm(Faction.Black))
-                    {
-                        return new GameStatus()
+                    case Phase.PerformingKarmaHandSwap:
                         {
-                            Description = Skin.Current.Format("Please decide which {0} cards to return to {1}.", Game.KarmaHandSwapNumberOfCards, Game.KarmaHandSwapTarget),
-                            WaitingForOthers = false
-                        };
-                    }
-                    else
-                    {
-                        return new GameStatus()
-                        {
-                            Description = Skin.Current.Format("{0} are deciding which {1} cards to return to {2}.", Faction.Black, Game.KarmaHandSwapNumberOfCards, Game.KarmaHandSwapTarget),
-                            WaitingForOthers = true
-                        };
-                    }
-                }
-                else if (Game.CurrentPhase == Phase.Clairvoyance)
-                {
-                    if (IAm(Game.LatestClairvoyance.Target))
-                    {
-                        return new GameStatus()
-                        {
-                            Description = Skin.Current.Format("{0} asked you a question in {1}! All factions are waiting for you answer...", Game.LatestClairvoyance.Initiator, TreacheryCardType.Clairvoyance),
-                            WaitingForOthers = false
-                        };
-                    }
-                    else
-                    {
-                        return new GameStatus()
-                        {
-                            Description = Skin.Current.Format("Waiting for {0} to answer a question asked in {1}...", Game.LatestClairvoyance.Target, TreacheryCardType.Clairvoyance),
-                            WaitingForOthers = true
-                        };
-                    }
-                }
-                else if (Game.CurrentPhase == Phase.SearchingDiscarded)
-                {
-                    if (DiscardedSearched.CanBePlayed(Player))
-                    {
-                        return new GameStatus()
-                        {
-                            Description = "Please select a card from the treachery discard pile to take...",
-                            WaitingForOthers = false
-                        };
-                    }
-                    else
-                    {
-                        return new GameStatus()
-                        {
-                            Description = "Waiting for a card to be searched from the treachery discard pile...",
-                            WaitingForOthers = true
-                        };
-                    }
-                }
-                else if (Game.CurrentPhase == Phase.StormLosses)
-                {
-                    if (IAm(Faction.Yellow))
-                    {
-                        return new GameStatus()
-                        {
-                            Description = Skin.Current.Format("Please decide which forces were killed by the storm in {0}.", TakeLosses.LossesToTake(Game).Location),
-                            WaitingForOthers = false
-                        };
-                    }
-                    else
-                    {
-                        return new GameStatus()
-                        {
-                            Description = Skin.Current.Format("{0} are deciding which forces were killed by the storm in {1}...", TakeLosses.LossesToTake(Game).Faction, TakeLosses.LossesToTake(Game).Location),
-                            WaitingForOthers = true
-                        };
-                    }
-                }
-                else if (Game.CurrentPhase == Phase.TradingCards)
-                {
-                    if (Faction == Faction.Brown || Player.Ally == Faction.Brown)
-                    {
-                        if (Game.CurrentCardTradeOffer.Initiator == Faction)
-                        {
-                            return new GameStatus()
+                            if (IAm(Faction.Black))
                             {
-                                Description = "You are waiting for your ally to select a card in return ...",
-                                WaitingForOthers = true
-                            };
-                        }
-                        else
-                        {
-                            return new GameStatus()
+                                return new GameStatus()
+                                {
+                                    Description = Skin.Current.Format("Please decide which {0} cards to return to {1}.", Game.KarmaHandSwapNumberOfCards, Game.KarmaHandSwapTarget),
+                                    WaitingForOthers = false
+                                };
+                            }
+                            else
                             {
-                                Description = "Please select a card in return...",
-                                WaitingForOthers = false
-                            };
+                                return new GameStatus()
+                                {
+                                    Description = Skin.Current.Format("{0} are deciding which {1} cards to return to {2}.", Faction.Black, Game.KarmaHandSwapNumberOfCards, Game.KarmaHandSwapTarget),
+                                    WaitingForOthers = true
+                                };
+                            }
                         }
-                    }
-                    else
-                    {
-                        return new GameStatus()
+
+                    case Phase.Clairvoyance:
                         {
-                            Description = "{0} and their ally are currently trading cards...",
-                            WaitingForOthers = true
-                        };
-                    }
+                            if (IAm(Game.LatestClairvoyance.Target))
+                            {
+                                return new GameStatus()
+                                {
+                                    Description = Skin.Current.Format("{0} asked you a question in {1}! All factions are waiting for you answer...", Game.LatestClairvoyance.Initiator, TreacheryCardType.Clairvoyance),
+                                    WaitingForOthers = false
+                                };
+                            }
+                            else
+                            {
+                                return new GameStatus()
+                                {
+                                    Description = Skin.Current.Format("Waiting for {0} to answer a question asked in {1}...", Game.LatestClairvoyance.Target, TreacheryCardType.Clairvoyance),
+                                    WaitingForOthers = true
+                                };
+                            }
+                        }
+
+                    case Phase.SearchingDiscarded:
+                        {
+                            if (DiscardedSearched.CanBePlayed(Player))
+                            {
+                                return new GameStatus()
+                                {
+                                    Description = "Please select a card from the treachery discard pile to take...",
+                                    WaitingForOthers = false
+                                };
+                            }
+                            else
+                            {
+                                return new GameStatus()
+                                {
+                                    Description = "Waiting for a card to be searched from the treachery discard pile...",
+                                    WaitingForOthers = true
+                                };
+                            }
+                        }
+
+                    case Phase.StormLosses:
+                        {
+                            if (IAm(Faction.Yellow))
+                            {
+                                return new GameStatus()
+                                {
+                                    Description = Skin.Current.Format("Please decide which forces were killed by the storm in {0}.", TakeLosses.LossesToTake(Game).Location),
+                                    WaitingForOthers = false
+                                };
+                            }
+                            else
+                            {
+                                return new GameStatus()
+                                {
+                                    Description = Skin.Current.Format("{0} are deciding which forces were killed by the storm in {1}...", TakeLosses.LossesToTake(Game).Faction, TakeLosses.LossesToTake(Game).Location),
+                                    WaitingForOthers = true
+                                };
+                            }
+                        }
+
+                    case Phase.TradingCards:
+                        {
+                            if (Faction == Faction.Brown || Player.Ally == Faction.Brown)
+                            {
+                                if (Game.CurrentCardTradeOffer.Initiator == Faction)
+                                {
+                                    return new GameStatus()
+                                    {
+                                        Description = "You are waiting for your ally to select a card in return ...",
+                                        WaitingForOthers = true
+                                    };
+                                }
+                                else
+                                {
+                                    return new GameStatus()
+                                    {
+                                        Description = "Please select a card in return...",
+                                        WaitingForOthers = false
+                                    };
+                                }
+                            }
+                            else
+                            {
+                                return new GameStatus()
+                                {
+                                    Description = "{0} and their ally are currently trading cards...",
+                                    WaitingForOthers = true
+                                };
+                            }
+                        }
                 }
 
                 switch (Game.CurrentMainPhase)
@@ -985,28 +914,29 @@ namespace Treachery.Client
                         }
 
                     case MainPhase.Resurrection:
-                        switch (CurrentPhase)
                         {
-
-                            case Phase.Resurrection:
-                                if (IsHost)
-                                {
-                                    return new GameStatus()
+                            switch (CurrentPhase)
+                            {
+                                case Phase.Resurrection:
+                                    if (IsHost)
                                     {
-                                        Description = "Factions may now reclaim forces and leaders. As host, you may end this phase and start Shipment & Move when ready.",
-                                        WaitingForOthers = false
-                                    };
-                                }
-                                else
-                                {
-                                    return new GameStatus()
+                                        return new GameStatus()
+                                        {
+                                            Description = "Factions may now reclaim forces and leaders. As host, you may end this phase and start Shipment & Move when ready.",
+                                            WaitingForOthers = false
+                                        };
+                                    }
+                                    else
                                     {
-                                        Description = "Factions may now reclaim forces and leaders. The host is waiting for everyone to be ready to enter the Shipment & Move phase...",
-                                        WaitingForOthers = true
-                                    };
-                                }
+                                        return new GameStatus()
+                                        {
+                                            Description = "Factions may now reclaim forces and leaders. The host is waiting for everyone to be ready to enter the Shipment & Move phase...",
+                                            WaitingForOthers = true
+                                        };
+                                    }
+                            }
                         }
-                        break;
+                        break; 
 
                     case MainPhase.ShipmentAndMove:
                         {
@@ -1391,106 +1321,110 @@ namespace Treachery.Client
                         break;
 
                     case MainPhase.Collection:
-
-                        switch (CurrentPhase)
                         {
-                            case Phase.CollectionReport:
 
-                                if (IsHost)
-                                {
-                                    return new GameStatus()
-                                    {
-                                        Description = Skin.Current.Format("Please move to {1} when all factions are done reviewing the {0} Report.", MainPhase.Collection, MainPhase.Contemplate),
-                                        WaitingForOthers = false
-                                    };
-                                }
-                                else
-                                {
-                                    return new GameStatus()
-                                    {
-                                        Description = Skin.Current.Format("Factions may review the {0} report until the host moves to {1}...", MainPhase.Collection, MainPhase.Contemplate),
-                                        WaitingForOthers = true
-                                    };
-                                }
+                            switch (CurrentPhase)
+                            {
+                                case Phase.CollectionReport:
 
+                                    if (IsHost)
+                                    {
+                                        return new GameStatus()
+                                        {
+                                            Description = Skin.Current.Format("Please move to {1} when all factions are done reviewing the {0} Report.", MainPhase.Collection, MainPhase.Contemplate),
+                                            WaitingForOthers = false
+                                        };
+                                    }
+                                    else
+                                    {
+                                        return new GameStatus()
+                                        {
+                                            Description = Skin.Current.Format("Factions may review the {0} report until the host moves to {1}...", MainPhase.Collection, MainPhase.Contemplate),
+                                            WaitingForOthers = true
+                                        };
+                                    }
+
+                            }
                         }
                         break;
 
                     case MainPhase.Contemplate:
-
-                        switch (CurrentPhase)
                         {
-                            case Phase.ReplacingFaceDancer:
+                            switch (CurrentPhase)
+                            {
+                                case Phase.ReplacingFaceDancer:
 
-                                if (IAm(Faction.Purple))
-                                {
-                                    return new GameStatus()
+                                    if (IAm(Faction.Purple))
                                     {
-                                        Description = "You may replace an unrevealed Face Dancer with a new one drawn from the Traitor Deck.",
-                                        WaitingForOthers = false
-                                    };
-                                }
-                                else
-                                {
-                                    return new GameStatus()
+                                        return new GameStatus()
+                                        {
+                                            Description = "You may replace an unrevealed Face Dancer with a new one drawn from the Traitor Deck.",
+                                            WaitingForOthers = false
+                                        };
+                                    }
+                                    else
                                     {
-                                        Description = Skin.Current.Format("{0} are thinking about replacing one of their Face Dancers...", Faction.Purple),
-                                        WaitingForOthers = true
-                                    };
-                                }
-                            
-                            case Phase.Contemplate:
+                                        return new GameStatus()
+                                        {
+                                            Description = Skin.Current.Format("{0} are thinking about replacing one of their Face Dancers...", Faction.Purple),
+                                            WaitingForOthers = true
+                                        };
+                                    }
 
-                                if (IsHost)
-                                {
-                                    return new GameStatus()
-                                    {
-                                        Description = Skin.Current.Format("You may now proceed with determining victories when ready.", Concept.Resource),
-                                        WaitingForOthers = false
-                                    };
-                                }
-                                else
-                                {
-                                    return new GameStatus()
-                                    {
-                                        Description = Skin.Current.Format("Waiting for the host to start determining victories..."),
-                                        WaitingForOthers = true
-                                    };
-                                }
+                                case Phase.Contemplate:
 
-                            case Phase.TurnConcluded:
-
-                                if (IsHost)
-                                {
-                                    return new GameStatus()
+                                    if (IsHost)
                                     {
-                                        Description = Skin.Current.Format("Please start the next turn when all factions are done reviewing the {0} Report.", MainPhase.Contemplate),
-                                        WaitingForOthers = false
-                                    };
-                                }
-                                else
-                                {
-                                    return new GameStatus()
+                                        return new GameStatus()
+                                        {
+                                            Description = Skin.Current.Format("You may now proceed with determining victories when ready.", Concept.Resource),
+                                            WaitingForOthers = false
+                                        };
+                                    }
+                                    else
                                     {
-                                        Description = Skin.Current.Format("Factions may review the {0} report until the host starts the next turn...", MainPhase.Contemplate),
-                                        WaitingForOthers = true
-                                    };
-                                }
+                                        return new GameStatus()
+                                        {
+                                            Description = Skin.Current.Format("Waiting for the host to start determining victories..."),
+                                            WaitingForOthers = true
+                                        };
+                                    }
 
+                                case Phase.TurnConcluded:
+
+                                    if (IsHost)
+                                    {
+                                        return new GameStatus()
+                                        {
+                                            Description = Skin.Current.Format("Please start the next turn when all factions are done reviewing the {0} Report.", MainPhase.Contemplate),
+                                            WaitingForOthers = false
+                                        };
+                                    }
+                                    else
+                                    {
+                                        return new GameStatus()
+                                        {
+                                            Description = Skin.Current.Format("Factions may review the {0} report until the host starts the next turn...", MainPhase.Contemplate),
+                                            WaitingForOthers = true
+                                        };
+                                    }
+
+                            }
                         }
                         break;
 
                     case MainPhase.Ended:
-                        return new GameStatus()
-                        {
-                            Description = "The game has ended.",
-                            WaitingForOthers = false
-                        };
+                        return Construct("The game has ended.", false);
 
                 }
 
-                return new GameStatus() { Description = "unknown phase" };
+                return Construct("unknown phase", false);
             }
+        }
+
+        private static GameStatus Construct(string description, bool waitingForOthers)
+        {
+            return new GameStatus() { Description = description, WaitingForOthers = waitingForOthers };
         }
 
         public string WhoAreWeWaitingFor
@@ -1579,7 +1513,6 @@ namespace Treachery.Client
                 return new Territory[] { };
             }
         }
-
 
         public bool HighlightPlayer(Player p)
         {

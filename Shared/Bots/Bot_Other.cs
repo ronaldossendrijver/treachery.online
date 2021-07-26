@@ -515,6 +515,16 @@ namespace Treachery.Shared
 
             return null;
         }
+
+        public JuicePlayed DetermineJuicePlayed()
+        {
+            if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.CurrentMoment == MainPhaseMoment.Start)
+            {
+                return new JuicePlayed(Game) { Initiator = Faction, Type = JuiceType.GoLast };
+            }
+
+            return null;
+        }
     }
 
 }

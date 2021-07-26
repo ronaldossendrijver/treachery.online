@@ -14,65 +14,106 @@ namespace Treachery.Shared
 
         public int RoundStartedAt { get; set; }
 
-        private int MaximumNumberOfPlayers { get; set; }
+        private Game Game { get; set; }
 
         public int Current { get; set; }
 
         private int _direction = 1;
 
-        public PlayerSequence(IEnumerable<Player> players, int maximumNumberOfPlayers)
+        private int _playerNumberInRound = 0;
+
+        public PlayerSequence(Game game, IEnumerable<Player> players)
         {
             Players = players.ToList();
-            MaximumNumberOfPlayers = maximumNumberOfPlayers;
+            Game = game;
         }
 
         public void Start(Player p, int direction)
         {
+            _playerNumberInRound = 0;
             _direction = direction;
             Current = p.PositionAtTable;
             RoundStartedAt = Current;
         }
 
-        public void Start(Game game, bool ignorePlayersThatCantBid, int direction)
+        public void Start(bool ignorePlayersThatCantBid, int direction)
         {
+            _playerNumberInRound = 0;
             _direction = direction;
-            var startLookingInSector = (int)Math.Ceiling((float)game.SectorInStorm * game.MaximumNumberOfPlayers / Map.NUMBER_OF_SECTORS) % game.MaximumNumberOfPlayers;
+            var startLookingInSector = (int)Math.Ceiling((float)Game.SectorInStorm * Game.MaximumNumberOfPlayers / Map.NUMBER_OF_SECTORS) % Game.MaximumNumberOfPlayers;
             Current = FindNearestPlayerPosition(startLookingInSector, ignorePlayersThatCantBid);
             RoundStartedAt = Current;
         }
              
-        public Player CurrentPlayer => Players.Where(p => p.PositionAtTable == Current).SingleOrDefault();
+        public Player CurrentPlayer
+        {
+            get
+            {
+                if (_playerNumberInRound == 0 && Game.JuiceForcesFirstPlayer)
+                {
+                    return Game.CurrentJuice.Player;
+                }
+                else if (_playerNumberInRound == Players.Count - 1 && Game.JuiceForcesLastPlayer)
+                {
+                    return Game.CurrentJuice.Player;
+                }
+                else
+                {
+                    return Players.Where(p => p.PositionAtTable == Current).SingleOrDefault();
+                }
+            }
+        }
 
         public Faction CurrentFaction => CurrentPlayer != null ? CurrentPlayer.Faction : Faction.None;
 
         public void NextRound(bool ignorePlayersThatCantBid)
         {
+            _playerNumberInRound = 0;
             Current = FindNearestPlayerPosition(RoundStartedAt + _direction, ignorePlayersThatCantBid);
             RoundStartedAt = Current;
         }
 
+
         public void NextPlayer(bool ignorePlayersThatCantBid)
         {
-            Current = FindNearestPlayerPosition(Current + _direction, ignorePlayersThatCantBid);
+            if (_playerNumberInRound == 0 && Game.JuiceForcesFirstPlayer)
+            {
+                
+            }
+            else if (_playerNumberInRound == Players.Count - 1 && Game.JuiceForcesLastPlayer)
+            {
+
+            }
+            else
+            {
+                Current = FindNearestPlayerPosition(Current + _direction, ignorePlayersThatCantBid);
+            }
+
+            _playerNumberInRound = (_playerNumberInRound + 1) % Players.Count;
         }
 
         //Returns a position number at the table occupied by a player nearest to the indicated position. The number of positions is zero based and depends on the Maximum number of players selected at game start.
         private int FindNearestPlayerPosition(int positionToStartLooking, bool ignorePlayersThatCantBid)
         {
-            int position = (MaximumNumberOfPlayers + positionToStartLooking) % MaximumNumberOfPlayers;
-            for (int i = 0; i < MaximumNumberOfPlayers; i++)
+            int position = (Game.MaximumNumberOfPlayers + positionToStartLooking) % Game.MaximumNumberOfPlayers;
+            for (int i = 0; i < Game.MaximumNumberOfPlayers; i++)
             {
-                if (Players.Any(p => p.PositionAtTable == (position % MaximumNumberOfPlayers) && (!ignorePlayersThatCantBid || p.HasRoomForCards)))
+                if (Players.Any(p => p.PositionAtTable == (position % Game.MaximumNumberOfPlayers) && (!ignorePlayersThatCantBid || p.HasRoomForCards) && !HasJuice(p)))
                 {
                     return position;
                 }
                 else
                 {
-                    position = (MaximumNumberOfPlayers + position + _direction) % MaximumNumberOfPlayers;
+                    position = (Game.MaximumNumberOfPlayers + position + _direction) % Game.MaximumNumberOfPlayers;
                 }
             }
 
             return -1;
+        }
+
+        private bool HasJuice(Player p)
+        {
+            return Game.CurrentJuice != null && Game.CurrentJuice.Player == p;
         }
 
         public override string ToString()
@@ -80,13 +121,13 @@ namespace Treachery.Shared
             return string.Format(string.Join("->", Players.OrderBy(p => p.PositionAtTable).Select(p => string.Format("{0} ({1})", p.Name, p.PositionAtTable))) + ", Current: {0}", Current);
         }
 
-        public IEnumerable<SequenceElement> GetPlayersInSequence(Game g)
+        public IEnumerable<SequenceElement> GetPlayersInSequence()
         {
             var result = new List<SequenceElement>();
-            for (int i = 0; i < g.MaximumNumberOfPlayers; i++)
+            for (int i = 0; i < Game.MaximumNumberOfPlayers; i++)
             {
-                int pos = (RoundStartedAt + i) % g.MaximumNumberOfPlayers;
-                var playerAtPosition = Players.FirstOrDefault(p => p.PositionAtTable == (RoundStartedAt + _direction * i) % g.MaximumNumberOfPlayers);
+                int pos = (RoundStartedAt + i) % Game.MaximumNumberOfPlayers;
+                var playerAtPosition = Players.FirstOrDefault(p => p.PositionAtTable == (RoundStartedAt + _direction * i) % Game.MaximumNumberOfPlayers);
                 if (playerAtPosition != null)
                 {
                     var elt = new SequenceElement() { Player = playerAtPosition, HasTurn = pos == Current };

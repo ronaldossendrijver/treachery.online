@@ -529,9 +529,8 @@ namespace Treachery.Shared
         {
             return jt switch
             {
-                JuiceType.Aggressor => "Be considered aggressor in this battle",
-                JuiceType.GoFirst => "Go first in this phase or action",
-                JuiceType.GoLast => "Go last in this phase or action",
+                JuiceType.GoFirst => "Be considered first in storm order during this phase",
+                JuiceType.GoLast => "Be considered last in storm order during this phase",
                 _ => "None"
             };
         }

@@ -52,12 +52,7 @@ namespace Treachery.Shared
         {
             get
             {
-                if (CurrentJuice != null && CurrentJuice.Type == JuiceType.Aggressor && Battle.MustFight(this, CurrentJuice.Player))
-                {
-                    return CurrentJuice.Player;
-                }
-
-                BattleSequence.Start(this, false, 1);
+                BattleSequence.Start(false, 1);
 
                 for (int i = 0; i < Players.Count; i++)
                 {

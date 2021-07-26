@@ -88,7 +88,7 @@ namespace Treachery.Shared
             {
                 case AuctionType.BlackMarketNormal:
                 case AuctionType.BlackMarketOnceAround:
-                    return g.BidSequence.GetPlayersInSequence(g);
+                    return g.BidSequence.GetPlayersInSequence();
 
                 case AuctionType.BlackMarketSilent:
                     return g.Players.Select(p => new SequenceElement() { Player = p, HasTurn = p.HasRoomForCards && !g.Bids.Keys.Contains(p.Faction) });

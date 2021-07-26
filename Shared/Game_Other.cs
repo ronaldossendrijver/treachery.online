@@ -508,6 +508,11 @@ namespace Treachery.Shared
             RecentMilestones.Add(Milestone.SpecialUselessPlayed);
         }
 
+        public bool JuiceForcesFirstPlayer => CurrentJuice != null && CurrentJuice.Type == JuiceType.GoFirst;
+
+        public bool JuiceForcesLastPlayer => CurrentJuice != null && CurrentJuice.Type == JuiceType.GoLast;
+
+
         public JuicePlayed CurrentJuice { get; set; }
         public void HandleEvent(JuicePlayed e)
         {

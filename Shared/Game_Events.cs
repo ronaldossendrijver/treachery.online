@@ -389,16 +389,23 @@ namespace Treachery.Shared
                 result.Add(typeof(HideSecrets));
             }
 
-            if (CurrentPhase != Phase.Clairvoyance && 
+            bool isAfterSetup = Version < 107 ? CurrentPhase > Phase.TradingFactions : CurrentMainPhase > MainPhase.Setup;
+
+            if (isAfterSetup &&
+                CurrentMainPhase < MainPhase.Ended &&
+                CurrentPhase != Phase.Clairvoyance && 
                 CurrentPhase != Phase.TradingCards &&
                 CurrentPhase != Phase.SearchingDiscarded &&
-                CurrentPhase != Phase.PerformingKarmaHandSwap && 
-                CurrentPhase > Phase.TradingFactions && 
-                CurrentPhase < Phase.GameEnded)
+                CurrentPhase != Phase.PerformingKarmaHandSwap)
             {
                 if (CurrentMainPhase < MainPhase.Battle && player.NoFieldIsActive)
                 {
                     result.Add(typeof(WhiteRevealedNoField));
+                }
+
+                if (JuicePlayed.CanBePlayedBy(player))
+                {
+                    result.Add(typeof(JuicePlayed));
                 }
 
                 if (faction == Faction.Brown && !Prevented(FactionAdvantage.BrownDiscarding) && (CurrentMoment == MainPhaseMoment.Start || CurrentMoment == MainPhaseMoment.End) && BrownDiscarded.ValidCards(this, player).Any())

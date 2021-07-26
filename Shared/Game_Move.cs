@@ -48,13 +48,13 @@ namespace Treachery.Shared
 
         private void StartShipAndMoveSequence()
         {
-            ShipmentAndMoveSequence.Start(this, false, 1);
+            ShipmentAndMoveSequence.Start(false, 1);
             if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && OrangeDeterminesMoveMoment)
             {
                 ShipmentAndMoveSequence.NextPlayer(false);
             }
 
-            Enter(IsPlaying(Faction.Orange) && OrangeDeterminesMoveMoment, Phase.OrangeShip, Phase.NonOrangeShip);
+            Enter(JuiceForcesFirstPlayer && CurrentJuice.Initiator != Faction.Orange, Phase.NonOrangeShip, IsPlaying(Faction.Orange) && OrangeDeterminesMoveMoment, Phase.OrangeShip, Phase.NonOrangeShip);
         }
 
         public bool OccupiesArrakeenOrCarthag(Player p)

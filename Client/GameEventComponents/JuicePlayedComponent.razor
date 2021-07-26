@@ -1,0 +1,32 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<JuicePlayed>
+
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Use @Skin.Current.Describe(TreacheryCardType.Juice)?</Header>
+    <Body>
+
+        <RadioComponent @bind-Value="type" Values="JuicePlayed.ValidTypes()"/>
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    private JuiceType type;
+
+    protected override void OnInitialized()
+    {
+        BackgroundImage = Support.GetCardImage(TreacheryCardType.Juice);
+    }
+
+    protected override JuicePlayed ConfirmedResult => new JuicePlayed(Game) { Initiator = Faction, Type = type };
+}

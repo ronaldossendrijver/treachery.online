@@ -18,8 +18,8 @@ namespace Treachery.Shared
         {
             MainPhaseStart(MainPhase.Blow);
             ignoredMonsters.Clear();
-            var sequenceToDetermineFirstPlayer = new PlayerSequence(Players, MaximumNumberOfPlayers);
-            sequenceToDetermineFirstPlayer.Start(this, false, 1);
+            var sequenceToDetermineFirstPlayer = new PlayerSequence(this, Players);
+            sequenceToDetermineFirstPlayer.Start(false, 1);
             FirstPlayerPosition = sequenceToDetermineFirstPlayer.Current;
             Enter(Applicable(Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal) && (Version <= 102 || CurrentTurn > 1), Phase.Thumper, EnterBlowA);
         }

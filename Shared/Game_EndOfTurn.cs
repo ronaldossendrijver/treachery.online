@@ -226,7 +226,7 @@ namespace Treachery.Shared
 
         private void CheckNormalWin()
         {
-            CheckWinSequence.Start(this, false, 1);
+            CheckWinSequence.Start(false, 1);
 
             for (int i = 0; i < Players.Count; i++)
             {

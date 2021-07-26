@@ -2,6 +2,9 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Treachery.Shared
 {
     public class JuicePlayed : GameEvent
@@ -29,6 +32,16 @@ namespace Treachery.Shared
         public override Message GetMessage()
         {
             return new Message(Initiator, "{0} use {1} to {2}.", Initiator, TreacheryCardType.Juice, Type);
+        }
+
+        public static IEnumerable<JuiceType> ValidTypes()
+        {
+            return Enumerations.GetValuesExceptDefault(typeof(JuiceType), JuiceType.None);
+        }
+
+        public static bool CanBePlayedBy(Player player)
+        {
+            return player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Juice);
         }
     }
 }

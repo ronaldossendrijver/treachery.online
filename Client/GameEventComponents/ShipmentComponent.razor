@@ -58,7 +58,7 @@
             shipmentFrom = null;
         }
 
-        <div class="mt-1">
+        <div class="mt-1 mb-1">
             <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="shipmentTo" Values="ValidShipmentLocations.OrderByDescending(l => l.IsStronghold).ThenBy(l => l.Territory.Name).ThenBy(l => l.Name)">
                 <Label>To</Label>
             </SelectComponent>
@@ -77,7 +77,7 @@
 
             var validNoFieldValueLabels = new List<string>();
             validNoFieldValueLabels.Add("Don't use a No-Field");
-            validNoFieldValueLabels.AddRange(Shipment.ValidNoFieldValues(Game, Player).Select(v => v.ToString()));
+            validNoFieldValueLabels.AddRange(Shipment.ValidNoFieldValues(Game, Player).Select(v => string.Format("No-Field of {0}", v)));
 
             <RadioComponent @bind-Value="nofieldValue" Values="validNoFieldValues" ValueLabels="validNoFieldValueLabels">
                 <Label>Use a @Skin.Current.Describe(Faction.White) No-Field for this shipment?</Label>

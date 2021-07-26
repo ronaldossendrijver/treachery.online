@@ -158,7 +158,7 @@ namespace Treachery.Shared
                 case AuctionType.Normal:
                 case AuctionType.WhiteNormal:
                 case AuctionType.WhiteOnceAround:
-                    return g.BidSequence.GetPlayersInSequence(g);
+                    return g.BidSequence.GetPlayersInSequence();
 
                 case AuctionType.WhiteSilent:
                     return g.Players.Select(p => new SequenceElement() { Player = p, HasTurn = p.HasRoomForCards && !g.Bids.Keys.Contains(p.Faction) });

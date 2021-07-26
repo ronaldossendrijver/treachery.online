@@ -248,7 +248,7 @@ namespace Treachery.Shared
             var remainingTechTokens = new Deck<TechToken>(techTokensToBeDealt, Random);
             remainingTechTokens.Shuffle();
             RecentMilestones.Add(Milestone.Shuffled);
-            TechTokenSequence.Start(this, false, 1);
+            TechTokenSequence.Start(false, 1);
 
             while (!remainingTechTokens.IsEmpty && Players.Any(p => p.TechTokens.Count == 0))
             {

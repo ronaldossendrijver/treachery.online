@@ -145,8 +145,8 @@ namespace Treachery.Shared
         private IBid DetermineHighestBid(Dictionary<Faction, IBid> bids)
         {
             int highestBidValue = bids.Values.Max(b => b.TotalAmount);
-            var determineBidWinnerSequence = new PlayerSequence(Players, MaximumNumberOfPlayers);
-            determineBidWinnerSequence.Start(this, false, 1);
+            var determineBidWinnerSequence = new PlayerSequence(this, Players);
+            determineBidWinnerSequence.Start(false, 1);
             for (int i = 0; i < MaximumNumberOfPlayers; i++)
             {
                 var f = determineBidWinnerSequence.CurrentFaction;
@@ -242,12 +242,12 @@ namespace Treachery.Shared
                 (CurrentAuctionType != AuctionType.BlackMarketNormal || CurrentAuctionType != AuctionType.Normal || CurrentAuctionType != AuctionType.WhiteNormal))
             {
                 //We want to start normal bidding and the previous auction type was not normal bidding
-                BidSequence.Start(this, true, 1);
+                BidSequence.Start(true, 1);
                 SkipPlayersThatCantBid(BidSequence);
             }
             else if (auctionType == AuctionType.BlackMarketNormal)
             {
-                BidSequence.Start(this, true, 1);
+                BidSequence.Start(true, 1);
                 SkipPlayersThatCantBid(BidSequence);
             }
             else if (auctionType == AuctionType.BlackMarketOnceAround || auctionType == AuctionType.WhiteOnceAround)
