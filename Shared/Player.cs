@@ -236,29 +236,34 @@ namespace Treachery.Shared
 
         public int KillAllForces(Location location, bool inBattle)
         {
-            var battallion = ForcesOnPlanet[location];
-
-            int killCount = battallion.AmountOfForces;
-            ForcesKilled += killCount;
-
-            int specialKillCount = battallion.AmountOfSpecialForces;
-            if (Faction == Faction.Blue)
+            if (ForcesOnPlanet.ContainsKey(location))
             {
-                ForcesKilled += specialKillCount;
-            }
-            else
-            {
-                SpecialForcesKilled += specialKillCount;
-            }
+                var battallion = ForcesOnPlanet[location];
 
-            ForcesOnPlanet.Remove(location);
+                int killCount = battallion.AmountOfForces;
+                ForcesKilled += killCount;
 
-            if (inBattle)
-            {
-                TotalForcesKilledInBattle += killCount + specialKillCount;
+                int specialKillCount = battallion.AmountOfSpecialForces;
+                if (Faction == Faction.Blue)
+                {
+                    ForcesKilled += specialKillCount;
+                }
+                else
+                {
+                    SpecialForcesKilled += specialKillCount;
+                }
+
+                ForcesOnPlanet.Remove(location);
+
+                if (inBattle)
+                {
+                    TotalForcesKilledInBattle += killCount + specialKillCount;
+                }
+
+                return killCount + specialKillCount;
             }
-
-            return killCount + specialKillCount;
+            
+            return 0;
         }
 
         public void KillAllForces(Territory t, bool inBattle)

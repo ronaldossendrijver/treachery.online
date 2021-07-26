@@ -349,11 +349,8 @@ namespace Treachery.Shared
                     else
                     {
                         RevealCurrentNoField(player, l.Key);
-                        if (player.AnyForcesIn(l.Key) > 0)
-                        {
-                            killCount += player.AnyForcesIn(l.Key);
-                            player.KillAllForces(l.Key, false);
-                        }
+                        killCount += player.AnyForcesIn(l.Key);
+                        player.KillAllForces(l.Key, false);
                     }
 
                     if (killCount > 0)
