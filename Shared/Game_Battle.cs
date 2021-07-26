@@ -701,18 +701,12 @@ namespace Treachery.Shared
                 SetHeroLocations(def, b.Territory);
             }
 
-            agg.ActivateMirrorWeapon(def.Weapon);
-            def.ActivateMirrorWeapon(agg.Weapon);
-
             if (aggtrt.TraitorCalled || deftrt.TraitorCalled)
             {
                 TraitorCalled(b, agg, def, deftrt, aggressor, defender, agg.Hero, def.Hero);
             }
             else if ((agg.HasLaser || def.HasLaser) && (agg.HasShield || def.HasShield))
             {
-                agg.DeactivateMirrorWeapon();
-                def.DeactivateMirrorWeapon();
-
                 LasgunShieldExplosion(agg, def, aggressor, defender, b.Territory, agg.Hero, def.Hero);
             }
             else
@@ -787,6 +781,9 @@ namespace Treachery.Shared
 
         private void DetermineBattleOutcome(Battle agg, Battle def, Player aggressor, Player defender, Territory territory, IHero aggHero, IHero defHero)
         {
+            agg.ActivateMirrorWeapon(def.Weapon);
+            def.ActivateMirrorWeapon(agg.Weapon);
+
             bool poisonToothUsed = !PoisonToothCancelled && (agg.HasPoisonTooth || def.HasPoisonTooth);
             bool artilleryUsed = agg.HasArtillery || def.HasArtillery;
             bool rockMelterUsed = agg.HasRockMelter || def.HasRockMelter;
@@ -811,8 +808,19 @@ namespace Treachery.Shared
             var aggMessiahContribution = aggressor.Is(Faction.Green) && agg.Messiah && agg.Hero != null && !aggHeroKilled && !artilleryUsed && !rockMelterUsed ? 2 : 0;
             var defMessiahContribution = defender.Is(Faction.Green) && def.Messiah && def.Hero != null && !defHeroKilled && !artilleryUsed && !rockMelterUsed ? 2 : 0;
 
-            float aggForceDial = agg.Dial(this, defender.Faction);
-            float defForceDial = def.Dial(this, aggressor.Faction);
+            float aggForceDial;
+            float defForceDial;
+
+            if (!rockMelterUsed)
+            {
+                aggForceDial = agg.Dial(this, defender.Faction);
+                defForceDial = def.Dial(this, aggressor.Faction);
+            }
+            else
+            {
+                aggForceDial = aggressor.ForcesIn(CurrentBattle.Territory) - agg.Forces - agg.ForcesAtHalfStrength + aggressor.SpecialForcesIn(CurrentBattle.Territory) - agg.SpecialForces - agg.SpecialForcesAtHalfStrength;
+                defForceDial = defender.ForcesIn(CurrentBattle.Territory) - def.Forces - def.ForcesAtHalfStrength + defender.SpecialForcesIn(CurrentBattle.Territory) - def.SpecialForces - def.SpecialForcesAtHalfStrength;
+            }
 
             float aggTotal = aggForceDial + aggHeroContribution + aggMessiahContribution;
             float defTotal = defForceDial + defHeroContribution + defMessiahContribution;
@@ -836,8 +844,8 @@ namespace Treachery.Shared
                 KillLeaderInBattle(defHero, aggHero, defHeroCauseOfDeath, winner, defHeroEffectiveStrength);
             }
 
-            CurrentReport.Add(aggressor.Faction, "Strength of the {0} (aggressor) army: {1}.", aggressor.Faction, aggTotal);
-            CurrentReport.Add(defender.Faction, "Strength of the {0} (defending) army: {1}.", defender.Faction, defTotal);
+            CurrentReport.Add(aggressor.Faction, "{0} (aggressor) strength: {1}.", aggressor.Faction, aggTotal);
+            CurrentReport.Add(defender.Faction, "{0} (defending) strength: {1}.", defender.Faction, defTotal);
             CurrentReport.Add(winner.Faction, "{0} WIN THE BATTLE.", winner.Faction);
 
             ProcessWinnerLosses(territory, winner, winnerBattlePlan);

@@ -518,7 +518,11 @@ namespace Treachery.Shared
 
         public JuicePlayed DetermineJuicePlayed()
         {
-            if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.CurrentMoment == MainPhaseMoment.Start)
+            if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.CurrentMoment == MainPhaseMoment.Start && Faction != Faction.Orange && Game.ShipmentAndMoveSequence.GetPlayersInSequence().LastOrDefault()?.Player != this)
+            {
+                return new JuicePlayed(Game) { Initiator = Faction, Type = JuiceType.GoLast };
+            }
+            else if (Game.CurrentMainPhase == MainPhase.Battle && Game.CurrentMoment == MainPhaseMoment.Start && Battle.BattlesToBeFought(Game, this).Any())
             {
                 return new JuicePlayed(Game) { Initiator = Faction, Type = JuiceType.GoLast };
             }

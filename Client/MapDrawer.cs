@@ -749,7 +749,7 @@ namespace Treachery.Client
         
         private static async Task DrawBids()
         {
-            if (h.Game.CurrentPhase == Phase.Bidding)
+            if (h.Game.CurrentPhase == Phase.Bidding || h.Game.CurrentPhase == Phase.BlackMarketBidding)
             {
                 foreach (var p in h.Game.Players)
                 {
