@@ -104,6 +104,9 @@ namespace Treachery.Shared
             if (c.Type == TreacheryCardType.Chemistry) return 4;
             if (c.Type == TreacheryCardType.WeirdingWay) return 4;
 
+            if (c.IsRockmelter) return 3;
+            if (c.IsMirrorWeapon) return 3;
+
             if (c.IsPoisonWeapon && !TreacheryCards.Any(c => c.IsPoisonWeapon)) return 3;
             if (c.IsProjectileWeapon && !TreacheryCards.Any(c => c.IsProjectileWeapon)) return 3;
             if (c.IsPoisonDefense && !TreacheryCards.Any(c => c.IsPoisonDefense)) return 3;

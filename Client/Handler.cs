@@ -36,7 +36,7 @@ namespace Treachery.Client
         public Host Host = null;
         public bool IsObserver = false;
 
-        public Dictionary<int, string> _joinError = new Dictionary<int, string>();
+        public Dictionary<int, string> _joinError = new();
         public int _gameinprogressHostId;
         public Battle _battleUnderConstruction = null;
         public int BidAutoPassThreshold = 0;
@@ -171,7 +171,7 @@ namespace Treachery.Client
         }
 
         //Process information about a currently running game on treachery.online
-        public Dictionary<GameInfo, DateTime> AvailableGames = new Dictionary<GameInfo, DateTime>();
+        public Dictionary<GameInfo, DateTime> AvailableGames = new();
         private void ReceiveGameAvailable(GameInfo info)
         {
             if (HostProxy != null && info.HostID == HostProxy.HostID)
@@ -322,7 +322,7 @@ namespace Treachery.Client
             return false;
         }
 
-        public Dictionary<int, GameEvent> _pending = new Dictionary<int, GameEvent>();
+        public Dictionary<int, GameEvent> _pending = new();
         private async Task HandleEvent(int newEventNumber, GameEvent e)
         {
             //Console.WriteLine("HandleEvent(" + newEventNumber + "," + e + ")");
@@ -519,7 +519,7 @@ namespace Treachery.Client
             }
         }
 
-        public LinkedList<ChatMessage> Messages = new LinkedList<ChatMessage>();
+        public LinkedList<ChatMessage> Messages = new();
         private async Task HandleChatMessage(ChatMessage m)
         {
             m.DateTimeReceived = DateTime.Now;

@@ -124,16 +124,28 @@ namespace Treachery.Shared
         public IEnumerable<SequenceElement> GetPlayersInSequence()
         {
             var result = new List<SequenceElement>();
+
+            if (Game.JuiceForcesFirstPlayer)
+            {
+                result.Add(new SequenceElement() { Player = Game.CurrentJuice?.Player, HasTurn = _playerNumberInRound == 0 });
+            }
+                        
             for (int i = 0; i < Game.MaximumNumberOfPlayers; i++)
             {
                 int pos = (RoundStartedAt + i) % Game.MaximumNumberOfPlayers;
                 var playerAtPosition = Players.FirstOrDefault(p => p.PositionAtTable == (RoundStartedAt + _direction * i) % Game.MaximumNumberOfPlayers);
-                if (playerAtPosition != null)
+                if (playerAtPosition != null && playerAtPosition != Game.CurrentJuice?.Player)
                 {
-                    var elt = new SequenceElement() { Player = playerAtPosition, HasTurn = pos == Current };
-                    result.Add(elt);
+                    bool hasTurn = (pos == Current && !(Game.JuiceForcesFirstPlayer && _playerNumberInRound == 0) && !(Game.JuiceForcesLastPlayer && _playerNumberInRound == Players.Count - 1));
+                    result.Add(new SequenceElement() { Player = playerAtPosition, HasTurn = hasTurn });
                 }
             }
+
+            if (Game.JuiceForcesLastPlayer)
+            {
+                result.Add(new SequenceElement() { Player = Game.CurrentJuice.Player, HasTurn = _playerNumberInRound == Players.Count - 1 });
+            }
+
             return result;
         }
     }

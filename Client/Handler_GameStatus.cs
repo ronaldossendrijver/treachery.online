@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System;
 using Treachery.Shared;
 
 namespace Treachery.Client
@@ -983,7 +984,7 @@ namespace Treachery.Client
                                     {
                                         return new GameStatus()
                                         {
-                                            Description = !Game.EveryoneButOneActedOrPassed && Game.Applicable(Rule.OrangeDetermineShipment) ?
+                                            Description = Game.OrangeMayDelay ?
                                                 "Please decide to ship now or delay your turn and let other factions go first." :
                                                 "Your turn! Please decide to ship forces or pass.",
                                             WaitingForOthers = false
@@ -993,7 +994,7 @@ namespace Treachery.Client
                                     {
                                         return new GameStatus()
                                         {
-                                            Description = !Game.EveryoneButOneActedOrPassed && Game.Applicable(Rule.OrangeDetermineShipment) ?
+                                            Description = Game.OrangeMayDelay ?
                                             Skin.Current.Format("{0} are thinking deciding about shipping forces or delaying their turn...", Faction.Orange) :
                                             Skin.Current.Format("{0} are thinking about shipping forces...", Faction.Orange),
                                             WaitingForOthers = true
@@ -1102,6 +1103,25 @@ namespace Treachery.Client
                         {
                             switch (CurrentPhase)
                             {
+                                case Phase.BeginningOfBattle:
+
+                                    if (IsHost)
+                                    {
+                                        return new GameStatus()
+                                        {
+                                            Description = "You may now start the first battle when when ready.",
+                                            WaitingForOthers = false
+                                        };
+                                    }
+                                    else
+                                    {
+                                        return new GameStatus()
+                                        {
+                                            Description = "Waiting for the host to start the first battle...",
+                                            WaitingForOthers = true
+                                        };
+                                    }
+
                                 case Phase.BattlePhase:
                                     if (Game.CurrentBattle == null)
                                     {
@@ -1510,7 +1530,7 @@ namespace Treachery.Client
                         break;
                 }
 
-                return new Territory[] { };
+                return Array.Empty<Territory>();
             }
         }
 

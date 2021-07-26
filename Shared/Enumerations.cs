@@ -203,6 +203,8 @@ namespace Treachery.Shared
         BlueIntrudedByYellowRidingMonsterB = 297,
 
         ShipmentAndMoveConcluded = 299,
+
+        BeginningOfBattle = 301,
         BattlePhase = 300,
         CallTraitorOrPass = 310,
         AvoidingAudit = 312,

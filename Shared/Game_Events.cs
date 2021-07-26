@@ -56,6 +56,7 @@ namespace Treachery.Shared
                 case Phase.Resurrection:
                 case Phase.BeginningOfShipAndMove:
                 case Phase.ShipmentAndMoveConcluded:
+                case Phase.BeginningOfBattle:
                 case Phase.BattleReport:
                 case Phase.CollectionReport:
                 case Phase.Contemplate:
@@ -206,7 +207,7 @@ namespace Treachery.Shared
                 case Phase.OrangeShip:
                     if (faction == Faction.Orange)
                     {
-                        if (!EveryoneButOneActedOrPassed && Applicable(Rule.OrangeDetermineShipment)) result.Add(typeof(OrangeDelay));
+                        if (OrangeMayDelay) result.Add(typeof(OrangeDelay));
                         result.Add(typeof(Shipment));
                         if (player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Caravan)) result.Add(typeof(Caravan));
                     }
@@ -403,7 +404,7 @@ namespace Treachery.Shared
                     result.Add(typeof(WhiteRevealedNoField));
                 }
 
-                if (JuicePlayed.CanBePlayedBy(player))
+                if (JuicePlayed.CanBePlayedBy(this, player))
                 {
                     result.Add(typeof(JuicePlayed));
                 }

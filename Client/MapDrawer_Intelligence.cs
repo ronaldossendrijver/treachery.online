@@ -83,10 +83,10 @@ namespace Treachery.Client
         {
             string result = "";
 
-            if (h.Host != null && h.Host.JoinedObservers.Count(o => o != "$RonaldAdmin$") > 0)
+            if (h.Host != null && h.Host.JoinedObservers.Any(o => o != "$RonaldAdmin$"))
             {
                 result += Skin.Current.Format("<h4>Observers</h4>");
-                result += "<div>" + string.Join(", ", h.Host.JoinedObservers.Where(o => o != "$RonaldAdmin$")) + "</div>";
+                result += "<div>" + string.Join(", ", h.Host.JoinedObservers.Where(o => o != "$RonaldAdmin$").Distinct()) + "</div>";
             }
             
             return result;

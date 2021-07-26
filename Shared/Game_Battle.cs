@@ -29,7 +29,7 @@ namespace Treachery.Shared
             if (KarmaHmsMovesLeft != 2) KarmaHmsMovesLeft = 0;
             AllowMovePhaseFactionAdvantages();
             ResetBattle();
-            Enter(Aggressor != null, Phase.BattlePhase, EnterSpiceCollectionPhase);
+            Enter(Aggressor == null, EnterSpiceCollectionPhase, Version >= 107, Phase.BeginningOfBattle, Phase.BattlePhase);
         }
 
         private void AllowMovePhaseFactionAdvantages()
@@ -573,7 +573,6 @@ namespace Treachery.Shared
 
         private void FinishBattle()
         {
-            CurrentJuice = null;
             GreenKarma = false;
             if (!Applicable(Rule.FullPhaseKarma)) AllowPreventedBattleFactionAdvantages();
             if (Aggressor == null) MainPhaseEnd();

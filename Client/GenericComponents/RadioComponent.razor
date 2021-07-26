@@ -79,9 +79,9 @@
 
     protected override void OnParametersSet()
     {
-        if (Required && (object)Value == default)
+        if (!Values.Contains(Value))
         {
-            Value = Values.FirstOrDefault();
+            Value = Required ? Values.FirstOrDefault() : default;
         }
     }
 

@@ -10,7 +10,7 @@
 
     <div class="card-body text-center bg-transparent border-bottom-0">
 
-        <div class="row justify-content-center">
+        <div class="row justify-content-center align-items-center">
 
             @{
                 var waitingFor = WaitingFor;
@@ -65,7 +65,7 @@
 
         @if (CanEndPhase)
         {
-            <ButtonRowComponent Confirm="Confirm" ConfirmText="Next" ConfirmError="@Validation" />
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="Continue" ConfirmError="@Validation" />
         }
 
     </div>

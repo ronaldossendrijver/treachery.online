@@ -11,7 +11,7 @@
     <Header>Use @Skin.Current.Describe(TreacheryCardType.Juice)?</Header>
     <Body>
 
-        <RadioComponent @bind-Value="type" Values="JuicePlayed.ValidTypes()"/>
+        <RadioComponent @bind-Value="type" Values="JuicePlayed.ValidTypes(Game)" Required="true"/>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 

@@ -43,18 +43,18 @@ namespace Treachery.Shared
             HasActedOrPassed.Clear();
             LastShippedOrMovedTo = null;
 
+            ShipmentAndMoveSequence.Start(false, 1);
+            if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && Applicable(Rule.OrangeDetermineShipment))
+            {
+                ShipmentAndMoveSequence.NextPlayer(false);
+            }
+
             Enter(Version >= 107, Phase.BeginningOfShipAndMove, StartShipAndMoveSequence);
         }
 
         private void StartShipAndMoveSequence()
         {
-            ShipmentAndMoveSequence.Start(false, 1);
-            if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && OrangeDeterminesMoveMoment)
-            {
-                ShipmentAndMoveSequence.NextPlayer(false);
-            }
-
-            Enter(JuiceForcesFirstPlayer && CurrentJuice.Initiator != Faction.Orange, Phase.NonOrangeShip, IsPlaying(Faction.Orange) && OrangeDeterminesMoveMoment, Phase.OrangeShip, Phase.NonOrangeShip);
+            Enter(JuiceForcesFirstPlayer && CurrentJuice.Initiator != Faction.Orange, Phase.NonOrangeShip, IsPlaying(Faction.Orange) && Applicable(Rule.OrangeDetermineShipment), Phase.OrangeShip, Phase.NonOrangeShip);
         }
 
         public bool OccupiesArrakeenOrCarthag(Player p)
@@ -80,7 +80,7 @@ namespace Treachery.Shared
         {
             BeginningOfShipmentAndMovePhase = false;
             CurrentReport.Add(e);
-            Enter(EveryoneButOneActedOrPassed, Phase.ShipmentAndMoveConcluded, Phase.NonOrangeShip);
+            Enter(Phase.NonOrangeShip);
         }
 
         private bool BGMayAccompany;
@@ -314,7 +314,7 @@ namespace Treachery.Shared
             {
                 ShipmentAndMoveSequence.NextPlayer(false);
 
-                if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && OrangeDeterminesMoveMoment)
+                if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && Applicable(Rule.OrangeDetermineShipment))
                 {
                     ShipmentAndMoveSequence.NextPlayer(false);
                 }
@@ -672,18 +672,12 @@ namespace Treachery.Shared
             {
                 Enter(
                     EveryoneActedOrPassed, ConcludeShipmentAndMove,
-                    IsPlaying(Faction.Orange) && !HasActedOrPassed.Any(p => p == Faction.Orange) && OrangeDeterminesMoveMoment, Phase.OrangeShip,
+                    IsPlaying(Faction.Orange) && !HasActedOrPassed.Any(p => p == Faction.Orange) && Applicable(Rule.OrangeDetermineShipment), Phase.OrangeShip,
                     Phase.NonOrangeShip);
             }
         }
 
-        private bool OrangeDeterminesMoveMoment
-        {
-            get
-            {
-                return Applicable(Rule.OrangeDetermineShipment);
-            }
-        }
+        public bool OrangeMayDelay => Applicable(Rule.OrangeDetermineShipment) && Players.Count - HasActedOrPassed.Count > (JuiceForcesLastPlayer && !HasActedOrPassed.Contains(CurrentJuice.Initiator) ? 2 : 1);
 
         private void DetermineNextSubPhaseAfterOrangeMove()
         {

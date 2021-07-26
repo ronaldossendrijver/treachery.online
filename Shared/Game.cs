@@ -51,7 +51,6 @@ namespace Treachery.Shared
         public int SectorInStorm { get; set; } = -1;
         public int NextStormMoves { get; set; } = -1;
         public bool ShieldWallDestroyed { get; set; } = false;
-        public int FirstPlayerPosition { get; set; } = -1;
         public BrownEconomicsStatus EconomicsStatus { get; set; } = BrownEconomicsStatus.None;
         public IDictionary<Location, int> ResourcesOnPlanet { get; set; } = new Dictionary<Location, int>();
         public IDictionary<IHero, LeaderState> LeaderState { get; set; } = new Dictionary<IHero, LeaderState>();
@@ -205,6 +204,10 @@ namespace Treachery.Shared
 
                 case Phase.ShipmentAndMoveConcluded:
                     EnterBattlePhase();
+                    break;
+
+                case Phase.BeginningOfBattle:
+                    Enter(Phase.BattlePhase);
                     break;
 
                 case Phase.BattleReport:
@@ -729,7 +732,6 @@ namespace Treachery.Shared
 
         private bool EveryoneActedOrPassed => HasActedOrPassed.Count == Players.Count;
 
-        public bool EveryoneButOneActedOrPassed => HasActedOrPassed.Count == Players.Count - 1;
 
         public bool HasStormPrescience(Player p)
         {
@@ -832,6 +834,27 @@ namespace Treachery.Shared
             }
 
             return false;
+        }
+
+        private int _firstPlayerPosition = -1;
+        public int FirstPlayerPosition
+        {
+            get
+            {
+                if (JuiceForcesFirstPlayer)
+                {
+                    return CurrentJuice.Player.PositionAtTable;
+                }
+                else
+                {
+                    return _firstPlayerPosition;
+                }
+            }
+
+            set
+            {
+                _firstPlayerPosition = value;
+            }
         }
 
         #endregion SupportMethods

@@ -518,6 +518,7 @@ namespace Treachery.Shared
         {
             CurrentReport.Add(e);
             CurrentJuice = e;
+            Discard(e.Player, TreacheryCardType.Juice);
         }
     }
 }

@@ -343,7 +343,7 @@
         }
         else if (a == typeof(WhiteRevealedNoField))
         {
-            <SimpleActionComponent GameEventType="WhiteRevealedNoField" h="@h" Title="@Skin.Current.Format("Reveal your currently active No-Field of {0}? {1} forces will be placed there.", h.Game.CurrentNoFieldValue, Math.Min(h.Game.CurrentNoFieldValue, h.Player.ForcesInReserve))" />
+            <SimpleActionComponent GameEventType="WhiteRevealedNoField" h="@h" Title="@Skin.Current.Format("Reveal your currently active No-Field of {0}, placing {1} forces?", h.Game.CurrentNoFieldValue, Math.Min(h.Game.CurrentNoFieldValue, h.Player.ForcesInReserve))" />
         }
         else if (a == typeof(ResidualPlayed))
         {
