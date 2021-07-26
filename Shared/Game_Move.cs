@@ -48,10 +48,10 @@ namespace Treachery.Shared
 
         private void StartShipAndMoveSequence()
         {
-            ShipmentAndMoveSequence.Start(this, false);
+            ShipmentAndMoveSequence.Start(this, false, 1);
             if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && OrangeDeterminesMoveMoment)
             {
-                ShipmentAndMoveSequence.NextPlayer(this, false);
+                ShipmentAndMoveSequence.NextPlayer(false);
             }
 
             Enter(IsPlaying(Faction.Orange) && OrangeDeterminesMoveMoment, Phase.OrangeShip, Phase.NonOrangeShip);
@@ -312,11 +312,11 @@ namespace Treachery.Shared
 
             if (CurrentPhase == Phase.NonOrangeMove)
             {
-                ShipmentAndMoveSequence.NextPlayer(this, false);
+                ShipmentAndMoveSequence.NextPlayer(false);
 
                 if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && OrangeDeterminesMoveMoment)
                 {
-                    ShipmentAndMoveSequence.NextPlayer(this, false);
+                    ShipmentAndMoveSequence.NextPlayer(false);
                 }
             }
 

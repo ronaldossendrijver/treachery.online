@@ -14,14 +14,14 @@ namespace Treachery.Shared
         {
             List<Type> result = new List<Type>();
 
-            if (isHost)
-            {
-                AddHostActions(result);
-            }
-
             if (player != null && (CurrentPhase == Phase.SelectingFactions || player.Faction != Faction.None))
             {
                 AddPlayerActions(player, isHost, result);
+            }
+
+            if (isHost)
+            {
+                AddHostActions(result);
             }
 
             return new List<Type>(result);

@@ -189,11 +189,11 @@ namespace Treachery.Shared
             }
 
             DeterminePositionsAtTable();
-            BidSequence = new PlayerSequence(Players);
-            ShipmentAndMoveSequence = new PlayerSequence(Players);
-            BattleSequence = new PlayerSequence(Players);
-            CheckWinSequence = new PlayerSequence(Players);
-            TechTokenSequence = new PlayerSequence(Players);
+            BidSequence = new PlayerSequence(Players, MaximumNumberOfPlayers);
+            ShipmentAndMoveSequence = new PlayerSequence(Players, MaximumNumberOfPlayers);
+            BattleSequence = new PlayerSequence(Players, MaximumNumberOfPlayers);
+            CheckWinSequence = new PlayerSequence(Players, MaximumNumberOfPlayers);
+            TechTokenSequence = new PlayerSequence(Players, MaximumNumberOfPlayers);
             CurrentReport.Add("Game started.");
             EnterPhaseTradingFactions();
         }

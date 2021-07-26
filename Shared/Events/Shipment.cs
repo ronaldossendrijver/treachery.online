@@ -117,13 +117,18 @@ namespace Treachery.Shared
             if (cost > p.Resources + AllyContributionAmount) return "You can't pay that much.";
             if (cost < AllyContributionAmount) return "Your ally is paying too much.";
             if (!ValidShipmentLocations(Game, p).Contains(To)) return "Cannot ship there.";
+
+            bool isWhiteNoFieldShipment = p.Faction == Faction.White && NoFieldValue >= 0;
+            if (NoFieldValue >= 0 && !(p.Faction == Faction.White && !Game.Prevented(FactionAdvantage.WhiteNofield)) && !(p.Ally == Faction.White && Game.WhiteAllyMayUseNoField)) return "You can't use a No-Field";
+            if (isWhiteNoFieldShipment && ForceAmount > 0) return "You can't do both normal and No-Field shipment.";
+            if (isWhiteNoFieldShipment && SpecialForceAmount != 1) return "Invalid special force value for No-Field shipment.";
+            if (p.Faction == Faction.White && SpecialForceAmount > 0 && !ValidNoFieldValues(Game, Player).Contains(NoFieldValue)) return "Invalid No-Field value.";
+
             if (From == null && ForceAmount > p.ForcesInReserve) return Skin.Current.Format("Not enough {0} in reserve.", p.Force);
-            if (From == null && SpecialForceAmount > p.SpecialForcesInReserve) return Skin.Current.Format("Not enough {0} in reserve.", p.SpecialForce);
+            if (From == null && !isWhiteNoFieldShipment && SpecialForceAmount > p.SpecialForcesInReserve) return Skin.Current.Format("Not enough {0} in reserve.", p.SpecialForce);
+
             if (From != null && ForceAmount > p.ForcesIn(From)) return Skin.Current.Format("Not enough {0} for site-to-site shipment.", p.Force);
             if (From != null && SpecialForceAmount > p.SpecialForcesIn(From)) return Skin.Current.Format("Not enough {0} for site-to-site shipment.", p.SpecialForce);
-            if (p.Faction == Faction.White && ForceAmount > 0 && SpecialForceAmount > 0) return "You can't do both normal and No-Field shipment.";
-            if (NoFieldValue >= 0 && !(p.Faction == Faction.White && !Game.Prevented(FactionAdvantage.WhiteNofield)) && !(p.Ally == Faction.White && Game.WhiteAllyMayUseNoField)) return "You can't use a No-Field";
-            if (p.Faction == Faction.White && SpecialForceAmount > 0 && !ValidNoFieldValues(Game, Player).Contains(NoFieldValue)) return "Invalid No-Field value.";
             
             if (IsNoField && p.Faction != Faction.White)
             {

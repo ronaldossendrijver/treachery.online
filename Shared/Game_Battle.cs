@@ -57,7 +57,7 @@ namespace Treachery.Shared
                     return CurrentJuice.Player;
                 }
 
-                BattleSequence.Start(this, false);
+                BattleSequence.Start(this, false, 1);
 
                 for (int i = 0; i < Players.Count; i++)
                 {
@@ -67,7 +67,7 @@ namespace Treachery.Shared
                         return playerToCheck;
                     }
 
-                    BattleSequence.NextPlayer(this, false);
+                    BattleSequence.NextPlayer(false);
                 }
 
                 return null;

@@ -4,7 +4,7 @@
 
 @using Treachery.Shared
 @using Treachery.Client.GenericComponents;
-@inherits GameComponent
+@inherits GameEventComponent<EndPhase>
 
 <div class="card p-0 mb-2" style="background-color:#e8dba6ee;">
 
@@ -63,11 +63,21 @@
 
         <div class="@(StatusDescriptionClass)">@h.Status.Description</div>
 
+        @if (CanEndPhase)
+        {
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="Next" ConfirmError="@Validation" />
+        }
+
     </div>
 
 </div>
 
 @code {
+
+    [Parameter]
+    public bool CanEndPhase { get; set; }
+
+    protected override EndPhase ConfirmedResult => new EndPhase(Game) { Initiator = Faction };
 
     private IEnumerable<SequenceElement> CurrentSequence
     {

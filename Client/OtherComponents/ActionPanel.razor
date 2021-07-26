@@ -25,11 +25,7 @@
 
     @foreach (var a in h.Actions)
     {
-        if (a == typeof(EndPhase))
-        {
-            <SimpleActionComponent GameEventType="EndPhase" h="@h" Title="@h.NextPhase()" Alert="true" />
-        }
-        else if (a == typeof(FactionSelected))
+        if (a == typeof(FactionSelected))
         {
             <FactionSelectedComponent h="@h" />
         }
@@ -347,7 +343,7 @@
         }
         else if (a == typeof(WhiteRevealedNoField))
         {
-            <SimpleActionComponent GameEventType="WhiteRevealedNoField" h="@h" Title="Reveal your currently active No-Field?" />
+            <SimpleActionComponent GameEventType="WhiteRevealedNoField" h="@h" Title="@Skin.Current.Format("Reveal your currently active No-Field of {0}? {1} forces will be placed there.", h.Game.CurrentNoFieldValue, Math.Min(h.Game.CurrentNoFieldValue, h.Player.ForcesInReserve))" />
         }
         else if (a == typeof(ResidualPlayed))
         {

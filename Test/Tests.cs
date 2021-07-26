@@ -53,21 +53,14 @@ namespace Treachery.Test
 
         private static string TestSpecialCases(Game g, GameEvent e)
         {
-            /*
+            
             var p = g.GetPlayer(e.Initiator);
             
-            WriteSavegameIfApplicable(g, typeof(BrownExtraMove));
+            WriteSavegameIfApplicable(g, typeof(DistransUsed));
             WriteSavegameIfApplicable(g, typeof(BrownFreeRevivalPrevention));
             WriteSavegameIfApplicable(g, typeof(BrownRemoveForce));
 
             
-            WriteSavegameIfApplicable(g, typeof(PerformHmsMovement));
-            WriteSavegameIfApplicable(g, typeof(PerformHmsPlacement));
-            WriteSavegameIfApplicable(g, typeof(PoisonToothCancelled));
-            WriteSavegameIfApplicable(g, typeof(TakeLosses));
-            WriteSavegameIfApplicable(g, typeof(YellowRidesMonster));
-            WriteSavegameIfApplicable(g, typeof(YellowSentMonster));
-            */
             /*
             var brown = g.GetPlayer(Faction.Brown);
             if (brown != null)

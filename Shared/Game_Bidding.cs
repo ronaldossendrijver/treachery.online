@@ -63,7 +63,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(BlackMarketBid bid)
         {
-            BidSequence.NextPlayer(this, true);
+            BidSequence.NextPlayer(true);
             SkipPlayersThatCantBid(BidSequence);
             RecentMilestones.Add(Milestone.Bid);
 
@@ -145,8 +145,8 @@ namespace Treachery.Shared
         private IBid DetermineHighestBid(Dictionary<Faction, IBid> bids)
         {
             int highestBidValue = bids.Values.Max(b => b.TotalAmount);
-            var determineBidWinnerSequence = new PlayerSequence(Players);
-            determineBidWinnerSequence.Start(this, false);
+            var determineBidWinnerSequence = new PlayerSequence(Players, MaximumNumberOfPlayers);
+            determineBidWinnerSequence.Start(this, false, 1);
             for (int i = 0; i < MaximumNumberOfPlayers; i++)
             {
                 var f = determineBidWinnerSequence.CurrentFaction;
@@ -154,7 +154,7 @@ namespace Treachery.Shared
                 {
                     return bids[f];
                 }
-                determineBidWinnerSequence.NextPlayer(this, false);
+                determineBidWinnerSequence.NextPlayer(false);
             }
             
             return null;
@@ -242,18 +242,18 @@ namespace Treachery.Shared
                 (CurrentAuctionType != AuctionType.BlackMarketNormal || CurrentAuctionType != AuctionType.Normal || CurrentAuctionType != AuctionType.WhiteNormal))
             {
                 //We want to start normal bidding and the previous auction type was not normal bidding
-                BidSequence.Start(this, true);
+                BidSequence.Start(this, true, 1);
                 SkipPlayersThatCantBid(BidSequence);
             }
             else if (auctionType == AuctionType.BlackMarketNormal)
             {
-                BidSequence.Start(this, true);
+                BidSequence.Start(this, true, 1);
                 SkipPlayersThatCantBid(BidSequence);
             }
             else if (auctionType == AuctionType.BlackMarketOnceAround || auctionType == AuctionType.WhiteOnceAround)
             {
                 BidSequence.Start(whitePlayer, direction);
-                BidSequence.NextPlayer(this, true);
+                BidSequence.NextPlayer(true);
             }
 
             FirstFactionToBid = BidSequence.CurrentFaction;
@@ -382,7 +382,7 @@ namespace Treachery.Shared
                 RecentMilestones.Add(Milestone.Bid);
             }
 
-            BidSequence.NextPlayer(this, true);
+            BidSequence.NextPlayer(true);
             SkipPlayersThatCantBid(BidSequence);
 
             if (Bids.ContainsKey(bid.Initiator))
@@ -633,7 +633,7 @@ namespace Treachery.Shared
             for (int i = 0; i < Players.Count; i++)
             {
                 if (sequence.CurrentPlayer.HasRoomForCards) break;
-                sequence.NextPlayer(this, Version >= 50);
+                sequence.NextPlayer(Version >= 50);
             }
         }
 
@@ -817,7 +817,7 @@ namespace Treachery.Shared
         private void PutNextCardOnAuction()
         {
             Enter(Phase.Bidding);
-            BidSequence.NextRound(this, true);
+            BidSequence.NextRound(true);
             SkipPlayersThatCantBid(BidSequence);
             FirstFactionToBid = BidSequence.CurrentFaction;
         }

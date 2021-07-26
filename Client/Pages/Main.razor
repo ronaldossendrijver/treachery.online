@@ -59,7 +59,7 @@
             }
             else
             {
-                <GameStatusComponent h="@h" />
+                <GameStatusComponent h="@h" CanEndPhase="h.Actions.Contains(typeof(EndPhase))"/>
 
                 @if (h.CurrentPhase == Phase.GameEnded)
                 {
