@@ -39,9 +39,13 @@ namespace Treachery.Shared
         public Dictionary<TreacheryCardType, string> TreacheryCardType_STR;
         public Dictionary<int, string> TreacheryCardName_STR;
         public Dictionary<int, string> TreacheryCardDescription_STR;
-        public Dictionary<TechToken, string> TechTokenDescription_STR;
         public Dictionary<int, string> TreacheryCardImage_URL;
+        public Dictionary<TechToken, string> TechTokenDescription_STR;
         public Dictionary<int, string> ResourceCardImage_URL;
+        public Dictionary<LeaderSkill, string> LeaderSkillCardName_STR;
+        public Dictionary<LeaderSkill, string> LeaderSkillCardImage_URL;
+        public Dictionary<int, string> StrongholdCardName_STR;
+        public Dictionary<int, string> StrongholdCardImage_URL;
 
         public string Map_URL = null;
         public string Eye_URL = null;
@@ -1958,6 +1962,64 @@ namespace Treachery.Shared
                 [Faction.White] = "No-Field",
                 [Faction.Pink] = "-",
                 [Faction.Cyan] = "-"
+            },
+
+            LeaderSkillCardName_STR = new Dictionary<LeaderSkill, string>()
+            {
+                [LeaderSkill.None] = "",
+                [LeaderSkill.Bureaucrat] = "Bureaucrat",
+                [LeaderSkill.Diplomat] = "Diplomat",
+                [LeaderSkill.Decipherer] = "Rihani Decipherer",
+                [LeaderSkill.Smuggler] = "Smuggler",
+                [LeaderSkill.Graduate] = "Suk Graduate",
+                [LeaderSkill.Planetologist] = "Planetologist",
+                [LeaderSkill.Warmaster] = "Warmaster",
+                [LeaderSkill.Adept] = "Prana Bindu Adept",
+                [LeaderSkill.Swordmaster] = "Swordmaster of Ginaz",
+                [LeaderSkill.KillerMedic] = "Killer Medic",
+                [LeaderSkill.MasterOfAssassins] = "Master of Assassins",
+                [LeaderSkill.Sandmaster] = "Sandmaster",
+                [LeaderSkill.Thinker] = "Mentat",
+                [LeaderSkill.Banker] = "Spice Banker"
+            },
+
+            LeaderSkillCardImage_URL = new Dictionary<LeaderSkill, string>()
+            {
+                [LeaderSkill.None] = "",
+                [LeaderSkill.Bureaucrat] = "Bureaucrat.gif",
+                [LeaderSkill.Diplomat] = "Diplomat.gif",
+                [LeaderSkill.Decipherer] = "Decipherer.gif",
+                [LeaderSkill.Smuggler] = "Smuggler.gif",
+                [LeaderSkill.Graduate] = "Graduate.gif",
+                [LeaderSkill.Planetologist] = "Planetologist.gif",
+                [LeaderSkill.Warmaster] = "Warmaster.gif",
+                [LeaderSkill.Adept] = "Adept.gif",
+                [LeaderSkill.Swordmaster] = "Swordmaster.gif",
+                [LeaderSkill.KillerMedic] = "KillerMedic.gif",
+                [LeaderSkill.MasterOfAssassins] = "MasterOfAssassins.gif",
+                [LeaderSkill.Sandmaster] = "Sandmaster.gif",
+                [LeaderSkill.Thinker] = "Thinker.gif",
+                [LeaderSkill.Banker] = "Banker.gif"
+            },
+
+            StrongholdCardName_STR = new Dictionary<int, string>()
+            {
+                [2] = "Carthag",
+                [3] = "Arrakeen",
+                [4] = "Tuek's Sietch",
+                [5] = "Sietch Tabr",
+                [6] = "Habbanya Sietch",
+                [42] = "Habbanya Sietch"
+            },
+
+            StrongholdCardImage_URL = new Dictionary<int, string>()
+            {
+                [2] = "Carthag.gif",
+                [3] = "Arrakeen.gif",
+                [4] = "TueksSietch.gif",
+                [5] = "SietchTabr.gif",
+                [6] = "HabbanyaSietch.gif",
+                [42] = "HabbanyaSietch.gif"
             },
 
             MusicGeneral_URL = DEFAULT_ART_LOCATION + "/art/101_-_Dune_-_DOS_-_Arrakis.mp3",

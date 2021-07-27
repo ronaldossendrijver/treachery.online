@@ -288,25 +288,25 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 5000;
+            int nrOfGames = 100;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
             //Expansion, advanced game, all expansions, all factions:
-            //var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
-            //rules.Add(Rule.FillWithBots);
-            //rules.Add(Rule.BotsCannotAlly);
-            //var factions = EstablishPlayers.AvailableFactions().ToList();
-            //int nrOfTurns = 7;
-            //int nrOfPlayers = factions.Count;
-
-            //Expansion, advanced game, all expansions, free for all without guild and fremen:
             var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
             rules.Add(Rule.FillWithBots);
             rules.Add(Rule.BotsCannotAlly);
-            var factions = EstablishPlayers.AvailableFactions().Except(new Faction[] { Faction.Orange, Faction.Yellow }).ToList();
-            int nrOfTurns = 7; 
+            var factions = EstablishPlayers.AvailableFactions().ToList();
+            int nrOfTurns = 10;
             int nrOfPlayers = factions.Count;
+
+            //Expansion, advanced game, all expansions, free for all without guild and fremen:
+            //var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
+            //rules.Add(Rule.FillWithBots);
+            //rules.Add(Rule.BotsCannotAlly);
+            //var factions = EstablishPlayers.AvailableFactions().Except(new Faction[] { Faction.Orange, Faction.Yellow }).ToList();
+            //int nrOfTurns = 7; 
+            //int nrOfPlayers = factions.Count;
             
             //Expansion, advanced game, 8 players:
             //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();

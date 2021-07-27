@@ -136,7 +136,6 @@ namespace Treachery.Shared
                 RevealCurrentNoField(AggressorBattleAction.Player, CurrentBattle.Territory);
                 RevealCurrentNoField(DefenderBattleAction.Player, CurrentBattle.Territory);
 
-                if (Version < 43) DiscardOneTimeCardsUsedInBattle(null, null);
                 CurrentReport.Add(AggressorBattleAction.GetBattlePlanMessage());
                 CurrentReport.Add(DefenderBattleAction.GetBattlePlanMessage());
                 RegisterKnownCards(AggressorBattleAction);
@@ -308,11 +307,43 @@ namespace Treachery.Shared
 
         private void HandleRevealedBattlePlans()
         {
-            if (Version >= 43) DiscardOneTimeCardsUsedInBattle(AggressorTraitorAction, DefenderTraitorAction);
+            ResolveEffectsOfOwnedStrongholds(AggressorBattleAction, DefenderBattleAction);
+            ResolveEffectsOfOwnedStrongholds(DefenderBattleAction, AggressorBattleAction);
+
+            DiscardOneTimeCardsUsedInBattle(AggressorTraitorAction, DefenderTraitorAction);
             ResolveBattle(CurrentBattle, AggressorBattleAction, DefenderBattleAction, AggressorTraitorAction, DefenderTraitorAction);
             CaptureLeaderIfApplicable();
             FlipBeneGesseritWhenAlone();
             DetermineAudit();
+        }
+
+        private void ResolveEffectsOfOwnedStrongholds(Battle playerPlan, Battle opponentPlan)
+        {
+            if (Map.TueksSietch.Territory == CurrentBattle.Territory && HasStrongholdAdvantage(playerPlan.Initiator, StrongholdAdvantage.CollectResourcesForUseless))
+            {
+                if (playerPlan.Weapon?.Type == TreacheryCardType.Useless)
+                {
+                    CurrentReport.Add(playerPlan.Initiator, "{0} stronghold advantage: {1} collect 2 for playing {2}", Map.TueksSietch, playerPlan.Initiator, playerPlan.Weapon);
+                    playerPlan.Player.Resources += 2;
+                }
+
+                if (playerPlan.Defense?.Type == TreacheryCardType.Useless)
+                {
+                    CurrentReport.Add(playerPlan.Initiator, "{0} stronghold advantage: {1} collect 2 for playing {2}", Map.TueksSietch, playerPlan.Initiator, playerPlan.Defense);
+                    playerPlan.Player.Resources += 2;
+                }
+            }
+
+            if (Map.SietchTabr.Territory == CurrentBattle.Territory && HasStrongholdAdvantage(playerPlan.Initiator, StrongholdAdvantage.CollectResourcesForDial))
+            {
+                int collected = (int)Math.Floor(opponentPlan.Dial(this, playerPlan.Initiator));
+                if (collected > 0)
+                {
+                    CurrentReport.Add(playerPlan.Initiator, "{0} stronghold advantage: {1} collect {2} for enemy force dial", Map.SietchTabr, playerPlan.Initiator, playerPlan.Defense);
+                    playerPlan.Player.Resources += collected;
+                }
+            }
+
         }
 
         private void DetermineAudit()
@@ -840,14 +871,18 @@ namespace Treachery.Shared
             float aggTotal = aggForceDial + aggHeroContribution + aggMessiahContribution;
             float defTotal = defForceDial + defHeroContribution + defMessiahContribution;
 
+            bool aggressorWinsTies = true;
+            if (HasStrongholdAdvantage(defender.Faction, StrongholdAdvantage.WinTies)) aggressorWinsTies = false;
+            if (IsAggressorByJuice(defender) && !HasStrongholdAdvantage(aggressor.Faction, StrongholdAdvantage.WinTies)) aggressorWinsTies = false;
+
             Player winner;
-            if (IsAggressorByJuice(defender))
+            if (aggressorWinsTies)
             {
-                winner = (defTotal >= aggTotal) ? defender : aggressor;
+                winner = (aggTotal >= defTotal) ? aggressor : defender;
             }
             else
             {
-                winner = (aggTotal >= defTotal) ? aggressor : defender;
+                winner = (defTotal >= aggTotal) ? defender : aggressor;
             }
 
             var winnerBattlePlan = (winner == aggressor) ? agg : def;
@@ -890,14 +925,22 @@ namespace Treachery.Shared
             return CurrentJuice != null && CurrentJuice.Type == JuiceType.Aggressor && CurrentJuice.Player == p;
         }
 
-        private void DetermineCauseOfDeath(Battle wheel, Battle opponent, IHero theHero, bool poisonToothUsed, bool artilleryUsed, bool rockMelterWasUsedToKill, ref bool heroDies, ref TreacheryCardType causeOfDeath)
+        private void DetermineCauseOfDeath(Battle playerPlan, Battle opponentPlan, IHero theHero, bool poisonToothUsed, bool artilleryUsed, bool rockMelterWasUsedToKill, ref bool heroDies, ref TreacheryCardType causeOfDeath)
         {
+            bool isProtectedByCarthagAdvantage = HasStrongholdAdvantage(playerPlan.Initiator, StrongholdAdvantage.CountDefensesAsSnooper) && !playerPlan.HasPoison;
+
             DetermineDeathBy(theHero, TreacheryCardType.Rockmelter, rockMelterWasUsedToKill, ref heroDies, ref causeOfDeath);
-            DetermineDeathBy(theHero, TreacheryCardType.ArtilleryStrike, artilleryUsed && !wheel.HasShield, ref heroDies, ref causeOfDeath);
-            DetermineDeathBy(theHero, TreacheryCardType.PoisonTooth, poisonToothUsed && !wheel.HasNonAntidotePoisonDefense, ref heroDies, ref causeOfDeath);
-            DetermineDeathBy(theHero, TreacheryCardType.Laser, opponent.HasLaser, ref heroDies, ref causeOfDeath);
-            DetermineDeathBy(theHero, TreacheryCardType.Poison, opponent.HasPoison && !wheel.HasAntidote, ref heroDies, ref causeOfDeath);
-            DetermineDeathBy(theHero, TreacheryCardType.Projectile, opponent.HasProjectile && !wheel.HasProjectileDefense, ref heroDies, ref causeOfDeath);
+            DetermineDeathBy(theHero, TreacheryCardType.ArtilleryStrike, artilleryUsed && !playerPlan.HasShield, ref heroDies, ref causeOfDeath);
+            DetermineDeathBy(theHero, TreacheryCardType.PoisonTooth, poisonToothUsed && !playerPlan.HasNonAntidotePoisonDefense, ref heroDies, ref causeOfDeath);
+            DetermineDeathBy(theHero, TreacheryCardType.Laser, opponentPlan.HasLaser, ref heroDies, ref causeOfDeath);
+
+            if (opponentPlan.HasPoison && !playerPlan.HasAntidote && isProtectedByCarthagAdvantage)
+            {
+                CurrentReport.Add(playerPlan.Initiator, "{0} stronghold advantage protects {1} from death by {2}.", Map.Carthag, theHero, TreacheryCardType.Poison);
+            }
+
+            DetermineDeathBy(theHero, TreacheryCardType.Poison, opponentPlan.HasPoison && !(playerPlan.HasAntidote || isProtectedByCarthagAdvantage), ref heroDies, ref causeOfDeath);
+            DetermineDeathBy(theHero, TreacheryCardType.Projectile, opponentPlan.HasProjectile && !playerPlan.HasProjectileDefense, ref heroDies, ref causeOfDeath);
         }
 
         private void DetermineDeathBy(IHero hero, TreacheryCardType byWeapon, bool weaponHasEffect, ref bool heroIsKilled, ref TreacheryCardType causeOfDeath)
@@ -953,6 +996,13 @@ namespace Treachery.Shared
                                 CurrentReport.Add(Faction.Brown, "{0} prevents {1}", Faction.Brown, FactionAdvantage.BrownReceiveForcePayment);
                             }
                         }
+                    }
+
+                    if (HasStrongholdAdvantage(p.Faction, StrongholdAdvantage.FreeResourcesForBattles))
+                    {
+                        int resourcesRefunded = Math.Min(2, costForPlayer);
+                        p.Resources += resourcesRefunded;
+                        CurrentReport.Add(p.Faction, "{0} stronghold advantage: {1} dialed {2} refunded to {3}", Map.Arrakeen, resourcesRefunded, Concept.Resource, p.Faction);
                     }
                 }
 

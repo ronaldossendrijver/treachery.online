@@ -651,4 +651,14 @@ namespace Treachery.Shared
         Thinker = 130,
         Banker = 140
     }
+
+    public enum StrongholdAdvantage : int
+    {
+        None = 0,
+        FreeResourcesForBattles = 10,
+        CollectResourcesForUseless = 20,
+        CountDefensesAsSnooper = 30,
+        WinTies = 40,
+        CollectResourcesForDial = 50
+    }
 }

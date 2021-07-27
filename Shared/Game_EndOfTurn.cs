@@ -87,18 +87,40 @@ namespace Treachery.Shared
 
         private void DetermineStrongholdOwnership()
         {
-            StrongholdOwnership.Clear();
-            DetermineStrongholdOwnership(Map.Arrakeen);
-            DetermineStrongholdOwnership(Map.Carthag);
-            DetermineStrongholdOwnership(Map.SietchTabr);
-            DetermineStrongholdOwnership(Map.HabbanyaSietch);
-            DetermineStrongholdOwnership(Map.TueksSietch);
-            DetermineStrongholdOwnership(Map.HiddenMobileStronghold);
+            if (Applicable(Rule.BrownAndWhiteStrongholdBonus))
+            {
+                StrongholdOwnership.Clear();
+                DetermineStrongholdOwnership(Map.Arrakeen);
+                DetermineStrongholdOwnership(Map.Carthag);
+                DetermineStrongholdOwnership(Map.SietchTabr);
+                DetermineStrongholdOwnership(Map.HabbanyaSietch);
+                DetermineStrongholdOwnership(Map.TueksSietch);
+                DetermineStrongholdOwnership(Map.HiddenMobileStronghold);
+            }
         }
 
-        private bool IsOwner(Location stronghold, Faction faction)
+        private StrongholdAdvantage ChosenHMSAdvantage { get; set; } = StrongholdAdvantage.None;
+        private bool HasStrongholdAdvantage(Faction f, StrongholdAdvantage advantage)
         {
-            return StrongholdOwnership.ContainsKey(stronghold) && StrongholdOwnership[stronghold] == faction;
+            if (HasStronghold(f, Map.HiddenMobileStronghold) && ChosenHMSAdvantage == advantage)
+            {
+                return true;
+            }
+
+            return advantage switch
+            {
+                StrongholdAdvantage.FreeResourcesForBattles => HasStronghold(f, Map.Arrakeen),
+                StrongholdAdvantage.CollectResourcesForDial => HasStronghold(f, Map.SietchTabr),
+                StrongholdAdvantage.CollectResourcesForUseless => HasStronghold(f, Map.TueksSietch),
+                StrongholdAdvantage.CountDefensesAsSnooper => HasStronghold(f, Map.Carthag),
+                StrongholdAdvantage.WinTies => HasStronghold(f, Map.HabbanyaSietch),
+                _ => false
+            };
+        }
+
+        private bool HasStronghold(Faction f, Location stronghold)
+        {
+            return StrongholdOwnership.ContainsKey(stronghold) && StrongholdOwnership[stronghold] == f;
         }
 
         private void DetermineStrongholdOwnership(Location location)

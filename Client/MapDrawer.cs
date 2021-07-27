@@ -57,6 +57,7 @@ namespace Treachery.Client
                     await DrawPhases();
                     await DrawHighlightedTerritories();
                     await DrawHiddenMobileStronghold();
+                    await DrawStrongholdOwnership();
                     await DrawRecentMoves();
                     await DrawForcesOnDune();
                     await DrawBids();
@@ -743,10 +744,22 @@ namespace Treachery.Client
                 }
             }
         }
+
+        private static async Task DrawStrongholdOwnership()
+        {
+            foreach (var stronghold in h.Game.Map.Strongholds)
+            {
+                if (h.Game.StrongholdOwnership.ContainsKey(stronghold))
+                {
+                    var owner = h.Game.StrongholdOwnership[stronghold];
+                    await DrawImage(Artwork.FactionTableTokens[owner].Value, stronghold.Center.X + 80, stronghold.Center.Y + 80, Skin.Current.PlayerTokenRadius, Skin.Current.PlayerTokenRadius, Skin.Current.SHADOW_LIGHT, 1, 1, 1, 0.5f);
+                }
+            }
+        }
         #endregion
 
         #region Bids
-        
+
         private static async Task DrawBids()
         {
             if (h.Game.CurrentPhase == Phase.Bidding || h.Game.CurrentPhase == Phase.BlackMarketBidding)
