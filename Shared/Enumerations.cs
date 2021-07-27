@@ -632,4 +632,23 @@ namespace Treachery.Shared
         GoLast = 20,
         Aggressor = 30
     }
+
+    public enum LeaderSkill : int
+    {
+        None = 0,
+        Bureaucrat = 10,
+        Diplomat = 20,
+        Decipherer = 30,
+        Smuggler = 40,
+        Graduate = 50,
+        Planetologist = 60,
+        Warmaster = 70,
+        Adept = 80,
+        Swordmaster = 90,
+        KillerMedic = 100,
+        MasterOfAssassins = 110,
+        Sandmaster = 120,
+        Thinker = 130,
+        Banker = 140
+    }
 }

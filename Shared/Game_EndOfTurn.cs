@@ -79,8 +79,32 @@ namespace Treachery.Shared
             MainPhaseStart(MainPhase.Contemplate, Version >= 103);
             AllowAllPreventedFactionAdvantages();
             HandleEconomics();
-
+            DetermineStrongholdOwnership();
             Enter(Version >= 103, Phase.Contemplate, ContinueMentatPhase);
+        }
+
+        public Dictionary<Location, Faction> StrongholdOwnership { get; set; } = new Dictionary<Location, Faction>();
+
+        private void DetermineStrongholdOwnership()
+        {
+            StrongholdOwnership.Clear();
+            DetermineStrongholdOwnership(Map.Arrakeen);
+            DetermineStrongholdOwnership(Map.Carthag);
+            DetermineStrongholdOwnership(Map.SietchTabr);
+            DetermineStrongholdOwnership(Map.HabbanyaSietch);
+            DetermineStrongholdOwnership(Map.TueksSietch);
+            DetermineStrongholdOwnership(Map.HiddenMobileStronghold);
+        }
+
+        private bool IsOwner(Location stronghold, Faction faction)
+        {
+            return StrongholdOwnership.ContainsKey(stronghold) && StrongholdOwnership[stronghold] == faction;
+        }
+
+        private void DetermineStrongholdOwnership(Location location)
+        {
+            var owner = Players.FirstOrDefault(p => p.Controls(this, location, Applicable(Rule.ContestedStongholdsCountAsOccupied)));
+            if (owner != null) StrongholdOwnership.Add(location, owner.Faction);
         }
 
         private void ContinueMentatPhase()
