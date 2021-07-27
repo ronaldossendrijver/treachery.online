@@ -377,6 +377,10 @@
         {
             <JuicePlayedComponent h="@h" />
         }
+        else if (a == typeof(PortableAntidoteUsed))
+        {
+            <SimpleActionComponent GameEventType="PortableAntidoteUsed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.PortableAntidote)" Title="@Skin.Current.Format("Use your {0}?", TreacheryCardType.PortableAntidote)" />
+        }
     }
 
     @if (DealAccepted.CurrentDeals(h.Game).Any() || h.IsPlayer && (DealAccepted.AcceptableDeals(h.Game, h.Player).Any() || DealAccepted.CancellableDeals(h.Game, h.Player).Any()))

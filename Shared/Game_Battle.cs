@@ -176,11 +176,18 @@ namespace Treachery.Shared
                 if (AggressorBattleAction.Weapon != null && (
                 AggressorBattleAction.Weapon.IsArtillery ||
                 AggressorBattleAction.Weapon.IsRockmelter ||
-                AggressorBattleAction.Weapon.IsPortableAntidote ||
+                AggressorBattleAction.Weapon.IsMirrorWeapon ||
                 AggressorBattleAction.Weapon.IsPoisonTooth && !PoisonToothCancelled
                 ))
                 {
                     Discard(AggressorBattleAction.Weapon);
+                }
+
+                if (AggressorBattleAction.Defense != null && (
+                AggressorBattleAction.Defense.IsPortableAntidote
+                ))
+                {
+                    Discard(AggressorBattleAction.Defense);
                 }
             }
 
@@ -195,11 +202,18 @@ namespace Treachery.Shared
                 if (DefenderBattleAction.Weapon != null && (
                     DefenderBattleAction.Weapon.IsArtillery ||
                     DefenderBattleAction.Weapon.IsRockmelter ||
-                    DefenderBattleAction.Weapon.IsPortableAntidote ||
+                    DefenderBattleAction.Weapon.IsMirrorWeapon ||
                     DefenderBattleAction.Weapon.IsPoisonTooth && !PoisonToothCancelled
                     ))
                 {
                     Discard(DefenderBattleAction.Weapon);
+                }
+
+                if (DefenderBattleAction.Defense != null && (
+                    DefenderBattleAction.Defense.IsPortableAntidote
+                    ))
+                {
+                    Discard(DefenderBattleAction.Defense);
                 }
             }
         }

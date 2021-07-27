@@ -1521,6 +1521,7 @@ namespace Treachery.Client
 
                     case Phase.BattlePhase:
                     case Phase.CallTraitorOrPass:
+                    case Phase.MeltingRock:
                     case Phase.BattleConclusion:
                     case Phase.Facedancing:
                         if (Game.CurrentBattle != null)

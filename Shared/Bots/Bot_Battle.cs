@@ -884,6 +884,21 @@ namespace Treachery.Shared
         {
             return new ResidualPlayed(Game) { Initiator = Faction };
         }
+
+        protected PortableAntidoteUsed DeterminePortableAntidoteUsed()
+        {
+            var opponent = Game.CurrentBattle.OpponentOf(this);
+            var opponentPlan = Game.CurrentBattle.PlanOf(opponent);
+            var myPlan = Game.CurrentBattle.PlanOf(this);
+            var defense = TreacheryCards.FirstOrDefault(c => c.IsPortableAntidote);
+            
+            if (opponentPlan.Weapon != null && opponentPlan.Weapon.CounteredBy(defense, myPlan.Weapon)) {
+
+                return new PortableAntidoteUsed(Game) { Initiator = Faction };
+            }
+
+            return null;
+        }
     }
 
 }

@@ -99,6 +99,7 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(DiscardedSearched))) action = DetermineDiscardedSearched();
                 if (action == null && possibleEvents.Contains(typeof(DiscardedTaken))) action = DetermineDiscardedTaken();
                 if (action == null && possibleEvents.Contains(typeof(JuicePlayed))) action = DetermineJuicePlayed();
+                if (action == null && possibleEvents.Contains(typeof(PortableAntidoteUsed))) action = DeterminePortableAntidoteUsed();
                 
                 //Blue
                 if (action == null && possibleEvents.Contains(typeof(BluePrediction))) action = DetermineBluePrediction();

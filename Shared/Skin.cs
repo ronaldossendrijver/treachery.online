@@ -1870,7 +1870,7 @@ namespace Treachery.Shared
                 { Faction.Red, DEFAULT_ART_LOCATION + "/art/faction4specialforce.svg" },
                 { Faction.Blue, DEFAULT_ART_LOCATION + "/art/faction6specialforce.svg" },
                 { Faction.Grey, DEFAULT_ART_LOCATION + "/art/faction7specialforce.svg" },
-                { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10force.svg" }
+                { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10specialforce.svg" }
             },
 
             TechTokenName_STR = new Dictionary<TechToken, string>()

@@ -293,12 +293,21 @@ namespace Treachery.Test
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
             //Expansion, advanced game, all expansions, all factions:
+            //var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
+            //rules.Add(Rule.FillWithBots);
+            //rules.Add(Rule.BotsCannotAlly);
+            //var factions = EstablishPlayers.AvailableFactions().ToList();
+            //int nrOfTurns = 7;
+            //int nrOfPlayers = factions.Count;
+
+            //Expansion, advanced game, all expansions, free for all without guild and fremen:
             var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
             rules.Add(Rule.FillWithBots);
-            //rules.Add(Rule.BotsCannotAlly);
-            var factions = EstablishPlayers.AvailableFactions().ToList();
+            rules.Add(Rule.BotsCannotAlly);
+            var factions = EstablishPlayers.AvailableFactions().Except(new Faction[] { Faction.Orange, Faction.Yellow }).ToList();
+            int nrOfTurns = 7; 
             int nrOfPlayers = factions.Count;
-
+            
             //Expansion, advanced game, 8 players:
             //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
             //rules.Add(Rule.FillWithBots);
@@ -364,7 +373,7 @@ namespace Treachery.Test
             
             Parallel.For(0, nrOfGames,
                    index => {
-                       PlayGameAndRecordResults(factions, nrOfPlayers, rulesAsArray, wincounter);
+                       PlayGameAndRecordResults(factions, nrOfPlayers, nrOfTurns, rulesAsArray, wincounter);
                    });
             
             foreach (var f in wincounter.Counted)
@@ -374,9 +383,9 @@ namespace Treachery.Test
             
         }
 
-        private static void PlayGameAndRecordResults(List<Faction> factions, int nrOfPlayers, Rule[] rulesAsArray, ObjectCounter<Faction> wincounter)
+        private static void PlayGameAndRecordResults(List<Faction> factions, int nrOfPlayers, int nrOfTurns, Rule[] rulesAsArray, ObjectCounter<Faction> wincounter)
         {
-            var game = LetBotsPlay(rulesAsArray, factions, nrOfPlayers, 10, null, false, true);
+            var game = LetBotsPlay(rulesAsArray, factions, nrOfPlayers, nrOfTurns, null, false, true);
 
             Console.WriteLine("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
                 string.Join(",", game.Winners),

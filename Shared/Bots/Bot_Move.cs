@@ -18,7 +18,7 @@ namespace Treachery.Shared
             if (decidedShipmentAction == ShipmentDecision.StrongholdNearResources)
             {
                 LogInfo("Move to spice");
-                var toMove = ForcesOnPlanet[decidedShipment.To].Take(decidedShipment.ForceAmount + decidedShipment.SpecialForceAmount, false);
+                var toMove = ForcesOnPlanet[decidedShipment.To].Take(decidedShipment.ForceAmount + decidedShipment.SpecialForceAmount, Faction == Faction.Grey);
                 return ConstructMove(finalDestination, decidedShipment.To, toMove);
             }
 
@@ -167,7 +167,7 @@ namespace Treachery.Shared
             {
                 decidedShipmentAction = ShipmentDecision.None;
                 LogInfo("Hajr to spice: {0} -> {1}", decidedShipment.To, finalDestination);
-                var toMove = ForcesOnPlanet[decidedShipment.To].Take(decidedShipment.ForceAmount + decidedShipment.SpecialForceAmount, false);
+                var toMove = ForcesOnPlanet[decidedShipment.To].Take(decidedShipment.ForceAmount + decidedShipment.SpecialForceAmount, Faction == Faction.Grey);
                 return ConstructCaravan(finalDestination, decidedShipment.To, toMove);
             }
 
