@@ -328,6 +328,8 @@ namespace Treachery.Shared
 
                     if (PortableAntidoteUsed.CanBePlayed(this, player)) result.Add(typeof(PortableAntidoteUsed));
 
+                    if (Diplomacy.CanBePlayed(this, player)) result.Add(typeof(Diplomacy));
+
                     break;
 
                 case Phase.BattleConclusion:
@@ -399,6 +401,7 @@ namespace Treachery.Shared
                 CurrentMainPhase < MainPhase.Ended &&
                 CurrentPhase != Phase.Clairvoyance && 
                 CurrentPhase != Phase.TradingCards &&
+                CurrentPhase != Phase.Bureaucracy &&
                 CurrentPhase != Phase.SearchingDiscarded &&
                 CurrentPhase != Phase.PerformingKarmaHandSwap)
             {

@@ -127,6 +127,8 @@ namespace Treachery.Shared
 
         public Battle PlanOf(Player p)
         {
+            if (p == null) return null;
+
             if (p.Faction == Initiator)
             {
                 return Game.AggressorBattleAction;
@@ -139,6 +141,11 @@ namespace Treachery.Shared
             {
                 return null;
             }
+        }
+
+        public Battle PlanOfOpponent(Player p)
+        {
+            return PlanOf(OpponentOf(p));
         }
 
         public Battle PlanOf(Faction f)

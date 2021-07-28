@@ -1,0 +1,71 @@
+﻿/*
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+ */
+
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Treachery.Shared
+{
+    public class Diplomacy : GameEvent
+    {
+        public int _cardId;
+
+        public Diplomacy(Game game) : base(game)
+        {
+        }
+
+        public Diplomacy()
+        {
+        }
+
+        [JsonIgnore]
+        public TreacheryCard Card
+        {
+            get
+            {
+                return TreacheryCardManager.Get(_cardId);
+            }
+            set
+            {
+                _cardId = TreacheryCardManager.GetId(value);
+            }
+        }
+
+        public override string Validate()
+        {
+            return "";
+        }
+
+        protected override void ExecuteConcreteEvent()
+        {
+            Game.HandleEvent(this);
+        }
+
+        public override Message GetMessage()
+        {
+            return new Message(Initiator, "{0} use Diplomacy to turn {1} into a copy of the opponent's defense.", Initiator, Card);
+        }
+
+        public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)
+        {
+            var result = new List<TreacheryCard>();
+            var plan = g.CurrentBattle.PlanOf(p);
+            if (plan.Weapon != null && plan.Weapon.IsUseless) result.Add(plan.Weapon);
+            if (plan.Defense != null && plan.Defense.IsUseless) result.Add(plan.Defense);
+            return result;
+        }
+
+        public static bool CanBePlayed(Game g, Player p)
+        {
+            if (p == g.SkilledAs(LeaderSkill.Diplomat))
+            {
+                var plan = g.CurrentBattle.PlanOf(p);
+                return (plan.Defense == null || !plan.Defense.IsDefense) && g.CurrentBattle.PlanOfOpponent(p).Weapon != null && ValidCards(g, p).Any();
+            }
+
+            return false;
+        }
+    }
+}

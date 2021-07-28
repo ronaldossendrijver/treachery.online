@@ -11,7 +11,7 @@
     <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to prevent a faction from using one of their advantages</Header>
     <Body>
 
-        <SelectCardComponent @bind-Value="card" Values="Karma.ValidKarmaCards(Game, Player)" />
+        <SelectCardComponent @bind-Value="card" Values="Karma.ValidKarmaCards(Game, Player)" Required="true"/>
 
         <SelectComponent @bind-Value="prevented" Values="Karma.ValidFactionAdvantages(Game, Player)">
             <Label>Advantage to prevent <InfoComponent Contents="@InfoMessage" /></Label>

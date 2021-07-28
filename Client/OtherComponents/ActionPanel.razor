@@ -383,7 +383,11 @@
         }
         else if (a == typeof(Bureaucracy))
         {
-            <YesNoActionComponent GameEventType="Bureaucracy" h="@h" BackgroundImage="@Skin.Current.GetImageURL(LeaderSkill.Bureaucrat)" Title="Apply Bureaucracy?" Alert="true" />
+            <YesNoActionComponent GameEventType="Bureaucracy" h="@h" BackgroundImage="@Skin.Current.GetImageURL(LeaderSkill.Bureaucrat)" Title="@Skin.Current.Format("Use your {0} skill?", LeaderSkill.Bureaucrat)" Alert="true" />
+        }
+        else if (a == typeof(Diplomacy))
+        {
+            <DiplomacyComponent h="@h" />
         }
     }
 

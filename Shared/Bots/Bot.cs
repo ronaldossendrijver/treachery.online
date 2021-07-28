@@ -29,6 +29,9 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(AcceptOrCancelPurpleRevival))) action = DetermineAcceptOrCancelPurpleRevival();
                 if (action == null && possibleEvents.Contains(typeof(RequestPurpleRevival))) action = DetermineRequestPurpleRevival();
                 if (action == null && possibleEvents.Contains(typeof(DistransUsed))) action = DetermineDistransUsed();
+                if (action == null && possibleEvents.Contains(typeof(JuicePlayed))) action = DetermineJuicePlayed();
+                if (action == null && possibleEvents.Contains(typeof(PortableAntidoteUsed))) action = DeterminePortableAntidoteUsed();
+                if (action == null && possibleEvents.Contains(typeof(Diplomacy))) action = DetermineDiplomacy();
             }
             catch (Exception e)
             {
@@ -98,8 +101,6 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(DiscardedSearchedAnnounced))) action = DetermineDiscardedSearchedAnnounced();
                 if (action == null && possibleEvents.Contains(typeof(DiscardedSearched))) action = DetermineDiscardedSearched();
                 if (action == null && possibleEvents.Contains(typeof(DiscardedTaken))) action = DetermineDiscardedTaken();
-                if (action == null && possibleEvents.Contains(typeof(JuicePlayed))) action = DetermineJuicePlayed();
-                if (action == null && possibleEvents.Contains(typeof(PortableAntidoteUsed))) action = DeterminePortableAntidoteUsed();
                 if (action == null && possibleEvents.Contains(typeof(Bureaucracy))) action = DetermineBureaucracy();
 
                 //Blue

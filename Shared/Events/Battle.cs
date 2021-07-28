@@ -160,21 +160,36 @@ namespace Treachery.Shared
         [JsonIgnore]
         public TreacheryCard OriginalWeapon { get; set; } = null;
 
-        public void ActivateMirrorWeapon(TreacheryCard mirroredWeapon)
+        [JsonIgnore]
+        public TreacheryCard OriginalDefense { get; set; } = null;
+
+        public void ActivateMirrorWeaponAndDiplomacy(TreacheryCard mirroredWeapon, TreacheryCard mirroredDefense)
         {
             if (Weapon != null && Weapon.Type == TreacheryCardType.MirrorWeapon)
             {
                 OriginalWeapon = Weapon;
                 Weapon = mirroredWeapon;
             }
+
+            if (Game.CurrentDiplomat?.Initiator == Initiator)
+            {
+                OriginalDefense = Defense;
+                Defense = mirroredDefense;
+            }
         }
 
-        public void DeactivateMirrorWeapon()
+        public void DeactivateMirrorWeaponAndDiplomacy()
         {
             if (OriginalWeapon != null)
             {
                 Weapon = OriginalWeapon;
                 OriginalWeapon = null;
+            }
+
+            if (Game.CurrentDiplomat?.Initiator == Initiator)
+            {
+                Defense = OriginalDefense;
+                OriginalDefense = null;
             }
         }
 

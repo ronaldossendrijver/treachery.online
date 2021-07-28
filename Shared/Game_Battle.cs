@@ -167,53 +167,44 @@ namespace Treachery.Shared
             bool aggressorKeepsCards = Version >= 73 && aggressorCall.TraitorCalled && !defenderCall.TraitorCalled;
             if (!aggressorKeepsCards)
             {
-                if (AggressorBattleAction.Hero != null && AggressorBattleAction.Hero is TreacheryCard)
-                {
-                    Discard(AggressorBattleAction.Hero as TreacheryCard);
-                }
-
-                if (AggressorBattleAction.Weapon != null && (
-                AggressorBattleAction.Weapon.IsArtillery ||
-                AggressorBattleAction.Weapon.IsRockmelter ||
-                AggressorBattleAction.Weapon.IsMirrorWeapon ||
-                AggressorBattleAction.Weapon.IsPoisonTooth && !PoisonToothCancelled
-                ))
-                {
-                    Discard(AggressorBattleAction.Weapon);
-                }
-
-                if (AggressorBattleAction.Defense != null && (
-                AggressorBattleAction.Defense.IsPortableAntidote
-                ))
-                {
-                    Discard(AggressorBattleAction.Defense);
-                }
+                DiscardOneTimeCards(AggressorBattleAction);
             }
 
             bool defenderKeepsCards = Version >= 73 && defenderCall.TraitorCalled && !aggressorCall.TraitorCalled;
             if (!defenderKeepsCards)
             {
-                if (DefenderBattleAction.Hero != null && DefenderBattleAction.Hero is TreacheryCard)
-                {
-                    Discard(DefenderBattleAction.Hero as TreacheryCard);
-                }
+                DiscardOneTimeCards(DefenderBattleAction);
+            }
+        }
 
-                if (DefenderBattleAction.Weapon != null && (
-                    DefenderBattleAction.Weapon.IsArtillery ||
-                    DefenderBattleAction.Weapon.IsRockmelter ||
-                    DefenderBattleAction.Weapon.IsMirrorWeapon ||
-                    DefenderBattleAction.Weapon.IsPoisonTooth && !PoisonToothCancelled
-                    ))
-                {
-                    Discard(DefenderBattleAction.Weapon);
-                }
+        private void DiscardOneTimeCards(Battle plan)
+        {
+            if (plan.Hero != null && plan.Hero is TreacheryCard)
+            {
+                Discard(plan.Hero as TreacheryCard);
+            }
 
-                if (DefenderBattleAction.Defense != null && (
-                    DefenderBattleAction.Defense.IsPortableAntidote
-                    ))
-                {
-                    Discard(DefenderBattleAction.Defense);
-                }
+            if (plan.Weapon != null && (
+            plan.Weapon.IsArtillery ||
+            plan.Weapon.IsRockmelter ||
+            plan.Weapon.IsMirrorWeapon ||
+            plan.Weapon.IsPoisonTooth && !PoisonToothCancelled
+            ))
+            {
+                Discard(plan.Weapon);
+            }
+
+            if (plan.Defense != null && (
+            plan.Defense.IsPortableAntidote
+            ))
+            {
+                Discard(plan.Defense);
+            }
+
+            if (CurrentDiplomat != null && plan.Initiator == CurrentDiplomat.Initiator)
+            {
+                if (plan.Weapon == CurrentDiplomat.Card) Discard(plan.Weapon);
+                if (plan.Defense == CurrentDiplomat.Card) Discard(plan.Defense);
             }
         }
 
@@ -244,6 +235,13 @@ namespace Treachery.Shared
             CurrentReport.Add(e);
             var plan = CurrentBattle.PlanOf(e.Initiator);
             plan.Defense = e.Player.Card(TreacheryCardType.PortableAntidote);
+        }
+
+        public Diplomacy CurrentDiplomat { get; private set; }
+        public void HandleEvent(Diplomacy e)
+        {
+            CurrentReport.Add(e);
+            CurrentDiplomat = e;
         }
 
         public void HandleEvent(ResidualPlayed e)
@@ -620,8 +618,9 @@ namespace Treachery.Shared
         {
             GreenKarma = false;
             if (!Applicable(Rule.FullPhaseKarma)) AllowPreventedBattleFactionAdvantages();
-            if (NextPlayerToBattle == null) MainPhaseEnd();
             if (CurrentJuice != null && CurrentJuice.Type == JuiceType.Aggressor) CurrentJuice = null;
+            CurrentDiplomat = null;
+            if (NextPlayerToBattle == null) MainPhaseEnd();
             Enter(Phase.BattleReport);
         }
 
@@ -827,8 +826,8 @@ namespace Treachery.Shared
 
         private void DetermineBattleOutcome(Battle agg, Battle def, Player aggressor, Player defender, Territory territory, IHero aggHero, IHero defHero)
         {
-            agg.ActivateMirrorWeapon(def.Weapon);
-            def.ActivateMirrorWeapon(agg.Weapon);
+            agg.ActivateMirrorWeaponAndDiplomacy(def.Weapon, def.Defense);
+            def.ActivateMirrorWeaponAndDiplomacy(agg.Weapon, agg.Defense);
 
             bool poisonToothUsed = !PoisonToothCancelled && (agg.HasPoisonTooth || def.HasPoisonTooth);
             bool artilleryUsed = agg.HasArtillery || def.HasArtillery;
@@ -842,8 +841,8 @@ namespace Treachery.Shared
             var defHeroCauseOfDeath = TreacheryCardType.None;
             DetermineCauseOfDeath(def, agg, defHero, poisonToothUsed, artilleryUsed, rockMelterUsed && RockMelterWasUsedToKill, ref defHeroKilled, ref defHeroCauseOfDeath);
 
-            agg.DeactivateMirrorWeapon();
-            def.DeactivateMirrorWeapon();
+            agg.DeactivateMirrorWeaponAndDiplomacy();
+            def.DeactivateMirrorWeaponAndDiplomacy();
 
             int aggHeroEffectiveStrength = (aggHero != null && !artilleryUsed) ? aggHero.ValueInCombatAgainst(defHero) : 0;
             int aggHeroContribution = !aggHeroKilled && !rockMelterUsed ? aggHeroEffectiveStrength : 0;

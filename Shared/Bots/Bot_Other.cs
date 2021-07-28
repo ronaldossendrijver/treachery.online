@@ -534,6 +534,11 @@ namespace Treachery.Shared
         {
             return new Bureaucracy(Game) { Initiator = Faction, Passed = Game.TargetOfBureaucracy == Ally };
         }
+
+        public Diplomacy DetermineDiplomacy()
+        {
+            return new Diplomacy(Game) { Initiator = Faction, Card = Diplomacy.ValidCards(Game, this).First() };
+        }
     }
 
 }

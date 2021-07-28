@@ -56,8 +56,8 @@ namespace Treachery.Test
             
             var p = g.GetPlayer(e.Initiator);
             
-            WriteSavegameIfApplicable(g, typeof(PortableAntidoteUsed));
-            WriteSavegameIfApplicable(g, typeof(RockWasMelted));
+            WriteSavegameIfApplicable(g, typeof(Diplomacy));
+            WriteSavegameIfApplicable(g, typeof(Bureaucracy));
             
             /*
             var brown = g.GetPlayer(Faction.Brown);
