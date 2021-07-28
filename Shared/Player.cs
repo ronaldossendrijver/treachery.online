@@ -221,6 +221,41 @@ namespace Treachery.Shared
             ForcesInReserve += amount;
             ChangeForces(location, -amount);
         }
+        public void ForcesToReserves(Territory t, int amount, bool special)
+        {
+            int toRemoveInTotal = amount;
+            foreach (var l in Game.Map.Locations.Where(l => l.Territory == t).OrderBy(l => l.SpiceBlowAmount))
+            {
+                int forcesIn = special ? SpecialForcesIn(l) : ForcesIn(l);
+                if (forcesIn > 0)
+                {
+                    int toRemoveInThisLocation = Math.Min(forcesIn, toRemoveInTotal);
+
+                    if (special && Faction != Faction.Blue)
+                    {
+                        SpecialForcesInReserve += toRemoveInTotal;
+                    }
+                    else
+                    {
+                        ForcesInReserve += toRemoveInTotal;
+                    }
+
+                    if (special)
+                    {
+                        ChangeSpecialForces(l, -toRemoveInTotal);
+                    }
+                    else
+                    {
+                        ChangeForces(l, -toRemoveInTotal);
+                    }
+
+                    toRemoveInTotal -= toRemoveInThisLocation;
+                }
+
+                if (toRemoveInTotal == 0) break;
+            }
+           
+        }
 
         public void SpecialForcesToReserves(Location location, int amount)
         {

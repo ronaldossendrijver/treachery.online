@@ -752,7 +752,7 @@ namespace Treachery.Client
                 if (h.Game.StrongholdOwnership.ContainsKey(stronghold))
                 {
                     var owner = h.Game.StrongholdOwnership[stronghold];
-                    await DrawImage(Artwork.FactionTableTokens[owner].Value, stronghold.Center.X + 80, stronghold.Center.Y + 80, Skin.Current.PlayerTokenRadius, Skin.Current.PlayerTokenRadius, Skin.Current.SHADOW_LIGHT, 1, 1, 1, 0.5f);
+                    await DrawImage(Artwork.FactionTableTokens[owner].Value, stronghold.Center.X + 80, stronghold.Center.Y + 80, Skin.Current.PlayerTokenRadius, Skin.Current.PlayerTokenRadius, Skin.Current.SHADOW_LIGHT, 1, 1, 1, 0.8f);
                 }
             }
         }
@@ -1155,12 +1155,7 @@ namespace Treachery.Client
 
         private static async Task SetAlpha(float alpha)
         {
-            var result = map.GlobalAlpha;
-
-            if (result != alpha)
-            {
-                await map.SetGlobalAlphaAsync(alpha);
-            }
+            await map.SetGlobalAlphaAsync(alpha);
         }
 
         public static async Task DrawPath(Segment[] path)

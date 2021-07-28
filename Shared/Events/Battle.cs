@@ -171,7 +171,7 @@ namespace Treachery.Shared
                 Weapon = mirroredWeapon;
             }
 
-            if (Game.CurrentDiplomat?.Initiator == Initiator)
+            if (Game.CurrentDiplomacy?.Initiator == Initiator)
             {
                 OriginalDefense = Defense;
                 Defense = mirroredDefense;
@@ -186,7 +186,7 @@ namespace Treachery.Shared
                 OriginalWeapon = null;
             }
 
-            if (Game.CurrentDiplomat?.Initiator == Initiator)
+            if (Game.CurrentDiplomacy?.Initiator == Initiator)
             {
                 Defense = OriginalDefense;
                 OriginalDefense = null;

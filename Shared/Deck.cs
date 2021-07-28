@@ -48,14 +48,19 @@ namespace Treachery.Shared
 
         public void Shuffle()
         {
-            int n = Items.Count;
+            Shuffle(Items, Random);
+        }
+
+        public static void Shuffle(List<T> items, Random random)
+        {
+            int n = items.Count;
             while (n > 1)
             {
                 n--;
-                int k = Random.Next(n + 1);
-                var value = Items[k];
-                Items[k] = Items[n];
-                Items[n] = value;
+                int k = random.Next(n + 1);
+                var value = items[k];
+                items[k] = items[n];
+                items[n] = value;
             }
         }
 

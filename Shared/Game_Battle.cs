@@ -201,10 +201,10 @@ namespace Treachery.Shared
                 Discard(plan.Defense);
             }
 
-            if (CurrentDiplomat != null && plan.Initiator == CurrentDiplomat.Initiator)
+            if (CurrentDiplomacy != null && plan.Initiator == CurrentDiplomacy.Initiator)
             {
-                if (plan.Weapon == CurrentDiplomat.Card) Discard(plan.Weapon);
-                if (plan.Defense == CurrentDiplomat.Card) Discard(plan.Defense);
+                if (plan.Weapon == CurrentDiplomacy.Card) Discard(plan.Weapon);
+                if (plan.Defense == CurrentDiplomacy.Card) Discard(plan.Defense);
             }
         }
 
@@ -237,11 +237,11 @@ namespace Treachery.Shared
             plan.Defense = e.Player.Card(TreacheryCardType.PortableAntidote);
         }
 
-        public Diplomacy CurrentDiplomat { get; private set; }
+        public Diplomacy CurrentDiplomacy { get; private set; }
         public void HandleEvent(Diplomacy e)
         {
             CurrentReport.Add(e);
-            CurrentDiplomat = e;
+            CurrentDiplomacy = e;
         }
 
         public void HandleEvent(ResidualPlayed e)
@@ -310,9 +310,37 @@ namespace Treachery.Shared
 
             DiscardOneTimeCardsUsedInBattle(AggressorTraitorAction, DefenderTraitorAction);
             ResolveBattle(CurrentBattle, AggressorBattleAction, DefenderBattleAction, AggressorTraitorAction, DefenderTraitorAction);
+            ActivateDeciphererIfApplicable();
             CaptureLeaderIfApplicable();
             FlipBeneGesseritWhenAlone();
             DetermineAudit();
+        }
+
+        public readonly List<IHero> TraitorsBattleWinnerCanLookAt = new List<IHero>();
+
+        private void ActivateDeciphererIfApplicable()
+        {
+            var decipherer = SkilledAs(LeaderSkill.Decipherer);
+            if (decipherer != null && decipherer.Faction == BattleWinner)
+            {
+                TraitorsBattleWinnerCanLookAt.Add(TraitorDeck.Draw());
+                TraitorsBattleWinnerCanLookAt.Add(TraitorDeck.Draw());
+            } 
+        }
+        private void FinishDeciphererIfApplicable()
+        {
+            if (TraitorsBattleWinnerCanLookAt.Count > 0)
+            {
+                foreach (var item in TraitorsBattleWinnerCanLookAt)
+                {
+                    TraitorDeck.PutOnTop(item);
+                }
+
+                TraitorDeck.Shuffle();
+                RecentMilestones.Add(Milestone.Shuffled);
+
+                TraitorsBattleWinnerCanLookAt.Clear();
+            }
         }
 
         private void ResolveEffectsOfOwnedStrongholds(Battle playerPlan, Battle opponentPlan)
@@ -619,7 +647,8 @@ namespace Treachery.Shared
             GreenKarma = false;
             if (!Applicable(Rule.FullPhaseKarma)) AllowPreventedBattleFactionAdvantages();
             if (CurrentJuice != null && CurrentJuice.Type == JuiceType.Aggressor) CurrentJuice = null;
-            CurrentDiplomat = null;
+            CurrentDiplomacy = null;
+            FinishDeciphererIfApplicable();
             if (NextPlayerToBattle == null) MainPhaseEnd();
             Enter(Phase.BattleReport);
         }
@@ -1017,19 +1046,36 @@ namespace Treachery.Shared
             }
         }
 
-        private void ProcessWinnerLosses(Territory territory, Player winner, Battle winnerGambit)
+        private void ProcessWinnerLosses(Territory territory, Player winner, Battle plan)
         {
-            PayDialedSpice(winner, winnerGambit);
+            PayDialedSpice(winner, plan);
 
-            if (winner.Faction != Faction.Grey || winnerGambit.SpecialForces + winnerGambit.SpecialForcesAtHalfStrength == 0 || winner.ForcesIn(territory) <= winnerGambit.Forces + winnerGambit.ForcesAtHalfStrength)
+            var graduate = SkilledAs(LeaderSkill.Graduate);
+
+            int specialForcesToLose = plan.SpecialForces + plan.SpecialForcesAtHalfStrength;
+            int forcesToLose = plan.Forces + plan.ForcesAtHalfStrength;
+
+            int specialForcesToSave = graduate != null && specialForcesToLose > 0 ? 1 : 0;
+            int forcesToSave = graduate != null && specialForcesToSave == 0 && forcesToLose > 0 ? 1 : 0;
+
+            if (specialForcesToSave > 0)
             {
-                int winnerForcesLost = winnerGambit.Forces + winnerGambit.ForcesAtHalfStrength;
-                int winnerSpecialForcesLost = winnerGambit.SpecialForces + winnerGambit.SpecialForcesAtHalfStrength;
+                winner.ForcesToReserves(territory, 1, true);
+            }
+            else if (forcesToSave > 0)
+            {
+                winner.ForcesToReserves(territory, 1, false);
+            }
+
+            if (winner.Faction != Faction.Grey || specialForcesToLose - specialForcesToSave == 0 || winner.ForcesIn(territory) <= plan.Forces + plan.ForcesAtHalfStrength)
+            {
+                int winnerForcesLost = forcesToLose - forcesToSave;
+                int winnerSpecialForcesLost = specialForcesToLose - specialForcesToSave;
                 HandleLosses(territory, winner, winnerForcesLost, winnerSpecialForcesLost);
             }
             else
             {
-                GreySpecialForceLossesToTake = winnerGambit.SpecialForces + winnerGambit.SpecialForcesAtHalfStrength;
+                GreySpecialForceLossesToTake = specialForcesToLose - specialForcesToSave;
             }
         }
 

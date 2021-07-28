@@ -119,7 +119,7 @@ namespace Treachery.Shared
 
         AssigningInitialSkills = 64,
         SelectingTraitors = 65,
-        PerformCustomSetup = 67,
+        PerformCustomSetup = 66,
 
         [PhaseProperty(true, Faction.Yellow)]
         YellowSettingUp = 70,

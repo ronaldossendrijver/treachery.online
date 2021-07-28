@@ -48,8 +48,8 @@
             if (BattleConcluded.MayCaptureOrKill(Game, Player))
             {
                 <div>We caught <HeroComponent Value="Game.BlackVictim" />... What are your orders, capture or kill?</div>
-                <RadioComponent @bind-Value="captureDecision" 
-                                Values="@(new CaptureDecision[] {CaptureDecision.Capture,CaptureDecision.Kill,CaptureDecision.DontCapture})" 
+                <RadioComponent @bind-Value="captureDecision"
+                                Values="@(new CaptureDecision[] {CaptureDecision.Capture,CaptureDecision.Kill,CaptureDecision.DontCapture})"
                                 ValueLabels="@(new string[] { "Capture", "Kill to gain 2 spice", "Neither capture nor kill" })" />
             }
 
@@ -58,6 +58,15 @@
                 <SelectFromImageComponent @bind-Value="stolenToken" Values="Loser.TechTokens" ImageURLs="Loser.TechTokens.Select(t => Skin.Current.GetImageURL(t))" PopupHTMLs="Loser.TechTokens.Select(t => Support.GetTechTokenHTML(t))">
                     <Label>Choose a tech token to steal</Label>
                 </SelectFromImageComponent>
+            }
+
+            if (Game.TraitorsBattleWinnerCanLookAt.Any())
+            {
+                <div>@Skin.Current.Describe(LeaderSkill.Decipherer) lets you look at the following cards from the traitor deck:</div>
+                @foreach (var v in Game.TraitorsBattleWinnerCanLookAt)
+                {
+                    <img src="@Skin.Current.GetImageURL(v)" class="img-fluid p-1" width=60 data-animation="true" data-content="@Support.GetHeroHoverHTML(v)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
+                }
             }
         }
 

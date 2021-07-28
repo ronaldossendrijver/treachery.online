@@ -156,7 +156,11 @@ namespace Treachery.Shared
 
         public static int DetermineCost(Game g, Player p, int amount, Location to, bool karamaShipment, bool backToReserves, bool noField)
         {
-            //Console.WriteLine("{0} ships {1} to {2}, karama: {3}, backToReserves: {4}, noField: {5}", p, amount, to, karamaShipment, backToReserves, noField);
+            var amountToPayFor = amount;
+            if (amountToPayFor > 0 && p == g.SkilledAs(LeaderSkill.Smuggler) && !g.AnyForcesIn(to.Territory))
+            {
+                amountToPayFor--;
+            }
 
             if (noField)
             {
@@ -165,7 +169,7 @@ namespace Treachery.Shared
 
             if (backToReserves)
             {
-                return (int)Math.Ceiling(0.5f * amount);
+                return (int)Math.Ceiling(0.5f * amountToPayFor);
             }
             else
             {
@@ -174,7 +178,7 @@ namespace Treachery.Shared
                     return 0;
                 }
 
-                double costOfShipment = Math.Abs(amount) * (to.Territory.IsStronghold ? 1 : 2);
+                double costOfShipment = Math.Abs(amountToPayFor) * (to.Territory.IsStronghold ? 1 : 2);
 
                 if (g.MayShipWithDiscount(p) || karamaShipment)
                 {

@@ -553,6 +553,8 @@ namespace Treachery.Shared
             {
                 GetPlayer(TargetOfBureaucracy).Resources -= 2;
             }
+            Enter(_phaseBeforeBureaucratWasActivated);
+            TargetOfBureaucracy = Faction.None;
         }
     }
 }

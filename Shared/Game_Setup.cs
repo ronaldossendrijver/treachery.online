@@ -285,7 +285,7 @@ namespace Treachery.Shared
             DealTraitorCards();
         }
 
-        private Deck<IHero> TraitorDeck;
+        private Deck<IHero> TraitorDeck { get; set; }
         private void DealTraitorCards()
         {
             RecentMilestones.Add(Milestone.Shuffled);
