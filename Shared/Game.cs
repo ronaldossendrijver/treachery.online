@@ -54,6 +54,7 @@ namespace Treachery.Shared
         public BrownEconomicsStatus EconomicsStatus { get; set; } = BrownEconomicsStatus.None;
         public IDictionary<Location, int> ResourcesOnPlanet { get; set; } = new Dictionary<Location, int>();
         public IDictionary<IHero, LeaderState> LeaderState { get; set; } = new Dictionary<IHero, LeaderState>();
+        public Deck<LeaderSkill> SkillDeck { get; set; }
 
         #endregion GameState
 
@@ -434,6 +435,14 @@ namespace Treachery.Shared
                 }
 
                 ReturnGholaToOriginalFaction(l);
+
+                var playerThatAssignedASkillToThisLeader = Players.FirstOrDefault(p => p.SkilledLeader == l);
+                if (playerThatAssignedASkillToThisLeader != null)
+                {
+                    SkillDeck.PutOnTop(playerThatAssignedASkillToThisLeader.ActiveSkill);
+                    playerThatAssignedASkillToThisLeader.SkilledLeader = null;
+                    playerThatAssignedASkillToThisLeader.ActiveSkill = LeaderSkill.None;
+                }
             }
         }
 

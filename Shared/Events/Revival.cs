@@ -39,6 +39,8 @@ namespace Treachery.Shared
             }
         }
 
+        public bool AssignSkill { get; set; } = false;
+
         public override string Validate()
         {
             var p = Player;

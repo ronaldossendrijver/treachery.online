@@ -260,6 +260,7 @@ namespace Treachery.Shared
             else if (value is FactionSpecialForce fsf) result = Describe(fsf);
             else if (value is FactionAdvantage factionadvantage) result = Describe(factionadvantage);
             else if (value is TreacheryCardType tct) result = Describe(tct);
+            else if (value is LeaderSkill ls) result = Describe(ls);
             else if (value is Ruleset r) result = Describe(r);
             else if (value is RuleGroup rg) result = Describe(rg);
             else if (value is Rule rule) result = Describe(rule);
@@ -310,6 +311,11 @@ namespace Treachery.Shared
         public string Describe(TreacheryCardType t)
         {
             return TreacheryCardType_STR[t];
+        }
+
+        public string Describe(LeaderSkill l)
+        {
+            return LeaderSkillCardName_STR[l];
         }
 
         public string Describe(MainPhase p)

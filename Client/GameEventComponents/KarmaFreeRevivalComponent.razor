@@ -31,6 +31,17 @@
 
         <SelectHeroComponent @bind-Value="hero" Values="Game.ValidFreeRevivalHeroes(Player)" Required="false" />
 
+        @if (hero != null && Game.Applicable(Rule.BrownAndWhiteLeaderSkills) && Player.SkilledLeader == null)
+        {
+            <RadioComponent @bind-Value="assignSkill" Values="@(new bool[] {false,true})" ValueLabels="@(new string[] {"No","Yes"})">
+                <Label>Do you wish to assign a skill to this leader?</Label>
+            </RadioComponent>
+        }
+        else
+        {
+            assignSkill = false;
+        }
+
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
     </Body>
@@ -44,6 +55,7 @@
     private int amountOfForces;
     private int amountOfSpecialForces;
     private IHero hero;
+    private bool assignSkill;
 
-    protected override KarmaFreeRevival ConfirmedResult => new KarmaFreeRevival(Game) { Initiator = Faction, AmountOfForces = amountOfForces, AmountOfSpecialForces = amountOfSpecialForces, Hero = hero };
+    protected override KarmaFreeRevival ConfirmedResult => new KarmaFreeRevival(Game) { Initiator = Faction, AmountOfForces = amountOfForces, AmountOfSpecialForces = amountOfSpecialForces, Hero = hero, AssignSkill = assignSkill };
 }

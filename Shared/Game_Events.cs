@@ -80,6 +80,10 @@ namespace Treachery.Shared
                 case Phase.Bureaucracy:
                     if (player == SkilledAs(LeaderSkill.Bureaucrat)) result.Add(typeof(Bureaucracy));
                     break;
+                case Phase.AssigningInitialSkills:
+                case Phase.AssigningSkill:
+                    if (player.SkillsToChooseFrom.Any()) result.Add(typeof(SkillAssigned));
+                    break;
                 case Phase.SelectingFactions:
                     if (player.Faction == Faction.None) result.Add(typeof(FactionSelected));
                     break;

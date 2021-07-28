@@ -78,6 +78,18 @@ namespace Treachery.Client
             }
         }
 
+        public static string GetSkillCardHoverHTML(LeaderSkill c)
+        {
+            if (c == LeaderSkill.None)
+            {
+                return "";
+            }
+            else
+            {
+                return string.Format("<img src='{0}' width=300 class='img-fluid' title='{1}'/>", Skin.Current.GetImageURL(c), c.ToString());
+            }
+        }
+
         public static string GetResourceCardHoverHTMLSmall(ResourceCard c)
         {
             if (c == null)

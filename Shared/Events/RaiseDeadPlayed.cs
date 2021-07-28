@@ -25,6 +25,8 @@ namespace Treachery.Shared
 
         public int AmountOfSpecialForces { get; set; } = 0;
 
+        public bool AssignSkill { get; set; } = false;
+
         [JsonIgnore]
         public IHero Hero
         {

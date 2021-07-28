@@ -17,6 +17,27 @@ namespace Treachery.Client
             {
                 switch (Game.CurrentPhase)
                 {
+                    case Phase.AssigningInitialSkills:
+                    case Phase.AssigningSkill:
+                        {
+                            if (Player.SkillsToChooseFrom.Any())
+                            {
+                                return new GameStatus()
+                                {
+                                    Description = "You may now assign a skill to a leader.",
+                                    WaitingForOthers = false
+                                };
+                            }
+                            else
+                            {
+                                return new GameStatus()
+                                {
+                                    Description = Skin.Current.Join(Game.Players.Where(p => p.SkillsToChooseFrom.Any())) + " are currently assigning leader skills...",
+                                    WaitingForOthers = true
+                                };
+                            }
+                        }
+
                     case Phase.PerformingKarmaHandSwap:
                         {
                             if (IAm(Faction.Black))
@@ -1157,7 +1178,7 @@ namespace Treachery.Client
                                         {
                                             return new GameStatus()
                                             {
-                                                Description = Skin.Current.Format("{0} are Aggressors! They are deciding whom and where to battle...", Game.CurrentBattle?.EffectiveAggressor),
+                                                Description = Skin.Current.Format("{0} are Aggressors! They are deciding whom and where to battle...", Game.NextPlayerToBattle.Faction),
                                                 WaitingForOthers = true
                                             };
                                         }

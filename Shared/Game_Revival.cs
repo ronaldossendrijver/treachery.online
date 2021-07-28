@@ -112,6 +112,11 @@ namespace Treachery.Shared
                     ReviveHero(r.Hero);
                 }
 
+                if (r.AssignSkill)
+                {
+                    PrepareSkillAssignmentToRevivedLeader(r.Player, r.Hero as Leader);
+                }
+
                 if (AllowedEarlyRevivals.ContainsKey(r.Hero))
                 {
                     AllowedEarlyRevivals.Remove(r.Hero);
@@ -126,6 +131,17 @@ namespace Treachery.Shared
             {
                 HasActedOrPassed.Add(r.Initiator);
             }
+        }
+
+        private void PrepareSkillAssignmentToRevivedLeader(Player player, Leader leader)
+        {
+            PhaseBeforeSkillAssignment = CurrentPhase;
+            player.MostRecentlyRevivedLeader = leader;
+            SkillDeck.Shuffle();
+            RecentMilestones.Add(Milestone.Shuffled);
+            player.SkillsToChooseFrom.Add(SkillDeck.Draw());
+            player.SkillsToChooseFrom.Add(SkillDeck.Draw());
+            Enter(Phase.AssigningSkill);
         }
 
         private void ReviveHero(IHero h)
@@ -309,6 +325,11 @@ namespace Treachery.Shared
             if (r.Hero != null)
             {
                 ReviveHero(r.Hero);
+
+                if (r.AssignSkill)
+                {
+                    PrepareSkillAssignmentToRevivedLeader(r.Player, r.Hero as Leader);
+                }
             }
             else
             {

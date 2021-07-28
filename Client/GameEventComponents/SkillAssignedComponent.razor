@@ -1,0 +1,41 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<SkillAssigned>
+
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Choose one of two randomly drawn skills and a leader to assign it to</Header>
+    <Body>
+
+        <SelectFromImageComponent @bind-Value="skill" Values="SkillAssigned.ValidSkills(Player)" ImageURLs="SkillAssigned.ValidSkills(Player).Select(t => Skin.Current.GetImageURL(t))" PopupHTMLs="SkillAssigned.ValidSkills(Player).Select(t => Support.GetSkillCardHoverHTML(t))" />
+
+        <SelectHeroComponent @bind-Value="leader" Values="SkillAssigned.ValidLeaders(Game, Player)" />
+
+        @if (Game.CurrentPhase == Phase.AssigningInitialSkills)
+        {
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+        }
+        else
+        {
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+        }
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override bool IsUrgent => true;
+
+    private LeaderSkill skill;
+    private IHero leader;
+
+    protected override SkillAssigned ConfirmedResult => new SkillAssigned(Game) { Initiator = Faction, Passed = false, Leader = leader as Leader, Skill = skill };
+
+    protected override SkillAssigned PassedResult => new SkillAssigned(Game) { Initiator = Faction, Passed = true };
+}

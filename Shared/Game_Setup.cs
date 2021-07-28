@@ -427,7 +427,48 @@ namespace Treachery.Shared
                 }
             }
 
-            SetupSpiceAndForces();
+            AssignLeaderSkills();
+        }
+
+        private void AssignLeaderSkills()
+        {
+            if (Applicable(Rule.BrownAndWhiteLeaderSkills))
+            {
+                SkillDeck = new Deck<LeaderSkill>(Enumerations.GetValuesExceptDefault(typeof(LeaderSkill), LeaderSkill.None), Random);
+                SkillDeck.Shuffle();
+                RecentMilestones.Add(Milestone.Shuffled);
+
+                for (int i = 0; i < 2; i++)
+                {
+                    foreach (var p in Players)
+                    {
+                        p.SkillsToChooseFrom.Add(SkillDeck.Draw());
+
+                    }
+                }
+
+                Enter(Phase.AssigningInitialSkills);
+            }
+            else
+            {
+                SetupSpiceAndForces();
+            }
+        }
+
+        private Phase PhaseBeforeSkillAssignment;
+        public void HandleEvent(SkillAssigned e) {
+
+            CurrentReport.Add(e);
+            e.Player.ActiveSkill = e.Skill;
+            e.Player.SkilledLeader = e.Leader;
+            SkillDeck.PutOnTop(e.Player.SkillsToChooseFrom.First(s => s != e.Skill));
+            e.Player.SkillsToChooseFrom.Clear();
+
+            if (!Players.Any(p => p.SkillsToChooseFrom.Any()))
+            {
+                SkillDeck.Shuffle();
+                Enter(CurrentPhase != Phase.AssigningInitialSkills, PhaseBeforeSkillAssignment, SetupSpiceAndForces);
+            }
         }
 
         private void SetupSpiceAndForces()
@@ -452,7 +493,7 @@ namespace Treachery.Shared
                 Enter(
                     IsPlaying(Faction.Yellow), Phase.YellowSettingUp,
                     IsPlaying(Faction.Blue) && Applicable(Rule.BlueFirstForceInAnyTerritory), Phase.BlueSettingUp,
-                    DealTreacheryCardsAndEndSetup);
+                    DrawStartingTreacheryCards);
             }
         }
 
@@ -609,7 +650,7 @@ namespace Treachery.Shared
 
             if (Players.Count == HasActedOrPassed.Count)
             {
-                DealTreacheryCardsAndEndSetup();
+                DrawStartingTreacheryCards();
             }
         }
 
@@ -625,7 +666,7 @@ namespace Treachery.Shared
             }
 
             CurrentReport.Add(e);
-            Enter(IsPlaying(Faction.Blue) && Applicable(Rule.BlueFirstForceInAnyTerritory), Phase.BlueSettingUp, DealTreacheryCardsAndEndSetup);
+            Enter(IsPlaying(Faction.Blue) && Applicable(Rule.BlueFirstForceInAnyTerritory), Phase.BlueSettingUp, DrawStartingTreacheryCards);
         }
 
         public void HandleEvent(PerformBluePlacement e)
@@ -641,7 +682,7 @@ namespace Treachery.Shared
             }
 
             CurrentReport.Add(e);
-            DealTreacheryCardsAndEndSetup();
+            DrawStartingTreacheryCards();
         }
 
         private void FlipBeneGesseritWhenAlone()
@@ -656,11 +697,6 @@ namespace Treachery.Shared
                     CurrentReport.Add(Faction.Blue, "{0} are alone and flip to fighters in {1}", Faction.Blue, t);
                 }
             }
-        }
-
-        private void DealTreacheryCardsAndEndSetup()
-        {
-            DrawStartingTreacheryCards();
         }
 
         public Deck<TreacheryCard> StartingTreacheryCards;

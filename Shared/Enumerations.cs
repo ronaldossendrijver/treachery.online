@@ -117,8 +117,9 @@ namespace Treachery.Shared
         [PhaseProperty(true, Faction.Black)]
         BlackMulligan = 60,
 
+        AssigningInitialSkills = 64,
         SelectingTraitors = 65,
-        PerformCustomSetup = 66,
+        PerformCustomSetup = 67,
 
         [PhaseProperty(true, Faction.Yellow)]
         YellowSettingUp = 70,
@@ -255,7 +256,10 @@ namespace Treachery.Shared
 
         [PhaseProperty(true, Faction.White)]
         WhiteKeepingUnsoldCard = 507,
+
+        [PhaseProperty(true, Faction.None)]
         Bureaucracy = 508,
+        AssigningSkill = 509,
     }
 
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]

@@ -325,6 +325,12 @@ namespace Treachery.Shared
             if (e.Hero != null)
             {
                 ReviveHero(e.Hero);
+
+                if (e.AssignSkill)
+                {
+                    PrepareSkillAssignmentToRevivedLeader(e.Player, e.Hero as Leader);
+                }
+
             }
             else
             {

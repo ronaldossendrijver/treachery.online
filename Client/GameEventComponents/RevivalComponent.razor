@@ -41,6 +41,17 @@
 
         <SelectHeroComponent @bind-Value="hero" Values="Revival.ValidRevivalHeroes(Game, Player)" Required="false" />
 
+        @if (hero != null && Game.Applicable(Rule.BrownAndWhiteLeaderSkills) && Player.SkilledLeader == null)
+        {
+            <RadioComponent @bind-Value="assignSkill" Values="@(new bool[] {false,true})" ValueLabels="@(new string[] {"No","Yes"})">
+                <Label>Do you wish to assign a skill to this leader?</Label>
+            </RadioComponent>
+        }
+        else
+        {
+            assignSkill = false;
+        }
+
         <div class="mt-1 text-right">Revival cost for you: <span class="badge badge-primary badge-pill">@(CostOfRevival.TotalCostForPlayer)</span></div>
 
         @if (Player.Ally == Faction.Red)
@@ -59,8 +70,9 @@
     private int amountOfForces;
     private int amountOfSpecialForces;
     private IHero hero;
+    private bool assignSkill;
 
-    protected override Revival ConfirmedResult => new Revival(Game) { Initiator = Faction, AmountOfForces = amountOfForces, AmountOfSpecialForces = amountOfSpecialForces, Hero = hero };
+    protected override Revival ConfirmedResult => new Revival(Game) { Initiator = Faction, AmountOfForces = amountOfForces, AmountOfSpecialForces = amountOfSpecialForces, Hero = hero, AssignSkill = assignSkill };
 
     private RevivalCost CostOfRevival => Revival.DetermineCost(Game, Player, hero, amountOfForces, amountOfSpecialForces);
 }

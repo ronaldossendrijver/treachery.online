@@ -539,6 +539,11 @@ namespace Treachery.Shared
         {
             return new Diplomacy(Game) { Initiator = Faction, Card = Diplomacy.ValidCards(Game, this).First() };
         }
+
+        public SkillAssigned DetermineSkillAssigned()
+        {
+            return new SkillAssigned(Game) { Initiator = Faction, Passed = false, Leader = SkillAssigned.ValidLeaders(Game, this).First(), Skill = SkillAssigned.ValidSkills(this).First() };
+        }
     }
 
 }

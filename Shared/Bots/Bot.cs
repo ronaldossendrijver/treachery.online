@@ -63,6 +63,7 @@ namespace Treachery.Shared
             {
                 //Other
                 if (action == null && possibleEvents.Contains(typeof(FactionTradeOffered))) action = DetermineFactionTradeOffered();
+                if (action == null && possibleEvents.Contains(typeof(SkillAssigned))) action = DetermineSkillAssigned();
                 if (action == null && possibleEvents.Contains(typeof(StormDialled))) action = DetermineStormDialled();
                 if (action == null && possibleEvents.Contains(typeof(ClairVoyanceAnswered))) action = DetermineClairVoyanceAnswered(); 
                 if (action == null && possibleEvents.Contains(typeof(TraitorsSelected))) action = DetermineTraitorsSelected();

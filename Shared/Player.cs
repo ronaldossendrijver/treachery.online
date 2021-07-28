@@ -81,8 +81,12 @@ namespace Treachery.Shared
 
         public Leader SkilledLeader { get; set; }
 
+        public Leader MostRecentlyRevivedLeader { get; set; }
+
         public bool SkilledLeaderInFront { get; set; } = true;
-                
+
+        public IList<LeaderSkill> SkillsToChooseFrom { get; set; } = new List<LeaderSkill>();
+
         protected Game Game { get; set; }
 
         public Player(Game game, string name)
