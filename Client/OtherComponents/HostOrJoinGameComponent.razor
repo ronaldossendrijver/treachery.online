@@ -19,7 +19,7 @@
             @LoadGameLabel
             <input hidden type="file" class="custom-file-input" id="fileInput" @ref="_fileInput" @onchange="LoadGame" />
         </label>
-        @if (recentGame != null || restoredGame != null)
+        @if (recentGameState != null || restoredGame != null)
         {
             <label class="btn btn-dark btn-sm mt-1 p-2 text-left p-0 mt-0 mb-0" title="Restore game..." @onclick="RestoreGame">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" class="bi bi-play-fill" viewBox="0 0 16 16">
@@ -115,7 +115,7 @@
     private Game restoredGame = null;
 
     private string recentGameData = null;
-    private Game recentGame = null;
+    private GameState recentGameState = null;
 
     private string hostPWD = "";
     private Dictionary<int, string> joinPWD = new Dictionary<int, string>();
@@ -133,9 +133,12 @@
         }
     }
 
-    protected override void OnInitialized()
+    protected override void OnAfterRender(bool firstRender)
     {
-        Task.Delay(200).ContinueWith(e => LoadRecentGame());
+        if (firstRender)
+        {
+            Task.Delay(200).ContinueWith(e => LoadRecentGame());
+        }
     }
 
     private async Task LoadRecentGame()
@@ -143,8 +146,7 @@
         recentGameData = await Browser.LoadSetting<string>(string.Format("treachery.online;latestgame;{0}", h.PlayerName.ToLower().Trim()));
         if (recentGameData != default)
         {
-            var state = GameState.Load(recentGameData);
-            var message = Game.TryLoad(state, false, true, ref recentGame);
+            recentGameState = GameState.Load(recentGameData);
             StateHasChanged();
         }
     }
@@ -247,7 +249,7 @@
     {
         loadedGame = null;
         loadedGameData = null;
-        restoredGame = recentGame;
+        var message = Game.TryLoad(recentGameState, false, true, ref restoredGame);
         restoredGameData = recentGameData;
         StateHasChanged();
     }
@@ -262,7 +264,7 @@
             }
             else
             {
-                return Skin.Current.Format("Loaded game: {0} players - turn {1}, {2}, started: {3}", loadedGame.Players.Count, loadedGame.CurrentTurn, loadedGame.DetermineApproximateRuleset(), loadedGame.Started);
+                return Skin.Current.Format("Loaded game: {0} players - turn {1}, started: {2}", loadedGame.Players.Count, loadedGame.CurrentTurn, loadedGame.Started);
             }
         }
     }
@@ -273,11 +275,11 @@
         {
             if (restoredGame != null)
             {
-                return Skin.Current.Format("Restored game: {0} players - turn {1}, {2}, started: {3}", restoredGame.Players.Count, restoredGame.CurrentTurn, restoredGame.DetermineApproximateRuleset(), restoredGame.Started);
+                return Skin.Current.Format("Restored game: {0} players - turn {1}, started: {2}", restoredGame.Players.Count, restoredGame.CurrentTurn, restoredGame.Started);
             }
-            else if (recentGame != null)
+            else if (recentGameState != null)
             {
-                return Skin.Current.Format("Click here to continue your most recently hosted game ({0} players - turn {1}, {2}, started: {3})", recentGame.Players.Count, recentGame.CurrentTurn, recentGame.DetermineApproximateRuleset(), recentGame.Started);
+                return Skin.Current.Format("Click here to restore your most recently hosted game");
             }
 
             return "";
