@@ -206,6 +206,11 @@ namespace Treachery.Shared
                     {
                         orangeIncome = new MessagePart(" {0} receive {1}.", Faction.Orange, guildProfits);
                     }
+
+                    if (guildProfits >= 5)
+                    {
+                        ApplyBureaucracy(initiator.Faction, Faction.Orange);
+                    }
                 }
                 else
                 {

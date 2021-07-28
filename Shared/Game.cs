@@ -248,6 +248,7 @@ namespace Treachery.Shared
             if (clearReport) CurrentReport = new Report(phase);
             CurrentKarmaPrevention = null;
             CurrentJuice = null;
+            BureaucratWasUsedThisPhase = false;
         }
 
         private void MainPhaseMiddle()
@@ -855,6 +856,11 @@ namespace Treachery.Shared
             {
                 _firstPlayerPosition = value;
             }
+        }
+
+        public Player SkilledAs(LeaderSkill skill)
+        {
+            return Players.FirstOrDefault(p => p.ActiveSkill == skill && p.SkilledLeaderInFront);
         }
 
         #endregion SupportMethods

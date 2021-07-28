@@ -381,6 +381,10 @@
         {
             <SimpleActionComponent GameEventType="PortableAntidoteUsed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.PortableAntidote)" Title="@Skin.Current.Format("Use your {0}?", TreacheryCardType.PortableAntidote)" />
         }
+        else if (a == typeof(Bureaucracy))
+        {
+            <YesNoActionComponent GameEventType="Bureaucracy" h="@h" BackgroundImage="@Skin.Current.GetImageURL(LeaderSkill.Bureaucrat)" Title="Apply Bureaucracy?" Alert="true" />
+        }
     }
 
     @if (DealAccepted.CurrentDeals(h.Game).Any() || h.IsPlayer && (DealAccepted.AcceptableDeals(h.Game, h.Player).Any() || DealAccepted.CancellableDeals(h.Game, h.Player).Any()))

@@ -671,6 +671,11 @@ namespace Treachery.Shared
                         var receiverProfit = bidAmount + bidAllyContributionAmount + bidRedContributionAmount;
                         message = new MessagePart(" {0} receive {1}.", paymentReceiver, receiverProfit);
                         receiver.Resources += receiverProfit;
+                        
+                        if (receiverProfit >= 5)
+                        {
+                            ApplyBureaucracy(initiator.Faction, paymentReceiver);
+                        }
                     }
                 }
                 else

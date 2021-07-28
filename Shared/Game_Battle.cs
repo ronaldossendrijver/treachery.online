@@ -990,6 +990,11 @@ namespace Treachery.Shared
                             {
                                 brown.Resources += brownIncome;
                                 CurrentReport.Add(Faction.Brown, "{0} receive {1} from supported forces", Faction.Brown, brownIncome);
+
+                                if (brownIncome >= 5)
+                                {
+                                    ApplyBureaucracy(p.Faction, Faction.Brown);
+                                }
                             }
                             else
                             {

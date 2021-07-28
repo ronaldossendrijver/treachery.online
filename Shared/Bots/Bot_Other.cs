@@ -529,6 +529,11 @@ namespace Treachery.Shared
 
             return null;
         }
+
+        public Bureaucracy DetermineBureaucracy()
+        {
+            return new Bureaucracy(Game) { Initiator = Faction, Passed = Game.TargetOfBureaucracy == Ally };
+        }
     }
 
 }

@@ -520,5 +520,33 @@ namespace Treachery.Shared
             CurrentJuice = e;
             Discard(e.Player, TreacheryCardType.Juice);
         }
+
+        private bool BureaucratWasUsedThisPhase { get; set; } = false;
+        private Phase _phaseBeforeBureaucratWasActivated;
+        public Faction TargetOfBureaucracy { get; private set; }
+
+        private void ApplyBureaucracy(Faction payer, Faction receiver)
+        {
+            if (!BureaucratWasUsedThisPhase)
+            {
+                var bureaucrat = SkilledAs(LeaderSkill.Bureaucrat);
+                if (bureaucrat != null && bureaucrat.Faction != payer && bureaucrat.Faction != receiver)
+                {
+                    BureaucratWasUsedThisPhase = true;
+                    _phaseBeforeBureaucratWasActivated = CurrentPhase;
+                    TargetOfBureaucracy = receiver;
+                    Enter(Phase.Bureaucracy);
+                }
+            }
+        }
+
+        public void HandleEvent(Bureaucracy e)
+        {
+            CurrentReport.Add(e.GetDynamicMessage());
+            if (!e.Passed)
+            {
+                GetPlayer(TargetOfBureaucracy).Resources -= 2;
+            }
+        }
     }
 }

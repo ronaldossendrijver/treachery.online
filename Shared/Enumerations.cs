@@ -255,6 +255,7 @@ namespace Treachery.Shared
 
         [PhaseProperty(true, Faction.White)]
         WhiteKeepingUnsoldCard = 507,
+        Bureaucracy = 508,
     }
 
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]

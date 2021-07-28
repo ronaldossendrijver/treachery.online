@@ -76,6 +76,12 @@ namespace Treachery.Shared
         public IList<TechToken> TechTokens { get; private set; } = new List<TechToken>();
 
         public bool NoFieldIsActive => Faction == Faction.White && ForcesOnPlanet.Any(locationWithForces => locationWithForces.Value.AmountOfSpecialForces > 0);
+
+        public LeaderSkill ActiveSkill { get; set; }
+
+        public Leader SkilledLeader { get; set; }
+
+        public bool SkilledLeaderInFront { get; set; } = true;
                 
         protected Game Game { get; set; }
 

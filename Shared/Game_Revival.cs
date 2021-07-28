@@ -88,9 +88,14 @@ namespace Treachery.Shared
                     if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.PurpleReceiveRevive);
                 }
 
-                purple.Resources += purpleReceivedResourcesForFreeRevival;
-                purple.Resources += purpleReceivedResourcesForPaidForceRevival;
-                purple.Resources += purpleReceivedResourcesForPaidHeroRevival;
+                int totalProfits = purpleReceivedResourcesForFreeRevival + purpleReceivedResourcesForPaidForceRevival + purpleReceivedResourcesForPaidHeroRevival;
+
+                purple.Resources += totalProfits;
+
+                if (totalProfits >= 5)
+                {
+                    ApplyBureaucracy(initiator.Faction, Faction.Purple);
+                }
             }
 
             //Hero revival

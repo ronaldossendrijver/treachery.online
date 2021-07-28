@@ -1,0 +1,66 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<GameEventType>
+@typeparam GameEventType
+
+@if (!dismissed)
+{
+    <GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+        <Header>@Title</Header>
+        <Body>
+
+            @if (Dismissable)
+            {
+                <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError="@Validation" Pass="Pass" PassText="@PassLabel" Other="Dismiss" OtherText="@DismissLabel" />
+            }
+            else
+            {
+                <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError="@Validation" Pass="Pass" PassText="@PassLabel" />
+            }
+
+        </Body>
+
+    </GameEventComponentLayout>
+}
+
+@code {        
+
+    protected override bool IsUrgent => Alert;
+
+    private bool dismissed = false;
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string ConfirmLabel { get; set; } = "Yes";
+
+    [Parameter]
+    public string PassLabel { get; set; } = "No";
+
+    [Parameter]
+    public bool Alert { get; set; }
+
+    [Parameter]
+    public bool Dismissable { get; set; } = false;
+
+    [Parameter]
+    public string DismissLabel { get; set; } = "Dismiss";
+
+    [Parameter]
+    public bool Collapsible { get; set; } = false;
+
+    protected override GameEventType ConfirmedResult => new GameEventType() { Game = Game, Initiator = Faction, Passed = false };
+
+    protected override GameEventType PassedResult => new GameEventType() { Game = Game, Initiator = Faction, Passed = true };
+
+    private void Dismiss()
+    {
+        dismissed = true;
+    }
+}
+

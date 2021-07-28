@@ -127,6 +127,24 @@ namespace Treachery.Client
                                 };
                             }
                         }
+
+                    case Phase.Bureaucracy:
+                        if (IAm(Game.SkilledAs(LeaderSkill.Bureaucrat)))
+                        {
+                            return new GameStatus()
+                            {
+                                Description = Skin.Current.Format("Please decide whether to apply Bureaucracy to the latest payment."),
+                                WaitingForOthers = false
+                            };
+                        }
+                        else
+                        {
+                            return new GameStatus()
+                            {
+                                Description = Skin.Current.Format("Waiting for Bureaucracy to be applied to the latest payment..."),
+                                WaitingForOthers = true
+                            };
+                        }
                 }
 
                 switch (Game.CurrentMainPhase)

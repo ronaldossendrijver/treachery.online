@@ -674,6 +674,11 @@ namespace Treachery.Shared
             return GetURL(ResourceCardImage_URL, c.SkinId);
         }
 
+        public string GetImageURL(LeaderSkill s)
+        {
+            return GetURL(LeaderSkillCardImage_URL, s);
+        }
+
         public string GetTreacheryCardName(TreacheryCard c)
         {
             return GetLabel(TreacheryCardName_STR, c.SkinId);
