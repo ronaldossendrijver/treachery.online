@@ -1033,9 +1033,7 @@ namespace Treachery.Shared
 
                     if (HasStrongholdAdvantage(p.Faction, StrongholdAdvantage.FreeResourcesForBattles))
                     {
-                        int resourcesRefunded = Math.Min(2, costForPlayer);
-                        p.Resources += resourcesRefunded;
-                        CurrentReport.Add(p.Faction, "{0} stronghold advantage: {1} dialed {2} refunded to {3}", Map.Arrakeen, resourcesRefunded, Concept.Resource, p.Faction);
+                        CurrentReport.Add(p.Faction, "{0} stronghold advantage: supporting forces costs 2 less.", Map.Arrakeen);
                     }
                 }
 
@@ -1258,6 +1256,8 @@ namespace Treachery.Shared
 
             foreach (var p in Players)
             {
+                RevealCurrentNoField(p, territory);
+
                 int numberOfForces = p.AnyForcesIn(territory);
                 if (numberOfForces > 0)
                 {

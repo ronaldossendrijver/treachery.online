@@ -283,14 +283,16 @@ namespace Treachery.Shared
 
         public static int Cost(Game g, Player p, int AmountOfForcesAtFullStrength, int AmountOfSpecialForcesAtFullStrength)
         {
-            return AmountOfForcesAtFullStrength * NormalForceCost(g, p) + AmountOfSpecialForcesAtFullStrength * SpecialForceCost(g, p);
+            int cost = AmountOfForcesAtFullStrength * NormalForceCost(g, p) + AmountOfSpecialForcesAtFullStrength * SpecialForceCost(g, p);
+            int costReduction = g.HasStrongholdAdvantage(p.Faction, StrongholdAdvantage.FreeResourcesForBattles) ? Math.Min(2, cost) : 0;
+            return cost - costReduction;
         }
 
         public static int NormalForceCost(Game g, Player p)
         {
             if (MustPayForForcesInBattle(g, p))
             {
-                if (g.Version >= 52 && p.Faction == Faction.Grey)
+                if (p.Faction == Faction.Grey)
                 {
                     return 0;
                 }

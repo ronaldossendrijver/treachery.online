@@ -38,9 +38,12 @@ namespace Treachery.Shared
 
         private void RevealCurrentNoField(Player player, Territory inTerritory)
         {
-            foreach (var l in inTerritory.Locations)
+            if (player != null && player.Faction == Faction.White)
             {
-                RevealCurrentNoField(player, l);
+                foreach (var l in inTerritory.Locations)
+                {
+                    RevealCurrentNoField(player, l);
+                }
             }
         }
 

@@ -97,8 +97,6 @@ namespace Treachery.Shared
             var initiator = GetPlayer(s.Initiator);
 
             MessagePart orangeIncome = new MessagePart("");
-            ProcessOrangeIncome(s, initiator, ref orangeIncome);
-            CurrentReport.Add(s.GetVerboseMessage(orangeIncome));
 
             if (!s.Passed)
             {
@@ -148,14 +146,22 @@ namespace Treachery.Shared
                 if (Version >= 89 || mustBeAdvisors) initiator.FlipForces(s.To, mustBeAdvisors);
 
                 DetermineNextShipmentAndMoveSubPhase(DetermineIntrusionCaused(s), BGMayAccompany);
-                PayForShipment(s, initiator);
-                
+                int totalCost = PayForShipment(s, initiator);
+                int orangeProfit = HandleOrangeProfit(s, initiator, ref orangeIncome);
+
+                if (totalCost - orangeProfit >= 4)
+                {
+                    ActivateBanker();
+                }
+
                 FlipBeneGesseritWhenAlone();
             }
             else
             {
                 DetermineNextShipmentAndMoveSubPhase(false, BGMayAccompany);
             }
+
+            CurrentReport.Add(s.GetVerboseMessage(orangeIncome));
         }
 
         public bool ContainsConflictingAlly(Player initiator, Location to)
@@ -174,7 +180,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void PayForShipment(Shipment s, Player initiator)
+        private int PayForShipment(Shipment s, Player initiator)
         {
             var costToInitiator = s.DetermineCostToInitiator(this);
             initiator.Resources -= costToInitiator;
@@ -191,35 +197,44 @@ namespace Treachery.Shared
                 GetPlayer(initiator.Ally).Resources -= s.AllyContributionAmount;
                 if (Version >= 76) DecreasePermittedUseOfAllySpice(initiator.Faction, s.AllyContributionAmount);
             }
+
+            return costToInitiator + s.AllyContributionAmount;
         }
 
-        private void ProcessOrangeIncome(Shipment s, Player initiator, ref MessagePart orangeIncome)
+        private int HandleOrangeProfit(Shipment s, Player initiator, ref MessagePart profitMessage)
         {
-            var guild = GetPlayer(Faction.Orange);
-
-            int guildProfits;
-            if (guild != null && initiator != guild && !s.UsingKarma(this) && (guildProfits = s.DetermineOrangeProfits(this)) > 0)
+            int receiverProfit = 0;
+            var orange = GetPlayer(Faction.Orange);
+            
+            if (orange != null && initiator != orange && !s.UsingKarma(this))
             {
-                if (!Prevented(FactionAdvantage.OrangeReceiveShipment))
-                {
-                    guild.Resources += guildProfits;
+                receiverProfit = s.DetermineOrangeProfits(this);
 
-                    if (guildProfits > 0)
-                    {
-                        orangeIncome = new MessagePart(" {0} receive {1}.", Faction.Orange, guildProfits);
-                    }
-
-                    if (guildProfits >= 5)
-                    {
-                        ApplyBureaucracy(initiator.Faction, Faction.Orange);
-                    }
-                }
-                else
+                if (receiverProfit > 0)
                 {
-                    orangeIncome = new MessagePart(" {0} prevents {1} from receiving {2}.", TreacheryCardType.Karma, Faction.Orange, Concept.Resource);
-                    if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.OrangeReceiveShipment);
+                    if (!Prevented(FactionAdvantage.OrangeReceiveShipment))
+                    {
+                        orange.Resources += receiverProfit;
+
+                        if (receiverProfit > 0)
+                        {
+                            profitMessage = new MessagePart(" {0} receive {1}.", Faction.Orange, receiverProfit);
+                        }
+
+                        if (receiverProfit >= 5)
+                        {
+                            ApplyBureaucracy(initiator.Faction, Faction.Orange);
+                        }
+                    }
+                    else
+                    {
+                        profitMessage = new MessagePart(" {0} prevents {1} from receiving {2}.", TreacheryCardType.Karma, Faction.Orange, Concept.Resource);
+                        if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.OrangeReceiveShipment);
+                    }
                 }
             }
+
+            return receiverProfit;
         }
 
         private void PerformRetreatShipment(Shipment s, Player initiator)
