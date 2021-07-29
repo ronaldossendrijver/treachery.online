@@ -19,6 +19,15 @@ namespace Treachery.Shared
             CallHeroesHome();
             CollectResourcesFromTerritories();
             CollectResourcesFromStrongholds();
+            
+            foreach (var p in Players)
+            {
+                p.Resources += p.ResourcesDuringCollection;
+                p.ResourcesDuringCollection = 0;
+            }
+
+
+
             MainPhaseEnd();
             Enter(Version >= 103, Phase.CollectionReport, EnterMentatPhase);
         }

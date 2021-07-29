@@ -187,27 +187,54 @@
     {
         get
         {
-            if (ShownPlayer.Bribes > 0)
+            if (ShownPlayer.ResourcesDuringCollection > 0)
             {
-
-                if (ShownPlayer.ResourcesAfterBidding > 0)
+                if (ShownPlayer.Bribes > 0)
                 {
-                    return Skin.Current.Format("{0}, {1} at end of turn, {2} at end of bidding", ShownPlayer.Resources, ShownPlayer.Bribes, ShownPlayer.ResourcesAfterBidding);
+                    if (ShownPlayer.ResourcesAfterBidding > 0)
+                    {
+                        return Skin.Current.Format("{0}, {1} at end of turn, {2} at end of bidding, {3} at {4}", ShownPlayer.Resources, ShownPlayer.Bribes, ShownPlayer.ResourcesAfterBidding, ShownPlayer.ResourcesDuringCollection, MainPhase.Collection);
+                    }
+                    else
+                    {
+                        return Skin.Current.Format("{0}, {1} at {2}, {3} at {4}", ShownPlayer.Resources, ShownPlayer.Bribes, MainPhase.Contemplate, ShownPlayer.ResourcesDuringCollection, MainPhase.Collection);
+                    }
                 }
                 else
                 {
-                    return Skin.Current.Format("{0}, {1} at {2}", ShownPlayer.Resources, ShownPlayer.Bribes, MainPhase.Contemplate);
+                    if (ShownPlayer.ResourcesAfterBidding > 0)
+                    {
+                        return Skin.Current.Format("{0}, {1} at end of {2}, {3} at {4}", ShownPlayer.Resources, ShownPlayer.ResourcesAfterBidding, MainPhase.Bidding, ShownPlayer.ResourcesDuringCollection, MainPhase.Collection);
+                    }
+                    else
+                    {
+                        return Skin.Current.Format("{0}, {1} at {2}", ShownPlayer.Resources, ShownPlayer.ResourcesDuringCollection, MainPhase.Collection);
+                    }
                 }
             }
             else
             {
-                if (ShownPlayer.ResourcesAfterBidding > 0)
+                if (ShownPlayer.Bribes > 0)
                 {
-                    return Skin.Current.Format("{0}, {1} at end of {2}", ShownPlayer.Resources, ShownPlayer.ResourcesAfterBidding, MainPhase.Bidding);
+                    if (ShownPlayer.ResourcesAfterBidding > 0)
+                    {
+                        return Skin.Current.Format("{0}, {1} at end of turn, {2} at end of bidding", ShownPlayer.Resources, ShownPlayer.Bribes, ShownPlayer.ResourcesAfterBidding);
+                    }
+                    else
+                    {
+                        return Skin.Current.Format("{0}, {1} at {2}", ShownPlayer.Resources, ShownPlayer.Bribes, MainPhase.Contemplate);
+                    }
                 }
                 else
                 {
-                    return Skin.Current.Format("{0}", ShownPlayer.Resources);
+                    if (ShownPlayer.ResourcesAfterBidding > 0)
+                    {
+                        return Skin.Current.Format("{0}, {1} at end of {2}", ShownPlayer.Resources, ShownPlayer.ResourcesAfterBidding, MainPhase.Bidding);
+                    }
+                    else
+                    {
+                        return Skin.Current.Format("{0}", ShownPlayer.Resources);
+                    }
                 }
             }
         }

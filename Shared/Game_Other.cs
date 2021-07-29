@@ -570,7 +570,8 @@ namespace Treachery.Shared
                 if (banker != null)
                 {
                     BankerWasUsedThisPhase = true;
-                    CurrentReport.Add(banker.Faction, "{0} receive 1 from {1}", banker.Faction, LeaderSkill.Banker);
+                    CurrentReport.Add(banker.Faction, "{0} will receive 1 from {1} at {2}", banker.Faction, LeaderSkill.Banker, MainPhase.Collection);
+                    banker.ResourcesDuringCollection += 1;
                 }
             }
         }

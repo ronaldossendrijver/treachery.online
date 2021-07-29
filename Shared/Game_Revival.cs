@@ -96,6 +96,11 @@ namespace Treachery.Shared
                 {
                     ApplyBureaucracy(initiator.Faction, Faction.Purple);
                 }
+
+                if (cost.Total - totalProfits >= 4)
+                {
+                    ActivateBanker();
+                }
             }
 
             //Hero revival
