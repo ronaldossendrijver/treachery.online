@@ -58,98 +58,22 @@ namespace Treachery.Test
             
             WriteSavegameIfApplicable(g, typeof(Diplomacy));
             WriteSavegameIfApplicable(g, typeof(Bureaucracy));
-            
-            /*
-            var brown = g.GetPlayer(Faction.Brown);
-            if (brown != null)
-            {
-                if (e is Move m && e.Initiator != Faction.Brown && brown.AnyForcesIn(m.To) > 0 && brown.TreacheryCards.Any(c => c.Id == TreacheryCardManager.CARD_BALISET))
-                {
-                    WriteSavegameIfApplicable(g, p, "01 Brown has Baliset and player moves to Brown");
-                }
+            WriteSavegameIfApplicable(g, typeof(Planetology));
 
-                if (e is KarmaHandSwapInitiated k && e.Initiator != Faction.Brown && brown.TreacheryCards.Any(c => c.Id == TreacheryCardManager.CARD_KULLWAHAD))
-                {
-                    WriteSavegameIfApplicable(g, p, "02 Brown has Kull Wahad and player uses Karama");
-                }
+            p = g.Players.FirstOrDefault(p => p.ForcesInReserve < 0 || p.SpecialForcesInReserve < 0);
+            if (p != null) return "Negative forces: " + p;
 
-                if (e is TakeLosses && e.Initiator == Faction.Brown && brown.TreacheryCards.Any(c => c.Id == TreacheryCardManager.CARD_JUBBACLOAK))
-                {
-                    WriteSavegameIfApplicable(g, p, "03 Brown has Jubba Cloak and was hit by storm");
-                }
-            }
-            */
-            /*
-            if (e is Bid && p.HasKarma && p.Ally == Faction.Red && p.AlliedPlayer.Resources > 10)
-            {
-                WriteSavegameIfApplicable(g, p, "04 Karma holding Player to bid with rich Emperor as ally!");
-            }
-            */
-            /*
-            if (e is FaceDanced && FaceDanced.MayCallFaceDancer(g, p) && p.ForcesInReserve > 0 && p.ForcesOnPlanet.Sum(fl => fl.Value.TotalAmountOfForces) > 0)
-            {
-                WriteSavegameIfApplicable(g, p, "05 Face dance with both reserve and on planet forces!");
-            }
-            */
-            /*
-            if (e is KarmaFreeRevival && p.SpecialForcesKilled > 0 && p.Leaders.Any(l => !g.IsAlive(l)) && p.ForcesKilled > 0)
-            {
-                WriteSavegameIfApplicable(g, p, "06 Emperor special karama!");
-            }
-            */
-            /*
-            if (e is RaiseDeadPlayed && p.Faction == Faction.Purple && p.Leaders.Any(l => !g.IsAlive(l)) && p.ForcesKilled > 0)
-            {
-                WriteSavegameIfApplicable(g, p, "07 Tlx Ghola!");
-            }
+            p = g.Players.FirstOrDefault(p => p.Faction == Faction.White &&(p.SpecialForcesInReserve != 0 || p.SpecialForcesKilled != 0));
+            if (p != null) return "Invalid forces: " + p;
 
-            if (e is Revival && p.Faction == Faction.Green && Revival.ValidRevivalHeroes(g, p).Contains(LeaderManager.Messiah))
-            {
-                WriteSavegameIfApplicable(g, p, "08 Messiah can be revived!");
-            }
+            p = g.Players.FirstOrDefault(p => p.Resources < 0);
+            if (p != null) return "Negative spice: " + p;
 
-            if (e is Revival && p.Faction == Faction.Grey && p.SpecialForcesKilled > 1 && p.ForcesKilled > 1 && p.Ally == Faction.Red && g.RedWillPayForExtraRevival == 3)
-            {
-                WriteSavegameIfApplicable(g, p, "09 Ix may use extra emp revivals!");
-            }
-            */
 
-            /*
-            if (e is Battle b && b.Weapon != null && g.LatestClairvoyanceQandA != null && g.LatestClairvoyanceBattle == g.CurrentBattle && g.LatestClairvoyanceQandA.Answer.Initiator == b.Initiator && 
-                g.LatestClairvoyanceQandA.Question.Question == ClairvoyanceQuestion.CardTypeAsWeaponInBattle &&
-                (
-                g.LatestClairvoyanceQandA.Answer.IsYes() && !ClairVoyancePlayed.IsInScopeOf(true, b.Weapon.Type, (TreacheryCardType)g.LatestClairvoyanceQandA.Question.Parameter1) ||
-                g.LatestClairvoyanceQandA.Answer.IsNo() && ClairVoyancePlayed.IsInScopeOf(true, b.Weapon.Type, (TreacheryCardType)g.LatestClairvoyanceQandA.Question.Parameter1)
-                )
-                )
-            {
-                return "weapon lie?";
-            }
 
-            if (e is Battle b2 && b2.Defense != null && g.LatestClairvoyanceQandA != null && g.LatestClairvoyanceBattle == g.CurrentBattle && g.LatestClairvoyanceQandA.Answer.Initiator == b2.Initiator && 
-                g.LatestClairvoyanceQandA.Question.Question == ClairvoyanceQuestion.CardTypeAsDefenseInBattle &&
-                (
-                g.LatestClairvoyanceQandA.Answer.IsYes() && !ClairVoyancePlayed.IsInScopeOf(false, b2.Defense.Type, (TreacheryCardType)g.LatestClairvoyanceQandA.Question.Parameter1) ||
-                g.LatestClairvoyanceQandA.Answer.IsNo() && ClairVoyancePlayed.IsInScopeOf(false, b2.Defense.Type, (TreacheryCardType)g.LatestClairvoyanceQandA.Question.Parameter1)
-                )
-                )
-            {
-                return "defense lie?";
-            }
-            */
+            p = g.Players.FirstOrDefault(p => p.TreacheryCards.Count > p.MaximumNumberOfCards);
+            if (p != null && g.CurrentPhase != Phase.PerformingKarmaHandSwap) return "Too many cards: " + p;
 
-            /*
-            if (e is Battle b && b.Weapon != null && b.Weapon.IsLaser && b.Defense != null && b.Defense.IsShield)
-            {
-                return "Lasgun/Shield suicide";
-            }
-            */
-            /*
-            if (e is Battle b2 && b2.Weapon != null && b2.Weapon.IsArtillery)
-            {
-                return "Artillery Strike / Poison Tooth";
-            }
-            */
             return "";
         }
 
@@ -288,16 +212,17 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 1000;
+            int nrOfGames = 5000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
             //Expansion, advanced game, all expansions, all factions:
             var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
             rules.Add(Rule.FillWithBots);
-            rules.Add(Rule.BotsCannotAlly);
-            var factions = EstablishPlayers.AvailableFactions().TakeLast(7).ToList();
-            int nrOfTurns = 10;
+            //rules.Add(Rule.BotsCannotAlly);
+            //rules.Remove(Rule.BrownAndWhiteLeaderSkills);
+            var factions = EstablishPlayers.AvailableFactions().ToList();
+            int nrOfTurns = 7;
             int nrOfPlayers = factions.Count;
 
             //Expansion, advanced game, all expansions, free for all without guild and fremen:
@@ -430,7 +355,7 @@ namespace Treachery.Test
                 {
                     if (evt == null)
                     {
-                        File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
+                        File.WriteAllText("novalidbotevent.json", GameState.GetStateAsString(game));
                     }
                     Assert.IsNotNull(evt, "bots couldn't come up with a valid event");
 
@@ -484,7 +409,7 @@ namespace Treachery.Test
                         }
                         Console.WriteLine(evt.GetMessage());
 
-                        File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
+                        File.WriteAllText("invalid_" + executeResult + ".json", GameState.GetStateAsString(game));
                     }
                     if (performTests) Assert.AreEqual("", executeResult);
                     return evt;
@@ -509,7 +434,7 @@ namespace Treachery.Test
                         }
                         Console.WriteLine(evt.GetMessage());
 
-                        File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
+                        File.WriteAllText("invalid_" + executeResult + ".json", GameState.GetStateAsString(game));
                     }
                     if (performTests) Assert.AreEqual("", executeResult);
                     return evt;

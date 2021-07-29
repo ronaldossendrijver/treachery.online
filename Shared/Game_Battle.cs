@@ -320,7 +320,7 @@ namespace Treachery.Shared
 
         private void ActivateDeciphererIfApplicable()
         {
-            var decipherer = SkilledAs(LeaderSkill.Decipherer);
+            var decipherer = SkilledPassiveAs(LeaderSkill.Decipherer);
             if (decipherer != null && decipherer.Faction == BattleWinner)
             {
                 TraitorsBattleWinnerCanLookAt.Add(TraitorDeck.Draw());
@@ -870,18 +870,20 @@ namespace Treachery.Shared
             var defHeroCauseOfDeath = TreacheryCardType.None;
             DetermineCauseOfDeath(def, agg, defHero, poisonToothUsed, artilleryUsed, rockMelterUsed && RockMelterWasUsedToKill, ref defHeroKilled, ref defHeroCauseOfDeath);
 
-            agg.DeactivateMirrorWeaponAndDiplomacy();
-            def.DeactivateMirrorWeaponAndDiplomacy();
-
+            int aggHeroSkillBonus = DetermineSkillBonus(agg); //add to effective strength or to herocontribution?
             int aggHeroEffectiveStrength = (aggHero != null && !artilleryUsed) ? aggHero.ValueInCombatAgainst(defHero) : 0;
-            int aggHeroContribution = !aggHeroKilled && !rockMelterUsed ? aggHeroEffectiveStrength : 0;
+            int aggHeroContribution = !aggHeroKilled && !rockMelterUsed ? aggHeroEffectiveStrength + aggHeroSkillBonus : 0;
 
+            int defHeroSkillBonus = DetermineSkillBonus(def);
             int defHeroEffectiveStrength = (defHero != null && !artilleryUsed) ? defHero.ValueInCombatAgainst(aggHero) : 0;
-            int defHeroContribution = !defHeroKilled && !rockMelterUsed ? defHeroEffectiveStrength : 0;
+            int defHeroContribution = !defHeroKilled && !rockMelterUsed ? defHeroEffectiveStrength + defHeroSkillBonus : 0;
 
-            var aggMessiahContribution = aggressor.Is(Faction.Green) && agg.Messiah && agg.Hero != null && !aggHeroKilled && !artilleryUsed && !rockMelterUsed ? 2 : 0;
-            var defMessiahContribution = defender.Is(Faction.Green) && def.Messiah && def.Hero != null && !defHeroKilled && !artilleryUsed && !rockMelterUsed ? 2 : 0;
+            var aggMessiahContribution = aggressor.Is(Faction.Green) && agg.Messiah && agg.Hero != null && !aggHeroKilled && !artilleryUsed ? 2 : 0;
+            var defMessiahContribution = defender.Is(Faction.Green) && def.Messiah && def.Hero != null && !defHeroKilled && !artilleryUsed  ? 2 : 0;
 
+            var aggThinkerContribution = agg.Player.LeaderSkill == LeaderSkill.Thinker && agg.Hero == agg.Player.SkilledLeader && !aggHeroKilled && !artilleryUsed ? 2 : 0;
+            var defThinkerContribution = def.Player.LeaderSkill == LeaderSkill.Thinker && def.Hero == def.Player.SkilledLeader && !defHeroKilled && !artilleryUsed ? 2 : 0;
+            
             float aggForceDial;
             float defForceDial;
 
@@ -896,8 +898,11 @@ namespace Treachery.Shared
                 defForceDial = defender.ForcesIn(CurrentBattle.Territory) - def.Forces - def.ForcesAtHalfStrength + defender.SpecialForcesIn(CurrentBattle.Territory) - def.SpecialForces - def.SpecialForcesAtHalfStrength;
             }
 
-            float aggTotal = aggForceDial + aggHeroContribution + aggMessiahContribution;
-            float defTotal = defForceDial + defHeroContribution + defMessiahContribution;
+            float aggTotal = aggForceDial + aggHeroContribution + aggMessiahContribution + aggThinkerContribution;
+            float defTotal = defForceDial + defHeroContribution + defMessiahContribution + defThinkerContribution;
+
+            agg.DeactivateMirrorWeaponAndDiplomacy();
+            def.DeactivateMirrorWeaponAndDiplomacy();
 
             bool aggressorWinsTies = true;
             if (HasStrongholdAdvantage(defender.Faction, StrongholdAdvantage.WinTies)) aggressorWinsTies = false;
@@ -915,7 +920,7 @@ namespace Treachery.Shared
 
             var winnerBattlePlan = (winner == aggressor) ? agg : def;
 
-            var loser = (aggTotal >= defTotal) ? defender : aggressor;
+            var loser = winner == aggressor ? defender : aggressor;
             var loserBattlePlan = (loser == aggressor) ? agg : def;
 
             BattleWinner = winner.Faction;
@@ -946,6 +951,23 @@ namespace Treachery.Shared
 
             ProcessWinnerLosses(territory, winner, winnerBattlePlan);
             ProcessLoserLosses(territory, loser, loserBattlePlan);
+        }
+
+        private int DetermineSkillBonus(Battle plan)
+        {
+            if (
+                plan.Player.LeaderSkill == LeaderSkill.Warmaster && (plan.Weapon != null && plan.Weapon.IsUseless || plan.Defense != null && plan.Defense.IsUseless) ||
+                plan.Player.LeaderSkill == LeaderSkill.Adept && plan.Defense != null && plan.Defense.IsProjectileDefense ||
+                plan.Player.LeaderSkill == LeaderSkill.Swordmaster && plan.Weapon != null && plan.Weapon.IsProjectileWeapon ||
+                plan.Player.LeaderSkill == LeaderSkill.KillerMedic && plan.Defense != null && plan.Defense.IsPoisonDefense ||
+                plan.Player.LeaderSkill == LeaderSkill.MasterOfAssassins && plan.Weapon != null && (plan.Weapon.IsPoisonWeapon || plan.Weapon.IsPoisonTooth))
+            {
+                return plan.Player.SkilledLeader == plan.Hero ? 3 : 1;
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         public bool IsAggressorByJuice(Player p)
@@ -998,6 +1020,8 @@ namespace Treachery.Shared
         private void PayDialedSpice(Player p, Battle b)
         {
             int cost = b.Cost(this);
+            int costToBrown = p.Ally == Faction.Brown ? b.AllyContributionAmount : 0;
+            int receiverProfit = 0;
 
             if (cost > 0)
             {
@@ -1006,30 +1030,6 @@ namespace Treachery.Shared
                 if (costForPlayer > 0)
                 {
                     p.Resources -= costForPlayer;
-
-                    var brown = GetPlayer(Faction.Brown);
-                    if (brown != null && p.Faction != Faction.Brown)
-                    {
-                        int brownIncome = (int)Math.Floor(0.5 * costForPlayer);
-
-                        if (brownIncome > 0)
-                        {
-                            if (!Prevented(FactionAdvantage.BrownReceiveForcePayment))
-                            {
-                                brown.Resources += brownIncome;
-                                CurrentReport.Add(Faction.Brown, "{0} receive {1} from supported forces", Faction.Brown, brownIncome);
-
-                                if (brownIncome >= 5)
-                                {
-                                    ApplyBureaucracy(p.Faction, Faction.Brown);
-                                }
-                            }
-                            else
-                            {
-                                CurrentReport.Add(Faction.Brown, "{0} prevents {1}", Faction.Brown, FactionAdvantage.BrownReceiveForcePayment);
-                            }
-                        }
-                    }
 
                     if (HasStrongholdAdvantage(p.Faction, StrongholdAdvantage.FreeResourcesForBattles))
                     {
@@ -1043,6 +1043,35 @@ namespace Treachery.Shared
                 {
                     p.AlliedPlayer.Resources -= b.AllyContributionAmount;
                 }
+
+                var brown = GetPlayer(Faction.Brown);
+                if (brown != null && p.Faction != Faction.Brown)
+                {
+                    receiverProfit = (int)Math.Floor(0.5f * (cost - costToBrown));
+
+                    if (receiverProfit > 0)
+                    {
+                        if (!Prevented(FactionAdvantage.BrownReceiveForcePayment))
+                        {
+                            brown.Resources += receiverProfit;
+                            CurrentReport.Add(Faction.Brown, "{0} receive {1} from supported forces", Faction.Brown, receiverProfit);
+
+                            if (receiverProfit >= 5)
+                            {
+                                ApplyBureaucracy(p.Faction, Faction.Brown);
+                            }
+                        }
+                        else
+                        {
+                            CurrentReport.Add(Faction.Brown, "{0} prevents {1}", Faction.Brown, FactionAdvantage.BrownReceiveForcePayment);
+                        }
+                    }
+                }
+                
+                if (cost - receiverProfit >= 4)
+                {
+                    ActivateBanker();
+                }
             }
         }
 
@@ -1050,7 +1079,7 @@ namespace Treachery.Shared
         {
             PayDialedSpice(winner, plan);
 
-            var graduate = SkilledAs(LeaderSkill.Graduate);
+            var graduate = SkilledPassiveAs(LeaderSkill.Graduate);
 
             int specialForcesToLose = plan.SpecialForces + plan.SpecialForcesAtHalfStrength;
             int forcesToLose = plan.Forces + plan.ForcesAtHalfStrength;
@@ -1058,13 +1087,13 @@ namespace Treachery.Shared
             int specialForcesToSave = graduate != null && specialForcesToLose > 0 ? 1 : 0;
             int forcesToSave = graduate != null && specialForcesToSave == 0 && forcesToLose > 0 ? 1 : 0;
 
-            if (specialForcesToSave > 0)
+            if (specialForcesToSave + forcesToSave > 0)
             {
-                winner.ForcesToReserves(territory, 1, true);
-            }
-            else if (forcesToSave > 0)
-            {
-                winner.ForcesToReserves(territory, 1, false);
+                winner.ForcesToReserves(territory, 1, specialForcesToSave > 0);
+                CurrentReport.Add(winner.Faction, "{0} returns {1} {2} to reserves.", 
+                    LeaderSkill.Graduate, 
+                    specialForcesToSave + forcesToSave, 
+                    specialForcesToSave > 0 ? (object)winner.SpecialForce : (object)winner.Force);
             }
 
             if (winner.Faction != Faction.Grey || specialForcesToLose - specialForcesToSave == 0 || winner.ForcesIn(territory) <= plan.Forces + plan.ForcesAtHalfStrength)

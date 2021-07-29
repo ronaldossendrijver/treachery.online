@@ -29,9 +29,25 @@ namespace Treachery.Shared
             Items.Insert(0, item);
         }
 
+        public void PutOnTop(IEnumerable<T> items)
+        {
+            foreach (var item in items)
+            {
+                PutOnTop(item);
+            }
+        }
+
         public void PutOnBottom(T item)
         {
             Items.Add(item);
+        }
+
+        public void PutOnBottom(IEnumerable<T> items)
+        {
+            foreach (var item in items)
+            {
+                PutOnBottom(item);
+            }
         }
 
         public T Draw()

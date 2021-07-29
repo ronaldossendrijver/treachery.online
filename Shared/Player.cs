@@ -77,7 +77,7 @@ namespace Treachery.Shared
 
         public bool NoFieldIsActive => Faction == Faction.White && ForcesOnPlanet.Any(locationWithForces => locationWithForces.Value.AmountOfSpecialForces > 0);
 
-        public LeaderSkill ActiveSkill { get; set; }
+        public LeaderSkill LeaderSkill { get; set; }
 
         public Leader SkilledLeader { get; set; }
 
@@ -202,13 +202,14 @@ namespace Treachery.Shared
         public void ForcesToReserves(Location location)
         {
             var battaltion = ForcesOnPlanet[location];
+
             ForcesInReserve += battaltion.AmountOfForces;
 
-            if (Game.Version >= 56 && Faction == Faction.Blue)
+            if (Faction == Faction.Blue)
             {
                 ForcesInReserve += battaltion.AmountOfSpecialForces;
             }
-            else
+            else if (Faction != Faction.White)
             {
                 SpecialForcesInReserve += battaltion.AmountOfSpecialForces;
             }
@@ -221,6 +222,21 @@ namespace Treachery.Shared
             ForcesInReserve += amount;
             ChangeForces(location, -amount);
         }
+
+        public void SpecialForcesToReserves(Location location, int amount)
+        {
+            if (Faction == Faction.Blue)
+            {
+                ForcesInReserve += amount;
+            }
+            else if (Faction != Faction.White)
+            {
+                SpecialForcesInReserve += amount;
+            }
+
+            ChangeSpecialForces(location, -amount);
+        }
+
         public void ForcesToReserves(Territory t, int amount, bool special)
         {
             int toRemoveInTotal = amount;
@@ -235,7 +251,7 @@ namespace Treachery.Shared
                     {
                         SpecialForcesInReserve += toRemoveInTotal;
                     }
-                    else
+                    else if (!special || Faction != Faction.White)
                     {
                         ForcesInReserve += toRemoveInTotal;
                     }
@@ -255,20 +271,6 @@ namespace Treachery.Shared
                 if (toRemoveInTotal == 0) break;
             }
            
-        }
-
-        public void SpecialForcesToReserves(Location location, int amount)
-        {
-            if (Faction == Faction.Blue)
-            {
-                ForcesInReserve += amount;
-            }
-            else
-            {
-                SpecialForcesInReserve += amount;
-            }
-
-            ChangeSpecialForces(location, -amount);
         }
 
         public void ForcesToReserves(Territory t)
@@ -391,7 +393,11 @@ namespace Treachery.Shared
 
         public void ShipSpecialForces(Location l, int amount)
         {
-            SpecialForcesInReserve -= amount;
+            if (Faction != Faction.White)
+            {
+                SpecialForcesInReserve -= amount;
+            }
+
             ChangeSpecialForces(l, amount);
         }
 

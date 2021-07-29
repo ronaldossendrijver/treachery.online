@@ -8,7 +8,7 @@
 
 <GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Choose one of two randomly drawn skills and a leader to assign it to</Header>
+    <Header>Assign a skill to a one of your leaders</Header>
     <Body>
 
         <SelectFromImageComponent @bind-Value="skill" Values="SkillAssigned.ValidSkills(Player)" ImageURLs="SkillAssigned.ValidSkills(Player).Select(t => Skin.Current.GetImageURL(t))" PopupHTMLs="SkillAssigned.ValidSkills(Player).Select(t => Support.GetSkillCardHoverHTML(t))" />

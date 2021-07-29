@@ -78,7 +78,7 @@ namespace Treachery.Shared
             switch (CurrentPhase)
             {
                 case Phase.Bureaucracy:
-                    if (player == SkilledAs(LeaderSkill.Bureaucrat)) result.Add(typeof(Bureaucracy));
+                    if (player == SkilledPassiveAs(LeaderSkill.Bureaucrat)) result.Add(typeof(Bureaucracy));
                     break;
                 case Phase.AssigningInitialSkills:
                 case Phase.AssigningSkill:
@@ -578,7 +578,7 @@ namespace Treachery.Shared
                     result.Add(typeof(WhiteGaveCard));
                 }
 
-                if (DistransUsed.CanBePlayed(this, player))
+                if (CurrentPhase != Phase.Bidding && CurrentPhase != Phase.BlackMarketBidding && DistransUsed.CanBePlayed(this, player))
                 {
                     result.Add(typeof(DistransUsed));
                 }

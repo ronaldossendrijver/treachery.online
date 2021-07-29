@@ -250,6 +250,7 @@ namespace Treachery.Shared
             CurrentKarmaPrevention = null;
             CurrentJuice = null;
             BureaucratWasUsedThisPhase = false;
+            BankerWasUsedThisPhase = false;
         }
 
         private void MainPhaseMiddle()
@@ -439,9 +440,9 @@ namespace Treachery.Shared
                 var playerThatAssignedASkillToThisLeader = Players.FirstOrDefault(p => p.SkilledLeader == l);
                 if (playerThatAssignedASkillToThisLeader != null)
                 {
-                    SkillDeck.PutOnTop(playerThatAssignedASkillToThisLeader.ActiveSkill);
+                    SkillDeck.PutOnTop(playerThatAssignedASkillToThisLeader.LeaderSkill);
                     playerThatAssignedASkillToThisLeader.SkilledLeader = null;
-                    playerThatAssignedASkillToThisLeader.ActiveSkill = LeaderSkill.None;
+                    playerThatAssignedASkillToThisLeader.LeaderSkill = LeaderSkill.None;
                 }
             }
         }
@@ -645,7 +646,9 @@ namespace Treachery.Shared
 
             int brownExtraMoveBonus = p.Faction == Faction.Brown && BrownHasExtraMove ? 1 : 0;
 
-            int result = 1;
+            int planetologyBonus = CurrentPlanetology != null && CurrentPlanetology.AddOneToMovement && CurrentPlanetology.Initiator == p.Faction ? 1 : 0;
+
+            int result = 1 + planetologyBonus;
 
             if (hasOrnithopters)
             {
@@ -653,11 +656,11 @@ namespace Treachery.Shared
             }
             else if (p.Is(Faction.Yellow) && !Prevented(FactionAdvantage.YellowExtraMove))
             {
-                result = 2;
+                result = 2 + planetologyBonus;
             }
             else if (p.Is(Faction.Grey) && !Prevented(FactionAdvantage.GreyCyborgExtraMove) && moved.Any(b => b.AmountOfSpecialForces > 0))
             {
-                result = 2;
+                result = 2 + planetologyBonus;
             }
 
             return result + brownExtraMoveBonus;
@@ -867,9 +870,14 @@ namespace Treachery.Shared
             }
         }
 
-        public Player SkilledAs(LeaderSkill skill)
+        public Player SkilledPassiveAs(LeaderSkill skill)
         {
-            return Players.FirstOrDefault(p => p.ActiveSkill == skill && p.SkilledLeaderInFront);
+            return Players.FirstOrDefault(p => p.LeaderSkill == skill && p.SkilledLeaderInFront);
+        }
+
+        public Player SkilledActiveAs(Leader leader, LeaderSkill skill)
+        {
+            return Players.FirstOrDefault(p => p.LeaderSkill == skill && p.SkilledLeader == leader);
         }
 
         #endregion SupportMethods

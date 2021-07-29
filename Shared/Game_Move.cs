@@ -146,8 +146,10 @@ namespace Treachery.Shared
                 }
 
                 if (Version >= 89 || mustBeAdvisors) initiator.FlipForces(s.To, mustBeAdvisors);
-                PayForShipment(s, initiator);
+
                 DetermineNextShipmentAndMoveSubPhase(DetermineIntrusionCaused(s), BGMayAccompany);
+                PayForShipment(s, initiator);
+                
                 FlipBeneGesseritWhenAlone();
             }
             else
@@ -354,6 +356,7 @@ namespace Treachery.Shared
 
             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.YellowExtraMove);
             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyCyborgExtraMove);
+            CurrentPlanetology = null;
         }
 
         private bool DetermineIntrusionCaused(PlacementEvent m)
@@ -414,22 +417,26 @@ namespace Treachery.Shared
         {
             LastShippedOrMovedTo = to;
             bool wasOccupiedBeforeMove = IsOccupied(to.Territory);
-            var fromTerritory = forceLocations.Keys.First().Territory;
 
-            int totalNumberOfForces = 0;
-            int totalNumberOfSpecialForces = 0;
-            foreach (var fl in forceLocations)
+            foreach (var fromTerritory in forceLocations.Keys.Select(l => l.Territory).Distinct())
             {
-                PerformMoveFromLocation(initiator, fl.Key, fl.Value, to, ref totalNumberOfForces, ref totalNumberOfSpecialForces);
-            }
+                int totalNumberOfForces = 0;
+                int totalNumberOfSpecialForces = 0;
 
-            if (initiator.Is(Faction.Blue))
-            {
-                initiator.FlipForces(to, wasOccupiedBeforeMove && asAdvisors);
+                foreach (var fl in forceLocations.Where(fl => fl.Key.Territory == fromTerritory))
+                {
+                    PerformMoveFromLocation(initiator, fl.Key, fl.Value, to, ref totalNumberOfForces, ref totalNumberOfSpecialForces);
+                }
+
+                if (initiator.Is(Faction.Blue))
+                {
+                    initiator.FlipForces(to, wasOccupiedBeforeMove && asAdvisors);
+                }
+                                
+                LogMove(initiator, fromTerritory, to, totalNumberOfForces, totalNumberOfSpecialForces, wasOccupiedBeforeMove && asAdvisors, byCaravan);
             }
 
             RecentMilestones.Add(Milestone.Move);
-            LogMove(initiator, fromTerritory, to, totalNumberOfForces, totalNumberOfSpecialForces, wasOccupiedBeforeMove && asAdvisors, byCaravan);
             FlipBeneGesseritWhenAlone();
         }
 

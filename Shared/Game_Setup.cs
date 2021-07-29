@@ -438,12 +438,12 @@ namespace Treachery.Shared
                 SkillDeck.Shuffle();
                 RecentMilestones.Add(Milestone.Shuffled);
 
-                for (int i = 0; i < 2; i++)
+                int nrOfSkillsToAssign = Players.Count <= 7 ? 2 : 1;
+                for (int i = 0; i < nrOfSkillsToAssign; i++)
                 {
                     foreach (var p in Players)
                     {
                         p.SkillsToChooseFrom.Add(SkillDeck.Draw());
-
                     }
                 }
 
@@ -459,9 +459,9 @@ namespace Treachery.Shared
         public void HandleEvent(SkillAssigned e) {
 
             CurrentReport.Add(e);
-            e.Player.ActiveSkill = e.Skill;
+            e.Player.LeaderSkill = e.Skill;
             e.Player.SkilledLeader = e.Leader;
-            SkillDeck.PutOnTop(e.Player.SkillsToChooseFrom.First(s => s != e.Skill));
+            SkillDeck.PutOnTop(e.Player.SkillsToChooseFrom);
             e.Player.SkillsToChooseFrom.Clear();
 
             if (!Players.Any(p => p.SkillsToChooseFrom.Any()))

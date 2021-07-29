@@ -14,7 +14,7 @@
         <select class="custom-select" @bind="undoEventId" id="undoEventNr">
             @foreach (var i in UndoableEvents)
             {
-                <option value=@i.Key>@i.Value.GetMessage()</option>
+                <option value=@i.Key>@i.Value</option>
             }
         </select>
         <button class="btn btn-primary mt-1" @onclick="ConfirmUndo">Confirm</button>
@@ -50,17 +50,17 @@
         }
     }
 
-    private Dictionary<int, GameEvent> UndoableEvents
+    private Dictionary<int, string> UndoableEvents
     {
         get
         {
-            var result = new Dictionary<int, GameEvent>();
+            var result = new Dictionary<int, string>();
             for (int i = h.Game.History.Count - 1; i >= 0; i--)
             {
                 var e = h.Game.History[i];
                 if (!(e is AllyPermission) && !(e is BattleRevision))
                 {
-                    result.Add(i, e);
+                    result.Add(i, "" + i + ". " + e.GetMessage());
                 }
             }
             return result;

@@ -20,29 +20,7 @@ namespace Treachery.Shared
 
         public override string Validate()
         {
-            var p = Player;
-
-            var forceAmount = ForceLocations.Values.Sum(b => b.AmountOfForces);
-            bool tooManyForces = ForceLocations.Any(bl => bl.Value.AmountOfForces > p.ForcesIn(bl.Key));
-            if (tooManyForces) return Skin.Current.Format("Invalid amount of {0}.", p.Force);
-
-            var specialForceAmount = ForceLocations.Values.Sum(b => b.AmountOfSpecialForces);
-            bool tooManySpecialForces = ForceLocations.Any(bl => bl.Value.AmountOfSpecialForces > p.SpecialForcesIn(bl.Key));
-            if (tooManySpecialForces) return Skin.Current.Format("Invalid amount of {0}.", p.SpecialForce);
-
-            if (forceAmount == 0 && specialForceAmount == 0) return "No forces selected.";
-
-            if (To == null) return "To not selected.";
-            if (!ValidTargets(Game, p, ForceLocations).Contains(To)) return "Invalid To location.";
-            if (AsAdvisors && !(p.Is(Faction.Blue) && Game.Applicable(Rule.BlueAdvisors))) return "You can't move as advisors.";
-
-            if (Initiator == Faction.Blue)
-            {
-                if (AsAdvisors && p.ForcesIn(To.Territory) > 0) return "You have fighters there, so you can't move as advisors.";
-                if (!AsAdvisors && p.SpecialForcesIn(To.Territory) > 0) return "You have advisors there, so you can't move as fighters.";
-            }
-
-            return "";
+            return ValidateMove(AsAdvisors);
         }
 
         protected override void ExecuteConcreteEvent()

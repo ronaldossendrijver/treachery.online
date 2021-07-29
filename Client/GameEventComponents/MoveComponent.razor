@@ -22,7 +22,14 @@
                 <Label>From</Label>
             </SelectComponent>
 
-            <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="forces" Locations="Player.LocationsWithAnyForcesInTerritory(fromTerritory)" />
+            @if (Game.CurrentPlanetology != null && Game.CurrentPlanetology.MoveFromTwoTerritories && Game.CurrentPlanetology.Initiator == Faction)
+            {
+                <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="forces" Locations="Game.LocationsWithAnyForcesNotInStorm(Player)" AlwaysShowLocation="true" AllowMultipleTerritories="true" />
+            }
+            else
+            {
+                <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="forces" Locations="Player.LocationsWithAnyForcesInTerritory(fromTerritory)" />
+            }
 
             <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="toLocation" Values="ValidTargets">
                 <Label>To</Label>

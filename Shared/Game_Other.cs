@@ -26,7 +26,7 @@ namespace Treachery.Shared
                     if (inLocation == null || inLocation == noFieldLocation)
                     {
                         LatestRevealedNoFieldValue = CurrentNoFieldValue;
-                        player.ForcesToReserves(noFieldLocation);
+                        player.SpecialForcesToReserves(noFieldLocation, 1);
                         int nrOfForces = Math.Min(player.ForcesInReserve, CurrentNoFieldValue);
                         player.ShipForces(noFieldLocation, nrOfForces);
                         CurrentReport.Add(player.Faction, "{0} reveal {1} forces under the No-Field of value {2} in {3}", player.Faction, nrOfForces, CurrentNoFieldValue, noFieldLocation);
@@ -535,7 +535,7 @@ namespace Treachery.Shared
         {
             if (!BureaucratWasUsedThisPhase)
             {
-                var bureaucrat = SkilledAs(LeaderSkill.Bureaucrat);
+                var bureaucrat = SkilledPassiveAs(LeaderSkill.Bureaucrat);
                 if (bureaucrat != null && bureaucrat.Faction != payer && bureaucrat.Faction != receiver)
                 {
                     BureaucratWasUsedThisPhase = true;
@@ -556,5 +556,28 @@ namespace Treachery.Shared
             Enter(_phaseBeforeBureaucratWasActivated);
             TargetOfBureaucracy = Faction.None;
         }
+
+        private bool BankerWasUsedThisPhase { get; set; } = false;
+
+        private void ActivateBanker()
+        {
+            if (!BankerWasUsedThisPhase)
+            {
+                var banker = SkilledPassiveAs(LeaderSkill.Banker);
+                if (banker != null)
+                {
+                    BankerWasUsedThisPhase = true;
+                    CurrentReport.Add(banker.Faction, "{0} receive 1 from {1}", banker.Faction, LeaderSkill.Banker);
+                }
+            }
+        }
+
+        public Planetology CurrentPlanetology { get; private set; }
+        public void HandleEvent(Planetology e)
+        {
+            CurrentReport.Add(e);
+            CurrentPlanetology = e;
+        }
+
     }
 }

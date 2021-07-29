@@ -163,7 +163,6 @@ namespace Treachery.Shared
         private void EnterWhiteBidding()
         {
             NumberOfCardsOnAuction = PlayersThatCanBid.Count();
-            CardNumber = 1;
 
             if (CardWasSoldOnBlackMarket)
             {
@@ -337,6 +336,7 @@ namespace Treachery.Shared
             {
                 CurrentBid = null;
                 Bids.Clear();
+                CardNumber = 1;
             }
         }
 
@@ -641,6 +641,9 @@ namespace Treachery.Shared
         {
             initiator.Resources -= bidAmount;
 
+            int receiverProfit = 0;
+            int receiverProfitAfterBidding = 0;
+
             if (bidAllyContributionAmount > 0)
             {
                 GetPlayer(initiator.Ally).Resources -= bidAllyContributionAmount;
@@ -660,15 +663,15 @@ namespace Treachery.Shared
                 {
                     if (bidRedContributionAmount > 0)
                     {
-                        var receiverProfit = bidAmount + bidAllyContributionAmount;
-                        var receiverProfitAfterBidding = bidRedContributionAmount;
+                        receiverProfit = bidAmount + bidAllyContributionAmount;
+                        receiverProfitAfterBidding = bidRedContributionAmount;
                         message = new MessagePart(" {0} receive {1} immediately and {2} at the end of the bidding phase.", receiver, receiverProfit, receiverProfitAfterBidding);
                         receiver.Resources += receiverProfit;
                         receiver.ResourcesAfterBidding += receiverProfitAfterBidding;
                     }
                     else
                     {
-                        var receiverProfit = bidAmount + bidAllyContributionAmount + bidRedContributionAmount;
+                        receiverProfit = bidAmount + bidAllyContributionAmount + bidRedContributionAmount;
                         message = new MessagePart(" {0} receive {1}.", paymentReceiver, receiverProfit);
                         receiver.Resources += receiverProfit;
                         
@@ -683,6 +686,11 @@ namespace Treachery.Shared
                     message = new MessagePart(" {0} prevents {1} from receiving {2} for this card.", TreacheryCardType.Karma, paymentReceiver, Concept.Resource);
                     if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.RedReceiveBid);
                 }
+            }
+
+            if (bidAmount + bidAllyContributionAmount + bidRedContributionAmount - receiverProfit - receiverProfitAfterBidding >= 4) {
+
+                ActivateBanker();
             }
         }
 
@@ -795,7 +803,7 @@ namespace Treachery.Shared
             if (!CardsOnAuction.IsEmpty)
             {
                 CardNumber++;
-                Enter(GreyMaySwapCardOnBid, Phase.GreySwappingCard, IsPlaying(Faction.Green), Phase.WaitingForNextBiddingRound, PutNextCardOnAuction);
+                Enter(GreyMaySwapCardOnBid, Phase.GreySwappingCard, Version >= 107 || IsPlaying(Faction.Green), Phase.WaitingForNextBiddingRound, PutNextCardOnAuction);
             }
             else
             {

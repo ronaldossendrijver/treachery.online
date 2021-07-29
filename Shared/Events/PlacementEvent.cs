@@ -26,6 +26,40 @@ namespace Treachery.Shared
         {
         }
 
+        protected string ValidateMove(bool AsAdvisors)
+        {
+            if (Passed) return "";
+
+            var p = Player;
+
+            var forceAmount = ForceLocations.Values.Sum(b => b.AmountOfForces);
+            bool tooManyForces = ForceLocations.Any(bl => bl.Value.AmountOfForces > p.ForcesIn(bl.Key));
+            if (tooManyForces) return Skin.Current.Format("Invalid amount of {0}.", p.Force);
+
+            var specialForceAmount = ForceLocations.Values.Sum(b => b.AmountOfSpecialForces);
+            bool tooManySpecialForces = ForceLocations.Any(bl => bl.Value.AmountOfSpecialForces > p.SpecialForcesIn(bl.Key));
+            if (tooManySpecialForces) return Skin.Current.Format("Invalid amount of {0}.", p.SpecialForce);
+
+            if (forceAmount == 0 && specialForceAmount == 0) return "No forces selected.";
+
+            if (To == null) return "To not selected.";
+            if (!ValidTargets(Game, p, ForceLocations).Contains(To)) return "Invalid To location.";
+            if (AsAdvisors && !(p.Is(Faction.Blue) && Game.Applicable(Rule.BlueAdvisors))) return "You can't move as advisors.";
+
+            if (Initiator == Faction.Blue)
+            {
+                if (AsAdvisors && p.ForcesIn(To.Territory) > 0) return "You have fighters there, so you can't move as advisors.";
+                if (!AsAdvisors && p.SpecialForcesIn(To.Territory) > 0) return "You have advisors there, so you can't move as fighters.";
+            }
+
+            bool hasPlanetologyToMoveFromTwoTerritories = Game.CurrentPlanetology != null && Game.CurrentPlanetology.MoveFromTwoTerritories && Game.CurrentPlanetology.Initiator == Initiator;
+            int numberOfSelectedTerritories = ForceLocations.Select(fl => fl.Key.Territory).Distinct().Count();
+            if (numberOfSelectedTerritories > 1 && !hasPlanetologyToMoveFromTwoTerritories) return "You can't move from two territories at the same time";
+            if (numberOfSelectedTerritories > 2) return "You can't move from more than two territories at the same time";
+
+            return "";
+        }
+    
         [JsonIgnore]
         public Dictionary<Location, Battalion> ForceLocations
         {
