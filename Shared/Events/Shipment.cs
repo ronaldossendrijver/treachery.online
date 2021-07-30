@@ -277,7 +277,7 @@ namespace Treachery.Shared
             }
         }
 
-        public Message GetVerboseMessage(MessagePart orangeIncome)
+        public Message GetVerboseMessage(int cost, MessagePart orangeIncome)
         {
             if (Passed)
             {
@@ -287,17 +287,17 @@ namespace Treachery.Shared
             {
                 if (IsBackToReserves)
                 {
-                    return new Message(Initiator, "{0} ship from {1} back to reserves{2}.{3}{4}", Initiator, To, CostMessage, KaramaMessage, orangeIncome);
+                    return new Message(Initiator, "{0} ship from {1} back to reserves{2}.{3}{4}", Initiator, To, CostMessage(cost), KaramaMessage, orangeIncome);
                 }
                 else if (IsSiteToSite)
                 {
                     var baseMessage = "{0} site-to-site ship {1} from {5} to {2}{3}.{4}{6}";
-                    return new Message(Initiator, baseMessage, Initiator, ForceMessage, To.ToString(), CostMessage, KaramaMessage, From, orangeIncome);
+                    return new Message(Initiator, baseMessage, Initiator, ForceMessage, To.ToString(), CostMessage(cost), KaramaMessage, From, orangeIncome);
                 }
                 else
                 {
                     var baseMessage = Initiator == Faction.Yellow ? "{0} rally {1} in {2}{3}.{4}{5}" : "{0} ship {1} to {2}{3}.{4}{5}";
-                    return new Message(Initiator, baseMessage, Initiator, ForceMessage, To, CostMessage, KaramaMessage, orangeIncome);
+                    return new Message(Initiator, baseMessage, Initiator, ForceMessage, To, CostMessage(cost), KaramaMessage, orangeIncome);
                 }
             }
         }
@@ -323,25 +323,21 @@ namespace Treachery.Shared
             }
         }
 
-        private MessagePart CostMessage
+        private MessagePart CostMessage(int cost)
         {
-            get
-            {
-                var p = Player;
-                var cost = DetermineCost(Game, p, this);
+            var p = Player;
 
-                if (AllyContributionAmount > 0)
-                {
-                    return new MessagePart(" for {0}, of which {1} pay {2}", cost, p.Ally, AllyContributionAmount);
-                }
-                else if (cost > 0)
-                {
-                    return new MessagePart(" for {0}", cost);
-                }
-                else
-                {
-                    return new MessagePart("", cost);
-                }
+            if (AllyContributionAmount > 0)
+            {
+                return new MessagePart(" for {0}, of which {1} pay {2}", cost, p.Ally, AllyContributionAmount);
+            }
+            else if (cost > 0)
+            {
+                return new MessagePart(" for {0}", cost);
+            }
+            else
+            {
+                return new MessagePart("", cost);
             }
         }
 

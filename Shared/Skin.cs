@@ -151,8 +151,8 @@ namespace Treachery.Shared
         public int CARDPILE_FONT_BORDERWIDTH = 3;
 
         //Phases
-        public string PHASE_FONT = "normal normal bold 90px Advokat, Calibri, Tahoma, sans-serif";
-        public string PHASE_ACTIVE_FONT = "normal normal normal 130px Advokat, Calibri, Tahoma, sans-serif";
+        public string PHASE_FONT = "normal normal bold 80px Advokat, Calibri, Tahoma, sans-serif";
+        public string PHASE_ACTIVE_FONT = "normal normal normal 120px Advokat, Calibri, Tahoma, sans-serif";
         public string PHASE_FONTCOLOR = "white";
         public string PHASE_ACTIVE_FONTCOLOR = "rgb(231,191,60)";
         public string PHASE_FONT_BORDERCOLOR = "black";
@@ -160,16 +160,22 @@ namespace Treachery.Shared
         public int PHASE_ACTIVE_FONT_BORDERWIDTH = 3;
 
         //Player names
-        public string PLAYERNAME_FONT = "normal normal bold 95px Advokat, Calibri, Tahoma, sans-serif";
+        public string PLAYERNAME_FONT = "normal normal bold 80px Advokat, Calibri, Tahoma, sans-serif";
         public string PLAYERNAME_FONTCOLOR = "white";
         public string PLAYERNAME_FONT_BORDERCOLOR = "black";
         public int PLAYERNAME_FONT_BORDERWIDTH = 3;
+
+        //Skill names
+        public string SKILL_FONT = "normal normal bold 60px Advokat, Calibri, Tahoma, sans-serif";
+        public string SKILL_FONTCOLOR = "white";
+        public string SKILL_FONT_BORDERCOLOR = "black";
+        public int SKILL_FONT_BORDERWIDTH = 1;
 
         //Player positions
         public string TABLEPOSITION_BACKGROUNDCOLOR = "rgb(231,191,60)";
 
         //Turns
-        public string TURN_FONT = "normal normal normal 130px Advokat, Calibri, Tahoma, sans-serif";
+        public string TURN_FONT = "normal normal normal 120px Advokat, Calibri, Tahoma, sans-serif";
         public string TURN_FONT_COLOR = "white";
         public string TURN_FONT_BORDERCOLOR = "black";
         public int TURN_FONT_BORDERWIDTH = 3;
@@ -2150,24 +2156,29 @@ namespace Treachery.Shared
             CARDPILE_FONT_BORDERWIDTH = 3,
 
             //Phases
-            PHASE_FONT = "normal normal bold 90px Advokat, Calibri, Tahoma, sans-serif",
-            PHASE_ACTIVE_FONT = "normal normal normal 130px Advokat, Calibri, Tahoma, sans-serif",
+            PHASE_FONT = "normal normal bold 80px Advokat, Calibri, Tahoma, sans-serif",
+            PHASE_ACTIVE_FONT = "normal normal normal 120px Advokat, Calibri, Tahoma, sans-serif",
             PHASE_FONTCOLOR = "white",
             PHASE_ACTIVE_FONTCOLOR = "rgb(231,191,60)",
             PHASE_FONT_BORDERCOLOR = "black",
             PHASE_FONT_BORDERWIDTH = 3,
-            PHASE_ACTIVE_FONT_BORDERWIDTH = 3,
+            PHASE_ACTIVE_FONT_BORDERWIDTH = 2,
 
             //Player names
-            PLAYERNAME_FONT = "normal normal bold 95px Advokat, Calibri, Tahoma, sans-serif",
+            PLAYERNAME_FONT = "normal normal bold 80px Advokat, Calibri, Tahoma, sans-serif",
             PLAYERNAME_FONTCOLOR = "white",
             PLAYERNAME_FONT_BORDERCOLOR = "black",
-            PLAYERNAME_FONT_BORDERWIDTH = 3,
+            PLAYERNAME_FONT_BORDERWIDTH = 2,
+
+            SKILL_FONT = "normal normal bold 60px Advokat, Calibri, Tahoma, sans-serif",
+            SKILL_FONTCOLOR = "white",
+            SKILL_FONT_BORDERCOLOR = "black",
+            SKILL_FONT_BORDERWIDTH = 1,
 
             TABLEPOSITION_BACKGROUNDCOLOR = "rgb(231,191,60)",
 
             //Turns
-            TURN_FONT = "normal normal normal 130px Advokat, Calibri, Tahoma, sans-serif",
+            TURN_FONT = "normal normal normal 120px Advokat, Calibri, Tahoma, sans-serif",
             TURN_FONT_COLOR = "white",
             TURN_FONT_BORDERCOLOR = "black",
             TURN_FONT_BORDERWIDTH = 3,

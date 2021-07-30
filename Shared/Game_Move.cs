@@ -98,8 +98,16 @@ namespace Treachery.Shared
 
             MessagePart orangeIncome = new MessagePart("");
 
+            int totalCost = PayForShipment(s, initiator);
+            int orangeProfit = HandleOrangeProfit(s, initiator, ref orangeIncome);
+
             if (!s.Passed)
             {
+                if (totalCost - orangeProfit >= 4)
+                {
+                    ActivateBanker();
+                }
+
                 if (s.IsNoField)
                 {
                     RevealCurrentNoField(GetPlayer(Faction.White));
@@ -146,13 +154,7 @@ namespace Treachery.Shared
                 if (Version >= 89 || mustBeAdvisors) initiator.FlipForces(s.To, mustBeAdvisors);
 
                 DetermineNextShipmentAndMoveSubPhase(DetermineIntrusionCaused(s), BGMayAccompany);
-                int totalCost = PayForShipment(s, initiator);
-                int orangeProfit = HandleOrangeProfit(s, initiator, ref orangeIncome);
-
-                if (totalCost - orangeProfit >= 4)
-                {
-                    ActivateBanker();
-                }
+                               
 
                 FlipBeneGesseritWhenAlone();
             }
@@ -161,7 +163,7 @@ namespace Treachery.Shared
                 DetermineNextShipmentAndMoveSubPhase(false, BGMayAccompany);
             }
 
-            CurrentReport.Add(s.GetVerboseMessage(orangeIncome));
+            CurrentReport.Add(s.GetVerboseMessage(totalCost, orangeIncome));
         }
 
         public bool ContainsConflictingAlly(Player initiator, Location to)

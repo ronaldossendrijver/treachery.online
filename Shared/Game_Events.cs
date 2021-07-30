@@ -267,6 +267,11 @@ namespace Treachery.Shared
 
                 case Phase.BattlePhase:
                     {
+                        if (player.SkilledLeader != null)
+                        {
+                            result.Add(typeof(SwitchedSkilledLeader));
+                        }
+
                         if (CurrentBattle == null && player == NextPlayerToBattle)
                         {
                             result.Add(typeof(BattleInitiated));

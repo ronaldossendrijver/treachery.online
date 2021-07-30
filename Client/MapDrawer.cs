@@ -53,13 +53,13 @@ namespace Treachery.Client
                     await DrawResourcesOnPlanet();
                     await DrawMonsters();
                     await DrawStormAndStormPrescience();
-                    await DrawPlayersAndTechTokens();
                     await DrawPhases();
                     await DrawHighlightedTerritories();
                     await DrawHiddenMobileStronghold();
                     await DrawStrongholdOwnership();
                     await DrawRecentMoves();
                     await DrawForcesOnDune();
+                    await DrawPlayersAndTechTokensAndLeaderSkills();
                     await DrawBids();
                     await DrawTanks();
                     await DrawCardPiles();
@@ -693,7 +693,7 @@ namespace Treachery.Client
             return new Point(x, y);
         }
 
-        private static async Task DrawPlayersAndTechTokens()
+        private static async Task DrawPlayersAndTechTokensAndLeaderSkills()
         {
             if (h.Game.CurrentPhase > Phase.SelectingFactions)
             {
@@ -727,6 +727,15 @@ namespace Treachery.Client
                         await DrawImage(Artwork.TechTokens[tt].Value, Skin.Current.PlanetCenter.X + techtokenOrbitRadius * Math.Cos(ttRad) - Skin.Current.PlayerTokenRadius, Skin.Current.PlanetCenter.Y + techtokenOrbitRadius * Math.Sin(ttRad) - Skin.Current.PlayerTokenRadius, 2 * Skin.Current.PlayerTokenRadius, 2 * Skin.Current.PlayerTokenRadius, Skin.Current.SHADOW_DARK, 1, 1, 1);
                     }
 
+                    if (p.SkilledLeader != null && p.SkilledLeaderInFront)
+                    {
+                        ttRad += (TWOPI / 90);
+                        var ttx = Skin.Current.PlanetCenter.X + techtokenOrbitRadius * Math.Cos(ttRad) - Skin.Current.PlayerTokenRadius;
+                        var tty = Skin.Current.PlanetCenter.Y + techtokenOrbitRadius * Math.Sin(ttRad) - Skin.Current.PlayerTokenRadius;
+                        await DrawImage(Artwork.GetLeaderToken(p.SkilledLeader), ttx, tty, 2 * Skin.Current.PlayerTokenRadius, 2 * Skin.Current.PlayerTokenRadius, Skin.Current.SHADOW_DARK, 1, 1, 1);
+                        await DrawText(ttx + Skin.Current.PlayerTokenRadius, tty + 2 * Skin.Current.PlayerTokenRadius, Skin.Current.Describe(p.LeaderSkill), Skin.Current.SKILL_FONT, TextAlign.Center, Skin.Current.SKILL_FONTCOLOR, Skin.Current.SKILL_FONT_BORDERWIDTH, Skin.Current.SKILL_FONT_BORDERCOLOR, 2.2* Skin.Current.PlayerTokenRadius);
+                    }
+
                     var align = TextAlign.Center;
                     int textPositionX = position.X;
                     if (position.X < Skin.Current.PlanetCenter.X - 500)
@@ -740,7 +749,7 @@ namespace Treachery.Client
                         textPositionX = (int)(position.X + 1.6 * Skin.Current.PlayerTokenRadius);
                     }
 
-                    await DrawText(textPositionX, y, p.Name, Skin.Current.PLAYERNAME_FONT, align, Skin.Current.PLAYERNAME_FONTCOLOR, Skin.Current.PLAYERNAME_FONT_BORDERWIDTH, Skin.Current.PLAYERNAME_FONT_BORDERCOLOR, 6 * Skin.Current.PlayerTokenRadius);
+                    await DrawText(textPositionX, y + 40, p.Name, Skin.Current.PLAYERNAME_FONT, align, Skin.Current.PLAYERNAME_FONTCOLOR, Skin.Current.PLAYERNAME_FONT_BORDERWIDTH, Skin.Current.PLAYERNAME_FONT_BORDERCOLOR, 6 * Skin.Current.PlayerTokenRadius);
                 }
             }
         }
@@ -814,6 +823,7 @@ namespace Treachery.Client
                 float leaderWidth = 3.8f * Skin.Current.FORCETOKEN_RADIUS;
                 float leaderHeight = leaderWidth * Skin.Current.BattleWheelHeroHeight / Skin.Current.BattleWheelHeroWidth;
                 float leaderPctHeight = .15f * leaderWidth * Skin.Current.BattleWheelHeroHeight / Skin.Current.BattleWheelHeroWidth;
+                float spacing = 0.9f;
 
                 foreach (var p in h.Game.Players)
                 {
@@ -834,7 +844,7 @@ namespace Treachery.Client
                             await DrawForces(l, color, p.SpecialForcesKilled, true, p.Faction);
                         }
 
-                        y += 2 * Skin.Current.FORCETOKEN_RADIUS;
+                        y += spacing * 2 * Skin.Current.FORCETOKEN_RADIUS;
                     }
 
                     var corpses = p.Leaders
@@ -845,7 +855,7 @@ namespace Treachery.Client
                     int corpseNr = 0;
                     if (corpses.Any())
                     {
-                        y += (int)(leaderPctHeight * (corpses.Count() - 1));
+                        y += spacing * (leaderPctHeight * (corpses.Count() - 1));
                         int dy = 0;
                         foreach (var leader in corpses)
                         {
@@ -864,27 +874,27 @@ namespace Treachery.Client
                             corpseNr++;
                         }
 
-                        y += leaderHeight;
+                        y += spacing * leaderHeight;
                     }
 
                     if (p.Faction == Faction.Green && !h.Game.MessiahIsAlive)
                     {
                         var l = new Point((int)x, (int)y);
                         await DrawImage(Artwork.Messiah, l.X, l.Y, 0.5f * leaderWidth, 0.5f * leaderHeight, Skin.Current.SHADOW_LIGHT, 2, 3, 3);
-                        y += leaderHeight;
+                        y += spacing * leaderHeight;
                     }
 
-                    NextColumnIfNecessary(ref y, ref x);
+                    NextColumnIfNecessary(ref y, ref x, spacing);
                 }
             }
         }
 
-        private static void NextColumnIfNecessary(ref float y, ref float x)
+        private static void NextColumnIfNecessary(ref float y, ref float x, float spacing)
         {
             if (y > 14 * Skin.Current.FORCETOKEN_RADIUS - x)
             {
                 y = 2 * Skin.Current.FORCETOKEN_RADIUS;
-                x += (int)(4.5 * Skin.Current.FORCETOKEN_RADIUS);
+                x += spacing * (4.5f * Skin.Current.FORCETOKEN_RADIUS);
             }
         }
         #endregion

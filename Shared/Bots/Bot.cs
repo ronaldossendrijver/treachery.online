@@ -32,6 +32,7 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(JuicePlayed))) action = DetermineJuicePlayed();
                 if (action == null && possibleEvents.Contains(typeof(PortableAntidoteUsed))) action = DeterminePortableAntidoteUsed();
                 if (action == null && possibleEvents.Contains(typeof(Diplomacy))) action = DetermineDiplomacy();
+                if (action == null && possibleEvents.Contains(typeof(SwitchedSkilledLeader))) action = DetermineSwitchedSkilledLeader();
             }
             catch (Exception e)
             {

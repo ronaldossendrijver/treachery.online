@@ -281,15 +281,41 @@ namespace Treachery.Shared
         {
             int specialForcesThatCanBeRevived = Math.Min(5, Revival.ValidMaxRevivals(Game, this, true));
 
-            if (Game.CurrentTurn == Game.MaximumNumberOfTurns || Game.CurrentMainPhase > MainPhase.Resurrection && ForcesKilled + specialForcesThatCanBeRevived >= 7)
+            if (Game.CurrentTurn == Game.MaximumNumberOfTurns || Game.CurrentMainPhase > MainPhase.Resurrection)
             {
-                int forces = Math.Max(0, Math.Min(5, ForcesKilled) - specialForcesThatCanBeRevived);
-                return new RaiseDeadPlayed(Game) { Initiator = Faction, Hero = null, AmountOfForces = forces, AmountOfSpecialForces = specialForcesThatCanBeRevived };
+                if (ForcesKilled + specialForcesThatCanBeRevived >= 7)
+                {
+                    int forces = Math.Max(0, Math.Min(5, ForcesKilled) - specialForcesThatCanBeRevived);
+                    return new RaiseDeadPlayed(Game) { Initiator = Faction, Hero = null, AmountOfForces = forces, AmountOfSpecialForces = specialForcesThatCanBeRevived, AssignSkill = false };
+                }
+                else
+                {
+                    int nrOfLivingLeaders = Leaders.Count(l => Game.IsAlive(l));
+                    int minimumValue = Faction == Faction.Purple && nrOfLivingLeaders > 2 ? 4 : 0;
+
+                    var leaderToRevive = Revival.ValidRevivalHeroes(Game, this).Where(l =>
+                        SafeLeaders.Contains(l) &&
+                        l.Faction != Ally &&
+                        l.Value >= minimumValue
+                        ).OrderByDescending(l => l.Value + HeroRevivalPenalty(l)).FirstOrDefault();
+
+                    if (leaderToRevive == null)
+                    {
+                        leaderToRevive = Revival.ValidRevivalHeroes(Game, this).Where(l =>
+                            l.Faction != Ally &&
+                            l.Value >= minimumValue
+                            ).OrderByDescending(l => l.Value + HeroRevivalPenalty(l)).FirstOrDefault();
+                    }
+
+                    if (leaderToRevive != null)
+                    {
+                        var assignSkill = Revival.MayAssignSkill(Game, this);
+                        return new RaiseDeadPlayed(Game) { Initiator = Faction, Hero = leaderToRevive, AmountOfForces = 0, AmountOfSpecialForces = 0, AssignSkill = true };
+                    }
+                }
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         protected virtual AmalPlayed DetermineAmalPlayed()
@@ -474,9 +500,11 @@ namespace Treachery.Shared
                 normalForcesToRevive++;
             }
 
+            var assignSkill = leaderToRevive != null && Revival.MayAssignSkill(Game, this);
+
             if (leaderToRevive != null || specialForcesToRevive + normalForcesToRevive > 0)
             {
-                return new Revival(Game) { Initiator = Faction, Hero = leaderToRevive, AmountOfForces = normalForcesToRevive, AmountOfSpecialForces = specialForcesToRevive };
+                return new Revival(Game) { Initiator = Faction, Hero = leaderToRevive, AmountOfForces = normalForcesToRevive, AmountOfSpecialForces = specialForcesToRevive, AssignSkill = assignSkill };
             }
             else
             {
@@ -542,7 +570,13 @@ namespace Treachery.Shared
 
         public SkillAssigned DetermineSkillAssigned()
         {
-            return new SkillAssigned(Game) { Initiator = Faction, Passed = false, Leader = SkillAssigned.ValidLeaders(Game, this).First(), Skill = SkillAssigned.ValidSkills(this).First() };
+            return new SkillAssigned(Game) { Initiator = Faction, Passed = false, Leader = RandomItemFrom(SkillAssigned.ValidLeaders(Game, this)), Skill = SkillAssigned.ValidSkills(this).First() };
+        }
+
+        public T RandomItemFrom<T>(IEnumerable<T> items)
+        {
+            var itemsAsArray = items.ToArray();
+            return itemsAsArray[D(1, itemsAsArray.Length) - 1];
         }
     }
 

@@ -126,6 +126,18 @@ namespace Treachery.Client
             }
         }
 
+        public static string GetSkilledLeaderHTML(Leader l, LeaderSkill s)
+        {
+            if (l == null)
+            {
+                return "";
+            }
+            else
+            {
+                return string.Format("<div style='position:relative'/><img style='position:relative' src='{0}' width=300/><div style='position:absolute;left:190px;top:10px'><img src='{1}' width=100/></div></div>", Skin.Current.GetImageURL(s), Skin.Current.GetImageURL(l));
+            }
+        }
+
         public static string GetTechTokenHTML(TechToken tt)
         {
             if (tt == TechToken.None)
@@ -134,7 +146,8 @@ namespace Treachery.Client
             }
             else
             {
-                return string.Format("<div><img class='img-fluid' src='{0}' title='{2}' width=200/><div class='bg-dark text-white text-center small' style='width:200px'>{1}</div></div>", Skin.Current.GetImageURL(tt), Skin.Current.GetTechTokenDescription(tt), Skin.Current.Describe(tt));
+                return string.Format("<div><img src='{0}' width=300/></div>", Skin.Current.GetImageURL(tt));
+                //return string.Format("<div><img src='{0}' title='{2}' width=300/><div class='bg-dark text-white text-center small' style='width:300px'>{1}</div></div>", Skin.Current.GetImageURL(tt), Skin.Current.GetTechTokenDescription(tt), Skin.Current.Describe(tt));
             }
         }
 

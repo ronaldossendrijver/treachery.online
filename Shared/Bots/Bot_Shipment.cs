@@ -201,7 +201,7 @@ namespace Treachery.Shared
 
         protected virtual void DetermineShipment_ShipDirectlyToSpiceAsYellow()
         {
-            LogInfo("DetermineShipment_ShipToSpice()");
+            LogInfo("DetermineShipment_ShipDirectlyToSpiceAsYellow()");
 
             var safeLocationWithMostResources = Game.ResourcesOnPlanet.Where(kvp =>
                 ValidShipmentLocations.Contains(kvp.Key) &&
@@ -333,6 +333,7 @@ namespace Treachery.Shared
 
         protected virtual void UseAllyResources(Shipment shipment)
         {
+            LogInfo("UseAllyResources: shipment.DetermineCostToInitiator(Game): {0}, Game.GetPermittedUseOfAllySpice(Faction): {1}", shipment.DetermineCostToInitiator(Game), Game.GetPermittedUseOfAllySpice(Faction));
             shipment.AllyContributionAmount = Math.Min(shipment.DetermineCostToInitiator(Game), Game.GetPermittedUseOfAllySpice(Faction));
         }
 
@@ -651,46 +652,44 @@ namespace Treachery.Shared
 
             var normalStrength = Battle.DetermineNormalForceStrength(Faction);
             var specialStrength = Battle.DetermineSpecialForceStrength(Game, Faction, opponent);
-            float spiceLeft = ResourcesIncludingAllyContribution - minResourcesToKeep;
-            float costModifier = Game.MayShipAsGuild(this) ? 0.5f : 1f;
-            float costPerForceToShip = Shipment.ShipsForFree(Game, this, location) ? 0 : costModifier * (location.IsStronghold ? 1 : 2);
+            int spiceAvailable = ResourcesIncludingAllyContribution - minResourcesToKeep;
+            //float costModifier = Game.MayShipAsGuild(this) ? 0.5f : 1f;
+            //float costPerForceToShip = Shipment.ShipsForFree(Game, this, location) ? 0 : costModifier * (location.IsStronghold ? 1 : 2);
             float noSpiceForForceModifier = Battle.MustPayForForcesInBattle(Game, this) ? 0.5f : 1;
             int costPerForceInBattle = diallingForBattle && Battle.MustPayForForcesInBattle(Game, this) ? 1 : 0;
             int costOfBattle = 0;
+            int shipcost;
 
             if (preferSpecialForces && specialStrength > normalStrength)
             {
                 specialForces = 0;
-                while (dialNeeded > 0 && (dialNeeded > normalStrength || forcesAvailable == 0) && specialForcesAvailable >= 1 && spiceLeft >= costPerForceToShip && costOfBattle - spiceLeft < maxUnsupportedForces)
+                while (dialNeeded > 0 && (dialNeeded > normalStrength || forcesAvailable == 0) && specialForcesAvailable >= 1 && (shipcost = Shipment.DetermineCost(Game, this, forces + specialForces + 1, location, false, false, false)) <= spiceAvailable && shipcost + costOfBattle - spiceAvailable < maxUnsupportedForces)
                 {
                     specialForces++;
                     specialForcesAvailable--;
-                    spiceLeft -= costPerForceToShip;
                     costOfBattle += costPerForceInBattle;
-                    dialNeeded -= specialStrength * (costOfBattle <= spiceLeft ? 1 : noSpiceForForceModifier);
+                    dialNeeded -= specialStrength * (costOfBattle <= spiceAvailable ? 1 : noSpiceForForceModifier);
                 }
             }
 
             forces = 0;
-            while (dialNeeded > 0 && forcesAvailable >= 1 && spiceLeft >= costPerForceToShip && costOfBattle - spiceLeft < maxUnsupportedForces)
+            while (dialNeeded > 0 && forcesAvailable >= 1 && (shipcost = Shipment.DetermineCost(Game, this, forces + specialForces + 1, location, false, false, false)) <= spiceAvailable && shipcost + costOfBattle - spiceAvailable < maxUnsupportedForces)
             {
                 forces++;
                 forcesAvailable--;
-                spiceLeft -= costPerForceToShip;
                 costOfBattle += costPerForceInBattle;
-                dialNeeded -= normalStrength * (costOfBattle <= spiceLeft ? 1 : noSpiceForForceModifier);
+                dialNeeded -= normalStrength * (costOfBattle <= spiceAvailable ? 1 : noSpiceForForceModifier);
             }
 
-            while (dialNeeded > 0 && specialForcesAvailable >= 1 && spiceLeft >= costPerForceToShip && costOfBattle - spiceLeft < maxUnsupportedForces)
+            while (dialNeeded > 0 && specialForcesAvailable >= 1 && (shipcost = Shipment.DetermineCost(Game, this, forces + specialForces + 1, location, false, false, false)) <= spiceAvailable && shipcost + costOfBattle - spiceAvailable < maxUnsupportedForces)
             {
                 specialForces++;
                 specialForcesAvailable--;
-                spiceLeft -= costPerForceToShip;
                 costOfBattle += costPerForceInBattle;
-                dialNeeded -= specialStrength * (costOfBattle <= spiceLeft ? 1 : noSpiceForForceModifier);
+                dialNeeded -= specialStrength * (costOfBattle <= spiceAvailable ? 1 : noSpiceForForceModifier);
             }
 
-            LogInfo("DetermineValidForcesInShipment() --> forces: {0}, specialForces: {1}, remaining dial needed: {2}, cost of battle: {3})", forces, specialForces, dialNeeded, costOfBattle);
+            LogInfo("DetermineValidForcesInShipment() --> forces: {0}, specialForces: {1}, remaining dial needed: {2}, cost of shipment: {3}, cost of battle: {4})", forces, specialForces, dialNeeded, Shipment.DetermineCost(Game, this, forces + specialForces + 1, location, false, false, false), costOfBattle);
 
             return dialNeeded;
         }

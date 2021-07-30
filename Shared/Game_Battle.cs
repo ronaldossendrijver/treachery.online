@@ -1332,6 +1332,12 @@ namespace Treachery.Shared
             }
         }
 
+        public void HandleEvent(SwitchedSkilledLeader e)
+        {
+            e.Player.SkilledLeaderInFront = !e.Player.SkilledLeaderInFront;
+            CurrentReport.Add(e.Initiator, "{0} {1} {2} {3}", e.Initiator, e.Player.SkilledLeaderInFront ? "activate" : "deactivate", e.Player.LeaderSkill, e.Player.SkilledLeader);
+        }
+
         public Battle WinnerBattleAction
         {
             get

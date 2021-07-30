@@ -31,7 +31,7 @@
 
         <SelectHeroComponent @bind-Value="hero" Values="Game.ValidFreeRevivalHeroes(Player)" Required="false" />
 
-        @if (hero != null && Game.Applicable(Rule.BrownAndWhiteLeaderSkills) && Player.SkilledLeader == null)
+        @if (hero != null && Revival.MayAssignSkill(Game, Player))
         {
             <RadioComponent @bind-Value="assignSkill" Values="@(new bool[] {false,true})" ValueLabels="@(new string[] {"No","Yes"})">
                 <Label>Do you wish to assign a skill to this leader?</Label>

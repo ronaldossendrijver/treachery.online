@@ -24,7 +24,7 @@ namespace Treachery.Client
 
         public static Dictionary<Location, string> IntelLocations = new Dictionary<Location, string>();
         public static Dictionary<int, string> IntelPlayers = new Dictionary<int, string>();
-        public static Dictionary<int, string> IntelTechtokens = new Dictionary<int, string>();
+        public static Dictionary<int, string> IntelTechtokensAndSkills = new Dictionary<int, string>();
         public static string IntelTreacheryCardPile = "";
         public static string IntelResourceCardPile = "";
         public static string IntelTanks = "";
@@ -52,17 +52,13 @@ namespace Treachery.Client
 
                     //Player token
                     IntelPlayers.Clear();
-                    IntelTechtokens.Clear();
+                    IntelTechtokensAndSkills.Clear();
                     if (h.Game.CurrentPhase > Phase.SelectingFactions)
                     {
                         foreach (var player in h.Game.Players)
                         {
                             IntelPlayers.Add(player.PositionAtTable, Intel(player));
-
-                            if (player.TechTokens.Count > 0)
-                            {
-                                IntelTechtokens.Add(player.PositionAtTable, IntelOfTechtokens(player));
-                            }
+                            IntelTechtokensAndSkills.Add(player.PositionAtTable, IntelOfTechtokensAndSkilledLeaders(player));
                         }
                     }
 
@@ -143,7 +139,7 @@ namespace Treachery.Client
         private static string DetermineIntelligence(int x, int y)
         {
             //Tanks
-            if (y > 0 && y < 10 * Skin.Current.FORCETOKEN_RADIUS && x > 0 && x < 20 * Skin.Current.FORCETOKEN_RADIUS)
+            if (y > 0 && y < 14 * Skin.Current.FORCETOKEN_RADIUS && x > 0 && x < 16 * Skin.Current.FORCETOKEN_RADIUS)
             {
                 return IntelTanks;
             }
@@ -168,16 +164,16 @@ namespace Treachery.Client
             }
 
             //Player token
-            var player = h.Game.Players.FirstOrDefault(p => Near(PlayerTokenPosition(h.Game, p.PositionAtTable), x, y, Skin.Current.PlayerTokenRadius * 3));
+            var player = h.Game.Players.FirstOrDefault(p => Near(PlayerTokenPosition(h.Game, p.PositionAtTable), x, y, (int)(3.5f * Skin.Current.PlayerTokenRadius)));
             if (player != null)
             {
-                if (Near(PlayerTokenPosition(h.Game, player.PositionAtTable), x, y, Skin.Current.PlayerTokenRadius) && IntelPlayers.ContainsKey(player.PositionAtTable))
+                if (Near(PlayerTokenPosition(h.Game, player.PositionAtTable), x, y, (int)(0.8 * Skin.Current.PlayerTokenRadius)) && IntelPlayers.ContainsKey(player.PositionAtTable))
                 {
                     return IntelPlayers[player.PositionAtTable];
                 }
-                else if (IntelTechtokens.ContainsKey(player.PositionAtTable))
+                else if (IntelTechtokensAndSkills.ContainsKey(player.PositionAtTable))
                 {
-                    return IntelTechtokens[player.PositionAtTable];
+                    return IntelTechtokensAndSkills[player.PositionAtTable];
                 }
             }
 
@@ -321,12 +317,17 @@ namespace Treachery.Client
             return result;
         }
 
-        private static string IntelOfTechtokens(Player p)
+        private static string IntelOfTechtokensAndSkilledLeaders(Player p)
         {
             string result = "";
             foreach (var v in p.TechTokens)
             {
                 result += Support.GetTechTokenHTML(v);
+            }
+
+            if (p.SkilledLeader != null && p.SkilledLeaderInFront)
+            {
+                result += Support.GetSkilledLeaderHTML(p.SkilledLeader, p.LeaderSkill);
             }
             return result;
         }
