@@ -12,12 +12,14 @@ namespace Treachery.Shared
     {
         protected virtual SwitchedSkilledLeader DetermineSwitchedSkilledLeader()
         {
-            if (SkilledLeader != null && SkilledLeaderInFront && Game.CurrentPhase == Phase.BattlePhase && Game.CurrentBattle != null && Game.CurrentBattle.IsInvolved(this) && Battle.ValidBattleHeroes(Game,this).Count() < 2)
+            var skilledLeader = Leaders.First(l => Game.Skilled(l) && !Game.CapturedLeaders.ContainsKey(l));
+
+            if (skilledLeader != null && Game.IsInFrontOfShield(skilledLeader) && Game.CurrentPhase == Phase.BattlePhase && Game.CurrentBattle != null && Game.CurrentBattle.IsInvolved(this) && Battle.ValidBattleHeroes(Game,this).Count() < 2)
             {
                 return new SwitchedSkilledLeader(Game) { Initiator = Faction };
             }
             
-            if (SkilledLeader != null && !SkilledLeaderInFront && Game.CurrentPhase != Phase.BattlePhase)
+            if (skilledLeader != null && !Game.IsInFrontOfShield(skilledLeader) && Game.CurrentPhase != Phase.BattlePhase)
             {
                 return new SwitchedSkilledLeader(Game) { Initiator = Faction };
             }
@@ -480,11 +482,6 @@ namespace Treachery.Shared
             }
 
             return DetermineBestDefense(opponent, chosenWeapon, out mostEffectiveDefense);
-        }
-
-        public bool IsSkilledLeaderInFront(Leader l)
-        {
-            return l == SkilledLeader && SkilledLeaderInFront;
         }
 
         private int NrOfUnknownOpponentCards(Player opponent)

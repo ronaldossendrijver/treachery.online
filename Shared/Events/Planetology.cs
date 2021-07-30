@@ -45,7 +45,7 @@ namespace Treachery.Shared
 
         public static bool CanBePlayed(Game g, Player p)
         {
-            return (p == g.SkilledPassiveAs(LeaderSkill.Planetologist) && g.CurrentPlanetology == null);
+            return (g.SkilledAs(p, LeaderSkill.Planetologist) && g.CurrentPlanetology == null);
         }
     }
 }

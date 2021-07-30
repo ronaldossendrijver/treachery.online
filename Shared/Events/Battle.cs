@@ -338,7 +338,7 @@ namespace Treachery.Shared
             if (Defense == null && Weapon != null && Weapon.Type == TreacheryCardType.Chemistry) return Skin.Current.Format("You can't use {0} as weapon without using a defense.", TreacheryCardType.Chemistry);
             if (!ValidWeapons(Game, p, Defense, true).Contains(Weapon)) return "Invalid weapon";
             if (!ValidDefenses(Game, p, Weapon, true).Contains(Defense)) return "Invalid defense";
-            if (Hero == p.SkilledLeader && p.SkilledLeaderInFront) return "You can't use a leader in front of your player shield";
+            if (Game.LeaderState[Hero].InFrontOfShield) return "You can't use a leader that is in front of a player shield";
 
             if (Hero != null &&
                 AffectedByVoice(Game, Player, Game.CurrentVoice) &&

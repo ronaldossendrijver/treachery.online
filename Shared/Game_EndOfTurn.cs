@@ -16,7 +16,7 @@ namespace Treachery.Shared
         private void EnterSpiceCollectionPhase()
         {
             MainPhaseStart(MainPhase.Collection);
-            CallHeroesHome();
+            CallHeroesHomeAndPutSkilledLeadersInFrontOfShield();
             CollectResourcesFromTerritories();
             CollectResourcesFromStrongholds();
             
@@ -447,11 +447,16 @@ namespace Treachery.Shared
             }
         }
 
-        private void CallHeroesHome()
+        private void CallHeroesHomeAndPutSkilledLeadersInFrontOfShield()
         {
             foreach (var ls in LeaderState)
             {
                 ls.Value.CurrentTerritory = null;
+
+                if (ls.Key is Leader && !CapturedLeaders.ContainsKey(ls.Key as Leader))
+                {
+                    ls.Value.InFrontOfShield = true;
+                }
             }
         }
 

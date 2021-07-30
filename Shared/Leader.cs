@@ -115,6 +115,10 @@ namespace Treachery.Shared
 
         public int TimeOfDeath { get; set; }
 
+        public LeaderSkill Skill { get; set; }
+
+        public bool InFrontOfShield { get; set; }
+
         public bool Alive
         {
             get
@@ -133,6 +137,8 @@ namespace Treachery.Shared
 
         public void Kill()
         {
+            Skill = LeaderSkill.None;
+            InFrontOfShield = false;
             DeathCounter++;
             TimeOfDeath = moment++;
         }

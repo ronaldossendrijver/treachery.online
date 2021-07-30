@@ -538,7 +538,7 @@ namespace Treachery.Shared
         {
             if (!BureaucratWasUsedThisPhase)
             {
-                var bureaucrat = SkilledPassiveAs(LeaderSkill.Bureaucrat);
+                var bureaucrat = PlayerSkilledAs(LeaderSkill.Bureaucrat);
                 if (bureaucrat != null && bureaucrat.Faction != payer && bureaucrat.Faction != receiver)
                 {
                     BureaucratWasUsedThisPhase = true;
@@ -566,7 +566,7 @@ namespace Treachery.Shared
         {
             if (!BankerWasUsedThisPhase)
             {
-                var banker = SkilledPassiveAs(LeaderSkill.Banker);
+                var banker = PlayerSkilledAs(LeaderSkill.Banker);
                 if (banker != null)
                 {
                     BankerWasUsedThisPhase = true;

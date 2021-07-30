@@ -727,13 +727,14 @@ namespace Treachery.Client
                         await DrawImage(Artwork.TechTokens[tt].Value, Skin.Current.PlanetCenter.X + techtokenOrbitRadius * Math.Cos(ttRad) - Skin.Current.PlayerTokenRadius, Skin.Current.PlanetCenter.Y + techtokenOrbitRadius * Math.Sin(ttRad) - Skin.Current.PlayerTokenRadius, 2 * Skin.Current.PlayerTokenRadius, 2 * Skin.Current.PlayerTokenRadius, Skin.Current.SHADOW_DARK, 1, 1, 1);
                     }
 
-                    if (p.SkilledLeader != null && p.SkilledLeaderInFront)
+                    var skilledLeader = h.Game.GetSkilledLeader(p);
+                    if (skilledLeader != null && h.Game.IsInFrontOfShield(skilledLeader))
                     {
                         ttRad += (TWOPI / 90);
                         var ttx = Skin.Current.PlanetCenter.X + techtokenOrbitRadius * Math.Cos(ttRad) - Skin.Current.PlayerTokenRadius;
                         var tty = Skin.Current.PlanetCenter.Y + techtokenOrbitRadius * Math.Sin(ttRad) - Skin.Current.PlayerTokenRadius;
-                        await DrawImage(Artwork.GetLeaderToken(p.SkilledLeader), ttx, tty, 2 * Skin.Current.PlayerTokenRadius, 2 * Skin.Current.PlayerTokenRadius, Skin.Current.SHADOW_DARK, 1, 1, 1);
-                        await DrawText(ttx + Skin.Current.PlayerTokenRadius, tty + 2 * Skin.Current.PlayerTokenRadius, Skin.Current.Describe(p.LeaderSkill), Skin.Current.SKILL_FONT, TextAlign.Center, Skin.Current.SKILL_FONTCOLOR, Skin.Current.SKILL_FONT_BORDERWIDTH, Skin.Current.SKILL_FONT_BORDERCOLOR, 2.2* Skin.Current.PlayerTokenRadius);
+                        await DrawImage(Artwork.GetLeaderToken(skilledLeader), ttx, tty, 2 * Skin.Current.PlayerTokenRadius, 2 * Skin.Current.PlayerTokenRadius, Skin.Current.SHADOW_DARK, 1, 1, 1);
+                        await DrawText(ttx + Skin.Current.PlayerTokenRadius, tty + 2 * Skin.Current.PlayerTokenRadius, Skin.Current.Describe(skilledLeader), Skin.Current.SKILL_FONT, TextAlign.Center, Skin.Current.SKILL_FONTCOLOR, Skin.Current.SKILL_FONT_BORDERWIDTH, Skin.Current.SKILL_FONT_BORDERCOLOR, 2.2* Skin.Current.PlayerTokenRadius);
                     }
 
                     var align = TextAlign.Center;

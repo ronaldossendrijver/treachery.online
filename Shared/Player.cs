@@ -79,13 +79,7 @@ namespace Treachery.Shared
 
         public bool NoFieldIsActive => Faction == Faction.White && ForcesOnPlanet.Any(locationWithForces => locationWithForces.Value.AmountOfSpecialForces > 0);
 
-        public LeaderSkill LeaderSkill { get; set; }
-
-        public Leader SkilledLeader { get; set; }
-
         public Leader MostRecentlyRevivedLeader { get; set; }
-
-        public bool SkilledLeaderInFront { get; set; } = true;
 
         public IList<LeaderSkill> SkillsToChooseFrom { get; set; } = new List<LeaderSkill>();
 

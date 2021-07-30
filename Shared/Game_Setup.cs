@@ -459,8 +459,8 @@ namespace Treachery.Shared
         public void HandleEvent(SkillAssigned e) {
 
             CurrentReport.Add(e);
-            e.Player.LeaderSkill = e.Skill;
-            e.Player.SkilledLeader = e.Leader;
+            SetSkill(e.Leader, e.Skill);
+            SetInFrontOfShield(e.Leader, true);
             SkillDeck.PutOnTop(e.Player.SkillsToChooseFrom);
             e.Player.SkillsToChooseFrom.Clear();
 

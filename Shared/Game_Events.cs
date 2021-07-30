@@ -78,7 +78,7 @@ namespace Treachery.Shared
             switch (CurrentPhase)
             {
                 case Phase.Bureaucracy:
-                    if (player == SkilledPassiveAs(LeaderSkill.Bureaucrat)) result.Add(typeof(Bureaucracy));
+                    if (player == PlayerSkilledAs(LeaderSkill.Bureaucrat)) result.Add(typeof(Bureaucracy));
                     break;
                 case Phase.AssigningInitialSkills:
                 case Phase.AssigningSkill:
@@ -267,7 +267,7 @@ namespace Treachery.Shared
 
                 case Phase.BattlePhase:
                     {
-                        if (player.SkilledLeader != null)
+                        if (SwitchedSkilledLeader.CanBePlayed(this, player))
                         {
                             result.Add(typeof(SwitchedSkilledLeader));
                         }

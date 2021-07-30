@@ -325,9 +325,10 @@ namespace Treachery.Client
                 result += Support.GetTechTokenHTML(v);
             }
 
-            if (p.SkilledLeader != null && p.SkilledLeaderInFront)
+            var skilledLeader = h.Game.GetSkilledLeader(p);
+            if (skilledLeader != null && h.Game.IsInFrontOfShield(skilledLeader))
             {
-                result += Support.GetSkilledLeaderHTML(p.SkilledLeader, p.LeaderSkill);
+                result += Support.GetSkilledLeaderHTML(skilledLeader, h.Game.Skill(skilledLeader));
             }
             return result;
         }

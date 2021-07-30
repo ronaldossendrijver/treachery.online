@@ -320,13 +320,14 @@ namespace Treachery.Shared
 
         private void ActivateDeciphererIfApplicable()
         {
-            var decipherer = SkilledPassiveAs(LeaderSkill.Decipherer);
+            var decipherer = PlayerSkilledAs(LeaderSkill.Decipherer);
             if (decipherer != null && decipherer.Faction == BattleWinner)
             {
                 TraitorsBattleWinnerCanLookAt.Add(TraitorDeck.Draw());
                 TraitorsBattleWinnerCanLookAt.Add(TraitorDeck.Draw());
             } 
         }
+
         private void FinishDeciphererIfApplicable()
         {
             if (TraitorsBattleWinnerCanLookAt.Count > 0)
@@ -825,12 +826,12 @@ namespace Treachery.Shared
             if (harkonnen != null)
             {
                 //Captured leader used in battle
-                if (hero != null && hero is Leader capturedLeader && harkonnen.Leaders.Contains(capturedLeader) && PreviousOwners.ContainsKey(capturedLeader))
+                if (hero != null && hero is Leader capturedLeader && harkonnen.Leaders.Contains(capturedLeader) && CapturedLeaders.ContainsKey(capturedLeader))
                 {
                     ReturnLeader(harkonnen, capturedLeader);
                 }
 
-                if (!harkonnen.Leaders.Any(l => PreviousOwners.ContainsKey(l) && IsAlive(l)))
+                if (!harkonnen.Leaders.Any(l => CapturedLeaders.ContainsKey(l) && IsAlive(l)))
                 {
                     Leader toReturn;
                     while ((toReturn = harkonnen.Leaders.FirstOrDefault(c => c.Faction != Faction.Black)) != null)
@@ -843,12 +844,16 @@ namespace Treachery.Shared
 
         private void ReturnLeader(Player currentOwner, Leader toReturn)
         {
-            if (PreviousOwners.ContainsKey(toReturn))
+            if (CapturedLeaders.ContainsKey(toReturn))
             {
-                Player originalPlayer = GetPlayer(PreviousOwners[toReturn]);
+                Player originalPlayer = GetPlayer(CapturedLeaders[toReturn]);
                 originalPlayer.Leaders.Add(toReturn);
                 currentOwner.Leaders.Remove(toReturn);
-                PreviousOwners.Remove(toReturn);
+                CapturedLeaders.Remove(toReturn);
+                if (Skilled(toReturn))
+                {
+                    SetInFrontOfShield(toReturn, true);
+                }
                 CurrentReport.Add(originalPlayer.Faction, "{0} returns to {1} after service for {2}", toReturn, originalPlayer.Faction, currentOwner.Faction);
             }
         }
@@ -881,8 +886,8 @@ namespace Treachery.Shared
             var aggMessiahContribution = aggressor.Is(Faction.Green) && agg.Messiah && agg.Hero != null && !aggHeroKilled && !artilleryUsed ? 2 : 0;
             var defMessiahContribution = defender.Is(Faction.Green) && def.Messiah && def.Hero != null && !defHeroKilled && !artilleryUsed  ? 2 : 0;
 
-            var aggThinkerContribution = agg.Player.LeaderSkill == LeaderSkill.Thinker && agg.Hero == agg.Player.SkilledLeader && !aggHeroKilled && !artilleryUsed ? 2 : 0;
-            var defThinkerContribution = def.Player.LeaderSkill == LeaderSkill.Thinker && def.Hero == def.Player.SkilledLeader && !defHeroKilled && !artilleryUsed ? 2 : 0;
+            var aggThinkerContribution = Skill(agg.Hero) == LeaderSkill.Thinker && !aggHeroKilled && !artilleryUsed ? 2 : 0;
+            var defThinkerContribution = Skill(def.Hero) == LeaderSkill.Thinker && !defHeroKilled && !artilleryUsed ? 2 : 0;
             
             float aggForceDial;
             float defForceDial;
@@ -955,19 +960,36 @@ namespace Treachery.Shared
 
         private int DetermineSkillBonus(Battle plan)
         {
-            if (
-                plan.Player.LeaderSkill == LeaderSkill.Warmaster && (plan.Weapon != null && plan.Weapon.IsUseless || plan.Defense != null && plan.Defense.IsUseless) ||
-                plan.Player.LeaderSkill == LeaderSkill.Adept && plan.Defense != null && plan.Defense.IsProjectileDefense ||
-                plan.Player.LeaderSkill == LeaderSkill.Swordmaster && plan.Weapon != null && plan.Weapon.IsProjectileWeapon ||
-                plan.Player.LeaderSkill == LeaderSkill.KillerMedic && plan.Defense != null && plan.Defense.IsPoisonDefense ||
-                plan.Player.LeaderSkill == LeaderSkill.MasterOfAssassins && plan.Weapon != null && (plan.Weapon.IsPoisonWeapon || plan.Weapon.IsPoisonTooth))
-            {
-                return plan.Player.SkilledLeader == plan.Hero ? 3 : 1;
+            if (plan.Weapon != null && plan.Weapon.IsUseless || plan.Defense != null && plan.Defense.IsUseless) {
+                if (SkilledAs(plan.Hero, LeaderSkill.Warmaster)) return 3;
+                else if (SkilledAs(plan.Player, LeaderSkill.Warmaster)) return 1;
             }
-            else
+
+            if (plan.Defense != null && plan.Defense.IsProjectileDefense)
             {
-                return 0;
+                if (SkilledAs(plan.Hero, LeaderSkill.Adept)) return 3;
+                else if (SkilledAs(plan.Player, LeaderSkill.Adept)) return 1;
             }
+
+            if (plan.Weapon != null && plan.Weapon.IsProjectileWeapon)
+            {
+                if (SkilledAs(plan.Hero, LeaderSkill.Swordmaster)) return 3;
+                else if (SkilledAs(plan.Player, LeaderSkill.Swordmaster)) return 1;
+            }
+
+            if (plan.Defense != null && plan.Defense.IsPoisonDefense)
+            {
+                if (SkilledAs(plan.Hero, LeaderSkill.KillerMedic)) return 3;
+                else if (SkilledAs(plan.Player, LeaderSkill.KillerMedic)) return 1;
+            }
+
+            if (plan.Weapon != null && (plan.Weapon.IsPoisonWeapon || plan.Weapon.IsPoisonTooth))
+            {
+                if (SkilledAs(plan.Hero, LeaderSkill.MasterOfAssassins)) return 3;
+                else if (SkilledAs(plan.Player, LeaderSkill.MasterOfAssassins)) return 1;
+            }
+
+            return 0;
         }
 
         public bool IsAggressorByJuice(Player p)
@@ -1077,7 +1099,7 @@ namespace Treachery.Shared
         {
             PayDialedSpice(winner, plan);
 
-            var graduate = SkilledPassiveAs(LeaderSkill.Graduate);
+            var graduate = PlayerSkilledAs(LeaderSkill.Graduate);
 
             int specialForcesToLose = plan.SpecialForces + plan.SpecialForcesAtHalfStrength;
             int forcesToLose = plan.Forces + plan.ForcesAtHalfStrength;
@@ -1306,7 +1328,7 @@ namespace Treachery.Shared
             }
         }
 
-        private Dictionary<Leader, Faction> PreviousOwners = new Dictionary<Leader, Faction>();
+        public Dictionary<Leader, Faction> CapturedLeaders { get; private set; } = new Dictionary<Leader, Faction>();
         private void CaptureOrAssassinateLeader(Battle harkonnenAction, Battle victimAction, CaptureDecision decision)
         {
             var harkonnen = GetPlayer(harkonnenAction.Initiator);
@@ -1317,7 +1339,8 @@ namespace Treachery.Shared
                 CurrentReport.Add(Faction.Black, "{0} capture a leader!", Faction.Black);
                 harkonnen.Leaders.Add(BlackVictim);
                 target.Leaders.Remove(BlackVictim);
-                PreviousOwners.Add(BlackVictim, target.Faction);
+                SetInFrontOfShield(BlackVictim, false);
+                CapturedLeaders.Add(BlackVictim, target.Faction);
             }
             else if (decision == CaptureDecision.Kill)
             {
@@ -1332,10 +1355,31 @@ namespace Treachery.Shared
             }
         }
 
+        public void SetSkill(IHero l, LeaderSkill skill)
+        {
+            LeaderState[l].Skill = skill;
+        }
+
+        public void SwitchInFrontOfShield(IHero l)
+        {
+            LeaderState[l].InFrontOfShield = !LeaderState[l].InFrontOfShield;
+        }
+
+        public void SetInFrontOfShield(IHero l, bool value)
+        {
+            LeaderState[l].InFrontOfShield = value;
+        }
+
+        public bool IsInFrontOfShield(IHero l)
+        {
+            return LeaderState[l].InFrontOfShield;
+        }
+
         public void HandleEvent(SwitchedSkilledLeader e)
         {
-            e.Player.SkilledLeaderInFront = !e.Player.SkilledLeaderInFront;
-            CurrentReport.Add(e.Initiator, "{0} {1} {2} {3}", e.Initiator, e.Player.SkilledLeaderInFront ? "activate" : "deactivate", e.Player.LeaderSkill, e.Player.SkilledLeader);
+            var leader = e.Player.Leaders.FirstOrDefault(l => Skilled(l) && !CapturedLeaders.ContainsKey(l));
+            SwitchInFrontOfShield(leader);
+            CurrentReport.Add(e.Initiator, "{0} {1} {2} {3}", e.Initiator, IsInFrontOfShield(leader) ? "activate" : "deactivate", Skill(leader), leader);
         }
 
         public Battle WinnerBattleAction

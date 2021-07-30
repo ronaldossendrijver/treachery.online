@@ -150,7 +150,7 @@ namespace Treachery.Client
                         }
 
                     case Phase.Bureaucracy:
-                        if (IAm(Game.SkilledPassiveAs(LeaderSkill.Bureaucrat)))
+                        if (IAm(LeaderSkill.Bureaucrat))
                         {
                             return new GameStatus()
                             {

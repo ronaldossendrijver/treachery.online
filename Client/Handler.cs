@@ -461,6 +461,11 @@ namespace Treachery.Client
             return p != null && p.Faction == f;
         }
 
+        public bool IAm(LeaderSkill skill)
+        {
+            return Game.SkilledAs(Player, skill);
+        }
+
         public bool IAm(Player p)
         {
             return Player == p;

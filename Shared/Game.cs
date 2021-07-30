@@ -436,14 +436,6 @@ namespace Treachery.Shared
                 }
 
                 ReturnGholaToOriginalFaction(l);
-
-                var playerThatAssignedASkillToThisLeader = Players.FirstOrDefault(p => p.SkilledLeader == l);
-                if (playerThatAssignedASkillToThisLeader != null)
-                {
-                    SkillDeck.PutOnTop(playerThatAssignedASkillToThisLeader.LeaderSkill);
-                    playerThatAssignedASkillToThisLeader.SkilledLeader = null;
-                    playerThatAssignedASkillToThisLeader.LeaderSkill = LeaderSkill.None;
-                }
             }
         }
 
@@ -469,6 +461,48 @@ namespace Treachery.Shared
         public bool IsAlive(IHero l)
         {
             return LeaderState[l].Alive;
+        }
+
+        public bool SkilledAs(IHero leader, LeaderSkill skill)
+        {
+            return Skill(leader) == skill;
+        }
+
+        public bool SkilledAs(Player p, LeaderSkill skill)
+        {
+            return p.Leaders.Any(l => LeaderState[l].Skill == skill && LeaderState[l].InFrontOfShield);
+        }
+
+        public bool Skilled(IHero l)
+        {
+            return Skill(l) != LeaderSkill.None;
+        }
+
+        public Player PlayerSkilledAs(LeaderSkill skill)
+        {
+            return Players.FirstOrDefault(p => SkilledAs(p, skill));
+        }
+
+        public Leader GetSkilledLeader(Player player)
+        {
+            return player.Leaders.FirstOrDefault(l => Skilled(l));
+        }
+
+        public LeaderSkill Skill(Player p)
+        {
+            return Skill(GetSkilledLeader(p));
+        }
+
+        public LeaderSkill Skill(IHero l)
+        {
+            if (l == null)
+            {
+                return LeaderSkill.None;
+            }
+            else
+            {
+                return LeaderState[l].Skill;
+            }
         }
 
         public bool MessiahIsAlive => IsAlive(LeaderManager.Messiah);
@@ -870,15 +904,7 @@ namespace Treachery.Shared
             }
         }
 
-        public Player SkilledPassiveAs(LeaderSkill skill)
-        {
-            return Players.FirstOrDefault(p => p.LeaderSkill == skill && p.SkilledLeaderInFront);
-        }
 
-        public Player SkilledActiveAs(Leader leader, LeaderSkill skill)
-        {
-            return Players.FirstOrDefault(p => p.LeaderSkill == skill && p.SkilledLeader == leader);
-        }
 
         #endregion SupportMethods
 

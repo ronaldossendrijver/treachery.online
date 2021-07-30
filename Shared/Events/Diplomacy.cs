@@ -59,7 +59,7 @@ namespace Treachery.Shared
 
         public static bool CanBePlayed(Game g, Player p)
         {
-            if (p == g.SkilledPassiveAs(LeaderSkill.Diplomat) && g.CurrentDiplomacy == null)
+            if (g.SkilledAs(p, LeaderSkill.Diplomat) && g.CurrentDiplomacy == null)
             {
                 var plan = g.CurrentBattle.PlanOf(p);
                 return 
