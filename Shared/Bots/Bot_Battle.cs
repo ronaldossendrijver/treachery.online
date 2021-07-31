@@ -954,6 +954,12 @@ namespace Treachery.Shared
         {
             return new ThoughtAnswered(Game) { Initiator = Faction, Card = ThoughtAnswered.ValidCards(Game, this).OrderBy(c => CardQuality(c)).FirstOrDefault() };
         }
+
+        protected HMSAdvantageChosen DetermineHMSAdvantageChosen()
+        {
+            //This can be improved!
+            return new HMSAdvantageChosen(Game) { Initiator = Faction, Advantage = HMSAdvantageChosen.ValidAdvantages(Game, this).FirstOrDefault() };
+        }
     }
 
 }

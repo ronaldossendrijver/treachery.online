@@ -74,6 +74,7 @@ namespace Treachery.Shared
         {
             CurrentReport = new Report(MainPhase.Battle);
             CurrentBattle = b;
+            ChosenHMSAdvantage = StrongholdAdvantage.None;
             NrOfBattlesFought++;
             CurrentReport.Add(b.GetMessage());
 
@@ -889,7 +890,7 @@ namespace Treachery.Shared
 
             var aggThinkerContribution = Skill(agg.Hero) == LeaderSkill.Thinker && !aggHeroKilled && !artilleryUsed ? 2 : 0;
             var defThinkerContribution = Skill(def.Hero) == LeaderSkill.Thinker && !defHeroKilled && !artilleryUsed ? 2 : 0;
-            
+
             float aggForceDial;
             float defForceDial;
 
@@ -904,8 +905,11 @@ namespace Treachery.Shared
                 defForceDial = defender.ForcesIn(CurrentBattle.Territory) - def.Forces - def.ForcesAtHalfStrength + defender.SpecialForcesIn(CurrentBattle.Territory) - def.SpecialForces - def.SpecialForcesAtHalfStrength;
             }
 
-            float aggTotal = aggForceDial + aggHeroContribution + aggMessiahContribution + aggThinkerContribution;
-            float defTotal = defForceDial + defHeroContribution + defMessiahContribution + defThinkerContribution;
+            int aggBureaucracyPenalty = SkilledAs(def.Hero, LeaderSkill.Bureaucrat) ? Map.Strongholds.Count(sh => aggressor.Occupies(sh)) : 0;
+            int defBureaucracyPenalty = SkilledAs(agg.Hero, LeaderSkill.Bureaucrat) ? Map.Strongholds.Count(sh => defender.Occupies(sh)) : 0;
+
+            float aggTotal = aggForceDial + aggHeroContribution + aggMessiahContribution + aggThinkerContribution - aggBureaucracyPenalty;
+            float defTotal = defForceDial + defHeroContribution + defMessiahContribution + defThinkerContribution - defBureaucracyPenalty;
 
             agg.DeactivateMirrorWeaponAndDiplomacy();
             def.DeactivateMirrorWeaponAndDiplomacy();
@@ -1401,6 +1405,12 @@ namespace Treachery.Shared
             }
 
             Enter(Phase.BattlePhase);
+        }
+
+        public void HandleEvent(HMSAdvantageChosen e)
+        {
+            CurrentReport.Add(e);
+            ChosenHMSAdvantage = e.Advantage;
         }
     }
 }

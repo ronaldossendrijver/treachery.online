@@ -127,7 +127,20 @@ namespace Treachery.Shared
             };
         }
 
-        private bool HasStronghold(Faction f, Location stronghold)
+        public Location StrongholdGranting(StrongholdAdvantage advantage)
+        {
+            return advantage switch
+            {
+                StrongholdAdvantage.FreeResourcesForBattles => Map.Arrakeen,
+                StrongholdAdvantage.CollectResourcesForDial => Map.SietchTabr,
+                StrongholdAdvantage.CollectResourcesForUseless => Map.TueksSietch,
+                StrongholdAdvantage.CountDefensesAsSnooper => Map.Carthag,
+                StrongholdAdvantage.WinTies => Map.HabbanyaSietch,
+                _ => null
+            };
+        }
+
+        public bool HasStronghold(Faction f, Location stronghold)
         {
             return StrongholdOwnership.ContainsKey(stronghold) && StrongholdOwnership[stronghold] == f;
         }

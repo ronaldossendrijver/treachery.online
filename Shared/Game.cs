@@ -765,6 +765,11 @@ namespace Treachery.Shared
             return Players.FirstOrDefault(p => p.TreacheryCards.Contains(karmaCard));
         }
 
+        public Player OwnerOf(Location stronghold)
+        {
+            return StrongholdOwnership.ContainsKey(stronghold) ? GetPlayer(StrongholdOwnership[stronghold]) : null;
+        }
+
         private bool HasSomethingToRevive(Player player)
         {
             if (player.ForcesKilled > 0 || player.SpecialForcesKilled > 0 || Revival.ValidRevivalHeroes(this, player).Any())

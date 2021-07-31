@@ -267,14 +267,19 @@ namespace Treachery.Shared
 
                 case Phase.BattlePhase:
                     {
+                        if (CurrentBattle == null && player == NextPlayerToBattle)
+                        {
+                            result.Add(typeof(BattleInitiated));
+                        }
+
                         if (SwitchedSkilledLeader.CanBePlayed(this, player))
                         {
                             result.Add(typeof(SwitchedSkilledLeader));
                         }
 
-                        if (CurrentBattle == null && player == NextPlayerToBattle)
+                        if (HMSAdvantageChosen.CanBePlayed(this, player))
                         {
-                            result.Add(typeof(BattleInitiated));
+                            result.Add(typeof(HMSAdvantageChosen));
                         }
 
                         if (CurrentBattle != null && faction == CurrentBattle.Aggressor && AggressorBattleAction == null)

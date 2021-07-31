@@ -1,0 +1,31 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<HMSAdvantageChosen>
+
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Select which advantage of another stronghold you control to use for the @Skin.Current.Describe(Game.Map.HiddenMobileStronghold)</Header>
+    <Body>
+
+        <SelectFromImageComponent @bind-Value="advantage" Values="HMSAdvantageChosen.ValidAdvantages(Game, Player)" ImageURLs="ImageURLs" PopupHTMLs="PopoverHTMLs" Required="true"/>
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    private StrongholdAdvantage advantage;
+
+    protected override HMSAdvantageChosen ConfirmedResult => new HMSAdvantageChosen(Game) { Initiator = Faction, Advantage = advantage };
+
+    private IEnumerable<string> ImageURLs => HMSAdvantageChosen.ValidAdvantages(Game, Player).Select(adv => Skin.Current.GetImageURL(Game.StrongholdGranting(adv)));
+
+    private IEnumerable<string> PopoverHTMLs => HMSAdvantageChosen.ValidAdvantages(Game, Player).Select(adv => Skin.Current.Describe(adv));
+}
