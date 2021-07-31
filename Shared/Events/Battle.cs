@@ -35,6 +35,9 @@ namespace Treachery.Shared
         public int SpecialForces { get; set; }
         public int SpecialForcesAtHalfStrength { get; set; }
 
+        [JsonIgnore]
+        public int TotalForces => Forces + ForcesAtHalfStrength + SpecialForces + SpecialForcesAtHalfStrength;
+
         public int AllyContributionAmount { get; set; }
 
         public int _weaponCardId;

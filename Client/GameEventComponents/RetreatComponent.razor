@@ -1,0 +1,68 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<Retreat>
+@implements IDisposable
+
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Retreat any number of undial forces to an adjacent empty non-stronghold territory?</Header>
+    <Body>
+
+        <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="Retreat.ValidTargets(Game, Player)">
+            <Label>To</Label>
+        </SelectComponent>
+
+        @if (Retreat.MaxForces(Game, Player) > 0)
+        {
+            <SelectForcesComponent @bind-Value="forces" Min="0" Max="Retreat.MaxForces(Game, Player)" Faction="Faction" Special="false" />
+        }
+        else
+        {
+            forces = 0;
+        }
+
+        @if (Retreat.MaxSpecialForces(Game, Player) > 0)
+        {
+            <SelectForcesComponent @bind-Value="specialForces" Min="0" Max="Retreat.MaxSpecialForces(Game, Player)" Faction="Faction" Special="true" />
+        }
+        else
+        {
+            specialForces = 0;
+        }
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    private Location target;
+    private int forces;
+    private int specialForces;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            MapDrawer.OnLocationSelected += HandleLocationSelected;
+        }
+    }
+
+    public void Dispose()
+    {
+        MapDrawer.OnLocationSelected -= HandleLocationSelected;
+    }
+
+    protected override Retreat ConfirmedResult => new Retreat(Game) { Initiator = Faction, Location = target, Forces = forces, SpecialForces = specialForces };
+
+    private void HandleLocationSelected(object sender, Location l)
+    {
+        SetIfValid<Location, Location>(ref target, Retreat.ValidTargets(Game, Player), l);
+    }
+}

@@ -29,7 +29,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} (de)activate their skilled leader.", Initiator);
+            return new Message(Initiator, "{0} switch their skilled leader.", Initiator);
         }
 
         public static bool CanBePlayed(Game game, Player player)

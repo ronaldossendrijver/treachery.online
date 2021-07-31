@@ -137,6 +137,9 @@ namespace Treachery.Shared
                 RevealCurrentNoField(AggressorBattleAction.Player, CurrentBattle.Territory);
                 RevealCurrentNoField(DefenderBattleAction.Player, CurrentBattle.Territory);
 
+                ActivateSmuggler(AggressorBattleAction.Player, AggressorBattleAction.Hero, DefenderBattleAction.Hero, CurrentBattle.Territory);
+                ActivateSmuggler(DefenderBattleAction.Player, DefenderBattleAction.Hero, AggressorBattleAction.Hero, CurrentBattle.Territory);
+
                 CurrentReport.Add(AggressorBattleAction.GetBattlePlanMessage());
                 CurrentReport.Add(DefenderBattleAction.GetBattlePlanMessage());
                 RegisterKnownCards(AggressorBattleAction);
@@ -155,6 +158,26 @@ namespace Treachery.Shared
                     }
                 }
             }
+        }
+
+        private void ActivateSmuggler(Player player, IHero hero, IHero opponentHero, Territory territory)
+        {
+            if (SkilledAs(hero, LeaderSkill.Smuggler))
+            {
+                var locationWithResources = territory.Locations.FirstOrDefault(l => ResourcesOnPlanet.ContainsKey(l));
+                if (locationWithResources != null)
+                {
+                    int collected = Math.Min(ResourcesOnPlanet[locationWithResources], hero.ValueInCombatAgainst(opponentHero));
+                    if (collected > 0)
+                    {
+                        CurrentReport.Add(player.Faction, "{0} {1} collects {2} {3} from {4}", player.Faction, LeaderSkill.Smuggler, collected, Concept.Resource, territory);
+                        ChangeSpiceOnPlanet(locationWithResources, -collected);
+                        player.Resources += collected;
+                        RecentMilestones.Add(Milestone.None);
+                    }
+                }
+            }
+
         }
 
         private void RegisterKnownCards(Battle battle)
@@ -1366,7 +1389,7 @@ namespace Treachery.Shared
         {
             var leader = e.Player.Leaders.FirstOrDefault(l => Skilled(l) && !CapturedLeaders.ContainsKey(l));
             SwitchInFrontOfShield(leader);
-            CurrentReport.Add(e.Initiator, "{0} {1} {2} {3}", e.Initiator, IsInFrontOfShield(leader) ? "activate" : "deactivate", Skill(leader), leader);
+            CurrentReport.Add(e.Initiator, "{0} place {1} {2} {3} their shield", e.Initiator, Skill(leader), leader, IsInFrontOfShield(leader) ? "in front of" : "behind");
         }
 
         public Battle WinnerBattleAction
@@ -1411,6 +1434,30 @@ namespace Treachery.Shared
         {
             CurrentReport.Add(e);
             ChosenHMSAdvantage = e.Advantage;
+        }
+
+        public void HandleEvent(Retreat e)
+        {
+            CurrentReport.Add(e);
+            
+            int forcesToMove = e.Forces;
+            foreach (var l in CurrentBattle.Territory.Locations.Where(l => e.Player.ForcesIn(l) > 0).ToArray()) {
+
+                if (forcesToMove == 0) break;
+                int toMoveFromHere = Math.Min(forcesToMove, e.Player.ForcesIn(l));
+                e.Player.MoveForces(l, e.Location, toMoveFromHere);
+                forcesToMove-= toMoveFromHere;
+            }
+
+            int specialForcesToMove = e.SpecialForces;
+            foreach (var l in CurrentBattle.Territory.Locations.Where(l => e.Player.SpecialForcesIn(l) > 0).ToArray())
+            {
+
+                if (specialForcesToMove == 0) break;
+                int toMoveFromHere = Math.Min(specialForcesToMove, e.Player.SpecialForcesIn(l));
+                e.Player.MoveSpecialForces(l, e.Location, toMoveFromHere);
+                specialForcesToMove -= toMoveFromHere;
+            }
         }
     }
 }

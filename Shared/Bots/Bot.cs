@@ -35,6 +35,9 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(SwitchedSkilledLeader))) action = DetermineSwitchedSkilledLeader();
                 if (action == null && possibleEvents.Contains(typeof(Thought))) action = DetermineThought();
                 if (action == null && possibleEvents.Contains(typeof(ThoughtAnswered))) action = DetermineThoughtAnswered();
+                if (action == null && possibleEvents.Contains(typeof(Retreat))) action = DetermineRetreat();
+                if (action == null && possibleEvents.Contains(typeof(HMSAdvantageChosen))) action = DetermineHMSAdvantageChosen();
+
             }
             catch (Exception e)
             {

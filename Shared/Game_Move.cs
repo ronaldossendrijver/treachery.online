@@ -489,7 +489,6 @@ namespace Treachery.Shared
                     }
 
                     CurrentReport.Add(initiator.Faction, "{0} {1} collects {2} {3} along the way.", initiator.Faction, LeaderSkill.Sandmaster, mostSpice, Concept.Resource);
-                    RecentMilestones.Add(Milestone.SandMastered);
                 }
             }
         }

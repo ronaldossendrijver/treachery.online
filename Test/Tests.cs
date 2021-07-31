@@ -84,11 +84,6 @@ namespace Treachery.Test
                 return "Assigning skill to null leader";
             }
 
-            if (g.RecentMilestones.Contains(Milestone.SandMastered))
-            {
-                return "Sandmaster activated";
-            }
-
             p = g.Players.FirstOrDefault(p => p.TreacheryCards.Count > p.MaximumNumberOfCards);
             if (p != null && g.CurrentPhase != Phase.PerformingKarmaHandSwap) return "Too many cards: " + p;
 
@@ -230,7 +225,7 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 5000;
+            int nrOfGames = 200;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 

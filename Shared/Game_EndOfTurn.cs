@@ -108,7 +108,7 @@ namespace Treachery.Shared
             }
         }
 
-        private StrongholdAdvantage ChosenHMSAdvantage { get; set; } = StrongholdAdvantage.None;
+        public StrongholdAdvantage ChosenHMSAdvantage { get; private set; } = StrongholdAdvantage.None;
         public bool HasStrongholdAdvantage(Faction f, StrongholdAdvantage advantage)
         {
             if (HasStronghold(f, Map.HiddenMobileStronghold) && ChosenHMSAdvantage == advantage)

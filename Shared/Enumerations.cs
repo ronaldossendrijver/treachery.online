@@ -315,8 +315,7 @@ namespace Treachery.Shared
         Economics = 2800,
         CardTraded = 2900,
         Discard = 3000,
-        SpecialUselessPlayed = 3100,
-        SandMastered = 3200
+        SpecialUselessPlayed = 3100
     }
 
 
