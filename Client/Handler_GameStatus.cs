@@ -78,6 +78,26 @@ namespace Treachery.Client
                             }
                         }
 
+                    case Phase.Thought:
+                        {
+                            if (IAm(Game.CurrentBattle.OpponentOf(Game.CurrentThought.Initiator)))
+                            {
+                                return new GameStatus()
+                                {
+                                    Description = Skin.Current.Format("{0} asked you a question! All factions are waiting for you answer...", Game.CurrentThought.Initiator),
+                                    WaitingForOthers = false
+                                };
+                            }
+                            else
+                            {
+                                return new GameStatus()
+                                {
+                                    Description = Skin.Current.Format("Waiting for {0} to answer a question...", Game.CurrentBattle.OpponentOf(Game.CurrentThought.Initiator).Faction),
+                                    WaitingForOthers = true
+                                };
+                            }
+                        }
+
                     case Phase.SearchingDiscarded:
                         {
                             if (DiscardedSearched.CanBePlayed(Player))

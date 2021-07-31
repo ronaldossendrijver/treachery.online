@@ -156,6 +156,8 @@ namespace Treachery.Server
         public async Task RequestDiplomacy(int hostID, Diplomacy e) { await Request(hostID, e); }
         public async Task RequestSkillAssigned(int hostID, SkillAssigned e) { await Request(hostID, e); }
         public async Task RequestSwitchedSkilledLeader(int hostID, SwitchedSkilledLeader e) { await Request(hostID, e); }
+        public async Task RequestThought(int hostID, Thought e) { await Request(hostID, e); }
+        public async Task RequestThoughtAnswered(int hostID, ThoughtAnswered e) { await Request(hostID, e); }
 
         private async Task Request<GameEventType>(int hostID, GameEventType e) where GameEventType : GameEvent
         {

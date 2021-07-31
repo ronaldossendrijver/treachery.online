@@ -422,7 +422,7 @@ namespace Treachery.Test
                         }
                         Console.WriteLine(evt.GetMessage());
 
-                        File.WriteAllText("invalid_" + executeResult + ".json", GameState.GetStateAsString(game));
+                        File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
                     }
                     if (performTests) Assert.AreEqual("", executeResult);
                     return evt;
@@ -447,7 +447,7 @@ namespace Treachery.Test
                         }
                         Console.WriteLine(evt.GetMessage());
 
-                        File.WriteAllText("invalid_" + executeResult + ".json", GameState.GetStateAsString(game));
+                        File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
                     }
                     if (performTests) Assert.AreEqual("", executeResult);
                     return evt;

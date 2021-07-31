@@ -1,0 +1,27 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<Thought>
+
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Use your @Skin.Current.Describe(LeaderSkill.Thinker) to ask if your opponent has a specific card</Header>
+    <Body>
+
+        <SelectCardComponent @bind-Value="card" Values="Thought.ValidCards(Game, Player)" Required="true"/>
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    private TreacheryCard card;
+
+    protected override Thought ConfirmedResult => new Thought(Game) { Initiator = Faction, Card = card };
+}

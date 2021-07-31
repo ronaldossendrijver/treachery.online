@@ -752,6 +752,7 @@ namespace Treachery.Shared
         {
             CurrentBattle = null;
             CurrentPrescience = null;
+            CurrentThought = null;
             CurrentVoice = null;
             BlackVictim = null;
             AggressorBattleAction = null;
@@ -1373,6 +1374,33 @@ namespace Treachery.Shared
 
                 return null;
             }
+        }
+
+
+        public Thought CurrentThought { get; private set; }
+        public void HandleEvent(Thought e)
+        {
+            CurrentThought = e;
+            var opponent = CurrentBattle.OpponentOf(e.Initiator);
+            CurrentReport.Add(e.Initiator, "By {0}, {1} ask {2} if they have a {3}.", LeaderSkill.Thinker, e.Initiator, opponent, e.Card);
+
+            Enter(Phase.Thought);
+        }
+
+        public void HandleEvent(ThoughtAnswered e)
+        {
+            CurrentReport.Add(e);
+            if (e.Card == null)
+            {
+                CurrentReport.Add(e.Initiator, CurrentThought.Initiator, "In response, {0} say they don't own any cards.", e.Initiator);
+            }
+            else
+            {
+                CurrentReport.Add(e.Initiator, CurrentThought.Initiator, "In response, {0} show a {1}.", e.Initiator, e.Card);
+                RegisterKnown(CurrentThought.Initiator, e.Card);
+            }
+
+            Enter(Phase.BattlePhase);
         }
     }
 }

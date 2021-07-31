@@ -934,6 +934,26 @@ namespace Treachery.Shared
 
             return null;
         }
+
+        protected Thought DetermineThought()
+        {
+            var opponent = Game.CurrentBattle.OpponentOf(this);
+            if (OpponentCardsUnknownToMe(opponent).Any())
+            {
+                var unknownWeapons = CardsUnknownToMe.Where(c => c.IsWeapon).OrderByDescending(c => CardQuality(c));
+                if (unknownWeapons.Any())
+                {
+                    return new Thought(Game) { Initiator = Faction, Card = unknownWeapons.First() };
+                }
+            }
+
+            return null;
+        }
+
+        protected ThoughtAnswered DetermineThoughtAnswered()
+        {
+            return new ThoughtAnswered(Game) { Initiator = Faction, Card = ThoughtAnswered.ValidCards(Game, this).OrderBy(c => CardQuality(c)).FirstOrDefault() };
+        }
     }
 
 }

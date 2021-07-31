@@ -305,6 +305,11 @@ namespace Treachery.Shared
                             result.Add(typeof(Prescience));
                         }
 
+                        if (Thought.MayBeUsed(this, player))
+                        {
+                            result.Add(typeof(Thought));
+                        }
+
                         if (CurrentBattle != null && CurrentBattle.IsAggressorOrDefender(player) && ResidualPlayed.MayPlay(player))
                         {
                             result.Add(typeof(ResidualPlayed));
@@ -392,6 +397,10 @@ namespace Treachery.Shared
                     if (faction == LatestClairvoyance.Target) result.Add(typeof(ClairVoyanceAnswered));
                     break;
 
+                case Phase.Thought:
+                    if (player == CurrentBattle.OpponentOf(CurrentThought.Initiator)) result.Add(typeof(ThoughtAnswered));
+                    break;
+
                 case Phase.SearchingDiscarded:
                     if (DiscardedSearched.CanBePlayed(player)) result.Add(typeof(DiscardedSearched));
                     break;
@@ -408,7 +417,9 @@ namespace Treachery.Shared
 
             if (isAfterSetup &&
                 CurrentMainPhase < MainPhase.Ended &&
-                CurrentPhase != Phase.Clairvoyance && 
+                CurrentPhase != Phase.AssigningSkill &&
+                CurrentPhase != Phase.Clairvoyance &&
+                CurrentPhase != Phase.Thought &&
                 CurrentPhase != Phase.TradingCards &&
                 CurrentPhase != Phase.Bureaucracy &&
                 CurrentPhase != Phase.SearchingDiscarded &&

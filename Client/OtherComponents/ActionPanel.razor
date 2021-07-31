@@ -398,6 +398,14 @@
             var skilledLeader = h.Game.GetSkilledLeader(h.Player);
             <SimpleActionComponent GameEventType="SwitchedSkilledLeader" h="@h" BackgroundImage="@Skin.Current.GetImageURL(h.Game.Skill(skilledLeader))" Title="@Skin.Current.Format("Place {0} {1} your player shield?", skilledLeader, h.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of")" />
         }
+        else if (a == typeof(Thought))
+        {
+            <ThoughtComponent h="@h" />
+        }
+        else if (a == typeof(ThoughtAnswered))
+        {
+            <ThoughtAnsweredComponent h="@h" />
+        }
     }
 
     @if (DealAccepted.CurrentDeals(h.Game).Any() || h.IsPlayer && (DealAccepted.AcceptableDeals(h.Game, h.Player).Any() || DealAccepted.CancellableDeals(h.Game, h.Player).Any()))

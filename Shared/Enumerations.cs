@@ -260,6 +260,7 @@ namespace Treachery.Shared
         [PhaseProperty(true, Faction.None)]
         Bureaucracy = 508,
         AssigningSkill = 509,
+        Thought = 510,
     }
 
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]

@@ -140,7 +140,11 @@ namespace Treachery.Shared
 
         private void PrepareSkillAssignmentToRevivedLeader(Player player, Leader leader)
         {
-            PhaseBeforeSkillAssignment = CurrentPhase;
+            if (CurrentPhase != Phase.AssigningSkill)
+            {
+                PhaseBeforeSkillAssignment = CurrentPhase;
+            }
+
             player.MostRecentlyRevivedLeader = leader;
             SkillDeck.Shuffle();
             RecentMilestones.Add(Milestone.Shuffled);
