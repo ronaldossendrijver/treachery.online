@@ -337,7 +337,7 @@ namespace Treachery.Shared
                     Name = "",
                     Sector = 10,
                     SpiceBlowAmount = 0,
-                    Center = new Point { X = 2000, Y = 1200 }
+                    Center = new Point { X = 2020, Y = 1240 }
                 };
                 Locations.Add(Carthag);
             }
@@ -1801,7 +1801,7 @@ namespace Treachery.Shared
             Locations[13].Neighbours.Add(Locations[16]);
         }
 
-        public List<Location> FindNeighbours(Location start, int distance, bool ignoreStorm, Faction f, int sectorInStorm, Dictionary<Location, List<Battalion>> forceLocations, List<Territory> blockedTerritories)
+        public static List<Location> FindNeighbours(Location start, int distance, bool ignoreStorm, Faction f, int sectorInStorm, Dictionary<Location, List<Battalion>> forceLocations, List<Territory> blockedTerritories)
         {
             List<Location> neighbours = new List<Location>();
             FindNeighbours(neighbours, start, null, 0, distance, ignoreStorm, f, sectorInStorm, forceLocations, blockedTerritories);
@@ -1809,7 +1809,7 @@ namespace Treachery.Shared
             return neighbours;
         }
 
-        public List<Location> FindNeighboursForHmsMovement(Location start, int distance, bool ignoreStorm, int sectorInStorm)
+        public static List<Location> FindNeighboursForHmsMovement(Location start, int distance, bool ignoreStorm, int sectorInStorm)
         {
             List<Location> neighbours = new List<Location>();
             FindNeighboursForHmsMovement(neighbours, start, null, 0, distance, ignoreStorm, sectorInStorm);
@@ -1817,7 +1817,7 @@ namespace Treachery.Shared
             return neighbours;
         }
 
-        private void FindNeighbours(List<Location> found, Location current, Location previous, int currentDistance, int maxDistance, bool ignoreStorm, Faction f, int sectorInStorm, Dictionary<Location, List<Battalion>> forceLocations, List<Territory> blockedTerritories)
+        private static void FindNeighbours(List<Location> found, Location current, Location previous, int currentDistance, int maxDistance, bool ignoreStorm, Faction f, int sectorInStorm, Dictionary<Location, List<Battalion>> forceLocations, List<Territory> blockedTerritories)
         {
             if (!found.Contains(current))
             {
@@ -1847,7 +1847,50 @@ namespace Treachery.Shared
             }
         }
 
-        private void FindNeighboursForHmsMovement(List<Location> found, Location current, Location previous, int currentDistance, int maxDistance, bool ignoreStorm, int sectorInStorm)
+        public static List<List<Location>> FindPaths(Location start, Location destination, int distance, bool ignoreStorm, Faction f, int sectorInStorm, Dictionary<Location, List<Battalion>> forceLocations, List<Territory> blockedTerritories)
+        {
+            var paths = new List<List<Location>>();
+            var route = new Stack<Location>();
+            FindPaths(paths, route, start, destination, null, 0, distance, ignoreStorm, f, sectorInStorm, forceLocations, blockedTerritories);
+            return paths;
+        }
+
+        private static void FindPaths(List<List<Location>> foundPaths, Stack<Location> currentPath, Location current, Location destination, Location previous, int currentDistance, int maxDistance, bool ignoreStorm, Faction f, int sectorInStorm, Dictionary<Location, List<Battalion>> forceLocations, List<Territory> blockedTerritories)
+        {
+            currentPath.Push(current);
+
+            if (current.Equals(destination))
+            {
+                foundPaths.Add(currentPath.ToList());
+            }
+            else
+            {
+                foreach (var neighbour in current.Neighbours.Where(neighbour => neighbour != previous && !currentPath.Contains(neighbour)))
+                {
+                    if (ignoreStorm || neighbour.Sector != sectorInStorm)
+                    {
+                        if (blockedTerritories == null || !blockedTerritories.Any(t => t == neighbour.Territory))
+                        {
+                            if (!neighbour.IsStronghold || forceLocations == null || !forceLocations.ContainsKey(neighbour) || forceLocations[neighbour].Any(b => b.Faction == f) || forceLocations[neighbour].Count(b => b.Faction != f && b.CanOccupy) < 2)
+                            {
+                                int distance = (current.Territory == neighbour.Territory) ? 0 : 1;
+
+                                if (currentDistance + distance <= maxDistance)
+                                {
+                                    FindPaths(foundPaths, currentPath, neighbour, destination, current, currentDistance + distance, maxDistance, ignoreStorm, f, sectorInStorm, forceLocations, blockedTerritories);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            currentPath.Pop();
+        }
+
+
+
+        private static void FindNeighboursForHmsMovement(List<Location> found, Location current, Location previous, int currentDistance, int maxDistance, bool ignoreStorm, int sectorInStorm)
         {
             if (!found.Contains(current))
             {
@@ -1871,14 +1914,14 @@ namespace Treachery.Shared
             }
         }
 
-        public List<Location> FindNeighboursWithinTerritory(Location start, bool ignoreStorm, int sectorInStorm)
+        public static List<Location> FindNeighboursWithinTerritory(Location start, bool ignoreStorm, int sectorInStorm)
         {
             List<Location> neighbours = new List<Location>();
             FindNeighboursWithinTerritory(neighbours, start, null, ignoreStorm, sectorInStorm);
             return neighbours;
         }
 
-        private void FindNeighboursWithinTerritory(List<Location> found, Location current, Location previous, bool ignoreStorm, int sectorInStorm)
+        private static void FindNeighboursWithinTerritory(List<Location> found, Location current, Location previous, bool ignoreStorm, int sectorInStorm)
         {
             if (!found.Contains(current))
             {

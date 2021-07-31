@@ -436,6 +436,7 @@ namespace Treachery.Shared
         {
             LastShippedOrMovedTo = to;
             bool wasOccupiedBeforeMove = IsOccupied(to.Territory);
+            var dist = DetermineMaximumMoveDistance(initiator, forceLocations.Values);
 
             foreach (var fromTerritory in forceLocations.Keys.Select(l => l.Territory).Distinct())
             {
@@ -445,6 +446,7 @@ namespace Treachery.Shared
                 foreach (var fl in forceLocations.Where(fl => fl.Key.Territory == fromTerritory))
                 {
                     PerformMoveFromLocation(initiator, fl.Key, fl.Value, to, ref totalNumberOfForces, ref totalNumberOfSpecialForces);
+                    CheckSandmaster(initiator, to, dist, fl);
                 }
 
                 if (initiator.Is(Faction.Blue))
@@ -457,6 +459,39 @@ namespace Treachery.Shared
 
             RecentMilestones.Add(Milestone.Move);
             FlipBeneGesseritWhenAlone();
+        }
+
+        private void CheckSandmaster(Player initiator, Location to, int dist, KeyValuePair<Location, Battalion> fl)
+        {
+            if (SkilledAs(initiator, LeaderSkill.Sandmaster))
+            {
+                var paths = Map.FindPaths(fl.Key, to, dist, initiator.Faction == Faction.Yellow && Applicable(Rule.YellowMayMoveIntoStorm), initiator.Faction, SectorInStorm, ForcesOnPlanetExcludingEmptyLocations, CurrentBlockedTerritories);
+                int mostSpice = 0;
+                List<Location> pathWithMostSpice = null;
+                foreach (var p in paths)
+                {
+                    int amountOfSpiceLocations = p.Where(l => ResourcesOnPlanet.ContainsKey(l)).Distinct().Count();
+                    if (amountOfSpiceLocations > mostSpice)
+                    {
+                        mostSpice = amountOfSpiceLocations;
+                        pathWithMostSpice = p;
+                    }
+                }
+
+                if (mostSpice > 0)
+                {
+                    foreach (var loc in pathWithMostSpice)
+                    {
+                        if (ResourcesOnPlanet.ContainsKey(loc))
+                        {
+                            ChangeSpiceOnPlanet(loc, -1);
+                        }
+                    }
+
+                    CurrentReport.Add(initiator.Faction, "{0} {1} collects {2} {3} along the way.", initiator.Faction, LeaderSkill.Sandmaster, mostSpice, Concept.Resource);
+                    RecentMilestones.Add(Milestone.SandMastered);
+                }
+            }
         }
 
         private void PerformMoveFromLocation(Player initiator, Location from, Battalion battalion, Location to, ref int totalNumberOfForces, ref int totalNumberOfSpecialForces)

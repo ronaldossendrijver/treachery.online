@@ -427,7 +427,7 @@ namespace Treachery.Shared
 
             foreach (var occupiedLocation in player.OccupiedLocations.Where(l => (mayBattleUnderStorm || l.Sector != g.SectorInStorm) && l != g.Map.PolarSink))
             {
-                var locationsWithinRange = g.Map.FindNeighboursWithinTerritory(occupiedLocation, false, g.SectorInStorm);
+                var locationsWithinRange = Map.FindNeighboursWithinTerritory(occupiedLocation, false, g.SectorInStorm);
 
                 foreach (var battalions in g.OccupyingForcesOnPlanet.Where(l => (mayBattleUnderStorm || l.Key.Sector != g.SectorInStorm) && locationsWithinRange.Contains(l.Key)))
                 {
@@ -450,7 +450,7 @@ namespace Treachery.Shared
 
             foreach (var occupiedLocation in player.OccupiedLocations.Where(l => (mayBattleUnderStorm || l.Sector != g.SectorInStorm) && l != g.Map.PolarSink))
             {
-                var locationsWithinRange = g.Map.FindNeighboursWithinTerritory(occupiedLocation, false, g.SectorInStorm);
+                var locationsWithinRange = Map.FindNeighboursWithinTerritory(occupiedLocation, false, g.SectorInStorm);
 
                 foreach (var battalions in g.OccupyingForcesOnPlanet.Where(l => (mayBattleUnderStorm || l.Key.Sector != g.SectorInStorm) && locationsWithinRange.Contains(l.Key)))
                 {

@@ -44,7 +44,7 @@ namespace Treachery.Shared
 
                 foreach (var shieldwallLocation in g.Map.ShieldWall.Locations)
                 {
-                    if (g.Map.FindNeighbours(shieldwallLocation, 1, false, p.Faction, g.SectorInStorm, null, g.CurrentBlockedTerritories).Any(l => p.Occupies(l)))
+                    if (Map.FindNeighbours(shieldwallLocation, 1, false, p.Faction, g.SectorInStorm, null, g.CurrentBlockedTerritories).Any(l => p.Occupies(l)))
                     {
                         return true;
                     }

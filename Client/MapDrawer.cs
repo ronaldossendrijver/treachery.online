@@ -730,7 +730,7 @@ namespace Treachery.Client
                 if (h.Game.StrongholdOwnership.ContainsKey(stronghold))
                 {
                     var owner = h.Game.StrongholdOwnership[stronghold];
-                    await DrawImage(Artwork.FactionTableTokens[owner].Value, stronghold.Center.X - 120, stronghold.Center.Y - 60, Skin.Current.PlayerTokenRadius, Skin.Current.PlayerTokenRadius, Skin.Current.SHADOW_LIGHT, 1, 1, 1, 0.8f);
+                    await DrawImage(Artwork.FactionTableTokens[owner].Value, stronghold.Center.X - 180, stronghold.Center.Y - 30, Skin.Current.PlayerTokenRadius, Skin.Current.PlayerTokenRadius, Skin.Current.SHADOW_LIGHT, 1, 1, 1, 0.8f);
                 }
             }
         }

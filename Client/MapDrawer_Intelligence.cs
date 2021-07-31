@@ -203,10 +203,21 @@ namespace Treachery.Client
 
         private static string Intel(Location intelligenceLocation)
         {
-            string result = Skin.Current.Format("<h5>{0}</h5>", intelligenceLocation.Territory.Name);
-            if (intelligenceLocation.Name != "")
+            string result = "";
+
+            var owner = h.Game.StrongholdOwnership.ContainsKey(intelligenceLocation) ? h.Game.StrongholdOwnership[intelligenceLocation] : Faction.None;
+            if (owner != Faction.None)
             {
-                result += "<div class='mt-0 mb-2'><strong>Sector: " + intelligenceLocation.Name + "</strong></div>";
+                result += Support.GetOwnedStrongholdHTML(intelligenceLocation, owner);
+            }
+            else
+            {
+
+                result += Skin.Current.Format("<h5>{0}</h5>", intelligenceLocation.Territory.Name);
+                if (intelligenceLocation.Name != "")
+                {
+                    result += "<div class='mt-0 mb-2'><strong>Sector: " + intelligenceLocation.Name + "</strong></div>";
+                }
             }
 
             if (Skin.Current.ShowVerboseToolipsOnMap)
@@ -248,6 +259,9 @@ namespace Treachery.Client
                 {
                     result += Skin.Current.Format("<p>Current amount of {0}: <strong>{1}</strong>.</p>", Concept.Resource, h.Game.ResourcesOnPlanet[intelligenceLocation]);
                 }
+
+
+
             }
             result += "<div class=\"row m-0 bg-dark text-center\">";
             if (h.Game.ForcesOnPlanetExcludingEmptyLocations.ContainsKey(intelligenceLocation))

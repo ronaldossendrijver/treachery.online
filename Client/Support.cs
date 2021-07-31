@@ -138,6 +138,18 @@ namespace Treachery.Client
             }
         }
 
+        public static string GetOwnedStrongholdHTML(Location l, Faction f)
+        {
+            if (l == null)
+            {
+                return "";
+            }
+            else
+            {
+                return string.Format("<div style='position:relative'/><img style='position:relative' src='{0}' width=300/><div style='position:absolute;left:190px;top:10px'><img src='{1}' width=100/></div></div>", Skin.Current.GetImageURL(l), Skin.Current.GetImageURL(f));
+            }
+        }
+
         public static string GetTechTokenHTML(TechToken tt)
         {
             if (tt == TechToken.None)

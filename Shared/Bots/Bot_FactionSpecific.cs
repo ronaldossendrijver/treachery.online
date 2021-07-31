@@ -118,7 +118,7 @@ namespace Treachery.Shared
                 return new PerformHmsMovement(Game) { Initiator = Faction, Passed = false, Target = richestAdjacentSpiceLocation };
             }
 
-            var reachableFromCurrentLocation = Game.Map.FindNeighbours(currentLocation, Game.HmsMovesLeft, false, Faction, Game.SectorInStorm, Game.ForcesOnPlanet, Game.CurrentBlockedTerritories);
+            var reachableFromCurrentLocation = Map.FindNeighbours(currentLocation, Game.HmsMovesLeft, false, Faction, Game.SectorInStorm, Game.ForcesOnPlanet, Game.CurrentBlockedTerritories);
 
             var richestReachableSpiceLocation = reachableFromCurrentLocation.Where(l => l != currentLocation && ResourcesIn(l) > 0).OrderByDescending(l => ResourcesIn(l)).FirstOrDefault();
             if (richestReachableSpiceLocation != null)

@@ -681,6 +681,11 @@ namespace Treachery.Shared
             return GetURL(TreacheryCardImage_URL, c.SkinId);
         }
 
+        public string GetImageURL(Location stronghold)
+        {
+            return GetURL(StrongholdCardImage_URL, stronghold.Territory.SkinId);
+        }
+
         public string GetImageURL(ResourceCard c)
         {
             return GetURL(ResourceCardImage_URL, c.SkinId);
