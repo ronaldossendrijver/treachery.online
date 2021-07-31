@@ -168,11 +168,12 @@ namespace Treachery.Shared
             }
         }
 
-        public static bool MayAssignSkill(Game g, Player p)
+        public static bool MayAssignSkill(Game g, Player p, IHero h)
         {
             //Console.WriteLine("MayAssign " + Skin.Current.Join(p.Leaders.Select(l => l.Name + ":" + g.Skill(l) + "," + g.IsInFrontOfShield(l))));
 
             return 
+                h is Leader &&
                 g.Applicable(Rule.BrownAndWhiteLeaderSkills) && 
                 !g.CapturedLeaders.Any(cl => cl.Value == p.Faction && g.Skilled(cl.Key)) && 
                 !p.Leaders.Any(l => g.Skilled(l));

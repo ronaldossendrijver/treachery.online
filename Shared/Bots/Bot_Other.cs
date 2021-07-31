@@ -309,7 +309,7 @@ namespace Treachery.Shared
 
                     if (leaderToRevive != null)
                     {
-                        var assignSkill = Revival.MayAssignSkill(Game, this);
+                        var assignSkill = Revival.MayAssignSkill(Game, this, leaderToRevive);
                         return new RaiseDeadPlayed(Game) { Initiator = Faction, Hero = leaderToRevive, AmountOfForces = 0, AmountOfSpecialForces = 0, AssignSkill = assignSkill };
                     }
                 }
@@ -500,7 +500,7 @@ namespace Treachery.Shared
                 normalForcesToRevive++;
             }
 
-            var assignSkill = leaderToRevive != null && Revival.MayAssignSkill(Game, this);
+            var assignSkill = leaderToRevive != null && Revival.MayAssignSkill(Game, this, leaderToRevive);
 
             if (leaderToRevive != null || specialForcesToRevive + normalForcesToRevive > 0)
             {

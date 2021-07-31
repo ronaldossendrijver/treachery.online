@@ -55,18 +55,17 @@ namespace Treachery.Client
                     await DrawStormAndStormPrescience();
                     await DrawPhases();
                     await DrawHighlightedTerritories();
+                    await DrawPlayersAndTechTokensAndLeaderSkills();
                     await DrawHiddenMobileStronghold();
                     await DrawStrongholdOwnership();
                     await DrawRecentMoves();
                     await DrawForcesOnDune();
-                    await DrawPlayersAndTechTokensAndLeaderSkills();
                     await DrawBids();
                     await DrawTanks();
                     await DrawCardPiles();
                     await DrawBattlePlans();
                     await DrawDisconnected();
                     await DrawOptions();
-                    //await DrawCardOnAuction();
                 }
             }
         }
@@ -159,37 +158,6 @@ namespace Treachery.Client
             };
         }
 
-        #endregion
-
-        #region CardOnAuction
-        private static async Task DrawCardOnAuction()
-        {
-            if (ShowWheelsAndHMS && h.CurrentPhase == Phase.Bidding && !h.Game.CardsOnAuction.IsEmpty)
-            {
-                var cardX = Skin.Current.MapDimensions.X / 2 - Skin.Current.BattleWheelCardWidth * 0.75;
-                var cardY = Skin.Current.MapDimensions.Y / 2 - Skin.Current.BattleWheelCardHeight * 1.5;
-
-                var imageToDraw = h.Game.HasBiddingPrescience(h.Player) || h.IsGameMaster ?
-                    Artwork.GetTreacheryCard(h.Game.CardsOnAuction.Top) :
-                    Artwork.TreacheryCardBack;
-
-                await DrawImage(imageToDraw, cardX, cardY, (int)(Skin.Current.BattleWheelCardWidth * 1.5), (int)(Skin.Current.BattleWheelCardHeight * 1.5), Skin.Current.SHADOW_DARK, 1, 5, 5, 0.8f);
-
-                await DrawRectangle((int)cardX, Skin.Current.MapDimensions.Y / 2 - 310, (int)(Skin.Current.BattleWheelCardWidth * 1.5), 310, "rgba(0,0,0,0.3)", "", BORDER_SOLID, 0);
-                string progress = string.Format("Card {0} of {1}", h.Game.CardNumber, h.Game.CardNumber + h.Game.CardsOnAuction.Items.Count - 1);
-
-                await DrawText(Skin.Current.MapDimensions.X / 2, Skin.Current.MapDimensions.Y / 2 - 30, progress, Skin.Current.TURN_FONT, TextAlign.Center, "white", 3, "black");
-
-                if (h.Game.CurrentBid != null)
-                {
-                    var factionImageX = Skin.Current.MapDimensions.X / 2 - 130;
-                    var factionImageY = Skin.Current.MapDimensions.Y / 2 - 300;
-
-                    await DrawImage(Artwork.FactionTableTokens[h.Game.CurrentBid.Initiator].Value, factionImageX, factionImageY, 160, 160, Skin.Current.SHADOW_LIGHT, 3, 3, 3);
-                    await DrawText(Skin.Current.MapDimensions.X / 2 + 60, factionImageY + 130, h.Game.CurrentBid.TotalAmount.ToString(), Skin.Current.CARDPILE_FONT, TextAlign.Left, "white", 3, "black");
-                }
-            }
-        }
         #endregion
 
         #region DrawHMS
