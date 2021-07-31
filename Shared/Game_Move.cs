@@ -98,11 +98,13 @@ namespace Treachery.Shared
 
             MessagePart orangeIncome = new MessagePart("");
 
-            int totalCost = PayForShipment(s, initiator);
-            int orangeProfit = HandleOrangeProfit(s, initiator, ref orangeIncome);
+            int totalCost = 0;
 
             if (!s.Passed)
             {
+                totalCost = PayForShipment(s, initiator);
+                int orangeProfit = HandleOrangeProfit(s, initiator, ref orangeIncome);
+
                 if (totalCost - orangeProfit >= 4)
                 {
                     ActivateBanker();

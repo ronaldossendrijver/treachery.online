@@ -599,7 +599,7 @@ namespace Treachery.Client
                 {
                     await DrawImageSimple(img.Value, x - i * 3 - Skin.Current.FORCETOKEN_RADIUS, y - i * 5 - Skin.Current.FORCETOKEN_RADIUS, Skin.Current.FORCETOKEN_RADIUS * 2, Skin.Current.FORCETOKEN_RADIUS * 2);
                 }
-                await DrawText(x + 30, y + 50, numberOfForces, Skin.Current.FORCETOKEN_FONT, TextAlign.Center, fontcolor, Skin.Current.FORCETOKEN_FONT_BORDERWIDTH, bordercolor);
+                await DrawText(x + 30, y + 40, numberOfForces, Skin.Current.FORCETOKEN_FONT, TextAlign.Center, fontcolor, Skin.Current.FORCETOKEN_FONT_BORDERWIDTH, bordercolor);
             }
             else
             {
@@ -734,7 +734,7 @@ namespace Treachery.Client
                         var ttx = Skin.Current.PlanetCenter.X + techtokenOrbitRadius * Math.Cos(ttRad) - Skin.Current.PlayerTokenRadius;
                         var tty = Skin.Current.PlanetCenter.Y + techtokenOrbitRadius * Math.Sin(ttRad) - Skin.Current.PlayerTokenRadius;
                         await DrawImage(Artwork.GetLeaderToken(skilledLeader), ttx, tty, 2 * Skin.Current.PlayerTokenRadius, 2 * Skin.Current.PlayerTokenRadius, Skin.Current.SHADOW_DARK, 1, 1, 1);
-                        await DrawText(ttx + Skin.Current.PlayerTokenRadius, tty + 2 * Skin.Current.PlayerTokenRadius, Skin.Current.Describe(skilledLeader), Skin.Current.SKILL_FONT, TextAlign.Center, Skin.Current.SKILL_FONTCOLOR, Skin.Current.SKILL_FONT_BORDERWIDTH, Skin.Current.SKILL_FONT_BORDERCOLOR, 2.2* Skin.Current.PlayerTokenRadius);
+                        await DrawText(ttx + Skin.Current.PlayerTokenRadius, tty + 2 * Skin.Current.PlayerTokenRadius, Skin.Current.Describe(h.Game.Skill(skilledLeader)), Skin.Current.SKILL_FONT, TextAlign.Center, Skin.Current.SKILL_FONTCOLOR, Skin.Current.SKILL_FONT_BORDERWIDTH, Skin.Current.SKILL_FONT_BORDERCOLOR, 2.2* Skin.Current.PlayerTokenRadius);
                     }
 
                     var align = TextAlign.Center;
@@ -762,7 +762,7 @@ namespace Treachery.Client
                 if (h.Game.StrongholdOwnership.ContainsKey(stronghold))
                 {
                     var owner = h.Game.StrongholdOwnership[stronghold];
-                    await DrawImage(Artwork.FactionTableTokens[owner].Value, stronghold.Center.X + 80, stronghold.Center.Y + 80, Skin.Current.PlayerTokenRadius, Skin.Current.PlayerTokenRadius, Skin.Current.SHADOW_LIGHT, 1, 1, 1, 0.8f);
+                    await DrawImage(Artwork.FactionTableTokens[owner].Value, stronghold.Center.X - 120, stronghold.Center.Y - 60, Skin.Current.PlayerTokenRadius, Skin.Current.PlayerTokenRadius, Skin.Current.SHADOW_LIGHT, 1, 1, 1, 0.8f);
                 }
             }
         }
@@ -824,7 +824,7 @@ namespace Treachery.Client
                 float leaderWidth = 3.8f * Skin.Current.FORCETOKEN_RADIUS;
                 float leaderHeight = leaderWidth * Skin.Current.BattleWheelHeroHeight / Skin.Current.BattleWheelHeroWidth;
                 float leaderPctHeight = .15f * leaderWidth * Skin.Current.BattleWheelHeroHeight / Skin.Current.BattleWheelHeroWidth;
-                float spacing = 0.9f;
+                float spacing = 0.8f;
 
                 foreach (var p in h.Game.Players)
                 {
@@ -895,7 +895,7 @@ namespace Treachery.Client
             if (y > 14 * Skin.Current.FORCETOKEN_RADIUS - x)
             {
                 y = 2 * Skin.Current.FORCETOKEN_RADIUS;
-                x += spacing * (4.5f * Skin.Current.FORCETOKEN_RADIUS);
+                x += 4 * Skin.Current.FORCETOKEN_RADIUS;
             }
         }
         #endregion

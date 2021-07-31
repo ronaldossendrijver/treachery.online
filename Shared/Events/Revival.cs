@@ -170,7 +170,12 @@ namespace Treachery.Shared
 
         public static bool MayAssignSkill(Game g, Player p)
         {
-            return g.Applicable(Rule.BrownAndWhiteLeaderSkills) && !LeaderManager.Leaders.Where(l => l.Faction == p.Faction).Any(l => g.Skilled(l));
+            //Console.WriteLine("MayAssign " + Skin.Current.Join(p.Leaders.Select(l => l.Name + ":" + g.Skill(l) + "," + g.IsInFrontOfShield(l))));
+
+            return 
+                g.Applicable(Rule.BrownAndWhiteLeaderSkills) && 
+                !g.CapturedLeaders.Any(cl => cl.Value == p.Faction && g.Skilled(cl.Key)) && 
+                !p.Leaders.Any(l => g.Skilled(l));
         }
 
         public static bool MayReviveWithDiscount(Game g, Player p)

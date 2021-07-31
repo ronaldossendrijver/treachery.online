@@ -1303,7 +1303,7 @@ namespace Treachery.Shared
         public bool CanJoinCurrentBattle(IHero hero)
         {
             var currentTerritory = CurrentTerritory(hero);
-            return currentTerritory == null || currentTerritory == CurrentBattle.Territory;
+            return currentTerritory == null || currentTerritory == CurrentBattle?.Territory;
         }
 
         public Leader BlackVictim = null;
@@ -1355,25 +1355,7 @@ namespace Treachery.Shared
             }
         }
 
-        public void SetSkill(IHero l, LeaderSkill skill)
-        {
-            LeaderState[l].Skill = skill;
-        }
-
-        public void SwitchInFrontOfShield(IHero l)
-        {
-            LeaderState[l].InFrontOfShield = !LeaderState[l].InFrontOfShield;
-        }
-
-        public void SetInFrontOfShield(IHero l, bool value)
-        {
-            LeaderState[l].InFrontOfShield = value;
-        }
-
-        public bool IsInFrontOfShield(IHero l)
-        {
-            return LeaderState[l].InFrontOfShield;
-        }
+        
 
         public void HandleEvent(SwitchedSkilledLeader e)
         {

@@ -396,7 +396,7 @@
         else if (a == typeof(SwitchedSkilledLeader))
         {
             var skilledLeader = h.Game.GetSkilledLeader(h.Player);
-            <SimpleActionComponent GameEventType="SwitchedSkilledLeader" h="@h" BackgroundImage="@Skin.Current.GetImageURL(h.Game.Skill(skilledLeader))" Title="@Skin.Current.Format("Put your Skilled Leader {0} your player shield?", h.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of")" />
+            <SimpleActionComponent GameEventType="SwitchedSkilledLeader" h="@h" BackgroundImage="@Skin.Current.GetImageURL(h.Game.Skill(skilledLeader))" Title="@Skin.Current.Format("Place {0} {1} your player shield?", skilledLeader, h.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of")" />
         }
     }
 

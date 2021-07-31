@@ -69,7 +69,20 @@ namespace Treachery.Test
             p = g.Players.FirstOrDefault(p => p.Resources < 0);
             if (p != null) return "Negative spice: " + p;
 
+            if (g.Players.Any(p => p.Leaders.Count(l => g.IsInFrontOfShield(l)) > 1))
+            {
+                return "More than 1 leader in front of shield";
+            }
 
+            if (g.Players.Any(p => p.Leaders.Count(l => !g.CapturedLeaders.Keys.Contains(l) && g.Skilled(l)) + g.CapturedLeaders.Count(cl => cl.Value == p.Faction && g.Skilled(cl.Key)) > 1))
+            {
+                return "More than 1 skilled leader for 1 player (not counting leaders captured by hark)";
+            }
+
+            if (e is SkillAssigned sa && sa.Leader == null)
+            {
+                return "Assigning skill to null leader";
+            }
 
             p = g.Players.FirstOrDefault(p => p.TreacheryCards.Count > p.MaximumNumberOfCards);
             if (p != null && g.CurrentPhase != Phase.PerformingKarmaHandSwap) return "Too many cards: " + p;

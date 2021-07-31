@@ -94,6 +94,20 @@ namespace Treachery.Shared
         {
             LogInfo("DetermineBattle()");
 
+            /*
+            foreach (var l in Leaders)
+            {
+                LogInfo("{0}: {1} {2} {3}", l, Game.IsAlive(l), Game.Skill(l), Game.IsInFrontOfShield(l));
+            }
+
+            LogInfo("Heroes for battle:");
+
+            foreach (var l in HeroesForBattle(this))
+            {
+                LogInfo("{0}: {1} {2} {3}", l, Game.IsAlive(l), Game.Skill(l), Game.IsInFrontOfShield(l));
+            }
+            */
+
             var opponent = Game.CurrentBattle.OpponentOf(this);
             var prescience = MyPrescience;
 
@@ -386,7 +400,7 @@ namespace Treachery.Shared
 
         protected float ChanceOfMyLeaderSurviving(Player opponent, VoicePlan voicePlan, Prescience prescience, out TreacheryCard mostEffectiveDefense, TreacheryCard chosenWeapon)
         {
-            if (!Battle.ValidBattleHeroes(Game, opponent).Any())
+            if (!HeroesForBattle(opponent).Any())
             {
                 LogInfo("Opponent has no leaders");
                 mostEffectiveDefense = null;
@@ -602,7 +616,7 @@ namespace Treachery.Shared
         {
             enemyCanDefendPoisonTooth = false;
 
-            if (!Battle.ValidBattleHeroes(Game, opponent).Any())
+            if (!HeroesForBattle(opponent).Any())
             {
                 LogInfo("Opponent has no leaders");
                 mostEffectiveWeapon = null;
@@ -709,6 +723,10 @@ namespace Treachery.Shared
             return answer;
         }
 
+        protected IEnumerable<IHero> HeroesForBattleBehindShield(Player player) => Battle.ValidBattleHeroes(Game, player).Where(l => !Game.IsInFrontOfShield(l));
+
+        protected IEnumerable<IHero> HeroesForBattle(Player player) => Battle.ValidBattleHeroes(Game, player);
+
         protected void SelectHeroForBattle(Player opponent, bool highest, bool messiahUsed, out IHero hero, out bool isTraitor)
         {
             isTraitor = false;
@@ -720,21 +738,21 @@ namespace Treachery.Shared
             var revealedTraitorsByNonOpponents = Game.Players.Where(p => p != opponent && (p.Ally != Faction.Black || p.Faction != opponent.Ally)).SelectMany(p => p.RevealedTraitors);
             var knownNonTraitors = Traitors.Union(KnownNonTraitors).Union(knownNonTraitorsByAlly).Union(revealedTraitorsByNonOpponents);
             var revealedTraitorsByOpponentsInBattle = Game.Players.Where(p => p == opponent || (p.Ally == Faction.Black && p.Faction == opponent.Ally)).SelectMany(p => p.RevealedTraitors);
-            var highestOpponentLeader = Battle.ValidBattleHeroes(Game, opponent).OrderByDescending(l => l.Value).FirstOrDefault();
-            var safeLeaders = Battle.ValidBattleHeroes(Game, this).Where(l => messiahUsed || (knownNonTraitors.Contains(l) && !revealedTraitorsByOpponentsInBattle.Contains(l)));
-
+            var highestOpponentLeader = HeroesForBattle(opponent).OrderByDescending(l => l.Value).FirstOrDefault();
+            var safeLeaders = HeroesForBattleBehindShield(this).Where(l => messiahUsed || (knownNonTraitors.Contains(l) && !revealedTraitorsByOpponentsInBattle.Contains(l)));
+            LogInfo("Available leaders: {0}, safe leaders: {1}", HeroesForBattleBehindShield(this), safeLeaders);
             IHero safeHero = null;
             IHero unsafeHero = null;
 
             if (highest)
             {
                 safeHero = safeLeaders.OrderByDescending(l => l.ValueInCombatAgainst(highestOpponentLeader)).FirstOrDefault();
-                unsafeHero = Battle.ValidBattleHeroes(Game, this).OrderByDescending(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader)).FirstOrDefault();
+                unsafeHero = HeroesForBattleBehindShield(this).OrderByDescending(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader)).FirstOrDefault();
             }
             else
             {
                 safeHero = safeLeaders.OrderBy(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader)).FirstOrDefault();
-                unsafeHero = Battle.ValidBattleHeroes(Game, this).OrderBy(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader)).FirstOrDefault();
+                unsafeHero = HeroesForBattleBehindShield(this).OrderBy(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader)).FirstOrDefault();
             }
 
             if (safeHero == null ||
@@ -848,7 +866,7 @@ namespace Treachery.Shared
             LogInfo("Chance of my hero surviving: {0} with {1} (my weapon: {2})", chanceOfMyHeroSurviving, bestDefense, bestWeapon);
 
             var myHeroToFightAgainst = hero;
-            var opponentLeader = (prescience != null && prescience.Aspect == PrescienceAspect.Leader && opponentPlan != null) ? opponentPlan.Hero : Battle.ValidBattleHeroes(Game, opponent).OrderByDescending(l => l.ValueInCombatAgainst(myHeroToFightAgainst)).FirstOrDefault(l => !Traitors.Contains(l));
+            var opponentLeader = (prescience != null && prescience.Aspect == PrescienceAspect.Leader && opponentPlan != null) ? opponentPlan.Hero : HeroesForBattle(opponent).OrderByDescending(l => l.ValueInCombatAgainst(myHeroToFightAgainst)).FirstOrDefault(l => !Traitors.Contains(l));
             int opponentLeaderValue = opponentLeader == null ? 0 : opponentLeader.ValueInCombatAgainst(hero);
 
             int opponentMessiahBonus = Battle.MessiahAvailableForBattle(Game, opponent) ? 2 : 0;

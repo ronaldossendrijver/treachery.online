@@ -135,21 +135,26 @@ namespace Treachery.Shared
             }
         }
 
-        public void Kill()
+        public void Kill(Game g)
         {
-            Skill = LeaderSkill.None;
-            InFrontOfShield = false;
+            if (Skill != LeaderSkill.None)
+            {
+                g.SkillDeck.PutOnTop(Skill);
+                Skill = LeaderSkill.None;
+                InFrontOfShield = false;
+            }
+
             DeathCounter++;
             TimeOfDeath = moment++;
         }
 
-        public void Assassinate()
+        public void Assassinate(Game g)
         {
-            Kill();
+            Kill(g);
             if (!IsFaceDownDead)
             {
                 Revive();
-                Kill();
+                Kill(g);
             }
         }
 

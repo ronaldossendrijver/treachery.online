@@ -338,7 +338,7 @@ namespace Treachery.Shared
             if (Defense == null && Weapon != null && Weapon.Type == TreacheryCardType.Chemistry) return Skin.Current.Format("You can't use {0} as weapon without using a defense.", TreacheryCardType.Chemistry);
             if (!ValidWeapons(Game, p, Defense, true).Contains(Weapon)) return "Invalid weapon";
             if (!ValidDefenses(Game, p, Weapon, true).Contains(Defense)) return "Invalid defense";
-            if (Game.LeaderState[Hero].InFrontOfShield) return "You can't use a leader that is in front of a player shield";
+            if (Game.IsInFrontOfShield(Hero)) return "You can't use a leader that is in front of a player shield";
 
             if (Hero != null &&
                 AffectedByVoice(Game, Player, Game.CurrentVoice) &&
@@ -471,8 +471,8 @@ namespace Treachery.Shared
         {
             if (voice != null)
             {
-                var opponent = g.CurrentBattle.OpponentOf(p);
-                return voice.Initiator == opponent.Faction || voice.Initiator == opponent.Ally;
+                var opponent = g.CurrentBattle?.OpponentOf(p);
+                return opponent != null && (voice.Initiator == opponent.Faction || voice.Initiator == opponent.Ally);
             }
 
             return false;

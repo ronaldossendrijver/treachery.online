@@ -453,7 +453,7 @@ namespace Treachery.Shared
             {
                 ls.Value.CurrentTerritory = null;
 
-                if (ls.Key is Leader && !CapturedLeaders.ContainsKey(ls.Key as Leader))
+                if (ls.Key is Leader l && Skilled(l) && !CapturedLeaders.ContainsKey(l))
                 {
                     ls.Value.InFrontOfShield = true;
                 }

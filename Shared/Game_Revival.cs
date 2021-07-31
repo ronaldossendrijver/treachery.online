@@ -329,7 +329,14 @@ namespace Treachery.Shared
 
             if (r.Hero != null)
             {
-                ReviveHero(r.Hero);
+                if (r.Initiator != r.Hero.Faction && r.Hero is Leader)
+                {
+                    ReviveGhola(player, r.Hero as Leader);
+                }
+                else
+                {
+                    ReviveHero(r.Hero);
+                }
 
                 if (r.AssignSkill)
                 {

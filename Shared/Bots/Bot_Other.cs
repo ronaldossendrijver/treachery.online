@@ -310,7 +310,7 @@ namespace Treachery.Shared
                     if (leaderToRevive != null)
                     {
                         var assignSkill = Revival.MayAssignSkill(Game, this);
-                        return new RaiseDeadPlayed(Game) { Initiator = Faction, Hero = leaderToRevive, AmountOfForces = 0, AmountOfSpecialForces = 0, AssignSkill = true };
+                        return new RaiseDeadPlayed(Game) { Initiator = Faction, Hero = leaderToRevive, AmountOfForces = 0, AmountOfSpecialForces = 0, AssignSkill = assignSkill };
                     }
                 }
             }
