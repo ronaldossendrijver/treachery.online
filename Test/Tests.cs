@@ -84,10 +84,10 @@ namespace Treachery.Test
                 return "Assigning skill to null leader";
             }
 
-            if (g.RecentMilestones.Contains(Milestone.None))
+            /*if (g.RecentMilestones.Contains(Milestone.None))
             {
                 return "Traitor replaced";
-            }
+            }*/
 
             p = g.Players.FirstOrDefault(p => p.TreacheryCards.Count > p.MaximumNumberOfCards);
             if (p != null && g.CurrentPhase != Phase.PerformingKarmaHandSwap) return "Too many cards: " + p;

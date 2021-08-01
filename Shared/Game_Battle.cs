@@ -75,6 +75,7 @@ namespace Treachery.Shared
             CurrentReport = new Report(MainPhase.Battle);
             CurrentBattle = b;
             ChosenHMSAdvantage = StrongholdAdvantage.None;
+            CurrentRetreat = null;
             NrOfBattlesFought++;
             CurrentReport.Add(b.GetMessage());
 
@@ -732,7 +733,6 @@ namespace Treachery.Shared
                 TraitorDeck.PutOnTop(e.ReplacedTraitor);
 
                 TraitorDeck.Shuffle();
-                RecentMilestones.Add(Milestone.None);
             }
 
             DecideFateOfCapturedLeader(e);
@@ -809,11 +809,18 @@ namespace Treachery.Shared
                 SetHeroLocations(def, b.Territory);
             }
 
+            bool lasgunShield = !aggtrt.TraitorCalled && !deftrt.TraitorCalled && (agg.HasLaser || def.HasLaser) && (agg.HasShield || def.HasShield);
+
+            if (CurrentRetreat != null && !lasgunShield)
+            {
+                ExecuteRetreat();
+            }
+
             if (aggtrt.TraitorCalled || deftrt.TraitorCalled)
             {
                 TraitorCalled(b, agg, def, deftrt, aggressor, defender, agg.Hero, def.Hero);
             }
-            else if ((agg.HasLaser || def.HasLaser) && (agg.HasShield || def.HasShield))
+            else if (lasgunShield)
             {
                 LasgunShieldExplosion(agg, def, aggressor, defender, b.Territory, agg.Hero, def.Hero);
             }
@@ -835,6 +842,30 @@ namespace Treachery.Shared
             else if (defender.Is(Faction.Black))
             {
                 ReturnCapturedLeaders(defender, def.Hero);
+            }
+        }
+
+        private void ExecuteRetreat()
+        {
+            CurrentReport.Add(CurrentRetreat);
+            int forcesToMove = CurrentRetreat.Forces;
+            foreach (var l in CurrentBattle.Territory.Locations.Where(l => CurrentRetreat.Player.ForcesIn(l) > 0).ToArray())
+            {
+
+                if (forcesToMove == 0) break;
+                int toMoveFromHere = Math.Min(forcesToMove, CurrentRetreat.Player.ForcesIn(l));
+                CurrentRetreat.Player.MoveForces(l, CurrentRetreat.Location, toMoveFromHere);
+                forcesToMove -= toMoveFromHere;
+            }
+
+            int specialForcesToMove = CurrentRetreat.SpecialForces;
+            foreach (var l in CurrentBattle.Territory.Locations.Where(l => CurrentRetreat.Player.SpecialForcesIn(l) > 0).ToArray())
+            {
+
+                if (specialForcesToMove == 0) break;
+                int toMoveFromHere = Math.Min(specialForcesToMove, CurrentRetreat.Player.SpecialForcesIn(l));
+                CurrentRetreat.Player.MoveSpecialForces(l, CurrentRetreat.Location, toMoveFromHere);
+                specialForcesToMove -= toMoveFromHere;
             }
         }
 
@@ -1444,28 +1475,10 @@ namespace Treachery.Shared
             ChosenHMSAdvantage = e.Advantage;
         }
 
+        public Retreat CurrentRetreat { get; private set; } = null;
         public void HandleEvent(Retreat e)
         {
-            CurrentReport.Add(e);
-            
-            int forcesToMove = e.Forces;
-            foreach (var l in CurrentBattle.Territory.Locations.Where(l => e.Player.ForcesIn(l) > 0).ToArray()) {
-
-                if (forcesToMove == 0) break;
-                int toMoveFromHere = Math.Min(forcesToMove, e.Player.ForcesIn(l));
-                e.Player.MoveForces(l, e.Location, toMoveFromHere);
-                forcesToMove-= toMoveFromHere;
-            }
-
-            int specialForcesToMove = e.SpecialForces;
-            foreach (var l in CurrentBattle.Territory.Locations.Where(l => e.Player.SpecialForcesIn(l) > 0).ToArray())
-            {
-
-                if (specialForcesToMove == 0) break;
-                int toMoveFromHere = Math.Min(specialForcesToMove, e.Player.SpecialForcesIn(l));
-                e.Player.MoveSpecialForces(l, e.Location, toMoveFromHere);
-                specialForcesToMove -= toMoveFromHere;
-            }
+            CurrentRetreat = e;
         }
     }
 }
