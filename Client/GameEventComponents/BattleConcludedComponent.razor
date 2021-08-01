@@ -60,13 +60,32 @@
                 </SelectFromImageComponent>
             }
 
-            if (Game.TraitorsBattleWinnerCanLookAt.Any())
+            if (Game.TraitorsDeciphererCanLookAt.Any())
             {
-                <div>@Skin.Current.Describe(LeaderSkill.Decipherer) lets you look at the following cards from the traitor deck:</div>
-                @foreach (var v in Game.TraitorsBattleWinnerCanLookAt)
+                <SelectHeroComponent @bind-Value="selectedNewTraitor" Values=" Game.TraitorsDeciphererCanLookAt">
+                    <Label>Skin.Current.Describe(LeaderSkill.Decipherer) lets you look at the following traitors from the traitor deck:</Label>
+                </SelectHeroComponent>
+
+                @if (Game.DeciphererMayReplaceTraitor)
+                {
+                    <SelectHeroComponent @bind-Value="traitorToReplace" Values="Player.Traitors">
+                        <Label>If you wish, you may select one of the above traitors to reveal and replace one of your current traitors:</Label>
+                    </SelectHeroComponent>
+                }
+                else
+                {
+                    traitorToReplace = null;
+                }
+
+                @foreach (var v in Game.TraitorsDeciphererCanLookAt)
                 {
                     <img src="@Skin.Current.GetImageURL(v)" class="img-fluid p-1" width=60 data-animation="true" data-content="@Support.GetHeroHoverHTML(v)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
                 }
+            }
+            else
+            {
+                selectedNewTraitor = null;
+                traitorToReplace = null;
             }
         }
 
@@ -86,8 +105,18 @@
     private bool discardDefense;
     private TechToken stolenToken;
     private int replacementAmount;
+    private IHero selectedNewTraitor;
+    private IHero traitorToReplace;
 
-    protected override BattleConcluded ConfirmedResult => new BattleConcluded(Game) { Initiator = Faction, DiscardedCards = DetermineSelectedCards(), StolenToken = stolenToken, SpecialForceLossesReplaced = replacementAmount, CaptureDecision = captureDecision };
+    protected override BattleConcluded ConfirmedResult => new BattleConcluded(Game) {
+        Initiator = Faction,
+        DiscardedCards = DetermineSelectedCards(),
+        StolenToken = stolenToken,
+        SpecialForceLossesReplaced = replacementAmount,
+        CaptureDecision = captureDecision,
+        ReplacedTraitor = traitorToReplace,
+        NewTraitor = selectedNewTraitor
+    };
 
     private IEnumerable<TreacheryCard> DetermineSelectedCards()
     {

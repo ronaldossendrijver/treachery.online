@@ -87,7 +87,32 @@ namespace Treachery.Shared
 
             int replacedSpecialForces = BattleConcluded.ValidReplacementForceAmounts(Game, this).Max();
 
-            return new BattleConcluded(Game) { Initiator = Faction, DiscardedCards = discarded, StolenToken = opponent.TechTokens.FirstOrDefault(), Kill = kill, SpecialForceLossesReplaced = replacedSpecialForces };
+            IHero newTraitor = null;
+            IHero toReplace = null;
+            if (Game.TraitorsDeciphererCanLookAt.Any() && Game.DeciphererMayReplaceTraitor)
+            {
+                newTraitor = Game.TraitorsDeciphererCanLookAt.OrderByDescending(t => t.Value).FirstOrDefault(l => l.Faction != Faction && Game.IsAlive(l));
+
+                if (newTraitor != null)
+                {
+                    toReplace = RevealedTraitors.OrderBy(t => t.Value).FirstOrDefault();
+                    if (toReplace == null) toReplace = Traitors.FirstOrDefault(t => t.Faction == Faction);
+                    if (toReplace == null) toReplace = Traitors.OrderBy(t => t.Value).FirstOrDefault(t => !Game.IsAlive(t));
+                    if (toReplace == null) toReplace = Traitors.OrderBy(t => t.Value).FirstOrDefault(t => t.Value < newTraitor.Value);
+                }
+            }
+
+            if (toReplace == null) newTraitor = null;
+
+            return new BattleConcluded(Game) { 
+                Initiator = Faction, 
+                DiscardedCards = discarded, 
+                StolenToken = opponent.TechTokens.FirstOrDefault(), 
+                Kill = kill, 
+                SpecialForceLossesReplaced = replacedSpecialForces,
+                NewTraitor = newTraitor,
+                ReplacedTraitor = toReplace
+            };
         }
 
         protected virtual Battle DetermineBattle(bool waitForPrescience)

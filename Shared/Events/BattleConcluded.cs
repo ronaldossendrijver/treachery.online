@@ -25,6 +25,36 @@ namespace Treachery.Shared
 
         public bool Capture { get; set; } = true;
 
+        public int _traitorToReplaceId = -1;
+
+        [JsonIgnore]
+        public IHero ReplacedTraitor
+        {
+            get
+            {
+                return LeaderManager.HeroLookup.Find(_traitorToReplaceId);
+            }
+            set
+            {
+                _traitorToReplaceId = LeaderManager.HeroLookup.GetId(value);
+            }
+        }
+
+        public int _newTraitorId = -1;
+
+        [JsonIgnore]
+        public IHero NewTraitor
+        {
+            get
+            {
+                return LeaderManager.HeroLookup.Find(_newTraitorId);
+            }
+            set
+            {
+                _newTraitorId = LeaderManager.HeroLookup.GetId(value);
+            }
+        }
+
         public CaptureDecision CaptureDecision
         {
             get

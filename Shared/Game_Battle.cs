@@ -173,7 +173,6 @@ namespace Treachery.Shared
                         CurrentReport.Add(player.Faction, "{0} {1} collects {2} {3} from {4}", player.Faction, LeaderSkill.Smuggler, collected, Concept.Resource, territory);
                         ChangeSpiceOnPlanet(locationWithResources, -collected);
                         player.Resources += collected;
-                        RecentMilestones.Add(Milestone.None);
                     }
                 }
             }
@@ -334,29 +333,42 @@ namespace Treachery.Shared
 
             DiscardOneTimeCardsUsedInBattle(AggressorTraitorAction, DefenderTraitorAction);
             ResolveBattle(CurrentBattle, AggressorBattleAction, DefenderBattleAction, AggressorTraitorAction, DefenderTraitorAction);
-            ActivateDeciphererIfApplicable();
+
+            if (AggressorBattleAction.Initiator == BattleWinner) ActivateDeciphererIfApplicable(AggressorBattleAction);
+            if (DefenderBattleAction.Initiator == BattleWinner) ActivateDeciphererIfApplicable(DefenderBattleAction);
+
             CaptureLeaderIfApplicable();
             FlipBeneGesseritWhenAlone();
             DetermineAudit();
         }
 
-        public readonly List<IHero> TraitorsBattleWinnerCanLookAt = new List<IHero>();
+        public List<IHero> TraitorsDeciphererCanLookAt { get; private set; } = new List<IHero>();
+        public bool DeciphererMayReplaceTraitor { get; private set; } = false;
 
-        private void ActivateDeciphererIfApplicable()
+        private void ActivateDeciphererIfApplicable(Battle plan)
         {
-            var decipherer = PlayerSkilledAs(LeaderSkill.Decipherer);
-            if (decipherer != null && decipherer.Faction == BattleWinner)
+            bool playerIsSkilled = SkilledAs(plan.Player, LeaderSkill.Decipherer);
+            bool leaderIsSkilled = SkilledAs(plan.Hero, LeaderSkill.Decipherer);
+
+            if (playerIsSkilled || leaderIsSkilled)
             {
-                TraitorsBattleWinnerCanLookAt.Add(TraitorDeck.Draw());
-                TraitorsBattleWinnerCanLookAt.Add(TraitorDeck.Draw());
+                var traitor = TraitorDeck.Draw();
+                TraitorsDeciphererCanLookAt.Add(traitor);
+                plan.Player.KnownNonTraitors.Add(traitor);
+
+                traitor = TraitorDeck.Draw();
+                TraitorsDeciphererCanLookAt.Add(traitor);
+                plan.Player.KnownNonTraitors.Add(traitor);
+
+                DeciphererMayReplaceTraitor = plan.Initiator != Faction.Purple && leaderIsSkilled;
             } 
         }
 
         private void FinishDeciphererIfApplicable()
         {
-            if (TraitorsBattleWinnerCanLookAt.Count > 0)
+            if (TraitorsDeciphererCanLookAt.Count > 0)
             {
-                foreach (var item in TraitorsBattleWinnerCanLookAt)
+                foreach (var item in TraitorsDeciphererCanLookAt)
                 {
                     TraitorDeck.PutOnTop(item);
                 }
@@ -364,7 +376,7 @@ namespace Treachery.Shared
                 TraitorDeck.Shuffle();
                 RecentMilestones.Add(Milestone.Shuffled);
 
-                TraitorsBattleWinnerCanLookAt.Clear();
+                TraitorsDeciphererCanLookAt.Clear();
             }
         }
 
@@ -495,26 +507,8 @@ namespace Treachery.Shared
 
         public void HandleEvent(BattleConcluded e)
         {
-            if (Version < 43)
-            {
-                HasActedOrPassed.Add(e.Initiator);
-
-                if (e.Initiator == BattleWinner)
-                {
-                    HandleWinnerConclusion(e);
-                }
-
-                if (HasActedOrPassed.Contains(AggressorBattleAction.Initiator) && HasActedOrPassed.Contains(DefenderBattleAction.Initiator))
-                {
-                    if (!Applicable(Rule.FullPhaseKarma)) AllowPreventedBattleFactionAdvantages();
-                    Enter(IsPlaying(Faction.Purple) && BattleWinner != Faction.Purple, Phase.Facedancing, FinishBattle);
-                }
-            }
-            else
-            {
-                HandleWinnerConclusion(e);
-                Enter(IsPlaying(Faction.Purple) && BattleWinner != Faction.Purple, Phase.Facedancing, FinishBattle);
-            }
+            HandleWinnerConclusion(e);
+            Enter(IsPlaying(Faction.Purple) && BattleWinner != Faction.Purple, Phase.Facedancing, FinishBattle);
         }
 
         public void HandleEvent(FaceDanced f)
@@ -725,6 +719,20 @@ namespace Treachery.Shared
                 CurrentReport.Add(e.Initiator, "{0} discard {1}.", e.Initiator, c);
                 winner.TreacheryCards.Remove(c);
                 TreacheryDiscardPile.PutOnTop(c);
+            }
+
+            if (e.ReplacedTraitor != null)
+            {
+                CurrentReport.Add(e.Initiator, "{0} replaced {1} by another traitor from the deck.", e.Initiator, e.ReplacedTraitor);
+
+                e.Player.Traitors.Add(e.NewTraitor);
+                TraitorsDeciphererCanLookAt.Remove(e.NewTraitor);
+
+                e.Player.Traitors.Remove(e.ReplacedTraitor);
+                TraitorDeck.PutOnTop(e.ReplacedTraitor);
+
+                TraitorDeck.Shuffle();
+                RecentMilestones.Add(Milestone.None);
             }
 
             DecideFateOfCapturedLeader(e);
