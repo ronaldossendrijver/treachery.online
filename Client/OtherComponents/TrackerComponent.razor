@@ -92,7 +92,7 @@
 
                             <select class="custom-select form-control-sm mt-0" style="font: @Skin.Current.TRACKER_FONT" value="@sel"
                                     @onchange="eventArgs => { Info.ChangeDiscardedTraitor(selIndex, int.Parse(eventArgs.Value as string)); }"
-                                    data-animation="true" data-content="@Support.GetHeroHoverHTML(LeaderManager.HeroLookup.Find(sel))" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" data-container="body">
+                                    data-animation="true" data-content="@Support.GetHeroHoverHTML(LeaderManager.HeroLookup.Find(sel), h.Game)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" data-container="body">
 
                                 <option value="-1">Unknown</option>
                                 @foreach (var c in AllLeadersInPlay)
@@ -116,7 +116,7 @@
 
                             <div class="col-sm-6">
                                 <select class="custom-select form-control-sm mt-0" style="font: @Skin.Current.TRACKER_FONT" value="@sel" @onchange="eventArgs => { Info.ChangeSelectedTraitor(p.Faction, selIndex, int.Parse(eventArgs.Value as string)); }"
-                                        data-animation="true" data-content="@Support.GetHeroHoverHTML(LeaderManager.HeroLookup.Find(sel))" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" data-container="body">
+                                        data-animation="true" data-content="@Support.GetHeroHoverHTML(LeaderManager.HeroLookup.Find(sel), h.Game)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" data-container="body">
 
                                     <option value="-1">Unknown</option>
                                     @foreach (var c in AllLeadersInPlay)
@@ -139,7 +139,7 @@
 
                             <div class="col-sm-4">
                                 <select class="custom-select form-control-sm mt-0" style="font: @Skin.Current.TRACKER_FONT" value="@sel" @onchange="eventArgs => { Info.ChangeSelectedTraitor(p.Faction, selIndex, int.Parse(eventArgs.Value as string)); }"
-                                        data-animation="true" data-content="@Support.GetHeroHoverHTML(LeaderManager.HeroLookup.Find(sel))" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" data-container="body">
+                                        data-animation="true" data-content="@Support.GetHeroHoverHTML(LeaderManager.HeroLookup.Find(sel), Game)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" data-container="body">
 
                                     <option value="-1">Unknown</option>
                                     @foreach (var c in AllLeadersInPlay)

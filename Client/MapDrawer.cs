@@ -224,7 +224,7 @@ namespace Treachery.Client
                 if (MaySeeAggressorBattlePlan || MaySeeBothBattlePlans)
                 {
                     //confirmed aggressor wheel
-                    await DrawWheel(h.Game.AggressorBattleAction, h.Game.DefenderTraitorAction, true, Skin.Current.BattleScreenWidth, Skin.Current.BattleScreenHeight, 500, 200,
+                    await DrawWheel(h.Game.AggressorBattleAction, h.Game.CurrentBattle.Defender, h.Game.DefenderTraitorAction, true, Skin.Current.BattleScreenWidth, Skin.Current.BattleScreenHeight, 500, 200,
                         Skin.Current.BattleScreenHeroX, Skin.Current.BattleScreenHeroY, Skin.Current.BattleWheelForcesY,
                         Skin.Current.BattleWheelForcesX, Skin.Current.BattleWheelCardX, Skin.Current.BattleWheelCardY, Skin.Current.BattleWheelCardWidth, Skin.Current.BattleWheelCardHeight,
                         Skin.Current.BattleWheelHeroWidth, Skin.Current.BattleWheelHeroHeight);
@@ -232,7 +232,7 @@ namespace Treachery.Client
                 else if (MaySeeAggressorBattlePlanUnderConstruction)
                 {
                     //aggressor wheel under construction
-                    await DrawWheel(h._battleUnderConstruction, null, true, Skin.Current.BattleScreenWidth, Skin.Current.BattleScreenHeight, 500, 200,
+                    await DrawWheel(h._battleUnderConstruction, h.Game.CurrentBattle.Defender, null, true, Skin.Current.BattleScreenWidth, Skin.Current.BattleScreenHeight, 500, 200,
                         Skin.Current.BattleScreenHeroX, Skin.Current.BattleScreenHeroY, Skin.Current.BattleWheelForcesY,
                         Skin.Current.BattleWheelForcesX, Skin.Current.BattleWheelCardX, Skin.Current.BattleWheelCardY, Skin.Current.BattleWheelCardWidth, Skin.Current.BattleWheelCardHeight,
                         Skin.Current.BattleWheelHeroWidth, Skin.Current.BattleWheelHeroHeight);
@@ -240,7 +240,7 @@ namespace Treachery.Client
                 else if (AggressorIsAffectedByPartialPrescience)
                 {
                     //aggressor prescience
-                    await DrawWheel(h.Game.AggressorBattleAction, null, true, Skin.Current.BattleScreenWidth, Skin.Current.BattleScreenHeight, 500, 200,
+                    await DrawWheel(h.Game.AggressorBattleAction, h.Game.CurrentBattle.Defender, null, true, Skin.Current.BattleScreenWidth, Skin.Current.BattleScreenHeight, 500, 200,
                         Skin.Current.BattleScreenHeroX, Skin.Current.BattleScreenHeroY, Skin.Current.BattleWheelForcesY,
                         Skin.Current.BattleWheelForcesX, Skin.Current.BattleWheelCardX, Skin.Current.BattleWheelCardY, Skin.Current.BattleWheelCardWidth, Skin.Current.BattleWheelCardHeight,
                         Skin.Current.BattleWheelHeroWidth, Skin.Current.BattleWheelHeroHeight, h.Game.CurrentPrescience.Aspect);
@@ -249,7 +249,7 @@ namespace Treachery.Client
                 if (MaySeeDefenderBattlePlan || MaySeeBothBattlePlans)
                 {
                     //confirmed defender wheel
-                    await DrawWheel(h.Game.DefenderBattleAction, h.Game.AggressorTraitorAction, false, Skin.Current.BattleScreenWidth, Skin.Current.BattleScreenHeight, Skin.Current.MapDimensions.X / 2 - 500, Skin.Current.MapDimensions.Y / 2,
+                    await DrawWheel(h.Game.DefenderBattleAction, h.Game.CurrentBattle.Player, h.Game.AggressorTraitorAction, false, Skin.Current.BattleScreenWidth, Skin.Current.BattleScreenHeight, Skin.Current.MapDimensions.X / 2 - 500, Skin.Current.MapDimensions.Y / 2,
                         Skin.Current.BattleScreenHeroX, Skin.Current.BattleScreenHeroY, Skin.Current.BattleWheelForcesY,
                         Skin.Current.BattleWheelForcesX, Skin.Current.BattleWheelCardX, Skin.Current.BattleWheelCardY, Skin.Current.BattleWheelCardWidth, Skin.Current.BattleWheelCardHeight,
                         Skin.Current.BattleWheelHeroWidth, Skin.Current.BattleWheelHeroHeight);
@@ -257,7 +257,7 @@ namespace Treachery.Client
                 else if (MaySeeDefenderBattlePlanUnderConstruction)
                 {
                     //defernder wheel under construction
-                    await DrawWheel(h._battleUnderConstruction, null, false, Skin.Current.BattleScreenWidth, Skin.Current.BattleScreenHeight, Skin.Current.MapDimensions.X / 2 - 500, Skin.Current.MapDimensions.Y / 2,
+                    await DrawWheel(h._battleUnderConstruction, h.Game.CurrentBattle.Player, null, false, Skin.Current.BattleScreenWidth, Skin.Current.BattleScreenHeight, Skin.Current.MapDimensions.X / 2 - 500, Skin.Current.MapDimensions.Y / 2,
                         Skin.Current.BattleScreenHeroX, Skin.Current.BattleScreenHeroY, Skin.Current.BattleWheelForcesY,
                         Skin.Current.BattleWheelForcesX, Skin.Current.BattleWheelCardX, Skin.Current.BattleWheelCardY, Skin.Current.BattleWheelCardWidth, Skin.Current.BattleWheelCardHeight,
                         Skin.Current.BattleWheelHeroWidth, Skin.Current.BattleWheelHeroHeight);
@@ -265,7 +265,7 @@ namespace Treachery.Client
                 else if (DefenderIsAffectedByPartialPrescience)
                 {
                     //defender prescience
-                    await DrawWheel(h.Game.DefenderBattleAction, null, false, Skin.Current.BattleScreenWidth, Skin.Current.BattleScreenHeight, Skin.Current.MapDimensions.X / 2 - 500, Skin.Current.MapDimensions.Y / 2,
+                    await DrawWheel(h.Game.DefenderBattleAction, h.Game.CurrentBattle.Player, null, false, Skin.Current.BattleScreenWidth, Skin.Current.BattleScreenHeight, Skin.Current.MapDimensions.X / 2 - 500, Skin.Current.MapDimensions.Y / 2,
                         Skin.Current.BattleScreenHeroX, Skin.Current.BattleScreenHeroY, Skin.Current.BattleWheelForcesY,
                         Skin.Current.BattleWheelForcesX, Skin.Current.BattleWheelCardX, Skin.Current.BattleWheelCardY, Skin.Current.BattleWheelCardWidth, Skin.Current.BattleWheelCardHeight,
                         Skin.Current.BattleWheelHeroWidth, Skin.Current.BattleWheelHeroHeight, h.Game.CurrentPrescience.Aspect);
@@ -289,17 +289,17 @@ namespace Treachery.Client
             }
         }
 
-        private static async Task DrawWheel(Battle b, TreacheryCalled t, bool isAggressor, int wheelWidth, int wheelHeight, int leftMargin, int topMargin,
+        private static async Task DrawWheel(Battle plan, Player opponent, TreacheryCalled t, bool isAggressor, int wheelWidth, int wheelHeight, int leftMargin, int topMargin,
             int leaderLeftMargin, int leaderTopMargin, int forceTopMargin, int forceLeftMargin,
             int cardX, int cardY, int cardWidth, int cardHeight, int leaderSizeWidth, int leaderSizeHeight, PrescienceAspect aspect = PrescienceAspect.None)
         {
-            await DrawWheelImage(wheelWidth, wheelHeight, leftMargin, topMargin, b.Initiator, aspect == PrescienceAspect.None ? 1f : 0.5f);
+            await DrawWheelImage(wheelWidth, wheelHeight, leftMargin, topMargin, plan.Initiator, aspect == PrescienceAspect.None ? 1f : 0.5f);
 
-            if (aspect == PrescienceAspect.None || aspect == PrescienceAspect.Dial) await DrawWheelForces(b, leftMargin, topMargin, forceTopMargin, forceLeftMargin, isAggressor);
-            if (aspect == PrescienceAspect.None) await DrawWheelResourcesPaid(b, leftMargin, topMargin, forceTopMargin, forceLeftMargin);
-            if (aspect == PrescienceAspect.None || aspect == PrescienceAspect.Leader) await DrawWheelLeader(b, t, leftMargin, topMargin, leaderLeftMargin, leaderTopMargin, cardWidth, cardHeight, leaderSizeWidth, leaderSizeHeight, aspect == PrescienceAspect.Leader);
-            if (aspect == PrescienceAspect.None || aspect == PrescienceAspect.Defense) await DrawWheelDefense(b, leftMargin, topMargin, cardX, cardY, cardWidth, cardHeight, aspect == PrescienceAspect.Defense);
-            if (aspect == PrescienceAspect.None || aspect == PrescienceAspect.Weapon) await DrawWheelWeapon(b, leftMargin, topMargin, cardX, cardY, cardWidth, cardHeight, aspect == PrescienceAspect.Weapon);
+            if (aspect == PrescienceAspect.None || aspect == PrescienceAspect.Dial) await DrawWheelForces(plan, leftMargin, topMargin, forceTopMargin, forceLeftMargin, isAggressor);
+            if (aspect == PrescienceAspect.None) await DrawWheelResourcesPaid(plan, leftMargin, topMargin, forceTopMargin, forceLeftMargin);
+            if (aspect == PrescienceAspect.None || aspect == PrescienceAspect.Leader) await DrawWheelLeader(plan, opponent, t, leftMargin, topMargin, leaderLeftMargin, leaderTopMargin, cardWidth, cardHeight, leaderSizeWidth, leaderSizeHeight, aspect == PrescienceAspect.Leader);
+            if (aspect == PrescienceAspect.None || aspect == PrescienceAspect.Defense) await DrawWheelDefense(plan, leftMargin, topMargin, cardX, cardY, cardWidth, cardHeight, aspect == PrescienceAspect.Defense);
+            if (aspect == PrescienceAspect.None || aspect == PrescienceAspect.Weapon) await DrawWheelWeapon(plan, leftMargin, topMargin, cardX, cardY, cardWidth, cardHeight, aspect == PrescienceAspect.Weapon);
         }
 
         private static async Task DrawWheelImage(int wheelWidth, int wheelHeight, int leftMargin, int topMargin, Faction f, float alpha = 1f)
@@ -356,27 +356,41 @@ namespace Treachery.Client
             }
         }
 
-        private static async Task DrawWheelLeader(Battle b, TreacheryCalled t, int leftMargin, int topMargin, int leaderLeftMargin, int leaderTopMargin, int cardWidth, int cardHeight, int leaderSizeWidth, int leaderSizeHeight, bool prescience)
+        private static async Task DrawWheelLeader(Battle plan, Player opponent, TreacheryCalled t, int leftMargin, int topMargin, int leaderLeftMargin, int leaderTopMargin, int cardWidth, int cardHeight, int leaderSizeWidth, int leaderSizeHeight, bool prescience)
         {
-            if (b.Hero == null)
+            if (plan.Hero == null)
             {
                 if (prescience)
                 {
                     await DrawText(leftMargin + leaderLeftMargin + leaderSizeWidth / 2, topMargin + leaderTopMargin + leaderSizeHeight / 2, "no leader", Skin.Current.CARDPILE_FONT, TextAlign.Center, "white", Skin.Current.WHEEL_FONT_BORDERWIDTH, "black");
                 }
             }
-            else if (b.Hero is Leader)
+            else if (plan.Hero is Leader)
             {
-                await DrawImage(Artwork.GetLeaderToken(b.Hero as Leader), leftMargin + leaderLeftMargin, topMargin + leaderTopMargin, leaderSizeWidth, leaderSizeHeight, Skin.Current.SHADOW_DARK, 1, 2, 2);
-                var skill = h.Game.Skill(b.Hero);
+                await DrawImage(Artwork.GetLeaderToken(plan.Hero as Leader), leftMargin + leaderLeftMargin, topMargin + leaderTopMargin, leaderSizeWidth, leaderSizeHeight, Skin.Current.SHADOW_DARK, 1, 2, 2);
+                var skill = h.Game.Skill(plan.Hero);
                 if (skill != LeaderSkill.None)
                 {
                     await DrawImage(Artwork.GetSkillCard(skill), leftMargin + leaderLeftMargin + leaderSizeWidth + 20, topMargin + leaderTopMargin, cardWidth, cardHeight, Skin.Current.SHADOW_LIGHT, 1, 5, 5);
+                    
+                    int bonus = Battle.DetermineSkillBonus(h.Game, plan, out _);
+                    if (bonus != 0)
+                    {
+                        await DrawText(leftMargin + leaderLeftMargin + leaderSizeWidth + cardWidth - 20, topMargin + leaderTopMargin + 140, "+ " + bonus, Skin.Current.CARDPILE_FONT, TextAlign.Right, "green", Skin.Current.WHEEL_FONT_BORDERWIDTH, "white");
+                    }
+                    else
+                    {
+                        int penalty = Battle.DetermineSkillPenalty(h.Game, plan, opponent, out _);
+                        if (penalty != 0)
+                        {
+                            await DrawText(leftMargin + leaderLeftMargin + leaderSizeWidth + cardWidth - 20, topMargin + leaderTopMargin + 140, "- " + penalty, Skin.Current.CARDPILE_FONT, TextAlign.Right, "red", Skin.Current.WHEEL_FONT_BORDERWIDTH, "white");
+                        }
+                    }
                 }
             }
-            else if (b.Hero is TreacheryCard)
+            else if (plan.Hero is TreacheryCard)
             {
-                await DrawImage(Artwork.GetTreacheryCard((b.Hero as TreacheryCard)), leftMargin + leaderLeftMargin, topMargin + leaderTopMargin, cardWidth, cardHeight, Skin.Current.SHADOW_LIGHT, 1, 5, 5);
+                await DrawImage(Artwork.GetTreacheryCard((plan.Hero as TreacheryCard)), leftMargin + leaderLeftMargin, topMargin + leaderTopMargin, cardWidth, cardHeight, Skin.Current.SHADOW_LIGHT, 1, 5, 5);
             }
 
             if (t != null && t.TraitorCalled)
@@ -384,7 +398,7 @@ namespace Treachery.Client
                 await DrawText(leftMargin + leaderLeftMargin + leaderSizeWidth / 2, topMargin + leaderTopMargin + leaderSizeHeight / 2 + 100, "TRAITOR!", Skin.Current.CARDPILE_FONT, TextAlign.Center, "red", Skin.Current.WHEEL_FONT_BORDERWIDTH, "white");
             }
 
-            if (b.Initiator == Faction.Green && b.Messiah)
+            if (plan.Initiator == Faction.Green && plan.Messiah)
             {
                 await DrawImage(Artwork.Messiah, leftMargin + leaderLeftMargin + leaderSizeWidth / 1.5, topMargin + leaderTopMargin - 50, -1, -1, Skin.Current.SHADOW_LIGHT, 1, 2, 2);
             }

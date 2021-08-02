@@ -2008,20 +2008,20 @@ namespace Treachery.Shared
             LeaderSkillCardImage_URL = new Dictionary<LeaderSkill, string>()
             {
                 [LeaderSkill.None] = "",
-                [LeaderSkill.Bureaucrat] = "Bureaucrat.gif",
-                [LeaderSkill.Diplomat] = "Diplomat.gif",
-                [LeaderSkill.Decipherer] = "Decipherer.gif",
-                [LeaderSkill.Smuggler] = "Smuggler.gif",
-                [LeaderSkill.Graduate] = "Graduate.gif",
-                [LeaderSkill.Planetologist] = "Planetologist.gif",
-                [LeaderSkill.Warmaster] = "Warmaster.gif",
-                [LeaderSkill.Adept] = "Adept.gif",
-                [LeaderSkill.Swordmaster] = "Swordmaster.gif",
-                [LeaderSkill.KillerMedic] = "KillerMedic.gif",
-                [LeaderSkill.MasterOfAssassins] = "MasterOfAssassins.gif",
-                [LeaderSkill.Sandmaster] = "Sandmaster.gif",
-                [LeaderSkill.Thinker] = "Thinker.gif",
-                [LeaderSkill.Banker] = "Banker.gif"
+                [LeaderSkill.Bureaucrat] = DEFAULT_ART_LOCATION + "/art/Bureaucrat.jpg",
+                [LeaderSkill.Diplomat] = DEFAULT_ART_LOCATION + "/art/Diplomat.jpg",
+                [LeaderSkill.Decipherer] = DEFAULT_ART_LOCATION + "/art/Decipherer.jpg",
+                [LeaderSkill.Smuggler] = DEFAULT_ART_LOCATION + "/art/Smuggler.jpg",
+                [LeaderSkill.Graduate] = DEFAULT_ART_LOCATION + "/art/Graduate.jpg",
+                [LeaderSkill.Planetologist] = DEFAULT_ART_LOCATION + "/art/Planetologist.jpg",
+                [LeaderSkill.Warmaster] = DEFAULT_ART_LOCATION + "/art/Warmaster.jpg",
+                [LeaderSkill.Adept] = DEFAULT_ART_LOCATION + "/art/Adept.jpg",
+                [LeaderSkill.Swordmaster] = DEFAULT_ART_LOCATION + "/art/Swordmaster.jpg",
+                [LeaderSkill.KillerMedic] = DEFAULT_ART_LOCATION + "/art/KillerMedic.jpg",
+                [LeaderSkill.MasterOfAssassins] = DEFAULT_ART_LOCATION + "/art/MasterOfAssassins.jpg",
+                [LeaderSkill.Sandmaster] = DEFAULT_ART_LOCATION + "/art/Sandmaster.jpg",
+                [LeaderSkill.Thinker] = DEFAULT_ART_LOCATION + "/art/Thinker.jpg",
+                [LeaderSkill.Banker] = DEFAULT_ART_LOCATION + "/art/Banker.jpg"
             },
 
             StrongholdCardName_STR = new Dictionary<int, string>()

@@ -13,7 +13,7 @@
 
         <SelectFromImageComponent @bind-Value="skill" Values="SkillAssigned.ValidSkills(Player)" ImageURLs="SkillAssigned.ValidSkills(Player).Select(t => Skin.Current.GetImageURL(t))" PopupHTMLs="SkillAssigned.ValidSkills(Player).Select(t => Support.GetSkillCardHoverHTML(t))" />
 
-        <SelectHeroComponent @bind-Value="leader" Values="SkillAssigned.ValidLeaders(Game, Player)" />
+        <SelectHeroComponent Game="Game" @bind-Value="leader" Values="SkillAssigned.ValidLeaders(Game, Player)" />
 
         @if (Game.CurrentPhase == Phase.AssigningInitialSkills)
         {

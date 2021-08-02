@@ -78,6 +78,7 @@ namespace Treachery.Shared
             }
         }
 
+        public int BankerBonus { get; set; }
 
         [JsonIgnore]
         public bool HasPoison
@@ -328,8 +329,9 @@ namespace Treachery.Shared
             if (Game.Version >= 56 && (Forces < 0 || ForcesAtHalfStrength < 0 || SpecialForces < 0 || SpecialForcesAtHalfStrength < 0)) return string.Format("Invalid number of forces {0} {1} {2} {3}.", Forces, ForcesAtHalfStrength, SpecialForces, SpecialForcesAtHalfStrength);
             if (Forces + ForcesAtHalfStrength > MaxForces(Game, p, false)) return Skin.Current.Format("Too many {0} selected.", p.Force);
             if (SpecialForces + SpecialForcesAtHalfStrength > MaxForces(Game, p, true)) return Skin.Current.Format("Too many {0} selected.", p.SpecialForce);
+            if (AllyContributionAmount > MaxAllyResources(Game, p, Forces, SpecialForces)) return "Your ally won't pay that much";
             int cost = Cost(Game, p, Forces, SpecialForces);
-            if (cost > p.Resources) return Skin.Current.Format("You can't pay {0} {1} to fight with {2} forces at full strength.", cost, Concept.Resource, Forces + SpecialForces);
+            if (cost > p.Resources + AllyContributionAmount) return Skin.Current.Format("You can't pay {0} {1} to fight with {2} forces at full strength.", cost, Concept.Resource, Forces + SpecialForces);
             if (Hero == null && ValidBattleHeroes(Game, p).Any()) return "You must select a hero.";
             if (Hero != null && !ValidBattleHeroes(Game, p).Contains(Hero)) return "Invalid hero.";
             if (Weapon != null && Weapon == Defense) return "Can't use the same card as weapon and defense.";
@@ -342,6 +344,9 @@ namespace Treachery.Shared
             if (!ValidWeapons(Game, p, Defense, Hero, true).Contains(Weapon)) return "Invalid weapon";
             if (!ValidDefenses(Game, p, Weapon, true).Contains(Defense)) return "Invalid defense";
             if (Game.IsInFrontOfShield(Hero)) return "You can't use a leader that is in front of a player shield";
+            if (BankerBonus > 0 && !Game.SkilledAs(Hero, LeaderSkill.Banker)) return Skin.Current.Format("Only a Leader skilled as {0} can be boosted by {1}", LeaderSkill.Banker, Concept.Resource);
+            if (BankerBonus > MaxBankerBoost(Game, Player, Hero)) return Skin.Current.Format("You cannot boost your leader this much");
+            if (cost + BankerBonus > p.Resources) return Skin.Current.Format("You can't pay this {0} bonus", LeaderSkill.Banker);
 
             if (Hero != null &&
                 AffectedByVoice(Game, Player, Game.CurrentVoice) &&
@@ -389,6 +394,10 @@ namespace Treachery.Shared
                     Defense != null ? Defense.ToString() : "none");
             }
         }
+
+        public static int MaxResources(Player p, int forces, int specialForces) => Math.Min(p.Resources, forces + specialForces);
+
+        public static int MaxAllyResources(Game g, Player p, int forces, int specialForces) => Math.Min(g.SpiceYourAllyCanPay(p), forces + specialForces);
 
         public static int MaxForces(Game g, Player p, bool specialForces)
         {
@@ -611,6 +620,16 @@ namespace Treachery.Shared
             }
         }
 
+        public static int MaxBankerBoost(Game g, Player p, IHero hero)
+        {
+            if (g.SkilledAs(hero, LeaderSkill.Banker))
+            {
+                return Math.Min(p.Resources, 3);
+            }
+
+            return 0;
+        }
+
         private static IEnumerable<TreacheryCard> CardsPlayableAsDefense(Game g, Player p, TreacheryCard withWeapon)
         {
             if (g.Version <= 91)
@@ -648,6 +667,119 @@ namespace Treachery.Shared
                 forcesFull = forces;
                 forcesHalf = 0;
             }
+        }
+
+        public static int DetermineSkillBonus(Game g, Battle plan, out LeaderSkill activatedSkill)
+        {
+            if (g.SkilledAs(plan.Hero, LeaderSkill.Thinker))
+            {
+                activatedSkill = LeaderSkill.Thinker;
+                return 2;
+            }
+
+            if (g.SkilledAs(plan.Hero, LeaderSkill.Banker))
+            {
+                activatedSkill = LeaderSkill.Banker;
+                return plan.BankerBonus;
+            }
+
+            if (plan.Weapon != null && plan.Weapon.IsUseless || plan.Defense != null && plan.Defense.IsUseless)
+            {
+                if (g.SkilledAs(plan.Hero, LeaderSkill.Warmaster))
+                {
+                    activatedSkill = LeaderSkill.Warmaster;
+                    return 3;
+                }
+                else if (g.SkilledAs(plan.Player, LeaderSkill.Warmaster))
+                {
+                    activatedSkill = LeaderSkill.Warmaster;
+                    return 1;
+                }
+            }
+
+            if (plan.Defense != null && plan.Defense.IsProjectileDefense)
+            {
+                if (g.SkilledAs(plan.Hero, LeaderSkill.Adept))
+                {
+                    activatedSkill = LeaderSkill.Adept;
+                    return 3;
+                }
+                else if (g.SkilledAs(plan.Player, LeaderSkill.Adept))
+                {
+                    activatedSkill = LeaderSkill.Adept;
+                    return 1;
+                }
+            }
+
+            if (plan.Weapon != null && plan.Weapon.IsProjectileWeapon)
+            {
+                if (g.SkilledAs(plan.Hero, LeaderSkill.Swordmaster))
+                {
+
+                    activatedSkill = LeaderSkill.Swordmaster;
+                    return 3;
+                }
+                else if (g.SkilledAs(plan.Player, LeaderSkill.Swordmaster))
+                {
+
+                    activatedSkill = LeaderSkill.Swordmaster;
+                    return 1;
+                }
+            }
+
+            if (plan.Weapon != null && !(plan.Weapon.IsWeapon || plan.Weapon.IsDefense || plan.Weapon.IsUseless))
+            {
+                if (g.SkilledAs(plan.Hero, LeaderSkill.Planetologist))
+                {
+                    activatedSkill = LeaderSkill.Planetologist;
+                    return 2;
+                }
+            }
+
+            if (plan.Defense != null && plan.Defense.IsPoisonDefense)
+            {
+                if (g.SkilledAs(plan.Hero, LeaderSkill.KillerMedic))
+                {
+                    activatedSkill = LeaderSkill.KillerMedic;
+                    return 3;
+                }
+                else if (g.SkilledAs(plan.Player, LeaderSkill.KillerMedic))
+                {
+
+                    activatedSkill = LeaderSkill.KillerMedic;
+                    return 1;
+                }
+            }
+
+            if (plan.Weapon != null && (plan.Weapon.IsPoisonWeapon || plan.Weapon.IsPoisonTooth))
+            {
+                if (g.SkilledAs(plan.Hero, LeaderSkill.MasterOfAssassins))
+                {
+
+                    activatedSkill = LeaderSkill.MasterOfAssassins;
+                    return 3;
+                }
+                else if (g.SkilledAs(plan.Player, LeaderSkill.MasterOfAssassins))
+                {
+                    activatedSkill = LeaderSkill.MasterOfAssassins;
+                    return 1;
+                }
+            }
+
+            activatedSkill = LeaderSkill.None;
+            return 0;
+        }
+
+        public static int DetermineSkillPenalty(Game g, Battle playerPlan, Player opponent, out LeaderSkill activatedSkill)
+        {
+            if (g.SkilledAs(playerPlan.Hero, LeaderSkill.Bureaucrat))
+            {
+                activatedSkill = LeaderSkill.Bureaucrat;
+                return g.Map.Strongholds.Count(sh => opponent.Occupies(sh));
+            }
+
+            activatedSkill = LeaderSkill.None;
+            return 0;
         }
     }
 }

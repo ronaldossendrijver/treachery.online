@@ -102,7 +102,7 @@ namespace Treachery.Client
             }
         }
 
-        public static string GetHeroHoverHTML(IHero h)
+        public static string GetHeroHoverHTML(IHero h, Game g)
         {
             if (h == null)
             {
@@ -110,7 +110,15 @@ namespace Treachery.Client
             }
             else
             {
-                return string.Format("<img src='{0}' width=200 class='img-fluid' title='{1}'/>", Skin.Current.GetImageURL(h), h.Name);
+                var skill = g.Skill(h);
+                if (skill == LeaderSkill.None)
+                {
+                    return string.Format("<img src='{0}' width=200 class='img-fluid' title='{1}'/>", Skin.Current.GetImageURL(h), h.Name);
+                }
+                else
+                {
+                    return GetSkilledLeaderHTML(h as Leader, skill);
+                }
             }
         }
 

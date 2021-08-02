@@ -358,7 +358,6 @@ namespace Treachery.Shared
             {
                 CurrentReport.Add(plan.Initiator, "{0} adds 3 {1} to {2}", LeaderSkill.Sandmaster, Concept.Resource, CurrentBattle.Territory);
                 ChangeSpiceOnPlanet(locationWithResources, 3);
-                RecentMilestones.Add(Milestone.None);
             }
         }
 
@@ -957,19 +956,16 @@ namespace Treachery.Shared
             var defHeroCauseOfDeath = TreacheryCardType.None;
             DetermineCauseOfDeath(def, agg, defHero, poisonToothUsed, artilleryUsed, rockMelterUsed && RockMelterWasUsedToKill, ref defHeroKilled, ref defHeroCauseOfDeath);
 
-            int aggHeroSkillBonus = DetermineSkillBonus(agg, out LeaderSkill aggActivatedSkill);
+            int aggHeroSkillBonus = Battle.DetermineSkillBonus(this, agg, out LeaderSkill aggActivatedBonusSkill);
             int aggHeroEffectiveStrength = (aggHero != null && !artilleryUsed) ? aggHero.ValueInCombatAgainst(defHero) : 0;
             int aggHeroContribution = !aggHeroKilled && !rockMelterUsed ? aggHeroEffectiveStrength + aggHeroSkillBonus : 0;
 
-            int defHeroSkillBonus = DetermineSkillBonus(def, out LeaderSkill defActivatedSkill);
+            int defHeroSkillBonus = Battle.DetermineSkillBonus(this, def, out LeaderSkill defActivatedBonusSkill);
             int defHeroEffectiveStrength = (defHero != null && !artilleryUsed) ? defHero.ValueInCombatAgainst(aggHero) : 0;
             int defHeroContribution = !defHeroKilled && !rockMelterUsed ? defHeroEffectiveStrength + defHeroSkillBonus : 0;
 
             var aggMessiahContribution = aggressor.Is(Faction.Green) && agg.Messiah && agg.Hero != null && !aggHeroKilled && !artilleryUsed ? 2 : 0;
             var defMessiahContribution = defender.Is(Faction.Green) && def.Messiah && def.Hero != null && !defHeroKilled && !artilleryUsed  ? 2 : 0;
-
-            var aggThinkerContribution = Skill(agg.Hero) == LeaderSkill.Thinker && !aggHeroKilled && !artilleryUsed ? 2 : 0;
-            var defThinkerContribution = Skill(def.Hero) == LeaderSkill.Thinker && !defHeroKilled && !artilleryUsed ? 2 : 0;
 
             float aggForceDial;
             float defForceDial;
@@ -985,11 +981,11 @@ namespace Treachery.Shared
                 defForceDial = defender.ForcesIn(CurrentBattle.Territory) - def.Forces - def.ForcesAtHalfStrength + defender.SpecialForcesIn(CurrentBattle.Territory) - def.SpecialForces - def.SpecialForcesAtHalfStrength;
             }
 
-            int aggBureaucracyPenalty = SkilledAs(def.Hero, LeaderSkill.Bureaucrat) ? Map.Strongholds.Count(sh => aggressor.Occupies(sh)) : 0;
-            int defBureaucracyPenalty = SkilledAs(agg.Hero, LeaderSkill.Bureaucrat) ? Map.Strongholds.Count(sh => defender.Occupies(sh)) : 0;
+            int aggSkillPenalty = Battle.DetermineSkillPenalty(this, def, aggressor, out LeaderSkill defActivatedPenaltySkill);
+            int defSkillPenalty = Battle.DetermineSkillPenalty(this, agg, defender, out LeaderSkill aggActivatedPenaltySkill);
 
-            float aggTotal = aggForceDial + aggHeroContribution + aggMessiahContribution + aggThinkerContribution - aggBureaucracyPenalty;
-            float defTotal = defForceDial + defHeroContribution + defMessiahContribution + defThinkerContribution - defBureaucracyPenalty;
+            float aggTotal = aggForceDial + aggHeroContribution + aggMessiahContribution - aggSkillPenalty;
+            float defTotal = defForceDial + defHeroContribution + defMessiahContribution - defSkillPenalty;
 
             agg.DeactivateMirrorWeaponAndDiplomacy();
             def.DeactivateMirrorWeaponAndDiplomacy();
@@ -1015,14 +1011,35 @@ namespace Treachery.Shared
 
             //Handle results
 
-            if (aggHeroSkillBonus > 0) CurrentReport.Add(agg.Initiator, "{0} bonus: {1}", aggActivatedSkill, aggHeroSkillBonus);
-            if (defHeroSkillBonus > 0) CurrentReport.Add(def.Initiator, "{0} bonus: {1}", defActivatedSkill, defHeroSkillBonus);
-            if (aggBureaucracyPenalty > 0) CurrentReport.Add(agg.Initiator, "{0} penalty: {1}", LeaderSkill.Bureaucrat, aggBureaucracyPenalty);
-            if (defBureaucracyPenalty > 0) CurrentReport.Add(def.Initiator, "{0} penalty: {1}", LeaderSkill.Bureaucrat, defBureaucracyPenalty);
+            if (aggHeroSkillBonus != 0)
+            {
+                string paid = "";
+                if (aggActivatedBonusSkill == LeaderSkill.Banker)
+                {
+                    agg.Player.Resources -= agg.BankerBonus;
+                    paid = string.Format(" ({0} was paid)", agg.BankerBonus);
+                }
+
+                CurrentReport.Add(agg.Initiator, "{0} bonus: {1}{2}", aggActivatedBonusSkill, aggHeroSkillBonus, paid);
+            }
+
+            if (defHeroSkillBonus != 0)
+            {
+                string paid = "";
+                if (defActivatedBonusSkill == LeaderSkill.Banker)
+                {
+                    def.Player.Resources -= def.BankerBonus;
+                    paid = string.Format(" ({0} was paid)", def.BankerBonus);
+                }
+
+                CurrentReport.Add(def.Initiator, "{0} bonus: {1}{2}", defActivatedBonusSkill, defHeroSkillBonus, paid);
+            }
+
+            if (aggSkillPenalty != 0) CurrentReport.Add(agg.Initiator, "{0} penalty: {1}", defActivatedPenaltySkill, aggSkillPenalty);
+            if (defSkillPenalty != 0) CurrentReport.Add(def.Initiator, "{0} penalty: {1}", aggActivatedPenaltySkill, defSkillPenalty);
+
             if (aggMessiahContribution > 0) CurrentReport.Add(agg.Initiator, "{0} bonus: {1}", Concept.Messiah, aggMessiahContribution);
             if (defMessiahContribution > 0) CurrentReport.Add(def.Initiator, "{0} bonus: {1}", Concept.Messiah, defMessiahContribution);
-            if (aggThinkerContribution > 0) CurrentReport.Add(agg.Initiator, "{0} bonus: {1}", LeaderSkill.Thinker, aggThinkerContribution);
-            if (defThinkerContribution > 0) CurrentReport.Add(def.Initiator, "{0} bonus: {1}", LeaderSkill.Thinker, defThinkerContribution);
 
             BattleWinner = winner.Faction;
             BattleLoser = loser.Faction;
@@ -1053,94 +1070,7 @@ namespace Treachery.Shared
             ProcessWinnerLosses(territory, winner, winnerBattlePlan);
             ProcessLoserLosses(territory, loser, loserBattlePlan);
         }
-
-        private int DetermineSkillBonus(Battle plan, out LeaderSkill activatedSkill)
-        {
-            if (plan.Weapon != null && plan.Weapon.IsUseless || plan.Defense != null && plan.Defense.IsUseless) {
-                if (SkilledAs(plan.Hero, LeaderSkill.Warmaster))
-                {
-                    activatedSkill = LeaderSkill.Warmaster;
-                    return 3;
-                }
-                else if (SkilledAs(plan.Player, LeaderSkill.Warmaster))
-                {
-                    activatedSkill = LeaderSkill.Warmaster;
-                    return 1;
-                }
-            }
-
-            if (plan.Defense != null && plan.Defense.IsProjectileDefense)
-            {
-                if (SkilledAs(plan.Hero, LeaderSkill.Adept))
-                {
-                    activatedSkill = LeaderSkill.Adept;
-                    return 3;
-                }
-                else if (SkilledAs(plan.Player, LeaderSkill.Adept))
-                {
-                    activatedSkill = LeaderSkill.Adept;
-                    return 1;
-                }
-            }
-
-            if (plan.Weapon != null && plan.Weapon.IsProjectileWeapon)
-            {
-                if (SkilledAs(plan.Hero, LeaderSkill.Swordmaster))
-                {
-
-                    activatedSkill = LeaderSkill.Swordmaster;
-                    return 3;
-                }
-                else if (SkilledAs(plan.Player, LeaderSkill.Swordmaster))
-                {
-
-                    activatedSkill = LeaderSkill.Swordmaster;
-                    return 1;
-                }
-            }
-
-            if (plan.Weapon != null && !(plan.Weapon.IsWeapon || plan.Weapon.IsDefense || plan.Weapon.IsUseless))
-            {
-                if (SkilledAs(plan.Hero, LeaderSkill.Planetologist))
-                {
-                    activatedSkill = LeaderSkill.Planetologist;
-                    return 2;
-                }
-            }
-
-            if (plan.Defense != null && plan.Defense.IsPoisonDefense)
-            {
-                if (SkilledAs(plan.Hero, LeaderSkill.KillerMedic))
-                {
-                    activatedSkill = LeaderSkill.KillerMedic;
-                    return 3;
-                }
-                else if (SkilledAs(plan.Player, LeaderSkill.KillerMedic))
-                {
-
-                    activatedSkill = LeaderSkill.KillerMedic;
-                    return 1;
-                }
-            }
-
-            if (plan.Weapon != null && (plan.Weapon.IsPoisonWeapon || plan.Weapon.IsPoisonTooth))
-            {
-                if (SkilledAs(plan.Hero, LeaderSkill.MasterOfAssassins))
-                {
-
-                    activatedSkill = LeaderSkill.MasterOfAssassins;
-                    return 3;
-                }
-                else if (SkilledAs(plan.Player, LeaderSkill.MasterOfAssassins))
-                {
-                    activatedSkill = LeaderSkill.MasterOfAssassins;
-                    return 1;
-                }
-            }
-
-            activatedSkill = LeaderSkill.None;
-            return 0;
-        }
+               
 
         public bool IsAggressorByJuice(Player p)
         {
@@ -1273,9 +1203,6 @@ namespace Treachery.Shared
 
             if (specialForcesToSaveInTerritory + forcesToSaveInTerritory + specialForcesToSaveToReserves + forcesToSaveToReserves > 0)
             {
-                if (SkilledAs(plan.Hero, LeaderSkill.Graduate)) RecentMilestones.Add(Milestone.AdvancedGraduate);
-                else RecentMilestones.Add(Milestone.Graduate);
-
                 if (specialForcesToSaveToReserves > 0) winner.ForcesToReserves(territory, specialForcesToSaveToReserves, true);
 
                 if (forcesToSaveToReserves > 0) winner.ForcesToReserves(territory, forcesToSaveToReserves, false);
@@ -1284,7 +1211,6 @@ namespace Treachery.Shared
                     LeaderSkill.Graduate,
                     specialForcesToSaveInTerritory + forcesToSaveInTerritory,
                     specialForcesToSaveToReserves + forcesToSaveToReserves);
-
             }
 
             if (winner.Faction != Faction.Grey || specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory == 0 || winner.ForcesIn(territory) <= plan.Forces + plan.ForcesAtHalfStrength)

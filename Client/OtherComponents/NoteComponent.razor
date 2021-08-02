@@ -93,7 +93,7 @@
                         @foreach (var c in p.RevealedTraitors)
                         {
                             <img class="img-fluid pr-1" width=60 src="@Skin.Current.GetImageURL(c)"
-                                 data-animation="true" data-content="@Support.GetHeroHoverHTML(c)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
+                                 data-animation="true" data-content="@Support.GetHeroHoverHTML(c, Game)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
                         }
                     </div>
                 }
@@ -105,7 +105,7 @@
                         @foreach (var c in p.RevealedDancers)
                         {
                             <img class="img-fluid pr-1" width=60 src="@Skin.Current.GetImageURL(c)"
-                                 data-animation="true" data-content="@Support.GetHeroHoverHTML(c)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
+                                 data-animation="true" data-content="@Support.GetHeroHoverHTML(c, Game)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
                         }
                     </div>
                 }
@@ -124,144 +124,12 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-
         if (popoversNeedUpdate)
         {
             popoversNeedUpdate = false;
             await Browser.EnablePopovers();
         }
     }
-
-
-    //Faction currentlyPickedFaction = Faction.None;
-    /*int currentlyPickedCardId;
-
-    public int CurrentCard
-    {
-        get
-        {
-            if (currentlyPickedFaction != Faction.None)
-            {
-                return Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId];
-            }
-            else
-            {
-                return TreacheryCard.NONE;
-            }
-        }
-    }
-
-    private void SetCurrent(Faction f, int i)
-    {
-        currentlyPickedFaction = f;
-        currentlyPickedCardId = i;
-    }
-
-    public void Pick(int cardID)
-    {
-        try
-        {
-            Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId] = cardID;
-            popoversNeedUpdate = true;
-            StateHasChanged();
-        }
-        catch (Exception)
-        {
-
-        }
-    }
-
-    public void Discard()
-    {
-        try
-        {
-            if (Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId] != TreacheryCard.NONE && Info.TrackedTreacheryCards[currentlyPickedFaction][currentlyPickedCardId] != TreacheryCard.UNKNOWN)
-            {
-                Info.Discard(currentlyPickedFaction, currentlyPickedCardId);
-                popoversNeedUpdate = true;
-                StateHasChanged();
-            }
-        }
-        catch (Exception)
-        {
-
-        }
-    }
-
-    public IEnumerable<TreacheryCard> CardsToPick
-    {
-        get
-        {
-            return Info.AvailableDistinctCards(currentlyPickedFaction, currentlyPickedCardId);
-        }
-    }
-
-    private void SetNotDiscarded(TreacheryCard c)
-    {
-        Info.SetNotDiscarded(c);
-        popoversNeedUpdate = true;
-        StateHasChanged();
-    }
-    */
-
-
-
-    /*
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            await Load();
-        }
-        catch (Exception e)
-        {
-            Support.Log(e);
-        }
-    }
-
-    private async Task Save()
-    {
-        await Browser.SaveSetting(string.Format("treachery.online;currentgame;{0};trackerdata", h.Game.Seed), Info.ToString());
-    }
-
-    private async Task Load()
-    {
-        var trackerdata = await Browser.LoadSetting<string>(string.Format("treachery.online;currentgame;{0};trackerdata", h.Game.Seed));
-        if (trackerdata != null && trackerdata != "")
-        {
-            Info = GreenIntelligence.Parse(h.Game, trackerdata);
-            StateHasChanged();
-        }
-    }
-
-    public class CardInfo
-    {
-        public Player Player;
-        public int CardNumber;
-        public int CardId;
-    }
-
-    private IEnumerable<IHero> AllLeadersInPlay
-    {
-        get
-        {
-            return h.Game.TraitorsInPlay.OrderBy(l => l.Name);
-        }
-    }
-
-    private IEnumerable<string> AllSpiceCards
-    {
-        get
-        {
-            return h.Game.Map
-                .Locations
-                .Where(c => c.SpiceBlowAmount > 0)
-                .Select(c => c.Territory.Name)
-                .OrderBy(c => c)
-                .Distinct();
-        }
-    }
-    */
 
     private IEnumerable<Player> Players
     {
@@ -270,16 +138,7 @@
             return h.Game.Players.OrderBy(p => Skin.Current.Describe(p.Faction));
         }
     }
-    /*
-    private string InfoMessage
-    {
-        get
-        {
-            return Skin.Current.Format("Welcome to the {0} Tracker! Use it to take note of (discarded) traitors, the top spice card and treachery cards.<br>When a (possibly unknown) card is won, click on an empty card placeholder and select it.<br>To indicate that a card was discarded, click it and then select the 'trash can' which will move the card to the Discarded section. When an unknown card becomes known and discarded, select it first, then discard it.<br>When the discard pile is shuffled into a new draw pile, click 'reshuffle' to clear the Discarded section.<br>If you sent a card to the Discarded section by mistake, click on the X next to it.", Faction.Green);
-        }
-    }
-    */
-
+    
     private void Toggle(object toShow)
     {
         if (toShow == Shown)
@@ -294,13 +153,10 @@
         popoversNeedUpdate = true;
     }
 
-
-
     private bool IsKnownCard(TreacheryCard c)
     {
         return h.Player.KnownCards.Contains(c);
     }
-
 
     private string ButtonStyle(object o)
     {
@@ -313,7 +169,6 @@
             return "btn-outline-primary";
         }
     }
-
 
     private string ResourcesText(Player p)
     {

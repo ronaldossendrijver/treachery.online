@@ -5,10 +5,13 @@
 @using Treachery.Shared;
 @inherits Component 
 
-<span class="badge badge-primary badge-pill" style="@Color(Value.Faction)" data-animation="true" data-content="@Support.GetHeroHoverHTML(Value)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">@Value</span>
+<span class="badge badge-primary badge-pill" style="@Color(Value.Faction)" data-animation="true" data-content="@Support.GetHeroHoverHTML(Value, Game)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">@Value</span>
 
 @code {
 
     [Parameter]
     public IHero Value { get; set; }
+
+    [Parameter]
+    public Game Game { get; set; }
 }

@@ -11,7 +11,7 @@
     <Header>Request @Skin.Current.Describe(Faction.Purple) Revival of one of your leaders?</Header>
     <Body>
 
-        <SelectHeroComponent @bind-Value="hero" Values="RequestPurpleRevival.ValidTargets(Game, Player)" />
+        <SelectHeroComponent Game="Game" @bind-Value="hero" Values="RequestPurpleRevival.ValidTargets(Game, Player)" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 

@@ -84,7 +84,12 @@ namespace Treachery.Test
                 return "Assigning skill to null leader";
             }
 
-            if (e is Battle b && b.Hero != null && b.Hero.Id == 1002 && (g.SkilledAs(b.Hero, LeaderSkill.Swordmaster) || g.SkilledAs(b.Hero, LeaderSkill.MasterOfAssassins)) && b.Messiah)
+            if (e is Battle b4 && b4.Hero != null && g.SkilledAs(b4.Hero, LeaderSkill.Bureaucrat))
+            {
+                WriteSavegameIfApplicable(g, b4.Player, "Bureaucrat in battle");
+            }
+
+            if (e is Battle b && b.Hero != null && b.Hero.Id == 1002 && b.Weapon != null && !b.Weapon.IsUseless && (g.SkilledAs(b.Hero, LeaderSkill.Swordmaster) || g.SkilledAs(b.Hero, LeaderSkill.MasterOfAssassins)) && b.Messiah)
             {
                 WriteSavegameIfApplicable(g, b.Player, "10-Strength Jessica");
             }
@@ -94,22 +99,10 @@ namespace Treachery.Test
                 WriteSavegameIfApplicable(g, b2.Player, "Planetologist in battle");
             }
 
-            if (g.RecentMilestones.Contains(Milestone.Graduate))
+            if (e is Battle b3 && b3.BankerBonus > 0)
             {
-                var graduate = g.PlayerSkilledAs(LeaderSkill.Graduate);
-                WriteSavegameIfApplicable(g, graduate, "Graduate");
-            }
-
-            if (g.RecentMilestones.Contains(Milestone.AdvancedGraduate))
-            {
-                var graduate = g.Players.FirstOrDefault(p => p.Leaders.Any(l => g.SkilledAs(l, LeaderSkill.Graduate)));
-                WriteSavegameIfApplicable(g, graduate, "Advanced Graduate");
-            }
-
-            if (g.RecentMilestones.Contains(Milestone.None))
-            {
-                var graduate = g.Players.FirstOrDefault(p => p.Leaders.Any(l => g.SkilledAs(l, LeaderSkill.Sandmaster)));
-                WriteSavegameIfApplicable(g, graduate, "Sandmaster");
+                var graduate = g.Players.FirstOrDefault(p => p.Leaders.Any(l => g.SkilledAs(l, LeaderSkill.Banker)));
+                WriteSavegameIfApplicable(g, graduate, "Banker");
             }
 
             p = g.Players.FirstOrDefault(p => p.TreacheryCards.Count > p.MaximumNumberOfCards);

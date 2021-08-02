@@ -162,7 +162,8 @@ namespace Treachery.Shared
                 out bool messiah,
                 out bool isTraitor,
                 out bool lasgunShield,
-                out bool stoneBurner);
+                out bool stoneBurner,
+                out int bankerBoost);
 
             if (stoneBurner) dialNeeded = 0;
 
@@ -173,6 +174,7 @@ namespace Treachery.Shared
                 opponent.Faction, 
                 forcesAvailable, 
                 specialForcesAvailable, 
+                Resources - bankerBoost,
                 out int forcesAtFullStrength, 
                 out int forcesAtHalfStrength, 
                 out int specialForcesAtFullStrength, 
@@ -213,7 +215,8 @@ namespace Treachery.Shared
                     SpecialForces = specialForcesAtFullStrength,
                     SpecialForcesAtHalfStrength = specialForcesAtHalfStrength,
                     Defense = defense,
-                    Weapon = weapon
+                    Weapon = weapon,
+                    BankerBonus = bankerBoost
                 };
             }
             else
@@ -280,7 +283,8 @@ namespace Treachery.Shared
                     SpecialForces = 0,
                     SpecialForcesAtHalfStrength = Battle.MaxForces(Game, this, true),
                     Defense = uselessAsDefense,
-                    Weapon = uselessAsWeapon
+                    Weapon = uselessAsWeapon,
+                    BankerBonus = 0
                 };
             }
             else
@@ -294,7 +298,8 @@ namespace Treachery.Shared
                     SpecialForces = Battle.MaxForces(Game, this, true),
                     SpecialForcesAtHalfStrength = 0,
                     Defense = uselessAsDefense,
-                    Weapon = uselessAsWeapon
+                    Weapon = uselessAsWeapon,
+                    BankerBonus = 0
                 };
             }
         }
@@ -336,16 +341,16 @@ namespace Treachery.Shared
             }
         }
 
-        protected float DetermineRemainingDialInBattle(float dialNeeded, Faction opponent, int forcesAvailable, int specialForcesAvailable)
+        protected float DetermineRemainingDialInBattle(float dialNeeded, Faction opponent, int forcesAvailable, int specialForcesAvailable, int resourcesAvailable)
         {
-            return DetermineRemainingDialInBattle(dialNeeded, opponent, forcesAvailable, specialForcesAvailable, out _, out _, out _, out _);
+            return DetermineRemainingDialInBattle(dialNeeded, opponent, forcesAvailable, specialForcesAvailable, resourcesAvailable, out _, out _, out _, out _);
         }
 
-        protected float DetermineRemainingDialInBattle(float dialNeeded, Faction opponent, int forcesAvailable, int specialForcesAvailable, out int forcesAtFullStrength, out int forcesAtHalfStrength, out int specialForcesAtFullStrength, out int specialForcesAtHalfStrength)
+        protected float DetermineRemainingDialInBattle(float dialNeeded, Faction opponent, int forcesAvailable, int specialForcesAvailable, int resourcesAvailable, out int forcesAtFullStrength, out int forcesAtHalfStrength, out int specialForcesAtFullStrength, out int specialForcesAtHalfStrength)
         {
             var normalStrength = Battle.DetermineNormalForceStrength(Faction);
             var specialStrength = Battle.DetermineSpecialForceStrength(Game, Faction, opponent);
-            int spiceLeft = Resources;
+            int spiceLeft = resourcesAvailable;
             int costPerForce = Battle.NormalForceCost(Game, this);
             int costPerSpecialForce = Battle.SpecialForceCost(Game, this);
 
@@ -801,12 +806,12 @@ namespace Treachery.Shared
             var prescience = Prescience.MayUsePrescience(Game, this) ? BestPrescience(opponent, strength) : null;
 
             //More could be done with the information obtained in the below call
-            return GetDialNeeded(IWillBeAggressorAgainst(opponent), opponent, territory, voicePlan, prescience, takeReinforcementsIntoAccount, out _, out _, out _, out _, out _, out _, out _);
+            return GetDialNeeded(IWillBeAggressorAgainst(opponent), opponent, territory, voicePlan, prescience, takeReinforcementsIntoAccount, out _, out _, out _, out _, out _, out _, out _, out _);
         }
 
         protected float GetDialNeeded(
             bool iAmAggressor, Player opponent, Territory territory, VoicePlan voicePlan, Prescience prescience, bool takeReinforcementsIntoAccount,
-            out TreacheryCard bestDefense, out TreacheryCard bestWeapon, out IHero hero, out bool messiah, out bool isTraitor, out bool lasgunShieldDetected, out bool stoneBurnerDetected)
+            out TreacheryCard bestDefense, out TreacheryCard bestWeapon, out IHero hero, out bool messiah, out bool isTraitor, out bool lasgunShieldDetected, out bool stoneBurnerDetected, out int bankerBoost)
         {
             bool enemyCanDefendPoisonTooth = false;
             float chanceOfMyHeroSurviving;
@@ -843,12 +848,13 @@ namespace Treachery.Shared
             isTraitor = false;
             SelectHeroForBattle(opponent, !lasgunShieldDetected && chanceOfMyHeroSurviving > 0, messiah, out hero, out isTraitor);
 
+            bankerBoost = 0;
             if (hero == null)
             {
                 messiah = false;
                 myMessiahBonus = 0;
             }
-
+            
             if (isTraitor)
             {
                 LogInfo("My leader is a traitor: chanceOfMyHeroSurviving = 0");
@@ -883,6 +889,11 @@ namespace Treachery.Shared
                 return 0.5f;
             }
 
+            if (Game.SkilledAs(hero, LeaderSkill.Banker) && chanceOfMyHeroSurviving >= Param.Battle_MimimumChanceToAssumeMyLeaderSurvives)
+            {
+                bankerBoost = Math.Min(Resources, 3);
+            }
+
             if (hero is TreacheryCard && bestDefense != null && !bestDefense.IsUseless && MayPlayNoDefense(bestWeapon))
             {
                 bestDefense = null;
@@ -896,7 +907,7 @@ namespace Treachery.Shared
 
             int opponentMessiahBonus = Battle.MessiahAvailableForBattle(Game, opponent) ? 2 : 0;
             int maxReinforcements = takeReinforcementsIntoAccount ? (int)Math.Ceiling(MaxReinforcedDialTo(opponent, territory)) : 0;
-            int myHeroValue = hero == null ? 0 : hero.Value;
+            int myHeroValue = hero == null ? 0 : hero.ValueInCombatAgainst(opponentLeader);
 
             var opponentDial = (prescience != null && prescience.Aspect == PrescienceAspect.Dial && opponentPlan != null) ? opponentPlan.Dial(Game, Faction) : MaxDial(opponent, territory, Faction);
 
@@ -905,9 +916,9 @@ namespace Treachery.Shared
                 maxReinforcements + 
                 (chanceOfEnemyHeroSurviving < Param.Battle_MimimumChanceToAssumeEnemyHeroSurvives ? 0 : 1) * (opponentLeaderValue + opponentMessiahBonus) + 
                 (iAmAggressor ? 0 : 0.5f) - 
-                (chanceOfMyHeroSurviving < Param.Battle_MimimumChanceToAssumeMyLeaderSurvives ? 0 : 1) * (myHeroValue + myMessiahBonus);
+                (chanceOfMyHeroSurviving < Param.Battle_MimimumChanceToAssumeMyLeaderSurvives ? 0 : 1) * (myHeroValue + myMessiahBonus + bankerBoost);
 
-            LogInfo("opponentDial ({0}) + maxReinforcements ({8}) + (chanceOfEnemyHeroSurviving ({7}) < Battle_MimimumChanceToAssumeEnemyHeroSurvives ({10}) ? 0 : 1) * (highestleader ({1}) + messiahbonus ({2})) + defenderpenalty ({3}) - (chanceOfMyHeroSurviving ({4}) < Battle_MimimumChanceToAssumeMyLeaderSurvives ({11}) ? 0 : 1) * (myHeroValue ({5}) + messiahbonus ({9}) = ({6}))",
+            LogInfo("opponentDial ({0}) + maxReinforcements ({8}) + (chanceOfEnemyHeroSurviving ({7}) < Battle_MimimumChanceToAssumeEnemyHeroSurvives ({10}) ? 0 : 1) * (highestleader ({1}) + messiahbonus ({2})) + defenderpenalty ({3}) - (chanceOfMyHeroSurviving ({4}) < Battle_MimimumChanceToAssumeMyLeaderSurvives ({11}) ? 0 : 1) * (myHeroValue ({5}) + messiahbonus ({9}) + bankerBoost ({13}) = ({6}))",
                 opponentDial,
                 opponentLeaderValue,
                 opponentMessiahBonus,
@@ -919,7 +930,8 @@ namespace Treachery.Shared
                 maxReinforcements,
                 myMessiahBonus,
                 Param.Battle_MimimumChanceToAssumeEnemyHeroSurvives,
-                Param.Battle_MimimumChanceToAssumeMyLeaderSurvives);
+                Param.Battle_MimimumChanceToAssumeMyLeaderSurvives,
+                bankerBoost);
 
             return result;
         }

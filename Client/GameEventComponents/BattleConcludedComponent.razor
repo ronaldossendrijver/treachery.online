@@ -47,7 +47,7 @@
 
             if (BattleConcluded.MayCaptureOrKill(Game, Player))
             {
-                <div>We caught <HeroComponent Value="Game.BlackVictim" />... What are your orders, capture or kill?</div>
+                <div>We caught <HeroComponent Game="Game" Value="Game.BlackVictim" />... What are your orders, capture or kill?</div>
                 <RadioComponent @bind-Value="captureDecision"
                                 Values="@(new CaptureDecision[] {CaptureDecision.Capture,CaptureDecision.Kill,CaptureDecision.DontCapture})"
                                 ValueLabels="@(new string[] { "Capture", "Kill to gain 2 spice", "Neither capture nor kill" })" />
@@ -62,13 +62,13 @@
 
             if (Game.TraitorsDeciphererCanLookAt.Any())
             {
-                <SelectHeroComponent @bind-Value="selectedNewTraitor" Values=" Game.TraitorsDeciphererCanLookAt" Required="false">
+                <SelectHeroComponent Game="Game" @bind-Value="selectedNewTraitor" Values=" Game.TraitorsDeciphererCanLookAt" Required="false">
                     <Label>@Skin.Current.Describe(LeaderSkill.Decipherer) shows you the following traitors from the traitor deck:</Label>
                 </SelectHeroComponent>
 
                 @if (Game.DeciphererMayReplaceTraitor)
                 {
-                    <SelectHeroComponent @bind-Value="traitorToReplace" Values="Player.Traitors" Required="false">
+                    <SelectHeroComponent Game="Game" @bind-Value="traitorToReplace" Values="Player.Traitors" Required="false">
                         <Label>If you wish, you may select one of the above traitors to reveal and replace one of your current traitors:</Label>
                     </SelectHeroComponent>
                 }
