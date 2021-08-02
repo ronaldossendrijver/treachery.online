@@ -208,27 +208,31 @@ namespace Treachery.Shared
                 Discard(plan.Hero as TreacheryCard);
             }
 
-            if (plan.Weapon != null && (
-            plan.Weapon.IsArtillery ||
-            plan.Weapon.IsRockmelter ||
-            plan.Weapon.IsMirrorWeapon ||
-            plan.Weapon.IsPoisonTooth && !PoisonToothCancelled
-            ))
+            if (plan.Weapon != null && !(plan.Weapon.IsWeapon || plan.Weapon.IsDefense || plan.Weapon.IsUseless))
+            {
+                Discard(plan.Weapon);
+            }
+            else if (CurrentDiplomacy != null && plan.Initiator == CurrentDiplomacy.Initiator && plan.Weapon == CurrentDiplomacy.Card)
+            {
+                Discard(plan.Weapon);
+            }
+            else if (plan.Weapon != null && (
+                plan.Weapon.IsArtillery ||
+                plan.Weapon.IsRockmelter ||
+                plan.Weapon.IsMirrorWeapon ||
+                plan.Weapon.IsPoisonTooth && !PoisonToothCancelled
+                ))
             {
                 Discard(plan.Weapon);
             }
 
-            if (plan.Defense != null && (
-            plan.Defense.IsPortableAntidote
-            ))
+            if (plan.Defense != null && plan.Defense.IsPortableAntidote)
             {
                 Discard(plan.Defense);
             }
-
-            if (CurrentDiplomacy != null && plan.Initiator == CurrentDiplomacy.Initiator)
+            else if (CurrentDiplomacy != null && plan.Initiator == CurrentDiplomacy.Initiator && plan.Defense == CurrentDiplomacy.Card)
             {
-                if (plan.Weapon == CurrentDiplomacy.Card) Discard(plan.Weapon);
-                if (plan.Defense == CurrentDiplomacy.Card) Discard(plan.Defense);
+                Discard(plan.Defense);
             }
         }
 
@@ -508,7 +512,33 @@ namespace Treachery.Shared
 
         public void HandleEvent(BattleConcluded e)
         {
-            HandleWinnerConclusion(e);
+            var winner = GetPlayer(e.Initiator);
+
+            foreach (var c in e.DiscardedCards)
+            {
+                CurrentReport.Add(e.Initiator, "{0} discard {1}.", e.Initiator, c);
+                winner.TreacheryCards.Remove(c);
+                TreacheryDiscardPile.PutOnTop(c);
+            }
+
+            if (e.ReplacedTraitor != null && e.NewTraitor != null)
+            {
+                CurrentReport.Add(e.Initiator, "{0} replaced {1} by another traitor from the deck.", e.Initiator, e.ReplacedTraitor);
+
+                e.Player.Traitors.Add(e.NewTraitor);
+                TraitorsDeciphererCanLookAt.Remove(e.NewTraitor);
+
+                e.Player.Traitors.Remove(e.ReplacedTraitor);
+                TraitorDeck.PutOnTop(e.ReplacedTraitor);
+
+                RecentMilestones.Add(Milestone.Shuffled);
+                TraitorDeck.Shuffle();
+            }
+
+            DecideFateOfCapturedLeader(e);
+            TakeTechToken(e, winner);
+            ProcessGreyForceLossesAndSubstitutions(e, winner);
+
             Enter(IsPlaying(Faction.Purple) && BattleWinner != Faction.Purple, Phase.Facedancing, FinishBattle);
         }
 
@@ -711,35 +741,6 @@ namespace Treachery.Shared
             Allow(FactionAdvantage.BrownReceiveForcePayment);
         }
 
-        private void HandleWinnerConclusion(BattleConcluded e)
-        {
-            var winner = GetPlayer(e.Initiator);
-
-            foreach (var c in e.DiscardedCards)
-            {
-                CurrentReport.Add(e.Initiator, "{0} discard {1}.", e.Initiator, c);
-                winner.TreacheryCards.Remove(c);
-                TreacheryDiscardPile.PutOnTop(c);
-            }
-
-            if (e.ReplacedTraitor != null)
-            {
-                CurrentReport.Add(e.Initiator, "{0} replaced {1} by another traitor from the deck.", e.Initiator, e.ReplacedTraitor);
-
-                e.Player.Traitors.Add(e.NewTraitor);
-                TraitorsDeciphererCanLookAt.Remove(e.NewTraitor);
-
-                e.Player.Traitors.Remove(e.ReplacedTraitor);
-                TraitorDeck.PutOnTop(e.ReplacedTraitor);
-
-                TraitorDeck.Shuffle();
-            }
-
-            DecideFateOfCapturedLeader(e);
-            TakeTechToken(e, winner);
-            ProcessGreyForceLossesAndSubstitutions(e, winner);
-        }
-
         private void ProcessGreyForceLossesAndSubstitutions(BattleConcluded e, Player winner)
         {
             if (GreySpecialForceLossesToTake > 0)
@@ -924,6 +925,8 @@ namespace Treachery.Shared
 
         private void DetermineBattleOutcome(Battle agg, Battle def, Player aggressor, Player defender, Territory territory, IHero aggHero, IHero defHero)
         {
+            //Determine result
+
             agg.ActivateMirrorWeaponAndDiplomacy(def.Weapon, def.Defense);
             def.ActivateMirrorWeaponAndDiplomacy(agg.Weapon, agg.Defense);
 
@@ -939,7 +942,7 @@ namespace Treachery.Shared
             var defHeroCauseOfDeath = TreacheryCardType.None;
             DetermineCauseOfDeath(def, agg, defHero, poisonToothUsed, artilleryUsed, rockMelterUsed && RockMelterWasUsedToKill, ref defHeroKilled, ref defHeroCauseOfDeath);
 
-            int aggHeroSkillBonus = DetermineSkillBonus(agg); //add to effective strength or to herocontribution?
+            int aggHeroSkillBonus = DetermineSkillBonus(agg);
             int aggHeroEffectiveStrength = (aggHero != null && !artilleryUsed) ? aggHero.ValueInCombatAgainst(defHero) : 0;
             int aggHeroContribution = !aggHeroKilled && !rockMelterUsed ? aggHeroEffectiveStrength + aggHeroSkillBonus : 0;
 
@@ -995,6 +998,8 @@ namespace Treachery.Shared
             var loser = winner == aggressor ? defender : aggressor;
             var loserBattlePlan = (loser == aggressor) ? agg : def;
 
+            //Handle result
+
             BattleWinner = winner.Faction;
             BattleLoser = loser.Faction;
 
@@ -1042,6 +1047,11 @@ namespace Treachery.Shared
             {
                 if (SkilledAs(plan.Hero, LeaderSkill.Swordmaster)) return 3;
                 else if (SkilledAs(plan.Player, LeaderSkill.Swordmaster)) return 1;
+            }
+
+            if (plan.Weapon != null && !(plan.Weapon.IsWeapon || plan.Weapon.IsDefense || plan.Weapon.IsUseless))
+            {
+                if (SkilledAs(plan.Hero, LeaderSkill.Planetologist)) return 2;
             }
 
             if (plan.Defense != null && plan.Defense.IsPoisonDefense)
@@ -1166,33 +1176,56 @@ namespace Treachery.Shared
         {
             PayDialedSpice(winner, plan);
 
-            var graduate = PlayerSkilledAs(LeaderSkill.Graduate);
-
             int specialForcesToLose = plan.SpecialForces + plan.SpecialForcesAtHalfStrength;
             int forcesToLose = plan.Forces + plan.ForcesAtHalfStrength;
 
-            int specialForcesToSave = graduate != null && specialForcesToLose > 0 ? 1 : 0;
-            int forcesToSave = graduate != null && specialForcesToSave == 0 && forcesToLose > 0 ? 1 : 0;
+            int specialForcesToSaveToReserves = 0;
+            int forcesToSaveToReserves = 0;
+            int specialForcesToSaveInTerritory = 0;
+            int forcesToSaveInTerritory = 0;
 
-            if (specialForcesToSave + forcesToSave > 0)
+            if (SkilledAs(plan.Hero, LeaderSkill.Graduate))
             {
-                winner.ForcesToReserves(territory, 1, specialForcesToSave > 0);
-                CurrentReport.Add(winner.Faction, "{0} returns {1} {2} to reserves.", 
-                    LeaderSkill.Graduate, 
-                    specialForcesToSave + forcesToSave, 
-                    specialForcesToSave > 0 ? (object)winner.SpecialForce : (object)winner.Force);
+                specialForcesToSaveInTerritory = Math.Min(specialForcesToLose, 1);
+                forcesToSaveInTerritory = Math.Max(0, Math.Min(forcesToLose - specialForcesToSaveInTerritory, 1));
+
+                specialForcesToSaveToReserves = Math.Max(0, Math.Min(specialForcesToLose - specialForcesToSaveInTerritory - forcesToSaveInTerritory, 2));
+                forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose - specialForcesToSaveInTerritory - forcesToSaveInTerritory - specialForcesToSaveToReserves, 2));
+            }
+            else if (SkilledAs(winner, LeaderSkill.Graduate))
+            {
+                specialForcesToSaveToReserves = Math.Min(specialForcesToLose, 1);
+                forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose - specialForcesToSaveToReserves, 1));
             }
 
-            if (winner.Faction != Faction.Grey || specialForcesToLose - specialForcesToSave == 0 || winner.ForcesIn(territory) <= plan.Forces + plan.ForcesAtHalfStrength)
+            if (specialForcesToSaveInTerritory + forcesToSaveInTerritory + specialForcesToSaveToReserves + forcesToSaveToReserves > 0)
             {
-                int winnerForcesLost = forcesToLose - forcesToSave;
-                int winnerSpecialForcesLost = specialForcesToLose - specialForcesToSave;
+                if (SkilledAs(plan.Hero, LeaderSkill.Graduate)) RecentMilestones.Add(Milestone.AdvancedGraduate);
+                else RecentMilestones.Add(Milestone.Graduate);
+
+                if (specialForcesToSaveToReserves > 0) winner.ForcesToReserves(territory, specialForcesToSaveToReserves, true);
+
+                if (forcesToSaveToReserves > 0) winner.ForcesToReserves(territory, forcesToSaveToReserves, false);
+
+                CurrentReport.Add(winner.Faction, "{0} rescues {1} forces on site and rescues {2} forces to reserves.",
+                    LeaderSkill.Graduate,
+                    specialForcesToSaveInTerritory + forcesToSaveInTerritory,
+                    specialForcesToSaveToReserves + forcesToSaveToReserves);
+
+            }
+
+            if (winner.Faction != Faction.Grey || specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory == 0 || winner.ForcesIn(territory) <= plan.Forces + plan.ForcesAtHalfStrength)
+            {
+                int winnerForcesLost = forcesToLose - forcesToSaveToReserves - forcesToSaveInTerritory;
+                int winnerSpecialForcesLost = specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory;
                 HandleLosses(territory, winner, winnerForcesLost, winnerSpecialForcesLost);
             }
             else
             {
-                GreySpecialForceLossesToTake = specialForcesToLose - specialForcesToSave;
+                GreySpecialForceLossesToTake = specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory;
             }
+
+            
         }
 
         private void HandleLosses(Territory territory, Player player, int forcesLost, int specialForcesLost)

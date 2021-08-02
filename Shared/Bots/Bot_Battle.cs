@@ -91,14 +91,14 @@ namespace Treachery.Shared
             IHero toReplace = null;
             if (Game.TraitorsDeciphererCanLookAt.Any() && Game.DeciphererMayReplaceTraitor)
             {
-                newTraitor = Game.TraitorsDeciphererCanLookAt.OrderByDescending(t => t.Value).FirstOrDefault(l => l.Faction != Faction && Game.IsAlive(l));
+                newTraitor = Game.TraitorsDeciphererCanLookAt.OrderByDescending(t => t.Value).FirstOrDefault(t => t is TreacheryCard || (t.Faction != Faction && Game.IsAlive(t)));
 
                 if (newTraitor != null)
                 {
                     toReplace = RevealedTraitors.OrderBy(t => t.Value).FirstOrDefault();
                     if (toReplace == null) toReplace = Traitors.FirstOrDefault(t => t.Faction == Faction);
-                    if (toReplace == null) toReplace = Traitors.OrderBy(t => t.Value).FirstOrDefault(t => !Game.IsAlive(t));
-                    if (toReplace == null) toReplace = Traitors.OrderBy(t => t.Value).FirstOrDefault(t => t.Value < newTraitor.Value);
+                    if (toReplace == null) toReplace = Traitors.OrderBy(t => t.Value).FirstOrDefault(t => !(t is TreacheryCard) && !Game.IsAlive(t));
+                    if (toReplace == null) toReplace = Traitors.OrderBy(t => t.Value).FirstOrDefault(t => !(t is TreacheryCard) && t.Value < newTraitor.Value);
                 }
             }
 
@@ -242,11 +242,11 @@ namespace Treachery.Shared
         {
             if (weapon == null && myHeroSurviving < Param.Battle_MimimumChanceToAssumeMyLeaderSurvives && enemyHeroSurviving >= Param.Battle_MimimumChanceToAssumeEnemyHeroSurvives)
             {
-                weapon = Weapons(defense).FirstOrDefault(c => c.Type == TreacheryCardType.ArtilleryStrike);
+                weapon = Weapons(defense, null).FirstOrDefault(c => c.Type == TreacheryCardType.ArtilleryStrike);
 
                 if (weapon == null && !enemyCanDefendPoisonTooth)
                 {
-                    weapon = Weapons(defense).FirstOrDefault(c => c.Type == TreacheryCardType.PoisonTooth);
+                    weapon = Weapons(defense, null).FirstOrDefault(c => c.Type == TreacheryCardType.PoisonTooth);
                 }
 
                 if (weapon != null)
@@ -304,7 +304,7 @@ namespace Treachery.Shared
             var weapClairvoyance = RulingWeaponClairvoyanceForThisBattle;
             if (weapClairvoyance != null && !IsAllowedWithClairvoyance(weapClairvoyance, weapon, true))
             {
-                weapon = Weapons(defense).FirstOrDefault(c => IsAllowedWithClairvoyance(weapClairvoyance, c, true));
+                weapon = Weapons(defense, hero).FirstOrDefault(c => IsAllowedWithClairvoyance(weapClairvoyance, c, true));
             }
             
             var defClairvoyance = RulingDefenseClairvoyanceForThisBattle;
@@ -319,9 +319,9 @@ namespace Treachery.Shared
             if (weapon == null && defense != null && defense.Type == TreacheryCardType.WeirdingWay) defense = null;
             if (defense == null && weapon != null && weapon.Type == TreacheryCardType.Chemistry) weapon = null;
 
-            if (!Battle.ValidWeapons(Game, this, defense, true).Contains(weapon))
+            if (!Battle.ValidWeapons(Game, this, defense, hero, true).Contains(weapon))
             {
-                weapon = Weapons(defense).FirstOrDefault(w => w.Type != TreacheryCardType.Chemistry);
+                weapon = Weapons(defense, hero).FirstOrDefault(w => w.Type != TreacheryCardType.Chemistry);
             }
 
             if (!Battle.ValidDefenses(Game, this, weapon, true).Contains(defense))
@@ -654,7 +654,7 @@ namespace Treachery.Shared
                 return voicePlan.opponentHeroWillCertainlyBeZero ? 1 : 0.5f;
             }
 
-            var availableWeapons = Weapons(null).Where(w => w.Type != TreacheryCardType.Useless && w.Type != TreacheryCardType.ArtilleryStrike && w.Type != TreacheryCardType.PoisonTooth)
+            var availableWeapons = Weapons(null, null).Where(w => w.Type != TreacheryCardType.Useless && w.Type != TreacheryCardType.ArtilleryStrike && w.Type != TreacheryCardType.PoisonTooth)
                 .OrderBy(w => NumberOfUnknownDefensesThatCouldCounterThisWeapon(CardsUnknownToMe, w)).ToArray();
 
             var opponentPlan = Game.CurrentBattle?.PlanOf(opponent);

@@ -114,7 +114,7 @@ namespace Treachery.Shared
                 {
                     LogInfo("Start using Clairvoyance against " + opponent);
 
-                    var myWeapons = Battle.ValidWeapons(Game, this, null);
+                    var myWeapons = Battle.ValidWeapons(Game, this, null, null);
                     var enemyDefenses = Battle.ValidDefenses(Game, opponent, null, false).Where(w => Game.KnownCards(this).Contains(w));
 
                     if (
@@ -125,7 +125,7 @@ namespace Treachery.Shared
                         if (myWeapons.Any(w => w.IsProjectileWeapon) && !OpponentMayNotUse(TreacheryCardType.ProjectileDefense, false) && !enemyDefenses.Any(w => w.IsProjectileDefense)) return UseClairvoyanceInBattle(opponent.Faction, ClairvoyanceQuestion.CardTypeAsDefenseInBattle, TreacheryCardType.ProjectileDefense);
                     }
 
-                    var enemyWeapons = Battle.ValidWeapons(Game, opponent, null).Where(w => Game.KnownCards(this).Contains(w));
+                    var enemyWeapons = Battle.ValidWeapons(Game, opponent, null, null).Where(w => Game.KnownCards(this).Contains(w));
                     var myDefenses = Battle.ValidDefenses(Game, this, null, false);
 
                     if (
@@ -577,6 +577,11 @@ namespace Treachery.Shared
         {
             var itemsAsArray = items.ToArray();
             return itemsAsArray[D(1, itemsAsArray.Length) - 1];
+        }
+
+        protected virtual Planetology DeterminePlanetology()
+        {
+            return new Planetology(Game) { Initiator = Faction, AddOneToMovement = true };
         }
     }
 

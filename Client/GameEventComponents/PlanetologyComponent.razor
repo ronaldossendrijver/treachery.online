@@ -1,0 +1,30 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<Planetology>
+
+<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Use @Skin.Current.Describe(LeaderSkill.Planetologist) to move 1 extra territory or move two force groups to the same territory?</Header>
+    <Body>
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="1 extra territory" Other="Other" OtherText="2 force groups" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override Planetology ConfirmedResult => new Planetology(Game) { Initiator = Faction, AddOneToMovement = true };
+
+    protected override Planetology OtherResult => new Planetology(Game) { Initiator = Faction, AddOneToMovement = false };
+
+    protected override void OnParametersSet()
+    {
+        BackgroundImage = Skin.Current.GetImageURL(LeaderSkill.Planetologist);
+    }
+}

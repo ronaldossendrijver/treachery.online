@@ -578,15 +578,15 @@ namespace Treachery.Shared
             return opponent.TreacheryCards.Where(c => c.IsDefense && Game.KnownCards(this).Contains(c));
         }
 
-        protected virtual IEnumerable<TreacheryCard> Weapons(TreacheryCard usingThisDefense) => Battle.ValidWeapons(Game, this, usingThisDefense);
+        protected virtual IEnumerable<TreacheryCard> Weapons(TreacheryCard usingThisDefense, IHero usingThisHero) => Battle.ValidWeapons(Game, this, usingThisDefense, usingThisHero);
 
         protected virtual IEnumerable<TreacheryCard> Defenses(TreacheryCard usingThisWeapon) => Battle.ValidDefenses(Game, this, usingThisWeapon);
 
-        protected virtual TreacheryCard UselessAsWeapon(TreacheryCard usingThisDefense) => Weapons(usingThisDefense).FirstOrDefault(c => c.Type == TreacheryCardType.Useless);
+        protected virtual TreacheryCard UselessAsWeapon(TreacheryCard usingThisDefense) => Weapons(usingThisDefense, null).FirstOrDefault(c => c.Type == TreacheryCardType.Useless);
 
         protected virtual TreacheryCard UselessAsDefense(TreacheryCard usingThisWeapon) => Defenses(usingThisWeapon).FirstOrDefault(c => c.Type == TreacheryCardType.Useless);
 
-        protected bool MayPlayNoWeapon(TreacheryCard usingThisDefense) => Battle.ValidWeapons(Game, this, usingThisDefense, true).Contains(null);
+        protected bool MayPlayNoWeapon(TreacheryCard usingThisDefense) => Battle.ValidWeapons(Game, this, usingThisDefense, null, true).Contains(null);
 
         protected bool MayPlayNoDefense(TreacheryCard usingThisWeapon) => Battle.ValidDefenses(Game, this, usingThisWeapon, true).Contains(null);
 

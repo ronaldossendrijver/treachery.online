@@ -37,7 +37,7 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(ThoughtAnswered))) action = DetermineThoughtAnswered();
                 if (action == null && possibleEvents.Contains(typeof(Retreat))) action = DetermineRetreat();
                 if (action == null && possibleEvents.Contains(typeof(HMSAdvantageChosen))) action = DetermineHMSAdvantageChosen();
-
+                if (action == null && possibleEvents.Contains(typeof(Planetology))) action = DeterminePlanetology();
             }
             catch (Exception e)
             {

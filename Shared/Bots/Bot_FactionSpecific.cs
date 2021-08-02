@@ -420,7 +420,7 @@ namespace Treachery.Shared
             var knownOpponentWeapons = KnownOpponentWeapons(opponent);
             int nrOfUnknownOpponentCards = NrOfUnknownOpponentCards(opponent);
 
-            var weapons = Weapons(null).Where(w => w.Type != TreacheryCardType.Useless && w.Type != TreacheryCardType.ArtilleryStrike && w.Type != TreacheryCardType.PoisonTooth);
+            var weapons = Weapons(null, null).Where(w => w.Type != TreacheryCardType.Useless && w.Type != TreacheryCardType.ArtilleryStrike && w.Type != TreacheryCardType.PoisonTooth);
             result.weaponToUse = weapons.FirstOrDefault(w => w.Type == TreacheryCardType.ProjectileAndPoison); //use poisonblade if available
             if (result.weaponToUse == null) result.weaponToUse = weapons.FirstOrDefault(w => w.Type == TreacheryCardType.Laser); //use lasgun if available
             if (result.weaponToUse == null) result.weaponToUse = weapons.FirstOrDefault(w => Game.KnownCards(this).Contains(w)); //use a known weapon if available
@@ -690,10 +690,10 @@ namespace Treachery.Shared
         protected Prescience BestPrescience(Player opponent, float maxForceStrengthInBattle)
         {
             var myDefenses = Battle.ValidDefenses(Game, this, null).Where(c => Game.KnownCards(this).Contains(c));
-            var myWeapons = Battle.ValidWeapons(Game, this, null).Where(c => Game.KnownCards(this).Contains(c));
+            var myWeapons = Battle.ValidWeapons(Game, this, null, null).Where(c => Game.KnownCards(this).Contains(c));
 
             var knownOpponentDefenses = Battle.ValidDefenses(Game, opponent, null).Where(c => Game.KnownCards(this).Contains(c));
-            var knownOpponentWeapons = Battle.ValidWeapons(Game, opponent, null).Where(c => Game.KnownCards(this).Contains(c));
+            var knownOpponentWeapons = Battle.ValidWeapons(Game, opponent, null, null).Where(c => Game.KnownCards(this).Contains(c));
             //int nrOfUnknownOpponentCards = opponent.TreacheryCards.Count(c => !Game.KnownCards(this).Contains(c));
 
             var cardsOpponentHasOrMightHave = CardsPlayerHasOrMightHave(opponent);

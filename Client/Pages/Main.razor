@@ -59,7 +59,7 @@
             }
             else
             {
-                <GameStatusComponent h="@h" CanEndPhase="h.Actions.Contains(typeof(EndPhase))"/>
+                <GameStatusComponent h="@h" CanEndPhase="h.Actions.Contains(typeof(EndPhase))" />
 
                 @if (h.CurrentPhase == Phase.GameEnded)
                 {
@@ -164,6 +164,12 @@
 {
     <img src="@Skin.Current.GetImageURL(card)" hidden @ref="Artwork.TreacheryCards[card].Value" />
 }
+
+@foreach (var skill in Enumerations.GetValuesExceptDefault(typeof(LeaderSkill), LeaderSkill.None))
+{
+    <img src="@Skin.Current.GetImageURL(skill)" hidden @ref="Artwork.SkillCards[skill].Value" />
+}
+
 
 @if (h.Game != null)
 {

@@ -54,7 +54,7 @@ namespace Treachery.Shared
             if (!Player.AlliedPlayer.TreacheryCards.Any()) return "Your ally does not have cards to trade";
 
             var targetPlayer = Game.GetPlayer(Target);
-            if (targetPlayer == null) return "Invalid targte player";
+            if (targetPlayer == null) return "Invalid target player";
 
             if (RequestedCard != null && !Player.AlliedPlayer.IsBot) return "You can only select a card from a Bot ally";
             if (RequestedCard != null && !ValidCards(Game.GetPlayer(Target)).Contains(RequestedCard)) return "Invalid requested card";

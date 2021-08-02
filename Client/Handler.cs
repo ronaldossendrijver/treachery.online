@@ -788,7 +788,18 @@ namespace Treachery.Client
 
         private async Task SaveGame()
         {
-            await Browser.SaveSetting(string.Format("treachery.online;latestgame;{0}", PlayerName.ToLower().Trim()), GameState.GetStateAsString(Game));
+            if (Game.History.Count < 1500)
+            {
+                try
+                {
+                    await Browser.SaveSetting(string.Format("treachery.online;latestgame;{0}", PlayerName.ToLower().Trim()), GameState.GetStateAsString(Game));
+                }
+                catch (Exception e)
+                {
+                    Support.Log("Unable to save game: {0}", e.Message);
+                }
+            }
+            
         }
 
         public async Task ConfirmPlayername(string name)

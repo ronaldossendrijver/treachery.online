@@ -157,7 +157,7 @@ namespace Treachery.Shared
         public static int DetermineCost(Game g, Player p, int amount, Location to, bool karamaShipment, bool backToReserves, bool noField)
         {
             var amountToPayFor = amount;
-            if (amountToPayFor > 0 && g.SkilledAs(p, LeaderSkill.Smuggler) && !g.AnyForcesIn(to.Territory))
+            if (amountToPayFor > 1 && g.SkilledAs(p, LeaderSkill.Smuggler) && !g.AnyForcesIn(to.Territory))
             {
                 amountToPayFor--;
             }

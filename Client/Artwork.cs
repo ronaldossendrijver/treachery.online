@@ -24,6 +24,7 @@ namespace Treachery.Client
 
         public static readonly Dictionary<Leader, Art> LeaderTokens = new Dictionary<Leader, Art>();
         public static readonly Dictionary<TreacheryCard, Art> TreacheryCards = new Dictionary<TreacheryCard, Art>();
+        public static readonly Dictionary<LeaderSkill, Art> SkillCards = new Dictionary<LeaderSkill, Art>();
         public static readonly Dictionary<int, Art> ResourceCards = new Dictionary<int, Art>();
         public static readonly Dictionary<Faction, Art> FactionTokens = new Dictionary<Faction, Art>();
         public static readonly Dictionary<Faction, Art> FactionTableTokens = new Dictionary<Faction, Art>();
@@ -43,6 +44,11 @@ namespace Treachery.Client
             foreach (var c in TreacheryCardManager.GetCardsInAndOutsidePlay())
             {
                 TreacheryCards.Add(c, new Art());
+            }
+
+            foreach (var c in Enumerations.GetValuesExceptDefault(typeof(LeaderSkill), LeaderSkill.None))
+            {
+                SkillCards.Add(c, new Art());
             }
 
             foreach (var c in Enumerations.GetValuesExceptDefault(typeof(Faction), Faction.None))
@@ -105,6 +111,11 @@ namespace Treachery.Client
         public static ElementReference GetTreacheryCard(TreacheryCard card)
         {
             return TreacheryCards[card].Value;
+        }
+
+        public static ElementReference GetSkillCard(LeaderSkill skill)
+        {
+            return SkillCards[skill].Value;
         }
 
         public static Art GetResourceCard(ResourceCard card)

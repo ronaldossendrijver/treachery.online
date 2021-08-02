@@ -368,6 +368,11 @@ namespace Treachery.Client
             else if (b.Hero is Leader)
             {
                 await DrawImage(Artwork.GetLeaderToken(b.Hero as Leader), leftMargin + leaderLeftMargin, topMargin + leaderTopMargin, leaderSizeWidth, leaderSizeHeight, Skin.Current.SHADOW_DARK, 1, 2, 2);
+                var skill = h.Game.Skill(b.Hero);
+                if (skill != LeaderSkill.None)
+                {
+                    await DrawImage(Artwork.GetSkillCard(skill), leftMargin + leaderLeftMargin + leaderSizeWidth + 20, topMargin + leaderTopMargin, cardWidth, cardHeight, Skin.Current.SHADOW_LIGHT, 1, 5, 5);
+                }
             }
             else if (b.Hero is TreacheryCard)
             {
@@ -381,7 +386,7 @@ namespace Treachery.Client
 
             if (b.Initiator == Faction.Green && b.Messiah)
             {
-                await DrawImage(Artwork.Messiah, leftMargin + leaderLeftMargin + leaderSizeWidth / 1.5, topMargin + leaderTopMargin, -1, -1, Skin.Current.SHADOW_LIGHT, 1, 2, 2);
+                await DrawImage(Artwork.Messiah, leftMargin + leaderLeftMargin + leaderSizeWidth / 1.5, topMargin + leaderTopMargin - 50, -1, -1, Skin.Current.SHADOW_LIGHT, 1, 2, 2);
             }
         }
         #endregion
@@ -860,7 +865,7 @@ namespace Treachery.Client
 
         private static void NextColumnIfNecessary(ref float y, ref float x, float spacing)
         {
-            if (y > 14 * Skin.Current.FORCETOKEN_RADIUS - x)
+            if (y > 14 * Skin.Current.FORCETOKEN_RADIUS - 0.5f * x)
             {
                 y = 2 * Skin.Current.FORCETOKEN_RADIUS;
                 x += 4 * Skin.Current.FORCETOKEN_RADIUS;

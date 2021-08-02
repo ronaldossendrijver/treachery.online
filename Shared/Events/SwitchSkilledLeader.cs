@@ -34,7 +34,7 @@ namespace Treachery.Shared
 
         public static bool CanBePlayed(Game game, Player player)
         {
-            return player.Leaders.Any(l => game.Skilled(l) && !game.CapturedLeaders.ContainsKey(l));
+            return player.Leaders.Any(l => game.Skilled(l) && !game.CapturedLeaders.ContainsKey(l)) && game.CurrentBattle?.PlanOf(player) == null;
         }
     }
 }

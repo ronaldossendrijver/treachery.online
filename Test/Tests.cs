@@ -31,7 +31,7 @@ namespace Treachery.Test
                 {
                     lock (Written) {
 
-                        File.WriteAllText("" + (Written.Count + 100) + " " + t.Name + "-" + playerWithAction.Name.Replace('*', 'X') + ".json", GameState.GetStateAsString(g));
+                        File.WriteAllText("" + (Written.Count + 100) + " " + t.Name + "-" + playerWithAction.Name.Replace('*', 'X') + ".special.json", GameState.GetStateAsString(g));
                         Written.Add(t);
                     }
                 }
@@ -45,7 +45,7 @@ namespace Treachery.Test
             {
                 lock (WrittenCases)
                 {
-                    File.WriteAllText(c + "-" + playerWithAction.Name.Replace('*', 'X') + ".json", GameState.GetStateAsString(g));
+                    File.WriteAllText(c + "-" + playerWithAction.Name.Replace('*', 'X') + ".special.json", GameState.GetStateAsString(g));
                     WrittenCases.Add(c);
                 }
             }
@@ -84,10 +84,27 @@ namespace Treachery.Test
                 return "Assigning skill to null leader";
             }
 
-            /*if (g.RecentMilestones.Contains(Milestone.None))
+            if (e is Battle b && b.Hero != null && b.Hero.Id == 1002 && (g.SkilledAs(b.Hero, LeaderSkill.Swordmaster) || g.SkilledAs(b.Hero, LeaderSkill.MasterOfAssassins)) && b.Messiah)
             {
-                return "Traitor replaced";
-            }*/
+                WriteSavegameIfApplicable(g, b.Player, "10-Strength Jessica");
+            }
+
+            if (e is Battle b2 && b2.Weapon != null && g.SkilledAs(b2.Hero, LeaderSkill.Planetologist) && b2.Player.TreacheryCards.Any(c => !(c.IsWeapon || c.IsDefense || c.IsUseless)))
+            {
+                WriteSavegameIfApplicable(g, b2.Player, "Planetologist in battle");
+            }
+
+            if (g.RecentMilestones.Contains(Milestone.Graduate))
+            {
+                var graduate = g.PlayerSkilledAs(LeaderSkill.Graduate);
+                WriteSavegameIfApplicable(g, graduate, "Graduate");
+            }
+
+            if (g.RecentMilestones.Contains(Milestone.AdvancedGraduate))
+            {
+                var graduate = g.Players.FirstOrDefault(p => p.Leaders.Any(l => g.SkilledAs(l, LeaderSkill.Graduate)));
+                WriteSavegameIfApplicable(g, graduate, "Advanced Graduate");
+            }
 
             p = g.Players.FirstOrDefault(p => p.TreacheryCards.Count > p.MaximumNumberOfCards);
             if (p != null && g.CurrentPhase != Phase.PerformingKarmaHandSwap) return "Too many cards: " + p;
@@ -230,7 +247,7 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 200;
+            int nrOfGames = 1000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 

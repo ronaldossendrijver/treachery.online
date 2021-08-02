@@ -62,24 +62,19 @@
 
             if (Game.TraitorsDeciphererCanLookAt.Any())
             {
-                <SelectHeroComponent @bind-Value="selectedNewTraitor" Values=" Game.TraitorsDeciphererCanLookAt">
-                    <Label>Skin.Current.Describe(LeaderSkill.Decipherer) lets you look at the following traitors from the traitor deck:</Label>
+                <SelectHeroComponent @bind-Value="selectedNewTraitor" Values=" Game.TraitorsDeciphererCanLookAt" Required="false">
+                    <Label>@Skin.Current.Describe(LeaderSkill.Decipherer) shows you the following traitors from the traitor deck:</Label>
                 </SelectHeroComponent>
 
                 @if (Game.DeciphererMayReplaceTraitor)
                 {
-                    <SelectHeroComponent @bind-Value="traitorToReplace" Values="Player.Traitors">
+                    <SelectHeroComponent @bind-Value="traitorToReplace" Values="Player.Traitors" Required="false">
                         <Label>If you wish, you may select one of the above traitors to reveal and replace one of your current traitors:</Label>
                     </SelectHeroComponent>
                 }
                 else
                 {
                     traitorToReplace = null;
-                }
-
-                @foreach (var v in Game.TraitorsDeciphererCanLookAt)
-                {
-                    <img src="@Skin.Current.GetImageURL(v)" class="img-fluid p-1" width=60 data-animation="true" data-content="@Support.GetHeroHoverHTML(v)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
                 }
             }
             else
@@ -89,7 +84,7 @@
             }
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError="@Validation" />
 
     </Body>
 
@@ -203,4 +198,6 @@
             return Game.GetPlayer(Game.BattleLoser);
         }
     }
+
+    private string ConfirmLabel => traitorToReplace == null ? "Conclude Battle" : Skin.Current.Format("Conclude Battle and Reveal & Replace {0}", traitorToReplace);
 }

@@ -242,6 +242,7 @@ namespace Treachery.Shared
                         result.Add(typeof(Move));
                         if (player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Caravan)) result.Add(typeof(Caravan));
                         if (FlightUsed.IsAvailable(player)) result.Add(typeof(FlightUsed));
+                        if (Planetology.CanBePlayed(this, player)) result.Add(typeof(Planetology));
                     }
                     break;
                 case Phase.NonOrangeMove:
@@ -250,6 +251,7 @@ namespace Treachery.Shared
                         result.Add(typeof(Move));
                         if (player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Caravan)) result.Add(typeof(Caravan));
                         if (FlightUsed.IsAvailable(player)) result.Add(typeof(FlightUsed));
+                        if (Planetology.CanBePlayed(this, player)) result.Add(typeof(Planetology));
                     }
                     break;
                 case Phase.BlueIntrudedByOrangeShip:
@@ -432,6 +434,7 @@ namespace Treachery.Shared
                 CurrentPhase != Phase.SearchingDiscarded &&
                 CurrentPhase != Phase.PerformingKarmaHandSwap)
             {
+                bool hasFinalizedBattlePlan = CurrentPhase == Phase.BattlePhase && CurrentBattle != null && CurrentBattle.PlanOf(player) != null;
                 if (CurrentMainPhase < MainPhase.Battle && player.NoFieldIsActive)
                 {
                     result.Add(typeof(WhiteRevealedNoField));
@@ -490,6 +493,7 @@ namespace Treachery.Shared
                 if (
                     (faction == Faction.Brown && player.Ally != Faction.None || player.Ally == Faction.Brown) &&
                     player.AlliedPlayer.TreacheryCards.Count > 0 &&
+                    player.TreacheryCards.Count > 0 &&
                     LastTurnCardWasTraded < CurrentTurn)
                 {
                     result.Add(typeof(CardTraded));
@@ -596,12 +600,21 @@ namespace Treachery.Shared
                     result.Add(typeof(Donated));
                 }
 
-                if (faction == Faction.White && player.Ally != Faction.None && WhiteGaveCard.ValidCards(this, player).Any() && player.AlliedPlayer.HasRoomForCards)
+                if (faction == Faction.White &&
+                    CurrentPhase != Phase.BlackMarketBidding && 
+                    CurrentPhase != Phase.Bidding &&
+                    !hasFinalizedBattlePlan &&
+                    player.Ally != Faction.None && 
+                    WhiteGaveCard.ValidCards(this, player).Any() && 
+                    player.AlliedPlayer.HasRoomForCards)
                 {
                     result.Add(typeof(WhiteGaveCard));
                 }
 
-                if (CurrentPhase != Phase.Bidding && CurrentPhase != Phase.BlackMarketBidding && DistransUsed.CanBePlayed(this, player))
+                if (CurrentPhase != Phase.BlackMarketBidding && 
+                    CurrentPhase != Phase.Bidding && 
+                    !hasFinalizedBattlePlan &&
+                    DistransUsed.CanBePlayed(this, player))
                 {
                     result.Add(typeof(DistransUsed));
                 }
