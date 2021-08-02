@@ -106,6 +106,12 @@ namespace Treachery.Test
                 WriteSavegameIfApplicable(g, graduate, "Advanced Graduate");
             }
 
+            if (g.RecentMilestones.Contains(Milestone.None))
+            {
+                var graduate = g.Players.FirstOrDefault(p => p.Leaders.Any(l => g.SkilledAs(l, LeaderSkill.Sandmaster)));
+                WriteSavegameIfApplicable(g, graduate, "Sandmaster");
+            }
+
             p = g.Players.FirstOrDefault(p => p.TreacheryCards.Count > p.MaximumNumberOfCards);
             if (p != null && g.CurrentPhase != Phase.PerformingKarmaHandSwap) return "Too many cards: " + p;
 

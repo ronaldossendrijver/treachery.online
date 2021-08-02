@@ -342,9 +342,24 @@ namespace Treachery.Shared
             if (AggressorBattleAction.Initiator == BattleWinner) ActivateDeciphererIfApplicable(AggressorBattleAction);
             if (DefenderBattleAction.Initiator == BattleWinner) ActivateDeciphererIfApplicable(DefenderBattleAction);
 
+            if (AggressorBattleAction.Initiator == BattleWinner) ActivateSandmasterIfApplicable(AggressorBattleAction);
+            if (DefenderBattleAction.Initiator == BattleWinner) ActivateSandmasterIfApplicable(DefenderBattleAction);
+
             CaptureLeaderIfApplicable();
             FlipBeneGesseritWhenAlone();
             DetermineAudit();
+        }
+
+        private void ActivateSandmasterIfApplicable(Battle plan)
+        {
+            var locationWithResources = CurrentBattle.Territory.Locations.FirstOrDefault(l => ResourcesOnPlanet.ContainsKey(l));
+
+            if (locationWithResources != null && SkilledAs(plan.Hero, LeaderSkill.Sandmaster) && plan.Player.AnyForcesIn(CurrentBattle.Territory) > 0)
+            {
+                CurrentReport.Add(plan.Initiator, "{0} adds 3 {1} to {2}", LeaderSkill.Sandmaster, Concept.Resource, CurrentBattle.Territory);
+                ChangeSpiceOnPlanet(locationWithResources, 3);
+                RecentMilestones.Add(Milestone.None);
+            }
         }
 
         public List<IHero> TraitorsDeciphererCanLookAt { get; private set; } = new List<IHero>();
@@ -942,11 +957,11 @@ namespace Treachery.Shared
             var defHeroCauseOfDeath = TreacheryCardType.None;
             DetermineCauseOfDeath(def, agg, defHero, poisonToothUsed, artilleryUsed, rockMelterUsed && RockMelterWasUsedToKill, ref defHeroKilled, ref defHeroCauseOfDeath);
 
-            int aggHeroSkillBonus = DetermineSkillBonus(agg);
+            int aggHeroSkillBonus = DetermineSkillBonus(agg, out LeaderSkill aggActivatedSkill);
             int aggHeroEffectiveStrength = (aggHero != null && !artilleryUsed) ? aggHero.ValueInCombatAgainst(defHero) : 0;
             int aggHeroContribution = !aggHeroKilled && !rockMelterUsed ? aggHeroEffectiveStrength + aggHeroSkillBonus : 0;
 
-            int defHeroSkillBonus = DetermineSkillBonus(def);
+            int defHeroSkillBonus = DetermineSkillBonus(def, out LeaderSkill defActivatedSkill);
             int defHeroEffectiveStrength = (defHero != null && !artilleryUsed) ? defHero.ValueInCombatAgainst(aggHero) : 0;
             int defHeroContribution = !defHeroKilled && !rockMelterUsed ? defHeroEffectiveStrength + defHeroSkillBonus : 0;
 
@@ -998,7 +1013,16 @@ namespace Treachery.Shared
             var loser = winner == aggressor ? defender : aggressor;
             var loserBattlePlan = (loser == aggressor) ? agg : def;
 
-            //Handle result
+            //Handle results
+
+            if (aggHeroSkillBonus > 0) CurrentReport.Add(agg.Initiator, "{0} bonus: {1}", aggActivatedSkill, aggHeroSkillBonus);
+            if (defHeroSkillBonus > 0) CurrentReport.Add(def.Initiator, "{0} bonus: {1}", defActivatedSkill, defHeroSkillBonus);
+            if (aggBureaucracyPenalty > 0) CurrentReport.Add(agg.Initiator, "{0} penalty: {1}", LeaderSkill.Bureaucrat, aggBureaucracyPenalty);
+            if (defBureaucracyPenalty > 0) CurrentReport.Add(def.Initiator, "{0} penalty: {1}", LeaderSkill.Bureaucrat, defBureaucracyPenalty);
+            if (aggMessiahContribution > 0) CurrentReport.Add(agg.Initiator, "{0} bonus: {1}", Concept.Messiah, aggMessiahContribution);
+            if (defMessiahContribution > 0) CurrentReport.Add(def.Initiator, "{0} bonus: {1}", Concept.Messiah, defMessiahContribution);
+            if (aggThinkerContribution > 0) CurrentReport.Add(agg.Initiator, "{0} bonus: {1}", LeaderSkill.Thinker, aggThinkerContribution);
+            if (defThinkerContribution > 0) CurrentReport.Add(def.Initiator, "{0} bonus: {1}", LeaderSkill.Thinker, defThinkerContribution);
 
             BattleWinner = winner.Faction;
             BattleLoser = loser.Faction;
@@ -1030,42 +1054,91 @@ namespace Treachery.Shared
             ProcessLoserLosses(territory, loser, loserBattlePlan);
         }
 
-        private int DetermineSkillBonus(Battle plan)
+        private int DetermineSkillBonus(Battle plan, out LeaderSkill activatedSkill)
         {
             if (plan.Weapon != null && plan.Weapon.IsUseless || plan.Defense != null && plan.Defense.IsUseless) {
-                if (SkilledAs(plan.Hero, LeaderSkill.Warmaster)) return 3;
-                else if (SkilledAs(plan.Player, LeaderSkill.Warmaster)) return 1;
+                if (SkilledAs(plan.Hero, LeaderSkill.Warmaster))
+                {
+                    activatedSkill = LeaderSkill.Warmaster;
+                    return 3;
+                }
+                else if (SkilledAs(plan.Player, LeaderSkill.Warmaster))
+                {
+                    activatedSkill = LeaderSkill.Warmaster;
+                    return 1;
+                }
             }
 
             if (plan.Defense != null && plan.Defense.IsProjectileDefense)
             {
-                if (SkilledAs(plan.Hero, LeaderSkill.Adept)) return 3;
-                else if (SkilledAs(plan.Player, LeaderSkill.Adept)) return 1;
+                if (SkilledAs(plan.Hero, LeaderSkill.Adept))
+                {
+                    activatedSkill = LeaderSkill.Adept;
+                    return 3;
+                }
+                else if (SkilledAs(plan.Player, LeaderSkill.Adept))
+                {
+                    activatedSkill = LeaderSkill.Adept;
+                    return 1;
+                }
             }
 
             if (plan.Weapon != null && plan.Weapon.IsProjectileWeapon)
             {
-                if (SkilledAs(plan.Hero, LeaderSkill.Swordmaster)) return 3;
-                else if (SkilledAs(plan.Player, LeaderSkill.Swordmaster)) return 1;
+                if (SkilledAs(plan.Hero, LeaderSkill.Swordmaster))
+                {
+
+                    activatedSkill = LeaderSkill.Swordmaster;
+                    return 3;
+                }
+                else if (SkilledAs(plan.Player, LeaderSkill.Swordmaster))
+                {
+
+                    activatedSkill = LeaderSkill.Swordmaster;
+                    return 1;
+                }
             }
 
             if (plan.Weapon != null && !(plan.Weapon.IsWeapon || plan.Weapon.IsDefense || plan.Weapon.IsUseless))
             {
-                if (SkilledAs(plan.Hero, LeaderSkill.Planetologist)) return 2;
+                if (SkilledAs(plan.Hero, LeaderSkill.Planetologist))
+                {
+                    activatedSkill = LeaderSkill.Planetologist;
+                    return 2;
+                }
             }
 
             if (plan.Defense != null && plan.Defense.IsPoisonDefense)
             {
-                if (SkilledAs(plan.Hero, LeaderSkill.KillerMedic)) return 3;
-                else if (SkilledAs(plan.Player, LeaderSkill.KillerMedic)) return 1;
+                if (SkilledAs(plan.Hero, LeaderSkill.KillerMedic))
+                {
+                    activatedSkill = LeaderSkill.KillerMedic;
+                    return 3;
+                }
+                else if (SkilledAs(plan.Player, LeaderSkill.KillerMedic))
+                {
+
+                    activatedSkill = LeaderSkill.KillerMedic;
+                    return 1;
+                }
             }
 
             if (plan.Weapon != null && (plan.Weapon.IsPoisonWeapon || plan.Weapon.IsPoisonTooth))
             {
-                if (SkilledAs(plan.Hero, LeaderSkill.MasterOfAssassins)) return 3;
-                else if (SkilledAs(plan.Player, LeaderSkill.MasterOfAssassins)) return 1;
+                if (SkilledAs(plan.Hero, LeaderSkill.MasterOfAssassins))
+                {
+
+                    activatedSkill = LeaderSkill.MasterOfAssassins;
+                    return 3;
+                }
+                else if (SkilledAs(plan.Player, LeaderSkill.MasterOfAssassins))
+                {
+                    activatedSkill = LeaderSkill.MasterOfAssassins;
+                    return 1;
+                }
             }
 
+            activatedSkill = LeaderSkill.None;
             return 0;
         }
 
