@@ -19,7 +19,8 @@ namespace Treachery.Shared
             {
                 LogInfo("Move to spice");
                 var toMove = ForcesOnPlanet[decidedShipment.To].Take(decidedShipment.ForceAmount + decidedShipment.SpecialForceAmount, Faction == Faction.Grey);
-                return ConstructMove(finalDestination, decidedShipment.To, toMove);
+                var move = ConstructMove(finalDestination, decidedShipment.To, toMove);
+                if (move != null) return move;
             }
 
             //Move biggest batallion threatened by ally presence
@@ -31,7 +32,8 @@ namespace Treachery.Shared
                 if (moveTo != null)
                 {
                     LogInfo("Move biggest batallion threatened by ally presence");
-                    return ConstructMove(moveTo, battalionThreatenedByAllyPresence.Key, battalionThreatenedByAllyPresence.Value);
+                    var move = ConstructMove(moveTo, battalionThreatenedByAllyPresence.Key, battalionThreatenedByAllyPresence.Value);
+                    if (move != null) return move;
                 }
             }
 
@@ -46,7 +48,8 @@ namespace Treachery.Shared
                     if (moveTo != null)
                     {
                         LogInfo("Move biggest batallion threatened by storm");
-                        return ConstructMove(moveTo, biggestBattalionThreatenedByStorm.Key, biggestBattalionThreatenedByStorm.Value);
+                        var move = ConstructMove(moveTo, biggestBattalionThreatenedByStorm.Key, biggestBattalionThreatenedByStorm.Value);
+                        if (move != null) return move;
                     }
                 }
             }
@@ -60,7 +63,8 @@ namespace Treachery.Shared
                 if (moveTo != null)
                 {
                     LogInfo("Move from spiceless non-stronghold location (if not needed for atomics) to safe stronghold or spice or rock");
-                    return ConstructMove(moveTo, biggestBattalionInSpicelessNonStronghold.Key, biggestBattalionInSpicelessNonStronghold.Value);
+                    var move = ConstructMove(moveTo, biggestBattalionInSpicelessNonStronghold.Key, biggestBattalionInSpicelessNonStronghold.Value);
+                    if (move != null) return move;
                 }
             }
 
@@ -73,7 +77,8 @@ namespace Treachery.Shared
                 if (moveTo != null)
                 {
                     LogInfo("Move from useless non-stronghold location (if not needed for atomics) to safe stronghold or spice or rock");
-                    return ConstructMove(moveTo, biggestBattalionInSpicelessNonStrongholdNotNearStronghold.Key, biggestBattalionInSpicelessNonStrongholdNotNearStronghold.Value);
+                    var move = ConstructMove(moveTo, biggestBattalionInSpicelessNonStrongholdNotNearStronghold.Key, biggestBattalionInSpicelessNonStrongholdNotNearStronghold.Value);
+                    if (move != null) return move;
                 }
             }
 
@@ -88,7 +93,8 @@ namespace Treachery.Shared
                     if (moveTo != null)
                     {
                         LogInfo("Move partly from unthreatened stronghold location with enough forces to nearby vacant stronghold");
-                        return ConstructMove(moveTo, biggestStackOfAdvisorsInStrongholdNearVacantStronghold.Key, biggestStackOfAdvisorsInStrongholdNearVacantStronghold.Value);
+                        var move = ConstructMove(moveTo, biggestStackOfAdvisorsInStrongholdNearVacantStronghold.Key, biggestStackOfAdvisorsInStrongholdNearVacantStronghold.Value);
+                        if (move != null) return move;
                     }
                 }
             }
@@ -104,7 +110,8 @@ namespace Treachery.Shared
                     if (moveTo != null)
                     {
                         LogInfo("Move partly from unthreatened stronghold location with enough forces to nearby vacant stronghold");
-                        return ConstructMove(moveTo, bigUnthreatenedBattalionNearVacantStronghold.Key, bigUnthreatenedBattalionNearVacantStronghold.Value.TakeHalf());
+                        var move = ConstructMove(moveTo, bigUnthreatenedBattalionNearVacantStronghold.Key, bigUnthreatenedBattalionNearVacantStronghold.Value.TakeHalf());
+                        if (move != null) return move;
                     }
                 }
             }
@@ -123,7 +130,8 @@ namespace Treachery.Shared
                     {
                         LogInfo("Move partly from unthreatened stronghold location with enough forces to nearby spice");
                         int forcesForCollection = Math.Max(2, Math.Min(DetermineForcesNeededForCollection(moveTo), bigUnthreatenedBattalionNearSpice.Value.TotalAmountOfForces / 2));
-                        return ConstructMove(moveTo, bigUnthreatenedBattalionNearSpice.Key, bigUnthreatenedBattalionNearSpice.Value.Take(forcesForCollection, Faction == Faction.Grey));
+                        var move = ConstructMove(moveTo, bigUnthreatenedBattalionNearSpice.Key, bigUnthreatenedBattalionNearSpice.Value.Take(forcesForCollection, Faction == Faction.Grey));
+                        if (move != null) return move;
                     }
                 }
             }
@@ -134,9 +142,6 @@ namespace Treachery.Shared
                 //var locationsNearShieldWall = Map.FindNeighbours(Game.Map.ShieldWall.MiddleLocation, 1, false, Faction, Game.SectorInStorm, null);
                 if (!LastTurn && Game.SectorInStorm >= 0 && Game.SectorInStorm <= 8 && TreacheryCards.Any(c => c.Type == TreacheryCardType.Metheor) && !MetheorPlayed.HasForcesAtOrNearShieldWall(Game, this))
                 {
-
-
-
                     Location from = null;
                     Location to = null;
                     Battalion troopThatWillBlowShieldWall = DetermineBattalionThatWillDestroyShieldWall(ref from, ref to);
@@ -144,7 +149,8 @@ namespace Treachery.Shared
                     if (troopThatWillBlowShieldWall != null)
                     {
                         LogInfo("Move towards shield wall to detonate family atomics if needed");
-                        return ConstructMove(to, from, troopThatWillBlowShieldWall);
+                        var move = ConstructMove(to, from, troopThatWillBlowShieldWall);
+                        if (move != null) return move;
                     }
                 }
             }
@@ -270,11 +276,13 @@ namespace Treachery.Shared
 
             bool asAdvisors = Faction == Faction.Blue && SpecialForcesIn(to.Territory) > 0;
             var result = new Move(Game) { Initiator = Faction, Passed = false, To = to, ForceLocations = forces, AsAdvisors = asAdvisors };
+            
             if (!result.IsValid)
             {
                 LogInfo(result.Validate());
-                throw new ArgumentException(result.GetMessage().ToString());
+                return null;
             }
+
             return result;
         }
 

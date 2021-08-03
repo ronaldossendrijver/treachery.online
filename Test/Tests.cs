@@ -45,7 +45,8 @@ namespace Treachery.Test
             {
                 lock (WrittenCases)
                 {
-                    File.WriteAllText(c + "-" + playerWithAction.Name.Replace('*', 'X') + ".special.json", GameState.GetStateAsString(g));
+                    var id = playerWithAction == null ? "x" : playerWithAction.Name.Replace('*', 'X');
+                    File.WriteAllText(c + "-" + id + ".special.json", GameState.GetStateAsString(g));
                     WrittenCases.Add(c);
                 }
             }
@@ -103,6 +104,11 @@ namespace Treachery.Test
             {
                 var graduate = g.Players.FirstOrDefault(p => p.Leaders.Any(l => g.SkilledAs(l, LeaderSkill.Banker)));
                 WriteSavegameIfApplicable(g, graduate, "Banker");
+            }
+
+            if (g.RecentMilestones.Contains(Milestone.None))
+            {
+                WriteSavegameIfApplicable(g, null, "Retreat failed due to killed leader...");
             }
 
             p = g.Players.FirstOrDefault(p => p.TreacheryCards.Count > p.MaximumNumberOfCards);
@@ -246,7 +252,7 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 1000;
+            int nrOfGames = 5000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
