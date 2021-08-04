@@ -18,8 +18,8 @@ namespace Treachery.Shared
 
         public const int CurrentVersion = 2;
 
-        //public const string DEFAULT_ART_LOCATION = "https://treachery.online";
-        public const string DEFAULT_ART_LOCATION = ".";
+        public const string DEFAULT_ART_LOCATION = "https://treachery-nda.azurewebsites.net";
+        //public const string DEFAULT_ART_LOCATION = ".";
 
         public string Description = null;
         public int Version;
@@ -1180,6 +1180,8 @@ namespace Treachery.Shared
             var tTechTokenName_STR = FixDictionaryIfMissing("TechTokenName_STR", false, TechTokenName_STR, Dune1979.TechTokenName_STR, errors, UrlExists);
             var tTechTokenImage_URL = FixDictionaryIfMissing("TechTokenImage_URL", true, TechTokenImage_URL, Dune1979.TechTokenImage_URL, errors, UrlExists);
             
+            var tStrongholdCardImage_URL = FixDictionaryIfMissing("StrongholdCardImage_URL", true, StrongholdCardImage_URL, Dune1979.StrongholdCardImage_URL, errors, UrlExists);
+            var stLeaderSkillCardImage_URL = FixDictionaryIfMissing("LeaderSkillCardImage_URL", true, LeaderSkillCardImage_URL, Dune1979.LeaderSkillCardImage_URL, errors, UrlExists);
             /*
             ReportBackground_ShipmentAndMove_URL = await tReportBackground_ShipmentAndMove_URL;
             ReportBackground_StormAndResourceBlow_URL = await tReportBackground_StormAndResourceBlow_URL;

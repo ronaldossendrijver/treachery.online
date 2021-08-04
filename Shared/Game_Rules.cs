@@ -146,8 +146,7 @@ namespace Treachery.Shared
                 Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS,
                 Rule.GreyAndPurpleExpansionTreacheryCardsAmal,
                 Rule.GreyAndPurpleExpansionSandTrout,
-                Rule.BrownAndWhiteLeaderSkills,
-                Rule.BrownAndWhiteStrongholdBonus
+                Rule.BrownAndWhiteLeaderSkills
             },
 
             [Ruleset.ExpansionBasicGame] = new Rule[] {
@@ -160,8 +159,7 @@ namespace Treachery.Shared
             },
 
             [Ruleset.Expansion2BasicGame] = new Rule[] {
-                Rule.BrownAndWhiteLeaderSkills,
-                Rule.BrownAndWhiteStrongholdBonus
+                Rule.BrownAndWhiteLeaderSkills
             },
 
             [Ruleset.AllExpansionsAdvancedGame] = new Rule[] {
@@ -192,7 +190,8 @@ namespace Treachery.Shared
                 Rule.BrownAndWhiteLeaderSkills,
                 Rule.BrownAndWhiteStrongholdBonus,
                 Rule.BrownAuditor,
-                Rule.WhiteBlackMarket
+                Rule.WhiteBlackMarket,
+                Rule.BrownAndWhiteStrongholdBonus
             },
 
             [Ruleset.ExpansionAdvancedGame] = new Rule[] {
@@ -242,7 +241,8 @@ namespace Treachery.Shared
                 Rule.BrownAndWhiteLeaderSkills,
                 Rule.BrownAndWhiteStrongholdBonus,
                 Rule.BrownAuditor,
-                Rule.WhiteBlackMarket
+                Rule.WhiteBlackMarket,
+                Rule.BrownAndWhiteStrongholdBonus
             },
 
             [Ruleset.AllExpansionsAdvancedGameWithoutPayingForBattles] = new Rule[] {
@@ -272,7 +272,8 @@ namespace Treachery.Shared
                 Rule.BrownAndWhiteLeaderSkills,
                 Rule.BrownAndWhiteStrongholdBonus,
                 Rule.BrownAuditor,
-                Rule.WhiteBlackMarket
+                Rule.WhiteBlackMarket,
+                Rule.BrownAndWhiteStrongholdBonus
             },
 
             [Ruleset.ExpansionAdvancedGameWithoutPayingForBattles] = new Rule[] {
@@ -320,7 +321,8 @@ namespace Treachery.Shared
                 Rule.BrownAndWhiteLeaderSkills,
                 Rule.BrownAndWhiteStrongholdBonus,
                 Rule.BrownAuditor,
-                Rule.WhiteBlackMarket
+                Rule.WhiteBlackMarket,
+                Rule.BrownAndWhiteStrongholdBonus
             },
 
             [Ruleset.ServerClassic] = new Rule[] {
@@ -433,11 +435,11 @@ namespace Treachery.Shared
                     return RuleGroup.ExpansionIxAndBtAdvanced;
 
                 case Rule.BrownAndWhiteLeaderSkills:
-                case Rule.BrownAndWhiteStrongholdBonus:
                     return RuleGroup.ExpansionBrownAndWhiteBasic;
 
                 case Rule.BrownAuditor:
                 case Rule.WhiteBlackMarket:
+                case Rule.BrownAndWhiteStrongholdBonus:
                     return RuleGroup.ExpansionBrownAndWhiteAdvanced;
             }
 

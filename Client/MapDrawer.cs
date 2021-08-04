@@ -626,11 +626,11 @@ namespace Treachery.Client
                         //var text = (h.Game.CurrentMoment == MainPhaseMoment.Start ? "*" : "") + Skin.Current.Describe(phase) + (h.Game.CurrentMoment == MainPhaseMoment.End ? "*" : "") + "(" + h.Game.CurrentMoment + ")";
                         posY += 90;
 
-                        if (h.Game.EconomicsStatus != BrownEconomicsStatus.None)
+                        if (h.Game.EconomicsStatus != BrownEconomicsStatus.None && phase == MainPhase.Charity)
                         {
-                            var dX = await DrawText(posX, posY, Skin.Current.Describe(phase), Skin.Current.PHASE_ACTIVE_FONT, TextAlign.Right, Skin.Current.PHASE_ACTIVE_FONTCOLOR, Skin.Current.PHASE_ACTIVE_FONT_BORDERWIDTH, Skin.Current.PHASE_FONT_BORDERCOLOR);
+                            var dX = await DrawText(posX, posY, Skin.Current.Describe(phase), Skin.Current.PHASE_ACTIVE_FONT, TextAlign.Right, Skin.Current.PHASE_ACTIVE_FONTCOLOR, Skin.Current.PHASE_ACTIVE_FONT_BORDERWIDTH, Skin.Current.PHASE_FONT_BORDERCOLOR, null, true);
                             await DrawImage(Artwork.FactionTokens[Faction.Brown].Value, posX - dX - 130, posY - 90, 120, 120, Skin.Current.SHADOW_LIGHT, 1, 2, 2);
-                            await DrawText(posX - dX - 65, posY, Skin.Current.Describe(h.Game.EconomicsStatus), Skin.Current.FORCETOKEN_FONT, TextAlign.Center, "white", 1, "black");
+                            await DrawText(posX - dX - 65, posY, Skin.Current.Describe(h.Game.EconomicsStatus), Skin.Current.SKILL_FONT, TextAlign.Center, "white", 1, "black");
                         }
                         else
                         {
@@ -642,11 +642,11 @@ namespace Treachery.Client
                     {
                         posY += 60;
 
-                        if (h.Game.EconomicsStatus != BrownEconomicsStatus.None)
+                        if (h.Game.EconomicsStatus != BrownEconomicsStatus.None && phase == MainPhase.Charity)
                         {
-                            var dX = await DrawText(posX, posY, Skin.Current.Describe(phase), Skin.Current.PHASE_FONT, TextAlign.Right, Skin.Current.PHASE_FONTCOLOR, Skin.Current.PHASE_FONT_BORDERWIDTH, Skin.Current.PHASE_FONT_BORDERCOLOR);
+                            var dX = await DrawText(posX, posY, Skin.Current.Describe(phase), Skin.Current.PHASE_FONT, TextAlign.Right, Skin.Current.PHASE_FONTCOLOR, Skin.Current.PHASE_FONT_BORDERWIDTH, Skin.Current.PHASE_FONT_BORDERCOLOR, null, true);
                             await DrawImage (Artwork.FactionTokens[Faction.Brown].Value, posX - dX - 90, posY - 60, 80, 80, Skin.Current.SHADOW_LIGHT, 1, 2, 2);
-                            await DrawText(posX - dX - 65, posY, Skin.Current.Describe(h.Game.EconomicsStatus), Skin.Current.FORCETOKEN_FONT, TextAlign.Center, "white", 1, "black");
+                            await DrawText(posX - dX - 45, posY, Skin.Current.Describe(h.Game.EconomicsStatus), Skin.Current.SKILL_FONT, TextAlign.Center, "white", 1, "black");
                         }
                         else
                         {

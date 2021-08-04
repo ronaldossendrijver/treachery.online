@@ -167,7 +167,7 @@ namespace Treachery.Client
             var player = h.Game.Players.FirstOrDefault(p => Near(PlayerTokenPosition(h.Game, p.PositionAtTable), x, y, (int)(3.5f * Skin.Current.PlayerTokenRadius)));
             if (player != null)
             {
-                if (Near(PlayerTokenPosition(h.Game, player.PositionAtTable), x, y, (int)(0.8 * Skin.Current.PlayerTokenRadius)) && IntelPlayers.ContainsKey(player.PositionAtTable))
+                if (Near(PlayerTokenPosition(h.Game, player.PositionAtTable), x, y, Skin.Current.PlayerTokenRadius) && IntelPlayers.ContainsKey(player.PositionAtTable))
                 {
                     return IntelPlayers[player.PositionAtTable];
                 }
