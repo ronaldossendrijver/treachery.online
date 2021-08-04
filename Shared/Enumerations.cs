@@ -213,9 +213,6 @@ namespace Treachery.Shared
         [PhaseProperty(true, Faction.Brown)]
         Auditing = 313,
 
-        [PhaseProperty(true, Faction.None)]
-        MeltingRock = 314,
-
         BattleConclusion = 315,
 
         [PhaseProperty(true, Faction.Purple)]

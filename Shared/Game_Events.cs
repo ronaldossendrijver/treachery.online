@@ -317,19 +317,13 @@ namespace Treachery.Shared
                             result.Add(typeof(Thought));
                         }
 
-                        if (CurrentBattle != null && CurrentBattle.IsAggressorOrDefender(player) && ResidualPlayed.MayPlay(player))
+                        if (CurrentBattle != null && CurrentBattle.IsAggressorOrDefender(player) && ResidualPlayed.MayPlay(this, player))
                         {
                             result.Add(typeof(ResidualPlayed));
                         }
 
                         if (Version < 103 && player.Has(TreacheryCardType.Amal) && NrOfBattlesFought == 0) result.Add(typeof(AmalPlayed));
                     }
-                    break;
-
-                case Phase.MeltingRock:
-
-                    var myPlan = CurrentBattle.PlanOf(faction);
-                    if (myPlan != null && myPlan.HasRockMelter) result.Add(typeof(RockWasMelted));
                     break;
 
                 case Phase.CallTraitorOrPass:
@@ -348,6 +342,8 @@ namespace Treachery.Shared
                     if (faction == DefenderBattleAction.Initiator && DefenderBattleAction.Weapon != null && DefenderBattleAction.Weapon.Type == TreacheryCardType.PoisonTooth && !PoisonToothCancelled) result.Add(typeof(PoisonToothCancelled));
 
                     if (PortableAntidoteUsed.CanBePlayed(this, player)) result.Add(typeof(PortableAntidoteUsed));
+
+                    if (RockWasMelted.CanBePlayed(player)) result.Add(typeof(RockWasMelted));
 
                     if (Diplomacy.CanBePlayed(this, player)) result.Add(typeof(Diplomacy));
 

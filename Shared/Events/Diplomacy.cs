@@ -48,6 +48,11 @@ namespace Treachery.Shared
             return new Message(Initiator, "{0} use Diplomacy to turn {1} into a copy of the opponent's defense.", Initiator, Card);
         }
 
+        public Message GetDynamicMessage()
+        {
+            return new Message(Initiator, "{0} use Diplomacy to turn {1} into a {2}.", Initiator, Card, Game.CurrentBattle?.PlanOfOpponent(Player)?.Defense);
+        }
+
         public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)
         {
             var result = new List<TreacheryCard>();

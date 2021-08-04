@@ -110,7 +110,7 @@ namespace Treachery.Shared
 
         public bool IsProjectileWeapon => Type == TreacheryCardType.Projectile || Type == TreacheryCardType.WeirdingWay || Type == TreacheryCardType.ProjectileAndPoison;
 
-        public bool IsPoisonDefense => Type == TreacheryCardType.Chemistry || Type == TreacheryCardType.Antidote || Type == TreacheryCardType.ShieldAndAntidote || Type == TreacheryCardType.PortableAntidote;
+        public bool IsPoisonDefense => Type == TreacheryCardType.Chemistry || Type == TreacheryCardType.Antidote || Type == TreacheryCardType.ShieldAndAntidote;
 
         public bool IsNonAntidotePoisonDefense => Type == TreacheryCardType.Chemistry;
 
@@ -130,7 +130,7 @@ namespace Treachery.Shared
 
         public bool IsPortableAntidote => Type == TreacheryCardType.PortableAntidote;
 
-        public bool IsWeapon => IsLaser || IsPoisonWeapon || IsProjectileWeapon || IsPoisonTooth || IsArtillery || IsRockmelter || IsMirrorWeapon;
+        public bool IsWeapon => IsLaser || IsPoisonWeapon || IsProjectileWeapon || IsPoisonTooth || IsArtillery || IsMirrorWeapon;
 
         public bool IsDefense => IsPoisonDefense || IsProjectileDefense;
 

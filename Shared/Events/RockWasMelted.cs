@@ -2,6 +2,8 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
+using System;
+
 namespace Treachery.Shared
 {
     public class RockWasMelted : GameEvent
@@ -41,6 +43,11 @@ namespace Treachery.Shared
         public static Territory GetTerritory(Game g)
         {
             return g.LastShippedOrMovedTo.Territory;
+        }
+
+        public static bool CanBePlayed(Player p)
+        {
+            return p.Has(TreacheryCardType.Rockmelter);
         }
     }
 }

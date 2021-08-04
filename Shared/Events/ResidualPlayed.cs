@@ -31,9 +31,10 @@ namespace Treachery.Shared
             return new Message(Initiator, "{0} use {1} to kill a random opponent leader.", Initiator, TreacheryCardType.Residual);
         }
 
-        public static bool MayPlay(Player p)
+        public static bool MayPlay(Game g, Player p)
         {
-            return p.TreacheryCards.Any(c => c.Type == TreacheryCardType.Residual);
+            var opponentBattlePlan = g.CurrentBattle?.PlanOfOpponent(p);
+            return p.TreacheryCards.Any(c => c.Type == TreacheryCardType.Residual) && opponentBattlePlan == null;
         }
 
     }

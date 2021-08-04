@@ -565,7 +565,13 @@ namespace Treachery.Shared
 
         public Diplomacy DetermineDiplomacy()
         {
-            return new Diplomacy(Game) { Initiator = Faction, Card = Diplomacy.ValidCards(Game, this).First() };
+            var opponentPlan = Game.CurrentBattle.PlanOfOpponent(this);
+            if (opponentPlan.Weapon != null && opponentPlan.Weapon.CounteredBy(opponentPlan.Defense, null))
+            {
+                return new Diplomacy(Game) { Initiator = Faction, Card = Diplomacy.ValidCards(Game, this).First() };
+            }
+
+            return null;
         }
 
         public SkillAssigned DetermineSkillAssigned()

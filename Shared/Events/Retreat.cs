@@ -5,6 +5,7 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace Treachery.Shared
 {
@@ -35,7 +36,7 @@ namespace Treachery.Shared
         public static bool CanBePlayed(Game g, Player p)
         {
             var plan = g.CurrentBattle.PlanOf(p);
-            return g.CurrentRetreat != null && plan != null && g.SkilledAs(plan.Hero, LeaderSkill.Diplomat) && MaxForces(g, p) > 0 && ValidTargets(g, p).Any();
+            return g.CurrentRetreat == null && plan != null && g.SkilledAs(plan.Hero, LeaderSkill.Diplomat) && MaxForces(g, p) > 0 && ValidTargets(g, p).Any();
         }
 
         public static IEnumerable<Location> ValidTargets(Game g, Player p)
@@ -55,17 +56,6 @@ namespace Treachery.Shared
             return p.SpecialForcesIn(g.CurrentBattle.Territory) - plan.SpecialForces - plan.SpecialForcesAtHalfStrength;
         }
 
-        private static bool AllyPreventsAccompanyingToShipmentLocation(Game g, Player p)
-        {
-            var ally = g.GetPlayer(p.Ally);
-
-            return
-                !g.Applicable(Rule.AdvisorsDontConflictWithAlly) &&
-                g.Version >= 38 &&
-                (ally != null) &&
-                ally.AnyForcesIn(g.LastShippedOrMovedTo.Territory) != 0;
-        }
-
         protected override void ExecuteConcreteEvent()
         {
             Game.HandleEvent(this);
@@ -75,11 +65,11 @@ namespace Treachery.Shared
         {
             if (SpecialForces > 0)
             {
-                return new Message(Initiator, "{0} retreat {1} {2} and {3} {4} to {5}.", Initiator, Forces, Player.Force, SpecialForces, Player.SpecialForce, Location);
+                return new Message(Initiator, "{0} try to retreat {1} {2} and {3} {4} to {5}.", Initiator, Forces, Player.Force, SpecialForces, Player.SpecialForce, Location);
             }
             else
             {
-                return new Message(Initiator, "{0} retreat {1} {2} to {3}.", Initiator, Forces, Player.Force, Location);
+                return new Message(Initiator, "{0} try to retreat {1} {2} to {3}.", Initiator, Forces, Player.Force, Location);
             }
         }
     }

@@ -673,6 +673,7 @@ namespace Treachery.Shared
                         if (p.AnyForcesIn(t) > 0)
                         {
                             CurrentReport.Add(p.Faction, "All {0} forces in {1} were killed due to ally presence.", p.Faction, t);
+                            RevealCurrentNoField(p, t);
                             p.KillAllForces(t, false);
                         }
                     }
@@ -690,6 +691,7 @@ namespace Treachery.Shared
                         if (t != Map.PolarSink.Territory)
                         {
                             CurrentReport.Add(p.Faction, "All {0} forces in {1} were killed due to ally presence.", p.Faction, t);
+                            RevealCurrentNoField(p, t);
                             p.KillAllForces(t, false);
                         }
                     }

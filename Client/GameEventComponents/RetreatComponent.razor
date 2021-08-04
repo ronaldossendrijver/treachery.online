@@ -46,6 +46,11 @@
     private int forces;
     private int specialForces;
 
+    protected override void OnParametersSet()
+    {
+        BackgroundImage = Skin.Current.GetImageURL(LeaderSkill.Diplomat);
+    }
+
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)

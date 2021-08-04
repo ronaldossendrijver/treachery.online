@@ -204,11 +204,19 @@
         }
     }
 
+    bool _loading = false;
     private async Task LoadGame()
+    {
+        _loading = true;
+        _loadValidationError = "";
+        StateHasChanged();
+        await Task.Delay(200).ContinueWith(e => LoadGame_Continued());
+    }
+
+    private async Task LoadGame_Continued()
     {
         try
         {
-            _loadValidationError = "";
             loadedGameData = await Browser.LoadFile(_fileInput);
             await Browser.ClearFileInput("fileInput");
 
@@ -243,14 +251,26 @@
         {
             _loadValidationError = string.Format("Error loading game ({0})", e.Message);
         }
+
+        _loading = false;
+        StateHasChanged();
     }
 
-    private void RestoreGame()
+    bool _restoring = false;
+    private async void RestoreGame()
     {
         loadedGame = null;
         loadedGameData = null;
+        _restoring = true;
+        StateHasChanged();
+        await Task.Delay(200).ContinueWith(e => RestoreGame_Continued());
+    }
+
+    private void RestoreGame_Continued()
+    {
         var message = Game.TryLoad(recentGameState, false, true, ref restoredGame);
         restoredGameData = recentGameData;
+        _restoring = false;
         StateHasChanged();
     }
 
@@ -258,7 +278,11 @@
     {
         get
         {
-            if (loadedGame == null)
+            if (_loading)
+            {
+                return "Loading...";
+            }
+            else if (loadedGame == null)
             {
                 return "Click here if you wish to load a saved game...";
             }
@@ -273,7 +297,11 @@
     {
         get
         {
-            if (restoredGame != null)
+            if (_restoring)
+            {
+                return "Loading...";
+            }
+            else if (restoredGame != null)
             {
                 return Skin.Current.Format("Restored game: {0} players - turn {1}, started: {2}", restoredGame.Players.Count, restoredGame.CurrentTurn, restoredGame.Started);
             }

@@ -949,7 +949,12 @@ namespace Treachery.Shared
             var opponent = Game.CurrentBattle.OpponentOf(this);
             var opponentPlan = Game.CurrentBattle.PlanOf(opponent);
 
-            return new RockWasMelted(Game) { Initiator = Faction, Kill = opponentPlan.Hero != null && (myPlan.Hero == null || myPlan.Hero.Value < opponentPlan.Hero.Value) };
+            if (AnyForcesIn(Game.CurrentBattle.Territory) - myPlan.TotalForces > opponent.AnyForcesIn(Game.CurrentBattle.Territory) - opponentPlan.TotalForces)
+            {
+                return new RockWasMelted(Game) { Initiator = Faction, Kill = opponentPlan.Hero != null && (Faction == Faction.Purple || myPlan.Hero == null || myPlan.Hero.Value < opponentPlan.Hero.Value) };
+            }
+
+            return null;
         }
 
         protected ResidualPlayed DetermineResidualPlayed()

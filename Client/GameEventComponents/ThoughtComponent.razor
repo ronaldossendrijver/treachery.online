@@ -8,7 +8,7 @@
 
 <GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Use your @Skin.Current.Describe(LeaderSkill.Thinker) to ask if your opponent has a specific card</Header>
+    <Header>Use your @Skin.Current.Describe(LeaderSkill.Thinker) to ask if your opponent has a specific weapon</Header>
     <Body>
 
         <SelectCardComponent @bind-Value="card" Values="Thought.ValidCards(Game, Player)" Required="true"/>

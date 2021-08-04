@@ -49,7 +49,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} answer.", Initiator);
+            return new Message(Initiator, "{0} answered.", Initiator);
         }
 
         public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)
