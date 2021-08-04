@@ -18,8 +18,8 @@ namespace Treachery.Shared
 
         public const int CurrentVersion = 2;
 
-        public const string DEFAULT_ART_LOCATION = "https://treachery.online";
-        //public const string DEFAULT_ART_LOCATION = ".";
+        //public const string DEFAULT_ART_LOCATION = "https://treachery.online";
+        public const string DEFAULT_ART_LOCATION = ".";
 
         public string Description = null;
         public int Version;
@@ -2031,17 +2031,17 @@ namespace Treachery.Shared
                 [4] = "Tuek's Sietch",
                 [5] = "Sietch Tabr",
                 [6] = "Habbanya Sietch",
-                [42] = "Habbanya Sietch"
+                [42] = "Hidden Mobile Stronghold"
             },
 
             StrongholdCardImage_URL = new Dictionary<int, string>()
             {
-                [2] = "Carthag.gif",
-                [3] = "Arrakeen.gif",
-                [4] = "TueksSietch.gif",
-                [5] = "SietchTabr.gif",
-                [6] = "HabbanyaSietch.gif",
-                [42] = "HabbanyaSietch.gif"
+                [2] = DEFAULT_ART_LOCATION + "/art/Carthag.jpg",
+                [3] = DEFAULT_ART_LOCATION + "/art/Arrakeen.jpg",
+                [4] = DEFAULT_ART_LOCATION + "/art/TueksSietch.jpg",
+                [5] = DEFAULT_ART_LOCATION + "/art/SietchTabr.jpg",
+                [6] = DEFAULT_ART_LOCATION + "/art/HabbanyaSietch.jpg",
+                [42] = DEFAULT_ART_LOCATION + "/art/HMS.jpg"
             },
 
             MusicGeneral_URL = DEFAULT_ART_LOCATION + "/art/101_-_Dune_-_DOS_-_Arrakis.mp3",

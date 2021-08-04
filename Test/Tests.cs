@@ -54,17 +54,12 @@ namespace Treachery.Test
 
         private static string TestSpecialCases(Game g, GameEvent e)
         {
-            
             var p = g.GetPlayer(e.Initiator);
-            
-            WriteSavegameIfApplicable(g, typeof(Diplomacy));
-            WriteSavegameIfApplicable(g, typeof(Bureaucracy));
-            WriteSavegameIfApplicable(g, typeof(Planetology));
 
             p = g.Players.FirstOrDefault(p => p.ForcesInReserve < 0 || p.SpecialForcesInReserve < 0);
             if (p != null) return "Negative forces: " + p;
 
-            p = g.Players.FirstOrDefault(p => p.Faction == Faction.White &&(p.SpecialForcesInReserve != 0 || p.SpecialForcesKilled != 0));
+            p = g.Players.FirstOrDefault(p => p.Faction == Faction.White && (p.SpecialForcesInReserve != 0 || p.SpecialForcesKilled != 0));
             if (p != null) return "Invalid forces: " + p;
 
             p = g.Players.FirstOrDefault(p => p.Resources < 0);
@@ -85,34 +80,22 @@ namespace Treachery.Test
                 return "Assigning skill to null leader";
             }
 
-            if (e is Battle b4 && b4.Hero != null && g.SkilledAs(b4.Hero, LeaderSkill.Bureaucrat))
-            {
-                WriteSavegameIfApplicable(g, b4.Player, "Bureaucrat in battle");
-            }
-
-            if (e is Battle b && b.Hero != null && b.Hero.Id == 1002 && b.Weapon != null && !b.Weapon.IsUseless && (g.SkilledAs(b.Hero, LeaderSkill.Swordmaster) || g.SkilledAs(b.Hero, LeaderSkill.MasterOfAssassins)) && b.Messiah)
-            {
-                WriteSavegameIfApplicable(g, b.Player, "10-Strength Jessica");
-            }
-
-            if (e is Battle b2 && b2.Weapon != null && g.SkilledAs(b2.Hero, LeaderSkill.Planetologist) && b2.Player.TreacheryCards.Any(c => !(c.IsWeapon || c.IsDefense || c.IsUseless)))
-            {
-                WriteSavegameIfApplicable(g, b2.Player, "Planetologist in battle");
-            }
-
-            if (e is Battle b3 && b3.BankerBonus > 0)
-            {
-                var graduate = g.Players.FirstOrDefault(p => p.Leaders.Any(l => g.SkilledAs(l, LeaderSkill.Banker)));
-                WriteSavegameIfApplicable(g, graduate, "Banker");
-            }
-
-            if (g.RecentMilestones.Contains(Milestone.None))
-            {
-                WriteSavegameIfApplicable(g, null, "Retreat failed due to killed leader...");
-            }
-
             p = g.Players.FirstOrDefault(p => p.TreacheryCards.Count > p.MaximumNumberOfCards);
-            if (p != null && g.CurrentPhase != Phase.PerformingKarmaHandSwap) return "Too many cards: " + p;
+            if (p != null && g.CurrentPhase != Phase.PerformingKarmaHandSwap)
+            {
+                return "Too many cards: " + p;
+            }
+
+            WriteSavegameIfApplicable(g, typeof(Diplomacy));
+            WriteSavegameIfApplicable(g, typeof(Bureaucracy));
+            WriteSavegameIfApplicable(g, typeof(Planetology));
+            WriteSavegameIfApplicable(g, typeof(HMSAdvantageChosen));
+            WriteSavegameIfApplicable(g, typeof(Retreat));
+
+            if (e is Battle b && g.Skilled(b.Hero))
+            {
+                WriteSavegameIfApplicable(g, b.Player, Skin.Current.Format("{0} in battle", g.Skill(b.Hero)));
+            }
 
             return "";
         }
@@ -252,7 +235,7 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 5000;
+            int nrOfGames = 10000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 

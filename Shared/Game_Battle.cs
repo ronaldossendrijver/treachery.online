@@ -829,8 +829,6 @@ namespace Treachery.Shared
             bool aggHeroSurvives = !deftrt.TraitorCalled && (aggtrt.TraitorCalled || !lasgunShield && !outcome.DefHeroKilled);
             bool defHeroSurvives = !aggtrt.TraitorCalled && (deftrt.TraitorCalled || !lasgunShield && !outcome.AggHeroKilled);
 
-            if (CurrentRetreat != null) RecentMilestones.Add(Milestone.None);
-
             if (aggHeroSurvives)
             {
                 ExecuteRetreat(agg.Initiator);
@@ -874,10 +872,8 @@ namespace Treachery.Shared
 
         private void ExecuteRetreat(Faction f)
         {
-            Console.WriteLine("ExecuteRetreat()");
             if (CurrentRetreat != null && CurrentRetreat.Initiator == f)
             {
-                CurrentReport.Add(CurrentRetreat);
                 int forcesToMove = CurrentRetreat.Forces;
                 foreach (var l in CurrentBattle.Territory.Locations.Where(l => CurrentRetreat.Player.ForcesIn(l) > 0).ToArray())
                 {
@@ -969,11 +965,11 @@ namespace Treachery.Shared
 
             result.AggHeroKilled = false;
             result.AggHeroCauseOfDeath = TreacheryCardType.None;
-            DetermineCauseOfDeath(agg, def, agg.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && CurrentRockWasMelted.Kill, ref result.AggHeroKilled, ref result.AggHeroCauseOfDeath);
+            DetermineCauseOfDeath(agg, def, agg.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && CurrentRockWasMelted.Kill, ref result.AggHeroKilled, ref result.AggHeroCauseOfDeath, ref result.AggSavedByCarthag);
 
             result.DefHeroKilled = false;
             result.DefHeroCauseOfDeath = TreacheryCardType.None;
-            DetermineCauseOfDeath(def, agg, def.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && CurrentRockWasMelted.Kill, ref result.DefHeroKilled, ref result.DefHeroCauseOfDeath);
+            DetermineCauseOfDeath(def, agg, def.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && CurrentRockWasMelted.Kill, ref result.DefHeroKilled, ref result.DefHeroCauseOfDeath, ref result.DefSavedByCarthag);
 
             int aggHeroSkillBonus = Battle.DetermineSkillBonus(this, agg, out result.AggActivatedBonusSkill);
             result.AggHeroEffectiveStrength = (agg.Hero != null && !artilleryUsed) ? agg.Hero.ValueInCombatAgainst(def.Hero) : 0;
@@ -1075,10 +1071,18 @@ namespace Treachery.Shared
             {
                 KillLeaderInBattle(agg.Hero, def.Hero, outcome.AggHeroCauseOfDeath, outcome.Winner, outcome.AggHeroEffectiveStrength);
             }
+            else if (outcome.AggSavedByCarthag)
+            {
+                CurrentReport.Add(agg.Initiator, "{0} stronghold advantage protects {1} from death by {2}.", Map.Carthag, agg.Hero, TreacheryCardType.Poison);
+            }
 
             if (outcome.DefHeroKilled)
             {
                 KillLeaderInBattle(def.Hero, agg.Hero, outcome.DefHeroCauseOfDeath, outcome.Winner, outcome.DefHeroEffectiveStrength);
+            }
+            else if (outcome.DefSavedByCarthag)
+            {
+                CurrentReport.Add(def.Initiator, "{0} stronghold advantage protects {1} from death by {2}.", Map.Carthag, def.Hero, TreacheryCardType.Poison);
             }
 
             if (IsAggressorByJuice(def.Player))
@@ -1104,19 +1108,17 @@ namespace Treachery.Shared
             return CurrentJuice != null && CurrentJuice.Type == JuiceType.Aggressor && CurrentJuice.Player == p;
         }
 
-        private void DetermineCauseOfDeath(Battle playerPlan, Battle opponentPlan, IHero theHero, bool poisonToothUsed, bool artilleryUsed, bool rockMelterWasUsedToKill, ref bool heroDies, ref TreacheryCardType causeOfDeath)
+        private void DetermineCauseOfDeath(Battle playerPlan, Battle opponentPlan, IHero theHero, bool poisonToothUsed, bool artilleryUsed, bool rockMelterWasUsedToKill, ref bool heroDies, ref TreacheryCardType causeOfDeath, ref bool savedByCarthag)
         {
+            heroDies = false;
+            causeOfDeath = TreacheryCardType.None;
             bool isProtectedByCarthagAdvantage = HasStrongholdAdvantage(playerPlan.Initiator, StrongholdAdvantage.CountDefensesAsSnooper) && !playerPlan.HasPoison && !playerPlan.HasPoisonTooth;
+            savedByCarthag = isProtectedByCarthagAdvantage && opponentPlan.HasPoison && !playerPlan.HasAntidote;
 
             DetermineDeathBy(theHero, TreacheryCardType.Rockmelter, rockMelterWasUsedToKill, ref heroDies, ref causeOfDeath);
             DetermineDeathBy(theHero, TreacheryCardType.ArtilleryStrike, artilleryUsed && !playerPlan.HasShield, ref heroDies, ref causeOfDeath);
             DetermineDeathBy(theHero, TreacheryCardType.PoisonTooth, poisonToothUsed && !playerPlan.HasNonAntidotePoisonDefense, ref heroDies, ref causeOfDeath);
             DetermineDeathBy(theHero, TreacheryCardType.Laser, opponentPlan.HasLaser, ref heroDies, ref causeOfDeath);
-
-            if (opponentPlan.HasPoison && !playerPlan.HasAntidote && isProtectedByCarthagAdvantage)
-            {
-                CurrentReport.Add(playerPlan.Initiator, "{0} stronghold advantage protects {1} from death by {2}.", Map.Carthag, theHero, TreacheryCardType.Poison);
-            }
 
             DetermineDeathBy(theHero, TreacheryCardType.Poison, opponentPlan.HasPoison && !(playerPlan.HasAntidote || isProtectedByCarthagAdvantage), ref heroDies, ref causeOfDeath);
             DetermineDeathBy(theHero, TreacheryCardType.Projectile, opponentPlan.HasProjectile && !playerPlan.HasProjectileDefense, ref heroDies, ref causeOfDeath);
@@ -1217,15 +1219,15 @@ namespace Treachery.Shared
             if (SkilledAs(plan.Hero, LeaderSkill.Graduate))
             {
                 specialForcesToSaveInTerritory = Math.Min(specialForcesToLose, 1);
-                forcesToSaveInTerritory = Math.Max(0, Math.Min(forcesToLose - specialForcesToSaveInTerritory, 1));
+                forcesToSaveInTerritory = Math.Max(0, Math.Min(forcesToLose, 1 - specialForcesToSaveInTerritory));
 
                 specialForcesToSaveToReserves = Math.Max(0, Math.Min(specialForcesToLose - specialForcesToSaveInTerritory - forcesToSaveInTerritory, 2));
-                forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose - specialForcesToSaveInTerritory - forcesToSaveInTerritory - specialForcesToSaveToReserves, 2));
+                forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose - forcesToSaveInTerritory, 2 - specialForcesToSaveToReserves));
             }
             else if (SkilledAs(winner, LeaderSkill.Graduate))
             {
                 specialForcesToSaveToReserves = Math.Min(specialForcesToLose, 1);
-                forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose - specialForcesToSaveToReserves, 1));
+                forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose, 1 - specialForcesToSaveToReserves));
             }
 
             if (specialForcesToSaveInTerritory + forcesToSaveInTerritory + specialForcesToSaveToReserves + forcesToSaveToReserves > 0)
@@ -1538,6 +1540,7 @@ namespace Treachery.Shared
         public void HandleEvent(Retreat e)
         {
             CurrentRetreat = e;
+            CurrentReport.Add(CurrentRetreat);
         }
     }
 
@@ -1565,5 +1568,8 @@ namespace Treachery.Shared
         public float DefTotal;
         public Battle WinnerBattlePlan;
         public Battle LoserBattlePlan;
+
+        public bool AggSavedByCarthag;
+        public bool DefSavedByCarthag;
     }
 }

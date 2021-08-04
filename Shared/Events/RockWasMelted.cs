@@ -45,9 +45,9 @@ namespace Treachery.Shared
             return g.LastShippedOrMovedTo.Territory;
         }
 
-        public static bool CanBePlayed(Player p)
+        public static bool CanBePlayed(Game g, Player p)
         {
-            return p.Has(TreacheryCardType.Rockmelter);
+            return g.CurrentBattle.IsAggressorOrDefender(p) && p.Has(TreacheryCardType.Rockmelter);
         }
     }
 }

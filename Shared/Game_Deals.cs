@@ -71,7 +71,7 @@ namespace Treachery.Shared
                 if (deal.End == phase)
                 {
                     Deals.Remove(deal);
-                    CurrentReport.Add(new Message("Deal ended: {0}", deal.ToString(this)));
+                    //CurrentReport.Add(new Message("Deal ended: {0}", deal.ToString(this)));
                 }
             }
 

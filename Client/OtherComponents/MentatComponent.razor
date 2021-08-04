@@ -36,6 +36,40 @@
 
     </div>
 
+    @if (h.Game.Applicable(Rule.BrownAndWhiteLeaderSkills))
+    {
+        <h5 class="mt-2">Leader Skill Cards</h5>
+        <div class="row row-cols-3 row-cols-md-6 ml-0 mr-0">
+
+            @foreach (var v in Enumerations.GetValuesExceptDefault(typeof(LeaderSkill), LeaderSkill.None))
+            {
+                <div class="card">
+                    <div class="card-img-top" data-animation="true" data-content="@Support.GetSkillCardHoverHTML(v)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
+                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@(v.ToString())">
+                    </div>
+                </div>
+            }
+
+        </div>
+    }
+
+    @if (h.Game.Applicable(Rule.BrownAndWhiteStrongholdBonus))
+    {
+        <h5 class="mt-2">Stronghold Cards</h5>
+        <div class="row row-cols-3 row-cols-md-6 ml-0 mr-0">
+
+            @foreach (var v in h.Game.Map.Strongholds)
+            {
+                <div class="card">
+                    <div class="card-img-top" data-animation="true" data-content="@Support.GetStrongholdHTML(v)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
+                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@(v.ToString())">
+                    </div>
+                </div>
+            }
+
+        </div>
+    }
+
 </ModalComponent>
 
 @code {

@@ -92,7 +92,7 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(BattleInitiated))) action = DetermineBattleInitiated();
                 if (action == null && possibleEvents.Contains(typeof(Prescience))) action = DeterminePrescience();
                 if (action == null && possibleEvents.Contains(typeof(ClairVoyancePlayed))) action = DetermineClairvoyance();
-                if (action == null && possibleEvents.Contains(typeof(Battle))) action = DetermineBattle(true);
+                if (action == null && possibleEvents.Contains(typeof(Battle))) action = DetermineBattle(true, false);
                 if (action == null && possibleEvents.Contains(typeof(TreacheryCalled))) action = DetermineTreacheryCalled();
                 if (action == null && possibleEvents.Contains(typeof(BattleConcluded))) action = DetermineBattleConcluded();
                 if (action == null && possibleEvents.Contains(typeof(FaceDanced))) action = DetermineFaceDanced();

@@ -170,7 +170,7 @@ namespace Treachery.Shared
                         if (Game.CurrentBattle != null && (Game.CurrentBattle.Initiator == Faction || Game.CurrentBattle.Target == Faction))
                         {
                             var plan = Game.CurrentBattle.PlanOf(this);
-                            if (plan == null) plan = DetermineBattle(false);
+                            if (plan == null) plan = DetermineBattle(false, true);
                             if (plan != null)
                             {
                                 answer = Answer(plan.Defense != null && Voice.IsVoicedBy(Game, false, plan.Defense.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1));
@@ -182,7 +182,7 @@ namespace Treachery.Shared
                         if (Game.CurrentBattle != null && (Game.CurrentBattle.Initiator == Faction || Game.CurrentBattle.Target == Faction))
                         {
                             var plan = Game.CurrentBattle.PlanOf(this);
-                            if (plan == null) plan = DetermineBattle(false);
+                            if (plan == null) plan = DetermineBattle(false, true);
                             if (plan != null)
                             {
                                 answer = Answer(plan.Weapon != null && Voice.IsVoicedBy(Game, true, plan.Weapon.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1));
@@ -200,7 +200,7 @@ namespace Treachery.Shared
                         if (Game.CurrentBattle != null && (Game.CurrentBattle.Initiator == Faction || Game.CurrentBattle.Target == Faction))
                         {
                             var plan = Game.CurrentBattle.PlanOf(this);
-                            if (plan == null) plan = DetermineBattle(false);
+                            if (plan == null) plan = DetermineBattle(false, true);
                             if (plan != null)
                             {
                                 answer = Answer(
@@ -215,7 +215,7 @@ namespace Treachery.Shared
                         if (Game.CurrentBattle != null && (Game.CurrentBattle.Initiator == Faction || Game.CurrentBattle.Target == Faction))
                         {
                             var plan = Game.CurrentBattle.PlanOf(this);
-                            if (plan == null) plan = DetermineBattle(false);
+                            if (plan == null) plan = DetermineBattle(false, true);
                             if (plan != null)
                             {
                                 answer = Answer(plan.Dial(Game, Game.CurrentBattle.OpponentOf(this).Faction) > (float)Game.LatestClairvoyance.Parameter1);
@@ -228,7 +228,7 @@ namespace Treachery.Shared
                         if (Game.CurrentBattle != null && (Game.CurrentBattle.Initiator == Faction || Game.CurrentBattle.Target == Faction))
                         {
                             var plan = Game.CurrentBattle.PlanOf(this);
-                            if (plan == null) plan = (Battle)DetermineBattle(false);
+                            if (plan == null) plan = DetermineBattle(false, true);
                             if (plan != null)
                             {
                                 answer = Answer(plan.Hero == (IHero)Game.LatestClairvoyance.Parameter1);

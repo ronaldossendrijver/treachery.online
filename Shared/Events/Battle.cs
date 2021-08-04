@@ -671,55 +671,60 @@ namespace Treachery.Shared
 
         public static int DetermineSkillBonus(Game g, Battle plan, out LeaderSkill activatedSkill)
         {
-            if (g.SkilledAs(plan.Hero, LeaderSkill.Thinker))
+            return DetermineSkillBonus(g, plan.Player, plan.Hero, plan.Weapon, plan.Defense, plan.BankerBonus, out activatedSkill);
+        }
+
+        public static int DetermineSkillBonus(Game g, Player player, IHero hero, TreacheryCard weapon, TreacheryCard defense, int bankerBonus, out LeaderSkill activatedSkill)
+        {
+            if (g.SkilledAs(hero, LeaderSkill.Thinker))
             {
                 activatedSkill = LeaderSkill.Thinker;
                 return 2;
             }
 
-            if (g.SkilledAs(plan.Hero, LeaderSkill.Banker))
+            if (g.SkilledAs(hero, LeaderSkill.Banker))
             {
                 activatedSkill = LeaderSkill.Banker;
-                return plan.BankerBonus;
+                return bankerBonus;
             }
 
-            if (plan.Weapon != null && plan.Weapon.IsUseless || plan.Defense != null && plan.Defense.IsUseless)
+            if (weapon != null && weapon.IsUseless || defense != null && defense.IsUseless)
             {
-                if (g.SkilledAs(plan.Hero, LeaderSkill.Warmaster))
+                if (g.SkilledAs(hero, LeaderSkill.Warmaster))
                 {
                     activatedSkill = LeaderSkill.Warmaster;
                     return 3;
                 }
-                else if (g.SkilledAs(plan.Player, LeaderSkill.Warmaster))
+                else if (g.SkilledAs(player, LeaderSkill.Warmaster))
                 {
                     activatedSkill = LeaderSkill.Warmaster;
                     return 1;
                 }
             }
 
-            if (plan.Defense != null && plan.Defense.IsProjectileDefense)
+            if (defense != null && defense.IsProjectileDefense)
             {
-                if (g.SkilledAs(plan.Hero, LeaderSkill.Adept))
+                if (g.SkilledAs(hero, LeaderSkill.Adept))
                 {
                     activatedSkill = LeaderSkill.Adept;
                     return 3;
                 }
-                else if (g.SkilledAs(plan.Player, LeaderSkill.Adept))
+                else if (g.SkilledAs(player, LeaderSkill.Adept))
                 {
                     activatedSkill = LeaderSkill.Adept;
                     return 1;
                 }
             }
 
-            if (plan.Weapon != null && plan.Weapon.IsProjectileWeapon)
+            if (weapon != null && weapon.IsProjectileWeapon)
             {
-                if (g.SkilledAs(plan.Hero, LeaderSkill.Swordmaster))
+                if (g.SkilledAs(hero, LeaderSkill.Swordmaster))
                 {
 
                     activatedSkill = LeaderSkill.Swordmaster;
                     return 3;
                 }
-                else if (g.SkilledAs(plan.Player, LeaderSkill.Swordmaster))
+                else if (g.SkilledAs(player, LeaderSkill.Swordmaster))
                 {
 
                     activatedSkill = LeaderSkill.Swordmaster;
@@ -727,23 +732,23 @@ namespace Treachery.Shared
                 }
             }
 
-            if (plan.Weapon != null && !(plan.Weapon.IsWeapon || plan.Weapon.IsDefense || plan.Weapon.IsUseless))
+            if (weapon != null && !(weapon.IsWeapon || weapon.IsDefense || weapon.IsUseless))
             {
-                if (g.SkilledAs(plan.Hero, LeaderSkill.Planetologist))
+                if (g.SkilledAs(hero, LeaderSkill.Planetologist))
                 {
                     activatedSkill = LeaderSkill.Planetologist;
                     return 2;
                 }
             }
 
-            if (plan.Defense != null && plan.Defense.IsPoisonDefense)
+            if (defense != null && defense.IsPoisonDefense)
             {
-                if (g.SkilledAs(plan.Hero, LeaderSkill.KillerMedic))
+                if (g.SkilledAs(hero, LeaderSkill.KillerMedic))
                 {
                     activatedSkill = LeaderSkill.KillerMedic;
                     return 3;
                 }
-                else if (g.SkilledAs(plan.Player, LeaderSkill.KillerMedic))
+                else if (g.SkilledAs(player, LeaderSkill.KillerMedic))
                 {
 
                     activatedSkill = LeaderSkill.KillerMedic;
@@ -751,15 +756,15 @@ namespace Treachery.Shared
                 }
             }
 
-            if (plan.Weapon != null && (plan.Weapon.IsPoisonWeapon || plan.Weapon.IsPoisonTooth))
+            if (weapon != null && (weapon.IsPoisonWeapon || weapon.IsPoisonTooth))
             {
-                if (g.SkilledAs(plan.Hero, LeaderSkill.MasterOfAssassins))
+                if (g.SkilledAs(hero, LeaderSkill.MasterOfAssassins))
                 {
 
                     activatedSkill = LeaderSkill.MasterOfAssassins;
                     return 3;
                 }
-                else if (g.SkilledAs(plan.Player, LeaderSkill.MasterOfAssassins))
+                else if (g.SkilledAs(player, LeaderSkill.MasterOfAssassins))
                 {
                     activatedSkill = LeaderSkill.MasterOfAssassins;
                     return 1;
@@ -770,9 +775,14 @@ namespace Treachery.Shared
             return 0;
         }
 
-        public static int DetermineSkillPenalty(Game g, Battle playerPlan, Player opponent, out LeaderSkill activatedSkill)
+        public static int DetermineSkillPenalty(Game g, Battle plan, Player opponent, out LeaderSkill activatedSkill)
         {
-            if (g.SkilledAs(playerPlan.Hero, LeaderSkill.Bureaucrat))
+            return DetermineSkillPenalty(g, plan.Hero, opponent, out activatedSkill);
+        }
+
+        public static int DetermineSkillPenalty(Game g, IHero hero, Player opponent, out LeaderSkill activatedSkill)
+        {
+            if (g.SkilledAs(hero, LeaderSkill.Bureaucrat))
             {
                 activatedSkill = LeaderSkill.Bureaucrat;
                 return g.Map.Strongholds.Count(sh => opponent.Occupies(sh));

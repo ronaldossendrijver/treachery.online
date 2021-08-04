@@ -146,6 +146,18 @@ namespace Treachery.Client
             }
         }
 
+        public static string GetStrongholdHTML(Location l)
+        {
+            if (l == null)
+            {
+                return "";
+            }
+            else
+            {
+                return string.Format("<img src='{0}' width=300/>", Skin.Current.GetImageURL(l));
+            }
+        }
+
         public static string GetOwnedStrongholdHTML(Location l, Faction f)
         {
             if (l == null)

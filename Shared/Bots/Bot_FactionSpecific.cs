@@ -288,7 +288,7 @@ namespace Treachery.Shared
             {
                 var potentialWinningOpponents = Game.Players.Where(p => p != this && p != AlliedPlayer && Game.MeetsNormalVictoryCondition(p, true) && Game.CountChallengedStongholds(p) < 2);
                 var amountICanReinforce = MaxReinforcedDialTo(this, territory);
-                var maxDial = MaxDial(this, territory, opponent.Faction);
+                var maxDial = MaxDial(this, territory, opponent);
 
                 if (WinWasPredictedByMeThisTurn(opponent.Faction) || GetDialNeeded(territory, opponent, false) <= maxDial || potentialWinningOpponents.Contains(opponent) && GetDialNeeded(territory, opponent, false) <= amountICanReinforce + maxDial)
                 {
@@ -681,7 +681,7 @@ namespace Treachery.Shared
             if (Game.CurrentBattle.Initiator == Faction || Game.CurrentBattle.Target == Faction)
             {
                 var opponent = Game.CurrentBattle.OpponentOf(Faction);
-                return BestPrescience(opponent, MaxDial(this, Game.CurrentBattle.Territory, opponent.Faction));
+                return BestPrescience(opponent, MaxDial(this, Game.CurrentBattle.Territory, opponent));
             }
 
             return null;

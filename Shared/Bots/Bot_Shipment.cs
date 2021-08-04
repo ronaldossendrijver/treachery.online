@@ -339,7 +339,7 @@ namespace Treachery.Shared
 
             var myThreatenedStrongholds = ValidShipmentLocations
                 .Where(s => s.IsStronghold && OccupyingForces(s) > 0 && AllyNotIn(s.Territory) && OccupyingOpponentIn(s.Territory) != null)
-                .Select(s => new { Location = s, Difference = TotalMaxDialOfOpponents(s.Territory) + (takeReinforcementsIntoAccount ? (int)Math.Ceiling(MaxReinforcedDialTo(OccupyingOpponentIn(s.Territory), s.Territory)) : 0) - MaxDial(this, s.Territory, OccupyingOpponentIn(s.Territory).Faction) });
+                .Select(s => new { Location = s, Difference = TotalMaxDialOfOpponents(s.Territory) + (takeReinforcementsIntoAccount ? (int)Math.Ceiling(MaxReinforcedDialTo(OccupyingOpponentIn(s.Territory), s.Territory)) : 0) - MaxDial(this, s.Territory, OccupyingOpponentIn(s.Territory)) });
 
             LogInfo("MyThreatenedStrongholds:" + string.Join(",", myThreatenedStrongholds));
 
@@ -568,7 +568,7 @@ namespace Treachery.Shared
             var shippableStrongholdsOfWinningOpponents = ValidShipmentLocations.Where(l => (l.Territory.IsStronghold || Game.IsSpecialStronghold(Game.Map.ShieldWall)) && AllyNotIn(l.Territory) && potentialWinningOpponents.Any(p => p.Occupies(l)) && IDontHaveAdvisorsIn(l));
             LogInfo("shippableStrongholdsOfWinningOpponents:" + string.Join(",", shippableStrongholdsOfWinningOpponents));
 
-            var weakestShippableLocationOfWinningOpponent = shippableStrongholdsOfWinningOpponents.Select(s => new { Stronghold = s, Strength = potentialWinningOpponents.Sum(p => MaxDial(p, s.Territory, Faction) - MaxDial(this, s.Territory, p.Faction)) }).Where(l => l.Strength > 0).OrderBy(l => l.Strength).FirstOrDefault();
+            var weakestShippableLocationOfWinningOpponent = shippableStrongholdsOfWinningOpponents.Select(s => new { Stronghold = s, Strength = potentialWinningOpponents.Sum(p => MaxDial(p, s.Territory, this) - MaxDial(this, s.Territory, p)) }).Where(l => l.Strength > 0).OrderBy(l => l.Strength).FirstOrDefault();
             LogInfo("weakestShippableLocationOfWinningOpponent:" + weakestShippableLocationOfWinningOpponent);
 
             if (weakestShippableLocationOfWinningOpponent != null)

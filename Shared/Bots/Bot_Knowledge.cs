@@ -461,9 +461,15 @@ namespace Treachery.Shared
 
         protected virtual bool IMustPayForForcesInBattle => Battle.MustPayForForcesInBattle(Game, this);
 
-        protected virtual float MaxDial(Player p, Territory t, Faction opponent)
+        protected virtual float MaxDial(Player p, Territory t, Player opponent)
         {
-            return MaxDial(p.Resources, p.ForcesIn(t), p.SpecialForcesIn(t), p.Faction, opponent);
+            int countForcesForWhite = 0;
+            if (p.Faction == Faction.White && p.SpecialForcesIn(t) > 0)
+            {
+                countForcesForWhite = Game.LatestRevealedNoFieldValue == 5 ? 3 : 5;
+            }
+
+            return MaxDial(p.Resources, p.ForcesIn(t) + countForcesForWhite, p.Faction != Faction.White ? p.SpecialForcesIn(t) : 0, p.Faction, opponent.Faction);
         }
 
         protected virtual float MaxDial(int resources, Battalion battalion, Faction opponent)
@@ -491,7 +497,7 @@ namespace Treachery.Shared
 
         protected virtual float TotalMaxDialOfOpponents(Territory t)
         {
-            return Opponents.Sum(o => MaxDial(o, t, Faction));
+            return Opponents.Sum(o => MaxDial(o, t, this));
         }
 
         protected bool IWillBeAggressorAgainst(Player opponent)

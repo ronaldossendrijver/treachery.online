@@ -625,13 +625,34 @@ namespace Treachery.Client
                     {
                         //var text = (h.Game.CurrentMoment == MainPhaseMoment.Start ? "*" : "") + Skin.Current.Describe(phase) + (h.Game.CurrentMoment == MainPhaseMoment.End ? "*" : "") + "(" + h.Game.CurrentMoment + ")";
                         posY += 90;
-                        await DrawText(posX, posY, Skin.Current.Describe(phase), Skin.Current.PHASE_ACTIVE_FONT, TextAlign.Right, Skin.Current.PHASE_ACTIVE_FONTCOLOR, Skin.Current.PHASE_ACTIVE_FONT_BORDERWIDTH, Skin.Current.PHASE_FONT_BORDERCOLOR);
+
+                        if (h.Game.EconomicsStatus != BrownEconomicsStatus.None)
+                        {
+                            var dX = await DrawText(posX, posY, Skin.Current.Describe(phase), Skin.Current.PHASE_ACTIVE_FONT, TextAlign.Right, Skin.Current.PHASE_ACTIVE_FONTCOLOR, Skin.Current.PHASE_ACTIVE_FONT_BORDERWIDTH, Skin.Current.PHASE_FONT_BORDERCOLOR);
+                            await DrawImage(Artwork.FactionTokens[Faction.Brown].Value, posX - dX - 130, posY - 90, 120, 120, Skin.Current.SHADOW_LIGHT, 1, 2, 2);
+                            await DrawText(posX - dX - 65, posY, Skin.Current.Describe(h.Game.EconomicsStatus), Skin.Current.FORCETOKEN_FONT, TextAlign.Center, "white", 1, "black");
+                        }
+                        else
+                        {
+                            await DrawText(posX, posY, Skin.Current.Describe(phase), Skin.Current.PHASE_ACTIVE_FONT, TextAlign.Right, Skin.Current.PHASE_ACTIVE_FONTCOLOR, Skin.Current.PHASE_ACTIVE_FONT_BORDERWIDTH, Skin.Current.PHASE_FONT_BORDERCOLOR);
+                        }
                         posY += 40;
                     }
                     else
                     {
                         posY += 60;
-                        await DrawText(posX, posY, Skin.Current.Describe(phase), Skin.Current.PHASE_FONT, TextAlign.Right, Skin.Current.PHASE_FONTCOLOR, Skin.Current.PHASE_FONT_BORDERWIDTH, Skin.Current.PHASE_FONT_BORDERCOLOR);
+
+                        if (h.Game.EconomicsStatus != BrownEconomicsStatus.None)
+                        {
+                            var dX = await DrawText(posX, posY, Skin.Current.Describe(phase), Skin.Current.PHASE_FONT, TextAlign.Right, Skin.Current.PHASE_FONTCOLOR, Skin.Current.PHASE_FONT_BORDERWIDTH, Skin.Current.PHASE_FONT_BORDERCOLOR);
+                            await DrawImage (Artwork.FactionTokens[Faction.Brown].Value, posX - dX - 90, posY - 60, 80, 80, Skin.Current.SHADOW_LIGHT, 1, 2, 2);
+                            await DrawText(posX - dX - 65, posY, Skin.Current.Describe(h.Game.EconomicsStatus), Skin.Current.FORCETOKEN_FONT, TextAlign.Center, "white", 1, "black");
+                        }
+                        else
+                        {
+                            await DrawText(posX, posY, Skin.Current.Describe(phase), Skin.Current.PHASE_FONT, TextAlign.Right, Skin.Current.PHASE_FONTCOLOR, Skin.Current.PHASE_FONT_BORDERWIDTH, Skin.Current.PHASE_FONT_BORDERCOLOR);
+                        }
+
                         posY += 30;
                     }
                 }
@@ -1014,9 +1035,11 @@ namespace Treachery.Client
             await map.RestoreAsync();
         }
 
-        private static async Task DrawText(double x, double y, string text,
-            string font, TextAlign alignment, string color, int bordersize, string bordercolor, double? maxWidth = null)
+        private static async Task<double> DrawText(double x, double y, string text,
+            string font, TextAlign alignment, string color, int bordersize, string bordercolor, double? maxWidth = null, bool measureText = false)
         {
+            double result = 0;
+
             await map.SaveAsync();
             await SetShadow("rgb(0,0,0,0)", 0, 0, 0);
             await map.SetFontAsync(font);
@@ -1030,7 +1053,16 @@ namespace Treachery.Client
                 await map.SetLineWidthAsync(bordersize);
                 await map.StrokeTextAsync(text, x, y, maxWidth);
             }
+
+            if (measureText)
+            {
+                var measure = await map.MeasureTextAsync(text);
+                result = measure.Width;
+            }
+
             await map.RestoreAsync();
+
+            return result;
         }
 
         private static async Task DrawSegments(Segment[] shape, string fillStyle)

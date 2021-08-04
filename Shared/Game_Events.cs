@@ -274,7 +274,7 @@ namespace Treachery.Shared
                             result.Add(typeof(BattleInitiated));
                         }
 
-                        if (SwitchedSkilledLeader.CanBePlayed(this, player))
+                        if (CurrentBattle != null && SwitchedSkilledLeader.CanBePlayed(this, player))
                         {
                             result.Add(typeof(SwitchedSkilledLeader));
                         }
@@ -343,7 +343,7 @@ namespace Treachery.Shared
 
                     if (PortableAntidoteUsed.CanBePlayed(this, player)) result.Add(typeof(PortableAntidoteUsed));
 
-                    if (RockWasMelted.CanBePlayed(player)) result.Add(typeof(RockWasMelted));
+                    if (RockWasMelted.CanBePlayed(this, player)) result.Add(typeof(RockWasMelted));
 
                     if (Diplomacy.CanBePlayed(this, player)) result.Add(typeof(Diplomacy));
 
