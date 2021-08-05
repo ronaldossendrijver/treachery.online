@@ -185,7 +185,7 @@ namespace Treachery.Shared
 
             if (IsPlaying(Faction.White))
             {
-                WhiteCache = TreacheryCardManager.CreateWhiteCache(this);
+                WhiteCache = TreacheryCardManager.GetWhiteCards(this);
             }
 
             DeterminePositionsAtTable();

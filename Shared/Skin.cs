@@ -18,8 +18,8 @@ namespace Treachery.Shared
 
         public const int CurrentVersion = 2;
 
-        public const string DEFAULT_ART_LOCATION = "https://treachery-nda.azurewebsites.net";
-        //public const string DEFAULT_ART_LOCATION = ".";
+        //public const string DEFAULT_ART_LOCATION = "https://treachery-nda.azurewebsites.net";
+        public const string DEFAULT_ART_LOCATION = ".";
 
         public string Description = null;
         public int Version;
@@ -1598,16 +1598,16 @@ namespace Treachery.Shared
                 [43] = DEFAULT_ART_LOCATION + "/art/Amal.gif",
                 [44] = DEFAULT_ART_LOCATION + "/art/KullWahad.gif",
 
-                [45] = DEFAULT_ART_LOCATION + "/art/Distrans.gif",
-                [46] = DEFAULT_ART_LOCATION + "/art/JuiceOfSapho.gif",
-                [47] = DEFAULT_ART_LOCATION + "/art/MirrorWeapon.gif",
-                [48] = DEFAULT_ART_LOCATION + "/art/PortableSnooper.gif",
-                [49] = DEFAULT_ART_LOCATION + "/art/Ornithopter.gif",
-                [50] = DEFAULT_ART_LOCATION + "/art/Nullentropy.gif",
-                [51] = DEFAULT_ART_LOCATION + "/art/SemutaDrug.gif",
-                [52] = DEFAULT_ART_LOCATION + "/art/ResidualPoison.gif",
-                [53] = DEFAULT_ART_LOCATION + "/art/StoneBurner.gif",
-                [54] = DEFAULT_ART_LOCATION + "/art/WhiteKarama.gif",
+                [45] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [46] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [47] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [48] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [49] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [50] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [51] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [52] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [53] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [54] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
             },
 
             ResourceCardImage_URL = new Dictionary<int, string>()
@@ -1895,7 +1895,7 @@ namespace Treachery.Shared
                 { Faction.Grey, DEFAULT_ART_LOCATION + "/art/faction7force.svg" },
                 { Faction.Purple, DEFAULT_ART_LOCATION + "/art/faction8force.svg" },
 
-                { Faction.Brown, DEFAULT_ART_LOCATION + "/art/faction9force.png" },
+                { Faction.Brown, DEFAULT_ART_LOCATION + "/art/faction9force.svg" },
                 { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10force.svg" },
                 { Faction.Pink, DEFAULT_ART_LOCATION + "/art/faction11force.svg" },
                 { Faction.Cyan, DEFAULT_ART_LOCATION + "/art/faction12force.svg" }
@@ -2019,20 +2019,20 @@ namespace Treachery.Shared
             LeaderSkillCardImage_URL = new Dictionary<LeaderSkill, string>()
             {
                 [LeaderSkill.None] = "",
-                [LeaderSkill.Bureaucrat] = DEFAULT_ART_LOCATION + "/art/Bureaucrat.jpg",
-                [LeaderSkill.Diplomat] = DEFAULT_ART_LOCATION + "/art/Diplomat.jpg",
-                [LeaderSkill.Decipherer] = DEFAULT_ART_LOCATION + "/art/Decipherer.jpg",
-                [LeaderSkill.Smuggler] = DEFAULT_ART_LOCATION + "/art/Smuggler.jpg",
-                [LeaderSkill.Graduate] = DEFAULT_ART_LOCATION + "/art/Graduate.jpg",
-                [LeaderSkill.Planetologist] = DEFAULT_ART_LOCATION + "/art/Planetologist.jpg",
-                [LeaderSkill.Warmaster] = DEFAULT_ART_LOCATION + "/art/Warmaster.jpg",
-                [LeaderSkill.Adept] = DEFAULT_ART_LOCATION + "/art/Adept.jpg",
-                [LeaderSkill.Swordmaster] = DEFAULT_ART_LOCATION + "/art/Swordmaster.jpg",
-                [LeaderSkill.KillerMedic] = DEFAULT_ART_LOCATION + "/art/KillerMedic.jpg",
-                [LeaderSkill.MasterOfAssassins] = DEFAULT_ART_LOCATION + "/art/MasterOfAssassins.jpg",
-                [LeaderSkill.Sandmaster] = DEFAULT_ART_LOCATION + "/art/Sandmaster.jpg",
-                [LeaderSkill.Thinker] = DEFAULT_ART_LOCATION + "/art/Thinker.jpg",
-                [LeaderSkill.Banker] = DEFAULT_ART_LOCATION + "/art/Banker.jpg"
+                [LeaderSkill.Bureaucrat] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [LeaderSkill.Diplomat] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [LeaderSkill.Decipherer] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [LeaderSkill.Smuggler] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [LeaderSkill.Graduate] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [LeaderSkill.Planetologist] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [LeaderSkill.Warmaster] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [LeaderSkill.Adept] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [LeaderSkill.Swordmaster] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [LeaderSkill.KillerMedic] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [LeaderSkill.MasterOfAssassins] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [LeaderSkill.Sandmaster] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [LeaderSkill.Thinker] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [LeaderSkill.Banker] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif"
             },
 
             StrongholdCardName_STR = new Dictionary<int, string>()
@@ -2047,12 +2047,12 @@ namespace Treachery.Shared
 
             StrongholdCardImage_URL = new Dictionary<int, string>()
             {
-                [2] = DEFAULT_ART_LOCATION + "/art/Carthag.jpg",
-                [3] = DEFAULT_ART_LOCATION + "/art/Arrakeen.jpg",
-                [4] = DEFAULT_ART_LOCATION + "/art/TueksSietch.jpg",
-                [5] = DEFAULT_ART_LOCATION + "/art/SietchTabr.jpg",
-                [6] = DEFAULT_ART_LOCATION + "/art/HabbanyaSietch.jpg",
-                [42] = DEFAULT_ART_LOCATION + "/art/HMS.jpg"
+                [2] = DEFAULT_ART_LOCATION + "/art/Carthag.gif",
+                [3] = DEFAULT_ART_LOCATION + "/art/Arrakeen.gif",
+                [4] = DEFAULT_ART_LOCATION + "/art/TueksSietch.gif",
+                [5] = DEFAULT_ART_LOCATION + "/art/SietchTabr.gif",
+                [6] = DEFAULT_ART_LOCATION + "/art/HabbanyaSietch.gif",
+                [42] = DEFAULT_ART_LOCATION + "/art/HMS.gif"
             },
 
             MusicGeneral_URL = DEFAULT_ART_LOCATION + "/art/101_-_Dune_-_DOS_-_Arrakis.mp3",

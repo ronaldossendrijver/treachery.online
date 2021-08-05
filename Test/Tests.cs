@@ -235,12 +235,13 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 2000;
+            int nrOfGames = 5000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
             //Expansion, advanced game, all expansions, all factions:
-            var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
+            //var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
+            var rules = Game.RulesetDefinition[Ruleset.AllExpansionsBasicGame].ToList();
             rules.Add(Rule.FillWithBots);
             //rules.Add(Rule.BotsCannotAlly);
             //rules.Remove(Rule.BrownAndWhiteLeaderSkills);

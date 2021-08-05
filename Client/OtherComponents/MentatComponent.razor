@@ -22,6 +22,23 @@
 
     </div>
 
+    @if (h.Game.IsPlaying(Faction.White))
+    {
+        <h5 class="mt-2">@Skin.Current.Describe(Faction.White) Cards</h5>
+        <div class="row row-cols-3 row-cols-md-6 ml-0 mr-0">
+
+            @foreach (var v in TreacheryCardManager.GetWhiteCards(h.Game))
+            {
+                <div class="card">
+                    <div class="card-img-top" data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(v)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
+                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@(v.Name)">
+                    </div>
+                </div>
+            }
+
+        </div>
+    }
+
     <h5 class="mt-2">@Skin.Current.Describe(Concept.Resource) Cards</h5>
     <div class="row row-cols-3 row-cols-md-6 ml-0 mr-0">
 

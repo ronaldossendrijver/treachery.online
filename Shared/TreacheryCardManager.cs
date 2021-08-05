@@ -106,7 +106,7 @@ namespace Treachery.Shared
             return result;
         }
 
-        public static List<TreacheryCard> CreateWhiteCache(Game g)
+        public static List<TreacheryCard> GetWhiteCards(Game g)
         {
             return GetCardsInPlay(g, Rule.WhiteTreacheryCards).ToList();
         }
