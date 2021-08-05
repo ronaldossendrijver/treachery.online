@@ -258,6 +258,7 @@ namespace Treachery.Shared
         Bureaucracy = 508,
         AssigningSkill = 509,
         Thought = 510,
+        MeltingRock = 511,
     }
 
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]

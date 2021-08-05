@@ -6,6 +6,7 @@ using Microsoft.JSInterop;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System;
+using System.Collections.Generic;
 
 namespace Treachery.Client
 {
@@ -50,6 +51,20 @@ namespace Treachery.Client
             }
         }
 
+        public async Task<IEnumerable<string>> GetKeys()
+        {
+            /*int nrOfItems = await _jsRuntime.InvokeAsync<string[]>("localStorage.length");
+            _jsRuntime.
+            string[] result = new string[nrOfItems];
+
+            for (int i = 0; i < nrOfItems; i++)
+            {
+                result[i] = await _jsRuntime.InvokeAsync<string>("localStorage.key", i);
+            }*/
+            return await _jsRuntime.InvokeAsync<string[]>("GetLocalStorageKeys");
+            //return result;
+        }
+
         public async Task<string> GetStringAsync(string key)
         {
             string val = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", key);
@@ -66,5 +81,6 @@ namespace Treachery.Client
         {
             await _jsRuntime.InvokeVoidAsync("localStorage.clear");
         }
+
     }
 }

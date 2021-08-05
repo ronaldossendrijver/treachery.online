@@ -130,7 +130,7 @@ namespace Treachery.Shared
 
         public bool IsPortableAntidote => Type == TreacheryCardType.PortableAntidote;
 
-        public bool IsWeapon => IsLaser || IsPoisonWeapon || IsProjectileWeapon || IsPoisonTooth || IsArtillery || IsMirrorWeapon;
+        public bool IsWeapon => IsLaser || IsPoisonWeapon || IsProjectileWeapon || IsPoisonTooth || IsArtillery || IsMirrorWeapon || IsRockmelter;
 
         public bool IsDefense => IsPoisonDefense || IsProjectileDefense;
 

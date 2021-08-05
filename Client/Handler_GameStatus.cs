@@ -1257,6 +1257,30 @@ namespace Treachery.Client
                                         }
                                     }
 
+                                case Phase.MeltingRock:
+                                    {
+                                        var myPlan = Game.CurrentBattle.PlanOf(Player);
+
+                                        if (myPlan != null && myPlan.HasRockMelter)
+                                        {
+                                            return new GameStatus()
+                                            {
+                                                Description = Skin.Current.Format("You may now decide how to use your {0}.", TreacheryCardType.Rockmelter),
+                                                WaitingForOthers = false
+                                            };
+                                        }
+                                        else
+                                        {
+
+                                            return new GameStatus()
+                                            {
+                                                Description = Skin.Current.Format("Waiting for a decision on how the {0} will be used...", TreacheryCardType.Rockmelter),
+                                                WaitingForOthers = true
+                                            };
+                                        }
+                                    }
+
+
                                 case Phase.CallTraitorOrPass:
                                     {
                                         var iAmAggressor = IAm(Game.CurrentBattle.Initiator);
@@ -1556,6 +1580,7 @@ namespace Treachery.Client
                         break;
 
                     case Phase.BattlePhase:
+                    case Phase.MeltingRock:
                     case Phase.CallTraitorOrPass:
                     case Phase.BattleConclusion:
                     case Phase.Facedancing:

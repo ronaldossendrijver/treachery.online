@@ -786,20 +786,38 @@ namespace Treachery.Client
             }
         }
 
+        bool _localStorageCleared = false;
         private async Task SaveGame()
         {
-            if (Game.History.Count < 1500)
+            try
             {
-                try
+                if (Game.History.Count < 2000)
                 {
-                    await Browser.SaveSetting(string.Format("treachery.online;latestgame;{0}", PlayerName.ToLower().Trim()), GameState.GetStateAsString(Game));
-                }
-                catch (Exception e)
-                {
-                    Support.Log("Unable to save game: {0}", e.Message);
+                    bool mustClear = false;
+
+                    try
+                    {
+                        await Browser.SaveSetting(string.Format("treachery.online;latestgame;{0}", PlayerName.ToLower().Trim()), GameState.GetStateAsString(Game));
+                    }
+                    catch (Exception)
+                    {
+                        if (!_localStorageCleared) 
+                        {
+                            _localStorageCleared = true;
+                            mustClear = true;
+                        }
+                    }
+
+                    if (mustClear)
+                    {
+                        await Browser.ClearSettingsStartingWith("treachery.online;latestgame");
+                    }
                 }
             }
-            
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         public async Task ConfirmPlayername(string name)

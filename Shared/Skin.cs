@@ -1396,7 +1396,7 @@ namespace Treachery.Shared
                 [MainPhase.Resurrection] = "Revival",
                 [MainPhase.ShipmentAndMove] = "Ship & Move",
                 [MainPhase.Battle] = "Battle",
-                [MainPhase.Collection] = "Spice Collection",
+                [MainPhase.Collection] = "Collection",
                 [MainPhase.Contemplate] = "Mentat",
                 [MainPhase.Ended] = "Game Ended"
             },

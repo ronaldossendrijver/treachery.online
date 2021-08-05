@@ -58,6 +58,12 @@ namespace Treachery.Shared
                 result.Add(TreacheryCardType.ShieldAndAntidote);
             }
 
+            if (g.IsPlaying(Faction.White))
+            {
+                result.Add(TreacheryCardType.Rockmelter);
+                result.Add(TreacheryCardType.MirrorWeapon);
+            }
+
             if (!g.Applicable(Rule.BlueVoiceMustNameSpecialCards))
             {
                 result.Add(TreacheryCardType.PoisonDefense);

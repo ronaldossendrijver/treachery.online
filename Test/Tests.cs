@@ -57,40 +57,71 @@ namespace Treachery.Test
             var p = g.GetPlayer(e.Initiator);
 
             p = g.Players.FirstOrDefault(p => p.ForcesInReserve < 0 || p.SpecialForcesInReserve < 0);
-            if (p != null) return "Negative forces: " + p;
+            if (p != null) return "Negative forces: " + p + " after " + e.GetType().Name + " -> " + g.History.Count;
 
             p = g.Players.FirstOrDefault(p => p.Faction == Faction.White && (p.SpecialForcesInReserve != 0 || p.SpecialForcesKilled != 0));
-            if (p != null) return "Invalid forces: " + p;
+            if (p != null) return "Invalid forces: " + p + " after " + e.GetType().Name + " -> " + g.History.Count;
 
             p = g.Players.FirstOrDefault(p => p.Resources < 0);
-            if (p != null) return "Negative spice: " + p;
+            if (p != null) return "Negative spice: " + p + " after " + e.GetType().Name + " -> " + g.History.Count;
 
             if (g.Players.Any(p => p.Leaders.Count(l => g.IsInFrontOfShield(l)) > 1))
             {
-                return "More than 1 leader in front of shield";
+                return "More than 1 leader in front of shield" + " after " + e.GetType().Name + " -> " + g.History.Count;
             }
 
             if (g.Players.Any(p => p.Leaders.Count(l => !g.CapturedLeaders.Keys.Contains(l) && g.Skilled(l)) + g.CapturedLeaders.Count(cl => cl.Value == p.Faction && g.Skilled(cl.Key)) > 1))
             {
-                return "More than 1 skilled leader for 1 player (not counting leaders captured by hark)";
+                return "More than 1 skilled leader for 1 player (not counting leaders captured by hark)" + " after " + e.GetType().Name + " -> " + g.History.Count;
             }
 
             if (e is SkillAssigned sa && sa.Leader == null)
             {
-                return "Assigning skill to null leader";
+                return "Assigning skill to null leader" + " after " + e.GetType().Name + " -> " + g.History.Count;
+            }
+
+            if (g.SkillDeck != null) {
+
+                var allCards = g.SkillDeck.Items.Concat(g.LeaderState.Where(ls => ls.Value.Skill != LeaderSkill.None).Select(ls => ls.Value.Skill)).ToArray();
+
+                if (allCards.Any(item => allCards.Count(c => c == item) > 1))
+                {
+                    return "Duplicate card in Skill Deck" + " after " + e.GetType().Name + " -> " + g.History.Count;
+                }
+            }
+
+            if (g.TreacheryDeck != null)
+            {
+                var allCards = g.TreacheryDeck.Items.Concat(g.TreacheryDiscardPile.Items).Concat(g.Players.SelectMany(p => p.TreacheryCards)).ToArray();
+                if (allCards.Any(item => allCards.Count(c => c == item) > 1))
+                {
+                    return "Duplicate card in Treachery Card Deck" + " after " + e.GetType().Name + " -> " + g.History.Count;
+                }
+            }
+
+            if (g.ResourceCardDeck != null)
+            {
+                var allCards = g.ResourceCardDeck.Items.Concat(g.ResourceCardDiscardPileA.Items).Concat(g.ResourceCardDiscardPileB.Items).ToArray();
+                if (allCards.Any(item => allCards.Count(c => c == item) > 1))
+                {
+                    return "Duplicate card in Spice Deck" + " after " + e.GetType().Name + " -> " + g.History.Count;
+                }
             }
 
             p = g.Players.FirstOrDefault(p => p.TreacheryCards.Count > p.MaximumNumberOfCards);
             if (p != null && g.CurrentPhase != Phase.PerformingKarmaHandSwap)
             {
-                return "Too many cards: " + p;
+                return "Too many cards: " + p + " after " + e.GetType().Name + " -> " + g.History.Count;
             }
 
+            WriteSavegameIfApplicable(g, typeof(DiscardedTaken));
             WriteSavegameIfApplicable(g, typeof(Diplomacy));
             WriteSavegameIfApplicable(g, typeof(Bureaucracy));
             WriteSavegameIfApplicable(g, typeof(Planetology));
             WriteSavegameIfApplicable(g, typeof(HMSAdvantageChosen));
             WriteSavegameIfApplicable(g, typeof(Retreat));
+            WriteSavegameIfApplicable(g, typeof(RockWasMelted));
+            WriteSavegameIfApplicable(g, typeof(AuditCancelled));
 
             if (e is Battle b && g.Skilled(b.Hero))
             {
@@ -235,19 +266,39 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 5000;
+            int nrOfGames = 50;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
-
+            
             //Expansion, advanced game, all expansions, all factions:
-            //var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
-            var rules = Game.RulesetDefinition[Ruleset.AllExpansionsBasicGame].ToList();
+            var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
+            //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
             rules.Add(Rule.FillWithBots);
             //rules.Add(Rule.BotsCannotAlly);
             //rules.Remove(Rule.BrownAndWhiteLeaderSkills);
             var factions = EstablishPlayers.AvailableFactions().ToList();
             int nrOfTurns = 7;
             int nrOfPlayers = factions.Count;
+            
+
+            //Expansion, advanced game, all expansions, free for all without guild and fremen:
+            /*
+            var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
+            rules.Add(Rule.FillWithBots);
+            rules.Add(Rule.BotsCannotAlly);
+            var factions = EstablishPlayers.AvailableFactions().Except(new Faction[] { Faction.Orange, Faction.Yellow, Faction.Red, Faction.Purple }).ToList();
+            int nrOfTurns = 7; 
+            int nrOfPlayers = factions.Count;
+            */
+
+            /*
+            var rules = Game.RulesetDefinition[Ruleset.AllExpansionsBasicGame].ToList();
+            rules.Add(Rule.FillWithBots);
+            rules.Add(Rule.BotsCannotAlly);
+            var factions = EstablishPlayers.AvailableFactions().Except(new Faction[] { Faction.Orange, Faction.Yellow }).ToList();
+            int nrOfTurns = 7;
+            int nrOfPlayers = factions.Count;
+            */
 
             //Expansion, advanced game, all expansions, free for all without guild and fremen:
             //var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
@@ -256,7 +307,7 @@ namespace Treachery.Test
             //var factions = EstablishPlayers.AvailableFactions().Except(new Faction[] { Faction.Orange, Faction.Yellow }).ToList();
             //int nrOfTurns = 7; 
             //int nrOfPlayers = factions.Count;
-            
+
             //Expansion, advanced game, 8 players:
             //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
             //rules.Add(Rule.FillWithBots);

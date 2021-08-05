@@ -47,7 +47,8 @@ namespace Treachery.Shared
 
         public static bool CanBePlayed(Game g, Player p)
         {
-            return g.CurrentBattle.IsAggressorOrDefender(p) && p.Has(TreacheryCardType.Rockmelter);
+            var plan = g.CurrentBattle.PlanOf(p);
+            return plan != null && plan.Weapon != null && plan.Weapon.IsRockmelter;
         }
     }
 }

@@ -343,12 +343,15 @@ namespace Treachery.Shared
 
                     if (PortableAntidoteUsed.CanBePlayed(this, player)) result.Add(typeof(PortableAntidoteUsed));
 
-                    if (RockWasMelted.CanBePlayed(this, player)) result.Add(typeof(RockWasMelted));
-
                     if (Diplomacy.CanBePlayed(this, player)) result.Add(typeof(Diplomacy));
 
                     if (Retreat.CanBePlayed(this, player)) result.Add(typeof(Retreat));
 
+                    break;
+
+                case Phase.MeltingRock:
+
+                    if (RockWasMelted.CanBePlayed(this, player)) result.Add(typeof(RockWasMelted));
                     break;
 
                 case Phase.BattleConclusion:

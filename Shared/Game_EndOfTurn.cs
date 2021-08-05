@@ -22,11 +22,13 @@ namespace Treachery.Shared
             
             foreach (var p in Players)
             {
-                p.Resources += p.ResourcesDuringCollection;
-                p.ResourcesDuringCollection = 0;
+                if (p.ResourcesDuringCollection > 0)
+                {
+                    p.Resources += p.ResourcesDuringCollection;
+                    p.ResourcesDuringCollection = 0;
+                    CurrentReport.Add(p.Faction, "{0} add {1} received as {2} to their reserves.", p.Faction, p.Bribes, LeaderSkill.Banker);
+                }
             }
-
-
 
             MainPhaseEnd();
             Enter(Version >= 103, Phase.CollectionReport, EnterMentatPhase);
@@ -89,6 +91,7 @@ namespace Treachery.Shared
             AllowAllPreventedFactionAdvantages();
             HandleEconomics();
             DetermineStrongholdOwnership();
+            if (Version >= 108) AddBribesToPlayerResources();
             Enter(Version >= 103, Phase.Contemplate, ContinueMentatPhase);
         }
 

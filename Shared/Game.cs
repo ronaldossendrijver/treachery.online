@@ -11,7 +11,7 @@ namespace Treachery.Shared
     public partial class Game
     {
         public const int LowestSupportedVersion = 68;
-        public const int LatestVersion = 107;
+        public const int LatestVersion = 108;
 
         public bool BotInfologging = true;
 
@@ -90,10 +90,14 @@ namespace Treachery.Shared
 
         #region EventHandling
 
+        public void PerformPreEventTasks()
+        {
+            RecentlyDiscarded.Clear();
+        }
+
         public void PerformPostEventTasks(GameEvent e, bool justEnteredStartOfPhase)
         {
             if (!justEnteredStartOfPhase &&!(e is AllyPermission) && !(e is DealOffered) && !(e is DealAccepted)) MainPhaseMiddle();
-            RecentlyDiscarded.Clear();
             History.Add(e);
             States.Add(Clone());
         }
@@ -225,7 +229,7 @@ namespace Treachery.Shared
                     break;
 
                 case Phase.TurnConcluded:
-                    AddBribesToPlayerResources();
+                    if (Version < 108) AddBribesToPlayerResources();
                     EnterStormPhase();
                     break;
             }
@@ -718,6 +722,8 @@ namespace Treachery.Shared
 
         private TreacheryCard Discard(Player player, TreacheryCardType cardType)
         {
+            //Console.WriteLine("Discard Pile pre: {0}", Skin.Current.Join(TreacheryDiscardPile.Items));
+
             TreacheryCard card = null;
             if (cardType == TreacheryCardType.Karma && player.Is(Faction.Blue))
             {
@@ -736,6 +742,8 @@ namespace Treachery.Shared
             {
                 CurrentReport.Add("{0} not found", cardType);
             }
+
+            //Console.WriteLine("Discarded: {0}, discard Pile post: {1}", card, Skin.Current.Join(TreacheryDiscardPile.Items));
 
             return card;
         }

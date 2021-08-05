@@ -7,7 +7,7 @@ using Microsoft.JSInterop;
 using System;
 using System.Threading.Tasks;
 using Treachery.Shared;
-using Blazor.Extensions.Canvas.Canvas2D;
+using System.Linq;
 
 namespace Treachery.Client
 {
@@ -170,6 +170,15 @@ namespace Treachery.Client
         public static async Task SaveSetting(string name, object value)
         {
             await Storage.SetAsync(name, value);
+        }
+
+        public static async Task ClearSettingsStartingWith(string startOfName)
+        {
+            var keys = await Storage.GetKeys();
+            foreach (var key in keys.Where(k => k.StartsWith(startOfName)))
+            {
+                await Storage.RemoveAsync(key);
+            }
         }
 
         public static async Task SaveStringSetting(string name, string value)

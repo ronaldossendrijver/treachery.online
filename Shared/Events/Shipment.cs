@@ -161,10 +161,9 @@ namespace Treachery.Shared
             {
                 amountToPayFor--;
             }
-
-            if (noField)
+            else if (noField)
             {
-                return 1;
+                amountToPayFor = 1;
             }
 
             if (backToReserves)

@@ -218,6 +218,7 @@ namespace Treachery.Shared
             else if (plan.Weapon != null && (
                 plan.Weapon.IsArtillery ||
                 plan.Weapon.IsMirrorWeapon ||
+                plan.Weapon.IsRockmelter ||
                 plan.Weapon.IsPoisonTooth && !PoisonToothCancelled
                 ))
             {
@@ -317,7 +318,7 @@ namespace Treachery.Shared
 
             if (AggressorTraitorAction != null && DefenderTraitorAction != null)
             {
-                HandleRevealedBattlePlans(); 
+                Enter(AggressorBattleAction.HasRockMelter || DefenderBattleAction.HasRockMelter, Phase.MeltingRock, HandleRevealedBattlePlans);
             }
         }
 
@@ -327,6 +328,7 @@ namespace Treachery.Shared
             CurrentReport.Add(e);
             Discard(e.Player, TreacheryCardType.Rockmelter);
             CurrentRockWasMelted = e;
+            HandleRevealedBattlePlans();
         }
 
         private void HandleRevealedBattlePlans()

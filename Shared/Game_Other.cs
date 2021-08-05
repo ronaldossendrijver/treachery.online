@@ -139,6 +139,7 @@ namespace Treachery.Shared
         {
             CurrentReport.Add(e);
             RecentlyDiscarded.Remove(e.Card);
+            TreacheryDiscardPile.Items.Remove(e.Card); 
             e.Player.TreacheryCards.Add(e.Card);
             Discard(e.Player, TreacheryCardType.TakeDiscarded);
             RecentMilestones.Add(Milestone.CardWonSwapped);

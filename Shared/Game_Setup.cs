@@ -460,6 +460,7 @@ namespace Treachery.Shared
 
             CurrentReport.Add(e);
             SetSkill(e.Leader, e.Skill);
+            e.Player.SkillsToChooseFrom.Remove(e.Skill); 
             SetInFrontOfShield(e.Leader, true);
             SkillDeck.PutOnTop(e.Player.SkillsToChooseFrom);
             e.Player.SkillsToChooseFrom.Clear();

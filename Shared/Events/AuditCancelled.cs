@@ -76,7 +76,14 @@ namespace Treachery.Shared
         {
             var auditee = g.Auditee;
             var recentBattlePlan = g.CurrentBattle.PlanOf(auditee);
-            return auditee.TreacheryCards.Where(c => c != recentBattlePlan.Weapon && c != recentBattlePlan.Defense && c != recentBattlePlan.Hero);
+            if (recentBattlePlan != null)
+            {
+                return auditee.TreacheryCards.Where(c => c != recentBattlePlan.Weapon && c != recentBattlePlan.Defense && c != recentBattlePlan.Hero);
+            }
+            else
+            {
+                return Array.Empty<TreacheryCard>();
+            }
         }
     }
 }

@@ -140,6 +140,7 @@ namespace Treachery.Shared
 
         private void PrepareSkillAssignmentToRevivedLeader(Player player, Leader leader)
         {
+            //Console.WriteLine("Contents of skill deck: {0}", Skin.Current.Join(SkillDeck.Items));
             if (CurrentPhase != Phase.AssigningSkill)
             {
                 PhaseBeforeSkillAssignment = CurrentPhase;
@@ -148,8 +149,10 @@ namespace Treachery.Shared
             player.MostRecentlyRevivedLeader = leader;
             SkillDeck.Shuffle();
             RecentMilestones.Add(Milestone.Shuffled);
+            //Console.WriteLine("Contents of SkillsToChooseFrom pre: {0}", Skin.Current.Join(player.SkillsToChooseFrom));
             player.SkillsToChooseFrom.Add(SkillDeck.Draw());
             player.SkillsToChooseFrom.Add(SkillDeck.Draw());
+            //Console.WriteLine("Contents of SkillsToChooseFrom post: {0}", Skin.Current.Join(player.SkillsToChooseFrom));
             Enter(Phase.AssigningSkill);
         }
 

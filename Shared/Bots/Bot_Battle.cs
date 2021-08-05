@@ -91,7 +91,7 @@ namespace Treachery.Shared
                 discarded.Add(myBattleplan.Defense);
             }
 
-            bool kill = Game.BlackVictim != null && Game.BlackVictim.Value < 4;
+            bool kill = Game.BlackVictim != null && !Game.Skilled(Game.BlackVictim) && Game.BlackVictim.Value < 4;
 
             int replacedSpecialForces = BattleConcluded.ValidReplacementForceAmounts(Game, this).Max();
 
@@ -251,11 +251,16 @@ namespace Treachery.Shared
             }
         }*/
 
-        private void UseArtilleryStrikeOrPoisonToothIfApplicable(bool enemyCanDefendPoisonTooth, ref float myHeroSurviving, ref float enemyHeroSurviving, ref TreacheryCard defense, ref TreacheryCard weapon)
+        private void UseDestructiveWeaponIfApplicable(bool enemyCanDefendPoisonTooth, ref float myHeroSurviving, ref float enemyHeroSurviving, ref TreacheryCard defense, ref TreacheryCard weapon)
         {
             if (weapon == null && myHeroSurviving < Param.Battle_MimimumChanceToAssumeMyLeaderSurvives && enemyHeroSurviving >= Param.Battle_MimimumChanceToAssumeEnemyHeroSurvives)
             {
-                weapon = Weapons(defense, null).FirstOrDefault(c => c.Type == TreacheryCardType.ArtilleryStrike);
+                weapon = Weapons(defense, null).FirstOrDefault(c => c.Type == TreacheryCardType.Rockmelter);
+
+                if (weapon == null)
+                {
+                    weapon = Weapons(defense, null).FirstOrDefault(c => c.Type == TreacheryCardType.ArtilleryStrike);
+                }
 
                 if (weapon == null && !enemyCanDefendPoisonTooth)
                 {
@@ -460,19 +465,19 @@ namespace Treachery.Shared
                 def.Type != TreacheryCardType.Useless
                 ).ToArray();
 
-            if (chosenWeapon != null && chosenWeapon.Type == TreacheryCardType.ArtilleryStrike)
+            if (chosenWeapon != null && chosenWeapon.IsArtillery)
             {
                 mostEffectiveDefense = availableDefenses.FirstOrDefault(def => def.IsShield);
                 return 0;
             }
 
-            if (chosenWeapon != null && chosenWeapon.Type == TreacheryCardType.Rockmelter)
+            if (chosenWeapon != null && chosenWeapon.IsRockmelter)
             {
                 mostEffectiveDefense = null;
                 return 0;
             }
 
-            if (chosenWeapon != null && chosenWeapon.Type == TreacheryCardType.PoisonTooth)
+            if (chosenWeapon != null && chosenWeapon.IsPoisonTooth)
             {
                 mostEffectiveDefense = availableDefenses.FirstOrDefault(def => def.Type == TreacheryCardType.Chemistry);
                 return 0;
@@ -669,7 +674,7 @@ namespace Treachery.Shared
                 return voicePlan.opponentHeroWillCertainlyBeZero ? 1 : 0.5f;
             }
 
-            var availableWeapons = Weapons(null, null).Where(w => w.Type != TreacheryCardType.Useless && w.Type != TreacheryCardType.ArtilleryStrike && w.Type != TreacheryCardType.PoisonTooth)
+            var availableWeapons = Weapons(null, null).Where(w => w.Type != TreacheryCardType.Useless && w.Type != TreacheryCardType.ArtilleryStrike && w.Type != TreacheryCardType.PoisonTooth && w.Type != TreacheryCardType.Rockmelter)
                 .OrderBy(w => NumberOfUnknownDefensesThatCouldCounterThisWeapon(CardsUnknownToMe, w)).ToArray();
 
             var opponentPlan = Game.CurrentBattle?.PlanOf(opponent);
@@ -833,7 +838,7 @@ namespace Treachery.Shared
 
             chanceOfMyHeroSurviving = ChanceOfMyLeaderSurviving(opponent, voicePlan, prescience, out bestDefense, bestWeapon);
 
-            UseArtilleryStrikeOrPoisonToothIfApplicable(enemyCanDefendPoisonTooth, ref chanceOfMyHeroSurviving, ref chanceOfEnemyHeroSurviving, ref bestDefense, ref bestWeapon);
+            UseDestructiveWeaponIfApplicable(enemyCanDefendPoisonTooth, ref chanceOfMyHeroSurviving, ref chanceOfEnemyHeroSurviving, ref bestDefense, ref bestWeapon);
 
             var opponentPlan = Game.CurrentBattle?.PlanOf(opponent);
             lasgunShieldDetected = HasLasgunShield(
@@ -957,16 +962,13 @@ namespace Treachery.Shared
 
         protected RockWasMelted DetermineRockWasMelted()
         {
+            /*
             var myPlan = Game.CurrentBattle.PlanOf(this);
             var opponent = Game.CurrentBattle.OpponentOf(this);
             var opponentPlan = Game.CurrentBattle.PlanOf(opponent);
-
-            if (AnyForcesIn(Game.CurrentBattle.Territory) - myPlan.TotalForces > opponent.AnyForcesIn(Game.CurrentBattle.Territory) - opponentPlan.TotalForces)
-            {
-                return new RockWasMelted(Game) { Initiator = Faction, Kill = opponentPlan.Hero != null && (Faction == Faction.Purple || myPlan.Hero == null || myPlan.Hero.Value < opponentPlan.Hero.Value) };
-            }
-
-            return null;
+            */
+            return new RockWasMelted(Game) { Initiator = Faction, Kill = true };
+            //opponentPlan.Hero != null && (Faction == Faction.Purple || myPlan.Hero == null || myPlan.Hero.Value < opponentPlan.Hero.Value)
         }
 
         protected ResidualPlayed DetermineResidualPlayed()

@@ -367,26 +367,32 @@ namespace Treachery.Client
             }
             else if (plan.Hero is Leader)
             {
-                await DrawImage(Artwork.GetLeaderToken(plan.Hero as Leader), leftMargin + leaderLeftMargin, topMargin + leaderTopMargin, leaderSizeWidth, leaderSizeHeight, Skin.Current.SHADOW_DARK, 1, 2, 2);
                 var skill = h.Game.Skill(plan.Hero);
                 if (skill != LeaderSkill.None)
                 {
-                    await DrawImage(Artwork.GetSkillCard(skill), leftMargin + leaderLeftMargin + leaderSizeWidth + 20, topMargin + leaderTopMargin, cardWidth, cardHeight, Skin.Current.SHADOW_LIGHT, 1, 5, 5);
+                    int skillLeftMargin = leftMargin + leaderLeftMargin - (int)(0.5f * (cardWidth - leaderSizeWidth));
+                    int skillTopMargin = topMargin + leaderTopMargin - 120;
+
+                    await DrawImage(Artwork.GetSkillCard(skill), skillLeftMargin, skillTopMargin, cardWidth, cardHeight, Skin.Current.SHADOW_LIGHT, 1, 5, 5, 0.9f);
                     
                     int bonus = Battle.DetermineSkillBonus(h.Game, plan, out _);
                     if (bonus != 0)
                     {
-                        await DrawText(leftMargin + leaderLeftMargin + leaderSizeWidth + cardWidth - 20, topMargin + leaderTopMargin + 140, "+ " + bonus, Skin.Current.CARDPILE_FONT, TextAlign.Right, "green", Skin.Current.WHEEL_FONT_BORDERWIDTH, "white");
+                        await DrawText(skillLeftMargin + cardWidth - 20, skillTopMargin + 140, "+ " + bonus, Skin.Current.CARDPILE_FONT, TextAlign.Right, "green", Skin.Current.WHEEL_FONT_BORDERWIDTH, "white");
                     }
                     else
                     {
                         int penalty = Battle.DetermineSkillPenalty(h.Game, plan, opponent, out _);
                         if (penalty != 0)
                         {
-                            await DrawText(leftMargin + leaderLeftMargin + leaderSizeWidth + cardWidth - 20, topMargin + leaderTopMargin + 140, "- " + penalty, Skin.Current.CARDPILE_FONT, TextAlign.Right, "red", Skin.Current.WHEEL_FONT_BORDERWIDTH, "white");
+                            await DrawText(skillLeftMargin + cardWidth - 20, skillTopMargin + 140, "- " + penalty, Skin.Current.CARDPILE_FONT, TextAlign.Right, "red", Skin.Current.WHEEL_FONT_BORDERWIDTH, "white");
                         }
                     }
                 }
+
+                //Hero token
+                await DrawImage(Artwork.GetLeaderToken(plan.Hero as Leader), leftMargin + leaderLeftMargin, topMargin + leaderTopMargin, leaderSizeWidth, leaderSizeHeight, Skin.Current.SHADOW_DARK, 1, 2, 2);
+
             }
             else if (plan.Hero is TreacheryCard)
             {
@@ -743,6 +749,15 @@ namespace Treachery.Client
                         var tty = Skin.Current.PlanetCenter.Y + techtokenOrbitRadius * Math.Sin(ttRad) - Skin.Current.PlayerTokenRadius;
                         await DrawImage(Artwork.GetLeaderToken(skilledLeader), ttx, tty, 2 * Skin.Current.PlayerTokenRadius, 2 * Skin.Current.PlayerTokenRadius, Skin.Current.SHADOW_DARK, 1, 1, 1);
                         await DrawText(ttx + Skin.Current.PlayerTokenRadius, tty + 2 * Skin.Current.PlayerTokenRadius, Skin.Current.Describe(h.Game.Skill(skilledLeader)), Skin.Current.SKILL_FONT, TextAlign.Center, Skin.Current.SKILL_FONTCOLOR, Skin.Current.SKILL_FONT_BORDERWIDTH, Skin.Current.SKILL_FONT_BORDERCOLOR, 2.2* Skin.Current.PlayerTokenRadius);
+                    }
+
+                    if (p.Faction == Faction.White && h.Game.LatestRevealedNoFieldValue >= 0)
+                    {
+                        ttRad += (TWOPI / 90);
+                        var ttx = Skin.Current.PlanetCenter.X + techtokenOrbitRadius * Math.Cos(ttRad) - Skin.Current.PlayerTokenRadius;
+                        var tty = Skin.Current.PlanetCenter.Y + techtokenOrbitRadius * Math.Sin(ttRad) - Skin.Current.PlayerTokenRadius;
+                        await DrawImage(Artwork.SpecialForceTokens[Faction.White].Value, ttx + Skin.Current.FORCETOKEN_RADIUS, tty + Skin.Current.FORCETOKEN_RADIUS, 2 * Skin.Current.FORCETOKEN_RADIUS, 2 * Skin.Current.FORCETOKEN_RADIUS, Skin.Current.SHADOW_DARK, 1, 1, 1);
+                        await DrawText(ttx + 2 * Skin.Current.FORCETOKEN_RADIUS, tty + 2.5f * Skin.Current.FORCETOKEN_RADIUS, h.Game.LatestRevealedNoFieldValue.ToString(), Skin.Current.PLAYERNAME_FONT, TextAlign.Center, Skin.Current.PLAYERNAME_FONTCOLOR, Skin.Current.PLAYERNAME_FONT_BORDERWIDTH, Skin.Current.PLAYERNAME_FONT_BORDERCOLOR);
                     }
 
                     var align = TextAlign.Center;
