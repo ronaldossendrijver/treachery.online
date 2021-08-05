@@ -25,6 +25,8 @@ namespace Treachery.Shared
 
         public int _cardId = -1;
 
+        public bool FromBank { get; set; } = false;
+
         [JsonIgnore]
         public TreacheryCard Card
         {
@@ -40,6 +42,8 @@ namespace Treachery.Shared
 
         public override string Validate()
         {
+            if (FromBank) return "";
+
             var p = Player;
             if (!MayDonate(Game, Player)) return "You currently have an outstanding bid";
             if (Game.Version >= 60 && Card == null && Resources <= 0) return "Invalid amount";
@@ -64,7 +68,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} give {1}{3} to {2}.", Initiator, Resources, Target, CardMessage);
+            return new Message(Initiator, "{0} give {1}{3} to {2}.", Initiator, Concept.Resource, Target, CardMessage);
         }
 
         public static bool MayDonate(Game g, Player p)

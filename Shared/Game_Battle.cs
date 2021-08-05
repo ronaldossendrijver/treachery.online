@@ -965,11 +965,15 @@ namespace Treachery.Shared
 
             result.AggHeroKilled = false;
             result.AggHeroCauseOfDeath = TreacheryCardType.None;
-            DetermineCauseOfDeath(agg, def, agg.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && CurrentRockWasMelted.Kill, ref result.AggHeroKilled, ref result.AggHeroCauseOfDeath, ref result.AggSavedByCarthag);
+            DetermineCauseOfDeath(
+                agg, def, agg.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && CurrentRockWasMelted.Kill, territory == Map.Carthag.Territory, 
+                ref result.AggHeroKilled, ref result.AggHeroCauseOfDeath, ref result.AggSavedByCarthag);
 
             result.DefHeroKilled = false;
             result.DefHeroCauseOfDeath = TreacheryCardType.None;
-            DetermineCauseOfDeath(def, agg, def.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && CurrentRockWasMelted.Kill, ref result.DefHeroKilled, ref result.DefHeroCauseOfDeath, ref result.DefSavedByCarthag);
+            DetermineCauseOfDeath(
+                def, agg, def.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && CurrentRockWasMelted.Kill, territory == Map.Carthag.Territory, 
+                ref result.DefHeroKilled, ref result.DefHeroCauseOfDeath, ref result.DefSavedByCarthag);
 
             int aggHeroSkillBonus = Battle.DetermineSkillBonus(this, agg, out result.AggActivatedBonusSkill);
             result.AggHeroEffectiveStrength = (agg.Hero != null && !artilleryUsed) ? agg.Hero.ValueInCombatAgainst(def.Hero) : 0;
@@ -1108,11 +1112,11 @@ namespace Treachery.Shared
             return CurrentJuice != null && CurrentJuice.Type == JuiceType.Aggressor && CurrentJuice.Player == p;
         }
 
-        private void DetermineCauseOfDeath(Battle playerPlan, Battle opponentPlan, IHero theHero, bool poisonToothUsed, bool artilleryUsed, bool rockMelterWasUsedToKill, ref bool heroDies, ref TreacheryCardType causeOfDeath, ref bool savedByCarthag)
+        private void DetermineCauseOfDeath(Battle playerPlan, Battle opponentPlan, IHero theHero, bool poisonToothUsed, bool artilleryUsed, bool rockMelterWasUsedToKill, bool battleIsInCarthag, ref bool heroDies, ref TreacheryCardType causeOfDeath, ref bool savedByCarthag)
         {
             heroDies = false;
             causeOfDeath = TreacheryCardType.None;
-            bool isProtectedByCarthagAdvantage = HasStrongholdAdvantage(playerPlan.Initiator, StrongholdAdvantage.CountDefensesAsSnooper) && !playerPlan.HasPoison && !playerPlan.HasPoisonTooth;
+            bool isProtectedByCarthagAdvantage = battleIsInCarthag && HasStrongholdAdvantage(playerPlan.Initiator, StrongholdAdvantage.CountDefensesAsSnooper) && !playerPlan.HasPoison && !playerPlan.HasPoisonTooth;
             savedByCarthag = isProtectedByCarthagAdvantage && opponentPlan.HasPoison && !playerPlan.HasAntidote;
 
             DetermineDeathBy(theHero, TreacheryCardType.Rockmelter, rockMelterWasUsedToKill, ref heroDies, ref causeOfDeath);

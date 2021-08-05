@@ -91,7 +91,7 @@ namespace Treachery.Shared
             Items.Add(new TreacheryCard(53, 51, TreacheryCardType.TakeDiscarded, Rule.WhiteTreacheryCards));
             Items.Add(new TreacheryCard(54, 52, TreacheryCardType.Residual, Rule.WhiteTreacheryCards));
             Items.Add(new TreacheryCard(55, 53, TreacheryCardType.Rockmelter, Rule.WhiteTreacheryCards));
-            Items.Add(new TreacheryCard(56, 23, TreacheryCardType.Karma, Rule.WhiteTreacheryCards));
+            Items.Add(new TreacheryCard(56, 54, TreacheryCardType.Karma, Rule.WhiteTreacheryCards));
 
             //3 extra karma cards
             Items.Add(new TreacheryCard(100, 23, TreacheryCardType.Karma, Rule.ExtraKaramaCards));

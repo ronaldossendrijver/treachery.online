@@ -416,7 +416,15 @@ namespace Treachery.Shared
                             }
                             else
                             {
-                                var card = WinByHighestBid(CurrentBid.Player, CurrentBid.Amount, CurrentBid.AllyContributionAmount, CurrentBid.RedContributionAmount, Faction.Red, CardsOnAuction);
+                                var receiver = (CurrentAuctionType == AuctionType.WhiteNormal) ? (CurrentBid.Initiator != Faction.White ? Faction.White : Faction.Red) : Faction.Red;
+                                var card = WinByHighestBid(
+                                    CurrentBid.Player, 
+                                    CurrentBid.Amount, 
+                                    CurrentBid.AllyContributionAmount, 
+                                    CurrentBid.RedContributionAmount,
+                                    receiver, 
+                                    CardsOnAuction);
+
                                 FinishBid(CurrentBid.Player, card);
                             }
                         }

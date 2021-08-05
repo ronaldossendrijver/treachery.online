@@ -174,6 +174,7 @@ namespace Treachery.Shared
 
             return 
                 h is Leader &&
+                h.HeroType != HeroType.Auditor &&
                 g.Applicable(Rule.BrownAndWhiteLeaderSkills) && 
                 !g.CapturedLeaders.Any(cl => cl.Value == p.Faction && g.Skilled(cl.Key)) && 
                 !p.Leaders.Any(l => g.Skilled(l));

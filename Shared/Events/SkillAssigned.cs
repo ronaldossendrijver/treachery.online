@@ -62,7 +62,7 @@ namespace Treachery.Shared
         {
             if (g.CurrentPhase == Phase.AssigningInitialSkills)
             {
-                return p.Leaders;
+                return p.Leaders.Where(l => l.HeroType != HeroType.Auditor);
             }
             else
             {

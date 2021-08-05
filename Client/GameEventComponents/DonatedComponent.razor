@@ -8,13 +8,13 @@
 
 <GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Bribe @(Faction == Faction.Red?"any":"a non-allied") faction</Header>
+    <Header>Give @Skin.Current.Describe(Concept.Resource) to a faction</Header>
     <Body>
 
-        <SelectFactionComponent @bind-Value="target" Values="Donated.ValidTargets(Game, Player)" />
+        <SelectFactionComponent @bind-Value="target" Values="Targets" />
 
         <div class="mt-1">
-            <SelectResourcesComponent @bind-Value="resources" Min="Donated.MinAmount(Game, Player)" Max="Donated.MaxAmount(Game, Player)" />
+            <SelectResourcesComponent @bind-Value="resources" Min="MinAmount" Max="MaxAmount" />
         </div>
 
         @if (Game.Applicable(Rule.CardsCanBeTraded))
@@ -28,6 +28,17 @@
             card = null;
         }
 
+        @if (h.IsHost)
+        {
+            <CheckboxComponent @bind-Value="fromBank">
+                Host only: give from @Skin.Current.Describe(Concept.Resource) bank (you may select a negative amount to put that amount of @Skin.Current.Describe(Concept.Resource) from target faction in the bank)
+            </CheckboxComponent>
+        }
+        else
+        {
+            fromBank = false;
+        }
+
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
     </Body>
@@ -39,6 +50,26 @@
     private Faction target;
     private int resources;
     private TreacheryCard card;
+    private bool fromBank;
 
-    protected override Donated ConfirmedResult => new Donated(Game) { Initiator = Faction, Target = target, Resources = resources, Card = card };
+    protected override Donated ConfirmedResult => new Donated(Game) { Initiator = Faction, Target = target, Resources = resources, Card = card, FromBank = fromBank };
+
+    private IEnumerable<Faction> Targets
+    {
+        get
+        {
+            if (!fromBank)
+            {
+                return Donated.ValidTargets(Game, Player);
+            }
+            else
+            {
+                return Game.Players.Select(p => p.Faction);
+            }
+        }
+    }
+
+    private int MaxAmount => !fromBank ? Donated.MaxAmount(Game, Player) : 99;
+
+    private int MinAmount => !fromBank ? Donated.MinAmount(Game, Player) : -99;
 }

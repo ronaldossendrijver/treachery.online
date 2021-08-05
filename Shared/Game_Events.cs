@@ -588,7 +588,7 @@ namespace Treachery.Shared
 
                 if (Players.Count > 1 &&
                     Donated.ValidTargets(this, player).Any() &&
-                    player.Resources > 0 &&
+                    (isHost || player.Resources > 0 ) &&
                     Donated.MayDonate(this, player) &&
                     (AggressorBattleAction == null || faction != AggressorBattleAction.Initiator) &&
                     (DefenderBattleAction == null || faction != DefenderBattleAction.Initiator))

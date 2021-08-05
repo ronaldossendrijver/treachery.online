@@ -56,26 +56,44 @@ namespace Treachery.Shared
 
         public void HandleEvent(Donated e)
         {
-            var initiator = GetPlayer(e.Initiator);
             var target = GetPlayer(e.Target);
 
-            ExchangeResourcesInBribe(initiator, target, e.Resources);
-
-            if (e.Card != null)
+            if (!e.FromBank)
             {
-                initiator.TreacheryCards.Remove(e.Card);
-                RegisterKnown(initiator, e.Card);
-                target.TreacheryCards.Add(e.Card);
+                var initiator = GetPlayer(e.Initiator);
+            
+                ExchangeResourcesInBribe(initiator, target, e.Resources);
 
-                foreach (var p in Players.Where(p => p != initiator && p != target))
+                if (e.Card != null)
                 {
-                    UnregisterKnown(p, initiator.TreacheryCards);
-                    UnregisterKnown(p, target.TreacheryCards);
+                    initiator.TreacheryCards.Remove(e.Card);
+                    RegisterKnown(initiator, e.Card);
+                    target.TreacheryCards.Add(e.Card);
+
+                    foreach (var p in Players.Where(p => p != initiator && p != target))
+                    {
+                        UnregisterKnown(p, initiator.TreacheryCards);
+                        UnregisterKnown(p, target.TreacheryCards);
+                    }
+                }
+
+                CurrentReport.Add(e);
+                RecentMilestones.Add(Milestone.Bribe);
+            }
+            else
+            {
+                if (e.Resources < 0)
+                {
+                    int resourcesToTake = Math.Min(Math.Abs(e.Resources), target.Resources);
+                    CurrentReport.Add(e.Initiator, "Host takes {0} {1} from {2} and puts it in the {1} Bank", resourcesToTake, Concept.Resource, e.Target);
+                    target.Resources -= resourcesToTake;
+                }
+                else
+                {
+                    CurrentReport.Add(e.Initiator, "Host gives {0} {1} {2} from the {2} Bank", e.Target, e.Resources, Concept.Resource);
+                    target.Resources += e.Resources;
                 }
             }
-
-            CurrentReport.Add(e);
-            RecentMilestones.Add(Milestone.Bribe);
         }
 
         public void HandleEvent(DistransUsed e)

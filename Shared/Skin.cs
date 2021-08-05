@@ -474,10 +474,10 @@ namespace Treachery.Shared
                 RuleGroup.CoreAdvancedExceptions => "Core Game, Exceptions to Advanced Rules",
                 
                 RuleGroup.ExpansionIxAndBtBasic => "Ixians & Tleilaxu Expansion",
-                RuleGroup.ExpansionIxAndBtAdvanced => "Tleilaxu Expansion, Advanced Rules",
+                RuleGroup.ExpansionIxAndBtAdvanced => "Ixians & Tleilaxu Expansion, Advanced Rules",
                 
                 RuleGroup.ExpansionBrownAndWhiteBasic => "CHOAM & Richese Expansion",
-                RuleGroup.ExpansionBrownAndWhiteAdvanced => "CHOAM Richese, Advanced Rules",
+                RuleGroup.ExpansionBrownAndWhiteAdvanced => "CHOAM & Richese Expansion, Advanced Rules",
                 
                 RuleGroup.House => "House Rules",
 
@@ -518,9 +518,9 @@ namespace Treachery.Shared
             return p switch
             {
                 BrownEconomicsStatus.Cancel => "Cancel",
-                BrownEconomicsStatus.CancelFlipped => "Cancel (flipped)",
+                BrownEconomicsStatus.CancelFlipped => "Cancel",
                 BrownEconomicsStatus.Double => "Double",
-                BrownEconomicsStatus.DoubleFlipped => "Double (flipped)",
+                BrownEconomicsStatus.DoubleFlipped => "Double",
                 BrownEconomicsStatus.RemovedFromGame => "Removed from game",
                 _ => "None"
             };
@@ -1181,7 +1181,9 @@ namespace Treachery.Shared
             var tTechTokenImage_URL = FixDictionaryIfMissing("TechTokenImage_URL", true, TechTokenImage_URL, Dune1979.TechTokenImage_URL, errors, UrlExists);
             
             var tStrongholdCardImage_URL = FixDictionaryIfMissing("StrongholdCardImage_URL", true, StrongholdCardImage_URL, Dune1979.StrongholdCardImage_URL, errors, UrlExists);
-            var stLeaderSkillCardImage_URL = FixDictionaryIfMissing("LeaderSkillCardImage_URL", true, LeaderSkillCardImage_URL, Dune1979.LeaderSkillCardImage_URL, errors, UrlExists);
+            var tStrongholdCardName_STR = FixDictionaryIfMissing("StrongholdCardImage_URL", true, StrongholdCardName_STR, Dune1979.StrongholdCardName_STR, errors, UrlExists);
+            var tLeaderSkillCardImage_URL = FixDictionaryIfMissing("LeaderSkillCardImage_URL", true, LeaderSkillCardImage_URL, Dune1979.LeaderSkillCardImage_URL, errors, UrlExists);
+            var tLeaderSkillCardName_STR = FixDictionaryIfMissing("LeaderSkillCardName_STR", true, LeaderSkillCardName_STR, Dune1979.LeaderSkillCardName_STR, errors, UrlExists);
             /*
             ReportBackground_ShipmentAndMove_URL = await tReportBackground_ShipmentAndMove_URL;
             ReportBackground_StormAndResourceBlow_URL = await tReportBackground_StormAndResourceBlow_URL;
@@ -1265,6 +1267,10 @@ namespace Treachery.Shared
             ForceName_STR = await tForceName_STR;
             TechTokenName_STR = await tTechTokenName_STR;
             TechTokenImage_URL = await tTechTokenImage_URL;
+            StrongholdCardImage_URL = await tStrongholdCardImage_URL;
+            StrongholdCardName_STR = await tStrongholdCardName_STR;
+            LeaderSkillCardImage_URL = await tLeaderSkillCardImage_URL;
+            LeaderSkillCardName_STR = await tLeaderSkillCardName_STR;
 
             return errors;
         }
@@ -1489,6 +1495,7 @@ namespace Treachery.Shared
                 [51] = "Semuta Drug",
                 [52] = "Residual Poison",
                 [53] = "Stone Burner",
+                [54] = "Karama",
             },
 
             TreacheryCardDescription_STR = new Dictionary<int, string>
@@ -1541,6 +1548,7 @@ namespace Treachery.Shared
                 [51] = "",
                 [52] = "",
                 [53] = "",
+                [54] = "",
             },
 
             TechTokenDescription_STR = new Dictionary<TechToken, string>
@@ -1599,6 +1607,7 @@ namespace Treachery.Shared
                 [51] = DEFAULT_ART_LOCATION + "/art/SemutaDrug.gif",
                 [52] = DEFAULT_ART_LOCATION + "/art/ResidualPoison.gif",
                 [53] = DEFAULT_ART_LOCATION + "/art/StoneBurner.gif",
+                [54] = DEFAULT_ART_LOCATION + "/art/WhiteKarama.gif",
             },
 
             ResourceCardImage_URL = new Dictionary<int, string>()

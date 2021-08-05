@@ -101,6 +101,10 @@
                 {
                     <SelectForcesComponent @bind-Value="shipmentSpecialForceAmount" Min="0" Max="ValidShipmentSpecialForces" Faction="Faction" Special="true" />
                 }
+                else
+                {
+                    shipmentSpecialForceAmount = 0;
+                }
 
             </div>
         }
@@ -110,11 +114,15 @@
             shipmentSpecialForceAmount = 1;
         }
 
-        @if (Player.Ally != Faction.None && Cost > 0)
+        @if (Player.Ally != Faction.None && Cost > 0 && Game.SpiceYourAllyCanPay(Player) > 0)
         {
             <div class="mt-1">
                 <SelectResourcesFromFactionComponent @bind-Value="shipmentAllyContributionAmount" Min="0" Max="Game.SpiceYourAllyCanPay(Player)" Faction="Player.Ally" />
             </div>
+        }
+        else
+        {
+            shipmentAllyContributionAmount = 0;
         }
 
         @if (Shipment.CanKarma(Game, Player) && (Faction != Faction.Yellow || shipmentType == SHIPMENT_SITETOSITE))
