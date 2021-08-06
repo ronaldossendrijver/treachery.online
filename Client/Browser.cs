@@ -181,6 +181,11 @@ namespace Treachery.Client
             }
         }
 
+        public static async Task ClearSetting(string name)
+        {
+            await Storage.RemoveAsync(name);
+        }
+
         public static async Task SaveStringSetting(string name, string value)
         {
             await Storage.SetStringAsync(name, value);

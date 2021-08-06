@@ -64,7 +64,7 @@ namespace Treachery.Shared
         [JsonIgnore]
         public TreacheryCard KarmaCard
         {
-            private get
+            get
             {
                 return TreacheryCardManager.Lookup.Find(_karmaCardId);
             }
@@ -276,7 +276,7 @@ namespace Treachery.Shared
             }
         }
 
-        public Message GetVerboseMessage(int cost, MessagePart orangeIncome)
+        public Message GetVerboseMessage(int cost, MessagePart orangeIncome, Player ownerOfKarma)
         {
             if (Passed)
             {
@@ -286,17 +286,17 @@ namespace Treachery.Shared
             {
                 if (IsBackToReserves)
                 {
-                    return new Message(Initiator, "{0} ship from {1} back to reserves{2}.{3}{4}", Initiator, To, CostMessage(cost), KaramaMessage, orangeIncome);
+                    return new Message(Initiator, "{0} ship from {1} back to reserves{2}.{3}{4}", Initiator, To, CostMessage(cost), KaramaMessage(ownerOfKarma), orangeIncome);
                 }
                 else if (IsSiteToSite)
                 {
                     var baseMessage = "{0} site-to-site ship {1} from {5} to {2}{3}.{4}{6}";
-                    return new Message(Initiator, baseMessage, Initiator, ForceMessage, To.ToString(), CostMessage(cost), KaramaMessage, From, orangeIncome);
+                    return new Message(Initiator, baseMessage, Initiator, ForceMessage, To.ToString(), CostMessage(cost), KaramaMessage(ownerOfKarma), From, orangeIncome);
                 }
                 else
                 {
                     var baseMessage = Initiator == Faction.Yellow ? "{0} rally {1} in {2}{3}.{4}{5}" : "{0} ship {1} to {2}{3}.{4}{5}";
-                    return new Message(Initiator, baseMessage, Initiator, ForceMessage, To, CostMessage(cost), KaramaMessage, orangeIncome);
+                    return new Message(Initiator, baseMessage, Initiator, ForceMessage, To, CostMessage(cost), KaramaMessage(ownerOfKarma), orangeIncome);
                 }
             }
         }
@@ -340,42 +340,37 @@ namespace Treachery.Shared
             }
         }
 
-        private MessagePart KaramaMessage
+        private MessagePart KaramaMessage(Player ownerOfKarma)
         {
-            get
+            if (KarmaCard != null)
             {
-                if (KarmaCard != null)
+                var initiator = Player;
+                if (ownerOfKarma != initiator)
                 {
-                    var cardOwner = Game.OwnerOf(KarmaCard);
-                    var initiator = Player;
-                    if (cardOwner != initiator)
+                    if (KarmaCard.Type != TreacheryCardType.Karma)
                     {
-                        if (KarmaCard.Type != TreacheryCardType.Karma)
-                        {
-                            return new MessagePart(" They used their allies' {0} ({1}).", TreacheryCardType.Karma, KarmaCard);
-                        }
-                        else
-                        {
-                            return new MessagePart(" They used their allies' {0}.", TreacheryCardType.Karma);
-                        }
+                        return new MessagePart(" They used their allies' {0} ({1}).", TreacheryCardType.Karma, KarmaCard);
                     }
                     else
                     {
-                        if (KarmaCard.Type != TreacheryCardType.Karma)
-                        {
-                            return new MessagePart(" They used {0} ({1}).", TreacheryCardType.Karma, KarmaCard);
-                        }
-                        else
-                        {
-                            return new MessagePart(" They used {0}.", TreacheryCardType.Karma);
-                        }
-
+                        return new MessagePart(" They used their allies' {0}.", TreacheryCardType.Karma);
                     }
                 }
                 else
                 {
-                    return new MessagePart("");
+                    if (KarmaCard.Type != TreacheryCardType.Karma)
+                    {
+                        return new MessagePart(" They used {0} ({1}).", TreacheryCardType.Karma, KarmaCard);
+                    }
+                    else
+                    {
+                        return new MessagePart(" They used {0}.", TreacheryCardType.Karma);
+                    }
                 }
+            }
+            else
+            {
+                return new MessagePart("");
             }
         }
 

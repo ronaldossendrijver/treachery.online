@@ -1088,6 +1088,36 @@ namespace Treachery.Shared
                 </div>";
         }
 
+        private string GetWhiteTemplate(Game g)
+        {
+            bool advancedApplies = g.Applicable(Rule.GreyAndPurpleExpansionGreySwappingCardOnBid) || g.Applicable(Rule.AdvancedCombat);
+
+            return
+              @"<div style='{25}'>
+                <p><strong>At start:</strong> 3 {32} and 3 {33} in the {34}. 10 {32} and 4 {33} in reserve. Start with 10 {16}.</p>
+                <p><strong>Free revival:</strong> 1.</p>
+                <h5>Basic Advantages</h5>
+                <p>You are skilled in technology and production.</p>
+                <p>During Setup you see all initially dealt Treachery Cards and choose your starting card from them.</p>
+                <p>Before Bidding, one extra card is drawn and you see them all and put one of those cards on top or on the bottom of the Treachery Card deck. The remaining cards are shuffled for the bidding round.</p>
+                <p>Your 7 {33} forces are each worth 2 normal forces in battle, are able to move 2 territories instead of 1 and can collect 3 {16}. Your {33} forces ship normally, but each costs 3 to revive.</p>
+                <p>Your 13 {32} forces ship normally but are worth ½ in battle. {32} can be used to absorb losses after a battle. After battle losses are calculated, any of your surviving {32} in that territory can be exchanged for {33} you lost in that battle. {32} can control strongholds and collect {16}. {32} move 2 if accompanied by a {33}, or 1 if they are not.</p>
+                <p>After the first storm movement, place your {34} in any non-stronghold territory. This stronghold counts towards the game win and is protected from worms and storms.</p>
+                <p>Subsequently, before text storms are revealed, as long as your forces occupy it, you may move your {34} up to 3 territories to any non-stronghold territory. You can't move it into or out of a storm. When you move into, from, or through a sector containing {16}, you may immediately collect 2 {16} per force in your stronghold.</p>
+                <p>No other faction may ship forces directly into your {34}, or move it if they take control. Other factions must move or ship forces into the territory it is pointing at (including {26}), and then use one movement to enter.</p>" +
+
+              (advancedApplies ? @"<h5>Advanced Advantages</h5>" : "") +
+              (g.Applicable(Rule.GreyAndPurpleExpansionGreySwappingCardOnBid) ? @"<p>Once, during the bidding round, before bidding begins on a card and before {0} gets to look at the card, you may take the Treachery Card about to be bid on, replacing it with one from your hand.</p>" : "") +
+              (g.Applicable(Rule.AdvancedCombat) ? @"<p>{32} are always considered half strength for dialing. You can’t increase the effectiveness of {32} in battle by spending {16}.</p>" : "") +
+
+              @"<p><strong>Special {19}:</strong> during Shipment and Movement, you may move the {34} 2 territories on your turn as well as make your normal movement.</p>
+                <h5>Alliance Power</h5>
+                <p>After an ally purchases a Treachery Card during bidding, they may immediately discard it and draw the top card from the deck.</p>
+                <h5>Strategy</h5>
+                <p>You are handicapped by having weaker forces in the halfstrength {32}, which make up the bulk of your forces. You have no regular source of {16} income. However, tactical placement of your {34} can position you to acquire {16} left behind on the planet. You also have an advantage over other factions because you know what Treachery cards are in play and you can mix in or suppress certain cards during the bidding phase.</p>
+                </div>";
+        }
+
         #endregion FactionManual
 
         #region SkinValidationAndFixing
@@ -1181,9 +1211,9 @@ namespace Treachery.Shared
             var tTechTokenImage_URL = FixDictionaryIfMissing("TechTokenImage_URL", true, TechTokenImage_URL, Dune1979.TechTokenImage_URL, errors, UrlExists);
             
             var tStrongholdCardImage_URL = FixDictionaryIfMissing("StrongholdCardImage_URL", true, StrongholdCardImage_URL, Dune1979.StrongholdCardImage_URL, errors, UrlExists);
-            var tStrongholdCardName_STR = FixDictionaryIfMissing("StrongholdCardImage_URL", true, StrongholdCardName_STR, Dune1979.StrongholdCardName_STR, errors, UrlExists);
+            var tStrongholdCardName_STR = FixDictionaryIfMissing("StrongholdCardImage_STR", false, StrongholdCardName_STR, Dune1979.StrongholdCardName_STR, errors, UrlExists);
             var tLeaderSkillCardImage_URL = FixDictionaryIfMissing("LeaderSkillCardImage_URL", true, LeaderSkillCardImage_URL, Dune1979.LeaderSkillCardImage_URL, errors, UrlExists);
-            var tLeaderSkillCardName_STR = FixDictionaryIfMissing("LeaderSkillCardName_STR", true, LeaderSkillCardName_STR, Dune1979.LeaderSkillCardName_STR, errors, UrlExists);
+            var tLeaderSkillCardName_STR = FixDictionaryIfMissing("LeaderSkillCardName_STR", false, LeaderSkillCardName_STR, Dune1979.LeaderSkillCardName_STR, errors, UrlExists);
             /*
             ReportBackground_ShipmentAndMove_URL = await tReportBackground_ShipmentAndMove_URL;
             ReportBackground_StormAndResourceBlow_URL = await tReportBackground_StormAndResourceBlow_URL;
@@ -1999,7 +2029,6 @@ namespace Treachery.Shared
 
             LeaderSkillCardName_STR = new Dictionary<LeaderSkill, string>()
             {
-                [LeaderSkill.None] = "",
                 [LeaderSkill.Bureaucrat] = "Bureaucrat",
                 [LeaderSkill.Diplomat] = "Diplomat",
                 [LeaderSkill.Decipherer] = "Rihani Decipherer",
@@ -2018,7 +2047,6 @@ namespace Treachery.Shared
 
             LeaderSkillCardImage_URL = new Dictionary<LeaderSkill, string>()
             {
-                [LeaderSkill.None] = "",
                 [LeaderSkill.Bureaucrat] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
                 [LeaderSkill.Diplomat] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
                 [LeaderSkill.Decipherer] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",

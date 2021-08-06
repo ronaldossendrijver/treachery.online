@@ -317,7 +317,7 @@ namespace Treachery.Shared
                             result.Add(typeof(Thought));
                         }
 
-                        if (CurrentBattle != null && CurrentBattle.IsAggressorOrDefender(player) && ResidualPlayed.MayPlay(this, player))
+                        if (CurrentBattle != null && ResidualPlayed.MayPlay(this, player))
                         {
                             result.Add(typeof(ResidualPlayed));
                         }

@@ -97,13 +97,14 @@ namespace Treachery.Shared
             var initiator = GetPlayer(s.Initiator);
 
             MessagePart orangeIncome = new MessagePart("");
-
             int totalCost = 0;
 
             if (!s.Passed)
             {
+                var ownerOfKarma = s.KarmaCard != null ? OwnerOf(s.KarmaCard) : null;
                 totalCost = PayForShipment(s, initiator);
                 int orangeProfit = HandleOrangeProfit(s, initiator, ref orangeIncome);
+                CurrentReport.Add(s.GetVerboseMessage(totalCost, orangeIncome, ownerOfKarma));
 
                 if (totalCost - orangeProfit >= 4)
                 {
@@ -156,16 +157,14 @@ namespace Treachery.Shared
                 if (Version >= 89 || mustBeAdvisors) initiator.FlipForces(s.To, mustBeAdvisors);
 
                 DetermineNextShipmentAndMoveSubPhase(DetermineIntrusionCaused(s), BGMayAccompany);
-                               
 
                 FlipBeneGesseritWhenAlone();
             }
             else
             {
+                CurrentReport.Add(s.GetVerboseMessage(totalCost, orangeIncome, null));
                 DetermineNextShipmentAndMoveSubPhase(false, BGMayAccompany);
             }
-
-            CurrentReport.Add(s.GetVerboseMessage(totalCost, orangeIncome));
         }
 
         public bool ContainsConflictingAlly(Player initiator, Location to)

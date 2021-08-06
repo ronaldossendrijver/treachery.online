@@ -101,7 +101,6 @@ namespace Treachery.Shared
 
             if (CurrentBattle != null)
             {
-
                 var opponent = CurrentBattle.OpponentOf(e.Player);
 
                 if (opponent != null)
@@ -282,6 +281,12 @@ namespace Treachery.Shared
             if (!leadersToKill.IsEmpty)
             {
                 var toKill = leadersToKill.Draw();
+                var opponentPlan = CurrentBattle.PlanOf(opponent);
+                if (opponentPlan != null && opponentPlan.Hero == toKill)
+                {
+                    RevokePlan(opponentPlan);
+                }
+
                 KillHero(toKill);
                 CurrentReport.Add(e);
             }

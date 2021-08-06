@@ -300,6 +300,7 @@ namespace Treachery.Client
                         await HostProxy.SendHeartbeat(PlayerName);
                     }
 
+                    if ((nrOfHeartbeats % 3) == 0) await Browser.EnablePopovers();
                 }
                 catch (Exception e)
                 {
@@ -744,11 +745,12 @@ namespace Treachery.Client
             }
 
             RefreshAll();
-
+            /*
             if (!(e is AllyPermission || e is Bid && !Game.RecentMilestones.Contains(Milestone.AuctionWon) || e is DealOffered))
             {
                 await Browser.EnablePopovers();
             }
+            */
         }
 
         private void PerformBotAction()

@@ -14,7 +14,12 @@
     </div>
 </div>
 
-@code {
+@code {        
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await Browser.EnableEnterEvents();
+    }
 
     private static Func<Task> action;
 

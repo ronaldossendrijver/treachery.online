@@ -33,8 +33,7 @@ namespace Treachery.Shared
 
         public static bool MayPlay(Game g, Player p)
         {
-            var opponentBattlePlan = g.CurrentBattle?.PlanOfOpponent(p);
-            return p.TreacheryCards.Any(c => c.Type == TreacheryCardType.Residual) && opponentBattlePlan == null;
+            return g.CurrentBattle.IsAggressorOrDefender(p) && p.TreacheryCards.Any(c => c.Type == TreacheryCardType.Residual);
         }
 
     }

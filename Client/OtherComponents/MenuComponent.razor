@@ -251,7 +251,7 @@ else if (IsVisible(HELP))
 
                 if (newSkin.Version > 0)
                 {
-                    //_loadValidationError = string.Join(", ", await newSkin.ValidateAndFix(Browser.UrlExists));
+                    _loadValidationError = string.Join(", ", await newSkin.ValidateAndFix(Browser.UrlExists));
                     await newSkin.ValidateAndFix(Browser.UrlExists);
                     await h.Host.LoadSkin(Skin.SkinToString(newSkin));
                 }

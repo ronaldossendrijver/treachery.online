@@ -464,12 +464,16 @@ namespace Treachery.Shared
 
         private void RevokePlanIfNeeded(Faction f)
         {
-            if (AggressorBattleAction != null && AggressorBattleAction.Initiator == f)
+            RevokePlan(CurrentBattle?.PlanOf(f));
+        }
+
+        private void RevokePlan(Battle plan)
+        {
+            if (plan == AggressorBattleAction)
             {
                 AggressorBattleAction = null;
             }
-
-            if (DefenderBattleAction != null && DefenderBattleAction.Initiator == f)
+            else if (plan == DefenderBattleAction)
             {
                 DefenderBattleAction = null;
             }

@@ -770,7 +770,7 @@ namespace Treachery.Shared
 
         public Player OwnerOf(TreacheryCard karmaCard)
         {
-            return Players.FirstOrDefault(p => p.TreacheryCards.Contains(karmaCard));
+            return karmaCard != null ? Players.FirstOrDefault(p => p.TreacheryCards.Contains(karmaCard)) : null;
         }
 
         public Player OwnerOf(Location stronghold)

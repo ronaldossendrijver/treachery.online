@@ -215,12 +215,15 @@
     private bool mapHoverInitialized = false;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        try
+        if (firstRender)
         {
             await LoadSkinDataIfSaved();
+        }
+
+        try
+        {
             MapDrawer.SetGame(h._canvas, h);
             await Browser.DetermineCanvas();
-            await Browser.EnableEnterEvents();
 
             if (h.HostProxy != null && !mapHoverInitialized)
             {
@@ -232,6 +235,7 @@
         {
 
         }
+
     }
 
     private async Task LoadSkinDataIfSaved()
@@ -241,10 +245,7 @@
         {
             var existingSkin = Support.LoadSkin(existingSkinData);
             var issues = await existingSkin.ValidateAndFix(Browser.UrlExists);
-            if (!issues.Any())
-            {
-                Skin.Current = existingSkin;
-            }
+            Skin.Current = existingSkin;
         }
     }
 
