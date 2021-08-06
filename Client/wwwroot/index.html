@@ -97,12 +97,16 @@
             DotNet.invokeMethodAsync('Treachery.Client', 'MapDrawerDraw');
         }
 
-        function EnablePopovers() {
+        function RefreshPopovers() {
 
             $('[data-toggle="popover"]').popover('dispose');
-            $('[data-toggle="popover"]').popover({ sanitize: false });
-
             $('[data-toggle="tooltip"]').tooltip('dispose');
+            EnablePopovers();
+        }
+
+        function EnablePopovers() {
+
+            $('[data-toggle="popover"]').popover({ sanitize: false });
             $('[data-toggle="tooltip"]').tooltip({ sanitize: false });
         }
 

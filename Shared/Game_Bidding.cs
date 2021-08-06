@@ -251,8 +251,7 @@ namespace Treachery.Shared
             }
             else if (auctionType == AuctionType.BlackMarketOnceAround || auctionType == AuctionType.WhiteOnceAround)
             {
-                BidSequence.Start(whitePlayer, direction);
-                BidSequence.NextPlayer(true);
+                BidSequence.Start(whitePlayer, true, direction);
             }
 
             FirstFactionToBid = BidSequence.CurrentFaction;

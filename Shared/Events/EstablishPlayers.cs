@@ -11,6 +11,8 @@ namespace Treachery.Shared
 {
     public class EstablishPlayers : GameEvent
     {
+        private const bool EXP2 = true;
+
         public string _players = "";
 
         public int Seed { get; set; }
@@ -164,31 +166,41 @@ namespace Treachery.Shared
 
         public static IEnumerable<Faction> AvailableFactions()
         {
-            return new Faction[] { Faction.Green, Faction.Black, Faction.Yellow, Faction.Red, Faction.Orange, Faction.Blue, Faction.Grey, Faction.Purple, Faction.Brown, Faction.White };
-            //return new Faction[] { Faction.Green, Faction.Black, Faction.Yellow, Faction.Red, Faction.Orange, Faction.Blue, Faction.Grey, Faction.Purple };
+            if (EXP2)
+            {
+                return new Faction[] { Faction.Green, Faction.Black, Faction.Yellow, Faction.Red, Faction.Orange, Faction.Blue, Faction.Grey, Faction.Purple, Faction.Brown, Faction.White };
+            }
+            else
+            {
+                return new Faction[] { Faction.Green, Faction.Black, Faction.Yellow, Faction.Red, Faction.Orange, Faction.Blue, Faction.Grey, Faction.Purple };
+            }
         }
 
         public static IEnumerable<Ruleset> AvailableRulesets()
         {
-            return Enumerations.GetValuesExceptDefault(typeof(Ruleset), Ruleset.None);
-            
-            /*
-            return new Ruleset[] { 
-                Ruleset.BasicGame, 
-                Ruleset.AdvancedGame, 
-                Ruleset.ExpansionBasicGame, 
-                Ruleset.ExpansionAdvancedGame, 
-                Ruleset.ServerClassic, 
-                Ruleset.Custom 
+            if (EXP2)
+            {
+                return Enumerations.GetValuesExceptDefault(typeof(Ruleset), Ruleset.None);
+            }
+            else
+            {
+                return new Ruleset[] {
+                Ruleset.BasicGame,
+                Ruleset.AdvancedGame,
+                Ruleset.ExpansionBasicGame,
+                Ruleset.ExpansionAdvancedGame,
+                Ruleset.ServerClassic,
+                Ruleset.Custom
             };
-            */   
+            }
         }
 
         public static IEnumerable<RuleGroup> AvailableRuleGroups()
         {
-            
-            return new RuleGroup[]
+            if (EXP2)
             {
+                return new RuleGroup[]
+                {
                 RuleGroup.CoreAdvanced,
                 RuleGroup.CoreBasicExceptions,
                 RuleGroup.CoreAdvancedExceptions,
@@ -200,11 +212,13 @@ namespace Treachery.Shared
                 RuleGroup.ExpansionBrownAndWhiteAdvanced,
 
                 RuleGroup.House,
-            };
-            
-            
-            /*return new RuleGroup[]
+                };
+            }
+            else
             {
+
+                return new RuleGroup[]
+                {
                 RuleGroup.CoreAdvanced,
                 RuleGroup.CoreBasicExceptions,
                 RuleGroup.CoreAdvancedExceptions,
@@ -213,9 +227,8 @@ namespace Treachery.Shared
                 RuleGroup.ExpansionIxAndBtAdvanced,
 
                 RuleGroup.House,
-            };*/
-            
+                };
+            }
         }
-
     }
 }

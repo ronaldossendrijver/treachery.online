@@ -89,22 +89,14 @@
         if (PopupHTMLs == null || PopupHTMLs.Count() != nrOfValues) PopupHTMLs = new string[nrOfValues];
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        //Console.WriteLine("Values: " + Skin.Current.Join(Values));
-        //Console.WriteLine("Value: " + Skin.Current.Describe(Value));
-
         if (Selected == null && !Values.Contains(Value))
         {
             Value = Required ? Values.FirstOrDefault() : default;
         }
 
-        /*
-            else if (!Selected.Any() && Values.Any())
-            {
-                Selected.Add(Values.FirstOrDefault());
-            }
-        */
+        await Browser.EnablePopovers();
     }
 
     private void SwapSelection(T value)

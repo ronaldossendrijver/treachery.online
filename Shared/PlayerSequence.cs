@@ -28,11 +28,13 @@ namespace Treachery.Shared
             Game = game;
         }
 
-        public void Start(Player p, int direction)
+        public void Start(Player p, bool ignorePlayersThatCantBid, int direction)
         {
             _playerNumberInRound = 0;
             _direction = direction;
             Current = p.PositionAtTable;
+            RoundStartedAt = Current;
+            NextPlayer(ignorePlayersThatCantBid);
             RoundStartedAt = Current;
         }
 
@@ -104,7 +106,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    position = (Game.MaximumNumberOfPlayers + position + _direction) % Game.MaximumNumberOfPlayers;
+                    position = Mod(Game.MaximumNumberOfPlayers + position + _direction, Game.MaximumNumberOfPlayers);
                 }
             }
 
@@ -132,8 +134,8 @@ namespace Treachery.Shared
                         
             for (int i = 0; i < Game.MaximumNumberOfPlayers; i++)
             {
-                int pos = (RoundStartedAt + i) % Game.MaximumNumberOfPlayers;
-                var playerAtPosition = Players.FirstOrDefault(p => p.PositionAtTable == (RoundStartedAt + _direction * i) % Game.MaximumNumberOfPlayers);
+                int pos = Mod(RoundStartedAt + _direction * i, Game.MaximumNumberOfPlayers);
+                var playerAtPosition = Players.FirstOrDefault(p => p.PositionAtTable == pos);
                 if (playerAtPosition != null && playerAtPosition != Game.CurrentJuice?.Player)
                 {
                     bool hasTurn = (pos == Current && !(Game.JuiceForcesFirstPlayer && _playerNumberInRound == 0) && !(Game.JuiceForcesLastPlayer && _playerNumberInRound == Players.Count - 1));
@@ -148,7 +150,14 @@ namespace Treachery.Shared
 
             return result;
         }
+
+        public static int Mod(int x, int m)
+        {
+            return (x % m + m) % m;
+        }
     }
+
+    
 
     public class SequenceElement
     {

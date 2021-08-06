@@ -53,6 +53,11 @@ namespace Treachery.Client
             await JsInvoke("EnablePopovers");
         }
 
+        public static async Task RefreshPopovers()
+        {
+            await JsInvoke("RefreshPopovers");
+        }
+
         public static async Task EnableMapHover()
         {
             await JsInvoke("EnableMapHover");

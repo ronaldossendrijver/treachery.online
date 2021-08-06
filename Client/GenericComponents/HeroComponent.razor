@@ -14,4 +14,9 @@
 
     [Parameter]
     public Game Game { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await Browser.EnablePopovers();
+    }
 }
