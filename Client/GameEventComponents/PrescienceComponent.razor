@@ -11,6 +11,11 @@
     <Header>Use Prescience</Header>
     <Body>
 
+        @if (Game.CurrentBattle.IsInvolved(Faction.Blue))
+        {
+            <div class="text-info small mb-2">Note: Voice should be used before Prescience.</div>
+        }
+
         <SelectComponent @bind-Value="aspect" Values="Prescience.ValidAspects(Game, Player)">
             <Label>What should be foreseen?</Label>
         </SelectComponent>

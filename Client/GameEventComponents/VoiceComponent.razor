@@ -12,6 +12,11 @@
     <Header>Use Voice</Header>
     <Body>
 
+        @if (Game.CurrentBattle.IsInvolved(Faction.Green))
+        {
+            <div class="text-info small mb-2">Note: Voice should be used before Prescience.</div>
+        }
+
         <RadioComponent @bind-Value="mustUse" Values="@(new bool[] {true,false})" ValueLabels="@(new string[] {"Force the use of...","Deny the use of..."})" />
 
         <SelectComponent @bind-Value="type" Values="ValidTypes" />

@@ -468,32 +468,7 @@ namespace Treachery.Test
 
             foreach (var bot in bots)
             {
-                var evt = bot.DetermineHighPrioInPhaseAction(game.GetApplicableEvents(bot, true));
-
-                if (evt != null)
-                {
-                    var executeResult = evt.Execute(performTests, true);
-                    if (performTests && executeResult != "")
-                    {
-                        var cnt = game.History.Count;
-                        if (cnt >= 3)
-                        {
-                            Console.WriteLine(game.History[cnt - 3].GetMessage());
-                            Console.WriteLine(game.History[cnt - 2].GetMessage());
-                            Console.WriteLine(game.History[cnt - 1].GetMessage());
-                        }
-                        Console.WriteLine(evt.GetMessage());
-
-                        File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
-                    }
-                    if (performTests) Assert.AreEqual("", executeResult);
-                    return evt;
-                }
-            }
-
-            foreach (var bot in bots)
-            {
-                var evt = bot.DetermineLowPrioInPhaseAction(game.GetApplicableEvents(bot, true));
+                var evt = bot.DetermineInPhaseAction(game.GetApplicableEvents(bot, true));
 
                 if (evt != null)
                 {

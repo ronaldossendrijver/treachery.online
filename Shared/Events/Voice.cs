@@ -75,7 +75,9 @@ namespace Treachery.Shared
 
         public static bool MayUseVoice(Game g, Player p)
         {
-            if (g.CurrentBattle != null && g.CurrentVoice == null && !g.Prevented(FactionAdvantage.BlueUsingVoice))
+            bool disableWhenPrescienceIsUsed = g.Version >= 108 && g.CurrentPrescience != null;
+
+            if (!disableWhenPrescienceIsUsed && g.CurrentBattle != null && g.CurrentVoice == null && !g.Prevented(FactionAdvantage.BlueUsingVoice))
             {
                 if (p.Faction == Faction.Blue)
                 {

@@ -76,6 +76,11 @@ namespace Treachery.Shared
             return Initiator == p.Faction || Target == p.Faction || Initiator == p.Ally || Target == p.Ally;
         }
 
+        public bool IsInvolved(Faction f)
+        {
+            return Initiator == f || Target == f || Player.Ally == f || Defender.Ally == f;
+        }
+
         public bool IsAggressorOrDefender(Player p)
         {
             return Initiator == p.Faction || Target == p.Faction;

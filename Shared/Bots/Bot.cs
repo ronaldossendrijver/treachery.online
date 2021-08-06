@@ -14,7 +14,49 @@ namespace Treachery.Shared
 
         public BotParameters Param { get; set; }
 
-        public GameEvent DetermineHighPrioInPhaseAction(IEnumerable<Type> possibleEvents)
+        public GameEvent DetermineInPhaseAction(IEnumerable<Type> possibleEvents)
+        {
+            var action = DetermineHighPrioInPhaseAction(possibleEvents);
+            if (action == null) action = DetermineMiddlePrioInPhaseAction(possibleEvents);
+            if (action == null) action = DetermineLowPrioInPhaseAction(possibleEvents);
+
+            return action;
+        }
+
+        private GameEvent DetermineHighPrioInPhaseAction(IEnumerable<Type> possibleEvents)
+        {
+            GameEvent action = null;
+
+            try
+            {
+                if (action == null && possibleEvents.Contains(typeof(Voice))) action = DetermineVoice();
+                if (action == null && possibleEvents.Contains(typeof(DealAccepted))) action = DetermineDealAccepted();
+                if (action == null && possibleEvents.Contains(typeof(AcceptOrCancelPurpleRevival))) action = DetermineAcceptOrCancelPurpleRevival();
+                if (action == null && possibleEvents.Contains(typeof(ThoughtAnswered))) action = DetermineThoughtAnswered();
+            }
+            catch (Exception e)
+            {
+                LogInfo("--error occured -->" + e.ToString());
+            }
+
+            if (action != null)
+            {
+                var result = action.Validate();
+                if (result != "")
+                {
+                    LogInfo("--invalid decision ({0},{1})--> {2}: {3}", Resources, string.Join(",", TreacheryCards), action.GetMessage(), result);
+                    action = null;
+                }
+                else
+                {
+                    LogInfo("--valid decision ({0},{1})--> {2}", Resources, string.Join(",", TreacheryCards), action.GetMessage());
+                }
+            }
+
+            return action;
+        }
+
+        private GameEvent DetermineMiddlePrioInPhaseAction(IEnumerable<Type> possibleEvents)
         {
             GameEvent action = null;
 
@@ -23,10 +65,7 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(MetheorPlayed))) action = DetermineMetheorPlayed();
                 if (action == null && possibleEvents.Contains(typeof(AmalPlayed))) action = DetermineAmalPlayed();
                 if (action == null && possibleEvents.Contains(typeof(SetIncreasedRevivalLimits))) action = DetermineSetIncreasedRevivalLimits();
-                if (action == null && possibleEvents.Contains(typeof(Voice))) action = DetermineVoice();
                 if (action == null && possibleEvents.Contains(typeof(DealOffered))) action = DetermineDealOffered();
-                if (action == null && possibleEvents.Contains(typeof(DealAccepted))) action = DetermineDealAccepted();
-                if (action == null && possibleEvents.Contains(typeof(AcceptOrCancelPurpleRevival))) action = DetermineAcceptOrCancelPurpleRevival();
                 if (action == null && possibleEvents.Contains(typeof(RequestPurpleRevival))) action = DetermineRequestPurpleRevival();
                 if (action == null && possibleEvents.Contains(typeof(DistransUsed))) action = DetermineDistransUsed();
                 if (action == null && possibleEvents.Contains(typeof(JuicePlayed))) action = DetermineJuicePlayed();
@@ -34,7 +73,6 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(Diplomacy))) action = DetermineDiplomacy();
                 if (action == null && possibleEvents.Contains(typeof(SwitchedSkilledLeader))) action = DetermineSwitchedSkilledLeader();
                 if (action == null && possibleEvents.Contains(typeof(Thought))) action = DetermineThought();
-                if (action == null && possibleEvents.Contains(typeof(ThoughtAnswered))) action = DetermineThoughtAnswered();
                 if (action == null && possibleEvents.Contains(typeof(Retreat))) action = DetermineRetreat();
                 if (action == null && possibleEvents.Contains(typeof(HMSAdvantageChosen))) action = DetermineHMSAdvantageChosen();
                 if (action == null && possibleEvents.Contains(typeof(Planetology))) action = DeterminePlanetology();
@@ -61,7 +99,7 @@ namespace Treachery.Shared
             return action;
         }
 
-        public GameEvent DetermineLowPrioInPhaseAction(IEnumerable<Type> possibleEvents)
+        private GameEvent DetermineLowPrioInPhaseAction(IEnumerable<Type> possibleEvents)
         {
             GameEvent action = null;
 

@@ -118,12 +118,16 @@
         var oldY = 0;
         function UpdateTooltip(e) {
 
-            if (Math.abs(e.clientX - oldX) > 10 || Math.abs(e.clientY - oldY) > 10) {
+            x = e.clientX;
+            y = e.clientY;
 
-                oldX = e.clientX;
-                oldY = e.clientY;
+            if (Math.abs(x - oldX) > 5 || Math.abs(y - oldY) > 5) {
 
-                tooltip = DotNet.invokeMethodAsync('Treachery.Client', 'DetermineTooltip', e.clientX, e.clientY, GetMapDimensions())
+                oldX = x;
+                oldY = y;
+
+                tooltip = DotNet
+                    .invokeMethodAsync('Treachery.Client', 'DetermineTooltip', x, y, GetMapDimensions())
                     .then(result => SetTooltipText(result));
             }
         }
