@@ -701,15 +701,21 @@ namespace Treachery.Client
         #region ClientUpdates
         private async Task PerformPostEventTasks(GameEvent e)
         {
-            if (!(e is AllyPermission))
+            if (!(e is AllyPermission || e is DealOffered || e is DealAccepted))
             {
                 await TurnAlert();
                 await PlaySoundsForMilestones();
                 CheckTimers();
                 
-                if (e == null || Game.CurrentMainPhase != MainPhase.Bidding)
+                if (e == null || !(Game.CurrentPhase == Phase.Bidding || Game.CurrentPhase == Phase.BlackMarketBidding))
                 {
                     MapDrawer.UpdateIntelligence();
+                    await Browser.EnablePopovers();
+
+                    if (IsHost)
+                    {
+                        await SaveGame();
+                    }
                 }
             }
 
@@ -727,17 +733,10 @@ namespace Treachery.Client
 
             if (IsHost)
             {
-                await SaveGame();
                 PerformBotAction();
             }
 
             RefreshAll();
-            /*
-            if (!(e is AllyPermission || e is Bid && !Game.RecentMilestones.Contains(Milestone.AuctionWon) || e is DealOffered))
-            {
-                await Browser.EnablePopovers();
-            }
-            */
         }
 
         private void PerformBotAction()

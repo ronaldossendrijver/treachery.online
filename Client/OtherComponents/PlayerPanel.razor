@@ -51,7 +51,7 @@
                         <!-- Leaders -->
                         @foreach (var v in ShownPlayer.Leaders.Where(l => h.Game.IsAlive(l)))
                         {
-                            var style = Game.Skilled(v) ? "filter:brightness(150%) contrast(100%) blur(1px)" : "";
+                            var style = Game.Skilled(v) ? "filter:brightness(150%) contrast(100%)" : "";
                             <img src="@Skin.Current.GetImageURL(v)" style="@style" class="img-fluid p-1" width=60 data-animation="true" data-content="@Support.GetHeroHoverHTML(v, h.Game)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
                         }
 
