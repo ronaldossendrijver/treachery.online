@@ -203,7 +203,7 @@ namespace Treachery.Client
 
         private static string Intel(Location intelligenceLocation)
         {
-            string result = "";
+            string result = "<div style='width:300px'>";
 
             var owner = h.Game.StrongholdOwnership.ContainsKey(intelligenceLocation) ? h.Game.StrongholdOwnership[intelligenceLocation] : Faction.None;
             if (owner != Faction.None)
@@ -212,7 +212,6 @@ namespace Treachery.Client
             }
             else
             {
-
                 result += Skin.Current.Format("<h5>{0}</h5>", intelligenceLocation.Territory.Name);
                 if (intelligenceLocation.Name != "")
                 {
