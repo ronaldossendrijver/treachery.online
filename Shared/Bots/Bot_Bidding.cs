@@ -30,7 +30,7 @@ namespace Treachery.Shared
             var karmaCardToUseForBidding = couldUseKarmaForBid && (currentBid > 4 || resourcesAvailable <= currentBid) ? TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma || MayUseUselessAsKarma && c.Type == TreacheryCardType.Useless) : null;
             int karmaWorth = (karmaCardToUseForBidding == null ? 0 : 8);
             int maximumIWillSpend = D(1, resourcesAvailable + karmaWorth);
-            int amountToBidInSilentOrOnceAround = D(1, resourcesAvailable);
+            int amountToBidInSilentOrOnceAround = D(1, Math.Min(resourcesAvailable, 10));
 
             LogInfo("currentBidIsFromAlly: {0}, thisCardIsUseless: {1}, thisCardIsCrappy: {2}, resourcesAvailable:, {3}, karmaWorth: {4}, maximumIWillSpend: {5}, karmaCardToUseForBidding: {6}.",
                 currentBidIsFromAlly, thisCardIsUseless, thisCardIsCrappy, resourcesAvailable, karmaWorth, maximumIWillSpend, karmaCardToUseForBidding);
@@ -42,7 +42,7 @@ namespace Treachery.Shared
             }
             else if (Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent)
             {
-                return CreateBidUsingAllyAndRedSpice(D(1, amountToBidInSilentOrOnceAround), 0, null);
+                return CreateBidUsingAllyAndRedSpice(amountToBidInSilentOrOnceAround, 0, null);
             }
             else if (Game.CurrentAuctionType == AuctionType.BlackMarketOnceAround || Game.CurrentAuctionType == AuctionType.WhiteOnceAround)
             {

@@ -954,12 +954,12 @@ namespace Treachery.Shared
             }
         }
 
-        private BattleOutcome DetermineBattleOutcome(Battle agg, Battle def, Territory territory)
+        public BattleOutcome DetermineBattleOutcome(Battle agg, Battle def, Territory territory)
         {
             var result = new BattleOutcome();
 
-            var aggressor = agg.Player;
-            var defender = def.Player;
+            result.Aggressor = agg.Player;
+            result.Defender = def.Player;
 
             //Determine result
 
@@ -968,18 +968,19 @@ namespace Treachery.Shared
 
             bool poisonToothUsed = !PoisonToothCancelled && (agg.HasPoisonTooth || def.HasPoisonTooth);
             bool artilleryUsed = agg.HasArtillery || def.HasArtillery;
-            bool rockMelterUsed = CurrentRockWasMelted != null;
+            bool rockMelterUsed = agg.HasRockMelter || def.HasRockMelter;
+            bool rockMelterUsedToKill = CurrentRockWasMelted != null && CurrentRockWasMelted.Kill;
 
             result.AggHeroKilled = false;
             result.AggHeroCauseOfDeath = TreacheryCardType.None;
             DetermineCauseOfDeath(
-                agg, def, agg.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && CurrentRockWasMelted.Kill, territory == Map.Carthag.Territory, 
+                agg, def, agg.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && rockMelterUsedToKill, territory == Map.Carthag.Territory, 
                 ref result.AggHeroKilled, ref result.AggHeroCauseOfDeath, ref result.AggSavedByCarthag);
 
             result.DefHeroKilled = false;
             result.DefHeroCauseOfDeath = TreacheryCardType.None;
             DetermineCauseOfDeath(
-                def, agg, def.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && CurrentRockWasMelted.Kill, territory == Map.Carthag.Territory, 
+                def, agg, def.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && rockMelterUsedToKill, territory == Map.Carthag.Territory, 
                 ref result.DefHeroKilled, ref result.DefHeroCauseOfDeath, ref result.DefSavedByCarthag);
 
             int aggHeroSkillBonus = Battle.DetermineSkillBonus(this, agg, out result.AggActivatedBonusSkill);
@@ -990,27 +991,27 @@ namespace Treachery.Shared
             result.DefHeroEffectiveStrength = (def.Hero != null && !artilleryUsed) ? def.Hero.ValueInCombatAgainst(agg.Hero) : 0;
             int defHeroContribution = !result.DefHeroKilled && !rockMelterUsed ? result.DefHeroEffectiveStrength + defHeroSkillBonus : 0;
 
-            int aggSkillPenalty = Battle.DetermineSkillPenalty(this, def, aggressor, out result.DefActivatedPenaltySkill);
+            int aggSkillPenalty = Battle.DetermineSkillPenalty(this, def, result.Aggressor, out result.DefActivatedPenaltySkill);
             result.AggBattlePenalty = !result.DefHeroKilled && !rockMelterUsed ? aggSkillPenalty : 0;
 
-            int defSkillPenalty = Battle.DetermineSkillPenalty(this, agg, defender, out result.AggActivatedPenaltySkill);
+            int defSkillPenalty = Battle.DetermineSkillPenalty(this, agg, result.Defender, out result.AggActivatedPenaltySkill);
             result.DefBattlePenalty = !result.AggHeroKilled && !rockMelterUsed ? defSkillPenalty : 0;
 
-            var aggMessiahContribution = aggressor.Is(Faction.Green) && agg.Messiah && agg.Hero != null && !result.AggHeroKilled && !artilleryUsed ? 2 : 0;
-            var defMessiahContribution = defender.Is(Faction.Green) && def.Messiah && def.Hero != null && !result.DefHeroKilled && !artilleryUsed ? 2 : 0;
+            var aggMessiahContribution = result.Aggressor.Is(Faction.Green) && agg.Messiah && agg.Hero != null && !result.AggHeroKilled && !artilleryUsed ? 2 : 0;
+            var defMessiahContribution = result.Defender.Is(Faction.Green) && def.Messiah && def.Hero != null && !result.DefHeroKilled && !artilleryUsed ? 2 : 0;
 
             float aggForceDial;
             float defForceDial;
 
             if (!rockMelterUsed)
             {
-                aggForceDial = agg.Dial(this, defender.Faction);
-                defForceDial = def.Dial(this, aggressor.Faction);
+                aggForceDial = agg.Dial(this, result.Defender.Faction);
+                defForceDial = def.Dial(this, result.Aggressor.Faction);
             }
             else
             {
-                aggForceDial = aggressor.AnyForcesIn(CurrentBattle.Territory) - agg.TotalForces;
-                defForceDial = defender.AnyForcesIn(CurrentBattle.Territory) - def.TotalForces;
+                aggForceDial = result.Aggressor.AnyForcesIn(CurrentBattle.Territory) - agg.TotalForces;
+                defForceDial = result.Defender.AnyForcesIn(CurrentBattle.Territory) - def.TotalForces;
             }
 
             result.AggTotal = aggForceDial + aggHeroContribution + aggMessiahContribution - result.AggBattlePenalty;
@@ -1020,21 +1021,21 @@ namespace Treachery.Shared
             def.DeactivateMirrorWeaponAndDiplomacy();
 
             bool aggressorWinsTies = true;
-            if (HasStrongholdAdvantage(defender.Faction, StrongholdAdvantage.WinTies)) aggressorWinsTies = false;
-            if (IsAggressorByJuice(defender) && !HasStrongholdAdvantage(aggressor.Faction, StrongholdAdvantage.WinTies)) aggressorWinsTies = false;
+            if (HasStrongholdAdvantage(result.Defender.Faction, StrongholdAdvantage.WinTies)) aggressorWinsTies = false;
+            if (IsAggressorByJuice(result.Defender) && !HasStrongholdAdvantage(result.Aggressor.Faction, StrongholdAdvantage.WinTies)) aggressorWinsTies = false;
 
             if (aggressorWinsTies)
             {
-                result.Winner = (result.AggTotal >= result.DefTotal) ? aggressor : defender;
+                result.Winner = (result.AggTotal >= result.DefTotal) ? result.Aggressor : result.Defender;
             }
             else
             {
-                result.Winner = (result.DefTotal >= result.AggTotal) ? defender : aggressor;
+                result.Winner = (result.DefTotal >= result.AggTotal) ? result.Defender : result.Aggressor;
             }
 
-            result.WinnerBattlePlan = (result.Winner == aggressor) ? agg : def;
-            result.Loser = result.Winner == aggressor ? defender : aggressor;
-            result.LoserBattlePlan = (result.Loser == aggressor) ? agg : def;
+            result.WinnerBattlePlan = (result.Winner == result.Aggressor) ? agg : def;
+            result.Loser = result.Winner == result.Aggressor ? result.Defender : result.Aggressor;
+            result.LoserBattlePlan = (result.Loser == result.Aggressor) ? agg : def;
 
             return result;
         }
@@ -1582,5 +1583,28 @@ namespace Treachery.Shared
 
         public bool AggSavedByCarthag;
         public bool DefSavedByCarthag;
+
+        public Player Aggressor;
+        public Player Defender;
+
+        public override string ToString()
+        {
+            var aggPlan = Winner == Aggressor ? WinnerBattlePlan : LoserBattlePlan;
+            var defPlan = Winner == Defender ? WinnerBattlePlan : LoserBattlePlan;
+            return Skin.Current.Format("Aggressor ({0}) {1}. Total strength: {2}, leader {3} by {4}. Defender ({5}) {6}. Total strength: {7}, leader {8} by {9}.",
+                
+                Aggressor.Faction, 
+                Winner == Aggressor ? "win" : "lose", 
+                AggTotal, 
+                AggHeroKilled ? "killed" : "survives",
+                AggHeroCauseOfDeath,
+
+                Defender.Faction,
+                Winner == Defender ? "win" : "lose",
+                DefTotal,
+                DefHeroKilled ? "killed" : "survives",
+                DefHeroCauseOfDeath
+                );
+        }
     }
 }
