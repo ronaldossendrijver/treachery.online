@@ -97,6 +97,11 @@
             DotNet.invokeMethodAsync('Treachery.Client', 'MapDrawerDraw');
         }
 
+        function RemoveFocusFromButtons() {
+
+            $(':button').blur();
+        }
+
         function RefreshPopovers() {
 
             $('[data-toggle="popover"]').popover('dispose');

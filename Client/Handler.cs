@@ -719,6 +719,8 @@ namespace Treachery.Client
                 }
             }
 
+            await Browser.RemoveFocusFromButtons();
+
             if (Game.CurrentMainPhase == MainPhase.Bidding)
             {
                 ResetAutopassThreshold();

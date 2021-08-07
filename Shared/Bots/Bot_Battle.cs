@@ -81,12 +81,12 @@ namespace Treachery.Shared
 
             var discarded = new List<TreacheryCard>();
 
-            if (myBattleplan.Weapon != null && TreacheryCards.Contains(myBattleplan.Weapon) && myBattleplan.Weapon.Type == TreacheryCardType.Useless)
+            if (myBattleplan.Weapon != null && TreacheryCards.Contains(myBattleplan.Weapon) && myBattleplan.Weapon.Type == TreacheryCardType.Useless && Faction != Faction.Brown)
             {
                 discarded.Add(myBattleplan.Weapon);
             }
 
-            if (myBattleplan.Defense != null && TreacheryCards.Contains(myBattleplan.Defense) && myBattleplan.Defense.Type == TreacheryCardType.Useless)
+            if (myBattleplan.Defense != null && TreacheryCards.Contains(myBattleplan.Defense) && myBattleplan.Defense.Type == TreacheryCardType.Useless && Faction != Faction.Brown)
             {
                 discarded.Add(myBattleplan.Defense);
             }
@@ -196,8 +196,8 @@ namespace Treachery.Shared
 
             if (!minimizeSpendingsInThisLostFight)
             {
-                if (weapon == null && !MayUseUselessAsKarma) weapon = UselessAsWeapon(defense);
-                if (defense == null && !MayUseUselessAsKarma) defense = UselessAsDefense(weapon);
+                if (weapon == null && !MayUseUselessAsKarma && Faction != Faction.Brown) weapon = UselessAsWeapon(defense);
+                if (defense == null && !MayUseUselessAsKarma && Faction != Faction.Brown) defense = UselessAsDefense(weapon);
 
                 RemoveIllegalChoices(ref hero, ref weapon, ref defense);
 
@@ -282,8 +282,8 @@ namespace Treachery.Shared
         {
             SelectHeroForBattle(opponent, false, false, null, null, out IHero lowestAvailableHero, out _);
 
-            var uselessAsWeapon = lowestAvailableHero == null || MayUseUselessAsKarma ? null : UselessAsWeapon(null);
-            var uselessAsDefense = lowestAvailableHero == null || MayUseUselessAsKarma ? null : UselessAsDefense(uselessAsWeapon);
+            var uselessAsWeapon = lowestAvailableHero == null || MayUseUselessAsKarma || Faction == Faction.Brown ? null : UselessAsWeapon(null);
+            var uselessAsDefense = lowestAvailableHero == null || MayUseUselessAsKarma || Faction == Faction.Brown ? null : UselessAsDefense(uselessAsWeapon);
 
             RemoveIllegalChoices(ref lowestAvailableHero, ref uselessAsWeapon, ref uselessAsDefense);
             

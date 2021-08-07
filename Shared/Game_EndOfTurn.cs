@@ -25,8 +25,8 @@ namespace Treachery.Shared
                 if (p.ResourcesDuringCollection > 0)
                 {
                     p.Resources += p.ResourcesDuringCollection;
+                    CurrentReport.Add(p.Faction, "{0} add {1} received as {2} to their reserves.", p.Faction, p.ResourcesDuringCollection, LeaderSkill.Banker);
                     p.ResourcesDuringCollection = 0;
-                    CurrentReport.Add(p.Faction, "{0} add {1} received as {2} to their reserves.", p.Faction, p.Bribes, LeaderSkill.Banker);
                 }
             }
 
@@ -101,7 +101,6 @@ namespace Treachery.Shared
         {
             if (Applicable(Rule.BrownAndWhiteStrongholdBonus))
             {
-                StrongholdOwnership.Clear();
                 DetermineStrongholdOwnership(Map.Arrakeen);
                 DetermineStrongholdOwnership(Map.Carthag);
                 DetermineStrongholdOwnership(Map.SietchTabr);
@@ -150,8 +149,23 @@ namespace Treachery.Shared
 
         private void DetermineStrongholdOwnership(Location location)
         {
-            var owner = Players.FirstOrDefault(p => p.Controls(this, location, Applicable(Rule.ContestedStongholdsCountAsOccupied)));
-            if (owner != null) StrongholdOwnership.Add(location, owner.Faction);
+            var currentOwner = StrongholdOwnership.ContainsKey(location) ? StrongholdOwnership[location] : Faction.None;
+            if (currentOwner != Faction.None)
+            {
+                StrongholdOwnership.Remove(location);
+            }
+
+            var newOwner = Players.FirstOrDefault(p => p.Controls(this, location, Applicable(Rule.ContestedStongholdsCountAsOccupied)));
+
+            if (newOwner != null)
+            {
+                StrongholdOwnership.Add(location, newOwner.Faction);
+
+                if (newOwner.Faction != currentOwner)
+                {
+                    CurrentReport.Add(newOwner.Faction, "{0} take control of {1}", newOwner.Faction, location);
+                }
+            }
         }
 
         private void ContinueMentatPhase()

@@ -8,9 +8,9 @@
  
 @code {
 
-    protected virtual Faction IsFactionSpecific => Faction.None;
+    protected virtual Faction IsFactionSpecific { get; set; } = Faction.None;
 
-    protected virtual bool IsUrgent => false;
+    protected virtual bool IsUrgent { get; set; } = false;
 
     [Parameter]
     public string BackgroundImage

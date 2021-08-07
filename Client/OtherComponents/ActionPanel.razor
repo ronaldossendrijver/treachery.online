@@ -347,11 +347,15 @@
         }
         else if (a == typeof(WhiteRevealedNoField))
         {
-            <SimpleActionComponent GameEventType="WhiteRevealedNoField" h="@h" Title="@Skin.Current.Format("Reveal your currently active No-Field of {0}, placing {1} forces?", h.Game.CurrentNoFieldValue, Math.Min(h.Game.CurrentNoFieldValue, h.Player.ForcesInReserve))" />
+            <SimpleActionComponent GameEventType="WhiteRevealedNoField" h="@h" 
+                                   IsFactionSpecific="Faction.White"
+                                   Title="@Skin.Current.Format("Reveal your currently active No-Field of {0}, placing {1} forces?", h.Game.CurrentNoFieldValue, Math.Min(h.Game.CurrentNoFieldValue, h.Player.ForcesInReserve))" />
         }
         else if (a == typeof(ResidualPlayed))
         {
-            <SimpleActionComponent GameEventType="ResidualPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Residual)" Title="@Skin.Current.Format("Use {0} to kill a random available opponent leader?", TreacheryCardType.Residual)" />
+            <SimpleActionComponent GameEventType="ResidualPlayed" h="@h" 
+                                   BackgroundImage="@Support.GetCardImage(TreacheryCardType.Residual)" 
+                                   Title="@Skin.Current.Format("Use {0} to kill a random available opponent leader?", TreacheryCardType.Residual)" />
         }
         else if (a == typeof(FlightUsed))
         {
@@ -371,7 +375,9 @@
         }
         else if (a == typeof(DiscardedSearchedAnnounced))
         {
-            <SimpleActionComponent GameEventType="DiscardedSearchedAnnounced" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.SearchDiscarded)" Title="@Skin.Current.Format("Use {0} to pay 2 and search and take a card from the treachery discard pile?", TreacheryCardType.SearchDiscarded)" />
+            <SimpleActionComponent GameEventType="DiscardedSearchedAnnounced" h="@h" 
+                                   BackgroundImage="@Support.GetCardImage(TreacheryCardType.SearchDiscarded)" 
+                                   Title="@Skin.Current.Format("Use {0} to pay 2 and search and take a card from the treachery discard pile?", TreacheryCardType.SearchDiscarded)" />
         }
         else if (a == typeof(DiscardedSearched))
         {
@@ -383,7 +389,9 @@
         }
         else if (a == typeof(PortableAntidoteUsed))
         {
-            <SimpleActionComponent GameEventType="PortableAntidoteUsed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.PortableAntidote)" Title="@Skin.Current.Format("Use your {0}?", TreacheryCardType.PortableAntidote)" />
+            <SimpleActionComponent GameEventType="PortableAntidoteUsed" h="@h" 
+                                   BackgroundImage="@Support.GetCardImage(TreacheryCardType.PortableAntidote)" 
+                                   Title="@Skin.Current.Format("Use your {0}?", TreacheryCardType.PortableAntidote)" />
         }
         else if (a == typeof(Bureaucracy))
         {

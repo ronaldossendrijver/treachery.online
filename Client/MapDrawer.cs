@@ -367,13 +367,13 @@ namespace Treachery.Client
             }
             else if (plan.Hero is Leader)
             {
-                var skill = h.Game.Skill(plan.Hero);
+                var skill = h.Game.Skill(plan.Player, plan.Hero);
                 if (skill != LeaderSkill.None)
                 {
                     int skillLeftMargin = leftMargin + leaderLeftMargin - (int)(0.5f * (cardWidth - leaderSizeWidth));
                     int skillTopMargin = topMargin + leaderTopMargin - 120;
 
-                    await DrawImage(Artwork.GetSkillCard(skill), skillLeftMargin, skillTopMargin, cardWidth, cardHeight, Skin.Current.SHADOW_LIGHT, 1, 5, 5, 0.9f);
+                    await DrawImage(Artwork.GetSkillCard(skill), skillLeftMargin, skillTopMargin, cardWidth, cardHeight, Skin.Current.SHADOW_LIGHT, 1, 5, 5, h.Game.Skilled(plan.Hero) ? 1f : 0.7f);
                     
                     int bonus = Battle.DetermineSkillBonus(h.Game, plan, out _);
                     if (bonus != 0)
@@ -406,7 +406,7 @@ namespace Treachery.Client
 
             if (plan.Initiator == Faction.Green && plan.Messiah)
             {
-                await DrawImage(Artwork.Messiah, leftMargin + leaderLeftMargin + leaderSizeWidth / 1.5, topMargin + leaderTopMargin - 50, -1, -1, Skin.Current.SHADOW_LIGHT, 1, 2, 2);
+                await DrawImage(Artwork.Messiah, leftMargin + leaderLeftMargin + leaderSizeWidth / 1.5, topMargin + leaderTopMargin + leaderSizeHeight - 50, -1, -1, Skin.Current.SHADOW_LIGHT, 1, 2, 2);
             }
         }
         #endregion

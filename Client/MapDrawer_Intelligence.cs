@@ -333,6 +333,12 @@ namespace Treachery.Client
         private static string IntelOfTechtokensAndSkilledLeaders(Player p)
         {
             string result = "";
+            
+            if (p.Faction == Faction.White && h.Game.LatestRevealedNoFieldValue >= 0)
+            {
+                result += string.Format("<div class=\"mt-1\">Latest revealed No-Field value: <strong>{0}</strong></div>", h.Game.LatestRevealedNoFieldValue);
+            }
+
             foreach (var v in p.TechTokens)
             {
                 result += Support.GetTechTokenHTML(v);
@@ -342,11 +348,6 @@ namespace Treachery.Client
             if (skilledLeader != null && h.Game.IsInFrontOfShield(skilledLeader))
             {
                 result += Support.GetSkilledLeaderHTML(skilledLeader, h.Game.Skill(skilledLeader));
-            }
-
-            if (p.Faction == Faction.White && h.Game.LatestRevealedNoFieldValue >= 0)
-            {
-                result += string.Format("<div class=\"mt-1\">Latest revealed No-Field value: <strong>{0}</strong></div>", h.Game.LatestRevealedNoFieldValue);
             }
 
             return result;

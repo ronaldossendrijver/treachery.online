@@ -58,6 +58,11 @@ namespace Treachery.Client
             await JsInvoke("RefreshPopovers");
         }
 
+        public static async Task RemoveFocusFromButtons()
+        {
+            await JsInvoke("RemoveFocusFromButtons");
+        }
+
         public static async Task EnableMapHover()
         {
             await JsInvoke("EnableMapHover");

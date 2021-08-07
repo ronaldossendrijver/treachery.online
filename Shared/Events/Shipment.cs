@@ -295,8 +295,8 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    var baseMessage = Initiator == Faction.Yellow ? "{0} rally {1} in {2}{3}.{4}{5}" : "{0} ship {1} to {2}{3}.{4}{5}";
-                    return new Message(Initiator, baseMessage, Initiator, ForceMessage, To, CostMessage(cost), KaramaMessage(ownerOfKarma), orangeIncome);
+                    var baseMessage = Initiator == Faction.Yellow ? "{0} rally {1}{6} in {2}{3}.{4}{5}" : "{0} ship {1}{6} to {2}{3}.{4}{5}";
+                    return new Message(Initiator, baseMessage, Initiator, ForceMessage, To, CostMessage(cost), KaramaMessage(ownerOfKarma), orangeIncome, IsNoField ? " by No-Field" : "");
                 }
             }
         }

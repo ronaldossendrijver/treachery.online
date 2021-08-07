@@ -1393,7 +1393,7 @@ namespace Treachery.Shared
             ShowVerboseToolipsOnMap = true,
             Resource_URL = DEFAULT_ART_LOCATION + "/art/PassiveSpice.svg",
             Harvester_URL = DEFAULT_ART_LOCATION + "/art/ActiveSpice.svg",
-            HMS_URL = DEFAULT_ART_LOCATION + "/art/hms.png",
+            HMS_URL = DEFAULT_ART_LOCATION + "/art/hms.svg",
 
             ReportBackground_ShipmentAndMove_URL = DEFAULT_ART_LOCATION + "/art/vortex.gif",
             ReportBackground_StormAndResourceBlow_URL = DEFAULT_ART_LOCATION + "/art/storm.gif",

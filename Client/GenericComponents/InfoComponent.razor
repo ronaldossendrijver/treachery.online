@@ -27,11 +27,6 @@
     [Parameter]
     public int Size { get; set; } = 16;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await Browser.EnablePopovers();
-    }
-
     private string FormattedContents
     {
         get
