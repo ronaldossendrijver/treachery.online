@@ -158,12 +158,12 @@ namespace Treachery.Shared
         public void HandleEvent(DiscardedSearched e)
         {
             CurrentReport.Add(e);
-            TreacheryDiscardPile.Items.Remove(e.Card);
-            e.Player.TreacheryCards.Add(e.Card);
             foreach (var p in Players)
             {
                 UnregisterKnown(p, TreacheryDiscardPile.Items);
             }
+            TreacheryDiscardPile.Items.Remove(e.Card);
+            e.Player.TreacheryCards.Add(e.Card);
             TreacheryDiscardPile.Shuffle();
             Discard(e.Player, TreacheryCardType.SearchDiscarded);
             Enter(PhaseBeforeSearchingDiscarded);

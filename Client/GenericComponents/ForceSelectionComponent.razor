@@ -49,32 +49,32 @@
 
 @code {
 
-        [Parameter]
-        public Dictionary<Location, Battalion> Forces { get; set; }
+    [Parameter]
+    public Dictionary<Location, Battalion> Forces { get; set; }
 
-        [Parameter]
-        public IEnumerable<Location> Locations { get; set; }
+    [Parameter]
+    public IEnumerable<Location> Locations { get; set; }
 
-        [Parameter]
-        public bool MaySelectFromStorm { get; set; } = false;
+    [Parameter]
+    public bool MaySelectFromStorm { get; set; } = false;
 
-        [Parameter]
-        public bool AlwaysShowLocation { get; set; } = false;
+    [Parameter]
+    public bool AlwaysShowLocation { get; set; } = false;
 
-        [Parameter]
-        public bool FullLocationName { get; set; } = false;
+    [Parameter]
+    public bool FullLocationName { get; set; } = false;
 
-        [Parameter]
-        public int FixedMaxForces { get; set; } = -1;
+    [Parameter]
+    public int FixedMaxForces { get; set; } = -1;
 
-        [Parameter]
-        public int FixedMaxSpecialForces { get; set; } = -1;
+    [Parameter]
+    public int FixedMaxSpecialForces { get; set; } = -1;
 
-        [Parameter]
-        public Action OnChanged { get; set; }
+    [Parameter]
+    public Action OnChanged { get; set; }
 
-        [Parameter]
-        public bool AllowMultipleTerritories { get; set; } = false;
+    [Parameter]
+    public bool AllowMultipleTerritories { get; set; } = false;
 
     private int Min => 0;
     private int Max(Location l) => FixedMaxForces > 0 ? FixedMaxForces : Player.ForcesIn(l);
@@ -120,6 +120,8 @@
             {
                 Forces[location].ChangeForces(amount);
             }
+
+            if (Forces[location].TotalAmountOfForces == 0) Forces.Remove(location);
         }
         else if (amount > 0)
         {

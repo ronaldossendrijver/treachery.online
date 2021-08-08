@@ -110,7 +110,7 @@ namespace Treachery.Shared
 
         public bool IsProjectileWeapon => Type == TreacheryCardType.Projectile || Type == TreacheryCardType.WeirdingWay || Type == TreacheryCardType.ProjectileAndPoison;
 
-        public bool IsPoisonDefense => Type == TreacheryCardType.Chemistry || Type == TreacheryCardType.Antidote || Type == TreacheryCardType.ShieldAndAntidote;
+        public bool IsPoisonDefense => Type == TreacheryCardType.Chemistry || Type == TreacheryCardType.Antidote || Type == TreacheryCardType.ShieldAndAntidote || Type == TreacheryCardType.PortableAntidote;
 
         public bool IsNonAntidotePoisonDefense => Type == TreacheryCardType.Chemistry;
 
