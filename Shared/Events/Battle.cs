@@ -288,8 +288,12 @@ namespace Treachery.Shared
         public static int Cost(Game g, Player p, int AmountOfForcesAtFullStrength, int AmountOfSpecialForcesAtFullStrength)
         {
             int cost = AmountOfForcesAtFullStrength * NormalForceCost(g, p) + AmountOfSpecialForcesAtFullStrength * SpecialForceCost(g, p);
-            int costReduction = g.HasStrongholdAdvantage(p.Faction, StrongholdAdvantage.FreeResourcesForBattles) ? Math.Min(2, cost) : 0;
-            return cost - costReduction;
+            return cost - Math.Min(CostReduction(g, p), cost);
+        }
+
+        public static int CostReduction(Game g, Player p)
+        {
+            return g.HasStrongholdAdvantage(p.Faction, StrongholdAdvantage.FreeResourcesForBattles, g.CurrentBattle?.Territory) ? 2 : 0;
         }
 
         public static int NormalForceCost(Game g, Player p)
@@ -395,9 +399,9 @@ namespace Treachery.Shared
             }
         }
 
-        public static int MaxResources(Player p, int forces, int specialForces) => Math.Min(p.Resources, forces + specialForces);
+        public static int MaxResources(Game g, Player p, int forces, int specialForces) => Math.Min(p.Resources, Math.Max(0, forces + specialForces - CostReduction(g, p)));
 
-        public static int MaxAllyResources(Game g, Player p, int forces, int specialForces) => Math.Min(g.SpiceYourAllyCanPay(p), forces + specialForces);
+        public static int MaxAllyResources(Game g, Player p, int forces, int specialForces) => Math.Min(g.SpiceYourAllyCanPay(p), Math.Max(0, forces + specialForces - CostReduction(g, p)));
 
         public static int MaxForces(Game g, Player p, bool specialForces)
         {
@@ -653,10 +657,11 @@ namespace Treachery.Shared
         {
             if (MustPayForForcesInBattle(g, p))
             {
-                specialForcesFull = Math.Min(specialForces, resources);
+                int effectiveResources = CostReduction(g, p) + resources;
+                specialForcesFull = Math.Min(specialForces, effectiveResources);
                 specialForcesHalf = specialForces - specialForcesFull;
 
-                forcesFull = Math.Min(forces, resources - specialForcesFull);
+                forcesFull = Math.Min(forces, effectiveResources - specialForcesFull);
                 forcesHalf = forces - forcesFull;
             }
             else

@@ -406,7 +406,7 @@ namespace Treachery.Shared
 
         private void ResolveEffectsOfOwnedStrongholds(Battle playerPlan, Battle opponentPlan)
         {
-            if (Map.TueksSietch.Territory == CurrentBattle.Territory && HasStrongholdAdvantage(playerPlan.Initiator, StrongholdAdvantage.CollectResourcesForUseless))
+            if (HasStrongholdAdvantage(playerPlan.Initiator, StrongholdAdvantage.CollectResourcesForUseless, CurrentBattle.Territory))
             {
                 if (playerPlan.Weapon?.Type == TreacheryCardType.Useless)
                 {
@@ -421,7 +421,7 @@ namespace Treachery.Shared
                 }
             }
 
-            if (Map.SietchTabr.Territory == CurrentBattle.Territory && HasStrongholdAdvantage(playerPlan.Initiator, StrongholdAdvantage.CollectResourcesForDial))
+            if (HasStrongholdAdvantage(playerPlan.Initiator, StrongholdAdvantage.CollectResourcesForDial, CurrentBattle.Territory))
             {
                 int collected = (int)Math.Floor(opponentPlan.Dial(this, playerPlan.Initiator));
                 if (collected > 0)
@@ -974,13 +974,13 @@ namespace Treachery.Shared
             result.AggHeroKilled = false;
             result.AggHeroCauseOfDeath = TreacheryCardType.None;
             DetermineCauseOfDeath(
-                agg, def, agg.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && rockMelterUsedToKill, territory == Map.Carthag.Territory, 
+                agg, def, agg.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && rockMelterUsedToKill, territory, 
                 ref result.AggHeroKilled, ref result.AggHeroCauseOfDeath, ref result.AggSavedByCarthag);
 
             result.DefHeroKilled = false;
             result.DefHeroCauseOfDeath = TreacheryCardType.None;
             DetermineCauseOfDeath(
-                def, agg, def.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && rockMelterUsedToKill, territory == Map.Carthag.Territory, 
+                def, agg, def.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && rockMelterUsedToKill, territory, 
                 ref result.DefHeroKilled, ref result.DefHeroCauseOfDeath, ref result.DefSavedByCarthag);
 
             int aggHeroSkillBonus = Battle.DetermineSkillBonus(this, agg, out result.AggActivatedBonusSkill);
@@ -1021,8 +1021,8 @@ namespace Treachery.Shared
             def.DeactivateMirrorWeaponAndDiplomacy();
 
             bool aggressorWinsTies = true;
-            if (HasStrongholdAdvantage(result.Defender.Faction, StrongholdAdvantage.WinTies)) aggressorWinsTies = false;
-            if (IsAggressorByJuice(result.Defender) && !HasStrongholdAdvantage(result.Aggressor.Faction, StrongholdAdvantage.WinTies)) aggressorWinsTies = false;
+            if (HasStrongholdAdvantage(result.Defender.Faction, StrongholdAdvantage.WinTies, CurrentBattle.Territory)) aggressorWinsTies = false;
+            if (IsAggressorByJuice(result.Defender) && !HasStrongholdAdvantage(result.Aggressor.Faction, StrongholdAdvantage.WinTies, CurrentBattle.Territory)) aggressorWinsTies = false;
 
             if (aggressorWinsTies)
             {
@@ -1044,30 +1044,14 @@ namespace Treachery.Shared
 
             var outcome = DetermineBattleOutcome(agg, def, territory);
 
-            //Handle results
-
             if (outcome.AggHeroSkillBonus != 0)
             {
-                string paid = "";
-                if (outcome.AggActivatedBonusSkill == LeaderSkill.Banker)
-                {
-                    agg.Player.Resources -= agg.BankerBonus;
-                    paid = string.Format(" ({0} was paid)", agg.BankerBonus);
-                }
-
-                CurrentReport.Add(agg.Initiator, "{0} bonus: {1}{2}", outcome.AggActivatedBonusSkill, outcome.AggHeroSkillBonus, paid);
+                CurrentReport.Add(agg.Initiator, "{0} bonus: {1}", outcome.AggActivatedBonusSkill, outcome.AggHeroSkillBonus);
             }
 
             if (outcome.DefHeroSkillBonus != 0)
             {
-                string paid = "";
-                if (outcome.DefActivatedBonusSkill == LeaderSkill.Banker)
-                {
-                    def.Player.Resources -= def.BankerBonus;
-                    paid = string.Format(" ({0} was paid)", def.BankerBonus);
-                }
-
-                CurrentReport.Add(def.Initiator, "{0} bonus: {1}{2}", outcome.DefActivatedBonusSkill, outcome.DefHeroSkillBonus, paid);
+                CurrentReport.Add(def.Initiator, "{0} bonus: {1}", outcome.DefActivatedBonusSkill, outcome.DefHeroSkillBonus);
             }
 
             if (outcome.AggBattlePenalty != 0) CurrentReport.Add(agg.Initiator, "{0} penalty: {1}", outcome.DefActivatedPenaltySkill, outcome.AggBattlePenalty);
@@ -1120,11 +1104,11 @@ namespace Treachery.Shared
             return CurrentJuice != null && CurrentJuice.Type == JuiceType.Aggressor && CurrentJuice.Player == p;
         }
 
-        private void DetermineCauseOfDeath(Battle playerPlan, Battle opponentPlan, IHero theHero, bool poisonToothUsed, bool artilleryUsed, bool rockMelterWasUsedToKill, bool battleIsInCarthag, ref bool heroDies, ref TreacheryCardType causeOfDeath, ref bool savedByCarthag)
+        private void DetermineCauseOfDeath(Battle playerPlan, Battle opponentPlan, IHero theHero, bool poisonToothUsed, bool artilleryUsed, bool rockMelterWasUsedToKill, Territory battleTerritory, ref bool heroDies, ref TreacheryCardType causeOfDeath, ref bool savedByCarthag)
         {
             heroDies = false;
             causeOfDeath = TreacheryCardType.None;
-            bool isProtectedByCarthagAdvantage = battleIsInCarthag && HasStrongholdAdvantage(playerPlan.Initiator, StrongholdAdvantage.CountDefensesAsSnooper) && !playerPlan.HasPoison && !playerPlan.HasPoisonTooth;
+            bool isProtectedByCarthagAdvantage = HasStrongholdAdvantage(playerPlan.Initiator, StrongholdAdvantage.CountDefensesAsAntidote, battleTerritory) && !playerPlan.HasPoison && !playerPlan.HasPoisonTooth;
             savedByCarthag = isProtectedByCarthagAdvantage && opponentPlan.HasPoison && !playerPlan.HasAntidote;
 
             DetermineDeathBy(theHero, TreacheryCardType.Rockmelter, rockMelterWasUsedToKill, ref heroDies, ref causeOfDeath);
@@ -1160,29 +1144,29 @@ namespace Treachery.Shared
             }
         }
 
-        private void PayDialedSpice(Player p, Battle b)
+        private void PayDialedSpice(Player p, Battle plan)
         {
-            int cost = b.Cost(this);
-            int costToBrown = p.Ally == Faction.Brown ? b.AllyContributionAmount : 0;
+            int cost = plan.Cost(this);
+            int costToBrown = p.Ally == Faction.Brown ? plan.AllyContributionAmount : 0;
             int receiverProfit = 0;
 
             if (cost > 0)
             {
-                int costForPlayer = cost - b.AllyContributionAmount;
+                int costForPlayer = cost - plan.AllyContributionAmount;
 
                 if (costForPlayer > 0)
                 {
                     p.Resources -= costForPlayer;
 
-                    if (HasStrongholdAdvantage(p.Faction, StrongholdAdvantage.FreeResourcesForBattles))
+                    if (HasStrongholdAdvantage(p.Faction, StrongholdAdvantage.FreeResourcesForBattles, CurrentBattle.Territory))
                     {
                         CurrentReport.Add(p.Faction, "{0} stronghold advantage: supporting forces costs 2 less.", Map.Arrakeen);
                     }
                 }
 
-                if (b.AllyContributionAmount > 0)
+                if (plan.AllyContributionAmount > 0)
                 {
-                    p.AlliedPlayer.Resources -= b.AllyContributionAmount;
+                    p.AlliedPlayer.Resources -= plan.AllyContributionAmount;
                 }
 
                 var brown = GetPlayer(Faction.Brown);
@@ -1211,8 +1195,14 @@ namespace Treachery.Shared
                 
                 if (cost - receiverProfit >= 4)
                 {
-                    ActivateBanker();
+                    ActivateBanker(p);
                 }
+            }
+
+            if (plan.BankerBonus > 0)
+            {
+                p.Resources -= plan.BankerBonus;
+                CurrentReport.Add(p.Faction, "{0} paid {1} for Banker Bonus", p.Faction, plan.BankerBonus);
             }
         }
 

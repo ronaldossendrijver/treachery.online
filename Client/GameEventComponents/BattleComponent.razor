@@ -71,7 +71,7 @@
 
             @if (Battle.MustPayForForcesInBattle(Game, Player))
             {
-                <SelectResourcesComponent @bind-Value="resources" Min="0" Max="Battle.MaxResources(Player, forces, specialForces)" /> <span>&nbsp;</span>
+                <SelectResourcesComponent @bind-Value="resources" Min="0" Max="Battle.MaxResources(Game, Player, forces, specialForces)" /> <span>&nbsp;</span>
 
                 @if (Player.Ally == Faction.Brown)
                 {

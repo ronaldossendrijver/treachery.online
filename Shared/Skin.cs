@@ -18,7 +18,7 @@ namespace Treachery.Shared
 
         public const int CurrentVersion = 2;
 
-        //public const string DEFAULT_ART_LOCATION = "https://treachery-nda.azurewebsites.net";
+        //public const string DEFAULT_ART_LOCATION = "https://treachery.online"; //Used for debugging
         public const string DEFAULT_ART_LOCATION = ".";
 
         public string Description = null;
@@ -98,7 +98,7 @@ namespace Treachery.Shared
         public int PlayerTokenRadius = 95;
 
         public Point SpiceDeckLocation = new Point(3750, 3490);
-        public Point TreacheryDeckLocation = new Point(3300, 4050);
+        public Point TreacheryDeckLocation = new Point(3350, 4050);
 
         public int BattleScreenWidth = -1;
         public int BattleScreenHeight = -1;
@@ -193,7 +193,7 @@ namespace Treachery.Shared
 
         //General
         public string GAMEVERSION_FONT = "normal normal normal 16px Advokat, Calibri, Tahoma, sans-serif;";
-        public string PLAYEDCARD_MESSAGE_FONT = "normal normal normal 16px Calibri, Tahoma, sans-serif";
+        public string PLAYEDCARD_MESSAGE_FONT = "normal normal normal 18px Calibri, Tahoma, sans-serif";
         public string FACTION_INFORMATIONCARDSTYLE = "font: normal normal normal 14px Calibri, Tahoma, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; line-height: 95%; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;";
         public string TRACKER_FONT = "normal normal normal 12px Calibri, Tahoma, sans-serif;";
         public string JSPANEL_DEFAULTSTYLE = "font-family: Calibri, Tahoma, sans-serif";
@@ -2240,7 +2240,7 @@ namespace Treachery.Shared
 
             //General
             GAMEVERSION_FONT = "normal normal normal 16px Advokat, Calibri, Tahoma, sans-serif;",
-            PLAYEDCARD_MESSAGE_FONT = "normal normal normal 16px Calibri, Tahoma, sans-serif",
+            PLAYEDCARD_MESSAGE_FONT = "normal normal normal 18px Calibri, Tahoma, sans-serif",
             FACTION_INFORMATIONCARDSTYLE = "font: normal normal normal 14px Calibri, Tahoma, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; line-height: 95%; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;",
             TRACKER_FONT = "normal normal normal 12px Calibri, Tahoma, sans-serif;",
             JSPANEL_DEFAULTSTYLE = "font-family: Calibri, Tahoma, sans-serif"

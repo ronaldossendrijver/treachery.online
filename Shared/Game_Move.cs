@@ -108,7 +108,7 @@ namespace Treachery.Shared
 
                 if (totalCost - orangeProfit >= 4)
                 {
-                    ActivateBanker();
+                    ActivateBanker(initiator);
                 }
 
                 if (s.IsNoField)

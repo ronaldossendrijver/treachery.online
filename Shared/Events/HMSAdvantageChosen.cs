@@ -41,7 +41,13 @@ namespace Treachery.Shared
 
         public static IEnumerable<StrongholdAdvantage> ValidAdvantages(Game g, Player p)
         {
-            return Enumerations.GetValuesExceptDefault(typeof(StrongholdAdvantage), StrongholdAdvantage.None).Where(a => g.HasStrongholdAdvantage(p.Faction, a));
+            var result = new List<StrongholdAdvantage>();
+            if (g.OwnerOf(g.Map.Arrakeen) == p) result.Add(StrongholdAdvantage.FreeResourcesForBattles);
+            if (g.OwnerOf(g.Map.Carthag) == p) result.Add(StrongholdAdvantage.CountDefensesAsAntidote);
+            if (g.OwnerOf(g.Map.SietchTabr) == p) result.Add(StrongholdAdvantage.CollectResourcesForDial);
+            if (g.OwnerOf(g.Map.TueksSietch) == p) result.Add(StrongholdAdvantage.CollectResourcesForUseless);
+            if (g.OwnerOf(g.Map.HabbanyaSietch) == p) result.Add(StrongholdAdvantage.WinTies);
+            return result;
         }
 
         public static bool MayBeUsed(Game game, Player player)

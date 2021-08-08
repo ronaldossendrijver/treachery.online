@@ -111,20 +111,20 @@ namespace Treachery.Shared
         }
 
         public StrongholdAdvantage ChosenHMSAdvantage { get; private set; } = StrongholdAdvantage.None;
-        public bool HasStrongholdAdvantage(Faction f, StrongholdAdvantage advantage)
+        public bool HasStrongholdAdvantage(Faction f, StrongholdAdvantage advantage, Territory battleTerritory)
         {
-            if (HasStronghold(f, Map.HiddenMobileStronghold) && ChosenHMSAdvantage == advantage)
+            if (battleTerritory == Map.HiddenMobileStronghold.Territory && HasStronghold(f, Map.HiddenMobileStronghold) && ChosenHMSAdvantage == advantage)
             {
                 return true;
             }
 
             return advantage switch
             {
-                StrongholdAdvantage.FreeResourcesForBattles => HasStronghold(f, Map.Arrakeen),
-                StrongholdAdvantage.CollectResourcesForDial => HasStronghold(f, Map.SietchTabr),
-                StrongholdAdvantage.CollectResourcesForUseless => HasStronghold(f, Map.TueksSietch),
-                StrongholdAdvantage.CountDefensesAsSnooper => HasStronghold(f, Map.Carthag),
-                StrongholdAdvantage.WinTies => HasStronghold(f, Map.HabbanyaSietch),
+                StrongholdAdvantage.FreeResourcesForBattles => battleTerritory == Map.Arrakeen.Territory && HasStronghold(f, Map.Arrakeen),
+                StrongholdAdvantage.CollectResourcesForDial => battleTerritory == Map.SietchTabr.Territory && HasStronghold(f, Map.SietchTabr),
+                StrongholdAdvantage.CollectResourcesForUseless => battleTerritory == Map.TueksSietch.Territory && HasStronghold(f, Map.TueksSietch),
+                StrongholdAdvantage.CountDefensesAsAntidote => battleTerritory == Map.Carthag.Territory && HasStronghold(f, Map.Carthag),
+                StrongholdAdvantage.WinTies => battleTerritory == Map.HabbanyaSietch.Territory && HasStronghold(f, Map.HabbanyaSietch),
                 _ => false
             };
         }
@@ -136,7 +136,7 @@ namespace Treachery.Shared
                 StrongholdAdvantage.FreeResourcesForBattles => Map.Arrakeen,
                 StrongholdAdvantage.CollectResourcesForDial => Map.SietchTabr,
                 StrongholdAdvantage.CollectResourcesForUseless => Map.TueksSietch,
-                StrongholdAdvantage.CountDefensesAsSnooper => Map.Carthag,
+                StrongholdAdvantage.CountDefensesAsAntidote => Map.Carthag,
                 StrongholdAdvantage.WinTies => Map.HabbanyaSietch,
                 _ => null
             };

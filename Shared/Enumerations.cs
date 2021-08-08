@@ -660,7 +660,7 @@ namespace Treachery.Shared
         None = 0,
         FreeResourcesForBattles = 10,
         CollectResourcesForUseless = 20,
-        CountDefensesAsSnooper = 30,
+        CountDefensesAsAntidote = 30,
         WinTies = 40,
         CollectResourcesForDial = 50
     }

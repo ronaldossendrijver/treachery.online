@@ -371,9 +371,9 @@ namespace Treachery.Client
                 if (skill != LeaderSkill.None)
                 {
                     int skillLeftMargin = leftMargin + leaderLeftMargin - (int)(0.5f * (cardWidth - leaderSizeWidth));
-                    int skillTopMargin = topMargin + leaderTopMargin - 120;
+                    int skillTopMargin = topMargin + leaderTopMargin - cardHeight + 80;
 
-                    await DrawImage(Artwork.GetSkillCard(skill), skillLeftMargin, skillTopMargin, cardWidth, cardHeight, Skin.Current.SHADOW_LIGHT, 1, 5, 5, h.Game.Skilled(plan.Hero) ? 1f : 0.7f);
+                    await DrawImage(Artwork.GetSkillCard(skill), skillLeftMargin, skillTopMargin, cardWidth, cardHeight, Skin.Current.SHADOW_LIGHT, 1, 5, 5);
                     
                     int bonus = Battle.DetermineSkillBonus(h.Game, plan, out _);
                     if (bonus != 0)
@@ -406,7 +406,7 @@ namespace Treachery.Client
 
             if (plan.Initiator == Faction.Green && plan.Messiah)
             {
-                await DrawImage(Artwork.Messiah, leftMargin + leaderLeftMargin + leaderSizeWidth / 1.5, topMargin + leaderTopMargin + leaderSizeHeight - 50, -1, -1, Skin.Current.SHADOW_LIGHT, 1, 2, 2);
+                await DrawImage(Artwork.Messiah, leftMargin + leaderLeftMargin + leaderSizeWidth / 1.5, topMargin + leaderTopMargin - 50, -1, -1, Skin.Current.SHADOW_LIGHT, 1, 2, 2);
             }
         }
         #endregion
@@ -476,6 +476,14 @@ namespace Treachery.Client
                 x += cardWidth + 30;
                 await DrawImage(Artwork.GetTreacheryCard(h.Game.TreacheryDiscardPile.Top), x, Skin.Current.TreacheryDeckLocation.Y, cardWidth, cardHeight, Skin.Current.SHADOW_LIGHT, 5, 5, 5);
                 await DrawText(x + cardWidth / 2, Skin.Current.TreacheryDeckLocation.Y + cardHeight / 2 + 20, h.Game.TreacheryDiscardPile.Items.Count.ToString(), Skin.Current.CARDPILE_FONT, TextAlign.Center, Skin.Current.CARDPILE_FONTCOLOR, 3, Skin.Current.CARDPILE_FONT_BORDERCOLOR);
+            }
+
+            if (h.Game.WhiteCache.Count > 0)
+            {
+                x = Skin.Current.TreacheryDeckLocation.X - cardWidth - 30;
+                await DrawImage(Artwork.TreacheryCardBack, x, Skin.Current.TreacheryDeckLocation.Y, cardWidth, cardHeight, Skin.Current.SHADOW_LIGHT, 5, 5, 5);
+                await DrawImage(Artwork.FactionTokens[Faction.White].Value, x + cardWidth / 3, Skin.Current.TreacheryDeckLocation.Y + 30, cardWidth / 3, cardWidth / 3, Skin.Current.SHADOW_LIGHT, 1, 2, 2);
+                await DrawText(x + cardWidth / 2, Skin.Current.TreacheryDeckLocation.Y + cardHeight / 2 + 20, h.Game.WhiteCache.Count.ToString(), Skin.Current.CARDPILE_FONT, TextAlign.Center, Skin.Current.CARDPILE_FONTCOLOR, 3, Skin.Current.CARDPILE_FONT_BORDERCOLOR);
             }
         }
         #endregion
@@ -762,12 +770,12 @@ namespace Treachery.Client
 
                     var align = TextAlign.Center;
                     int textPositionX = position.X;
-                    if (position.X < Skin.Current.PlanetCenter.X - 500)
+                    if (position.X < 200)
                     {
                         align = TextAlign.Left;
                         textPositionX = (int)(position.X - 1.6 * Skin.Current.PlayerTokenRadius);
                     }
-                    else if (position.X > Skin.Current.PlanetCenter.X + 500)
+                    else if (position.X > Skin.Current.MapDimensions.X - 200)
                     {
                         align = TextAlign.Right;
                         textPositionX = (int)(position.X + 1.6 * Skin.Current.PlayerTokenRadius);

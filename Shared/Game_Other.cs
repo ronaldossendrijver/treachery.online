@@ -585,12 +585,12 @@ namespace Treachery.Shared
 
         private bool BankerWasUsedThisPhase { get; set; } = false;
 
-        private void ActivateBanker()
+        private void ActivateBanker(Player playerWhoPaid)
         {
             if (!BankerWasUsedThisPhase)
             {
                 var banker = PlayerSkilledAs(LeaderSkill.Banker);
-                if (banker != null)
+                if (banker != null && banker != playerWhoPaid)
                 {
                     BankerWasUsedThisPhase = true;
                     CurrentReport.Add(banker.Faction, "{0} will receive 1 from {1} at {2}", banker.Faction, LeaderSkill.Banker, MainPhase.Collection);

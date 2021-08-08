@@ -12,7 +12,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Treachery.Shared;
-using Treachery.Client.Pages;
 
 namespace Treachery.Client
 {
@@ -368,7 +367,31 @@ namespace Treachery.Client
                 foreach (var bot in bots)
                 {
                     var evts = Game.GetApplicableEvents(bot, false);
-                    var evt = bot.DetermineInPhaseAction(evts);
+                    var evt = bot.DetermineHighPrioInPhaseAction(evts);
+
+                    if (evt != null && HostProxy != null)
+                    {
+                        await HostProxy.Request(evt);
+                        return;
+                    }
+                }
+
+                foreach (var bot in bots)
+                {
+                    var evts = Game.GetApplicableEvents(bot, false);
+                    var evt = bot.DetermineMiddlePrioInPhaseAction(evts);
+
+                    if (evt != null && HostProxy != null)
+                    {
+                        await HostProxy.Request(evt);
+                        return;
+                    }
+                }
+
+                foreach (var bot in bots)
+                {
+                    var evts = Game.GetApplicableEvents(bot, false);
+                    var evt = bot.DetermineLowPrioInPhaseAction(evts);
 
                     if (evt != null && HostProxy != null)
                     {
@@ -705,13 +728,13 @@ namespace Treachery.Client
             {
                 await TurnAlert();
                 await PlaySoundsForMilestones();
+                await Browser.EnablePopovers(); 
                 CheckTimers();
                 
                 if (e == null || !(Game.CurrentPhase == Phase.Bidding || Game.CurrentPhase == Phase.BlackMarketBidding))
                 {
                     MapDrawer.UpdateIntelligence();
-                    await Browser.EnablePopovers();
-
+                    
                     if (IsHost)
                     {
                         await SaveGame();
@@ -781,7 +804,7 @@ namespace Treachery.Client
         {
             try
             {
-                if (Game.History.Count < 2000)
+                if (Game.History.Count < 2500)
                 {
                     bool mustClear = false;
 

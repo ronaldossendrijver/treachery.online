@@ -697,7 +697,7 @@ namespace Treachery.Shared
 
             if (bidAmount + bidAllyContributionAmount + bidRedContributionAmount - receiverProfit - receiverProfitAfterBidding >= 4) {
 
-                ActivateBanker();
+                ActivateBanker(initiator);
             }
         }
 

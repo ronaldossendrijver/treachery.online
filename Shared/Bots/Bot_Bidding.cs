@@ -29,8 +29,8 @@ namespace Treachery.Shared
             bool couldUseKarmaForBid = Game.CurrentAuctionType == AuctionType.Normal && !Game.KarmaPrevented(Faction) && Ally != Faction.Red && (SpecialKarmaPowerUsed || !Param.Karma_SaveCardToUseSpecialKarmaAbility);
             var karmaCardToUseForBidding = couldUseKarmaForBid && (currentBid > 4 || resourcesAvailable <= currentBid) ? TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma || MayUseUselessAsKarma && c.Type == TreacheryCardType.Useless) : null;
             int karmaWorth = (karmaCardToUseForBidding == null ? 0 : 8);
-            int maximumIWillSpend = D(1, resourcesAvailable + karmaWorth);
-            int amountToBidInSilentOrOnceAround = D(1, Math.Min(resourcesAvailable, 10));
+            int maximumIWillSpend = D(1, Math.Min(resourcesAvailable, 12) + karmaWorth);
+            int amountToBidInSilentOrOnceAround = D(1, Math.Min(resourcesAvailable, 8));
 
             LogInfo("currentBidIsFromAlly: {0}, thisCardIsUseless: {1}, thisCardIsCrappy: {2}, resourcesAvailable:, {3}, karmaWorth: {4}, maximumIWillSpend: {5}, karmaCardToUseForBidding: {6}.",
                 currentBidIsFromAlly, thisCardIsUseless, thisCardIsCrappy, resourcesAvailable, karmaWorth, maximumIWillSpend, karmaCardToUseForBidding);

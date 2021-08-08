@@ -14,16 +14,7 @@ namespace Treachery.Shared
 
         public BotParameters Param { get; set; }
 
-        public GameEvent DetermineInPhaseAction(IEnumerable<Type> possibleEvents)
-        {
-            var action = DetermineHighPrioInPhaseAction(possibleEvents);
-            if (action == null) action = DetermineMiddlePrioInPhaseAction(possibleEvents);
-            if (action == null) action = DetermineLowPrioInPhaseAction(possibleEvents);
-
-            return action;
-        }
-
-        private GameEvent DetermineHighPrioInPhaseAction(IEnumerable<Type> possibleEvents)
+        public GameEvent DetermineHighPrioInPhaseAction(IEnumerable<Type> possibleEvents)
         {
             GameEvent action = null;
 
@@ -56,7 +47,7 @@ namespace Treachery.Shared
             return action;
         }
 
-        private GameEvent DetermineMiddlePrioInPhaseAction(IEnumerable<Type> possibleEvents)
+        public GameEvent DetermineMiddlePrioInPhaseAction(IEnumerable<Type> possibleEvents)
         {
             GameEvent action = null;
 
@@ -99,7 +90,7 @@ namespace Treachery.Shared
             return action;
         }
 
-        private GameEvent DetermineLowPrioInPhaseAction(IEnumerable<Type> possibleEvents)
+        public GameEvent DetermineLowPrioInPhaseAction(IEnumerable<Type> possibleEvents)
         {
             GameEvent action = null;
 

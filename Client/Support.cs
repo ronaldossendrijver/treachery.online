@@ -178,7 +178,7 @@ namespace Treachery.Client
             }
             else
             {
-                return string.Format("<div><img src='{0}' width=300/></div>", Skin.Current.GetImageURL(tt));
+                return string.Format("<img src='{0}' width=150/>", Skin.Current.GetImageURL(tt));
                 //return string.Format("<div><img src='{0}' title='{2}' width=300/><div class='bg-dark text-white text-center small' style='width:300px'>{1}</div></div>", Skin.Current.GetImageURL(tt), Skin.Current.GetTechTokenDescription(tt), Skin.Current.Describe(tt));
             }
         }

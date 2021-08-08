@@ -433,7 +433,7 @@ namespace Treachery.Shared
                 CurrentPhase != Phase.SearchingDiscarded &&
                 CurrentPhase != Phase.PerformingKarmaHandSwap)
             {
-                bool hasFinalizedBattlePlan = CurrentPhase == Phase.BattlePhase && CurrentBattle != null && CurrentBattle.PlanOf(player) != null;
+                bool hasFinalizedBattlePlan = CurrentMainPhase == MainPhase.Battle && CurrentBattle != null && CurrentBattle.PlanOf(player) != null;
                 if (CurrentMainPhase < MainPhase.Battle && player.NoFieldIsActive)
                 {
                     result.Add(typeof(WhiteRevealedNoField));

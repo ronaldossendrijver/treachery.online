@@ -452,8 +452,7 @@ namespace Treachery.Shared
                         type = TreacheryCardType.ShieldAndAntidote;
                     }
                 }
-
-                if (type == TreacheryCardType.None && result.weaponToUse.IsLaser)
+                else if (result.weaponToUse.IsLaser)
                 {
                     var uselessDefense = knownOpponentDefenses.FirstOrDefault(d => d.IsPoisonDefense && !d.IsShield);
                     if (uselessDefense != null)
@@ -467,8 +466,7 @@ namespace Treachery.Shared
                         type = TreacheryCardType.Shield;
                     }
                 }
-
-                if (type == TreacheryCardType.None && result.weaponToUse.IsProjectileWeapon)
+                else if (result.weaponToUse.IsProjectileWeapon)
                 {
                     var uselessDefense = knownOpponentDefenses.FirstOrDefault(d => d.IsPoisonDefense && !d.IsProjectileDefense);
                     if (uselessDefense != null)
@@ -501,8 +499,7 @@ namespace Treachery.Shared
                         }
                     }
                 }
-
-                if (type == TreacheryCardType.None && result.weaponToUse.IsPoisonWeapon)
+                else if (result.weaponToUse.IsPoisonWeapon)
                 {
                     var uselessDefense = knownOpponentDefenses.FirstOrDefault(d => d.IsProjectileDefense && !d.IsProjectileDefense);
                     if (uselessDefense != null)
@@ -531,6 +528,8 @@ namespace Treachery.Shared
                         type = TreacheryCardType.Antidote;
                     }
                 }
+
+                LogInfo("Using {0}, disable enemy defense: {1} {2}", result.weaponToUse, must ? "must use" : "may not use", type);
             }
 
             if (type == TreacheryCardType.None)
@@ -545,7 +544,34 @@ namespace Treachery.Shared
                     //opponent might have weapons and player has a defense. Use voice to disable the corresponding weapon, if possible by forcing use of the wrong weapon and otherwise by forcing not to use the correct weapon.
                     if (result.defenseToUse.Type == TreacheryCardType.ShieldAndAntidote)
                     {
-                        var uselessWeapon = knownOpponentWeapons.FirstOrDefault(w => w.Type != TreacheryCardType.Laser && w.Type != TreacheryCardType.PoisonTooth);
+                        var uselessWeapon = knownOpponentWeapons.FirstOrDefault(w => w.Type != TreacheryCardType.Laser && w.Type != TreacheryCardType.PoisonTooth && w.Type != TreacheryCardType.Rockmelter);
+                        if (uselessWeapon != null)
+                        {
+                            must = true;
+                            type = uselessWeapon.Type;
+                            result.playerHeroWillCertainlySurvive = true;
+                        }
+                        else if (knownOpponentWeapons.Any(w => w.Type == TreacheryCardType.PoisonTooth))
+                        {
+                            must = false;
+                            type = TreacheryCardType.PoisonTooth;
+                        }
+                        else if (knownOpponentWeapons.Any(w => w.Type == TreacheryCardType.Laser))
+                        {
+                            must = false;
+                            type = TreacheryCardType.Laser;
+                        }
+                        else if (knownOpponentWeapons.Any(w => w.Type == TreacheryCardType.Rockmelter))
+                        {
+                            must = false;
+                            type = TreacheryCardType.Rockmelter;
+                        }
+
+                        LogInfo("Using {0}, disable enemy weapon: {1} {2}", result.defenseToUse, must ? "must use" : "may not use", type);
+                    }
+                    else if (result.defenseToUse.IsProjectileDefense)
+                    {
+                        var uselessWeapon = knownOpponentWeapons.FirstOrDefault(w => w.IsProjectileWeapon && !w.IsPoisonWeapon);
                         if (uselessWeapon != null)
                         {
                             must = true;
@@ -556,34 +582,13 @@ namespace Treachery.Shared
                         {
                             must = false;
                             type = TreacheryCardType.Laser;
+                            result.playerHeroWillCertainlySurvive = nrOfUnknownOpponentCards == 0;
                         }
                         else if (knownOpponentWeapons.Any(w => w.Type == TreacheryCardType.PoisonTooth))
                         {
                             must = false;
                             type = TreacheryCardType.PoisonTooth;
-                        }
-                    }
-
-                    if (type == TreacheryCardType.None && result.defenseToUse.IsProjectileDefense)
-                    {
-                        var uselessWeapon = knownOpponentWeapons.FirstOrDefault(w => w.IsProjectileWeapon && !w.IsPoisonWeapon);
-                        if (uselessWeapon != null)
-                        {
-                            must = true;
-                            type = uselessWeapon.Type;
-                            result.playerHeroWillCertainlySurvive = true;
-                        }
-                        else if (knownOpponentWeapons.Any(w => w.Type == TreacheryCardType.Laser) && nrOfUnknownOpponentCards == 0)
-                        {
-                            must = false;
-                            type = TreacheryCardType.Laser;
-                            result.playerHeroWillCertainlySurvive = true;
-                        }
-                        else if (knownOpponentWeapons.Any(w => w.Type == TreacheryCardType.PoisonTooth) && nrOfUnknownOpponentCards == 0)
-                        {
-                            must = false;
-                            type = TreacheryCardType.PoisonTooth;
-                            result.playerHeroWillCertainlySurvive = true;
+                            result.playerHeroWillCertainlySurvive = nrOfUnknownOpponentCards == 0;
                         }
                         else
                         {
@@ -601,9 +606,10 @@ namespace Treachery.Shared
                                 type = TreacheryCardType.Poison;
                             }
                         }
-                    }
 
-                    if (type == TreacheryCardType.None && result.defenseToUse.IsPoisonDefense)
+                        LogInfo("Using {0}, disable enemy weapon: {1} {2}", result.defenseToUse, must ? "must use" : "may not use", type);
+                    }
+                    else if (result.defenseToUse.IsPoisonDefense)
                     {
                         var uselessWeapon = knownOpponentWeapons.FirstOrDefault(w => !w.IsProjectileWeapon && w.IsPoisonWeapon);
                         if (uselessWeapon != null)
@@ -612,23 +618,25 @@ namespace Treachery.Shared
                             type = uselessWeapon.Type;
                             result.playerHeroWillCertainlySurvive = true;
                         }
-                        else if (knownOpponentWeapons.Any(w => w.Type == TreacheryCardType.Laser) && nrOfUnknownOpponentCards == 0)
+                        else if (knownOpponentWeapons.Any(w => w.Type == TreacheryCardType.Laser))
                         {
                             must = false;
                             type = TreacheryCardType.Laser;
-                            result.playerHeroWillCertainlySurvive = true;
+                            result.playerHeroWillCertainlySurvive = nrOfUnknownOpponentCards == 0;
                         }
-                        else if (knownOpponentWeapons.Any(w => w.Type == TreacheryCardType.PoisonTooth) && nrOfUnknownOpponentCards == 0)
+                        else if (knownOpponentWeapons.Any(w => w.Type == TreacheryCardType.PoisonTooth))
                         {
                             must = false;
                             type = TreacheryCardType.PoisonTooth;
-                            result.playerHeroWillCertainlySurvive = true;
+                            result.playerHeroWillCertainlySurvive = nrOfUnknownOpponentCards == 0;
                         }
                         else if (cardsPlayerHasOrMightHave.Any(c => c.IsProjectileWeapon))
                         {
                             must = false;
                             type = TreacheryCardType.Projectile;
                         }
+
+                        LogInfo("Using {0}, disable enemy weapon: {1} {2}", result.defenseToUse, must ? "must use" : "may not use", type);
                     }
                 }
             }
@@ -664,6 +672,8 @@ namespace Treachery.Shared
                         type = TreacheryCardType.Projectile;
                     }
                 }
+
+                LogInfo("Remaining category: {0} {1}", must ? "must use" : "may not use", type);
             }
 
             var voice = new Voice(Game) { Initiator = player.Faction, Must = must, Type = type };

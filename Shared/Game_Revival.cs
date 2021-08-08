@@ -99,7 +99,7 @@ namespace Treachery.Shared
 
                 if (cost.Total - totalProfits >= 4)
                 {
-                    ActivateBanker();
+                    ActivateBanker(initiator);
                 }
             }
 

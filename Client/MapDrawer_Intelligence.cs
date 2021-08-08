@@ -70,11 +70,6 @@ namespace Treachery.Client
             }
         }
 
-        private static bool In(params MainPhase[] phases)
-        {
-            return phases.Any(p => h.Game.CurrentMainPhase == p);
-        }
-
         private static string IntelOfIntelObservers()
         {
             string result = "";
@@ -151,7 +146,7 @@ namespace Treachery.Client
             }
 
             //Treachery Card Pile
-            if (y > Skin.Current.TreacheryDeckLocation.Y && y < Skin.Current.TreacheryDeckLocation.Y + 400 && x > Skin.Current.TreacheryDeckLocation.X && x < Skin.Current.TreacheryDeckLocation.X + 800)
+            if (y > Skin.Current.TreacheryDeckLocation.Y && y < Skin.Current.TreacheryDeckLocation.Y + 400 && x > Skin.Current.TreacheryDeckLocation.X - 400 && x < Skin.Current.TreacheryDeckLocation.X + 800)
             {
                 return IntelTreacheryCardPile;
             }
@@ -356,8 +351,22 @@ namespace Treachery.Client
         private static string IntelOfTreacheryCardPile()
         {
             string result = "";
-            result += "<h4>Treachery Cards</h4>";
-            result += Skin.Current.Format("<p>{0} on deck, {1} discarded.</p>", h.Game.TreacheryDeck.Items.Count, h.Game.TreacheryDiscardPile.Items.Count);
+            if (h.Game.WhiteCache.Count > 0)
+            {
+                result += Skin.Current.Format("<h4>{0} Cards ({1} on deck)</h4>", Faction.White, h.Game.WhiteCache.Count);
+
+                if (h.Faction == Faction.White || h.Game.Applicable(Rule.AssistedNotekeeping))
+                {
+                    result += "<div class=\"row row-cols-6 ml-0 mr-0 mt-1\">";
+                    foreach (var c in h.Game.WhiteCache)
+                    {
+                        result += string.Format("<img src=\"{0}\" class=\"img-fluid\"/>", Skin.Current.GetImageURL(c));
+                    }
+                    result += "</div>";
+                }
+            }
+
+            result += Skin.Current.Format("<h4>Treachery Cards ({0} on deck, {1} discarded)</h4>", h.Game.TreacheryDeck.Items.Count, h.Game.TreacheryDiscardPile.Items.Count);
 
             if (h.Game.Applicable(Rule.AssistedNotekeeping))
             {
