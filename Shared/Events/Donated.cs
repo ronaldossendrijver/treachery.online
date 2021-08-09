@@ -68,7 +68,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} give {1}{3} to {2}.", Initiator, Concept.Resource, Target, CardMessage);
+            return new Message(Initiator, "{0} give {1}{3} to {2}.", Initiator, Resources, Target, CardMessage);
         }
 
         public static bool MayDonate(Game g, Player p)

@@ -2,6 +2,7 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
+using System;
 using System.Linq;
 
 namespace Treachery.Shared
@@ -37,7 +38,7 @@ namespace Treachery.Shared
             if (card != null)
             {
                 var plan = g.CurrentBattle?.PlanOf(p);
-                if (plan != null && plan.Defense == null && Battle.ValidDefenses(g, p, plan.Weapon, false).Contains(card))
+                if (plan != null && plan.Defense == null && g.CurrentPortableAntidoteUsed == null && Battle.ValidDefenses(g, p, plan.Weapon, false).Contains(card))
                 {
                     return true;
                 }

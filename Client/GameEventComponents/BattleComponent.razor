@@ -200,15 +200,20 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
+        if (firstRender) StartRedrawCycle(1000);
+    }
+
+    protected override async Task RedrawAsync()
+    {
         if (
-            forces != lastforces ||
-            specialForces != lastspecialForces ||
-            resources != lastResources ||
-            resourcesFromAlly != lastResourcesFromAlly ||
-            hero != lasthero ||
-            messiah != lastmessiah ||
-            defense != lastdefense ||
-            weapon != lastweapon)
+        forces != lastforces ||
+        specialForces != lastspecialForces ||
+        resources != lastResources ||
+        resourcesFromAlly != lastResourcesFromAlly ||
+        hero != lasthero ||
+        messiah != lastmessiah ||
+        defense != lastdefense ||
+        weapon != lastweapon)
         {
             lastforces = forces;
             lastspecialForces = specialForces;
@@ -220,7 +225,7 @@
             lastweapon = weapon;
 
             h._battleUnderConstruction = ConfirmedResult;
-            Task.Delay(200).ContinueWith(e => MapDrawer.Draw());
+            await MapDrawer.Draw();
         }
     }
 

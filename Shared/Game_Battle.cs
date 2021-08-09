@@ -143,8 +143,6 @@ namespace Treachery.Shared
                 RegisterKnownCards(AggressorBattleAction);
                 RegisterKnownCards(DefenderBattleAction);
 
-                Enter(Phase.CallTraitorOrPass);
-
                 if (Version >= 69)
                 {
                     if (CurrentBattle.Initiator == Faction.Purple && (GetPlayer(Faction.Purple).Ally != Faction.Black || Prevented(FactionAdvantage.BlackCallTraitorForAlly)))
@@ -156,6 +154,9 @@ namespace Treachery.Shared
                         DefenderTraitorAction = new TreacheryCalled(this) { Initiator = Faction.Purple, TraitorCalled = false };
                     }
                 }
+
+                Enter(AggressorBattleAction.HasRockMelter || DefenderBattleAction.HasRockMelter, Phase.MeltingRock, Phase.CallTraitorOrPass);
+
             }
         }
 
@@ -232,6 +233,11 @@ namespace Treachery.Shared
             {
                 Discard(plan.Defense);
             }
+
+            if (CurrentPortableAntidoteUsed != null)
+            {
+                Discard(CurrentPortableAntidoteUsed.Player.Card(TreacheryCardType.PortableAntidote));
+            }
         }
 
         public void HandleEvent(BattleRevision e)
@@ -256,11 +262,11 @@ namespace Treachery.Shared
             CurrentReport.Add(e);
         }
 
+        public PortableAntidoteUsed CurrentPortableAntidoteUsed = null;
         public void HandleEvent(PortableAntidoteUsed e)
         {
             CurrentReport.Add(e);
-            var plan = CurrentBattle.PlanOf(e.Initiator);
-            plan.Defense = e.Player.Card(TreacheryCardType.PortableAntidote);
+            CurrentPortableAntidoteUsed = e;
         }
 
         public Diplomacy CurrentDiplomacy { get; private set; }
@@ -323,7 +329,7 @@ namespace Treachery.Shared
 
             if (AggressorTraitorAction != null && DefenderTraitorAction != null)
             {
-                Enter(AggressorBattleAction.HasRockMelter || DefenderBattleAction.HasRockMelter, Phase.MeltingRock, HandleRevealedBattlePlans);
+                HandleRevealedBattlePlans();
             }
         }
 
@@ -333,13 +339,13 @@ namespace Treachery.Shared
             CurrentReport.Add(e);
             Discard(e.Player, TreacheryCardType.Rockmelter);
             CurrentRockWasMelted = e;
-            HandleRevealedBattlePlans();
+            Enter(Phase.CallTraitorOrPass);
         }
 
         private void HandleRevealedBattlePlans()
         {
-            ResolveEffectsOfOwnedStrongholds(AggressorBattleAction, DefenderBattleAction);
-            ResolveEffectsOfOwnedStrongholds(DefenderBattleAction, AggressorBattleAction);
+            ResolveEffectOfOwnedTueksSietch(AggressorBattleAction);
+            ResolveEffectOfOwnedTueksSietch(DefenderBattleAction);
 
             DiscardOneTimeCardsUsedInBattle(AggressorTraitorAction, DefenderTraitorAction);
             ResolveBattle(CurrentBattle, AggressorBattleAction, DefenderBattleAction, AggressorTraitorAction, DefenderTraitorAction);
@@ -349,6 +355,9 @@ namespace Treachery.Shared
 
             if (AggressorBattleAction.Initiator == BattleWinner) ActivateSandmasterIfApplicable(AggressorBattleAction);
             if (DefenderBattleAction.Initiator == BattleWinner) ActivateSandmasterIfApplicable(DefenderBattleAction);
+
+            if (AggressorBattleAction.Initiator == BattleWinner) ResolveEffectOfOwnedSietchTabr(AggressorBattleAction, DefenderBattleAction);
+            if (DefenderBattleAction.Initiator == BattleWinner) ResolveEffectOfOwnedSietchTabr(DefenderBattleAction, AggressorBattleAction);
 
             CaptureLeaderIfApplicable();
             FlipBeneGesseritWhenAlone();
@@ -404,7 +413,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void ResolveEffectsOfOwnedStrongholds(Battle playerPlan, Battle opponentPlan)
+        private void ResolveEffectOfOwnedTueksSietch(Battle playerPlan)
         {
             if (HasStrongholdAdvantage(playerPlan.Initiator, StrongholdAdvantage.CollectResourcesForUseless, CurrentBattle.Territory))
             {
@@ -420,13 +429,16 @@ namespace Treachery.Shared
                     playerPlan.Player.Resources += 2;
                 }
             }
+        }
 
+        private void ResolveEffectOfOwnedSietchTabr(Battle playerPlan, Battle opponentPlan)
+        {
             if (HasStrongholdAdvantage(playerPlan.Initiator, StrongholdAdvantage.CollectResourcesForDial, CurrentBattle.Territory))
             {
                 int collected = (int)Math.Floor(opponentPlan.Dial(this, playerPlan.Initiator));
                 if (collected > 0)
                 {
-                    CurrentReport.Add(playerPlan.Initiator, "{0} stronghold advantage: {1} collect {2} for enemy force dial", Map.SietchTabr, playerPlan.Initiator, playerPlan.Defense);
+                    CurrentReport.Add(playerPlan.Initiator, "{0} stronghold advantage: {1} collect {2} for enemy force dial", Map.SietchTabr, playerPlan.Initiator, collected);
                     playerPlan.Player.Resources += collected;
                 }
             }
@@ -718,6 +730,7 @@ namespace Treachery.Shared
             if (CurrentJuice != null && CurrentJuice.Type == JuiceType.Aggressor) CurrentJuice = null;
             CurrentDiplomacy = null;
             CurrentRockWasMelted = null;
+            CurrentPortableAntidoteUsed = null;
             FinishDeciphererIfApplicable();
             if (NextPlayerToBattle == null) MainPhaseEnd();
             Enter(Phase.BattleReport);
@@ -963,8 +976,8 @@ namespace Treachery.Shared
 
             //Determine result
 
-            agg.ActivateMirrorWeaponAndDiplomacy(def.Weapon, def.Defense);
-            def.ActivateMirrorWeaponAndDiplomacy(agg.Weapon, agg.Defense);
+            agg.ActivateDynamicWeapons(def.Weapon, def.Defense);
+            def.ActivateDynamicWeapons(agg.Weapon, agg.Defense);
 
             bool poisonToothUsed = !PoisonToothCancelled && (agg.HasPoisonTooth || def.HasPoisonTooth);
             bool artilleryUsed = agg.HasArtillery || def.HasArtillery;
@@ -1017,12 +1030,19 @@ namespace Treachery.Shared
             result.AggTotal = aggForceDial + aggHeroContribution + aggMessiahContribution - result.AggBattlePenalty;
             result.DefTotal = defForceDial + defHeroContribution + defMessiahContribution - result.DefBattlePenalty;
 
-            agg.DeactivateMirrorWeaponAndDiplomacy();
-            def.DeactivateMirrorWeaponAndDiplomacy();
+            agg.DeactivateDynamicWeapons();
+            def.DeactivateDynamicWeapons();
 
             bool aggressorWinsTies = true;
-            if (HasStrongholdAdvantage(result.Defender.Faction, StrongholdAdvantage.WinTies, CurrentBattle.Territory)) aggressorWinsTies = false;
-            if (IsAggressorByJuice(result.Defender) && !HasStrongholdAdvantage(result.Aggressor.Faction, StrongholdAdvantage.WinTies, CurrentBattle.Territory)) aggressorWinsTies = false;
+            if (HasStrongholdAdvantage(result.Defender.Faction, StrongholdAdvantage.WinTies, CurrentBattle.Territory))
+            {
+                aggressorWinsTies = false;
+            }
+
+            if (IsAggressorByJuice(result.Defender) && !HasStrongholdAdvantage(result.Aggressor.Faction, StrongholdAdvantage.WinTies, CurrentBattle.Territory))
+            {
+                aggressorWinsTies = false;
+            }
 
             if (aggressorWinsTies)
             {

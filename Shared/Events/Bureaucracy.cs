@@ -32,7 +32,7 @@ namespace Treachery.Shared
             }
             else
             {
-                return new Message(Initiator, "{0} apply Bureaucracy.", Game.TargetOfBureaucracy);
+                return new Message(Initiator, "{0} apply Bureaucracy.", Initiator);
             }
         }
 

@@ -128,6 +128,35 @@ namespace Treachery.Test
                 WriteSavegameIfApplicable(g, b.Player, Skin.Current.Format("{0} in battle", g.Skill(b.Hero)));
             }
 
+            if (e is BattleConcluded bc1 && g.HasStrongholdAdvantage(bc1.Initiator, StrongholdAdvantage.CollectResourcesForDial, g.CurrentBattle.Territory))
+            {
+                WriteSavegameIfApplicable(g, bc1.Player, Skin.Current.Format("advantage {0}", StrongholdAdvantage.CollectResourcesForDial));
+            }
+
+            if (e is Battle bc2 && (bc2.Weapon != null && bc2.Weapon.IsUseless || bc2.Defense != null && bc2.Defense.IsUseless) && g.HasStrongholdAdvantage(bc2.Initiator, StrongholdAdvantage.CollectResourcesForUseless, g.CurrentBattle.Territory))
+            {
+                WriteSavegameIfApplicable(g, bc2.Player, Skin.Current.Format("advantage {0}", StrongholdAdvantage.CollectResourcesForUseless));
+            }
+
+            if (e is BattleConcluded bc3 && g.CurrentBattle.PlanOfOpponent(bc3.Player).HasPoison && !g.CurrentBattle.PlanOf(bc3.Initiator).HasAntidote && g.CurrentBattle.PlanOf(bc3.Initiator).Defense != null && g.HasStrongholdAdvantage(bc3.Initiator, StrongholdAdvantage.CountDefensesAsAntidote, g.CurrentBattle.Territory))
+            {
+                WriteSavegameIfApplicable(g, bc3.Player, Skin.Current.Format("advantage {0}", StrongholdAdvantage.CountDefensesAsAntidote));
+            }
+
+            if (e is BattleConcluded bc4 && bc4.Initiator == g.CurrentBattle.Target && g.HasStrongholdAdvantage(bc4.Initiator, StrongholdAdvantage.WinTies, g.CurrentBattle.Territory))
+            {
+                var outcome = g.DetermineBattleOutcome(g.CurrentBattle.PlanOf(bc4.Initiator), g.CurrentBattle.PlanOfOpponent(bc4.Player), g.CurrentBattle.Territory);
+                if (outcome.AggTotal == outcome.DefTotal)
+                {
+                    WriteSavegameIfApplicable(g, bc4.Player, Skin.Current.Format("advantage {0}", StrongholdAdvantage.WinTies));
+                }
+            }
+
+            if (e is Battle bc5 && bc5.Forces > 0 && g.HasStrongholdAdvantage(bc5.Initiator, StrongholdAdvantage.FreeResourcesForBattles, g.CurrentBattle.Territory))
+            {
+                WriteSavegameIfApplicable(g, bc5.Player, Skin.Current.Format("advantage {0}", StrongholdAdvantage.FreeResourcesForBattles));
+            }
+
             return "";
         }
 
@@ -266,16 +295,13 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 50;
+            int nrOfGames = 1000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
             
             //Expansion, advanced game, all expansions, all factions:
             var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
-            //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
             rules.Add(Rule.FillWithBots);
-            //rules.Add(Rule.BotsCannotAlly);
-            //rules.Remove(Rule.BrownAndWhiteLeaderSkills);
             var factions = EstablishPlayers.AvailableFactions().ToList();
             int nrOfTurns = 7;
             int nrOfPlayers = factions.Count;

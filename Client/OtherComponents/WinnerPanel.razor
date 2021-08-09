@@ -7,13 +7,12 @@
 @inherits GameComponent;
 
 <div class="card p-1 mb-2 border-light" style="background-color:#e8dba6;background-image:url('@Skin.Current.PanelBackground_EndOfGame_URL');background-size:cover;background-repeat:no-repeat;">
-    <div class="card-header">Game Ended</div>
+    <div class="card-header">Victory!</div>
     <div class="card-body">
+
         @foreach (var w in h.Game.Winners)
         {
-            <div class="card p-1 mb-2">
-                <div class="card-header" style="background-color:@(Skin.Current.GetFactionColor(w.Faction))">@Skin.Current.Describe(w.Faction) Win!</div>
-            </div>
+            <h1><img width="80" src="@Skin.Current.GetImageURL(w.Faction)" /> @w.Name</h1>
         }
 
         <button class="btn btn-primary mt-1" data-toggle="modal" data-target="#storyModal">Read the story of this game...</button>

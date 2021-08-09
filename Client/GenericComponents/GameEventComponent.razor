@@ -46,23 +46,18 @@
         await Request(OtherResult);
     }
 
-    //TODO Remove
-    protected bool Valid
+    protected void StartRedrawCycle(int interval)
     {
-        get
+        if (interval > 0)
         {
-            try
-            {
-                validationError = Validation;
-                return validationError == "";
-            }
-            catch (Exception e)
-            {
-                validationError = string.Format("Error: {0}", e.Message);
-            }
-
-            return false;
+            _ = RedrawAsync();
+            _ = Task.Delay(interval).ContinueWith(e => StartRedrawCycle(interval));
         }
+    }
+
+    protected virtual async Task RedrawAsync()
+    {
+        await OnAfterRenderAsync(false);
     }
 
     protected string Validation

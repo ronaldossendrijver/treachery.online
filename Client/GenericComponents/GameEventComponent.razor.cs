@@ -6,7 +6,7 @@ using Treachery.Shared;
 
 namespace Treachery.Client.GenericComponents
 {
-    public partial class GameEventComponent<GameEventType> where GameEventType : GameEvent, new()
+    public abstract partial class GameEventComponent<GameEventType> where GameEventType : GameEvent, new()
     {
 
     }

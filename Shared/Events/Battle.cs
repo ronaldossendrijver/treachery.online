@@ -167,7 +167,7 @@ namespace Treachery.Shared
         [JsonIgnore]
         public TreacheryCard OriginalDefense { get; set; } = null;
 
-        public void ActivateMirrorWeaponAndDiplomacy(TreacheryCard mirroredWeapon, TreacheryCard mirroredDefense)
+        public void ActivateDynamicWeapons(TreacheryCard mirroredWeapon, TreacheryCard mirroredDefense)
         {
             if (Weapon != null && Weapon.Type == TreacheryCardType.MirrorWeapon)
             {
@@ -180,9 +180,15 @@ namespace Treachery.Shared
                 OriginalDefense = Defense;
                 Defense = mirroredDefense;
             }
+
+            if (Game.CurrentPortableAntidoteUsed?.Initiator == Initiator)
+            {
+                OriginalDefense = Defense;
+                Defense = Game.TreacheryDiscardPile.Items.FirstOrDefault(c => c.IsPortableAntidote);
+            }
         }
 
-        public void DeactivateMirrorWeaponAndDiplomacy()
+        public void DeactivateDynamicWeapons()
         {
             if (OriginalWeapon != null)
             {
@@ -191,6 +197,12 @@ namespace Treachery.Shared
             }
 
             if (Game.CurrentDiplomacy?.Initiator == Initiator)
+            {
+                Defense = OriginalDefense;
+                OriginalDefense = null;
+            }
+
+            if (Game.CurrentPortableAntidoteUsed?.Initiator == Initiator)
             {
                 Defense = OriginalDefense;
                 OriginalDefense = null;
@@ -347,8 +359,8 @@ namespace Treachery.Shared
             if (Defense == null && Weapon != null && Weapon.Type == TreacheryCardType.Chemistry) return Skin.Current.Format("You can't use {0} as weapon without using a defense.", TreacheryCardType.Chemistry);
             if (!ValidWeapons(Game, p, Defense, Hero, true).Contains(Weapon)) return "Invalid weapon";
             if (!ValidDefenses(Game, p, Weapon, true).Contains(Defense)) return "Invalid defense";
-            if (Game.IsInFrontOfShield(Hero)) return "You can't use a leader that is in front of a player shield";
-            if (BankerBonus > 0 && !Game.SkilledAs(Hero, LeaderSkill.Banker)) return Skin.Current.Format("Only a Leader skilled as {0} can be boosted by {1}", LeaderSkill.Banker, Concept.Resource);
+            if (Game.IsInFrontOfShield(Hero)) return "This leader is in front of your player shield";
+            if (BankerBonus > 0 && !Game.SkilledAs(Hero, LeaderSkill.Banker)) return Skin.Current.Format("Only a leader skilled as {0} can be boosted by {1}", LeaderSkill.Banker, Concept.Resource);
             if (BankerBonus > MaxBankerBoost(Game, Player, Hero)) return Skin.Current.Format("You cannot boost your leader this much");
             if (cost + BankerBonus > p.Resources) return Skin.Current.Format("You can't pay this {0} bonus", LeaderSkill.Banker);
 

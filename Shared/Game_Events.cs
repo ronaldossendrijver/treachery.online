@@ -422,8 +422,10 @@ namespace Treachery.Shared
             }
 
             bool isAfterSetup = Version < 107 ? CurrentPhase > Phase.TradingFactions : CurrentMainPhase > MainPhase.Setup;
+            bool hasFinalizedBattlePlanWaitingToBeResolved = (CurrentPhase == Phase.BattlePhase || CurrentPhase == Phase.MeltingRock || CurrentPhase == Phase.CallTraitorOrPass) && CurrentBattle != null && CurrentBattle.PlanOf(player) != null;
 
             if (isAfterSetup &&
+                (Version < 100 || !hasFinalizedBattlePlanWaitingToBeResolved) &&
                 CurrentMainPhase < MainPhase.Ended &&
                 CurrentPhase != Phase.AssigningSkill &&
                 CurrentPhase != Phase.Clairvoyance &&
@@ -433,7 +435,6 @@ namespace Treachery.Shared
                 CurrentPhase != Phase.SearchingDiscarded &&
                 CurrentPhase != Phase.PerformingKarmaHandSwap)
             {
-                bool hasFinalizedBattlePlan = CurrentMainPhase == MainPhase.Battle && CurrentBattle != null && CurrentBattle.PlanOf(player) != null;
                 if (CurrentMainPhase < MainPhase.Battle && player.NoFieldIsActive)
                 {
                     result.Add(typeof(WhiteRevealedNoField));
@@ -602,7 +603,7 @@ namespace Treachery.Shared
                 if (faction == Faction.White &&
                     CurrentPhase != Phase.BlackMarketBidding && 
                     CurrentPhase != Phase.Bidding &&
-                    !hasFinalizedBattlePlan &&
+                    !hasFinalizedBattlePlanWaitingToBeResolved &&
                     player.Ally != Faction.None && 
                     WhiteGaveCard.ValidCards(this, player).Any() && 
                     player.AlliedPlayer.HasRoomForCards)
@@ -612,7 +613,7 @@ namespace Treachery.Shared
 
                 if (CurrentPhase != Phase.BlackMarketBidding && 
                     CurrentPhase != Phase.Bidding && 
-                    !hasFinalizedBattlePlan &&
+                    !hasFinalizedBattlePlanWaitingToBeResolved &&
                     DistransUsed.CanBePlayed(this, player))
                 {
                     result.Add(typeof(DistransUsed));

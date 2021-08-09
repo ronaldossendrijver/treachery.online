@@ -95,14 +95,14 @@ namespace Treachery.Client
 
                 if (p.ForcesKilled > 0)
                 {
-                    result += string.Format("<div class=\"col p-0\"><img class=\"img-fluid m-0 p-0\" width=\"40\" height=\"40\" src=\"{0}\"/><strong>&nbsp;{1}</strong></div>",
+                    result += string.Format("<div class=\"col p-0\"><img class=\"m-0 p-0\" width=\"40\" height=\"40\" src=\"{0}\"/><strong>&nbsp;{1}</strong></div>",
                         Skin.Current.GetFactionForceImageURL(p.Faction),
                         p.ForcesKilled);
                 }
 
                 if (p.SpecialForcesKilled > 0)
                 {
-                    result += string.Format("<div class=\"col p-0\"><img class=\"img-fluid m-0 p-0\" width=\"40\" height=\"40\" src=\"{0}\"/><strong>&nbsp;{1}</strong></div>",
+                    result += string.Format("<div class=\"col p-0\"><img class=\"m-0 p-0\" width=\"40\" height=\"40\" src=\"{0}\"/><strong>&nbsp;{1}</strong></div>",
                         Skin.Current.GetFactionSpecialForceImageURL(p.Faction),
                         p.SpecialForcesKilled);
                 }
@@ -114,13 +114,13 @@ namespace Treachery.Client
 
                 foreach (var hero in corpses)
                 {
-                    result += string.Format("<div class=\"col p-0\"><img class=\"img-fluid m-0 p-0\" width=\"80\" height=\"80\" src=\"{0}\" /></div>",
+                    result += string.Format("<div class=\"col p-0\"><img class=\"m-0 p-0\" width=\"80\" height=\"80\" src=\"{0}\" /></div>",
                                 !hero.Item2.IsFaceDownDead || showFaceDown ? Skin.Current.GetImageURL(hero.Item1) : Skin.Current.GetFactionFacedownImageURL(hero.Item1.Faction));
                 }
 
                 if (p.Faction == Faction.Green && !h.Game.MessiahIsAlive)
                 {
-                    result += string.Format("<div class=\"col p-0\"><img class=\"img-fluid m-0 p-0\" width=\"80\" height=\"80\" src=\"{0}\" title=\"{1}\" /></div>",
+                    result += string.Format("<div class=\"col p-0\"><img class=\"m-0 p-0\" width=\"80\" height=\"80\" src=\"{0}\" title=\"{1}\" /></div>",
                                 Skin.Current.Messiah_URL,
                                 Skin.Current.Describe(Concept.Messiah));
                 }

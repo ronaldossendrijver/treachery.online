@@ -367,9 +367,13 @@ namespace Treachery.Client
             }
             else if (plan.Hero is Leader)
             {
-                var skill = h.Game.Skill(plan.Player, plan.Hero);
-                if (skill != LeaderSkill.None)
+                var heroSkill = h.Game.Skill(plan.Hero);
+                var playerSkill = h.Game.Skill(plan.Player);
+
+                if (heroSkill != LeaderSkill.None || playerSkill != LeaderSkill.None && PassiveSkillIsRelevantForBattlePlan(playerSkill))
                 {
+                    var skill = heroSkill != LeaderSkill.None ? heroSkill : playerSkill;
+
                     int skillLeftMargin = leftMargin + leaderLeftMargin - (int)(0.5f * (cardWidth - leaderSizeWidth));
                     int skillTopMargin = topMargin + leaderTopMargin - cardHeight + 80;
 
@@ -409,6 +413,19 @@ namespace Treachery.Client
                 await DrawImage(Artwork.Messiah, leftMargin + leaderLeftMargin + leaderSizeWidth / 1.5, topMargin + leaderTopMargin - 50, -1, -1, Skin.Current.SHADOW_LIGHT, 1, 2, 2);
             }
         }
+
+        private static bool PassiveSkillIsRelevantForBattlePlan(LeaderSkill skill)
+        {
+            return 
+                skill == LeaderSkill.Diplomat || 
+                skill == LeaderSkill.Graduate || 
+                skill == LeaderSkill.Warmaster || 
+                skill == LeaderSkill.Adept || 
+                skill == LeaderSkill.Swordmaster || 
+                skill == LeaderSkill.KillerMedic || 
+                skill == LeaderSkill.MasterOfAssassins;
+        }
+
         #endregion
 
         #region Piles
@@ -781,7 +798,7 @@ namespace Treachery.Client
                         textPositionX = (int)(position.X + 1.6 * Skin.Current.PlayerTokenRadius);
                     }
 
-                    await DrawText(textPositionX, y + 40, p.Name, Skin.Current.PLAYERNAME_FONT, align, Skin.Current.PLAYERNAME_FONTCOLOR, Skin.Current.PLAYERNAME_FONT_BORDERWIDTH, Skin.Current.PLAYERNAME_FONT_BORDERCOLOR, 6 * Skin.Current.PlayerTokenRadius);
+                    await DrawText(textPositionX, y + 60, p.Name, Skin.Current.PLAYERNAME_FONT, align, Skin.Current.PLAYERNAME_FONTCOLOR, Skin.Current.PLAYERNAME_FONT_BORDERWIDTH, Skin.Current.PLAYERNAME_FONT_BORDERCOLOR, 6 * Skin.Current.PlayerTokenRadius);
                 }
             }
         }
@@ -855,7 +872,7 @@ namespace Treachery.Client
                 float leaderWidth = 3.8f * Skin.Current.FORCETOKEN_RADIUS;
                 float leaderHeight = leaderWidth * Skin.Current.BattleWheelHeroHeight / Skin.Current.BattleWheelHeroWidth;
                 float leaderPctHeight = .15f * leaderWidth * Skin.Current.BattleWheelHeroHeight / Skin.Current.BattleWheelHeroWidth;
-                float spacing = 0.8f;
+                float spacing = 0.85f;
 
                 foreach (var p in h.Game.Players)
                 {

@@ -44,7 +44,7 @@ namespace Treachery.Client
             }
             catch (Exception e)
             {
-                Support.Log("Error invoking method: {0}", e);
+                Support.Log("Error invoking method: {0}", e.Message);
             }
         }
 

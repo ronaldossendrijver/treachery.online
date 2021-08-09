@@ -73,19 +73,16 @@ namespace Treachery.Shared
             return player.Leaders.FirstOrDefault(l => Skilled(l) && !CapturedLeaders.ContainsKey(l));
         }
 
-        public LeaderSkill Skill(Player p, IHero l)
+        public LeaderSkill Skill(Player p)
         {
-            var skill = Skill(l);
-            if (skill == LeaderSkill.None)
+            var skilledLeader = GetSkilledLeader(p);
+            
+            if (IsInFrontOfShield(skilledLeader))
             {
-                var skilledLeader = GetSkilledLeader(p);
-                if (IsInFrontOfShield(skilledLeader))
-                {
-                    skill = Skill(skilledLeader);
-                }
+                return Skill(skilledLeader);
             }
 
-            return skill;
+            return LeaderSkill.None;
         }
 
         public LeaderSkill Skill(IHero l)
