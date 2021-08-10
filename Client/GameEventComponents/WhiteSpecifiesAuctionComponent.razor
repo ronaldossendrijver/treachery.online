@@ -13,7 +13,7 @@
 
         <SelectCardComponent @bind-Value="card" Values="WhiteSpecifiesAuction.ValidCards(Game)" Required="true" />
 
-        <RadioComponent @bind-Value="auctionType" Values="new AuctionType[] { AuctionType.WhiteNormal, AuctionType.WhiteOnceAround, AuctionType.WhiteSilent }" ValueLabels="@(new string[] { "Normal", "Once Around", "Silent"})">
+        <RadioComponent @bind-Value="auctionType" Values="new AuctionType[] { AuctionType.WhiteOnceAround, AuctionType.WhiteSilent }" ValueLabels="@(new string[] { "Once Around", "Silent"})">
             <Label>Type of auction</Label>
         </RadioComponent>
 
@@ -37,7 +37,7 @@
     protected override Faction IsFactionSpecific => Faction.White;
 
     private TreacheryCard card;
-    private AuctionType auctionType = AuctionType.WhiteNormal;
+    private AuctionType auctionType = AuctionType.WhiteOnceAround;
     private int direction = 1;
 
     protected override WhiteSpecifiesAuction ConfirmedResult => new WhiteSpecifiesAuction(Game) { Initiator = Faction, Card = card, AuctionType = auctionType, Direction = direction };

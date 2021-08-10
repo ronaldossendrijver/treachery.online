@@ -623,7 +623,6 @@ namespace Treachery.Shared
         BlackMarketNormal = 20,
         BlackMarketOnceAround = 30,
         BlackMarketSilent = 40,
-        WhiteNormal = 50,
         WhiteOnceAround = 60,
         WhiteSilent = 70
     }

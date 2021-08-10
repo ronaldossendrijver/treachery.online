@@ -85,6 +85,8 @@ namespace Treachery.Shared
 
         public override string Validate()
         {
+            if ((Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent) && Passed) return "You cannot pass a silent bid";
+
             if (Passed) return "";
             
             bool isSpecialAuction = Game.CurrentAuctionType == AuctionType.WhiteOnceAround || Game.CurrentAuctionType == AuctionType.WhiteSilent;
@@ -156,7 +158,6 @@ namespace Treachery.Shared
             switch (g.CurrentAuctionType)
             {
                 case AuctionType.Normal:
-                case AuctionType.WhiteNormal:
                 case AuctionType.WhiteOnceAround:
                     return g.BidSequence.GetPlayersInSequence();
 

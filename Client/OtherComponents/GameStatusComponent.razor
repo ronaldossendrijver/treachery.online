@@ -28,6 +28,17 @@
                         <img class="align-self-center p-0" src="./art/worm.gif" width="90" style="position: absolute; top: -9px; left: -13px; filter: drop-shadow(1px 1px 1px black)" />
                     </div>
                 }
+                else if (h.Game.CurrentMainPhase == MainPhase.Bidding)
+                {
+                    @foreach (var se in ToBid)
+                    {
+                        <div class="d-inline-block p-2" style="filter:drop-shadow(1px 1px 1px black)">
+                            <NumberComponent Value="se.Player.TreacheryCards.Count" Size="@(se.HasTurn ? 48 : 32)"
+                                                SymbolSRC="@Skin.Current.GetImageURL(se.Player.Faction)"
+                                                NumberColor="@(se.Player.HasRoomForCards ? "black" : "red")" NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
+                        </div>
+                    }
+                }
                 else
                 {
                     var currentSequence = CurrentSequence;
@@ -74,8 +85,8 @@
 
 @code {
 
-    [Parameter]
-    public bool CanEndPhase { get; set; }
+        [Parameter]
+        public bool CanEndPhase { get; set; }
 
     protected override EndPhase ConfirmedResult => new EndPhase(Game) { Initiator = Faction };
 
@@ -100,6 +111,21 @@
                 Game.CurrentPhase == Phase.Resurrection) return Game.Players.Where(p => !Game.HasActedOrPassed.Contains(p.Faction)).Select(p => p.Faction);
 
             return null;
+        }
+    }
+
+    private IEnumerable<SequenceElement> ToBid
+    {
+        get
+        {
+            if (h.Game.CurrentPhase == Phase.BlackMarketAnnouncement || h.Game.CurrentPhase == Phase.BlackMarketBidding)
+            {
+                return BlackMarketBid.PlayersToBid(h.Game);
+            }
+            else
+            {
+                return Bid.PlayersToBid(h.Game);
+            }
         }
     }
 

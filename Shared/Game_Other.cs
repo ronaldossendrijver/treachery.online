@@ -332,6 +332,7 @@ namespace Treachery.Shared
             CurrentReport.Add(e);
             e.Player.TreacheryCards.Add(e.Card);
             WhiteCache.Remove(e.Card);
+            e.Player.Resources -= 3;
             e.Player.SpecialKarmaPowerUsed = true;
         }
 

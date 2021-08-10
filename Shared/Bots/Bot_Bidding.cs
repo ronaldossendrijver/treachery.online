@@ -35,14 +35,21 @@ namespace Treachery.Shared
             LogInfo("currentBidIsFromAlly: {0}, thisCardIsUseless: {1}, thisCardIsCrappy: {2}, resourcesAvailable:, {3}, karmaWorth: {4}, maximumIWillSpend: {5}, karmaCardToUseForBidding: {6}.",
                 currentBidIsFromAlly, thisCardIsUseless, thisCardIsCrappy, resourcesAvailable, karmaWorth, maximumIWillSpend, karmaCardToUseForBidding);
 
-            if (currentBidIsFromAlly || thisCardIsUseless && currentBid > 0 || thisCardIsCrappy && D(1, 1 + 2 * currentBid) > 1)
+            if (Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent)
+            {
+                if (thisCardIsUseless)
+                {
+                    return CreateBidUsingAllyAndRedSpice(0, 0, null);
+                }
+                else
+                {
+                    return CreateBidUsingAllyAndRedSpice(amountToBidInSilentOrOnceAround, 0, null);
+                }
+            }
+            else if (currentBidIsFromAlly || thisCardIsUseless && currentBid > 0 || thisCardIsCrappy && D(1, 1 + 2 * currentBid) > 1)
             {
                 LogInfo("currentBidIsFromAlly or thisCardIsUseless or thisCardIsCrappy");
                 return PassedBid();
-            }
-            else if (Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent)
-            {
-                return CreateBidUsingAllyAndRedSpice(amountToBidInSilentOrOnceAround, 0, null);
             }
             else if (Game.CurrentAuctionType == AuctionType.BlackMarketOnceAround || Game.CurrentAuctionType == AuctionType.WhiteOnceAround)
             {

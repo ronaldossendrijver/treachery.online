@@ -375,7 +375,7 @@ namespace Treachery.Client
                     var skill = heroSkill != LeaderSkill.None ? heroSkill : playerSkill;
 
                     int skillLeftMargin = leftMargin + leaderLeftMargin - (int)(0.5f * (cardWidth - leaderSizeWidth));
-                    int skillTopMargin = topMargin + leaderTopMargin - cardHeight + 80;
+                    int skillTopMargin = topMargin + leaderTopMargin - cardHeight + 120;
 
                     await DrawImage(Artwork.GetSkillCard(skill), skillLeftMargin, skillTopMargin, cardWidth, cardHeight, Skin.Current.SHADOW_LIGHT, 1, 5, 5);
                     

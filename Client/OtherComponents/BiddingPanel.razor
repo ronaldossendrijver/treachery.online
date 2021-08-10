@@ -37,17 +37,6 @@
 
                     <td class="align-top">
 
-                        <div class="row justify-content-start">
-                            @foreach (var se in Bid.PlayersToBid(Game))
-                            {
-                                <div class="d-inline-block pl-1" style="filter:drop-shadow(2px 2px 2px black)">
-                                    <NumberComponent Value="se.Player.TreacheryCards.Count" Size="@(se.HasTurn ? 42 : 28)" 
-                                                     SymbolSRC="@Skin.Current.GetImageURL(se.Player.Faction)" 
-                                                     NumberColor="@(se.Player.HasRoomForCards ? "black" : "red")" NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
-                                </div>
-                            }
-                        </div>
-
                         @if (!h.IsObserver && h.Player.Faction != Faction.None)
                         {
                             <CheckboxComponent @bind-Value="@h.Autopass">Auto-pass</CheckboxComponent>
@@ -98,13 +87,27 @@
 
                             </div>
 
-                            @if (karmaCard != null)
+                            @if (Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent)
                             {
-                                <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Pass="Pass" PassText="Pass" Other="Other" OtherText="Win immediately" Alignment="justify-content-start" />
+                                @if (karmaCard != null)
+                                {
+                                    <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Other="Other" OtherText="Win immediately" Alignment="justify-content-start" />
+                                }
+                                else
+                                {
+                                    <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Alignment="justify-content-start" />
+                                }
                             }
                             else
                             {
-                                <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Pass="Pass" PassText="Pass" Alignment="justify-content-start" />
+                                @if (karmaCard != null)
+                                {
+                                    <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Pass="Pass" PassText="Pass" Other="Other" OtherText="Win immediately" Alignment="justify-content-start" />
+                                }
+                                else
+                                {
+                                    <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Pass="Pass" PassText="Pass" Alignment="justify-content-start" />
+                                }
                             }
                         }
 

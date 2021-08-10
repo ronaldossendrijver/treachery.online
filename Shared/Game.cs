@@ -11,9 +11,9 @@ namespace Treachery.Shared
     public partial class Game
     {
         public const int LowestSupportedVersion = 68;
-        public const int LatestVersion = 109;
+        public const int LatestVersion = 110;
 
-        public bool BotInfologging = false;
+        public bool BotInfologging = true;
 
         #region GameState
 
@@ -700,7 +700,7 @@ namespace Treachery.Shared
 
         public bool HasBiddingPrescience(Player p)
         {
-            bool isPubliclyKnown = CurrentAuctionType == AuctionType.WhiteNormal || CurrentAuctionType == AuctionType.WhiteOnceAround || CurrentAuctionType == AuctionType.WhiteSilent;
+            bool isPubliclyKnown = CurrentAuctionType == AuctionType.WhiteOnceAround || CurrentAuctionType == AuctionType.WhiteSilent;
 
             return
                 isPubliclyKnown ||

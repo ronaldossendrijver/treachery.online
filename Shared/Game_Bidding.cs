@@ -236,13 +236,21 @@ namespace Treachery.Shared
 
         private void StartBidSequenceAndAuctionType(AuctionType auctionType, Player whitePlayer = null, int direction = 1)
         {
-            if (
-                (auctionType == AuctionType.Normal || auctionType == AuctionType.WhiteNormal) && 
-                (CurrentAuctionType != AuctionType.BlackMarketNormal || CurrentAuctionType != AuctionType.Normal || CurrentAuctionType != AuctionType.WhiteNormal))
+            if (auctionType == AuctionType.Normal)
             {
-                //We want to start normal bidding and the previous auction type was not normal bidding
-                BidSequence.Start(true, 1);
-                SkipPlayersThatCantBid(BidSequence);
+                if (CurrentAuctionType == AuctionType.BlackMarketNormal)
+                {
+                    BidSequence.NextRound(true);
+                }
+                else if (CurrentAuctionType == AuctionType.Normal)
+                {
+
+                }
+                else
+                {
+                    BidSequence.Start(true, 1);
+                    SkipPlayersThatCantBid(BidSequence);
+                }
             }
             else if (auctionType == AuctionType.BlackMarketNormal)
             {
@@ -253,6 +261,7 @@ namespace Treachery.Shared
             {
                 BidSequence.Start(whitePlayer, true, direction);
             }
+
 
             FirstFactionToBid = BidSequence.CurrentFaction;
             CurrentAuctionType = auctionType;
@@ -394,7 +403,6 @@ namespace Treachery.Shared
             switch (CurrentAuctionType)
             {
                 case AuctionType.Normal:
-                case AuctionType.WhiteNormal:
 
                     if (bid.Passed || bid.KarmaBid)
                     {
@@ -415,7 +423,7 @@ namespace Treachery.Shared
                             }
                             else
                             {
-                                var receiver = (CurrentAuctionType == AuctionType.WhiteNormal) ? (CurrentBid.Initiator != Faction.White ? Faction.White : Faction.Red) : Faction.Red;
+                                var receiver = Faction.Red;
                                 var card = WinByHighestBid(
                                     CurrentBid.Player, 
                                     CurrentBid.Amount, 
