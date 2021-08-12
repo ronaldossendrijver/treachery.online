@@ -81,6 +81,7 @@ namespace Treachery.Client
             //_page = page;
             _logger = logger;
             Game = new Game();
+            UpdateStatus();
             Game.MessageHandler += Game_MessageHandler;
             RegisterHandlers();
         }
@@ -730,7 +731,8 @@ namespace Treachery.Client
                 await PlaySoundsForMilestones();
                 await Browser.EnablePopovers(); 
                 CheckTimers();
-                
+                UpdateStatus();
+
                 if (e == null || !(Game.CurrentPhase == Phase.Bidding || Game.CurrentPhase == Phase.BlackMarketBidding))
                 {
                     MapDrawer.UpdateIntelligence();

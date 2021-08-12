@@ -13,7 +13,7 @@ namespace Treachery.Shared
         public const int LowestSupportedVersion = 68;
         public const int LatestVersion = 110;
 
-        public bool BotInfologging = false;
+        public bool BotInfologging = true;
 
         #region GameState
 
@@ -771,6 +771,11 @@ namespace Treachery.Shared
         public Player OwnerOf(TreacheryCard karmaCard)
         {
             return karmaCard != null ? Players.FirstOrDefault(p => p.TreacheryCards.Contains(karmaCard)) : null;
+        }
+
+        public Player OwnerOf(TreacheryCardType cardType)
+        {
+            return Players.FirstOrDefault(p => p.TreacheryCards.Any(c => c.Type == cardType));
         }
 
         public Player OwnerOf(Location stronghold)

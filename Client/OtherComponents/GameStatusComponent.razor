@@ -13,59 +13,48 @@
         <div class="row justify-content-center align-items-center">
 
             @{
-                var waitingFor = WaitingFor;
-                var currentFactionsToAct = CurrentFactionsToAct;
+                var currentFactionsToAct = h.Status.WaitingForFactions;
 
-                if (waitingFor == Faction.None && currentFactionsToAct != null && currentFactionsToAct.Count() == 1)
-                {
-                    waitingFor = currentFactionsToAct.First();
-                }
-
-                if (waitingFor != Faction.None)
+                if (currentFactionsToAct.Count() == 1)
                 {
                     <div style="position: relative">
-                        <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(waitingFor)" width="72" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
+                        <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(currentFactionsToAct.First())" width="72" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
                         <img class="align-self-center p-0" src="./art/worm.gif" width="90" style="position: absolute; top: -9px; left: -13px; filter: drop-shadow(1px 1px 1px black)" />
                     </div>
                 }
                 else if (h.Game.CurrentMainPhase == MainPhase.Bidding)
                 {
-                    @foreach (var se in ToBid)
+                    foreach (var se in ToBid)
                     {
                         <div class="d-inline-block p-2" style="filter:drop-shadow(1px 1px 1px black)">
                             <NumberComponent Value="se.Player.TreacheryCards.Count" Size="@(se.HasTurn ? 48 : 32)"
-                                                SymbolSRC="@Skin.Current.GetImageURL(se.Player.Faction)"
-                                                NumberColor="@(se.Player.HasRoomForCards ? "black" : "red")" NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
+                                             SymbolSRC="@Skin.Current.GetImageURL(se.Player.Faction)"
+                                             NumberColor="@(se.Player.HasRoomForCards ? "black" : "red")" NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
                         </div>
                     }
                 }
-                else
+                else if (currentFactionsToAct.Any())
                 {
-                    var currentSequence = CurrentSequence;
-
-                    if (currentSequence != null)
+                    foreach (var f in currentFactionsToAct)
                     {
-                        @foreach (var f in currentSequence)
-                        {
-                            <div style="position: relative">
-                                @if (f.HasTurn)
-                                {
-                                    <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(f.Player.Faction)" width="72" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
-                                    <img class="align-self-center p-0" src="./art/worm.gif" width="90" style="position: absolute; top: -9px; left: -13px; filter: drop-shadow(1px 1px 1px black)" />
-                                }
-                                else
-                                {
-                                    <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(f.Player.Faction)" width="48" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
-                                }
-                            </div>
-                        }
+                        <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(f)" width="48" style="filter:drop-shadow(2px 2px 2px black)" />
                     }
-                    else if (currentFactionsToAct != null)
+                }
+                else if (h.Status.WaitingInSequence.Any())
+                {
+                    foreach (var f in h.Status.WaitingInSequence)
                     {
-                        @foreach (var f in currentFactionsToAct)
-                        {
-                            <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(f)" width="48" style="filter:drop-shadow(2px 2px 2px black)" />
-                        }
+                        <div style="position: relative">
+                            @if (f.HasTurn)
+                            {
+                                <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(f.Player.Faction)" width="72" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
+                                <img class="align-self-center p-0" src="./art/worm.gif" width="90" style="position: absolute; top: -9px; left: -13px; filter: drop-shadow(1px 1px 1px black)" />
+                            }
+                            else
+                            {
+                                <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(f.Player.Faction)" width="48" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
+                            }
+                        </div>
                     }
                 }
             }
@@ -85,34 +74,10 @@
 
 @code {
 
-        [Parameter]
-        public bool CanEndPhase { get; set; }
+    [Parameter]
+    public bool CanEndPhase { get; set; }
 
     protected override EndPhase ConfirmedResult => new EndPhase(Game) { Initiator = Faction };
-
-    private IEnumerable<SequenceElement> CurrentSequence
-    {
-        get
-        {
-            //if (Game.CurrentPhase == Phase.Bidding) return Game.BidSequence.GetFactionsInSequence(Game);
-            if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.CurrentPhase != Phase.ShipmentAndMoveConcluded) return Game.ShipmentAndMoveSequence.GetPlayersInSequence();
-            if (Game.CurrentMainPhase == MainPhase.Battle && Game.NextPlayerToBattle != null) return Game.BattleSequence.GetPlayersInSequence();
-
-            return null;
-        }
-    }
-
-    private IEnumerable<Faction> CurrentFactionsToAct
-    {
-        get
-        {
-            if (Game.CurrentPhase == Phase.SelectingTraitors ||
-                Game.CurrentPhase == Phase.ClaimingCharity ||
-                Game.CurrentPhase == Phase.Resurrection) return Game.Players.Where(p => !Game.HasActedOrPassed.Contains(p.Faction)).Select(p => p.Faction);
-
-            return null;
-        }
-    }
 
     private IEnumerable<SequenceElement> ToBid
     {
@@ -129,43 +94,18 @@
         }
     }
 
-    private Faction WaitingFor
-    {
-        get
-        {
-            var att = GetAttribute(Game.CurrentPhase);
-
-            if (att != null && att.Urgent)
-            {
-                return att.FactionSpecific;
-            }
-            else
-            {
-                return Faction.None;
-            }
-        }
-    }
-
     private string StatusDescriptionClass
     {
         get
         {
-            if (h.Game != null && h.Status.WaitingForOthers)
-            {
-                return "text-dark";
-            }
-            else
+            if (h.Status.WaitingForMe)
             {
                 return "text-danger font-weight-bold";
             }
+            else
+            {
+                return "text-dark";
+            }
         }
-    }
-
-    public PhasePropertyAttribute GetAttribute(Phase p)
-    {
-        var type = typeof(Phase);
-        var member = type.GetMember(type.GetEnumName(p))[0];
-        var att = member.GetCustomAttributes(typeof(PhasePropertyAttribute), false).FirstOrDefault();
-        return (PhasePropertyAttribute)att;
     }
 }

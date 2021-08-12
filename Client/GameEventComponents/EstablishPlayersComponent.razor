@@ -11,7 +11,7 @@
     <Header>You may now configure your game below.</Header>
     <Body>
 
-        <CheckboxComponent Value="info.HostParticipates">The host (you) will participate in this game</CheckboxComponent>
+        <CheckboxComponent @bind-Value="info.HostParticipates">The host (you) will participate in this game</CheckboxComponent>
 
         <div class="mt-2"><strong>Players:</strong> @string.Join(", ", Players)</div>
 
