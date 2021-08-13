@@ -284,7 +284,7 @@ namespace Treachery.Client
 
                 case Phase.NonOrangeShip:
                     return new GameStatus(Player, IsHost,
-                    Skin.Current.Format("Please decide to {0} forces or pass."),
+                    Skin.Current.Format("Please decide to {0} forces or pass.", Game.ShipmentAndMoveSequence.CurrentFaction == Faction.Yellow ? "rally" : "ship"),
                     Skin.Current.Format("{0} are thinking about {1} forces...", Game.ShipmentAndMoveSequence.CurrentFaction, Game.ShipmentAndMoveSequence.CurrentFaction == Faction.Yellow ? "rallying" : "shipping"),
                     Game.ShipmentAndMoveSequence.CurrentPlayer);
 
