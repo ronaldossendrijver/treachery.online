@@ -15,14 +15,7 @@
             @{
                 var currentFactionsToAct = h.Status.WaitingForFactions;
 
-                if (currentFactionsToAct.Count() == 1)
-                {
-                    <div style="position: relative">
-                        <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(currentFactionsToAct.First())" width="72" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
-                        <img class="align-self-center p-0" src="./art/worm.gif" width="90" style="position: absolute; top: -9px; left: -13px; filter: drop-shadow(1px 1px 1px black)" />
-                    </div>
-                }
-                else if (h.Game.CurrentMainPhase == MainPhase.Bidding)
+                if (h.Game.CurrentPhase == Phase.BlackMarketBidding || h.Game.CurrentPhase == Phase.Bidding || h.Game.CurrentPhase == Phase.BiddingReport)
                 {
                     foreach (var se in ToBid)
                     {
@@ -32,6 +25,13 @@
                                              NumberColor="@(se.Player.HasRoomForCards ? "black" : "red")" NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
                         </div>
                     }
+                }
+                else if (currentFactionsToAct.Count() == 1)
+                {
+                    <div style="position: relative">
+                        <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(currentFactionsToAct.First())" width="72" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
+                        <img class="align-self-center p-0" src="./art/worm.gif" width="90" style="position: absolute; top: -9px; left: -13px; filter: drop-shadow(1px 1px 1px black)" />
+                    </div>
                 }
                 else if (currentFactionsToAct.Any())
                 {

@@ -136,7 +136,7 @@
             </CheckboxComponent>
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm Changes" ConfirmError="@Validation" Disabled="@(!Dirty)"/>
 
     </Body>
 
@@ -162,27 +162,86 @@
     {
         spice = Game.GetPermittedUseOfAllySpice(Player.Ally);
         karmaCard = Game.GetPermittedUseOfAllyKarma(Player.Ally);
-        purpleAllyMyReviveAsPurple = Game.PurpleAllyMayReviveAsPurple;
-        greyAllyMayReplace = Game.GreyAllyMayReplaceCards;
-        guildAllyMayShipAsGuild = Game.OrangeAllyMayShipAsGuild;
-        emperorWillPayForExtraRevival = Game.RedWillPayForExtraRevival;
-        fremenWillProtectFromShaiHulud = Game.YellowWillProtectFromShaiHulud;
-        fremenAllowsThreeFreeRevivals = Game.YellowAllowsThreeFreeRevivals;
-        fremenShareStormPrescience = Game.YellowSharesPrescience;
-        greenSharePrescience = Game.GreenSharesPrescience;
-        blueAllyMayUseVoice = Game.BlueAllyMayUseVoice;
-        whiteAllyMayUseNoField = Game.WhiteAllyMayUseNoField;
+
+        switch (Faction)
+        {
+            case Faction.Purple:
+                purpleAllyMyReviveAsPurple = Game.PurpleAllyMayReviveAsPurple;
+                break;
+            case Faction.Grey:
+                greyAllyMayReplace = Game.GreyAllyMayReplaceCards;
+                break;
+            case Faction.Orange:
+                guildAllyMayShipAsGuild = Game.OrangeAllyMayShipAsGuild;
+                break;
+            case Faction.Red:
+                emperorWillPayForExtraRevival = Game.RedWillPayForExtraRevival;
+                break;
+            case Faction.Yellow:
+                fremenWillProtectFromShaiHulud = Game.YellowWillProtectFromShaiHulud;
+                fremenAllowsThreeFreeRevivals = Game.YellowAllowsThreeFreeRevivals;
+                fremenShareStormPrescience = Game.YellowSharesPrescience;
+                break;
+            case Faction.Green:
+                greenSharePrescience = Game.GreenSharesPrescience;
+                break;
+            case Faction.Blue:
+                blueAllyMayUseVoice = Game.BlueAllyMayUseVoice;
+                break;
+            case Faction.White:
+                whiteAllyMayUseNoField = Game.WhiteAllyMayUseNoField;
+                break;
+        }
+    }
+
+    private bool Dirty
+    {
+        get
+        {
+            if (spice != Game.GetPermittedUseOfAllySpice(Player.Ally)) return true;
+            if (karmaCard != Game.GetPermittedUseOfAllyKarma(Player.Ally)) return true;
+
+            switch (Faction)
+            {
+                case Faction.Purple:
+                    if (purpleAllyMyReviveAsPurple != Game.PurpleAllyMayReviveAsPurple) return true;
+                    break;
+                case Faction.Grey:
+                    if (greyAllyMayReplace != Game.GreyAllyMayReplaceCards) return true;
+                    break;
+                case Faction.Orange:
+                    if (guildAllyMayShipAsGuild != Game.OrangeAllyMayShipAsGuild) return true;
+                    break;
+                case Faction.Red:
+                    if (emperorWillPayForExtraRevival != Game.RedWillPayForExtraRevival) return true;
+                    break;
+                case Faction.Yellow:
+                    if (fremenWillProtectFromShaiHulud != Game.YellowWillProtectFromShaiHulud) return true;
+                    if (fremenAllowsThreeFreeRevivals != Game.YellowAllowsThreeFreeRevivals) return true;
+                    if (fremenShareStormPrescience != Game.YellowSharesPrescience) return true;
+                    break;
+                case Faction.Green:
+                    if (greenSharePrescience != Game.GreenSharesPrescience) return true;
+                    break;
+                case Faction.Blue:
+                    if (blueAllyMayUseVoice != Game.BlueAllyMayUseVoice) return true;
+                    break;
+                case Faction.White:
+                    if (whiteAllyMayUseNoField != Game.WhiteAllyMayUseNoField) return true;
+                    break;
+            }
+
+            return false;
+        }
     }
 
     public void Dispose()
     {
     }
 
-    protected override AllyPermission ConfirmedResult
-    {
-        get
-        {
-            return new AllyPermission(Game)
+    protected override AllyPermission ConfirmedResult =>
+
+            new AllyPermission(Game)
             {
                 Initiator = Faction,
                 RedWillPayForExtraRevival = emperorWillPayForExtraRevival,
@@ -198,6 +257,5 @@
                 PermittedResources = spice,
                 PermittedKarmaCard = karmaCard
             };
-        }
-    }
 }
+

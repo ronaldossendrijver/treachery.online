@@ -2,17 +2,17 @@
 
     @if (Other.HasDelegate)
     {
-        <button class="btn btn-primary mr-1" @onclick="Other">@OtherText</button>
+        <button class="btn btn-primary mr-1" @onclick="Other" disabled=@Disabled>@OtherText</button>
     }
 
     @if (Pass.HasDelegate)
     {
-        <button class="btn btn-primary mr-1" @onclick="Pass">@PassText</button>
+        <button class="btn btn-primary mr-1" @onclick="Pass" disabled=@Disabled>@PassText</button>
     }
 
     @if (Confirm.HasDelegate)
     {
-        <button class="btn btn-primary" @onclick="Confirm" disabled=@(ConfirmError != "")>@ConfirmText</button>
+        <button class="btn btn-primary" @onclick="Confirm" disabled=@(Disabled || ConfirmError != "")>@ConfirmText</button>
     }
 
 </div>
@@ -44,4 +44,7 @@
 
     [Parameter]
     public string Alignment { get; set; } = "justify-content-end";
+
+    [Parameter]
+    public bool Disabled { get; set; } = false;
 }

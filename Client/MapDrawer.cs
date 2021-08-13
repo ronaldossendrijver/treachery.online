@@ -165,11 +165,13 @@ namespace Treachery.Client
         {
             if (h.Game.Map.HiddenMobileStronghold.Visible)
             {
+                bool isInFrontOfPlayerToken = h.Game.Players.Any(p => Near(h.Game.Map.HiddenMobileStronghold.Center, PlayerTokenPosition(h.Game, p.PositionAtTable), 100));
+
                 await DrawImage(
                     Artwork.HiddenMobileStronghold,
                     h.Game.Map.HiddenMobileStronghold.Center.X - HiddenMobileStronghold.RADIUS,
                     h.Game.Map.HiddenMobileStronghold.Center.Y - HiddenMobileStronghold.RADIUS,
-                    HiddenMobileStronghold.RADIUS + Math.Abs(HiddenMobileStronghold.DX), 2 * HiddenMobileStronghold.RADIUS, Skin.Current.SHADOW_DARK, 3, 8, 8, ShowWheelsAndHMS ? 1.0f : 0.3f);
+                    HiddenMobileStronghold.RADIUS + Math.Abs(HiddenMobileStronghold.DX), 2 * HiddenMobileStronghold.RADIUS, Skin.Current.SHADOW_DARK, 3, 8, 8, !isInFrontOfPlayerToken && ShowWheelsAndHMS ? 1.0f : 0.4f);
             }
         }
         #endregion

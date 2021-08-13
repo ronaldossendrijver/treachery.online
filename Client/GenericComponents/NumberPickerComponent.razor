@@ -24,10 +24,10 @@
         <img src="@BehindNumberSRC" style="position: absolute; left: @BehindNumberImageOffsetX; top:@BehindNumberImageOffsetY; width: @BehindNumberImageSize;" />
     }
 
-    <span style="position: absolute; left: @NumberBoxOffsetX; top:@NumberBoxOffsetY; width: @NumberBoxSize; font-size: @NumberFontSize; font-weight: bold; color: @NumberColor; line-height: 1.0; text-align:center; white-space:nowrap;">@Value</span>
+    <span @onclick="e => Click(e)" style="position: absolute; left: @NumberBoxOffsetX; top:@NumberBoxOffsetY; width: @NumberBoxSize; font-size: @NumberFontSize; font-weight: bold; color: @NumberColor; line-height: 1.0; text-align:center; white-space:nowrap;">@Value</span>
 
     <svg 
-         @onclick="@Increase" 
+         @onclick="e => Increase()" 
          @onmouseover="e => MouseOver(true)"
          @onmouseout="e => MouseOut(true)"
          xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" height="@ArrowSize" fill="@IncreaseArrowColor" viewBox="0 0 16 16" style="position: absolute; left: @ArrowOffsetX; top: 3px; width: @ArrowSize; filter: @UpStyle;">
@@ -35,7 +35,7 @@
     </svg>
 
     <svg 
-         @onclick="@Decrease" 
+         @onclick="e => Decrease()" 
          @onmouseover="e => MouseOver(false)"
          @onmouseout="e => MouseOut(false)"
          xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" height="@ArrowSize" fill="@DecreaseArrowColor" viewBox="0 0 16 16" style="position: absolute; left: @ArrowOffsetX; bottom: 3px; width: @ArrowSize; filter: @DownStyle;">
@@ -141,6 +141,18 @@
         {
             Value--;
             OnDown.InvokeAsync();
+        }
+    }
+
+    private void Click(MouseEventArgs e)
+    {
+        if (e.AltKey || e.ShiftKey || e.CtrlKey)
+        {
+            Decrease();
+        }
+        else
+        {
+            Increase();
         }
     }
 

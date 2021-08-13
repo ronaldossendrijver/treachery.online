@@ -45,7 +45,7 @@ namespace Treachery.Client
 
                 case Phase.Clairvoyance:
                     return new GameStatus(Player, IsHost,
-                    Skin.Current.Format("{0} asked you a question in {1}! All factions are waiting for you answer...", Game.LatestClairvoyance.Initiator, TreacheryCardType.Clairvoyance),
+                    Skin.Current.Format("Please answer a question asked to you by {0} in {1}...", Game.LatestClairvoyance.Initiator, TreacheryCardType.Clairvoyance),
                     Skin.Current.Format("Waiting for {0} to answer a question asked in {1}...", Game.LatestClairvoyance.Target, TreacheryCardType.Clairvoyance),
                     Game.LatestClairvoyance.Target);
 
@@ -91,18 +91,18 @@ namespace Treachery.Client
                 case Phase.BluePredicting:
                     return new GameStatus(Player, IsHost,
                     Skin.Current.Format("Please predict who will win the game and when."),
-                    Skin.Current.Format("{0} are predicting who will win the game and in which turn...", Faction.Blue),
+                    Skin.Current.Format("{0} are predicting who will win the game and when...", Faction.Blue),
                     Faction.Blue);
 
                 case Phase.BlackMulligan:
                     return new GameStatus(Player, IsHost,
-                    Skin.Current.Format("If you drew two or more of your own leaders as traitors, you may draw a new set of traitors. Otherwise, pass."),
+                    Skin.Current.Format("You may draw a new set of traitors if you were dealt two or more of your own leaders. Otherwise, pass."),
                     Skin.Current.Format("{0} may draw a new set of traitors if they were dealt two or more of their own leaders...", Faction.Black),
                     Faction.Black);
 
                 case Phase.SelectingTraitors:
                     return new GameStatus(Player, IsHost,
-                    Skin.Current.Format("Please select one of four leaders to keep as a traitor"),
+                    Skin.Current.Format("Please select one leader to keep as a traitor"),
                     Skin.Current.Format("Players are selecting traitors..."),
                     PlayersThatHaventActedOrPassed);
 
@@ -143,7 +143,7 @@ namespace Treachery.Client
 
                 case Phase.HmsMovement:
                     return new GameStatus(Player, IsHost,
-                    Skin.Current.Format("You may move the Hidden Mobile Stronghold to a sector in an adjacent territory."),
+                    Skin.Current.Format("You may move the Hidden Mobile Stronghold to a sector in an adjacent territory, or pass."),
                     Skin.Current.Format("The Hidden Mobile Stronghold is being moved..."),
                     Faction.Grey);
 
@@ -162,22 +162,22 @@ namespace Treachery.Client
                 case Phase.YellowSendingMonsterA:
                 case Phase.YellowSendingMonsterB:
                     return new GameStatus(Player, IsHost,
-                    Skin.Current.Format("Please select where to make {0} appear.", Concept.Monster),
-                    Skin.Current.Format("{0} are selecting where to make {1} appear...", Faction.Yellow, Concept.Monster),
+                    Skin.Current.Format("Please decide where to make {0} appear.", Concept.Monster),
+                    Skin.Current.Format("{0} are deciding where to make {1} appear...", Faction.Yellow, Concept.Monster),
                     Faction.Yellow);
 
                 case Phase.YellowRidingMonsterA:
                 case Phase.YellowRidingMonsterB:
                     return new GameStatus(Player, IsHost,
-                    Skin.Current.Format("Please select where to travel with {0}.", Concept.Monster),
-                    Skin.Current.Format("{0} are selecting where to travel with {1}...", Faction.Yellow, Concept.Monster),
+                    Skin.Current.Format("Please decide where to travel with {0}.", Concept.Monster),
+                    Skin.Current.Format("{0} are deciding where to travel with {1}...", Faction.Yellow, Concept.Monster),
                     Faction.Yellow);
 
                 case Phase.BlueIntrudedByYellowRidingMonsterA:
                 case Phase.BlueIntrudedByYellowRidingMonsterB:
                     return new GameStatus(Player, IsHost,
                     Skin.Current.Format("Please decide what to do in response to an intrusion of {0}; be fighters or advisors?", Game.LastShippedOrMovedTo.Territory.Name),
-                    Skin.Current.Format("{0} are deciding what to do in response to an intrusion...", Faction.Blue),
+                    Skin.Current.Format("{0} are deciding what to do in response to an intrusion of {1}...", Faction.Blue, Game.LastShippedOrMovedTo.Territory.Name),
                     Faction.Blue);
 
                 case Phase.HarvesterA:
@@ -228,24 +228,24 @@ namespace Treachery.Client
                 case Phase.WhiteSpecifyingAuction:
                     return new GameStatus(Player, IsHost,
                     Skin.Current.Format("Please select a card from your cache to sell and select the type of auction."),
-                    Skin.Current.Format("{0} are deciding which card from their cache to sell and by which type of auction...", Faction.White),
+                    Skin.Current.Format("Waiting for {0} to put a card from their cache on auction...", Faction.White),
                     Faction.White);
 
                 case Phase.WhiteKeepingUnsoldCard:
                     return new GameStatus(Player, IsHost,
                     Skin.Current.Format("Please decide if you wish to keep this unsold card."),
-                    Skin.Current.Format("{0} are deciding whether to keep the unsold card...", Faction.White),
+                    Skin.Current.Format("{0} are deciding about keeping the unsold card...", Faction.White),
                     Faction.White);
 
                 case Phase.GreyRemovingCardFromBid:
                     return new GameStatus(Player, IsHost,
-                    Skin.Current.Format("Put one card from the auction on top or at the bottom of the Treachery Card deck."),
+                    Skin.Current.Format("Please put one card from the auction on top or at the bottom of the Treachery Card deck."),
                     Skin.Current.Format("{0} are putting one card from the auction on top or at the bottom of the Treachery Card deck...", Faction.Grey),
                     Faction.Grey);
 
                 case Phase.GreySwappingCard:
                     return new GameStatus(Player, IsHost,
-                    Skin.Current.Format("You may swap the next card on auction with a card from your hand."),
+                    Skin.Current.Format("You may swap the next card on auction with a card from your hand, or pass."),
                     Skin.Current.Format("{0} are thinking about swapping the next card on auction with a card from their hand...", Faction.Grey),
                     Faction.Grey);
 
@@ -291,14 +291,14 @@ namespace Treachery.Client
                 case Phase.OrangeShip:
                     return new GameStatus(Player, IsHost,
                     Skin.Current.Format(Game.OrangeMayDelay ? Skin.Current.Format("Please decide to ship now or delay your turn and let other factions go first.") : Skin.Current.Format("Please decide to ship forces or pass.")),
-                    Skin.Current.Format(Game.OrangeMayDelay ? Skin.Current.Format("{0} are thinking deciding about shipping forces or delaying their turn...", Faction.Orange) : Skin.Current.Format("{0} are thinking about shipping forces...", Faction.Orange)),
+                    Skin.Current.Format(Game.OrangeMayDelay ? Skin.Current.Format("{0} are deciding about taking their turn now...", Faction.Orange) : Skin.Current.Format("{0} are thinking about shipping forces...", Faction.Orange)),
                     Faction.Orange);
 
                 case Phase.BlueAccompaniesNonOrange:
                 case Phase.BlueAccompaniesOrange:
                     return new GameStatus(Player, IsHost,
                     Skin.Current.Format("Do you wish to accompany the latest shipment?"),
-                    Skin.Current.Format(Skin.Current.Format("{0} are deciding whether to accompany the latest shipment...", Faction.Blue)),
+                    Skin.Current.Format(Skin.Current.Format("{0} are thinking about accompanying the latest shipment...", Faction.Blue)),
                     Faction.Blue);
 
                 case Phase.BlueIntrudedByNonOrangeShip:
@@ -341,14 +341,14 @@ namespace Treachery.Client
                         if (IAm(Game.CurrentBattle.Initiator))
                         {
                             return new GameStatus(Player, IsHost,
-                            Skin.Current.Format("You are Aggressor against {0} in {1}! Please confirm your Battle Plan.", Game.CurrentBattle.Target, Game.CurrentBattle.Territory),
+                            Skin.Current.Format("You are aggressor against {0} in {1}! Please confirm your Battle Plan.", Game.CurrentBattle.Target, Game.CurrentBattle.Territory),
                             Skin.Current.Format("You are waiting for {0} to defend {1}...", Game.CurrentBattle.Target, Game.CurrentBattle.Territory),
                             FactionsThatNeedToMakeABattlePlan);
                         }
                         else if (IAm(Game.CurrentBattle.Target))
                         {
                             return new GameStatus(Player, IsHost,
-                            Skin.Current.Format("You must defend against {0} Aggression in {1}! Please confirm your Battle Plan.", Game.CurrentBattle.Initiator, Game.CurrentBattle.Territory),
+                            Skin.Current.Format("You must defend against {0} in {1}! Please confirm your Battle Plan.", Game.CurrentBattle.Initiator, Game.CurrentBattle.Territory),
                             Skin.Current.Format("You are waiting for {0} to attack {1}...", Game.CurrentBattle.Initiator, Game.CurrentBattle.Territory),
                             FactionsThatNeedToMakeABattlePlan);
                         }
@@ -362,19 +362,19 @@ namespace Treachery.Client
 
                 case Phase.MeltingRock:
                     return new GameStatus(Player, IsHost,
-                    Skin.Current.Format("You may now decide how to use your {0}.", TreacheryCardType.Rockmelter),
+                    Skin.Current.Format("Please decide how to use your {0}.", TreacheryCardType.Rockmelter),
                     Skin.Current.Format("Waiting for a decision on how the {0} will be used...", TreacheryCardType.Rockmelter),
                     Game.CurrentBattle.AggressorAction.HasRockMelter ? Game.CurrentBattle.Player : Game.CurrentBattle.Defender);
 
                 case Phase.CallTraitorOrPass:
                     return new GameStatus(Player, IsHost,
-                    Skin.Current.Format("You may now decide to call TREACHERY if the enemy leader is a traitor under your command."),
+                    Skin.Current.Format("You may now call TREACHERY if the enemy leader is a traitor under your command."),
                     Skin.Current.Format("Waiting for a faction to call TREACHERY..."),
                     FactionsThatNeedToCallTraitor);
 
                 case Phase.AvoidingAudit:
                     return new GameStatus(Player, IsHost,
-                    Skin.Current.Format("Do you wish to avoid being audited?"),
+                    Skin.Current.Format("Please decide if you wish to avoid being audited."),
                     Skin.Current.Format("{0} are thinking about avoiding a scheduled audit...", Game.Auditee.Faction),
                     Game.Auditee);
 
@@ -398,7 +398,7 @@ namespace Treachery.Client
 
                 case Phase.ReplacingFaceDancer:
                     return new GameStatus(Player, IsHost,
-                    Skin.Current.Format("You may replace an unrevealed Face Dancer with a new one drawn from the Traitor Deck."),
+                    Skin.Current.Format("You may replace an unrevealed Face Dancer with a new one from the Traitor Deck."),
                     Skin.Current.Format("Waiting for a Face Dancer to be replaced..."),
                     Faction.Purple);
 

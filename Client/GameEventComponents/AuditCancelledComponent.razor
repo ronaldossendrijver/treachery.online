@@ -8,7 +8,7 @@
 
 <GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Do you wish to bribe @Skin.Current.Describe(Faction.Brown) with @AuditCancelled.Cost(Game) @Skin.Current.Describe(Concept.Resource) to cancel a scheduled audit of @AuditCancelled.GetNumberOfCardsThatMayBeAudited(Game) of your treachery cards?</Header>
+    <Header>Do you wish to pay @Skin.Current.Describe(Faction.Brown) @AuditCancelled.Cost(Game) @Skin.Current.Describe(Concept.Resource) to cancel a scheduled audit of @AuditCancelled.GetNumberOfCardsThatMayBeAudited(Game) of your treachery cards?</Header>
     <Body>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError="@Validation" Pass="Pass" PassText="No" />

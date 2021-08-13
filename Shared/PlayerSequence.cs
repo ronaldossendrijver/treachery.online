@@ -36,6 +36,7 @@ namespace Treachery.Shared
             RoundStartedAt = Current;
             NextPlayer(ignorePlayersThatCantBid);
             RoundStartedAt = Current;
+            //Console.WriteLine("Start(): " + CurrentFaction);
         }
 
         public void Start(bool ignorePlayersThatCantBid, int direction)
@@ -45,6 +46,7 @@ namespace Treachery.Shared
             var startLookingInSector = (int)Math.Ceiling((float)Game.SectorInStorm * Game.MaximumNumberOfPlayers / Map.NUMBER_OF_SECTORS) % Game.MaximumNumberOfPlayers;
             Current = FindNearestPlayerPosition(startLookingInSector, ignorePlayersThatCantBid);
             RoundStartedAt = Current;
+            //Console.WriteLine("Start(): " + CurrentFaction);
         }
              
         public Player CurrentPlayer
@@ -73,6 +75,7 @@ namespace Treachery.Shared
             _playerNumberInRound = 0;
             Current = FindNearestPlayerPosition(RoundStartedAt + _direction, ignorePlayersThatCantBid);
             RoundStartedAt = Current;
+            //Console.WriteLine("NextRound(): " + CurrentFaction);
         }
 
 

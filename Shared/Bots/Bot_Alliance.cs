@@ -62,6 +62,8 @@ namespace Treachery.Shared
 
         protected virtual AllyPermission DetermineAlliancePermissions()
         {
+            if (Ally == Faction.None) return null;
+
             return Faction switch {
 
                 Faction.Yellow => DetermineAlliancePermissions_Yellow(),

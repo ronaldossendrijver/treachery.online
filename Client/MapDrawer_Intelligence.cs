@@ -196,6 +196,11 @@ namespace Treachery.Client
             return Math.Abs(p.X - x) < distance && Math.Abs(p.Y - y) < distance;
         }
 
+        private static bool Near(Point p, Point p2, int distance)
+        {
+            return Math.Abs(p.X - p2.X) < distance && Math.Abs(p.Y - p2.Y) < distance;
+        }
+
         private static string Intel(Location intelligenceLocation)
         {
             string result = "<div style='width:300px'>";

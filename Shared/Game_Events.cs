@@ -618,15 +618,20 @@ namespace Treachery.Shared
                 {
                     result.Add(typeof(DistransUsed));
                 }
+
+                if (player.Ally != Faction.None) result.Add(typeof(AllyPermission));
+
+                if (Version >= 110)
+                {
+                    result.Add(typeof(DealOffered));
+                    result.Add(typeof(DealAccepted));
+                }
             }
 
-            if (player.Ally != Faction.None)
+            if (Version < 110)
             {
-                result.Add(typeof(AllyPermission));
-            }
+                if (player.Ally != Faction.None) result.Add(typeof(AllyPermission));
 
-            if (CurrentMainPhase > MainPhase.Setup && CurrentPhase < Phase.GameEnded)
-            {
                 result.Add(typeof(DealOffered));
                 result.Add(typeof(DealAccepted));
             }
