@@ -25,11 +25,11 @@
 
         @if (Faction == Faction.Brown && TakeLosses.ValidUselessCardToPreventLosses(Game, Player) != null)
         {
-            <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" Other="Other" OtherText="@(UseUselessLabel)" />
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm Losses" ConfirmError="@Validation" Other="Other" OtherText="@(UseUselessLabel)" />
         }
         else
         {
-            <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm Losses" ConfirmError="@Validation" />
         }
 
     </Body>

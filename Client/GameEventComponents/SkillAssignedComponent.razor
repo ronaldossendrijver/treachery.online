@@ -15,14 +15,7 @@
 
         <SelectHeroComponent Game="Game" @bind-Value="leader" Values="SkillAssigned.ValidLeaders(Game, Player)" />
 
-        @if (Game.CurrentPhase == Phase.AssigningInitialSkills)
-        {
-            <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
-        }
-        else
-        {
-            <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
-        }
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Assign Skill" ConfirmError="@Validation" />
 
     </Body>
 

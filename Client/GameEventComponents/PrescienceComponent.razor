@@ -16,11 +16,11 @@
             <div class="text-info small mb-2">Note: Voice should be used before Prescience.</div>
         }
 
-        <SelectComponent @bind-Value="aspect" Values="Prescience.ValidAspects(Game, Player)">
+        <RadioComponent @bind-Value="aspect" Values="Prescience.ValidAspects(Game, Player)">
             <Label>What should be foreseen?</Label>
-        </SelectComponent>
+        </RadioComponent>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Use Prescience" ConfirmError="@Validation" />
 
     </Body>
 

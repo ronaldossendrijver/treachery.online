@@ -103,7 +103,7 @@ namespace Treachery.Client
                 case Phase.SelectingTraitors:
                     return new GameStatus(Player, IsHost,
                     Skin.Current.Format("Please select one leader to keep as a traitor"),
-                    Skin.Current.Format("Players are selecting traitors..."),
+                    Skin.Current.Format("Factions are selecting traitors..."),
                     PlayersThatHaventActedOrPassed);
 
                 case Phase.PerformCustomSetup:

@@ -12,7 +12,7 @@
     <Body>
 
         <SelectHeroComponent Game="Game" @bind-Value="traitor" Values="Player.Traitors" />
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Keep {0}", traitor)" ConfirmError="@Validation" />
 
     </Body>
 

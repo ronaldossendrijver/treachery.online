@@ -8,12 +8,12 @@
 
 <GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Use your @Skin.Current.Describe(LeaderSkill.Diplomat) skill?</Header>
+    <Header>Use Diplomacy?</Header>
     <Body>
 
         <SelectCardComponent @bind-Value="card" Values="Diplomacy.ValidCards(Game, Player)" Required="true"/>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Use Diplomacy" ConfirmError="@Validation" />
 
     </Body>
 

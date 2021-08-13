@@ -12,7 +12,7 @@
     <Body>
 
         <SelectHeroComponent Game="Game" @bind-Value="dancer" Values="FaceDancerReplaced.ValidFaceDancers(Player)"/>
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Replace Face Dancer" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
 
     </Body>
 
@@ -24,11 +24,6 @@
     protected override Faction IsFactionSpecific => Faction.Purple;
 
     private IHero dancer;
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        //Initialize(ref dancer, FaceDancerReplaced.ValidFaceDancers(Player));
-    }
 
     protected override FaceDancerReplaced ConfirmedResult => new FaceDancerReplaced(Game) { Initiator = Faction, Passed = false, SelectedDancer = dancer };
 

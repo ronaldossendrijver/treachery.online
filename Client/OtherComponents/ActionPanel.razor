@@ -71,7 +71,7 @@
         }
         else if (a == typeof(MetheorPlayed))
         {
-            <SimpleActionComponent GameEventType="MetheorPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Metheor)" Title="@Support.GetCardTitle(TreacheryCardType.Metheor)" Alert="false" />
+            <SimpleActionComponent GameEventType="MetheorPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Metheor)" Title="@Support.GetCardTitle(TreacheryCardType.Metheor)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Metheor)"/>
         }
         else if (a == typeof(TakeLosses))
         {
@@ -91,11 +91,11 @@
         }
         else if (a == typeof(AllianceBroken))
         {
-            <SimpleActionComponent GameEventType="AllianceBroken" h="@h" Title="Break your current alliance?" Alert="false" />
+            <SimpleActionComponent GameEventType="AllianceBroken" h="@h" Title="Break your current alliance?" Alert="false" ConfirmLabel="Break" />
         }
         else if (a == typeof(CharityClaimed))
         {
-            <SimpleActionComponent GameEventType="CharityClaimed" h="@h" Title="Claim Charity?" Alert="false" />
+            <SimpleActionComponent GameEventType="CharityClaimed" h="@h" Title="Claim Charity?" Alert="false" ConfirmLabel="Claim"/>
         }
         else if (a == typeof(Revival))
         {
@@ -107,7 +107,7 @@
         }
         else if (a == typeof(OrangeDelay))
         {
-            <SimpleActionComponent GameEventType="OrangeDelay" h="@h" Title="Delay your turn?" Alert="true" />
+            <SimpleActionComponent GameEventType="OrangeDelay" h="@h" Title="Delay your turn?" Alert="true" ConfirmLabel="Delay"/>
         }
         else if (a == typeof(BlueAccompanies))
         {
@@ -147,7 +147,7 @@
         }
         else if (a == typeof(BattleRevision))
         {
-            <SimpleActionComponent GameEventType="BattleRevision" h="@h" Title="Change your battle plan?" Alert="false" />
+            <SimpleActionComponent GameEventType="BattleRevision" h="@h" Title="Change your battle plan?" Alert="false" ConfirmLabel="Change Plan"/>
         }
         else if (a == typeof(TreacheryCalled))
         {
@@ -203,7 +203,7 @@
         }
         else if (a == typeof(KarmaPrescience))
         {
-            <SimpleActionComponent GameEventType="KarmaPrescience" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" Title="@Skin.Current.Format("Use {0} to see the entire enemy battle plan", TreacheryCardType.Karma)" Alert="false" Collapsible="false" />
+            <SimpleActionComponent GameEventType="KarmaPrescience" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" Title="@Skin.Current.Format("Use {0} to see the entire enemy battle plan", TreacheryCardType.Karma)" Alert="false" Collapsible="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Karma)"/>
         }
         else if (a == typeof(Karma))
         {
@@ -235,7 +235,7 @@
         }
         else if (a == typeof(AmalPlayed))
         {
-            <SimpleActionComponent GameEventType="AmalPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Amal)" Title="@Support.GetCardTitle(TreacheryCardType.Amal)" Alert="false" Collapsible="true" />
+            <SimpleActionComponent GameEventType="AmalPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Amal)" Title="@Support.GetCardTitle(TreacheryCardType.Amal)" Alert="false" Collapsible="true" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Amal)"/>
         }
         else if (a == typeof(WhiteAnnouncesBlackMarket))
         {
@@ -263,11 +263,11 @@
         }
         else if (a == typeof(HarvesterPlayed))
         {
-            <SimpleActionComponent GameEventType="HarvesterPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Harvester)" Title="@Support.GetCardTitle(TreacheryCardType.Harvester)" Alert="false" />
+            <SimpleActionComponent GameEventType="HarvesterPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Harvester)" Title="@Support.GetCardTitle(TreacheryCardType.Harvester)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Harvester)"/>
         }
         else if (a == typeof(PoisonToothCancelled))
         {
-            <SimpleActionComponent GameEventType="PoisonToothCancelled" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.PoisonTooth)" Title="Cancel Poison Tooth?" Alert="false" />
+            <SimpleActionComponent GameEventType="PoisonToothCancelled" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.PoisonTooth)" Title="Cancel Poison Tooth?" Alert="false" ConfirmLabel="Cancel"/>
         }
         else if (a == typeof(ReplacedCardWon))
         {
@@ -275,7 +275,7 @@
         }
         else if (a == typeof(ThumperPlayed))
         {
-            <SimpleActionComponent GameEventType="ThumperPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Thumper)" Title="@Support.GetCardTitle(TreacheryCardType.Thumper)" Alert="false" />
+            <SimpleActionComponent GameEventType="ThumperPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Thumper)" Title="@Support.GetCardTitle(TreacheryCardType.Thumper)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Thumper)"/>
         }
         else if (a == typeof(HideSecrets))
         {
@@ -349,13 +349,15 @@
         {
             <SimpleActionComponent GameEventType="WhiteRevealedNoField" h="@h" 
                                    IsFactionSpecific="Faction.White"
-                                   Title="@Skin.Current.Format("Reveal your currently active No-Field of {0}, placing {1} forces?", h.Game.CurrentNoFieldValue, Math.Min(h.Game.CurrentNoFieldValue, h.Player.ForcesInReserve))" />
+                                   Title="@Skin.Current.Format("Reveal your currently active No-Field of {0}, placing {1} forces?", h.Game.CurrentNoFieldValue, Math.Min(h.Game.CurrentNoFieldValue, h.Player.ForcesInReserve))"
+                                   ConfirmLabel="Reveal"/>
         }
         else if (a == typeof(ResidualPlayed))
         {
             <SimpleActionComponent GameEventType="ResidualPlayed" h="@h" 
                                    BackgroundImage="@Support.GetCardImage(TreacheryCardType.Residual)" 
-                                   Title="@Skin.Current.Format("Use {0} to kill a random available opponent leader?", TreacheryCardType.Residual)" />
+                                   Title="@Skin.Current.Format("Use {0} to kill a random available opponent leader?", TreacheryCardType.Residual)" 
+                                   ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Residual)"/>
         }
         else if (a == typeof(FlightUsed))
         {
@@ -377,7 +379,8 @@
         {
             <SimpleActionComponent GameEventType="DiscardedSearchedAnnounced" h="@h" 
                                    BackgroundImage="@Support.GetCardImage(TreacheryCardType.SearchDiscarded)" 
-                                   Title="@Skin.Current.Format("Use {0} to pay 2 and search and take a card from the treachery discard pile?", TreacheryCardType.SearchDiscarded)" />
+                                   Title="@Skin.Current.Format("Use {0} to pay 2 and search and take a card from the treachery discard pile?", TreacheryCardType.SearchDiscarded)" 
+                                   ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.SearchDiscarded)"/>
         }
         else if (a == typeof(DiscardedSearched))
         {
@@ -391,7 +394,8 @@
         {
             <SimpleActionComponent GameEventType="PortableAntidoteUsed" h="@h" 
                                    BackgroundImage="@Support.GetCardImage(TreacheryCardType.PortableAntidote)" 
-                                   Title="@Skin.Current.Format("Use your {0}?", TreacheryCardType.PortableAntidote)" />
+                                   Title="@Skin.Current.Format("Use your {0}?", TreacheryCardType.PortableAntidote)" 
+                                   ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.PortableAntidote)"/>
         }
         else if (a == typeof(Bureaucracy))
         {
@@ -404,7 +408,11 @@
         else if (a == typeof(SwitchedSkilledLeader))
         {
             var skilledLeader = h.Game.GetSkilledLeader(h.Player);
-            <SimpleActionComponent GameEventType="SwitchedSkilledLeader" h="@h" BackgroundImage="@Skin.Current.GetImageURL(h.Game.Skill(skilledLeader))" Title="@Skin.Current.Format("Place {0} {1} your player shield?", skilledLeader, h.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of")" />
+            <SimpleActionComponent 
+                                   GameEventType="SwitchedSkilledLeader" h="@h" 
+                                   BackgroundImage="@Skin.Current.GetImageURL(h.Game.Skill(skilledLeader))" 
+                                   Title="@Skin.Current.Format("Place {0} {1} your player shield?", skilledLeader, h.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of")" 
+                                   ConfirmLabel="@Skin.Current.Format("Put {0} shield", h.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of")"/>
         }
         else if (a == typeof(Thought))
         {

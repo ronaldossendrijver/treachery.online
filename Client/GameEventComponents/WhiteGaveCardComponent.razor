@@ -13,7 +13,7 @@
 
         <SelectCardComponent @bind-Value="card" Values="WhiteGaveCard.ValidCards(Game, Player)" Required="true" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Give {0}", card)" ConfirmError="@Validation" />
 
     </Body>
 

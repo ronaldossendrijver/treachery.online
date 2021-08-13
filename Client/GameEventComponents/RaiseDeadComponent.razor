@@ -42,7 +42,7 @@
             assignSkill = false;
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.RaiseDead)" ConfirmError="@Validation" />
 
     </Body>
 

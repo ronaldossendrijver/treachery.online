@@ -11,7 +11,7 @@
     <Header>Select your starting Treachery Card. The remaining cards will be shuffled and dealt to the other factions.</Header>
     <Body>
         <SelectCardComponent @bind-Value="card" Values="Game.StartingTreacheryCards.Items" />
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Select {0}", card)" ConfirmError="@Validation" />
     </Body>
 
 </GameEventComponentLayout>

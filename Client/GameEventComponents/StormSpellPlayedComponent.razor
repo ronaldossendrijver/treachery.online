@@ -12,7 +12,7 @@
     <Body>
 
         <SelectNumberComponent @bind-Value="nrOfSectors" Min="0" Max="10" Label="Number of sectors" />
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.StormSpell)" ConfirmError="@Validation" />
 
     </Body>
 
