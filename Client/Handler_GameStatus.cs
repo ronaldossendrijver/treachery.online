@@ -86,7 +86,7 @@ namespace Treachery.Client
 
                 case Phase.SelectingFactions: return new GameStatus(Player, IsHost, Skin.Current.Format("Players may now choose a faction..."));
 
-                case Phase.TradingFactions: return new GameStatus(Player, IsHost, Skin.Current.Format("Players may offer to trade factions with other players..."));
+                case Phase.TradingFactions: return new GameStatus(Player, IsHost, Skin.Current.Format("Players may now offer to trade factions with other players..."));
 
                 case Phase.BluePredicting:
                     return new GameStatus(Player, IsHost,
@@ -272,7 +272,7 @@ namespace Treachery.Client
                     Skin.Current.Format("{0} are thinking about replacing the card they just won with a new card from the deck...", Game.GetPlayer(Faction.Grey).Ally),
                     Game.GetPlayer(Faction.Grey).Ally);
 
-                case Phase.WaitingForNextBiddingRound: return new GameStatus(Player, IsHost, Skin.Current.Format("Waiting for the next card to be put on auction..."));
+                case Phase.WaitingForNextBiddingRound: return new GameStatus(Player, IsHost, Skin.Current.Format("Factions are waiting for the next card to be put on auction..."));
 
                 /* Revival */
 
@@ -280,7 +280,7 @@ namespace Treachery.Client
 
                 /* Ship & Move */
 
-                case Phase.BeginningOfShipAndMove: return new GameStatus(Player, IsHost, Skin.Current.Format("Waiting for everyone to be ready to start the ship & move sequence..."));
+                case Phase.BeginningOfShipAndMove: return new GameStatus(Player, IsHost, Skin.Current.Format("You may now start the ship & move sequence..."), Skin.Current.Format("Waiting for the host to start the ship & move sequence..."));
 
                 case Phase.NonOrangeShip:
                     return new GameStatus(Player, IsHost,
@@ -325,7 +325,7 @@ namespace Treachery.Client
 
                 case Phase.ShipmentAndMoveConcluded: return new GameStatus(Player, IsHost, Skin.Current.Format("Waiting for factions to be ready to enter the Battle phase..."));
 
-                case Phase.BeginningOfBattle: return new GameStatus(Player, IsHost, Skin.Current.Format("You may proceed to the first battle when when ready."), Skin.Current.Format("Waiting for the host to start the first battle..."));
+                case Phase.BeginningOfBattle: return new GameStatus(Player, IsHost, Skin.Current.Format("You may proceed to the first battle when ready."), Skin.Current.Format("Waiting for the host to proceed to the first battle..."));
 
                 case Phase.BattlePhase:
 

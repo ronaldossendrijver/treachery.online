@@ -59,9 +59,10 @@ namespace Treachery.Shared
             DetermineWaiting(player, isHost);
         }
 
-        public GameStatus(Player player, bool isHost, string descriptionWhenAwaited)
+        public GameStatus(Player player, bool isHost, string description)
         {
-            DescriptionWhenAwaited = descriptionWhenAwaited;
+            DescriptionWhenAwaited = description;
+            DescriptionWhenWaiting = description;
             WaitingForHost = true;
             DetermineWaiting(player, isHost);
         }

@@ -445,12 +445,12 @@ namespace Treachery.Shared
                     result.Add(typeof(JuicePlayed));
                 }
 
-                if (faction == Faction.Brown && !Prevented(FactionAdvantage.BrownDiscarding) && (CurrentMoment == MainPhaseMoment.Start || CurrentMoment == MainPhaseMoment.End) && BrownDiscarded.ValidCards(this, player).Any())
+                if (faction == Faction.Brown && !Prevented(FactionAdvantage.BrownDiscarding) && ConsiderAsEndOfPhase && BrownDiscarded.ValidCards(this, player).Any())
                 {
                     result.Add(typeof(BrownDiscarded));
                 }
 
-                if (!result.Contains(typeof(AmalPlayed)) && player.Has(TreacheryCardType.Amal) && (CurrentMoment == MainPhaseMoment.Start || CurrentMoment == MainPhaseMoment.End))
+                if (!result.Contains(typeof(AmalPlayed)) && player.Has(TreacheryCardType.Amal) && ConsiderAsStartOfPhase)
                 {
                     result.Add(typeof(AmalPlayed));
                 }
@@ -642,5 +642,12 @@ namespace Treachery.Shared
         {
             return AppDomain.CurrentDomain.GetAssemblies().SelectMany(ass => ass.GetTypes().Where(t => t.IsSubclassOf(typeof(GameEvent))).Distinct());
         }
+
+        private bool ConsiderAsEndOfPhase =>
+            CurrentMoment == MainPhaseMoment.End ||
+            CurrentMoment == MainPhaseMoment.Start &&
+            (CurrentMainPhase == MainPhase.Bidding && CurrentMainPhase == MainPhase.ShipmentAndMove);
+
+        private bool ConsiderAsStartOfPhase => CurrentMoment == MainPhaseMoment.Start || Version < 109 && CurrentMoment == MainPhaseMoment.End;
     }
 }

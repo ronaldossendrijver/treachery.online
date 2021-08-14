@@ -47,23 +47,23 @@
                 }
             }
 
-            if (replay.CurrentMainPhase != previousMainPhase && (replay.CurrentMainPhase == MainPhase.Charity))
+            if (replay.CurrentMainPhase != previousMainPhase && (replay.CurrentMainPhase == MainPhase.Bidding))
             {
                 <h4 class="h4">Turn @replay.CurrentTurn</h4>
 
-                <h5 class="h5">Situation right after the spice blow:</h5>
+                <h5 class="h5">Situation at the start of Bidding:</h5>
                 <StoryPlayerInfoComponent Game="replay" ShowAlly="ShowAllies(replay)" ShowCards="true" ShowTraitorsAndFacedancers="true" ShowResources="true" ShowTechTokens="@(Game.Applicable(Rule.GreyAndPurpleExpansionTechTokens))" />
             }
 
             if (replay.CurrentMainPhase != previousMainPhase && (replay.CurrentMainPhase == MainPhase.Resurrection))
             {
-                <h5>Situation at the end of bidding:</h5>
+                <h5>Situation at the end of Bidding:</h5>
                 <StoryPlayerInfoComponent Game="replay" ShowCards="true" ShowResources="true" />
             }
 
             if (replay.CurrentMainPhase != previousMainPhase && (replay.CurrentMainPhase == MainPhase.Battle))
             {
-                <h5>Situation at the end of ship & move:</h5>
+                <h5>Situation at the end of Ship & Move:</h5>
                 <StoryPlayerInfoComponent Game="replay" ShowAlly="ShowAllies(replay)" ShowResources="true" ShowForces="true" ShowLeaders="true" ShowPoints="true" />
             }
 
