@@ -1,0 +1,59 @@
+﻿@using Treachery.Shared;
+
+<div style="position: relative; width: 100%; height: 100%; transform: scale(0.25)">
+
+    <div style="position:absolute; width:@(Skin.Current.MapDimensions.X)px; height:@(Skin.Current.MapDimensions.Y)px;">
+
+    <img style="position:absolute; width:@(Skin.Current.MapDimensions.X)px; height:@(Skin.Current.MapDimensions.Y)px;" src="/art/map.svg" />
+
+    @{ 
+        var forceLocations = h.Game.ForcesOnPlanetExcludingEmptyLocations;
+
+        foreach (var location in h.Game.Map.Locations)
+        {
+            int xOffset = 0;
+            int yOffset = 0;
+            var pos = location.Center;
+
+            //var location = fl.Key;
+            if (forceLocations.ContainsKey(location))
+            {
+                var battalions = forceLocations[location];
+                int nrOfBattalions = battalions.Count;
+                yOffset = -(nrOfBattalions - 1) * Skin.Current.FORCETOKEN_RADIUS;
+
+                foreach (var battalion in battalions)
+                {
+                    var player = h.Game.GetPlayer(battalion.Faction);
+                    var threatened = h.Game.ThreatenedByAllyPresence(player, location.Territory);
+
+                    xOffset = 0;
+                    string color = Skin.Current.GetFactionColor(battalion.Faction);
+                    if (battalion.AmountOfForces > 0)
+                    {
+                        xOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
+                        <MapForceComponent X=@pos.X Y=@(yOffset + pos.Y) Special=@false Amount=@battalion.AmountOfForces Faction=@battalion.Faction Threatened=@threatened/>
+                    }
+
+                    if (battalion.AmountOfSpecialForces > 0)
+                    {
+                        xOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
+                        <MapForceComponent X=@pos.X Y=@(yOffset + pos.Y) Special=@true Amount=@battalion.AmountOfForces Faction=@battalion.Faction Threatened=@threatened/>
+                    }
+
+                    yOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
+                }
+            }
+        }
+    }
+
+    </div>
+
+</div>
+
+@code {
+
+    [Parameter]
+    public Handler h { get; set; }
+
+}
