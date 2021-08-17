@@ -688,9 +688,20 @@ namespace Treachery.Shared
 
         protected virtual Prescience DeterminePrescience()
         {
+            var opponent = Game.CurrentBattle.OpponentOf(Faction);
+
+            //Wait for voice or finalized battle plan
+            if (Voice.MayUseVoice(Game, opponent))
+            {
+                if (Game.CurrentVoice == null && Game.CurrentBattle.PlanOf(opponent) == null)
+                {
+                    //Wait for voice or finalized plan
+                    return null;
+                }
+            }
+
             if (Game.CurrentBattle.Initiator == Faction || Game.CurrentBattle.Target == Faction)
             {
-                var opponent = Game.CurrentBattle.OpponentOf(Faction);
                 return BestPrescience(opponent, MaxDial(this, Game.CurrentBattle.Territory, opponent));
             }
 

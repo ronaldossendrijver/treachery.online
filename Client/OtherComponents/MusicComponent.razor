@@ -106,15 +106,15 @@
         {
             return Skin.Current.MusicShipmentAndMove_URL;
         }
-        else if (h.Game.CurrentMainPhase == MainPhase.Battle && h.Game.CurrentPhase == Phase.BattlePhase)
-        {
-            return Skin.Current.MusicBattle_URL;
-        }
-        else if (h.Game.CurrentMainPhase == MainPhase.Battle)
+        else if (h.Game.CurrentMainPhase == MainPhase.Battle && (h.Game.CurrentPhase == Phase.CallTraitorOrPass || h.Game.CurrentPhase == Phase.Facedancing))
         {
             return Skin.Current.MusicBattleClimax_URL;
         }
-        else if (h.Game.CurrentMainPhase == MainPhase.Contemplate || h.Game.CurrentMainPhase == MainPhase.Ended)
+        else if (h.Game.CurrentMainPhase == MainPhase.Battle)
+        {
+            return Skin.Current.MusicBattle_URL;
+        }
+        else if (h.Game.CurrentMainPhase == MainPhase.Collection || h.Game.CurrentMainPhase == MainPhase.Contemplate || h.Game.CurrentMainPhase == MainPhase.Ended)
         {
             return Skin.Current.MusicMentat_URL;
         }

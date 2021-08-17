@@ -18,8 +18,8 @@ namespace Treachery.Shared
 
         public const int CurrentVersion = 2;
 
-        //public const string DEFAULT_ART_LOCATION = "https://treachery.online"; //Used for debugging
-        public const string DEFAULT_ART_LOCATION = ".";
+        public const string DEFAULT_ART_LOCATION = "https://treachery.online"; //Used for debugging
+        //public const string DEFAULT_ART_LOCATION = ".";
 
         public string Description = null;
         public int Version;

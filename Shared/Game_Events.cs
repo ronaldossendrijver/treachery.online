@@ -492,6 +492,7 @@ namespace Treachery.Shared
 
                 if (
                     (faction == Faction.Brown && player.Ally != Faction.None || player.Ally == Faction.Brown) &&
+                    ConsiderAsEndOfPhase &&
                     player.AlliedPlayer.TreacheryCards.Count > 0 &&
                     player.TreacheryCards.Count > 0 &&
                     LastTurnCardWasTraded < CurrentTurn)

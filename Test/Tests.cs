@@ -162,6 +162,8 @@ namespace Treachery.Test
 
         private static void ProfileGames()
         {
+            Console.WriteLine("Profiling all savegame files in {0}...", Directory.GetCurrentDirectory());
+
             foreach (var f in Directory.EnumerateFiles(".", "savegame*.json"))
             {
                 var testcaseFilename = f + ".testcase";
@@ -182,6 +184,10 @@ namespace Treachery.Test
                     }
 
                     SaveObject(testcase, testcaseFilename);
+                }
+                else
+                {
+                    Console.WriteLine(testcaseFilename + " already exists.");
                 }
             }
         }

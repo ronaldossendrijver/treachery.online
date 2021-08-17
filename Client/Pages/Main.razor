@@ -32,14 +32,17 @@
                 <BECanvas @ref="h._canvas"></BECanvas>
             </div>
 
-            <Treachery.Client.MapComponents.MapComponent h="h"/>
+            @if (false)
+            {
+                <Treachery.Client.MapComponents.MapComponent h="h"/>
+            }
         }
         else
         {
-            <div class="text-center">
-                <img src="@Skin.Current.Planet_URL" class="img-fluid" />
-                <p class="text-light" style="font: @Skin.Current.GAMEVERSION_FONT">Version @Game.LatestVersion</p>
-            </div>
+        <div class="text-center">
+            <img src="@Skin.Current.Planet_URL" class="img-fluid" />
+            <p class="text-light" style="font: @Skin.Current.GAMEVERSION_FONT">Version @Game.LatestVersion</p>
+        </div>
         }
     </div>
 

@@ -74,6 +74,8 @@ namespace Treachery.Shared
                 Faction.Blue => DetermineAlliancePermissions_Blue(),
                 Faction.Grey => DetermineAlliancePermissions_Grey(),
                 Faction.Purple => DetermineAlliancePermissions_Purple(),
+                Faction.White => DetermineAlliancePermissions_White(),
+                Faction.Brown => DetermineAlliancePermissions_Brown(),
                 _ => null
             };
         }
@@ -189,6 +191,66 @@ namespace Treachery.Shared
                 {
                     LogInfo("Allowing use of resources: {0} and Karama card: {1}", allowedResources, karmaCard);
                     var permission = new AllyPermission(Game) { Initiator = Faction, PermittedKarmaCard = karmaCard, PermittedResources = allowedResources, AllyMayReplaceCards = true };
+                    LogInfo(permission.GetMessage().ToString());
+                    return permission;
+                }
+            }
+
+            return null;
+        }
+
+        protected AllyPermission DetermineAlliancePermissions_Brown()
+        {
+            if (Game.CurrentMainPhase == MainPhase.Bidding || Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
+            {
+                LogInfo("DetermineAlliancePermissions()");
+
+                var karmaCard = TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
+
+                int allowedResources;
+                if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasActedOrPassed.Contains(Faction))
+                {
+                    allowedResources = Math.Max(Resources - 5, 0);
+                }
+                else
+                {
+                    allowedResources = Math.Max(Resources - 10, 0);
+                }
+
+                if (Game.GetPermittedUseOfAllySpice(Ally) != allowedResources || Game.GetPermittedUseOfAllyKarma(Ally) != karmaCard)
+                {
+                    LogInfo("Allowing use of resources: {0} and Karama card: {1}", allowedResources, karmaCard);
+                    var permission = new AllyPermission(Game) { Initiator = Faction, PermittedKarmaCard = karmaCard, PermittedResources = allowedResources };
+                    LogInfo(permission.GetMessage().ToString());
+                    return permission;
+                }
+            }
+
+            return null;
+        }
+
+        protected AllyPermission DetermineAlliancePermissions_White()
+        {
+            if (Game.CurrentMainPhase == MainPhase.Bidding || Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
+            {
+                LogInfo("DetermineAlliancePermissions()");
+
+                var karmaCard = TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
+
+                int allowedResources;
+                if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasActedOrPassed.Contains(Faction))
+                {
+                    allowedResources = Math.Max(Resources - 5, 0);
+                }
+                else
+                {
+                    allowedResources = Math.Max(Resources - 10, 0);
+                }
+
+                if (!Game.WhiteAllyMayUseNoField|| Game.GetPermittedUseOfAllySpice(Ally) != allowedResources || Game.GetPermittedUseOfAllyKarma(Ally) != karmaCard)
+                {
+                    LogInfo("Allowing use of resources: {0} and Karama card: {1}", allowedResources, karmaCard);
+                    var permission = new AllyPermission(Game) { Initiator = Faction, PermittedKarmaCard = karmaCard, PermittedResources = allowedResources, WhiteAllowsUseOfNoField = true };
                     LogInfo(permission.GetMessage().ToString());
                     return permission;
                 }

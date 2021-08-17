@@ -73,9 +73,13 @@
             {
                 <SelectResourcesComponent @bind-Value="resources" Min="0" Max="Battle.MaxResources(Game, Player, forces, specialForces)" /> <span>&nbsp;</span>
 
-                @if (Player.Ally == Faction.Brown)
+                @if (Player.Ally == Faction.Brown && Battle.MaxAllyResources(Game, Player, forces, specialForces) > 0)
                 {
                     <SelectResourcesFromFactionComponent @bind-Value="resourcesFromAlly" Min="0" Max="Battle.MaxAllyResources(Game, Player, forces, specialForces)" Faction="Player.Ally" />
+                }
+                else
+                {
+                    resourcesFromAlly = 0;
                 }
             }
             else

@@ -5,6 +5,7 @@
 @using Treachery.Shared;
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<Bid>
+@implements IDisposable
 
 @if (h.Game.CurrentPhase == Phase.Bidding)
 {
@@ -70,14 +71,15 @@
 
                             <div class="mt-1">
 
-                                @if (Player.Ally == Faction.None)
-                                {
-                                    <SelectResourcesComponent @bind-Value="amount" Min="0" Max="Bid.ValidMaxAmount(Player, karmaCard != null)" />
-                                }
-                                else
+                                @if (Player.Ally != Faction.None && Bid.ValidMaxAllyAmount(Game, Player) > 0)
                                 {
                                     <SelectResourcesFromFactionComponent @bind-Value="amount" Min="0" Max="Bid.ValidMaxAmount(Player, karmaCard != null)" Faction="Faction" />
                                     <SelectResourcesFromFactionComponent @bind-Value="allyContributionAmount" Min="0" Max="Bid.ValidMaxAllyAmount(Game, Player)" Faction="Player.Ally" />
+                                }
+                                else
+                                {
+                                    <SelectResourcesComponent @bind-Value="amount" Min="0" Max="Bid.ValidMaxAmount(Player, karmaCard != null)" />
+                                    allyContributionAmount = 0;
                                 }
 
                                 @if (Game.SpiceForBidsRedCanPay(Faction) > 0)
@@ -178,5 +180,8 @@
 
     private string CurrentCardHover => (Game.HasBiddingPrescience(Player) || Game.WhiteCache.Contains(Game.CardsOnAuction.Top)) && Game.CardsOnAuction.Top != null ? Support.GetTreacheryCardHoverHTML(h.Game.CardsOnAuction.Top) : "";
 
-
+    public void Dispose()
+    {
+        _ = Browser.RefreshPopovers();
+    }
 }

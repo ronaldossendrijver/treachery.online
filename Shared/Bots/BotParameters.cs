@@ -50,7 +50,7 @@ namespace Treachery.Shared
             Shipment_MaxEnemyForceStrengthFightingForSpice = 2,
             Shipment_ExpectedStormMovesWhenUnknown = 3,
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
-            Bidding_ResourcesToKeepWhenCardIsntPerfect = 2,
+            Bidding_ResourcesToKeepWhenCardIsntPerfect = 4,
             Bidding_PassingTreshold = 2,
             Karma_SaveCardToUseSpecialKarmaAbility = false,
             Shipment_MinimumOtherPlayersITrustToPreventAWin = 2,

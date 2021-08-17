@@ -386,6 +386,7 @@ namespace Treachery.Shared
 
             var weakestEnemyStronghold = enemyWeakStrongholds
                 .Where(s =>
+                s.DialNeeded <= 8 &&
                 (s.Stronghold == Game.Map.Arrakeen || s.Stronghold == Game.Map.Carthag) && AnyForcesIn(Game.Map.PolarSink) > 5 ||
                 DetermineValidForcesInShipment(s.DialNeeded + extraForces, true, s.Stronghold, s.Opponent, ForcesInReserve, SpecialForcesInReserve, out _, out _, minResourcesToKeep, maxUnsupportedForces, !(Faction == Faction.Red && s.Opponent == Faction.Yellow)) <= 0
                 )

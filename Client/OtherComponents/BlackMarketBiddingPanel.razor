@@ -5,6 +5,7 @@
 @using Treachery.Shared;
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<BlackMarketBid>
+@implements IDisposable
 
 @if (h.Game.CurrentPhase == Phase.BlackMarketBidding)
 {
@@ -33,24 +34,25 @@
 
                         @if (CanBid)
                         {
-                            <div class="mt-1">
+                        <div class="mt-1">
 
-                                @if (Player.Ally == Faction.None)
-                                {
-                                    <SelectResourcesComponent @bind-Value="amount" Min="0" Max="BlackMarketBid.ValidMaxAmount(Player)" />
-                                }
-                                else
-                                {
-                                    <SelectResourcesFromFactionComponent @bind-Value="amount" Min="0" Max="BlackMarketBid.ValidMaxAmount(Player)" Faction="Faction" />
-                                    <SelectResourcesFromFactionComponent @bind-Value="allyContributionAmount" Min="0" Max="BlackMarketBid.ValidMaxAllyAmount(Game, Player)" Faction="Player.Ally" />
-                                }
+                            @if (Player.Ally != Faction.None && BlackMarketBid.ValidMaxAllyAmount(Game, Player) > 0)
+                            {
+                                <SelectResourcesFromFactionComponent @bind-Value="amount" Min="0" Max="BlackMarketBid.ValidMaxAmount(Player)" Faction="Faction" />
+                                <SelectResourcesFromFactionComponent @bind-Value="allyContributionAmount" Min="0" Max="BlackMarketBid.ValidMaxAllyAmount(Game, Player)" Faction="Player.Ally" /> 
+                            }
+                            else
+                            {
+                                <SelectResourcesComponent @bind-Value="amount" Min="0" Max="BlackMarketBid.ValidMaxAmount(Player)" />
+                                allyContributionAmount = 0;
+                            }
 
-                                @if (Game.SpiceForBidsRedCanPay(Faction) > 0)
-                                {
-                                    <SelectResourcesFromFactionComponent @bind-Value="redContributionAmount" Min="0" Max="Game.SpiceForBidsRedCanPay(Faction)" Faction="Faction.Red" />
-                                }
+                            @if (Game.SpiceForBidsRedCanPay(Faction) > 0)
+                            {
+                                <SelectResourcesFromFactionComponent @bind-Value="redContributionAmount" Min="0" Max="Game.SpiceForBidsRedCanPay(Faction)" Faction="Faction.Red" />
+                            }
 
-                            </div>
+                        </div>
 
                             <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Pass="Pass" PassText="Pass" Alignment="justify-content-start" />
                         }
@@ -95,4 +97,9 @@
     private string CurrentCardImageSRC => Game.HasBiddingPrescience(Player) && Game.CardsOnAuction.Top != null ? Skin.Current.GetImageURL(Game.CardsOnAuction.Top) : Skin.Current.CardBack_TreacheryCard_URL;
 
     private string CurrentCardHover => Game.HasBiddingPrescience(Player) && Game.CardsOnAuction.Top != null ? Support.GetTreacheryCardHoverHTML(h.Game.CardsOnAuction.Top) : "";
+
+    public void Dispose()
+    {
+        _ = Browser.RefreshPopovers();
+    }
 }

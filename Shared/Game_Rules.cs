@@ -45,33 +45,29 @@ namespace Treachery.Shared
 
         public Ruleset DetermineApproximateRuleset()
         {
-            if (Players.Any(p => p.Faction == Faction.Purple || p.Faction == Faction.Grey || p.Faction == Faction.Brown || p.Faction == Faction.White) ||
+            var hasExpansion1 = Players.Any(p => p.Faction == Faction.Purple || p.Faction == Faction.Grey) ||
+                Applicable(Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS) ||
+                Applicable(Rule.GreyAndPurpleExpansionTreacheryCardsAmal) ||
+                Applicable(Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal) ||
+                Applicable(Rule.GreyAndPurpleExpansionTechTokens);
+
+            var hasExpansion2 = Players.Any(p => p.Faction == Faction.Brown || p.Faction == Faction.White) ||
                 Applicable(Rule.BrownAndWhiteLeaderSkills) ||
-                Applicable(Rule.BrownAndWhiteStrongholdBonus) ||
-                Applicable(Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS) || 
-                Applicable(Rule.GreyAndPurpleExpansionTreacheryCardsAmal) || 
-                Applicable(Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal) || 
-                Applicable(Rule.GreyAndPurpleExpansionTechTokens))
+                Applicable(Rule.BrownAndWhiteStrongholdBonus);
+
+            if (AdvancedRulesApply)
             {
-                if (AdvancedRulesApply)
-                {
-                    return Ruleset.ExpansionAdvancedGame;
-                }
-                else
-                {
-                    return Ruleset.ExpansionBasicGame;
-                }
+                if (hasExpansion1 && hasExpansion2) return Ruleset.AllExpansionsAdvancedGame;
+                else if (hasExpansion1 && hasExpansion2) return Ruleset.ExpansionAdvancedGame;
+                else if (hasExpansion1 && hasExpansion2) return Ruleset.Expansion2AdvancedGame;
+                else return Ruleset.AdvancedGame;
             }
             else
             {
-                if (AdvancedRulesApply)
-                {
-                    return Ruleset.AdvancedGame;
-                }
-                else
-                {
-                    return Ruleset.BasicGame;
-                }
+                if (hasExpansion1 && hasExpansion2) return Ruleset.AllExpansionsBasicGame;
+                else if (hasExpansion1 && hasExpansion2) return Ruleset.ExpansionBasicGame;
+                else if (hasExpansion1 && hasExpansion2) return Ruleset.Expansion2BasicGame;
+                else return Ruleset.BasicGame;
             }
         }
 

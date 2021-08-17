@@ -63,6 +63,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(BlackMarketBid bid)
         {
+            //console.writeLine("BlackMarketBid NextPlayer");
             BidSequence.NextPlayer(true);
             SkipPlayersThatCantBid(BidSequence);
             RecentMilestones.Add(Milestone.Bid);
@@ -154,6 +155,7 @@ namespace Treachery.Shared
                 {
                     return bids[f];
                 }
+                //console.writeLine("determineBidWinnerSequence");
                 determineBidWinnerSequence.NextPlayer(false);
             }
             
@@ -203,6 +205,8 @@ namespace Treachery.Shared
                 numberOfCardsToDraw++;
             }
 
+            CurrentReport.Add("{0} cards were drawn for bidding.", numberOfCardsToDraw);
+
             for (int i = 0; i < numberOfCardsToDraw; i++)
             {
                 var card = DrawTreacheryCard();
@@ -221,6 +225,7 @@ namespace Treachery.Shared
 
             //if (initializeBidSequence)
             //{
+            //console.writeLine("DrawCardsForRegularBidding->StartBidSequence");
                 StartBidSequenceAndAuctionType(AuctionType.Normal);
             //}
 
@@ -241,7 +246,7 @@ namespace Treachery.Shared
         AuctionType BlackMarketAuctionType;
         private void StartBidSequenceAndAuctionType(AuctionType auctionType, Player whitePlayer = null, int direction = 1)
         {
-            //Console.WriteLine("BlackMarketAuctionType: {0}, CurrentAuctionType: {1}, requested auction type: {2}", BlackMarketAuctionType, CurrentAuctionType, auctionType);
+            //console.writeLine("Pre. BlackMarketAuctionType: {0}, CurrentAuctionType: {1}, requested auction type: {2}", BlackMarketAuctionType, CurrentAuctionType, auctionType);
 
             switch (auctionType)
             {
@@ -273,11 +278,12 @@ namespace Treachery.Shared
                         //Continue where black market bidding left off
                         BidSequence.NextRound(true);
                     }
-                    //Console.WriteLine("** Starting bid sequence **, starting with: " + BidSequence.CurrentFaction);
+                    ////console.writeLine("** Starting bid sequence **, starting with: " + BidSequence.CurrentFaction);
                     break;
             }
 
             CurrentAuctionType = auctionType;
+            //console.writeLine("Post. BlackMarketAuctionType: {0}, CurrentAuctionType: {1}, requested auction type: {2}", BlackMarketAuctionType, CurrentAuctionType, auctionType);
         }
 
         public void HandleEvent(GreyRemovedCardFromAuction e)
@@ -403,6 +409,7 @@ namespace Treachery.Shared
                 RecentMilestones.Add(Milestone.Bid);
             }
 
+            //console.writeLine("Bid NextPlayer");
             BidSequence.NextPlayer(true);
             SkipPlayersThatCantBid(BidSequence);
 
@@ -420,7 +427,7 @@ namespace Treachery.Shared
                     if (bid.Passed || bid.KarmaBid)
                     {
                         /*
-                        //Console.WriteLine("KarmaBid: {0}, CurrentBid != null: {1}, BidSequence.CurrentFaction: {2}, CurrentBid.Initiator: {3}, Bids.Count: {4}, PlayersThatCanBid.Count(): {5}",
+                        ////console.writeLine("KarmaBid: {0}, CurrentBid != null: {1}, BidSequence.CurrentFaction: {2}, CurrentBid.Initiator: {3}, Bids.Count: {4}, PlayersThatCanBid.Count(): {5}",
                             bid.KarmaBid,
                             CurrentBid != null,
                             BidSequence?.CurrentFaction,
@@ -867,20 +874,26 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    DrawCardsForRegularBidding();
+                    //DrawCardsForRegularBidding();
                 }
             }
         }
 
         private void PutNextCardOnAuction()
         {
-            //Console.WriteLine("** PutNextCardOnAuction ** " + CurrentAuctionType);
+            //console.writeLine("** PutNextCardOnAuction ** " + CurrentAuctionType);
             if (CurrentAuctionType == AuctionType.WhiteOnceAround || CurrentAuctionType == AuctionType.WhiteSilent)
             {
-                StartBidSequenceAndAuctionType(AuctionType.Normal);
+                if (!DrawingCardsForRegularBiddingHasHappened)
+                {
+                    DrawCardsForRegularBidding();
+                }
+                ////console.writeLine("PutNextCardOnAuction->StartBidSequence")
+                //StartBidSequenceAndAuctionType(AuctionType.Normal);
             }
             else
             {
+                //console.writeLine("Next Bidding Round");
                 BidSequence.NextRound(true);
             }
                         

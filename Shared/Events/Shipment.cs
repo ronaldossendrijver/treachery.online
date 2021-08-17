@@ -243,9 +243,9 @@ namespace Treachery.Shared
             if (p.Faction == Faction.White && !g.Prevented(FactionAdvantage.WhiteNofield) || 
                 p.Ally == Faction.White && g.WhiteAllyMayUseNoField)
             {
-                if (p.Faction == Faction.White && g.LatestRevealedNoFieldValue != 0) result.Add(0);
-                if (g.LatestRevealedNoFieldValue != 3) result.Add(3);
-                if (g.LatestRevealedNoFieldValue != 5) result.Add(5);
+                if (p.Faction == Faction.White && g.LatestRevealedNoFieldValue != 0 && g.CurrentNoFieldValue != 0) result.Add(0);
+                if (g.LatestRevealedNoFieldValue != 3 && g.CurrentNoFieldValue != 3) result.Add(3);
+                if (g.LatestRevealedNoFieldValue != 5 && g.CurrentNoFieldValue != 5) result.Add(5);
             }
             return result;
         }

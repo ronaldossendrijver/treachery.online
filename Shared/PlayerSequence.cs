@@ -34,9 +34,10 @@ namespace Treachery.Shared
             _direction = direction;
             Current = p.PositionAtTable;
             RoundStartedAt = Current;
+            //console.writeLine("Start(p) NextPlayer");
             NextPlayer(ignorePlayersThatCantBid);
             RoundStartedAt = Current;
-            //Console.WriteLine("Start(): " + CurrentFaction);
+            //console.writeLine("Start(p, ignorePlayersThatCantBid, direction): " + CurrentFaction);
         }
 
         public void Start(bool ignorePlayersThatCantBid, int direction)
@@ -46,7 +47,7 @@ namespace Treachery.Shared
             var startLookingInSector = (int)Math.Ceiling((float)Game.SectorInStorm * Game.MaximumNumberOfPlayers / Map.NUMBER_OF_SECTORS) % Game.MaximumNumberOfPlayers;
             Current = FindNearestPlayerPosition(startLookingInSector, ignorePlayersThatCantBid);
             RoundStartedAt = Current;
-            //Console.WriteLine("Start(): " + CurrentFaction);
+            //console.writeLine("Start(ignorePlayersThatCantBid, direction): " + CurrentFaction);
         }
              
         public Player CurrentPlayer
@@ -75,12 +76,14 @@ namespace Treachery.Shared
             _playerNumberInRound = 0;
             Current = FindNearestPlayerPosition(RoundStartedAt + _direction, ignorePlayersThatCantBid);
             RoundStartedAt = Current;
-            //Console.WriteLine("NextRound(): " + CurrentFaction);
+            //console.writeLine("NextRound(): " + CurrentFaction);
         }
 
 
         public void NextPlayer(bool ignorePlayersThatCantBid)
         {
+            //console.write("NextPlayer(): " + CurrentFaction);
+
             if (_playerNumberInRound == 0 && Game.JuiceForcesFirstPlayer)
             {
                 
@@ -95,6 +98,8 @@ namespace Treachery.Shared
             }
 
             _playerNumberInRound = (_playerNumberInRound + 1) % Players.Count;
+
+            //console.writeLine(" --> " + CurrentFaction);
         }
 
         //Returns a position number at the table occupied by a player nearest to the indicated position. The number of positions is zero based and depends on the Maximum number of players selected at game start.
