@@ -889,6 +889,26 @@ namespace Treachery.Shared
 
         #endregion Purple
 
+        #region Brown
+
+        protected virtual BrownEconomics DetermineBrownEconomics()
+        {
+            if (ResourcesIncludingAllyContribution >= 14 && 
+                Game.Players.Where(p => p.Faction != Ally).Count(p => p.Resources < 2 || Game.Applicable(Rule.BlueAutoCharity) && p.Faction == Faction.Blue) >= 2)
+            {
+                return new BrownEconomics(Game) { Initiator = Faction, Status = BrownEconomicsStatus.Cancel };
+            }
+            else if (ResourcesIncludingAllyContribution <= 8 &&
+                Game.Players.Where(p => p.Faction != Ally).Count(p => p.Resources < 2 || Game.Applicable(Rule.BlueAutoCharity) && p.Faction == Faction.Blue) <= 2)
+            {
+                return new BrownEconomics(Game) { Initiator = Faction, Status = BrownEconomicsStatus.Double };
+            }
+
+            return null;
+        }
+
+        #endregion
+
         #region White
 
         protected virtual WhiteAnnouncesBlackMarket DetermineWhiteAnnouncesBlackMarket()

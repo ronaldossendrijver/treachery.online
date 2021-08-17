@@ -729,7 +729,7 @@ namespace Treachery.Client
             {
                 await TurnAlert();
                 await PlaySoundsForMilestones();
-                await Browser.EnablePopovers(); 
+                
                 CheckTimers();
                 UpdateStatus();
 

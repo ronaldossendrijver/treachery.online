@@ -254,9 +254,9 @@
         FlashInfo result;
         result.Url = Skin.Current.GetImageURL(c);
 
-        if (c.Type == TreacheryCardType.Karma && e is Bid && (e as Bid).Passed)
+        if ((c.Type == TreacheryCardType.Karma || c.Type == TreacheryCardType.Useless) && e is Bid && (e as Bid).Passed)
         {
-            result.Message = new Message("Card was won using {0}", c.Type);
+            result.Message = new Message("Card was won using {0}", TreacheryCardType.Karma);
         }
         else
         {

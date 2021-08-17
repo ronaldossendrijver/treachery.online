@@ -186,8 +186,7 @@ namespace Treachery.Shared
                 Rule.BrownAndWhiteLeaderSkills,
                 Rule.BrownAndWhiteStrongholdBonus,
                 Rule.BrownAuditor,
-                Rule.WhiteBlackMarket,
-                Rule.BrownAndWhiteStrongholdBonus
+                Rule.WhiteBlackMarket
             },
 
             [Ruleset.ExpansionAdvancedGame] = new Rule[] {

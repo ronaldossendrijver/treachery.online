@@ -850,8 +850,11 @@ namespace Treachery.Shared
             DetermineNextCardToBePutOnAuction();
         }
 
+        bool WhiteBiddingJustFinished;
         private void DetermineNextCardToBePutOnAuction()
         {
+            WhiteBiddingJustFinished = CurrentAuctionType == AuctionType.WhiteOnceAround || CurrentAuctionType == AuctionType.WhiteSilent;
+
             if (!CardsOnAuction.IsEmpty)
             {
                 CardNumber++;
@@ -874,7 +877,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    //DrawCardsForRegularBidding();
+                    DrawCardsForRegularBidding();
                 }
             }
         }
@@ -882,19 +885,12 @@ namespace Treachery.Shared
         private void PutNextCardOnAuction()
         {
             //console.writeLine("** PutNextCardOnAuction ** " + CurrentAuctionType);
-            if (CurrentAuctionType == AuctionType.WhiteOnceAround || CurrentAuctionType == AuctionType.WhiteSilent)
+            if (!WhiteBiddingJustFinished)
             {
-                if (!DrawingCardsForRegularBiddingHasHappened)
-                {
-                    DrawCardsForRegularBidding();
-                }
+                BidSequence.NextRound(true);
+                //DrawCardsForRegularBidding();
                 ////console.writeLine("PutNextCardOnAuction->StartBidSequence")
                 //StartBidSequenceAndAuctionType(AuctionType.Normal);
-            }
-            else
-            {
-                //console.writeLine("Next Bidding Round");
-                BidSequence.NextRound(true);
             }
                         
             Enter(Phase.Bidding);

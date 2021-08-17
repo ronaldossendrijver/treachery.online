@@ -44,9 +44,8 @@
                             @if (h.Autopass)
                             {
                                 <SelectResourcesComponent @bind-Value="@h.BidAutoPassThreshold" Min="0" Max="50" Label="When above:" />
+                                <CheckboxComponent @bind-Value="@h.KeepAutopassSetting">Repeat auto-pass every round</CheckboxComponent>
                             }
-                            <CheckboxComponent @bind-Value="@h.KeepAutopassSetting">Repeat auto-pass every round</CheckboxComponent>
-
 
                             @if (CanBid)
                             {
