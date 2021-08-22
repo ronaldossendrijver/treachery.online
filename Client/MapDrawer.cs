@@ -659,7 +659,7 @@ namespace Treachery.Client
                         //var text = (h.Game.CurrentMoment == MainPhaseMoment.Start ? "*" : "") + Skin.Current.Describe(phase) + (h.Game.CurrentMoment == MainPhaseMoment.End ? "*" : "") + "(" + h.Game.CurrentMoment + ")";
                         posY += 90;
 
-                        if (h.Game.EconomicsStatus != BrownEconomicsStatus.None && phase == MainPhase.Charity)
+                        if (h.Game.EconomicsStatus != BrownEconomicsStatus.None && h.Game.EconomicsStatus != BrownEconomicsStatus.RemovedFromGame && phase == MainPhase.Charity)
                         {
                             var dX = await DrawText(posX, posY, Skin.Current.Describe(phase), Skin.Current.PHASE_ACTIVE_FONT, TextAlign.Right, Skin.Current.PHASE_ACTIVE_FONTCOLOR, Skin.Current.PHASE_ACTIVE_FONT_BORDERWIDTH, Skin.Current.PHASE_FONT_BORDERCOLOR, null, true);
                             await DrawImage(Artwork.FactionTokens[Faction.Brown].Value, posX - dX - 200, posY - 90, 120, 120, Skin.Current.SHADOW_LIGHT, 1, 2, 2);
@@ -675,7 +675,7 @@ namespace Treachery.Client
                     {
                         posY += 60;
 
-                        if (h.Game.EconomicsStatus != BrownEconomicsStatus.None && phase == MainPhase.Charity)
+                        if (h.Game.EconomicsStatus != BrownEconomicsStatus.None && h.Game.EconomicsStatus != BrownEconomicsStatus.RemovedFromGame && phase == MainPhase.Charity)
                         {
                             var dX = await DrawText(posX, posY, Skin.Current.Describe(phase), Skin.Current.PHASE_FONT, TextAlign.Right, Skin.Current.PHASE_FONTCOLOR, Skin.Current.PHASE_FONT_BORDERWIDTH, Skin.Current.PHASE_FONT_BORDERCOLOR, null, true);
                             await DrawImage (Artwork.FactionTokens[Faction.Brown].Value, posX - dX - 160, posY - 60, 80, 80, Skin.Current.SHADOW_LIGHT, 1, 2, 2);

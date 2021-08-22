@@ -128,7 +128,7 @@ namespace Treachery.Shared
                     Type = DealType.TellDiscardedTraitors,
                     EndPhase = Phase.TurnConcluded,
                     Price = D(3, 3),
-                    Text = "tell which traitors I discarded"
+                    Text = "tell (in chat) which traitors I discarded"
                 };
             }
 

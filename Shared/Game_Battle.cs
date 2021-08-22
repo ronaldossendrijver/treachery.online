@@ -281,7 +281,7 @@ namespace Treachery.Shared
             Discard(e.Player, TreacheryCardType.Residual);
 
             var opponent = CurrentBattle.OpponentOf(e.Initiator);
-            var leadersToKill = new Deck<IHero>(Battle.ValidBattleHeroes(this, opponent), Random);
+            var leadersToKill = new Deck<IHero>(opponent.Leaders.Where(l => LeaderState[l].Alive && CanJoinCurrentBattle(l)), Random);
             leadersToKill.Shuffle();
 
             if (!leadersToKill.IsEmpty)
@@ -294,7 +294,7 @@ namespace Treachery.Shared
                 }
 
                 KillHero(toKill);
-                CurrentReport.Add(e);
+                CurrentReport.Add(e.Initiator, "{0} kills {1}", TreacheryCardType.Residual, toKill);
             }
             else
             {
@@ -726,6 +726,7 @@ namespace Treachery.Shared
         private void FinishBattle()
         {
             GreenKarma = false;
+            PutSkilledLeadersInFrontOfShield();
             if (!Applicable(Rule.FullPhaseKarma)) AllowPreventedBattleFactionAdvantages();
             if (CurrentJuice != null && CurrentJuice.Type == JuiceType.Aggressor) CurrentJuice = null;
             CurrentDiplomacy = null;
@@ -734,6 +735,18 @@ namespace Treachery.Shared
             FinishDeciphererIfApplicable();
             if (NextPlayerToBattle == null) MainPhaseEnd();
             Enter(Phase.BattleReport);
+        }
+
+        private void PutSkilledLeadersInFrontOfShield()
+        {
+            foreach (var ls in LeaderState)
+            {
+                if (ls.Key is Leader l && Skilled(l) && !CapturedLeaders.ContainsKey(l) && !ls.Value.InFrontOfShield)
+                {
+                    CurrentReport.Add(l.Faction, "{0} {1} is placed back in front of shield.", Skill(l), l);
+                    ls.Value.InFrontOfShield = true;
+                }
+            }
         }
 
         private void AllowPreventedBattleFactionAdvantages()

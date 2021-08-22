@@ -359,7 +359,7 @@ namespace Treachery.Shared
             if (Defense == null && Weapon != null && Weapon.Type == TreacheryCardType.Chemistry) return Skin.Current.Format("You can't use {0} as weapon without using a defense.", TreacheryCardType.Chemistry);
             if (!ValidWeapons(Game, p, Defense, Hero, true).Contains(Weapon)) return "Invalid weapon";
             if (!ValidDefenses(Game, p, Weapon, true).Contains(Defense)) return "Invalid defense";
-            if (Game.IsInFrontOfShield(Hero)) return "This leader is in front of your player shield";
+            if (Game.IsInFrontOfShield(Hero)) return Skin.Current.Format("{0} is currently in front of your player shield", Hero);
             if (BankerBonus > 0 && !Game.SkilledAs(Hero, LeaderSkill.Banker)) return Skin.Current.Format("Only a leader skilled as {0} can be boosted by {1}", LeaderSkill.Banker, Concept.Resource);
             if (BankerBonus > MaxBankerBoost(Game, Player, Hero)) return Skin.Current.Format("You cannot boost your leader this much");
             if (cost + BankerBonus > p.Resources) return Skin.Current.Format("You can't pay this {0} bonus", LeaderSkill.Banker);

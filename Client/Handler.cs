@@ -678,11 +678,11 @@ namespace Treachery.Client
         {
             if (itAlreadyWasMyTurn)
             {
-                itAlreadyWasMyTurn = !Status.WaitingForOthers;
+                itAlreadyWasMyTurn = !Status.WaitingForOthers(Player, IsHost);
             }
             else
             {
-                if (!Status.WaitingForOthers && Game.CurrentMainPhase != MainPhase.Battle)
+                if (!Status.WaitingForOthers(Player, IsHost) && Game.CurrentMainPhase != MainPhase.Battle)
                 {
                     itAlreadyWasMyTurn = true;
                     await Browser.PlaySound(Skin.Current.Sound_YourTurn_URL, CurrentEffectVolume);

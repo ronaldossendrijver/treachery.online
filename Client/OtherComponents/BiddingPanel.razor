@@ -21,12 +21,17 @@
                         <img src="@CurrentCardImageSRC" width="150" data-animation="true" data-content="@CurrentCardHover" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" />
 
                         <div style="position: absolute; top: 135px; width: 150px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
-                            @if (Game.CurrentAuctionType == AuctionType.Normal)
-                            {
-                                <div style="font-size: 24px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">
-                                    Card @Game.CardNumber of @(Game.NumberOfCardsOnRegularAuction)
-                                </div>
-                            }
+                            <div style="font-size: 24px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">
+                                @if (Game.CurrentAuctionType == AuctionType.Normal)
+                                {
+                                    <span>Card @Game.CardNumber of @(Game.NumberOfCardsOnRegularAuction)</span>
+                                }
+                                else
+                                {
+                                    <span>@Skin.Current.Describe(Faction.White) Card</span>
+                                }
+                            </div>
+                            
                             @if (Game.CurrentAuctionType != AuctionType.WhiteSilent && Game.CurrentBid != null)
                             {
                                 <img src="@Skin.Current.GetImageURL(Game.CurrentBid.Initiator)" width="36" style="vertical-align: top;" />

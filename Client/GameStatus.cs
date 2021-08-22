@@ -25,7 +25,6 @@ namespace Treachery.Shared
             DescriptionWhenAwaited = descriptionWhenAwaited;
             DescriptionWhenWaiting = descriptionWhenWaiting;
             WaitingInSequence = waitingInSequence;
-            DetermineWaiting(player, isHost);
         }
 
         public GameStatus(Player player, bool isHost, string descriptionWhenAwaited, string descriptionWhenWaiting, Faction waitingForFaction) : 
@@ -43,7 +42,6 @@ namespace Treachery.Shared
             DescriptionWhenAwaited = descriptionWhenAwaited;
             DescriptionWhenWaiting = descriptionWhenWaiting;
             WaitingForFactions = waitingForFactions;
-            DetermineWaiting(player, isHost);
         }
 
         public GameStatus(Player player, bool isHost, string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Player> waitingForPlayers) :
@@ -56,7 +54,6 @@ namespace Treachery.Shared
             DescriptionWhenAwaited = descriptionWhenAwaited;
             DescriptionWhenWaiting = descriptionWhenWaiting;
             WaitingForHost = true;
-            DetermineWaiting(player, isHost);
         }
 
         public GameStatus(Player player, bool isHost, string description)
@@ -64,24 +61,23 @@ namespace Treachery.Shared
             DescriptionWhenAwaited = description;
             DescriptionWhenWaiting = description;
             WaitingForHost = true;
-            DetermineWaiting(player, isHost);
         }
 
-        public void DetermineWaiting(Player player, bool isHost)
+        public bool WaitingForMe(Player player, bool isHost) => WaitingForHost && isHost ||
+                WaitingForFactions.Contains(player.Faction) ||
+                WaitingInSequence.Any(se => se.Player == player && se.HasTurn);
+
+        public bool WaitingForOthers(Player player, bool isHost) => !WaitingForMe(player, isHost);
+
+        public string GetDescription(Player player, bool isHost)
         {
-            WaitingForMe = WaitingForHost && isHost || WaitingForFactions.Contains(player.Faction) || WaitingInSequence.Any(se => se.Player == player && se.HasTurn);
-        }
-
-        public bool WaitingForMe { get; private set; }
-
-        public bool WaitingForOthers => !WaitingForMe;
-
-        public string Description
-        {
-            get
+            if (WaitingForMe(player, isHost))
             {
-                if (WaitingForMe) return DescriptionWhenAwaited;
-                else return DescriptionWhenWaiting;
+                return DescriptionWhenAwaited;
+            }
+            else
+            {
+                return DescriptionWhenWaiting;
             }
         }
     }

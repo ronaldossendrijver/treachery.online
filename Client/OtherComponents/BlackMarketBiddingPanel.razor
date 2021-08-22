@@ -21,6 +21,11 @@
                         <img src="@CurrentCardImageSRC" width="150" data-animation="true" data-content="@CurrentCardHover" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" />
 
                         <div style="position: absolute; top: 135px; width: 150px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
+
+                            <div style="font-size: 24px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">
+                                Black Market
+                            </div>
+
                             @if (Game.CurrentAuctionType != AuctionType.BlackMarketSilent && Game.CurrentBid != null)
                             {
                                 <img src="@Skin.Current.GetImageURL(Game.CurrentBid.Initiator)" width="36" style="vertical-align: top;" />

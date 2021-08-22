@@ -374,7 +374,7 @@ namespace Treachery.Shared
             if (Battle.MustPayForForcesInBattle(Game, this))
             {
                 specialForcesAtFullStrength = 0;
-                while (dialNeeded >= specialStrength && specialForcesAvailable >= 1 && spiceLeft >= costPerSpecialForce)
+                while (dialNeeded > normalStrength && specialForcesAvailable >= 1 && spiceLeft >= costPerSpecialForce)
                 {
                     dialNeeded -= specialStrength;
                     specialForcesAtFullStrength++;

@@ -114,6 +114,7 @@ namespace Treachery.Test
                 return "Too many cards: " + p + " after " + e.GetType().Name + " -> " + g.History.Count;
             }
 
+            WriteSavegameIfApplicable(g, typeof(BrownEconomics));
             WriteSavegameIfApplicable(g, typeof(DiscardedTaken));
             WriteSavegameIfApplicable(g, typeof(Diplomacy));
             WriteSavegameIfApplicable(g, typeof(Bureaucracy));

@@ -21,7 +21,8 @@ namespace Treachery.Client
 
         public GreenIntelligence(Game g)
         {
-            CardsInPlay = TreacheryCardManager.GetCardsInPlay(g).ToArray();
+            var whiteCards = g.IsPlaying(Faction.White) ? TreacheryCardManager.GetWhiteCards(g).ToArray() : Array.Empty<TreacheryCard>();
+            CardsInPlay = TreacheryCardManager.GetCardsInPlay(g).Union(whiteCards).ToArray();
             TrackedTreacheryCards = new Dictionary<Faction, Dictionary<int, int>>();
             foreach (var p in g.Players)
             {
