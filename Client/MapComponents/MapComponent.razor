@@ -1,4 +1,12 @@
-﻿@code {
+﻿@using Treachery.Shared
+ 
+@code {
+
+    [Parameter]
+    public Game Game { get; set; }
+
+    [Parameter]
+    public Player Player { get; set; }
 
     [Parameter]
     public float X { get; set; }
