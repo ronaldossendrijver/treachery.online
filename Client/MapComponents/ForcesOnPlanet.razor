@@ -1,0 +1,46 @@
+﻿@using Treachery.Shared
+ 
+@{
+    var forceLocations = Game.ForcesOnPlanetExcludingEmptyLocations;
+
+    foreach (var location in Game.Map.Locations)
+    {
+        int xOffset = 0;
+        int yOffset = 0;
+        var pos = location.Center;
+
+        if (forceLocations.ContainsKey(location))
+        {
+            var battalions = forceLocations[location];
+            int nrOfBattalions = battalions.Count;
+            yOffset = -(nrOfBattalions - 1) * Skin.Current.FORCETOKEN_RADIUS;
+
+            foreach (var battalion in battalions)
+            {
+                var player = Game.GetPlayer(battalion.Faction);
+                var threatened = Game.ThreatenedByAllyPresence(player, location.Territory);
+
+                xOffset = 0;
+                if (battalion.AmountOfForces > 0)
+                {
+                    xOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
+                    <Force X=@pos.X Y=@(yOffset + pos.Y) Special=@false Amount=@battalion.AmountOfForces Faction=@battalion.Faction Threatened=@threatened />
+                }
+
+                if (battalion.AmountOfSpecialForces > 0)
+                {
+                    xOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
+                    <Force X=@pos.X Y=@(yOffset + pos.Y) Special=@true Amount=@battalion.AmountOfForces Faction=@battalion.Faction Threatened=@threatened />
+                }
+
+                yOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
+            }
+        }
+    }
+}
+
+@code {
+
+    [Parameter]
+    public Game Game { get; set; }
+}

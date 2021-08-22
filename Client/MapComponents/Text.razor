@@ -1,0 +1,20 @@
+﻿@inherits MapComponent
+
+<span style="position:absolute; top:@Px(Y+20); left:@Px(X+30); font:@Font -webkit-text-stroke:@BorderWidth; -webkit-text-stroke-color:@BorderColor">
+    @ChildContent
+</span>
+
+@code {
+
+    [Parameter]
+    public string Font { get; set; }
+
+    [Parameter]
+    public int BorderWidth { get; set; } = 0;
+
+    [Parameter]
+    public string BorderColor { get; set; } = "black";
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

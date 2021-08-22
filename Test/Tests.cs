@@ -302,7 +302,7 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 100;
+            int nrOfGames = 10;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
             
@@ -706,11 +706,12 @@ namespace Treachery.Test
             SaveObject(Skin.Dune1979, "e:\\Skin.Dune.treachery.online.json");
         }
 
+        [TestMethod]
         public static void SVG()
         {
             var accumulatedTransforms = new List<SvgTransformCollection>();
 
-            var doc = SvgDocument.Open("e:\\map.svg");
+            var doc = SvgDocument.Open("c:\\map.svg");
             foreach (var group1 in doc.Children)
             {
                 if (group1.ID == "Dune")

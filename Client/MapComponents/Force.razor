@@ -1,0 +1,23 @@
+﻿@using Treachery.Shared;
+@inherits MapComponent;
+
+<Image X=X Y=Y Width=@(2*Skin.Current.FORCETOKEN_RADIUS) Height=@(2*Skin.Current.FORCETOKEN_RADIUS) Src="@ForceURL" />
+
+<Text Y=(Y+20) X=(X+30) Font=@Skin.Current.FORCETOKEN_FONT BorderWidth=@Skin.Current.FORCETOKEN_FONT_BORDERWIDTH BorderColor=@Skin.Current.FORCETOKEN_FONT_BORDERCOLOR>@Amount</Text>
+
+@code {
+
+    [Parameter]
+    public bool Special { get; set; }
+
+    [Parameter]
+    public int Amount { get; set; }
+
+    [Parameter]
+    public Faction Faction { get; set; }
+
+    [Parameter]
+    public bool Threatened { get; set; }
+
+    private string ForceURL => Special ? Skin.Current.GetFactionSpecialForceImageURL(Faction) : Skin.Current.GetFactionForceImageURL(Faction);
+}

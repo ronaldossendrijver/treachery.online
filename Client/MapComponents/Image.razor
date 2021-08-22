@@ -1,0 +1,9 @@
+﻿@inherits MapComponent
+
+<img style="position:absolute; left:@Px(X); top:@Px(Y); width:@Px(Width); height:@(Height);" src=@Src />
+
+@code {
+
+    [Parameter]
+    public string Src { get; set; }
+}

@@ -1,0 +1,19 @@
+﻿@using Treachery.Shared;
+
+<div style="position: relative; width: 100%; height: 100%; transform: scale(0.25)">
+
+    <div style="position:absolute; width:@(Skin.Current.MapDimensions.X)px; height:@(Skin.Current.MapDimensions.Y)px;">
+
+    <Image X="0" Y="0" Width=@(Skin.Current.MapDimensions.X) Height=@(Skin.Current.MapDimensions.Y) Src=@Skin.Current.Map_URL />
+
+    <ForcesOnPlanet Game="h.Game"/>
+
+    </div>
+
+</div>
+
+@code {
+
+    [Parameter]
+    public Handler h { get; set; }
+}

@@ -1,0 +1,20 @@
+﻿@using Treachery.Shared
+ 
+@{
+    int sector = Game.SectorInStorm;
+    await DrawStorm(sector, Skin.Current.STORM_OVERLAY_COLOR);
+
+    if (Game.HasStormPrescience(h.Player))
+    {
+        for (int i = 1; i <= h.Game.NextStormMoves; i++)
+        {
+            await DrawStorm((sector + i) % Map.NUMBER_OF_SECTORS, Skin.Current.STORM_PRESCIENCE_OVERLAY_COLOR);
+        }
+    }
+}
+
+@code {
+
+    [Parameter]
+    public Game Game { get; set; }
+}
