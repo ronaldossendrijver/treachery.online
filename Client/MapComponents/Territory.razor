@@ -1,7 +1,9 @@
 ﻿@using Treachery.Shared
 @inherits MapComponent
  
-<svg width="563" height="626" viewBox="0 0 563 626" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;">
+<svg width="563" height="626" viewBox="0 0 563 626" 
+     version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" 
+     style="height: 100%; width: 100%; fill-rule: evenodd; clip-rule: evenodd;">
 
     @switch (ToShow.Id)
     {
@@ -271,10 +273,10 @@
     public string FillColor { get; set; }
 
     [Parameter]
-    public float FillOpacity { get; set; } = 0f;
+    public float FillOpacity { get; set; } = 1f;
 
     [Parameter]
-    public string FillRule { get; set; } = "nonzero";
+    public string FillRule { get; set; } = "";
 
     [Parameter]
     public string StrokeColor { get; set; } = "black";

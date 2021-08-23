@@ -1,0 +1,26 @@
+﻿@using Treachery.Shared 
+@inherits MapComponent
+
+@{ 
+
+    if (Sector >= 0)
+    {
+        foreach (var l in Game.Map.Locations.Where(l => l.Sector == Sector))
+        {
+            <Location ToShow="@l" FillColor="@FillColor" FillOpacity="@FillOpacity"/>
+        }
+    }
+}
+
+@code {
+
+    [Parameter]
+    public int Sector { get; set; }
+
+    [Parameter]
+    public string FillColor { get; set; }
+
+    [Parameter]
+    public float FillOpacity { get; set; }
+}
+

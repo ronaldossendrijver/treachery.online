@@ -1,0 +1,34 @@
+﻿@using Treachery.Shared 
+@inherits MapComponent
+
+<svg>
+<Territory ToShow="@ToShow.Territory" FillColor="@FillColor" FillOpacity="@FillOpacity" StrokeColor="@StrokeColor" StrokeWidth="@StrokeWidth" />
+</svg>
+
+@code {
+
+    [Parameter]
+    public Treachery.Shared.Location ToShow { get; set; }
+
+    [Parameter]
+    public string FillColor { get; set; }
+
+    [Parameter]
+    public float FillOpacity { get; set; } = 0f;
+
+    [Parameter]
+    public string FillRule { get; set; } = "";
+
+    [Parameter]
+    public string StrokeColor { get; set; } = "black";
+
+    [Parameter]
+    public float StrokeWidth { get; set; } = 1f;
+
+    [Parameter]
+    public string StrokeLinecap { get; set; } = "round";
+
+    [Parameter]
+    public string StrokeLinejoin { get; set; } = "round";
+}
+
