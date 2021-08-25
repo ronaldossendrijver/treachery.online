@@ -1,11 +1,11 @@
 ﻿@using Treachery.Shared 
 @inherits MapComponent
 
-<svg>
-<Territory ToShow="@ToShow.Territory" FillColor="@FillColor" FillOpacity="@FillOpacity" StrokeColor="@StrokeColor" StrokeWidth="@StrokeWidth" />
-</svg>
+<Territory ToShow="@ToShow.Territory" FillColor="@FillColor" FillOpacity="@FillOpacity" StrokeColor="transparant" StrokeWidth="0" Sector=@ToShow.Sector/>
 
 @code {
+
+    //A rx ry x-axis-rotation large-arc-flag sweep-flag x y
 
     [Parameter]
     public Treachery.Shared.Location ToShow { get; set; }
@@ -18,17 +18,5 @@
 
     [Parameter]
     public string FillRule { get; set; } = "";
-
-    [Parameter]
-    public string StrokeColor { get; set; } = "black";
-
-    [Parameter]
-    public float StrokeWidth { get; set; } = 1f;
-
-    [Parameter]
-    public string StrokeLinecap { get; set; } = "round";
-
-    [Parameter]
-    public string StrokeLinejoin { get; set; } = "round";
 }
 

@@ -2,7 +2,6 @@
 @inherits MapComponent
 
 @{ 
-
     if (Sector >= 0)
     {
         foreach (var l in Game.Map.Locations.Where(l => l.Sector == Sector))
@@ -21,6 +20,6 @@
     public string FillColor { get; set; }
 
     [Parameter]
-    public float FillOpacity { get; set; }
+    public float FillOpacity { get; set; } = 1f;
 }
 

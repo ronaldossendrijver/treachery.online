@@ -47,7 +47,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} buy one of their special Treachery cards.", Initiator);
+            return new Message(Initiator, "{0} use {1} to buy a card from their cache.", Initiator, TreacheryCardType.Karma);
         }
     }
 }

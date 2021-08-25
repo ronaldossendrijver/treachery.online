@@ -6,6 +6,7 @@
 @using Treachery.Shared;
 @using Treachery.Client.GenericComponents;
 @using Treachery.Client.OtherComponents;
+@using Treachery.Client.MapComponents;
 @using Blazor.Extensions.Canvas;
 @using Microsoft.Extensions.Logging;
 
@@ -25,24 +26,24 @@
     <div class="col-sm-12 col-lg-6">
         @if (h.HostProxy != null)
         {
-            <div @onmousedown="MapDrawer.MapClick" 
-                 class="p-0 m-0 cursor-hand" 
-                 id="mapdiv" 
+            <div @onmousedown="MapDrawer.MapClick"
+                 class="p-0 m-0 cursor-hand"
+                 id="mapdiv"
                  data-trigger="hover click" data-toggle="tooltip" data-placement="bottom" data-html="true" data-animation="false" data-delay="100">
                 <BECanvas @ref="h._canvas"></BECanvas>
             </div>
 
             @if (true)
             {
-                <PlanetMap h="h"/>
+                <PlanetMap h="h" />
             }
         }
         else
         {
-        <div class="text-center">
-            <img src="@Skin.Current.Planet_URL" class="img-fluid" />
-            <p class="text-light" style="font: @Skin.Current.GAMEVERSION_FONT">Version @Game.LatestVersion</p>
-        </div>
+            <div class="text-center">
+                <img src="@Skin.Current.Planet_URL" class="img-fluid" />
+                <p class="text-light" style="font: @Skin.Current.GAMEVERSION_FONT">Version @Game.LatestVersion</p>
+            </div>
         }
     </div>
 
