@@ -51,10 +51,11 @@
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(skilledLeader)" ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="1" ShadowY="1" ShadowBlur="1" />
 
-                <MapText X="@(ttx + Skin.Current.PlayerTokenRadius)" Y="@(tty + 2 * Skin.Current.PlayerTokenRadius)"
+                <MapText ToShow="@Skin.Current.Describe(Game.Skill(skilledLeader))"
+                         X="@(ttx + Skin.Current.PlayerTokenRadius)" Y="@(tty + 2 * Skin.Current.PlayerTokenRadius)"
                          Font="@Skin.Current.SKILL_FONT" FontColor="@Skin.Current.SKILL_FONTCOLOR"
                          BorderWidth="@Skin.Current.SKILL_FONT_BORDERWIDTH" BorderColor="@Skin.Current.SKILL_FONT_BORDERCOLOR"
-                         Align="@TextAlignment.Center" MaxWidth="2.2f * Skin.Current.PlayerTokenRadius">@Skin.Current.Describe(Game.Skill(skilledLeader))</MapText>
+                         Align="@TextAlignment.Center" MaxWidth="2.2f * Skin.Current.PlayerTokenRadius"/>
             }
 
             if (p.Faction == Faction.White && Game.LatestRevealedNoFieldValue >= 0)
@@ -65,10 +66,11 @@
 
                 <Image X="@(ttx + Skin.Current.FORCETOKEN_RADIUS)" Y="@(tty + Skin.Current.FORCETOKEN_RADIUS)" Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS) Src="@Skin.Current.FactionSpecialForceImage_URL[Faction.White]" ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="1" ShadowY="1" ShadowBlur="1"/>
 
-                <MapText X="@(ttx + 2 * Skin.Current.FORCETOKEN_RADIUS)" Y="@(tty + 2.5f * Skin.Current.FORCETOKEN_RADIUS)"
+                <MapText ToShow="@Game.LatestRevealedNoFieldValue.ToString()"
+                         X="@(ttx + 2 * Skin.Current.FORCETOKEN_RADIUS)" Y="@(tty + 2.5f * Skin.Current.FORCETOKEN_RADIUS)"
                          Font="@Skin.Current.TURN_FONT" FontColor="@Skin.Current.TURN_FONT_COLOR"
                          BorderWidth="@Skin.Current.TURN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.TURN_FONT_BORDERCOLOR"
-                         Align="@TextAlignment.Center">@Game.LatestRevealedNoFieldValue.ToString()</MapText>
+                         Align="@TextAlignment.Center"/>
             }
 
             var align = TextAlignment.Center;
@@ -84,10 +86,11 @@
                 textPositionX = (int)(position.X + 1.6 * Skin.Current.PlayerTokenRadius);
             }
 
-            <MapText X="@(textPositionX)" Y="@(y + 60)"
-                         Font="@Skin.Current.PLAYERNAME_FONT" FontColor="@Skin.Current.PLAYERNAME_FONTCOLOR"
-                         BorderWidth="@Skin.Current.PLAYERNAME_FONT_BORDERWIDTH" BorderColor="@Skin.Current.PLAYERNAME_FONT_BORDERCOLOR"
-                         Align="@align" MaxWidth="6 * Skin.Current.PlayerTokenRadius">@p.Name</MapText>
+            <MapText ToShow="@p.Name"
+                     X="@(textPositionX)" Y="@(y + 60)"
+                     Font="@Skin.Current.PLAYERNAME_FONT" FontColor="@Skin.Current.PLAYERNAME_FONTCOLOR"
+                     BorderWidth="@Skin.Current.PLAYERNAME_FONT_BORDERWIDTH" BorderColor="@Skin.Current.PLAYERNAME_FONT_BORDERCOLOR"
+                     Align="@align" MaxWidth="6 * Skin.Current.PlayerTokenRadius"/>
         }
     }
 }

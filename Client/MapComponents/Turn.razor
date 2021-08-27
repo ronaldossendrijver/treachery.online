@@ -4,26 +4,24 @@
 
 @if (Game.CurrentTurn >= 1)
 {
-    <MapText X="@(Skin.Current.PlanetCenter.X)"
+    <MapText ToShow="@string.Format("Turn {0} of {1}", h.Game.CurrentTurn, h.Game.MaximumNumberOfTurns)"
+             X="@(Skin.Current.PlanetCenter.X)"
              Y="@(100)"
              Font="@Skin.Current.TURN_FONT"
              FontColor="@Skin.Current.TURN_FONT_COLOR"
              BorderWidth="@Skin.Current.TURN_FONT_BORDERWIDTH"
              BorderColor="@Skin.Current.TURN_FONT_BORDERCOLOR"
-             Align="@TextAlignment.Center">
-        @string.Format("Turn {0} of {1}", h.Game.CurrentTurn, h.Game.MaximumNumberOfTurns)
-    </MapText>
+             Align="@TextAlignment.Center"/>
 }
 
 @if (h.Host != null && h.Host.JoinedObservers.Count(o => o != "$RonaldAdmin$") > 0)
 {
-    <MapText X="@(Skin.Current.PlanetCenter.X)"
+    <MapText ToShow="@string.Format("observers: {0}", h.Host.JoinedObservers.Count(o => o != "$RonaldAdmin$"))"
+             X="@(Skin.Current.PlanetCenter.X)"
              Y="@(Skin.Current.MapDimensions.Y - 60)"
              Font="@Skin.Current.FORCETOKEN_FONT"
              FontColor="@Skin.Current.TURN_FONT_COLOR"
              BorderWidth="@Skin.Current.FORCETOKEN_FONT_BORDERWIDTH"
              BorderColor="@Skin.Current.FORCETOKEN_FONT_BORDERCOLOR"
-             Align="@TextAlignment.Center">
-        @string.Format("observers: {0}", h.Host.JoinedObservers.Count(o => o != "$RonaldAdmin$"))
-    </MapText>
+             Align="@TextAlignment.Center"/>
 }

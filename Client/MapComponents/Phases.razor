@@ -12,21 +12,21 @@
             {
                 posY += 90;
 
-                <MapText X="@(posX)" Y="@(posY)"
+                <MapText ToShow="@Skin.Current.Describe(phase)"
+                         X="@(posX)" Y="@(posY)"
                          Font="@Skin.Current.PHASE_ACTIVE_FONT" FontColor="@Skin.Current.PHASE_ACTIVE_FONTCOLOR"
                          BorderWidth="@Skin.Current.PHASE_ACTIVE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.PHASE_FONT_BORDERCOLOR"
-                         Align="@TextAlignment.Right">@Skin.Current.Describe(phase)</MapText>
+                         Align="@TextAlignment.Right"/>
 
                 if (Game.EconomicsStatus != BrownEconomicsStatus.None && Game.EconomicsStatus != BrownEconomicsStatus.RemovedFromGame && phase == MainPhase.Charity)
                 {
                     <Image X="@(posX-200)" Y="@(posY - 90)" Width=@(120) Height="@(120)" Src="@Skin.Current.GetImageURL(Faction.Brown)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1" />
 
-                    <MapText X="@(posX-140)" Y="@(posY)"
+                    <MapText ToShow="@Skin.Current.Describe(Game.EconomicsStatus)"
+                             X="@(posX-140)" Y="@(posY)"
                              Font="@Skin.Current.SKILL_FONT" FontColor="white"
                              BorderWidth="1" BorderColor="black"
-                             Align="@TextAlignment.Center">
-                        @Skin.Current.Describe(Game.EconomicsStatus)
-                    </MapText>
+                             Align="@TextAlignment.Center"/>
                 }
 
                 posY += 40;
@@ -35,21 +35,21 @@
             {
                 posY += 60;
 
-                <MapText X="@(posX)" Y="@(posY)"
+                <MapText ToShow="@Skin.Current.Describe(phase)"
+                         X="@(posX)" Y="@(posY)"
                          Font="@Skin.Current.PHASE_FONT" FontColor="@Skin.Current.PHASE_FONTCOLOR"
                          BorderWidth="@Skin.Current.PHASE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.PHASE_FONT_BORDERCOLOR"
-                         Align="@TextAlignment.Right">@Skin.Current.Describe(phase)</MapText>
+                         Align="@TextAlignment.Right"/>
 
                 if (Game.EconomicsStatus != BrownEconomicsStatus.None && Game.EconomicsStatus != BrownEconomicsStatus.RemovedFromGame && phase == MainPhase.Charity)
                 {
                     <Image X="@(posX-160)" Y="@(posY - 60)" Width=@(80) Height="@(80)" Src="@Skin.Current.GetImageURL(Faction.Brown)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1" />
 
-                    <MapText X="@(posX-120)" Y="@(posY)"
+                    <MapText ToShow="@Skin.Current.Describe(Game.EconomicsStatus)"
+                             X="@(posX-120)" Y="@(posY)"
                              Font="@Skin.Current.SKILL_FONT" FontColor="white"
                              BorderWidth="1" BorderColor="black"
-                             Align="@TextAlignment.Center">
-                        @Skin.Current.Describe(Game.EconomicsStatus)
-                    </MapText>
+                             Align="@TextAlignment.Center"/>
                 }
 
                 posY += 30;

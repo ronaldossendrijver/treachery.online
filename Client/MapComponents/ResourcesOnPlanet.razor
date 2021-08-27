@@ -10,13 +10,12 @@
 
             <Image X="@(l.SpiceLocation.X - Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(l.SpiceLocation.Y - Skin.Current.RESOURCETOKEN_RADIUS)" Width=@(Skin.Current.RESOURCETOKEN_RADIUS * 2) Height="@(Skin.Current.RESOURCETOKEN_RADIUS * 2)" Src="@Skin.Current.Harvester_URL" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="2" />
 
-            <MapText X="@(l.SpiceLocation.X)" Y="@(l.SpiceLocation.Y + 30)"
+            <MapText ToShow="@amount.ToString()"
+                     X="@(l.SpiceLocation.X)" Y="@(l.SpiceLocation.Y + 30)"
                      Font="@Skin.Current.RESOURCETOKEN_FONT" FontColor="@Skin.Current.RESOURCETOKEN_FONTCOLOR"
                      BorderWidth="@Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH"
                      BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
-                     Align="@TextAlignment.Center">
-                @amount.ToString()
-            </MapText>
+                     Align="@TextAlignment.Center"/>
         }
         else if (Skin.Current.DrawResourceIconsOnMap)
         {

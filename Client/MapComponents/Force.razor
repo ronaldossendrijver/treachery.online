@@ -8,7 +8,7 @@
     }
 }
 
-<MapText X=@(X+30) Y=@(Y) Font=@Skin.Current.FORCETOKEN_FONT BorderWidth=@Skin.Current.FORCETOKEN_FONT_BORDERWIDTH BorderColor=@Skin.Current.FORCETOKEN_FONT_BORDERCOLOR>@Amount</MapText>
+<MapText ToShow="@Amount.ToString()" X=@(X+30) Y=@(Y) Font=@Skin.Current.FORCETOKEN_FONT BorderWidth=@Skin.Current.FORCETOKEN_FONT_BORDERWIDTH BorderColor=@Skin.Current.FORCETOKEN_FONT_BORDERCOLOR/>
 
 @code {
 

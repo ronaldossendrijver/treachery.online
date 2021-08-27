@@ -1,10 +1,13 @@
 ﻿@inherits MapComponent
 
-<span style="position: absolute; white-space: nowrap; left: @Px(AlignedX); top: @Px(Y-20); font: @Font; color: @FontColor; max-width: @Px(MaxWidth); -webkit-text-stroke-width: @Px(BorderWidth); -webkit-text-stroke-color: @BorderColor;">
-    @ChildContent
+<span style="position: absolute; white-space: nowrap; left: @Px(AlignedX); top: @Px(Y-100); font: @Font; color: @FontColor; max-width: @Px(MaxWidth); -webkit-text-stroke-width: @Px(BorderWidth); -webkit-text-stroke-color: @BorderColor;">
+    @ToShow
 </span>
 
 @code {
+
+    [Parameter]
+    public string ToShow { get; set; }
 
     [Parameter]
     public string Font { get; set; }
@@ -35,13 +38,10 @@
 
     private async Task<float> GetAlignedX()
     {
-        float width = await Browser.MeasureText(ChildContent.ToString(), Font);
-        Console.WriteLine("Width of " + ChildContent.ToString() + ": " + width);
-
         switch (Align)
         {
-            case TextAlignment.Center: return X - 0.5f * await Browser.MeasureText(ChildContent.ToString(), Font);
-            case TextAlignment.Right: return X - await Browser.MeasureText(ChildContent.ToString(), Font);
+            case TextAlignment.Center: return X - 0.5f * await Browser.MeasureText(ToShow, Font);
+            case TextAlignment.Right: return X - await Browser.MeasureText(ToShow, Font);
             default: return X;
         }
     }
