@@ -1,0 +1,109 @@
+﻿@using Treachery.Shared
+@using System.Linq
+@inherits MapComponent
+ 
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="@(Radius * 2)" height="@(Radius * 2)">
+
+    <defs>
+        <path id="pijl" d="M-50,-50L0,0L-50,50L0,100L100,0L0,-100L-50,-50Z" fill="@FillColor" fill-opacity="@FillOpacity" stroke="@StrokeColor" stroke-width="@StrokeWidth" stroke-linejoin="round" transform="scale(@Scale)" />
+        <linearGradient id="Gradient-1" x1="20%" y1="30%" x2="40%" y2="80%">
+            <stop offset="0%" stop-color="#B8D0DE"></stop>
+            <stop offset="100%" stop-color="#73A2BD"></stop>
+        </linearGradient>
+        <filter id="dropshadow" xmlns="http://www.w3.org/2000/svg" height="200%" width="200%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="@(ShadowBlur)" />
+            <feOffset dx="@(ShadowDistance)" dy="@(ShadowDistance)" result="offsetblur" />
+            <feComponentTransfer>
+                <feFuncA type="linear" slope="0.5"></feFuncA>
+            </feComponentTransfer>
+            <feMerge>
+                <feMergeNode />
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+
+    @for (int i = 0; i <= n; i++)
+    {
+        var t = -tMax * (i / n);
+        var t2 = -tMax * ((i + 1) / n);
+        var x = Radius * (u[0] * Math.Cos(t) + v[0] * Math.Sin(t));
+        var y = Radius * (u[1] * Math.Cos(t) + v[1] * Math.Sin(t));
+        var x2 = Radius * (u[0] * Math.Cos(t2) + v[0] * Math.Sin(t2));
+        var y2 = Radius * (u[1] * Math.Cos(t2) + v[1] * Math.Sin(t2));
+        var alpha = -Math.Atan2((x2 - x), (y2 - y)) / Math.PI * 180 + 90;
+
+        <g transform="translate(@(x + Radius),@(y + Radius)) rotate(@(alpha))" filter="url(#dropshadow)" fill="url(#Gradient-1)"><use xlink:href="#pijl" /></g>
+    }
+
+</svg>
+
+@code {
+
+    [Parameter]
+    public int MarginX { get; set; }
+
+    [Parameter]
+    public int MarginY { get; set; }
+
+    [Parameter]
+    public int Radius { get; set; }
+
+    [Parameter]
+    public Point From { get; set; }
+
+    [Parameter]
+    public Point To { get; set; }
+
+    [Parameter]
+    public float Scale { get; set; } = 0.3f;
+
+    [Parameter]
+    public int ShadowDistance { get; set; } = 12;
+
+    [Parameter]
+    public int ShadowBlur { get; set; } = 4;
+
+    [Parameter]
+    public string FillColor { get; set; } = "white";
+
+    [Parameter]
+    public float FillOpacity { get; set; } = 1f;
+
+    [Parameter]
+    public string StrokeColor { get; set; } = "black";
+
+    [Parameter]
+    public float StrokeWidth { get; set; } = 0;
+
+    int fromX => From.X - MarginX - Radius;
+    int fromY => From.Y - MarginY - Radius;
+    int fromZ => (int)Math.Pow(Radius * Radius - fromX * fromX - fromY * fromY, 0.5);
+    float[] fromAsArray => new float[] { fromX, fromY, fromZ };
+
+    int toX => To.X - MarginX - Radius;
+    int toY => To.Y - MarginY - Radius;
+    int toZ => (int)Math.Pow(Radius * Radius - toX * toX - toY * toY, 0.5);
+    float[] toAsArray => new float[] { toX, toY, toZ };
+
+    float[] u => fromAsArray.Select(a => a / Radius).ToArray();
+    float[] w => cross(fromAsArray, toAsArray);
+    float[] v => cross(u, w).Select(a => a / length(w)).ToArray();
+    float tMax => (float)Math.Acos(inner(fromAsArray, toAsArray) / length(fromAsArray) / length(toAsArray));
+    int n => (int)Math.Round((50 * tMax) / Math.PI);
+
+    private float[] cross(float[] a, float[] b) => new float[] {
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0]
+    };
+
+    private float inner(float[] v1, float[] v2)
+    {
+        if (v1.Length != v2.Length) return float.NaN;
+        return v1.Zip(v2, (x, y) => x * y).Sum();
+    }
+
+    private float length(float[] vector) => (float)Math.Pow(vector.Aggregate((sum, cur) => sum + (float)Math.Pow(cur, 2)), 0.5);
+
+}

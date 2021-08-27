@@ -3,17 +3,13 @@
 
 @{
     int sector = Game.SectorInStorm;
-    <Storm Game="Game" Sector="sector" FillColor="@Skin.Current.STORM_OVERLAY_COLOR" />
+    <Storm h="h" Sector="sector" FillColor="@Skin.Current.STORM_OVERLAY_COLOR" />
 
     if (Game.HasStormPrescience(Player))
     {
         for (int i = 1; i <= Game.NextStormMoves; i++)
         {
-            <Storm Game="Game" Sector="(sector + i) % Treachery.Shared.Map.NUMBER_OF_SECTORS" FillColor="@Skin.Current.STORM_PRESCIENCE_OVERLAY_COLOR" />        
+            <Storm h="h" Sector="(sector + i) % Treachery.Shared.Map.NUMBER_OF_SECTORS" FillColor="@Skin.Current.STORM_PRESCIENCE_OVERLAY_COLOR" />        
         }
     }
-}
-
-@code {
-
 }

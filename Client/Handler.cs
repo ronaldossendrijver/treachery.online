@@ -43,6 +43,7 @@ namespace Treachery.Client
         public bool KeepAutopassSetting = false;
         public float CurrentEffectVolume = -1;
         public float CurrentChatVolume = -1;
+        public bool ShowWheelsAndHMS = true;
         public bool StatisticsSent = false;
         public bool BotsArePaused { get; private set; } = false;
 

@@ -1,0 +1,11 @@
+﻿@using Treachery.Shared
+@inherits MapComponent
+
+@{
+    if (h == null || h.Actions == null) return;
+
+    foreach (var t in h.HighlightedTerritories)
+    {
+        <Territory h="h" ToShow="t" FillColor="Skin.Current.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1" />
+    }
+}

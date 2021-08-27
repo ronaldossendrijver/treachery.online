@@ -1,9 +1,28 @@
 ﻿@inherits MapComponent
 
-<img style="position:absolute; left:@Px(X); top:@Px(Y); width:@Px(Width); height:@(Height);" src=@Src />
+@if (ShadowX > 0 || ShadowY > 0)
+{
+    <img style="position:absolute; left:@Px(X); top:@Px(Y); width:@Px(Width); height:@(Height); filter:drop-shadow(@Px(ShadowX) @Px(ShadowY) @Px(ShadowBlur) @ShadowColor); opacity:@Opacity;" src=@Src />
+}
+else
+{
+    <img style="position:absolute; left:@Px(X); top:@Px(Y); width:@Px(Width); height:@(Height);" src=@Src />
+}
 
 @code {
 
     [Parameter]
     public string Src { get; set; }
+
+    [Parameter]
+    public int ShadowX { get; set; } = 0;
+
+    [Parameter]
+    public int ShadowY { get; set; } = 0;
+
+    [Parameter]
+    public int ShadowBlur { get; set; } = 0;
+
+    [Parameter]
+    public string ShadowColor { get; set; } = "black";
 }

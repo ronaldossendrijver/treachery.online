@@ -1,0 +1,31 @@
+﻿@using Treachery.Shared
+@inherits MapComponent
+
+@{
+    if (Skin.Current.ShowArrowsForRecentMoves)
+    {
+        if (h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
+        {
+            foreach (var move in h.Game.RecentMoves.Where(move => !move.Passed))
+            {
+                var to = move.To.Center;
+
+                foreach (var from in move.ForceLocations.Keys)
+                {
+                    var a = CloserTo(from.Center, to, 0.10f);
+                    var b = CloserTo(to, from.Center, 0.15f);
+
+                    <Arrow FillColor="@Skin.Current.FactionColor[move.Initiator]" StrokeColor="@Skin.Current.FactionColorTransparant[move.Initiator]"
+                           MarginX="Skin.Current.MapDimensions.X / 2 - Skin.Current.PlanetRadius" MarginY="Skin.Current.MapDimensions.Y / 2 - Skin.Current.PlanetRadius"
+                           Radius="@Skin.Current.PlanetRadius"
+                           From="a" To="b" Scale="0.35f"/>
+
+                }
+            }
+        }
+    }
+}
+
+@code {
+
+}

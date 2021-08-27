@@ -26,8 +26,6 @@ namespace Treachery.Client
 
         private static Dimensions Dimensions { get; set; } = null;
 
-        public static bool ShowWheelsAndHMS { get; set; } = true;
-
         public static bool Loading { get; set; } = false;
 
         private static int nrOfDraws;
@@ -47,17 +45,17 @@ namespace Treachery.Client
 
                 if (!Loading && h.Game.CurrentPhase > Phase.AwaitingPlayers)
                 {
-                    await DrawDestroyedShieldWall();
-                    await DrawSSW();
-                    await DrawTurn(h.Game.CurrentTurn);
-                    await DrawResourcesOnPlanet();
-                    await DrawMonsters();
-                    await DrawStormAndStormPrescience();
-                    await DrawPhases();
-                    await DrawHighlightedTerritories();
-                    await DrawPlayersAndTechTokensAndLeaderSkills();
-                    await DrawHiddenMobileStronghold();
-                    await DrawStrongholdOwnership();
+                    await DrawDestroyedShieldWall(); //done
+                    await DrawSSW(); //done
+                    await DrawTurn(h.Game.CurrentTurn); //done
+                    await DrawResourcesOnPlanet(); //done
+                    await DrawMonsters(); //done
+                    await DrawStormAndStormPrescience(); //done
+                    await DrawPhases(); //done
+                    await DrawHighlightedTerritories(); //done
+                    await DrawPlayersAndTechTokensAndLeaderSkills(); //done
+                    await DrawHiddenMobileStronghold(); //done
+                    await DrawStrongholdOwnership(); //done
                     await DrawRecentMoves();
                     await DrawForcesOnDune(); //done
                     await DrawBids();
@@ -171,7 +169,7 @@ namespace Treachery.Client
                     Artwork.HiddenMobileStronghold,
                     h.Game.Map.HiddenMobileStronghold.Center.X - HiddenMobileStronghold.RADIUS,
                     h.Game.Map.HiddenMobileStronghold.Center.Y - HiddenMobileStronghold.RADIUS,
-                    HiddenMobileStronghold.RADIUS + Math.Abs(HiddenMobileStronghold.DX), 2 * HiddenMobileStronghold.RADIUS, Skin.Current.SHADOW_DARK, 3, 8, 8, !isInFrontOfPlayerToken && ShowWheelsAndHMS ? 1.0f : 0.4f);
+                    HiddenMobileStronghold.RADIUS + Math.Abs(HiddenMobileStronghold.DX), 2 * HiddenMobileStronghold.RADIUS, Skin.Current.SHADOW_DARK, 3, 8, 8, !isInFrontOfPlayerToken && h.ShowWheelsAndHMS ? 1.0f : 0.4f);
             }
         }
         #endregion
@@ -215,7 +213,7 @@ namespace Treachery.Client
         #region Battleplans
         private static async Task DrawBattlePlans()
         {
-            if (ShowWheelsAndHMS && h.Game.CurrentPhase != Phase.Facedancing && h.Game.CurrentPhase != Phase.BattleReport)
+            if (h.ShowWheelsAndHMS && h.Game.CurrentPhase != Phase.Facedancing && h.Game.CurrentPhase != Phase.BattleReport)
             {
                 bool MaySeeAggressorBattlePlan = h.Game.AggressorBattleAction != null && (h.Game.AggressorBattleAction.Initiator == h.Faction || h.Game.GreenKarma && h.Game.CurrentBattle.OpponentOf(Faction.Green) == h.Game.AggressorBattleAction.Player);
                 bool MaySeeDefenderBattlePlan = h.Game.DefenderBattleAction != null && (h.Game.DefenderBattleAction.Initiator == h.Faction || h.Game.GreenKarma && h.Game.CurrentBattle.OpponentOf(Faction.Green) == h.Game.DefenderBattleAction.Player);
@@ -694,7 +692,7 @@ namespace Treachery.Client
 
         private static async Task DrawOptions()
         {
-            await DrawImageSimple(ShowWheelsAndHMS ? Artwork.Eye : Artwork.EyeSlash, Skin.Current.MapDimensions.X - 100, Skin.Current.MapDimensions.Y / 4 - 250, 100, 100);
+            await DrawImageSimple(h.ShowWheelsAndHMS ? Artwork.Eye : Artwork.EyeSlash, Skin.Current.MapDimensions.X - 100, Skin.Current.MapDimensions.Y / 4 - 250, 100, 100);
         }
 
         #endregion
@@ -1299,7 +1297,7 @@ namespace Treachery.Client
                     y >= Skin.Current.MapDimensions.Y / 4 - 300 &&
                     y <= Skin.Current.MapDimensions.Y / 4 - 100)
                 {
-                    ShowWheelsAndHMS = !ShowWheelsAndHMS;
+                    h.ShowWheelsAndHMS = !h.ShowWheelsAndHMS;
                     await Draw();
                 }
                 else

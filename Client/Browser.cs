@@ -68,6 +68,11 @@ namespace Treachery.Client
             await JsInvoke("EnableMapHover");
         }
 
+        public static async Task<float> MeasureText(string text, string font)
+        {
+            return await JsInvoke<float>("MeasureText", text, font);
+        }
+
         public static async Task HideModal(string modalId)
         {
             await JsInvoke("HideModal", "#" + modalId);

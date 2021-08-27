@@ -1,0 +1,26 @@
+﻿@using Treachery.Shared
+@inherits MapComponent
+
+@{
+    foreach (var l in Game.Map.Locations.Where(l => l.SpiceBlowAmount > 0))
+    {
+        if (Game.ResourcesOnPlanet.ContainsKey(l))
+        {
+            int amount = Game.ResourcesOnPlanet[l];
+
+            <Image X="@(l.SpiceLocation.X - Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(l.SpiceLocation.Y - Skin.Current.RESOURCETOKEN_RADIUS)" Width=@(Skin.Current.RESOURCETOKEN_RADIUS * 2) Height="@(Skin.Current.RESOURCETOKEN_RADIUS * 2)" Src="@Skin.Current.Harvester_URL" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="2" />
+
+            <MapText X="@(l.SpiceLocation.X)" Y="@(l.SpiceLocation.Y + 30)"
+                     Font="@Skin.Current.RESOURCETOKEN_FONT" FontColor="@Skin.Current.RESOURCETOKEN_FONTCOLOR"
+                     BorderWidth="@Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH"
+                     BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
+                     Align="@TextAlignment.Center">
+                @amount.ToString()
+            </MapText>
+        }
+        else if (Skin.Current.DrawResourceIconsOnMap)
+        {
+            <Image X="@(l.SpiceLocation.X - Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(l.SpiceLocation.Y - Skin.Current.RESOURCETOKEN_RADIUS)" Width=@(Skin.Current.RESOURCETOKEN_RADIUS * 2) Height="@(Skin.Current.RESOURCETOKEN_RADIUS * 2)" Src="@Skin.Current.Resource_URL" ShadowColor="@Skin.Current.SHADOW_LIGHT" />
+        }
+    }
+}

@@ -1,0 +1,12 @@
+﻿@using Treachery.Shared;
+@inherits MapComponent;
+
+<Image X=X Y=Y Width=@(3*Skin.Current.FORCETOKEN_RADIUS) Height=@(3*Skin.Current.FORCETOKEN_RADIUS) Src="@LeaderURL" />
+
+@code {
+
+    [Parameter]
+    public IHero ToShow { get; set; }
+
+    private string LeaderURL => Skin.Current.GetImageURL(ToShow);
+}

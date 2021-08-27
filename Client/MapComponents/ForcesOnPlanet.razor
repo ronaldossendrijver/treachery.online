@@ -1,5 +1,6 @@
 ﻿@using Treachery.Shared
- 
+@inherits MapComponent
+
 @{
     var forceLocations = Game.ForcesOnPlanetExcludingEmptyLocations;
 
@@ -23,24 +24,29 @@
                 xOffset = 0;
                 if (battalion.AmountOfForces > 0)
                 {
-                    xOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
                     <Force X=@pos.X Y=@(yOffset + pos.Y) Special=@false Amount=@battalion.AmountOfForces Faction=@battalion.Faction Threatened=@threatened />
+                    xOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
                 }
 
                 if (battalion.AmountOfSpecialForces > 0)
                 {
+                    <Force X=@(pos.X + xOffset) Y=@(yOffset + pos.Y) Special=@true Amount=@battalion.AmountOfSpecialForces Faction=@battalion.Faction Threatened=@threatened />
                     xOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
-                    <Force X=@pos.X Y=@(yOffset + pos.Y) Special=@true Amount=@battalion.AmountOfForces Faction=@battalion.Faction Threatened=@threatened />
                 }
 
                 yOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
             }
         }
+
+        if (Game.AnyForcesIn(location.Territory) ? forceLocations.ContainsKey(location) : location == location.Territory.MiddleLocation)
+        {
+
+            xOffset = 0;
+            foreach (var hero in Game.LeaderState.Where(state => state.Key is IHero && state.Value.Alive && state.Value.CurrentTerritory == location.Territory).Select(state => state.Key))
+            {
+                <Leader ToShow="hero" X=@(pos.X + xOffset - Skin.Current.FORCETOKEN_RADIUS) Y=@(yOffset + pos.Y - Skin.Current.FORCETOKEN_RADIUS) />
+                xOffset += 3 * Skin.Current.FORCETOKEN_RADIUS;
+            }
+        }
     }
-}
-
-@code {
-
-    [Parameter]
-    public Game Game { get; set; }
 }
