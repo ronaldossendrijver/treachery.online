@@ -1,0 +1,100 @@
+﻿@using Treachery.Shared
+@inherits MapComponent
+
+@if (h.Game.CurrentPhase >= Phase.MetheorAndStormSpell)
+{
+    float y = 2 * Skin.Current.FORCETOKEN_RADIUS;
+    float x = Skin.Current.FORCETOKEN_RADIUS;
+    float leaderDiameter = 3f * Skin.Current.FORCETOKEN_RADIUS;
+    float leaderPctHeight = .15f * leaderDiameter * Skin.Current.BattleWheelHeroHeight / Skin.Current.BattleWheelHeroWidth;
+    float spacing = 0.85f;
+
+    foreach (var p in h.Game.Players)
+    {
+        string color = Skin.Current.GetFactionColor(p.Faction);
+
+        if (p.ForcesKilled > 0 || p.SpecialForcesKilled > 0)
+        {
+            if (p.ForcesKilled > 0)
+            {
+                <Force X=@(x + Skin.Current.FORCETOKEN_RADIUS) Y=@(y + Skin.Current.FORCETOKEN_RADIUS) Special=@false Amount=@p.ForcesKilled Faction=@p.Faction />
+            }
+
+            if (p.SpecialForcesKilled > 0)
+            {
+                var dX = (p.ForcesKilled > 0) ? 2 * Skin.Current.FORCETOKEN_RADIUS : 0;
+                <Force X=@(x + Skin.Current.FORCETOKEN_RADIUS + dX) Y=@(y + Skin.Current.FORCETOKEN_RADIUS) Special=@true Amount=@p.SpecialForcesKilled Faction=@p.Faction />
+            }
+
+            y += spacing * 2 * Skin.Current.FORCETOKEN_RADIUS;
+        }
+
+        var corpses = p.Leaders
+            .Where(l => !h.Game.IsAlive(l))
+            .Select(l => new Tuple<Treachery.Shared.Leader, LeaderState>(l, h.Game.LeaderState[l]))
+            .OrderBy(l => l.Item2.TimeOfDeath).Select(l => l.Item1);
+
+        int corpseNr = 0;
+        if (corpses.Any())
+        {
+            y += spacing * (leaderPctHeight * (corpses.Count() - 1));
+            int dy = 0;
+            foreach (var leader in corpses)
+            {
+                var l = new Point((int)x, (int)y - dy);
+
+                if (h.Game.LeaderState[leader].IsFaceDownDead)
+                {
+                    <Image X="@(l.X + DisplaceX[corpseNr] * 2)" Y="@(l.Y)" Diameter="@(leaderDiameter)"
+                           Src="@Skin.Current.GetFactionFacedownImageURL(p.Faction)"
+                           ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="2" />
+                }
+                else
+                {
+                    <Leader ToShow="leader" X=@(l.X + DisplaceX[corpseNr] * 2) Y=@(l.Y) Diameter="leaderDiameter" />
+                }
+
+                dy += (int)leaderPctHeight;
+                corpseNr++;
+            }
+
+            y += spacing * leaderDiameter;
+        }
+
+        if (p.Faction == Faction.Green && !h.Game.MessiahIsAlive)
+        {
+            var l = new Point((int)x, (int)y);
+            <Image X="@(x)" Y="@(y)" Diameter="@(0.5f * leaderDiameter)"
+                   Src="@Skin.Current.GetFactionFacedownImageURL(p.Faction)"
+                   ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="2" />
+            y += spacing * leaderDiameter;
+        }
+
+        NextColumnIfNecessary(ref y, ref x, spacing);
+    }
+}
+
+@code {
+
+    private static void NextColumnIfNecessary(ref float y, ref float x, float spacing)
+    {
+        if (y > 14 * Skin.Current.FORCETOKEN_RADIUS - 0.5f * x)
+        {
+            y = 2 * Skin.Current.FORCETOKEN_RADIUS;
+            x += 4 * Skin.Current.FORCETOKEN_RADIUS;
+        }
+    }
+
+    private static readonly int[] DisplaceX = Displace();
+
+    private static int[] Displace()
+    {
+        var rnd = new Random();
+        int[] result = new int[20];
+        for (int i = 0; i < 20; i++)
+        {
+            result[i] = 20 - rnd.Next(40);
+        }
+        return result;
+    }
+}

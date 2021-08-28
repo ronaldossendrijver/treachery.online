@@ -1,0 +1,101 @@
+﻿@using Treachery.Shared
+@inherits MapComponent
+
+@if (Game.CurrentPhase > Phase.AwaitingPlayers) {
+
+    int cardWidth = 371;
+    int cardHeight = 515;
+
+    var x = Skin.Current.SpiceDeckLocation.X;
+    var y = Skin.Current.SpiceDeckLocation.Y;
+
+    //Temporal code to avoid spice piles to display off screen, in case people use outdated skins
+
+    if (x + 100 + 3 * cardWidth > Skin.Current.MapDimensions.X)
+    {
+        x = Skin.Dune1979.SpiceDeckLocation.X;
+        y = Skin.Dune1979.SpiceDeckLocation.Y;
+    }
+
+    //Resource cards
+    if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(h.Player))
+    {
+        <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.ResourceCardDeck.Top)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="5" ShadowY="5" ShadowBlur="3" />
+    }
+    else
+    {
+        <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.CardBack_ResourceCard_URL" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="5" ShadowY="5" ShadowBlur="3" />
+    }
+
+    <MapText ToShow="@Game.ResourceCardDeck.Items.Count.ToString()"
+             X="@(x + cardWidth / 2)" Y="@(y + cardHeight / 2 + 20)"
+             Font="@Skin.Current.CARDPILE_FONT" FontColor="@Skin.Current.CARDPILE_FONTCOLOR"
+             BorderWidth="@Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.CARDPILE_FONT_BORDERCOLOR"
+             Align="@TextAlignment.Center" />
+
+    x += cardWidth + 30;
+    if (Game.LatestSpiceCardA != null)
+    {
+        <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.LatestSpiceCardA)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="5" ShadowY="5" ShadowBlur="3" />
+    }
+
+    if (Game.Applicable(Rule.IncreasedResourceFlow))
+    {
+        <MapText ToShow="A"
+                 X="@(x + cardWidth / 2)" Y="@(y + cardHeight / 2 + 20)"
+                 Font="@Skin.Current.CARDPILE_FONT" FontColor="@Skin.Current.CARDPILE_FONTCOLOR"
+                 BorderWidth="@Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.CARDPILE_FONT_BORDERCOLOR"
+                 Align="@TextAlignment.Center" />
+
+        x += cardWidth + 30;
+        if (Game.LatestSpiceCardB != null)
+        {
+            <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.LatestSpiceCardB)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="5" ShadowY="5" ShadowBlur="3" />
+        }
+
+        <MapText ToShow="B"
+                 X="@(x + cardWidth / 2)" Y="@(y + cardHeight / 2 + 20)"
+                 Font="@Skin.Current.CARDPILE_FONT" FontColor="@Skin.Current.CARDPILE_FONTCOLOR"
+                 BorderWidth="@Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.CARDPILE_FONT_BORDERCOLOR"
+                 Align="@TextAlignment.Center" />
+    }
+
+    //Treachery cards
+    x = Skin.Current.TreacheryDeckLocation.X;
+
+    if (Game.TreacheryDeck.Items.Count > 0)
+    {
+        <Image X="@(x)" Y="@(Skin.Current.TreacheryDeckLocation.Y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.CardBack_TreacheryCard_URL" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="5" ShadowY="5" ShadowBlur="3" />
+    }
+
+    <MapText ToShow="@Game.TreacheryDeck.Items.Count.ToString()"
+             X="@(x + cardWidth / 2)" Y="@(Skin.Current.TreacheryDeckLocation.Y + cardHeight / 2 + 20)"
+             Font="@Skin.Current.CARDPILE_FONT" FontColor="@Skin.Current.CARDPILE_FONTCOLOR"
+             BorderWidth="@Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.CARDPILE_FONT_BORDERCOLOR"
+             Align="@TextAlignment.Center" />
+
+    if (!Game.TreacheryDiscardPile.IsEmpty)
+    {
+        x += cardWidth + 30;
+        <Image X="@(x)" Y="@(Skin.Current.TreacheryDeckLocation.Y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.TreacheryDiscardPile.Top)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="5" ShadowY="5" ShadowBlur="3" />
+
+        <MapText ToShow="@Game.TreacheryDiscardPile.Items.Count.ToString()"
+                 X="@(x + cardWidth / 2)" Y="@(Skin.Current.TreacheryDeckLocation.Y + cardHeight / 2 + 20)"
+                 Font="@Skin.Current.CARDPILE_FONT" FontColor="@Skin.Current.CARDPILE_FONTCOLOR"
+                 BorderWidth="@Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.CARDPILE_FONT_BORDERCOLOR"
+                 Align="@TextAlignment.Center" />
+    }
+
+    if (Game.WhiteCache.Count > 0)
+    {
+        x = Skin.Current.TreacheryDeckLocation.X - cardWidth - 30;
+
+        <Image X="@(x)" Y="@(Skin.Current.TreacheryDeckLocation.Y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.CardBack_TreacheryCard_URL" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="5" ShadowY="5" ShadowBlur="3" />
+        <Image X="@(x + cardWidth / 3)" Y="@(Skin.Current.TreacheryDeckLocation.Y + 30)" Diameter="@(cardWidth / 3)" Src="@Skin.Current.GetImageURL(Faction.White)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1" />
+        <MapText ToShow="@Game.WhiteCache.Count.ToString()"
+                 X="@(x + cardWidth / 2)" Y="@(Skin.Current.TreacheryDeckLocation.Y + cardHeight / 2 + 20)"
+                 Font="@Skin.Current.CARDPILE_FONT" FontColor="@Skin.Current.CARDPILE_FONTCOLOR"
+                 BorderWidth="@Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.CARDPILE_FONT_BORDERCOLOR"
+                 Align="@TextAlignment.Center" />
+    }
+}

@@ -56,12 +56,12 @@ namespace Treachery.Client
                     await DrawPlayersAndTechTokensAndLeaderSkills(); //done
                     await DrawHiddenMobileStronghold(); //done
                     await DrawStrongholdOwnership(); //done
-                    await DrawRecentMoves();
+                    await DrawRecentMoves(); //done?
                     await DrawForcesOnDune(); //done
-                    await DrawBids();
-                    await DrawTanks();
-                    await DrawCardPiles();
-                    await DrawBattlePlans();
+                    await DrawBids(); //done
+                    await DrawTanks(); //done
+                    await DrawCardPiles(); //done
+                    await DrawBattlePlans(); //done
                     await DrawDisconnected();
                     await DrawOptions();
                 }

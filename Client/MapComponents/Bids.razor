@@ -1,0 +1,48 @@
+﻿@using Treachery.Shared
+@inherits MapComponent
+
+@if (h.Game.CurrentPhase == Phase.Bidding || h.Game.CurrentPhase == Phase.BlackMarketBidding)
+{
+    foreach (var p in h.Game.Players)
+    {
+        var position = PlayerTokenPosition(h.Game, p.PositionAtTable);
+        if (!h.HighlightPlayer(p))
+        {
+            var y = position.Y + Skin.Current.PlayerTokenRadius;
+            string bidText = "";
+            string bidColor = "white";
+            if (!p.HasRoomForCards)
+            {
+                bidText = "FULL";
+                bidColor = "rgb(200,200,200)";
+            }
+            else if (h.Game.Bids.ContainsKey(p.Faction))
+            {
+                var bid = h.Game.Bids[p.Faction];
+                bidText = DetermineBidText(bid);
+                bidColor = bid.Passed ? "rgb(255,200,200)" : "rgb(200,255,200)";
+            }
+
+            <MapText ToShow="@bidText"
+                     X="@(position.X)" Y="@(y)"
+                     Font="@Skin.Current.TURN_FONT" FontColor="@bidColor"
+                     BorderWidth="3" BorderColor="black"
+                     Align="@TextAlignment.Center" />
+        }
+    }
+}
+
+@code {
+
+    private string DetermineBidText(IBid bid)
+    {
+        if (Game.CurrentAuctionType != AuctionType.BlackMarketSilent && Game.CurrentAuctionType != AuctionType.WhiteSilent)
+        {
+            return bid.Passed ? "PASS" : string.Format("BID {0}", bid.TotalAmount);
+        }
+        else
+        {
+            return "READY";
+        }
+    }
+}

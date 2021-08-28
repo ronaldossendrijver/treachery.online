@@ -4,16 +4,16 @@
 @{
     for (int i = 0; i < Amount; i++)
     {
-        <Image X=@(X - i * 3 - Skin.Current.FORCETOKEN_RADIUS) Y=@(Y - i * 5 - Skin.Current.FORCETOKEN_RADIUS) Width=@(2*Skin.Current.FORCETOKEN_RADIUS) Height=@(2*Skin.Current.FORCETOKEN_RADIUS) Src="@ForceURL" />
+        <Image X=@(X - i * 3 - Skin.Current.FORCETOKEN_RADIUS) Y=@(Y - i * 5 - Skin.Current.FORCETOKEN_RADIUS) Diameter=@Diameter Src="@ForceURL" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1"/>
     }
 }
 
-<MapText ToShow="@Amount.ToString()" X=@(X+30) Y=@(Y) Font=@Skin.Current.FORCETOKEN_FONT BorderWidth=@Skin.Current.FORCETOKEN_FONT_BORDERWIDTH BorderColor=@Skin.Current.FORCETOKEN_FONT_BORDERCOLOR/>
+<MapText ToShow="@Amount.ToString()" X=@(X+30) Y=@(Y+40) Font=@Skin.Current.FORCETOKEN_FONT BorderWidth=@Skin.Current.FORCETOKEN_FONT_BORDERWIDTH BorderColor=@Skin.Current.FORCETOKEN_FONT_BORDERCOLOR/>
 
 @code {
 
     [Parameter]
-    public bool Special { get; set; }
+    public bool Special { get; set; } = false;
 
     [Parameter]
     public int Amount { get; set; }
@@ -22,7 +22,12 @@
     public Faction Faction { get; set; }
 
     [Parameter]
-    public bool Threatened { get; set; }
+    public bool Threatened { get; set; } = false;
+
+    protected override void OnInitialized()
+    {
+        Diameter = 2 * Skin.Current.FORCETOKEN_RADIUS;
+    }
 
     private string ForceURL => Special ? Skin.Current.GetFactionSpecialForceImageURL(Faction) : Skin.Current.GetFactionForceImageURL(Faction);
 }

@@ -1,0 +1,188 @@
+﻿@using Treachery.Shared
+@inherits MapComponent
+
+@{
+    <Image X="@(LeftMargin)" Y="@(TopMargin)" Diameter="@(Skin.Current.BattleScreenWidth)" Src="@Skin.Current.BattleScreen_URL" ShadowColor="Skin.Current.SHADOW_LIGHT" ShadowX="10" ShadowY="10" ShadowBlur="4" Opacity="Opacity"/>
+    <Image X="@(LeftMargin)" Y="@(TopMargin)" Diameter="@(Skin.Current.BattleScreenWidth)" Src="@Skin.Current.FactionTableImage_URL[Plan.Initiator]" Opacity="(Aspect == PrescienceAspect.None ? 1f : 0.5f) * 0.3f"/>
+
+    Console.WriteLine(Plan == null ? "PLAN IS NULL" : "PLAN IS OK");
+
+    if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Dial)
+    {
+        var dial = Plan.Dial(Game, IsAggressor ? Game.CurrentBattle.Target : Game.CurrentBattle.Initiator).ToString();
+
+        int forceX = LeftMargin + Skin.Current.BattleWheelForcesX;
+        int forceY = TopMargin + Skin.Current.BattleWheelForcesY;
+
+        <MapText ToShow="@dial"
+                 X="@(forceX)" Y="@(forceY)"
+                 Font="@Skin.Current.WHEEL_FONT" FontColor="@Skin.Current.WHEEL_FONTCOLOR"
+                 BorderWidth="Skin.Current.WHEEL_FONT_BORDERWIDTH" BorderColor="@(IsAggressor ? Skin.Current.WHEEL_FONT_AGGRESSOR_BORDERCOLOR : Skin.Current.WHEEL_FONT_DEFENDER_BORDERCOLOR)"
+                 Align="@TextAlignment.Center" />
+    }
+
+    Console.WriteLine("2");
+
+    if (Aspect == PrescienceAspect.None)
+    {
+        int forceX = LeftMargin + Skin.Current.BattleWheelForcesX;
+        int forceY = TopMargin + Skin.Current.BattleWheelForcesY;
+
+        int costsOfBattle = Plan.Cost(Game);
+        if (costsOfBattle > 0)
+        {
+            <Image X="@(forceX + 250 - Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY + 50 - Skin.Current.RESOURCETOKEN_RADIUS)" Diameter="@(Skin.Current.RESOURCETOKEN_RADIUS * 2)" Src="@Skin.Current.Harvester_URL" ShadowColor="Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1" />
+
+            <MapText ToShow="@costsOfBattle.ToString()"
+                     X="@(forceX + 250)" Y="@(forceY + 75)"
+                     Font="@Skin.Current.RESOURCETOKEN_FONT" FontColor="@Skin.Current.RESOURCETOKEN_FONTCOLOR"
+                     BorderWidth="Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
+                     Align="@TextAlignment.Center" />
+        }
+    }
+
+    Console.WriteLine("3");
+
+    if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Leader)
+    {
+        if (Plan.Hero == null)
+        {
+            if (Aspect == PrescienceAspect.Leader)
+            {
+                <MapText ToShow="no leader"
+                         X="@(LeftMargin + Skin.Current.BattleScreenHeroX + Skin.Current.BattleWheelHeroWidth / 2)" Y="@(TopMargin + Skin.Current.BattleScreenHeroY + Skin.Current.BattleWheelHeroWidth / 2)"
+                         Font="@Skin.Current.CARDPILE_FONT" FontColor="white"
+                         BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="black"
+                         Align="@TextAlignment.Center" />
+            }
+        }
+        else if (Plan.Hero is Leader)
+        {
+            var heroSkill = Game.Skill(Plan.Hero);
+            var playerSkill = Game.Skill(Plan.Player);
+
+            if (heroSkill != LeaderSkill.None || playerSkill != LeaderSkill.None && PassiveSkillIsRelevantForBattlePlan(playerSkill))
+            {
+                var skill = heroSkill != LeaderSkill.None ? heroSkill : playerSkill;
+
+                int skillLeftMargin = LeftMargin + Skin.Current.BattleScreenHeroX - (int)(0.5f * (Skin.Current.BattleWheelCardWidth - Skin.Current.BattleWheelHeroWidth));
+                int skillTopMargin = TopMargin + Skin.Current.BattleScreenHeroY - Skin.Current.BattleWheelCardHeight + 120;
+
+                <Image X="@(skillLeftMargin)" Y="@(skillTopMargin)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageURL(skill)" ShadowColor="Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="1" />
+
+                int bonus = Battle.DetermineSkillBonus(Game, Plan, out _);
+                if (bonus != 0)
+                {
+                    <MapText ToShow="@("+ " + bonus)"
+                             X="@(skillLeftMargin + Skin.Current.BattleWheelCardWidth - 20)" Y="@(skillTopMargin + 140)"
+                             Font="@Skin.Current.CARDPILE_FONT" FontColor="green"
+                             BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.FORCETOKEN_FONT_BORDERCOLOR"
+                             Align="@TextAlignment.Center" />
+                }
+                else
+                {
+                    int penalty = Battle.DetermineSkillPenalty(Game, Plan, Opponent, out _);
+                    if (penalty != 0)
+                    {
+                        <MapText ToShow="@("- " + penalty)"
+                                 X="@(skillLeftMargin + Skin.Current.BattleWheelCardWidth - 20)" Y="@(skillTopMargin + 140)"
+                                 Font="@Skin.Current.CARDPILE_FONT" FontColor="red"
+                                 BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
+                                 Align="@TextAlignment.Center" />
+                    }
+                }
+            }
+
+            <Leader ToShow="Plan.Hero" X=@(LeftMargin + Skin.Current.BattleScreenHeroX) Y=@(TopMargin + Skin.Current.BattleScreenHeroY) Diameter="Skin.Current.BattleWheelHeroWidth"/>
+
+        }
+        else if (Plan.Hero is TreacheryCard)
+        {
+            <Image X="@(LeftMargin + Skin.Current.BattleScreenHeroX)" Y="@(TopMargin + Skin.Current.BattleScreenHeroY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageURL(Plan.Hero as TreacheryCard)" ShadowColor="Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="1" />
+        }
+
+        Console.WriteLine("4");
+
+        if (TraitorCalled)
+        {
+            <MapText ToShow="TRAITOR!"
+                     X="@(LeftMargin + Skin.Current.BattleScreenHeroX + Skin.Current.BattleWheelHeroWidth / 2)" Y="@(TopMargin + Skin.Current.BattleScreenHeroY + Skin.Current.BattleWheelHeroWidth / 2 + 100)"
+                     Font="@Skin.Current.CARDPILE_FONT" FontColor="red"
+                     BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
+                     Align="@TextAlignment.Center" />
+        }
+
+        if (Plan.Initiator == Faction.Green && Plan.Messiah)
+        {
+            <Image X="@(LeftMargin + Skin.Current.BattleScreenHeroX + Skin.Current.BattleWheelHeroWidth / 1.5f)" Y="@(TopMargin + Skin.Current.BattleScreenHeroY - 50)" Diameter="@(0.5f * Skin.Current.BattleWheelHeroWidth)" Src="@Skin.Current.Messiah_URL" ShadowColor="Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1" />
+        }
+    }
+
+    if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Defense)
+    {
+        if (Plan.Defense != null)
+        {
+            <Image X="@(LeftMargin + Skin.Current.BattleWheelCardX + Skin.Current.BattleWheelCardWidth + 30)" Y="@(TopMargin + Skin.Current.BattleWheelCardY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageURL(Plan.Defense)" ShadowColor="Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="1" />
+        }
+        else if (Aspect == PrescienceAspect.Defense)
+        {
+            <MapText ToShow="no defense"
+                     X="@(LeftMargin + Skin.Current.BattleWheelCardX + 1.5f * Skin.Current.BattleWheelCardWidth + 30)" Y="@(TopMargin + Skin.Current.BattleWheelCardY + 20 + Skin.Current.BattleWheelCardHeight / 2)"
+                     Font="@Skin.Current.TURN_FONT" FontColor="white"
+                     BorderWidth="Skin.Current.TURN_FONT_BORDERWIDTH" BorderColor="black"
+                     Align="@TextAlignment.Center" />
+        }
+    }
+
+    if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Weapon)
+    {
+        if (Plan.Weapon != null)
+        {
+            <Image X="@(LeftMargin + Skin.Current.BattleWheelCardX)" Y="@(TopMargin + Skin.Current.BattleWheelCardY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageURL(Plan.Weapon)" ShadowColor="Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="1" />
+        }
+        else if (Aspect == PrescienceAspect.Weapon)
+        {
+            <MapText ToShow="no weapon"
+                     X="@(LeftMargin + Skin.Current.BattleWheelCardX + Skin.Current.BattleWheelCardWidth / 2)" Y="@(TopMargin + Skin.Current.BattleWheelCardY + 20 + Skin.Current.BattleWheelCardHeight / 2)"
+                     Font="@Skin.Current.TURN_FONT" FontColor="white"
+                     BorderWidth="Skin.Current.TURN_FONT_BORDERWIDTH" BorderColor="black"
+                     Align="@TextAlignment.Center" />
+        }
+    }
+}
+
+@code {
+
+    [Parameter]
+    public Battle Plan { get; set; }
+
+    [Parameter]
+    public Player Opponent { get; set; }
+
+    [Parameter]
+    public bool TraitorCalled { get; set; }
+
+    [Parameter]
+    public bool IsAggressor { get; set; }
+
+    [Parameter]
+    public int LeftMargin { get; set; }
+
+    [Parameter]
+    public int TopMargin { get; set; }
+
+    [Parameter]
+    public PrescienceAspect Aspect { get; set; } = PrescienceAspect.None;
+
+    private static bool PassiveSkillIsRelevantForBattlePlan(LeaderSkill skill)
+    {
+        return
+            skill == LeaderSkill.Diplomat ||
+            skill == LeaderSkill.Graduate ||
+            skill == LeaderSkill.Warmaster ||
+            skill == LeaderSkill.Adept ||
+            skill == LeaderSkill.Swordmaster ||
+            skill == LeaderSkill.KillerMedic ||
+            skill == LeaderSkill.MasterOfAssassins;
+    }
+}
