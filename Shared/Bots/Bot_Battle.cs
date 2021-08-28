@@ -145,7 +145,7 @@ namespace Treachery.Shared
             //LogInfo("Opponent of " + this + " in current battle: " + opponent);
             var prescience = MyPrescience;
 
-            if (waitForPrescience && prescience != null && Game.CurrentBattle.PlanOf(opponent) == null)
+            if (waitForPrescience && Prescience.MayUsePrescience(Game, this) || waitForPrescience && prescience != null && Game.CurrentBattle.PlanOf(opponent) == null)
             {
                 return null; //enemy is not ready yet
             }

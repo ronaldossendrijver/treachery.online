@@ -84,7 +84,7 @@
                 break;
             case "MetheorPlayed":
                 {
-                <SimpleActionComponent GameEventType="MetheorPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Metheor)" Title="@Support.GetCardTitle(TreacheryCardType.Metheor)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0} break;", TreacheryCardType.Metheor)"/>
+                <SimpleActionComponent GameEventType="MetheorPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Metheor)" Title="@Support.GetCardTitle(TreacheryCardType.Metheor)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Metheor)"/>
                 }
                 break;
             case "TakeLosses":
@@ -249,7 +249,7 @@
                 break;
             case "KarmaPrescience":
                 {
-                <SimpleActionComponent GameEventType="KarmaPrescience" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" Title="@Skin.Current.Format("Use {0} break; to see the entire enemy battle plan", TreacheryCardType.Karma)" Alert="false" Collapsible="false" ConfirmLabel="@Skin.Current.Format("Use {0} break;", TreacheryCardType.Karma)"/>
+                <SimpleActionComponent GameEventType="KarmaPrescience" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" Title="@Skin.Current.Format("Use {0} to see the entire enemy battle plan", TreacheryCardType.Karma)" Alert="false" Collapsible="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Karma)"/>
                 }
                 break;
             case "Karma":
@@ -289,7 +289,7 @@
                 break;
             case "AmalPlayed":
                 {
-                <SimpleActionComponent GameEventType="AmalPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Amal)" Title="@Support.GetCardTitle(TreacheryCardType.Amal)" Alert="false" Collapsible="true" ConfirmLabel="@Skin.Current.Format("Use {0} break;", TreacheryCardType.Amal)"/>
+                <SimpleActionComponent GameEventType="AmalPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Amal)" Title="@Support.GetCardTitle(TreacheryCardType.Amal)" Alert="false" Collapsible="true" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Amal)"/>
                 }
                 break;
             case "WhiteAnnouncesBlackMarket":
@@ -324,7 +324,7 @@
                 break;
             case "HarvesterPlayed":
                 {
-                <SimpleActionComponent GameEventType="HarvesterPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Harvester)" Title="@Support.GetCardTitle(TreacheryCardType.Harvester)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0} break;", TreacheryCardType.Harvester)"/>
+                <SimpleActionComponent GameEventType="HarvesterPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Harvester)" Title="@Support.GetCardTitle(TreacheryCardType.Harvester)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Harvester)"/>
                 }
                 break;
             case "PoisonToothCancelled":
@@ -339,7 +339,7 @@
                 break;
             case "ThumperPlayed":
                 {
-                <SimpleActionComponent GameEventType="ThumperPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Thumper)" Title="@Support.GetCardTitle(TreacheryCardType.Thumper)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0} break;", TreacheryCardType.Thumper)"/>
+                <SimpleActionComponent GameEventType="ThumperPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Thumper)" Title="@Support.GetCardTitle(TreacheryCardType.Thumper)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Thumper)"/>
                 }
                 break;
             case "HideSecrets":
@@ -389,7 +389,7 @@
                 break;
             case "BrownExtraMove":
                 {
-                <SimpleActionComponent GameEventType="BrownExtraMove" h="@h" BackgroundImage="@Skin.Current.GetImageURL(BrownExtraMove.CardToUse(h.Player))" Title="@Skin.Current.Format("Use {0} break; to be able to move your forces one extra territory?", BrownExtraMove.CardToUse(h.Player))" Alert="false" Collapsible="true" />
+                <SimpleActionComponent GameEventType="BrownExtraMove" h="@h" BackgroundImage="@Skin.Current.GetImageURL(BrownExtraMove.CardToUse(h.Player))" Title="@Skin.Current.Format("Use {0} to be able to move your forces one extra territory?", BrownExtraMove.CardToUse(h.Player))" Alert="false" Collapsible="true" />
                 }
                 break;
             case "BrownMovePrevention":
@@ -431,7 +431,7 @@
                 {
                 <SimpleActionComponent GameEventType="WhiteRevealedNoField" h="@h" 
                                        IsFactionSpecific="Faction.White"
-                                       Title="@Skin.Current.Format("Reveal your currently active No-Field of {0} break;, placing {1} break; forces?", h.Game.CurrentNoFieldValue, Math.Min(h.Game.CurrentNoFieldValue, h.Player.ForcesInReserve))"
+                                       Title="@Skin.Current.Format("Reveal your currently active No-Field of {0}, placing {1} forces?", h.Game.CurrentNoFieldValue, Math.Min(h.Game.CurrentNoFieldValue, h.Player.ForcesInReserve))"
                                        ConfirmLabel="Reveal"/>
                 }
                 break;
@@ -439,8 +439,8 @@
                 {
                 <SimpleActionComponent GameEventType="ResidualPlayed" h="@h" 
                                        BackgroundImage="@Support.GetCardImage(TreacheryCardType.Residual)" 
-                                       Title="@Skin.Current.Format("Use {0} break; to kill a random available opponent leader?", TreacheryCardType.Residual)" 
-                                       ConfirmLabel="@Skin.Current.Format("Use {0} break;", TreacheryCardType.Residual)"/>
+                                       Title="@Skin.Current.Format("Use {0} to kill a random available opponent leader?", TreacheryCardType.Residual)" 
+                                       ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Residual)"/>
                 }
                 break;
             case "FlightUsed":
@@ -467,8 +467,8 @@
                 {
                 <SimpleActionComponent GameEventType="DiscardedSearchedAnnounced" h="@h" 
                                        BackgroundImage="@Support.GetCardImage(TreacheryCardType.SearchDiscarded)" 
-                                       Title="@Skin.Current.Format("Use {0} break; to pay 2 and search and take a card from the treachery discard pile?", TreacheryCardType.SearchDiscarded)" 
-                                       ConfirmLabel="@Skin.Current.Format("Use {0} break;", TreacheryCardType.SearchDiscarded)"/>
+                                       Title="@Skin.Current.Format("Use {0} to pay 2 and search and take a card from the treachery discard pile?", TreacheryCardType.SearchDiscarded)" 
+                                       ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.SearchDiscarded)"/>
                 }
                 break;
             case "DiscardedSearched":
@@ -485,13 +485,13 @@
                 {
                 <SimpleActionComponent GameEventType="PortableAntidoteUsed" h="@h" 
                                        BackgroundImage="@Support.GetCardImage(TreacheryCardType.PortableAntidote)" 
-                                       Title="@Skin.Current.Format("Use your {0} break;?", TreacheryCardType.PortableAntidote)" 
-                                       ConfirmLabel="@Skin.Current.Format("Use {0} break;", TreacheryCardType.PortableAntidote)"/>
+                                       Title="@Skin.Current.Format("Use your {0}?", TreacheryCardType.PortableAntidote)" 
+                                       ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.PortableAntidote)"/>
                 }
                 break;
             case "Bureaucracy":
                 {
-                <YesNoActionComponent GameEventType="Bureaucracy" h="@h" BackgroundImage="@Skin.Current.GetImageURL(LeaderSkill.Bureaucrat)" Title="@Skin.Current.Format("Use your {0} break; skill?", LeaderSkill.Bureaucrat)" Alert="true" />
+                <YesNoActionComponent GameEventType="Bureaucracy" h="@h" BackgroundImage="@Skin.Current.GetImageURL(LeaderSkill.Bureaucrat)" Title="@Skin.Current.Format("Use your {0} skill?", LeaderSkill.Bureaucrat)" Alert="true" />
                 }
                 break;
             case "Diplomacy":
@@ -505,8 +505,8 @@
                 <SimpleActionComponent 
                                        GameEventType="SwitchedSkilledLeader" h="@h" 
                                        BackgroundImage="@Skin.Current.GetImageURL(h.Game.Skill(skilledLeader))" 
-                                       Title="@Skin.Current.Format("Place {0} break; {1} break; your player shield?", skilledLeader, h.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of")" 
-                                       ConfirmLabel="@Skin.Current.Format("Put {0} break; shield", h.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of")"/>
+                                       Title="@Skin.Current.Format("Place {0} {1} your player shield?", skilledLeader, h.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of")" 
+                                       ConfirmLabel="@Skin.Current.Format("Put {0} shield", h.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of")"/>
                 }
                 break;
             case "Thought":
