@@ -457,6 +457,7 @@
             v = v.map(a => a / length(w));
             const tMax = Math.acos(inner(from, to) / length(from) / length(to));
             const n = Math.round((50 * tMax) / Math.PI);
+            
             for (let i = 0; i <= n; i++) {
                 const t = -tMax * (i / n);
                 const t2 = -tMax * ((i + 1) / n);

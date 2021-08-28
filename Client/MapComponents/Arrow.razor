@@ -2,7 +2,7 @@
 @using System.Linq
 @inherits MapComponent
  
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="@(Radius * 2)" height="@(Radius * 2)">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="@(Radius * 2)" height="@(Radius * 2)" style="position: absolute; height: 100%; width: 100%;">
 
     <defs>
         <path id="pijl" d="M-50,-50L0,0L-50,50L0,100L100,0L0,-100L-50,-50Z" fill="@FillColor" fill-opacity="@FillOpacity" stroke="@StrokeColor" stroke-width="@StrokeWidth" stroke-linejoin="round" transform="scale(@Scale)" />
@@ -23,7 +23,7 @@
         </filter>
     </defs>
 
-    @for (int i = 0; i <= n; i++)
+    @for (float i = 0; i <= n; i++)
     {
         var t = -tMax * (i / n);
         var t2 = -tMax * ((i + 1) / n);
@@ -76,21 +76,41 @@
     [Parameter]
     public float StrokeWidth { get; set; } = 0;
 
-    int fromX => From.X - MarginX - Radius;
-    int fromY => From.Y - MarginY - Radius;
-    int fromZ => (int)Math.Pow(Radius * Radius - fromX * fromX - fromY * fromY, 0.5);
-    float[] fromAsArray => new float[] { fromX, fromY, fromZ };
+    private float[] u;
+    private float[] v;
+    private float tMax;
+    private int n;
 
-    int toX => To.X - MarginX - Radius;
-    int toY => To.Y - MarginY - Radius;
-    int toZ => (int)Math.Pow(Radius * Radius - toX * toX - toY * toY, 0.5);
-    float[] toAsArray => new float[] { toX, toY, toZ };
+    protected override void OnParametersSet()
+    {
+        int fromX;
+        int fromY;
+        int fromZ;
+        float[] fromAsArray;
 
-    float[] u => fromAsArray.Select(a => a / Radius).ToArray();
-    float[] w => cross(fromAsArray, toAsArray);
-    float[] v => cross(u, w).Select(a => a / length(w)).ToArray();
-    float tMax => (float)Math.Acos(inner(fromAsArray, toAsArray) / length(fromAsArray) / length(toAsArray));
-    int n => (int)Math.Round((50 * tMax) / Math.PI);
+        int toX;
+        int toY;
+        int toZ;
+        float[] toAsArray;
+
+        float[] w;
+
+        fromX = From.X - MarginX - Radius;
+        fromY = From.Y - MarginY - Radius;
+        fromZ = (int)Math.Pow(Radius * Radius - fromX * fromX - fromY * fromY, 0.5);
+        fromAsArray = new float[] { fromX, fromY, fromZ };
+
+        toX = To.X - MarginX - Radius;
+        toY = To.Y - MarginY - Radius;
+        toZ = (int)Math.Pow(Radius * Radius - toX * toX - toY * toY, 0.5);
+        toAsArray = new float[] { toX, toY, toZ };
+
+        u = fromAsArray.Select(a => a / Radius).ToArray();
+        w = cross(fromAsArray, toAsArray);
+        v = cross(u, w).Select(a => a / length(w)).ToArray();
+        tMax = (float)Math.Acos(inner(fromAsArray, toAsArray) / length(fromAsArray) / length(toAsArray));
+        n = (int)Math.Round((50 * tMax) / Math.PI);
+    }
 
     private float[] cross(float[] a, float[] b) => new float[] {
         a[1] * b[2] - a[2] * b[1],
@@ -104,6 +124,5 @@
         return v1.Zip(v2, (x, y) => x * y).Sum();
     }
 
-    private float length(float[] vector) => (float)Math.Pow(vector.Aggregate((sum, cur) => sum + (float)Math.Pow(cur, 2)), 0.5);
-
+    private float length(float[] vector) => (float)Math.Sqrt(vector.Select(v => v * v).Sum());
 }

@@ -1,0 +1,8 @@
+﻿@using Treachery.Shared
+@inherits MapComponent
+
+<Image X="@(Skin.Current.MapDimensions.X - 100)" Y="@(Skin.Current.MapDimensions.Y / 4 - 250)" Diameter="@(100)" Src="@(h.ShowWheelsAndHMS ? Skin.Current.Eye_URL : Skin.Current.EyeSlash_URL)" />
+
+@code {
+
+}
