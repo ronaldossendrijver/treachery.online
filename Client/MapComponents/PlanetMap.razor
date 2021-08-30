@@ -1,4 +1,5 @@
 ﻿@using Treachery.Shared
+@inherits MapComponent
 
 <div id="planetmap" style="position: absolute; left: 0px; transform: scale(0.2)">
 
@@ -46,13 +47,8 @@
 @code {
 
     [Parameter]
-    public Handler h { get; set; }
-
-    [Parameter]
     public EventCallback<LocationEventArgs> OnLocationClick { get; set; }
 
     [Parameter]
     public EventCallback<TerritoryEventArgs> OnTerritoryClick { get; set; }
-
-    private string Px(float x) => x + "px";
 }

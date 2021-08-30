@@ -1,5 +1,6 @@
 ﻿@using Treachery.Shared
- 
+@using System.Globalization;
+
 @code {
 
     [Parameter]
@@ -42,7 +43,11 @@
 
     protected Game Game => h.Game;
 
-    protected string Px(float x) => x + "px";
+    protected string Px(float x) => (int)x + "px";
+
+    protected string Round(float x) => Math.Round(x, 2).ToString(CultureInfo.InvariantCulture);
+
+    protected string Round(double x) => Math.Round(x, 2).ToString(CultureInfo.InvariantCulture);
 
     private string _id = null;
     protected string Id

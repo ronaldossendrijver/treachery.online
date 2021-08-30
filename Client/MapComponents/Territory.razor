@@ -9,9 +9,9 @@
         @if (SpecificLocation != null && SpecificLocation != Game.Map.PolarSink)
         {
             <path d="
-                M @(ScaleX * Skin.Current.PlanetCenter.X),@(ScaleY * Skin.Current.PlanetCenter.Y)
-                L @(ScaleX * StartX(SpecificLocation.Sector)),@(ScaleY * StartY(SpecificLocation.Sector)) 
-                A @(ScaleX * Skin.Current.PlanetRadius) @(ScaleY * Skin.Current.PlanetRadius) @Angle 0 0 @(ScaleX * EndX(SpecificLocation.Sector)) @(ScaleY * EndY(SpecificLocation.Sector))
+                M @Round(ScaleX * Skin.Current.PlanetCenter.X),@Round(ScaleY * Skin.Current.PlanetCenter.Y)
+                L @Round(ScaleX * StartX(SpecificLocation.Sector)),@Round(ScaleY * StartY(SpecificLocation.Sector)) 
+                A @Round(ScaleX * Skin.Current.PlanetRadius) @Round(ScaleY * Skin.Current.PlanetRadius) @Angle 0 0 @Round(ScaleX * EndX(SpecificLocation.Sector)) @Round(ScaleY * EndY(SpecificLocation.Sector))
                 Z"/>
         }
         else
