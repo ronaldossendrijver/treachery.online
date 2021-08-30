@@ -1306,6 +1306,8 @@ namespace Treachery.Client
 
                     if (location != null)
                     {
+                        Console.WriteLine("Location " + location.Id + ": " + location + ", territory " + location.Territory.Id + ": " + location.Territory);
+
                         if (e.ShiftKey)
                         {
                             if (e.CtrlKey || e.AltKey)

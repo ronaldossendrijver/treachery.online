@@ -2,41 +2,37 @@
 @using System.Linq
 @inherits MapComponent
  
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="@(Radius * 2)" height="@(Radius * 2)" style="position: absolute; height: 100%; width: 100%;">
+<defs>
+    <path id="pijl" d="M-50,-50L0,0L-50,50L0,100L100,0L0,-100L-50,-50Z" fill="@FillColor" fill-opacity="@FillOpacity" stroke="@StrokeColor" stroke-width="@StrokeWidth" stroke-linejoin="round" transform="scale(@Scale)" />
+    <linearGradient id="Gradient-1" x1="20%" y1="30%" x2="40%" y2="80%">
+        <stop offset="0%" stop-color="#B8D0DE"></stop>
+        <stop offset="100%" stop-color="#73A2BD"></stop>
+    </linearGradient>
+    <filter id="dropshadow" xmlns="http://www.w3.org/2000/svg" height="200%" width="200%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="@(ShadowBlur)" />
+        <feOffset dx="@(ShadowDistance)" dy="@(ShadowDistance)" result="offsetblur" />
+        <feComponentTransfer>
+            <feFuncA type="linear" slope="0.5"></feFuncA>
+        </feComponentTransfer>
+        <feMerge>
+            <feMergeNode />
+            <feMergeNode in="SourceGraphic"></feMergeNode>
+        </feMerge>
+    </filter>
+</defs>
 
-    <defs>
-        <path id="pijl" d="M-50,-50L0,0L-50,50L0,100L100,0L0,-100L-50,-50Z" fill="@FillColor" fill-opacity="@FillOpacity" stroke="@StrokeColor" stroke-width="@StrokeWidth" stroke-linejoin="round" transform="scale(@Scale)" />
-        <linearGradient id="Gradient-1" x1="20%" y1="30%" x2="40%" y2="80%">
-            <stop offset="0%" stop-color="#B8D0DE"></stop>
-            <stop offset="100%" stop-color="#73A2BD"></stop>
-        </linearGradient>
-        <filter id="dropshadow" xmlns="http://www.w3.org/2000/svg" height="200%" width="200%">
-            <feGaussianBlur in="SourceAlpha" stdDeviation="@(ShadowBlur)" />
-            <feOffset dx="@(ShadowDistance)" dy="@(ShadowDistance)" result="offsetblur" />
-            <feComponentTransfer>
-                <feFuncA type="linear" slope="0.5"></feFuncA>
-            </feComponentTransfer>
-            <feMerge>
-                <feMergeNode />
-                <feMergeNode in="SourceGraphic"></feMergeNode>
-            </feMerge>
-        </filter>
-    </defs>
+@for (float i = 0; i <= n; i++)
+{
+    var t = -tMax * (i / n);
+    var t2 = -tMax * ((i + 1) / n);
+    var x = Radius * (u[0] * Math.Cos(t) + v[0] * Math.Sin(t));
+    var y = Radius * (u[1] * Math.Cos(t) + v[1] * Math.Sin(t));
+    var x2 = Radius * (u[0] * Math.Cos(t2) + v[0] * Math.Sin(t2));
+    var y2 = Radius * (u[1] * Math.Cos(t2) + v[1] * Math.Sin(t2));
+    var alpha = -Math.Atan2((x2 - x), (y2 - y)) / Math.PI * 180 + 90;
 
-    @for (float i = 0; i <= n; i++)
-    {
-        var t = -tMax * (i / n);
-        var t2 = -tMax * ((i + 1) / n);
-        var x = Radius * (u[0] * Math.Cos(t) + v[0] * Math.Sin(t));
-        var y = Radius * (u[1] * Math.Cos(t) + v[1] * Math.Sin(t));
-        var x2 = Radius * (u[0] * Math.Cos(t2) + v[0] * Math.Sin(t2));
-        var y2 = Radius * (u[1] * Math.Cos(t2) + v[1] * Math.Sin(t2));
-        var alpha = -Math.Atan2((x2 - x), (y2 - y)) / Math.PI * 180 + 90;
-
-        <g transform="translate(@(x + Radius),@(y + Radius)) rotate(@(alpha))" filter="url(#dropshadow)" fill="url(#Gradient-1)"><use xlink:href="#pijl" /></g>
-    }
-
-</svg>
+    <g transform="translate(@(x + Radius),@(y + Radius)) rotate(@(alpha))" filter="url(#dropshadow)" fill="url(#Gradient-1)"><use xlink:href="#pijl" /></g>
+}
 
 @code {
 

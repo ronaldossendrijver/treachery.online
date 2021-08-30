@@ -17,14 +17,17 @@
             var x = position.X - radiusModifier * Skin.Current.PlayerTokenRadius;
             var y = position.Y - radiusModifier * Skin.Current.PlayerTokenRadius;
 
-
             <Circle X="@position.X" Y="@position.Y" Radius="@(1.5f * Skin.Current.PlayerTokenRadius)" FillColor="@Skin.Current.TABLEPOSITION_BACKGROUNDCOLOR" />
 
-            <Image X="@(x)" Y="@(y)" Diameter=@(radiusModifier * Skin.Current.PlayerTokenRadius * 2) Src="@Skin.Current.GetFactionTableImageURL(p.Faction)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="3" />
+            <Image X="@(x)" Y="@(y)" Diameter=@(radiusModifier * Skin.Current.PlayerTokenRadius * 2) Src="@Skin.Current.GetFactionTableImageURL(p.Faction)" 
+                   ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="3" 
+                   Title="@p.Name" Popover="@Intel(p)"/>
 
             if (p.Ally != Faction.None)
             {
-                <Image X="@(position.X)" Y="@(position.Y + 20)" Diameter=@(1.2f * Skin.Current.PlayerTokenRadius) Src="@Skin.Current.GetFactionTableImageURL(p.Ally)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="1" ShadowY="1" ShadowBlur="1" />
+                <Image X="@(position.X)" Y="@(position.Y + 20)" Diameter=@(1.2f * Skin.Current.PlayerTokenRadius) Src="@Skin.Current.GetFactionTableImageURL(p.Ally)" 
+                       ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+                       Popover="@Intel(p.AlliedPlayer)"/>
             }
 
             var positionSector = Math.Floor((float)p.PositionAtTable * Map.NUMBER_OF_SECTORS / Game.MaximumNumberOfPlayers);
@@ -36,7 +39,8 @@
                 <Image X="@(Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad) * techtokenOrbitRadius) - Skin.Current.PlayerTokenRadius)"
                        Y="@(Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad) * techtokenOrbitRadius) - Skin.Current.PlayerTokenRadius)"
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
-                       Src="@Skin.Current.GetImageURL(tt)" ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="1" ShadowY="1" ShadowBlur="1" />
+                       Src="@Skin.Current.GetImageURL(tt)" ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+                       Popover="@Support.GetTechTokenHTML(tt)"/>
             }
 
             var skilledLeader = Game.GetSkilledLeader(p);
@@ -49,7 +53,8 @@
                 <Image X="@(ttx)"
                        Y="@(tty)"
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
-                       Src="@Skin.Current.GetImageURL(skilledLeader)" ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="1" ShadowY="1" ShadowBlur="1" />
+                       Src="@Skin.Current.GetImageURL(skilledLeader)" ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+                       Popover="@Support.GetSkilledLeaderHTML(skilledLeader, h.Game.Skill(skilledLeader))"/>
 
                 <MapText ToShow="@Skin.Current.Describe(Game.Skill(skilledLeader))"
                          X="@(ttx + Skin.Current.PlayerTokenRadius)" Y="@(tty + 2 * Skin.Current.PlayerTokenRadius)"
@@ -64,7 +69,9 @@
                 var ttx = Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad)) * techtokenOrbitRadius - Skin.Current.PlayerTokenRadius;
                 var tty = Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad)) * techtokenOrbitRadius - Skin.Current.PlayerTokenRadius;
 
-                <Image X="@(ttx + Skin.Current.FORCETOKEN_RADIUS)" Y="@(tty + Skin.Current.FORCETOKEN_RADIUS)" Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS) Src="@Skin.Current.FactionSpecialForceImage_URL[Faction.White]" ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="1" ShadowY="1" ShadowBlur="1"/>
+                <Image X="@(ttx + Skin.Current.FORCETOKEN_RADIUS)" Y="@(tty + Skin.Current.FORCETOKEN_RADIUS)" Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS) Src="@Skin.Current.FactionSpecialForceImage_URL[Faction.White]" 
+                       ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="1" ShadowY="1" ShadowBlur="1"
+                       Popover="@Skin.Current.Format("Latest revealed No-Field value: {0}", Game.LatestRevealedNoFieldValue)"/>
 
                 <MapText ToShow="@Game.LatestRevealedNoFieldValue.ToString()"
                          X="@(ttx + 2 * Skin.Current.FORCETOKEN_RADIUS)" Y="@(tty + 2.5f * Skin.Current.FORCETOKEN_RADIUS)"
@@ -94,3 +101,67 @@
         }
     }
 }
+
+@code {
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await Browser.EnablePopovers();
+    }
+
+    private string Intel(Player p)
+    {
+        string result = "";
+        result += Skin.Current.Format("<h5>{0} plays <span class=\"badge badge-primary badge-pill\" style=\"{1}\">{2}</span></h5>", p.Name, Support.Color(p.Faction), p.Faction);
+        foreach (var v in LeaderManager.Leaders.Where(l => l.Faction == p.Faction))
+        {
+            result += Support.GetLeaderHTML(v);
+        }
+
+        result += "<div class=\"row m-0 mt-1 justify-content-center\">";
+
+        result += "<div class=\"col-2 col-lg-1 p-0\">Reserves:</div>";
+
+        result += string.Format("<div class=\"col-2 col-lg-1 p-0\"><img class=\"img-fluid m-0 p-0\" width=\"24\" height=\"24\" src=\"{0}\" title=\"{1}\" /><strong>&nbsp;{2}</strong></div>",
+            Skin.Current.GetFactionForceImageURL(p.Faction),
+            p.ForceName,
+            p.ForcesInReserve);
+
+        if (p.HasSpecialForces)
+        {
+            result += string.Format("<div class=\"col-2 col-lg-1 p-0\"><img class=\"img-fluid m-0 p-0\" width=\"24\" height=\"24\" src=\"{0}\" title=\"{1}\" /><strong>&nbsp;{2}</strong></div>",
+                Skin.Current.GetFactionSpecialForceImageURL(p.Faction),
+                p.SpecialForceName,
+                p.SpecialForcesInReserve);
+        }
+
+        result += "</div>";
+
+        result += "<div class=\"mt-1 text-left\">" + Skin.Current.GetFactionInfo_HTML(h.Game, p.Faction) + "</div>";
+        return result;
+    }
+
+    private string IntelOfTechtokensAndSkilledLeaders(Player p)
+    {
+        string result = "";
+
+        if (p.Faction == Faction.White && h.Game.LatestRevealedNoFieldValue >= 0)
+        {
+            result += string.Format("<div class=\"mt-1\">Latest revealed No-Field value: <strong>{0}</strong></div>", h.Game.LatestRevealedNoFieldValue);
+        }
+
+        foreach (var v in p.TechTokens)
+        {
+            result += Support.GetTechTokenHTML(v);
+        }
+
+        var skilledLeader = h.Game.GetSkilledLeader(p);
+        if (skilledLeader != null && h.Game.IsInFrontOfShield(skilledLeader))
+        {
+            result += Support.GetSkilledLeaderHTML(skilledLeader, h.Game.Skill(skilledLeader));
+        }
+
+        return result;
+    }
+
+} 

@@ -3,17 +3,17 @@
  
 <svg width="563" height="626" viewBox="0 0 563 626" 
      version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" 
-     style="position: absolute; height: 100%; width: 100%;">
+     style="position: absolute; left: 0px; top: 0px; height: 100%; width: 100%;" pointer-events="none">
 
     <clipPath id="@ClipId">
-        @if (Sector >= 0)
-            {
+        @if (SpecificLocation != null && SpecificLocation != Game.Map.PolarSink)
+        {
             <path d="
-                    M @(ScaleX * Skin.Current.PlanetCenter.X),@(ScaleY * Skin.Current.PlanetCenter.Y)
-                    L @(ScaleX * StartX(Sector)),@(ScaleY * StartY(Sector)) 
-                    A @(ScaleX * Skin.Current.PlanetRadius) @(ScaleY * Skin.Current.PlanetRadius) @Angle 0 0 @(ScaleX * EndX(Sector)) @(ScaleY * EndY(Sector))
-                    Z"/>
-            }
+                M @(ScaleX * Skin.Current.PlanetCenter.X),@(ScaleY * Skin.Current.PlanetCenter.Y)
+                L @(ScaleX * StartX(SpecificLocation.Sector)),@(ScaleY * StartY(SpecificLocation.Sector)) 
+                A @(ScaleX * Skin.Current.PlanetRadius) @(ScaleY * Skin.Current.PlanetRadius) @Angle 0 0 @(ScaleX * EndX(SpecificLocation.Sector)) @(ScaleY * EndY(SpecificLocation.Sector))
+                Z"/>
+        }
         else
         {
             <rect x="0" y="0" width="563" height="626"/>
@@ -23,7 +23,9 @@
     <g clip-path="url(#@ClipId)">
         <g transform="matrix(0.992126,0,0,0.99369,-140.572,-114.998)"
            fill="@FillColor" fill-opacity="@FillOpacity"
-           stroke="@StrokeColor" stroke-width="@Px(StrokeWidth)" stroke-linecap="@StrokeLinecap" stroke-linejoin="@StrokeLinejoin">
+           stroke="@StrokeColor" stroke-width="@Px(StrokeWidth)" stroke-linecap="@StrokeLinecap" stroke-linejoin="@StrokeLinejoin"
+           cursor="pointer" pointer-events="all" @onclick="@OnClick">
+           <title>@Title</title>
 
             @switch (ToShow.Id)
             {
@@ -187,7 +189,7 @@
 
                 case 7:
                     {
-                        <path d="M271.48163,351.24545L276.62213,333.81448L273.71524,330.6958L273.1891,325.75558L270.62186,323.74792L270.3749,317.51056L264.68408,307.908L262.68637,298.4272L253.61995,294.04752L233.53676,312.07928L232.84933,317.03458L228.53535,324.7734L223.30414,326.48825L221.81543,335.10358L231.81921,346.1211L237.35483,346.88293L242.69994,343.79544L255.33849,349.20862L263.20343,349.09387L271.48163,351.24545Z" />
+                        <path d="M367.55444,528.36005L363.22134,535.8533L364.56088,542.9783L377.27502,554.71936L407.59085,557.65485L412.37152,554.19403L423.89426,554.0672L449.9616,570.4838L458.16223,565.1743L468.0612,550.39606L474.66016,543.05475L480.35403,524.8036L445.03583,463.7262L432.65326,472.47842L417.4122,471.91486L412.3735,466.82474L407.83478,458.70248L367.55444,528.36005Z" />
                     }
                     break;
 
@@ -293,6 +295,9 @@
     public Treachery.Shared.Territory ToShow { get; set; }
 
     [Parameter]
+    public Treachery.Shared.Location SpecificLocation { get; set; } = null;
+
+    [Parameter]
     public string FillColor { get; set; }
 
     [Parameter]
@@ -314,7 +319,10 @@
     public string StrokeLinejoin { get; set; } = "round";
 
     [Parameter]
-    public int Sector { get; set; } = -1;
+    public string PopoverText { get; set; } = "";
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
 
     private float Angle => 360f / Map.NUMBER_OF_SECTORS;
 
@@ -328,4 +336,6 @@
     private float ScaleY = 626f / Skin.Current.MapDimensions.Y;
 
     private string ClipId => "clip" + Id;
+
+    private string Title => SpecificLocation != null ? SpecificLocation.ToString() : ToShow.ToString();
 }

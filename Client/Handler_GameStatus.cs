@@ -192,7 +192,7 @@ namespace Treachery.Client
 
                 /* Charity */
 
-                case Phase.ClaimingCharity: return new GameStatus(Player, IsHost, Skin.Current.Format("Factions may now claim charity if eligable."));
+                case Phase.ClaimingCharity: return new GameStatus(Player, IsHost, Skin.Current.Format("Factions may now claim charity if eligible."));
 
                 /* Bidding */
 

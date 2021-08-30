@@ -1,12 +1,12 @@
 ﻿@inherits MapComponent
 
-@if (ShadowX > 0 || ShadowY > 0)
+@if (Popover != null)
 {
-    <img style="position:absolute; left:@Px(X); top:@Px(Y); width:@Px(Width); height:@(Height); filter:drop-shadow(@Px(ShadowX) @Px(ShadowY) @Px(ShadowBlur) @ShadowColor); opacity:@Opacity;" src=@Src />
+    <img @onclick="@OnClick" title="@Title" style="@Style" src=@Src data-trigger="hover" data-toggle="popover" data-html="true" data-animation="true" data-delay="100" data-content="@Popover"/>
 }
 else
 {
-    <img style="position:absolute; left:@Px(X); top:@Px(Y); width:@Px(Width); height:@(Height); opacity:@Opacity;" src=@Src />
+    <img @onclick="@OnClick" title="@Title" style="@Style" src=@Src />
 }
 
 @code {
@@ -25,4 +25,33 @@ else
 
     [Parameter]
     public string ShadowColor { get; set; } = "black";
+
+    [Parameter]
+    public string Title { get; set; } = "";
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    [Parameter]
+    public string Popover { get; set; } = null;
+
+    private string Style
+    {
+        get
+        {
+            var result = string.Format("position:absolute;left:{0};top:{1};width:{2};height:{3};opacity:{4};", Px(X), Px(Y), Px(Width), Px(Height), Opacity);
+
+            if (OnClick.HasDelegate || Popover != null)
+            {
+                result += "cursor:pointer;pointer-events:all;";
+            }
+
+            if (ShadowX > 0 || ShadowY > 0)
+            {
+                result += string.Format("filter:drop-shadow({0} {1} {2} {3});", Px(ShadowX), Px(ShadowY), Px(ShadowBlur), ShadowColor);
+            }
+
+            return result;
+        }
+    }
 }

@@ -2,11 +2,11 @@
 @inherits MapComponent
 
 @{
-    if (Skin.Current.ShowArrowsForRecentMoves)
+    if (Skin.Current.ShowArrowsForRecentMoves && h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
     {
-        if (h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
-        {
-            foreach (var move in h.Game.RecentMoves.Where(move => !move.Passed))
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="@(@Skin.Current.PlanetRadius * 2)" height="@(@Skin.Current.PlanetRadius * 2)" style="position: absolute; left: 0px; top:0px; height: 100%; width: 100%;">
+            
+            @foreach (var move in h.Game.RecentMoves.Where(move => !move.Passed))
             {
                 var to = move.To.Center;
 
@@ -16,13 +16,13 @@
                     var b = CloserTo(to, from.Center, 0.15f);
 
                     <Arrow FillColor="@Skin.Current.FactionColor[move.Initiator]" StrokeColor="@Skin.Current.FactionColorTransparant[move.Initiator]"
-                           MarginX="0" MarginY="0"
-                           Radius="@Skin.Current.PlanetRadius"
-                           From="a" To="b" Scale="0.35f"/>
-
+                            MarginX="0" MarginY="0"
+                            Radius="@Skin.Current.PlanetRadius"
+                            From="a" To="b" Scale="0.35f" />
                 }
             }
-        }
+
+        </svg>
     }
 }
 

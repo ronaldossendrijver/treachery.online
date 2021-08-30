@@ -68,9 +68,9 @@ namespace Treachery.Client
             await JsInvoke("EnableMapHover");
         }
 
-        public static async Task<float> MeasureText(string text, string font)
+        public static async Task<Dimensions> MeasureText(string text, string font)
         {
-            return await JsInvoke<float>("MeasureText", text, font);
+            return await JsInvoke<Dimensions>("MeasureText", text, font);
         }
 
         public static async Task HideModal(string modalId)
@@ -105,6 +105,11 @@ namespace Treachery.Client
         public static async Task DetermineCanvas()
         {
             await JsInvoke("DetermineCanvas");
+        }
+
+        public static async Task SetPlanetMapScale()
+        {
+            await JsInvoke("SetPlanetMapScale");
         }
 
         public static async Task<Dimensions> GetMapDimensions()

@@ -1,10 +1,10 @@
 ﻿@using Treachery.Shared
 
-<div style="position: relative; width: 100%; height: 100%; transform: scale(0.3)">
+<div id="planetmap" style="position: relative; width: 100%; height: 100%; transform: scale(0.3)">
 
     <div style="position:absolute; width:@Px(Skin.Current.MapDimensions.X); height:@Px(Skin.Current.MapDimensions.Y);">
 
-        <Image X="0" Y="0" Width=@Skin.Current.MapDimensions.X Height=@Skin.Current.MapDimensions.Y Src=@Skin.Current.Map_URL />
+        <Image X="0" Y="0" Width=@Skin.Current.MapDimensions.X Height=@Skin.Current.MapDimensions.Y Src=@Skin.Current.Map_URL/>
 
         @if (h.Game.CurrentPhase > Phase.AwaitingPlayers)
         {
@@ -30,6 +30,11 @@
                 <Disconnection h="h" />
                 <Options h="h" />
 
+                @foreach (var l in h.Game.Map.Locations)
+                {
+                    <Location h="@h" ToShow="l" FillColor="transparent" FillOpacity="0" OnClick="@OnClick"/>
+                }
+
             </div>
         }
 
@@ -41,6 +46,9 @@
 
     [Parameter]
     public Handler h { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
 
     private string Px(float x) => x + "px";
 }

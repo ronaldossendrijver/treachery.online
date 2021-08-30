@@ -33,9 +33,9 @@
                 <BECanvas @ref="h._canvas"></BECanvas>
             </div>
 
-            @if (false)
+            @if (true)
             {
-                <PlanetMap h="h" />
+                <PlanetMap h="h" OnClick="@MapDrawer.MapClick"/>
             }
         }
         else
@@ -233,6 +233,7 @@
         {
             MapDrawer.SetGame(h._canvas, h);
             await Browser.DetermineCanvas();
+            await Browser.SetPlanetMapScale();
 
             if (h.HostProxy != null && !mapHoverInitialized)
             {

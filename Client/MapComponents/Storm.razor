@@ -6,7 +6,7 @@
     {
         foreach (var l in Game.Map.Locations.Where(l => l.Sector == Sector))
         {
-            <Location ToShow="@l" FillColor="@FillColor" FillOpacity="@FillOpacity"/>
+            <Location h="@h" ToShow="@l" FillColor="@FillColor" FillOpacity="@FillOpacity"/>
         }
     }
 }
