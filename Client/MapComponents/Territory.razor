@@ -24,7 +24,8 @@
         <g transform="matrix(0.992126,0,0,0.99369,-140.572,-114.998)"
            fill="@FillColor" fill-opacity="@FillOpacity"
            stroke="@StrokeColor" stroke-width="@Px(StrokeWidth)" stroke-linecap="@StrokeLinecap" stroke-linejoin="@StrokeLinejoin"
-           cursor="pointer" pointer-events="all" @onclick="@OnClick">
+           cursor="pointer" pointer-events="all" @onclick="@OnClick"
+           data-trigger="hover" data-toggle="popover" data-html="true" data-animation="true" data-delay="100" data-content="@Popover" data-template="@PopoverTemplate">
            <title>@Title</title>
 
             @switch (ToShow.Id)
@@ -319,7 +320,7 @@
     public string StrokeLinejoin { get; set; } = "round";
 
     [Parameter]
-    public string PopoverText { get; set; } = "";
+    public string Popover { get; set; } = null;
 
     [Parameter]
     public EventCallback<MouseEventArgs> OnClick { get; set; }
