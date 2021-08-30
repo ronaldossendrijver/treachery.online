@@ -102,20 +102,20 @@ namespace Treachery.Client
         {
             await JsInvoke("AddEnterListeners");
         }
-        public static async Task DetermineCanvas()
+        /*public static async Task DetermineCanvas()
         {
             await JsInvoke("DetermineCanvas");
-        }
+        }*/
 
         public static async Task SetPlanetMapScale()
         {
             await JsInvoke("SetPlanetMapScale");
         }
 
-        public static async Task<Dimensions> GetMapDimensions()
+        /*public static async Task<Dimensions> GetMapDimensions()
         {
             return await JsInvoke<Dimensions>("GetMapDimensions");
-        }
+        }*/
 
         public static async Task<Dimensions> GetWindowDimensions()
         {
@@ -242,7 +242,7 @@ namespace Treachery.Client
         /// <param name="imageId"></param>
         /// <param name="svg"></param>
         /// <returns></returns>
-        public static async Task SetImageSVG(string imageId, string svg)
+        /*public static async Task SetImageSVG(string imageId, string svg)
         {
             try
             {
@@ -252,8 +252,8 @@ namespace Treachery.Client
             {
                 Support.Log(e);
             }
-        }
-
+        }*/
+        /*
         public static async Task CreateArrowImage(string arrowImageId, int marginX, int marginY, int radius, Point from, Point to, string arrowColor, string borderColor, float segmentScale)
         {
             try
@@ -275,7 +275,7 @@ namespace Treachery.Client
                 Support.Log(e);
             }
         }
-
+        */
         public static async Task Print(string elementName)
         {
             try

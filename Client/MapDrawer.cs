@@ -17,6 +17,9 @@ namespace Treachery.Client
 {
     public static partial class MapDrawer
     {
+        private static Handler h = null;
+
+        /*
         private static Canvas2DContext map = null;
         private static BECanvasComponent canvas = null;
         private static Handler h = null;
@@ -1384,6 +1387,41 @@ namespace Treachery.Client
         public static string CreateArrowId(int i)
         {
             return "arrow" + i;
+        }
+        */
+
+        public static event EventHandler<Location> OnLocationSelected;
+        public static event EventHandler<Location> OnLocationSelectedWithCtrlOrAlt;
+        public static event EventHandler<Location> OnLocationSelectedWithShift;
+        public static event EventHandler<Location> OnLocationSelectedWithShiftAndWithCtrlOrAlt;
+
+
+        public static void LocationClick(LocationEventArgs e)
+        {
+            Console.WriteLine("Location " + e.Location.Id + ": " + e.Location + ", territory " + e.Location.Territory.Id + ": " + e.Location.Territory);
+
+            if (e.ShiftKey)
+            {
+                if (e.CtrlKey || e.AltKey)
+                {
+                    OnLocationSelectedWithShiftAndWithCtrlOrAlt?.Invoke(h, e.Location);
+                }
+                else
+                {
+                    OnLocationSelectedWithShift?.Invoke(h, e.Location);
+                }
+            }
+            else
+            {
+                if (e.CtrlKey || e.AltKey)
+                {
+                    OnLocationSelectedWithCtrlOrAlt?.Invoke(h, e.Location);
+                }
+                else
+                {
+                    OnLocationSelected?.Invoke(h, e.Location);
+                }
+            }
         }
     }
 }

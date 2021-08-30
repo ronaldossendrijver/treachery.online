@@ -48,7 +48,7 @@
                 Height: metrics.height,
             };
         }
-
+        /*
         function DetermineCanvas() {
 
             var dims = GetMapDimensions();
@@ -71,7 +71,7 @@
                 }
             }
         }
-
+        */
         function SetPlanetMapScale() {
 
             planetmap = document.getElementById('planetmap');
@@ -83,7 +83,7 @@
                 }
             }
         }
-
+        /*
         var canvas = null;
         var mapdiv = null;
 
@@ -112,16 +112,17 @@
                 ScrollY: mapdiv.getBoundingClientRect().top,
             };
         }
+        */
 
         function GetWindowDimensions() {
 
             return { X: 0, Y: 0, Width: $(window).width(), Height: $(window).height() };
         }
-
-        function Draw() {
+        
+        /*function Draw() {
 
             DotNet.invokeMethodAsync('Treachery.Client', 'MapDrawerDraw');
-        }
+        }*/
 
         function RemoveFocusFromButtons() {
 
@@ -148,7 +149,7 @@
             }
             );
         }
-
+        /*
         var oldX = 0;
         var oldY = 0;
         function UpdateTooltip(e) {
@@ -180,7 +181,7 @@
             }
 
         }
-
+        */
         function SendChatMessage() {
 
             var msgElt = document.getElementById("messageSentBody");
@@ -446,17 +447,17 @@
             $printSection.appendChild(domClone);
             window.print();
         }
-
+        
         //Sets the .src of an existing <IMG> within the dom to the specified value
-        function SetImageSVG(id, svg) {
+        /*function SetImageSVG(id, svg) {
 
             document.getElementById(id).src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-        }
+        }*/
 
         /*
          * Arrows
          */
-
+        /*
         function CreateArrowImage(arrowImageId, radius, pointFromXYZ, pointToXYZ, arrowcolor, bordercolor, segmentScale) {
 
             var svg = DetermineArrowSVG(radius, pointFromXYZ, pointToXYZ, arrowcolor, bordercolor, segmentScale, 12, 4.0);
@@ -524,7 +525,9 @@
             a[2] * b[0] - a[0] * b[2],
             a[0] * b[1] - a[1] * b[0],
         ];
+        */
 
+        /*
         const inner = (v1, v2) => {
             if (v1.length !== v2.length) return NaN;
             return v1.reduce((sum, cur, i) => sum + cur * v2[i], 0);
@@ -532,7 +535,7 @@
 
         const length = vector =>
             vector.reduce((sum, cur) => sum + cur ** 2, 0) ** 0.5;
-
+            */
     </script>
 
 </head>
@@ -554,7 +557,6 @@
 
         window.onbeforeunload = function () { return "This will disconnect you from the game! Are you sure?"; }
         window.addEventListener("resize", SetPlanetMapScale);
-        window.addEventListener("resize", DetermineCanvas);
 
     </script>
 

@@ -317,7 +317,7 @@ namespace Treachery.Client
             if (_connection.State == HubConnectionState.Disconnected || DateTime.Now.Subtract(hostLastSeen).TotalMilliseconds > DISCONNECT_TIMEOUT)
             {
                 Disconnected = DateTime.Now;
-                await MapDrawer.Draw();
+                //NEWMAP//await MapDrawer.Draw();
                 return true;
             }
 
@@ -420,17 +420,17 @@ namespace Treachery.Client
 
             Skin.Current = Support.LoadSkin(skinData);
             await Skin.Current.ValidateAndFix(Browser.UrlExists);
-            
-            MapDrawer.Loading = true;
+
+            //NEWMAP//MapDrawer.Loading = true;
             RefreshAll();
             _ = Task.Delay(4000).ContinueWith(e => RedrawMapAfterSkinLoad());
         }
 
         private static async Task RedrawMapAfterSkinLoad()
         {
-            MapDrawer.Loading = false;
-            MapDrawer.UpdateIntelligence();
-            await MapDrawer.Draw();
+            //NEWMAP//MapDrawer.Loading = false;
+            //NEWMAP//MapDrawer.UpdateIntelligence();
+            //NEWMAP//await MapDrawer.Draw();
         }
 
         public bool IsPlayer
@@ -492,14 +492,14 @@ namespace Treachery.Client
             {
                 _pending.Clear();
 
-                MapDrawer.Loading = true;
+                //NEWMAP//MapDrawer.Loading = true;
 
                 var state = GameState.Load(stateData);
 
                 var result = Game.TryLoad(state, false, false, ref Game);
                 Game.MessageHandler += Game_MessageHandler;
 
-                MapDrawer.Loading = false;
+                //NEWMAP//MapDrawer.Loading = false;
 
                 if (result != "")
                 {
@@ -736,8 +736,8 @@ namespace Treachery.Client
 
                 if (e == null || !(Game.CurrentPhase == Phase.Bidding || Game.CurrentPhase == Phase.BlackMarketBidding))
                 {
-                    MapDrawer.UpdateIntelligence();
-                    
+                    //NEWMAP//MapDrawer.UpdateIntelligence();
+
                     if (IsHost)
                     {
                         await SaveGame();

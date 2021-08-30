@@ -13,6 +13,7 @@ namespace Treachery.Client
 {
     public static partial class MapDrawer
     {
+        /*
         [JSInvokable("DetermineTooltip")]
         public static string DetermineTooltip(int x, int y, Dimensions dimensions)
         {
@@ -480,6 +481,6 @@ namespace Treachery.Client
         {
             return h.Game.IsProtectedFromStorm(l) ? "Protected" : "NOT protected";
         }
-
+        */
     }
 }
