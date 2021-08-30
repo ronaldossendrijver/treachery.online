@@ -1306,7 +1306,7 @@ namespace Treachery.Client
 
                     if (location != null)
                     {
-                        Console.WriteLine("Location " + location.Id + ": " + location + ", territory " + location.Territory.Id + ": " + location.Territory);
+                        //Console.WriteLine("Location " + location.Id + ": " + location + ", territory " + location.Territory.Id + ": " + location.Territory);
 
                         if (e.ShiftKey)
                         {
@@ -1331,6 +1331,34 @@ namespace Treachery.Client
                             }
                         }
                     }
+                }
+            }
+        }
+
+        public static void LocationClick(LocationEventArgs e)
+        {
+            Console.WriteLine("Location " + e.Location.Id + ": " + e.Location + ", territory " + e.Location.Territory.Id + ": " + e.Location.Territory);
+
+            if (e.ShiftKey)
+            {
+                if (e.CtrlKey || e.AltKey)
+                {
+                    OnLocationSelectedWithShiftAndWithCtrlOrAlt?.Invoke(h, e.Location);
+                }
+                else
+                {
+                    OnLocationSelectedWithShift?.Invoke(h, e.Location);
+                }
+            }
+            else
+            {
+                if (e.CtrlKey || e.AltKey)
+                {
+                    OnLocationSelectedWithCtrlOrAlt?.Invoke(h, e.Location);
+                }
+                else
+                {
+                    OnLocationSelected?.Invoke(h, e.Location);
                 }
             }
         }

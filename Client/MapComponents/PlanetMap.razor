@@ -8,34 +8,35 @@
 
         @if (h.Game.CurrentPhase > Phase.AwaitingPlayers)
         {
-            <div style="width:100%; height:100%;">
+        <div style="width:100%; height:100%;">
 
-                <ShieldWall h="h" />
-                <SSW h="h" />
-                <Turn h="h" />
-                <ResourcesOnPlanet h="h" />
-                <Monsters h="h" />
-                <StormAndStormPrescience h="h" />
-                <Phases h="h" />
-                <Highlights h="h" />
-                <Players h="h" />
-                <HMS h="h" />
-                <StrongholdOwnership h="h" />
-                <RecentMoves h="h" />
-                <ForcesOnPlanet h="h" />
-                <Bids h="h" />
-                <Tanks h="h" />
-                <CardPiles h="h" />
-                <BattlePlans h="h" />
-                <Disconnection h="h" />
-                <Options h="h" />
+            <ShieldWall h="h" />
+            <SSW h="h" />
+            <Turn h="h" />
+            <ResourcesOnPlanet h="h" />
+            <Monsters h="h" />
+            <StormAndStormPrescience h="h" />
+            <Phases h="h" />
+            <Highlights h="h" />
+            <Players h="h" />
+            <HMS h="h" />
+            <StrongholdOwnership h="h" />
+            <RecentMoves h="h" />
+            <ForcesOnPlanet h="h" />
+            <Bids h="h" />
+            <Tanks h="h" />
+            <CardPiles h="h" />
+            <Disconnection h="h" />
 
-                @foreach (var l in h.Game.Map.Locations)
-                {
-                    <Location h="@h" ToShow="l" FillColor="transparent" FillOpacity="0" OnClick="@OnClick"/>
-                }
+            @foreach (var l in h.Game.Map.Locations)
+            {
+                <Location h="@h" ToShow="l" FillColor="transparent" FillOpacity="0" OnLocationClick="@OnLocationClick" />
+            }
 
-            </div>
+            <BattlePlans h="h" />
+            <Options h="h" />
+
+        </div>
         }
 
     </div>
@@ -48,7 +49,10 @@
     public Handler h { get; set; }
 
     [Parameter]
-    public EventCallback<MouseEventArgs> OnClick { get; set; }
+    public EventCallback<LocationEventArgs> OnLocationClick { get; set; }
+
+    [Parameter]
+    public EventCallback<TerritoryEventArgs> OnTerritoryClick { get; set; }
 
     private string Px(float x) => x + "px";
 }

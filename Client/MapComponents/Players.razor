@@ -27,7 +27,7 @@
             {
                 <Image X="@(position.X)" Y="@(position.Y + 20)" Diameter=@(1.2f * Skin.Current.PlayerTokenRadius) Src="@Skin.Current.GetFactionTableImageURL(p.Ally)" 
                        ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                       Popover="@Intel(p.AlliedPlayer)"/>
+                       Title="@p.AlliedPlayer.Name"/>
             }
 
             var positionSector = Math.Floor((float)p.PositionAtTable * Map.NUMBER_OF_SECTORS / Game.MaximumNumberOfPlayers);
@@ -112,7 +112,6 @@
     private string Intel(Player p)
     {
         string result = "";
-        result += Skin.Current.Format("<h5>{0} plays <span class=\"badge badge-primary badge-pill\" style=\"{1}\">{2}</span></h5>", p.Name, Support.Color(p.Faction), p.Faction);
         foreach (var v in LeaderManager.Leaders.Where(l => l.Faction == p.Faction))
         {
             result += Support.GetLeaderHTML(v);

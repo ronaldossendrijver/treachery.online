@@ -6,7 +6,8 @@
     {
         if (h.Game.StrongholdOwnership.ContainsKey(stronghold))
         {
-            <Image X="@(stronghold.Center.X - 180)" Y="@(stronghold.Center.Y - 50)" Diameter=@(Skin.Current.PlayerTokenRadius) Src="@Skin.Current.FactionTableImage_URL[h.Game.StrongholdOwnership[stronghold]]" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="1" ShadowY="1" ShadowBlur="1" Opacity="0.8f" />
+            <Image X="@(stronghold.Center.X - 180)" Y="@(stronghold.Center.Y - 50)" Diameter=@(Skin.Current.PlayerTokenRadius) Src="@Skin.Current.FactionTableImage_URL[h.Game.StrongholdOwnership[stronghold]]" 
+                   ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="3" ShadowY="3" ShadowBlur="2" Opacity="0.8f" />
         }
     }
 }

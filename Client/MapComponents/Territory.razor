@@ -24,9 +24,8 @@
         <g transform="matrix(0.992126,0,0,0.99369,-140.572,-114.998)"
            fill="@FillColor" fill-opacity="@FillOpacity"
            stroke="@StrokeColor" stroke-width="@Px(StrokeWidth)" stroke-linecap="@StrokeLinecap" stroke-linejoin="@StrokeLinejoin"
-           cursor="pointer" pointer-events="all" @onclick="@OnClick"
-           data-trigger="hover" data-toggle="popover" data-html="true" data-animation="true" data-delay="100" data-content="@Popover" data-template="@PopoverTemplate">
-           <title>@Title</title>
+           cursor="pointer" pointer-events="@PointerEvents" @onclick="@OnClick"
+           data-trigger="hover" data-toggle="popover" data-html="true" data-animation="false" data-delay="50" data-content="@Popover" data-template="@PopoverTemplate">
 
             @switch (ToShow.Id)
             {
@@ -111,7 +110,8 @@
                 case 40:
                     {
                         <g transform="matrix(1.00794,0,0,1.00635,141.688,115.728)">
-                            <path d="M178.418,459.257L169.586,459.257L160.504,453.316L158.97,438.465L150.68,420.748L149.704,409.501L154.736,405.113L154.582,397.872L151.821,392.533L149.213,389.649L140.11,387.412L129.213,381.506L123.694,381.766L117.343,375.875L106.294,374.954L53.248,394.261C71.319,445.448 110.679,493.498 159.846,521.299L179.479,487.293L183.095,466.833L178.418,459.257ZM139.628,430.022L129.121,408.951L128.56,401.422L125.941,395.015L112.333,391.741L97.789,396.839L91.241,407.548L96.806,427.143L117,449.009L139.628,430.022Z" />
+                            <path d="M178.418,459.257L169.586,459.257L160.504,453.316L158.97,438.465L150.68,420.748L149.704,409.501L154.736,405.113L154.582,397.872L151.821,392.533L149.213,389.649L140.11,387.412L129.213,381.506L123.694,381.766L117.343,375.875L106.294,374.954L53.248,394.261C71.319,445.448 110.679,493.498 159.846,521.299L179.479,487.293L183.095,466.833L178.418,459.257Z
+                                  M139.628,430.022 L139.628,430.022 L117,449.009 L96.806,427.143 L91.241,407.548 L97.789,396.839 L112.333,391.741 L125.941,395.015 L128.56,401.422 L129.121,408.951 Z" />
                         </g>
                     }
                     break;
@@ -323,7 +323,22 @@
     public string Popover { get; set; } = null;
 
     [Parameter]
-    public EventCallback<MouseEventArgs> OnClick { get; set; }
+    public EventCallback<LocationEventArgs> OnLocationClick { get; set; }
+
+    [Parameter]
+    public EventCallback<TerritoryEventArgs> OnTerritoryClick { get; set; }
+
+    private async Task OnClick(MouseEventArgs e)
+    {
+        if (SpecificLocation != null)
+        {
+            await OnLocationClick.InvokeAsync(new LocationEventArgs() { Location = SpecificLocation, AltKey = e.AltKey, CtrlKey = e.CtrlKey, ShiftKey = e.ShiftKey });
+        }
+        else
+        {
+            await OnTerritoryClick.InvokeAsync(new TerritoryEventArgs() { Territory = ToShow, AltKey = e.AltKey, CtrlKey = e.CtrlKey, ShiftKey = e.ShiftKey });
+        }
+    }
 
     private float Angle => 360f / Map.NUMBER_OF_SECTORS;
 
@@ -339,4 +354,6 @@
     private string ClipId => "clip" + Id;
 
     private string Title => SpecificLocation != null ? SpecificLocation.ToString() : ToShow.ToString();
+
+    private string PointerEvents => OnLocationClick.HasDelegate || OnTerritoryClick.HasDelegate ? "all" : "none";
 }

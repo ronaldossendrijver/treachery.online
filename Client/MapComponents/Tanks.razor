@@ -5,8 +5,8 @@
 {
     float y = 2 * Skin.Current.FORCETOKEN_RADIUS;
     float x = Skin.Current.FORCETOKEN_RADIUS;
-    float leaderDiameter = 3f * Skin.Current.FORCETOKEN_RADIUS;
-    float leaderPctHeight = .15f * leaderDiameter * Skin.Current.BattleWheelHeroHeight / Skin.Current.BattleWheelHeroWidth;
+    float leaderDiameter = 3.5f * Skin.Current.FORCETOKEN_RADIUS;
+    float leaderPctHeight = .2f * leaderDiameter * Skin.Current.BattleWheelHeroHeight / Skin.Current.BattleWheelHeroWidth;
     float spacing = 0.85f;
 
     foreach (var p in h.Game.Players)
@@ -51,7 +51,7 @@
                 }
                 else
                 {
-                    <Leader ToShow="leader" X=@(l.X + DisplaceX[corpseNr] * 2) Y=@(l.Y) Diameter="leaderDiameter" />
+                    <Leader h="h" ToShow="leader" X=@(l.X + DisplaceX[corpseNr] * 2) Y=@(l.Y) Diameter="leaderDiameter"/>
                 }
 
                 dy += (int)leaderPctHeight;
@@ -93,8 +93,9 @@
         int[] result = new int[20];
         for (int i = 0; i < 20; i++)
         {
-            result[i] = 20 - rnd.Next(40);
+            result[i] = 30 - rnd.Next(60);
         }
         return result;
     }
+
 }

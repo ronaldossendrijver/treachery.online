@@ -4,11 +4,13 @@
 @{
     for (int i = 0; i < Amount; i++)
     {
-        <Image X=@(X - i * 3 - Skin.Current.FORCETOKEN_RADIUS) Y=@(Y - i * 5 - Skin.Current.FORCETOKEN_RADIUS) Diameter=@Diameter Src="@ForceURL" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1"/>
+        <Image X=@(X - i * 3 - Skin.Current.FORCETOKEN_RADIUS) Y=@(Y - i * 5 - Skin.Current.FORCETOKEN_RADIUS) Diameter=@Diameter Src="@ForceURL" 
+               ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="2"
+               Popover="@Popover"/>
     }
 }
 
-<MapText ToShow="@Amount.ToString()" X=@(X+30) Y=@(Y+40) Font=@Skin.Current.FORCETOKEN_FONT BorderWidth=@Skin.Current.FORCETOKEN_FONT_BORDERWIDTH BorderColor=@Skin.Current.FORCETOKEN_FONT_BORDERCOLOR/>
+<MapText ToShow="@Amount.ToString()" X=@(X+30) Y=@(Y+70) Font=@Skin.Current.FORCETOKEN_FONT BorderWidth=@Skin.Current.FORCETOKEN_FONT_BORDERWIDTH BorderColor=@Skin.Current.FORCETOKEN_FONT_BORDERCOLOR/>
 
 @code {
 
@@ -30,4 +32,6 @@
     }
 
     private string ForceURL => Special ? Skin.Current.GetFactionSpecialForceImageURL(Faction) : Skin.Current.GetFactionForceImageURL(Faction);
+
+    private string Popover => string.Format("<img style='float:left' src='{0}' width=100/><h3 style='float:right'>{1}</h3>", ForceURL, Amount);
 }

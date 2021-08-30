@@ -44,7 +44,7 @@
             xOffset = 0;
             foreach (var hero in Game.LeaderState.Where(state => state.Key is IHero && state.Value.Alive && state.Value.CurrentTerritory == location.Territory).Select(state => state.Key))
             {
-                <Leader ToShow="hero" X=@(pos.X + xOffset - Skin.Current.FORCETOKEN_RADIUS) Y=@(yOffset + pos.Y - Skin.Current.FORCETOKEN_RADIUS) />
+                <Leader h="h" ToShow="hero" X=@(pos.X + xOffset - Skin.Current.FORCETOKEN_RADIUS) Y=@(yOffset + pos.Y - Skin.Current.FORCETOKEN_RADIUS) />
                 xOffset += 3 * Skin.Current.FORCETOKEN_RADIUS;
             }
         }

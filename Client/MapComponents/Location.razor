@@ -1,7 +1,7 @@
 ﻿@using Treachery.Shared 
 @inherits MapComponent
 
-<Territory h="h" ToShow="@ToShow.Territory" FillColor="@FillColor" FillOpacity="@FillOpacity" StrokeColor="transparent" StrokeWidth="0" SpecificLocation="ToShow" Popover="@Intel(ToShow)" OnClick="@OnClick"/>
+<Territory h="h" ToShow="@ToShow.Territory" FillColor="@FillColor" FillOpacity="@FillOpacity" StrokeColor="transparent" StrokeWidth="0" SpecificLocation="ToShow" Popover="@Intel(ToShow)" OnLocationClick="@OnLocationClick"/>
 
 @code {
 
@@ -18,7 +18,7 @@
     public string FillRule { get; set; } = "";
 
     [Parameter]
-    public EventCallback<MouseEventArgs> OnClick { get; set; }
+    public EventCallback<LocationEventArgs> OnLocationClick { get; set; }
 
     private string Intel(Treachery.Shared.Location intelligenceLocation)
     {
@@ -77,11 +77,10 @@
             {
                 result += Skin.Current.Format("<p>Current amount of {0}: <strong>{1}</strong>.</p>", Concept.Resource, Game.ResourcesOnPlanet[intelligenceLocation]);
             }
-
-
-
         }
+
         result += "<div class=\"row m-0 bg-dark text-center\">";
+
         if (Game.ForcesOnPlanetExcludingEmptyLocations.ContainsKey(intelligenceLocation))
         {
             foreach (var b in Game.ForcesOnPlanet[intelligenceLocation])

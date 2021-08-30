@@ -18,15 +18,11 @@
     }
 
     //Resource cards
-    if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(h.Player))
-    {
-        <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.ResourceCardDeck.Top)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="5" ShadowY="5" ShadowBlur="3" />
-    }
-    else
-    {
-        <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.CardBack_ResourceCard_URL" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="5" ShadowY="5" ShadowBlur="3" />
-    }
-
+    string cardImageToShow = Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(h.Player) ? Skin.Current.GetImageURL(Game.ResourceCardDeck.Top) : Skin.Current.CardBack_ResourceCard_URL;
+    <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@cardImageToShow" 
+           ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="5" ShadowY="5" ShadowBlur="3" 
+           Popover="@IntelOfResourceCardPile()"/>
+ 
     <MapText ToShow="@Game.ResourceCardDeck.Items.Count.ToString()"
              X="@(x + cardWidth / 2)" Y="@(y + cardHeight / 2 + 20)"
              Font="@Skin.Current.CARDPILE_FONT" FontColor="@Skin.Current.CARDPILE_FONTCOLOR"
@@ -36,7 +32,9 @@
     x += cardWidth + 30;
     if (Game.LatestSpiceCardA != null)
     {
-        <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.LatestSpiceCardA)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="5" ShadowY="5" ShadowBlur="3" />
+        <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.LatestSpiceCardA)" 
+               ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="5" ShadowY="5" ShadowBlur="3" 
+               Popover="@IntelOfResourceDiscardPileA()"/>
     }
 
     if (Game.Applicable(Rule.IncreasedResourceFlow))
@@ -50,7 +48,9 @@
         x += cardWidth + 30;
         if (Game.LatestSpiceCardB != null)
         {
-            <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.LatestSpiceCardB)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="5" ShadowY="5" ShadowBlur="3" />
+            <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.LatestSpiceCardB)" 
+                   ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="5" ShadowY="5" ShadowBlur="3" 
+                   Popover="@IntelOfResourceDiscardPileB()"/>
         }
 
         <MapText ToShow="B"
@@ -65,7 +65,9 @@
 
     if (Game.TreacheryDeck.Items.Count > 0)
     {
-        <Image X="@(x)" Y="@(Skin.Current.TreacheryDeckLocation.Y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.CardBack_TreacheryCard_URL" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="5" ShadowY="5" ShadowBlur="3" />
+        <Image X="@(x)" Y="@(Skin.Current.TreacheryDeckLocation.Y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.CardBack_TreacheryCard_URL" 
+               ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="5" ShadowY="5" ShadowBlur="3" 
+               Popover="@IntelOfTreacheryCardPile()"/>
     }
 
     <MapText ToShow="@Game.TreacheryDeck.Items.Count.ToString()"
@@ -77,7 +79,9 @@
     if (!Game.TreacheryDiscardPile.IsEmpty)
     {
         x += cardWidth + 30;
-        <Image X="@(x)" Y="@(Skin.Current.TreacheryDeckLocation.Y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.TreacheryDiscardPile.Top)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="5" ShadowY="5" ShadowBlur="3" />
+        <Image X="@(x)" Y="@(Skin.Current.TreacheryDeckLocation.Y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.TreacheryDiscardPile.Top)" 
+               ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="5" ShadowY="5" ShadowBlur="3" 
+               Popover="@IntelOfTreacheryDiscardPile()"/>
 
         <MapText ToShow="@Game.TreacheryDiscardPile.Items.Count.ToString()"
                  X="@(x + cardWidth / 2)" Y="@(Skin.Current.TreacheryDeckLocation.Y + cardHeight / 2 + 20)"
@@ -90,7 +94,9 @@
     {
         x = Skin.Current.TreacheryDeckLocation.X - cardWidth - 30;
 
-        <Image X="@(x)" Y="@(Skin.Current.TreacheryDeckLocation.Y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.CardBack_TreacheryCard_URL" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="5" ShadowY="5" ShadowBlur="3" />
+        <Image X="@(x)" Y="@(Skin.Current.TreacheryDeckLocation.Y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.CardBack_TreacheryCard_URL" 
+               ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="5" ShadowY="5" ShadowBlur="3" 
+               Popover="@IntelOfWhiteCardPile()"/>
         <Image X="@(x + cardWidth / 3)" Y="@(Skin.Current.TreacheryDeckLocation.Y + 30)" Diameter="@(cardWidth / 3)" Src="@Skin.Current.GetImageURL(Faction.White)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1" />
         <MapText ToShow="@Game.WhiteCache.Count.ToString()"
                  X="@(x + cardWidth / 2)" Y="@(Skin.Current.TreacheryDeckLocation.Y + cardHeight / 2 + 20)"
@@ -98,4 +104,131 @@
                  BorderWidth="@Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.CARDPILE_FONT_BORDERCOLOR"
                  Align="@TextAlignment.Center" />
     }
+}
+
+@code {
+
+    private string IntelOfTreacheryCardPile()
+    {
+        return Skin.Current.Format("<h4>Treachery Cards: {0} on deck</h4>", h.Game.TreacheryDeck.Items.Count); ;
+    }
+
+    private string IntelOfTreacheryDiscardPile()
+    {
+        string result = "";
+
+        result += Skin.Current.Format("<h4>Treachery discard pile: {0} cards</h4>", h.Game.TreacheryDiscardPile.Items.Count);
+
+        if (h.Game.Applicable(Rule.AssistedNotekeeping))
+        {
+            result += "<div class=\"row row-cols-6 ml-0 mr-0 mt-1\">";
+            foreach (var c in h.Game.TreacheryDiscardPile.Items)
+            {
+                result += string.Format("<img src=\"{0}\" class=\"img-fluid\"/>", Skin.Current.GetImageURL(c));
+            }
+            result += "</div>";
+        }
+        else if (h.Game.TreacheryDiscardPile.Top != null)
+        {
+            result += "Most recently discarded:";
+            result += Support.GetTreacheryCardHoverHTML(h.Game.TreacheryDiscardPile.Top);
+        }
+
+        return result;
+    }
+
+    private string IntelOfWhiteCardPile()
+    {
+        string result = "";
+        if (h.Game.WhiteCache.Count > 0)
+        {
+            result += Skin.Current.Format("<h4>{0} cards: {1} on deck</h4>", Faction.White, h.Game.WhiteCache.Count);
+
+            if (h.Faction == Faction.White || h.Game.Applicable(Rule.AssistedNotekeeping))
+            {
+                result += "<div class=\"row row-cols-6 ml-0 mr-0 mt-1\">";
+                foreach (var c in h.Game.WhiteCache)
+                {
+                    result += string.Format("<img src=\"{0}\" class=\"img-fluid\"/>", Skin.Current.GetImageURL(c));
+                }
+                result += "</div>";
+            }
+        }
+
+        return result;
+    }
+
+    private string IntelOfResourceCardPile()
+    {
+        string result = "";
+
+        result += Skin.Current.Format("<h4>{0} Cards: {1} on deck</h4>", Concept.Resource, h.Game.ResourceCardDeck.Items.Count);
+
+        if (h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove && h.Game.HasResourceDeckPrescience(h.Player) && h.Game.ResourceCardDeck.Top != null)
+        {
+            result += "<p>Top Card:</p>";
+            result += Support.GetResourceCardHoverHTML(h.Game.ResourceCardDeck.Top);
+        }
+
+        return result;
+    }
+
+    private string IntelOfResourceDiscardPileA()
+    {
+        string result = "";
+
+        if (h.Game.Applicable(Rule.IncreasedResourceFlow))
+        {
+            result += Skin.Current.Format("<h4>Resource discard pile A: {0} cards</h4>", h.Game.ResourceCardDiscardPileA.Items.Count);
+            if (h.Game.LatestSpiceCardA != null)
+            {
+                result += "<p>Latest card:</p>";
+                result += Support.GetResourceCardHoverHTML(h.Game.LatestSpiceCardA);
+                if (h.Game.Applicable(Rule.AssistedNotekeeping))
+                {
+                    result += "<p>" + Skin.Current.Join(h.Game.ResourceCardDiscardPileA.Items.Where(c => c != h.Game.LatestSpiceCardA)) + "</p>";
+                }
+            }
+        }
+        else
+        {
+            result += Skin.Current.Format("<h4>Resource discard pile: {0} cards</h4>", h.Game.ResourceCardDiscardPileA.Items.Count);
+            if (h.Game.LatestSpiceCardA != null)
+            {
+                result += "<p>Latest card:</p>";
+                result += Support.GetResourceCardHoverHTML(h.Game.LatestSpiceCardA);
+                if (h.Game.Applicable(Rule.AssistedNotekeeping))
+                {
+                    result += "<p>" + Skin.Current.Join(h.Game.ResourceCardDiscardPileB.Items.Where(c => c != h.Game.LatestSpiceCardA)) + "</p>";
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private string IntelOfResourceDiscardPileB()
+    {
+        string result = "";
+
+        if (h.Game.Applicable(Rule.IncreasedResourceFlow))
+        {
+            result += Skin.Current.Format("<h4>Resource discard pile B: {0} cards</h4>", h.Game.ResourceCardDiscardPileB.Items.Count);
+            if (h.Game.LatestSpiceCardB != null)
+            {
+                result += "<p>Latest card:</p>";
+                result += Support.GetResourceCardHoverHTML(h.Game.LatestSpiceCardB);
+                if (h.Game.Applicable(Rule.AssistedNotekeeping))
+                {
+                    foreach (var c in h.Game.ResourceCardDiscardPileB.Items.Where(c => c != h.Game.LatestSpiceCardB))
+                    {
+                        result += "<p>" + c.ToString() + "</p>";
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
 }
