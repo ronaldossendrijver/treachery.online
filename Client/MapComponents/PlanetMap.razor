@@ -20,7 +20,13 @@
             <Phases h="h" />
             <Highlights h="h" />
             <Players h="h" />
-            <HMS h="h" />
+
+            @foreach (var l in h.Game.Map.Locations.Where(l => l != Game.Map.HiddenMobileStronghold))
+            {
+                <Location h="@h" ToShow="l" FillColor="transparent" FillOpacity="0" OnLocationClick="@OnLocationClick" />
+            }
+            
+            <HMS h="h" OnLocationClick="@OnLocationClick"/>
             <StrongholdOwnership h="h" />
             <RecentMoves h="h" />
             <ForcesOnPlanet h="h" />
@@ -28,12 +34,6 @@
             <Tanks h="h" />
             <CardPiles h="h" />
             <Disconnection h="h" />
-
-            @foreach (var l in h.Game.Map.Locations)
-            {
-                <Location h="@h" ToShow="l" FillColor="transparent" FillOpacity="0" OnLocationClick="@OnLocationClick" />
-            }
-
             <BattlePlans h="h" />
             <Options h="h" />
 

@@ -1,8 +1,11 @@
 ﻿@inherits MapComponent
 
-<circle cx="@X" cy="@Y" r="@Radius" 
-        fill="@FillColor" fill-opacity="@FillOpacity"
-        stroke="@StrokeColor" stroke-width="@Px(StrokeWidth)" />
+<svg width="@(2*Radius)" height="@(2*Radius)" style="position:absolute;left:@Px(X-Radius);top:@Px(Y-Radius)" pointer-events="none">
+    <circle 
+            cx="@Radius" cy="@Radius" r="@Radius" 
+            fill="@FillColor" fill-opacity="@FillOpacity"
+            stroke="@StrokeColor" stroke-width="@Px(StrokeWidth)" />
+</svg>
 
 @code {
 
@@ -19,7 +22,7 @@
     public string FillRule { get; set; } = "";
 
     [Parameter]
-    public string StrokeColor { get; set; } = "transparant";
+    public string StrokeColor { get; set; } = "transparent";
 
     [Parameter]
     public float StrokeWidth { get; set; } = 0;

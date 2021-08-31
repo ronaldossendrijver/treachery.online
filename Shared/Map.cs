@@ -126,24 +126,6 @@ namespace Treachery.Shared
             }
         }
 
-        public Location FindLocation(int x, int y)
-        {
-            if (Arrakeen.IsInside(this, x, y)) return Arrakeen;
-            if (Carthag.IsInside(this, x, y)) return Carthag;
-            if (SietchTabr.IsInside(this, x, y)) return SietchTabr;
-            if (HabbanyaSietch.IsInside(this, x, y)) return HabbanyaSietch;
-            if (TueksSietch.IsInside(this, x, y)) return TueksSietch;
-            if (HiddenMobileStronghold.IsInside(this, x, y)) return HiddenMobileStronghold;
-
-            int sector = FindSector(x, y);
-            return Locations.FirstOrDefault(l => !l.Territory.IsStronghold && (l.Sector == sector || l.Sector == -1) && l.Territory.IsInside(x, y));
-        }
-
-        public Location Get(string locationName)
-        {
-            return Locations.SingleOrDefault(l => l.ToString() == locationName);
-        }
-
         private void InitializePositions()
         {
             TurnMarkerPosition = new Point(500, 495);

@@ -99,7 +99,7 @@ namespace Treachery.Shared
                             CardWasSoldOnBlackMarket = true;
                             EnterWhiteBidding();
                         }
-                        else if (CurrentBid == null && Bids.Count == PlayersThatCanBid.Count())
+                        else if (CurrentBid == null && Bids.Count >= PlayersThatCanBid.Count())
                         {
                             CurrentReport.Add("Card not sold as no faction bid on it.");
                             EnterWhiteBidding();
@@ -349,6 +349,7 @@ namespace Treachery.Shared
         private void StartBiddingRound()
         {
             BiddingRoundWasStarted = true;
+            SkipPlayersThatCantBid(BidSequence);
             Enter(Phase.Bidding);
 
             if (Players.Count == 1 && CardsOnAuction.Items.Count == 1)
@@ -464,7 +465,7 @@ namespace Treachery.Shared
                                 FinishBid(CurrentBid.Player, card);
                             }
                         }
-                        else if (CurrentBid == null && Bids.Count == PlayersThatCanBid.Count())
+                        else if (CurrentBid == null && Bids.Count >= PlayersThatCanBid.Count())
                         {
                             EveryonePassed();
                         }
@@ -677,7 +678,7 @@ namespace Treachery.Shared
             for (int i = 0; i < Players.Count; i++)
             {
                 if (sequence.CurrentPlayer.HasRoomForCards) break;
-                sequence.NextPlayer(Version >= 50);
+                sequence.NextPlayer(true);
             }
         }
 
@@ -892,7 +893,8 @@ namespace Treachery.Shared
                 ////console.writeLine("PutNextCardOnAuction->StartBidSequence")
                 //StartBidSequenceAndAuctionType(AuctionType.Normal);
             }
-                        
+
+            SkipPlayersThatCantBid(BidSequence);
             Enter(Phase.Bidding);
         }
 
