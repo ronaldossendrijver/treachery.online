@@ -55,19 +55,19 @@
     {
         if (firstRender)
         {
-            MapDrawer.OnLocationSelected += HandleAddForce;
-            MapDrawer.OnLocationSelectedWithShift += HandleRemoveForce;
-            MapDrawer.OnLocationSelectedWithCtrlOrAlt += HandleAddTargetForce;
-            MapDrawer.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleRemoveTargetForce;
+            h.OnLocationSelected += HandleAddForce;
+            h.OnLocationSelectedWithShift += HandleRemoveForce;
+            h.OnLocationSelectedWithCtrlOrAlt += HandleAddTargetForce;
+            h.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleRemoveTargetForce;
         }
     }
 
     public void Dispose()
     {
-        MapDrawer.OnLocationSelected -= HandleAddForce;
-        MapDrawer.OnLocationSelectedWithShift -= HandleRemoveForce;
-        MapDrawer.OnLocationSelectedWithCtrlOrAlt -= HandleAddTargetForce;
-        MapDrawer.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleRemoveTargetForce;
+        h.OnLocationSelected -= HandleAddForce;
+        h.OnLocationSelectedWithShift -= HandleRemoveForce;
+        h.OnLocationSelectedWithCtrlOrAlt -= HandleAddTargetForce;
+        h.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleRemoveTargetForce;
     }
 
     private void HandleAddForce(object sender, Location l)

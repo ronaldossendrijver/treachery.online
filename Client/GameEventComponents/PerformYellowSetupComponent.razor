@@ -43,26 +43,26 @@
     {
         if (firstRender)
         {
-            MapDrawer.OnLocationSelected += HandleAddForce;
-            MapDrawer.OnLocationSelectedWithShift += HandleRemoveForce;
+            h.OnLocationSelected += HandleAddForce;
+            h.OnLocationSelectedWithShift += HandleRemoveForce;
 
             if (Player.HasSpecialForces)
             {
-                MapDrawer.OnLocationSelectedWithCtrlOrAlt += HandleAddSpecialForce;
-                MapDrawer.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleRemoveSpecialForce;
+                h.OnLocationSelectedWithCtrlOrAlt += HandleAddSpecialForce;
+                h.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleRemoveSpecialForce;
             }
         }
     }
 
     public void Dispose()
     {
-        MapDrawer.OnLocationSelected -= HandleAddForce;
-        MapDrawer.OnLocationSelectedWithShift -= HandleRemoveForce;
+        h.OnLocationSelected -= HandleAddForce;
+        h.OnLocationSelectedWithShift -= HandleRemoveForce;
 
         if (Player.HasSpecialForces)
         {
-            MapDrawer.OnLocationSelectedWithCtrlOrAlt -= HandleAddSpecialForce;
-            MapDrawer.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleRemoveSpecialForce;
+            h.OnLocationSelectedWithCtrlOrAlt -= HandleAddSpecialForce;
+            h.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleRemoveSpecialForce;
         }
     }
 

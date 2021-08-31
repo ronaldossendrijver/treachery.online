@@ -32,14 +32,14 @@
 
     public void Dispose()
     {
-        MapDrawer.OnLocationSelected -= HandleLocationSelected;
+        h.OnLocationSelected -= HandleLocationSelected;
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
         {
-            MapDrawer.OnLocationSelected += HandleLocationSelected;
+            h.OnLocationSelected += HandleLocationSelected;
         }
     }
 

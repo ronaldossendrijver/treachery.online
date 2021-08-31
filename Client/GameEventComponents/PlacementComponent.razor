@@ -19,15 +19,15 @@
     {
         if (firstRender)
         {
-            MapDrawer.OnLocationSelected += HandleLocationSelected;
-            MapDrawer.OnLocationSelectedWithCtrlOrAlt += HandleLocationSelectedWithModifier;
+            h.OnLocationSelected += HandleLocationSelected;
+            h.OnLocationSelectedWithCtrlOrAlt += HandleLocationSelectedWithModifier;
         }
     }
 
     public void Dispose()
     {
-        MapDrawer.OnLocationSelected -= HandleLocationSelected;
-        MapDrawer.OnLocationSelectedWithCtrlOrAlt -= HandleLocationSelectedWithModifier;
+        h.OnLocationSelected -= HandleLocationSelected;
+        h.OnLocationSelectedWithCtrlOrAlt -= HandleLocationSelectedWithModifier;
     }
 
     protected void AsAdvisorsOnChange(ChangeEventArgs args)

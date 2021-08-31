@@ -191,19 +191,19 @@
     {
         if (firstRender)
         {
-            MapDrawer.OnLocationSelected += HandleLocationSelected;
-            MapDrawer.OnLocationSelectedWithShift += HandleLocationSelectedWithModifier;
-            MapDrawer.OnLocationSelectedWithCtrlOrAlt += HandleLocationSelectedWithModifier;
-            MapDrawer.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleLocationSelectedWithModifier;
+            h.OnLocationSelected += HandleLocationSelected;
+            h.OnLocationSelectedWithShift += HandleLocationSelectedWithModifier;
+            h.OnLocationSelectedWithCtrlOrAlt += HandleLocationSelectedWithModifier;
+            h.OnLocationSelectedWithShiftAndWithCtrlOrAlt += HandleLocationSelectedWithModifier;
         }
     }
 
     public void Dispose()
     {
-        MapDrawer.OnLocationSelected -= HandleLocationSelected;
-        MapDrawer.OnLocationSelectedWithShift -= HandleLocationSelectedWithModifier;
-        MapDrawer.OnLocationSelectedWithCtrlOrAlt -= HandleLocationSelectedWithModifier;
-        MapDrawer.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleLocationSelectedWithModifier;
+        h.OnLocationSelected -= HandleLocationSelected;
+        h.OnLocationSelectedWithShift -= HandleLocationSelectedWithModifier;
+        h.OnLocationSelectedWithCtrlOrAlt -= HandleLocationSelectedWithModifier;
+        h.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleLocationSelectedWithModifier;
     }
 
     private void HandleLocationSelected(object sender, Location l)

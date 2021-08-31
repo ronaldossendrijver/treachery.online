@@ -34,13 +34,13 @@
     {
         if (firstRender)
         {
-            MapDrawer.OnLocationSelected += HandleLocationSelected;
+            h.OnLocationSelected += HandleLocationSelected;
         }
     }
 
     public void Dispose()
     {
-        MapDrawer.OnLocationSelected -= HandleLocationSelected;
+        h.OnLocationSelected -= HandleLocationSelected;
     }
 
     protected override KarmaHmsMovement ConfirmedResult => new KarmaHmsMovement(Game) { Initiator = Faction, Passed = false, Target = target };

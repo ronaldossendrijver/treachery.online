@@ -33,13 +33,13 @@
     {
         if (firstRender)
         {
-            MapDrawer.OnLocationSelected += HandleLocationSelected;
+            h.OnLocationSelected += HandleLocationSelected;
         }
     }
 
     public void Dispose()
     {
-        MapDrawer.OnLocationSelected -= HandleLocationSelected;
+        h.OnLocationSelected -= HandleLocationSelected;
     }
 
     protected override BlueAccompanies ConfirmedResult => new BlueAccompanies(Game) { Initiator = Faction, Location = target, Accompanies = true };

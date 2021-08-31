@@ -26,7 +26,7 @@
     <div id="mapdiv" class="col-sm-12 col-lg-6">
         @if (h.HostProxy != null)
         {
-            <PlanetMap h="h" OnLocationClick="@MapDrawer.LocationClick"/>
+            <PlanetMap h="h" OnLocationClick="@h.LocationClick"/>
         }
         else
         {

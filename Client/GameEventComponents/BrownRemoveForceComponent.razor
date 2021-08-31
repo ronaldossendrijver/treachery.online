@@ -43,13 +43,13 @@
     {
         if (firstRender)
         {
-            MapDrawer.OnLocationSelected += HandleLocationSelected;
+            h.OnLocationSelected += HandleLocationSelected;
         }
     }
 
     public void Dispose()
     {
-        MapDrawer.OnLocationSelected -= HandleLocationSelected;
+        h.OnLocationSelected -= HandleLocationSelected;
     }
 
     private IEnumerable<bool> ForceChoices => BrownRemoveForce.ValidSpecialForceChoices(Game, Player, location, target);

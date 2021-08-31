@@ -35,7 +35,7 @@
     {
         if (firstRender)
         {
-            MapDrawer.OnLocationSelected += HandleLocationSelected;
+            h.OnLocationSelected += HandleLocationSelected;
         }
     }
 
@@ -48,6 +48,6 @@
 
     public void Dispose()
     {
-        MapDrawer.OnLocationSelected -= HandleLocationSelected;
+        h.OnLocationSelected -= HandleLocationSelected;
     }
 }

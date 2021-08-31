@@ -903,6 +903,43 @@ namespace Treachery.Client
         }
 
         #endregion SupportMethods
+
+        #region MapEvents
+
+        public event EventHandler<Location> OnLocationSelected;
+        public event EventHandler<Location> OnLocationSelectedWithCtrlOrAlt;
+        public event EventHandler<Location> OnLocationSelectedWithShift;
+        public event EventHandler<Location> OnLocationSelectedWithShiftAndWithCtrlOrAlt;
+
+        public void LocationClick(LocationEventArgs e)
+        {
+            //Console.WriteLine("Location " + e.Location.Id + ": " + e.Location + ", territory " + e.Location.Territory.Id + ": " + e.Location.Territory);
+
+            if (e.ShiftKey)
+            {
+                if (e.CtrlKey || e.AltKey)
+                {
+                    OnLocationSelectedWithShiftAndWithCtrlOrAlt?.Invoke(this, e.Location);
+                }
+                else
+                {
+                    OnLocationSelectedWithShift?.Invoke(this, e.Location);
+                }
+            }
+            else
+            {
+                if (e.CtrlKey || e.AltKey)
+                {
+                    OnLocationSelectedWithCtrlOrAlt?.Invoke(this, e.Location);
+                }
+                else
+                {
+                    OnLocationSelected?.Invoke(this, e.Location);
+                }
+            }
+        }
+
+        #endregion
     }
 
 
