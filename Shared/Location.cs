@@ -63,11 +63,6 @@ namespace Treachery.Shared
             }
         }
 
-        public virtual bool IsInside(Map map, int x, int y)
-        {
-            return (Sector == -1 || map.FindSector(x, y) == Sector) && Territory.IsInside(x, y);
-        }
-
         public bool IsProtectedFromStorm => Territory.IsProtectedFromStorm;
 
         public override bool Equals(object obj)

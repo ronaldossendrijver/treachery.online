@@ -46,20 +46,6 @@
         await Request(OtherResult);
     }
 
-    protected void StartRedrawCycle(int interval)
-    {
-        if (interval > 0)
-        {
-            _ = RedrawAsync();
-            _ = Task.Delay(interval).ContinueWith(e => StartRedrawCycle(interval));
-        }
-    }
-
-    protected virtual async Task RedrawAsync()
-    {
-        await OnAfterRenderAsync(false);
-    }
-
     protected string Validation
     {
         get

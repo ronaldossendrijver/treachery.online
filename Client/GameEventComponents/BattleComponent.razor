@@ -193,6 +193,12 @@
         }
     }
 
+    protected override void OnAfterRender(bool firstRender)
+    {
+        RedrawIfNeeded();
+    }
+
+
     private int lastforces;
     private int lastspecialForces;
     private int lastResources;
@@ -202,12 +208,7 @@
     private TreacheryCard lastdefense;
     private TreacheryCard lastweapon;
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender) StartRedrawCycle(1000);
-    }
-
-    protected override async Task RedrawAsync()
+    private void RedrawIfNeeded()
     {
         if (
         forces != lastforces ||
@@ -229,7 +230,7 @@
             lastweapon = weapon;
 
             h._battleUnderConstruction = ConfirmedResult;
-            //NEWMAP//await MapDrawer.Draw();
+            h.Refresh();
         }
     }
 

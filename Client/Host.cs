@@ -159,7 +159,7 @@ namespace Treachery.Client
                     {
                         JoinedPlayers.Remove(thePlayer);
                         Heartbeats.Remove(disconnectedPlayerName);
-                        h.RefreshControls();
+                        h.Refresh();
                     }
                 }
             }
@@ -200,7 +200,7 @@ namespace Treachery.Client
                 if (denyMessage == "")
                 {
                     JoinedPlayers.Add(e.Name);
-                    h.RefreshControls();
+                    h.Refresh();
                 }
             }
             catch (Exception ex)

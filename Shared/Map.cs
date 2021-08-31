@@ -256,8 +256,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = true,
-                    IsProtectedFromWorm = true,
-                    Shape = ShapeManager.territory0
+                    IsProtectedFromWorm = true
                 };
                 PolarSink = (new Location(id++)
                 {
@@ -275,8 +274,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = true,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory1
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {//1
@@ -310,8 +308,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = true,
                     IsProtectedFromStorm = true,
-                    IsProtectedFromWorm = true,
-                    Shape = ShapeManager.territory2
+                    IsProtectedFromWorm = true
                 };
                 Carthag = new Location(id++)
                 {//4
@@ -329,8 +326,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = true,
                     IsProtectedFromStorm = true,
-                    IsProtectedFromWorm = true,
-                    Shape = ShapeManager.territory3
+                    IsProtectedFromWorm = true
                 };
                 Arrakeen = new Location(id++)
                 {//5
@@ -349,8 +345,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = true,
                     IsProtectedFromStorm = true,
-                    IsProtectedFromWorm = true,
-                    Shape = ShapeManager.territory4
+                    IsProtectedFromWorm = true
                 };
                 TueksSietch = new Location(id++)
                 {//6
@@ -368,8 +363,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = true,
                     IsProtectedFromStorm = true,
-                    IsProtectedFromWorm = true,
-                    Shape = ShapeManager.territory5
+                    IsProtectedFromWorm = true
                 };
                 SietchTabr = new Location(id++)
                 {//7
@@ -388,8 +382,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = true,
                     IsProtectedFromStorm = true,
-                    IsProtectedFromWorm = true,
-                    Shape = ShapeManager.territory6
+                    IsProtectedFromWorm = true
                 };
                 HabbanyaSietch = new Location(id++)
                 {//8
@@ -408,8 +401,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory7
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -443,8 +435,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory8
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -477,8 +468,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory9
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -503,8 +493,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory10
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -530,8 +519,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory11
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -556,8 +544,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory12
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -582,8 +569,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = true,
-                    IsProtectedFromWorm = true,
-                    Shape = ShapeManager.territory13
+                    IsProtectedFromWorm = true
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -608,8 +594,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = true,
-                    IsProtectedFromWorm = true,
-                    Shape = ShapeManager.territory14
+                    IsProtectedFromWorm = true
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -658,8 +643,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory15
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -701,8 +685,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = true,
-                    IsProtectedFromWorm = true,
-                    Shape = ShapeManager.territory16
+                    IsProtectedFromWorm = true
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -743,8 +726,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory17
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -762,8 +744,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory18
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -797,8 +778,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory19
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -815,8 +795,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = true,
-                    IsProtectedFromWorm = true,
-                    Shape = ShapeManager.territory20
+                    IsProtectedFromWorm = true
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -833,8 +812,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory21
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -851,8 +829,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory22
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -870,8 +847,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = true,
-                    IsProtectedFromWorm = true,
-                    Shape = ShapeManager.territory23
+                    IsProtectedFromWorm = true
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -896,8 +872,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory24
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -914,8 +889,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory25
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -949,8 +923,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory26
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -976,8 +949,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory27
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -1010,8 +982,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory28
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -1036,8 +1007,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory29
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -1063,8 +1033,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = true,
-                    IsProtectedFromWorm = true,
-                    Shape = ShapeManager.territory30
+                    IsProtectedFromWorm = true
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -1097,8 +1066,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory31
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -1124,8 +1092,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory32
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -1150,8 +1117,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory33
+                    IsProtectedFromWorm = false
                 };
                 FuneralPlain = new Location(id++)
                 {
@@ -1170,8 +1136,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory34
+                    IsProtectedFromWorm = false
                 };
                 TheGreatFlat = new Location(id++)
                 {
@@ -1190,8 +1155,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory35
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -1232,8 +1196,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory36
+                    IsProtectedFromWorm = false
                 };
                 TheGreaterFlat = new Location(id++)
                 {
@@ -1252,8 +1215,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory37
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -1279,8 +1241,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = true,
-                    IsProtectedFromWorm = true,
-                    Shape = ShapeManager.territory38
+                    IsProtectedFromWorm = true
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -1313,8 +1274,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory39
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -1340,8 +1300,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory40
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {
@@ -1367,8 +1326,7 @@ namespace Treachery.Shared
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
-                    IsProtectedFromWorm = false,
-                    Shape = ShapeManager.territory41
+                    IsProtectedFromWorm = false
                 };
                 Locations.Add(new Location(id++)
                 {

@@ -87,18 +87,11 @@ namespace Treachery.Client
             RegisterHandlers();
         }
 
-        public event Action RefreshPageControls;
+        public event Action RefreshHandler;
 
-        public event Action RefreshPageAll;
-
-        public void RefreshControls()
+        public void Refresh()
         {
-            RefreshPageControls.Invoke();
-        }
-
-        public void RefreshAll()
-        {
-            RefreshPageAll.Invoke();
+            RefreshHandler.Invoke();
         }
 
         private void Game_MessageHandler(object sender, ChatMessage e)
@@ -188,7 +181,7 @@ namespace Treachery.Client
                 }
 
                 AvailableGames.Add(info, DateTime.Now);
-                RefreshControls();
+                Refresh();
             }
         }
 
@@ -237,7 +230,7 @@ namespace Treachery.Client
                     _joinError[hostID] = denyMessage;
                 }
             }
-            RefreshControls();
+            Refresh();
         }
 
 
@@ -257,7 +250,7 @@ namespace Treachery.Client
                     _joinError[hostID] = denyMessage;
                 }
             }
-            RefreshControls();
+            Refresh();
         }
 
         private async Task TryToReconnect()
@@ -421,7 +414,7 @@ namespace Treachery.Client
             Skin.Current = Support.LoadSkin(skinData);
             await Skin.Current.ValidateAndFix(Browser.UrlExists);
 
-            RefreshAll();
+            Refresh();
         }
 
         public bool IsPlayer
@@ -534,7 +527,7 @@ namespace Treachery.Client
             {
                 Messages.AddFirst(m);
                 await Browser.PlaySound(Skin.Current.Sound_Chatmessage_URL, CurrentChatVolume);
-                RefreshControls();
+                Refresh();
 
                 await Browser.SendToChatPopup(ConstructPopupChatMessage(m));
             }
@@ -559,7 +552,7 @@ namespace Treachery.Client
         public MainPhase TimerType;
         public List<Faction> TimedFactions = null;
 
-        private readonly Dictionary<Faction, ThinkTimer> _timers = new Dictionary<Faction, ThinkTimer>();
+        private readonly Dictionary<Faction, ThinkTimer> _timers = new();
         public ThinkTimer ThinkTimer(Faction f)
         {
             if (!_timers.ContainsKey(f))
@@ -751,7 +744,7 @@ namespace Treachery.Client
                 PerformBotAction();
             }
 
-            RefreshAll();
+            Refresh();
         }
 
         private void PerformBotAction()
@@ -829,7 +822,7 @@ namespace Treachery.Client
             {
                 PlayerName = name;
                 await CheckIfPlayerCanReconnect();
-                RefreshControls();
+                Refresh();
             }
         }
 

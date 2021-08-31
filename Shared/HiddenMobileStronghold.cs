@@ -21,17 +21,8 @@ namespace Treachery.Shared
             {
                 IsStronghold = true,
                 IsProtectedFromStorm = true,
-                IsProtectedFromWorm = true,
-                Shape = new Segment[] { }
+                IsProtectedFromWorm = true
             };
-        }
-
-        private Segment[] DetermineShape()
-        {
-            return new Segment[] {
-                    new Arc(new PointF(Center.X, Center.Y), RADIUS, 0, (float)(2 * Math.PI), false),
-                    new Close()
-                };
         }
 
         public bool Visible
@@ -51,7 +42,6 @@ namespace Treachery.Shared
 
             newLocation.Neighbours.Add(this);
             AttachedToLocation = newLocation;
-            Territory.Shape = DetermineShape();
         }
 
         public override int Sector
@@ -85,19 +75,6 @@ namespace Treachery.Shared
                 var result = new List<Location>();
                 if (AttachedToLocation != null) result.Add(AttachedToLocation);
                 return result;
-            }
-        }
-
-        public override bool IsInside(Map m, int x, int y)
-        {
-            if (AttachedToLocation == null)
-            {
-                return false;
-            }
-            else
-            {
-                var center = Center;
-                return x > center.X - RADIUS && x < center.X + RADIUS && y > center.Y - RADIUS && y < center.Y + RADIUS;
             }
         }
     }

@@ -8,10 +8,5 @@
     [Parameter]
     public IHero ToShow { get; set; }
 
-    protected override void OnInitialized()
-    {
-        Diameter = 3 * Skin.Current.FORCETOKEN_RADIUS;
-    }
-
     private string LeaderURL => Skin.Current.GetImageURL(ToShow);
 }

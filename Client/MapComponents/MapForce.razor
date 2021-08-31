@@ -26,6 +26,9 @@
     [Parameter]
     public bool Threatened { get; set; } = false;
 
+    [Parameter]
+    public bool ShowPopover { get; set; } = true;
+
     protected override void OnInitialized()
     {
         Diameter = 2 * Skin.Current.FORCETOKEN_RADIUS;
@@ -33,5 +36,5 @@
 
     private string ForceURL => Special ? Skin.Current.GetFactionSpecialForceImageURL(Faction) : Skin.Current.GetFactionForceImageURL(Faction);
 
-    private string Popover => string.Format("<img style='float:left' src='{0}' width=100/><h3 style='float:right'>{1}</h3>", ForceURL, Amount);
+    private string Popover => ShowPopover ? string.Format("<img style='float:left' src='{0}' width=100/><h3 style='float:right'>{1}</h3>", ForceURL, Amount) : null;
 }

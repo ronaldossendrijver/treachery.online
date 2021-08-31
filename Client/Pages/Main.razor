@@ -148,8 +148,7 @@
     {
         Browser.Initialize(JSRuntime);
         h = new Handler(NavigationManager.ToAbsoluteUri("/gameHub"), logger);
-        h.RefreshPageControls += RefreshControls;
-        h.RefreshPageAll += RefreshAll;
+        h.RefreshHandler += Refresh;
         await h.Start();
     }
 
@@ -193,21 +192,11 @@
         }
     }
 
-
-    public void RefreshAll()
+    public void Refresh()
     {
-        //Support.LogDuration("RefreshAll-Start");
-        //MapDrawer.SetGame(h._canvas, h);
-        //_ = MapDrawer.Draw();
+        Support.LogDuration("RefreshAll-Start");
         StateHasChanged();
-        //Support.LogDuration("RefreshAll-End");
-    }
-
-    public void RefreshControls()
-    {
-        //Support.LogDuration("RefreshControls-Start");
-        StateHasChanged();
-        //Support.LogDuration("RefreshControls-End");
+        Support.LogDuration("RefreshAll-End");
     }
 
     private string InformationLayout => h.IsObserver ? "col-sm-12 col-lg-4 cursor-hand" : "col-sm-12 col-lg-2 cursor-hand";

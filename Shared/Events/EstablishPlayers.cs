@@ -25,7 +25,7 @@ namespace Treachery.Shared
 
         public string _factionsInPlay = "";
 
-        public string _gameName { get; set; }
+        public string _gameName = "";
 
         [JsonIgnore]
         public string GameName

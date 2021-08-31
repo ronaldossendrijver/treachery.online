@@ -68,22 +68,22 @@
                 int bonus = Battle.DetermineSkillBonus(Game, Plan, out _);
                 if (bonus != 0)
                 {
-                    <MapText ToShow="@("+ " + bonus)"
-                             X="@(skillLeftMargin + Skin.Current.BattleWheelCardWidth - 20)" Y="@(skillTopMargin + 140)"
+                    <MapText ToShow="@("+" + bonus)"
+                             X="@(skillLeftMargin + Skin.Current.BattleWheelCardWidth - 10)" Y="@(skillTopMargin + 120)"
                              Font="@Skin.Current.CARDPILE_FONT" FontColor="green"
-                             BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.FORCETOKEN_FONT_BORDERCOLOR"
-                             Align="@TextAlignment.Center" />
+                             BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
+                             Align="@TextAlignment.Right" />
                 }
                 else
                 {
                     int penalty = Battle.DetermineSkillPenalty(Game, Plan, Opponent, out _);
                     if (penalty != 0)
                     {
-                        <MapText ToShow="@("- " + penalty)"
-                                 X="@(skillLeftMargin + Skin.Current.BattleWheelCardWidth - 20)" Y="@(skillTopMargin + 140)"
+                        <MapText ToShow="@("-" + penalty)"
+                                 X="@(skillLeftMargin + Skin.Current.BattleWheelCardWidth - 10)" Y="@(skillTopMargin + 120)"
                                  Font="@Skin.Current.CARDPILE_FONT" FontColor="red"
                                  BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
-                                 Align="@TextAlignment.Center" />
+                                 Align="@TextAlignment.Right" />
                     }
                 }
             }
