@@ -24,7 +24,7 @@
 
                         @if (img.Message != null)
                         {
-                            <div class='m-0 bg-dark text-white text-center container-fluid w-100' style='@MsgStyle(WIDTH)'>@img.Message</div>
+                            <div class='m-0 bg-transparent text-white text-center container-fluid w-100' style='@MsgStyle(WIDTH)'>@img.Message</div>
                         }
 
                     </div>
@@ -71,12 +71,12 @@
 
     private string ImgStyle(int width, int height)
     {
-        return string.Format("width:{0}px; height:{1}px", width, height);
+        return string.Format("width:{0}px; height:{1}px;", width, height);
     }
 
     private string MsgStyle(int width)
     {
-        return string.Format("width:{0}px; font:{1};", width, Skin.Current.PLAYEDCARD_MESSAGE_FONT);
+        return string.Format("width:{0}px; font:{1}; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;", width, Skin.Current.PLAYEDCARD_MESSAGE_FONT);
     }
 
     private void Hide()
@@ -128,6 +128,7 @@
             else if (latestEvent is Planetology) result.Add(CardInfo(latestEvent, LeaderSkill.Planetologist));
             else if (latestEvent is BattleConcluded battleconcluded && g.TraitorsDeciphererCanLookAt.Count > 0) result.Add(CardInfo(latestEvent, LeaderSkill.Decipherer));
             else if (latestEvent is Thought) result.Add(CardInfo(latestEvent, LeaderSkill.Thinker));
+            else if (latestEvent is EstablishPlayers && g.CurrentPhase != Phase.SelectingFactions) result.Add(CardInfo(Player.Faction));
 
         }
 
@@ -246,6 +247,14 @@
         FlashInfo result;
         result.Url = Skin.Current.GetImageURL(s);
         result.Message = e?.GetMessage();
+        return result;
+    }
+
+    private FlashInfo CardInfo(Faction f)
+    {
+        FlashInfo result;
+        result.Url = Skin.Current.GetImageURL(f);
+        result.Message = new Message("You play {0}", f);
         return result;
     }
 

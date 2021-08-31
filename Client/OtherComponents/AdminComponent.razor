@@ -55,7 +55,7 @@
         get
         {
             var result = new Dictionary<int, string>();
-            for (int i = h.Game.History.Count - 1; i >= 0; i--)
+            for (int i = h.Game.History.Count - 1; i > 0; i--)
             {
                 var e = h.Game.History[i];
                 if (!(e is AllyPermission) && !(e is BattleRevision))

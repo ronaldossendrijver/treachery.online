@@ -193,7 +193,7 @@ namespace Treachery.Shared
 
         //General
         public string GAMEVERSION_FONT = "normal normal normal 16px Advokat, Calibri, Tahoma, sans-serif;";
-        public string PLAYEDCARD_MESSAGE_FONT = "normal normal normal 18px Calibri, Tahoma, sans-serif";
+        public string PLAYEDCARD_MESSAGE_FONT = "normal normal bold 24px Advokat, Calibri, Tahoma, sans-serif";
         public string FACTION_INFORMATIONCARDSTYLE = "font: normal normal normal 14px Calibri, Tahoma, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; line-height: 95%; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;";
         public string TRACKER_FONT = "normal normal normal 12px Calibri, Tahoma, sans-serif;";
         public string JSPANEL_DEFAULTSTYLE = "font-family: Calibri, Tahoma, sans-serif";
