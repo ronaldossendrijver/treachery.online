@@ -11,7 +11,7 @@ namespace Treachery.Shared
     public class BrownDiscarded : GameEvent
     {
         public int _cardId;
-        
+
         public BrownDiscarded(Game game) : base(game)
         {
         }

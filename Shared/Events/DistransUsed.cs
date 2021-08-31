@@ -3,7 +3,6 @@
  */
 
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,7 +21,7 @@ namespace Treachery.Shared
         public Faction Target { get; set; }
 
         public int _cardId = -1;
-        
+
         [JsonIgnore]
         public TreacheryCard Card
         {

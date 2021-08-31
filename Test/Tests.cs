@@ -12,8 +12,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Treachery.Shared;
 using System.Threading.Tasks;
+using Treachery.Shared;
 
 namespace Treachery.Test
 {
@@ -29,7 +29,8 @@ namespace Treachery.Test
                 var playerWithAction = g.Players.FirstOrDefault(p => g.GetApplicableEvents(p, false).Contains(t));
                 if (playerWithAction != null)
                 {
-                    lock (Written) {
+                    lock (Written)
+                    {
 
                         File.WriteAllText("" + (Written.Count + 100) + " " + t.Name + "-" + playerWithAction.Name.Replace('*', 'X') + ".special.json", GameState.GetStateAsString(g));
                         Written.Add(t);
@@ -80,7 +81,8 @@ namespace Treachery.Test
                 return "Assigning skill to null leader" + " after " + e.GetType().Name + " -> " + g.History.Count;
             }
 
-            if (g.SkillDeck != null) {
+            if (g.SkillDeck != null)
+            {
 
                 var allCards = g.SkillDeck.Items.Concat(g.LeaderState.Where(ls => ls.Value.Skill != LeaderSkill.None).Select(ls => ls.Value.Skill)).ToArray();
 
@@ -310,7 +312,7 @@ namespace Treachery.Test
             int nrOfGames = 100;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
-            
+
             //Expansion, advanced game, all expansions, all factions:
             var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
             rules.Add(Rule.FillWithBots);
@@ -318,7 +320,7 @@ namespace Treachery.Test
             var factions = EstablishPlayers.AvailableFactions().ToList();
             int nrOfTurns = 7;
             int nrOfPlayers = factions.Count;
-            
+
 
             //Expansion, advanced game, all expansions, free for all without guild and fremen:
             /*
@@ -409,17 +411,18 @@ namespace Treachery.Test
 
             var rulesAsArray = rules.ToArray();
             var wincounter = new ObjectCounter<Faction>();
-            
+
             Parallel.For(0, nrOfGames,
-                   index => {
+                   index =>
+                   {
                        PlayGameAndRecordResults(factions, nrOfPlayers, nrOfTurns, rulesAsArray, wincounter);
                    });
-            
+
             foreach (var f in wincounter.Counted)
             {
                 Console.WriteLine("{0}: {1} ({2}%)", f, wincounter.CountOf(f), (100f * wincounter.CountOf(f) / nrOfGames));
             }
-            
+
         }
 
         private static void PlayGameAndRecordResults(List<Faction> factions, int nrOfPlayers, int nrOfTurns, Rule[] rulesAsArray, ObjectCounter<Faction> wincounter)
@@ -493,7 +496,7 @@ namespace Treachery.Test
                     File.WriteAllText("stuck" + game.Seed + ".json", GameState.GetStateAsString(game));
                     break;
                 }
-                
+
             }
 
             return game;

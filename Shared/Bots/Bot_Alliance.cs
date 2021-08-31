@@ -28,11 +28,11 @@ namespace Treachery.Shared
                 (nrOfUnalliedHumans == 0 || nrOfUnalliedHumans < nrOfUnalliedBots - 1) &&
                 !Game.CurrentAllianceOffers.Any(o => o.Initiator == Faction && Game.GetPlayer(o.Target).Ally == Faction.None))
             {
-                var opponentBotWithoutAlly = Game.Players.OrderByDescending(p => 
-                    2 * p.TreacheryCards.Count() + 
-                    p.Resources + 6 * p.LocationsWithAnyForces.Count(l => l.Territory.IsStronghold) + 
-                    p.ForcesOnPlanet.Sum(b => b.Value.TotalAmountOfForces) + 
-                    p.ForcesInReserve + 
+                var opponentBotWithoutAlly = Game.Players.OrderByDescending(p =>
+                    2 * p.TreacheryCards.Count() +
+                    p.Resources + 6 * p.LocationsWithAnyForces.Count(l => l.Territory.IsStronghold) +
+                    p.ForcesOnPlanet.Sum(b => b.Value.TotalAmountOfForces) +
+                    p.ForcesInReserve +
                     p.SpecialForcesInReserve
                     ).FirstOrDefault(p => p != this && p.IsBot && p.Ally == Faction.None);
 
@@ -64,7 +64,8 @@ namespace Treachery.Shared
         {
             if (Ally == Faction.None) return null;
 
-            return Faction switch {
+            return Faction switch
+            {
 
                 Faction.Yellow => DetermineAlliancePermissions_Yellow(),
                 Faction.Green => DetermineAlliancePermissions_Green(),
@@ -247,7 +248,7 @@ namespace Treachery.Shared
                     allowedResources = Math.Max(Resources - 10, 0);
                 }
 
-                if (!Game.WhiteAllyMayUseNoField|| Game.GetPermittedUseOfAllySpice(Ally) != allowedResources || Game.GetPermittedUseOfAllyKarma(Ally) != karmaCard)
+                if (!Game.WhiteAllyMayUseNoField || Game.GetPermittedUseOfAllySpice(Ally) != allowedResources || Game.GetPermittedUseOfAllyKarma(Ally) != karmaCard)
                 {
                     LogInfo("Allowing use of resources: {0} and Karama card: {1}", allowedResources, karmaCard);
                     var permission = new AllyPermission(Game) { Initiator = Faction, PermittedKarmaCard = karmaCard, PermittedResources = allowedResources, WhiteAllowsUseOfNoField = true };

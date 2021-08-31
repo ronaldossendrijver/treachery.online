@@ -113,8 +113,8 @@ namespace Treachery.Shared
 
         public static IEnumerable<TreacheryCard> GetCardsInPlay(Game g)
         {
-            return Items.Where(c => 
-            c.Rule == Rule.None || 
+            return Items.Where(c =>
+            c.Rule == Rule.None ||
             g.Applicable(c.Rule) ||
 
             //Amal used to be included in the basic set of expansion cards

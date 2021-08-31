@@ -488,7 +488,7 @@ namespace Treachery.Shared
 
         //Expansion 2, Advanced Game
         BrownAuditor = 500,
-        WhiteBlackMarket = 501, 
+        WhiteBlackMarket = 501,
 
         //Bots
         FillWithBots = 998,

@@ -19,7 +19,7 @@ namespace Treachery.Shared
             CallHeroesHome();
             CollectResourcesFromTerritories();
             CollectResourcesFromStrongholds();
-            
+
             foreach (var p in Players)
             {
                 if (p.ResourcesDuringCollection > 0)
@@ -188,7 +188,7 @@ namespace Treachery.Shared
             CurrentReport.Add(e);
             Discard(e.CardUsed());
             var target = GetPlayer(e.Target);
-            
+
             if (e.SpecialForce)
             {
                 target.SpecialForcesToReserves(e.Location, 1);
@@ -205,13 +205,13 @@ namespace Treachery.Shared
         {
             switch (EconomicsStatus)
             {
-                case BrownEconomicsStatus.Double: 
+                case BrownEconomicsStatus.Double:
                     EconomicsStatus = BrownEconomicsStatus.CancelFlipped;
                     CurrentReport.Add("The Economics Token flips to Cancel.");
                     RecentMilestones.Add(Milestone.Economics);
                     break;
-                
-                case BrownEconomicsStatus.Cancel: 
+
+                case BrownEconomicsStatus.Cancel:
                     EconomicsStatus = BrownEconomicsStatus.DoubleFlipped;
                     CurrentReport.Add("The Economics Token flips to Double.");
                     RecentMilestones.Add(Milestone.Economics);

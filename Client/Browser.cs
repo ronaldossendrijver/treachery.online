@@ -2,12 +2,10 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
-using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
-using System.Threading.Tasks;
-using Treachery.Shared;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Treachery.Client
 {

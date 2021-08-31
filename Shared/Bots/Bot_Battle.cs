@@ -14,7 +14,8 @@ namespace Treachery.Shared
         {
             var skilledLeader = Leaders.First(l => Game.Skilled(l) && !Game.CapturedLeaders.ContainsKey(l));
 
-            if (skilledLeader != null) {
+            if (skilledLeader != null)
+            {
 
                 if (skilledLeader != null && Game.IsInFrontOfShield(skilledLeader) && skilledLeader == DetermineBattle(true, true)?.Hero)
                 {
@@ -112,11 +113,12 @@ namespace Treachery.Shared
 
             if (toReplace == null) newTraitor = null;
 
-            return new BattleConcluded(Game) { 
-                Initiator = Faction, 
-                DiscardedCards = discarded, 
-                StolenToken = opponent.TechTokens.FirstOrDefault(), 
-                Kill = kill, 
+            return new BattleConcluded(Game)
+            {
+                Initiator = Faction,
+                DiscardedCards = discarded,
+                StolenToken = opponent.TechTokens.FirstOrDefault(),
+                Kill = kill,
                 SpecialForceLossesReplaced = replacedSpecialForces,
                 NewTraitor = newTraitor,
                 ReplacedTraitor = toReplace
@@ -180,14 +182,14 @@ namespace Treachery.Shared
             LogInfo("AGAINST {0} in {1}, WITH {2} + {3} as WEAP + {4} as DEF, I need a force dial of {5}", opponent, Game.CurrentBattle.Territory, hero, weapon, defense, dialNeeded);
 
             var remainingDial = DetermineRemainingDialInBattle(
-                lasgunShield ? 0.5f : dialNeeded, 
-                opponent.Faction, 
-                forcesAvailable, 
-                specialForcesAvailable, 
+                lasgunShield ? 0.5f : dialNeeded,
+                opponent.Faction,
+                forcesAvailable,
+                specialForcesAvailable,
                 Resources - bankerBoost,
-                out int forcesAtFullStrength, 
-                out int forcesAtHalfStrength, 
-                out int specialForcesAtFullStrength, 
+                out int forcesAtFullStrength,
+                out int forcesAtHalfStrength,
+                out int specialForcesAtFullStrength,
                 out int specialForcesAtHalfStrength);
 
             bool predicted = WinWasPredictedByMeThisTurn(opponent.Faction);
@@ -286,7 +288,7 @@ namespace Treachery.Shared
             var uselessAsDefense = lowestAvailableHero == null || MayUseUselessAsKarma || Faction == Faction.Brown ? null : UselessAsDefense(uselessAsWeapon);
 
             RemoveIllegalChoices(ref lowestAvailableHero, ref uselessAsWeapon, ref uselessAsDefense);
-            
+
             if (Battle.MustPayForForcesInBattle(Game, this))
             {
                 return new Battle(Game)
@@ -326,7 +328,7 @@ namespace Treachery.Shared
             {
                 weapon = Weapons(defense, hero).FirstOrDefault(c => IsAllowedWithClairvoyance(weapClairvoyance, c, true));
             }
-            
+
             var defClairvoyance = RulingDefenseClairvoyanceForThisBattle;
             if (defClairvoyance != null && !IsAllowedWithClairvoyance(defClairvoyance, defense, false))
             {
@@ -590,7 +592,7 @@ namespace Treachery.Shared
             mostEffectiveDefense = defenseQuality.Highest;
 
             var defenseToCheck = mostEffectiveDefense;
-            
+
             if (mostEffectiveDefense == null && knownEnemyWeapons.Any() || knownEnemyWeapons.Any(w => !w.CounteredBy(defenseToCheck, chosenWeapon))) return 0;
 
             return 1 - ChanceOfAnUnknownOpponentCardKillingMyLeader(unknownCards, mostEffectiveDefense, opponent, chosenWeapon);
@@ -603,7 +605,7 @@ namespace Treachery.Shared
             var nrOfUnknownOpponentCards = NrOfUnknownOpponentCards(opponent);
 
             var result = 1 - (float)CumulativeChance(unknownCards.Count - numberOfUnknownWeaponsThatCouldKillMeWithThisDefense, unknownCards.Count, nrOfUnknownOpponentCards);
-            
+
             LogInfo("ChanceOfAnUnknownOpponentCardKillingMyLeader: unknownCards.Length {0}, numberOfUnknownWeaponsThatCouldKillMeWithThisDefense {1}, NrOfUnknownOpponentCards {2} = {3}",
                 unknownCards.Count,
                 numberOfUnknownWeaponsThatCouldKillMeWithThisDefense,
@@ -650,10 +652,10 @@ namespace Treachery.Shared
             return unknownCards.Count(c => c.IsDefense && (weapon == null || weapon.CounteredBy(c, null)));
         }
 
-        private ClairVoyanceQandA RulingWeaponClairvoyanceForThisBattle => Game.LatestClairvoyance != null && Game.LatestClairvoyanceQandA != null && Game.LatestClairvoyanceQandA.Answer.Initiator == Faction && Game.LatestClairvoyanceBattle != null && Game.LatestClairvoyanceBattle == Game.CurrentBattle && 
-            (Game.LatestClairvoyanceQandA.Question.Question == ClairvoyanceQuestion.CardTypeAsWeaponInBattle || Game.LatestClairvoyanceQandA.Question.Question == ClairvoyanceQuestion.CardTypeInBattle ) ? Game.LatestClairvoyanceQandA : null;
+        private ClairVoyanceQandA RulingWeaponClairvoyanceForThisBattle => Game.LatestClairvoyance != null && Game.LatestClairvoyanceQandA != null && Game.LatestClairvoyanceQandA.Answer.Initiator == Faction && Game.LatestClairvoyanceBattle != null && Game.LatestClairvoyanceBattle == Game.CurrentBattle &&
+            (Game.LatestClairvoyanceQandA.Question.Question == ClairvoyanceQuestion.CardTypeAsWeaponInBattle || Game.LatestClairvoyanceQandA.Question.Question == ClairvoyanceQuestion.CardTypeInBattle) ? Game.LatestClairvoyanceQandA : null;
 
-        private ClairVoyanceQandA RulingDefenseClairvoyanceForThisBattle => Game.LatestClairvoyance != null && Game.LatestClairvoyanceQandA != null && Game.LatestClairvoyanceQandA.Answer.Initiator == Faction && Game.LatestClairvoyanceBattle != null && Game.LatestClairvoyanceBattle == Game.CurrentBattle && 
+        private ClairVoyanceQandA RulingDefenseClairvoyanceForThisBattle => Game.LatestClairvoyance != null && Game.LatestClairvoyanceQandA != null && Game.LatestClairvoyanceQandA.Answer.Initiator == Faction && Game.LatestClairvoyanceBattle != null && Game.LatestClairvoyanceBattle == Game.CurrentBattle &&
             (Game.LatestClairvoyanceQandA.Question.Question == ClairvoyanceQuestion.CardTypeAsDefenseInBattle || Game.LatestClairvoyanceQandA.Question.Question == ClairvoyanceQuestion.CardTypeInBattle) ? Game.LatestClairvoyanceQandA : null;
 
 
@@ -678,7 +680,7 @@ namespace Treachery.Shared
                 .OrderBy(w => NumberOfUnknownDefensesThatCouldCounterThisWeapon(CardsUnknownToMe, w)).ToArray();
 
             var opponentPlan = Game.CurrentBattle?.PlanOf(opponent);
-            
+
             //Prescience available?
             if (prescience != null && prescience.Aspect == PrescienceAspect.Defense && opponentPlan != null)
             {
@@ -723,7 +725,7 @@ namespace Treachery.Shared
                     }
                 }
             }
-            
+
             var unknownOpponentCards = OpponentCardsUnknownToMe(opponent);
 
             mostEffectiveWeapon = availableWeapons.FirstOrDefault(w => !knownEnemyDefenses.Any(defense => w.CounteredBy(defense, null)));
@@ -746,7 +748,7 @@ namespace Treachery.Shared
             {
                 return 0.5f;
             }
-            
+
             enemyCanDefendPoisonTooth = knownEnemyDefenses.Any(c => c.IsNonAntidotePoisonDefense);
 
             return 0f;
@@ -833,7 +835,7 @@ namespace Treachery.Shared
             float chanceOfEnemyHeroSurviving;
 
             chanceOfEnemyHeroSurviving = 1 - ChanceOfEnemyLeaderDying(opponent, voicePlan, prescience, out bestWeapon, out enemyCanDefendPoisonTooth);
- 
+
             LogInfo("Chance of enemy hero surviving: {0} with {1}", chanceOfEnemyHeroSurviving, bestWeapon);
 
             chanceOfMyHeroSurviving = ChanceOfMyLeaderSurviving(opponent, voicePlan, prescience, out bestDefense, bestWeapon);
@@ -871,7 +873,7 @@ namespace Treachery.Shared
                 messiah = false;
                 myMessiahBonus = 0;
             }
-            
+
             if (isTraitor)
             {
                 LogInfo("My leader is a traitor: chanceOfMyHeroSurviving = 0");
@@ -928,11 +930,11 @@ namespace Treachery.Shared
 
             var opponentDial = (prescience != null && prescience.Aspect == PrescienceAspect.Dial && opponentPlan != null) ? opponentPlan.Dial(Game, Faction) : MaxDial(opponent, territory, this);
 
-            var result = 
-                opponentDial + 
-                maxReinforcements + 
-                (chanceOfEnemyHeroSurviving < Param.Battle_MimimumChanceToAssumeEnemyHeroSurvives ? 0 : 1) * (opponentLeaderValue + opponentMessiahBonus) + 
-                (iAmAggressor ? 0 : 0.5f) - 
+            var result =
+                opponentDial +
+                maxReinforcements +
+                (chanceOfEnemyHeroSurviving < Param.Battle_MimimumChanceToAssumeEnemyHeroSurvives ? 0 : 1) * (opponentLeaderValue + opponentMessiahBonus) +
+                (iAmAggressor ? 0 : 0.5f) -
                 (chanceOfMyHeroSurviving < Param.Battle_MimimumChanceToAssumeMyLeaderSurvives ? 0 : 1) * (myHeroValue + opponentPenalty + myMessiahBonus);
 
             LogInfo("opponentDial ({0}) + maxReinforcements ({8}) + (chanceOfEnemyHeroSurviving ({7}) < Battle_MimimumChanceToAssumeEnemyHeroSurvives ({10}) ? 0 : 1) * (highestleader ({1}) + messiahbonus ({2})) + defenderpenalty ({3}) - (chanceOfMyHeroSurviving ({4}) < Battle_MimimumChanceToAssumeMyLeaderSurvives ({11}) ? 0 : 1) * (myHeroValue ({5}) + messiahbonus ({9}) + bankerBoost ({12}) = ({6}))",
@@ -984,8 +986,9 @@ namespace Treachery.Shared
             var opponentPlan = Game.CurrentBattle.PlanOf(opponent);
             var myPlan = Game.CurrentBattle.PlanOf(this);
             var defense = TreacheryCards.FirstOrDefault(c => c.IsPortableAntidote);
-            
-            if (opponentPlan.Weapon != null && opponentPlan.Weapon.CounteredBy(defense, myPlan.Weapon)) {
+
+            if (opponentPlan.Weapon != null && opponentPlan.Weapon.CounteredBy(defense, myPlan.Weapon))
+            {
 
                 return new PortableAntidoteUsed(Game) { Initiator = Faction };
             }

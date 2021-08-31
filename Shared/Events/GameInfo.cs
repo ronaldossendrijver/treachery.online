@@ -22,7 +22,7 @@ namespace Treachery.Shared
         public int NumberOfBots;
         public Ruleset Ruleset;
         public List<Rule> Rules;
-        
+
         public override bool Equals(object obj)
         {
             return obj is GameInfo info && info.HostID == HostID;

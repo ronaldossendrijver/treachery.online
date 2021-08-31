@@ -97,7 +97,7 @@ namespace Treachery.Shared
 
         public void PerformPostEventTasks(GameEvent e, bool justEnteredStartOfPhase)
         {
-            if (!justEnteredStartOfPhase &&!(e is AllyPermission) && !(e is DealOffered) && !(e is DealAccepted)) MainPhaseMiddle();
+            if (!justEnteredStartOfPhase && !(e is AllyPermission) && !(e is DealOffered) && !(e is DealAccepted)) MainPhaseMiddle();
             History.Add(e);
             States.Add(Clone());
         }
@@ -575,7 +575,7 @@ namespace Treachery.Shared
 
         public int DetermineMaximumMoveDistance(Player p, IEnumerable<Battalion> moved)
         {
-            bool hasOrnithopters = 
+            bool hasOrnithopters =
                 (Applicable(Rule.MovementBonusRequiresOccupationBeforeMovement) ? FactionsWithOrnithoptersAtStartOfMovement.Contains(p.Faction) : OccupiesArrakeenOrCarthag(p)) ||
                 CurrentFlightUsed != null && CurrentFlightUsed.MoveThreeTerritories;
 
@@ -843,7 +843,7 @@ namespace Treachery.Shared
             return result;
         }
 
-        
+
 
         public DateTime Started
         {

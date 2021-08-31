@@ -3,7 +3,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Treachery.Shared
@@ -76,7 +75,7 @@ namespace Treachery.Shared
         public LeaderSkill Skill(Player p)
         {
             var skilledLeader = GetSkilledLeader(p);
-            
+
             if (IsInFrontOfShield(skilledLeader))
             {
                 return Skill(skilledLeader);

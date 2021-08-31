@@ -200,9 +200,9 @@ namespace Treachery.Shared
                     if (faction == Faction.Purple && Players.Count > 1) result.Add(typeof(SetIncreasedRevivalLimits));
                     break;
                 case Phase.Resurrection:
-                    if (IsPlaying(Faction.Purple) && faction != Faction.Purple && 
-                        (Version <= 78 || !HasActedOrPassed.Contains(faction)) && 
-                        ValidFreeRevivalHeroes(player).Any() && 
+                    if (IsPlaying(Faction.Purple) && faction != Faction.Purple &&
+                        (Version <= 78 || !HasActedOrPassed.Contains(faction)) &&
+                        ValidFreeRevivalHeroes(player).Any() &&
                         (Version < 50 || !Revival.NormallyRevivableHeroes(this, player).Any()) &&
                         (Version < 102 || CurrentPurpleRevivalRequest == null)) result.Add(typeof(RequestPurpleRevival));
 
@@ -415,7 +415,7 @@ namespace Treachery.Shared
             }
 
             //Events that are (amost) always valid
-            if (!SecretsRemainHidden.Contains(faction) && 
+            if (!SecretsRemainHidden.Contains(faction) &&
                 (Version <= 97 && CurrentPhase < Phase.MetheorAndStormSpell) || (Version >= 98 && CurrentPhase == Phase.TradingFactions))
             {
                 result.Add(typeof(HideSecrets));
@@ -566,18 +566,18 @@ namespace Treachery.Shared
 
                 if (faction == Faction.Yellow && CurrentMainPhase == MainPhase.Blow && CurrentTurn > 1 &&
                     !KarmaPrevented(faction) &&
-                    !player.SpecialKarmaPowerUsed && 
-                    player.Has(TreacheryCardType.Karma) && 
+                    !player.SpecialKarmaPowerUsed &&
+                    player.Has(TreacheryCardType.Karma) &&
                     Applicable(Rule.AdvancedKarama))
                 {
                     result.Add(typeof(KarmaMonster));
                 }
 
                 if (faction == Faction.Green && CurrentMainPhase == MainPhase.Battle &&
-                    CurrentBattle != null && 
+                    CurrentBattle != null &&
                     CurrentBattle.IsInvolved(player) &&
                     !KarmaPrevented(faction) &&
-                    !player.SpecialKarmaPowerUsed && 
+                    !player.SpecialKarmaPowerUsed &&
                     player.Has(TreacheryCardType.Karma) &&
                     Applicable(Rule.AdvancedKarama))
                 {
@@ -593,7 +593,7 @@ namespace Treachery.Shared
 
                 if (Players.Count > 1 &&
                     Donated.ValidTargets(this, player).Any() &&
-                    (isHost || player.Resources > 0 ) &&
+                    (isHost || player.Resources > 0) &&
                     Donated.MayDonate(this, player) &&
                     (AggressorBattleAction == null || faction != AggressorBattleAction.Initiator) &&
                     (DefenderBattleAction == null || faction != DefenderBattleAction.Initiator))
@@ -602,18 +602,18 @@ namespace Treachery.Shared
                 }
 
                 if (faction == Faction.White &&
-                    CurrentPhase != Phase.BlackMarketBidding && 
+                    CurrentPhase != Phase.BlackMarketBidding &&
                     CurrentPhase != Phase.Bidding &&
                     !hasFinalizedBattlePlanWaitingToBeResolved &&
-                    player.Ally != Faction.None && 
-                    WhiteGaveCard.ValidCards(this, player).Any() && 
+                    player.Ally != Faction.None &&
+                    WhiteGaveCard.ValidCards(this, player).Any() &&
                     player.AlliedPlayer.HasRoomForCards)
                 {
                     result.Add(typeof(WhiteGaveCard));
                 }
 
-                if (CurrentPhase != Phase.BlackMarketBidding && 
-                    CurrentPhase != Phase.Bidding && 
+                if (CurrentPhase != Phase.BlackMarketBidding &&
+                    CurrentPhase != Phase.Bidding &&
                     !hasFinalizedBattlePlanWaitingToBeResolved &&
                     DistransUsed.CanBePlayed(this, player))
                 {

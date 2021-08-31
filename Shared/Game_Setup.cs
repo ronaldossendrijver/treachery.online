@@ -33,7 +33,7 @@ namespace Treachery.Shared
             AllRules = e.ApplicableRules;
             Rules = e.ApplicableRules.Where(r => GetRuleGroup(r) != RuleGroup.Bots).ToArray();
             RulesForBots = e.ApplicableRules.Where(r => GetRuleGroup(r) == RuleGroup.Bots).ToArray();
-            
+
             var usedRuleset = Ruleset;
             CurrentReport.Add("Ruleset: {0}.",
                 usedRuleset == Ruleset.Custom ?
@@ -456,11 +456,12 @@ namespace Treachery.Shared
         }
 
         private Phase PhaseBeforeSkillAssignment;
-        public void HandleEvent(SkillAssigned e) {
+        public void HandleEvent(SkillAssigned e)
+        {
 
             CurrentReport.Add(e);
             SetSkill(e.Leader, e.Skill);
-            e.Player.SkillsToChooseFrom.Remove(e.Skill); 
+            e.Player.SkillsToChooseFrom.Remove(e.Skill);
             SetInFrontOfShield(e.Leader, true);
             SkillDeck.PutOnTop(e.Player.SkillsToChooseFrom);
             e.Player.SkillsToChooseFrom.Clear();

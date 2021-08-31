@@ -129,7 +129,7 @@ namespace Treachery.Shared
 
             if (From != null && ForceAmount > p.ForcesIn(From)) return Skin.Current.Format("Not enough {0} for site-to-site shipment.", p.Force);
             if (From != null && SpecialForceAmount > p.SpecialForcesIn(From)) return Skin.Current.Format("Not enough {0} for site-to-site shipment.", p.SpecialForce);
-            
+
             if (IsNoField && p.Faction != Faction.White)
             {
                 int forcesToShip = Math.Min(NoFieldValue, p.ForcesInReserve + p.SpecialForcesInReserve);
@@ -191,7 +191,7 @@ namespace Treachery.Shared
         public static int ValidMaxNormalShipmentForces(Player p, bool specialForces, int usedNoField)
         {
             int noFieldMax = usedNoField == -1 ? int.MaxValue : usedNoField;
-            return specialForces ? Math.Min(p.SpecialForcesInReserve, noFieldMax): Math.Min(p.ForcesInReserve, noFieldMax);
+            return specialForces ? Math.Min(p.SpecialForcesInReserve, noFieldMax) : Math.Min(p.ForcesInReserve, noFieldMax);
         }
 
         public static int ValidMaxShipmentBackForces(Player p, bool specialForces, Location source)
@@ -240,7 +240,7 @@ namespace Treachery.Shared
         public static IEnumerable<int> ValidNoFieldValues(Game g, Player p)
         {
             var result = new List<int>();
-            if (p.Faction == Faction.White && !g.Prevented(FactionAdvantage.WhiteNofield) || 
+            if (p.Faction == Faction.White && !g.Prevented(FactionAdvantage.WhiteNofield) ||
                 p.Ally == Faction.White && g.WhiteAllyMayUseNoField)
             {
                 if (p.Faction == Faction.White && g.LatestRevealedNoFieldValue != 0 && g.CurrentNoFieldValue != 0) result.Add(0);

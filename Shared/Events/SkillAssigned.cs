@@ -3,7 +3,6 @@
  */
 
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,7 +13,7 @@ namespace Treachery.Shared
         public LeaderSkill Skill;
 
         public int _leaderId;
-        
+
         public SkillAssigned(Game game) : base(game)
         {
         }

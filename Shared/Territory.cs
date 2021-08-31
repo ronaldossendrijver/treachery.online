@@ -2,9 +2,7 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
-using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 
 namespace Treachery.Shared

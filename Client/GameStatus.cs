@@ -2,9 +2,9 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 
 namespace Treachery.Shared
 {
@@ -27,7 +27,7 @@ namespace Treachery.Shared
             WaitingInSequence = waitingInSequence;
         }
 
-        public GameStatus(Player player, bool isHost, string descriptionWhenAwaited, string descriptionWhenWaiting, Faction waitingForFaction) : 
+        public GameStatus(Player player, bool isHost, string descriptionWhenAwaited, string descriptionWhenWaiting, Faction waitingForFaction) :
             this(player, isHost, descriptionWhenAwaited, descriptionWhenWaiting, new Faction[] { waitingForFaction })
         {
         }

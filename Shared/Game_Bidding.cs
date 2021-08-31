@@ -89,11 +89,11 @@ namespace Treachery.Shared
                         if (CurrentBid != null && BidSequence.CurrentFaction == CurrentBid.Initiator)
                         {
                             WinByHighestBid(
-                                CurrentBid.Player, 
-                                CurrentBid.Amount, 
-                                CurrentBid.AllyContributionAmount, 
+                                CurrentBid.Player,
+                                CurrentBid.Amount,
+                                CurrentBid.AllyContributionAmount,
                                 CurrentBid.RedContributionAmount,
-                                CurrentBid.Initiator != Faction.White ? Faction.White : Faction.Red, 
+                                CurrentBid.Initiator != Faction.White ? Faction.White : Faction.Red,
                                 CardsOnAuction);
 
                             CardWasSoldOnBlackMarket = true;
@@ -123,10 +123,10 @@ namespace Treachery.Shared
                         {
                             WinByHighestBid(
                                 highestBid.Player,
-                                highestBid.Amount, 
-                                highestBid.AllyContributionAmount, 
-                                highestBid.RedContributionAmount, 
-                                highestBid.Initiator != Faction.White ? Faction.White : Faction.Red, 
+                                highestBid.Amount,
+                                highestBid.AllyContributionAmount,
+                                highestBid.RedContributionAmount,
+                                highestBid.Initiator != Faction.White ? Faction.White : Faction.Red,
                                 CardsOnAuction);
 
                             CardWasSoldOnBlackMarket = true;
@@ -158,7 +158,7 @@ namespace Treachery.Shared
                 //console.writeLine("determineBidWinnerSequence");
                 determineBidWinnerSequence.NextPlayer(false);
             }
-            
+
             return null;
         }
 
@@ -226,7 +226,7 @@ namespace Treachery.Shared
             //if (initializeBidSequence)
             //{
             //console.writeLine("DrawCardsForRegularBidding->StartBidSequence");
-                StartBidSequenceAndAuctionType(AuctionType.Normal);
+            StartBidSequenceAndAuctionType(AuctionType.Normal);
             //}
 
             Enter(IsPlaying(Faction.Grey) && !Prevented(FactionAdvantage.GreySelectingCardsOnAuction), Phase.GreyRemovingCardFromBid, StartBiddingRound);
@@ -324,7 +324,8 @@ namespace Treachery.Shared
                 initiator.TreacheryCards.Remove(e.Card);
                 initiator.TreacheryCards.Add(CardsOnAuction.Draw());
 
-                foreach (var p in Players.Where(p => !HasBiddingPrescience(p))) {
+                foreach (var p in Players.Where(p => !HasBiddingPrescience(p)))
+                {
 
                     UnregisterKnown(p, initiator.TreacheryCards);
                 }
@@ -455,11 +456,11 @@ namespace Treachery.Shared
                             {
                                 var receiver = Faction.Red;
                                 var card = WinByHighestBid(
-                                    CurrentBid.Player, 
-                                    CurrentBid.Amount, 
-                                    CurrentBid.AllyContributionAmount, 
+                                    CurrentBid.Player,
+                                    CurrentBid.Amount,
+                                    CurrentBid.AllyContributionAmount,
                                     CurrentBid.RedContributionAmount,
-                                    receiver, 
+                                    receiver,
                                     CardsOnAuction);
 
                                 FinishBid(CurrentBid.Player, card);
@@ -492,11 +493,11 @@ namespace Treachery.Shared
                         if (highestBid != null && highestBid.TotalAmount > 0)
                         {
                             var card = WinByHighestBid(
-                                highestBid.Player, 
-                                highestBid.Amount, 
-                                highestBid.AllyContributionAmount, 
-                                highestBid.RedContributionAmount, 
-                                highestBid.Initiator != Faction.White ? Faction.White : Faction.Red, 
+                                highestBid.Player,
+                                highestBid.Amount,
+                                highestBid.AllyContributionAmount,
+                                highestBid.RedContributionAmount,
+                                highestBid.Initiator != Faction.White ? Faction.White : Faction.Red,
                                 CardsOnAuction);
 
                             FinishBid(highestBid.Player, card);
@@ -701,7 +702,7 @@ namespace Treachery.Shared
             }
 
             var receiver = GetPlayer(paymentReceiver);
-            
+
             if (receiver != null && initiator.Faction != paymentReceiver)
             {
                 if (paymentReceiver != Faction.Red || !Prevented(FactionAdvantage.RedReceiveBid))
@@ -719,7 +720,7 @@ namespace Treachery.Shared
                         receiverProfit = bidAmount + bidAllyContributionAmount + bidRedContributionAmount;
                         message = new MessagePart(" {0} receive {1}.", paymentReceiver, receiverProfit);
                         receiver.Resources += receiverProfit;
-                        
+
                         if (receiverProfit >= 5)
                         {
                             ApplyBureaucracy(initiator.Faction, paymentReceiver);
@@ -733,7 +734,8 @@ namespace Treachery.Shared
                 }
             }
 
-            if (bidAmount + bidAllyContributionAmount + bidRedContributionAmount - receiverProfit - receiverProfitAfterBidding >= 4) {
+            if (bidAmount + bidAllyContributionAmount + bidRedContributionAmount - receiverProfit - receiverProfitAfterBidding >= 4)
+            {
 
                 ActivateBanker(initiator);
             }
@@ -799,8 +801,8 @@ namespace Treachery.Shared
         {
             //if (Version >= 109 && CurrentAuctionType == AuctionType.Normal && !CardsOnAuction.IsEmpty)
             //{
-              //  BidSequence.NextRound(true);
-                //SkipPlayersThatCantBid(BidSequence);
+            //  BidSequence.NextRound(true);
+            //SkipPlayersThatCantBid(BidSequence);
             //}
 
             CardJustWon = card;

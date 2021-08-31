@@ -319,7 +319,7 @@ namespace Treachery.Server
 
                     var savegameToAttach = new Attachment(GenerateStreamFromString(content), "savegame" + DateTime.Now.ToString("yyyyMMdd.HHmm") + ".json");
                     mailMessage.Attachments.Add(savegameToAttach);
-                    
+
                     SmtpClient client = new SmtpClient
                     {
                         Credentials = new System.Net.NetworkCredential(username, password),

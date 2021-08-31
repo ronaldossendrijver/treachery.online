@@ -3,10 +3,10 @@
  */
 
 using Microsoft.JSInterop;
-using System.Text.Json;
-using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Treachery.Client
 {
@@ -37,7 +37,7 @@ namespace Treachery.Client
         public async Task<T> GetAsync<T>(string key)
         {
             string val = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", key);
-            
+
             if (val == null) return default!;
 
             try

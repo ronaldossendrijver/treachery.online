@@ -67,9 +67,9 @@ namespace Treachery.Shared
             if (g.SkilledAs(p, LeaderSkill.Diplomat) && g.CurrentDiplomacy == null)
             {
                 var plan = g.CurrentBattle.PlanOf(p);
-                return 
-                    plan != null && 
-                    (plan.Defense == null || !plan.Defense.IsDefense) && 
+                return
+                    plan != null &&
+                    (plan.Defense == null || !plan.Defense.IsDefense) &&
                     g.CurrentBattle.PlanOfOpponent(p).Defense != null &&
                     g.CurrentBattle.PlanOfOpponent(p).Defense.IsDefense &&
                     ValidCards(g, p).Any();

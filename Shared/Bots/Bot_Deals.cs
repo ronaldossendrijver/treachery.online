@@ -171,7 +171,7 @@ namespace Treachery.Shared
                     Cancel = false,
                     Type = DealType.ShareStormPrescience,
                     EndPhase = Phase.TurnConcluded,
-                    Price = D(1,2),
+                    Price = D(1, 2),
                     Text = "share storm prescience this turn"
                 };
             }
@@ -205,8 +205,8 @@ namespace Treachery.Shared
 
         protected virtual DealOffered DetermineDealOffered_BiddingPrescienceEntirePhase()
         {
-            if (Faction == Faction.Green && 
-                Game.CurrentMainPhase <= MainPhase.Bidding && 
+            if (Faction == Faction.Green &&
+                Game.CurrentMainPhase <= MainPhase.Bidding &&
                 Game.HasBiddingPrescience(this) &&
                 !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal.Type == DealType.ShareBiddingPrescience && deal.EndPhase == Phase.BiddingReport && !(deal.To.Length == 1 && deal.To[0] == Faction.Yellow)))
             {
@@ -219,7 +219,7 @@ namespace Treachery.Shared
                     Price =
                         D(1, 3) +
                         (int)Math.Floor(0.1 * ResourcesIncludingAllyContribution) +
-                        (Ally == Faction.None ? 0 : 3) + 
+                        (Ally == Faction.None ? 0 : 3) +
                         Game.Players.Count(p => p.TreacheryCards.Count() < p.MaximumNumberOfCards),
                     Text = "share bidding prescience (entire phase)"
                 };

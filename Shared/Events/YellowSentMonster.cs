@@ -2,9 +2,9 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 
 namespace Treachery.Shared
 {

@@ -2,8 +2,8 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Treachery.Shared
@@ -394,7 +394,7 @@ namespace Treachery.Shared
                 plan.Player.KnownNonTraitors.Add(traitor);
 
                 DeciphererMayReplaceTraitor = plan.Initiator != Faction.Purple && leaderIsSkilled;
-            } 
+            }
         }
 
         private void FinishDeciphererIfApplicable()
@@ -481,7 +481,8 @@ namespace Treachery.Shared
             {
                 if (Applicable(Rule.BrownAuditor) && !Prevented(FactionAdvantage.BrownAudit))
                 {
-                    if (AggressorBattleAction.Hero != null && AggressorBattleAction.Hero.HeroType == HeroType.Auditor) {
+                    if (AggressorBattleAction.Hero != null && AggressorBattleAction.Hero.HeroType == HeroType.Auditor)
+                    {
 
                         return DefenderBattleAction.Player;
                     }
@@ -510,7 +511,7 @@ namespace Treachery.Shared
         public void HandleEvent(Audited e)
         {
             CurrentReport.Add(e);
-            
+
             foreach (var card in AuditedCards)
             {
                 RegisterKnown(e.Player, card);
@@ -1000,13 +1001,13 @@ namespace Treachery.Shared
             result.AggHeroKilled = false;
             result.AggHeroCauseOfDeath = TreacheryCardType.None;
             DetermineCauseOfDeath(
-                agg, def, agg.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && rockMelterUsedToKill, territory, 
+                agg, def, agg.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && rockMelterUsedToKill, territory,
                 ref result.AggHeroKilled, ref result.AggHeroCauseOfDeath, ref result.AggSavedByCarthag);
 
             result.DefHeroKilled = false;
             result.DefHeroCauseOfDeath = TreacheryCardType.None;
             DetermineCauseOfDeath(
-                def, agg, def.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && rockMelterUsedToKill, territory, 
+                def, agg, def.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && rockMelterUsedToKill, territory,
                 ref result.DefHeroKilled, ref result.DefHeroCauseOfDeath, ref result.DefSavedByCarthag);
 
             int aggHeroSkillBonus = Battle.DetermineSkillBonus(this, agg, out result.AggActivatedBonusSkill);
@@ -1073,7 +1074,8 @@ namespace Treachery.Shared
             return result;
         }
 
-        public void DetermineAndHandleBattleOutcome(Battle agg, Battle def, Territory territory) {
+        public void DetermineAndHandleBattleOutcome(Battle agg, Battle def, Territory territory)
+        {
 
             var outcome = DetermineBattleOutcome(agg, def, territory);
 
@@ -1130,7 +1132,7 @@ namespace Treachery.Shared
             ProcessWinnerLosses(territory, outcome.Winner, outcome.WinnerBattlePlan);
             ProcessLoserLosses(territory, outcome.Loser, outcome.LoserBattlePlan);
         }
-               
+
 
         public bool IsAggressorByJuice(Player p)
         {
@@ -1225,7 +1227,7 @@ namespace Treachery.Shared
                         }
                     }
                 }
-                
+
                 if (cost - receiverProfit >= 4)
                 {
                     ActivateBanker(p);
@@ -1288,7 +1290,7 @@ namespace Treachery.Shared
                 GreySpecialForceLossesToTake = specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory;
             }
 
-            
+
         }
 
         private void HandleLosses(Territory territory, Player player, int forcesLost, int specialForcesLost)
@@ -1518,7 +1520,7 @@ namespace Treachery.Shared
             }
         }
 
-        
+
 
         public void HandleEvent(SwitchedSkilledLeader e)
         {
@@ -1615,10 +1617,10 @@ namespace Treachery.Shared
             var aggPlan = Winner == Aggressor ? WinnerBattlePlan : LoserBattlePlan;
             var defPlan = Winner == Defender ? WinnerBattlePlan : LoserBattlePlan;
             return Skin.Current.Format("Aggressor ({0}) {1}. Total strength: {2}, leader {3} by {4}. Defender ({5}) {6}. Total strength: {7}, leader {8} by {9}.",
-                
-                Aggressor.Faction, 
-                Winner == Aggressor ? "win" : "lose", 
-                AggTotal, 
+
+                Aggressor.Faction,
+                Winner == Aggressor ? "win" : "lose",
+                AggTotal,
                 AggHeroKilled ? "killed" : "survives",
                 AggHeroCauseOfDeath,
 

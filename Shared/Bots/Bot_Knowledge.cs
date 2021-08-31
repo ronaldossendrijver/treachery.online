@@ -43,8 +43,8 @@ namespace Treachery.Shared
 
         protected ClairVoyanceQandA MyClairVoyanceAboutEnemyDefenseInCurrentBattle =>
             Game.LatestClairvoyance != null && Game.LatestClairvoyanceQandA != null &&
-            Game.LatestClairvoyanceBattle == Game.CurrentBattle && 
-            (Game.LatestClairvoyance.Initiator == Faction || Game.LatestClairvoyance.Initiator == Ally) && 
+            Game.LatestClairvoyanceBattle == Game.CurrentBattle &&
+            (Game.LatestClairvoyance.Initiator == Faction || Game.LatestClairvoyance.Initiator == Ally) &&
             (Game.LatestClairvoyance.Question == ClairvoyanceQuestion.CardTypeAsDefenseInBattle || Game.LatestClairvoyance.Question == ClairvoyanceQuestion.CardTypeInBattle) ? Game.LatestClairvoyanceQandA : null;
 
         protected ClairVoyanceQandA MyClairVoyanceAboutEnemyWeaponInCurrentBattle =>
@@ -341,7 +341,7 @@ namespace Treachery.Shared
         }
 
         protected virtual KeyValuePair<Location, Battalion> BiggestBattalionThreatenedByStormWithoutSpice => ForcesOnPlanet.Where(locationWithBattalion =>
-                StormWillProbablyHit(locationWithBattalion.Key) && 
+                StormWillProbablyHit(locationWithBattalion.Key) &&
                 !InStorm(locationWithBattalion.Key) &&
                 MayFleeOutOf(locationWithBattalion.Key) &&
                 !HasResources(locationWithBattalion.Key)
@@ -437,9 +437,9 @@ namespace Treachery.Shared
         protected virtual Location WinnableNearbyStronghold(Location from, Battalion battalion)
         {
             var enemyWeakStrongholds = PlacementEvent.ValidTargets(Game, this, from, battalion).Where(to =>
-                IsStronghold(to) && 
+                IsStronghold(to) &&
                 OccupiedByOpponent(to) &&
-                AllyNotIn(to) && 
+                AllyNotIn(to) &&
                 !StormWillProbablyHit(to))
                 .Select(l => new { Stronghold = l, Opponent = OccupyingOpponentIn(l.Territory) })
                 .Where(s => s.Opponent != null).Select(s => new
@@ -449,8 +449,8 @@ namespace Treachery.Shared
                     DialNeeded = GetDialNeeded(s.Stronghold.Territory, GetOpponentThatOccupies(s.Stronghold.Territory), true)
                 });
 
-            return enemyWeakStrongholds.Where(s => 
-                WinWasPredictedByMeThisTurn(s.Opponent) || 
+            return enemyWeakStrongholds.Where(s =>
+                WinWasPredictedByMeThisTurn(s.Opponent) ||
                 DetermineRemainingDialInBattle(s.DialNeeded, s.Opponent, battalion.AmountOfForces + ForcesIn(s.Stronghold), battalion.AmountOfSpecialForces + SpecialForcesIn(s.Stronghold), Resources) <= 0
                 ).OrderBy(s => s.DialNeeded).Select(s => s.Stronghold).FirstOrDefault();
         }
@@ -488,7 +488,7 @@ namespace Treachery.Shared
             int forcesAtFullStrength = Math.Min(forces, spice);
             int forcesAtHalfStrength = forces - forcesAtFullStrength;
 
-            var result = 
+            var result =
                 Battle.DetermineSpecialForceStrength(Game, playerFaction, opponentFaction) * (specialForcesAtFullStrength + 0.5f * specialForcesAtHalfStrength) +
                 Battle.DetermineNormalForceStrength(playerFaction) * (forcesAtFullStrength + 0.5f * forcesAtHalfStrength);
 
@@ -524,7 +524,7 @@ namespace Treachery.Shared
         }
 
         protected virtual int NrOfBattlesToFight => Battle.BattlesToBeFought(Game, this).Count();
-                
+
         protected virtual float MaxReinforcedDialTo(Player player, Territory to)
         {
             if (CanShip(player))

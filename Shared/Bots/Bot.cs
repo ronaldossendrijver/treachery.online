@@ -101,7 +101,7 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(FactionTradeOffered))) action = DetermineFactionTradeOffered();
                 if (action == null && possibleEvents.Contains(typeof(SkillAssigned))) action = DetermineSkillAssigned();
                 if (action == null && possibleEvents.Contains(typeof(StormDialled))) action = DetermineStormDialled();
-                if (action == null && possibleEvents.Contains(typeof(ClairVoyanceAnswered))) action = DetermineClairVoyanceAnswered(); 
+                if (action == null && possibleEvents.Contains(typeof(ClairVoyanceAnswered))) action = DetermineClairVoyanceAnswered();
                 if (action == null && possibleEvents.Contains(typeof(TraitorsSelected))) action = DetermineTraitorsSelected();
                 if (action == null && possibleEvents.Contains(typeof(StormSpellPlayed))) action = DetermineStormSpellPlayed();
                 if (action == null && possibleEvents.Contains(typeof(ThumperPlayed))) action = new ThumperPlayed(Game) { Initiator = Faction };

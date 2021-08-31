@@ -392,21 +392,21 @@ namespace Treachery.Shared
             if (Game.Applicable(Rule.AdvancedCombat))
             {
                 return new Message(Initiator, "{0} leader: {1}, dial: {2}, weapon: {3}, defense: {4}, {5}: {6}{7}.",
-                    Initiator, 
-                    Hero != null ? Hero.ToString() : "none", 
-                    Dial(Game, Game.CurrentBattle.OpponentOf(Initiator).Faction), 
-                    Weapon != null ? Weapon.ToString() : "none", Defense != null ? Defense.ToString() : "none", 
-                    Concept.Resource, 
-                    Cost(Game), 
-                    AllyContributionAmount > 0 ? string.Format(" ({0} from ally)", AllyContributionAmount) : "" );
+                    Initiator,
+                    Hero != null ? Hero.ToString() : "none",
+                    Dial(Game, Game.CurrentBattle.OpponentOf(Initiator).Faction),
+                    Weapon != null ? Weapon.ToString() : "none", Defense != null ? Defense.ToString() : "none",
+                    Concept.Resource,
+                    Cost(Game),
+                    AllyContributionAmount > 0 ? string.Format(" ({0} from ally)", AllyContributionAmount) : "");
             }
             else
             {
                 return new Message(Initiator, "{0} leader: {1}, dial: {2}, weapon: {3}, defense: {4}.",
-                    Initiator, 
-                    Hero != null ? Hero.ToString() : "none", 
-                    Dial(Game, Game.CurrentBattle.OpponentOf(Initiator).Faction), 
-                    Weapon != null ? Weapon.ToString() : "none", 
+                    Initiator,
+                    Hero != null ? Hero.ToString() : "none",
+                    Dial(Game, Game.CurrentBattle.OpponentOf(Initiator).Faction),
+                    Weapon != null ? Weapon.ToString() : "none",
                     Defense != null ? Defense.ToString() : "none");
             }
         }
@@ -443,11 +443,11 @@ namespace Treachery.Shared
                 {
                     return 0;
                 }
-                
+
             }
         }
 
-        public static IEnumerable<Tuple<Territory,Faction>> BattlesToBeFought(Game g, Player player)
+        public static IEnumerable<Tuple<Territory, Faction>> BattlesToBeFought(Game g, Player player)
         {
             var result = new List<Tuple<Territory, Faction>>();
 
@@ -629,7 +629,7 @@ namespace Treachery.Shared
             }
             else
             {
-                return p.TreacheryCards.Where(c => 
+                return p.TreacheryCards.Where(c =>
                 c.Type != TreacheryCardType.Chemistry && (c.IsWeapon || c.Type == TreacheryCardType.Useless) ||
                 c.Type == TreacheryCardType.Chemistry && withDefense != null && withDefense.IsDefense && withDefense.Type != TreacheryCardType.WeirdingWay ||
                 withPlanetologist && !(c.IsWeapon || c.IsDefense || c.IsUseless));

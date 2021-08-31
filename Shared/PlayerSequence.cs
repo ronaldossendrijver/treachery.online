@@ -49,7 +49,7 @@ namespace Treachery.Shared
             RoundStartedAt = Current;
             //console.writeLine("Start(ignorePlayersThatCantBid, direction): " + CurrentFaction);
         }
-             
+
         public Player CurrentPlayer
         {
             get
@@ -86,7 +86,7 @@ namespace Treachery.Shared
 
             if (_playerNumberInRound == 0 && Game.JuiceForcesFirstPlayer)
             {
-                
+
             }
             else if (_playerNumberInRound == Players.Count - 1 && Game.JuiceForcesLastPlayer)
             {
@@ -139,7 +139,7 @@ namespace Treachery.Shared
             {
                 result.Add(new SequenceElement() { Player = Game.CurrentJuice?.Player, HasTurn = _playerNumberInRound == 0 });
             }
-                        
+
             for (int i = 0; i < Game.MaximumNumberOfPlayers; i++)
             {
                 int pos = Mod(RoundStartedAt + _direction * i, Game.MaximumNumberOfPlayers);
@@ -165,7 +165,7 @@ namespace Treachery.Shared
         }
     }
 
-    
+
 
     public class SequenceElement
     {

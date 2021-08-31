@@ -166,7 +166,7 @@ namespace Treachery.Shared
         {
             LeaderState[l].Revive();
             LeaderState[l].CurrentTerritory = null;
-            
+
             var currentOwner = Players.FirstOrDefault(p => p.Leaders.Contains(l));
             if (currentOwner != null)
             {

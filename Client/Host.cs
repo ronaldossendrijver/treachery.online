@@ -64,7 +64,7 @@ namespace Treachery.Client
             connection.On<ChatMessage>("RequestChatMessage", (e) => ReceiveRequest_ChatMessage(e));
         }
 
-        
+
         private void RegisterGameEventHandlers()
         {
             foreach (var t in Game.GetGameEventTypes())

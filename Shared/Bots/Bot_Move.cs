@@ -276,7 +276,7 @@ namespace Treachery.Shared
 
             bool asAdvisors = Faction == Faction.Blue && SpecialForcesIn(to.Territory) > 0;
             var result = new Move(Game) { Initiator = Faction, Passed = false, To = to, ForceLocations = forces, AsAdvisors = asAdvisors };
-            
+
             if (!result.IsValid)
             {
                 LogInfo(result.Validate());

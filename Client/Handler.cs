@@ -52,13 +52,14 @@ namespace Treachery.Client
 
         public DateTime Disconnected { get; private set; } = default;
 
-        public bool IsDisconnected { 
-            
+        public bool IsDisconnected
+        {
+
             get
             {
                 return Disconnected != default;
             }
-            
+
             set
             {
                 Disconnected = default;
@@ -78,7 +79,7 @@ namespace Treachery.Client
                 configuration.PayloadSerializerSettings.Error += LogSerializationError;
             })
             .Build();
-            
+
             //_page = page;
             _logger = logger;
             Game = new Game();
@@ -126,7 +127,7 @@ namespace Treachery.Client
 
         private Battle RevisablePlan = null;
         private BattleInitiated RevisablePlanBattle = null;
-        
+
         public void SetRevisablePlan(Battle plan)
         {
             RevisablePlan = plan;
@@ -710,7 +711,7 @@ namespace Treachery.Client
             {
                 await TurnAlert();
                 await PlaySoundsForMilestones();
-                
+
                 CheckTimers();
                 UpdateStatus();
 
@@ -797,7 +798,7 @@ namespace Treachery.Client
                     }
                     catch (Exception)
                     {
-                        if (!_localStorageCleared) 
+                        if (!_localStorageCleared)
                         {
                             _localStorageCleared = true;
                             mustClear = true;

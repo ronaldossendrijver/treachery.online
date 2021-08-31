@@ -101,26 +101,26 @@ namespace Treachery.Shared
 
         public bool Same(DealOffered offeredDeal)
         {
-            return 
-                offeredDeal.Price == Price && 
-                offeredDeal.Type == Type && 
-                offeredDeal.DealParameter1 == DealParameter1 && 
-                offeredDeal.DealParameter2 == DealParameter2 && 
-                offeredDeal.Text == Text && 
-                offeredDeal.EndPhase == EndPhase && 
+            return
+                offeredDeal.Price == Price &&
+                offeredDeal.Type == Type &&
+                offeredDeal.DealParameter1 == DealParameter1 &&
+                offeredDeal.DealParameter2 == DealParameter2 &&
+                offeredDeal.Text == Text &&
+                offeredDeal.EndPhase == EndPhase &&
                 offeredDeal.To.SequenceEqual(To);
         }
 
         public bool IsAcceptedBy(DealAccepted acceptedDeal)
         {
-            return 
+            return
                 acceptedDeal.BoundFaction == Initiator &&
-                acceptedDeal.Price == Price && 
-                acceptedDeal.Type == Type && 
-                acceptedDeal.DealParameter1 == DealParameter1 && 
-                acceptedDeal.DealParameter2 == DealParameter2 && 
-                acceptedDeal.Text == Text && 
-                acceptedDeal.End == EndPhase && 
+                acceptedDeal.Price == Price &&
+                acceptedDeal.Type == Type &&
+                acceptedDeal.DealParameter1 == DealParameter1 &&
+                acceptedDeal.DealParameter2 == DealParameter2 &&
+                acceptedDeal.Text == Text &&
+                acceptedDeal.End == EndPhase &&
                 (To.Length == 0 || To.Contains(acceptedDeal.Initiator));
         }
 

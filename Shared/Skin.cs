@@ -7,8 +7,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Treachery.Shared
 {
@@ -473,13 +473,13 @@ namespace Treachery.Shared
                 RuleGroup.CoreAdvanced => "Core Game, Advanced Rules",
                 RuleGroup.CoreBasicExceptions => "Core Game, Exceptions to Basic Rules",
                 RuleGroup.CoreAdvancedExceptions => "Core Game, Exceptions to Advanced Rules",
-                
+
                 RuleGroup.ExpansionIxAndBtBasic => "Ixians & Tleilaxu Expansion",
                 RuleGroup.ExpansionIxAndBtAdvanced => "Ixians & Tleilaxu Expansion, Advanced Rules",
-                
+
                 RuleGroup.ExpansionBrownAndWhiteBasic => "CHOAM & Richese Expansion",
                 RuleGroup.ExpansionBrownAndWhiteAdvanced => "CHOAM & Richese Expansion, Advanced Rules",
-                
+
                 RuleGroup.House => "House Rules",
 
                 _ => "unknown rule group",
@@ -509,7 +509,7 @@ namespace Treachery.Shared
                 Phase.BiddingReport => "End of bidding phase",
                 Phase.ShipmentAndMoveConcluded => "End of movement phase",
                 Phase.BattleReport => "End of battle phase",
-                Phase.GameEnded=> "End of game",
+                Phase.GameEnded => "End of game",
                 _ => "unknown"
             };
         }
@@ -593,7 +593,7 @@ namespace Treachery.Shared
                 Rule.HMSwithoutGrey => Format("Use the {0} if {1} are not in play", "Hidden Mobile Stronghold", Faction.Grey),
                 Rule.SSW => Format("SSW: {0} counts for victory after fourth {1}", "Shield Wall", Concept.Monster),
                 Rule.BlackMulligan => Format("{0} mulligan traitors when they drew > 1 of their own", Faction.Black),
-                
+
                 Rule.GreyAndPurpleExpansionTechTokens => Format("Tech Tokens"),
                 Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal => Format("Treachery Cards: all except {0}, {1} and {2}", TreacheryCardType.ProjectileAndPoison, TreacheryCardType.ShieldAndAntidote, TreacheryCardType.Amal),
                 Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS => Format("Treachery Cards: {0} and {1}", TreacheryCardType.ProjectileAndPoison, TreacheryCardType.ShieldAndAntidote),
@@ -1186,7 +1186,7 @@ namespace Treachery.Shared
                 <p><p>Economics:</strong> during the Mentat Pause, you may play your Economics token with either the Double or Cancel side face up. In the following game turn, the amount collected for {36} Charity (including what you collect from your Charity advantage) is either doubled or canceled for that turn (even for {5} in the advanced game). In the next Mentat Pause, flip the Economics token to the other side. If the token has already been flipped it is removed from the game instead.</p>
                 <p><string>{3} Special Victory Condition:</strong> {35} counts as one of the factions that can not occupy {8} in order to fulfill the {3} Special Victory Condition.</p>" +
 
-              (advancedApplies ? 
+              (advancedApplies ?
               @"<h5>Advanced Advantages</h5>" : "") +
 
               (g.Applicable(Rule.AdvancedCombat) ?
@@ -1237,7 +1237,7 @@ namespace Treachery.Shared
             var tHarvester_URL = FixIfMissing("Harvester_URL", true, Harvester_URL, Dune1979.Harvester_URL, errors, UrlExists);
             var tResource_URL = FixIfMissing("Resource_URL", true, Resource_URL, Dune1979.Resource_URL, errors, UrlExists);
             var tHMS_URL = FixIfMissing("HMS_URL", true, HMS_URL, Dune1979.HMS_URL, errors, UrlExists);
-            
+
             /*
             var tMusicGeneral_URL = FixIfMissing("MusicGeneral_URL", false, MusicGeneral_URL, Dune1979.MusicGeneral_URL, errors, UrlExists);
             var tMusicSetup_URL = FixIfMissing("MusicSetup_URL", false, MusicSetup_URL, Dune1979.MusicSetup_URL, errors, UrlExists);
@@ -1298,7 +1298,7 @@ namespace Treachery.Shared
             var tForceName_STR = FixDictionaryIfMissing("ForceName_STR", false, ForceName_STR, Dune1979.ForceName_STR, errors, UrlExists);
             var tTechTokenName_STR = FixDictionaryIfMissing("TechTokenName_STR", false, TechTokenName_STR, Dune1979.TechTokenName_STR, errors, UrlExists);
             var tTechTokenImage_URL = FixDictionaryIfMissing("TechTokenImage_URL", true, TechTokenImage_URL, Dune1979.TechTokenImage_URL, errors, UrlExists);
-            
+
             var tStrongholdCardImage_URL = FixDictionaryIfMissing("StrongholdCardImage_URL", true, StrongholdCardImage_URL, Dune1979.StrongholdCardImage_URL, errors, UrlExists);
             var tStrongholdCardName_STR = FixDictionaryIfMissing("StrongholdCardImage_STR", false, StrongholdCardName_STR, Dune1979.StrongholdCardName_STR, errors, UrlExists);
             var tLeaderSkillCardImage_URL = FixDictionaryIfMissing("LeaderSkillCardImage_URL", true, LeaderSkillCardImage_URL, Dune1979.LeaderSkillCardImage_URL, errors, UrlExists);
@@ -1362,7 +1362,7 @@ namespace Treachery.Shared
             BattleWheelCardY = await tBattleWheelCardY;
             BattleWheelCardWidth = await tBattleWheelCardWidth;
             BattleWheelCardHeight = await tBattleWheelCardHeight;
-            
+
             TreacheryCardType_STR = await tTreacheryCardType_STR;
             TreacheryCardName_STR = await tTreacheryCardName_STR;
             TreacheryCardDescription_STR = await tTreacheryCardDescription_STR;

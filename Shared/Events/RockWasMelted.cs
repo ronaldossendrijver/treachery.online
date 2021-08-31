@@ -2,8 +2,6 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
-using System;
-
 namespace Treachery.Shared
 {
     public class RockWasMelted : GameEvent

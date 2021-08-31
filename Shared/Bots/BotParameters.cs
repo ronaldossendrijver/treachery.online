@@ -24,7 +24,7 @@ namespace Treachery.Shared
         public float Battle_MimimumChanceToAssumeEnemyHeroSurvives { get; set; }
         public float Battle_MimimumChanceToAssumeMyLeaderSurvives { get; set; }
         public float Battle_DialShortageThresholdForThrowing { get; set; }
-              
+
 
         public static BotParameters BlackParameters = new BotParameters()
         {

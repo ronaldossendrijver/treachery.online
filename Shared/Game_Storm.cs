@@ -381,7 +381,7 @@ namespace Treachery.Shared
             if (e.UseUselessCard)
             {
                 var card = TakeLosses.ValidUselessCardToPreventLosses(this, e.Player);
-                CurrentReport.Add(e.Initiator, "{0} use a {1} card to prevent losing forces in {2}.", e.Initiator, TreacheryCardType.Useless, StormLossesToTake[0].Location); 
+                CurrentReport.Add(e.Initiator, "{0} use a {1} card to prevent losing forces in {2}.", e.Initiator, TreacheryCardType.Useless, StormLossesToTake[0].Location);
                 StormLossesToTake.RemoveAt(0);
                 Discard(e.Player, card);
                 RecentMilestones.Add(Milestone.SpecialUselessPlayed);

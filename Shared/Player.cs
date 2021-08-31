@@ -118,7 +118,7 @@ namespace Treachery.Shared
             return Faction == f;
         }
 
-        
+
 
         private Battalion GetAndCreateIfNeeded(Location location)
         {
@@ -266,7 +266,7 @@ namespace Treachery.Shared
 
                 if (toRemoveInTotal == 0) break;
             }
-           
+
         }
 
         public void ForcesToReserves(Territory t)
@@ -305,7 +305,7 @@ namespace Treachery.Shared
 
                 return killCount + specialKillCount;
             }
-            
+
             return 0;
         }
 
@@ -619,7 +619,7 @@ namespace Treachery.Shared
                     Leaders = LeaderManager.GetLeaders(Faction).ToList();
                     break;
             }
-            
+
         }
 
         public override string ToString()

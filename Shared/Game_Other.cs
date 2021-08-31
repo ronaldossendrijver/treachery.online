@@ -61,7 +61,7 @@ namespace Treachery.Shared
             if (!e.FromBank)
             {
                 var initiator = GetPlayer(e.Initiator);
-            
+
                 ExchangeResourcesInBribe(initiator, target, e.Resources);
 
                 if (e.Card != null)
@@ -139,7 +139,7 @@ namespace Treachery.Shared
         {
             CurrentReport.Add(e);
             RecentlyDiscarded.Remove(e.Card);
-            TreacheryDiscardPile.Items.Remove(e.Card); 
+            TreacheryDiscardPile.Items.Remove(e.Card);
             e.Player.TreacheryCards.Add(e.Card);
             Discard(e.Player, TreacheryCardType.TakeDiscarded);
             RecentMilestones.Add(Milestone.CardWonSwapped);
@@ -278,8 +278,8 @@ namespace Treachery.Shared
 
             RecentMilestones.Add(Milestone.ResourcesReceived);
         }
-               
-        
+
+
         public int KarmaHmsMovesLeft { get; private set; } = 2;
         public void HandleEvent(KarmaHmsMovement e)
         {
@@ -313,9 +313,9 @@ namespace Treachery.Shared
         public void HandleEvent(KarmaBrownDiscard e)
         {
             RecentMilestones.Add(Milestone.Discard);
-            Discard(e.Player, TreacheryCardType.Karma); 
+            Discard(e.Player, TreacheryCardType.Karma);
             CurrentReport.Add(e);
-            
+
             foreach (var card in e.Cards)
             {
                 Discard(e.Player, card);
@@ -524,7 +524,7 @@ namespace Treachery.Shared
         public void HandleEvent(PlayerReplaced e)
         {
             GetPlayer(e.ToReplace).IsBot = !GetPlayer(e.ToReplace).IsBot;
-            CurrentReport.Add(e.ToReplace, "{0} will now be played by a {1}.", e.ToReplace, GetPlayer(e.ToReplace).IsBot? "Bot" : "Human");
+            CurrentReport.Add(e.ToReplace, "{0} will now be played by a {1}.", e.ToReplace, GetPlayer(e.ToReplace).IsBot ? "Bot" : "Human");
         }
 
         public bool KarmaPrevented(Faction f)

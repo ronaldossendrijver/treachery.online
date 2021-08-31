@@ -893,7 +893,7 @@ namespace Treachery.Shared
 
         protected virtual BrownEconomics DetermineBrownEconomics()
         {
-            if (ResourcesIncludingAllyContribution >= 14 && 
+            if (ResourcesIncludingAllyContribution >= 14 &&
                 Game.Players.Where(p => p.Faction != Ally).Count(p => p.Resources < 2 || Game.Applicable(Rule.BlueAutoCharity) && p.Faction == Faction.Blue) >= 2)
             {
                 return new BrownEconomics(Game) { Initiator = Faction, Status = BrownEconomicsStatus.Cancel };
@@ -933,7 +933,7 @@ namespace Treachery.Shared
         {
             var toAuction = new Deck<TreacheryCard>(Game.WhiteCache, random);
             toAuction.Shuffle();
-            return new WhiteSpecifiesAuction(Game) { Initiator = Faction, Card = toAuction.Draw(), AuctionType = D(1,2) > 1 ? AuctionType.WhiteSilent : AuctionType.WhiteOnceAround, Direction = D(1,2) > 1 ? 1 : -1 };
+            return new WhiteSpecifiesAuction(Game) { Initiator = Faction, Card = toAuction.Draw(), AuctionType = D(1, 2) > 1 ? AuctionType.WhiteSilent : AuctionType.WhiteOnceAround, Direction = D(1, 2) > 1 ? 1 : -1 };
         }
 
         protected virtual WhiteKeepsUnsoldCard DetermineWhiteKeepsUnsoldCard()

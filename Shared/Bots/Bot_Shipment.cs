@@ -97,16 +97,18 @@ namespace Treachery.Shared
             Shipment result;
             if (Shipment.ValidNoFieldValues(Game, this).Contains(usableNoField))
             {
-                result = new Shipment(Game) { 
-                    Initiator = Faction, 
-                    ForceAmount = Faction == Faction.White ? 0 : nrOfForces,  
-                    SpecialForceAmount = Faction == Faction.White ? 1 : nrOfSpecialForces, 
-                    Passed = false, 
-                    From = null, 
-                    KarmaCard = null, 
-                    KarmaShipment = false, 
+                result = new Shipment(Game)
+                {
+                    Initiator = Faction,
+                    ForceAmount = Faction == Faction.White ? 0 : nrOfForces,
+                    SpecialForceAmount = Faction == Faction.White ? 1 : nrOfSpecialForces,
+                    Passed = false,
+                    From = null,
+                    KarmaCard = null,
+                    KarmaShipment = false,
                     NoFieldValue = usableNoField,
-                    To = location };
+                    To = location
+                };
             }
             else
             {
@@ -185,7 +187,7 @@ namespace Treachery.Shared
                 nrOfForces = Math.Min(ForcesInReserve, 6 - Math.Min(6, 2 * nrOfSpecialForces));
             }
 
-            var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, Game.Map.PolarSink, false, false );
+            var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, Game.Map.PolarSink, false, false);
 
             if (shipment.IsValid)
             {
@@ -318,8 +320,8 @@ namespace Treachery.Shared
         {
             if (
                 HasKarma && !Game.KarmaPrevented(Faction) &&
-                ((Faction != Faction.Black || Faction != Faction.Red) || SpecialKarmaPowerUsed) && 
-                !Game.MayShipAsGuild(this) && 
+                ((Faction != Faction.Black || Faction != Faction.Red) || SpecialKarmaPowerUsed) &&
+                !Game.MayShipAsGuild(this) &&
                 Shipment.DetermineCost(Game, this, shipment) > 7)
             {
                 shipment.KarmaShipment = true;
@@ -438,7 +440,7 @@ namespace Treachery.Shared
                 .FirstOrDefault(l => AnyForcesIn(l) == 0 && AllyNotIn(l.Territory) && l.Territory.IsStronghold && !StormWillProbablyHit(l) && OpponentIsSuitableForUselessCardDumpAttack(OccupyingOpponentIn(l.Territory)));
                 LogInfo("OpponentIsSuitableForDummyAttack: " + targetOfDummyAttack);
             }
-            
+
             if (targetOfDummyAttack != null)
             {
                 DetermineValidForcesInShipment(0.5f, true, targetOfDummyAttack, OccupyingOpponentIn(targetOfDummyAttack.Territory).Faction, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, minResourcesToKeep, 1, false);
@@ -461,7 +463,7 @@ namespace Treachery.Shared
         {
             if (opponent == null) return false;
 
-            return opponent.Leaders.Any(l => Game.IsAlive(l) && (Traitors.Contains(l) || FaceDancers.Contains(l))) 
+            return opponent.Leaders.Any(l => Game.IsAlive(l) && (Traitors.Contains(l) || FaceDancers.Contains(l)))
                 && !KnownOpponentWeapons(opponent).Any();
         }
 
@@ -472,7 +474,7 @@ namespace Treachery.Shared
             return !(Game.Applicable(Rule.BlackCapturesOrKillsLeaders) && opponent.Faction == Faction.Black) && !KnownOpponentWeapons(opponent).Any();
         }
 
-        
+
 
         protected virtual void DetermineShipment_TakeVacantStronghold(int forcestrength, int minResourcesToKeep, int maxUnsupportedForces)
         {
@@ -655,10 +657,10 @@ namespace Treachery.Shared
             if (preferSpecialForces && specialStrength > normalStrength)
             {
                 while (
-                    dialNeeded > 0 && 
-                    (dialNeeded > normalStrength || forcesAvailable == 0) && 
-                    specialForcesAvailable >= 1 && 
-                    (shipcost = Shipment.DetermineCost(Game, this, forces + specialForces + 1, location, false, false, false)) <= spiceAvailable && 
+                    dialNeeded > 0 &&
+                    (dialNeeded > normalStrength || forcesAvailable == 0) &&
+                    specialForcesAvailable >= 1 &&
+                    (shipcost = Shipment.DetermineCost(Game, this, forces + specialForces + 1, location, false, false, false)) <= spiceAvailable &&
                     shipcost + costOfBattle - spiceAvailable < maxUnsupportedForces)
                 {
                     specialForces++;
@@ -669,9 +671,9 @@ namespace Treachery.Shared
             }
 
             while (
-                dialNeeded > 0 && 
-                forcesAvailable >= 1 && 
-                (shipcost = Shipment.DetermineCost(Game, this, forces + specialForces + 1, location, false, false, false)) <= spiceAvailable && 
+                dialNeeded > 0 &&
+                forcesAvailable >= 1 &&
+                (shipcost = Shipment.DetermineCost(Game, this, forces + specialForces + 1, location, false, false, false)) <= spiceAvailable &&
                 shipcost + costOfBattle - spiceAvailable < maxUnsupportedForces)
             {
                 forces++;
@@ -680,9 +682,9 @@ namespace Treachery.Shared
                 dialNeeded -= normalStrength * (costOfBattle <= spiceAvailable ? 1 : noSpiceForForceModifier);
             }
 
-            while (dialNeeded > 0 && 
-                specialForcesAvailable >= 1 && 
-                (shipcost = Shipment.DetermineCost(Game, this, forces + specialForces + 1, location, false, false, false)) <= spiceAvailable && 
+            while (dialNeeded > 0 &&
+                specialForcesAvailable >= 1 &&
+                (shipcost = Shipment.DetermineCost(Game, this, forces + specialForces + 1, location, false, false, false)) <= spiceAvailable &&
                 shipcost + costOfBattle - spiceAvailable < maxUnsupportedForces)
             {
                 specialForces++;
@@ -696,7 +698,7 @@ namespace Treachery.Shared
             return dialNeeded;
         }
 
-        
+
 
         protected virtual bool IsSafeAndNearby(Location source, Location destination, Battalion b, bool mayFight)
         {

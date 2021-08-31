@@ -266,6 +266,6 @@ namespace Treachery.Client
             return serializer.Deserialize<Skin>(jsonReader);
         }
 
-        
+
     }
 }

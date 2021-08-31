@@ -376,7 +376,7 @@ namespace Treachery.Shared
         protected virtual TraitorsSelected DetermineTraitorsSelected()
         {
             var traitor = Traitors.Where(l => l.Faction != Faction).OrderByDescending(l => l.Value).FirstOrDefault();
-            if (traitor == null) traitor = Traitors.OrderByDescending(l => l.Value - (l.Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah)? 2 : 0)).FirstOrDefault();
+            if (traitor == null) traitor = Traitors.OrderByDescending(l => l.Value - (l.Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah) ? 2 : 0)).FirstOrDefault();
             return new TraitorsSelected(Game) { Initiator = Faction, SelectedTraitor = traitor };
         }
 
@@ -438,7 +438,8 @@ namespace Treachery.Shared
                     .OrderByDescending(p => Game.NumberOfVictoryPoints(p, true))
                     .FirstOrDefault();
 
-                if (target != null) {
+                if (target != null)
+                {
 
                     return new DistransUsed(Game) { Initiator = Faction, Card = worstCard, Target = target.Faction };
                 }
@@ -471,18 +472,18 @@ namespace Treachery.Shared
             int minimumValue = Faction == Faction.Purple && nrOfLivingLeaders > 2 ? 4 : 0;
             int maxToSpendOnHeroRevival = Math.Min(availableResources, 7);
 
-            var leaderToRevive = Revival.ValidRevivalHeroes(Game, this).Where(l => 
+            var leaderToRevive = Revival.ValidRevivalHeroes(Game, this).Where(l =>
                 SafeLeaders.Contains(l) &&
-                Revival.GetPriceOfHeroRevival(Game, this, l) <= maxToSpendOnHeroRevival && 
-                l.Faction != Ally && 
+                Revival.GetPriceOfHeroRevival(Game, this, l) <= maxToSpendOnHeroRevival &&
+                l.Faction != Ally &&
                 l.Value >= minimumValue
                 ).OrderByDescending(l => l.Value + HeroRevivalPenalty(l)).FirstOrDefault();
 
             if (leaderToRevive == null)
             {
                 leaderToRevive = Revival.ValidRevivalHeroes(Game, this).Where(l =>
-                    Revival.GetPriceOfHeroRevival(Game, this, l) <= maxToSpendOnHeroRevival && 
-                    l.Faction != Ally && 
+                    Revival.GetPriceOfHeroRevival(Game, this, l) <= maxToSpendOnHeroRevival &&
+                    l.Faction != Ally &&
                     l.Value >= minimumValue
                     ).OrderByDescending(l => l.Value + HeroRevivalPenalty(l)).FirstOrDefault();
             }
@@ -538,7 +539,7 @@ namespace Treachery.Shared
             var cardToTake = DiscardedTaken.ValidCards(Game, this).OrderByDescending(c => CardQuality(c)).FirstOrDefault();
             if (cardToTake != null && CardQuality(cardToTake) >= 4)
             {
-                return new DiscardedTaken(Game) { Initiator = Faction, Card = cardToTake};
+                return new DiscardedTaken(Game) { Initiator = Faction, Card = cardToTake };
             }
 
             return null;

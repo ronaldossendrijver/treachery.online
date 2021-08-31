@@ -2,8 +2,8 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Treachery.Shared
 {
@@ -44,17 +44,17 @@ namespace Treachery.Shared
         {
             return
                 g.CurrentPhase != Phase.Bidding ||
-                price <= 0 || 
-                g.CurrentBid == null || 
+                price <= 0 ||
+                g.CurrentBid == null ||
                 g.CurrentBid.Initiator != p.Faction && (g.CurrentBid.AllyContributionAmount == 0 || g.CurrentBid.Player.Ally != p.Faction);
         }
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} accept {1} offer for {2}: {3}", 
-                Initiator, 
-                BoundFaction, 
-                Price, 
+            return new Message(Initiator, "{0} accept {1} offer for {2}: {3}",
+                Initiator,
+                BoundFaction,
+                Price,
                 Deal.DealContentsDescription(Game, Type, Text, End, DealParameter1, DealParameter2));
         }
 

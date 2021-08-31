@@ -172,11 +172,11 @@ namespace Treachery.Shared
         {
             //Console.WriteLine("MayAssign " + Skin.Current.Join(p.Leaders.Select(l => l.Name + ":" + g.Skill(l) + "," + g.IsInFrontOfShield(l))));
 
-            return 
+            return
                 h is Leader &&
                 h.HeroType != HeroType.Auditor &&
-                g.Applicable(Rule.BrownAndWhiteLeaderSkills) && 
-                !g.CapturedLeaders.Any(cl => cl.Value == p.Faction && g.Skilled(cl.Key)) && 
+                g.Applicable(Rule.BrownAndWhiteLeaderSkills) &&
+                !g.CapturedLeaders.Any(cl => cl.Value == p.Faction && g.Skilled(cl.Key)) &&
                 !p.Leaders.Any(l => g.Skilled(l));
         }
 
@@ -201,7 +201,7 @@ namespace Treachery.Shared
                 {
                     price = (int)Math.Ceiling(0.5 * price);
                 }
-                
+
                 if (!NormallyRevivableHeroes(g, initiator).Contains(hero) && g.AllowedEarlyRevivals.ContainsKey(hero))
                 {
                     price = g.AllowedEarlyRevivals[hero];

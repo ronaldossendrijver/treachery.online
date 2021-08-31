@@ -59,7 +59,7 @@ namespace Treachery.Shared
 
             return "";
         }
-    
+
         [JsonIgnore]
         public Dictionary<Location, Battalion> ForceLocations
         {

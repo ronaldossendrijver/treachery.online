@@ -2,10 +2,10 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 
 namespace Treachery.Shared
@@ -88,10 +88,10 @@ namespace Treachery.Shared
             if ((Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent) && Passed) return "You cannot pass a silent bid";
 
             if (Passed) return "";
-            
+
             bool isSpecialAuction = Game.CurrentAuctionType == AuctionType.WhiteOnceAround || Game.CurrentAuctionType == AuctionType.WhiteSilent;
             if (KarmaBid && isSpecialAuction) return Skin.Current.Format("You can't use {0} in Once Around or Silent bidding", TreacheryCardType.Karma);
-            
+
             if (KarmaBid && !CanKarma(Game, Player)) return Skin.Current.Format("You can't use {0} for this bid", TreacheryCardType.Karma);
 
             if (KarmaBid) return "";

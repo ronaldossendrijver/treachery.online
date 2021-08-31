@@ -3,7 +3,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Treachery.Shared
@@ -61,7 +60,7 @@ namespace Treachery.Shared
                 {
                     return PassedBid();
                 }
-            }            
+            }
             else if (currentBid == 0 && ResourcesIncludingAllyAndRedContribution > 0)
             {
                 LogInfo("always bid at least 1 if possible");

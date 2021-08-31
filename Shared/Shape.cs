@@ -132,7 +132,7 @@ namespace Treachery.Shared
         {
 
         }
-    }    
+    }
 
     public class LineTo : Segment
     {

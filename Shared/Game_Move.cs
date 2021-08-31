@@ -2,7 +2,6 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -39,7 +38,7 @@ namespace Treachery.Shared
             Allow(FactionAdvantage.RedLetAllyReviveExtraForces);
             Allow(FactionAdvantage.PurpleReceiveRevive);
             Allow(FactionAdvantage.BrownRevival);
-            
+
             HasActedOrPassed.Clear();
             LastShippedOrMovedTo = null;
 
@@ -173,7 +172,8 @@ namespace Treachery.Shared
 
             var ally = initiator.AlliedPlayer;
 
-            if (initiator.Ally == Faction.Blue && Applicable(Rule.AdvisorsDontConflictWithAlly)) {
+            if (initiator.Ally == Faction.Blue && Applicable(Rule.AdvisorsDontConflictWithAlly))
+            {
 
                 return ally.ForcesIn(to.Territory) > 0;
             }
@@ -208,7 +208,7 @@ namespace Treachery.Shared
         {
             int receiverProfit = 0;
             var orange = GetPlayer(Faction.Orange);
-            
+
             if (orange != null && initiator != orange && !s.UsingKarma(this))
             {
                 receiverProfit = s.DetermineOrangeProfits(this);
@@ -452,7 +452,7 @@ namespace Treachery.Shared
                 {
                     initiator.FlipForces(to, wasOccupiedBeforeMove && asAdvisors);
                 }
-                                
+
                 LogMove(initiator, fromTerritory, to, totalNumberOfForces, totalNumberOfSpecialForces, wasOccupiedBeforeMove && asAdvisors, byCaravan);
             }
 
@@ -538,7 +538,7 @@ namespace Treachery.Shared
         {
             if (from == null || to == null) return false;
 
-            var max = DetermineMaximumMoveDistance(initiator, new Battalion[] { moved } );
+            var max = DetermineMaximumMoveDistance(initiator, new Battalion[] { moved });
             var targetsAvoidingStorm = Map.FindNeighbours(from, max, false, initiator.Faction, SectorInStorm, ForcesOnPlanet, CurrentBlockedTerritories);
             var targetsIgnoringStorm = Map.FindNeighbours(from, max, true, initiator.Faction, SectorInStorm, ForcesOnPlanet, CurrentBlockedTerritories);
             return !targetsAvoidingStorm.Contains(to) && targetsIgnoringStorm.Contains(to);
