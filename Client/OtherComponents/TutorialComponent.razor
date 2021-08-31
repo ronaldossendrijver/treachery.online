@@ -1,0 +1,160 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Client.GenericComponents;
+
+<ModalComponent Id="@Id" Title="Tutorial" Size="modal-xl">
+
+    <h1>Introduction</h1>
+
+    Treachery.online game is based on the <a target="_blank" href="https://boardgamegeek.com/boardgame/121/dune">Dune Board Game</a>, released by Avalon Hill in 1979. It was created during the COVID19 crisis in 2020 that made it impossible to physically play the recent Dune board game release by Gale Force Nine one of my friends purchased early 2020. If you like the digital version, please consider buying the "real" board game <a target="_blank" href="https://www.gf9games.com/dune/">here</a>; playing it on a real table is even more exciting than playing it online!
+
+    Although I tried to automate as much of the gameplay I could, knowledge of the Dune Board Game is a prerequisite for playing treachery.online. You can find the manual of the original board game <a target="_blank" href="http://www.sorvan.com/games/dune/Rules/DuneRules.pdf">here</a>, and the manual of the Gale Force Nine release <a target="_blank" href="https://www.gf9games.com/dune/wp-content/uploads/Dune-Rulebook.pdf">here</a>.
+
+    The rules and game mechanics are not exactly the same and in case of ambiguity, I did some interpretation. These differences and interpretations will be on this wiki. However, this wiki is mainly about how to use treachery.online and not about the rules of the game. These are described in the manuals.
+
+    <h1>How to play</h1>
+    Let's start a game of treachery.online. We keep it simple and start a game with two players.
+
+    <h2>Hosting and joining a game</h2>
+    First, both players enter their player names. For example: "Paul" and "Vladimir". In any case, one of the players will be the Host. The Host selects "Host a game" and optionally enters a password for the game. You can use a password in case you're playing with friends and don't want people you don't know to enter the game.
+
+    <i>todo</i>
+
+    After the Host clicks Confirm, other players can join his game by entering the game password (if required) and clicking on the join button next to their Hosts game in the list of available games.
+
+    The Host will see the players that joined the game. He will also be able to select how many turns the game should last, which set of rules to use (see the Rulebooks mentioned in the introduction) and which factions should be in play.
+
+    When the Host confirms, no more players can join and the game will start by randomly assigning factions to the players that joined from the available factions selected by the host. In this two player example, we play with Atreides and Harkonnen.<h2>The Game Screen</h2>
+
+    <i>todo</i>
+
+    Once the game has been started, the screen looks like this below. This is Vladimirs screen. He has been assigned Harkonnen. The screen is divided into three columns:
+
+    <ol>
+        <li>Map Column; the first (and biggest) column contains the game board, which is a map of the world. This is where forces will be placed and battles will take place.</li>
+        <li>Action Column; next to the map is a column that starts with a description of the current phase of the game, followed by any actions you can perform during this phase.</li>
+        <li>Information Column; the third column contains a report about what has recently happened and (faction specific, secret) information only known to you.</li>
+        <li>
+        </li>
+    </ol>
+
+    The screen also contains a floating Chat window that you can move and minimize if needed.
+
+    According to the game rules, both players can now offer to trade factions. Paul might want to play Harkonnen and Vladimir may prefer Atreides. If both players offer to trade, their factions are switched. For now, lets assume both players are happy with their factions. The Host can now move to the next step, which is the selection of traitors. According to the game rules, all factions must choose one of four traitors randomly drawn from the Traitor deck, except Harkonnen; they keep all four traitors.
+
+    <h2>Host actions: undo action, save game, load game</h2>
+    In this example, Paul is Host, which means that he has additional actions at his disposal, as shown in the screenshot:
+    <ul>
+        <li>If applicable, the Host can end a game phase and move to the next phase.</li>
+        <li>The Host can undo one or more player actions. Players sometimes make mistakes and if everyone agrees, they can be undone. Just select up to which action should be undone and Confirm. Please note that you cannot "Redo" these actions; undoing actions cannot be undone.</li>
+        <li>The Host can save the game. It is stored on his computer as a savegame.json file, typically in the Downloads folder. Please not that this file contains unencrypted information about all players thus far. It also contains secret information like the traitors players selected and the Bene Gesserit prediction of the game outcome. Reading the file is cheating. Of course, the Host doesn't cheat :).</li>
+        <li>The Host can load a saved game by selecting a savegame.json file saved earlier. Please not that for this to work, the names of the players currently in the game must match the names of the players in the saved game. This will be explained in more detailed in the section about resuming saved games.</li>
+        <li>The Host can load a custom skin, as mentioned before. You can download an example skin <a href="art/skin.json">this file</a> and customize it to your taste with your own artwork and theme.</li>
+    </ul>
+
+    <h2>Information popups</h2>
+    There are several hotspots on the screen that will show additional information when you hover over them with the mouse:
+    <ul>
+        <li>Hovering over the Tanks (top left) will show what's in there.</li>
+        <li>
+            Hovering over a player name and faction logo will show you info about that faction.
+        </li>
+        <li>
+            Hovering over a territory on the map will show you what's there.
+        </li>
+        <li>
+            Hovering over the card piles (bottom right) will give more detailed information about what's there.
+        </li>
+        <li>
+            Hovering over the colored heading of your "Secret Information Screen" containing your factions logo and name will bring up detailed information about your faction.
+        </li>
+        <li>Hovering over the name of a leader will show a portrait of the leader, including its strength.</li>
+        <li>Hovering over the name of one of your treachery cards (shown at the bottom of your Secret Information Screen (not shown in this screenshot) will bring up a bigger and better readable version of that card.</li>
+    </ul>
+
+    <h2>The Planet Map</h2>
+
+    <i>todo</i>
+
+    With only Atreides and Harkonnen playing, the set-up is quite easy. After factions have been established and traitors have been selected, Atreides starts with 10 spice and 10 crystals in Arrakeen and Harkonnen starts with 10 crystals and 10 forces in Carthag. Atreides get 1 Treachery Card (shown at the bottom of the information column), Harkonnen get 2.
+
+    The planet map shows the following information:
+    <ul>
+        <li>The outer circle of the planet map shows the positions of the players at the table and the factions they play. Clicking on the faction icon of a player brings up information about that factions starting leaders.</li>
+        <li>You can see the Atreides (green) and Harkonnen (black) forces in Arrakeen and Carthag. Clicking on any territory will show more information about that territory in the Intelligence panel.</li>
+        <li>The "pie point" highlighted in red on the map represents the current sector "in storm".</li>
+        <li>The two dark red colored territories containing A and B represent the top cards of Spice Discard Piles A and B. This is where spice spawned during the last Spice Blow phase. The amount of resources that is currently present in a territory is shown by the orange token.</li>
+        <li>Above the planet map the current turn and maximum number of turns are shown. To the top right of the map, the game phases are shown. The current phase is highlighted.</li>
+
+        <li>At the bottom right of the planet map you see the number of cards on the Spice Card pile and Treachery Card pile. Clicking on these piles will show additional information.</li>
+    </ul>
+
+    <h1>Gameplay by phase</h1>
+
+    <h2>Storm and Resource Blow</h2>
+    We just entered The Storm and Spice Blow phase. In the first turn these are quite straightforward as Family Atomics and Weather Control are not played yet and Shai Hulud cards are ignored. After turn 1, the game will pause for players who would like to use Family Atomics or Storm Spell and the Host will have to resume the game if no one does. The position of the storm will be calculated automatically, crystals are put on the planet map according to the SpiceCards that were drawn. The Storm & Spice Blow report in the Information Column contains a log of what happened. When all players are ready, The Host starts the Charity phase.
+
+    <h2>Nexus</h2>
+    If Shai Hulud appears after turn one, a Nexus will follow where players can offer to ally with other factions. If two factions offer an alliance to each other, they become allies. While allied, an additional Action card will appear in the Actions column, allowing you to set at any time how you wish to aid your ally, by paying for their bids and shipments and, for example in case of Fremen, protecting your ally from Shai Hulud. The Secret Player Information card in the Information Column will show how you aid your ally and vice versa.
+
+    <h2>Charity Phase</h2>
+    Everyone who can claim charity may now do so. A Bene Gesserit player automatically receives it. When no one else wants to claim charity, the Host starts the Bidding phase.
+
+    <h2>Bidding Phase</h2>
+    During this phase the Information Column shows a Bidding Report that shows how many cards are on auction, shows the order in which players bid and how many cards they have. Townsfolk are the only faction that can see the card that is on auction. The Bidding Report will contain a log of who won which card. On the Planet Map, the player that currently has to bid or pass is enlarged. You can't bid more than you own. When your bid wins, the amount you bid is subtracted from your spice and the card one is shown at the bottom of the Information Column.
+
+    <h2>Revival Phase</h2>
+    During this phase, anyone can select (if applicable according to the game rules) a number of forces and leader to revive. The game automatically calculates how much this will cost you and whether you are able to pay that much. In turn one there are typically no deaths yet so there is nothing to revive.
+
+    <h2>Shipment & Move Phase</h2>
+    This is typically the most difficult of all phases. Players take turns in first performing a Shipment (put forces from there reserves onto the planet) and then performing a Move (moving forces from one territory to the other). The game limits the locations you can ship or move to based on the rules of the game, which means it shouldn't be possible to do anything illegal here.
+
+    <h2>Battle Phase</h2>
+    After Shipment & Move, the game determines which battles will have to take place. The aggressor (first player) starts a battle by selecting where and whom (the defender) he wants to fight. Then both aggressor and defender choose the number of forces they want to join the battle, their leader or cheap hero, if possible a weapon and a defense. Please note that this is the moment when Atreides can inform about one element of his opponents battle plan and when Bene Gesserit can use the voice. The game user interface does not facilitate this, it is something that should be done via video or audio chat (like Teamspeak or Hangouts) or via chat. When both players confirm their battle plans, they become final and are shown to all players. This will be the opportunity for both players to call TREACHERY (if the opposing leader is a traitor in their pay) or pass. When both players either called or passed treachery, the battle is resolved. The battle report shows what happened and who wins. After all battles have been resolved, the Host can start the Collection & Mentat phase.
+
+    <h2>Collection & Mentat Phases</h2>
+    These phase are easy. Players harvest spice from territories they occupy and get spice for some strongholds. If players received bribes, these are now added to their reserves. Then, the game checks if any player (and his ally) has won the game. If so, this is shown in the Information Column and the game ends. If no one has won, the Host can proceed to the next Storm & Resource Blow.
+
+    <h1>Issues and feature requests</h1>
+    Treachery.online is a hobby project, created alongside family life and a full time job. It still contains some issues that I would like to fix when I got the time. Please put any bugs you encounter or suggestions for improvements on the treachery.online 
+    <a href="https://trello.com/b/fTA2ujGp/treacheryonline" target="_blank">Backlog</a> as a <a href="https://trello.com/invite/b/fTA2ujGp/fabaa46d43f4b05c5dbbca69ff3a77c6/treacheryonline" target="_blank">contributor</a>. Your help is kindly appreciated!
+
+    If for some reason a player becomes disconnected from a game, he should refresh the page or navigate again to https://treachery.online. Then, if he enters <strong>the same player name as before</strong>, he should be able to reconnect to the game.
+
+    When this fails, the procedure to resume the game is as follows (assuming that the player that as disconnected isn't the Host):
+    <ol>
+        <li>The Host saves the game to a file on his computer</li>
+        <li>All players, including the Host and the disconnected player, reload their browser windows (F5 on Windows)</li>
+        <li>The Host hosts a new game (settings do not matter)</li>
+        <li>All players join the game <b>with the same name they used before</b></li>
+        <li>The Host starts the game, then loads the game from the file he just saved</li>
+    </ol>
+    This will bring the game back to where you just were.
+
+    The following known circumstances may cause players to disconnect:
+    <ul>
+        <li>The player closed his browser window, pressed Reload or navigated to another page</li>
+        <li>The game was left unattended for a long time or Internet connection was lost, causing the session to reset</li>
+        <li>There was some glitch in the user interface, causing the browser window to 'hang'</li>
+        <li>You encountered a bug in the programming. Please report it on the backlog and describe when the issue arised and include the saved game</li>
+    </ul>
+
+    <h1>Custom Skins</h1>
+
+    Treachery.online allows you to define and load a custom Skin, that you can define yourself (or use from the community) with your own theme and artwork. When my friends and I play treachery.online we often use the Gale Force Nine artwork from the game I purchased, as shown in the image below. You can download and use [https://treachery.online/art/skin.json this] Skin to play in the style of the original (1979) board game, which looks like below or edit the file to build a skin with your own artwork yourself. [[File:Dune Skin Example.png|alt=|thumb|333x333px|Dune Skin for treachery.online|none]]
+
+    To build a skin yourself, just point the image and sound URLs to your own files somewhere on a <i>secure </i>server (= http<strong>s</strong>) or online drive, as long as they can be accessed by others, e.g. by using sharable links. Furthermore, you can customize the names of leaders, cards and game concepts.
+
+    <h1>Frequently Asked Questions</h1>
+
+    To Do.
+
+</ModalComponent>
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; } = "";
+}

@@ -21,4 +21,8 @@
     <ProjectReference Include="..\Shared\Treachery.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\tutorial\" />
+  </ItemGroup>
+
 </Project>
