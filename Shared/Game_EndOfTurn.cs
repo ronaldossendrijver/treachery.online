@@ -446,35 +446,25 @@ namespace Treachery.Shared
         {
             var fremen = GetPlayer(Faction.Yellow);
 
-            if (Version < 50 && fremen != null)
+            CurrentReport.Add(Faction.None, "Players with the most strongholds win.");
+            WinMethod = WinMethod.Strongholds;
+            var nrOfStrongholdsPerPlayer = new Dictionary<Player, int>();
+            foreach (var p in Players)
             {
-                CurrentReport.Add(Faction.Yellow, "{0} win because {1} is not playing and no one else won.", Faction.Yellow, Faction.Orange);
-                WinMethod = WinMethod.OrangeSpecial;
-                Winners.Add(fremen);
-                if (fremen.Ally != Faction.None) Winners.Add(GetPlayer(fremen.Ally));
-            }
-            else
-            {
-                CurrentReport.Add(Faction.None, "Players with the most strongholds win.");
-                WinMethod = WinMethod.Strongholds;
-                var nrOfStrongholdsPerPlayer = new Dictionary<Player, int>();
-                foreach (var p in Players)
-                {
-                    int techTokenPoint = p.TechTokens.Count == 3 ? 1 : 0;
+                int techTokenPoint = p.TechTokens.Count == 3 ? 1 : 0;
 
-                    nrOfStrongholdsPerPlayer.Add(p,
-                        techTokenPoint +
-                        (p.Controls(this, Map.Arrakeen, Applicable(Rule.ContestedStongholdsCountAsOccupied)) ? 1 : 0) +
-                        (p.Controls(this, Map.Carthag, Applicable(Rule.ContestedStongholdsCountAsOccupied)) ? 1 : 0) +
-                        (p.Controls(this, Map.SietchTabr, Applicable(Rule.ContestedStongholdsCountAsOccupied)) ? 1 : 0) +
-                        (p.Controls(this, Map.HabbanyaSietch, Applicable(Rule.ContestedStongholdsCountAsOccupied)) ? 1 : 0) +
-                        (p.Controls(this, Map.TueksSietch, Applicable(Rule.ContestedStongholdsCountAsOccupied)) ? 1 : 0) +
-                        (IsSpecialStronghold(Map.ShieldWall) && p.Controls(this, Map.ShieldWall, Applicable(Rule.ContestedStongholdsCountAsOccupied)) ? 1 : 0));
-                }
-
-                int mostStrongholds = nrOfStrongholdsPerPlayer.Values.Max();
-                Winners.AddRange(nrOfStrongholdsPerPlayer.Where(nr => nr.Value == mostStrongholds).Select(nr => nr.Key));
+                nrOfStrongholdsPerPlayer.Add(p,
+                    techTokenPoint +
+                    (p.Controls(this, Map.Arrakeen, Applicable(Rule.ContestedStongholdsCountAsOccupied)) ? 1 : 0) +
+                    (p.Controls(this, Map.Carthag, Applicable(Rule.ContestedStongholdsCountAsOccupied)) ? 1 : 0) +
+                    (p.Controls(this, Map.SietchTabr, Applicable(Rule.ContestedStongholdsCountAsOccupied)) ? 1 : 0) +
+                    (p.Controls(this, Map.HabbanyaSietch, Applicable(Rule.ContestedStongholdsCountAsOccupied)) ? 1 : 0) +
+                    (p.Controls(this, Map.TueksSietch, Applicable(Rule.ContestedStongholdsCountAsOccupied)) ? 1 : 0) +
+                    (IsSpecialStronghold(Map.ShieldWall) && p.Controls(this, Map.ShieldWall, Applicable(Rule.ContestedStongholdsCountAsOccupied)) ? 1 : 0));
             }
+
+            int mostStrongholds = nrOfStrongholdsPerPlayer.Values.Max();
+            Winners.AddRange(nrOfStrongholdsPerPlayer.Where(nr => nr.Value == mostStrongholds).Select(nr => nr.Key));
         }
 
         private void CallHeroesHome()

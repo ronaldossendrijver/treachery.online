@@ -1309,13 +1309,10 @@ namespace Treachery.Shared
 
         private void KillLeaderInBattle(IHero killedHero, IHero opposingHero, TreacheryCardType causeOfDeath, Player winner, int heroValue)
         {
-            var earned = (causeOfDeath == TreacheryCardType.ArtilleryStrike) ? 0 : killedHero.ValueInCombatAgainst(opposingHero);
-            if (Version >= 45) earned = heroValue;
-
-            CurrentReport.Add(winner.Faction, "{1} kills {0}. {2} earn {3}.", killedHero, causeOfDeath, winner.Faction, earned);
+            CurrentReport.Add(winner.Faction, "{1} kills {0}. {2} earn {3}.", killedHero, causeOfDeath, winner.Faction, heroValue);
             RecentMilestones.Add(Milestone.LeaderKilled);
             if (killedHero is Leader) KillHero(killedHero as Leader);
-            winner.Resources += earned;
+            winner.Resources += heroValue;
         }
 
         private void LogLosses(Player player, int forcesLost, int specialForcesLost)
