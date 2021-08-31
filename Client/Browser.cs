@@ -61,11 +61,6 @@ namespace Treachery.Client
             await JsInvoke("RemoveFocusFromButtons");
         }
 
-        public static async Task EnableMapHover()
-        {
-            await JsInvoke("EnableMapHover");
-        }
-
         public static async Task<Dimensions> MeasureText(string text, string font)
         {
             return await JsInvoke<Dimensions>("MeasureText", text, font);
@@ -100,20 +95,11 @@ namespace Treachery.Client
         {
             await JsInvoke("AddEnterListeners");
         }
-        /*public static async Task DetermineCanvas()
-        {
-            await JsInvoke("DetermineCanvas");
-        }*/
 
         public static async Task SetPlanetMapScale()
         {
             await JsInvoke("SetPlanetMapScale");
         }
-
-        /*public static async Task<Dimensions> GetMapDimensions()
-        {
-            return await JsInvoke<Dimensions>("GetMapDimensions");
-        }*/
 
         public static async Task<Dimensions> GetWindowDimensions()
         {
@@ -234,46 +220,6 @@ namespace Treachery.Client
             await _runtime.InvokeVoidAsync("ToggleFullScreen");
         }
 
-        /// <summary>
-        /// Sets the SVG contents of an image in the browser's DOM
-        /// </summary>
-        /// <param name="imageId"></param>
-        /// <param name="svg"></param>
-        /// <returns></returns>
-        /*public static async Task SetImageSVG(string imageId, string svg)
-        {
-            try
-            {
-                await JsInvoke<ElementReference>("SetImageSVG", imageId, svg);
-            }
-            catch (Exception e)
-            {
-                Support.Log(e);
-            }
-        }*/
-        /*
-        public static async Task CreateArrowImage(string arrowImageId, int marginX, int marginY, int radius, Point from, Point to, string arrowColor, string borderColor, float segmentScale)
-        {
-            try
-            {
-                int fromX = from.X - marginX - radius;
-                int fromY = from.Y - marginY - radius;
-                int fromZ = (int)Math.Pow(radius * radius - fromX * fromX - fromY * fromY, 0.5);
-                int toX = to.X - marginX - radius;
-                int toY = to.Y - marginY - radius;
-                int toZ = (int)Math.Pow(radius * radius - toX * toX - toY * toY, 0.5);
-
-                float[] fromP = new float[] { fromX, fromY, fromZ };
-                float[] toP = new float[] { toX, toY, toZ };
-
-                await JsInvoke("CreateArrowImage", arrowImageId, radius, fromP, toP, arrowColor, borderColor, segmentScale);
-            }
-            catch (Exception e)
-            {
-                Support.Log(e);
-            }
-        }
-        */
         public static async Task Print(string elementName)
         {
             try
