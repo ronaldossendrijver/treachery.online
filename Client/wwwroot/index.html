@@ -45,7 +45,7 @@
 
             return {
                 Width: metrics.width,
-                Height: metrics.height,
+                Height: metrics.fontBoundingBoxDescent,
             };
         }
         
@@ -74,22 +74,12 @@
         function RefreshPopovers() {
 
             $('.popover').popover('dispose');
-            $('.tooltip').tooltip('dispose');
             EnablePopovers();
         }
 
         function EnablePopovers() {
 
             $('[data-toggle="popover"]').popover({ sanitize: false });
-            $('[data-toggle="tooltip"]').tooltip({ sanitize: false });
-        }
-
-        function EnableMapHover() {
-
-            $("#mapdiv").on('mousemove', function (e) {
-                UpdateTooltip(e);
-            }
-            );
         }
         
         function SendChatMessage() {

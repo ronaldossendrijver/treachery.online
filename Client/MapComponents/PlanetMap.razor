@@ -23,7 +23,7 @@
 
             @foreach (var l in h.Game.Map.Locations.Where(l => l != Game.Map.HiddenMobileStronghold))
             {
-                <Location h="@h" ToShow="l" FillColor="transparent" FillOpacity="0" OnLocationClick="@OnLocationClick" />
+                <MapLocation h="@h" ToShow="l" FillColor="transparent" FillOpacity="0" OnLocationClick="@OnLocationClick" />
             }
             
             <HMS h="h" OnLocationClick="@OnLocationClick"/>

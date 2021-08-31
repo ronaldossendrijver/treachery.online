@@ -24,13 +24,13 @@
                 xOffset = 0;
                 if (battalion.AmountOfForces > 0)
                 {
-                    <Force X=@pos.X Y=@(yOffset + pos.Y) Special=@false Amount=@battalion.AmountOfForces Faction=@battalion.Faction Threatened=@threatened />
+                    <MapForce X=@pos.X Y=@(yOffset + pos.Y) Special=@false Amount=@battalion.AmountOfForces Faction=@battalion.Faction Threatened=@threatened />
                     xOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
                 }
 
                 if (battalion.AmountOfSpecialForces > 0)
                 {
-                    <Force X=@(pos.X + xOffset) Y=@(yOffset + pos.Y) Special=@true Amount=@battalion.AmountOfSpecialForces Faction=@battalion.Faction Threatened=@threatened />
+                    <MapForce X=@(pos.X + xOffset) Y=@(yOffset + pos.Y) Special=@true Amount=@battalion.AmountOfSpecialForces Faction=@battalion.Faction Threatened=@threatened />
                     xOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
                 }
 
@@ -44,7 +44,7 @@
             xOffset = 0;
             foreach (var hero in Game.LeaderState.Where(state => state.Key is IHero && state.Value.Alive && state.Value.CurrentTerritory == location.Territory).Select(state => state.Key))
             {
-                <Leader h="h" ToShow="hero" X=@(pos.X + xOffset - Skin.Current.FORCETOKEN_RADIUS) Y=@(yOffset + pos.Y - Skin.Current.FORCETOKEN_RADIUS) />
+                <MapLeader h="h" ToShow="hero" X=@(pos.X + xOffset - Skin.Current.FORCETOKEN_RADIUS) Y=@(yOffset + pos.Y - Skin.Current.FORCETOKEN_RADIUS) />
                 xOffset += 3 * Skin.Current.FORCETOKEN_RADIUS;
             }
         }

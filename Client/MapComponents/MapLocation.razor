@@ -1,12 +1,12 @@
 ﻿@using Treachery.Shared 
 @inherits MapComponent
 
-<Territory h="h" ToShow="@ToShow.Territory" FillColor="@FillColor" FillOpacity="@FillOpacity" StrokeColor="transparent" StrokeWidth="0" SpecificLocation="ToShow" Popover="@Intel(ToShow)" OnLocationClick="@OnLocationClick"/>
+<MapTerritory h="h" ToShow="@ToShow.Territory" FillColor="@FillColor" FillOpacity="@FillOpacity" StrokeColor="transparent" StrokeWidth="0" SpecificLocation="ToShow" Popover="@Intel(ToShow)" OnLocationClick="@OnLocationClick"/>
 
 @code {
 
     [Parameter]
-    public Treachery.Shared.Location ToShow { get; set; }
+    public Location ToShow { get; set; }
 
     [Parameter]
     public string FillColor { get; set; }

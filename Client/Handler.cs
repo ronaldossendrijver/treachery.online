@@ -278,7 +278,7 @@ namespace Treachery.Client
             {
                 try
                 {
-                    if (!await CheckDisconnect())
+                    if (!CheckDisconnect())
                     {
                         if (oldConnectionId == "")
                         {
@@ -312,7 +312,7 @@ namespace Treachery.Client
             }
         }
 
-        private async Task<bool> CheckDisconnect()
+        private bool CheckDisconnect()
         {
             if (_connection.State == HubConnectionState.Disconnected || DateTime.Now.Subtract(hostLastSeen).TotalMilliseconds > DISCONNECT_TIMEOUT)
             {
@@ -421,16 +421,7 @@ namespace Treachery.Client
             Skin.Current = Support.LoadSkin(skinData);
             await Skin.Current.ValidateAndFix(Browser.UrlExists);
 
-            //NEWMAP//MapDrawer.Loading = true;
             RefreshAll();
-            _ = Task.Delay(4000).ContinueWith(e => RedrawMapAfterSkinLoad());
-        }
-
-        private static async Task RedrawMapAfterSkinLoad()
-        {
-            //NEWMAP//MapDrawer.Loading = false;
-            //NEWMAP//MapDrawer.UpdateIntelligence();
-            //NEWMAP//await MapDrawer.Draw();
         }
 
         public bool IsPlayer
@@ -446,10 +437,6 @@ namespace Treachery.Client
         {
             get
             {
-                //Console.WriteLine("Player:" + _player + ", playername: " + PlayerName + ", in game: " + string.Join(",", Game.Players.Select(p => p.Name)));
-
-                //if (_player != null && Game.CurrentPhase > Phase.TradingFactions) return _player;
-
                 _player = Game.Players.SingleOrDefault(p => p.Name.ToLower().Trim() == PlayerName.ToLower().Trim());
 
                 if (_player != null) return _player;

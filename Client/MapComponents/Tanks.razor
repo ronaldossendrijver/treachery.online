@@ -17,13 +17,13 @@
         {
             if (p.ForcesKilled > 0)
             {
-                <Force X=@(x + Skin.Current.FORCETOKEN_RADIUS) Y=@(y + Skin.Current.FORCETOKEN_RADIUS) Special=@false Amount=@p.ForcesKilled Faction=@p.Faction />
+                <MapForce X=@(x + Skin.Current.FORCETOKEN_RADIUS) Y=@(y + Skin.Current.FORCETOKEN_RADIUS) Special=@false Amount=@p.ForcesKilled Faction=@p.Faction />
             }
 
             if (p.SpecialForcesKilled > 0)
             {
                 var dX = (p.ForcesKilled > 0) ? 2 * Skin.Current.FORCETOKEN_RADIUS : 0;
-                <Force X=@(x + Skin.Current.FORCETOKEN_RADIUS + dX) Y=@(y + Skin.Current.FORCETOKEN_RADIUS) Special=@true Amount=@p.SpecialForcesKilled Faction=@p.Faction />
+                <MapForce X=@(x + Skin.Current.FORCETOKEN_RADIUS + dX) Y=@(y + Skin.Current.FORCETOKEN_RADIUS) Special=@true Amount=@p.SpecialForcesKilled Faction=@p.Faction />
             }
 
             y += spacing * 2 * Skin.Current.FORCETOKEN_RADIUS;
@@ -51,7 +51,7 @@
                 }
                 else
                 {
-                    <Leader h="h" ToShow="leader" X=@(l.X + DisplaceX[corpseNr] * 2) Y=@(l.Y) Diameter="leaderDiameter"/>
+                    <MapLeader h="h" ToShow="leader" X=@(l.X + DisplaceX[corpseNr] * 2) Y=@(l.Y) Diameter="leaderDiameter"/>
                 }
 
                 dy += (int)leaderPctHeight;
