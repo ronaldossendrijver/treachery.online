@@ -405,10 +405,7 @@ namespace Treachery.Shared
                 Prevent(e.Initiator, e.Prevented);
             }
 
-            if (Version >= 42)
-            {
-                RevokeBattlePlansIfNeeded(e);
-            }
+            RevokeBattlePlansIfNeeded(e);
 
             if (Version >= 77 && e.Prevented == FactionAdvantage.BlueUsingVoice)
             {
@@ -505,21 +502,7 @@ namespace Treachery.Shared
             return PreventedAdvantages.Contains(advantage);
         }
 
-        public bool BribesDuringMentat
-        {
-            get
-            {
-                if (Version >= 41)
-                {
-                    return !Applicable(Rule.BribesAreImmediate);
-                }
-                else
-                {
-                    //In this version, the rule was "the other way around"
-                    return Applicable(Rule.BribesAreImmediate);
-                }
-            }
-        }
+        public bool BribesDuringMentat => !Applicable(Rule.BribesAreImmediate);
 
         public void HandleEvent(PlayerReplaced e)
         {

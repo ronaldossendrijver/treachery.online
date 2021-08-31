@@ -44,9 +44,9 @@ namespace Treachery.Shared
 
             if (AmountOfForces > p.ForcesKilled) return "You can't revive that much.";
             if (AmountOfSpecialForces > p.SpecialForcesKilled) return "You can't revive that much.";
-            if (Game.Version >= 23 && AmountOfForces + AmountOfSpecialForces > 3) return "You can't revive that much.";
-            if (Game.Version >= 32 && AmountOfSpecialForces > 1) return Skin.Current.Format("You can only revive one {0} per turn.", p.SpecialForce);
-            if (Game.Version >= 32 && AmountOfSpecialForces > 0 && Game.FactionsThatRevivedSpecialForcesThisTurn.Contains(Initiator)) return Skin.Current.Format("You already revived one {0} this turn.", p.SpecialForce);
+            if (AmountOfForces + AmountOfSpecialForces > 3) return "You can't revive that much.";
+            if (AmountOfSpecialForces > 1) return Skin.Current.Format("You can only revive one {0} per turn.", p.SpecialForce);
+            if (AmountOfSpecialForces > 0 && Game.FactionsThatRevivedSpecialForcesThisTurn.Contains(Initiator)) return Skin.Current.Format("You already revived one {0} this turn.", p.SpecialForce);
             if (AmountOfForces + AmountOfSpecialForces > 0 && Hero != null) return "You can't revive both forces and a leader";
 
             return "";

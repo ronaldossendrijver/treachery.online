@@ -194,7 +194,6 @@ namespace Treachery.Shared
                     break;
                 case Phase.WaitingForNextBiddingRound:
                     if (!isHost && faction == Faction.Green) result.Add(typeof(EndPhase));
-                    if (Version < 46 && faction == Faction.Grey) result.Add(typeof(GreySwappedCardOnBid));
                     break;
                 case Phase.BiddingReport:
                     if (faction == Faction.Purple && Players.Count > 1) result.Add(typeof(SetIncreasedRevivalLimits));
@@ -203,7 +202,7 @@ namespace Treachery.Shared
                     if (IsPlaying(Faction.Purple) && faction != Faction.Purple &&
                         (Version <= 78 || !HasActedOrPassed.Contains(faction)) &&
                         ValidFreeRevivalHeroes(player).Any() &&
-                        (Version < 50 || !Revival.NormallyRevivableHeroes(this, player).Any()) &&
+                        !Revival.NormallyRevivableHeroes(this, player).Any() &&
                         (Version < 102 || CurrentPurpleRevivalRequest == null)) result.Add(typeof(RequestPurpleRevival));
 
                     if (!HasActedOrPassed.Contains(faction) && HasSomethingToRevive(player)) result.Add(typeof(Revival));
@@ -350,22 +349,11 @@ namespace Treachery.Shared
                     break;
 
                 case Phase.MeltingRock:
-
                     if (RockWasMelted.CanBePlayed(this, player)) result.Add(typeof(RockWasMelted));
                     break;
 
                 case Phase.BattleConclusion:
-                    if (Version < 43)
-                    {
-                        if ((faction == AggressorBattleAction.Initiator && !HasActedOrPassed.Contains(faction)) || (faction == DefenderBattleAction.Initiator && !HasActedOrPassed.Contains(faction)))
-                        {
-                            result.Add(typeof(BattleConcluded));
-                        }
-                    }
-                    else
-                    {
-                        if (faction == BattleWinner) result.Add(typeof(BattleConcluded));
-                    }
+                    if (faction == BattleWinner) result.Add(typeof(BattleConcluded));
                     break;
 
                 case Phase.AvoidingAudit:

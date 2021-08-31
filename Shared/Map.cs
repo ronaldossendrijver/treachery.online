@@ -2,7 +2,6 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,8 +9,6 @@ namespace Treachery.Shared
 {
     public class Map
     {
-        public static bool CorrectForPreVersion46IssueWithHMS = false;
-
         public const int NUMBER_OF_SECTORS = 18;
 
         public List<Location> Locations { get; set; }
@@ -104,19 +101,6 @@ namespace Treachery.Shared
             }
         }
 
-        public int FindSector(int x, int y)
-        {
-            int radialPosition = (int)Math.Floor(Math.Atan2(y - Skin.Current.PlanetCenter.Y, x - Skin.Current.PlanetCenter.X) * NUMBER_OF_SECTORS / (-2 * Math.PI));
-            if (radialPosition >= 0)
-            {
-                return radialPosition + 6;
-            }
-            else
-            {
-                return (radialPosition + 24) % NUMBER_OF_SECTORS;
-            }
-        }
-
         public IEnumerable<Location> Strongholds
         {
             get
@@ -181,69 +165,6 @@ namespace Treachery.Shared
 
             return result;
         }
-
-        public Point GetPhaseMarkerPosition(Phase phase)
-        {
-            switch (phase)
-            {
-                case Phase.AwaitingPlayers:
-                case Phase.TradingFactions:
-                case Phase.BluePredicting:
-                case Phase.SelectingTraitors:
-                case Phase.YellowSettingUp:
-                case Phase.BlueSettingUp:
-                case Phase.MetheorAndStormSpell:
-                    return PhaseMarkerPositions[MainPhase.Storm];
-
-                case Phase.BlowA:
-                case Phase.BlowB:
-                case Phase.YellowSendingMonsterA:
-                case Phase.AllianceA:
-                case Phase.YellowRidingMonsterA:
-                case Phase.BlueIntrudedByYellowRidingMonsterA:
-                case Phase.YellowSendingMonsterB:
-                case Phase.AllianceB:
-                case Phase.YellowRidingMonsterB:
-                case Phase.BlueIntrudedByYellowRidingMonsterB:
-                case Phase.BlowReport:
-                    return PhaseMarkerPositions[MainPhase.Blow];
-
-                case Phase.ClaimingCharity:
-                    return PhaseMarkerPositions[MainPhase.Charity];
-
-                case Phase.Bidding:
-                    return PhaseMarkerPositions[MainPhase.Bidding];
-
-                case Phase.Resurrection:
-                    return PhaseMarkerPositions[MainPhase.Resurrection];
-
-                case Phase.NonOrangeShip:
-                case Phase.OrangeShip:
-                case Phase.BlueAccompaniesNonOrange:
-                case Phase.BlueAccompaniesOrange:
-                case Phase.BlueIntrudedByNonOrangeShip:
-                case Phase.BlueIntrudedByOrangeShip:
-                case Phase.NonOrangeMove:
-                case Phase.OrangeMove:
-                case Phase.BlueIntrudedByNonOrangeMove:
-                case Phase.BlueIntrudedByOrangeMove:
-                case Phase.ShipmentAndMoveConcluded:
-                    return PhaseMarkerPositions[MainPhase.ShipmentAndMove];
-
-                case Phase.BattlePhase:
-                case Phase.CallTraitorOrPass:
-                case Phase.BattleConclusion:
-                    return PhaseMarkerPositions[MainPhase.Battle];
-
-                case Phase.TurnConcluded:
-                case Phase.GameEnded:
-                    return PhaseMarkerPositions[MainPhase.Contemplate];
-
-                default:
-                    return PhaseMarkerPositions[MainPhase.Storm];
-            }
-        }
-
 
         private void InitializeLocations()
         {
@@ -1930,21 +1851,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    if (CorrectForPreVersion46IssueWithHMS)
-                    {
-                        if (id == 0)
-                        {
-                            return _map.HiddenMobileStronghold;
-                        }
-                        else
-                        {
-                            return _map.Locations[id - 1];
-                        }
-                    }
-                    else
-                    {
-                        return _map.Locations[id];
-                    }
+                    return _map.Locations[id];
                 }
             }
 
@@ -1956,21 +1863,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    if (CorrectForPreVersion46IssueWithHMS)
-                    {
-                        if (obj == _map.HiddenMobileStronghold)
-                        {
-                            return 0;
-                        }
-                        else
-                        {
-                            return obj.Id + 1;
-                        }
-                    }
-                    else
-                    {
-                        return obj.Id;
-                    }
+                    return obj.Id;
                 }
             }
         }

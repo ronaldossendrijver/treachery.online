@@ -126,11 +126,6 @@ namespace Treachery.Test
             WriteSavegameIfApplicable(g, typeof(RockWasMelted));
             WriteSavegameIfApplicable(g, typeof(AuditCancelled));
 
-            if (e is BattleInitiated bi && bi.Initiator == Faction.Green && bi.Target == Faction.Blue)
-            {
-                WriteSavegameIfApplicable(g, bi.Player, Skin.Current.Format("Voice versus Prescience"));
-            }
-
             if (e is Battle b && g.Skilled(b.Hero))
             {
                 WriteSavegameIfApplicable(g, b.Player, Skin.Current.Format("{0} in battle", g.Skill(b.Hero)));

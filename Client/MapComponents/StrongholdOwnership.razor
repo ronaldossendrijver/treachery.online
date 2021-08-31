@@ -7,7 +7,7 @@
         if (h.Game.StrongholdOwnership.ContainsKey(stronghold))
         {
             <Image X="@(stronghold.Center.X - 180)" Y="@(stronghold.Center.Y - 50)" Diameter=@(Skin.Current.PlayerTokenRadius) Src="@Skin.Current.FactionTableImage_URL[h.Game.StrongholdOwnership[stronghold]]" 
-                   ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="3" ShadowY="3" ShadowBlur="2" Opacity="0.8f" />
+                   ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="3" ShadowY="3" ShadowBlur="2" Opacity="0.8f" Popover=@Support.GetOwnedStrongholdHTML(stronghold, Game.StrongholdOwnership[stronghold])/>
         }
     }
 }

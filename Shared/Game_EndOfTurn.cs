@@ -420,7 +420,7 @@ namespace Treachery.Shared
                 Winners.Add(guild);
                 if (guild.Ally != Faction.None) Winners.Add(GetPlayer(guild.Ally));
             }
-            else if (Version >= 50 && fremen != null)
+            else if (fremen != null)
             {
                 CurrentReport.Add(Faction.Yellow, "{0} win because {1} is not playing and no one else won.", Faction.Yellow, Faction.Orange);
                 WinMethod = WinMethod.YellowSpecial;

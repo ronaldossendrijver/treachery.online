@@ -411,14 +411,7 @@ namespace Treachery.Shared
 
         private int LossesToTake(int AmountOfForces, int AmountOfSpecialForces)
         {
-            if (Version >= 57)
-            {
-                return (int)Math.Ceiling(0.5 * (AmountOfForces + AmountOfSpecialForces));
-            }
-            else
-            {
-                return (int)Math.Ceiling(0.5 * (AmountOfForces + AmountOfSpecialForces * 2));
-            }
+            return (int)Math.Ceiling(0.5 * (AmountOfForces + AmountOfSpecialForces));
         }
 
         public List<LossToTake> StormLossesToTake = new List<LossToTake>();

@@ -46,7 +46,7 @@ namespace Treachery.Shared
 
             var p = Player;
             if (!MayDonate(Game, Player)) return "You currently have an outstanding bid";
-            if (Game.Version >= 60 && Card == null && Resources <= 0) return "Invalid amount";
+            if (Card == null && Resources <= 0) return "Invalid amount";
             if (p.Resources < Resources) return "You can't give that much";
             if (Initiator != Faction.Red && Target == p.Ally) return "You can't bribe your ally";
 

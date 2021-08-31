@@ -759,11 +759,7 @@ namespace Treachery.Shared
                 else
                 {
                     CurrentReport.Add(initiator.Faction, "{0} prevented {1} from receiving an extra treachery card.", TreacheryCardType.Karma, initiator.Faction);
-
-                    if (Version >= 38)
-                    {
-                        if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.BlackFreeCard);
-                    }
+                    if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.BlackFreeCard);
                 }
             }
         }

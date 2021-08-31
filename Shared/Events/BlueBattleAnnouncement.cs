@@ -76,17 +76,6 @@ namespace Treachery.Shared
                     !t.Locations.Any(l => l.Sector == g.SectorInStorm && p.SpecialForcesIn(l) > 0));
                 }
             }
-            else if (g.Version < 59)
-            {
-                if (ally == null)
-                {
-                    return g.Map.Territories.Where(t => !IsStrongholdInStorm(g, t) && p.SpecialForcesIn(t) > 0);
-                }
-                else
-                {
-                    return g.Map.Territories.Where(t => !IsStrongholdInStorm(g, t) && p.SpecialForcesIn(t) > 0 && ally.AnyForcesIn(t) == 0);
-                }
-            }
             else
             {
                 if (ally == null)

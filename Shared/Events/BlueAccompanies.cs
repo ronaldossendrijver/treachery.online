@@ -58,7 +58,6 @@ namespace Treachery.Shared
 
             return
                 !g.Applicable(Rule.AdvisorsDontConflictWithAlly) &&
-                g.Version >= 38 &&
                 (ally != null) &&
                 ally.AnyForcesIn(g.LastShippedOrMovedTo.Territory) != 0;
         }

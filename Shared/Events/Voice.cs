@@ -128,26 +128,13 @@ namespace Treachery.Shared
             }
             else if (!g.Applicable(Rule.BlueVoiceMustNameSpecialCards))
             {
-                if (g.Version <= 63)
+                switch (voiced)
                 {
-                    switch (voiced)
-                    {
-                        case TreacheryCardType.Antidote: return cardType == TreacheryCardType.Chemistry || cardType == TreacheryCardType.ShieldAndAntidote;
-                        case TreacheryCardType.Shield: return cardType == TreacheryCardType.ShieldAndAntidote;
-                        case TreacheryCardType.Poison: return cardType == TreacheryCardType.PoisonTooth || cardType == TreacheryCardType.ProjectileAndPoison;
-                        case TreacheryCardType.Projectile: return cardType == TreacheryCardType.WeirdingWay || cardType == TreacheryCardType.ProjectileAndPoison;
-                    }
-                }
-                else
-                {
-                    switch (voiced)
-                    {
-                        case TreacheryCardType.PoisonDefense: return cardType == TreacheryCardType.Antidote || (!asWeapon && cardType == TreacheryCardType.Chemistry) || cardType == TreacheryCardType.ShieldAndAntidote;
-                        case TreacheryCardType.Poison: return cardType == TreacheryCardType.PoisonTooth || cardType == TreacheryCardType.ProjectileAndPoison;
-                        case TreacheryCardType.Shield: return cardType == TreacheryCardType.ShieldAndAntidote;
-                        case TreacheryCardType.ProjectileDefense: return cardType == TreacheryCardType.Shield || cardType == TreacheryCardType.ShieldAndAntidote;
-                        case TreacheryCardType.Projectile: return (asWeapon && cardType == TreacheryCardType.WeirdingWay) || cardType == TreacheryCardType.ProjectileAndPoison;
-                    }
+                    case TreacheryCardType.PoisonDefense: return cardType == TreacheryCardType.Antidote || (!asWeapon && cardType == TreacheryCardType.Chemistry) || cardType == TreacheryCardType.ShieldAndAntidote;
+                    case TreacheryCardType.Poison: return cardType == TreacheryCardType.PoisonTooth || cardType == TreacheryCardType.ProjectileAndPoison;
+                    case TreacheryCardType.Shield: return cardType == TreacheryCardType.ShieldAndAntidote;
+                    case TreacheryCardType.ProjectileDefense: return cardType == TreacheryCardType.Shield || cardType == TreacheryCardType.ShieldAndAntidote;
+                    case TreacheryCardType.Projectile: return (asWeapon && cardType == TreacheryCardType.WeirdingWay) || cardType == TreacheryCardType.ProjectileAndPoison;
                 }
             }
 

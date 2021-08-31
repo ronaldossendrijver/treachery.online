@@ -111,27 +111,21 @@ namespace Treachery.Shared
         SelectingFactions = 29,
         TradingFactions = 30,
 
-        [PhaseProperty(true, Faction.Blue)]
         BluePredicting = 50,
 
-        [PhaseProperty(true, Faction.Black)]
         BlackMulligan = 60,
 
         AssigningInitialSkills = 64,
         SelectingTraitors = 65,
         PerformCustomSetup = 66,
 
-        [PhaseProperty(true, Faction.Yellow)]
         YellowSettingUp = 70,
 
-        [PhaseProperty(true, Faction.Blue)]
         BlueSettingUp = 90,
 
         MetheorAndStormSpell = 95,
 
-        [PhaseProperty(true, Faction.Grey)]
         HmsPlacement = 100,
-        [PhaseProperty(true, Faction.Grey)]
         HmsMovement = 101,
 
         DiallingStorm = 105,
@@ -144,7 +138,6 @@ namespace Treachery.Shared
         BlowB = 130,
         HarvesterB = 135,
 
-        [PhaseProperty(true, Faction.Yellow)]
         YellowSendingMonsterA = 140,
 
         AllianceA = 150,
@@ -152,17 +145,13 @@ namespace Treachery.Shared
         YellowSendingMonsterB = 170,
         AllianceB = 180,
 
-        [PhaseProperty(true, Faction.Yellow)]
         YellowRidingMonsterB = 190,
 
         BlowReport = 194,
         ClaimingCharity = 195,
 
-        [PhaseProperty(true, Faction.Grey)]
         GreySelectingCard = 196,
-        [PhaseProperty(true, Faction.Grey)]
         GreyRemovingCardFromBid = 197,
-        [PhaseProperty(true, Faction.Grey)]
         GreySwappingCard = 198,
 
         Bidding = 200,
@@ -175,32 +164,21 @@ namespace Treachery.Shared
 
         NonOrangeShip = 220,
 
-        [PhaseProperty(true, Faction.Orange)]
         OrangeShip = 230,
 
-        [PhaseProperty(true, Faction.Blue)]
         BlueAccompaniesNonOrange = 240,
-        [PhaseProperty(true, Faction.Blue)]
         BlueAccompaniesOrange = 250,
-        [PhaseProperty(true, Faction.Blue)]
         BlueIntrudedByNonOrangeShip = 255,
-        [PhaseProperty(true, Faction.Blue)]
         BlueIntrudedByOrangeShip = 256,
 
         NonOrangeMove = 260,
 
-        [PhaseProperty(true, Faction.Orange)]
         OrangeMove = 270,
 
-        [PhaseProperty(true, Faction.Blue)]
         BlueIntrudedByNonOrangeMove = 280,
-        [PhaseProperty(true, Faction.Blue)]
         BlueIntrudedByOrangeMove = 290,
-        [PhaseProperty(true, Faction.Blue)]
         BlueIntrudedByCaravan = 295,
-        [PhaseProperty(true, Faction.Blue)]
         BlueIntrudedByYellowRidingMonsterA = 296,
-        [PhaseProperty(true, Faction.Blue)]
         BlueIntrudedByYellowRidingMonsterB = 297,
 
         ShipmentAndMoveConcluded = 299,
@@ -210,68 +188,40 @@ namespace Treachery.Shared
         CallTraitorOrPass = 310,
         AvoidingAudit = 312,
 
-        [PhaseProperty(true, Faction.Brown)]
         Auditing = 313,
 
         BattleConclusion = 315,
 
-        [PhaseProperty(true, Faction.Purple)]
         Facedancing = 320,
 
         BattleReport = 330,
 
         CollectionReport = 340,
 
-        [PhaseProperty(true, Faction.Black)]
         PerformingKarmaHandSwap = 350,
 
-        [PhaseProperty(true, Faction.Brown)]
         TradingCards = 351,
 
         Clairvoyance = 360,
 
-        [PhaseProperty(true, Faction.None)]
         SearchingDiscarded = 370,
 
-        [PhaseProperty(true, Faction.Purple)]
         ReplacingFaceDancer = 395,
 
         Contemplate = 398,
         TurnConcluded = 399,
         GameEnded = 400,
 
-        [PhaseProperty(true, Faction.White)]
         BlackMarketAnnouncement = 500,
-
         BlackMarketBidding = 501,
-
-        [PhaseProperty(true, Faction.White)]
         WhiteAnnouncingAuction = 505,
-
-        [PhaseProperty(true, Faction.White)]
         WhiteSpecifyingAuction = 506,
-
-        [PhaseProperty(true, Faction.White)]
         WhiteKeepingUnsoldCard = 507,
 
-        [PhaseProperty(true, Faction.None)]
         Bureaucracy = 508,
         AssigningSkill = 509,
         Thought = 510,
         MeltingRock = 511,
-    }
-
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-    public class PhasePropertyAttribute : Attribute
-    {
-        public bool Urgent;
-        public Faction FactionSpecific;
-
-        public PhasePropertyAttribute(bool urgent, Faction factionSpecific)
-        {
-            Urgent = urgent;
-            FactionSpecific = factionSpecific;
-        }
     }
 
     public enum Milestone : int

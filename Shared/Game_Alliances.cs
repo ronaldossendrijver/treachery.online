@@ -16,7 +16,6 @@ namespace Treachery.Shared
         public bool BlueAllyMayUseVoice { get; private set; } = false;
         public int RedWillPayForExtraRevival { get; private set; } = 0;
         public bool WhiteAllyMayUseNoField { get; private set; } = false;
-        //public int BrownWillPayForBattles { get; private set; } = 0;
         public bool YellowWillProtectFromShaiHulud { get; private set; } = false;
         public bool YellowAllowsThreeFreeRevivals { get; private set; } = false;
         public bool YellowSharesPrescience { get; private set; } = false;

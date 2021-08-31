@@ -20,43 +20,36 @@ namespace Treachery.Shared
 
         public bool WaitingForHost { get; set; } = false;
 
-        public GameStatus(Player player, bool isHost, string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<SequenceElement> waitingInSequence)
-        {
-            DescriptionWhenAwaited = descriptionWhenAwaited;
-            DescriptionWhenWaiting = descriptionWhenWaiting;
-            WaitingInSequence = waitingInSequence;
-        }
-
-        public GameStatus(Player player, bool isHost, string descriptionWhenAwaited, string descriptionWhenWaiting, Faction waitingForFaction) :
-            this(player, isHost, descriptionWhenAwaited, descriptionWhenWaiting, new Faction[] { waitingForFaction })
+        public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting, Faction waitingForFaction) :
+            this(descriptionWhenAwaited, descriptionWhenWaiting, new Faction[] { waitingForFaction })
         {
         }
 
-        public GameStatus(Player player, bool isHost, string descriptionWhenAwaited, string descriptionWhenWaiting, Player waitingForPlayer) :
-            this(player, isHost, descriptionWhenAwaited, descriptionWhenWaiting, new Faction[] { waitingForPlayer.Faction })
+        public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting, Player waitingForPlayer) :
+            this(descriptionWhenAwaited, descriptionWhenWaiting, new Faction[] { waitingForPlayer.Faction })
         {
         }
 
-        public GameStatus(Player player, bool isHost, string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Faction> waitingForFactions)
+        public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Faction> waitingForFactions)
         {
             DescriptionWhenAwaited = descriptionWhenAwaited;
             DescriptionWhenWaiting = descriptionWhenWaiting;
             WaitingForFactions = waitingForFactions;
         }
 
-        public GameStatus(Player player, bool isHost, string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Player> waitingForPlayers) :
-            this(player, isHost, descriptionWhenAwaited, descriptionWhenWaiting, waitingForPlayers.Select(p => p.Faction))
+        public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Player> waitingForPlayers) :
+            this(descriptionWhenAwaited, descriptionWhenWaiting, waitingForPlayers.Select(p => p.Faction))
         {
         }
 
-        public GameStatus(Player player, bool isHost, string descriptionWhenAwaited, string descriptionWhenWaiting)
+        public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting)
         {
             DescriptionWhenAwaited = descriptionWhenAwaited;
             DescriptionWhenWaiting = descriptionWhenWaiting;
             WaitingForHost = true;
         }
 
-        public GameStatus(Player player, bool isHost, string description)
+        public GameStatus(string description)
         {
             DescriptionWhenAwaited = description;
             DescriptionWhenWaiting = description;

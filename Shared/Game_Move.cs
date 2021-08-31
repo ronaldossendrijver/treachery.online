@@ -25,12 +25,8 @@ namespace Treachery.Shared
             RecentMoves.Clear();
             ReceiveGraveyardTechIncome();
             BeginningOfShipmentAndMovePhase = true;
-
-            if (Version >= 46)
-            {
-                FactionsWithIncreasedRevivalLimits = new Faction[] { };
-                AllowedEarlyRevivals.Clear();
-            }
+            FactionsWithIncreasedRevivalLimits = new Faction[] { };
+            AllowedEarlyRevivals.Clear();
 
             ShipsTechTokenIncome = false;
             CurrentFreeRevivalPrevention = null;

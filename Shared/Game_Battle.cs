@@ -626,7 +626,7 @@ namespace Treachery.Shared
 
         private void ReplaceForces(FaceDanced f, Player initiator)
         {
-            if (Version < 56 || Version >= 80)
+            if (Version >= 80)
             {
                 var winner = GetPlayer(BattleWinner);
                 int nrOfRemovedForces = winner.AnyForcesIn(CurrentBattle.Territory);

@@ -342,7 +342,7 @@ namespace Treachery.Shared
         public override string Validate()
         {
             var p = Player;
-            if (Game.Version >= 56 && (Forces < 0 || ForcesAtHalfStrength < 0 || SpecialForces < 0 || SpecialForcesAtHalfStrength < 0)) return string.Format("Invalid number of forces {0} {1} {2} {3}.", Forces, ForcesAtHalfStrength, SpecialForces, SpecialForcesAtHalfStrength);
+            if (Forces < 0 || ForcesAtHalfStrength < 0 || SpecialForces < 0 || SpecialForcesAtHalfStrength < 0) return string.Format("Invalid number of forces {0} {1} {2} {3}.", Forces, ForcesAtHalfStrength, SpecialForces, SpecialForcesAtHalfStrength);
             if (Forces + ForcesAtHalfStrength > MaxForces(Game, p, false)) return Skin.Current.Format("Too many {0} selected.", p.Force);
             if (SpecialForces + SpecialForcesAtHalfStrength > MaxForces(Game, p, true)) return Skin.Current.Format("Too many {0} selected.", p.SpecialForce);
             if (AllyContributionAmount > MaxAllyResources(Game, p, Forces, SpecialForces)) return "Your ally won't pay that much";

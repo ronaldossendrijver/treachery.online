@@ -46,7 +46,7 @@ namespace Treachery.Shared
             var p = Player;
 
             if (AmountOfForces < 0 || AmountOfSpecialForces < 0) return "You can't revive a negative amount of forces.";
-            if (Game.Version >= 60 && AmountOfForces <= 0 && AmountOfSpecialForces <= 0 && Hero == null) return "Select forces or a leader to revive.";
+            if (AmountOfForces <= 0 && AmountOfSpecialForces <= 0 && Hero == null) return "Select forces or a leader to revive.";
 
             if (AmountOfForces > p.ForcesKilled) return "You can't revive that much.";
             if (AmountOfSpecialForces > p.SpecialForcesKilled) return "You can't revive that much.";
@@ -56,8 +56,8 @@ namespace Treachery.Shared
             int limit = Game.GetRevivalLimit(Game, p);
 
             if (AmountOfForces + AmountOfSpecialForces > limit + emperorRevivals) return "You can't revive that much.";
-            if (Game.Version >= 32 && Initiator != Faction.Grey && AmountOfSpecialForces > 1) return Skin.Current.Format("You can't revive more than one {0} per turn.", p.SpecialForce);
-            if (Game.Version >= 32 && AmountOfSpecialForces > 0 && Initiator != Faction.Grey && Game.FactionsThatRevivedSpecialForcesThisTurn.Contains(Initiator)) return Skin.Current.Format("You already revived one {0} this turn.", p.SpecialForce);
+            if (Initiator != Faction.Grey && AmountOfSpecialForces > 1) return Skin.Current.Format("You can't revive more than one {0} per turn.", p.SpecialForce);
+            if (AmountOfSpecialForces > 0 && Initiator != Faction.Grey && Game.FactionsThatRevivedSpecialForcesThisTurn.Contains(Initiator)) return Skin.Current.Format("You already revived one {0} this turn.", p.SpecialForce);
 
             var costOfRevival = DetermineCost(Game, p, Hero, AmountOfForces, AmountOfSpecialForces);
             if (costOfRevival.TotalCostForPlayer > p.Resources) return "You can't pay that much.";
@@ -121,7 +121,7 @@ namespace Treachery.Shared
 
                 if (p.Is(Faction.Green) && !g.IsAlive(LeaderManager.Messiah))
                 {
-                    if (g.Version < 43 || g.LeaderState[LeaderManager.Messiah].DeathCounter == lowestDeathCount && !g.LeaderState[LeaderManager.Messiah].Alive)
+                    if (g.LeaderState[LeaderManager.Messiah].DeathCounter == lowestDeathCount && !g.LeaderState[LeaderManager.Messiah].Alive)
                     {
                         result.Add(LeaderManager.Messiah);
                     }

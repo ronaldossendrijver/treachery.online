@@ -46,12 +46,12 @@ namespace Treachery.Shared
             ResourceCardDiscardPileA = new Deck<ResourceCard>(Random);
             ResourceCardDiscardPileB = new Deck<ResourceCard>(Random);
 
-            OrangeAllyMayShipAsGuild = Version >= 45;
-            PurpleAllyMayReviveAsPurple = Version >= 45;
-            GreyAllyMayReplaceCards = Version >= 45;
+            OrangeAllyMayShipAsGuild = true;
+            PurpleAllyMayReviveAsPurple = true;
+            GreyAllyMayReplaceCards = true;
             RedWillPayForExtraRevival = 0;
-            YellowWillProtectFromShaiHulud = Version >= 45;
-            YellowAllowsThreeFreeRevivals = Version >= 45;
+            YellowWillProtectFromShaiHulud = true;
+            YellowAllowsThreeFreeRevivals = true;
             YellowSharesPrescience = Version > 78;
             GreenSharesPrescience = Version > 78;
             BlueAllyMayUseVoice = Version > 78;
@@ -180,8 +180,6 @@ namespace Treachery.Shared
             {
                 p.Faction = inPlay.Draw();
             }
-
-            Map.CorrectForPreVersion46IssueWithHMS = IsPlaying(Faction.Grey) && Version < 46;
 
             if (IsPlaying(Faction.White))
             {
