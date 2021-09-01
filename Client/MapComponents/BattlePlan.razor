@@ -13,7 +13,7 @@
         int forceY = TopMargin + Skin.Current.BattleWheelForcesY;
 
         <MapText ToShow="@dial"
-                 X="@(forceX)" Y="@(forceY)"
+                 X="@(forceX)" Y="@(forceY - 40)"
                  Font="@Skin.Current.WHEEL_FONT" FontColor="@Skin.Current.WHEEL_FONTCOLOR"
                  BorderWidth="Skin.Current.WHEEL_FONT_BORDERWIDTH" BorderColor="@(IsAggressor ? Skin.Current.WHEEL_FONT_AGGRESSOR_BORDERCOLOR : Skin.Current.WHEEL_FONT_DEFENDER_BORDERCOLOR)"
                  Align="@TextAlignment.Center" />
@@ -30,7 +30,7 @@
             <Image X="@(forceX + 250 - Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY + 50 - Skin.Current.RESOURCETOKEN_RADIUS)" Diameter="@(Skin.Current.RESOURCETOKEN_RADIUS * 2)" Src="@Skin.Current.Harvester_URL" ShadowColor="Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1" />
 
             <MapText ToShow="@costsOfBattle.ToString()"
-                     X="@(forceX + 250)" Y="@(forceY + 75)"
+                     X="@(forceX + 250)" Y="@(forceY + 100)"
                      Font="@Skin.Current.RESOURCETOKEN_FONT" FontColor="@Skin.Current.RESOURCETOKEN_FONTCOLOR"
                      BorderWidth="Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
                      Align="@TextAlignment.Center" />
@@ -60,7 +60,7 @@
                 var skill = heroSkill != LeaderSkill.None ? heroSkill : playerSkill;
 
                 int skillLeftMargin = LeftMargin + Skin.Current.BattleScreenHeroX - (int)(0.5f * (Skin.Current.BattleWheelCardWidth - Skin.Current.BattleWheelHeroWidth));
-                int skillTopMargin = TopMargin + Skin.Current.BattleScreenHeroY - Skin.Current.BattleWheelCardHeight + 120;
+                int skillTopMargin = TopMargin + Skin.Current.BattleScreenHeroY - Skin.Current.BattleWheelCardHeight + 300;
 
                 <Image X="@(skillLeftMargin)" Y="@(skillTopMargin)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageURL(skill)" 
                        ShadowColor="Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="1" 

@@ -21,6 +21,7 @@ namespace Treachery.Shared
         public int GreySpecialForceLossesToTake { get; private set; }
 
         public int NrOfBattlesFought = 0;
+        private TriggeredBureaucracy BattleTriggeredBureaucracy { get; set; }
 
         private void EnterBattlePhase()
         {
@@ -362,6 +363,12 @@ namespace Treachery.Shared
             CaptureLeaderIfApplicable();
             FlipBeneGesseritWhenAlone();
             DetermineAudit();
+
+            if (BattleTriggeredBureaucracy != null)
+            {
+                ApplyBureaucracy(BattleTriggeredBureaucracy.PaymentFrom, BattleTriggeredBureaucracy.PaymentTo);
+                BattleTriggeredBureaucracy = null;
+            }
         }
 
         private void ActivateSandmasterIfApplicable(Battle plan)
@@ -844,6 +851,7 @@ namespace Treachery.Shared
             BattleWinner = Faction.None;
             BattleLoser = Faction.None;
             HasActedOrPassed.Clear();
+            BattleTriggeredBureaucracy = null;
         }
 
         public void ResolveBattle(BattleInitiated b, Battle agg, Battle def, TreacheryCalled aggtrt, TreacheryCalled deftrt)
@@ -1218,7 +1226,7 @@ namespace Treachery.Shared
 
                             if (receiverProfit >= 5)
                             {
-                                ApplyBureaucracy(p.Faction, Faction.Brown);
+                                BattleTriggeredBureaucracy = new TriggeredBureaucracy() { PaymentFrom = p.Faction, PaymentTo = Faction.Brown };
                             }
                         }
                         else

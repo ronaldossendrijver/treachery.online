@@ -624,6 +624,8 @@ namespace Treachery.Shared
                 Rule.BlueBot => Format("{0}Bot", Faction.Blue),
                 Rule.YellowBot => Format("{0}Bot", Faction.Yellow),
                 Rule.GreyBot => Format("{0}Bot", Faction.Grey),
+                Rule.BrownBot => Format("{0}Bot", Faction.Brown),
+                Rule.WhiteBot => Format("{0}Bot", Faction.White),
                 Rule.BotsCannotAlly => "Bots may not initiate alliances",
                 Rule.CardsCanBeTraded => Format("Allow players to give cards to each other"),
                 Rule.PlayersChooseFactions => Format("Let players choose their factions at start"),

@@ -722,8 +722,6 @@ namespace Treachery.Shared
 
         private TreacheryCard Discard(Player player, TreacheryCardType cardType)
         {
-            //Console.WriteLine("Discard Pile pre: {0}", Skin.Current.Join(TreacheryDiscardPile.Items));
-
             TreacheryCard card = null;
             if (cardType == TreacheryCardType.Karma && player.Is(Faction.Blue))
             {
@@ -742,8 +740,6 @@ namespace Treachery.Shared
             {
                 CurrentReport.Add("{0} not found", cardType);
             }
-
-            //Console.WriteLine("Discarded: {0}, discard Pile post: {1}", card, Skin.Current.Join(TreacheryDiscardPile.Items));
 
             return card;
         }

@@ -545,14 +545,14 @@ namespace Treachery.Shared
         {
             if (!BureaucratWasUsedThisPhase)
             {
-                var bureaucrat = PlayerSkilledAs(LeaderSkill.Bureaucrat);
+                 var bureaucrat = PlayerSkilledAs(LeaderSkill.Bureaucrat);
                 if (bureaucrat != null && bureaucrat.Faction != payer && bureaucrat.Faction != receiver)
                 {
                     BureaucratWasUsedThisPhase = true;
                     _phaseBeforeBureaucratWasActivated = CurrentPhase;
                     TargetOfBureaucracy = receiver;
                     Enter(Phase.Bureaucracy);
-                }
+                 }
             }
         }
 
@@ -590,5 +590,11 @@ namespace Treachery.Shared
             CurrentPlanetology = e;
         }
 
+    }
+
+    class TriggeredBureaucracy
+    {
+        internal Faction PaymentFrom;
+        internal Faction PaymentTo;
     }
 }

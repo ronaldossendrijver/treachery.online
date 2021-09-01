@@ -77,8 +77,6 @@ namespace Treachery.Shared
 
             if (g.Version >= 100 && g.CurrentPhase == Phase.Bidding && g.CurrentBid != null && g.CurrentBid.AllyContributionAmount > 0 && g.CurrentBid.Player.Ally == p.Faction) return false;
 
-            if (g.CurrentPhase == Phase.ClaimingCharity && p.Faction == Faction.Brown) return false;
-
             return true;
         }
 

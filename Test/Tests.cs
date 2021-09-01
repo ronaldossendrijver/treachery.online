@@ -83,7 +83,6 @@ namespace Treachery.Test
 
             if (g.SkillDeck != null)
             {
-
                 var allCards = g.SkillDeck.Items.Concat(g.LeaderState.Where(ls => ls.Value.Skill != LeaderSkill.None).Select(ls => ls.Value.Skill)).ToArray();
 
                 if (allCards.Any(item => allCards.Count(c => c == item) > 1))
@@ -125,6 +124,24 @@ namespace Treachery.Test
             WriteSavegameIfApplicable(g, typeof(Retreat));
             WriteSavegameIfApplicable(g, typeof(RockWasMelted));
             WriteSavegameIfApplicable(g, typeof(AuditCancelled));
+
+            if (g.CurrentPhase == Phase.ReplacingCardJustWon)
+            {
+                if (g.CardJustWon == g.CardSoldOnBlackMarket)
+                {
+                    WriteSavegameIfApplicable(g, g.GetPlayer(Faction.Grey).AlliedPlayer, Skin.Current.Format("REPLACING black market card"));
+                }
+
+                if (g.CardJustWon.Rule == Rule.WhiteTreacheryCards)
+                {
+                    WriteSavegameIfApplicable(g, g.GetPlayer(Faction.Grey).AlliedPlayer, Skin.Current.Format("REPLACING richese card"));
+                }
+            }
+
+            if (e is Bureaucracy bc)
+            {
+                WriteSavegameIfApplicable(g, bc.Player, Skin.Current.Format("Bureaucracy during {0}", g.CurrentMainPhase));
+            }
 
             if (e is Battle b && g.Skilled(b.Hero))
             {
