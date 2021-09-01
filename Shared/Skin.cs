@@ -1138,10 +1138,8 @@ namespace Treachery.Shared
                 <h5>Basic Advantages</h5>
                 <p>You have alternative technology.</p>
                 <p><strong>Bidding:</strong> when drawing Treachery cards up for bid, one less card is drawn and instead you choose to auction a {35} card from your cache first or last. When it is time to auction that card, you choose and reveal the card to auction from your cache and the type of auction (Once Around or Silent). You collect payment on your cards sold to other factions. If you buy any, the {16} goes to the {2} or the {16} Bank normally. Whenever discarded, they go to the normal discard pile. Your cards can’t be bought or acquired with {19}.</p>
-                <ul>
                 <p><i>Once Around Auction:</i> pick clockwise or counter-clockwise, and starting with the faction on one side of you, each player able to bid may pass or bid higher. You bid last and the highest bidder buys the card. If everyone else passes, you may get the card for free or remove it from the game.</p>
                 <p><i>Silent Auction:</i> all factions able to bid secretly choose an amount to bid ot pass. Choices are revealed simultaneously. The faction that bid to most wins the card (ties break according to Storm order). If all factions pass or bid zero {16}, you may either gain the card for free or remove it from the game.</p>
-                </ul>
                 <p><strong>Shipping:</strong> instead of normal shipping, you may ship one of your No-Field tokens (0, 3 or 5) face down, paying for one force. Other factions do not know how many of your forces are located there, but must proceed as if at least one is there. You may reveal a No-Field token at any time, placing the indicated number of forces from your reserves (or up to that amount if you have fewer forces left). You may move a No-Field token like a force.</p>
                 <p>You may not have two No-Field tokens on the planet at the same time. You may not use the same No-Field token twice in a row. The last used token is faceup in front of your shield until another one is used.</p>
                 <p>When you are in a battle, you must reveal a No-Field token in that territory when revealing your Battle Plan and place the number of forces indicated by the No-Field token from your reserves (or up to that amount if you have fewer forces left). When you are in a Battle with a No-Field token, {0} may not see your number dialed.</p>
@@ -1151,14 +1149,14 @@ namespace Treachery.Shared
               @"<h5>Advanced Advantages</h5>" : "") +
 
               (g.Applicable(Rule.WhiteBlackMarket) ?
-              @"<p><strong>Black Market:</strong> at the start of the Bidding Round, you may offer one Treachery card from your hand up for auction. You may announce what you are selling, and you may lie, but you keep the card face down (although {0} may still look). Cards you offer from your hand may be auctioned the normal way, or via your alternative auction methods. If no player bids any {16} for your card you must keep it. If a card from your hand is sold, one fewer Treachery card is put up for auction as part of the normal Bidding Round. You collect payments on Black Market cards sold to other factions. If you buy any, the {16} goes to the {2} or the {16} Bank normally. {19} cards can not be used to acquire Black Market cards. Any bids on Black Market cards using the normal bidding method use storm order, and normal bidding resumes wherever any normal bidding left off.</p>" : "") +
+              @"<p><strong>Black Market:</strong> at the start of the Bidding Round, you may offer one Treachery card from your hand up for auction. You may announce what you are selling (you may lie) and keep the card face down ({0} may still look). The card may be auctioned the normal way or via your alternative auction methods. If no player bids you keep the card. If it is sold, one fewer Treachery card is put up for auction as part of the normal Bidding Round. You collect payments on Black Market cards sold to other factions. If you buy any, the {16} goes to the {2} or the {16} Bank normally. {19} cards can not be used to acquire Black Market cards. Any bids on Black Market cards using the normal bidding method use storm order, and normal bidding resumes wherever it left off.</p>" : "") +
 
               (g.Applicable(Rule.AdvancedKarama) ?
               @"<p><strong>Special {19}:</strong> you may buy a card from your separate cache for 3 {16} at any time.</p>" : "") +
 
               @"<h5>Alliance Powers</h5>
-                <p>You may offer to ship an ally’s forces from off-planet using one of your available No-Field tokens, revealing the forces immediately upon shipping. Place the used No-Field token faceup in front of your shield until you place another No-Field token.</p>
-                <p>You may also give your ally a {35} Treachery Card that is in your hand at any time.</p>
+                <p>Your ally may ship using one of your available No-Field tokens, revealing immediately upon shipping. Place the used No-Field token faceup in front of your shield until you place another No-Field token.</p>
+                <p>You may also give your ally a {35} Card from your hand at any time.</p>
                 <h5>Strategy</h5>
                 <p>To Do</p>
                 </div>";
@@ -1177,16 +1175,13 @@ namespace Treachery.Shared
                 <p><strong>Charity:</strong> each turn, you collect 2 {16} for each faction in the game during {36} Charity before any factions collect. If another faction collects {36} Charity, it is paid to them from your {16}.</p>
                 <p><strong>Revival:</strong> you have no free revival, but you have no limit to the number of forces you may pay to revive, and it only costs you 1 {16} for each force.</p>
                 <p><strong>Treachery:</strong> You may hold up to 5 Treachery Cards. At the end of any phase, you may reveal duplicates of the same card from your hand, and discard the surplus ones for 3 {16} each. You may also discard {14} cards for 2 {16} for each. Alternatively, you may use {14} cards for special effects in the following manner:</p>
-                <ul>
-                <p><i>{37}</i> - Prevent a player from moving forces into a territory you occupy during Shipment and Movement. They may ship in normally.</p>
+                <p><i>{37}</i> - Prevent a player from moving forces into a territory you occupy during Ship & Move. They may ship in normally.</p>
                 <p><i>{38}</i> - Prevent a loss of your forces in one territory to the Storm when it moves.</p>
                 <p><i>{39}</i> - Prevent a player from playing a {19} card this phase as they attempt to do so.</p>
                 <p><i>{40}</i> - Move your forces one extra territory on your turn in Shipping and Movement.</p>
                 <p><i>{41}</i> - Prevent a player from taking Free Revival during Revival.</p>
                 <p><i>{42}</i> - Force a player to send 1 force of your choice from one territory to their reserves during the Mentat Pause.</p>
-                </ul>
-                <p><p>Economics:</strong> during the Mentat Pause, you may play your Economics token with either the Double or Cancel side face up. In the following game turn, the amount collected for {36} Charity (including what you collect from your Charity advantage) is either doubled or canceled for that turn (even for {5} in the advanced game). In the next Mentat Pause, flip the Economics token to the other side. If the token has already been flipped it is removed from the game instead.</p>
-                <p><string>{3} Special Victory Condition:</strong> {35} counts as one of the factions that can not occupy {8} in order to fulfill the {3} Special Victory Condition.</p>" +
+                <p><p>Economics:</strong> during the Mentat Pause, you may play your Economics token with either the Double or Cancel side face up. In the following game turn, the amount collected for {36} Charity (including what you collect from your Charity advantage) is either doubled or canceled for that turn (even for {5} in the advanced game). In the next Mentat Pause, flip the Economics token to the other side. If the token has already been flipped it is removed from the game instead.</p>" +
 
               (advancedApplies ?
               @"<h5>Advanced Advantages</h5>" : "") +

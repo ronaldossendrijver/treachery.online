@@ -2,7 +2,8 @@
 
 @if (Popover != null)
 {
-    <img @onclick="@OnClick" title="@Title" style="@Style" src=@Src data-trigger="hover" data-toggle="popover" data-html="true" data-animation="false" data-delay="50" data-container="body" data-content="@Popover" data-template="@PopoverTemplate"/>
+    <img @onclick="@OnClick" title="@Title" style="@Style" src=@Src 
+         data-trigger="hover" data-toggle="popover" data-html="true" data-animation="false" data-delay="50" data-container="body" data-content="@Popover" data-template="@PopoverTemplate" />
 }
 else
 {
