@@ -337,7 +337,7 @@ namespace Treachery.Shared
             {
                 int allyResources = Ally != Faction.None ? AlliedPlayer.Resources : 0;
 
-                if (Game.CurrentTurn > 1 && Game.CurrentPhase == Phase.ClaimingCharity && Opponents.Sum(p => p.Resources) > 10 && Opponents.Sum(p => p.Resources) > (Opponents.Count() + 1) * (Resources + allyResources))
+                if (Game.CurrentTurn > 1 && Game.CurrentMainPhase == MainPhase.Bidding && Opponents.Sum(p => p.Resources) > 10 && Opponents.Sum(p => p.Resources) > (Opponents.Count() + 1) * (Resources + allyResources))
                 {
                     return new AmalPlayed(Game) { Initiator = Faction };
                 }

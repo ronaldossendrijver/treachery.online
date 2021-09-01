@@ -356,6 +356,8 @@ namespace Treachery.Client
 
         public async Task PerformBotEvent()
         {
+            awaitingBotAction = false;
+
             if (!BotsArePaused && Game.CurrentPhase > Phase.AwaitingPlayers)
             {
                 var bots = Deck<Player>.Randomize(Game.Players.Where(p => p.IsBot));
@@ -748,11 +750,12 @@ namespace Treachery.Client
             Refresh();
         }
 
+        private bool awaitingBotAction;
         private void PerformBotAction()
         {
-            if (Game.Players.Any(p => p.IsBot))
+            if (!awaitingBotAction && Game.Players.Any(p => p.IsBot))
             {
-                int botDelay = 1000;
+                int botDelay = 1200;
                 if (Game.CurrentPhase == Phase.Clairvoyance || Game.CurrentPhase == Phase.OrangeMove || Game.CurrentPhase == Phase.NonOrangeMove || Game.CurrentPhase == Phase.OrangeShip || Game.CurrentPhase == Phase.NonOrangeShip) botDelay = 4000;
                 else if (Game.CurrentPhase == Phase.Resurrection || Game.CurrentPhase == Phase.BluePredicting || Game.CurrentPhase == Phase.BlueAccompaniesNonOrange || Game.CurrentPhase == Phase.BlueAccompaniesOrange || Game.CurrentPhase == Phase.BlueIntrudedByNonOrangeShip || Game.CurrentPhase == Phase.BlueIntrudedByNonOrangeMove || Game.CurrentPhase == Phase.BlueIntrudedByCaravan || Game.CurrentPhase == Phase.BlueIntrudedByOrangeShip || Game.CurrentPhase == Phase.BlueIntrudedByOrangeMove || Game.CurrentPhase == Phase.HmsMovement || Game.CurrentPhase == Phase.HmsPlacement) botDelay = 2000;
                 else if (Game.CurrentPhase == Phase.YellowRidingMonsterA || Game.CurrentPhase == Phase.YellowRidingMonsterB || Game.CurrentPhase == Phase.YellowSendingMonsterA || Game.CurrentPhase == Phase.YellowSendingMonsterB) botDelay = 4000;
@@ -762,6 +765,7 @@ namespace Treachery.Client
                 else if (Game.CurrentPhase == Phase.BattlePhase) botDelay = 4000;
                 else if (Game.CurrentPhase == Phase.CallTraitorOrPass || Game.CurrentPhase == Phase.BattleConclusion || Game.CurrentPhase == Phase.Facedancing) botDelay = 10000;
 
+                awaitingBotAction = true;
                 _ = Task.Delay(botDelay).ContinueWith(e => PerformBotEvent());
             }
         }

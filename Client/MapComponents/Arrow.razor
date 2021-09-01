@@ -3,12 +3,12 @@
 @inherits MapComponent
  
 <defs>
-    <path id="pijl" d="M-50,-50L0,0L-50,50L0,100L100,0L0,-100L-50,-50Z" fill="@FillColor" fill-opacity="@FillOpacity" stroke="@StrokeColor" stroke-width="@StrokeWidth" stroke-linejoin="round" transform="scale(@Scale)" />
-    <linearGradient id="Gradient-1" x1="20%" y1="30%" x2="40%" y2="80%">
+    <path id="@ArrowTemplateId" d="M-50,-50L0,0L-50,50L0,100L100,0L0,-100L-50,-50Z" fill="@FillColor" fill-opacity="@Round(FillOpacity)" stroke="@StrokeColor" stroke-width="@Round(StrokeWidth)" stroke-linejoin="round" transform="scale(@Round(Scale))" />
+    <linearGradient id="ArrowGradient" x1="20%" y1="30%" x2="40%" y2="80%">
         <stop offset="0%" stop-color="#B8D0DE"></stop>
         <stop offset="100%" stop-color="#73A2BD"></stop>
     </linearGradient>
-    <filter id="dropshadow" xmlns="http://www.w3.org/2000/svg" height="200%" width="200%">
+    <filter id="ArrowShadow" xmlns="http://www.w3.org/2000/svg" height="200%" width="200%">
         <feGaussianBlur in="SourceAlpha" stdDeviation="@(ShadowBlur)" />
         <feOffset dx="@(ShadowDistance)" dy="@(ShadowDistance)" result="offsetblur" />
         <feComponentTransfer>
@@ -31,7 +31,7 @@
     var y2 = Radius * (u[1] * Math.Cos(t2) + v[1] * Math.Sin(t2));
     var alpha = -Math.Atan2((x2 - x), (y2 - y)) / Math.PI * 180 + 90;
 
-    <g transform="translate(@Round(x + Radius),@Round(y + Radius)) rotate(@(alpha))" filter="url(#dropshadow)" fill="url(#Gradient-1)"><use xlink:href="#pijl" /></g>
+    <g transform="translate(@Round(x + Radius),@Round(y + Radius)) rotate(@Round(alpha))" filter="url(#ArrowShadow)" fill="url(#ArrowGradient)"><use href="#@ArrowTemplateId" /></g>
 }
 
 @code {
@@ -121,4 +121,6 @@
     }
 
     private float length(float[] vector) => (float)Math.Sqrt(vector.Select(v => v * v).Sum());
+
+    private string ArrowTemplateId => "arrowtemplate" + Id;
 }

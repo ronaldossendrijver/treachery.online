@@ -63,7 +63,8 @@
                 int skillTopMargin = TopMargin + Skin.Current.BattleScreenHeroY - Skin.Current.BattleWheelCardHeight + 120;
 
                 <Image X="@(skillLeftMargin)" Y="@(skillTopMargin)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageURL(skill)" 
-                       ShadowColor="Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="1" />
+                       ShadowColor="Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="1" 
+                       Popover="@Support.GetSkillCardHoverHTML(skill)"/>
 
                 int bonus = Battle.DetermineSkillBonus(Game, Plan, out _);
                 if (bonus != 0)

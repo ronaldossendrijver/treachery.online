@@ -637,6 +637,6 @@ namespace Treachery.Shared
             CurrentMoment == MainPhaseMoment.Start &&
             (CurrentMainPhase == MainPhase.Bidding && CurrentMainPhase == MainPhase.ShipmentAndMove);
 
-        private bool ConsiderAsStartOfPhase => CurrentMoment == MainPhaseMoment.Start || Version < 109 && CurrentMoment == MainPhaseMoment.End;
+        private bool ConsiderAsStartOfPhase => CurrentMoment == MainPhaseMoment.Start || (CurrentMainPhase == MainPhase.Blow && CurrentMoment == MainPhaseMoment.End) || Version < 109 && CurrentMoment == MainPhaseMoment.End;
     }
 }

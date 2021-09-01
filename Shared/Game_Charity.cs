@@ -50,6 +50,8 @@ namespace Treachery.Shared
                 }
             }
 
+            MainPhaseMiddle();
+
             Enter(Phase.ClaimingCharity);
         }
 

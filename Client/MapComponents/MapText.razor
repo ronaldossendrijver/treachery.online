@@ -36,9 +36,9 @@
     protected override async Task OnParametersSetAsync()
     {
         var textDimensions = await Browser.MeasureText(ToShow, Font);
+
         TextWidth = textDimensions.Width;
         TextHeight = textDimensions.Height;
-        //Console.WriteLine("Dimensions of text '{0}' in font '{1}': {2} x {3}", ToShow, Font, TextWidth, TextHeight);
 
         AlignedX = Align switch
         {
