@@ -7,7 +7,6 @@
 @using Treachery.Client.GenericComponents;
 @using Treachery.Client.OtherComponents;
 @using Treachery.Client.MapComponents;
-@using Blazor.Extensions.Canvas;
 @using Microsoft.Extensions.Logging;
 
 @inject NavigationManager NavigationManager
@@ -19,11 +18,11 @@
     <!--Empty Column-->
     @if (h.IsObserver)
     {
-        <div class="col-sm-1 col-lg-1 col-xl-1" />
+        <div class="col-sm-1 col-lg-1 col-xl-1 overflow-hidden" />
     }
 
     <!--Map Column-->
-    <div id="mapdiv" class="col-sm-12 col-lg-6">
+    <div id="mapdiv" class="col-sm-12 col-lg-6 overflow-hidden">
         @if (h.HostProxy != null)
         {
             <PlanetMap h="h" OnLocationClick="@h.LocationClick"/>
@@ -40,7 +39,7 @@
     <!--Action Column-->
     @if (!h.IsObserver)
     {
-        <div class="col-sm-12 col-lg-4">
+        <div class="col-sm-12 col-lg-4 vh-100 overflow-auto">
 
             <MenuComponent h="@h" />
 
@@ -135,7 +134,7 @@
     <!--Empty Column-->
     @if (h.IsObserver)
     {
-        <div class="col-sm-1 col-lg-1 col-xl-1" />
+        <div class="col-sm-1 col-lg-1 col-xl-1 overflow-hidden" />
     }
 
 </div>
@@ -152,7 +151,6 @@
         await h.Start();
     }
 
-    //private bool mapHoverInitialized = false;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -160,24 +158,7 @@
             await LoadSkinDataIfSaved();
         }
 
-        try
-        {
-            //MapDrawer.SetGame(h._canvas, h);
-            //await Browser.DetermineCanvas();
-            await Browser.SetPlanetMapScale();
-            
-            //if (h.HostProxy != null && !mapHoverInitialized)
-            //{
-            //    mapHoverInitialized = true;
-            //    await Browser.EnableMapHover();
-            //}
-            
-        }
-        catch (Exception)
-        {
-
-        }
-
+        await Browser.SetPlanetMapScale();
         await Browser.EnablePopovers();
     }
 
@@ -199,5 +180,5 @@
         Support.LogDuration("RefreshAll-End");
     }
 
-    private string InformationLayout => h.IsObserver ? "col-sm-12 col-lg-4 cursor-hand" : "col-sm-12 col-lg-2 cursor-hand";
+    private string InformationLayout => h.IsObserver ? "col-sm-12 col-lg-4 cursor-hand vh-100 overflow-auto" : "col-sm-12 col-lg-2 cursor-hand vh-100 overflow-auto";
 }

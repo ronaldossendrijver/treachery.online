@@ -799,10 +799,66 @@ namespace Treachery.Shared
         {
             if (GreySpecialForceLossesToTake > 0)
             {
+                var plan = CurrentBattle.PlanOf(winner);
+                var territory = CurrentBattle.Territory;
+
                 var winnerGambit = WinnerBattleAction;
-                int winnerForcesLost = winnerGambit.Forces + winnerGambit.ForcesAtHalfStrength + e.SpecialForceLossesReplaced;
-                int winnerSpecialForcesLost = winnerGambit.SpecialForces + winnerGambit.SpecialForcesAtHalfStrength - e.SpecialForceLossesReplaced;
-                HandleLosses(CurrentBattle.Territory, winner, winnerForcesLost, winnerSpecialForcesLost);
+                int forcesToLose = winnerGambit.Forces + winnerGambit.ForcesAtHalfStrength + e.SpecialForceLossesReplaced;
+                int specialForcesToLose = winnerGambit.SpecialForces + winnerGambit.SpecialForcesAtHalfStrength - e.SpecialForceLossesReplaced;
+
+                CurrentReport.Add(winner.Faction, "{0} substitute {1} {2} losses by {3} losses.", winner.Faction, e.SpecialForceLossesReplaced, winner.SpecialForce, winner.Force);
+
+                int specialForcesToSaveToReserves = 0;
+                int forcesToSaveToReserves = 0;
+                int specialForcesToSaveInTerritory = 0;
+                int forcesToSaveInTerritory = 0;
+
+                if (SkilledAs(plan.Hero, LeaderSkill.Graduate))
+                {
+                    specialForcesToSaveInTerritory = Math.Min(specialForcesToLose, 1);
+                    forcesToSaveInTerritory = Math.Max(0, Math.Min(forcesToLose, 1 - specialForcesToSaveInTerritory));
+
+                    specialForcesToSaveToReserves = Math.Max(0, Math.Min(specialForcesToLose - specialForcesToSaveInTerritory - forcesToSaveInTerritory, 2));
+                    forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose - forcesToSaveInTerritory, 2 - specialForcesToSaveToReserves));
+                }
+                else if (SkilledAs(winner, LeaderSkill.Graduate))
+                {
+                    specialForcesToSaveToReserves = Math.Min(specialForcesToLose, 1);
+                    forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose, 1 - specialForcesToSaveToReserves));
+                }
+                
+                if (specialForcesToSaveInTerritory + forcesToSaveInTerritory + specialForcesToSaveToReserves + forcesToSaveToReserves > 0)
+                {
+                    if (specialForcesToSaveToReserves > 0) winner.ForcesToReserves(territory, specialForcesToSaveToReserves, true);
+
+                    if (forcesToSaveToReserves > 0) winner.ForcesToReserves(territory, forcesToSaveToReserves, false);
+
+                    if (specialForcesToSaveInTerritory > 0 || specialForcesToSaveToReserves > 0)
+                    {
+                        CurrentReport.Add(winner.Faction, "{0} rescues {1} {2} and {3} {4} on site and {5} {6} and {7} {8} to reserves.",
+                            LeaderSkill.Graduate,
+                            forcesToSaveInTerritory,
+                            winner.Force,
+                            specialForcesToSaveInTerritory,
+                            winner.SpecialForce,
+                            forcesToSaveToReserves,
+                            winner.Force,
+                            specialForcesToSaveToReserves,
+                            winner.SpecialForce);
+                    }
+                    else
+                    {
+                        CurrentReport.Add(winner.Faction, "{0} rescues {1} {2} on site and {3} to reserves.",
+                            LeaderSkill.Graduate,
+                            forcesToSaveInTerritory,
+                            winner.Force,
+                            forcesToSaveToReserves);
+                    }
+                }
+
+                HandleLosses(territory, winner, 
+                    forcesToLose - forcesToSaveToReserves - forcesToSaveInTerritory,
+                    specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory);
             }
         }
 
@@ -1261,18 +1317,21 @@ namespace Treachery.Shared
             int specialForcesToSaveInTerritory = 0;
             int forcesToSaveInTerritory = 0;
 
-            if (SkilledAs(plan.Hero, LeaderSkill.Graduate))
+            if (winner.Faction != Faction.Grey)
             {
-                specialForcesToSaveInTerritory = Math.Min(specialForcesToLose, 1);
-                forcesToSaveInTerritory = Math.Max(0, Math.Min(forcesToLose, 1 - specialForcesToSaveInTerritory));
+                if (SkilledAs(plan.Hero, LeaderSkill.Graduate))
+                {
+                    specialForcesToSaveInTerritory = Math.Min(specialForcesToLose, 1);
+                    forcesToSaveInTerritory = Math.Max(0, Math.Min(forcesToLose, 1 - specialForcesToSaveInTerritory));
 
-                specialForcesToSaveToReserves = Math.Max(0, Math.Min(specialForcesToLose - specialForcesToSaveInTerritory - forcesToSaveInTerritory, 2));
-                forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose - forcesToSaveInTerritory, 2 - specialForcesToSaveToReserves));
-            }
-            else if (SkilledAs(winner, LeaderSkill.Graduate))
-            {
-                specialForcesToSaveToReserves = Math.Min(specialForcesToLose, 1);
-                forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose, 1 - specialForcesToSaveToReserves));
+                    specialForcesToSaveToReserves = Math.Max(0, Math.Min(specialForcesToLose - specialForcesToSaveInTerritory - forcesToSaveInTerritory, 2));
+                    forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose - forcesToSaveInTerritory, 2 - specialForcesToSaveToReserves));
+                }
+                else if (SkilledAs(winner, LeaderSkill.Graduate))
+                {
+                    specialForcesToSaveToReserves = Math.Min(specialForcesToLose, 1);
+                    forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose, 1 - specialForcesToSaveToReserves));
+                }
             }
 
             if (specialForcesToSaveInTerritory + forcesToSaveInTerritory + specialForcesToSaveToReserves + forcesToSaveToReserves > 0)
@@ -1281,10 +1340,27 @@ namespace Treachery.Shared
 
                 if (forcesToSaveToReserves > 0) winner.ForcesToReserves(territory, forcesToSaveToReserves, false);
 
-                CurrentReport.Add(winner.Faction, "{0} rescues {1} forces on site and rescues {2} forces to reserves.",
-                    LeaderSkill.Graduate,
-                    specialForcesToSaveInTerritory + forcesToSaveInTerritory,
-                    specialForcesToSaveToReserves + forcesToSaveToReserves);
+                if (specialForcesToSaveInTerritory > 0 || specialForcesToSaveToReserves > 0)
+                {
+                    CurrentReport.Add(winner.Faction, "{0} rescues {1} {2} and {3} {4} on site and {5} {6} and {7} {8} to reserves.",
+                        LeaderSkill.Graduate,
+                        forcesToSaveInTerritory,
+                        winner.Force,
+                        specialForcesToSaveInTerritory,
+                        winner.SpecialForce,
+                        forcesToSaveToReserves,
+                        winner.Force,
+                        specialForcesToSaveToReserves,
+                        winner.SpecialForce);
+                }
+                else
+                {
+                    CurrentReport.Add(winner.Faction, "{0} rescues {1} {2} on site and {3} to reserves.",
+                        LeaderSkill.Graduate,
+                        forcesToSaveInTerritory,
+                        winner.Force,
+                        forcesToSaveToReserves);
+                }
             }
 
             if (winner.Faction != Faction.Grey || specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory == 0 || winner.ForcesIn(territory) <= plan.Forces + plan.ForcesAtHalfStrength)
@@ -1297,8 +1373,6 @@ namespace Treachery.Shared
             {
                 GreySpecialForceLossesToTake = specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory;
             }
-
-
         }
 
         private void HandleLosses(Territory territory, Player player, int forcesLost, int specialForcesLost)

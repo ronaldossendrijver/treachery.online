@@ -263,6 +263,7 @@ namespace Treachery.Shared
             CurrentReport.Add(e);
             CardsOnAuction.PutOnTop(e.Card);
             WhiteCache.Remove(e.Card);
+            RegisterKnown(e.Card);
             StartBidSequenceAndAuctionType(e.AuctionType, e.Player, e.Direction);
             StartBiddingRound();
         }

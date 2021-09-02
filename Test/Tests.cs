@@ -138,6 +138,15 @@ namespace Treachery.Test
                 }
             }
 
+            if (e is BattleConcluded conc && conc.Initiator == Faction.Grey)
+            {
+                var plan = g.CurrentBattle.PlanOf(Faction.Grey);
+                if (g.SkilledAs(plan.Hero, LeaderSkill.Graduate) && plan.SpecialForces + plan.SpecialForcesAtHalfStrength > 0 && plan.Forces + plan.ForcesAtHalfStrength > 0)
+                {
+                    WriteSavegameIfApplicable(g, conc.Player, "Ixian Suk Graduate");
+                }
+            }
+
             if (e is Bureaucracy bc)
             {
                 WriteSavegameIfApplicable(g, bc.Player, Skin.Current.Format("Bureaucracy during {0}", g.CurrentMainPhase));
@@ -321,7 +330,7 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 10000;
+            int nrOfGames = 1000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 

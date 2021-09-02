@@ -34,7 +34,19 @@ namespace Treachery.Shared
             LogInfo("currentBidIsFromAlly: {0}, thisCardIsUseless: {1}, thisCardIsCrappy: {2}, resourcesAvailable:, {3}, karmaWorth: {4}, maximumIWillSpend: {5}, karmaCardToUseForBidding: {6}.",
                 currentBidIsFromAlly, thisCardIsUseless, thisCardIsCrappy, resourcesAvailable, karmaWorth, maximumIWillSpend, karmaCardToUseForBidding);
 
-            if (Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent)
+            if ((Faction == Faction.White || Ally == Faction.White) &&
+                (Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.BlackMarketNormal || Game.CurrentAuctionType == AuctionType.BlackMarketOnceAround))
+            {
+                if (Game.CurrentAuctionType == AuctionType.BlackMarketSilent)
+                {
+                    return CreateBidUsingAllyAndRedSpice(0, 0, null);
+                }
+                else
+                {
+                    return PassedBid();
+                }
+            }
+            else if (Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent)
             {
                 if (thisCardIsUseless)
                 {

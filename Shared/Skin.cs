@@ -686,6 +686,21 @@ namespace Treachery.Shared
             };
         }
 
+        public string GetBackground(MainPhase phase)
+        {
+            return phase switch
+            {
+                MainPhase.ShipmentAndMove => ReportBackground_ShipmentAndMove_URL,
+                MainPhase.Storm => ReportBackground_StormAndResourceBlow_URL,
+                MainPhase.Resurrection => ReportBackground_Resurrection_URL,
+                MainPhase.Contemplate => ReportBackground_EndOfTurn_URL,
+                MainPhase.Bidding => PanelBackground_Bidding_URL,
+                MainPhase.Ended => PanelBackground_EndOfGame_URL,
+                MainPhase.Battle => PanelBackground_Battle_URL,
+                _ => "?",
+            };
+        }
+
         public string GetTerritoryName(Territory t)
         {
             return GetLabel(TerritoryName_STR, t.SkinId);

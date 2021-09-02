@@ -220,7 +220,7 @@ namespace Treachery.Shared
 
         protected YellowSentMonster DetermineYellowSentMonster()
         {
-            var target = YellowSentMonster.ValidTargets(Game).OrderByDescending(t => TotalMaxDialOfOpponents(t)).FirstOrDefault();
+            var target = YellowSentMonster.ValidTargets(Game).OrderByDescending(t => TotalMaxDialOfOpponents(t) + 2 * AnyForcesIn(t)).FirstOrDefault();
             return new YellowSentMonster(Game) { Initiator = Faction, Territory = target };
         }
 

@@ -2,7 +2,6 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
-using Blazor.Extensions;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -26,7 +25,6 @@ namespace Treachery.Client
 
         //public readonly Main _page;
         public readonly HubConnection _connection;
-        public BECanvasComponent _canvas;
         private readonly ILogger _logger;
 
         public string PlayerName = "";
