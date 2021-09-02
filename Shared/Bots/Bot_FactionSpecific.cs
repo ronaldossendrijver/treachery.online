@@ -290,7 +290,10 @@ namespace Treachery.Shared
                 var amountICanReinforce = MaxReinforcedDialTo(this, territory);
                 var maxDial = MaxDial(this, territory, opponent);
 
-                if (WinWasPredictedByMeThisTurn(opponent.Faction) || GetDialNeeded(territory, opponent, false) <= maxDial || potentialWinningOpponents.Contains(opponent) && GetDialNeeded(territory, opponent, false) <= amountICanReinforce + maxDial)
+                if (WinWasPredictedByMeThisTurn(opponent.Faction) || 
+                    GetDialNeeded(territory, opponent, false) <= maxDial ||
+                    LastTurn && GetDialNeeded(territory, opponent, false) - 3 <= maxDial ||
+                    potentialWinningOpponents.Contains(opponent) && GetDialNeeded(territory, opponent, false) <= amountICanReinforce + maxDial)
                 {
                     return true;
                 }

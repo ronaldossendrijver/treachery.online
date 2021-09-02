@@ -117,7 +117,7 @@
     {
         string result = "";
 
-        result += Skin.Current.Format("<h4>Treachery discard pile: {0} cards</h4>", h.Game.TreacheryDiscardPile.Items.Count);
+        result += Skin.Current.Format("<h4>Discard pile: {0} cards</h4>", h.Game.TreacheryDiscardPile.Items.Count);
 
         if (h.Game.Applicable(Rule.AssistedNotekeeping))
         {
@@ -179,7 +179,7 @@
 
         if (h.Game.Applicable(Rule.IncreasedResourceFlow))
         {
-            result += Skin.Current.Format("<h4>Resource discard pile A: {0} cards</h4>", h.Game.ResourceCardDiscardPileA.Items.Count);
+            result += Skin.Current.Format("<h4>Discard pile A: {0} cards</h4>", h.Game.ResourceCardDiscardPileA.Items.Count);
             if (h.Game.LatestSpiceCardA != null)
             {
                 result += "<p>Latest card:</p>";
@@ -192,7 +192,7 @@
         }
         else
         {
-            result += Skin.Current.Format("<h4>Resource discard pile: {0} cards</h4>", h.Game.ResourceCardDiscardPileA.Items.Count);
+            result += Skin.Current.Format("<h4>Discard pile: {0} cards</h4>", h.Game.ResourceCardDiscardPileA.Items.Count);
             if (h.Game.LatestSpiceCardA != null)
             {
                 result += "<p>Latest card:</p>";
@@ -213,7 +213,7 @@
 
         if (h.Game.Applicable(Rule.IncreasedResourceFlow))
         {
-            result += Skin.Current.Format("<h4>Resource discard pile B: {0} cards</h4>", h.Game.ResourceCardDiscardPileB.Items.Count);
+            result += Skin.Current.Format("<h4>Discard pile B: {0} cards</h4>", h.Game.ResourceCardDiscardPileB.Items.Count);
             if (h.Game.LatestSpiceCardB != null)
             {
                 result += "<p>Latest card:</p>";
