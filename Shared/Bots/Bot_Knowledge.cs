@@ -37,7 +37,7 @@ namespace Treachery.Shared
 
         protected bool IAmWinning => Game.MeetsNormalVictoryCondition(this, true);
 
-        protected bool OpponentsAreWinning => Opponents.Any(o => Game.MeetsNormalVictoryCondition(this, true));
+        protected bool OpponentsAreWinning => Opponents.Any(o => Game.MeetsNormalVictoryCondition(o, true));
 
         protected Prescience MyPrescience => Game.CurrentPrescience != null && (Game.CurrentPrescience.Initiator == Faction || Game.CurrentPrescience.Initiator == Ally) ? Game.CurrentPrescience : null;
 
