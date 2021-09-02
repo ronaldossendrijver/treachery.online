@@ -924,6 +924,20 @@ namespace Treachery.Shared
             }
         }
 
+        protected virtual WhiteRevealedNoField DetermineWhiteRevealedNoField()
+        {
+            if (Game.CurrentPhase == Phase.ShipmentAndMoveConcluded)
+            {
+                var locationWithNoField = ForcesOnPlanet.FirstOrDefault(b => b.Value.AmountOfSpecialForces > 0).Key;
+                if (locationWithNoField != null && Game.ResourcesOnPlanet.ContainsKey(locationWithNoField) && !OccupiedByOpponent(locationWithNoField.Territory))
+                {
+                    return new WhiteRevealedNoField(Game) { Initiator = Faction };
+                }
+            }
+
+            return null;
+        }
+
         protected virtual WhiteAnnouncesAuction DetermineWhiteAnnouncesAuction()
         {
             return new WhiteAnnouncesAuction(Game) { Initiator = Faction, First = D(1, 2) > 1 };

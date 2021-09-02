@@ -310,7 +310,7 @@ namespace Treachery.Shared
                     Name = "",
                     Sector = 16,
                     SpiceBlowAmount = 0,
-                    Center = new Point { X = 835, Y = 3021 }
+                    Center = new Point { X = 800, Y = 3000 }
 
                 };
                 Locations.Add(HabbanyaSietch);
@@ -1237,7 +1237,7 @@ namespace Treachery.Shared
                     Sector = 17,
                     SpiceBlowAmount = 10,
                     SpiceLocation = new Point { X = 980, Y = 3552 },
-                    Center = new Point { X = 1130, Y = 3552 }
+                    Center = new Point { X = 1200, Y = 3580 }
                 });
             }
 

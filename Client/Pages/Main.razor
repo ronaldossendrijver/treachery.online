@@ -18,11 +18,11 @@
     <!--Empty Column-->
     @if (h.IsObserver)
     {
-        <div class="col-sm-1 col-lg-1 col-xl-1 overflow-hidden" />
+        <div class="col-sm-1 col-lg-1 col-xl-1" />
     }
 
     <!--Map Column-->
-    <div id="mapdiv" class="col-sm-12 col-lg-6 overflow-hidden">
+    <div id="mapdiv" class="col-sm-12 col-lg-6">
         @if (h.HostProxy != null)
         {
             <PlanetMap h="h" OnLocationClick="@h.LocationClick"/>
@@ -134,7 +134,7 @@
     <!--Empty Column-->
     @if (h.IsObserver)
     {
-        <div class="col-sm-1 col-lg-1 col-xl-1 overflow-hidden" />
+        <div class="col-sm-1 col-lg-1 col-xl-1" />
     }
 
 </div>

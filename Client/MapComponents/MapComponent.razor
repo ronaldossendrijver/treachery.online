@@ -7,9 +7,6 @@
     public Handler h { get; set; }
 
     [Parameter]
-    public Player Player { get; set; }
-
-    [Parameter]
     public float X { get; set; }
 
     [Parameter]
@@ -42,6 +39,8 @@
     protected const float TWOPI = 6.2831853072f;
 
     protected Game Game => h.Game;
+
+    protected Player Player => h.Player;
 
     protected string Px(float x) => (int)x + "px";
 
@@ -86,15 +85,6 @@
         var x = Skin.Current.PlanetCenter.X + (int)(Skin.Current.MapRadius * Math.Cos(angle));
         var y = Skin.Current.PlanetCenter.Y + (int)(Skin.Current.MapRadius * Math.Sin(angle));
         return new Point(x, y);
-    }
-
-    protected static Point CloserTo(Point a, Point b, float percentage)
-    {
-        return new Point()
-        {
-            X = a.X + (int)(percentage * (b.X - a.X)),
-            Y = a.Y + (int)(percentage * (b.Y - a.Y)),
-        };
     }
 
     protected static string PopoverTemplate => "<div class=\"popover\" role=\"tooltip\" style=\"background-color:black;text-align:center;\"><div class=\"arrow\"></div><h3 class=\"popover-header\"></h3><div class=\"popover-body\"></div></div>";

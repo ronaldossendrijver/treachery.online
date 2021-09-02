@@ -105,7 +105,7 @@
         w = cross(fromAsArray, toAsArray);
         v = cross(u, w).Select(a => a / length(w)).ToArray();
         tMax = (float)Math.Acos(inner(fromAsArray, toAsArray) / length(fromAsArray) / length(toAsArray));
-        n = (int)Math.Round((50 * tMax) / Math.PI);
+        n = (int)Math.Round((50f * tMax) / Math.PI);
     }
 
     private float[] cross(float[] a, float[] b) => new float[] {

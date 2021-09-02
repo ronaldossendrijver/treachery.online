@@ -138,6 +138,11 @@ namespace Treachery.Test
                 }
             }
 
+            if (e is WhiteRevealedNoField w )
+            {
+                WriteSavegameIfApplicable(g, w.Player, "White reveals a no-field");
+            }
+
             if (e is BattleConcluded conc && conc.Initiator == Faction.Grey)
             {
                 var plan = g.CurrentBattle.PlanOf(Faction.Grey);

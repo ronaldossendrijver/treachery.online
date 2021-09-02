@@ -15,13 +15,14 @@
 
                 foreach (var from in move.ForceLocations.Keys)
                 {
-                    var a = CloserTo(from.Center, to, 0.10f);
-                    var b = CloserTo(to, from.Center, 0.15f);
+                    var a = CloserTo(from.Center, to, 0.05f);
+                    var b = CloserTo(to, from.Center, 0.05f);
 
                     <Arrow FillColor="@Skin.Current.FactionColor[move.Initiator]" StrokeColor="@Skin.Current.FactionColorTransparant[move.Initiator]"
                             MarginX="0" MarginY="0"
-                            Radius="@Skin.Current.PlanetRadius"
-                            From="a" To="b" Scale="0.35f" />
+                            Radius="@((int)(1.1 * Skin.Current.PlanetRadius))"
+                            From="from.Center" To="to" Scale="0.35f" />
+
                 }
             }
 
@@ -30,5 +31,14 @@
 }
 
 @code {
+
+    private static Point CloserTo(Point a, Point b, float percentage)
+    {
+        return new Point()
+        {
+            X = a.X + (int)(percentage * (b.X - a.X)),
+            Y = a.Y + (int)(percentage * (b.Y - a.Y)),
+        };
+    }
 
 }
