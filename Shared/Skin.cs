@@ -193,7 +193,7 @@ namespace Treachery.Shared
 
         //General
         public string GAMEVERSION_FONT = "normal normal normal 16px Advokat, Calibri, Tahoma, sans-serif;";
-        public string PLAYEDCARD_MESSAGE_FONT = "normal normal bold 26px Advokat, Calibri, Tahoma, sans-serif";
+        public string PLAYEDCARD_MESSAGE_FONT = "normal normal bold 32px Advokat, Calibri, Tahoma, sans-serif";
         public string FACTION_INFORMATIONCARDSTYLE = "font: normal normal normal 14px Calibri, Tahoma, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; line-height: 95%; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;";
         public string TRACKER_FONT = "normal normal normal 12px Calibri, Tahoma, sans-serif;";
         public string JSPANEL_DEFAULTSTYLE = "font-family: Calibri, Tahoma, sans-serif";
@@ -1205,7 +1205,7 @@ namespace Treachery.Shared
               @"<p><strong>Forces:</strong> when other players pay {16} for their forces in battle, half of the {16} (rounded down) goes to you. When you pay {16} for your forces, it goes to the {16} Bank.</p>" : "") +
 
               (g.Applicable(Rule.BrownAuditor) ?
-              @"<p><strong>Auditor:</strong> you gain the Auditor Leader and it is added to the Traitor deck at the start of the game. Whenever you use the Auditor as a leader in a battle, you may audit your opponent. You may look at two cards in your opponent's hand at random (not counting any they used in battle) if the Auditor survived, or one card if the Auditor is killed. That faction may pay you 1 {16} per card you would get to see to cancel the audit. When the Auditor is in the Tanks, you may revive them as your one revived leader per turn, as if all of your leaders were in the Tanks. The Auditor can not be a ghola for {27}, nor captured by {1}. The Auditor can not be assigned a Leader Skill.</p>" : "") +
+              @"<p><strong>Auditor:</strong> you gain the Auditor Leader and it is added to the Traitor deck at the start of the game. Whenever you use the Auditor as a leader in a battle, you may audit your opponent. You may look at two cards in your opponent's hand at random (not counting any they used in battle) if the Auditor survived, or one card if the Auditor is killed. That faction may pay you 1 {16} per card you would get to see to cancel the audit. The Auditor may be revived as if all of your leaders were in the Tanks. The Auditor can't be revived as a ghola, nor be captured by {1}. The Auditor can't be assigned a Leader Skill.</p>" : "") +
 
               (g.Applicable(Rule.AdvancedKarama) ?
               @"<p><strong>Special {19}:</strong> you may discard any Treachery cards from your hand and gain 3 {16} each.</p>" : "") +
@@ -1622,7 +1622,7 @@ namespace Treachery.Shared
                 [47] = "Mirror Weapon",
                 [48] = "Portable Snooper",
                 [49] = "Ornithopter",
-                [50] = "Nullentropy",
+                [50] = "Nullentropy Box",
                 [51] = "Semuta Drug",
                 [52] = "Residual Poison",
                 [53] = "Stone Burner",
@@ -2341,7 +2341,7 @@ namespace Treachery.Shared
 
             //General
             GAMEVERSION_FONT = "normal normal normal 16px Advokat, Calibri, Tahoma, sans-serif;",
-            PLAYEDCARD_MESSAGE_FONT = "normal normal bold 26px Advokat, Calibri, Tahoma, sans-serif",
+            PLAYEDCARD_MESSAGE_FONT = "normal normal bold 32px Advokat, Calibri, Tahoma, sans-serif",
             FACTION_INFORMATIONCARDSTYLE = "font: normal normal normal 14px Calibri, Tahoma, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; line-height: 95%; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;",
             TRACKER_FONT = "normal normal normal 12px Calibri, Tahoma, sans-serif;",
             JSPANEL_DEFAULTSTYLE = "font-family: Calibri, Tahoma, sans-serif"

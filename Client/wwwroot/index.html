@@ -40,12 +40,13 @@
             // re-use canvas object for better performance
             const canvas = MeasureText.canvas || (MeasureText.canvas = document.createElement("canvas"));
             const context = canvas.getContext("2d");
+            
             context.font = font;
             const metrics = context.measureText(text);
 
             return {
                 Width: metrics.width,
-                Height: metrics.fontBoundingBoxDescent,
+                Height: metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent,
             };
         }
         

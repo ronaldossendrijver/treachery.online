@@ -53,6 +53,7 @@ namespace Treachery.Shared
                 Enter(Phase.BlackMarketBidding);
                 CardsOnAuction.PutOnTop(e.Card);
                 e.Player.TreacheryCards.Remove(e.Card);
+                RegisterKnown(e.Initiator, e.Card);
                 Bids.Clear();
                 CurrentBid = null;
                 StartBidSequenceAndAuctionType(e.AuctionType, e.Player, e.Direction);
