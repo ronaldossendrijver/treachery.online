@@ -157,7 +157,11 @@ namespace Treachery.Shared
                 c.IsPoisonDefense && !TreacheryCards.Any(c => c.IsPoisonDefense) ||
                 c.Type == TreacheryCardType.Karma ||
                 c.Type == TreacheryCardType.Mercenary && Leaders.Count(l => Game.IsAlive(l)) <= 1 ||
-                c.Type == TreacheryCardType.RaiseDead && ForcesKilled > 7;
+                c.Type == TreacheryCardType.RaiseDead && ForcesKilled > 7 ||
+                c.Type == TreacheryCardType.SearchDiscarded ||
+                c.Type == TreacheryCardType.TakeDiscarded ||
+                c.Type == TreacheryCardType.PortableAntidote ||
+                c.Type == TreacheryCardType.Rockmelter;
         }
 
         protected virtual BlackMarketBid DetermineBlackMarketBid()

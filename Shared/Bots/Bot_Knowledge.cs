@@ -106,6 +106,8 @@ namespace Treachery.Shared
 
             if (c.IsRockmelter) return 3;
             if (c.IsMirrorWeapon) return 3;
+            if (c.Type == TreacheryCardType.SearchDiscarded) return 3;
+            if (c.Type == TreacheryCardType.TakeDiscarded) return 3;
 
             if (c.IsPoisonWeapon && !TreacheryCards.Any(c => c.IsPoisonWeapon)) return 3;
             if (c.IsProjectileWeapon && !TreacheryCards.Any(c => c.IsProjectileWeapon)) return 3;

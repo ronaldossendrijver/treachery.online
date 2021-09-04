@@ -14,7 +14,7 @@ namespace Treachery.Shared
 
         protected virtual ReplacedCardWon DetermineReplacedCardWon()
         {
-            var replace = Game.CardJustWon != null && !WannaHave(Game.CardJustWon);
+            var replace = Game.CardJustWon != null && CardQuality(Game.CardJustWon) <= 2;
             return new ReplacedCardWon(Game) { Initiator = Faction, Passed = !replace };
         }
 
@@ -52,21 +52,9 @@ namespace Treachery.Shared
 
         protected GreySwappedCardOnBid DetermineGreySwappedCardOnBid()
         {
-            var card = TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Useless);
+            var card = TreacheryCards.OrderBy(c => CardQuality(c)).FirstOrDefault();
 
-            if (card == null) card = TreacheryCards.FirstOrDefault(c =>
-                c.Type == TreacheryCardType.Clairvoyance ||
-                c.Type == TreacheryCardType.Thumper ||
-                c.Type == TreacheryCardType.Harvester ||
-                c.Type == TreacheryCardType.Mercenary ||
-                c.Type == TreacheryCardType.StormSpell ||
-                c.Type == TreacheryCardType.Metheor);
-
-            if (card == null && TreacheryCards.Count(c => c.Type == TreacheryCardType.Shield) > 1) card = TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Shield);
-
-            if (card == null && TreacheryCards.Count(c => c.Type == TreacheryCardType.Antidote) > 1) card = TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Antidote);
-
-            if (card != null)
+            if (card != null && CardQuality(card) <= 2)
             {
                 return new GreySwappedCardOnBid(Game) { Initiator = Faction, Passed = false, Card = card };
             }
