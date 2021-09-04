@@ -47,7 +47,7 @@ namespace Treachery.Shared
 
                     biddingPrescienceDeal = DealAccepted.AcceptableDeals(Game, this).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.BiddingReport && d.Price <= Resources);
                     LogInfo("biddingPrescienceOfferEntirePhase: {0}", biddingPrescienceDeal);
-                    if (biddingPrescienceDeal != null && Game.CurrentMainPhase == MainPhase.Bidding && Game.CardNumber == 1 && biddingPrescienceDeal.Price < 1.4f * Game.CardsOnAuction.Items.Count() && ResourcesIncludingAllyContribution - biddingPrescienceDeal.Price > 14)
+                    if (biddingPrescienceDeal != null && Game.CurrentMainPhase == MainPhase.Bidding && Game.CardNumber == 1 && biddingPrescienceDeal.Price < 1.5f * Game.CardsOnAuction.Items.Count() && ResourcesIncludingAllyContribution - biddingPrescienceDeal.Price > 14)
                     {
                         return biddingPrescienceDeal.Acceptance(Faction);
                     }
@@ -210,6 +210,7 @@ namespace Treachery.Shared
                 Game.HasBiddingPrescience(this) &&
                 !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal.Type == DealType.ShareBiddingPrescience && deal.EndPhase == Phase.BiddingReport && !(deal.To.Length == 1 && deal.To[0] == Faction.Yellow)))
             {
+                int nrOfCards = Game.Players.Count(p => p.TreacheryCards.Count() < p.MaximumNumberOfCards);
                 return new DealOffered(Game)
                 {
                     Initiator = Faction,
@@ -219,8 +220,7 @@ namespace Treachery.Shared
                     Price =
                         D(1, 3) +
                         (int)Math.Floor(0.1 * ResourcesIncludingAllyContribution) +
-                        (Ally == Faction.None ? 0 : 3) +
-                        Game.Players.Count(p => p.TreacheryCards.Count() < p.MaximumNumberOfCards),
+                        (Ally == Faction.None ? 1 : 2) * nrOfCards,
                     Text = "share bidding prescience (entire phase)"
                 };
             }

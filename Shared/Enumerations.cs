@@ -451,8 +451,8 @@ namespace Treachery.Shared
         YellowBot = 1006,
         GreyBot = 1007,
         BotsCannotAlly = 1008,
-        BrownBot = 1009,
-        WhiteBot = 1013,
+        //BrownBot = 1009,
+        //WhiteBot = 1013,
 
         //House Rules
         CustomInitialForcesAndResources = 100,

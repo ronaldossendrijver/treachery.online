@@ -116,8 +116,8 @@ namespace Treachery.Shared
             if (Applicable(Rule.GreenBot)) Players.Add(new Player(this, UniquePlayerName("Paul Atreides*"), Faction.Green, true));
             if (Applicable(Rule.YellowBot)) Players.Add(new Player(this, UniquePlayerName("Liet Kynes*"), Faction.Yellow, true));
             if (Applicable(Rule.GreyBot)) Players.Add(new Player(this, UniquePlayerName("Prince Rhombur*"), Faction.Grey, true));
-            if (Applicable(Rule.BrownBot)) Players.Add(new Player(this, UniquePlayerName("Brown*"), Faction.Brown, true));
-            if (Applicable(Rule.WhiteBot)) Players.Add(new Player(this, UniquePlayerName("White*"), Faction.White, true));
+            //if (Applicable(Rule.BrownBot)) Players.Add(new Player(this, UniquePlayerName("Brown*"), Faction.Brown, true));
+            //if (Applicable(Rule.WhiteBot)) Players.Add(new Player(this, UniquePlayerName("White*"), Faction.White, true));
         }
 
         private string UniquePlayerName(string name)

@@ -414,8 +414,8 @@ namespace Treachery.Shared
                 case Rule.GreenBot:
                 case Rule.YellowBot:
                 case Rule.GreyBot:
-                case Rule.BrownBot:
-                case Rule.WhiteBot:
+                //case Rule.BrownBot:
+                //case Rule.WhiteBot:
                 case Rule.BotsCannotAlly:
                     return RuleGroup.Bots;
 

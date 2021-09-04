@@ -16,6 +16,7 @@ namespace Treachery.Client
         public void UpdateStatus()
         {
             Status = DetermineStatus();
+            Status.FlashInfo = DetermineFlash(Game);
         }
 
         public GameStatus DetermineStatus()
@@ -491,5 +492,193 @@ namespace Treachery.Client
                    (Game.CurrentPhase == Phase.BlueAccompaniesOrange || Game.CurrentPhase == Phase.BlueAccompaniesNonOrange || Game.CurrentPhase == Phase.BlueIntrudedByOrangeMove || Game.CurrentPhase == Phase.BlueIntrudedByNonOrangeMove || Game.CurrentPhase == Phase.BlueIntrudedByOrangeShip || Game.CurrentPhase == Phase.BlueIntrudedByNonOrangeShip) && p.Faction == Faction.Blue ||
                    (Game.CurrentMainPhase == MainPhase.Battle) && p == Game.CurrentBattle?.EffectiveAggressor;
         }
+
+        private List<FlashInfo> DetermineFlash(Game g)
+        {
+            var latestEvent = g.History.LastOrDefault();
+            var result = new List<FlashInfo>();
+
+            if (latestEvent != null)
+            {
+                if (latestEvent is RaiseDeadPlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.RaiseDead));
+                else if (latestEvent is MetheorPlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Metheor));
+                else if (latestEvent is StormSpellPlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.StormSpell));
+                else if (latestEvent is ClairVoyancePlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Clairvoyance));
+                else if (latestEvent is AmalPlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Amal));
+                else if (latestEvent is HarvesterPlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Harvester));
+                else if (latestEvent is ThumperPlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Thumper));
+                else if (latestEvent is ResidualPlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Residual));
+                else if (latestEvent is FlightUsed) result.Add(CardInfo(latestEvent, TreacheryCardType.Flight));
+                else if (latestEvent is DistransUsed) result.Add(CardInfo(latestEvent, TreacheryCardType.Distrans));
+                else if (latestEvent is PortableAntidoteUsed) result.Add(CardInfo(latestEvent, TreacheryCardType.PortableAntidote));
+                else if (latestEvent is RockWasMelted) result.Add(CardInfo(latestEvent, TreacheryCardType.Rockmelter));
+                else if (latestEvent is DiscardedTaken) result.Add(CardInfo(latestEvent, TreacheryCardType.TakeDiscarded));
+                else if (latestEvent is DiscardedSearched) result.Add(CardInfo(latestEvent, TreacheryCardType.SearchDiscarded));
+                else if (latestEvent is JuicePlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Juice));
+                else if (latestEvent is Retreat || latestEvent is Diplomacy) result.Add(CardInfo(latestEvent, LeaderSkill.Diplomat));
+                else if (latestEvent is Bureaucracy) result.Add(CardInfo(latestEvent, LeaderSkill.Bureaucrat));
+                else if (latestEvent is Planetology) result.Add(CardInfo(latestEvent, LeaderSkill.Planetologist));
+                else if (latestEvent is BattleConcluded battleconcluded && g.TraitorsDeciphererCanLookAt.Count > 0) result.Add(CardInfo(latestEvent, LeaderSkill.Decipherer));
+                else if (latestEvent is Thought) result.Add(CardInfo(latestEvent, LeaderSkill.Thinker));
+                else if (latestEvent is EstablishPlayers && g.CurrentPhase != Phase.SelectingFactions) result.Add(CardInfo(Player.Faction));
+
+            }
+
+            int nrOfSpiceBlows = g.RecentMilestones.Count(m => m == Milestone.Resource);
+            bool resourceCardAlreadyAdded = false;
+
+            foreach (var m in g.RecentMilestones)
+            {
+                switch (m)
+                {
+                    case Milestone.TreacheryCalled:
+                    case Milestone.FaceDanced:
+                        {
+                            result.Add(EventInfo(latestEvent));
+                            break;
+                        }
+                    case Milestone.Karma:
+                        {
+                            if (g.TreacheryDiscardPile.Top != null)
+                            {
+                                result.Add(CardInfo(latestEvent, g.TreacheryDiscardPile.Top));
+                            }
+                            else
+                            {
+                                result.Add(EventInfo(latestEvent));
+                            }
+                            break;
+                        }
+                    case Milestone.BabyMonster:
+                        {
+                            result.Add(CardInfo(Map.GetResourceCardsInAndOutsidePlay(g.Map).FirstOrDefault(c => c.IsSandTrout), new Message("{0} detected!", Concept.BabyMonster)));
+                            break;
+                        }
+                    case Milestone.Monster:
+                        {
+                            result.Add(CardInfo(Map.GetResourceCardsInAndOutsidePlay(g.Map).FirstOrDefault(c => c.IsShaiHulud), new Message("{0} detected!", Concept.Monster)));
+                            break;
+                        }
+                    case Milestone.Resource:
+                        {
+                            ResourceCard cardToShow = null;
+
+                            if (nrOfSpiceBlows == 2)
+                            {
+                                if (!resourceCardAlreadyAdded)
+                                {
+                                    cardToShow = g.LatestSpiceCardA;
+                                    resourceCardAlreadyAdded = true;
+                                }
+                                else
+                                {
+                                    cardToShow = g.LatestSpiceCardB;
+                                }
+                            }
+                            else
+                            {
+                                if (g.Applicable(Rule.IncreasedResourceFlow) && (g.CurrentPhase == Phase.AllianceB || g.CurrentPhase == Phase.HarvesterB || g.CurrentPhase == Phase.BlowReport))
+                                {
+                                    cardToShow = g.LatestSpiceCardB;
+                                }
+                                else
+                                {
+                                    cardToShow = g.LatestSpiceCardA;
+                                }
+                            }
+
+                            if (cardToShow != null)
+                            {
+                                result.Add(CardInfo(cardToShow, new Message("{0} in {1}", Concept.Resource, cardToShow.ToString())));
+                            }
+
+                            break;
+                        }
+
+                }
+            }
+
+            return result;
+        }
+
+        private FlashInfo EventInfo(GameEvent e)
+        {
+            FlashInfo result;
+            if (e is TreacheryCalled t)
+            {
+                var victim = Game.CurrentBattle.OpponentOf(t.Initiator);
+                var victimPlan = Game.CurrentBattle.PlanOf(victim);
+                result.Message = new Message("{0} is a {1} traitor!", victimPlan.Hero, t.Initiator);
+                result.Url = Skin.Current.GetImageURL(victimPlan.Hero);
+            }
+            else if (e is FaceDanced)
+            {
+                var dancer = Game.WinnerHero;
+                result.Message = new Message("{0} is revealed as a facedancer!", dancer);
+                result.Url = Skin.Current.GetImageURL(dancer);
+            }
+            else
+            {
+                result.Message = e?.GetMessage();
+                result.Url = Skin.Current.Planet_URL;
+            }
+
+            return result;
+        }
+
+        private FlashInfo CardInfo(GameEvent e, TreacheryCardType t)
+        {
+            FlashInfo result;
+            result.Url = Skin.Current.GetImageURL(TreacheryCardManager.GetCardsInAndOutsidePlay().First(card => card.Type == t));
+            result.Message = e?.GetMessage();
+            return result;
+        }
+
+        private FlashInfo CardInfo(GameEvent e, LeaderSkill s)
+        {
+            FlashInfo result;
+            result.Url = Skin.Current.GetImageURL(s);
+            result.Message = e?.GetMessage();
+            return result;
+        }
+
+        private FlashInfo CardInfo(Faction f)
+        {
+            FlashInfo result;
+            result.Url = Skin.Current.GetImageURL(f);
+            result.Message = new Message("You play {0}", f);
+            return result;
+        }
+
+        private FlashInfo CardInfo(GameEvent e, TreacheryCard c)
+        {
+            FlashInfo result;
+            result.Url = Skin.Current.GetImageURL(c);
+
+            if ((c.Type == TreacheryCardType.Karma || c.Type == TreacheryCardType.Useless) && e is Bid && (e as Bid).Passed)
+            {
+                result.Message = new Message("Card was won using {0}", TreacheryCardType.Karma);
+            }
+            else
+            {
+                result.Message = e?.GetMessage();
+            }
+
+            return result;
+        }
+
+        private FlashInfo CardInfo(ResourceCard c, Message m)
+        {
+            FlashInfo result;
+            result.Url = Skin.Current.GetImageURL(c);
+            result.Message = m;
+            return result;
+        }
+    }
+
+    public struct FlashInfo
+    {
+        public string Url;
+        public Message Message;
     }
 }

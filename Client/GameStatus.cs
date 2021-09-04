@@ -5,8 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Treachery.Shared;
 
-namespace Treachery.Shared
+namespace Treachery.Client
 {
     public class GameStatus
     {
@@ -17,6 +18,8 @@ namespace Treachery.Shared
         public IEnumerable<SequenceElement> WaitingInSequence { get; set; } = Array.Empty<SequenceElement>();
 
         public IEnumerable<Faction> WaitingForFactions { get; set; } = Array.Empty<Faction>();
+
+        public List<FlashInfo> FlashInfo = new List<FlashInfo>();
 
         public bool WaitingForHost { get; set; } = false;
 

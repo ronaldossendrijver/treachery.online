@@ -113,18 +113,18 @@ namespace Treachery.Shared
         public StrongholdAdvantage ChosenHMSAdvantage { get; private set; } = StrongholdAdvantage.None;
         public bool HasStrongholdAdvantage(Faction f, StrongholdAdvantage advantage, Territory battleTerritory)
         {
-            if (battleTerritory == Map.HiddenMobileStronghold.Territory && HasStronghold(f, Map.HiddenMobileStronghold) && ChosenHMSAdvantage == advantage)
+            if (battleTerritory == Map.HiddenMobileStronghold.Territory && OwnsStronghold(f, Map.HiddenMobileStronghold) && ChosenHMSAdvantage == advantage)
             {
                 return true;
             }
 
             return advantage switch
             {
-                StrongholdAdvantage.FreeResourcesForBattles => battleTerritory == Map.Arrakeen.Territory && HasStronghold(f, Map.Arrakeen),
-                StrongholdAdvantage.CollectResourcesForDial => battleTerritory == Map.SietchTabr.Territory && HasStronghold(f, Map.SietchTabr),
-                StrongholdAdvantage.CollectResourcesForUseless => battleTerritory == Map.TueksSietch.Territory && HasStronghold(f, Map.TueksSietch),
-                StrongholdAdvantage.CountDefensesAsAntidote => battleTerritory == Map.Carthag.Territory && HasStronghold(f, Map.Carthag),
-                StrongholdAdvantage.WinTies => battleTerritory == Map.HabbanyaSietch.Territory && HasStronghold(f, Map.HabbanyaSietch),
+                StrongholdAdvantage.FreeResourcesForBattles => battleTerritory == Map.Arrakeen.Territory && OwnsStronghold(f, Map.Arrakeen),
+                StrongholdAdvantage.CollectResourcesForDial => battleTerritory == Map.SietchTabr.Territory && OwnsStronghold(f, Map.SietchTabr),
+                StrongholdAdvantage.CollectResourcesForUseless => battleTerritory == Map.TueksSietch.Territory && OwnsStronghold(f, Map.TueksSietch),
+                StrongholdAdvantage.CountDefensesAsAntidote => battleTerritory == Map.Carthag.Territory && OwnsStronghold(f, Map.Carthag),
+                StrongholdAdvantage.WinTies => battleTerritory == Map.HabbanyaSietch.Territory && OwnsStronghold(f, Map.HabbanyaSietch),
                 _ => false
             };
         }
@@ -142,7 +142,7 @@ namespace Treachery.Shared
             };
         }
 
-        public bool HasStronghold(Faction f, Location stronghold)
+        public bool OwnsStronghold(Faction f, Location stronghold)
         {
             return StrongholdOwnership.ContainsKey(stronghold) && StrongholdOwnership[stronghold] == f;
         }

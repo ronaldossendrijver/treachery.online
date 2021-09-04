@@ -1,0 +1,104 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using System.Linq;
+@using Treachery.Shared;
+@using Treachery.Client.GenericComponents;
+@inherits GameComponent;
+@inject IJSRuntime JSRuntime;
+
+@if (h.Game != null)
+{
+    if (_visible)
+    {
+        <JsPanel Width="@WindowWidth" Height="@WindowHeight" HeaderShown="false" ShadowHeight="0" Autoclose="@TimeString" Theme="@JsPanelTheme.TRANSPARANT" Position="JsPanel.PanelPosition.Center" ContentOverflow="hidden" Resizable="false">
+
+            <div class="row m-0 p-0 w-100 justify-content-center" @onclick="Hide">
+
+                @foreach (var img in h.Status.FlashInfo)
+                {
+                    <div class="col-4 col-lg-2 p-1 bg-transparent">
+
+                        <img src="@img.Url" class="m-0 img-fluid text-center w-100" />
+
+                        @if (img.Message != null)
+                        {
+                            <div class='m-0 bg-transparent text-white text-center container-fluid w-100' style='@MsgStyle(WIDTH)'>@img.Message</div>
+                        }
+
+                    </div>
+                }
+
+            </div>
+
+        </JsPanel>
+    }
+}
+
+@code {
+
+    public const int WIDTH = 268;
+    private int WindowWidth = 500;
+    private int WindowHeight = 500;
+
+    private bool _visible = false;
+    
+    int afterEventId = -1;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (h.Game.EventCount != afterEventId)
+        {
+            afterEventId = h.Game.EventCount;
+
+            if (h.Status.FlashInfo.Any())
+            {
+                _visible = true;
+                StateHasChanged();
+                _ = Task.Delay(Time * 1000 + 1000).ContinueWith(e => Hide());
+            }
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var dimensions = await Browser.GetWindowDimensions();
+        WindowWidth = (int)(1.0f * dimensions.Width);
+        WindowHeight = (int)(0.6f * dimensions.Height);
+    }
+
+    private string ImgStyle(int width, int height)
+    {
+        return string.Format("width:{0}px; height:{1}px;", width, height);
+    }
+
+    private string MsgStyle(int width)
+    {
+        return string.Format("width:{0}px; font:{1}; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;", width, Skin.Current.PLAYEDCARD_MESSAGE_FONT);
+    }
+
+    private void Hide()
+    {
+        _visible = false;
+        StateHasChanged();
+    }
+
+    private string TimeString
+    {
+        get
+        {
+            return string.Format("{0}s", Time);
+        }
+    }
+
+    private int Time
+    {
+        get
+        {
+            return 2 + h.Status.FlashInfo.Count() * 3;
+        }
+    }
+
+}
+

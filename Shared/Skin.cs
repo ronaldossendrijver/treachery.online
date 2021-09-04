@@ -185,7 +185,7 @@ namespace Treachery.Shared
         public string WHEEL_FONTCOLOR;
         public string WHEEL_FONT_AGGRESSOR_BORDERCOLOR;
         public string WHEEL_FONT_DEFENDER_BORDERCOLOR;
-        public int WHEEL_FONT_BORDERWIDTH = 6;
+        public int WHEEL_FONT_BORDERWIDTH = 4;
 
         //Shadows
         public string SHADOW_DARK = "black";
@@ -624,8 +624,8 @@ namespace Treachery.Shared
                 Rule.BlueBot => Format("{0}Bot", Faction.Blue),
                 Rule.YellowBot => Format("{0}Bot", Faction.Yellow),
                 Rule.GreyBot => Format("{0}Bot", Faction.Grey),
-                Rule.BrownBot => Format("{0}Bot", Faction.Brown),
-                Rule.WhiteBot => Format("{0}Bot", Faction.White),
+                //Rule.BrownBot => Format("{0}Bot", Faction.Brown),
+                //Rule.WhiteBot => Format("{0}Bot", Faction.White),
                 Rule.BotsCannotAlly => "Bots may not initiate alliances",
                 Rule.CardsCanBeTraded => Format("Allow players to give cards to each other"),
                 Rule.PlayersChooseFactions => Format("Let players choose their factions at start"),
@@ -1190,12 +1190,12 @@ namespace Treachery.Shared
                 <p><strong>Charity:</strong> each turn, you collect 2 {16} for each faction in the game during {36} Charity before any factions collect. If another faction collects {36} Charity, it is paid to them from your {16}.</p>
                 <p><strong>Revival:</strong> you have no free revival, but you have no limit to the number of forces you may pay to revive, and it only costs you 1 {16} for each force.</p>
                 <p><strong>Treachery:</strong> You may hold up to 5 Treachery Cards. At the end of any phase, you may reveal duplicates of the same card from your hand, and discard the surplus ones for 3 {16} each. You may also discard {14} cards for 2 {16} for each. Alternatively, you may use {14} cards for special effects in the following manner:</p>
-                <p><i>{37}</i> - Prevent a player from moving forces into a territory you occupy during Ship & Move. They may ship in normally.</p>
-                <p><i>{38}</i> - Prevent a loss of your forces in one territory to the Storm when it moves.</p>
-                <p><i>{39}</i> - Prevent a player from playing a {19} card this phase as they attempt to do so.</p>
-                <p><i>{40}</i> - Move your forces one extra territory on your turn in Shipping and Movement.</p>
-                <p><i>{41}</i> - Prevent a player from taking Free Revival during Revival.</p>
-                <p><i>{42}</i> - Force a player to send 1 force of your choice from one territory to their reserves during the Mentat Pause.</p>
+                <p mt-0 mb-0><i>{37}</i> - Prevent a player from moving forces into a territory you occupy during Ship & Move. They may ship in normally.</p>
+                <p mt-0 mb-0><i>{38}</i> - Prevent a loss of your forces in one territory to the Storm when it moves.</p>
+                <p mt-0 mb-0><i>{39}</i> - Prevent a player from playing a {19} card this phase as they attempt to do so.</p>
+                <p mt-0 mb-0><i>{40}</i> - Move your forces one extra territory on your turn in Shipping and Movement.</p>
+                <p mt-0 mb-0><i>{41}</i> - Prevent a player from taking Free Revival during Revival.</p>
+                <p mt-0 mb-0><i>{42}</i> - Force a player to send 1 force of your choice from one territory to their reserves during the Mentat Pause.</p>
                 <p><p>Economics:</strong> during the Mentat Pause, you may play your Economics token with either the Double or Cancel side face up. In the following game turn, the amount collected for {36} Charity (including what you collect from your Charity advantage) is either doubled or canceled for that turn (even for {5} in the advanced game). In the next Mentat Pause, flip the Economics token to the other side. If the token has already been flipped it is removed from the game instead.</p>" +
 
               (advancedApplies ?
@@ -2329,7 +2329,7 @@ namespace Treachery.Shared
             TURN_FONT_BORDERWIDTH = 3,
 
             //Wheel
-            WHEEL_FONT = "normal normal normal 200px Advokat, Calibri, Tahoma, sans-serif",
+            WHEEL_FONT = "normal normal normal 190px Advokat, Calibri, Tahoma, sans-serif",
             WHEEL_FONTCOLOR = "black",
             WHEEL_FONT_AGGRESSOR_BORDERCOLOR = "white",
             WHEEL_FONT_DEFENDER_BORDERCOLOR = "white",

@@ -82,12 +82,22 @@ namespace Treachery.Shared
 
             var discarded = new List<TreacheryCard>();
 
-            if (myBattleplan.Weapon != null && TreacheryCards.Contains(myBattleplan.Weapon) && myBattleplan.Weapon.Type == TreacheryCardType.Useless && Faction != Faction.Brown)
+            if (myBattleplan.Weapon != null && 
+                TreacheryCards.Contains(myBattleplan.Weapon) && 
+                myBattleplan.Weapon.Type == TreacheryCardType.Useless && 
+                Faction != Faction.Brown &&
+                !Game.SkilledAs(this, LeaderSkill.Warmaster) &&
+                !Game.OwnsStronghold(Faction, Game.Map.TueksSietch))
             {
                 discarded.Add(myBattleplan.Weapon);
             }
 
-            if (myBattleplan.Defense != null && TreacheryCards.Contains(myBattleplan.Defense) && myBattleplan.Defense.Type == TreacheryCardType.Useless && Faction != Faction.Brown)
+            if (myBattleplan.Defense != null && 
+                TreacheryCards.Contains(myBattleplan.Defense) && 
+                myBattleplan.Defense.Type == TreacheryCardType.Useless && 
+                Faction != Faction.Brown && 
+                !Game.SkilledAs(this, LeaderSkill.Warmaster) &&
+                !Game.OwnsStronghold(Faction, Game.Map.TueksSietch))
             {
                 discarded.Add(myBattleplan.Defense);
             }

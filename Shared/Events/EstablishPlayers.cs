@@ -123,6 +123,7 @@ namespace Treachery.Shared
 
             if (Players.Count() + nrOfBots == 0 && !ApplicableRules.Contains(Rule.FillWithBots)) return "At least one player required";
             if (Players.Count() + nrOfBots > MaximumNumberOfPlayers) return "Too many players";
+            if (FactionsInPlay.Any(f => !AvailableFactions().Contains(f))) return "Invalid faction";
 
             return "";
         }
