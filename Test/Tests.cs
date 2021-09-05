@@ -152,10 +152,10 @@ namespace Treachery.Test
                 }
             }
 
-            var nonBgWithKarama = g.Players.FirstOrDefault(p => p.Faction != Faction.Blue && p.HasKarma);
-            if (e is BlueAccompanies ba && nonBgWithKarama != null)
+            var otherPlayerWithKarama = g.Players.FirstOrDefault(p => p.Faction != Faction.Grey && p.HasKarma);
+            if (e is GreySwappedCardOnBid ba && otherPlayerWithKarama != null)
             {
-                WriteSavegameIfApplicable(g, ba.Player, "Preventable accompany by " + nonBgWithKarama.Faction);
+                WriteSavegameIfApplicable(g, ba.Player, "Preventable swap by " + otherPlayerWithKarama.Faction);
             }
 
             if (e is Bureaucracy bc)

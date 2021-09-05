@@ -325,7 +325,24 @@ namespace Treachery.Shared
             CardsOnAuction.Shuffle();
             RecentMilestones.Add(Milestone.Shuffled);
             CurrentReport.Add(e);
-            Enter(GreyMaySwapCardOnBid, Phase.GreySwappingCard, StartBiddingRound);
+
+            if (GreyMaySwapCardOnBid)
+            {
+                if (Version < 113 || !Prevented(FactionAdvantage.GreySwappingCard))
+                {
+                    Enter(Phase.GreySwappingCard);
+                }
+                else
+                {
+                    LogPrevention(FactionAdvantage.GreySwappingCard);
+                    if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreySwappingCard);
+                    StartBiddingRound();
+                }
+            }
+            else
+            {
+                StartBiddingRound();
+            }
         }
 
         private bool GreyMaySwapCardOnBid
@@ -875,7 +892,24 @@ namespace Treachery.Shared
             if (!CardsOnAuction.IsEmpty)
             {
                 CardNumber++;
-                Enter(GreyMaySwapCardOnBid, Phase.GreySwappingCard, Version >= 107 || IsPlaying(Faction.Green), Phase.WaitingForNextBiddingRound, PutNextCardOnAuction);
+
+                if (GreyMaySwapCardOnBid)
+                {
+                    if (Version < 113 || !Prevented(FactionAdvantage.GreySwappingCard))
+                    {
+                        Enter(Phase.GreySwappingCard);
+                    }
+                    else
+                    {
+                        LogPrevention(FactionAdvantage.GreySwappingCard);
+                        if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreySwappingCard);
+                        Enter(Version >= 107 || IsPlaying(Faction.Green), Phase.WaitingForNextBiddingRound, PutNextCardOnAuction);
+                    }
+                }
+                else
+                {
+                    Enter(Version >= 107 || IsPlaying(Faction.Green), Phase.WaitingForNextBiddingRound, PutNextCardOnAuction);
+                }
             }
             else
             {

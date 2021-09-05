@@ -592,7 +592,7 @@ namespace Treachery.Shared
 
         private void LogPrevention(FactionAdvantage prevented)
         {
-            CurrentReport.Add("{0} prevents {2}.", TreacheryCardType.Karma, prevented);
+            CurrentReport.Add("{0} prevents {1}.", TreacheryCardType.Karma, prevented);
         }
     }
 

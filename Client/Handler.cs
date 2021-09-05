@@ -753,6 +753,8 @@ namespace Treachery.Client
         {
             if (!awaitingBotAction && Game.Players.Any(p => p.IsBot))
             {
+                awaitingBotAction = true;
+
                 int botDelay = 1000;
                 if (Status.FlashInfo.Any()) botDelay = 4000;
                 else if (Game.RecentMilestones.Any()) botDelay = 1500;
@@ -766,7 +768,6 @@ namespace Treachery.Client
                 else if (Game.CurrentPhase == Phase.BattlePhase) botDelay = 4000;
                 else if (Game.CurrentPhase == Phase.CallTraitorOrPass || Game.CurrentPhase == Phase.BattleConclusion || Game.CurrentPhase == Phase.Facedancing) botDelay = 10000;
 
-                awaitingBotAction = true;
                 _ = Task.Delay(botDelay).ContinueWith(e => PerformBotEvent());
             }
         }
