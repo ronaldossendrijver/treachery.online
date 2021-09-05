@@ -784,6 +784,7 @@ namespace Treachery.Shared
             if (Version >= 88 || AggressorBattleAction.By(Faction.Grey) || DefenderBattleAction.By(Faction.Grey))
             {
                 Allow(FactionAdvantage.GreySpecialForceBonus);
+                Allow(FactionAdvantage.GreyReplacingSpecialForces);
             }
 
             if (Version >= 88 || GetPlayer(AggressorBattleAction.Initiator).Ally == Faction.Black || GetPlayer(DefenderBattleAction.Initiator).Ally == Faction.Black)
@@ -1317,7 +1318,7 @@ namespace Treachery.Shared
             int specialForcesToSaveInTerritory = 0;
             int forcesToSaveInTerritory = 0;
 
-            if (winner.Faction != Faction.Grey)
+            if (!MaySubstituteForceLosses(winner))
             {
                 if (SkilledAs(plan.Hero, LeaderSkill.Graduate))
                 {
@@ -1363,7 +1364,7 @@ namespace Treachery.Shared
                 }
             }
 
-            if (winner.Faction != Faction.Grey || specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory == 0 || winner.ForcesIn(territory) <= plan.Forces + plan.ForcesAtHalfStrength)
+            if (!MaySubstituteForceLosses(winner) || specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory == 0 || winner.ForcesIn(territory) <= plan.Forces + plan.ForcesAtHalfStrength)
             {
                 int winnerForcesLost = forcesToLose - forcesToSaveToReserves - forcesToSaveInTerritory;
                 int winnerSpecialForcesLost = specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory;
@@ -1374,6 +1375,8 @@ namespace Treachery.Shared
                 GreySpecialForceLossesToTake = specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory;
             }
         }
+
+        private bool MaySubstituteForceLosses(Player p) => p.Faction == Faction.Grey && (Version < 113 || !Prevented(FactionAdvantage.GreyReplacingSpecialForces));
 
         private void HandleLosses(Territory territory, Player player, int forcesLost, int specialForcesLost)
         {
