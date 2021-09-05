@@ -39,21 +39,23 @@
         {
             y += spacing * (leaderPctHeight * (corpses.Count() - 1));
             int dy = 0;
+            int displaceX = 40;
             foreach (var leader in corpses)
             {
                 var l = new Point((int)x, (int)y - dy);
 
                 if (h.Game.LeaderState[leader].IsFaceDownDead)
                 {
-                    <Image X="@(l.X + DisplaceX[corpseNr] * 2)" Y="@(l.Y)" Diameter="@(leaderDiameter)"
+                    <Image X="@(l.X + displaceX)" Y="@(l.Y)" Diameter="@(leaderDiameter)"
                            Src="@Skin.Current.GetFactionFacedownImageURL(p.Faction)"
                            ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="2" />
                 }
                 else
                 {
-                    <MapLeader h="h" ToShow="leader" X=@(l.X + DisplaceX[corpseNr] * 2) Y=@(l.Y) Diameter="leaderDiameter"/>
+                    <MapLeader h="h" ToShow="leader" X=@(l.X + displaceX) Y=@(l.Y) Diameter="leaderDiameter"/>
                 }
 
+                displaceX *= -1;
                 dy += (int)leaderPctHeight;
                 corpseNr++;
             }
@@ -84,18 +86,4 @@
             x += 4 * Skin.Current.FORCETOKEN_RADIUS;
         }
     }
-
-    private static readonly int[] DisplaceX = Displace();
-
-    private static int[] Displace()
-    {
-        var rnd = new Random();
-        int[] result = new int[20];
-        for (int i = 0; i < 20; i++)
-        {
-            result[i] = 40 - rnd.Next(80);
-        }
-        return result;
-    }
-
 }
