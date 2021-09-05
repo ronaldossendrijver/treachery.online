@@ -465,6 +465,7 @@ namespace Treachery.Shared
         BattlesUnderStorm = 110,
         MovementBonusRequiresOccupationBeforeMovement = 111,
         AssistedNotekeeping = 112,
+        ResourceBonusForStrongholds = 113,
 
         ExtraKaramaCards = 999,
 

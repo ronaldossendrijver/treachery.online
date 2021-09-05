@@ -613,6 +613,8 @@ namespace Treachery.Shared
                 Rule.BattlesUnderStorm => "Battles may happen under the storm",
                 Rule.MovementBonusRequiresOccupationBeforeMovement => "Arrakeen/Carthag must be occupied before Ship&Move to grant ornithopters",
                 Rule.AssistedNotekeeping => "Mentat: auto notekeeping of knowable info (spice owned, cards seen, ...)",
+                Rule.ResourceBonusForStrongholds => "Stronghold spice bonus (even without increased spice flow)",
+
                 Rule.FillWithBots => "Fill empty seats with random Bots",
                 Rule.OrangeBot => Format("{0}Bot", Faction.Orange),
                 Rule.RedBot => Format("{0}Bot", Faction.Red),

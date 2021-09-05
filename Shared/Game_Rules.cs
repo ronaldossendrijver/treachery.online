@@ -403,6 +403,7 @@ namespace Treachery.Shared
                 case Rule.PlayersChooseFactions:
                 case Rule.RedSupportingNonAllyBids:
                 case Rule.AssistedNotekeeping:
+                case Rule.ResourceBonusForStrongholds:
                     return RuleGroup.House;
 
                 case Rule.FillWithBots:
