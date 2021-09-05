@@ -152,6 +152,12 @@ namespace Treachery.Test
                 }
             }
 
+            var nonBgWithKarama = g.Players.FirstOrDefault(p => p.Faction != Faction.Blue && p.HasKarma);
+            if (e is BlueAccompanies ba && nonBgWithKarama != null)
+            {
+                WriteSavegameIfApplicable(g, ba.Player, "Preventable accompany by " + nonBgWithKarama.Faction);
+            }
+
             if (e is Bureaucracy bc)
             {
                 WriteSavegameIfApplicable(g, bc.Player, Skin.Current.Format("Bureaucracy during {0}", g.CurrentMainPhase));
@@ -335,7 +341,7 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 10000;
+            int nrOfGames = 1000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 

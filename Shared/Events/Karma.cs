@@ -112,7 +112,7 @@ namespace Treachery.Shared
                 result.Add(FactionAdvantage.BlueUsingVoice);
                 if (g.Applicable(Rule.BlueWorthlessAsKarma)) result.Add(FactionAdvantage.BlueWorthlessAsKarma);
                 if (g.Applicable(Rule.BlueAdvisors)) result.Add(FactionAdvantage.BlueAnnouncesBattle);
-                if (g.Applicable(Rule.BlueAdvisors)) result.Add(FactionAdvantage.BlueNoFlipOnIntrusion);
+                if (g.Applicable(Rule.BlueAdvisors)) result.Add(FactionAdvantage.BlueIntrusion);
                 if (g.Applicable(Rule.BlueAutoCharity)) result.Add(FactionAdvantage.BlueCharity);
             }
 

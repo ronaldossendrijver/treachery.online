@@ -37,7 +37,7 @@ namespace Treachery.Shared
         {
             Allow(FactionAdvantage.BlueAccompanies);
             Allow(FactionAdvantage.GreenSpiceBlowPrescience);
-            Allow(FactionAdvantage.BlueNoFlipOnIntrusion);
+            Allow(FactionAdvantage.BlueIntrusion);
             Allow(FactionAdvantage.YellowExtraMove);
             Allow(FactionAdvantage.YellowProtectedFromStorm);
             Allow(FactionAdvantage.OrangeDetermineMoveMoment);

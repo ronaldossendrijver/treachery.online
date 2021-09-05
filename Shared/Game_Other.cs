@@ -590,6 +590,10 @@ namespace Treachery.Shared
             CurrentPlanetology = e;
         }
 
+        private void LogPrevention(FactionAdvantage prevented)
+        {
+            CurrentReport.Add("{0} prevents {2}.", TreacheryCardType.Karma, prevented);
+        }
     }
 
     class TriggeredBureaucracy

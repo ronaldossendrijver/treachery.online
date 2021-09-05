@@ -283,7 +283,7 @@ namespace Treachery.Shared
         BlueUsingVoice = 65,
         BlueWorthlessAsKarma = 70,
         BlueAnnouncesBattle = 71,
-        BlueNoFlipOnIntrusion = 72,
+        BlueIntrusion = 72,
         BlueCharity = 73,
 
         YellowControlsMonster = 80,
