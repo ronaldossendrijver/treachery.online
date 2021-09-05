@@ -265,7 +265,13 @@ namespace Treachery.Shared
         private void MainPhaseEnd()
         {
             CurrentMoment = MainPhaseMoment.End;
-            if (Version >= 103) AllowAllPreventedFactionAdvantages();
+
+            List<FactionAdvantage> expectionsToAllowing = new List<FactionAdvantage>();
+            if (CurrentMainPhase == MainPhase.Bidding && Prevented(FactionAdvantage.PurpleIncreasingRevivalLimits))
+            {
+                expectionsToAllowing.Add(FactionAdvantage.PurpleIncreasingRevivalLimits);
+            }
+            if (Version >= 103) AllowAllPreventedFactionAdvantages(expectionsToAllowing);
         }
 
         private void Enter(Phase phase)
@@ -656,11 +662,14 @@ namespace Treachery.Shared
 
         #region SupportMethods
 
-        private void AllowAllPreventedFactionAdvantages()
+        private void AllowAllPreventedFactionAdvantages(IEnumerable<FactionAdvantage> exceptions)
         {
             foreach (var adv in Enumerations.GetValuesExceptDefault(typeof(FactionAdvantage), FactionAdvantage.None))
             {
-                Allow(adv);
+                if (exceptions == null || !exceptions.Contains(adv))
+                {
+                    Allow(adv);
+                }
             }
         }
 

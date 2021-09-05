@@ -88,7 +88,7 @@ namespace Treachery.Shared
         private void EnterMentatPhase()
         {
             MainPhaseStart(MainPhase.Contemplate, Version >= 103);
-            AllowAllPreventedFactionAdvantages();
+            AllowAllPreventedFactionAdvantages(null);
             HandleEconomics();
             DetermineStrongholdOwnership();
             if (Version >= 108) AddBribesToPlayerResources();
@@ -173,6 +173,24 @@ namespace Treachery.Shared
             CheckNormalWin();
             CheckBeneGesseritPrediction();
             CheckFinalTurnWin();
+
+            if (Winners.Count > 0 || CurrentTurn == MaximumNumberOfTurns)
+            {
+                CurrentMainPhase = MainPhase.Ended;
+                Enter(Phase.GameEnded);
+                RecentMilestones.Add(Milestone.GameWon);
+                CurrentReport.Add("The game has ended.");
+
+                foreach (var w in Winners)
+                {
+                    CurrentReport.Add(w.Faction, "{0} win!", w.Faction);
+                }
+            }
+            else
+            {
+                Enter(IsPlaying(Faction.Purple) && (Version < 113 || !Prevented(FactionAdvantage.PurpleReplacingFaceDancer)), Phase.ReplacingFaceDancer, Phase.TurnConcluded);
+            }
+
             MainPhaseEnd();
         }
 
@@ -245,32 +263,18 @@ namespace Treachery.Shared
 
         private void CheckFinalTurnWin()
         {
-            if (Winners.Count == 0 && CurrentTurn == MaximumNumberOfTurns)
+            if (CurrentTurn == MaximumNumberOfTurns)
             {
-                CheckSpecialWinConditions();
-            }
-
-            if (Winners.Count == 0 && CurrentTurn == MaximumNumberOfTurns)
-            {
-                CheckOtherWinConditions();
-                CheckBeneGesseritPrediction();
-            }
-
-            if (Winners.Count > 0 || CurrentTurn == MaximumNumberOfTurns)
-            {
-                CurrentMainPhase = MainPhase.Ended;
-                Enter(Phase.GameEnded);
-                RecentMilestones.Add(Milestone.GameWon);
-                CurrentReport.Add("The game has ended.");
-
-                foreach (var w in Winners)
+                if (Winners.Count == 0)
                 {
-                    CurrentReport.Add(w.Faction, "{0} win!", w.Faction);
+                    CheckSpecialWinConditions();
                 }
-            }
-            else
-            {
-                Enter(IsPlaying(Faction.Purple), Phase.ReplacingFaceDancer, Phase.TurnConcluded);
+
+                if (Winners.Count == 0)
+                {
+                    CheckOtherWinConditions();
+                    CheckBeneGesseritPrediction();
+                }
             }
         }
 

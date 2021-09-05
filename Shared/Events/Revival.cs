@@ -51,7 +51,7 @@ namespace Treachery.Shared
             if (AmountOfForces > p.ForcesKilled) return "You can't revive that much.";
             if (AmountOfSpecialForces > p.SpecialForcesKilled) return "You can't revive that much.";
 
-            int emperorRevivals = (p.Ally == Faction.Red) ? Game.RedWillPayForExtraRevival : 0;
+            int emperorRevivals = Revival.RedExtraRevivals(Game, p);
 
             int limit = Game.GetRevivalLimit(Game, p);
 
@@ -156,7 +156,7 @@ namespace Treachery.Shared
 
         public static int ValidMaxRevivals(Game g, Player p, bool specialForces)
         {
-            var amountPaidByEmperor = p.Ally == Faction.Red ? g.RedWillPayForExtraRevival : 0;
+            var amountPaidByEmperor = RedExtraRevivals(g, p);
 
             if (!specialForces)
             {
@@ -238,6 +238,8 @@ namespace Treachery.Shared
 
             return cost;
         }
+
+        public static int RedExtraRevivals(Game g, Player p) => p.Ally == Faction.Red && (g.Version < 113 || !g.Prevented(FactionAdvantage.RedLetAllyReviveExtraForces)) ? g.RedWillPayForExtraRevival : 0;
     }
 
     public class RevivalCost
@@ -251,7 +253,7 @@ namespace Treachery.Shared
         public RevivalCost(Game g, Player initiator, IHero hero, int amountOfForces, int amountOfSpecialForces)
         {
             int costForForceRevival = Revival.GetPriceOfForceRevival(g, initiator, amountOfForces, amountOfSpecialForces);
-            var amountPaidForByEmperor = initiator.Ally == Faction.Red ? g.RedWillPayForExtraRevival : 0;
+            var amountPaidForByEmperor = Revival.RedExtraRevivals(g, initiator);
             var emperor = g.GetPlayer(Faction.Red);
             var emperorsSpice = emperor != null ? emperor.Resources : 0;
 
