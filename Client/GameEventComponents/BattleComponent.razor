@@ -98,7 +98,7 @@
 
         @if (Battle.ValidBattleHeroes(Game, Player).Any())
         {
-            <SelectHeroComponent Game="Game" @bind-Value="hero" Values="Battle.ValidBattleHeroes(Game, Player)" />
+            <SelectHeroComponent Game="Game" @bind-Value="hero" Values="Battle.ValidBattleHeroes(Game, Player)" Required="!Game.Applicable(Rule.BattleWithoutLeader)"/>
         }
         else
         {
@@ -195,7 +195,7 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
-        RedrawIfNeeded();
+        RedrawIfNeeded(firstRender);
     }
 
 
@@ -208,9 +208,10 @@
     private TreacheryCard lastdefense;
     private TreacheryCard lastweapon;
 
-    private void RedrawIfNeeded()
+    private void RedrawIfNeeded(bool firstRender)
     {
         if (
+        firstRender ||
         forces != lastforces ||
         specialForces != lastspecialForces ||
         resources != lastResources ||

@@ -3,18 +3,18 @@
 
 @{
     <Image X="@(X)" Y="@(Y)" Diameter="@(Skin.Current.BattleScreenWidth)" Src="@Skin.Current.BattleScreen_URL" 
-           ShadowColor="Skin.Current.SHADOW_LIGHT" ShadowX="10" ShadowY="10" ShadowBlur="4" 
+           ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="10" ShadowY="10" ShadowBlur="4" 
            Opacity="Opacity"/>
 
     <Image X="@(X)" Y="@(Y)" Diameter="@(Skin.Current.BattleScreenWidth)" Src="@Skin.Current.FactionTableImage_URL[Plan.Initiator]" 
            Opacity="(Aspect == PrescienceAspect.None ? 1f : 0.5f) * 0.3f"/>
 
+    var forceX = X + Skin.Current.BattleWheelForcesX;
+    var forceY = Y + Skin.Current.BattleWheelForcesY;
+
     if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Dial)
     {
         var dial = Plan.Dial(Game, IsAggressor ? Game.CurrentBattle.Target : Game.CurrentBattle.Initiator).ToString();
-
-        var forceX = X + Skin.Current.BattleWheelForcesX;
-        var forceY = Y + Skin.Current.BattleWheelForcesY;
 
         <MapText ToShow="@dial"
                  X="@(forceX)" Y="@(forceY - 20)"
@@ -25,13 +25,11 @@
 
     if (Aspect == PrescienceAspect.None)
     {
-        var forceX = X + Skin.Current.BattleWheelForcesX;
-        var forceY = Y + Skin.Current.BattleWheelForcesY;
-
         int costsOfBattle = Plan.Cost(Game);
         if (costsOfBattle > 0)
         {
-            <Image X="@(forceX + 250 - Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY + 50 - Skin.Current.RESOURCETOKEN_RADIUS)" Diameter="@(Skin.Current.RESOURCETOKEN_RADIUS * 2)" Src="@Skin.Current.Harvester_URL" ShadowColor="Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1" />
+            <Image X="@(forceX + 250 - Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY + 50 - Skin.Current.RESOURCETOKEN_RADIUS)" Diameter="@(Skin.Current.RESOURCETOKEN_RADIUS * 2)" 
+                   Src="@Skin.Current.Harvester_URL" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1" />
 
             <MapText ToShow="@costsOfBattle.ToString()"
                      X="@(forceX + 250)" Y="@(forceY + 100)"
@@ -67,7 +65,7 @@
                 var skillY = Y + Skin.Current.BattleScreenHeroY - Skin.Current.BattleWheelCardHeight + 300;
 
                 <Image X="@(skillX)" Y="@(skillY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageURL(skill)" 
-                       ShadowColor="Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="1" 
+                       ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="1" 
                        Popover="@Support.GetSkillCardHoverHTML(skill)"/>
 
                 int bonus = Battle.DetermineSkillBonus(Game, Plan, out _);
@@ -98,7 +96,7 @@
         else if (Plan.Hero is TreacheryCard)
         {
             <Image X="@(X + Skin.Current.BattleScreenHeroX)" Y="@(Y + Skin.Current.BattleScreenHeroY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
-                   Src="@Skin.Current.GetImageURL(Plan.Hero as TreacheryCard)" ShadowColor="Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="1" 
+                   Src="@Skin.Current.GetImageURL(Plan.Hero as TreacheryCard)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="1" 
                    Popover="@Support.GetTreacheryCardHoverHTML(Plan.Hero as TreacheryCard)"/>
         }
 
@@ -113,7 +111,7 @@
 
         if (Plan.Initiator == Faction.Green && Plan.Messiah)
         {
-            <Image X="@(X + Skin.Current.BattleScreenHeroX + Skin.Current.BattleWheelHeroWidth / 1.5f)" Y="@(Y + Skin.Current.BattleScreenHeroY - 50)" Diameter="@(0.5f * Skin.Current.BattleWheelHeroWidth)" Src="@Skin.Current.Messiah_URL" ShadowColor="Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1" />
+            <Image X="@(X + Skin.Current.BattleScreenHeroX + Skin.Current.BattleWheelHeroWidth / 1.5f)" Y="@(Y + Skin.Current.BattleScreenHeroY - 50)" Diameter="@(0.5f * Skin.Current.BattleWheelHeroWidth)" Src="@Skin.Current.Messiah_URL" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1" />
         }
     }
 
@@ -122,7 +120,7 @@
         if (Plan.Defense != null)
         {
             <Image X="@(X + Skin.Current.BattleWheelCardX + Skin.Current.BattleWheelCardWidth + 30)" Y="@(Y + Skin.Current.BattleWheelCardY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
-                   Src="@Skin.Current.GetImageURL(Plan.Defense)" ShadowColor="Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="1" 
+                   Src="@Skin.Current.GetImageURL(Plan.Defense)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="1" 
                    Popover="@Support.GetTreacheryCardHoverHTML(Plan.Defense)"/>
         }
         else if (Aspect == PrescienceAspect.Defense)
@@ -140,7 +138,7 @@
         if (Plan.Weapon != null)
         {
             <Image X="@(X + Skin.Current.BattleWheelCardX)" Y="@(Y + Skin.Current.BattleWheelCardY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
-                   Src="@Skin.Current.GetImageURL(Plan.Weapon)" ShadowColor="Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="1" 
+                   Src="@Skin.Current.GetImageURL(Plan.Weapon)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="1" 
                    Popover="@Support.GetTreacheryCardHoverHTML(Plan.Weapon)"/>
         }
         else if (Aspect == PrescienceAspect.Weapon)

@@ -158,7 +158,7 @@ namespace Treachery.Shared
 
         protected virtual ClairVoyanceAnswered DetermineClairVoyanceAnswered()
         {
-            LogInfo("DetermineClairVoyanceAnswered()");
+            LogInfo("DetermineClairVoyanceAnswered() {0}", Game.LatestClairvoyance.Question);
 
             ClairVoyanceAnswer answer = ClairVoyanceAnswer.Unknown;
 
@@ -219,7 +219,6 @@ namespace Treachery.Shared
                             if (plan != null)
                             {
                                 answer = Answer(plan.Dial(Game, Game.CurrentBattle.OpponentOf(this).Faction) > (float)Game.LatestClairvoyance.Parameter1);
-                                //Game.StartDeal(new Deal() { Type = answer == ClairVoyanceAnswer.Yes ? DealType.UseLeaderInBattle : DealType.DontUseLeaderInBattle, BoundFaction = Faction, DealParameter1 = Game.CurrentClairvoyance.Parameter1.ToString(), End = Phase.BattleConclusion });
                             }
                         }
                         break;
@@ -232,7 +231,6 @@ namespace Treachery.Shared
                             if (plan != null)
                             {
                                 answer = Answer(plan.Hero == (IHero)Game.LatestClairvoyance.Parameter1);
-                                //Game.StartDeal(new Deal() { Type = answer == ClairVoyanceAnswer.Yes ? DealType.UseLeaderInBattle : DealType.DontUseLeaderInBattle, BoundFaction = Faction, DealParameter1 = Game.CurrentClairvoyance.Parameter1.ToString(), End = Phase.BattleConclusion });
                             }
                         }
                         break;
@@ -255,7 +253,6 @@ namespace Treachery.Shared
 
                     case ClairvoyanceQuestion.WillAttackX:
                         answer = ClairVoyanceAnswer.No;
-                        Game.StartDeal(new Deal() { Type = DealType.DontShipOrMoveTo, BoundFaction = Faction, DealParameter1 = Game.LatestClairvoyance.QuestionParameter1, End = Phase.ShipmentAndMoveConcluded });
                         break;
                 }
             }

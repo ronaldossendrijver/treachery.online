@@ -94,7 +94,10 @@ namespace Treachery.Shared
 
         private void AddPlayersToGame(EstablishPlayers e)
         {
-            AddBots();
+            if (Version < 113)
+            {
+                AddBots();
+            }
 
             foreach (var newPlayer in e.Players)
             {
@@ -105,7 +108,6 @@ namespace Treachery.Shared
 
             FillEmptySeatsWithBots();
         }
-
         private void AddBots()
         {
             if (Applicable(Rule.OrangeBot)) Players.Add(new Player(this, UniquePlayerName("Edric*"), Faction.Orange, true));
@@ -119,7 +121,6 @@ namespace Treachery.Shared
             //if (Applicable(Rule.BrownBot)) Players.Add(new Player(this, UniquePlayerName("Brown*"), Faction.Brown, true));
             //if (Applicable(Rule.WhiteBot)) Players.Add(new Player(this, UniquePlayerName("White*"), Faction.White, true));
         }
-
         private string UniquePlayerName(string name)
         {
             var result = name;

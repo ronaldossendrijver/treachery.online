@@ -404,19 +404,11 @@ namespace Treachery.Shared
                 case Rule.RedSupportingNonAllyBids:
                 case Rule.AssistedNotekeeping:
                 case Rule.ResourceBonusForStrongholds:
+                case Rule.BattleWithoutLeader:
+                case Rule.CapturedLeadersAreTraitorsToOwnFaction:
                     return RuleGroup.House;
 
                 case Rule.FillWithBots:
-                case Rule.OrangeBot:
-                case Rule.RedBot:
-                case Rule.BlackBot:
-                case Rule.PurpleBot:
-                case Rule.BlueBot:
-                case Rule.GreenBot:
-                case Rule.YellowBot:
-                case Rule.GreyBot:
-                //case Rule.BrownBot:
-                //case Rule.WhiteBot:
                 case Rule.BotsCannotAlly:
                     return RuleGroup.Bots;
 

@@ -1627,7 +1627,7 @@ namespace Treachery.Shared
         public void HandleEvent(Thought e)
         {
             CurrentThought = e;
-            var opponent = CurrentBattle.OpponentOf(e.Initiator);
+            var opponent = CurrentBattle.OpponentOf(e.Initiator).Faction;
             CurrentReport.Add(e.Initiator, "By {0}, {1} ask {2} if they have a {3}.", LeaderSkill.Thinker, e.Initiator, opponent, e.Card);
 
             Enter(Phase.Thought);

@@ -471,7 +471,9 @@ namespace Treachery.Shared
 
         CardsCanBeTraded = 1010,
         PlayersChooseFactions = 1011,
-        RedSupportingNonAllyBids = 1012
+        RedSupportingNonAllyBids = 1012,
+        BattleWithoutLeader = 1013,
+        CapturedLeadersAreTraitorsToOwnFaction = 1014,
     }
 
     public enum RuleGroup

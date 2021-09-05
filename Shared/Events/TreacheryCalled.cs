@@ -51,8 +51,9 @@ namespace Treachery.Shared
             {
                 if (!g.DefenderBattleAction.Messiah)
                 {
-                    if (g.AggressorBattleAction.Initiator == p.Faction && HasTraitor(p, g.DefenderBattleAction.Hero) ||
-                         p.Is(Faction.Black) && p.Ally == g.AggressorBattleAction.Initiator && !g.Prevented(FactionAdvantage.BlackCallTraitorForAlly) && HasTraitor(p, g.DefenderBattleAction.Hero))
+                    if (g.AggressorBattleAction.Initiator == p.Faction && HasTraitor(g, p, g.DefenderBattleAction.Hero) ||
+                         p.Is(Faction.Black) && p.Ally == g.AggressorBattleAction.Initiator && !g.Prevented(FactionAdvantage.BlackCallTraitorForAlly) && HasTraitor(g, p, g.DefenderBattleAction.Hero))
+                          
                     {
                         return true;
                     }
@@ -60,8 +61,8 @@ namespace Treachery.Shared
 
                 if (!g.AggressorBattleAction.Messiah)
                 {
-                    if (g.DefenderBattleAction.Initiator == p.Faction && HasTraitor(p, g.AggressorBattleAction.Hero) ||
-                         p.Is(Faction.Black) && p.Ally == g.DefenderBattleAction.Initiator && !g.Prevented(FactionAdvantage.BlackCallTraitorForAlly) && HasTraitor(p, g.AggressorBattleAction.Hero))
+                    if (g.DefenderBattleAction.Initiator == p.Faction && HasTraitor(g, p, g.AggressorBattleAction.Hero) ||
+                         p.Is(Faction.Black) && p.Ally == g.DefenderBattleAction.Initiator && !g.Prevented(FactionAdvantage.BlackCallTraitorForAlly) && HasTraitor(g, p, g.AggressorBattleAction.Hero))
                     {
                         return true;
                     }
@@ -71,9 +72,9 @@ namespace Treachery.Shared
             return false;
         }
 
-        private static bool HasTraitor(Player p, IHero h)
+        private static bool HasTraitor(Game g, Player p, IHero h)
         {
-            return p.Traitors.Any(t => t.IsTraitor(h));
+            return p.Traitors.Any(t => t.IsTraitor(h)) || h != null && g.Applicable(Rule.CapturedLeadersAreTraitorsToOwnFaction) && h.Faction == p.Faction;
         }
     }
 }

@@ -630,6 +630,8 @@ namespace Treachery.Shared
                 Rule.CardsCanBeTraded => Format("Allow players to give cards to each other"),
                 Rule.PlayersChooseFactions => Format("Let players choose their factions at start"),
                 Rule.RedSupportingNonAllyBids => Format("{0} may support bids of non-ally players", Faction.Red),
+                Rule.BattleWithoutLeader => "Allow leaderless battles even if leaders are available", 
+                Rule.CapturedLeadersAreTraitorsToOwnFaction => "Captured leaders can be called as traitors by their original factions",
                 _ => "unknown rule",
             };
         }

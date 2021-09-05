@@ -23,7 +23,6 @@ namespace Treachery.Client
         public const int DISCONNECT_TIMEOUT = 25000;
         public const int CHATMESSAGE_LIFETIME = 120;
 
-        //public readonly Main _page;
         public readonly HubConnection _connection;
         private readonly ILogger _logger;
 
@@ -52,7 +51,6 @@ namespace Treachery.Client
 
         public bool IsDisconnected
         {
-
             get
             {
                 return Disconnected != default;
@@ -66,8 +64,6 @@ namespace Treachery.Client
 
         public Handler(Uri uri, ILogger logger)
         {
-            //var reconnectTimeouts = new int[] { 0, 2, 10, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20 };
-
             _connection = new HubConnectionBuilder()
             .WithUrl(uri)
             .WithAutomaticReconnect(new RetryPolicy())
@@ -78,7 +74,6 @@ namespace Treachery.Client
             })
             .Build();
 
-            //_page = page;
             _logger = logger;
             Game = new Game();
             UpdateStatus();
@@ -309,7 +304,7 @@ namespace Treachery.Client
             if (_connection.State == HubConnectionState.Disconnected || DateTime.Now.Subtract(hostLastSeen).TotalMilliseconds > DISCONNECT_TIMEOUT)
             {
                 Disconnected = DateTime.Now;
-                //NEWMAP//await MapDrawer.Draw();
+                Refresh();
                 return true;
             }
 
@@ -473,14 +468,10 @@ namespace Treachery.Client
             {
                 _pending.Clear();
 
-                //NEWMAP//MapDrawer.Loading = true;
-
                 var state = GameState.Load(stateData);
 
                 var result = Game.TryLoad(state, false, false, ref Game);
                 Game.MessageHandler += Game_MessageHandler;
-
-                //NEWMAP//MapDrawer.Loading = false;
 
                 if (result != "")
                 {
@@ -717,8 +708,6 @@ namespace Treachery.Client
 
                 if (e == null || !(Game.CurrentPhase == Phase.Bidding || Game.CurrentPhase == Phase.BlackMarketBidding))
                 {
-                    //NEWMAP//MapDrawer.UpdateIntelligence();
-
                     if (IsHost)
                     {
                         await SaveGame();

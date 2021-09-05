@@ -403,9 +403,15 @@ namespace Treachery.Shared
 
         #region DestinationsOfMovement
 
+        protected IEnumerable<Location> ValidMovementLocations(Location from, Battalion battalion)
+        {
+            var forbidden = Game.Deals.Where(deal => deal.BoundFaction == Faction && deal.Type == DealType.DontShipOrMoveTo).Select(deal => deal.GetParameter1<Territory>(Game));
+            return PlacementEvent.ValidTargets(Game, this, from, battalion).Where(l => !forbidden.Contains(l.Territory));
+        }
+
         protected virtual Location VacantAndSafeNearbyStronghold(Location from, Battalion battalion)
         {
-            return PlacementEvent.ValidTargets(Game, this, from, battalion).Where(to =>
+            return ValidMovementLocations(from, battalion).Where(to =>
                 IsStronghold(to) &&
                 !StormWillProbablyHit(to) &&
                 Vacant(to)
@@ -419,7 +425,7 @@ namespace Treachery.Shared
 
         protected virtual Location UnthreatenedAndSafeNearbyStronghold(Location from, Battalion battalion)
         {
-            return PlacementEvent.ValidTargets(Game, this, from, battalion).Where(to =>
+            return ValidMovementLocations(from, battalion).Where(to =>
                 IsStronghold(to) &&
                 !StormWillProbablyHit(to) &&
                 NotOccupiedByOthers(to)
@@ -428,7 +434,7 @@ namespace Treachery.Shared
 
         protected virtual Location WeakAndSafeNearbyStronghold(Location from, Battalion battalion)
         {
-            return PlacementEvent.ValidTargets(Game, this, from, battalion).Where(to =>
+            return ValidMovementLocations(from, battalion).Where(to =>
                 IsStronghold(to) &&
                 AnyForcesIn(to) > 0 &&
                 AllyNotIn(to.Territory) &&
@@ -438,7 +444,7 @@ namespace Treachery.Shared
 
         protected virtual Location WinnableNearbyStronghold(Location from, Battalion battalion)
         {
-            var enemyWeakStrongholds = PlacementEvent.ValidTargets(Game, this, from, battalion).Where(to =>
+            var enemyWeakStrongholds = ValidMovementLocations(from, battalion).Where(to =>
                 IsStronghold(to) &&
                 OccupiedByOpponent(to) &&
                 AllyNotIn(to) &&

@@ -348,7 +348,7 @@ namespace Treachery.Shared
             if (AllyContributionAmount > MaxAllyResources(Game, p, Forces, SpecialForces)) return "Your ally won't pay that much";
             int cost = Cost(Game, p, Forces, SpecialForces);
             if (cost > p.Resources + AllyContributionAmount) return Skin.Current.Format("You can't pay {0} {1} to fight with {2} forces at full strength.", cost, Concept.Resource, Forces + SpecialForces);
-            if (Hero == null && ValidBattleHeroes(Game, p).Any()) return "You must select a hero.";
+            if (Hero == null && ValidBattleHeroes(Game, p).Any() && !Game.Applicable(Rule.BattleWithoutLeader)) return "You must select a hero.";
             if (Hero != null && !ValidBattleHeroes(Game, p).Contains(Hero)) return "Invalid hero.";
             if (Weapon != null && Weapon == Defense) return "Can't use the same card as weapon and defense.";
             if (Hero == null && (Weapon != null || Defense != null)) return "Can't use treachery cards without a hero.";

@@ -11,7 +11,7 @@ namespace Treachery.Shared
     public partial class Game
     {
         public const int LowestSupportedVersion = 68;
-        public const int LatestVersion = 113;
+        public const int LatestVersion = 114;
 
         public bool BotInfologging = false;
 

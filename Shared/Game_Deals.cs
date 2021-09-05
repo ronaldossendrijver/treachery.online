@@ -52,10 +52,10 @@ namespace Treachery.Shared
         public List<Deal> Deals = new List<Deal>();
 
 
-        public void StartDeal(Deal deal)
+        private void StartDeal(Deal deal)
         {
             Deals.Add(deal);
-            //CurrentReport.Add(new Message("Deal: {0}", deal.ToString(this)));
+            CurrentReport.Add(new Message("Deal: {0}", deal.ToString(this)));
         }
 
         public bool HasDeal(Faction f, DealType type)

@@ -115,6 +115,14 @@ namespace Treachery.Test
                 return "Too many cards: " + p + " after " + e.GetType().Name + " -> " + g.History.Count;
             }
 
+            if (e is Battle b && b.Initiator == Faction.Black && 
+                g.CurrentBattle.OpponentOf(Faction.Black).Faction != Faction.Purple && 
+                Battle.ValidBattleHeroes(g,b.Player).Any(l => l.Faction == g.CurrentBattle.OpponentOf(Faction.Black).Faction))
+            {
+                WriteSavegameIfApplicable(g, b.Player, Skin.Current.Format("MAY USE TRAITOR LEADER {0}", StrongholdAdvantage.FreeResourcesForBattles));
+            }
+
+            /*
             WriteSavegameIfApplicable(g, typeof(BrownEconomics));
             WriteSavegameIfApplicable(g, typeof(DiscardedTaken));
             WriteSavegameIfApplicable(g, typeof(Diplomacy));
@@ -196,6 +204,7 @@ namespace Treachery.Test
             {
                 WriteSavegameIfApplicable(g, bc5.Player, Skin.Current.Format("advantage {0}", StrongholdAdvantage.FreeResourcesForBattles));
             }
+            */
 
             return "";
         }
@@ -341,7 +350,7 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 1000;
+            int nrOfGames = 500;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
@@ -349,6 +358,8 @@ namespace Treachery.Test
             var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
             rules.Add(Rule.FillWithBots);
             rules.Add(Rule.AssistedNotekeeping);
+            rules.Add(Rule.CapturedLeadersAreTraitorsToOwnFaction);
+            rules.Add(Rule.BattleWithoutLeader);
             var factions = EstablishPlayers.AvailableFactions().ToList();
             int nrOfTurns = 7;
             int nrOfPlayers = factions.Count;

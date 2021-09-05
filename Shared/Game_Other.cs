@@ -247,6 +247,13 @@ namespace Treachery.Shared
         {
             LatestClairvoyanceQandA = new ClairVoyanceQandA(LatestClairvoyance, e);
             CurrentReport.Add(e);
+
+            if (LatestClairvoyance.Question == ClairvoyanceQuestion.WillAttackX && e.Answer == ClairVoyanceAnswer.No)
+            {
+                var deal = new Deal() { Type = DealType.DontShipOrMoveTo, BoundFaction = e.Initiator, ConsumingFaction = LatestClairvoyance.Initiator, DealParameter1 = LatestClairvoyance.QuestionParameter1, End = Phase.ShipmentAndMoveConcluded };
+                StartDeal(deal);
+            }
+
             Enter(phasePausedByClairvoyance);
         }
 
