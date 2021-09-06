@@ -15,12 +15,15 @@
             @{
                 var currentFactionsToAct = h.Status.WaitingForFactions;
 
-                if (h.Game.CurrentPhase == Phase.BlackMarketBidding || h.Game.CurrentPhase == Phase.Bidding || h.Game.CurrentPhase == Phase.BiddingReport)
+                if (h.Game.CurrentMainPhase == MainPhase.Bidding)
                 {
+                    bool showTurnInSequence = h.Game.CurrentPhase == Phase.BlackMarketBidding || h.Game.CurrentPhase == Phase.Bidding || h.Game.CurrentPhase == Phase.BiddingReport;
+                    var hasTurn = currentFactionsToAct.Count() == 1 && !showTurnInSequence ? currentFactionsToAct.First() : Faction.None;
+
                     foreach (var se in ToBid)
                     {
                         <div class="d-inline-block p-2" style="filter:drop-shadow(1px 1px 1px black)">
-                            <NumberComponent Value="se.Player.TreacheryCards.Count" Size="@(se.HasTurn ? 48 : 32)"
+                            <NumberComponent Value="se.Player.TreacheryCards.Count" Size="@(se.Player.Faction == hasTurn || showTurnInSequence && se.HasTurn ? 48 : 32)"
                                              SymbolSRC="@Skin.Current.GetImageURL(se.Player.Faction)"
                                              NumberColor="@(se.Player.HasRoomForCards ? "black" : "red")" NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
                         </div>

@@ -1150,30 +1150,30 @@ namespace Treachery.Shared
 
             return
               @"<div style='{25}'>
-                <p><strong>At start:</strong> 20 tokens in reserve (off-planet). Start with 5 {16}. You have a separate cache of 10 Special Treachery cards. These cards are not part of your hand.</p>
+                <p><strong>At start:</strong> 20 tokens in reserve (off-planet). Start with 5 {16}. You have a separate deck of 10 {25} cards that are not part of your hand.</p>
                 <p><strong>Free revival:</strong> 2.</p>
                 <h5>Basic Advantages</h5>
                 <p>You have alternative technology.</p>
-                <p><strong>Bidding:</strong> when drawing Treachery cards up for bid, one less card is drawn and instead you choose to auction a {35} card from your cache first or last. When it is time to auction that card, you choose and reveal the card to auction from your cache and the type of auction (Once Around or Silent). You collect payment on your cards sold to other factions. If you buy any, the {16} goes to the {2} or the {16} Bank normally. Whenever discarded, they go to the normal discard pile. Your cards can’t be bought or acquired with {19}.</p>
-                <p><i>Once Around Auction:</i> pick clockwise or counter-clockwise, and starting with the faction on one side of you, each player able to bid may pass or bid higher. You bid last and the highest bidder buys the card. If everyone else passes, you may get the card for free or remove it from the game.</p>
-                <p><i>Silent Auction:</i> all factions able to bid secretly choose an amount to bid ot pass. Choices are revealed simultaneously. The faction that bid to most wins the card (ties break according to Storm order). If all factions pass or bid zero {16}, you may either gain the card for free or remove it from the game.</p>
-                <p><strong>Shipping:</strong> instead of normal shipping, you may ship one of your No-Field tokens (0, 3 or 5) face down, paying for one force. Other factions do not know how many of your forces are located there, but must proceed as if at least one is there. You may reveal a No-Field token at any time, placing the indicated number of forces from your reserves (or up to that amount if you have fewer forces left). You may move a No-Field token like a force.</p>
-                <p>You may not have two No-Field tokens on the planet at the same time. You may not use the same No-Field token twice in a row. The last used token is faceup in front of your shield until another one is used.</p>
-                <p>When you are in a battle, you must reveal a No-Field token in that territory when revealing your Battle Plan and place the number of forces indicated by the No-Field token from your reserves (or up to that amount if you have fewer forces left). When you are in a Battle with a No-Field token, {0} may not see your number dialed.</p>
+                <p><strong>Bidding:</strong> when drawing Treachery cards up for bid, one less card is drawn and instead you choose to auction a card from your {35} deck first or last. When it is time to auction that card, you choose and reveal the card and the type of auction (Once Around or Silent). You collect payment on your cards sold to other factions. If you buy any, the {16} goes to the {2} or the {16} Bank normally. Whenever discarded, these cards go to the normal discard pile. They can’t be bought with {19}.</p>
+                <p><i>Once Around Auction:</i> pick clockwise or counter-clockwise. Starting with the faction on one side of you, each player able to bid may pass or bid higher. You bid last and the highest bidder gets the card. If everyone else passes, you may either get the card for free or remove it from the game.</p>
+                <p><i>Silent Auction:</i> all factions able to bid secretly choose an amount to bid. Choices are revealed simultaneously. The faction that bid to most wins the card (ties break according to Storm order). If all factions bid zero {16}, you may either get the card for free or remove it from the game.</p>
+                <p><strong>Shipping:</strong> instead of normal shipping, you may ship one of your No-Field tokens (0, 3 or 5) face-down, paying for one force. Other factions do not know how many of your forces are located there and proceed as if at least one is there. You may reveal a No-Field token at any time before the Battle phase, placing the indicated number of forces from your reserves (or up to that amount if you have fewer forces left). You may move a No-Field token like a force.</p>
+                <p>You may not have two No-Field tokens on the planet at the same time. The last revealed token stays face-up in front of your shield until another one is revealed.</p>
+                <p>When you are in a battle, you must reveal the value of a No-Field token in that territory and place the indicated number of forces from your reserves (or up to that amount if you have fewer forces left). When you are in a Battle with a No-Field token, {0} may not see your force dial.</p>
                 <p><strong>{3} Special Victory Condition:</strong> {35} counts as one of the factions that can not occupy {8} in order to fulfill the {3} Special Victory Condition.</p>" +
 
               (advancedApplies ?
               @"<h5>Advanced Advantages</h5>" : "") +
 
               (g.Applicable(Rule.WhiteBlackMarket) ?
-              @"<p><strong>Black Market:</strong> at the start of the Bidding Round, you may offer one Treachery card from your hand up for auction. You may announce what you are selling (you may lie) and keep the card face down ({0} may still look). The card may be auctioned the normal way or via your alternative auction methods. If no player bids you keep the card. If it is sold, one fewer Treachery card is put up for auction as part of the normal Bidding Round. You collect payments on Black Market cards sold to other factions. If you buy any, the {16} goes to the {2} or the {16} Bank normally. {19} cards can not be used to acquire Black Market cards. Any bids on Black Market cards using the normal bidding method use storm order, and normal bidding resumes wherever it left off.</p>" : "") +
+              @"<p><strong>Black Market:</strong> at the start of the Bidding Round, you may auction one card from your hand. You may tell what you are selling (you may lie) and keep the card face-down ({0} may still look). You may use any type of auction. If no player bids, you keep the card. If it is sold, one fewer card is put up for auction as part of the normal Bidding Round. You collect payments on cards sold to other factions. If you buy any, the {16} goes to the {2} or the {16} Bank normally. They can’t be bought with {19}. If the normal bidding type was used, the regular bidding round resumes wherever it left off.</p>" : "") +
 
               (g.Applicable(Rule.AdvancedKarama) ?
               @"<p><strong>Special {19}:</strong> you may buy a card from your separate cache for 3 {16} at any time.</p>" : "") +
 
               @"<h5>Alliance Powers</h5>
-                <p>Your ally may ship using one of your available No-Field tokens, revealing immediately upon shipping. Place the used No-Field token faceup in front of your shield until you place another No-Field token.</p>
-                <p>You may also give your ally a {35} Card from your hand at any time.</p>
+                <p>Your ally may ship using one of your available No-Field tokens, revealing it immediately upon shipping. Place the used No-Field token face-up in front of your shield until you reveal another No-Field token.</p>
+                <p>You may give your ally a {35} Card from your hand at any time.</p>
                 <h5>Strategy</h5>
                 <p>To Do</p>
                 </div>";
@@ -1189,32 +1189,32 @@ namespace Treachery.Shared
                 <p><strong>Free revival:</strong> 0.</p>
                 <h5>Basic Advantages</h5>
                 <p>You control economic affairs across the Imperium.</p>
-                <p><strong>Charity:</strong> each turn, you collect 2 {16} for each faction in the game during {36} Charity before any factions collect. If another faction collects {36} Charity, it is paid to them from your {16}.</p>
-                <p><strong>Revival:</strong> you have no free revival, but you have no limit to the number of forces you may pay to revive, and it only costs you 1 {16} for each force.</p>
-                <p><strong>Treachery:</strong> You may hold up to 5 Treachery Cards. At the end of any phase, you may reveal duplicates of the same card from your hand, and discard the surplus ones for 3 {16} each. You may also discard {14} cards for 2 {16} for each. Alternatively, you may use {14} cards for special effects in the following manner:</p>
+                <p><strong>Charity:</strong> each turn, you collect 2 {16} for each faction in the game during Charity before any factions collect. If another faction collects Charity, it is paid to them from your {16}.</p>
+                <p><strong>Revival:</strong> you have no free revival, but you have no limit to the number of forces you may pay to revive and it only costs you 1 for each force.</p>
+                <p><strong>Treachery:</strong> You may hold up to 5 Treachery Cards. At the end of any phase, you may reveal duplicates of the same card from your hand for 3 {16} each. You may also discard {14} cards for 2 {16} each. Alternatively, you may use {14} cards as follows:</p>
                 <p mt-0 mb-0><i>{37}</i> - Prevent a player from moving forces into a territory you occupy during Ship & Move. They may ship in normally.</p>
                 <p mt-0 mb-0><i>{38}</i> - Prevent a loss of your forces in one territory to the Storm when it moves.</p>
                 <p mt-0 mb-0><i>{39}</i> - Prevent a player from playing a {19} card this phase as they attempt to do so.</p>
-                <p mt-0 mb-0><i>{40}</i> - Move your forces one extra territory on your turn in Shipping and Movement.</p>
-                <p mt-0 mb-0><i>{41}</i> - Prevent a player from taking Free Revival during Revival.</p>
-                <p mt-0 mb-0><i>{42}</i> - Force a player to send 1 force of your choice from one territory to their reserves during the Mentat Pause.</p>
-                <p><p>Economics:</strong> during the Mentat Pause, you may play your Economics token with either the Double or Cancel side face up. In the following game turn, the amount collected for {36} Charity (including what you collect from your Charity advantage) is either doubled or canceled for that turn (even for {5} in the advanced game). In the next Mentat Pause, flip the Economics token to the other side. If the token has already been flipped it is removed from the game instead.</p>" +
+                <p mt-0 mb-0><i>{40}</i> - Move your forces one extra territory on your turn during Ship & Move.</p>
+                <p mt-0 mb-0><i>{41}</i> - Prevent a player from taking Free Revival.</p>
+                <p mt-0 mb-0><i>{42}</i> - Force a player to send 1 force back to reserves during Mentat.</p>
+                <p><p>Economics:</strong> during Mentat, you may play your Economics token with either the Double or Cancel side face-up. In the following game turn, Charity is either doubled or canceled for that turn (including {5} in the advanced game). In the next Mentat, flip the Economics token to the other side. If the token has already been flipped it is removed from the game instead.</p>" +
 
               (advancedApplies ?
               @"<h5>Advanced Advantages</h5>" : "") +
 
               (g.Applicable(Rule.AdvancedCombat) ?
-              @"<p><strong>Forces:</strong> when other players pay {16} for their forces in battle, half of the {16} (rounded down) goes to you. When you pay {16} for your forces, it goes to the {16} Bank.</p>" : "") +
+              @"<p><strong>Forces:</strong> when other players pay for their forces in battle, half of the {16} (rounded down) goes to you.</p>" : "") +
 
               (g.Applicable(Rule.BrownAuditor) ?
-              @"<p><strong>Auditor:</strong> you gain the Auditor Leader and it is added to the Traitor deck at the start of the game. Whenever you use the Auditor as a leader in a battle, you may audit your opponent. You may look at two cards in your opponent's hand at random (not counting any they used in battle) if the Auditor survived, or one card if the Auditor is killed. That faction may pay you 1 {16} per card you would get to see to cancel the audit. The Auditor may be revived as if all of your leaders were in the Tanks. The Auditor can't be revived as a ghola, nor be captured by {1}. The Auditor can't be assigned a Leader Skill.</p>" : "") +
+              @"<p><strong>Auditor:</strong> you gain the Auditor Leader and it is added to the Traitor deck at the start of the game. Whenever you use the Auditor as a leader in a battle, you may audit your opponent. You may look at two cards in your opponent's hand at random (not counting cards used in battle) if the Auditor survived, or one card if killed. That faction may pay you 1 {16} per card you would get to see to cancel the audit. The Auditor may be revived as if all of your leaders were in the Tanks. The Auditor can't be revived as a ghola, nor be captured by {1}. The Auditor can't have a Leader Skill.</p>" : "") +
 
               (g.Applicable(Rule.AdvancedKarama) ?
               @"<p><strong>Special {19}:</strong> you may discard any Treachery cards from your hand and gain 3 {16} each.</p>" : "") +
 
               @"<h5>Alliance Powers</h5>
-                <p>Once per game tum, at the end of any phase, you may trade a Treachery Card with your ally. The trade must be simultaneous and two-way (each faction giving and receiving a card).</p>
-                <p>You may pay for some or all of your ally’s forces in battle.</p>
+                <p>Once per turn at the end of a phase, you may trade a Treachery Card with your ally. This trade is simultaneous and two-way.</p>
+                <p>You may pay for your ally’s forces in battle.</p>
 
                 <h5>Strategy</h5>
                 <p>To Do</p>
