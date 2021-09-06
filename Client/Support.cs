@@ -13,19 +13,6 @@ namespace Treachery.Client
 {
     public static class Support
     {
-        public static bool DURATION_LOGGING_ENABLED = false;
-
-        private static DateTime LatestLoggedDateTime = DateTime.Now;
-        public static void LogDuration(string method)
-        {
-            if (DURATION_LOGGING_ENABLED)
-            {
-                var cur = DateTime.Now;
-                Console.WriteLine("{0}:{1}", method, cur.Subtract(LatestLoggedDateTime).Milliseconds);
-                LatestLoggedDateTime = cur;
-            }
-        }
-
         public static string HTMLEncode(string toEncode)
         {
             return HttpUtility.HtmlEncode(toEncode);

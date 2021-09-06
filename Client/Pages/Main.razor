@@ -39,7 +39,7 @@
     <!--Action Column-->
     @if (!h.IsObserver)
     {
-        <div class="col-sm-12 col-lg-4 vh-100 overflow-auto">
+        <div class="col-sm-12 col-lg-4 @Scrollbars">
 
             <MenuComponent h="@h" />
 
@@ -71,7 +71,7 @@
     }
 
     <!--Information Column-->
-    <div class="@InformationLayout">
+    <div class="col-sm-12 cursor-hand @InformationSize @Scrollbars">
 
         @if (h.IsObserver)
         {
@@ -175,10 +175,10 @@
 
     public void Refresh()
     {
-        Support.LogDuration("RefreshAll-Start");
         StateHasChanged();
-        Support.LogDuration("RefreshAll-End");
     }
 
-    private string InformationLayout => h.IsObserver ? "col-sm-12 col-lg-4 cursor-hand vh-100 overflow-auto" : "col-sm-12 col-lg-2 cursor-hand vh-100 overflow-auto";
+    private string InformationSize => h.IsObserver ? "col-lg-4" : "col-lg-2";
+
+    private string Scrollbars => h.IsFullScreen ? "vh-100 overflow-auto" : "";
 }

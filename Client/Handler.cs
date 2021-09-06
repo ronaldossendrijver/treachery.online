@@ -42,6 +42,7 @@ namespace Treachery.Client
         public float CurrentChatVolume = -1;
         public bool ShowWheelsAndHMS = true;
         public bool StatisticsSent = false;
+        public bool IsFullScreen = false;
         public bool BotsArePaused { get; private set; } = false;
 
         public bool IsGameMaster => !IsObserver && Player.Faction == Faction.None && CurrentPhase > Phase.TradingFactions;
@@ -462,8 +463,6 @@ namespace Treachery.Client
 
         private async Task HandleLoadGame(string stateData, string targetPlayerName, string skinData)
         {
-            Support.LogDuration("HandleLoadGame-Start");
-
             if (targetPlayerName == "" || targetPlayerName.ToLower().Trim() == PlayerName.ToLower().Trim())
             {
                 _pending.Clear();
@@ -490,8 +489,6 @@ namespace Treachery.Client
 
                 await PerformPostEventTasks(null);
             }
-
-            Support.LogDuration("HandleLoadGame-End");
         }
 
         private async Task HandleUndo(int untilEventNr)
@@ -826,31 +823,21 @@ namespace Treachery.Client
 
         #region SupportMethods
 
-        public IEnumerable<Type> Actions
+        public async Task ToggleFullScreen()
         {
-            get
-            {
-                return Game.GetApplicableEvents(Player, IsHost);
-            }
+            await Browser.ToggleFullScreen();
+            IsFullScreen = !IsFullScreen;
+            Refresh();
         }
+
+        public IEnumerable<Type> Actions => Game.GetApplicableEvents(Player, IsHost);
 
         public bool IsConnected => _connection.State == HubConnectionState.Connected;
 
-        public bool IsHost
-        {
-            get
-            {
-                return Host != null;
-            }
-        }
+        public bool IsHost => Host != null;
 
-        public Phase CurrentPhase
-        {
-            get
-            {
-                return Game.CurrentPhase;
-            }
-        }
+        public Phase CurrentPhase => Game.CurrentPhase;
+
 
         public async Task CheckIfPlayerCanReconnect()
         {
