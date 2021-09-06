@@ -57,6 +57,20 @@
         }
     }
 
+    protected void StartRedrawCycle(int interval)
+    {
+        if (interval > 0)
+        {
+            Redraw();
+            _ = Task.Delay(interval).ContinueWith(e => StartRedrawCycle(interval));
+        }
+    }
+
+    protected virtual void Redraw()
+    {
+        StateHasChanged();
+    }
+
     protected IEnumerable<string> GetLabels<T>(IEnumerable<T> items, string labelIfNull = "")
     {
         return items.Select(i => i != null ? i.ToString() : labelIfNull);

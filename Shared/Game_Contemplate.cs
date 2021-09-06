@@ -143,6 +143,7 @@ namespace Treachery.Shared
                 target.ForcesToReserves(e.Location, 1);
             }
 
+            FlipBeneGesseritWhenAlone();
             RecentMilestones.Add(Milestone.SpecialUselessPlayed);
         }
 

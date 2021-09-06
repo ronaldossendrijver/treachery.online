@@ -125,19 +125,14 @@
         return RunningGames.FirstOrDefault(g => g.HostID == hostID && g.CurrentPhase > Phase.AwaitingPlayers);
     }
 
-    public IEnumerable<GameInfo> RunningGames
-    {
-        get
-        {
-            return h.AvailableGames.Where(gameAndDate => DateTime.Now.Subtract(gameAndDate.Value).TotalSeconds < 15).Select(gameAndDate => gameAndDate.Key);
-        }
-    }
+    public IEnumerable<GameInfo> RunningGames => h.AvailableGames.Where(gameAndDate => DateTime.Now.Subtract(gameAndDate.Value).TotalSeconds < 15).Select(gameAndDate => gameAndDate.Key);
 
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
         {
             Task.Delay(200).ContinueWith(e => LoadRecentGame());
+            StartRedrawCycle(10000);
         }
     }
 
