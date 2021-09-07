@@ -10,6 +10,18 @@ namespace Treachery.Shared
 {
     public partial class Player
     {
+        private CharityClaimed DetermineCharityClaimed()
+        {
+            if (!(Game.EconomicsStatus == BrownEconomicsStatus.Cancel || Game.EconomicsStatus == BrownEconomicsStatus.CancelFlipped))
+            {
+                return new CharityClaimed(Game) { Initiator = Faction };
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         protected KarmaFreeRevival DetermineKarmaFreeRevival()
         {
             int specialForcesThatCanBeRevived = Math.Min(3, Revival.ValidMaxRevivals(Game, this, true));

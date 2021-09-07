@@ -1302,7 +1302,7 @@ namespace Treachery.Shared
             if (plan.BankerBonus > 0)
             {
                 p.Resources -= plan.BankerBonus;
-                CurrentReport.Add(p.Faction, "{0} paid {1} for Banker Bonus", p.Faction, plan.BankerBonus);
+                CurrentReport.Add(p.Faction, "{0} paid {1} for {2} Bonus", p.Faction, plan.BankerBonus, LeaderSkill.Banker);
             }
         }
 

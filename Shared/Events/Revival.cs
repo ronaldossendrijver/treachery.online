@@ -248,7 +248,7 @@ namespace Treachery.Shared
 
             int potentialMaximum = p.Ally == Faction.Red && (g.Version < 113 || !g.Prevented(FactionAdvantage.RedLetAllyReviveExtraForces)) ? g.RedWillPayForExtraRevival : 0;
 
-            if (g.Version < 60)
+            if (g.Version < 115)
             {
                 return potentialMaximum;
             }

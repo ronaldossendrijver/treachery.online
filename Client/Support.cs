@@ -129,7 +129,7 @@ namespace Treachery.Client
             }
             else
             {
-                return string.Format("<div style='position:relative'><img style='position:relative' src='{0}' width=300/><div style='position:absolute;left:220px;top:0px'><img src='{1}' width=80/></div></div>", Skin.Current.GetImageURL(s), Skin.Current.GetImageURL(l));
+                return string.Format("<div style='position:relative'><img style='position:relative' src='{0}' width=300/><div style='position:absolute;left:210px;top:10px'><img src='{1}' width=80/></div></div>", Skin.Current.GetImageURL(s), Skin.Current.GetImageURL(l));
             }
         }
 
@@ -153,7 +153,7 @@ namespace Treachery.Client
             }
             else
             {
-                return string.Format("<div style='position:relative'><img src='{0}' width=300/><img style='position:absolute;left:220px;top:00px' src='{1}' width=80/></div>", Skin.Current.GetImageURL(l), Skin.Current.GetImageURL(f));
+                return string.Format("<div style='position:relative'><img src='{0}' width=300/><img style='position:absolute;left:210px;top:10px' src='{1}' width=80/></div>", Skin.Current.GetImageURL(l), Skin.Current.GetImageURL(f));
             }
         }
 

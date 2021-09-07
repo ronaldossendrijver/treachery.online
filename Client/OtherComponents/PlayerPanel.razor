@@ -188,28 +188,28 @@
     {
         get
         {
-            if (ShownPlayer.ResourcesDuringCollection > 0)
+            if (ShownPlayer.BankedResources > 0)
             {
                 if (ShownPlayer.Bribes > 0)
                 {
                     if (ShownPlayer.ResourcesAfterBidding > 0)
                     {
-                        return Skin.Current.Format("{0}, {1} at end of turn, {2} at end of bidding, {3} at {4}", ShownPlayer.Resources, ShownPlayer.Bribes, ShownPlayer.ResourcesAfterBidding, ShownPlayer.ResourcesDuringCollection, MainPhase.Collection);
+                        return Skin.Current.Format("{0}, {1} at end of turn, {2} at end of bidding, {3} at {4}", ShownPlayer.Resources, ShownPlayer.Bribes, ShownPlayer.ResourcesAfterBidding, ShownPlayer.BankedResources, MainPhase.Collection);
                     }
                     else
                     {
-                        return Skin.Current.Format("{0}, {1} at {2}, {3} at {4}", ShownPlayer.Resources, ShownPlayer.Bribes, MainPhase.Contemplate, ShownPlayer.ResourcesDuringCollection, MainPhase.Collection);
+                        return Skin.Current.Format("{0}, {1} at {2}, {3} at {4}", ShownPlayer.Resources, ShownPlayer.Bribes, MainPhase.Contemplate, ShownPlayer.BankedResources, MainPhase.Collection);
                     }
                 }
                 else
                 {
                     if (ShownPlayer.ResourcesAfterBidding > 0)
                     {
-                        return Skin.Current.Format("{0}, {1} at end of {2}, {3} at {4}", ShownPlayer.Resources, ShownPlayer.ResourcesAfterBidding, MainPhase.Bidding, ShownPlayer.ResourcesDuringCollection, MainPhase.Collection);
+                        return Skin.Current.Format("{0}, {1} at end of {2}, {3} at {4}", ShownPlayer.Resources, ShownPlayer.ResourcesAfterBidding, MainPhase.Bidding, ShownPlayer.BankedResources, MainPhase.Collection);
                     }
                     else
                     {
-                        return Skin.Current.Format("{0}, {1} at {2}", ShownPlayer.Resources, ShownPlayer.ResourcesDuringCollection, MainPhase.Collection);
+                        return Skin.Current.Format("{0}, {1} at {2}", ShownPlayer.Resources, ShownPlayer.BankedResources, MainPhase.Collection);
                     }
                 }
             }

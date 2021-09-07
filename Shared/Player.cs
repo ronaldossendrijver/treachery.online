@@ -34,7 +34,7 @@ namespace Treachery.Shared
 
         public int ResourcesAfterBidding { get; set; } = 0;
 
-        public int ResourcesDuringCollection { get; set; } = 0;
+        public int BankedResources { get; set; } = 0;
 
         public IList<TreacheryCard> TreacheryCards { get; set; } = new List<TreacheryCard>();
 

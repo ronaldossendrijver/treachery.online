@@ -20,10 +20,10 @@
 
                 if (Game.EconomicsStatus != BrownEconomicsStatus.None && Game.EconomicsStatus != BrownEconomicsStatus.RemovedFromGame && phase == MainPhase.Charity)
                 {
-                    <Image X="@(posX - 950)" Y="@(posY - 100)" Diameter=@(120) Src="@Skin.Current.GetImageURL(Faction.Brown)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1" />
+                    <Image X="@(posX - 950)" Y="@(posY - 90)" Diameter=@(120) Src="@Skin.Current.GetImageURL(Faction.Brown)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1" />
 
                     <MapText ToShow="@Skin.Current.Describe(Game.EconomicsStatus)"
-                             X="@(posX - 890)" Y="@(posY + 10)"
+                             X="@(posX - 890)" Y="@(posY)"
                              Font="@Skin.Current.SKILL_FONT" FontColor="white"
                              BorderWidth="1" BorderColor="black"
                              Align="@TextAlignment.Center"/>
@@ -43,10 +43,10 @@
 
                 if (Game.EconomicsStatus != BrownEconomicsStatus.None && Game.EconomicsStatus != BrownEconomicsStatus.RemovedFromGame && phase == MainPhase.Charity)
                 {
-                    <Image X="@(posX - 640)" Y="@(posY - 80)" Diameter=@(80) Src="@Skin.Current.GetImageURL(Faction.Brown)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1" />
+                    <Image X="@(posX - 640)" Y="@(posY - 70)" Diameter=@(80) Src="@Skin.Current.GetImageURL(Faction.Brown)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1" />
 
                     <MapText ToShow="@Skin.Current.Describe(Game.EconomicsStatus)"
-                             X="@(posX - 600)" Y="@(posY + 10)"
+                             X="@(posX - 600)" Y="@(posY)"
                              Font="@Skin.Current.SKILL_FONT" FontColor="white"
                              BorderWidth="1" BorderColor="black"
                              Align="@TextAlignment.Center"/>

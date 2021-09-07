@@ -19,17 +19,6 @@ namespace Treachery.Shared
             CallHeroesHome();
             CollectResourcesFromTerritories();
             CollectResourcesFromStrongholds();
-
-            foreach (var p in Players)
-            {
-                if (p.ResourcesDuringCollection > 0)
-                {
-                    p.Resources += p.ResourcesDuringCollection;
-                    CurrentReport.Add(p.Faction, "{0} add {1} received as {2} to their reserves.", p.Faction, p.ResourcesDuringCollection, LeaderSkill.Banker);
-                    p.ResourcesDuringCollection = 0;
-                }
-            }
-
             MainPhaseEnd();
             Enter(Version >= 103, Phase.CollectionReport, EnterMentatPhase);
         }

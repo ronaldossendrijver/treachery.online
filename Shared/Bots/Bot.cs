@@ -109,7 +109,7 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(AllianceBroken))) action = DetermineAllianceBroken();
                 if (action == null && possibleEvents.Contains(typeof(AllianceOffered))) action = DetermineAllianceOffered();
                 if (action == null && possibleEvents.Contains(typeof(AllyPermission))) action = DetermineAlliancePermissions();
-                if (action == null && possibleEvents.Contains(typeof(CharityClaimed))) action = new CharityClaimed(Game) { Initiator = Faction };
+                if (action == null && possibleEvents.Contains(typeof(CharityClaimed))) action = DetermineCharityClaimed();
                 if (action == null && possibleEvents.Contains(typeof(BlackMarketBid))) action = DetermineBlackMarketBid();
                 if (action == null && possibleEvents.Contains(typeof(Bid))) action = DetermineBid();
                 if (action == null && possibleEvents.Contains(typeof(Revival))) action = DetermineRevival();

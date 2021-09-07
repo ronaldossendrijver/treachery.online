@@ -19,6 +19,17 @@ namespace Treachery.Shared
             HandleEconomics();
             DetermineStrongholdOwnership();
             if (Version >= 108) AddBribesToPlayerResources();
+
+            foreach (var p in Players)
+            {
+                if (p.BankedResources > 0)
+                {
+                    p.Resources += p.BankedResources;
+                    CurrentReport.Add(p.Faction, "{0} add {1} received as {2} to their reserves.", p.Faction, p.BankedResources, LeaderSkill.Banker);
+                    p.BankedResources = 0;
+                }
+            }
+
             Enter(Version >= 103, Phase.Contemplate, ContinueMentatPhase);
         }
 

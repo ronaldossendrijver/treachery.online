@@ -53,7 +53,7 @@ namespace Treachery.Test
             }
         }
 
-        private static string TestSpecialCases(Game g, GameEvent e)
+        private static string TestIllegalCases(Game g, GameEvent e)
         {
             var p = g.GetPlayer(e.Initiator);
 
@@ -115,13 +115,36 @@ namespace Treachery.Test
                 return "Too many cards: " + p + " after " + e.GetType().Name + " -> " + g.History.Count;
             }
 
-            if (e is Battle b && b.Initiator == Faction.Black && 
-                g.CurrentBattle.OpponentOf(Faction.Black).Faction != Faction.Purple && 
-                Battle.ValidBattleHeroes(g,b.Player).Any(l => l.Faction == g.CurrentBattle.OpponentOf(Faction.Black).Faction))
+            if (g.Version > 80)
+            {
+                var blue = g.GetPlayer(Faction.Blue);
+                if (blue != null &&
+                    blue.ForcesOnPlanet.Any(bat => bat.Value.AmountOfSpecialForces > 0 && !g.Players.Any(p => p.Occupies(bat.Key.Territory))))
+                {
+                    return "Lonely advisor";
+                }
+            }
+
+            if (g.Players.Any(p => p.Leaders.Any(l => l.Faction != p.Faction && p.Faction != Faction.Purple && !g.CapturedLeaders.ContainsKey(l))))
+            {
+                return "Lost Leader";
+            }
+
+            return "";
+        }
+
+        private static string TestSpecialCases(Game g, GameEvent e)
+        {
+            var p = g.GetPlayer(e.Initiator);
+                        
+            /*
+            if (e is Battle b && b.Initiator == Faction.Black &&
+                g.CurrentBattle.OpponentOf(Faction.Black).Faction != Faction.Purple &&
+                Battle.ValidBattleHeroes(g, b.Player).Any(l => l.Faction == g.CurrentBattle.OpponentOf(Faction.Black).Faction))
             {
                 WriteSavegameIfApplicable(g, b.Player, Skin.Current.Format("MAY USE TRAITOR LEADER {0}", StrongholdAdvantage.FreeResourcesForBattles));
             }
-
+            */
             /*
             WriteSavegameIfApplicable(g, typeof(BrownEconomics));
             WriteSavegameIfApplicable(g, typeof(DiscardedTaken));
@@ -519,6 +542,12 @@ namespace Treachery.Test
                     }
                     Assert.IsNotNull(evt, "bots couldn't come up with a valid event");
 
+                    var illegalCase = TestIllegalCases(game, evt);
+                    if (illegalCase != "")
+                    {
+                        File.WriteAllText("illegalcase.json", GameState.GetStateAsString(game));
+                    }
+
                     var strangeCase = TestSpecialCases(game, evt);
                     if (strangeCase != "")
                     {
@@ -659,10 +688,10 @@ namespace Treachery.Test
                         }
                         Assert.AreEqual(tc.Testvalues[valueId], actualValues, f + ", " + previousPhase + " -> " + game.CurrentPhase + ", " + e.GetType().Name + " (" + valueId + ", " + e.GetMessage() + "): " + Testvalues.Difference);
 
-                        var strangeCase = TestSpecialCases(game, e);
+                        var strangeCase = TestIllegalCases(game, e);
                         if (strangeCase != "")
                         {
-                            File.WriteAllText("strangecase.json", GameState.GetStateAsString(game));
+                            File.WriteAllText("illegal.json", GameState.GetStateAsString(game));
                         }
                         Assert.AreEqual("", strangeCase);
 
