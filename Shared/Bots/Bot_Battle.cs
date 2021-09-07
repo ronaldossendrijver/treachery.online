@@ -792,7 +792,7 @@ namespace Treachery.Shared
             var knownNonTraitorsByAlly = ally != null ? ally.Traitors.Union(ally.KnownNonTraitors) : Array.Empty<IHero>();
             var revealedTraitorsByNonOpponents = Game.Players.Where(p => p != opponent && (p.Ally != Faction.Black || p.Faction != opponent.Ally)).SelectMany(p => p.RevealedTraitors);
             var knownNonTraitors = Traitors.Union(KnownNonTraitors).Union(knownNonTraitorsByAlly).Union(revealedTraitorsByNonOpponents);
-            var revealedTraitorsByOpponentsInBattle = Game.Players.Where(p => p == opponent || (p.Ally == Faction.Black && p.Faction == opponent.Ally)).SelectMany(p => p.RevealedTraitors);
+            var revealedTraitorsByOpponentsInBattle = Game.Players.Where(p => p == opponent || (p.Faction == Faction.Black && p.Faction == opponent.Ally)).SelectMany(p => p.RevealedTraitors);
             var highestOpponentLeader = HeroesForBattle(opponent, true).OrderByDescending(l => l.Value).FirstOrDefault();
             var safeLeaders = HeroesForBattle(this, includeInFrontOfShield).Where(l => messiahUsed || (knownNonTraitors.Contains(l) && !revealedTraitorsByOpponentsInBattle.Contains(l)));
             LogInfo("Available leaders: {0}, safe leaders: {1}", HeroesForBattle(this, includeInFrontOfShield), safeLeaders);

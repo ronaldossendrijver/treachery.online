@@ -18,7 +18,7 @@
 
         @if (Player.Ally == Faction.Red)
         {
-            <div>@Skin.Current.Describe(Concept.Resource) allowing, @Skin.Current.Describe(Faction.Red) will pay for up to <span class="badge badge-primary badge-pill">@Game.RedWillPayForExtraRevival</span> forces.</div>
+            <div>@Skin.Current.Describe(Faction.Red) will pay for up to <span class="badge badge-primary badge-pill">@Revival.RedExtraRevivals(Game, Player)</span> forces.</div>
         }
 
         @if (Revival.ValidMaxRevivals(Game, Player, false) > 0)
