@@ -55,7 +55,6 @@ namespace Treachery.Shared
         private void StartDeal(Deal deal)
         {
             Deals.Add(deal);
-            CurrentReport.Add(new Message("Deal: {0}", deal.ToString(this)));
         }
 
         public bool HasDeal(Faction f, DealType type)
@@ -70,18 +69,8 @@ namespace Treachery.Shared
                 if (deal.End == phase)
                 {
                     Deals.Remove(deal);
-                    //CurrentReport.Add(new Message("Deal ended: {0}", deal.ToString(this)));
                 }
             }
-
-            /*foreach (var deal in DealOffers.ToArray())
-            {
-                if (deal.End == phase)
-                {
-                    DealOffers.Remove(deal);
-                    //CurrentReport.Add(new Message("Deal ended: {0}", deal.ToString(this)));
-                }
-            }*/
         }
 
         private delegate void EnterPhaseMethod();

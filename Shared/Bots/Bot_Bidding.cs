@@ -20,9 +20,11 @@ namespace Treachery.Shared
             int currentBid = Game.CurrentBid == null ? 0 : Game.CurrentBid.TotalAmount;
             bool currentBidIsFromAlly = Game.CurrentBid != null && Game.CurrentBid.Initiator == Ally;
             bool isKnownCard = Game.HasBiddingPrescience(this) || Game.KnownCards(this).Contains(Game.CardsOnAuction.Top);
+
             bool thisCardIsUseless = isKnownCard && !MayUseUselessAsKarma && Game.CardsOnAuction.Top.Type == TreacheryCardType.Useless;
             bool thisCardIsCrappy = isKnownCard && !WannaHave(Game.CardsOnAuction.Top);
             bool thisCardIsPerfect = isKnownCard && CardQuality(Game.CardsOnAuction.Top) == 5;
+
             int resourcesToKeep = thisCardIsPerfect ? Param.Bidding_ResourcesToKeepWhenCardIsPerfect : Param.Bidding_ResourcesToKeepWhenCardIsntPerfect;
             int resourcesAvailable = Math.Max(0, ResourcesIncludingAllyAndRedContribution - resourcesToKeep);
             bool couldUseKarmaForBid = Game.CurrentAuctionType == AuctionType.Normal && !Game.KarmaPrevented(Faction) && Ally != Faction.Red && (SpecialKarmaPowerUsed || !Param.Karma_SaveCardToUseSpecialKarmaAbility);
@@ -37,6 +39,7 @@ namespace Treachery.Shared
             if ((Faction == Faction.White || Ally == Faction.White) &&
                 (Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.BlackMarketNormal || Game.CurrentAuctionType == AuctionType.BlackMarketOnceAround))
             {
+                LogInfo("this is my own card");
                 if (Game.CurrentAuctionType == AuctionType.BlackMarketSilent)
                 {
                     return CreateBidUsingAllyAndRedSpice(0, 0, null);
@@ -48,9 +51,10 @@ namespace Treachery.Shared
             }
             else if (Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent)
             {
-                if (thisCardIsUseless)
+                if (thisCardIsUseless || thisCardIsCrappy)
                 {
-                    return CreateBidUsingAllyAndRedSpice(0, 0, null);
+                    int toBid = thisCardIsUseless || resourcesAvailable < 2 ? 0 : D(1, 2);
+                    return CreateBidUsingAllyAndRedSpice(toBid, 0, null);
                 }
                 else
                 {

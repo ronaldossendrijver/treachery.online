@@ -35,12 +35,12 @@ namespace Treachery.Shared
                 var result = action.Validate();
                 if (result != "")
                 {
-                    LogInfo("--invalid decision ({0},{1})--> {2}: {3}", Resources, string.Join(",", TreacheryCards), action.GetMessage(), result);
+                    LogInfo("--invalid decision ({0})--> {1}: {2}", Resources, action.GetMessage(), result);
                     action = null;
                 }
                 else
                 {
-                    LogInfo("--valid decision ({0},{1})--> {2}", Resources, string.Join(",", TreacheryCards), action.GetMessage());
+                    LogInfo("--valid decision ({0})--> {1}", Resources, action.GetMessage());
                 }
             }
 

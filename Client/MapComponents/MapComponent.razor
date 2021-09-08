@@ -36,6 +36,9 @@
     [Parameter]
     public float Opacity { get; set; } = 1.0f;
 
+    [Parameter]
+    public string PopoverStyle { get; set; } = "background-color:black;text-align:center;";
+
     protected const float TWOPI = 6.2831853072f;
 
     protected Game Game => h.Game;
@@ -87,7 +90,7 @@
         return new Point(x, y);
     }
 
-    protected static string PopoverTemplate => "<div class=\"popover\" role=\"tooltip\" style=\"background-color:black;text-align:center;\"><div class=\"arrow\"></div><h3 class=\"popover-header\"></h3><div class=\"popover-body\"></div></div>";
+    protected string PopoverTemplate => string.Format("<div class=\"popover\" role=\"tooltip\" style=\"{0}\"><div class=\"arrow\"></div><h3 class=\"popover-header\"></h3><div class=\"popover-body\"></div></div>", PopoverStyle);
 
     protected string Intel(Treachery.Shared.Location intelligenceLocation)
     {

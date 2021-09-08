@@ -66,12 +66,12 @@
             if (p.Faction == Faction.White && Game.LatestRevealedNoFieldValue >= 0)
             {
                 ttRad += (TWOPI / 90);
-                var ttx = Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad)) * techtokenOrbitRadius - Skin.Current.PlayerTokenRadius;
-                var tty = Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad)) * techtokenOrbitRadius - Skin.Current.PlayerTokenRadius;
+                var ttx = Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad)) * techtokenOrbitRadius - Skin.Current.FORCETOKEN_RADIUS;
+                var tty = Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad)) * techtokenOrbitRadius - Skin.Current.FORCETOKEN_RADIUS;
 
                 <Image X="@(ttx + Skin.Current.FORCETOKEN_RADIUS)" Y="@(tty + Skin.Current.FORCETOKEN_RADIUS)" Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS) Src="@Skin.Current.FactionSpecialForceImage_URL[Faction.White]" 
                        ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="1" ShadowY="1" ShadowBlur="1"
-                       Popover="@Skin.Current.Format("Latest revealed No-Field value: {0}", Game.LatestRevealedNoFieldValue)"/>
+                       Popover="@Skin.Current.Format("Latest revealed No-Field: {0}", Game.LatestRevealedNoFieldValue)"/>
 
                 <MapText ToShow="@Game.LatestRevealedNoFieldValue.ToString()"
                          X="@(ttx + 2 * Skin.Current.FORCETOKEN_RADIUS)" Y="@(tty + 3f * Skin.Current.FORCETOKEN_RADIUS)"

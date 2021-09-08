@@ -67,8 +67,8 @@
         {
             var l = new Point((int)x, (int)y);
             <Image X="@(x)" Y="@(y)" Diameter="@(0.5f * leaderDiameter)"
-                   Src="@Skin.Current.GetFactionFacedownImageURL(p.Faction)"
-                   ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="2" />
+                   Src="@Skin.Current.Messiah_URL"
+                   ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="2" Popover="@Skin.Current.Describe(Concept.Messiah)"/>
             y += spacing * leaderDiameter;
         }
 
