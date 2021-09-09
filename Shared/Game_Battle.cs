@@ -360,7 +360,7 @@ namespace Treachery.Shared
             if (AggressorBattleAction.Initiator == BattleWinner) ResolveEffectOfOwnedSietchTabr(AggressorBattleAction, DefenderBattleAction);
             if (DefenderBattleAction.Initiator == BattleWinner) ResolveEffectOfOwnedSietchTabr(DefenderBattleAction, AggressorBattleAction);
 
-            CaptureLeaderIfApplicable();
+            if (Version < 116) CaptureLeaderIfApplicable();
             FlipBeneGesseritWhenAlone();
             DetermineAudit();
 
@@ -473,13 +473,26 @@ namespace Treachery.Shared
                 else
                 {
                     CurrentReport.Add(Auditee.Faction, "{0} don't have any cards to audit", Auditee.Faction);
-                    Enter(BattleWinner != Faction.None, Phase.BattleConclusion, FinishBattle);
+                    Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
                 }
             }
             else
             {
-                Enter(BattleWinner != Faction.None, Phase.BattleConclusion, FinishBattle);
+                Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
             }
+        }
+
+        private bool BlackMustDecideToCapture => Version >= 116 && BattleWinner == Faction.Black && Applicable(Rule.BlackCapturesOrKillsLeaders) && !Prevented(FactionAdvantage.BlackCaptureLeader);
+
+        public void HandleEvent(Captured e)
+        {
+            CurrentReport.Add(e);
+            if (!e.Passed)
+            {
+                CaptureLeader();
+            }
+
+            Enter(Phase.BattleConclusion);
         }
 
         public Player Auditee
@@ -512,7 +525,14 @@ namespace Treachery.Shared
                 GetPlayer(Faction.Brown).Resources += e.Cost();
             }
 
-            Enter(!e.Cancelled, Phase.Auditing, BattleWinner != Faction.None, Phase.BattleConclusion, FinishBattle);
+            if (!e.Cancelled)
+            {
+                Enter(Phase.Auditing);
+            }
+            else
+            {
+                Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
+            }
         }
 
         public void HandleEvent(Audited e)
@@ -524,28 +544,33 @@ namespace Treachery.Shared
                 RegisterKnown(e.Player, card);
             }
 
-            Enter(BattleWinner != Faction.None, Phase.BattleConclusion, FinishBattle);
+            Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
         }
 
         private void CaptureLeaderIfApplicable()
         {
-            if (BattleWinner == Faction.Black && Applicable(Rule.BlackCapturesOrKillsLeaders))
+            if (Version < 116 && BattleWinner == Faction.Black && Applicable(Rule.BlackCapturesOrKillsLeaders))
             {
                 if (!Prevented(FactionAdvantage.BlackCaptureLeader))
                 {
-                    if (AggressorBattleAction.By(BattleWinner))
-                    {
-                        SelectVictimOfBlackWinner(AggressorBattleAction, DefenderBattleAction);
-                    }
-                    else
-                    {
-                        SelectVictimOfBlackWinner(DefenderBattleAction, AggressorBattleAction);
-                    }
+                    CaptureLeader();
                 }
                 else
                 {
                     CurrentReport.Add(Faction.Black, "{0} prevents {1} from capturing a leader.", TreacheryCardType.Karma, Faction.Black);
                 }
+            }
+        }
+
+        private void CaptureLeader()
+        {
+            if (AggressorBattleAction.By(BattleWinner))
+            {
+                SelectVictimOfBlackWinner(AggressorBattleAction, DefenderBattleAction);
+            }
+            else
+            {
+                SelectVictimOfBlackWinner(DefenderBattleAction, AggressorBattleAction);
             }
         }
 
@@ -883,11 +908,11 @@ namespace Treachery.Shared
             {
                 if (e.Initiator == CurrentBattle.Aggressor)
                 {
-                    CaptureOrAssassinateLeader(AggressorBattleAction, DefenderBattleAction, e.CaptureDecision);
+                    CaptureOrAssassinateLeader(AggressorBattleAction, DefenderBattleAction, e.DecisionToCapture);
                 }
                 else
                 {
-                    CaptureOrAssassinateLeader(DefenderBattleAction, AggressorBattleAction, e.CaptureDecision);
+                    CaptureOrAssassinateLeader(DefenderBattleAction, AggressorBattleAction, e.DecisionToCapture);
                 }
             }
         }

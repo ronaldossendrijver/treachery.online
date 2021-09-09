@@ -352,6 +352,10 @@ namespace Treachery.Shared
                     if (RockWasMelted.CanBePlayed(this, player)) result.Add(typeof(RockWasMelted));
                     break;
 
+                case Phase.CaptureDecision:
+                    if (faction == Faction.Black) result.Add(typeof(Captured));
+                    break;
+
                 case Phase.BattleConclusion:
                     if (faction == BattleWinner) result.Add(typeof(BattleConcluded));
                     break;

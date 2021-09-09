@@ -47,10 +47,10 @@
 
             if (BattleConcluded.MayCaptureOrKill(Game, Player))
             {
-                <div>We caught <HeroComponent Game="Game" Value="Game.BlackVictim" />... What are your orders, capture or kill?</div>
+                <div>We captured <HeroComponent Game="Game" Value="Game.BlackVictim" />... What are your orders, keep or kill?</div>
                 <RadioComponent @bind-Value="captureDecision"
-                                Values="@(new CaptureDecision[] {CaptureDecision.Capture,CaptureDecision.Kill,CaptureDecision.DontCapture})"
-                                ValueLabels="@(new string[] { "Capture", "Kill to gain 2 spice", "Neither capture nor kill" })" />
+                                Values="@BattleConcluded.ValidCaptureDecisions(Game, Player)"
+                                ValueLabels="@BattleConcluded.ValidCaptureDecisions(Game, Player).Select(c => Skin.Current.Describe(c))" />
             }
 
             if (Loser.TechTokens.Count > 0)
@@ -108,7 +108,7 @@
         DiscardedCards = DetermineSelectedCards(),
         StolenToken = stolenToken,
         SpecialForceLossesReplaced = replacementAmount,
-        CaptureDecision = captureDecision,
+        DecisionToCapture = captureDecision,
         ReplacedTraitor = traitorToReplace,
         NewTraitor = selectedNewTraitor
     };

@@ -95,7 +95,7 @@ namespace Treachery.Shared
 
         private Shipment ConstructShipment(int nrOfForces, int nrOfSpecialForces, Location location, bool useKarma, bool useAllyResources)
         {
-            int usableNoField = Shipment.ValidNoFieldValues(Game, this).OrderByDescending(v => v).FirstOrDefault(v => v >= nrOfForces + nrOfSpecialForces + 1 - D(1, 3));
+            int usableNoField = Shipment.ValidNoFieldValues(Game, this).OrderByDescending(v => v).Where(v => v >= nrOfForces + nrOfSpecialForces + 1 - D(1, 3)).DefaultIfEmpty(-1).First();
             Shipment result;
             if (Shipment.ValidNoFieldValues(Game, this).Contains(usableNoField))
             {

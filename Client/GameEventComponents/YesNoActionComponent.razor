@@ -3,6 +3,7 @@
 --->
 
 @using Treachery.Client.GenericComponents;
+@using Treachery.Shared;
 @inherits GameEventComponent<GameEventType>
 @typeparam GameEventType
 
@@ -27,9 +28,11 @@
     </GameEventComponentLayout>
 }
 
-@code {        
+@code {
 
     protected override bool IsUrgent => Alert;
+
+    protected override Faction IsFactionSpecific => ForFaction;
 
     private bool dismissed = false;
 
@@ -44,6 +47,9 @@
 
     [Parameter]
     public bool Alert { get; set; }
+
+    [Parameter]
+    public Faction ForFaction { get; set; } = Faction.None;
 
     [Parameter]
     public bool Dismissable { get; set; } = false;

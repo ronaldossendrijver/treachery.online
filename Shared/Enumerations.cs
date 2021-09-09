@@ -186,6 +186,7 @@ namespace Treachery.Shared
         BeginningOfBattle = 301,
         BattlePhase = 300,
         CallTraitorOrPass = 310,
+        CaptureDecision = 311,
         AvoidingAudit = 312,
 
         Auditing = 313,
@@ -617,5 +618,13 @@ namespace Treachery.Shared
         CountDefensesAsAntidote = 30,
         WinTies = 40,
         CollectResourcesForDial = 50
+    }
+
+    public enum CaptureDecision
+    {
+        None = 0,
+        DontCapture = 10,
+        Capture = 20,
+        Kill = 30
     }
 }

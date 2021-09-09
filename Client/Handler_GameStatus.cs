@@ -379,6 +379,12 @@ namespace Treachery.Client
                     Skin.Current.Format("{0} are thinking about avoiding a scheduled audit...", Game.Auditee.Faction),
                     Game.Auditee);
 
+                case Phase.CaptureDecision:
+                    return new GameStatus(
+                    Skin.Current.Format("Please decide if you wish to capture a leader."),
+                    Skin.Current.Format("Waiting for {0} to decide about capturing a leader...", Faction.Black),
+                    Faction.Black);
+
                 case Phase.Auditing:
                     return new GameStatus(
                     Skin.Current.Format("Please conclude the audit when done inspecting your opponents cards."),

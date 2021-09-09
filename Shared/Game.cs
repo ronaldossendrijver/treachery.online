@@ -11,9 +11,9 @@ namespace Treachery.Shared
     public partial class Game
     {
         public const int LowestSupportedVersion = 68;
-        public const int LatestVersion = 115;
+        public const int LatestVersion = 116;
 
-        public bool BotInfologging = false;
+        public bool BotInfologging = true;
 
         #region GameState
 
@@ -760,7 +760,7 @@ namespace Treachery.Shared
             RegisterKnown(card);
         }
 
-        public List<TreacheryCard> RecentlyDiscarded { get; private set; } = new List<TreacheryCard>();
+        public Dictionary<TreacheryCard, Faction> RecentlyDiscarded { get; private set; } = new Dictionary<TreacheryCard, Faction>();
         private void Discard(Player player, TreacheryCard card)
         {
             if (player != null && card != null)
@@ -769,7 +769,7 @@ namespace Treachery.Shared
                 player.TreacheryCards.Remove(card);
                 TreacheryDiscardPile.PutOnTop(card);
                 RegisterKnown(card);
-                RecentlyDiscarded.Add(card);
+                RecentlyDiscarded.Add(card, player.Faction);
             }
         }
 

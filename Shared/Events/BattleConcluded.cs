@@ -55,7 +55,7 @@ namespace Treachery.Shared
             }
         }
 
-        public CaptureDecision CaptureDecision
+        public CaptureDecision DecisionToCapture
         {
             get
             {
@@ -156,13 +156,17 @@ namespace Treachery.Shared
         {
             return p.Faction == Faction.Black && g.BattleWinner == Faction.Black && !g.Prevented(FactionAdvantage.BlackCaptureLeader) && g.Applicable(Rule.BlackCapturesOrKillsLeaders) && g.BlackVictim != null;
         }
-    }
 
-    public enum CaptureDecision
-    {
-        None = 0,
-        DontCapture = 10,
-        Capture = 20,
-        Kill = 30
+        public static IEnumerable<CaptureDecision> ValidCaptureDecisions(Game g, Player p)
+        {
+            if (g.Version < 116)
+            {
+                return new CaptureDecision[] { CaptureDecision.Capture, CaptureDecision.Kill, CaptureDecision.DontCapture };
+            }
+            else
+            {
+                return new CaptureDecision[] { CaptureDecision.Capture, CaptureDecision.Kill };
+            }
+        }
     }
 }

@@ -279,6 +279,7 @@ namespace Treachery.Shared
             else if (value is BrownEconomicsStatus bes) result = Describe(bes);
             else if (value is AuctionType at) result = Describe(at);
             else if (value is JuiceType jt) result = Describe(jt);
+            else if (value is CaptureDecision cd) result = Describe(cd);
             else if (value is StrongholdAdvantage sa) result = Describe(sa);
             else if (value is IEnumerable ienum) result = Join(Enumerable.Cast<object>(ienum));
             else result = value.ToString();
@@ -546,6 +547,17 @@ namespace Treachery.Shared
                 JuiceType.GoFirst => "be considered first in storm order",
                 JuiceType.GoLast => "be considered last in storm order",
                 JuiceType.Aggressor => "be considered aggressor in this battle",
+                _ => "None"
+            };
+        }
+        
+        public string Describe(CaptureDecision c)
+        {
+            return c switch
+            {
+                CaptureDecision.Capture => "Keep",
+                CaptureDecision.Kill => "Kill to gain 2 spice",
+                CaptureDecision.DontCapture => "Neither keep nor kill",
                 _ => "None"
             };
         }

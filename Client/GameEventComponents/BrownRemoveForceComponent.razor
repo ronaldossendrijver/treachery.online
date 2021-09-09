@@ -19,7 +19,9 @@
 
         <SelectFactionComponent @bind-Value="target" Values="BrownRemoveForce.ValidFactions(Game, Player, location)" />
 
-        <SelectFromImageComponent @bind-Value="special" Values="ForceChoices" ImageURLs="ImageURLs" ImageWidth="40" Required="true" />
+        <div class="mt-1">
+            <SelectFromImageComponent @bind-Value="special" Values="ForceChoices" ImageURLs="ImageURLs" ImageWidth="40" Required="true" />
+        </div>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Remove Force" ConfirmError="@Validation" />
 

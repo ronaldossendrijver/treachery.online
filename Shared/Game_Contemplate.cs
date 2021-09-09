@@ -17,7 +17,6 @@ namespace Treachery.Shared
             MainPhaseStart(MainPhase.Contemplate, Version >= 103);
             AllowAllPreventedFactionAdvantages(null);
             HandleEconomics();
-            DetermineStrongholdOwnership();
             if (Version >= 108) AddBribesToPlayerResources();
 
             foreach (var p in Players)
@@ -129,6 +128,7 @@ namespace Treachery.Shared
                 Enter(IsPlaying(Faction.Purple) && (Version < 113 || !Prevented(FactionAdvantage.PurpleReplacingFaceDancer)), Phase.ReplacingFaceDancer, Phase.TurnConcluded);
             }
 
+            DetermineStrongholdOwnership();
             MainPhaseEnd();
         }
 
@@ -387,27 +387,35 @@ namespace Treachery.Shared
 
         private void CheckOtherWinConditions()
         {
-            var fremen = GetPlayer(Faction.Yellow);
-
-            CurrentReport.Add(Faction.None, "Players with the most strongholds win.");
-            WinMethod = WinMethod.Strongholds;
-            var nrOfStrongholdsPerPlayer = new Dictionary<Player, int>();
-            foreach (var p in Players)
+            Player withMostPoints = null;
+            int highestNumberOfPoints = -1;
+            CheckWinSequence.Start(false, 1);
+            
+            for (int i = 0; i < Players.Count; i++)
             {
-                int techTokenPoint = p.TechTokens.Count == 3 ? 1 : 0;
+                var p = CheckWinSequence.CurrentPlayer;
 
-                nrOfStrongholdsPerPlayer.Add(p,
-                    techTokenPoint +
-                    (p.Controls(this, Map.Arrakeen, Applicable(Rule.ContestedStongholdsCountAsOccupied)) ? 1 : 0) +
-                    (p.Controls(this, Map.Carthag, Applicable(Rule.ContestedStongholdsCountAsOccupied)) ? 1 : 0) +
-                    (p.Controls(this, Map.SietchTabr, Applicable(Rule.ContestedStongholdsCountAsOccupied)) ? 1 : 0) +
-                    (p.Controls(this, Map.HabbanyaSietch, Applicable(Rule.ContestedStongholdsCountAsOccupied)) ? 1 : 0) +
-                    (p.Controls(this, Map.TueksSietch, Applicable(Rule.ContestedStongholdsCountAsOccupied)) ? 1 : 0) +
-                    (IsSpecialStronghold(Map.ShieldWall) && p.Controls(this, Map.ShieldWall, Applicable(Rule.ContestedStongholdsCountAsOccupied)) ? 1 : 0));
+                int pointsOfPlayer = NumberOfVictoryPoints(p, Applicable(Rule.ContestedStongholdsCountAsOccupied));
+                if (pointsOfPlayer > highestNumberOfPoints)
+                {
+                    withMostPoints = p;
+                    highestNumberOfPoints = pointsOfPlayer;
+                }
+
+                CheckWinSequence.NextPlayer(false);
             }
 
-            int mostStrongholds = nrOfStrongholdsPerPlayer.Values.Max();
-            Winners.AddRange(nrOfStrongholdsPerPlayer.Where(nr => nr.Value == mostStrongholds).Select(nr => nr.Key));
+            if (withMostPoints != null)
+            {
+                Winners.Add(withMostPoints);
+                WinMethod = WinMethod.Strongholds;
+                CurrentReport.Add(Faction.None, "{0} is the first player after the storm with the most victory points.", withMostPoints.Faction);
+
+                if (withMostPoints.Ally != Faction.None)
+                {
+                    Winners.Add(withMostPoints.AlliedPlayer);
+                }
+            }
         }
 
         private void CallHeroesHome()

@@ -21,7 +21,7 @@
     }
     else if (AggressorIsAffectedByPartialPrescience)
     {
-        <BattlePlan h="h" Plan="Game.AggressorBattleAction" Opponent="Game.CurrentBattle.Defender" TraitorCalled="false" IsAggressor="true" X="500" Y="200" Aspect="Game.CurrentPrescience.Aspect" />
+        <BattlePlan h="h" Plan="Game.AggressorBattleAction" Opponent="Game.CurrentBattle.Defender" TraitorCalled="false" IsAggressor="true" X="500" Y="200" Aspect="Game.CurrentPrescience.Aspect" Opacity="0.5f"/>
     }
 
     if (MaySeeDefenderBattlePlan || MaySeeBothBattlePlans)
@@ -34,7 +34,7 @@
     }
     else if (DefenderIsAffectedByPartialPrescience)
     {
-        <BattlePlan h="h" Plan="Game.DefenderBattleAction" Opponent="Game.CurrentBattle.Player" TraitorCalled="false" IsAggressor="false" X="Skin.Current.MapDimensions.X / 2 - 500" Y="Skin.Current.MapDimensions.Y / 2" Aspect="Game.CurrentPrescience.Aspect"/>
+        <BattlePlan h="h" Plan="Game.DefenderBattleAction" Opponent="Game.CurrentBattle.Player" TraitorCalled="false" IsAggressor="false" X="Skin.Current.MapDimensions.X / 2 - 500" Y="Skin.Current.MapDimensions.Y / 2" Aspect="Game.CurrentPrescience.Aspect" Opacity="0.5f"/>
     }
 }
 

@@ -87,32 +87,32 @@ namespace Treachery.Shared
             return player.TreacheryCards.Where(c => known.Contains(c));
         }
 
-        protected int CardQuality(TreacheryCard c)
+        protected int CardQuality(TreacheryCard cardToRate)
         {
-            if (c.Type == TreacheryCardType.Useless) return 0;
+            if (cardToRate.Type == TreacheryCardType.Useless) return 0;
 
-            if (c.Type == TreacheryCardType.Thumper ||
-                c.Type == TreacheryCardType.Harvester ||
-                c.Type == TreacheryCardType.Flight ||
-                c.Type == TreacheryCardType.Juice) return 1;
+            if (cardToRate.Type == TreacheryCardType.Thumper ||
+                cardToRate.Type == TreacheryCardType.Harvester ||
+                cardToRate.Type == TreacheryCardType.Flight ||
+                cardToRate.Type == TreacheryCardType.Juice) return 1;
 
-            if (c.Type == TreacheryCardType.ProjectileAndPoison) return 5;
-            if (c.Type == TreacheryCardType.ShieldAndAntidote) return 5;
-            if (c.Type == TreacheryCardType.Laser) return 5;
-            if (c.Type == TreacheryCardType.Karma && Faction == Faction.Black && !SpecialKarmaPowerUsed) return 5;
+            if (cardToRate.Type == TreacheryCardType.ProjectileAndPoison) return 5;
+            if (cardToRate.Type == TreacheryCardType.ShieldAndAntidote) return 5;
+            if (cardToRate.Type == TreacheryCardType.Laser) return 5;
+            if (cardToRate.Type == TreacheryCardType.Karma && Faction == Faction.Black && !SpecialKarmaPowerUsed) return 5;
 
-            if (c.Type == TreacheryCardType.Chemistry) return 4;
-            if (c.Type == TreacheryCardType.WeirdingWay) return 4;
+            if (cardToRate.Type == TreacheryCardType.Chemistry) return 4;
+            if (cardToRate.Type == TreacheryCardType.WeirdingWay) return 4;
 
-            if (c.IsRockmelter) return 3;
-            if (c.IsMirrorWeapon) return 3;
-            if (c.Type == TreacheryCardType.SearchDiscarded) return 3;
-            if (c.Type == TreacheryCardType.TakeDiscarded) return 3;
+            if (cardToRate.IsRockmelter) return 3;
+            if (cardToRate.IsMirrorWeapon) return 3;
+            if (cardToRate.Type == TreacheryCardType.SearchDiscarded) return 3;
+            if (cardToRate.Type == TreacheryCardType.TakeDiscarded) return 3;
 
-            if (c.IsPoisonWeapon && !TreacheryCards.Any(c => c.IsPoisonWeapon)) return 3;
-            if (c.IsProjectileWeapon && !TreacheryCards.Any(c => c.IsProjectileWeapon)) return 3;
-            if (c.IsPoisonDefense && !TreacheryCards.Any(c => c.IsPoisonDefense)) return 3;
-            if (c.IsProjectileDefense && !TreacheryCards.Any(c => c.IsProjectileDefense)) return 3;
+            if (cardToRate.IsPoisonWeapon && !TreacheryCards.Any(c => c != cardToRate && c.IsPoisonWeapon)) return 3;
+            if (cardToRate.IsProjectileWeapon && !TreacheryCards.Any(c => c != cardToRate && c.IsProjectileWeapon)) return 3;
+            if (cardToRate.IsPoisonDefense && !TreacheryCards.Any(c => c != cardToRate && c.IsPoisonDefense)) return 3;
+            if (cardToRate.IsProjectileDefense && !TreacheryCards.Any(c => c != cardToRate && c.IsProjectileDefense)) return 3;
 
             return 2;
         }

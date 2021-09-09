@@ -7,7 +7,7 @@
            Opacity="Opacity"/>
 
     <Image X="@(X)" Y="@(Y)" Diameter="@(Skin.Current.BattleScreenWidth)" Src="@Skin.Current.FactionTableImage_URL[Plan.Initiator]" 
-           Opacity="(Aspect == PrescienceAspect.None ? 1f : 0.5f) * 0.3f"/>
+           Opacity="Opacity * 0.3f"/>
 
     var forceX = X + Skin.Current.BattleWheelForcesX;
     var forceY = Y + Skin.Current.BattleWheelForcesY;
@@ -91,7 +91,7 @@
                 }
             }
 
-            <MapLeader h="h" ToShow="Plan.Hero" X=@(X + Skin.Current.BattleScreenHeroX) Y=@(Y + Skin.Current.BattleScreenHeroY) Diameter="Skin.Current.BattleWheelHeroWidth" ShowPopover="false"/>
+            <MapLeader h="h" ToShow="Plan.Hero" X=@(X + Skin.Current.BattleScreenHeroX) Y=@(Y + Skin.Current.BattleScreenHeroY) Diameter="Skin.Current.BattleWheelHeroWidth"/>
         }
         else if (Plan.Hero is TreacheryCard)
         {

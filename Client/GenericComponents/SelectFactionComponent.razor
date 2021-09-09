@@ -7,7 +7,7 @@
 
 <SelectFromImageComponent @bind-Value="Value" Values="@Values" Selected="@Selected" 
                           ImageURLs="Values.Select(f => Skin.Current.GetImageURL(f))" ImageWidth="40" 
-                          Required="@(Selected == null)" Disabled="@Disabled" OnChanged="@OnChanged" PopupHTMLs="Values.Select(f => Skin.Current.Describe(f))">
+                          Required="@(Selected == null)" Disabled="@Disabled" OnChanged="@OnChanged" PopupHTMLs="@FactionTooltips">
     <Label>@Label</Label>
 </SelectFromImageComponent>
 
@@ -49,5 +49,7 @@
 
     [Parameter]
     public Action OnChanged { get; set; }
+
+    private IEnumerable<string> FactionTooltips => Values.Select(f => Skin.Current.Format("<div class='text-white bg-dark'>{0}</div>", f));
 }
 

@@ -904,7 +904,7 @@ namespace Treachery.Shared
 
         protected virtual WhiteAnnouncesBlackMarket DetermineWhiteAnnouncesBlackMarket()
         {
-            var card = TreacheryCards.FirstOrDefault(c => CardQuality(c) < 4);
+            var card = TreacheryCards.FirstOrDefault(c => CardQuality(c) < 3);
             if (card != null)
             {
                 return new WhiteAnnouncesBlackMarket(Game) { Initiator = Faction, Passed = false, Card = card, AuctionType = D(1, 2) > 1 ? AuctionType.BlackMarketSilent : AuctionType.BlackMarketOnceAround, Direction = D(1, 2) > 1 ? 1 : -1 };
@@ -947,6 +947,15 @@ namespace Treachery.Shared
         }
 
         #endregion White
+
+        #region Black
+
+        private Captured DetermineCaptured()
+        {
+            return new Captured(Game) { Initiator = Faction, Passed = false };
+        }
+
+        #endregion
     }
 
     public class VoicePlan

@@ -50,7 +50,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)
         {
-            return g.RecentlyDiscarded;
+            return g.RecentlyDiscarded.Where(kvp => kvp.Value != p.Faction).Select(kvp => kvp.Key);
         }
 
         public static bool CanBePlayed(Game g, Player p)

@@ -140,6 +140,9 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(Bureaucracy))) action = DetermineBureaucracy();
                 if (action == null && possibleEvents.Contains(typeof(BrownEconomics))) action = DetermineBrownEconomics();
 
+                //Black
+                if (action == null && possibleEvents.Contains(typeof(Captured))) action = DetermineCaptured();
+
                 //Blue
                 if (action == null && possibleEvents.Contains(typeof(BluePrediction))) action = DetermineBluePrediction();
                 if (action == null && possibleEvents.Contains(typeof(BlueFlip))) action = DetermineBlueFlip();
