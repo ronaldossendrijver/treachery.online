@@ -1292,6 +1292,7 @@ namespace Treachery.Shared
                 if (plan.AllyContributionAmount > 0)
                 {
                     p.AlliedPlayer.Resources -= plan.AllyContributionAmount;
+                    if (Version >= 117) DecreasePermittedUseOfAllySpice(p.Faction, plan.AllyContributionAmount);
                 }
 
                 var brown = GetPlayer(Faction.Brown);

@@ -32,7 +32,7 @@ namespace Treachery.Client
             MaximumNumberOfPlayers = 6,
             HostParticipates = true,
             Ruleset = Ruleset.BasicGame,
-            Rules = new List<Rule>(),
+            Rules = new List<Rule>() { Rule.FillWithBots },
             FactionsInPlay = EstablishPlayers.AvailableFactions().ToList()
         };
 

@@ -202,7 +202,7 @@ namespace Treachery.Shared
 
         protected AllyPermission DetermineAlliancePermissions_Brown()
         {
-            if (Game.CurrentMainPhase == MainPhase.Bidding || Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
+            if (Game.CurrentMainPhase == MainPhase.Bidding || Game.CurrentMainPhase == MainPhase.ShipmentAndMove || Game.CurrentMainPhase == MainPhase.Battle)
             {
                 LogInfo("DetermineAlliancePermissions()");
 

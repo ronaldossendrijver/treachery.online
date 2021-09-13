@@ -23,7 +23,7 @@
             <Label>Factions in play</Label>
         </SelectFactionComponent>
 
-        <label class="mt-1 mb-0">Bots</label>
+        <label class="mt-1 mb-0">AI Players</label>
         @foreach (var rule in Game.GetRulesInGroup(RuleGroup.Bots))
         {
             <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="StateHasChanged" />
