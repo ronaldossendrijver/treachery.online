@@ -32,6 +32,18 @@ namespace Treachery.Shared
             return new Message(Initiator, "{0} flip to {1}.", Initiator, AsAdvisors ? "advisors" : "fighters");
         }
 
+        public Message GetDynamicMessage(Game g)
+        {
+            var territory = GetTerritory(g);
+            var blue = g.GetPlayer(Faction.Blue);
+            bool hasAdvisorsThere = blue != null && blue.SpecialForcesIn(territory) > 0;
+
+            return new Message(Initiator, "{0} {1} {2}.", 
+                Initiator,
+                hasAdvisorsThere ^ AsAdvisors ? "become" : "stay as", 
+                AsAdvisors ? "advisors" : "fighters");
+        }
+
         public static Territory GetTerritory(Game g)
         {
             return g.LastShippedOrMovedTo.Territory;

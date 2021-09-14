@@ -575,6 +575,8 @@ namespace Treachery.Shared
         {
             var initiator = GetPlayer(e.Initiator);
 
+            CurrentReport.Add(e.GetDynamicMessage(this));
+
             if (Version < 77)
             {
                 initiator.FlipForces(LastShippedOrMovedTo, e.AsAdvisors);
@@ -584,7 +586,6 @@ namespace Treachery.Shared
                 initiator.FlipForces(LastShippedOrMovedTo.Territory, e.AsAdvisors);
             }
 
-            CurrentReport.Add(e);
             if (Version >= 102) FlipBeneGesseritWhenAlone();
             DetermineNextShipmentAndMoveSubPhase(false, BGMayAccompany);
         }

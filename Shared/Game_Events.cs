@@ -413,6 +413,8 @@ namespace Treachery.Shared
                 result.Add(typeof(HideSecrets));
             }
 
+            if (player.Ally != Faction.None) result.Add(typeof(AllyPermission));
+
             bool isAfterSetup = Version < 107 ? CurrentPhase > Phase.TradingFactions : CurrentMainPhase > MainPhase.Setup;
             bool hasFinalizedBattlePlanWaitingToBeResolved = (CurrentPhase == Phase.BattlePhase || CurrentPhase == Phase.MeltingRock || CurrentPhase == Phase.CallTraitorOrPass) && CurrentBattle != null && CurrentBattle.PlanOf(player) != null;
 
@@ -425,7 +427,8 @@ namespace Treachery.Shared
                 CurrentPhase != Phase.TradingCards &&
                 CurrentPhase != Phase.Bureaucracy &&
                 CurrentPhase != Phase.SearchingDiscarded &&
-                CurrentPhase != Phase.PerformingKarmaHandSwap)
+                CurrentPhase != Phase.PerformingKarmaHandSwap &&
+                CurrentPhase != Phase.ReplacingCardJustWon)
             {
                 if (CurrentMainPhase < MainPhase.Battle && player.NoFieldIsActive)
                 {
@@ -611,8 +614,6 @@ namespace Treachery.Shared
                 {
                     result.Add(typeof(DistransUsed));
                 }
-
-                if (player.Ally != Faction.None) result.Add(typeof(AllyPermission));
 
                 if (Version >= 110)
                 {

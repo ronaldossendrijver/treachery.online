@@ -585,6 +585,11 @@ namespace Treachery.Shared
                 TreacheryDiscardPile.PutOnTop(c);
             }
 
+            if (TraitorsDeciphererCanLookAt.Count > 0)
+            {
+                CurrentReport.Add(e.Initiator, "{0} look at {1} leaders in the traitor deck.", e.Initiator, TraitorsDeciphererCanLookAt.Count);
+            }
+
             if (e.ReplacedTraitor != null && e.NewTraitor != null)
             {
                 CurrentReport.Add(e.Initiator, "{0} replaced {1} by another traitor from the deck.", e.Initiator, e.ReplacedTraitor);

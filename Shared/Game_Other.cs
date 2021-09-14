@@ -552,7 +552,7 @@ namespace Treachery.Shared
         {
             if (!BureaucratWasUsedThisPhase)
             {
-                 var bureaucrat = PlayerSkilledAs(LeaderSkill.Bureaucrat);
+                var bureaucrat = PlayerSkilledAs(LeaderSkill.Bureaucrat);
                 if (bureaucrat != null && bureaucrat.Faction != payer && bureaucrat.Faction != receiver)
                 {
                     BureaucratWasUsedThisPhase = true;

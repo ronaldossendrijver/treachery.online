@@ -477,17 +477,17 @@ namespace Treachery.Shared
                 countForcesForWhite = Game.LatestRevealedNoFieldValue == 5 ? 3 : 5;
             }
 
-            return MaxDial(p.Resources, p.ForcesIn(t) + countForcesForWhite, p.Faction != Faction.White ? p.SpecialForcesIn(t) : 0, p.Faction, opponent.Faction);
+            return MaxDial(p.Resources, p.ForcesIn(t) + countForcesForWhite, p.Faction != Faction.White ? p.SpecialForcesIn(t) : 0, p, opponent.Faction);
         }
 
         protected virtual float MaxDial(int resources, Battalion battalion, Faction opponent)
         {
-            return MaxDial(resources, battalion.AmountOfForces, battalion.AmountOfSpecialForces, battalion.Faction, opponent);
+            return MaxDial(resources, battalion.AmountOfForces, battalion.AmountOfSpecialForces, Game.GetPlayer(battalion.Faction), opponent);
         }
 
-        protected virtual float MaxDial(int resources, int forces, int specialForces, Faction playerFaction, Faction opponentFaction)
+        protected virtual float MaxDial(int resources, int forces, int specialForces, Player player, Faction opponentFaction)
         {
-            int spice = Battle.MustPayForForcesInBattle(Game, this) ? resources : 99;
+            int spice = Battle.MustPayForForcesInBattle(Game, player) ? resources : 99;
 
             int specialForcesAtFullStrength = Math.Min(specialForces, spice);
             spice -= specialForcesAtFullStrength;
@@ -497,8 +497,18 @@ namespace Treachery.Shared
             int forcesAtHalfStrength = forces - forcesAtFullStrength;
 
             var result =
-                Battle.DetermineSpecialForceStrength(Game, playerFaction, opponentFaction) * (specialForcesAtFullStrength + 0.5f * specialForcesAtHalfStrength) +
-                Battle.DetermineNormalForceStrength(playerFaction) * (forcesAtFullStrength + 0.5f * forcesAtHalfStrength);
+                Battle.DetermineSpecialForceStrength(Game, player.Faction, opponentFaction) * (specialForcesAtFullStrength + 0.5f * specialForcesAtHalfStrength) +
+                Battle.DetermineNormalForceStrength(player.Faction) * (forcesAtFullStrength + 0.5f * forcesAtHalfStrength);
+
+            LogInfo("MaxDial: {0} (SpecialForceStrength {1} * (specialForcesAtFullStrength {2} + 0.5 * specialForcesAtHalfStrength {3}) + NormalForceStrength {4} * (forcesAtFullStrength {5} + 0.5 * forcesAtHalfStrength {6}))", 
+                result, 
+                Battle.DetermineSpecialForceStrength(Game, player.Faction, opponentFaction), 
+                specialForcesAtFullStrength, 
+                specialForcesAtHalfStrength,
+                Battle.DetermineNormalForceStrength(player.Faction),
+                forcesAtFullStrength,
+                forcesAtHalfStrength
+                );
 
             return result;
         }
