@@ -865,6 +865,20 @@ namespace Treachery.Client
             }
         }
 
+        public async Task<DateTime> GetScheduledMaintenance()
+        {
+            try
+            {
+                return await _connection.InvokeAsync<DateTime>("GetScheduledMaintenance");
+            }
+            catch (Exception ex)
+            {
+                Support.Log(ex.ToString());
+            }
+
+            return default;
+        }
+
         #endregion SupportMethods
 
         #region MapEvents

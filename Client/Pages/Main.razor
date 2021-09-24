@@ -13,6 +13,15 @@
 @inject ILogger<Index> logger
 @inject IJSRuntime JSRuntime
 
+@if (scheduledMaintenance > DateTime.Now &&
+   (scheduledMaintenance.Subtract(DateTime.Now).TotalHours < 12 && h.CurrentPhase <= Phase.AwaitingPlayers ||
+    scheduledMaintenance.Subtract(DateTime.Now).TotalHours < 1))
+{
+    <div class="alert alert-danger text-center p-0" role="alert">
+        treachery.online will be down for maintenance for one hour starting @scheduledMaintenance.ToLocalTime() (in @((int)scheduledMaintenance.Subtract(DateTime.Now).TotalHours) hours)
+    </div>
+}
+
 <div class="row">
 
     <!--Empty Column-->
@@ -142,6 +151,7 @@
 @code {
 
     private Handler h;
+    private DateTime scheduledMaintenance;
 
     protected override async Task OnInitializedAsync()
     {
@@ -149,6 +159,7 @@
         h = new Handler(NavigationManager.ToAbsoluteUri("/gameHub"), logger);
         h.RefreshHandler += Refresh;
         await h.Start();
+        scheduledMaintenance = await h.GetScheduledMaintenance();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

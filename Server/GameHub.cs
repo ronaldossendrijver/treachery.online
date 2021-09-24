@@ -269,7 +269,7 @@ namespace Treachery.Server
 
         public void GameFinished(string state, GameInfo info)
         {
-            SendMail(string.Format("{0} ({1} Players, {2}, Turn {3})", info.GameName, info.Players.Count(), Skin.Current.Describe(info.Ruleset), info.CurrentTurn), state);
+            SendMail(string.Format("{0} ({1} Players, {2}, Turn {3})", info.GameName, info.Players.Length, Skin.Current.Describe(info.Ruleset), info.CurrentTurn), state);
         }
 
         public async Task UploadStatistics(string state)
@@ -279,6 +279,20 @@ namespace Treachery.Server
             if (Game.TryLoad(gameState, false, true, ref game) == "")
             {
                 await SendGameStatistics(game);
+            }
+        }
+
+        public DateTime GetScheduledMaintenance()
+        {
+            var maintenanceDateTime = Configuration["GameMaintenanceDateTime"];
+
+            try
+            {
+                return DateTime.Parse(maintenanceDateTime);
+            }
+            catch (Exception)
+            {
+                return default;
             }
         }
 
