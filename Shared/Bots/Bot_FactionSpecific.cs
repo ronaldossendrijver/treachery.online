@@ -34,12 +34,12 @@ namespace Treachery.Shared
                 if (TreacheryCards.Count >= 3 || ResourcesIncludingAllyAndRedContribution < 5)
                 {
                     //Remove the best card from auction
-                    toBeRemoved = Game.CardsOnAuction.Items.OrderBy(c => CardQuality(c)).FirstOrDefault();
+                    toBeRemoved = Game.CardsOnAuction.Items.HighestOrDefault(c => CardQuality(c));
                 }
                 else
                 {
                     //Remove the worst card from auction
-                    toBeRemoved = Game.CardsOnAuction.Items.OrderBy(c => CardQuality(c)).FirstOrDefault();
+                    toBeRemoved = Game.CardsOnAuction.Items.LowestOrDefault(c => CardQuality(c));
                 }
             }
 
@@ -52,7 +52,7 @@ namespace Treachery.Shared
 
         protected GreySwappedCardOnBid DetermineGreySwappedCardOnBid()
         {
-            var card = TreacheryCards.OrderBy(c => CardQuality(c)).FirstOrDefault();
+            var card = TreacheryCards.LowestOrDefault(c => CardQuality(c));
 
             if (card != null && CardQuality(card) <= 2)
             {
@@ -100,7 +100,7 @@ namespace Treachery.Shared
         {
             var currentLocation = Game.Map.HiddenMobileStronghold.AttachedToLocation;
 
-            var richestAdjacentSpiceLocation = PerformHmsMovement.ValidLocations(Game).Where(l => l != currentLocation && ResourcesIn(l) > 0).OrderByDescending(l => ResourcesIn(l)).FirstOrDefault();
+            var richestAdjacentSpiceLocation = PerformHmsMovement.ValidLocations(Game).Where(l => l != currentLocation && ResourcesIn(l) > 0).HighestOrDefault(l => ResourcesIn(l));
             if (richestAdjacentSpiceLocation != null)
             {
                 return new PerformHmsMovement(Game) { Initiator = Faction, Passed = false, Target = richestAdjacentSpiceLocation };
@@ -108,7 +108,7 @@ namespace Treachery.Shared
 
             var reachableFromCurrentLocation = Map.FindNeighbours(currentLocation, Game.HmsMovesLeft, false, Faction, Game.SectorInStorm, Game.ForcesOnPlanet, Game.CurrentBlockedTerritories);
 
-            var richestReachableSpiceLocation = reachableFromCurrentLocation.Where(l => l != currentLocation && ResourcesIn(l) > 0).OrderByDescending(l => ResourcesIn(l)).FirstOrDefault();
+            var richestReachableSpiceLocation = reachableFromCurrentLocation.Where(l => l != currentLocation && ResourcesIn(l) > 0).HighestOrDefault(l => ResourcesIn(l));
             if (richestReachableSpiceLocation != null)
             {
                 var nextStepTowardsSpice = PerformHmsMovement.ValidLocations(Game).Where(l => WithinDistance(l, richestReachableSpiceLocation, 1)).FirstOrDefault();
@@ -208,7 +208,7 @@ namespace Treachery.Shared
 
         protected YellowSentMonster DetermineYellowSentMonster()
         {
-            var target = YellowSentMonster.ValidTargets(Game).OrderByDescending(t => TotalMaxDialOfOpponents(t) + 2 * AnyForcesIn(t)).FirstOrDefault();
+            var target = YellowSentMonster.ValidTargets(Game).HighestOrDefault(t => TotalMaxDialOfOpponents(t) + 2 * AnyForcesIn(t));
             return new YellowSentMonster(Game) { Initiator = Faction, Territory = target };
         }
 
@@ -226,11 +226,11 @@ namespace Treachery.Shared
 
             if (target == null && Game.LatestSpiceCardA != null && validLocations.Contains(Game.LatestSpiceCardA.Location) && Game.ResourcesOnPlanet.ContainsKey(Game.LatestSpiceCardA.Location) && VacantAndSafeFromStorm(Game.LatestSpiceCardA.Location)) target = Game.LatestSpiceCardA.Location;
             if (target == null && Game.LatestSpiceCardB != null && validLocations.Contains(Game.LatestSpiceCardB.Location) && Game.ResourcesOnPlanet.ContainsKey(Game.LatestSpiceCardB.Location) && VacantAndSafeFromStorm(Game.LatestSpiceCardB.Location)) target = Game.LatestSpiceCardB.Location;
-            if (target == null) target = Game.ResourcesOnPlanet.OrderByDescending(r => r.Value).FirstOrDefault(l => validLocations.Contains(l.Key) && VacantAndSafeFromStorm(l.Key)).Key;
+            if (target == null) target = Game.ResourcesOnPlanet.Where(l => validLocations.Contains(l.Key) && VacantAndSafeFromStorm(l.Key)).HighestOrDefault(r => r.Value).Key;
 
             if (target == null && Game.LatestSpiceCardA != null && validLocations.Contains(Game.LatestSpiceCardA.Location) && Game.ResourcesOnPlanet.ContainsKey(Game.LatestSpiceCardA.Location) && TotalMaxDialOfOpponents(Game.LatestSpiceCardA.Location.Territory) + 3 < nrOfForces) target = Game.LatestSpiceCardA.Location;
             if (target == null && Game.LatestSpiceCardB != null && validLocations.Contains(Game.LatestSpiceCardB.Location) && Game.ResourcesOnPlanet.ContainsKey(Game.LatestSpiceCardB.Location) && TotalMaxDialOfOpponents(Game.LatestSpiceCardB.Location.Territory) + 3 < nrOfForces) target = Game.LatestSpiceCardB.Location;
-            if (target == null) target = Game.ResourcesOnPlanet.OrderByDescending(r => r.Value).FirstOrDefault(l => validLocations.Contains(l.Key) && TotalMaxDialOfOpponents(l.Key.Territory) + 3 < nrOfForces).Key;
+            if (target == null) target = Game.ResourcesOnPlanet.Where(l => validLocations.Contains(l.Key) && VacantAndSafeFromStorm(l.Key) && TotalMaxDialOfOpponents(l.Key.Territory) + 3 < nrOfForces).HighestOrDefault(r => r.Value).Key;
 
             if (target == null) target = Game.Map.PolarSink;
 
@@ -294,7 +294,7 @@ namespace Treachery.Shared
         {
             if (Game.CurrentMainPhase == MainPhase.Resurrection && NrOfBattlesToFight < 2)
             {
-                var territory = BlueBattleAnnouncement.ValidTerritories(Game, this).OrderBy(t => GetDialNeeded(t, GetOpponentThatOccupies(t), false)).FirstOrDefault(t => IWantToAnnounceBattleIn(t));
+                var territory = BlueBattleAnnouncement.ValidTerritories(Game, this).Where(t => IWantToAnnounceBattleIn(t)).LowestOrDefault(t => GetDialNeeded(t, GetOpponentThatOccupies(t), false));
 
                 if (territory != null)
                 {
@@ -825,17 +825,17 @@ namespace Treachery.Shared
         {
             if (Game.CurrentPurpleRevivalRequest != null || Game.AllowedEarlyRevivals.Keys.Any(h => h.Faction == Faction)) return null;
 
-            var toRevive = RequestPurpleRevival.ValidTargets(Game, this).Where(l => SafeLeaders.Contains(l)).OrderByDescending(l => l.Value).FirstOrDefault();
+            var toRevive = RequestPurpleRevival.ValidTargets(Game, this).Where(l => SafeLeaders.Contains(l)).HighestOrDefault(l => l.Value);
 
             if (toRevive == null)
             {
                 var knownOpponentTraitors = Opponents.SelectMany(p => p.RevealedTraitors);
-                toRevive = RequestPurpleRevival.ValidTargets(Game, this).Where(l => !knownOpponentTraitors.Contains(l)).OrderByDescending(l => l.Value).FirstOrDefault();
+                toRevive = RequestPurpleRevival.ValidTargets(Game, this).Where(l => !knownOpponentTraitors.Contains(l)).HighestOrDefault(l => l.Value);
             }
 
             if (toRevive != null && Battle.ValidBattleHeroes(Game, this).Count() <= 3)
             {
-                toRevive = RequestPurpleRevival.ValidTargets(Game, this).OrderByDescending(l => l.Value).FirstOrDefault();
+                toRevive = RequestPurpleRevival.ValidTargets(Game, this).HighestOrDefault(l => l.Value);
             }
 
             if (toRevive != null)

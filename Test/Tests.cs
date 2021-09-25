@@ -373,7 +373,7 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 1000;
+            int nrOfGames = 500;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
@@ -961,6 +961,28 @@ namespace Treachery.Test
             }
 
             return standardDeviation;
+        }
+
+        [TestMethod]
+        public void BestExtensionMethod()
+        {
+            var toTest = new List<Tuple<string, int>>();
+            toTest.Add(new Tuple<string, int>("alia", 5));
+            toTest.Add(new Tuple<string, int>("fenring", 5));
+            toTest.Add(new Tuple<string, int>("ramallo", 5));
+            toTest.Add(new Tuple<string, int>("yueh", 5));
+            toTest.Add(new Tuple<string, int>("jessica", 5));
+            
+            var counter = new ObjectCounter<string>();
+            for (int i = 0; i < 10000; i++)
+            {
+                counter.Count(toTest.HighestOrDefault(v => v.Item2).Item1);
+            }
+
+            foreach (var f in counter.Counted)
+            {
+                Console.WriteLine("{0}: {1}", f, counter.CountOf(f));
+            }
         }
 
         [TestMethod]

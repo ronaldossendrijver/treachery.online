@@ -56,7 +56,7 @@ namespace Treachery.Shared
             {
                 if (TreacheryCards.Count(c => CardQuality(c) <= 2) >= 2)
                 {
-                    var bestOpponentToSwapWith = Opponents.OrderByDescending(o => CardsPlayerHas(o).Count(c => CardQuality(c) >= 3)).FirstOrDefault();
+                    var bestOpponentToSwapWith = Opponents.HighestOrDefault(o => CardsPlayerHas(o).Count(c => CardQuality(c) >= 3));
                     LogInfo("opponent with most known good cards: " + bestOpponentToSwapWith);
 
                     if (bestOpponentToSwapWith != null && CardsPlayerHas(bestOpponentToSwapWith).Count(c => CardQuality(c) >= 3) >= 2)
@@ -306,14 +306,14 @@ namespace Treachery.Shared
                         SafeLeaders.Contains(l) &&
                         l.Faction != Ally &&
                         l.Value >= minimumValue
-                        ).OrderByDescending(l => l.Value + HeroRevivalPenalty(l)).FirstOrDefault();
+                        ).HighestOrDefault(l => l.Value + HeroRevivalPenalty(l));
 
                     if (leaderToRevive == null)
                     {
                         leaderToRevive = Revival.ValidRevivalHeroes(Game, this).Where(l =>
                             l.Faction != Ally &&
                             l.Value >= minimumValue
-                            ).OrderByDescending(l => l.Value + HeroRevivalPenalty(l)).FirstOrDefault();
+                            ).HighestOrDefault(l => l.Value + HeroRevivalPenalty(l));
                     }
 
                     if (leaderToRevive != null)
@@ -384,8 +384,8 @@ namespace Treachery.Shared
 
         protected virtual TraitorsSelected DetermineTraitorsSelected()
         {
-            var traitor = Traitors.Where(l => l.Faction != Faction).OrderByDescending(l => l.Value).FirstOrDefault();
-            if (traitor == null) traitor = Traitors.OrderByDescending(l => l.Value - (l.Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah) ? 2 : 0)).FirstOrDefault();
+            var traitor = Traitors.Where(l => l.Faction != Faction).HighestOrDefault(l => l.Value);
+            if (traitor == null) traitor = Traitors.HighestOrDefault(l => l.Value - (l.Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah) ? 2 : 0));
             return new TraitorsSelected(Game) { Initiator = Faction, SelectedTraitor = traitor };
         }
 
@@ -422,7 +422,7 @@ namespace Treachery.Shared
                 enemyKills.Add(moves, enemyKills[moves - 1] + enemyForces);
             }
 
-            var mostEffectiveMove = myKills.OrderByDescending(myKills => enemyKills[myKills.Key] - myKills.Value).First();
+            var mostEffectiveMove = myKills.HighestOrDefault(myKills => enemyKills[myKills.Key] - myKills.Value);
             LogInfo("StormSpellPlayed() - Most effective number of moves: {0} sectors with {1} allied and {2} enemy kills.", mostEffectiveMove.Key, myKills[mostEffectiveMove.Key], enemyKills[mostEffectiveMove.Key]);
 
             if (enemyKills[mostEffectiveMove.Key] - myKills[mostEffectiveMove.Key] >= 10)
@@ -438,14 +438,13 @@ namespace Treachery.Shared
 
         protected DistransUsed DetermineDistransUsed()
         {
-            var worstCard = DistransUsed.ValidCards(Game, this).OrderBy(c => CardQuality(c)).FirstOrDefault();
+            var worstCard = DistransUsed.ValidCards(Game, this).LowestOrDefault(c => CardQuality(c));
             if (worstCard != null && CardQuality(worstCard) <= 1)
             {
                 var target = DistransUsed.ValidTargets(Game, this)
                     .Where(f => f != Ally && (!Game.Applicable(Rule.BlueWorthlessAsKarma) || f != Faction.Blue))
                     .Select(f => Game.GetPlayer(f))
-                    .OrderByDescending(p => Game.NumberOfVictoryPoints(p, true))
-                    .FirstOrDefault();
+                    .HighestOrDefault(p => Game.NumberOfVictoryPoints(p, true));
 
                 if (target != null)
                 {
@@ -486,7 +485,7 @@ namespace Treachery.Shared
                 Revival.GetPriceOfHeroRevival(Game, this, l) <= maxToSpendOnHeroRevival &&
                 l.Faction != Ally &&
                 l.Value >= minimumValue
-                ).OrderByDescending(l => l.Value + HeroRevivalPenalty(l)).FirstOrDefault();
+                ).HighestOrDefault(l => l.Value + HeroRevivalPenalty(l));
 
             if (leaderToRevive == null)
             {
@@ -494,7 +493,7 @@ namespace Treachery.Shared
                     Revival.GetPriceOfHeroRevival(Game, this, l) <= maxToSpendOnHeroRevival &&
                     l.Faction != Ally &&
                     l.Value >= minimumValue
-                    ).OrderByDescending(l => l.Value + HeroRevivalPenalty(l)).FirstOrDefault();
+                    ).HighestOrDefault(l => l.Value + HeroRevivalPenalty(l));
             }
 
             int specialForcesToRevive = SpecialForcesKilled > 0 && !Game.FactionsThatRevivedSpecialForcesThisTurn.Contains(Faction) ? 1 : 0;
@@ -527,7 +526,7 @@ namespace Treachery.Shared
         {
             if (Game.CurrentMainPhase == MainPhase.Contemplate)
             {
-                var cardToSearch = DiscardedSearched.ValidCards(Game).OrderByDescending(c => CardQuality(c)).FirstOrDefault();
+                var cardToSearch = DiscardedSearched.ValidCards(Game).HighestOrDefault(c => CardQuality(c));
                 if (cardToSearch != null && CardQuality(cardToSearch) >= 4)
                 {
                     return new DiscardedSearchedAnnounced(Game) { Initiator = Faction };
@@ -539,13 +538,13 @@ namespace Treachery.Shared
 
         public DiscardedSearched DetermineDiscardedSearched()
         {
-            var cardToSearch = DiscardedSearched.ValidCards(Game).OrderByDescending(c => CardQuality(c)).FirstOrDefault();
+            var cardToSearch = DiscardedSearched.ValidCards(Game).HighestOrDefault(c => CardQuality(c));
             return new DiscardedSearched(Game) { Initiator = Faction, Card = cardToSearch };
         }
 
         public DiscardedTaken DetermineDiscardedTaken()
         {
-            var cardToTake = DiscardedTaken.ValidCards(Game, this).OrderByDescending(c => CardQuality(c)).FirstOrDefault();
+            var cardToTake = DiscardedTaken.ValidCards(Game, this).HighestOrDefault(c => CardQuality(c));
             if (cardToTake != null && CardQuality(cardToTake) >= 4)
             {
                 return new DiscardedTaken(Game) { Initiator = Faction, Card = cardToTake };

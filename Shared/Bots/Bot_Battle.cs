@@ -577,8 +577,7 @@ namespace Treachery.Shared
             var unknownCards = CardsUnknownToMe;
 
             var bestDefenseAgainstUnknownCards = availableDefenses
-                    .OrderBy(def => NumberOfUnknownWeaponsThatCouldKillMeWithThisDefense(unknownCards, def, chosenWeapon))
-                    .FirstOrDefault();
+                    .LowestOrDefault(def => NumberOfUnknownWeaponsThatCouldKillMeWithThisDefense(unknownCards, def, chosenWeapon));
 
             foreach (var def in availableDefenses)
             {
@@ -801,13 +800,13 @@ namespace Treachery.Shared
 
             if (highest)
             {
-                safeHero = safeLeaders.OrderByDescending(l => l.ValueInCombatAgainst(highestOpponentLeader)).FirstOrDefault();
-                unsafeHero = HeroesForBattle(this, includeInFrontOfShield).OrderByDescending(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader)).FirstOrDefault();
+                safeHero = safeLeaders.HighestOrDefault(l => l.ValueInCombatAgainst(highestOpponentLeader));
+                unsafeHero = HeroesForBattle(this, includeInFrontOfShield).HighestOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader));
             }
             else
             {
-                safeHero = safeLeaders.OrderBy(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader)).FirstOrDefault();
-                unsafeHero = HeroesForBattle(this, includeInFrontOfShield).OrderBy(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader)).FirstOrDefault();
+                safeHero = safeLeaders.LowestOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader));
+                unsafeHero = HeroesForBattle(this, includeInFrontOfShield).LowestOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader));
             }
 
             if (safeHero == null ||
@@ -1023,7 +1022,7 @@ namespace Treachery.Shared
 
         protected ThoughtAnswered DetermineThoughtAnswered()
         {
-            return new ThoughtAnswered(Game) { Initiator = Faction, Card = ThoughtAnswered.ValidCards(Game, this).OrderBy(c => CardQuality(c)).FirstOrDefault() };
+            return new ThoughtAnswered(Game) { Initiator = Faction, Card = ThoughtAnswered.ValidCards(Game, this).LowestOrDefault(c => CardQuality(c)) };
         }
 
         protected HMSAdvantageChosen DetermineHMSAdvantageChosen()
@@ -1045,7 +1044,7 @@ namespace Treachery.Shared
                 specialForcesToRetreat--;
             }
 
-            var to = Retreat.ValidTargets(Game, this).Where(l => ResourcesIn(l) > 0).OrderByDescending(l => ResourcesIn(l)).FirstOrDefault();
+            var to = Retreat.ValidTargets(Game, this).Where(l => ResourcesIn(l) > 0).HighestOrDefault(l => ResourcesIn(l));
             if (to == null) to = Retreat.ValidTargets(Game, this).FirstOrDefault(l => l.IsProtectedFromStorm);
             if (to == null) to = Retreat.ValidTargets(Game, this).FirstOrDefault();
 

@@ -28,13 +28,14 @@ namespace Treachery.Shared
                 (nrOfUnalliedHumans == 0 || nrOfUnalliedHumans < nrOfUnalliedBots - 1) &&
                 !Game.CurrentAllianceOffers.Any(o => o.Initiator == Faction && Game.GetPlayer(o.Target).Ally == Faction.None))
             {
-                var opponentBotWithoutAlly = Game.Players.OrderByDescending(p =>
+                var opponentBotWithoutAlly = Game.Players.Where(p => p != this && p.IsBot && p.Ally == Faction.None).HighestOrDefault(p =>
                     2 * p.TreacheryCards.Count() +
-                    p.Resources + 6 * p.LocationsWithAnyForces.Count(l => l.Territory.IsStronghold) +
+                    p.Resources + 
+                    6 * p.LocationsWithAnyForces.Count(l => l.Territory.IsStronghold) +
                     p.ForcesOnPlanet.Sum(b => b.Value.TotalAmountOfForces) +
                     p.ForcesInReserve +
                     p.SpecialForcesInReserve
-                    ).FirstOrDefault(p => p != this && p.IsBot && p.Ally == Faction.None);
+                    );
 
                 if (opponentBotWithoutAlly != null)
                 {

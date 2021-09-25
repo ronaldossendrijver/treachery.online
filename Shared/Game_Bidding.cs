@@ -200,6 +200,8 @@ namespace Treachery.Shared
                 NumberOfCardsOnAuction--;
             }
 
+            CardSoldOnBlackMarket = null;
+
             if (NumberOfCardsOnAuction == 0)
             {
                 CurrentReport.Add("Bidding is skipped because no faction is able to buy cards");

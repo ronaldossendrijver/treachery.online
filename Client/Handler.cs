@@ -728,20 +728,21 @@ namespace Treachery.Client
 
             if (IsHost)
             {
-                PerformBotAction();
+                PerformBotAction(e);
             }
 
             Refresh();
         }
 
         private bool awaitingBotAction;
-        private void PerformBotAction()
+        private void PerformBotAction(GameEvent e)
         {
             if (!awaitingBotAction && Game.Players.Any(p => p.IsBot))
             {
                 awaitingBotAction = true;
+                int botDelay = DetermineBotDelay(Game.CurrentMainPhase, e, Status.FlashInfo.Any());
 
-                int botDelay = 1000;
+                /*
                 if (Status.FlashInfo.Any()) botDelay = 4000;
                 else if (Game.RecentMilestones.Any()) botDelay = 1500;
 
@@ -753,8 +754,32 @@ namespace Treachery.Client
                 else if (Game.CurrentPhase == Phase.PerformingKarmaHandSwap) botDelay = 10000;
                 else if (Game.CurrentPhase == Phase.BattlePhase) botDelay = 4000;
                 else if (Game.CurrentPhase == Phase.CallTraitorOrPass || Game.CurrentPhase == Phase.BattleConclusion || Game.CurrentPhase == Phase.Facedancing) botDelay = 10000;
-
+                */
                 _ = Task.Delay(botDelay).ContinueWith(e => PerformBotEvent());
+            }
+        }
+
+        private static int DetermineBotDelay(MainPhase phase, GameEvent e, bool hasFlashInfo)
+        {
+            if (hasFlashInfo)
+            {
+                return 4000;
+            }
+            else if (phase == MainPhase.Resurrection || phase == MainPhase.Charity || e is AllyPermission || e is DealOffered || e is DealAccepted)
+            {
+                return 200;
+            }
+            else if (e is Bid)
+            {
+                return 1000;
+            }
+            else if (phase == MainPhase.Battle || phase == MainPhase.ShipmentAndMove)
+            {
+                return 5000;
+            }
+            else
+            {
+                return 1500;
             }
         }
 

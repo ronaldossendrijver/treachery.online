@@ -324,7 +324,7 @@ namespace Treachery.Shared
                     return ForcesOnPlanet.Where(locationWithBattalion =>
                     !InStorm(locationWithBattalion.Key) &&
                     !AllyNotIn(locationWithBattalion.Key))
-                    .OrderByDescending(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces).FirstOrDefault();
+                    .HighestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
                 }
                 else
                 {
@@ -332,7 +332,7 @@ namespace Treachery.Shared
                     return ForcesOnPlanet.Where(locationWithBattalion =>
                     !InStorm(locationWithBattalion.Key) &&
                     !AllyNotIn(locationWithBattalion.Key.Territory))
-                    .OrderBy(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces).FirstOrDefault();
+                    .LowestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
                 }
             }
         }
@@ -347,7 +347,7 @@ namespace Treachery.Shared
                 !InStorm(locationWithBattalion.Key) &&
                 MayFleeOutOf(locationWithBattalion.Key) &&
                 !HasResources(locationWithBattalion.Key)
-                ).OrderByDescending(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces).FirstOrDefault();
+                ).HighestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
 
         protected virtual KeyValuePair<Location, Battalion> BiggestBattalionInSpicelessNonStrongholdLocationOnRock => ForcesOnPlanet.Where(locationWithBattalion =>
                 !IsStronghold(locationWithBattalion.Key) &&
@@ -355,7 +355,7 @@ namespace Treachery.Shared
                 Game.IsProtectedFromStorm(locationWithBattalion.Key) &&
                 ResourcesIn(locationWithBattalion.Key) == 0 &&
                 (!Has(TreacheryCardType.Metheor) || locationWithBattalion.Key.Territory != Game.Map.PastyMesa))
-                .OrderByDescending(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces).FirstOrDefault();
+                .HighestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
 
         protected virtual KeyValuePair<Location, Battalion> BiggestBattalionInSpicelessNonStrongholdLocationInSandOrNotNearStronghold => ForcesOnPlanet.Where(locationWithBattalion =>
                 !IsStronghold(locationWithBattalion.Key) &&
@@ -363,7 +363,7 @@ namespace Treachery.Shared
                 (!Game.IsProtectedFromStorm(locationWithBattalion.Key) || !Game.Map.Strongholds.Any(s => WithinRange(locationWithBattalion.Key, s, locationWithBattalion.Value))) &&
                 ResourcesIn(locationWithBattalion.Key) == 0 &&
                 (!Has(TreacheryCardType.Metheor) || locationWithBattalion.Key.Territory != Game.Map.PastyMesa))
-                .OrderByDescending(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces).FirstOrDefault();
+                .HighestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
 
         protected virtual KeyValuePair<Location, Battalion> BiggestBattalionInSpicelessNonStrongholdLocationNotNearStrongholdAndSpice => ForcesOnPlanet.Where(locationWithBattalion =>
                 !IsStronghold(locationWithBattalion.Key) &&
@@ -372,7 +372,7 @@ namespace Treachery.Shared
                 (!Has(TreacheryCardType.Metheor) || locationWithBattalion.Key.Territory != Game.Map.PastyMesa) &&
                 VacantAndSafeNearbyStronghold(locationWithBattalion) == null &&
                 BestSafeAndNearbyResources(locationWithBattalion.Key, locationWithBattalion.Value) == null)
-                .OrderByDescending(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces).FirstOrDefault();
+                .HighestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
 
         protected virtual KeyValuePair<Location, Battalion> BiggestLargeUnthreatenedMovableBattalionInStrongholdNearVacantStronghold => ForcesOnPlanet.Where(locationWithBattalion =>
                 IsStronghold(locationWithBattalion.Key) &&
@@ -380,7 +380,7 @@ namespace Treachery.Shared
                 locationWithBattalion.Key.Sector != Game.SectorInStorm &&
                 locationWithBattalion.Value.TotalAmountOfForces >= 8 &&
                 VacantAndSafeNearbyStronghold(locationWithBattalion) != null)
-                .OrderByDescending(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces).FirstOrDefault();
+                .HighestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
 
         protected virtual KeyValuePair<Location, Battalion> BiggestMovableStackOfAdvisorsInStrongholdNearVacantStronghold => ForcesOnPlanet.Where(locationWithBattalion =>
                 locationWithBattalion.Value.Faction == Faction.Blue &&
@@ -389,7 +389,7 @@ namespace Treachery.Shared
                 NotOccupiedByOthers(locationWithBattalion.Key) &&
                 !InStorm(locationWithBattalion.Key) &&
                 VacantAndSafeNearbyStronghold(locationWithBattalion) != null)
-                .OrderByDescending(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces).FirstOrDefault();
+                .HighestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
 
         protected virtual KeyValuePair<Location, Battalion> BiggestLargeUnthreatenedMovableBattalionInStrongholdNearSpice => ForcesOnPlanet.Where(locationWithBattalion =>
                 IsStronghold(locationWithBattalion.Key) &&
@@ -397,7 +397,7 @@ namespace Treachery.Shared
                 !InStorm(locationWithBattalion.Key) &&
                 locationWithBattalion.Value.TotalAmountOfForces >= (IAmDesparateForResources ? 5 : 7) &&
                 BestSafeAndNearbyResources(locationWithBattalion.Key, locationWithBattalion.Value) != null)
-                .OrderByDescending(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces).FirstOrDefault();
+                .HighestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
 
         #endregion
 
@@ -457,10 +457,19 @@ namespace Treachery.Shared
                     DialNeeded = GetDialNeeded(s.Stronghold.Territory, GetOpponentThatOccupies(s.Stronghold.Territory), true)
                 });
 
-            return enemyWeakStrongholds.Where(s =>
+            var winnableNearbyStronghold = enemyWeakStrongholds.Where(s =>
                 WinWasPredictedByMeThisTurn(s.Opponent) ||
                 DetermineRemainingDialInBattle(s.DialNeeded, s.Opponent, battalion.AmountOfForces + ForcesIn(s.Stronghold), battalion.AmountOfSpecialForces + SpecialForcesIn(s.Stronghold), Resources) <= 0
-                ).OrderBy(s => s.DialNeeded).Select(s => s.Stronghold).FirstOrDefault();
+                ).OrderBy(s => s.DialNeeded).FirstOrDefault();
+
+            if (winnableNearbyStronghold == null)
+            {
+                return null;
+            }
+            else
+            {
+                return winnableNearbyStronghold.Stronghold;
+            }
         }
 
         #endregion
@@ -575,7 +584,7 @@ namespace Treachery.Shared
 
         #region BattleInformation_Leaders
 
-        protected virtual IHero LowestAvailableNonMercenaryLeader => Battle.ValidBattleHeroes(Game, this).OrderBy(l => l.Value).FirstOrDefault(l => l is Leader);
+        protected virtual IHero LowestAvailableNonMercenaryLeader => Battle.ValidBattleHeroes(Game, this).Where(l => l is Leader).LowestOrDefault(l => l.Value);
 
         protected virtual IEnumerable<IHero> SafeLeaders
         {

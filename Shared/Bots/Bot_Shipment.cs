@@ -69,7 +69,7 @@ namespace Treachery.Shared
                 AllyNotIn(kvp.Key.Territory) &&
                 !StormWillProbablyHit(kvp.Key) &&
                 ProbablySafeFromShaiHulud(kvp.Key.Territory)
-                ).OrderByDescending(kvp => kvp.Value).FirstOrDefault();
+                ).HighestOrDefault(kvp => kvp.Value);
 
             if (safeLocationWithMostUnclaimedResources.Key != null)
             {
@@ -95,7 +95,7 @@ namespace Treachery.Shared
 
         private Shipment ConstructShipment(int nrOfForces, int nrOfSpecialForces, Location location, bool useKarma, bool useAllyResources)
         {
-            int usableNoField = Shipment.ValidNoFieldValues(Game, this).OrderByDescending(v => v).Where(v => v >= nrOfForces + nrOfSpecialForces + 1 - D(1, 3)).DefaultIfEmpty(-1).First();
+            int usableNoField = Shipment.ValidNoFieldValues(Game, this).Where(v => v >= nrOfForces + nrOfSpecialForces + 1 - D(1, 3)).OrderByDescending(v => v).DefaultIfEmpty(-1).First();
             Shipment result;
             if (Shipment.ValidNoFieldValues(Game, this).Contains(usableNoField))
             {
@@ -213,7 +213,7 @@ namespace Treachery.Shared
                 TotalMaxDialOfOpponents(kvp.Key.Territory) <= Param.Shipment_MaxEnemyForceStrengthFightingForSpice &&
                 AllyNotIn(kvp.Key.Territory) &&
                 !StormWillProbablyHit(kvp.Key)
-                ).OrderByDescending(kvp => kvp.Value).FirstOrDefault();
+                ).HighestOrDefault(kvp => kvp.Value);
 
             if (safeLocationWithMostResources.Key != null)
             {
@@ -270,8 +270,7 @@ namespace Treachery.Shared
                  TotalMaxDialOfOpponents(kvp.Key.Territory) <= Param.Shipment_MaxEnemyForceStrengthFightingForSpice &&
                  !StormWillProbablyHit(kvp.Key) &&
                  ProbablySafeFromShaiHulud(kvp.Key.Territory))
-                .OrderByDescending(kvp => kvp.Value)
-                .FirstOrDefault();
+                .HighestOrDefault(kvp => kvp.Value);
 
         protected virtual void DetermineShipment_ShipToStrongholdNearSpice()
         {
@@ -347,7 +346,7 @@ namespace Treachery.Shared
 
             LogInfo("MyThreatenedStrongholds:" + string.Join(",", myThreatenedStrongholds));
 
-            var mostThreatenedStrongholdWithFiveOrLessOpponentForces = myThreatenedStrongholds.Where(s => s.Difference >= -1).OrderByDescending(s => s.Difference).FirstOrDefault();
+            var mostThreatenedStrongholdWithFiveOrLessOpponentForces = myThreatenedStrongholds.Where(s => s.Difference >= -1).HighestOrDefault(s => s.Difference);
             LogInfo("MostThreatenedStrongholdWithFiveOrLessOpponentForces:" + mostThreatenedStrongholdWithFiveOrLessOpponentForces);
 
             if (mostThreatenedStrongholdWithFiveOrLessOpponentForces != null)
@@ -394,7 +393,7 @@ namespace Treachery.Shared
                 (s.Stronghold == Game.Map.Arrakeen || s.Stronghold == Game.Map.Carthag) && AnyForcesIn(Game.Map.PolarSink) > 5 ||
                 DetermineValidForcesInShipment(s.DialNeeded + extraForces, true, s.Stronghold, s.Opponent, ForcesInReserve, SpecialForcesInReserve, out _, out _, minResourcesToKeep, maxUnsupportedForces, !(Faction == Faction.Red && s.Opponent == Faction.Yellow)) <= 0
                 )
-                .OrderBy(s => s.DialNeeded).FirstOrDefault();
+                .LowestOrDefault(s => s.DialNeeded);
 
             LogInfo("WeakestEnemyStronghold:" + weakestEnemyStronghold);
 
@@ -573,7 +572,7 @@ namespace Treachery.Shared
             var shippableStrongholdsOfWinningOpponents = ValidShipmentLocations.Where(l => (l.Territory.IsStronghold || Game.IsSpecialStronghold(Game.Map.ShieldWall)) && AllyNotIn(l.Territory) && potentialWinningOpponents.Any(p => p.Occupies(l)) && IDontHaveAdvisorsIn(l));
             LogInfo("shippableStrongholdsOfWinningOpponents:" + string.Join(",", shippableStrongholdsOfWinningOpponents));
 
-            var weakestShippableLocationOfWinningOpponent = shippableStrongholdsOfWinningOpponents.Select(s => new { Stronghold = s, Strength = potentialWinningOpponents.Sum(p => MaxDial(p, s.Territory, this) - MaxDial(this, s.Territory, p)) }).Where(l => l.Strength > 0).OrderBy(l => l.Strength).FirstOrDefault();
+            var weakestShippableLocationOfWinningOpponent = shippableStrongholdsOfWinningOpponents.Select(s => new { Stronghold = s, Strength = potentialWinningOpponents.Sum(p => MaxDial(p, s.Territory, this) - MaxDial(this, s.Territory, p)) }).Where(l => l.Strength > 0).LowestOrDefault(l => l.Strength);
             LogInfo("weakestShippableLocationOfWinningOpponent:" + weakestShippableLocationOfWinningOpponent);
 
             if (weakestShippableLocationOfWinningOpponent != null)
@@ -724,7 +723,7 @@ namespace Treachery.Shared
 
         private Location BestSafeAndNearbyResources(Location location, Battalion b, bool mayFight = false)
         {
-            return Game.ResourcesOnPlanet.OrderByDescending(r => r.Value).FirstOrDefault(l => IsSafeAndNearby(location, l.Key, b, mayFight)).Key;
+            return Game.ResourcesOnPlanet.Where(l => IsSafeAndNearby(location, l.Key, b, mayFight)).HighestOrDefault(r => r.Value).Key;
         }
 
         private Location DetermineMostSuitableNearbyLocation(KeyValuePair<Location, Battalion> battalionAtLocation, bool includeSecondBestLocations, bool mustMove)

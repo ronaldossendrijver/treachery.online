@@ -2082,7 +2082,7 @@ namespace Treachery.Shared
                 [Faction.Purple] = "#602d8bbb",
 
                 [Faction.Brown] = "#582d1bbb",
-                [Faction.White] = "fffdd0bb",
+                [Faction.White] = "#fffdd0bb",
                 [Faction.Pink] = "#ac65a9bb",
                 [Faction.Cyan] = "#28a4bcbb",
 
@@ -2101,7 +2101,7 @@ namespace Treachery.Shared
                 [Faction.Purple] = "#602d8b",
 
                 [Faction.Brown] = "#582d1b",
-                [Faction.White] = "fffdd0",
+                [Faction.White] = "#fffdd0",
                 [Faction.Pink] = "#ac65a9",
                 [Faction.Cyan] = "#28a4bc",
             },
