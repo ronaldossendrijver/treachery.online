@@ -653,6 +653,7 @@ namespace Treachery.Test
             try
             {
                 Console.WriteLine("Re-playing all savegame files in {0}...", Directory.GetCurrentDirectory());
+
                 int gamesTested = 0;
                 Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), f =>
                 {
@@ -698,6 +699,66 @@ namespace Treachery.Test
                 });
 
                 Assert.AreNotEqual(0, gamesTested);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw;
+            }
+        }
+
+        [TestMethod]
+        public void Statistics()
+        {
+            try
+            {
+                var wonbattles = new ObjectCounter<string>();
+                var lostbattles = new ObjectCounter<string>();
+                var leaderInBattle = new ObjectCounter<string>();
+                var leaderCalledAsTraitor = new ObjectCounter<string>();
+
+                int gamesTested = 0;
+                Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), f =>
+                {
+                    gamesTested++;
+                    var fs = File.OpenText(f);
+                    var state = GameState.Load(fs.ReadToEnd());
+                    var game = new Game(state.Version);
+
+                    fs = File.OpenText(f + ".testcase");
+                    var tc = LoadObject<Testcase>(fs.ReadToEnd());
+
+                    foreach (var e in state.Events)
+                    {
+                        e.Game = game;
+                        var result = e.Execute(true, true);
+
+                        if (e is BattleConcluded bc)
+                        {
+                            var winner = game.CurrentBattle.PlanOf(bc.Initiator).Hero;
+                            var loser = game.CurrentBattle.PlanOfOpponent(bc.Player).Hero;
+                            wonbattles.Count("" + winner);
+                            lostbattles.Count("" + loser);
+                        }
+
+                        if (e is TreacheryCalled trc && trc.TraitorCalled)
+                        {
+                            var traitor = game.CurrentBattle.PlanOfOpponent(trc.Player).Hero;
+                            leaderCalledAsTraitor.Count("" + traitor);
+                        }
+
+                    }
+                });
+
+                //Statistics
+
+                Console.WriteLine("Leader;Won Battles;Lost Battles;Called as traitor");
+                foreach (var c in lostbattles.Counted)
+                {
+                    Console.WriteLine("{0};{1};{2};{3}", c, wonbattles.CountOf(c), lostbattles.CountOf(c), leaderCalledAsTraitor.CountOf(c));
+                }
+
+                //End Statistics
             }
             catch (Exception e)
             {
