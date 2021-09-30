@@ -10,7 +10,7 @@ namespace Treachery.Shared
     public partial class Game
     {
         public Location LastShippedOrMovedTo { get; private set; }
-
+        public PlayerSequence ShipmentAndMoveSequence { get; set; }
         public bool ShipsTechTokenIncome;
         public List<PlacementEvent> RecentMoves = new List<PlacementEvent>();
         private List<Faction> FactionsWithOrnithoptersAtStartOfMovement;
@@ -38,10 +38,10 @@ namespace Treachery.Shared
             HasActedOrPassed.Clear();
             LastShippedOrMovedTo = null;
 
-            ShipmentAndMoveSequence.Start(false, 1);
+            ShipmentAndMoveSequence = new PlayerSequence(this);
             if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && OrangeMayShipOutOfTurnOrder)
             {
-                ShipmentAndMoveSequence.NextPlayer(false);
+                ShipmentAndMoveSequence.NextPlayer();
             }
 
             Enter(Version >= 107, Phase.BeginningOfShipAndMove, StartShipAndMoveSequence);
@@ -333,11 +333,11 @@ namespace Treachery.Shared
 
             if (CurrentPhase == Phase.NonOrangeMove)
             {
-                ShipmentAndMoveSequence.NextPlayer(false);
+                ShipmentAndMoveSequence.NextPlayer();
 
                 if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && OrangeMayShipOutOfTurnOrder)
                 {
-                    ShipmentAndMoveSequence.NextPlayer(false);
+                    ShipmentAndMoveSequence.NextPlayer();
                 }
             }
 

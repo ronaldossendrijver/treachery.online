@@ -10,6 +10,7 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
+        public PlayerSequence BattleSequence { get; set; }
         public BattleInitiated CurrentBattle { get; private set; } = null;
         public Battle AggressorBattleAction { get; private set; } = null;
         public TreacheryCalled AggressorTraitorAction { get; private set; }
@@ -53,7 +54,7 @@ namespace Treachery.Shared
         {
             get
             {
-                BattleSequence.Start(false, 1);
+                BattleSequence = new PlayerSequence(this);
 
                 for (int i = 0; i < Players.Count; i++)
                 {
@@ -63,7 +64,7 @@ namespace Treachery.Shared
                         return playerToCheck;
                     }
 
-                    BattleSequence.NextPlayer(false);
+                    BattleSequence.NextPlayer();
                 }
 
                 return null;

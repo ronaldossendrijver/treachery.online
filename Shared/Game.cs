@@ -38,10 +38,6 @@ namespace Treachery.Shared
         public IList<Faction> HasActedOrPassed { get; set; } = new List<Faction>();
         public IList<Player> Players { get; set; } = new List<Player>();
         public Report CurrentReport { get; set; }
-        public PlayerSequence ShipmentAndMoveSequence { get; set; }
-        public PlayerSequence BattleSequence { get; set; }
-        public PlayerSequence CheckWinSequence { get; set; }
-        public PlayerSequence TechTokenSequence { get; set; }
         public Deck<TreacheryCard> TreacheryDeck { get; set; }
         public Deck<TreacheryCard> TreacheryDiscardPile { get; set; }
         public List<TreacheryCard> WhiteCache { get; set; } = new List<TreacheryCard>();
@@ -802,29 +798,6 @@ namespace Treachery.Shared
 
             return false;
         }
-
-        private int _firstPlayerPosition = -1;
-        public int FirstPlayerPosition
-        {
-            get
-            {
-                if (JuiceForcesFirstPlayer)
-                {
-                    return CurrentJuice.Player.PositionAtTable;
-                }
-                else
-                {
-                    return _firstPlayerPosition;
-                }
-            }
-
-            set
-            {
-                _firstPlayerPosition = value;
-            }
-        }
-
-
 
         #endregion SupportMethods
 

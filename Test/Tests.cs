@@ -370,6 +370,26 @@ namespace Treachery.Test
             forcesOnPlanet = countForcesOnPlanet;
         }
 
+        /*
+        [TestMethod]
+        public void TestPlayerSequence()
+        {
+            var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
+            rules.Add(Rule.FillWithBots);
+            rules.Add(Rule.AssistedNotekeeping);
+            var factions = EstablishPlayers.AvailableFactions().ToList();
+            int nrOfTurns = 7;
+            int nrOfPlayers = factions.Count;
+
+            var game = new Game();
+            var start = new EstablishPlayers(game) { ApplicableRules = rules.ToArray(), FactionsInPlay = factions, MaximumTurns = nrOfTurns, MaximumNumberOfPlayers = nrOfPlayers, Players = Array.Empty<string>(), Seed = new Random().Next() };
+            start.Execute(false, true);
+
+
+
+        }*/
+
+
         [TestMethod]
         public void TestBots()
         {
@@ -643,6 +663,61 @@ namespace Treachery.Test
             }
 
             return null;
+        }
+
+        [TestMethod]
+        public void RegressionOneGame()
+        {
+            try
+            {
+                Console.WriteLine("Re-playing one savegame files in {0}...", Directory.GetCurrentDirectory());
+
+                var f = Directory.EnumerateFiles(".", "savegame*.json").Last();
+
+                var fs = File.OpenText(f);
+                var state = GameState.Load(fs.ReadToEnd());
+                Console.WriteLine("Checking {0} (version {1})...", f, state.Version);
+                var game = new Game(state.Version);
+
+                fs = File.OpenText(f + ".testcase");
+                var tc = LoadObject<Testcase>(fs.ReadToEnd());
+
+                int valueId = 0;
+                foreach (var e in state.Events)
+                {
+                    e.Game = game;
+                    var previousPhase = game.CurrentPhase;
+
+                    var result = e.Execute(true, true);
+                    if (result != "")
+                    {
+                        File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
+                    }
+                    Assert.AreEqual("", result, f + ", " + e.GetType().Name + " (" + valueId + ", " + e.GetMessage() + ")");
+
+                    var actualValues = DetermineTestvalues(game);
+                    tc.Testvalues[valueId].Equals(actualValues);
+                    if (!tc.Testvalues[valueId].Equals(actualValues))
+                    {
+                        File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
+                    }
+                    Assert.AreEqual(tc.Testvalues[valueId], actualValues, f + ", " + previousPhase + " -> " + game.CurrentPhase + ", " + e.GetType().Name + " (" + valueId + ", " + e.GetMessage() + "): " + Testvalues.Difference);
+
+                    var strangeCase = TestIllegalCases(game, e);
+                    if (strangeCase != "")
+                    {
+                        File.WriteAllText("illegal.json", GameState.GetStateAsString(game));
+                    }
+                    Assert.AreEqual("", strangeCase);
+
+                    valueId++;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw;
+            }
         }
 
         [TestMethod]

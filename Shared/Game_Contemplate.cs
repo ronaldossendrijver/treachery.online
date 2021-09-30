@@ -254,11 +254,11 @@ namespace Treachery.Shared
 
         private void CheckNormalWin()
         {
-            CheckWinSequence.Start(false, 1);
+            var checkWinSequence = new PlayerSequence(this);
 
             for (int i = 0; i < Players.Count; i++)
             {
-                var p = CheckWinSequence.CurrentPlayer;
+                var p = checkWinSequence.CurrentPlayer;
 
                 if (MeetsNormalVictoryCondition(p, Applicable(Rule.ContestedStongholdsCountAsOccupied)))
                 {
@@ -277,7 +277,7 @@ namespace Treachery.Shared
 
                 if (Winners.Count > 0) break;
 
-                CheckWinSequence.NextPlayer(false);
+                checkWinSequence.NextPlayer();
             }
         }
 
@@ -389,11 +389,11 @@ namespace Treachery.Shared
         {
             Player withMostPoints = null;
             int highestNumberOfPoints = -1;
-            CheckWinSequence.Start(false, 1);
-            
+            var checkWinSequence = new PlayerSequence(this);
+
             for (int i = 0; i < Players.Count; i++)
             {
-                var p = CheckWinSequence.CurrentPlayer;
+                var p = checkWinSequence.CurrentPlayer;
 
                 int pointsOfPlayer = NumberOfVictoryPoints(p, Applicable(Rule.ContestedStongholdsCountAsOccupied));
                 if (pointsOfPlayer > highestNumberOfPoints)
@@ -402,7 +402,7 @@ namespace Treachery.Shared
                     highestNumberOfPoints = pointsOfPlayer;
                 }
 
-                CheckWinSequence.NextPlayer(false);
+                checkWinSequence.NextPlayer();
             }
 
             if (withMostPoints != null)

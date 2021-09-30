@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Treachery.Shared
 {
-    public class PlayerSequence
+    public class PlayerSequence3
     {
         public IList<Player> Players { get; set; }
 
@@ -22,7 +22,7 @@ namespace Treachery.Shared
 
         private int _playerNumberInRound = 0;
 
-        public PlayerSequence(Game game, IEnumerable<Player> players)
+        public PlayerSequence3(Game game, IEnumerable<Player> players)
         {
             Players = players.ToList();
             Game = game;
@@ -163,5 +163,181 @@ namespace Treachery.Shared
     {
         public Player Player;
         public bool HasTurn;
+    }
+
+    public class PlayerSequence
+    {
+        private readonly List<Player> _played = new List<Player>();
+        private readonly Game _game;
+        private readonly bool _skipPlayersThatCantBidOnCards;
+        private readonly int _direction;
+        private Player _first;
+
+        public PlayerSequence(Game game, bool skipPlayersThatCantBidOnCards, int direction, Player toStartWith)
+        {
+            _game = game;
+            _skipPlayersThatCantBidOnCards = skipPlayersThatCantBidOnCards;
+            _direction = direction;
+            _first = toStartWith;
+
+            Console.Write("Player sequence started: ");
+            foreach (var player in PlayersInOrder)
+            {
+                Console.Write(" -> " + player.Faction + " (" + player.PositionAtTable + ")");
+            }
+
+            Console.WriteLine(". Storm at: " + _game.SectorInStorm + ", first player: " + _first + " (position: " + _first.PositionAtTable + "), current player: " + CurrentPlayer);
+        }
+
+        public PlayerSequence(Game game, bool skipPlayersThatCantBidOnCards, int direction)
+            : this(game, skipPlayersThatCantBidOnCards, direction, DetermineFirstPlayer(game))
+        {
+
+        }
+
+        public PlayerSequence(Game game, bool skipPlayersThatCantBidOnCards)
+            : this(game, skipPlayersThatCantBidOnCards, 1, DetermineFirstPlayer(game))
+        {
+
+        }
+
+        public PlayerSequence(Game game)
+            : this(game, false, 1, DetermineFirstPlayer(game))
+        {
+
+        }
+
+        public void Start()
+        {
+            _played.Clear();
+        }
+
+        private IEnumerable<Player> PlayersInOrder => _game.Players.Where(p => !_skipPlayersThatCantBidOnCards || p.HasRoomForCards).OrderBy(p => _direction * p.PositionAtTable).ToList();
+
+        private Player PlayerAfter(Player currentPlayer)
+        {
+            Player result = null;
+            Player first = null;
+            bool currentPlayerFound = false;
+
+            foreach (Player p in PlayersInOrder)
+            {
+                if (first == null) first = p;
+
+                if (currentPlayerFound)
+                {
+                    result = p;
+                }
+                else if (p == currentPlayer)
+                {
+                    currentPlayerFound = true;
+                }
+            }
+
+            if (result == null)
+            {
+                result = first;
+            }
+
+            return result;
+        }
+
+        public Faction CurrentFaction => CurrentPlayer.Faction;
+
+        public Player CurrentPlayer
+        {
+            get
+            {
+                if (_game.JuiceForcesFirstPlayer && _played.Count == 0)
+                {
+                    return _game.CurrentJuice.Player;
+                }
+                else if (_game.JuiceForcesLastPlayer && PlayersInOrder.Count() == 1)
+                {
+                    return _game.CurrentJuice.Player;
+                }
+                else if (_played.Count == 0)
+                {
+                    if (_skipPlayersThatCantBidOnCards && !_first.HasRoomForCards)
+                    {
+                        return PlayerAfter(_first);
+                    }
+                    else
+                    {
+                        return _first;
+                    }
+                }
+                else
+                {
+                    return PlayerAfter(_played[_played.Count - 1]);
+                }
+            }
+        }
+
+        public void NextPlayer()
+        {
+            _played.Add(CurrentPlayer);
+
+            if (!PlayersInOrder.Any())
+            {
+                _played.Clear();
+            }
+        }
+
+        public void NextRound()
+        {
+            _first = PlayerAfter(_played[0]);
+            _played.Clear();
+        }
+
+        public IEnumerable<SequenceElement> GetPlayersInSequence()
+        {
+            var result = new List<SequenceElement>();
+
+            Player added = _first;
+
+            if (!_skipPlayersThatCantBidOnCards || _first.HasRoomForCards)
+            {
+                added = PlayerAfter(_first);
+            }
+
+            result.Add(new SequenceElement() { Player = added, HasTurn = CurrentPlayer == added });
+
+            while (!result.Any(se => se.Player == PlayerAfter(added)))
+            {
+                added = PlayerAfter(added);
+                result.Add(new SequenceElement() { Player = added, HasTurn = CurrentPlayer == added });
+            }
+
+            return result;
+        }
+
+        public static Player DetermineFirstPlayer(Game g)
+        {
+            var startLookingInSector = (int)Math.Ceiling((float)g.SectorInStorm * g.MaximumNumberOfPlayers / Map.NUMBER_OF_SECTORS) % g.MaximumNumberOfPlayers;
+
+            Player result = null;
+
+            int position = (g.MaximumNumberOfPlayers + startLookingInSector) % g.MaximumNumberOfPlayers;
+            for (int i = 0; i < g.MaximumNumberOfPlayers; i++)
+            {
+                result = g.Players.FirstOrDefault(p => p.PositionAtTable == position);
+                if (result != null)
+                {
+                    return result;
+                }
+                else
+                {
+                    position = Mod(g.MaximumNumberOfPlayers + position + 1, g.MaximumNumberOfPlayers);
+                }
+            }
+
+            return null;
+        }
+
+        private static int Mod(int x, int m)
+        {
+            return (x % m + m) % m;
+        }
     }
 }

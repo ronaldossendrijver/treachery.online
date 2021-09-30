@@ -248,18 +248,19 @@ namespace Treachery.Shared
             var remainingTechTokens = new Deck<TechToken>(techTokensToBeDealt, Random);
             remainingTechTokens.Shuffle();
             RecentMilestones.Add(Milestone.Shuffled);
-            TechTokenSequence.Start(false, 1);
+
+            var techTokenSequence = new PlayerSequence(this);
 
             while (!remainingTechTokens.IsEmpty && Players.Any(p => p.TechTokens.Count == 0))
             {
-                if (TechTokenSequence.CurrentPlayer.TechTokens.Count == 0)
+                if (techTokenSequence.CurrentPlayer.TechTokens.Count == 0)
                 {
                     var token = remainingTechTokens.Draw();
-                    TechTokenSequence.CurrentPlayer.TechTokens.Add(token);
-                    CurrentReport.Add(TechTokenSequence.CurrentPlayer.Faction, "{0} receive {1}", TechTokenSequence.CurrentPlayer.Faction, token);
+                    techTokenSequence.CurrentPlayer.TechTokens.Add(token);
+                    CurrentReport.Add(techTokenSequence.CurrentPlayer.Faction, "{0} receive {1}", techTokenSequence.CurrentPlayer.Faction, token);
                 }
 
-                TechTokenSequence.NextPlayer(false);
+                techTokenSequence.NextPlayer();
             }
         }
 
