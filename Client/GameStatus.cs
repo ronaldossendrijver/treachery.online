@@ -23,6 +23,8 @@ namespace Treachery.Client
 
         public bool WaitingForHost { get; set; } = false;
 
+        public int Timeout { get; set; } = 0;
+
         public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting, Faction waitingForFaction) :
             this(descriptionWhenAwaited, descriptionWhenWaiting, new Faction[] { waitingForFaction })
         {
@@ -45,18 +47,20 @@ namespace Treachery.Client
         {
         }
 
-        public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting)
+        public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting, int timeout = 0)
         {
             DescriptionWhenAwaited = descriptionWhenAwaited;
             DescriptionWhenWaiting = descriptionWhenWaiting;
             WaitingForHost = true;
+            Timeout = timeout;
         }
 
-        public GameStatus(string description)
+        public GameStatus(string description, int timeout = 0)
         {
             DescriptionWhenAwaited = description;
             DescriptionWhenWaiting = description;
             WaitingForHost = true;
+            Timeout = timeout;
         }
 
         public bool WaitingForMe(Player player, bool isHost) => WaitingForHost && isHost ||
