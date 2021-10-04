@@ -283,18 +283,20 @@ namespace Treachery.Shared
 
                 case AuctionType.BlackMarketOnceAround:
                     BlackMarketAuctionType = AuctionType.BlackMarketOnceAround;
-                    BidSequence = new PlayerSequence(this, true, direction, whitePlayer);
+                    BidSequence = new PlayerSequence(this, true, direction, whitePlayer, true);
                     break;
 
                 case AuctionType.BlackMarketSilent:
+                    BidSequence = new PlayerSequence(this, true, 1);
                     BlackMarketAuctionType = AuctionType.BlackMarketSilent;
                     break;
 
                 case AuctionType.WhiteOnceAround:
-                    BidSequence = new PlayerSequence(this, true, direction, whitePlayer);
+                    BidSequence = new PlayerSequence(this, true, direction, whitePlayer, true);
                     break;
 
                 case AuctionType.WhiteSilent:
+                    BidSequence = new PlayerSequence(this, true, 1);
                     break;
 
                 case AuctionType.Normal:

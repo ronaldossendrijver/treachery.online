@@ -16,43 +16,53 @@ namespace Treachery.Shared
         private readonly int _direction;
         private Player _first;
 
-        public PlayerSequence(Game game, bool skipPlayersThatCantBidOnCards, int direction, Player toStartWith)
+        public PlayerSequence(Game game, bool skipPlayersThatCantBidOnCards, int direction, Player toStartWith, bool beginNextToThatPlayer)
         {
             _game = game;
             _skipPlayersThatCantBidOnCards = skipPlayersThatCantBidOnCards;
             _direction = direction;
             _first = toStartWith;
-            
+
+            if (beginNextToThatPlayer && PlayersInOrderThatMayGetTurn.Count() > 1)
+            {
+                _first = PlayerAfter(_first);
+            }
+
             if (_game.Version <= 117)
             {
+                while (!MayGetTurn(_first))
+                {
+                    _first = PlayerAfter(_first);
+                }
+
                 CurrentPlayer = DetermineCurrentPlayer();
             }
 
-            /*
+            
             //Console.Write("Player sequence started: ");
-            foreach (var player in PlayersInOrder)
-            {
+            //foreach (var player in PlayersInOrderThatMayGetTurn)
+            //{
                 //Console.Write(" -> " + player.Faction + " (" + player.PositionAtTable + ")");
-            }
+            //}
 
-            //Console.WriteLine(". Storm at: " + _game.SectorInStorm + ", first player: " + _first + " (position: " + _first.PositionAtTable + "), current player: " + CurrentPlayer);
-            */
+            ////Console.WriteLine(". Storm at: " + _game.SectorInStorm + ", first player: " + _first + " (position: " + _first.PositionAtTable + "), current player: " + CurrentPlayer);
+            
         }
 
         public PlayerSequence(Game game, bool skipPlayersThatCantBidOnCards, int direction)
-            : this(game, skipPlayersThatCantBidOnCards, direction, DetermineFirstPlayer(game))
+            : this(game, skipPlayersThatCantBidOnCards, direction, DetermineFirstPlayer(game), false)
         {
 
         }
 
         public PlayerSequence(Game game, bool skipPlayersThatCantBidOnCards)
-            : this(game, skipPlayersThatCantBidOnCards, 1, DetermineFirstPlayer(game))
+            : this(game, skipPlayersThatCantBidOnCards, 1, DetermineFirstPlayer(game), false)
         {
 
         }
 
         public PlayerSequence(Game game)
-            : this(game, false, 1, DetermineFirstPlayer(game))
+            : this(game, false, 1, DetermineFirstPlayer(game), false)
         {
 
         }
@@ -82,7 +92,7 @@ namespace Treachery.Shared
                 {
                     if (MayGetTurn(p))
                     {
-                        //Console.WriteLine("PlayerAfter1 " + currentPlayer + " -> " + p);
+                        //////Console.WriteLine("PlayerAfter1 " + currentPlayer + " -> " + p);
                         return p;
                     }
                 }
@@ -98,7 +108,7 @@ namespace Treachery.Shared
                 first = PlayerAfter(first);
             }
 
-            //Console.WriteLine("PlayerAfter2 " + currentPlayer + " -> " + first);
+            //////Console.WriteLine("PlayerAfter2 " + currentPlayer + " -> " + first);
             return first;
         }   
 
@@ -148,20 +158,24 @@ namespace Treachery.Shared
             }
             else
             {
-                //Console.WriteLine("Continuing with " + PlayerAfter(_played[_played.Count - 1]) + " who is after " + _played[_played.Count - 1]);
+                //////Console.WriteLine("Continuing with " + PlayerAfter(_played[_played.Count - 1]) + " who is after " + _played[_played.Count - 1]);
                 return PlayerAfter(_played[_played.Count - 1]);
             }
         }
 
         public void NextPlayer()
         {
-            _played.Add(CurrentPlayer);
+            ////Console.WriteLine("=== START == NextPlayer == Currentplayer: {0} ===", CurrentPlayer);
 
-            //Console.WriteLine("Played: " + Skin.Current.Join(_played));
+            var currentPlayer = CurrentPlayer;
 
-            if (PlayerAfter(CurrentPlayer) == _played[0])
+            _played.Add(currentPlayer);
+
+            ////Console.WriteLine("Played: " + Skin.Current.Join(_played));
+
+            if (PlayerAfter(currentPlayer) == _first)
             {
-                //Console.WriteLine("Starting new...");
+                ////Console.WriteLine("CurrentPlayer: {0}, PlayerAfter: {1}, _first: {2} -> Starting new...", currentPlayer, PlayerAfter(currentPlayer), _first);
                 _played.Clear();
             }
 
@@ -169,6 +183,8 @@ namespace Treachery.Shared
             {
                 CurrentPlayer = DetermineCurrentPlayer();
             }
+
+            ////Console.WriteLine("=== END == NextPlayer == Currentplayer: {0} ===", CurrentPlayer);
         }
 
         public void NextRound()

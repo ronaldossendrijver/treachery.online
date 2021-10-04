@@ -257,10 +257,6 @@ namespace Treachery.Test
 
                     SaveObject(testcase, testcaseFilename);
                 }
-                else
-                {
-                    Console.WriteLine(testcaseFilename + " already exists.");
-                }
             }
         }
 
