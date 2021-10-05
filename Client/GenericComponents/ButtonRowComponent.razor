@@ -12,7 +12,7 @@
 
     @if (Confirm.HasDelegate)
     {
-        <button class="btn btn-primary" @onclick="Confirm" disabled=@(Disabled || ConfirmError != "" || _waitForTimeout)>@ConfirmText</button>
+        <button class="btn btn-primary" @onclick="Confirm" disabled=@(Disabled || ConfirmError != "")>@ConfirmText</button>
     }
 
 </div>
@@ -47,38 +47,4 @@
 
     [Parameter]
     public bool Disabled { get; set; } = false;
-
-    private bool _waitForTimeout = false;
-    private int _timeout = 0;
-    [Parameter]
-    public int Timeout { 
-
-        get
-        {
-            return _timeout;
-        }
-
-        set
-        {
-            _waitForTimeout = value > 0;
-
-            if (_timeout != value)
-            {
-                _timeout = value;
-
-                if (_timeout > 0)
-                {
-                    Task.Delay(_timeout).ContinueWith(e => EnableAfterTimeout());
-                }
-
-                StateHasChanged();
-            }
-        }
-    }
-
-    private void EnableAfterTimeout()
-    {
-        _waitForTimeout = false;
-        StateHasChanged();
-    }
 }

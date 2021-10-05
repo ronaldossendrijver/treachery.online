@@ -148,12 +148,12 @@ namespace Treachery.Client
                     Skin.Current.Format("The Hidden Mobile Stronghold is being moved..."),
                     Faction.Grey);
 
-                case Phase.MetheorAndStormSpell: return new GameStatus(Skin.Current.Format("Factions may now use {0} or {1}...", TreacheryCardType.Metheor, TreacheryCardType.StormSpell), 2000);
+                case Phase.MetheorAndStormSpell: return new GameStatus(Skin.Current.Format("Factions may now use {0} or {1}...", TreacheryCardType.Metheor, TreacheryCardType.StormSpell));
 
                 case Phase.Thumper:
                     if (Game.CurrentTurn > 1)
                     {
-                        return new GameStatus(Skin.Current.Format("Factions may now use a {0} to call {1}...", TreacheryCardType.Thumper, Concept.Monster), 2000);
+                        return new GameStatus(Skin.Current.Format("Factions may now use a {0} to call {1}...", TreacheryCardType.Thumper, Concept.Monster));
                     }
                     else
                     {
@@ -184,17 +184,16 @@ namespace Treachery.Client
                 case Phase.HarvesterA:
                 case Phase.HarvesterB:
                     return new GameStatus(
-                    Skin.Current.Format("Factions may use a {0} to double the {1} blow in {2}...", 
-                    TreacheryCardType.Harvester, Concept.Resource, CurrentPhase == Phase.HarvesterA ? Game.LatestSpiceCardA : Game.LatestSpiceCardB), 2000);
+                    Skin.Current.Format("Factions may use a {0} to double the {1} blow in {2}...", TreacheryCardType.Harvester, Concept.Resource, CurrentPhase == Phase.HarvesterA ? Game.LatestSpiceCardA : Game.LatestSpiceCardB));
 
                 case Phase.AllianceA:
                 case Phase.AllianceB:
                     return new GameStatus(
-                    Skin.Current.Format("Factions may now make and break alliances."), 2000);
+                    Skin.Current.Format("Factions may now make and break alliances."));
 
                 /* Charity */
 
-                case Phase.ClaimingCharity: return new GameStatus(Skin.Current.Format("Factions may now claim charity if eligible."), 4000);
+                case Phase.ClaimingCharity: return new GameStatus(Skin.Current.Format("Factions may now claim charity if eligible."));
 
                 /* Bidding */
 
@@ -278,15 +277,11 @@ namespace Treachery.Client
 
                 /* Revival */
 
-                case Phase.Resurrection: return new GameStatus(Skin.Current.Format("Factions may now reclaim forces and leaders."), 4000);
+                case Phase.Resurrection: return new GameStatus(Skin.Current.Format("Factions may now reclaim forces and leaders."));
 
                 /* Ship & Move */
 
-                case Phase.BeginningOfShipAndMove: 
-                    return new GameStatus(
-                        Skin.Current.Format("You may now start the ship & move sequence..."), 
-                        Skin.Current.Format("Waiting for the host to start the ship & move sequence..."),
-                        Game.ShipmentAndMoveSequence.GetPlayersInSequence().Select(ps => ps.Player));
+                case Phase.BeginningOfShipAndMove: return new GameStatus(Skin.Current.Format("You may now start the ship & move sequence..."), Skin.Current.Format("Waiting for the host to start the ship & move sequence..."));
 
                 case Phase.NonOrangeShip:
                     return new GameStatus(

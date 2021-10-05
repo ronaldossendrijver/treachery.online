@@ -731,7 +731,7 @@ namespace Treachery.Test
                     gamesTested++;
                     var fs = File.OpenText(f);
                     var state = GameState.Load(fs.ReadToEnd());
-                    //Console.WriteLine("Checking {0} (version {1})...", f, state.Version);
+                    Console.WriteLine("Checking {0} (version {1})...", f, state.Version);
                     var game = new Game(state.Version);
 
                     fs = File.OpenText(f + ".testcase");

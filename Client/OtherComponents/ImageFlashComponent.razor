@@ -65,15 +65,7 @@
     {
         var dimensions = await Browser.GetWindowDimensions();
         WindowWidth = (int)(1.0f * dimensions.Width);
-
-        if (dimensions.Height < dimensions.Width)
-        {
-            WindowHeight = (int)(0.6f * dimensions.Height);
-        }
-        else
-        {
-            WindowHeight = (int)(0.8f * dimensions.Height);
-        }
+        WindowHeight = (int)(0.6f * dimensions.Height);
     }
 
     private string ImgStyle(int width, int height)
@@ -83,7 +75,7 @@
 
     private string MsgStyle(int width)
     {
-        return string.Format("width:{0}px; font:{1}; text-shadow: 1px 1px 0 black, 0px 1px 0 black, -1px 1px 0 black, 1px 0px 0 black, 0px 0px 0 black, -1px 0px 0 black, 1px -1px 0 black, 0px -1px 0 black, -1px 0px 0 black;", width, "normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif");
+        return string.Format("width:{0}px; font:{1}; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;", width, Skin.Current.PLAYEDCARD_MESSAGE_FONT);
     }
 
     private void Hide()
@@ -92,8 +84,21 @@
         StateHasChanged();
     }
 
-    private string TimeString => string.Format("{0}s", Time);
+    private string TimeString
+    {
+        get
+        {
+            return string.Format("{0}s", Time);
+        }
+    }
 
-    private int Time => 2 + h.Status.FlashInfo.Count() * 3;
+    private int Time
+    {
+        get
+        {
+            return 2 + h.Status.FlashInfo.Count() * 3;
+        }
+    }
+
 }
 
