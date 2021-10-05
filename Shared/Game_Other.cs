@@ -542,6 +542,16 @@ namespace Treachery.Shared
             CurrentReport.Add(e);
             CurrentJuice = e;
             Discard(e.Player, TreacheryCardType.Juice);
+
+            if ((e.Type == JuiceType.GoFirst || e.Type == JuiceType.GoLast) && Version <= 117)
+            {
+                switch (CurrentMainPhase)
+                {
+                    case MainPhase.Bidding: BidSequence.CheckCurrentPlayer(); break;
+                    case MainPhase.ShipmentAndMove: ShipmentAndMoveSequence.CheckCurrentPlayer(); break;
+                    case MainPhase.Battle: BattleSequence.CheckCurrentPlayer(); break;
+                }
+            }
         }
 
         private bool BureaucratWasUsedThisPhase { get; set; } = false;

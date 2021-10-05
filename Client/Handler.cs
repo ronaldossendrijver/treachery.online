@@ -697,12 +697,13 @@ namespace Treachery.Client
         {
             if (!(e is AllyPermission || e is DealOffered || e is DealAccepted))
             {
+                UpdateStatus();
+
                 await TurnAlert();
                 await PlaySoundsForMilestones();
 
                 CheckTimers();
-                UpdateStatus();
-
+                
                 if (e == null || !(Game.CurrentPhase == Phase.Bidding || Game.CurrentPhase == Phase.BlackMarketBidding))
                 {
                     if (IsHost)
