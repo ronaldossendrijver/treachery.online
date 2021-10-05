@@ -703,7 +703,7 @@ namespace Treachery.Client
                 await PlaySoundsForMilestones();
 
                 CheckTimers();
-                
+
                 if (e == null || !(Game.CurrentPhase == Phase.Bidding || Game.CurrentPhase == Phase.BlackMarketBidding))
                 {
                     if (IsHost)

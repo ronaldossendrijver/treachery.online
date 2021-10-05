@@ -39,6 +39,7 @@ namespace Treachery.Shared
             WhiteAuctionShouldStillHappen = false;
             CurrentAuctionType = AuctionType.None;
             BiddingTriggeredBureaucracy = null;
+            BidSequence = new PlayerSequence(this);
 
             var white = GetPlayer(Faction.White);
             Enter(white != null && !Prevented(FactionAdvantage.WhiteBlackMarket) && white.TreacheryCards.Count > 0 && Players.Count > 1, Phase.BlackMarketAnnouncement, EnterWhiteBidding);
