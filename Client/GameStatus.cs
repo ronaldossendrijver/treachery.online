@@ -17,7 +17,7 @@ namespace Treachery.Client
 
         public IEnumerable<SequenceElement> WaitingInSequence { get; set; } = Array.Empty<SequenceElement>();
 
-        public IEnumerable<Faction> WaitingForFactions { get; set; } = Array.Empty<Faction>();
+        public IEnumerable<Player> WaitingForPlayers { get; set; } = Array.Empty<Player>();
 
         public List<FlashInfo> FlashInfo = new List<FlashInfo>();
 
@@ -25,46 +25,34 @@ namespace Treachery.Client
 
         public int Timeout { get; set; } = 0;
 
-        public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting, Faction waitingForFaction) :
-            this(descriptionWhenAwaited, descriptionWhenWaiting, new Faction[] { waitingForFaction })
-        {
-        }
-
         public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting, Player waitingForPlayer) :
-            this(descriptionWhenAwaited, descriptionWhenWaiting, new Faction[] { waitingForPlayer.Faction })
+            this(descriptionWhenAwaited, descriptionWhenWaiting, new Player[] { waitingForPlayer })
         {
         }
 
-        public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Faction> waitingForFactions)
+        public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Player> waitingForPlayers)
         {
             DescriptionWhenAwaited = descriptionWhenAwaited;
             DescriptionWhenWaiting = descriptionWhenWaiting;
-            WaitingForFactions = waitingForFactions;
+            WaitingForPlayers = waitingForPlayers;
         }
 
-        public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Player> waitingForPlayers) :
-            this(descriptionWhenAwaited, descriptionWhenWaiting, waitingForPlayers.Select(p => p.Faction))
-        {
-        }
-
-        public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting, int timeout = 0)
+        public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting)
         {
             DescriptionWhenAwaited = descriptionWhenAwaited;
             DescriptionWhenWaiting = descriptionWhenWaiting;
             WaitingForHost = true;
-            Timeout = timeout;
         }
 
-        public GameStatus(string description, int timeout = 0)
+        public GameStatus(string description)
         {
             DescriptionWhenAwaited = description;
             DescriptionWhenWaiting = description;
             WaitingForHost = true;
-            Timeout = timeout;
         }
 
         public bool WaitingForMe(Player player, bool isHost) => WaitingForHost && isHost ||
-                WaitingForFactions.Contains(player.Faction) ||
+                WaitingForPlayers.Contains(player) ||
                 WaitingInSequence.Any(se => se.Player == player && se.HasTurn);
 
         public bool WaitingForOthers(Player player, bool isHost) => !WaitingForMe(player, isHost);

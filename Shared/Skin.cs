@@ -151,7 +151,7 @@ namespace Treachery.Shared
         public int CARDPILE_FONT_BORDERWIDTH = 3;
 
         //Phases
-        public string PHASE_FONT = "normal normal bold 80px Advokat, Calibri, Tahoma, sans-serif";
+        public string PHASE_FONT = "normal normal normal 80px Advokat, Calibri, Tahoma, sans-serif";
         public string PHASE_ACTIVE_FONT = "normal normal normal 120px Advokat, Calibri, Tahoma, sans-serif";
         public string PHASE_FONTCOLOR = "white";
         public string PHASE_ACTIVE_FONTCOLOR = "rgb(231,191,60)";
@@ -160,13 +160,13 @@ namespace Treachery.Shared
         public int PHASE_ACTIVE_FONT_BORDERWIDTH = 3;
 
         //Player names
-        public string PLAYERNAME_FONT = "normal normal bold 80px Advokat, Calibri, Tahoma, sans-serif";
+        public string PLAYERNAME_FONT = "normal normal normal 80px Advokat, Calibri, Tahoma, sans-serif";
         public string PLAYERNAME_FONTCOLOR = "white";
         public string PLAYERNAME_FONT_BORDERCOLOR = "black";
         public int PLAYERNAME_FONT_BORDERWIDTH = 3;
 
         //Skill names
-        public string SKILL_FONT = "normal normal bold 60px Advokat, Calibri, Tahoma, sans-serif";
+        public string SKILL_FONT = "normal normal normal 60px Advokat, Calibri, Tahoma, sans-serif";
         public string SKILL_FONTCOLOR = "white";
         public string SKILL_FONT_BORDERCOLOR = "black";
         public int SKILL_FONT_BORDERWIDTH = 1;
@@ -193,7 +193,7 @@ namespace Treachery.Shared
 
         //General
         public string GAMEVERSION_FONT = "normal normal normal 16px Advokat, Calibri, Tahoma, sans-serif;";
-        public string PLAYEDCARD_MESSAGE_FONT = "normal normal bold 32px Advokat, Calibri, Tahoma, sans-serif";
+        public string PLAYEDCARD_MESSAGE_FONT = "normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif";
         public string FACTION_INFORMATIONCARDSTYLE = "font: normal normal normal 14px Calibri, Tahoma, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; line-height: 95%; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;";
         public string TRACKER_FONT = "normal normal normal 12px Calibri, Tahoma, sans-serif;";
         public string JSPANEL_DEFAULTSTYLE = "font-family: Calibri, Tahoma, sans-serif";
@@ -2315,7 +2315,7 @@ namespace Treachery.Shared
             CARDPILE_FONT_BORDERWIDTH = 3,
 
             //Phases
-            PHASE_FONT = "normal normal bold 80px Advokat, Calibri, Tahoma, sans-serif",
+            PHASE_FONT = "normal normal normal 80px Advokat, Calibri, Tahoma, sans-serif",
             PHASE_ACTIVE_FONT = "normal normal normal 120px Advokat, Calibri, Tahoma, sans-serif",
             PHASE_FONTCOLOR = "white",
             PHASE_ACTIVE_FONTCOLOR = "rgb(231,191,60)",
@@ -2324,12 +2324,12 @@ namespace Treachery.Shared
             PHASE_ACTIVE_FONT_BORDERWIDTH = 2,
 
             //Player names
-            PLAYERNAME_FONT = "normal normal bold 80px Advokat, Calibri, Tahoma, sans-serif",
+            PLAYERNAME_FONT = "normal normal normal 80px Advokat, Calibri, Tahoma, sans-serif",
             PLAYERNAME_FONTCOLOR = "white",
             PLAYERNAME_FONT_BORDERCOLOR = "black",
             PLAYERNAME_FONT_BORDERWIDTH = 2,
 
-            SKILL_FONT = "normal normal bold 60px Advokat, Calibri, Tahoma, sans-serif",
+            SKILL_FONT = "normal normal normal 60px Advokat, Calibri, Tahoma, sans-serif",
             SKILL_FONTCOLOR = "white",
             SKILL_FONT_BORDERCOLOR = "black",
             SKILL_FONT_BORDERWIDTH = 1,
@@ -2355,7 +2355,7 @@ namespace Treachery.Shared
 
             //General
             GAMEVERSION_FONT = "normal normal normal 16px Advokat, Calibri, Tahoma, sans-serif;",
-            PLAYEDCARD_MESSAGE_FONT = "normal normal bold 32px Advokat, Calibri, Tahoma, sans-serif",
+            PLAYEDCARD_MESSAGE_FONT = "normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif",
             FACTION_INFORMATIONCARDSTYLE = "font: normal normal normal 14px Calibri, Tahoma, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; line-height: 95%; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;",
             TRACKER_FONT = "normal normal normal 12px Calibri, Tahoma, sans-serif;",
             JSPANEL_DEFAULTSTYLE = "font-family: Calibri, Tahoma, sans-serif"
@@ -2364,5 +2364,6 @@ namespace Treachery.Shared
 
         public static Skin Current = Dune1979;
 
+        public static string TextBorder(int borderwidth, string bordercolor) => string.Format("text-shadow: {2}px {2}px {0}px {1}, 0px {2}px {0}px {1}, -{2}px {2}px {0}px {1}, {2}px 0px {0}px {1}, 0px 0px {0}px {1}, -{2}px 0px {0}px {1}, {2}px -{2}px {0}px {1}, 0px -{2}px {0}px {1}, -{2}px 0px {0}px {1};", 2*borderwidth, bordercolor, borderwidth);
     }
 }

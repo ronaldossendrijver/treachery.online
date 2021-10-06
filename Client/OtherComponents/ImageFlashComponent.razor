@@ -20,7 +20,7 @@
                 {
                     <div class="col-4 col-lg-2 p-1 bg-transparent">
 
-                        <img src="@img.Url" class="m-0 img-fluid text-center w-100" />
+                        <img src="@img.Url" class="m-0 img-fluid text-center w-100" style="filter:drop-shadow(4px 4px 3px black);"/>
 
                         @if (img.Message != null)
                         {
@@ -83,7 +83,7 @@
 
     private string MsgStyle(int width)
     {
-        return string.Format("width:{0}px; font:{1}; text-shadow: 1px 1px 2px black, 0px 1px 2px black, -1px 1px 2px black, 1px 0px 2px black, 0px 0px 2px black, -1px 0px 2px black, 1px -1px 2px black, 0px -1px 2px black, -1px 0px 2px black;", width, "normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif");
+        return string.Format("width:{0}px; font:{1};" + Skin.TextBorder(2, "black"), width, "normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif");
     }
 
     private void Hide()

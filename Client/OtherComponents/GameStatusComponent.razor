@@ -13,34 +13,41 @@
         <div class="row justify-content-center align-items-center">
 
             @{
-                var currentFactionsToAct = h.Status.WaitingForFactions;
+                var currentPlayersToAct = h.Status.WaitingForPlayers;
 
                 if (h.Game.CurrentMainPhase == MainPhase.Bidding)
                 {
                     bool showTurnInSequence = h.Game.CurrentPhase == Phase.BlackMarketBidding || h.Game.CurrentPhase == Phase.Bidding || h.Game.CurrentPhase == Phase.BiddingReport;
-                    var hasTurn = currentFactionsToAct.Count() == 1 && !showTurnInSequence ? currentFactionsToAct.First() : Faction.None;
+                    var hasTurn = currentPlayersToAct.Count() == 1 && !showTurnInSequence ? currentPlayersToAct.First() : null;
 
                     foreach (var se in ToBid)
                     {
                         <div class="d-inline-block p-2" style="filter:drop-shadow(1px 1px 1px black)">
-                            <NumberComponent Value="se.Player.TreacheryCards.Count" Size="@(se.Player.Faction == hasTurn || showTurnInSequence && se.HasTurn ? 48 : 32)"
+                            <NumberComponent Value="se.Player.TreacheryCards.Count" Size="@(se.Player == hasTurn || showTurnInSequence && se.HasTurn ? 48 : 32)"
                                              SymbolSRC="@Skin.Current.GetImageURL(se.Player.Faction)"
-                                             NumberColor="@(se.Player.HasRoomForCards ? "black" : "red")" NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
+                                             BehindNumberSRC="@Skin.Current.CardBack_TreacheryCard_URL"
+                                             Title="@PlayerWithCardsTitle(se.Player)"
+                                             NumberColor="@(se.Player.HasRoomForCards ? "black" : "red")" NumberBorderColor="white" NumberBorderWidth=1 NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
+                        </div>
+                }
+                }
+                else if (currentPlayersToAct.Any())
+                {
+                    if (currentPlayersToAct.Count() == 1) {
+                        
+                        var player = currentPlayersToAct.First();
+
+                        <div style="position: relative">
+                            <img class="align-self-center p-2" title="@player.Name" src="@Skin.Current.GetImageURL(player.Faction)" width="72" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
+                            <img class="align-self-center p-0" src="./art/worm.gif" width="90" style="position: absolute; top: -9px; left: -13px; filter: drop-shadow(1px 1px 1px black)" />
                         </div>
                     }
-                }
-                else if (currentFactionsToAct.Count() == 1)
-                {
-                    <div style="position: relative">
-                        <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(currentFactionsToAct.First())" width="72" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
-                        <img class="align-self-center p-0" src="./art/worm.gif" width="90" style="position: absolute; top: -9px; left: -13px; filter: drop-shadow(1px 1px 1px black)" />
-                    </div>
-                }
-                else if (currentFactionsToAct.Any())
-                {
-                    foreach (var f in currentFactionsToAct)
-                    {
-                        <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(f)" width="48" style="filter:drop-shadow(2px 2px 2px black)" />
+                    else {
+
+                        foreach (var p in currentPlayersToAct)
+                        {
+                            <img class="align-self-center p-2" title="@p.Name" src="@Skin.Current.GetImageURL(p.Faction)" width="48" style="filter:drop-shadow(2px 2px 2px black)" />
+                        }
                     }
                 }
                 else if (h.Status.WaitingInSequence.Any())
@@ -50,12 +57,12 @@
                         <div style="position: relative">
                             @if (f.HasTurn)
                             {
-                                <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(f.Player.Faction)" width="72" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
+                                <img class="align-self-center p-2" title="@f.Player.Name" src="@Skin.Current.GetImageURL(f.Player.Faction)" width="72" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
                                 <img class="align-self-center p-0" src="./art/worm.gif" width="90" style="position: absolute; top: -9px; left: -13px; filter: drop-shadow(1px 1px 1px black)" />
                             }
                             else
                             {
-                                <img class="align-self-center p-2" src="@Skin.Current.GetImageURL(f.Player.Faction)" width="48" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
+                                <img class="align-self-center p-2" title="@f.Player.Name" src="@Skin.Current.GetImageURL(f.Player.Faction)" width="48" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
                             }
                         </div>
                     }
@@ -111,4 +118,6 @@
             }
         }
     }
+
+    private string PlayerWithCardsTitle(Player player) => string.Format("{0} has {1} cards", player.Name, player.TreacheryCards.Count);
 }

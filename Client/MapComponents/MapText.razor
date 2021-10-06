@@ -1,6 +1,8 @@
-﻿@inherits MapComponent
+﻿@using Treachery.Shared;
 
-<span style="position: absolute; white-space: nowrap; left: @Px(AlignedX); top: @Px(Y-TextHeight-45); pointer-events: none; user-select: none; font: @Font; color: @FontColor; max-width: @Px(MaxWidth); -webkit-text-stroke-width: @Px(BorderWidth); -webkit-text-stroke-color: @BorderColor;">
+@inherits MapComponent
+
+<span style="position: absolute; white-space: nowrap; left: @Px(AlignedX); top: @Px(Y-TextHeight-45); pointer-events: none; user-select: none; font: @Font; color: @FontColor; max-width: @Px(MaxWidth); @Border" >
     @ToShow
 </span>
 
@@ -47,4 +49,6 @@
             _ => X
         };
     }
+
+    private string Border => Skin.TextBorder(BorderWidth, BorderColor);
 }
