@@ -269,7 +269,7 @@ namespace Treachery.Server
 
         public void GameFinished(string state, GameInfo info)
         {
-            SendMail(string.Format("{0} ({1} Players, {2}, Turn {3})", info.GameName, info.Players.Length, Skin.Current.Describe(info.Ruleset), info.CurrentTurn), state);
+            SendMail(state, info);
         }
 
         public async Task UploadStatistics(string state)
@@ -310,8 +310,10 @@ namespace Treachery.Server
             await Groups.AddToGroupAsync(connectionId, channelType + channelID);
         }
 
-        private void SendMail(string subject, string content)
+        private void SendMail(string content, GameInfo info)
         {
+            var subject = string.Format("{0} ({1} Players, {2} Bots, Turn {3} - {4})", info.GameName, info.Players.Length, info.NumberOfBots, info.CurrentTurn, Skin.Current.Describe(info.Ruleset));
+
             try
             {
                 var username = Configuration["GameEndEmailUsername"];
@@ -331,6 +333,7 @@ namespace Treachery.Server
                     mailMessage.Subject = subject;
                     mailMessage.IsBodyHtml = true;
                     mailMessage.Body = "Game finished!";
+                    mailMessage.Priority = info.NumberOfBots < 0.5f * info.Players.Length ? MailPriority.Normal : MailPriority.Low;
 
                     var savegameToAttach = new Attachment(GenerateStreamFromString(content), "savegame" + DateTime.Now.ToString("yyyyMMdd.HHmm") + ".json");
                     mailMessage.Attachments.Add(savegameToAttach);

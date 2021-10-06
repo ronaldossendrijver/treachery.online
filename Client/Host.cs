@@ -396,19 +396,13 @@ namespace Treachery.Client
 
         public async Task HandleGameFinished(Game game)
         {
-            var nrOfHumans = game.Players.Count(p => !p.IsBot);
-            var nrOfBots = game.Players.Count(p => p.IsBot);
-
-            if (nrOfHumans > nrOfBots && nrOfHumans > 1)
+            try
             {
-                try
-                {
-                    await connection.SendAsync("GameFinished", GameState.GetStateAsString(game), CurrentGame);
-                }
-                catch (Exception ex)
-                {
-                    Support.Log(ex.ToString());
-                }
+                await connection.SendAsync("GameFinished", GameState.GetStateAsString(game), CurrentGame);
+            }
+            catch (Exception ex)
+            {
+                Support.Log(ex.ToString());
             }
         }
 
