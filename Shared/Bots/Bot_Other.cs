@@ -182,10 +182,11 @@ namespace Treachery.Shared
                         if (Game.CurrentBattle != null && (Game.CurrentBattle.Initiator == Faction || Game.CurrentBattle.Target == Faction))
                         {
                             var plan = Game.CurrentBattle.PlanOf(this);
+                            LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
                             if (plan == null) plan = DetermineBattle(false, true);
                             if (plan != null)
                             {
-                                answer = Answer(plan.Defense != null && Voice.IsVoicedBy(Game, false, plan.Defense.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1));
+                                answer = Answer(plan.Defense != null && ClairVoyanceAnswered.IsQuestionedBy(Game, false, plan.Defense.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1));
                             }
                         }
                         break;
@@ -195,29 +196,26 @@ namespace Treachery.Shared
                         {
                             var plan = Game.CurrentBattle.PlanOf(this);
                             if (plan == null) plan = DetermineBattle(false, true);
+                            LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
                             if (plan != null)
                             {
-                                answer = Answer(plan.Weapon != null && Voice.IsVoicedBy(Game, true, plan.Weapon.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1));
+                                answer = Answer(plan.Weapon != null && ClairVoyanceAnswered.IsQuestionedBy(Game, true, plan.Weapon.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1));
                             }
                         }
                         break;
 
                     case ClairvoyanceQuestion.CardTypeInBattle:
-                        var askedTypeCardTypeInBattle = (TreacheryCardType)Game.LatestClairvoyance.Parameter1;
-                        answer = Answer(Game.CurrentBattle != null && Game.CurrentBattle.PlanOf(this) != null &&
-                           ((Game.CurrentBattle.PlanOf(this).Defense != null && Covers(Game.CurrentBattle.PlanOf(this).Defense.Type, Game.LatestClairvoyance.Parameter1)) ||
-                            (Game.CurrentBattle.PlanOf(this).Weapon != null && Covers(Game.CurrentBattle.PlanOf(this).Weapon.Type, Game.LatestClairvoyance.Parameter1)) ||
-                            (Game.CurrentBattle.PlanOf(this).Hero != null && Game.CurrentBattle.PlanOf(this).Hero is TreacheryCard && (TreacheryCardType)Game.LatestClairvoyance.Parameter1 == TreacheryCardType.Mercenary)));
-
                         if (Game.CurrentBattle != null && (Game.CurrentBattle.Initiator == Faction || Game.CurrentBattle.Target == Faction))
                         {
+                            var askedTypeCardTypeInBattle = (TreacheryCardType)Game.LatestClairvoyance.Parameter1;
                             var plan = Game.CurrentBattle.PlanOf(this);
                             if (plan == null) plan = DetermineBattle(false, true);
+                            LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
                             if (plan != null)
                             {
                                 answer = Answer(
-                                    plan.Defense != null && Voice.IsVoicedBy(Game, false, plan.Defense.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1) ||
-                                    plan.Weapon != null && Voice.IsVoicedBy(Game, true, plan.Weapon.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1) ||
+                                    plan.Defense != null && ClairVoyanceAnswered.IsQuestionedBy(Game, false, plan.Defense.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1) ||
+                                    plan.Weapon != null && ClairVoyanceAnswered.IsQuestionedBy(Game, true, plan.Weapon.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1) ||
                                     plan.Hero != null && plan.Hero is TreacheryCard && (TreacheryCardType)Game.LatestClairvoyance.Parameter1 == TreacheryCardType.Mercenary);
                             }
                         }
@@ -227,6 +225,7 @@ namespace Treachery.Shared
                         if (Game.CurrentBattle != null && (Game.CurrentBattle.Initiator == Faction || Game.CurrentBattle.Target == Faction))
                         {
                             var plan = Game.CurrentBattle.PlanOf(this);
+                            LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
                             if (plan == null) plan = DetermineBattle(false, true);
                             if (plan != null)
                             {
@@ -239,6 +238,7 @@ namespace Treachery.Shared
                         if (Game.CurrentBattle != null && (Game.CurrentBattle.Initiator == Faction || Game.CurrentBattle.Target == Faction))
                         {
                             var plan = Game.CurrentBattle.PlanOf(this);
+                            LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
                             if (plan == null) plan = DetermineBattle(false, true);
                             if (plan != null)
                             {
@@ -278,7 +278,9 @@ namespace Treachery.Shared
 
         private bool Covers(TreacheryCardType typeToCheck, object coveredByType)
         {
-            return Voice.IsVoicedBy(Game, true, typeToCheck, (TreacheryCardType)coveredByType) || Voice.IsVoicedBy(Game, false, typeToCheck, (TreacheryCardType)coveredByType);
+            return 
+                ClairVoyanceAnswered.IsQuestionedBy(Game, true,  typeToCheck, (TreacheryCardType)coveredByType) || 
+                ClairVoyanceAnswered.IsQuestionedBy(Game, false, typeToCheck, (TreacheryCardType)coveredByType);
         }
 
         private ClairVoyanceAnswer Answer(bool value)

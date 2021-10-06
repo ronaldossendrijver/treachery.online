@@ -51,6 +51,27 @@ namespace Treachery.Shared
         {
             return Answer == ClairVoyanceAnswer.Yes;
         }
+
+        public static bool IsQuestionedBy(Game g, bool asWeapon, TreacheryCardType cardType, TreacheryCardType asked)
+        {
+            if (cardType == asked)
+            {
+                return true;
+            }
+            else
+            {
+                switch (asked)
+                {
+                    case TreacheryCardType.PoisonDefense: return cardType == TreacheryCardType.Antidote || (!asWeapon && cardType == TreacheryCardType.Chemistry) || cardType == TreacheryCardType.ShieldAndAntidote;
+                    case TreacheryCardType.Poison: return cardType == TreacheryCardType.PoisonTooth || cardType == TreacheryCardType.ProjectileAndPoison;
+                    case TreacheryCardType.Shield: return cardType == TreacheryCardType.ShieldAndAntidote;
+                    case TreacheryCardType.ProjectileDefense: return cardType == TreacheryCardType.Shield || cardType == TreacheryCardType.ShieldAndAntidote;
+                    case TreacheryCardType.Projectile: return (asWeapon && cardType == TreacheryCardType.WeirdingWay) || cardType == TreacheryCardType.ProjectileAndPoison;
+                }
+            }
+
+            return false;
+        }
     }
 
     public class ClairVoyanceQandA

@@ -98,14 +98,7 @@ namespace Treachery.Shared
             {
                 var ownerOfKarma = s.KarmaCard != null ? OwnerOf(s.KarmaCard) : null;
                 totalCost = PayForShipment(s, initiator);
-                int orangeProfit = HandleOrangeProfit(s, initiator, ref orangeIncome);
-                CurrentReport.Add(s.GetVerboseMessage(totalCost, orangeIncome, ownerOfKarma));
-
-                if (totalCost - orangeProfit >= 4)
-                {
-                    ActivateBanker(initiator);
-                }
-
+                
                 if (s.IsNoField)
                 {
                     RevealCurrentNoField(GetPlayer(Faction.White));
@@ -152,6 +145,14 @@ namespace Treachery.Shared
                 if (Version >= 89 || mustBeAdvisors) initiator.FlipForces(s.To, mustBeAdvisors);
 
                 DetermineNextShipmentAndMoveSubPhase(DetermineIntrusionCaused(s), BGMayAccompany);
+
+                int orangeProfit = HandleOrangeProfit(s, initiator, ref orangeIncome);
+                CurrentReport.Add(s.GetVerboseMessage(totalCost, orangeIncome, ownerOfKarma));
+
+                if (totalCost - orangeProfit >= 4)
+                {
+                    ActivateBanker(initiator);
+                }
 
                 FlipBeneGesseritWhenAlone();
             }
