@@ -28,6 +28,7 @@ namespace Treachery.Shared
         {
             MainPhaseStart(MainPhase.Battle);
             NrOfBattlesFought = 0;
+            BattleSequence = new PlayerSequence(this);
             if (KarmaHmsMovesLeft != 2) KarmaHmsMovesLeft = 0;
             AllowMovePhaseFactionAdvantages();
             ResetBattle();
@@ -54,13 +55,15 @@ namespace Treachery.Shared
         {
             get
             {
-                BattleSequence = new PlayerSequence(this);
+                //BattleSequence = new PlayerSequence(this);
 
                 for (int i = 0; i < Players.Count; i++)
                 {
+                    //Console.WriteLine("Checking " + BattleSequence.CurrentPlayer);
                     var playerToCheck = BattleSequence.CurrentPlayer;
                     if (Battle.MustFight(this, playerToCheck))
                     {
+                        //Console.WriteLine(playerToCheck + " must fight!");
                         return playerToCheck;
                     }
 

@@ -331,7 +331,11 @@ namespace Treachery.Client
 
                 case Phase.ShipmentAndMoveConcluded: return S(Skin.Current.Format("Waiting for factions to be ready to enter the Battle phase..."));
 
-                case Phase.BeginningOfBattle: return S(Skin.Current.Format("You may proceed to the first battle when ready."), Skin.Current.Format("Waiting for the host to proceed to the first battle..."));
+                case Phase.BeginningOfBattle: 
+                    return S(
+                        Skin.Current.Format("You may proceed to the first battle when ready."), 
+                        Skin.Current.Format("Waiting for the host to proceed to the first battle..."),
+                        Game.BattleSequence.GetPlayersInSequence().Select(ps => ps.Player));
 
                 case Phase.BattlePhase:
 

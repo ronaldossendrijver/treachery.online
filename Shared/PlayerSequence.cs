@@ -157,14 +157,16 @@ namespace Treachery.Shared
         }
 
         private Player DetermineCurrentPlayer()
-        {
-            /*Console.WriteLine("JuiceForcesFirstPlayer: {0}, _played.Count: {1}, JuiceForcesLastPlayer: {2}, CurrentPlayer: {3}, PlayerAfter(CurrentPlayer): {4}, _first: {5}",
+        {/*
+            Console.WriteLine("JuiceForcesFirstPlayer: {0}, _played.Count: {1}, JuiceForcesLastPlayer: {2}, CurrentPlayer: {3}, PlayerAfter(CurrentPlayer): {4}, _first: {5}",
                 _game.JuiceForcesFirstPlayer,
                 _played.Count,
                 _game.JuiceForcesLastPlayer,
                 CurrentPlayer,
                 PlayerAfter(CurrentPlayer),
-                _first);*/
+                _first);
+            */
+            Console.WriteLine("JuiceForcesLastPlayer: {0}", _game.JuiceForcesLastPlayer);
 
             if (_game.JuiceForcesFirstPlayer && MayGetTurn(_game.CurrentJuice?.Player) && _played.Count == 0)
             {
