@@ -157,16 +157,14 @@ namespace Treachery.Shared
         }
 
         private Player DetermineCurrentPlayer()
-        {/*
-            Console.WriteLine("JuiceForcesFirstPlayer: {0}, _played.Count: {1}, JuiceForcesLastPlayer: {2}, CurrentPlayer: {3}, PlayerAfter(CurrentPlayer): {4}, _first: {5}",
+        {
+            /*
+            Console.WriteLine("JuiceForcesFirstPlayer: {0}, _played.Count: {1}, JuiceForcesLastPlayer: {2}, PlayersInOrderThatMayGetTurn.Count(p => !_played.Contains(p)): {3}, _first: {4}",
                 _game.JuiceForcesFirstPlayer,
                 _played.Count,
                 _game.JuiceForcesLastPlayer,
-                CurrentPlayer,
-                PlayerAfter(CurrentPlayer),
-                _first);
-            */
-            Console.WriteLine("JuiceForcesLastPlayer: {0}", _game.JuiceForcesLastPlayer);
+                PlayersInOrderThatMayGetTurn.Count(p => !_played.Contains(p)),
+                _first);*/
 
             if (_game.JuiceForcesFirstPlayer && MayGetTurn(_game.CurrentJuice?.Player) && _played.Count == 0)
             {
@@ -178,7 +176,7 @@ namespace Treachery.Shared
             }
             else if (_played.Count == 0)
             {
-                if (_skipPlayersThatCantBidOnCards && !_first.HasRoomForCards)
+                if (_skipPlayersThatCantBidOnCards && !_first.HasRoomForCards || _first == _game.CurrentJuice?.Player)
                 {
                     return PlayerAfter(_first);
                 }

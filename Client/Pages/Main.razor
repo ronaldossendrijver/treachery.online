@@ -179,8 +179,12 @@
         if (existingSkinData != null && existingSkinData.Length > 0)
         {
             var existingSkin = Support.LoadSkin(existingSkinData);
-            var issues = await existingSkin.ValidateAndFix(Browser.UrlExists);
-            Skin.Current = existingSkin;
+
+            if (existingSkin.Version >= Skin.CurrentVersion)
+            {
+                var issues = await existingSkin.ValidateAndFix(Browser.UrlExists);
+                Skin.Current = existingSkin;
+            }
         }
     }
 

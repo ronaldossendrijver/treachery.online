@@ -16,7 +16,7 @@ namespace Treachery.Shared
     {
         #region Attributes
 
-        public const int CurrentVersion = 2;
+        public const int CurrentVersion = 5;
 
         public const string DEFAULT_ART_LOCATION = "https://treachery.online"; //Used for debugging
         //public const string DEFAULT_ART_LOCATION = ".";
@@ -117,7 +117,7 @@ namespace Treachery.Shared
         public int MONSTERTOKEN_RADIUS = 100;
 
         //Force tokens
-        public string FORCETOKEN_FONT = "normal normal bolder 85px Calibri, Tahoma, sans-serif";
+        public string FORCETOKEN_FONT = "normal normal bold 80px Calibri, Tahoma, sans-serif";
         public string FORCETOKEN_FONTCOLOR = "white";
         public string FORCETOKEN_SPECIAL_FONTCOLOR = "gold";
         public string FORCETOKEN_FONT_BORDERCOLOR = "black";
@@ -129,7 +129,7 @@ namespace Treachery.Shared
         public int FORCETOKEN_RADIUS = 60;
 
         //Spice tokens
-        public string RESOURCETOKEN_FONT = "normal normal bolder 85px Calibri, Tahoma, sans-serif";
+        public string RESOURCETOKEN_FONT = "normal normal bold 80px Calibri, Tahoma, sans-serif";
         public string RESOURCETOKEN_FONTCOLOR = "white";
         public string RESOURCETOKEN_FONT_BORDERCOLOR = "black";
         public int RESOURCETOKEN_FONT_BORDERWIDTH = 3;
@@ -2281,7 +2281,7 @@ namespace Treachery.Shared
             MONSTERTOKEN_RADIUS = 100,
 
             //Force tokens
-            FORCETOKEN_FONT = "normal normal bolder 85px Calibri, Tahoma, sans-serif",
+            FORCETOKEN_FONT = "normal normal bold 80px Calibri, Tahoma, sans-serif",
             FORCETOKEN_FONTCOLOR = "white",
             FORCETOKEN_SPECIAL_FONTCOLOR = "gold",
             FORCETOKEN_FONT_BORDERCOLOR = "black",
@@ -2293,7 +2293,7 @@ namespace Treachery.Shared
             FORCETOKEN_RADIUS = 60,
 
             //Spice tokens
-            RESOURCETOKEN_FONT = "normal normal bolder 85px Calibri, Tahoma, sans-serif",
+            RESOURCETOKEN_FONT = "normal normal bold 80px Calibri, Tahoma, sans-serif",
             RESOURCETOKEN_FONTCOLOR = "white",
             RESOURCETOKEN_FONT_BORDERCOLOR = "black",
             RESOURCETOKEN_FONT_BORDERWIDTH = 3,
