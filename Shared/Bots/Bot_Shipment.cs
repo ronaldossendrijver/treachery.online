@@ -37,7 +37,7 @@ namespace Treachery.Shared
                 if (decidedShipment == null && Faction == Faction.Grey && decidedShipment == null && AnyForcesIn(Game.Map.HiddenMobileStronghold) == 0) DetermineShipment_AttackWeakHMS(1, Param.Shipment_DialShortageToAccept, 0, LastTurn ? 99 : Param.Battle_MaximumUnsupportedForces);
                 if (decidedShipment == null) DetermineShipment_StrengthenWeakestThreatenedStronghold(extraForces, Param.Shipment_DialShortageToAccept, !MayFlipToAdvisors);
                 if (decidedShipment == null && !winning) DetermineShipment_TakeVacantStronghold(extraForces, minResourcesToKeep, Param.Battle_MaximumUnsupportedForces);
-                if (decidedShipment == null && !winning && Param.Shipment_WillAttackWeakStrongholds) DetermineShipment_AttackWeakStronghold(extraForces, minResourcesToKeep, LastTurn ? 99 : Param.Battle_MaximumUnsupportedForces);
+                if (decidedShipment == null && !winning) DetermineShipment_AttackWeakStronghold(extraForces, minResourcesToKeep, LastTurn ? 99 : Param.Battle_MaximumUnsupportedForces);
                 if (decidedShipment == null && Faction != Faction.Yellow && !winning && !AlmostLastTurn && stillNeedsResources) DetermineShipment_ShipToStrongholdNearSpice();
                 if (decidedShipment == null && Faction == Faction.Yellow && !winning && !LastTurn && stillNeedsResources) DetermineShipment_ShipDirectlyToSpiceAsYellow();
                 if (decidedShipment == null && Game.MayShipAsGuild(this) && !winning && !AlmostLastTurn && stillNeedsResources) DetermineShipment_ShipDirectlyToSpiceAsOrangeOrOrangeAlly();

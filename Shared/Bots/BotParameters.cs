@@ -14,7 +14,6 @@ namespace Treachery.Shared
 
         public int Shipment_MinimumOtherPlayersITrustToPreventAWin { get; set; }
         public float Shipment_DialShortageToAccept { get; set; }
-        public bool Shipment_WillAttackWeakStrongholds { get; set; }
         public int Shipment_MinimumResourcesToKeepForBattle { get; set; }
         public float Shipment_MaxEnemyForceStrengthFightingForSpice { get; set; }
         public int Shipment_ExpectedStormMovesWhenUnknown { get; set; }
@@ -29,18 +28,17 @@ namespace Treachery.Shared
         public static BotParameters BlackParameters = new BotParameters()
         {
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
-            Bidding_ResourcesToKeepWhenCardIsntPerfect = 5,
+            Bidding_ResourcesToKeepWhenCardIsntPerfect = 4,
             Bidding_PassingTreshold = 0,
             Karma_SaveCardToUseSpecialKarmaAbility = true,
             Shipment_MinimumOtherPlayersITrustToPreventAWin = 4,
             Shipment_DialShortageToAccept = 4,
-            Shipment_WillAttackWeakStrongholds = true,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 3,
-            Shipment_MaxEnemyForceStrengthFightingForSpice = 2,
+            Shipment_MaxEnemyForceStrengthFightingForSpice = 3,
             Shipment_ExpectedStormMovesWhenUnknown = 3,
             Battle_MaximumUnsupportedForces = 6,
-            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.1f,
+            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.3f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.5f,
             Battle_DialShortageThresholdForThrowing = 7
         };
@@ -55,7 +53,6 @@ namespace Treachery.Shared
             Karma_SaveCardToUseSpecialKarmaAbility = false,
             Shipment_MinimumOtherPlayersITrustToPreventAWin = 2,
             Shipment_DialShortageToAccept = 4,
-            Shipment_WillAttackWeakStrongholds = true,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 2,
             Battle_MaximumUnsupportedForces = 6,
@@ -74,7 +71,6 @@ namespace Treachery.Shared
             Karma_SaveCardToUseSpecialKarmaAbility = false,
             Shipment_MinimumOtherPlayersITrustToPreventAWin = 4,
             Shipment_DialShortageToAccept = 4,
-            Shipment_WillAttackWeakStrongholds = true,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 8,
             Battle_MaximumUnsupportedForces = 20,
@@ -93,7 +89,6 @@ namespace Treachery.Shared
             Karma_SaveCardToUseSpecialKarmaAbility = true,
             Shipment_MinimumOtherPlayersITrustToPreventAWin = 2,
             Shipment_DialShortageToAccept = 4,
-            Shipment_WillAttackWeakStrongholds = true,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 8,
             Battle_MaximumUnsupportedForces = 2,
@@ -112,7 +107,6 @@ namespace Treachery.Shared
             Karma_SaveCardToUseSpecialKarmaAbility = false,
             Shipment_MinimumOtherPlayersITrustToPreventAWin = 4,
             Shipment_DialShortageToAccept = 4,
-            Shipment_WillAttackWeakStrongholds = false,
             Shipment_MinimumResourcesToKeepForBattle = 6,
             Shipment_DialForExtraForcesToShip = 6,
             Battle_MaximumUnsupportedForces = 0,
@@ -131,7 +125,6 @@ namespace Treachery.Shared
             Karma_SaveCardToUseSpecialKarmaAbility = false,
             Shipment_MinimumOtherPlayersITrustToPreventAWin = 4,
             Shipment_DialShortageToAccept = 2,
-            Shipment_WillAttackWeakStrongholds = true,
             Shipment_MinimumResourcesToKeepForBattle = 3,
             Shipment_DialForExtraForcesToShip = 4,
             Battle_MaximumUnsupportedForces = 2,
@@ -150,7 +143,6 @@ namespace Treachery.Shared
             Karma_SaveCardToUseSpecialKarmaAbility = false,
             Shipment_MinimumOtherPlayersITrustToPreventAWin = 4,
             Shipment_DialShortageToAccept = 4,
-            Shipment_WillAttackWeakStrongholds = true,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 6,
             Battle_MaximumUnsupportedForces = 2,
@@ -169,7 +161,6 @@ namespace Treachery.Shared
             Karma_SaveCardToUseSpecialKarmaAbility = false,
             Shipment_MinimumOtherPlayersITrustToPreventAWin = 2,
             Shipment_DialShortageToAccept = 6,
-            Shipment_WillAttackWeakStrongholds = true,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 8,
             Battle_MaximumUnsupportedForces = 6,
@@ -188,7 +179,6 @@ namespace Treachery.Shared
             Karma_SaveCardToUseSpecialKarmaAbility = true,
             Shipment_MinimumOtherPlayersITrustToPreventAWin = 2,
             Shipment_DialShortageToAccept = 4,
-            Shipment_WillAttackWeakStrongholds = true,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 8,
             Battle_MaximumUnsupportedForces = 2,
@@ -207,7 +197,6 @@ namespace Treachery.Shared
             Karma_SaveCardToUseSpecialKarmaAbility = false,
             Shipment_MinimumOtherPlayersITrustToPreventAWin = 4,
             Shipment_DialShortageToAccept = 4,
-            Shipment_WillAttackWeakStrongholds = true,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 6,
             Battle_MaximumUnsupportedForces = 2,
@@ -226,7 +215,6 @@ namespace Treachery.Shared
             Karma_SaveCardToUseSpecialKarmaAbility = false,
             Shipment_MinimumOtherPlayersITrustToPreventAWin = 4,
             Shipment_DialShortageToAccept = 4,
-            Shipment_WillAttackWeakStrongholds = true,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 6,
             Battle_MaximumUnsupportedForces = 2,
@@ -245,7 +233,6 @@ namespace Treachery.Shared
             Karma_SaveCardToUseSpecialKarmaAbility = false,
             Shipment_MinimumOtherPlayersITrustToPreventAWin = 4,
             Shipment_DialShortageToAccept = 4,
-            Shipment_WillAttackWeakStrongholds = true,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 6,
             Battle_MaximumUnsupportedForces = 2,

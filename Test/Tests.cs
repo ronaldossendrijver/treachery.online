@@ -778,6 +778,7 @@ namespace Treachery.Test
             }
         }
 
+        /*
         [TestMethod]
         public void Statistics()
         {
@@ -837,6 +838,7 @@ namespace Treachery.Test
                 throw;
             }
         }
+        */
 
         private static Testvalues DetermineTestvalues(Game game)
         {
