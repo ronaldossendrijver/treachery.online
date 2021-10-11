@@ -43,10 +43,10 @@ namespace Treachery.Shared
                 result.Add(JuiceType.Aggressor);
             }
 
-            if (g.CurrentMainPhase == MainPhase.Bidding ||
-                g.CurrentMainPhase == MainPhase.ShipmentAndMove && !g.HasActedOrPassed.Any() ||
-                g.CurrentMainPhase == MainPhase.Battle ||
-                g.CurrentMainPhase == MainPhase.Contemplate)
+            if (g.CurrentMainPhase == MainPhase.Bidding && !g.Bids.Any() ||
+                g.CurrentPhase == Phase.BeginningOfShipAndMove ||
+                (g.CurrentMainPhase == MainPhase.Battle) ||
+                g.CurrentPhase == Phase.Contemplate)
             {
                 result.Add(JuiceType.GoFirst);
             }
@@ -58,7 +58,18 @@ namespace Treachery.Shared
 
         public static bool CanBePlayedBy(Game g, Player player)
         {
-            bool applicablePhase = g.CurrentMainPhase == MainPhase.Bidding || g.CurrentMainPhase == MainPhase.ShipmentAndMove || g.CurrentMainPhase == MainPhase.Battle || g.CurrentMainPhase == MainPhase.Contemplate;
+            bool applicablePhase = 
+
+                g.CurrentMainPhase == MainPhase.Bidding || 
+                
+                g.CurrentPhase == Phase.BeginningOfShipAndMove ||
+                g.CurrentPhase == Phase.OrangeShip ||
+                g.CurrentPhase == Phase.NonOrangeShip ||
+                
+                (g.CurrentMainPhase == MainPhase.Battle && g.CurrentBattle == null) || 
+                
+                g.CurrentPhase == Phase.Contemplate;
+
             return applicablePhase && player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Juice);
         }
     }

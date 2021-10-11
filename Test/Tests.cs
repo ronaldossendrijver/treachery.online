@@ -136,6 +136,13 @@ namespace Treachery.Test
         private static string TestSpecialCases(Game g, GameEvent e)
         {
             var p = g.GetPlayer(e.Initiator);
+
+            if ((g.CurrentPhase == Phase.BeginningOfShipAndMove ||
+                g.CurrentPhase == Phase.WaitingForNextBiddingRound ||
+                g.CurrentPhase == Phase.BeginningOfBattle ) && g.Players.Any(p => p.Has(TreacheryCardType.Juice)))
+            {
+                WriteSavegameIfApplicable(g, g.Players.First(p => p.Has(TreacheryCardType.Juice)), string.Format("Juice in {0}", g.CurrentPhase));
+            }
                         
             /*
             if (e is Battle b && b.Initiator == Faction.Black &&
@@ -389,7 +396,7 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 100;
+            int nrOfGames = 200;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 

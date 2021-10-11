@@ -21,7 +21,7 @@
 
             <Image X="@(x)" Y="@(y)" Diameter=@(radiusModifier * Skin.Current.PlayerTokenRadius * 2) Src="@Skin.Current.GetFactionTableImageURL(p.Faction)" 
                    ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="3" 
-                   Title="@p.Name" Popover="@Intel(p)"/>
+                   Popover="@Intel(p)"/>
 
             if (p.Ally != Faction.None)
             {
@@ -111,7 +111,8 @@
 
     private string Intel(Player p)
     {
-        string result = "";
+        string result = Skin.Current.Format("<p><strong>{0} plays {1}</strong></p>", p.Name, p.Faction);
+
         foreach (var v in LeaderManager.Leaders.Where(l => l.Faction == p.Faction))
         {
             result += Support.GetLeaderHTML(v);

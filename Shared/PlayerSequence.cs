@@ -10,115 +10,86 @@ namespace Treachery.Shared
 {
     public class PlayerSequence
     {
+        private List<Player> PlayersInOrder { get; set; }
         private readonly List<Player> _played = new List<Player>();
         private readonly Game _game;
         private readonly bool _skipPlayersThatCantBidOnCards;
         private readonly int _direction;
-        private Player _first;
+        private int _round;
 
         public PlayerSequence(Game game, bool skipPlayersThatCantBidOnCards, int direction, Player toStartWith, bool beginNextToThatPlayer)
         {
-            //Console.WriteLine("Start PlayerSequence");
-
             _game = game;
             _skipPlayersThatCantBidOnCards = skipPlayersThatCantBidOnCards;
             _direction = direction;
-            _first = toStartWith;
+            _round = 1;
+            
+            PlayersInOrder = _game.Players.OrderBy(p => _direction * p.PositionAtTable).ToList();
+            FirstPlayer = toStartWith;
 
-            if (beginNextToThatPlayer && PlayersInOrderThatMayGetTurn.Count() > 1)
+            if (beginNextToThatPlayer && NumberOfPlayersThatMayGetTurn > 1)
             {
-                _first = PlayerAfter(_first);
+                FirstPlayer = PlayerAfter(FirstPlayer);
             }
+
+            ChangeFirstPlayerIfTheyCantBid();
 
             if (_game.Version <= 117)
             {
-                while (!MayGetTurn(_first) || JuiceForcesLast(_first) && PlayersInOrderThatMayGetTurn.Count() > 1)
-                {
-                    _first = PlayerAfter(_first);
-                }
-
                 CurrentPlayer = DetermineCurrentPlayer();
             }
-
-
-            //Console.Write("Player sequence started: ");
-            //foreach (var player in PlayersInOrderThatMayGetTurn)
-            //{
-            //Console.Write(" -> " + player.Faction + " (" + player.PositionAtTable + ")");
-            //}
-
-            //////Console.WriteLine(". Storm at: " + _game.SectorInStorm + ", first player: " + _first + " (position: " + _first.PositionAtTable + "), current player: " + CurrentPlayer);
-            //Console.WriteLine("End PlayerSequence");
         }
 
         public PlayerSequence(Game game, bool skipPlayersThatCantBidOnCards, int direction)
             : this(game, skipPlayersThatCantBidOnCards, direction, DetermineFirstPlayer(game), false)
         {
-
-        }
-
-        public PlayerSequence(Game game, bool skipPlayersThatCantBidOnCards)
-            : this(game, skipPlayersThatCantBidOnCards, 1, DetermineFirstPlayer(game), false)
-        {
-
         }
 
         public PlayerSequence(Game game)
             : this(game, false, 1, DetermineFirstPlayer(game), false)
         {
-
         }
 
-        private IEnumerable<Player> PlayersInOrder => _game.Players
-            .OrderBy(p => _direction * p.PositionAtTable);
-
-        private IEnumerable<Player> PlayersInOrderThatMayGetTurn => _game.Players
-            .Where(p => !_skipPlayersThatCantBidOnCards || p.HasRoomForCards)
-            .OrderBy(p => _direction * p.PositionAtTable);
-
-        private bool MayGetTurn(Player p)
+        private void ChangeFirstPlayerIfTheyCantBid()
         {
-            return !_skipPlayersThatCantBidOnCards || p.HasRoomForCards;
+            if (NumberOfPlayersThatMayGetTurn > 1)
+            {
+                while (!MayGetTurn(FirstPlayer) || JuiceForcesLast(FirstPlayer))
+                {
+                    FirstPlayer = PlayerAfter(FirstPlayer);
+                }
+            }
         }
 
-        private bool JuiceForcesLast(Player p)
-        {
-            return _game.CurrentJuice != null && _game.CurrentJuice.Type == JuiceType.GoLast && _game.CurrentJuice.Player == p;
-        }
+        private int NumberOfPlayersThatMayGetTurn => PlayersInOrder.Count(p => !_skipPlayersThatCantBidOnCards || p.HasRoomForCards);
+
+        private bool MayGetTurn(Player p) => !_skipPlayersThatCantBidOnCards || p.HasRoomForCards;
+
+        private bool JuiceForcesLast(Player p) => _game.CurrentJuice != null && _game.CurrentJuice.Type == JuiceType.GoLast && _game.CurrentJuice.Player == p;
+
+        private bool JuiceForcesFirst(Player p) => _game.CurrentJuice != null && _game.CurrentJuice.Type == JuiceType.GoFirst && _game.CurrentJuice.Player == p;
 
         public void CheckCurrentPlayer()
         {
-            //Console.WriteLine("Start CheckCurrentPlayer");
-
-            if (!_played.Any())
+            if (_round == 1 && !_played.Any())
             {
-                while (!MayGetTurn(_first) || JuiceForcesLast(_first) && PlayersInOrderThatMayGetTurn.Count() > 1)
-                {
-                    _first = PlayerAfter(_first);
-                }
+                ChangeFirstPlayerIfTheyCantBid();
             }
 
             CurrentPlayer = DetermineCurrentPlayer();
-
-            //Console.WriteLine("End CheckCurrentPlayer");
         }
 
         private Player PlayerAfter(Player currentPlayer, bool includePlayersThatCantBid = false)
         {
-            //Console.WriteLine("Start PlayerAfter");
             bool currentPlayerFound = false;
 
-            Player first = null;
+            Player firstFound = null;
             foreach (Player p in PlayersInOrder)
             {
-                if (first == null && (includePlayersThatCantBid || MayGetTurn(p))) first = p;
-
                 if (currentPlayerFound)
                 {
                     if (includePlayersThatCantBid || MayGetTurn(p))
                     {
-                        ////////Console.WriteLine("PlayerAfter1 " + currentPlayer + " -> " + p);
-                        //Console.WriteLine("PlayerAfter: currentPlayerFound -> " + p);
                         return p;
                     }
                 }
@@ -126,32 +97,22 @@ namespace Treachery.Shared
                 {
                     currentPlayerFound = true;
                 }
-            }
 
-            //Console.WriteLine("PlayerAfter: firstPlayer -> " + first);
-
-            if (first == null)
-            {
-                //Console.WriteLine("PlayerAfter: first is null!!! PlayerInOrder: " + Skin.Current.Join(PlayersInOrder) + ", MayGetTurn: " + Skin.Current.Join(PlayersInOrder.Select(p => MayGetTurn(p))));
-            }
-
-            //Skip players that can't bid
-            /*if (!includePlayersThatCantBid)
-            {
-                while (!MayGetTurn(first))
+                if (firstFound == null && (includePlayersThatCantBid || MayGetTurn(p)))
                 {
-                    first = PlayerAfter(first);
+                    firstFound = p;
                 }
-            }*/
+            }
 
-            ////////Console.WriteLine("PlayerAfter2 " + currentPlayer + " -> " + first);
-            //Console.WriteLine("End PlayerAfter");
-            return first;
-        }   
+            return firstFound;
+        }
+
+        public Player FirstPlayer { get; private set; }
 
         public Faction CurrentFaction => CurrentPlayer != null ? CurrentPlayer.Faction : Faction.None;
 
         private Player _currentPlayer;
+
         public Player CurrentPlayer
         {
             get
@@ -174,80 +135,55 @@ namespace Treachery.Shared
 
         private Player DetermineCurrentPlayer()
         {
-            //Console.WriteLine("Start DetermineCurrentPlayer");
-            /*
-            //Console.WriteLine("JuiceForcesFirstPlayer: {0}, _played.Count: {1}, JuiceForcesLastPlayer: {2}, PlayersInOrderThatMayGetTurn.Count(p => !_played.Contains(p)): {3}, _first: {4}",
-                _game.JuiceForcesFirstPlayer,
-                _played.Count,
-                _game.JuiceForcesLastPlayer,
-                PlayersInOrderThatMayGetTurn.Count(p => !_played.Contains(p)),
-                _first);*/
+            if (_played.Count > 0)
+            {
+                bool found = false;
+                foreach (var p in PlayersToGetTurn)
+                {
+                    if (found)
+                    {
+                        return p;
+                    }
+                    else
+                    {
+                        found = p == _played[^1];
+                    }
+                }
+            }
 
-            if (_game.JuiceForcesFirstPlayer && MayGetTurn(_game.CurrentJuice?.Player) && _played.Count == 0)
-            {
-                //Console.WriteLine("End DetermineCurrentPlayer");
-                return _game.CurrentJuice.Player;
-            }
-            else if (_game.JuiceForcesLastPlayer && MayGetTurn(_game.CurrentJuice?.Player) && PlayersInOrderThatMayGetTurn.Count(p => !_played.Contains(p)) == 1)
-            {
-                //Console.WriteLine("End DetermineCurrentPlayer");
-                return _game.CurrentJuice.Player;
-            }
-            else if (_played.Count == 0)
-            {
-                if (_skipPlayersThatCantBidOnCards && !_first.HasRoomForCards || _first == _game.CurrentJuice?.Player)
-                {
-                    //Console.WriteLine("End DetermineCurrentPlayer");
-                    return PlayerAfter(_first);
-                }
-                else
-                {
-                    //Console.WriteLine("End DetermineCurrentPlayer");
-                    return _first;
-                }
-            }
-            else
-            {
-                ////////Console.WriteLine("Continuing with " + PlayerAfter(_played[_played.Count - 1]) + " who is after " + _played[_played.Count - 1]);
-                //Console.WriteLine("End DetermineCurrentPlayer");
-                return PlayerAfter(_played[_played.Count - 1]);
-            }
+            return PlayersToGetTurn.FirstOrDefault();
         }
 
         public void NextPlayer()
         {
-            //////Console.WriteLine("=== START == NextPlayer == Currentplayer: {0} ===", CurrentPlayer);
-
             var currentPlayer = CurrentPlayer;
 
             _played.Add(currentPlayer);
 
-            //////Console.WriteLine("Played: " + Skin.Current.Join(_played));
-
-            if (PlayerAfter(currentPlayer) == _first && !_game.JuiceForcesLastPlayer)
+            /*if (_game.Version <= 117)
             {
-                //////Console.WriteLine("CurrentPlayer: {0}, PlayerAfter: {1}, _first: {2} -> Starting new...", currentPlayer, PlayerAfter(currentPlayer), _first);
-                _played.Clear();
+                if (PlayerAfter(currentPlayer) == FirstPlayer && !_game.JuiceForcesLastPlayer)
+                {
+                    _played.Clear();
+                }
             }
+            else
+            {*/
+                if (NumberOfPlayersThatMayGetTurn == 0)
+                {
+                    _played.Clear();
+                }
+            //}
 
             if (_game.Version <= 117)
             {
                 CurrentPlayer = DetermineCurrentPlayer();
             }
-
-            //////Console.WriteLine("=== END == NextPlayer == Currentplayer: {0} ===", CurrentPlayer);
         }
 
         public void NextRound()
         {
-            if (_played.Any())
-            {
-                _first = PlayerAfter(_played[0]);
-            }
-            else
-            {
-                _first = PlayerAfter(CurrentPlayer);
-            }
+            FirstPlayer = PlayerAfter(FirstPlayer);
 
             _played.Clear();
 
@@ -255,36 +191,50 @@ namespace Treachery.Shared
             {
                 CurrentPlayer = DetermineCurrentPlayer();
             }
+
+            _round++;
+        }
+
+        private List<Player> PlayersToGetTurn
+        {
+            get
+            {
+                var result = new List<Player>();
+                var playerWithJuice = _game.CurrentJuice != null && (_game.CurrentJuice.Type == JuiceType.GoFirst || _game.CurrentJuice.Type == JuiceType.GoLast) ? _game.CurrentJuice.Player : null;
+
+                if (playerWithJuice == null || NumberOfPlayersThatMayGetTurn > 1)
+                {
+                    var toAdd = FirstPlayer;
+                    while (result.Count == 0 || toAdd != result[0])
+                    {
+                        if (toAdd != playerWithJuice)
+                        {
+                            result.Add(toAdd);
+                        }
+
+                        toAdd = PlayerAfter(toAdd, true);
+                    }
+                }
+
+                if (playerWithJuice != null)
+                {
+                    if (_game.CurrentJuice.Type == JuiceType.GoFirst)
+                    {
+                        result.Insert(0, playerWithJuice);
+                    }
+                    else if (_game.CurrentJuice.Type == JuiceType.GoLast)
+                    {
+                        result.Add(playerWithJuice);
+                    }
+                }
+
+                return result;
+            }
         }
 
         public IEnumerable<SequenceElement> GetPlayersInSequence()
         {
-            var result = new List<SequenceElement>();
-
-            if (_game.JuiceForcesFirstPlayer)
-            {
-                result.Add(new SequenceElement() { Player = _game.CurrentJuice.Player, HasTurn = CurrentPlayer == _game.CurrentJuice.Player });
-            }
-
-            //result.AddRange(_played.Select(p => new SequenceElement() { Player = p, HasTurn = CurrentPlayer == p }));
-
-            var toAdd = _first;
-            while (!result.Any(se => se.Player == toAdd))
-            {
-                if (toAdd != _game.CurrentJuice?.Player)
-                {
-                    result.Add(new SequenceElement() { Player = toAdd, HasTurn = CurrentPlayer == toAdd });
-                }
-
-                toAdd = PlayerAfter(toAdd, true);
-            }
-
-            if (_game.JuiceForcesLastPlayer)
-            {
-                result.Add(new SequenceElement() { Player = _game.CurrentJuice.Player, HasTurn = CurrentPlayer == _game.CurrentJuice.Player });
-            }
-
-            return result;
+            return PlayersToGetTurn.Select(p => new SequenceElement() { Player = p, HasTurn = CurrentPlayer == p });
         }
 
         public static Player DetermineFirstPlayer(Game g)
