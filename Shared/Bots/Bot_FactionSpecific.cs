@@ -379,7 +379,7 @@ namespace Treachery.Shared
 
             voicePlan = null;
 
-            if (Game.CurrentBattle.Initiator == Faction || Game.CurrentBattle.Target == Faction)
+            if (Game.CurrentBattle.IsAggressorOrDefender(this))
             {
                 voicePlan = BestVoice(Game.CurrentBattle, this, Game.CurrentBattle.OpponentOf(Faction));
                 LogInfo(voicePlan.voice.GetMessage().ToString());
@@ -691,7 +691,7 @@ namespace Treachery.Shared
                 }
             }
 
-            if (Game.CurrentBattle.Initiator == Faction || Game.CurrentBattle.Target == Faction)
+            if (Game.CurrentBattle.IsAggressorOrDefender(this))
             {
                 return BestPrescience(opponent, MaxDial(this, Game.CurrentBattle.Territory, opponent));
             }

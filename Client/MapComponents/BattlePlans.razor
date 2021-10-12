@@ -13,15 +13,15 @@
 
     if (MaySeeAggressorBattlePlan || MaySeeBothBattlePlans)
     {
-        <BattlePlan h="h" Plan="Game.AggressorBattleAction" Opponent="Game.CurrentBattle.Defender" TraitorCalled="DefenderCallsTraitor" IsAggressor="true" X="500" Y="200" />
+        <BattlePlan h="h" Plan="Game.AggressorBattleAction" Opponent="Game.CurrentBattle.DefendingPlayer" TraitorCalled="DefenderCallsTraitor" IsAggressor="true" X="500" Y="200" />
     }
     else if (MaySeeAggressorBattlePlanUnderConstruction)
     {
-        <BattlePlan h="h" Plan="h._battleUnderConstruction" Opponent="Game.CurrentBattle.Defender" TraitorCalled="false" IsAggressor="true" X="500" Y="200" />
+        <BattlePlan h="h" Plan="h._battleUnderConstruction" Opponent="Game.CurrentBattle.DefendingPlayer" TraitorCalled="false" IsAggressor="true" X="500" Y="200" />
     }
     else if (AggressorIsAffectedByPartialPrescience)
     {
-        <BattlePlan h="h" Plan="Game.AggressorBattleAction" Opponent="Game.CurrentBattle.Defender" TraitorCalled="false" IsAggressor="true" X="500" Y="200" Aspect="Game.CurrentPrescience.Aspect" Opacity="0.5f"/>
+        <BattlePlan h="h" Plan="Game.AggressorBattleAction" Opponent="Game.CurrentBattle.DefendingPlayer" TraitorCalled="false" IsAggressor="true" X="500" Y="200" Aspect="Game.CurrentPrescience.Aspect" Opacity="0.5f"/>
     }
 
     if (MaySeeDefenderBattlePlan || MaySeeBothBattlePlans)
@@ -40,7 +40,7 @@
 
 @code {
 
-    private bool MaySeeAggressorBattlePlanUnderConstruction => h._battleUnderConstruction != null && Game.AggressorBattleAction == null && Game.CurrentBattle != null && Game.CurrentBattle.Initiator == h.Faction;
+    private bool MaySeeAggressorBattlePlanUnderConstruction => h._battleUnderConstruction != null && Game.AggressorBattleAction == null && Game.CurrentBattle != null && Game.CurrentBattle.Aggressor == h.Faction;
 
-    private bool MaySeeDefenderBattlePlanUnderConstruction => h._battleUnderConstruction != null && Game.DefenderBattleAction == null && Game.CurrentBattle != null && Game.CurrentBattle.Target == h.Faction;
+    private bool MaySeeDefenderBattlePlanUnderConstruction => h._battleUnderConstruction != null && Game.DefenderBattleAction == null && Game.CurrentBattle != null && Game.CurrentBattle.Defender == h.Faction;
 }

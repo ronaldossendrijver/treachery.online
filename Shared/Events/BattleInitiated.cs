@@ -2,6 +2,7 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
+using System;
 using Newtonsoft.Json;
 
 namespace Treachery.Shared
@@ -21,39 +22,66 @@ namespace Treachery.Shared
         public Faction Target { get; set; }
 
         [JsonIgnore]
+        public Faction Defender
+        {
+            get
+            {
+                if (Initiator == Aggressor)
+                {
+                    return Target;
+                }
+                else
+                {
+                    return Initiator;
+                }
+            }
+        }
+
+        [JsonIgnore]
+        public Player DefendingPlayer => Game.GetPlayer(Defender);
+
+        [JsonIgnore]
         public Faction Aggressor
         {
             get
             {
-                return Initiator;
-            }
-        }
-
-        [JsonIgnore]
-        public Player EffectiveAggressor
-        {
-            get
-            {
-                if (Game.IsAggressorByJuice(Defender))
+                if (IsAggressorByJuice(Game, Target))
                 {
-                    return Defender;
+                    return Target;
+                }
+                else if (IsInitiatorByJuice(Game, Player, Game.GetPlayer(Target)))
+                {
+                    return Target;
+                }
+                else if (IsTargetByJuice(Game, Player, Game.GetPlayer(Target)))
+                {
+                    return Target;
                 }
                 else
                 {
-                    return Player;
+                    return Initiator;
                 }
             }
         }
 
         [JsonIgnore]
-        public Player Defender
+        public Player AggressivePlayer => Game.GetPlayer(Aggressor);
+
+        public static bool IsAggressorByJuice(Game g, Faction f)
         {
-            get
-            {
-                return Game.GetPlayer(Target);
-            }
+            return g.CurrentJuice != null && g.CurrentJuice.Type == JuiceType.Aggressor && g.CurrentJuice.Initiator == f;
         }
 
+        public static bool IsInitiatorByJuice(Game g, Player initiator, Player target)
+        {
+            //Console.WriteLine("PlayerSequence.IsAfter(g, {0}, {1}): {2}", initiator, target, PlayerSequence.IsAfter(g, initiator, target));
+            return (g.CurrentJuice != null && g.CurrentJuice.Type == JuiceType.GoFirst && g.CurrentJuice.Player == initiator && PlayerSequence.IsAfter(g, initiator, target));
+        }
+
+        public static bool IsTargetByJuice(Game g, Player initiator, Player target)
+        {
+            return (g.CurrentJuice != null && g.CurrentJuice.Type == JuiceType.GoLast && g.CurrentJuice.Player == initiator && PlayerSequence.IsAfter(g, initiator, target));
+        }
 
         [JsonIgnore]
         public Territory Territory { get { return Game.Map.TerritoryLookup.Find(_territoryId); } set { _territoryId = Game.Map.TerritoryLookup.GetId(value); } }
@@ -63,7 +91,7 @@ namespace Treachery.Shared
             if (Territory == null) return "Territory not selected.";
 
             var p = Player;
-            var target = Game.GetPlayer(Target);
+            var target = Game.GetPlayer(Defender);
             if (!p.Occupies(Territory)) return "You have no forces in this territory.";
             if (!target.Occupies(Territory)) return "Opponent has no forces in this territory.";
             if (target == null) return "Opponent not selected.";
@@ -78,12 +106,12 @@ namespace Treachery.Shared
 
         public bool IsInvolved(Faction f)
         {
-            return Initiator == f || Target == f || Player.Ally == f || Defender.Ally == f;
+            return Initiator == f || Target == f || Player.Ally == f || Game.GetPlayer(Target).Ally == f;
         }
 
         public bool IsAggressorOrDefender(Player p)
         {
-            return Initiator == p.Faction || Target == p.Faction;
+            return Aggressor == p.Faction || Defender == p.Faction;
         }
 
         protected override void ExecuteConcreteEvent()
@@ -134,11 +162,11 @@ namespace Treachery.Shared
         {
             if (p == null) return null;
 
-            if (p.Faction == Initiator)
+            if (p.Faction == Aggressor)
             {
                 return Game.AggressorBattleAction;
             }
-            else if (p.Faction == Target)
+            else if (p.Faction == Defender)
             {
                 return Game.DefenderBattleAction;
             }
@@ -155,11 +183,11 @@ namespace Treachery.Shared
 
         public Battle PlanOf(Faction f)
         {
-            if (f == Initiator)
+            if (f == Aggressor)
             {
                 return Game.AggressorBattleAction;
             }
-            else if (f == Target)
+            else if (f == Defender)
             {
                 return Game.DefenderBattleAction;
             }
@@ -170,21 +198,9 @@ namespace Treachery.Shared
         }
 
         [JsonIgnore]
-        public Battle AggressorAction
-        {
-            get
-            {
-                return PlanOf(Initiator);
-            }
-        }
+        public Battle AggressorAction => Game.AggressorBattleAction;
 
         [JsonIgnore]
-        public Battle DefenderAction
-        {
-            get
-            {
-                return PlanOf(Target);
-            }
-        }
+        public Battle DefenderAction => Game.DefenderBattleAction;
     }
 }

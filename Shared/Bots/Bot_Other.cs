@@ -116,7 +116,7 @@ namespace Treachery.Shared
 
         protected virtual ClairVoyancePlayed DetermineClairvoyance()
         {
-            bool imInBattle = Game.CurrentPhase == Phase.BattlePhase && Game.CurrentBattle != null && (Game.CurrentBattle.Initiator == Faction || Game.CurrentBattle.Target == Faction);
+            bool imInBattle = Game.CurrentPhase == Phase.BattlePhase && Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(this);
 
             if (imInBattle && Game.LatestClairvoyanceBattle != Game.CurrentBattle)
             {
@@ -179,7 +179,7 @@ namespace Treachery.Shared
                 switch (Game.LatestClairvoyance.Question)
                 {
                     case ClairvoyanceQuestion.CardTypeAsDefenseInBattle:
-                        if (Game.CurrentBattle != null && (Game.CurrentBattle.Initiator == Faction || Game.CurrentBattle.Target == Faction))
+                        if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(this))
                         {
                             var plan = Game.CurrentBattle.PlanOf(this);
                             if (plan == null) plan = DetermineBattle(false, true);
@@ -192,7 +192,7 @@ namespace Treachery.Shared
                         break;
 
                     case ClairvoyanceQuestion.CardTypeAsWeaponInBattle:
-                        if (Game.CurrentBattle != null && (Game.CurrentBattle.Initiator == Faction || Game.CurrentBattle.Target == Faction))
+                        if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(this))
                         {
                             var plan = Game.CurrentBattle.PlanOf(this);
                             if (plan == null) plan = DetermineBattle(false, true);
@@ -205,7 +205,7 @@ namespace Treachery.Shared
                         break;
 
                     case ClairvoyanceQuestion.CardTypeInBattle:
-                        if (Game.CurrentBattle != null && (Game.CurrentBattle.Initiator == Faction || Game.CurrentBattle.Target == Faction))
+                        if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(this))
                         {
                             var plan = Game.CurrentBattle.PlanOf(this);
                             if (plan == null) plan = DetermineBattle(false, true);
@@ -221,7 +221,7 @@ namespace Treachery.Shared
                         break;
 
                     case ClairvoyanceQuestion.DialOfMoreThanXInBattle:
-                        if (Game.CurrentBattle != null && (Game.CurrentBattle.Initiator == Faction || Game.CurrentBattle.Target == Faction))
+                        if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(this))
                         {
                             var plan = Game.CurrentBattle.PlanOf(this);
                             if (plan == null) plan = DetermineBattle(false, true);
@@ -234,7 +234,7 @@ namespace Treachery.Shared
                         break;
 
                     case ClairvoyanceQuestion.LeaderInBattle:
-                        if (Game.CurrentBattle != null && (Game.CurrentBattle.Initiator == Faction || Game.CurrentBattle.Target == Faction))
+                        if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(this))
                         {
                             var plan = Game.CurrentBattle.PlanOf(this);
                             if (plan == null) plan = DetermineBattle(false, true);

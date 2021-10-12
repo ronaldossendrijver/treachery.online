@@ -287,7 +287,7 @@ namespace Treachery.Shared
                         {
                             result.Add(typeof(Battle));
                         }
-                        else if (CurrentBattle != null && faction == CurrentBattle.Target && DefenderBattleAction == null)
+                        else if (CurrentBattle != null && faction == CurrentBattle.Defender && DefenderBattleAction == null)
                         {
                             result.Add(typeof(Battle));
                         }
@@ -296,7 +296,7 @@ namespace Treachery.Shared
                         {
                             result.Add(typeof(BattleRevision));
                         }
-                        else if (CurrentBattle != null && faction == CurrentBattle.Target && DefenderBattleAction != null)
+                        else if (CurrentBattle != null && faction == CurrentBattle.Defender && DefenderBattleAction != null)
                         {
                             result.Add(typeof(BattleRevision));
                         }
@@ -330,7 +330,7 @@ namespace Treachery.Shared
                     if (AggressorBattleAction != null && DefenderBattleAction != null &&
                             (AggressorTraitorAction == null && faction == CurrentBattle.Aggressor ||
                              AggressorTraitorAction == null && faction == Faction.Black && GetPlayer(AggressorBattleAction.Initiator).Ally == Faction.Black && player.Traitors.Contains(DefenderBattleAction.Hero) ||
-                             DefenderTraitorAction == null && faction == CurrentBattle.Target ||
+                             DefenderTraitorAction == null && faction == CurrentBattle.Defender ||
                              DefenderTraitorAction == null && faction == Faction.Black && GetPlayer(DefenderBattleAction.Initiator).Ally == Faction.Black && player.Traitors.Contains(AggressorBattleAction.Hero)))
                     {
                         result.Add(typeof(TreacheryCalled));
@@ -418,6 +418,11 @@ namespace Treachery.Shared
             bool isAfterSetup = Version < 107 ? CurrentPhase > Phase.TradingFactions : CurrentMainPhase > MainPhase.Setup;
             bool hasFinalizedBattlePlanWaitingToBeResolved = (CurrentPhase == Phase.BattlePhase || CurrentPhase == Phase.MeltingRock || CurrentPhase == Phase.CallTraitorOrPass) && CurrentBattle != null && CurrentBattle.PlanOf(player) != null;
 
+            if (JuicePlayed.CanBePlayedBy(this, player))
+            {
+                result.Add(typeof(JuicePlayed));
+            }
+
             if (isAfterSetup &&
                 (Version < 100 || !hasFinalizedBattlePlanWaitingToBeResolved) &&
                 CurrentMainPhase < MainPhase.Ended &&
@@ -433,11 +438,6 @@ namespace Treachery.Shared
                 if (CurrentMainPhase < MainPhase.Battle && player.NoFieldIsActive)
                 {
                     result.Add(typeof(WhiteRevealedNoField));
-                }
-
-                if (JuicePlayed.CanBePlayedBy(this, player))
-                {
-                    result.Add(typeof(JuicePlayed));
                 }
 
                 if (faction == Faction.Brown && !Prevented(FactionAdvantage.BrownDiscarding) && ConsiderAsEndOfPhase && BrownDiscarded.ValidCards(this, player).Any())

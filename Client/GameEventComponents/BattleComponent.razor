@@ -12,7 +12,7 @@
 
     <Body>
 
-        <div class="text-warning">@(h.IAm(Game.CurrentBattle.EffectiveAggressor) ? "You are aggressor." : Skin.Current.Format("Aggressor: {0}.", Game.CurrentBattle.EffectiveAggressor.Faction))</div>
+        <div class="text-warning">@(h.IAm(Game.CurrentBattle.Aggressor) ? "You are aggressor." : Skin.Current.Format("Aggressor: {0}.", Game.CurrentBattle.Aggressor))</div>
 
         @if (Game.CurrentVoice != null)
         {
@@ -28,7 +28,7 @@
 
         @if (Faction == Faction.Green || Player.Ally == Faction.Green)
         {
-            var opponentBattlePlan = Game.CurrentBattle.Initiator == Faction ? Game.DefenderBattleAction : Game.AggressorBattleAction;
+            var opponentBattlePlan = Game.CurrentBattle.Aggressor == Faction ? Game.DefenderBattleAction : Game.AggressorBattleAction;
             if (Game.GreenKarma)
             {
                 if (opponentBattlePlan != null)
@@ -268,14 +268,7 @@
         {
             if (Game.CurrentBattle != null)
             {
-                if (Game.CurrentBattle.Initiator == Faction)
-                {
-                    return Game.CurrentBattle.Target;
-                }
-                else
-                {
-                    return Game.CurrentBattle.Initiator;
-                }
+                return Game.CurrentBattle.OpponentOf(Faction).Faction;
             }
             else
             {

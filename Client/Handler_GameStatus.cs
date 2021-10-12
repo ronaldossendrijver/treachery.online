@@ -342,30 +342,30 @@ namespace Treachery.Client
                     if (Game.CurrentBattle == null)
                     {
                         return S(
-                        Skin.Current.Format("You are Aggressor! Please choose whom and where to battle."),
-                        Skin.Current.Format("{0} are Aggressors! They are deciding whom and where to battle...", Game.NextPlayerToBattle.Faction),
+                        Skin.Current.Format("Please choose whom and where to battle."),
+                        Skin.Current.Format("{0} are deciding whom and where to battle...", Game.NextPlayerToBattle.Faction),
                         Game.NextPlayerToBattle);
                     }
                     else
                     {
-                        if (IAm(Game.CurrentBattle.Initiator))
+                        if (IAm(Game.CurrentBattle.Aggressor))
                         {
                             return S(
-                            Skin.Current.Format("You are aggressor against {0} in {1}! Please confirm your Battle Plan.", Game.CurrentBattle.Target, Game.CurrentBattle.Territory),
-                            Skin.Current.Format("You are waiting for {0} to defend {1}...", Game.CurrentBattle.Target, Game.CurrentBattle.Territory),
+                            Skin.Current.Format("You are aggressor against {0} in {1}! Please confirm your Battle Plan.", Game.CurrentBattle.Defender, Game.CurrentBattle.Territory),
+                            Skin.Current.Format("You are waiting for {0} to defend {1}...", Game.CurrentBattle.Defender, Game.CurrentBattle.Territory),
                             FactionsThatNeedToMakeABattlePlan);
                         }
-                        else if (IAm(Game.CurrentBattle.Target))
+                        else if (IAm(Game.CurrentBattle.Defender))
                         {
                             return S(
-                            Skin.Current.Format("You must defend against {0} in {1}! Please confirm your Battle Plan.", Game.CurrentBattle.Initiator, Game.CurrentBattle.Territory),
-                            Skin.Current.Format("You are waiting for {0} to attack {1}...", Game.CurrentBattle.Initiator, Game.CurrentBattle.Territory),
+                            Skin.Current.Format("You must defend against {0} in {1}! Please confirm your Battle Plan.", Game.CurrentBattle.Aggressor, Game.CurrentBattle.Territory),
+                            Skin.Current.Format("You are waiting for {0} to attack {1}...", Game.CurrentBattle.Aggressor, Game.CurrentBattle.Territory),
                             FactionsThatNeedToMakeABattlePlan);
                         }
                         else
                         {
                             return S("",
-                            Skin.Current.Format("{0} are defending against {1} aggression in {2}...", Game.CurrentBattle.Target, Game.CurrentBattle.Initiator, Game.CurrentBattle.Territory),
+                            Skin.Current.Format("{0} are defending against {1} aggression in {2}...", Game.CurrentBattle.Defender, Game.CurrentBattle.Aggressor, Game.CurrentBattle.Territory),
                             FactionsThatNeedToMakeABattlePlan);
                         }
                     }
@@ -374,7 +374,7 @@ namespace Treachery.Client
                     return S(
                     Skin.Current.Format("Please decide how to use your {0}.", TreacheryCardType.Rockmelter),
                     Skin.Current.Format("Waiting for a decision on how the {0} will be used...", TreacheryCardType.Rockmelter),
-                    Game.CurrentBattle.AggressorAction.HasRockMelter ? Game.CurrentBattle.Player : Game.CurrentBattle.Defender);
+                    Game.CurrentBattle.AggressorAction.HasRockMelter ? Game.CurrentBattle.Player : Game.CurrentBattle.DefendingPlayer);
 
                 case Phase.CallTraitorOrPass:
                     return S(
@@ -437,8 +437,8 @@ namespace Treachery.Client
             get
             {
                 var result = new List<Faction>();
-                if (Game.AggressorBattleAction == null) result.Add(Game.CurrentBattle.Initiator);
-                if (Game.DefenderBattleAction == null) result.Add(Game.CurrentBattle.Target);
+                if (Game.AggressorBattleAction == null) result.Add(Game.CurrentBattle.Aggressor);
+                if (Game.DefenderBattleAction == null) result.Add(Game.CurrentBattle.Defender);
                 return result;
             }
         }
@@ -448,8 +448,8 @@ namespace Treachery.Client
             get
             {
                 var result = new List<Faction>();
-                if (Game.AggressorTraitorAction == null) result.Add(Game.CurrentBattle.Initiator);
-                if (Game.DefenderTraitorAction == null) result.Add(Game.CurrentBattle.Target);
+                if (Game.AggressorTraitorAction == null) result.Add(Game.CurrentBattle.Aggressor);
+                if (Game.DefenderTraitorAction == null) result.Add(Game.CurrentBattle.Defender);
                 return result;
             }
         }
@@ -505,7 +505,7 @@ namespace Treachery.Client
                    (Game.CurrentPhase == Phase.OrangeMove || Game.CurrentPhase == Phase.OrangeShip) && p.Faction == Faction.Orange ||
                    (Game.CurrentPhase == Phase.NonOrangeMove || Game.CurrentPhase == Phase.NonOrangeShip) && p == Game.ShipmentAndMoveSequence.CurrentPlayer ||
                    (Game.CurrentPhase == Phase.BlueAccompaniesOrange || Game.CurrentPhase == Phase.BlueAccompaniesNonOrange || Game.CurrentPhase == Phase.BlueIntrudedByOrangeMove || Game.CurrentPhase == Phase.BlueIntrudedByNonOrangeMove || Game.CurrentPhase == Phase.BlueIntrudedByOrangeShip || Game.CurrentPhase == Phase.BlueIntrudedByNonOrangeShip) && p.Faction == Faction.Blue ||
-                   (Game.CurrentMainPhase == MainPhase.Battle) && p == Game.CurrentBattle?.EffectiveAggressor;
+                   (Game.CurrentMainPhase == MainPhase.Battle) && p == Game.CurrentBattle?.AggressivePlayer;
         }
 
         private List<FlashInfo> DetermineFlash(Game g)

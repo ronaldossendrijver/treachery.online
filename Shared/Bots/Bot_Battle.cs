@@ -50,7 +50,7 @@ namespace Treachery.Shared
 
         protected virtual TreacheryCalled DetermineTreacheryCalled()
         {
-            if (Faction != Game.CurrentBattle.Initiator && Faction != Game.CurrentBattle.Target && !TreacheryCalled.MayCallTreachery(Game, this))
+            if (!Game.CurrentBattle.IsAggressorOrDefender(this) && !TreacheryCalled.MayCallTreachery(Game, this))
             {
                 return null;
             }

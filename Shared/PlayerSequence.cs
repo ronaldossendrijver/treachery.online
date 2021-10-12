@@ -10,7 +10,7 @@ namespace Treachery.Shared
 {
     public class PlayerSequence
     {
-        private List<Player> PlayersInOrder { get; set; }
+        private List<Player> Players { get; set; }
         private readonly List<Player> _played = new List<Player>();
         private readonly Game _game;
         private readonly bool _skipPlayersThatCantBidOnCards;
@@ -24,7 +24,7 @@ namespace Treachery.Shared
             _direction = direction;
             _round = 1;
             
-            PlayersInOrder = _game.Players.OrderBy(p => _direction * p.PositionAtTable).ToList();
+            Players = _game.Players.OrderBy(p => _direction * p.PositionAtTable).ToList();
             FirstPlayer = toStartWith;
 
             if (beginNextToThatPlayer && NumberOfPlayersThatMayGetTurn > 1)
@@ -61,7 +61,7 @@ namespace Treachery.Shared
             }
         }
 
-        private int NumberOfPlayersThatMayGetTurn => PlayersInOrder.Count(p => !_skipPlayersThatCantBidOnCards || p.HasRoomForCards);
+        private int NumberOfPlayersThatMayGetTurn => Players.Count(p => !_skipPlayersThatCantBidOnCards || p.HasRoomForCards);
 
         private bool MayGetTurn(Player p) => !_skipPlayersThatCantBidOnCards || p.HasRoomForCards;
 
@@ -84,7 +84,7 @@ namespace Treachery.Shared
             bool currentPlayerFound = false;
 
             Player firstFound = null;
-            foreach (Player p in PlayersInOrder)
+            foreach (Player p in Players)
             {
                 if (currentPlayerFound)
                 {
@@ -138,7 +138,7 @@ namespace Treachery.Shared
             if (_played.Count > 0)
             {
                 bool found = false;
-                foreach (var p in PlayersToGetTurn)
+                foreach (var p in PlayersInOrder)
                 {
                     if (found)
                     {
@@ -151,7 +151,7 @@ namespace Treachery.Shared
                 }
             }
 
-            return PlayersToGetTurn.FirstOrDefault();
+            return PlayersInOrder.FirstOrDefault();
         }
 
         public void NextPlayer()
@@ -195,7 +195,7 @@ namespace Treachery.Shared
             _round++;
         }
 
-        private List<Player> PlayersToGetTurn
+        public IEnumerable<Player> PlayersInOrder
         {
             get
             {
@@ -234,7 +234,7 @@ namespace Treachery.Shared
 
         public IEnumerable<SequenceElement> GetPlayersInSequence()
         {
-            return PlayersToGetTurn.Select(p => new SequenceElement() { Player = p, HasTurn = CurrentPlayer == p });
+            return PlayersInOrder.Select(p => new SequenceElement() { Player = p, HasTurn = CurrentPlayer == p });
         }
 
         public static Player DetermineFirstPlayer(Game g)
@@ -263,6 +263,27 @@ namespace Treachery.Shared
         private static int Mod(int x, int m)
         {
             return (x % m + m) % m;
+        }
+
+        public static bool IsAfter(Game g, Player a, Player b)
+        {
+            var firstPlayer = DetermineFirstPlayer(g);
+
+            for (int i = 0; i < g.MaximumNumberOfPlayers; i++)
+            {
+                int positionToCheck = (firstPlayer.PositionAtTable + i) % g.MaximumNumberOfPlayers;
+
+                if (positionToCheck == b.PositionAtTable)
+                {
+                    return true;
+                }
+                else if (positionToCheck == a.PositionAtTable)
+                {
+                    return false;
+                }
+            }
+
+            return false;
         }
     }
 

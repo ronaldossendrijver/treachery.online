@@ -631,8 +631,8 @@ namespace Treachery.Client
                 case MainPhase.Battle:
                     if (Game.CurrentBattle != null)
                     {
-                        result.Add(Game.CurrentBattle.Initiator);
-                        result.Add(Game.CurrentBattle.Target);
+                        result.Add(Game.CurrentBattle.Aggressor);
+                        result.Add(Game.CurrentBattle.Defender);
                     }
                     break;
             }

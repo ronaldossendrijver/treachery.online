@@ -88,7 +88,7 @@ namespace Treachery.Shared
                 case ClairvoyanceQuestion.CardTypeAsWeaponInBattle:
                 case ClairvoyanceQuestion.LeaderInBattle:
                 case ClairvoyanceQuestion.DialOfMoreThanXInBattle:
-                    return g.CurrentBattle != null && (g.CurrentBattle.Initiator == p.Faction || g.CurrentBattle.Target == p.Faction);
+                    return g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(p);
 
                 default: return true;
             }

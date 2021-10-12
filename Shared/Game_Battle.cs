@@ -84,9 +84,9 @@ namespace Treachery.Shared
             NrOfBattlesFought++;
             CurrentReport.Add(b.GetMessage());
 
-            if (!Battle.ValidBattleHeroes(this, b.Defender).Any())
+            if (!Battle.ValidBattleHeroes(this, b.DefendingPlayer).Any())
             {
-                CurrentReport.Add(b.Target, "{0} don't have leaders available for this battle.", b.Target);
+                CurrentReport.Add(b.Defender, "{0} don't have leaders available for this battle.", b.Defender);
             }
 
             if (!Battle.ValidBattleHeroes(this, b.Player).Any())
@@ -96,7 +96,7 @@ namespace Treachery.Shared
 
             HasBattleWheel.Clear();
             HasBattleWheel.Add(b.Initiator);
-            HasBattleWheel.Add(b.Target);
+            HasBattleWheel.Add(b.Defender);
         }
 
         public Voice CurrentVoice { get; private set; } = null;
@@ -128,11 +128,11 @@ namespace Treachery.Shared
 
         public void HandleEvent(Battle b)
         {
-            if (b.Initiator == CurrentBattle.Initiator)
+            if (b.Initiator == CurrentBattle.Aggressor)
             {
                 AggressorBattleAction = b;
             }
-            else if (b.Initiator == CurrentBattle.Target)
+            else if (b.Initiator == CurrentBattle.Defender)
             {
                 DefenderBattleAction = b;
             }
@@ -150,11 +150,11 @@ namespace Treachery.Shared
 
                 if (Version >= 69)
                 {
-                    if (CurrentBattle.Initiator == Faction.Purple && (GetPlayer(Faction.Purple).Ally != Faction.Black || Prevented(FactionAdvantage.BlackCallTraitorForAlly)))
+                    if (CurrentBattle.Aggressor == Faction.Purple && (GetPlayer(Faction.Purple).Ally != Faction.Black || Prevented(FactionAdvantage.BlackCallTraitorForAlly)))
                     {
                         AggressorTraitorAction = new TreacheryCalled(this) { Initiator = Faction.Purple, TraitorCalled = false };
                     }
-                    else if (CurrentBattle.Target == Faction.Purple && (GetPlayer(Faction.Purple).Ally != Faction.Black || Prevented(FactionAdvantage.BlackCallTraitorForAlly)))
+                    else if (CurrentBattle.Defender == Faction.Purple && (GetPlayer(Faction.Purple).Ally != Faction.Black || Prevented(FactionAdvantage.BlackCallTraitorForAlly)))
                     {
                         DefenderTraitorAction = new TreacheryCalled(this) { Initiator = Faction.Purple, TraitorCalled = false };
                     }
@@ -249,11 +249,11 @@ namespace Treachery.Shared
         {
             if (CurrentBattle != null)
             {
-                if (e.By(CurrentBattle.Initiator))
+                if (e.By(CurrentBattle.Aggressor))
                 {
                     AggressorBattleAction = null;
                 }
-                else if (e.By(CurrentBattle.Target))
+                else if (e.By(CurrentBattle.Defender))
                 {
                     DefenderBattleAction = null;
                 }
@@ -1152,7 +1152,7 @@ namespace Treachery.Shared
                 aggressorWinsTies = false;
             }
 
-            if (IsAggressorByJuice(result.Defender) && !HasStrongholdAdvantage(result.Aggressor.Faction, StrongholdAdvantage.WinTies, CurrentBattle.Territory))
+            if (BattleInitiated.IsAggressorByJuice(this, result.Defender.Faction) && !HasStrongholdAdvantage(result.Aggressor.Faction, StrongholdAdvantage.WinTies, CurrentBattle.Territory))
             {
                 aggressorWinsTies = false;
             }
@@ -1215,7 +1215,7 @@ namespace Treachery.Shared
                 CurrentReport.Add(def.Initiator, "{0} stronghold advantage protects {1} from death by {2}.", Map.Carthag, def.Hero, TreacheryCardType.Poison);
             }
 
-            if (IsAggressorByJuice(def.Player))
+            if (BattleInitiated.IsAggressorByJuice(this, def.Player.Faction))
             {
                 CurrentReport.Add(agg.Initiator, "{0} (defending) strength: {1}.", agg.Initiator, outcome.AggTotal);
                 CurrentReport.Add(def.Initiator, "{0} (aggressor due to {2}) strength: {1}.", def.Initiator, outcome.DefTotal, TreacheryCardType.Juice);
@@ -1232,11 +1232,6 @@ namespace Treachery.Shared
             ProcessLoserLosses(territory, outcome.Loser, outcome.LoserBattlePlan);
         }
 
-
-        public bool IsAggressorByJuice(Player p)
-        {
-            return CurrentJuice != null && CurrentJuice.Type == JuiceType.Aggressor && CurrentJuice.Player == p;
-        }
 
         private void DetermineCauseOfDeath(Battle playerPlan, Battle opponentPlan, IHero theHero, bool poisonToothUsed, bool artilleryUsed, bool rockMelterWasUsedToKill, Territory battleTerritory, ref bool heroDies, ref TreacheryCardType causeOfDeath, ref bool savedByCarthag)
         {

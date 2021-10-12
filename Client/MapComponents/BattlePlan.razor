@@ -14,7 +14,7 @@
 
     if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Dial)
     {
-        var dial = Plan.Dial(Game, IsAggressor ? Game.CurrentBattle.Target : Game.CurrentBattle.Initiator).ToString();
+        var dial = Plan.Dial(Game, IsAggressor ? Game.CurrentBattle.Defender : Game.CurrentBattle.Aggressor).ToString();
 
         <MapText ToShow="@dial"
                  X="@(forceX)" Y="@(forceY - 20)"
