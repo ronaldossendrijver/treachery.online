@@ -28,11 +28,11 @@
         int costsOfBattle = Plan.Cost(Game);
         if (costsOfBattle > 0)
         {
-            <Image X="@(forceX + 250 - Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY + 50 - Skin.Current.RESOURCETOKEN_RADIUS)" Diameter="@(Skin.Current.RESOURCETOKEN_RADIUS * 2)" 
-                   Src="@Skin.Current.Harvester_URL" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1" />
+            <Image X="@(forceX + 300 - Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY + 55 - Skin.Current.RESOURCETOKEN_RADIUS)" Diameter="@(Skin.Current.RESOURCETOKEN_RADIUS * 2)" 
+                   Src="@Skin.Current.Harvester_URL" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="2" />
 
             <MapText ToShow="@costsOfBattle.ToString()"
-                     X="@(forceX + 250)" Y="@(forceY + 100)"
+                     X="@(forceX + 300)" Y="@(forceY + 100)"
                      Font="@Skin.Current.RESOURCETOKEN_FONT" FontColor="@Skin.Current.RESOURCETOKEN_FONTCOLOR"
                      BorderWidth="Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
                      Align="@TextAlignment.Center" />
@@ -61,18 +61,18 @@
             {
                 var skill = heroSkill != LeaderSkill.None ? heroSkill : playerSkill;
 
-                var skillX = X + Skin.Current.BattleScreenHeroX - (int)(0.5f * (Skin.Current.BattleWheelCardWidth - Skin.Current.BattleWheelHeroWidth));
-                var skillY = Y + Skin.Current.BattleScreenHeroY - Skin.Current.BattleWheelCardHeight + 300;
+                var skillX = X + Skin.Current.BattleScreenHeroX + 0.6f * Skin.Current.BattleWheelHeroWidth;
+                var skillY = Y + Skin.Current.BattleScreenHeroY - 0.6f * Skin.Current.BattleWheelHeroHeight;
 
-                <Image X="@(skillX)" Y="@(skillY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageURL(skill)" 
-                       ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="1" 
+                <Image X="@(skillX)" Y="@(skillY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageURL(skill)" 
+                       ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="3" ShadowY="3" ShadowBlur="1" 
                        Popover="@Support.GetSkillCardHoverHTML(skill)"/>
 
                 int bonus = Battle.DetermineSkillBonus(Game, Plan, out _);
                 if (bonus != 0)
                 {
                     <MapText ToShow="@("+" + bonus)"
-                             X="@(skillX + Skin.Current.BattleWheelCardWidth - 10)" Y="@(skillY + 120)"
+                             X="@(skillX + 0.4f * Skin.Current.BattleWheelCardWidth)" Y="@(skillY + 100)"
                              Font="@Skin.Current.CARDPILE_FONT" FontColor="green"
                              BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
                              Align="@TextAlignment.Right" />
@@ -83,7 +83,7 @@
                     if (penalty != 0)
                     {
                         <MapText ToShow="@("-" + penalty)"
-                                 X="@(skillX + Skin.Current.BattleWheelCardWidth - 10)" Y="@(skillY + 120)"
+                                 X="@(skillX + 0.4f * Skin.Current.BattleWheelCardWidth)" Y="@(skillY + 100)"
                                  Font="@Skin.Current.CARDPILE_FONT" FontColor="red"
                                  BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
                                  Align="@TextAlignment.Right" />

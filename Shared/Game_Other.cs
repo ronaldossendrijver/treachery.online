@@ -540,6 +540,9 @@ namespace Treachery.Shared
         public void HandleEvent(JuicePlayed e)
         {
             CurrentReport.Add(e);
+
+            var aggressorBeforeJuiceIsPlayed = CurrentBattle?.AggressivePlayer; 
+
             CurrentJuice = e;
             Discard(e.Player, TreacheryCardType.Juice);
 
@@ -551,6 +554,15 @@ namespace Treachery.Shared
                     case MainPhase.ShipmentAndMove: ShipmentAndMoveSequence.CheckCurrentPlayer(); break;
                     case MainPhase.Battle: BattleSequence.CheckCurrentPlayer(); break;
                 }
+            }
+            else if (CurrentBattle != null && e.Type == JuiceType.Aggressor && CurrentBattle.AggressivePlayer != aggressorBeforeJuiceIsPlayed)
+            {
+                var currentAggressorBattleAction = AggressorBattleAction;
+                var currentAggressorTraitorAction = AggressorTraitorAction;
+                AggressorBattleAction = DefenderBattleAction;
+                AggressorTraitorAction = DefenderTraitorAction;
+                DefenderBattleAction = currentAggressorBattleAction;
+                DefenderTraitorAction = currentAggressorTraitorAction;
             }
         }
 

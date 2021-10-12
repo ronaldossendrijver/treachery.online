@@ -2,7 +2,6 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
-using System;
 using Newtonsoft.Json;
 
 namespace Treachery.Shared
