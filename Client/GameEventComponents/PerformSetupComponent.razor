@@ -7,7 +7,7 @@
 @inherits GameEventComponent<PerformSetup>
 @implements IDisposable
 
-<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
     <Header>
         Set <span class="badge badge-primary badge-pill" style="@Color(Game.NextFactionToPerformCustomSetup)">@Skin.Current.Describe(Game.NextFactionToPerformCustomSetup)</span> initial @Skin.Current.Describe(Concept.Resource) and forces.

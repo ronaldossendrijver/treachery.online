@@ -1,4 +1,7 @@
-﻿<div class="card @Width p-1 mb-2 @Border" style="@BackgroundStyle">
+﻿@using Treachery.Shared;
+@inherits Component;
+
+<div class="card @Width p-1 mb-2 @Border" style="@BackgroundStyle">
 
     <div class="card-header" style="@HeaderStyle">
 
@@ -23,7 +26,7 @@
 @code {
 
     [Parameter]
-    public string Border { get; set; }
+    public bool IsUrgent { get; set; }
 
     [Parameter]
     public string Width { get; set; } = "w-100";
@@ -68,4 +71,9 @@
 
     [Parameter]
     public EventCallback<bool> CollapsedChanged { get; set; }
+
+    [Parameter]
+    public GameEvent TimedEvent { get; set; } = null;
+
+    private string Border => IsUrgent ? "border-white" : "";
 }

@@ -536,111 +536,6 @@ namespace Treachery.Client
 
         #endregion HostMessageHandlers
 
-        #region Timers
-        public Stopwatch Timer = null;
-        public MainPhase TimerType;
-        public List<Faction> TimedFactions = null;
-
-        private readonly Dictionary<Faction, ThinkTimer> _timers = new();
-        public ThinkTimer ThinkTimer(Faction f)
-        {
-            if (!_timers.ContainsKey(f))
-            {
-                _timers.Add(f, new ThinkTimer());
-            }
-
-            return _timers[f];
-        }
-
-        private void CheckTimers()
-        {
-            bool isBidding = (Game.CurrentPhase == Phase.Bidding);
-            bool isShippingOrMoving = (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.CurrentPhase != Phase.ShipmentAndMoveConcluded);
-            bool isBattling = (Game.CurrentPhase == Phase.BattlePhase && Game.CurrentBattle != null);
-
-            var timedAction = isShippingOrMoving || isBidding || isBattling;
-            var waitingFor = WaitingForFactions();
-
-            //If the timer is running, check if it should be turned off if:
-            //- The faction(s) we are waiting for are not the factions for which the timer was meant
-            //- This phase has no timer
-            if (Timer != null && (!timedAction || Different(TimedFactions, waitingFor)))
-            {
-                foreach (var f in TimedFactions)
-                {
-                    ThinkTimer(f).AddTime(TimerType, Timer.Elapsed);
-                }
-
-                Timer.Stop();
-                Timer = null;
-            }
-
-            if (Timer == null && timedAction)
-            {
-                TimerType = Game.CurrentMainPhase;
-                Timer = new Stopwatch();
-                TimedFactions = waitingFor;
-                Timer.Start();
-            }
-        }
-
-        private static bool Different<T>(List<T> a, List<T> b)
-        {
-            if (a == null && b == null) return false;
-            if (a == null || b == null) return true;
-            return a.Count != b.Count || (a.Intersect(b).Count() != a.Count);
-        }
-
-        private List<Faction> WaitingForFactions()
-        {
-            var result = new List<Faction>();
-
-            switch (Game.CurrentMainPhase)
-            {
-                case MainPhase.Bidding:
-                    result.Add(Game.BidSequence.CurrentFaction);
-                    break;
-
-                case MainPhase.ShipmentAndMove:
-                    {
-                        switch (Game.CurrentPhase)
-                        {
-                            case Phase.NonOrangeShip:
-                            case Phase.NonOrangeMove:
-                                result.Add(Game.ShipmentAndMoveSequence.CurrentFaction);
-                                break;
-
-                            case Phase.OrangeShip:
-                            case Phase.OrangeMove:
-                                result.Add(Faction.Orange);
-                                break;
-
-                            case Phase.BlueAccompaniesNonOrange:
-                            case Phase.BlueAccompaniesOrange:
-                            case Phase.BlueIntrudedByNonOrangeShip:
-                            case Phase.BlueIntrudedByOrangeShip:
-                            case Phase.BlueIntrudedByNonOrangeMove:
-                            case Phase.BlueIntrudedByOrangeMove:
-                            case Phase.BlueIntrudedByCaravan:
-                                result.Add(Faction.Blue);
-                                break;
-                        }
-                    }
-                    break;
-
-                case MainPhase.Battle:
-                    if (Game.CurrentBattle != null)
-                    {
-                        result.Add(Game.CurrentBattle.Aggressor);
-                        result.Add(Game.CurrentBattle.Defender);
-                    }
-                    break;
-            }
-
-            return result;
-        }
-        #endregion Timers
-
         #region Sounds
 
         bool itAlreadyWasMyTurn = false;
@@ -701,8 +596,6 @@ namespace Treachery.Client
 
                 await TurnAlert();
                 await PlaySoundsForMilestones();
-
-                CheckTimers();
 
                 if (e == null || !(Game.CurrentPhase == Phase.Bidding || Game.CurrentPhase == Phase.BlackMarketBidding))
                 {

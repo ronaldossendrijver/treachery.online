@@ -7,7 +7,7 @@
 @inherits GameEventComponent<BrownRemoveForce>
 @implements IDisposable
 
-<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
     <Header>Use @Skin.Current.Describe(BrownRemoveForce.CardToUse(Player)) to force a player to send 1 force to their reserves?</Header>
 

@@ -10,6 +10,11 @@
 
     <div class="card-body text-center bg-transparent border-bottom-0">
 
+        @if (h.Status.TimedEvent != null)
+        {
+            <div style="position:absolute;left:5px;top:0px;color:@TimerColor(h.Status.WaitingForMe(Player, h.IsHost));font-weight:bolder;">@TimerText(h.Status.TimedEvent)</div>
+        }
+
         <div class="row justify-content-center align-items-center">
 
             @{
@@ -87,6 +92,11 @@
     [Parameter]
     public bool CanEndPhase { get; set; }
 
+    protected override void OnInitialized()
+    {
+        StartRedrawCycle(1000);
+    }
+
     protected override EndPhase ConfirmedResult => new EndPhase(Game) { Initiator = Faction };
 
     private IEnumerable<SequenceElement> ToBid
@@ -120,4 +130,21 @@
     }
 
     private string PlayerWithCardsTitle(Player player) => string.Format("{0} has {1} cards", player.Name, player.TreacheryCards.Count);
+
+    protected string TimerText(GameEvent timedEvent)
+    {
+        if (timedEvent == null) return "";
+
+        var elapsed = DateTime.Now.Subtract(timedEvent.Time);
+        if (elapsed.TotalSeconds >= 1)
+        {
+            return elapsed.ToString("mm':'ss");
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    protected string TimerColor(bool hasTurn) => hasTurn ? "red" : "black";
 }

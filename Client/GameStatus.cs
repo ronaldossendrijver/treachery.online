@@ -11,44 +11,43 @@ namespace Treachery.Client
 {
     public class GameStatus
     {
-        public string DescriptionWhenAwaited { get; set; }
+        public string DescriptionWhenAwaited { get; private set; }
 
-        public string DescriptionWhenWaiting { get; set; }
+        public string DescriptionWhenWaiting { get; private set; }
 
-        public IEnumerable<SequenceElement> WaitingInSequence { get; set; } = Array.Empty<SequenceElement>();
+        public IEnumerable<SequenceElement> WaitingInSequence { get; private set; } = Array.Empty<SequenceElement>();
 
-        public IEnumerable<Player> WaitingForPlayers { get; set; } = Array.Empty<Player>();
+        public IEnumerable<Player> WaitingForPlayers { get; private set; } = Array.Empty<Player>();
 
-        public List<FlashInfo> FlashInfo = new List<FlashInfo>();
+        public List<FlashInfo> FlashInfo { get; set; } = new List<FlashInfo>();
 
-        public bool WaitingForHost { get; set; } = false;
+        public GameEvent TimedEvent { get; private set; } = null;
 
-        public int Timeout { get; set; } = 0;
+        public bool WaitingForHost { get; private set; } = false;
 
-        public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting, Player waitingForPlayer) :
-            this(descriptionWhenAwaited, descriptionWhenWaiting, new Player[] { waitingForPlayer })
+        public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting, Player waitingForPlayer, GameEvent timedEvent = null) :
+            this(descriptionWhenAwaited, descriptionWhenWaiting, new Player[] { waitingForPlayer }, timedEvent)
         {
         }
 
-        public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Player> waitingForPlayers)
+        public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Player> waitingForPlayers, GameEvent timedEvent = null)
         {
             DescriptionWhenAwaited = descriptionWhenAwaited;
             DescriptionWhenWaiting = descriptionWhenWaiting;
             WaitingForPlayers = waitingForPlayers;
+            TimedEvent = timedEvent;
         }
 
-        public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting)
+        public GameStatus(string descriptionWhenAwaited, string descriptionWhenWaiting, GameEvent timedEvent = null)
         {
             DescriptionWhenAwaited = descriptionWhenAwaited;
             DescriptionWhenWaiting = descriptionWhenWaiting;
             WaitingForHost = true;
+            TimedEvent = timedEvent;
         }
 
-        public GameStatus(string description)
+        public GameStatus(string description, GameEvent timedEvent = null) : this(description, description, timedEvent)
         {
-            DescriptionWhenAwaited = description;
-            DescriptionWhenWaiting = description;
-            WaitingForHost = true;
         }
 
         public bool WaitingForMe(Player player, bool isHost) => WaitingForHost && isHost ||

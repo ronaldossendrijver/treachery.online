@@ -7,7 +7,7 @@
 @inherits GameEventComponent<BlueBattleAnnouncement>
 @implements IDisposable
 
-<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
     <Header>Choose a territory in which you have advisors and wish to battle, flipping them to fighters.</Header>
     <Body>

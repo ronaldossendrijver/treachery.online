@@ -30,4 +30,32 @@
     {
         return string.Format("background-color:{0}", Skin.Current.GetFactionColorTransparant(f));
     }
+
+    private bool _redrawCycleStarted = false;
+    protected void StartRedrawCycle(int interval)
+    {
+        if (!_redrawCycleStarted && interval > 0)
+        {
+            _redrawCycleStarted = true;
+            //Redraw();
+            _ = Task.Delay(interval).ContinueWith(e => ContinueRedrawCycle(interval, false));
+        }
+    }
+
+    private void ContinueRedrawCycle(int interval, bool firstCall = true)
+    {
+        Console.WriteLine("Redrawing...");
+        Redraw();
+        _ = Task.Delay(interval).ContinueWith(e => ContinueRedrawCycle(interval, false));
+    }
+
+    protected virtual void Redraw()
+    {
+        StateHasChanged();
+    }
+
+    protected IEnumerable<string> GetLabels<T>(IEnumerable<T> items, string labelIfNull = "")
+    {
+        return items.Select(i => i != null ? i.ToString() : labelIfNull);
+    }
 }

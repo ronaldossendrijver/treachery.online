@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits PlacementComponent<YellowRidesMonster>
 
-<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
     <Header>Select where to travel with @Skin.Current.Describe(Concept.Monster)</Header>
     <Body>

@@ -258,14 +258,14 @@ namespace Treachery.Client
                         return S(
                         Skin.Current.Format("Please bid or pass."),
                         Skin.Current.Format("{0} are thinking about their bid...", Game.BidSequence.CurrentFaction),
-                        Game.BidSequence.CurrentPlayer);
+                        Game.BidSequence.CurrentPlayer, Game.LatestEvent());
                     }
                     else
                     {
                         return S(
                         Skin.Current.Format("Please bid."),
                         Skin.Current.Format("Factions are thinking about their bids..."),
-                        Game.Players.Where(p => p.HasRoomForCards && !Game.Bids.Keys.Contains(p.Faction)));
+                        Game.Players.Where(p => p.HasRoomForCards && !Game.Bids.Keys.Contains(p.Faction)), Game.LatestEvent());
                     }
 
                 case Phase.ReplacingCardJustWon:
@@ -292,13 +292,13 @@ namespace Treachery.Client
                     return S(
                     Skin.Current.Format("Please decide to {0} forces or pass.", Game.ShipmentAndMoveSequence.CurrentFaction == Faction.Yellow ? "rally" : "ship"),
                     Skin.Current.Format("{0} are thinking about {1} forces...", Game.ShipmentAndMoveSequence.CurrentFaction, Game.ShipmentAndMoveSequence.CurrentFaction == Faction.Yellow ? "rallying" : "shipping"),
-                    Game.ShipmentAndMoveSequence.CurrentPlayer);
+                    Game.ShipmentAndMoveSequence.CurrentPlayer, Game.LatestEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move)));
 
                 case Phase.OrangeShip:
                     return S(
                     Skin.Current.Format(Game.OrangeMayDelay ? Skin.Current.Format("Please decide to ship now or delay your turn and let other factions go first.") : Skin.Current.Format("Please decide to ship forces or pass.")),
                     Skin.Current.Format(Game.OrangeMayDelay ? Skin.Current.Format("{0} are deciding about taking their turn now...", Faction.Orange) : Skin.Current.Format("{0} are thinking about shipping forces...", Faction.Orange)),
-                    Faction.Orange);
+                    Faction.Orange, Game.LatestEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move)));
 
                 case Phase.BlueAccompaniesNonOrange:
                 case Phase.BlueAccompaniesOrange:
@@ -321,13 +321,13 @@ namespace Treachery.Client
                     return S(
                     Skin.Current.Format("Please decide to move forces or pass."),
                     Skin.Current.Format("{0} are thinking about about moving forces.", Game.ShipmentAndMoveSequence.CurrentFaction),
-                    Game.ShipmentAndMoveSequence.CurrentPlayer);
+                    Game.ShipmentAndMoveSequence.CurrentPlayer, Game.LatestEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move)));
 
                 case Phase.OrangeMove:
                     return S(
                     Skin.Current.Format("Please decide to move forces or pass."),
                     Skin.Current.Format("{0} are thinking about about moving forces.", Faction.Orange),
-                    Faction.Orange);
+                    Faction.Orange, Game.LatestEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move)));
 
                 case Phase.ShipmentAndMoveConcluded: return S(Skin.Current.Format("Waiting for factions to be ready to enter the Battle phase..."));
 
@@ -348,25 +348,26 @@ namespace Treachery.Client
                     }
                     else
                     {
+                        var latestBattleEvent = Game.LatestEvent(typeof(BattleInitiated));
                         if (IAm(Game.CurrentBattle.Aggressor))
                         {
                             return S(
                             Skin.Current.Format("You are aggressor against {0} in {1}! Please confirm your Battle Plan.", Game.CurrentBattle.Defender, Game.CurrentBattle.Territory),
                             Skin.Current.Format("You are waiting for {0} to defend {1}...", Game.CurrentBattle.Defender, Game.CurrentBattle.Territory),
-                            FactionsThatNeedToMakeABattlePlan);
+                            FactionsThatNeedToMakeABattlePlan, latestBattleEvent);
                         }
                         else if (IAm(Game.CurrentBattle.Defender))
                         {
                             return S(
                             Skin.Current.Format("You must defend against {0} in {1}! Please confirm your Battle Plan.", Game.CurrentBattle.Aggressor, Game.CurrentBattle.Territory),
                             Skin.Current.Format("You are waiting for {0} to attack {1}...", Game.CurrentBattle.Aggressor, Game.CurrentBattle.Territory),
-                            FactionsThatNeedToMakeABattlePlan);
+                            FactionsThatNeedToMakeABattlePlan, latestBattleEvent);
                         }
                         else
                         {
                             return S("",
                             Skin.Current.Format("{0} are defending against {1} aggression in {2}...", Game.CurrentBattle.Defender, Game.CurrentBattle.Aggressor, Game.CurrentBattle.Territory),
-                            FactionsThatNeedToMakeABattlePlan);
+                            FactionsThatNeedToMakeABattlePlan, latestBattleEvent);
                         }
                     }
 
@@ -616,23 +617,23 @@ namespace Treachery.Client
             return result;
         }
 
-        private GameStatus S(string description) => 
-            new GameStatus(description);
+        private GameStatus S(string description, GameEvent timedEvent = null) => 
+            new GameStatus(description, timedEvent);
 
-        private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting) => 
-            new GameStatus(descriptionWhenAwaited, descriptionWhenWaiting);
+        private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, GameEvent timedEvent = null) => 
+            new GameStatus(descriptionWhenAwaited, descriptionWhenWaiting, timedEvent);
 
-        private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Player> waitingForPlayers) => 
-            new GameStatus(descriptionWhenAwaited, descriptionWhenWaiting, waitingForPlayers);
+        private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Player> waitingForPlayers, GameEvent timedEvent = null) => 
+            new GameStatus(descriptionWhenAwaited, descriptionWhenWaiting, waitingForPlayers, timedEvent);
 
-        private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Faction> waitingForFactions) => 
-            new GameStatus(descriptionWhenAwaited, descriptionWhenWaiting, waitingForFactions.Select(f => Game.GetPlayer(f)));
+        private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Faction> waitingForFactions, GameEvent timedEvent = null) => 
+            new GameStatus(descriptionWhenAwaited, descriptionWhenWaiting, waitingForFactions.Select(f => Game.GetPlayer(f)), timedEvent);
 
-        private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, Player waitingForPlayer) =>
-            new GameStatus(descriptionWhenAwaited, descriptionWhenWaiting, waitingForPlayer);
+        private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, Player waitingForPlayer, GameEvent timedEvent = null) =>
+            new GameStatus(descriptionWhenAwaited, descriptionWhenWaiting, waitingForPlayer, timedEvent);
 
-        private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, Faction waitingForFaction) =>
-            new GameStatus(descriptionWhenAwaited, descriptionWhenWaiting, Game.GetPlayer(waitingForFaction));
+        private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, Faction waitingForFaction, GameEvent timedEvent = null) =>
+            new GameStatus(descriptionWhenAwaited, descriptionWhenWaiting, Game.GetPlayer(waitingForFaction), timedEvent);
 
 
         private FlashInfo EventInfo(GameEvent e)

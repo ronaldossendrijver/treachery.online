@@ -27,8 +27,6 @@
 
     protected virtual string Background { get; set; } = "";
 
-    protected string Border => IsUrgent ? "border-white" : "";
-
     protected string validationError = "";
 
     protected async Task Confirm()

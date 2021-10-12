@@ -128,11 +128,6 @@
         <ChatComponent h="@h" />
     }
 
-    @if (h.Timer != null)
-    {
-        <TimerComponent h="@h" />
-    }
-
     @if (h.CurrentPhase == Phase.GameEnded || h.CurrentPhase == Phase.BattleConclusion)
     {
         <WinnerFlashComponent h="@h" />

@@ -6,9 +6,11 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<Battle>
 
-<GameEventComponentLayout Border="@Border" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed" TimedEvent=Game.LatestEvent(typeof(BattleInitiated))>
 
-    <Header>Plan your battle against @Skin.Current.Describe(Opponent) in @Game.CurrentBattle.Territory.Name.</Header>
+    <Header>
+        Plan your battle against @Skin.Current.Describe(Opponent) in @Game.CurrentBattle.Territory.Name.
+    </Header>
 
     <Body>
 
@@ -197,7 +199,6 @@
     {
         RedrawIfNeeded(firstRender);
     }
-
 
     private int lastforces;
     private int lastspecialForces;

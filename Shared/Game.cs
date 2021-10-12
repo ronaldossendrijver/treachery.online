@@ -110,6 +110,23 @@ namespace Treachery.Shared
             return result;
         }
 
+        public GameEvent LatestEvent(Type eventType) => History.LastOrDefault(e => e.GetType() == eventType);
+
+        public GameEvent LatestEvent(params Type[] eventType)
+        {
+            for (int i = History.Count - 1; i >= 0; i--)
+            {
+                if (eventType.Any(t => t == History[i].GetType())) {
+
+                    return History[i];
+                }
+            }
+
+            return null;
+        }
+
+        public GameEvent LatestEvent() => History.Count > 0 ? History[^1] : null;
+
         public static string TryLoad(GameState state, bool performValidation, bool isHost, ref Game result)
         {
             try
