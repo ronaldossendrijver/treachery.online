@@ -166,7 +166,7 @@ namespace Treachery.Shared
         public int PLAYERNAME_FONT_BORDERWIDTH = 3;
 
         //Skill names
-        public string SKILL_FONT = "normal normal normal 60px Advokat, Calibri, Tahoma, sans-serif";
+        public string SKILL_FONT = "normal normal normal 50px Advokat, Calibri, Tahoma, sans-serif";
         public string SKILL_FONTCOLOR = "white";
         public string SKILL_FONT_BORDERCOLOR = "black";
         public int SKILL_FONT_BORDERWIDTH = 1;
@@ -2082,10 +2082,9 @@ namespace Treachery.Shared
                 [Faction.Purple] = "#602d8bbb",
 
                 [Faction.Brown] = "#582d1bbb",
-                [Faction.White] = "#fffdd0bb",
+                [Faction.White] = "#b3afa4bb",
                 [Faction.Pink] = "#ac65a9bb",
                 [Faction.Cyan] = "#28a4bcbb",
-
             },
 
             FactionColor = new Dictionary<Faction, string>()
@@ -2101,7 +2100,7 @@ namespace Treachery.Shared
                 [Faction.Purple] = "#602d8b",
 
                 [Faction.Brown] = "#582d1b",
-                [Faction.White] = "#fffdd0",
+                [Faction.White] = "#b3afa4",
                 [Faction.Pink] = "#ac65a9",
                 [Faction.Cyan] = "#28a4bc",
             },
@@ -2329,7 +2328,7 @@ namespace Treachery.Shared
             PLAYERNAME_FONT_BORDERCOLOR = "black",
             PLAYERNAME_FONT_BORDERWIDTH = 2,
 
-            SKILL_FONT = "normal normal normal 60px Advokat, Calibri, Tahoma, sans-serif",
+            SKILL_FONT = "normal normal normal 50px Advokat, Calibri, Tahoma, sans-serif",
             SKILL_FONTCOLOR = "white",
             SKILL_FONT_BORDERCOLOR = "black",
             SKILL_FONT_BORDERWIDTH = 1,
