@@ -138,7 +138,14 @@
         var elapsed = DateTime.Now.Subtract(timedEvent.Time);
         if (elapsed.TotalSeconds >= 1)
         {
-            return elapsed.ToString("mm':'ss");
+            if (elapsed.TotalHours >= 1)
+            {
+                return elapsed.ToString(@"hh\:mm\:ss");
+            }
+            else
+            {
+                return elapsed.ToString(@"m\:ss");
+            }
         }
         else
         {

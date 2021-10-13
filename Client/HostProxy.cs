@@ -22,7 +22,6 @@ namespace Treachery.Client
 
         public async Task Request(GameEvent e)
         {
-            //Console.WriteLine("HostProxy: " + e.GetMessage());
             try
             {
                 await _connection.SendAsync("Request" + e.GetType().Name, HostID, e);

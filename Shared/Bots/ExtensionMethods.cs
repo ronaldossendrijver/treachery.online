@@ -60,7 +60,7 @@ namespace Treachery.Shared
             }
             catch (Exception)
             {
-                Console.WriteLine("items: {0}, toTake: {1}", source.Count(), toTake);
+                
             }
 
             return default;

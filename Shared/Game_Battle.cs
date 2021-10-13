@@ -55,15 +55,11 @@ namespace Treachery.Shared
         {
             get
             {
-                //BattleSequence = new PlayerSequence(this);
-
                 for (int i = 0; i < Players.Count; i++)
                 {
-                    //Console.WriteLine("Checking " + BattleSequence.CurrentPlayer);
                     var playerToCheck = BattleSequence.CurrentPlayer;
                     if (Battle.MustFight(this, playerToCheck))
                     {
-                        //Console.WriteLine(playerToCheck + " must fight!");
                         return playerToCheck;
                     }
 

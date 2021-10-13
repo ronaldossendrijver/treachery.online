@@ -73,13 +73,12 @@ namespace Treachery.Shared
 
         public static bool IsInitiatorByJuice(Game g, Player initiator, Player target)
         {
-            //Console.WriteLine("PlayerSequence.IsAfter(g, {0}, {1}): {2}", initiator, target, PlayerSequence.IsAfter(g, initiator, target));
-            return (g.CurrentJuice != null && g.CurrentJuice.Type == JuiceType.GoFirst && g.CurrentJuice.Player == initiator && PlayerSequence.IsAfter(g, initiator, target));
+            return g.CurrentJuice != null && g.CurrentJuice.Type == JuiceType.GoFirst && g.CurrentJuice.Player == initiator && PlayerSequence.IsAfter(g, initiator, target);
         }
 
         public static bool IsTargetByJuice(Game g, Player initiator, Player target)
         {
-            return (g.CurrentJuice != null && g.CurrentJuice.Type == JuiceType.GoLast && g.CurrentJuice.Player == initiator && PlayerSequence.IsAfter(g, initiator, target));
+            return g.CurrentJuice != null && g.CurrentJuice.Type == JuiceType.GoLast && g.CurrentJuice.Player == initiator && PlayerSequence.IsAfter(g, initiator, target);
         }
 
         [JsonIgnore]

@@ -37,14 +37,12 @@
         if (!_redrawCycleStarted && interval > 0)
         {
             _redrawCycleStarted = true;
-            //Redraw();
             _ = Task.Delay(interval).ContinueWith(e => ContinueRedrawCycle(interval, false));
         }
     }
 
     private void ContinueRedrawCycle(int interval, bool firstCall = true)
     {
-        Console.WriteLine("Redrawing...");
         Redraw();
         _ = Task.Delay(interval).ContinueWith(e => ContinueRedrawCycle(interval, false));
     }

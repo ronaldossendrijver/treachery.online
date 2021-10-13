@@ -315,8 +315,6 @@ namespace Treachery.Client
         public Dictionary<int, GameEvent> _pending = new();
         private async Task HandleEvent(int newEventNumber, GameEvent e)
         {
-            //Console.WriteLine("HandleEvent(" + newEventNumber + "," + e + ")");
-
             try
             {
                 e.Game = Game;
@@ -809,8 +807,6 @@ namespace Treachery.Client
 
         public void LocationClick(LocationEventArgs e)
         {
-            //Console.WriteLine("Location " + e.Location.Id + ": " + e.Location + ", territory " + e.Location.Territory.Id + ": " + e.Location.Territory);
-
             if (e.ShiftKey)
             {
                 if (e.CtrlKey || e.AltKey)
