@@ -9,22 +9,34 @@
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed" TimedEvent=Game.LatestEvent(typeof(BattleInitiated))>
 
     <Header>
-        Plan your battle against @Skin.Current.Describe(Opponent) in @Game.CurrentBattle.Territory.Name.
+        Fighting <img class="img-fluid" src="@Skin.Current.GetImageURL(Opponent.Faction)" width=30 height=30/> in @Game.CurrentBattle.Territory.Name.
     </Header>
 
     <Body>
 
-        <div class="text-warning">@(h.IAm(Game.CurrentBattle.Aggressor) ? "You are aggressor." : Skin.Current.Format("Aggressor: {0}.", Game.CurrentBattle.Aggressor))</div>
+        <div class="mt-1">
+            Opponent forces: 
+            @if (Opponent.ForcesIn(Game.CurrentBattle.Territory) > 0)
+            {
+                <img class="img-fluid ml-1" src="@Skin.Current.GetFactionForceImageURL(Opponent.Faction)" width=30 height=30/><span>&nbsp;<strong>@Opponent.ForcesIn(Game.CurrentBattle.Territory)</strong></span>
+            }
+            @if (Opponent.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
+            {
+                <img class="img-fluid ml-1" src="@Skin.Current.GetFactionSpecialForceImageURL(Opponent.Faction)" width=30 height=30/><span>&nbsp;<strong>@Opponent.SpecialForcesIn(Game.CurrentBattle.Territory)</strong></span>
+            }
+        </div>
+
+        <div class="text-warning mt-1">@(h.IAm(Game.CurrentBattle.Aggressor) ? "You are aggressor." : Skin.Current.Format("Aggressor: {0}.", Game.CurrentBattle.Aggressor))</div>
 
         @if (Game.CurrentVoice != null)
         {
             @if (Faction == Faction.Blue || Player.Ally == Faction.Blue)
             {
-                <div class="text-success">Your opponent @(Game.CurrentVoice.Must? "must use" : "may not use") @Skin.Current.Describe(Game.CurrentVoice.Type).</div>
+                <div class="text-success mt-1">Your opponent @(Game.CurrentVoice.Must? "must use" : "may not use") @Skin.Current.Describe(Game.CurrentVoice.Type).</div>
             }
             else
             {
-                <div class="text-warning">You @(Game.CurrentVoice.Must? "must use" : "may not use") @Skin.Current.Describe(Game.CurrentVoice.Type).</div>
+                <div class="text-warning mt-1">You @(Game.CurrentVoice.Must? "must use" : "may not use") @Skin.Current.Describe(Game.CurrentVoice.Type).</div>
             }
         }
 
@@ -35,26 +47,25 @@
             {
                 if (opponentBattlePlan != null)
                 {
-                    <div class="text-success">Enemy @PrescienceAspect.Dial: @GetTextForAspect(PrescienceAspect.Dial, opponentBattlePlan).</div>
-                    <div class="text-success" data-animation="true" data-content="@GetPopupForAspect(PrescienceAspect.Weapon, opponentBattlePlan)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">Enemy @PrescienceAspect.Weapon: @GetTextForAspect(PrescienceAspect.Weapon, opponentBattlePlan).</div>
-                    <div class="text-success" data-animation="true" data-content="@GetPopupForAspect(PrescienceAspect.Defense, opponentBattlePlan)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">Enemy @PrescienceAspect.Defense: @GetTextForAspect(PrescienceAspect.Defense, opponentBattlePlan).</div>
-                    <div class="text-success" data-animation="true" data-content="@GetPopupForAspect(PrescienceAspect.Leader, opponentBattlePlan)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">Enemy @PrescienceAspect.Leader: @GetTextForAspect(PrescienceAspect.Leader, opponentBattlePlan).</div>
+                    <div class="text-success mt-1">Enemy @PrescienceAspect.Dial: @GetTextForAspect(PrescienceAspect.Dial, opponentBattlePlan).</div>
+                    <div class="text-success mt-0" data-animation="true" data-content="@GetPopupForAspect(PrescienceAspect.Weapon, opponentBattlePlan)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">Enemy @PrescienceAspect.Weapon: @GetTextForAspect(PrescienceAspect.Weapon, opponentBattlePlan).</div>
+                    <div class="text-success mt-0" data-animation="true" data-content="@GetPopupForAspect(PrescienceAspect.Defense, opponentBattlePlan)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">Enemy @PrescienceAspect.Defense: @GetTextForAspect(PrescienceAspect.Defense, opponentBattlePlan).</div>
+                    <div class="text-success mt-0" data-animation="true" data-content="@GetPopupForAspect(PrescienceAspect.Leader, opponentBattlePlan)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">Enemy @PrescienceAspect.Leader: @GetTextForAspect(PrescienceAspect.Leader, opponentBattlePlan).</div>
                 }
                 else
                 {
-                    <div class="text-success">Enemy battle plan will be visible as soon as they confirm it.</div>
+                    <div class="text-success mt-1">Opponent battle plan will be visible as soon as they confirm it.</div>
                 }
             }
             else if (Game.CurrentPrescience != null)
             {
                 if (opponentBattlePlan != null)
                 {
-
-                    <div class="text-success" data-animation="true" data-content="@GetPopupForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">Enemy @Game.CurrentPrescience.Aspect: @GetTextForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan).</div>
+                    <div class="text-success mt-1" data-animation="true" data-content="@GetPopupForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">Enemy @Game.CurrentPrescience.Aspect: @GetTextForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan).</div>
                 }
                 else
                 {
-                    <div class="text-success">Enemy @Game.CurrentPrescience.Aspect will be visible as soon as they confirm their battle plan.</div>
+                    <div class="text-success mt-1">Opponent @Game.CurrentPrescience.Aspect will be visible as soon as they confirm their battle plan.</div>
                 }
             }
         }
@@ -263,20 +274,7 @@
         }
     }
 
-    private Faction Opponent
-    {
-        get
-        {
-            if (Game.CurrentBattle != null)
-            {
-                return Game.CurrentBattle.OpponentOf(Faction).Faction;
-            }
-            else
-            {
-                return Faction.None;
-            }
-        }
-    }
+    private Player Opponent => Game.CurrentBattle.OpponentOf(Faction);
 
     private string GetTextForAspect(PrescienceAspect aspect, Battle plan)
     {
