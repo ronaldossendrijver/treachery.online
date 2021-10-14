@@ -18,7 +18,7 @@ namespace Treachery.Shared
         public Dictionary<Faction, IBid> Bids { get; private set; } = new Dictionary<Faction, IBid>();
         private bool GreySwappedCardOnBid { get; set; }
         public TreacheryCard CardSoldOnBlackMarket { get; set; }
-        private bool DrawingCardsForRegularBiddingHasHappened { get; set; }
+        private bool RegularBiddingIsDone { get; set; }
         private bool BiddingRoundWasStarted { get; set; }
         private bool WhiteAuctionShouldStillHappen { get; set; }
         private int NumberOfCardsOnAuction { get; set; }
@@ -34,7 +34,7 @@ namespace Treachery.Shared
             GreySwappedCardOnBid = false;
             CardSoldOnBlackMarket = null;
             BlackMarketAuctionType = AuctionType.None;
-            DrawingCardsForRegularBiddingHasHappened = false;
+            RegularBiddingIsDone = false;
             BiddingRoundWasStarted = false;
             WhiteAuctionShouldStillHappen = false;
             CurrentAuctionType = AuctionType.None;
@@ -103,7 +103,8 @@ namespace Treachery.Shared
                         }
                         else if (CurrentBid == null && Bids.Count >= PlayersThatCanBid.Count())
                         {
-                            CurrentReport.Add("Card not sold as no faction bid on it.");
+                            GetPlayer(Faction.White).TreacheryCards.Add(CardsOnAuction.Draw());
+                            CurrentReport.Add("{0} keep their card as no faction bid on it.", Faction.White);
                             EnterWhiteBidding();
                         }
                     }
@@ -135,7 +136,8 @@ namespace Treachery.Shared
                         }
                         else
                         {
-                            CurrentReport.Add("Card not sold as no faction bid on it.");
+                            GetPlayer(Faction.White).TreacheryCards.Add(CardsOnAuction.Draw());
+                            CurrentReport.Add("{0} keep their card as no faction bid on it.", Faction.White);
                             EnterWhiteBidding();
                         }
                     }
@@ -210,21 +212,30 @@ namespace Treachery.Shared
             }
             else
             {
-                Enter(IsPlaying(Faction.White) && WhiteCache.Count > 0, Phase.WhiteAnnouncingAuction, DrawCardsForRegularBidding);
+                Enter(IsPlaying(Faction.White) && WhiteCache.Count > 0, Phase.WhiteAnnouncingAuction, StartRegularBidding);
             }
         }
 
         public void HandleEvent(WhiteAnnouncesAuction e)
         {
             CurrentReport.Add(e);
-            if (!e.First && NumberOfCardsOnAuction > 1) WhiteAuctionShouldStillHappen = true;
-            if (NumberOfCardsOnAuction == 1) DrawingCardsForRegularBiddingHasHappened = true;
-            Enter(e.First || NumberOfCardsOnAuction == 1, Phase.WhiteSpecifyingAuction, DrawCardsForRegularBidding);
+
+            if (!e.First && NumberOfCardsOnAuction > 1)
+            {
+                WhiteAuctionShouldStillHappen = true;
+            }
+
+            if (NumberOfCardsOnAuction == 1)
+            {
+                RegularBiddingIsDone = true;
+            }
+
+            Enter(e.First || NumberOfCardsOnAuction == 1, Phase.WhiteSpecifyingAuction, StartRegularBidding);
         }
 
-        private void DrawCardsForRegularBidding()
+        private void StartRegularBidding()
         {
-            DrawingCardsForRegularBiddingHasHappened = true;
+            RegularBiddingIsDone = true;
             int numberOfCardsToDraw = NumberOfCardsOnAuction;
 
             if (IsPlaying(Faction.White))
@@ -920,7 +931,7 @@ namespace Treachery.Shared
             {
                 //there are no more cards on auction
 
-                if (DrawingCardsForRegularBiddingHasHappened)
+                if (RegularBiddingIsDone)
                 {
                     if (WhiteAuctionShouldStillHappen)
                     {
@@ -933,7 +944,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    DrawCardsForRegularBidding();
+                    StartRegularBidding();
                 }
             }
         }
@@ -975,7 +986,7 @@ namespace Treachery.Shared
             for (int i = 0; i < KarmaHandSwapNumberOfCards; i++)
             {
                 var card = cardsToDrawFrom.Draw();
-                RegisterKnown(victim, card);
+                RegisterKnown(initiator, card);
                 victim.TreacheryCards.Remove(card);
                 initiator.TreacheryCards.Add(card);
             }

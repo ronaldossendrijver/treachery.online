@@ -633,20 +633,6 @@ namespace Treachery.Client
             {
                 awaitingBotAction = true;
                 int botDelay = DetermineBotDelay(Game.CurrentMainPhase, e, Status.FlashInfo.Any());
-
-                /*
-                if (Status.FlashInfo.Any()) botDelay = 4000;
-                else if (Game.RecentMilestones.Any()) botDelay = 1500;
-
-                if (Game.CurrentPhase == Phase.Clairvoyance || Game.CurrentPhase == Phase.OrangeMove || Game.CurrentPhase == Phase.NonOrangeMove || Game.CurrentPhase == Phase.OrangeShip || Game.CurrentPhase == Phase.NonOrangeShip) botDelay = 4000;
-                else if (Game.CurrentPhase == Phase.Resurrection || Game.CurrentPhase == Phase.BluePredicting || Game.CurrentPhase == Phase.BlueAccompaniesNonOrange || Game.CurrentPhase == Phase.BlueAccompaniesOrange || Game.CurrentPhase == Phase.BlueIntrudedByNonOrangeShip || Game.CurrentPhase == Phase.BlueIntrudedByNonOrangeMove || Game.CurrentPhase == Phase.BlueIntrudedByCaravan || Game.CurrentPhase == Phase.BlueIntrudedByOrangeShip || Game.CurrentPhase == Phase.BlueIntrudedByOrangeMove || Game.CurrentPhase == Phase.HmsMovement || Game.CurrentPhase == Phase.HmsPlacement) botDelay = 3000;
-                else if (Game.CurrentPhase == Phase.YellowRidingMonsterA || Game.CurrentPhase == Phase.YellowRidingMonsterB || Game.CurrentPhase == Phase.YellowSendingMonsterA || Game.CurrentPhase == Phase.YellowSendingMonsterB) botDelay = 4000;
-                else if (Game.CurrentPhase == Phase.Clairvoyance) botDelay = 4000;
-                else if (Game.CurrentPhase == Phase.HarvesterA || Game.CurrentPhase == Phase.HarvesterB || Game.CurrentPhase == Phase.Thumper) botDelay = 4000;
-                else if (Game.CurrentPhase == Phase.PerformingKarmaHandSwap) botDelay = 10000;
-                else if (Game.CurrentPhase == Phase.BattlePhase) botDelay = 4000;
-                else if (Game.CurrentPhase == Phase.CallTraitorOrPass || Game.CurrentPhase == Phase.BattleConclusion || Game.CurrentPhase == Phase.Facedancing) botDelay = 10000;
-                */
                 _ = Task.Delay(botDelay).ContinueWith(e => PerformBotEvent());
             }
         }
@@ -655,7 +641,7 @@ namespace Treachery.Client
         {
             if (hasFlashInfo)
             {
-                return 4000;
+                return 5000;
             }
             else if (phase == MainPhase.Resurrection || phase == MainPhase.Charity || e is AllyPermission || e is DealOffered || e is DealAccepted)
             {

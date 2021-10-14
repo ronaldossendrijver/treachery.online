@@ -30,25 +30,8 @@ namespace Treachery.Shared
             NrOfBattlesFought = 0;
             BattleSequence = new PlayerSequence(this);
             if (KarmaHmsMovesLeft != 2) KarmaHmsMovesLeft = 0;
-            AllowMovePhaseFactionAdvantages();
             ResetBattle();
             Enter(NextPlayerToBattle == null, EnterSpiceCollectionPhase, Version >= 107, Phase.BeginningOfBattle, Phase.BattlePhase);
-        }
-
-        private void AllowMovePhaseFactionAdvantages()
-        {
-            Allow(FactionAdvantage.BlueAccompanies);
-            Allow(FactionAdvantage.GreenSpiceBlowPrescience);
-            Allow(FactionAdvantage.BlueIntrusion);
-            Allow(FactionAdvantage.YellowExtraMove);
-            Allow(FactionAdvantage.YellowProtectedFromStorm);
-            Allow(FactionAdvantage.OrangeDetermineMoveMoment);
-            Allow(FactionAdvantage.OrangeSpecialShipments);
-            Allow(FactionAdvantage.OrangeShipmentsDiscount);
-            Allow(FactionAdvantage.OrangeShipmentsDiscountAlly);
-            Allow(FactionAdvantage.PurpleRevivalDiscount);
-            Allow(FactionAdvantage.PurpleRevivalDiscountAlly);
-            Allow(FactionAdvantage.GreyCyborgExtraMove);
         }
 
         public Player NextPlayerToBattle
@@ -79,20 +62,26 @@ namespace Treachery.Shared
             CurrentRetreat = null;
             NrOfBattlesFought++;
             CurrentReport.Add(b.GetMessage());
+            CheckHeroAvailability(b.AggressivePlayer);
+            CheckHeroAvailability(b.DefendingPlayer);
+            AssignBattleWheels(b.AggressivePlayer, b.DefendingPlayer);
+        }
 
-            if (!Battle.ValidBattleHeroes(this, b.DefendingPlayer).Any())
-            {
-                CurrentReport.Add(b.Defender, "{0} don't have leaders available for this battle.", b.Defender);
-            }
-
-            if (!Battle.ValidBattleHeroes(this, b.Player).Any())
-            {
-                CurrentReport.Add(b.Initiator, "{0} don't have leaders available for this battle.", b.Initiator);
-            }
-
+        private void AssignBattleWheels(params Player[] players)
+        {
             HasBattleWheel.Clear();
-            HasBattleWheel.Add(b.Initiator);
-            HasBattleWheel.Add(b.Defender);
+            foreach (var p in players)
+            {
+                HasBattleWheel.Add(p.Faction);
+            }
+        }
+
+        private void CheckHeroAvailability(Player p)
+        {
+            if (!Battle.ValidBattleHeroes(this, p).Any())
+            {
+                CurrentReport.Add(p.Faction, "{0} don't have leaders available for this battle.", p.Faction);
+            }
         }
 
         public Voice CurrentVoice { get; private set; } = null;
@@ -144,20 +133,21 @@ namespace Treachery.Shared
                 RegisterKnownCards(AggressorBattleAction);
                 RegisterKnownCards(DefenderBattleAction);
 
-                if (Version >= 69)
-                {
-                    if (CurrentBattle.Aggressor == Faction.Purple && (GetPlayer(Faction.Purple).Ally != Faction.Black || Prevented(FactionAdvantage.BlackCallTraitorForAlly)))
-                    {
-                        AggressorTraitorAction = new TreacheryCalled(this) { Initiator = Faction.Purple, TraitorCalled = false };
-                    }
-                    else if (CurrentBattle.Defender == Faction.Purple && (GetPlayer(Faction.Purple).Ally != Faction.Black || Prevented(FactionAdvantage.BlackCallTraitorForAlly)))
-                    {
-                        DefenderTraitorAction = new TreacheryCalled(this) { Initiator = Faction.Purple, TraitorCalled = false };
-                    }
-                }
-
+                PassPurpleTraitorAction();
+                
                 Enter(AggressorBattleAction.HasRockMelter || DefenderBattleAction.HasRockMelter, Phase.MeltingRock, Phase.CallTraitorOrPass);
+            }
+        }
 
+        private void PassPurpleTraitorAction()
+        {
+            if (CurrentBattle.Aggressor == Faction.Purple && (GetPlayer(Faction.Purple).Ally != Faction.Black || Prevented(FactionAdvantage.BlackCallTraitorForAlly)))
+            {
+                AggressorTraitorAction = new TreacheryCalled(this) { Initiator = Faction.Purple, TraitorCalled = false };
+            }
+            else if (CurrentBattle.Defender == Faction.Purple && (GetPlayer(Faction.Purple).Ally != Faction.Black || Prevented(FactionAdvantage.BlackCallTraitorForAlly)))
+            {
+                DefenderTraitorAction = new TreacheryCalled(this) { Initiator = Faction.Purple, TraitorCalled = false };
             }
         }
 
@@ -177,7 +167,6 @@ namespace Treachery.Shared
                     }
                 }
             }
-
         }
 
         private void RegisterKnownCards(Battle battle)
@@ -188,13 +177,13 @@ namespace Treachery.Shared
 
         private void DiscardOneTimeCardsUsedInBattle(TreacheryCalled aggressorCall, TreacheryCalled defenderCall)
         {
-            bool aggressorKeepsCards = Version >= 73 && aggressorCall.TraitorCalled && !defenderCall.TraitorCalled;
+            bool aggressorKeepsCards = aggressorCall.TraitorCalled && !defenderCall.TraitorCalled;
             if (!aggressorKeepsCards)
             {
                 DiscardOneTimeCards(AggressorBattleAction);
             }
 
-            bool defenderKeepsCards = Version >= 73 && defenderCall.TraitorCalled && !aggressorCall.TraitorCalled;
+            bool defenderKeepsCards = defenderCall.TraitorCalled && !aggressorCall.TraitorCalled;
             if (!defenderKeepsCards)
             {
                 DiscardOneTimeCards(DefenderBattleAction);
@@ -220,8 +209,7 @@ namespace Treachery.Shared
                 plan.Weapon.IsArtillery ||
                 plan.Weapon.IsMirrorWeapon ||
                 plan.Weapon.IsRockmelter ||
-                plan.Weapon.IsPoisonTooth && !PoisonToothCancelled
-                ))
+                plan.Weapon.IsPoisonTooth && !PoisonToothCancelled))
             {
                 Discard(plan.Weapon);
             }
@@ -306,7 +294,7 @@ namespace Treachery.Shared
         public IList<TreacheryCard> AuditedCards;
         public void HandleEvent(TreacheryCalled e)
         {
-            if (AggressorBattleAction.By(e.Initiator) || (e.By(Faction.Black) && Allies(AggressorBattleAction.Initiator, Faction.Black)))
+            if (AggressorBattleAction.By(e.Initiator) || e.By(Faction.Black) && AreAllies(AggressorBattleAction.Initiator, Faction.Black))
             {
                 AggressorTraitorAction = e;
                 if (e.TraitorCalled)
@@ -317,7 +305,7 @@ namespace Treachery.Shared
                 }
             }
 
-            if (DefenderBattleAction.By(e.Initiator) || (e.By(Faction.Black) && Allies(DefenderBattleAction.Initiator, Faction.Black)))
+            if (DefenderBattleAction.By(e.Initiator) || e.By(Faction.Black) && AreAllies(DefenderBattleAction.Initiator, Faction.Black))
             {
                 DefenderTraitorAction = e;
                 if (e.TraitorCalled)
@@ -361,6 +349,7 @@ namespace Treachery.Shared
             if (DefenderBattleAction.Initiator == BattleWinner) ResolveEffectOfOwnedSietchTabr(DefenderBattleAction, AggressorBattleAction);
 
             if (Version < 116) CaptureLeaderIfApplicable();
+
             FlipBeneGesseritWhenAlone();
             DetermineAudit();
 
@@ -503,7 +492,6 @@ namespace Treachery.Shared
                 {
                     if (AggressorBattleAction.Hero != null && AggressorBattleAction.Hero.HeroType == HeroType.Auditor)
                     {
-
                         return DefenderBattleAction.Player;
                     }
                     else if (DefenderBattleAction.Hero != null && DefenderBattleAction.Hero.HeroType == HeroType.Auditor)
@@ -648,10 +636,7 @@ namespace Treachery.Shared
 
                 ReplaceForces(f, initiator);
 
-                if (Version >= 81)
-                {
-                    FlipBeneGesseritWhenAlone();
-                }
+                FlipBeneGesseritWhenAlone();
             }
             else
             {
@@ -663,61 +648,29 @@ namespace Treachery.Shared
 
         private void ReplaceForces(FaceDanced f, Player initiator)
         {
-            if (Version >= 80)
+            var winner = GetPlayer(BattleWinner);
+            int nrOfRemovedForces = winner.AnyForcesIn(CurrentBattle.Territory);
+
+            if (nrOfRemovedForces > 0)
             {
-                var winner = GetPlayer(BattleWinner);
-                int nrOfRemovedForces = winner.AnyForcesIn(CurrentBattle.Territory);
+                winner.ForcesToReserves(CurrentBattle.Territory);
 
-                if (nrOfRemovedForces > 0)
+                initiator.ForcesInReserve -= f.ForcesFromReserve;
+                foreach (var fl in f.ForceLocations)
                 {
-                    winner.ForcesToReserves(CurrentBattle.Territory);
-
-                    initiator.ForcesInReserve -= f.ForcesFromReserve;
-                    foreach (var fl in f.ForceLocations)
-                    {
-                        var location = fl.Key;
-                        initiator.ChangeForces(location, -fl.Value.AmountOfForces);
-                        initiator.ChangeSpecialForces(location, -fl.Value.AmountOfSpecialForces);
-                    }
-
-                    foreach (var fl in f.TargetForceLocations)
-                    {
-                        var location = fl.Key;
-                        initiator.ChangeForces(location, fl.Value.AmountOfForces);
-                        initiator.ChangeSpecialForces(location, fl.Value.AmountOfSpecialForces);
-                    }
-
-                    CurrentReport.Add(f.Initiator, "{0} {1} forces go back to reserves and are replaced by {2} {3} forces ({4} from reserves{5}).", nrOfRemovedForces, winner.Faction, f.TargetForceLocations.Sum(b => b.Value.TotalAmountOfForces), f.Initiator, f.ForcesFromReserve, DetermineSourceLocations(f));
+                    var location = fl.Key;
+                    initiator.ChangeForces(location, -fl.Value.AmountOfForces);
+                    initiator.ChangeSpecialForces(location, -fl.Value.AmountOfSpecialForces);
                 }
-            }
-            else
-            {
-                int nrOfRemovedForces = FaceDanced.MaximumNumberOfForces(this, initiator);
 
-                if (nrOfRemovedForces > 0)
+                foreach (var fl in f.TargetForceLocations)
                 {
-                    foreach (var player in Players.Where(p => p.Faction != f.Initiator))
-                    {
-                        player.ForcesToReserves(CurrentBattle.Territory);
-                    }
-
-                    initiator.ForcesInReserve -= f.ForcesFromReserve;
-                    foreach (var fl in f.ForceLocations)
-                    {
-                        var location = fl.Key;
-                        initiator.ChangeForces(location, -fl.Value.AmountOfForces);
-                        initiator.ChangeSpecialForces(location, -fl.Value.AmountOfSpecialForces);
-                    }
-
-                    foreach (var fl in f.TargetForceLocations)
-                    {
-                        var location = fl.Key;
-                        initiator.ChangeForces(location, fl.Value.AmountOfForces);
-                        initiator.ChangeSpecialForces(location, fl.Value.AmountOfSpecialForces);
-                    }
-
-                    CurrentReport.Add(f.Initiator, "{0} forces go back to reserves and are replaced by {1} {2} forces ({3} from reserves{4}).", nrOfRemovedForces, f.TargetForceLocations.Sum(b => b.Value.TotalAmountOfForces), f.Initiator, f.ForcesFromReserve, DetermineSourceLocations(f));
+                    var location = fl.Key;
+                    initiator.ChangeForces(location, fl.Value.AmountOfForces);
+                    initiator.ChangeSpecialForces(location, fl.Value.AmountOfSpecialForces);
                 }
+
+                CurrentReport.Add(f.Initiator, "{0} {1} forces go back to reserves and are replaced by {2} {3} forces ({4} from reserves{5}).", nrOfRemovedForces, winner.Faction, f.TargetForceLocations.Sum(b => b.Value.TotalAmountOfForces), f.Initiator, f.ForcesFromReserve, DetermineSourceLocations(f));
             }
         }
 
@@ -1078,10 +1031,11 @@ namespace Treachery.Shared
 
         public BattleOutcome DetermineBattleOutcome(Battle agg, Battle def, Territory territory)
         {
-            var result = new BattleOutcome();
-
-            result.Aggressor = agg.Player;
-            result.Defender = def.Player;
+            var result = new BattleOutcome
+            {
+                Aggressor = agg.Player,
+                Defender = def.Player
+            };
 
             //Determine result
 
@@ -1171,7 +1125,6 @@ namespace Treachery.Shared
 
         public void DetermineAndHandleBattleOutcome(Battle agg, Battle def, Territory territory)
         {
-
             var outcome = DetermineBattleOutcome(agg, def, territory);
 
             if (outcome.AggHeroSkillBonus != 0)
@@ -1240,7 +1193,6 @@ namespace Treachery.Shared
             DetermineDeathBy(theHero, TreacheryCardType.ArtilleryStrike, artilleryUsed && !playerPlan.HasShield, ref heroDies, ref causeOfDeath);
             DetermineDeathBy(theHero, TreacheryCardType.PoisonTooth, poisonToothUsed && !playerPlan.HasNonAntidotePoisonDefense, ref heroDies, ref causeOfDeath);
             DetermineDeathBy(theHero, TreacheryCardType.Laser, opponentPlan.HasLaser, ref heroDies, ref causeOfDeath);
-
             DetermineDeathBy(theHero, TreacheryCardType.Poison, opponentPlan.HasPoison && !(playerPlan.HasAntidote || isProtectedByCarthagAdvantage), ref heroDies, ref causeOfDeath);
             DetermineDeathBy(theHero, TreacheryCardType.Projectile, opponentPlan.HasProjectile && !playerPlan.HasProjectileDefense, ref heroDies, ref causeOfDeath);
         }
@@ -1628,8 +1580,6 @@ namespace Treachery.Shared
             }
         }
 
-
-
         public void HandleEvent(SwitchedSkilledLeader e)
         {
             var leader = e.Player.Leaders.FirstOrDefault(l => Skilled(l) && !CapturedLeaders.ContainsKey(l));
@@ -1686,58 +1636,6 @@ namespace Treachery.Shared
         {
             CurrentRetreat = e;
             CurrentReport.Add(CurrentRetreat);
-        }
-    }
-
-    public class BattleOutcome
-    {
-        public int AggHeroSkillBonus;
-        public LeaderSkill AggActivatedBonusSkill;
-        public int DefHeroSkillBonus;
-        public LeaderSkill DefActivatedBonusSkill;
-        public int AggBattlePenalty;
-        public LeaderSkill AggActivatedPenaltySkill;
-        public int DefBattlePenalty;
-        public int AggMessiahContribution;
-        public LeaderSkill DefActivatedPenaltySkill;
-        public int DefMessiahContribution;
-        public Player Winner;
-        public Player Loser;
-        public bool AggHeroKilled;
-        public TreacheryCardType AggHeroCauseOfDeath;
-        public int AggHeroEffectiveStrength;
-        public bool DefHeroKilled;
-        public TreacheryCardType DefHeroCauseOfDeath;
-        public int DefHeroEffectiveStrength;
-        public float AggTotal;
-        public float DefTotal;
-        public Battle WinnerBattlePlan;
-        public Battle LoserBattlePlan;
-
-        public bool AggSavedByCarthag;
-        public bool DefSavedByCarthag;
-
-        public Player Aggressor;
-        public Player Defender;
-
-        public override string ToString()
-        {
-            var aggPlan = Winner == Aggressor ? WinnerBattlePlan : LoserBattlePlan;
-            var defPlan = Winner == Defender ? WinnerBattlePlan : LoserBattlePlan;
-            return Skin.Current.Format("Aggressor ({0}) {1}. Total strength: {2}, leader {3} by {4}. Defender ({5}) {6}. Total strength: {7}, leader {8} by {9}.",
-
-                Aggressor.Faction,
-                Winner == Aggressor ? "win" : "lose",
-                AggTotal,
-                AggHeroKilled ? "killed" : "survives",
-                AggHeroCauseOfDeath,
-
-                Defender.Faction,
-                Winner == Defender ? "win" : "lose",
-                DefTotal,
-                DefHeroKilled ? "killed" : "survives",
-                DefHeroCauseOfDeath
-                );
         }
     }
 }

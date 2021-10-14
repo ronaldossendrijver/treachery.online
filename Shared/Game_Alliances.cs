@@ -193,7 +193,7 @@ namespace Treachery.Shared
             CurrentReport.Add(e);
         }
 
-        private bool Allies(Faction a, Faction b)
+        private bool AreAllies(Faction a, Faction b)
         {
             var player = GetPlayer(a);
             if (player != null)

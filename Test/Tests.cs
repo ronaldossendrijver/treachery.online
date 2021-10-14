@@ -71,7 +71,7 @@ namespace Treachery.Test
                 return "More than 1 leader in front of shield" + " after " + e.GetType().Name + " -> " + g.History.Count;
             }
 
-            if (g.Players.Any(p => p.Leaders.Count(l => !g.CapturedLeaders.Keys.Contains(l) && g.Skilled(l)) + g.CapturedLeaders.Count(cl => cl.Value == p.Faction && g.Skilled(cl.Key)) > 1))
+            if (g.Players.Any(p => p.Leaders.Count(l => !g.CapturedLeaders.ContainsKey(l) && g.Skilled(l)) + g.CapturedLeaders.Count(cl => cl.Value == p.Faction && g.Skilled(cl.Key)) > 1))
             {
                 return "More than 1 skilled leader for 1 player (not counting leaders captured by hark)" + " after " + e.GetType().Name + " -> " + g.History.Count;
             }
@@ -142,6 +142,11 @@ namespace Treachery.Test
                 g.CurrentPhase == Phase.BeginningOfBattle ) && g.Players.Any(p => p.Has(TreacheryCardType.Juice)))
             {
                 WriteSavegameIfApplicable(g, g.Players.First(p => p.Has(TreacheryCardType.Juice)), string.Format("Juice in {0}", g.CurrentPhase));
+            }
+
+            if (e is KarmaHandSwap)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Handswap");
             }
                         
             /*
@@ -373,30 +378,10 @@ namespace Treachery.Test
             forcesOnPlanet = countForcesOnPlanet;
         }
 
-        /*
-        [TestMethod]
-        public void TestPlayerSequence()
-        {
-            var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
-            rules.Add(Rule.FillWithBots);
-            rules.Add(Rule.AssistedNotekeeping);
-            var factions = EstablishPlayers.AvailableFactions().ToList();
-            int nrOfTurns = 7;
-            int nrOfPlayers = factions.Count;
-
-            var game = new Game();
-            var start = new EstablishPlayers(game) { ApplicableRules = rules.ToArray(), FactionsInPlay = factions, MaximumTurns = nrOfTurns, MaximumNumberOfPlayers = nrOfPlayers, Players = Array.Empty<string>(), Seed = new Random().Next() };
-            start.Execute(false, true);
-
-
-
-        }*/
-
-
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 50;
+            int nrOfGames = 10000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
@@ -406,7 +391,7 @@ namespace Treachery.Test
             rules.Add(Rule.AssistedNotekeeping);
             var factions = EstablishPlayers.AvailableFactions().ToList();
             int nrOfTurns = 7;
-            int nrOfPlayers = factions.Count;
+            int nrOfPlayers = 6;
 
 
             //Expansion, advanced game, all expansions, free for all without guild and fremen:
@@ -668,7 +653,6 @@ namespace Treachery.Test
             return null;
         }
 
-        [TestMethod]
         public void RegressionOneGame()
         {
             try
@@ -738,7 +722,7 @@ namespace Treachery.Test
                     gamesTested++;
                     var fs = File.OpenText(f);
                     var state = GameState.Load(fs.ReadToEnd());
-                    //Console.WriteLine("Checking {0} (version {1})...", f, state.Version);
+                    Console.WriteLine("Checking {0} (version {1})...", f, state.Version);
                     var game = new Game(state.Version);
 
                     fs = File.OpenText(f + ".testcase");
@@ -1103,29 +1087,7 @@ namespace Treachery.Test
 
             return standardDeviation;
         }
-
-        [TestMethod]
-        public void BestExtensionMethod()
-        {
-            var toTest = new List<Tuple<string, int>>();
-            toTest.Add(new Tuple<string, int>("alia", 5));
-            toTest.Add(new Tuple<string, int>("fenring", 5));
-            toTest.Add(new Tuple<string, int>("ramallo", 5));
-            toTest.Add(new Tuple<string, int>("yueh", 5));
-            toTest.Add(new Tuple<string, int>("jessica", 5));
-            
-            var counter = new ObjectCounter<string>();
-            for (int i = 0; i < 10000; i++)
-            {
-                counter.Count(toTest.HighestOrDefault(v => v.Item2).Item1);
-            }
-
-            foreach (var f in counter.Counted)
-            {
-                Console.WriteLine("{0}: {1}", f, counter.CountOf(f));
-            }
-        }
-
+                
         [TestMethod]
         public void DetermineBias()
         {
