@@ -27,6 +27,16 @@ namespace Treachery.Shared
             counters[obj] += 2;
         }
 
+        public void CountN(T obj, int n)
+        {
+            if (!counters.ContainsKey(obj))
+            {
+                counters.Add(obj, 0);
+            }
+
+            counters[obj] += n;
+        }
+
         public int CountOf(T obj)
         {
             if (counters.ContainsKey(obj))

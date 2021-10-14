@@ -21,8 +21,8 @@ namespace Treachery.Test
     [TestClass]
     public class Tests
     {
-        private static List<Type> Written = new List<Type>();
-        private static void WriteSavegameIfApplicable(Game g, Type t)
+        private List<Type> Written = new List<Type>();
+        private void WriteSavegameIfApplicable(Game g, Type t)
         {
             if (!Written.Contains(t))
             {
@@ -39,8 +39,8 @@ namespace Treachery.Test
             }
         }
 
-        private static List<string> WrittenCases = new List<string>();
-        private static void WriteSavegameIfApplicable(Game g, Player playerWithAction, string c)
+        private List<string> WrittenCases = new List<string>();
+        private void WriteSavegameIfApplicable(Game g, Player playerWithAction, string c)
         {
             if (!WrittenCases.Contains(c))
             {
@@ -53,7 +53,8 @@ namespace Treachery.Test
             }
         }
 
-        private static string TestIllegalCases(Game g, GameEvent e)
+        private ObjectCounter<Game> _cardcount;
+        private string TestIllegalCases(Game g, GameEvent e)
         {
             var p = g.GetPlayer(e.Initiator);
 
@@ -65,6 +66,15 @@ namespace Treachery.Test
 
             p = g.Players.FirstOrDefault(p => p.Resources < 0);
             if (p != null) return "Negative spice: " + p + " after " + e.GetType().Name + " -> " + g.History.Count;
+
+            if (g.CurrentTurn >= 1)
+            {
+                p = g.Players.FirstOrDefault(p => p.ForcesInReserve + p.SpecialForcesInReserve + p.ForcesKilled + p.SpecialForcesKilled + p.ForcesOnPlanet.Sum(b => b.Value.TotalAmountOfForces) != 20);
+                if (p != null)
+                {
+                    return "Illegal number of forces" + p;
+                }
+            }
 
             if (g.Players.Any(p => p.Leaders.Count(l => g.IsInFrontOfShield(l)) > 1))
             {
@@ -88,6 +98,26 @@ namespace Treachery.Test
                 if (allCards.Any(item => allCards.Count(c => c == item) > 1))
                 {
                     return "Duplicate card in Skill Deck" + " after " + e.GetType().Name + " -> " + g.History.Count;
+                }
+            }
+
+            if (g.CurrentTurn >= 1)
+            {
+                int previousNumberOfCardsInPlay = _cardcount.CountOf(g);
+                int currentOfCards = g.Players.Sum(p => p.TreacheryCards.Count) 
+                    + g.TreacheryDeck.Items.Count 
+                    + g.TreacheryDiscardPile.Items.Count 
+                    + (g.WhiteCache != null ? g.WhiteCache.Count : 0) 
+                    + (g.CardsOnAuction != null ? g.CardsOnAuction.Items.Count : 0)
+                    + (g.GetCardSetAsideForBid != null ? 1 : 0);
+
+                if (previousNumberOfCardsInPlay == 0)
+                {
+                    _cardcount.CountN(g, currentOfCards);
+                }
+                else if (currentOfCards != previousNumberOfCardsInPlay)
+                {
+                    return "Total number of cards has changed: " + previousNumberOfCardsInPlay + " -> " + currentOfCards;
                 }
             }
 
@@ -115,14 +145,11 @@ namespace Treachery.Test
                 return "Too many cards: " + p + " after " + e.GetType().Name + " -> " + g.History.Count;
             }
 
-            if (g.Version > 80)
+            var blue = g.GetPlayer(Faction.Blue);
+            if (blue != null &&
+                blue.ForcesOnPlanet.Any(bat => bat.Value.AmountOfSpecialForces > 0 && !g.Players.Any(p => p.Occupies(bat.Key.Territory))))
             {
-                var blue = g.GetPlayer(Faction.Blue);
-                if (blue != null &&
-                    blue.ForcesOnPlanet.Any(bat => bat.Value.AmountOfSpecialForces > 0 && !g.Players.Any(p => p.Occupies(bat.Key.Territory))))
-                {
-                    return "Lonely advisor";
-                }
+                return "Lonely advisor";
             }
 
             if (g.Players.Any(p => p.Leaders.Any(l => l.Faction != p.Faction && p.Faction != Faction.Purple && !g.CapturedLeaders.ContainsKey(l))))
@@ -133,7 +160,7 @@ namespace Treachery.Test
             return "";
         }
 
-        private static string TestSpecialCases(Game g, GameEvent e)
+        private string TestSpecialCases(Game g, GameEvent e)
         {
             var p = g.GetPlayer(e.Initiator);
 
@@ -244,7 +271,7 @@ namespace Treachery.Test
             return "";
         }
 
-        private static void ProfileGames()
+        private void ProfileGames()
         {
             Console.WriteLine("Profiling all savegame files in {0}...", Directory.GetCurrentDirectory());
 
@@ -381,7 +408,9 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
-            int nrOfGames = 10000;
+            _cardcount = new();
+
+            int nrOfGames = 5000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
@@ -497,7 +526,7 @@ namespace Treachery.Test
 
         }
 
-        private static void PlayGameAndRecordResults(List<Faction> factions, int nrOfPlayers, int nrOfTurns, Rule[] rulesAsArray, ObjectCounter<Faction> wincounter)
+        private void PlayGameAndRecordResults(List<Faction> factions, int nrOfPlayers, int nrOfTurns, Rule[] rulesAsArray, ObjectCounter<Faction> wincounter)
         {
             var game = LetBotsPlay(rulesAsArray, factions, nrOfPlayers, nrOfTurns, null, false, true);
 
@@ -518,7 +547,7 @@ namespace Treachery.Test
             }
         }
 
-        private static Game LetBotsPlay(Rule[] rules, List<Faction> factions, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool infoLogging, bool performTests)
+        private Game LetBotsPlay(Rule[] rules, List<Faction> factions, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool infoLogging, bool performTests)
         {
             var game = new Game
             {
@@ -553,6 +582,7 @@ namespace Treachery.Test
                     {
                         File.WriteAllText("illegalcase.json", GameState.GetStateAsString(game));
                     }
+                    Assert.AreEqual("", illegalCase);
 
                     var strangeCase = TestSpecialCases(game, evt);
                     if (strangeCase != "")
@@ -582,7 +612,7 @@ namespace Treachery.Test
 
 
 
-        private static GameEvent PerformBotEvent(Game game, bool performTests)
+        private GameEvent PerformBotEvent(Game game, bool performTests)
         {
             var bots = Deck<Player>.Randomize(game.Players.Where(p => p.IsBot));
 
@@ -653,64 +683,12 @@ namespace Treachery.Test
             return null;
         }
 
-        public void RegressionOneGame()
-        {
-            try
-            {
-                Console.WriteLine("Re-playing one savegame files in {0}...", Directory.GetCurrentDirectory());
-
-                var f = Directory.EnumerateFiles(".", "savegame*.json").Last();
-
-                var fs = File.OpenText(f);
-                var state = GameState.Load(fs.ReadToEnd());
-                Console.WriteLine("Checking {0} (version {1})...", f, state.Version);
-                var game = new Game(state.Version);
-
-                fs = File.OpenText(f + ".testcase");
-                var tc = LoadObject<Testcase>(fs.ReadToEnd());
-
-                int valueId = 0;
-                foreach (var e in state.Events)
-                {
-                    e.Game = game;
-                    var previousPhase = game.CurrentPhase;
-
-                    var result = e.Execute(true, true);
-                    if (result != "")
-                    {
-                        File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
-                    }
-                    Assert.AreEqual("", result, f + ", " + e.GetType().Name + " (" + valueId + ", " + e.GetMessage() + ")");
-
-                    var actualValues = DetermineTestvalues(game);
-                    tc.Testvalues[valueId].Equals(actualValues);
-                    if (!tc.Testvalues[valueId].Equals(actualValues))
-                    {
-                        File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
-                    }
-                    Assert.AreEqual(tc.Testvalues[valueId], actualValues, f + ", " + previousPhase + " -> " + game.CurrentPhase + ", " + e.GetType().Name + " (" + valueId + ", " + e.GetMessage() + "): " + Testvalues.Difference);
-
-                    var strangeCase = TestIllegalCases(game, e);
-                    if (strangeCase != "")
-                    {
-                        File.WriteAllText("illegal.json", GameState.GetStateAsString(game));
-                    }
-                    Assert.AreEqual("", strangeCase);
-
-                    valueId++;
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                throw;
-            }
-        }
-
         [TestMethod]
         public void Regression()
         {
             ProfileGames();
+
+            _cardcount = new();
 
             try
             {
@@ -831,7 +809,7 @@ namespace Treachery.Test
         }
         */
 
-        private static Testvalues DetermineTestvalues(Game game)
+        private Testvalues DetermineTestvalues(Game game)
         {
             var result = new Testvalues
             {

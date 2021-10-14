@@ -16,12 +16,10 @@ namespace Treachery.Shared
         public TreacheryCalled AggressorTraitorAction { get; private set; }
         public Battle DefenderBattleAction { get; private set; } = null;
         public TreacheryCalled DefenderTraitorAction { get; private set; }
-
         public Faction BattleWinner { get; private set; }
         public Faction BattleLoser { get; private set; }
         public int GreySpecialForceLossesToTake { get; private set; }
-
-        public int NrOfBattlesFought = 0;
+        public int NrOfBattlesFought { get; private set; } = 0;
         private TriggeredBureaucracy BattleTriggeredBureaucracy { get; set; }
 
         private void EnterBattlePhase()
@@ -52,7 +50,6 @@ namespace Treachery.Shared
                 return null;
             }
         }
-
 
         public void HandleEvent(BattleInitiated b)
         {
@@ -840,7 +837,7 @@ namespace Treachery.Shared
                     }
                 }
 
-                HandleLosses(territory, winner, 
+                HandleLoserLosses(territory, winner, 
                     forcesToLose - forcesToSaveToReserves - forcesToSaveInTerritory,
                     specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory);
             }
@@ -1287,7 +1284,11 @@ namespace Treachery.Shared
         private void ProcessWinnerLosses(Territory territory, Player winner, Battle plan)
         {
             PayDialedSpice(winner, plan);
+            ProcessForceLosses(territory, winner, plan);
+        }
 
+        private void ProcessForceLosses(Territory territory, Player player, Battle plan)
+        {
             int specialForcesToLose = plan.SpecialForces + plan.SpecialForcesAtHalfStrength;
             int forcesToLose = plan.Forces + plan.ForcesAtHalfStrength;
 
@@ -1296,7 +1297,7 @@ namespace Treachery.Shared
             int specialForcesToSaveInTerritory = 0;
             int forcesToSaveInTerritory = 0;
 
-            if (!MaySubstituteForceLosses(winner))
+            if (!MaySubstituteForceLosses(player))
             {
                 if (SkilledAs(plan.Hero, LeaderSkill.Graduate))
                 {
@@ -1306,7 +1307,7 @@ namespace Treachery.Shared
                     specialForcesToSaveToReserves = Math.Max(0, Math.Min(specialForcesToLose - specialForcesToSaveInTerritory - forcesToSaveInTerritory, 2));
                     forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose - forcesToSaveInTerritory, 2 - specialForcesToSaveToReserves));
                 }
-                else if (SkilledAs(winner, LeaderSkill.Graduate))
+                else if (SkilledAs(player, LeaderSkill.Graduate))
                 {
                     specialForcesToSaveToReserves = Math.Min(specialForcesToLose, 1);
                     forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose, 1 - specialForcesToSaveToReserves));
@@ -1315,38 +1316,38 @@ namespace Treachery.Shared
 
             if (specialForcesToSaveInTerritory + forcesToSaveInTerritory + specialForcesToSaveToReserves + forcesToSaveToReserves > 0)
             {
-                if (specialForcesToSaveToReserves > 0) winner.ForcesToReserves(territory, specialForcesToSaveToReserves, true);
+                if (specialForcesToSaveToReserves > 0) player.ForcesToReserves(territory, specialForcesToSaveToReserves, true);
 
-                if (forcesToSaveToReserves > 0) winner.ForcesToReserves(territory, forcesToSaveToReserves, false);
+                if (forcesToSaveToReserves > 0) player.ForcesToReserves(territory, forcesToSaveToReserves, false);
 
                 if (specialForcesToSaveInTerritory > 0 || specialForcesToSaveToReserves > 0)
                 {
-                    CurrentReport.Add(winner.Faction, "{0} rescues {1} {2} and {3} {4} on site and {5} {6} and {7} {8} to reserves.",
+                    CurrentReport.Add(player.Faction, "{0} rescues {1} {2} and {3} {4} on site and {5} {6} and {7} {8} to reserves.",
                         LeaderSkill.Graduate,
                         forcesToSaveInTerritory,
-                        winner.Force,
+                        player.Force,
                         specialForcesToSaveInTerritory,
-                        winner.SpecialForce,
+                        player.SpecialForce,
                         forcesToSaveToReserves,
-                        winner.Force,
+                        player.Force,
                         specialForcesToSaveToReserves,
-                        winner.SpecialForce);
+                        player.SpecialForce);
                 }
                 else
                 {
-                    CurrentReport.Add(winner.Faction, "{0} rescues {1} {2} on site and {3} to reserves.",
+                    CurrentReport.Add(player.Faction, "{0} rescues {1} {2} on site and {3} to reserves.",
                         LeaderSkill.Graduate,
                         forcesToSaveInTerritory,
-                        winner.Force,
+                        player.Force,
                         forcesToSaveToReserves);
                 }
             }
 
-            if (!MaySubstituteForceLosses(winner) || specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory == 0 || winner.ForcesIn(territory) <= plan.Forces + plan.ForcesAtHalfStrength)
+            if (!MaySubstituteForceLosses(player) || specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory == 0 || player.ForcesIn(territory) <= plan.Forces + plan.ForcesAtHalfStrength)
             {
                 int winnerForcesLost = forcesToLose - forcesToSaveToReserves - forcesToSaveInTerritory;
                 int winnerSpecialForcesLost = specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory;
-                HandleLosses(territory, winner, winnerForcesLost, winnerSpecialForcesLost);
+                HandleLoserLosses(territory, player, winnerForcesLost, winnerSpecialForcesLost);
             }
             else
             {
@@ -1356,15 +1357,15 @@ namespace Treachery.Shared
 
         private bool MaySubstituteForceLosses(Player p) => p.Faction == Faction.Grey && (Version < 113 || !Prevented(FactionAdvantage.GreyReplacingSpecialForces));
 
-        private void HandleLosses(Territory territory, Player player, int forcesLost, int specialForcesLost)
+        private void HandleLoserLosses(Territory territory, Player loser, int forcesLost, int specialForcesLost)
         {
-            bool hadMessiahBeforeLosses = player.MessiahAvailable;
+            bool hadMessiahBeforeLosses = loser.MessiahAvailable;
 
-            player.KillForces(territory, forcesLost, false, true);
-            player.KillForces(territory, specialForcesLost, true, true);
-            LogLosses(player, forcesLost, specialForcesLost);
+            loser.KillForces(territory, forcesLost, false, true);
+            loser.KillForces(territory, specialForcesLost, true, true);
+            LogLosses(loser, forcesLost, specialForcesLost);
 
-            if (player.MessiahAvailable && !hadMessiahBeforeLosses)
+            if (loser.MessiahAvailable && !hadMessiahBeforeLosses)
             {
                 RecentMilestones.Add(Milestone.Messiah);
             }
@@ -1518,6 +1519,8 @@ namespace Treachery.Shared
                 RecentMilestones.Add(Milestone.Messiah);
             }
         }
+
+
 
         private void LoseCards(Battle gambit)
         {
