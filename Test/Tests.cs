@@ -31,7 +31,6 @@ namespace Treachery.Test
                 {
                     lock (Written)
                     {
-
                         File.WriteAllText("" + (Written.Count + 100) + " " + t.Name + "-" + playerWithAction.Name.Replace('*', 'X') + ".special.json", GameState.GetStateAsString(g));
                         Written.Add(t);
                     }
@@ -104,20 +103,25 @@ namespace Treachery.Test
             if (g.CurrentTurn >= 1)
             {
                 int previousNumberOfCardsInPlay = _cardcount.CountOf(g);
-                int currentOfCards = g.Players.Sum(p => p.TreacheryCards.Count) 
+                int currentNumberOfCards = 
+                    g.Players.Sum(p => p.TreacheryCards.Count) 
                     + g.TreacheryDeck.Items.Count 
                     + g.TreacheryDiscardPile.Items.Count 
                     + (g.WhiteCache != null ? g.WhiteCache.Count : 0) 
                     + (g.CardsOnAuction != null ? g.CardsOnAuction.Items.Count : 0)
-                    + (g.GetCardSetAsideForBid != null ? 1 : 0);
+                    + (g.GetCardSetAsideForBid != null ? 1 : 0
+                    + (g.ShieldWallDestroyed ? 1 : 0));
 
                 if (previousNumberOfCardsInPlay == 0)
                 {
-                    _cardcount.CountN(g, currentOfCards);
+                    lock (_cardcount) {
+
+                        _cardcount.CountN(g, currentNumberOfCards);
+                    }
                 }
-                else if (currentOfCards != previousNumberOfCardsInPlay)
+                else if (currentNumberOfCards != previousNumberOfCardsInPlay)
                 {
-                    return "Total number of cards has changed: " + previousNumberOfCardsInPlay + " -> " + currentOfCards;
+                    return "Total number of cards has changed: " + previousNumberOfCardsInPlay + " -> " + currentNumberOfCards + " swd: " + g.ShieldWallDestroyed;
                 }
             }
 
@@ -730,7 +734,7 @@ namespace Treachery.Test
                         var strangeCase = TestIllegalCases(game, e);
                         if (strangeCase != "")
                         {
-                            File.WriteAllText("illegal.json", GameState.GetStateAsString(game));
+                            File.WriteAllText("illegalcase.json", GameState.GetStateAsString(game));
                         }
                         Assert.AreEqual("", strangeCase);
 
