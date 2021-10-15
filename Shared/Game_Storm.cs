@@ -272,6 +272,7 @@ namespace Treachery.Shared
             RecentMilestones.Add(Milestone.MetheorUsed);
             ShieldWallDestroyed = true;
             player.TreacheryCards.Remove(card);
+            RemovedTreacheryCards.Add(card);
             CurrentReport.Add(e);
 
             foreach (var p in Players)

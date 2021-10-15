@@ -40,6 +40,7 @@ namespace Treachery.Shared
         public Report CurrentReport { get; set; }
         public Deck<TreacheryCard> TreacheryDeck { get; set; }
         public Deck<TreacheryCard> TreacheryDiscardPile { get; set; }
+        public List<TreacheryCard> RemovedTreacheryCards { get; set; } = new List<TreacheryCard>();
         public List<TreacheryCard> WhiteCache { get; set; } = new List<TreacheryCard>();
         public Deck<ResourceCard> ResourceCardDeck { get; set; }
         public Deck<ResourceCard> ResourceCardDiscardPileA { get; set; }

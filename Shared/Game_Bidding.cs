@@ -530,6 +530,7 @@ namespace Treachery.Shared
                     else
                     {
                         var card = CardsOnAuction.Draw();
+                        RemovedTreacheryCards.Add(card);
                         RegisterWonCardAsKnown(card);
                         CurrentReport.Add(Faction.None, "{0} was removed from the game.", card);
                         FinishBid(null, card);

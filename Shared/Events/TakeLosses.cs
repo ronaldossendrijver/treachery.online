@@ -30,6 +30,12 @@ namespace Treachery.Shared
             int valueToBeKilled = LossesToTake(Game).Amount;
             if (ForceAmount + 2 * SpecialForceAmount < valueToBeKilled) return string.Format("Select a total value of at least {0} to be killed.", valueToBeKilled);
 
+            if (Game.Version >= 120)
+            {
+                if (ForceAmount > ValidMaxForceAmount(Game, Player)) return "Invalid amount of forces";
+                if (SpecialForceAmount > ValidMaxSpecialForceAmount(Game, Player)) return "Invalid amount of forces";
+            }
+
             return "";
         }
 

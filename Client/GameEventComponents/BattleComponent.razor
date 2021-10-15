@@ -76,10 +76,18 @@
             {
                 <SelectForcesComponent @bind-Value="forces" Min="0" Max="Battle.MaxForces(Game, Player, false)" Faction="Faction" Special="false" /> <span>&nbsp;</span>
             }
+            else {
+                
+                forces = 0;
+            }
 
             @if (Battle.MaxForces(Game, Player, true) > 0)
             {
                 <SelectForcesComponent @bind-Value="specialForces" Min="0" Max="Battle.MaxForces(Game, Player, true)" Faction="Faction" Special="true" /> <span>&nbsp;</span>
+            }
+            else
+            {
+                specialForces = 0;
             }
 
             @if (Battle.MustPayForForcesInBattle(Game, Player))

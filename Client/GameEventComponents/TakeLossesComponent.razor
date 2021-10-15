@@ -15,10 +15,18 @@
         {
             <SelectForcesComponent @bind-Value="forceAmount" Min="0" Max="TakeLosses.ValidMaxForceAmount(Game, Player)" Faction="Faction" Special="false" />
         }
+        else
+        {
+            forceAmount = 0;
+        }
 
         @if (TakeLosses.ValidMaxSpecialForceAmount(Game, Player) > 0)
         {
             <SelectForcesComponent @bind-Value="specialForceAmount" Min="0" Max="TakeLosses.ValidMaxSpecialForceAmount(Game, Player)" Faction="Faction" Special="true" />
+        }
+        else {
+
+            specialForceAmount = 0;
         }
 
         <p>Total selected value: <span class="badge badge-primary badge-pill">@(forceAmount + specialForceAmount)</span></p>

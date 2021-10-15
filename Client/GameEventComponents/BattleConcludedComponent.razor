@@ -20,6 +20,10 @@
                 <label for="replacementAmount">How many @Skin.Current.SpecialForceName_STR[Faction.Grey] losses should be exchanged with surviving @Skin.Current.ForceName_STR[Faction.Grey]?</label>
                 <SelectForcesComponent @bind-Value="replacementAmount" Min="0" Max="maxReplacementForces" Faction="Faction" Special="true" />
             }
+            else
+            {
+                replacementAmount = 0;
+            }
 
             var discardableMercenary = DiscardableMercenaryAfterBattle;
             var discardableWeapon = DiscardableWeaponAfterBattle;
@@ -58,6 +62,10 @@
                 <SelectFromImageComponent @bind-Value="stolenToken" Values="Loser.TechTokens" ImageURLs="Loser.TechTokens.Select(t => Skin.Current.GetImageURL(t))" PopupHTMLs="Loser.TechTokens.Select(t => Support.GetTechTokenHTML(t))">
                     <Label>Choose a tech token to steal</Label>
                 </SelectFromImageComponent>
+            }
+            else {
+                
+                stolenToken = TechToken.None;
             }
 
             if (Game.TraitorsDeciphererCanLookAt.Any())

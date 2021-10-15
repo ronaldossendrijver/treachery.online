@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Treachery.Shared;
+using System.Timers;
 
 namespace Treachery.Test
 {
@@ -52,7 +53,8 @@ namespace Treachery.Test
             }
         }
 
-        private ObjectCounter<Game> _cardcount;
+        private ObjectCounter<int> _cardcount;
+        private ObjectCounter<int> _leadercount;
         private string TestIllegalCases(Game g, GameEvent e)
         {
             var p = g.GetPlayer(e.Initiator);
@@ -68,10 +70,13 @@ namespace Treachery.Test
 
             if (g.CurrentTurn >= 1)
             {
-                p = g.Players.FirstOrDefault(p => p.ForcesInReserve + p.SpecialForcesInReserve + p.ForcesKilled + p.SpecialForcesKilled + p.ForcesOnPlanet.Sum(b => b.Value.TotalAmountOfForces) != 20);
+                p = g.Players.FirstOrDefault(p => 
+                    p.ForcesInReserve + p.ForcesKilled + p.ForcesOnPlanet.Sum(b => b.Value.AmountOfForces) + 
+                    (p.Faction != Faction.White ? p.SpecialForcesInReserve + p.SpecialForcesKilled + p.ForcesOnPlanet.Sum(b => b.Value.AmountOfSpecialForces) : 0) != 20);
+
                 if (p != null)
                 {
-                    return "Illegal number of forces" + p;
+                    return "Illegal number of forces: " + p;
                 }
             }
 
@@ -102,26 +107,47 @@ namespace Treachery.Test
 
             if (g.CurrentTurn >= 1)
             {
-                int previousNumberOfCardsInPlay = _cardcount.CountOf(g);
+                int previousNumberOfCardsInPlay = _cardcount.CountOf(g.Seed);
                 int currentNumberOfCards = 
-                    g.Players.Sum(p => p.TreacheryCards.Count) 
+                    g.Players.Sum(player => player.TreacheryCards.Count) 
                     + g.TreacheryDeck.Items.Count 
                     + g.TreacheryDiscardPile.Items.Count 
                     + (g.WhiteCache != null ? g.WhiteCache.Count : 0) 
                     + (g.CardsOnAuction != null ? g.CardsOnAuction.Items.Count : 0)
-                    + (g.GetCardSetAsideForBid != null ? 1 : 0
-                    + (g.ShieldWallDestroyed ? 1 : 0));
+                    + (g.Players.Any(player => g.GetCardSetAsideForBid(player) != null) ? 1 : 0)
+                    + g.RemovedTreacheryCards.Count();
 
                 if (previousNumberOfCardsInPlay == 0)
                 {
                     lock (_cardcount) {
 
-                        _cardcount.CountN(g, currentNumberOfCards);
+                        _cardcount.CountN(g.Seed, currentNumberOfCards);
                     }
                 }
                 else if (currentNumberOfCards != previousNumberOfCardsInPlay)
                 {
-                    return "Total number of cards has changed: " + previousNumberOfCardsInPlay + " -> " + currentNumberOfCards + " swd: " + g.ShieldWallDestroyed;
+                    return string.Format("Total number of cards has changed: {0} -> {1}.",
+                        previousNumberOfCardsInPlay,
+                        currentNumberOfCards);
+                }
+            }
+
+            if (g.CurrentTurn >= 1)
+            {
+                int previousNumberOfLeaderssInPlay = _leadercount.CountOf(g.Seed);
+                int currentNumberOfLeaders = g.Players.Sum(player => player.Leaders.Count);
+                if (previousNumberOfLeaderssInPlay == 0)
+                {
+                    lock (_cardcount)
+                    {
+                        _leadercount.CountN(g.Seed, currentNumberOfLeaders);
+                    }
+                }
+                else if (currentNumberOfLeaders != previousNumberOfLeaderssInPlay)
+                {
+                    return string.Format("Total number of leaders has changed: {0} -> {1}.",
+                        previousNumberOfLeaderssInPlay,
+                        currentNumberOfLeaders);
                 }
             }
 
@@ -166,8 +192,8 @@ namespace Treachery.Test
 
         private string TestSpecialCases(Game g, GameEvent e)
         {
-            var p = g.GetPlayer(e.Initiator);
-
+            var p = e.Player;
+            /*
             if ((g.CurrentPhase == Phase.BeginningOfShipAndMove ||
                 g.CurrentPhase == Phase.WaitingForNextBiddingRound ||
                 g.CurrentPhase == Phase.BeginningOfBattle ) && g.Players.Any(p => p.Has(TreacheryCardType.Juice)))
@@ -179,7 +205,7 @@ namespace Treachery.Test
             {
                 WriteSavegameIfApplicable(g, e.Player, "Handswap");
             }
-                        
+              */          
             /*
             if (e is Battle b && b.Initiator == Faction.Black &&
                 g.CurrentBattle.OpponentOf(Faction.Black).Faction != Faction.Purple &&
@@ -413,6 +439,7 @@ namespace Treachery.Test
         public void TestBots()
         {
             _cardcount = new();
+            _leadercount = new();
 
             int nrOfGames = 5000;
 
@@ -517,6 +544,8 @@ namespace Treachery.Test
             var rulesAsArray = rules.ToArray();
             var wincounter = new ObjectCounter<Faction>();
 
+            //ParallelOptions po = new ParallelOptions();
+            //po.MaxDegreeOfParallelism = Environment.ProcessorCount;
             Parallel.For(0, nrOfGames,
                    index =>
                    {
@@ -551,12 +580,22 @@ namespace Treachery.Test
             }
         }
 
+        private bool _testTimedOut = false;
         private Game LetBotsPlay(Rule[] rules, List<Faction> factions, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool infoLogging, bool performTests)
         {
+            TimedTest timer = null;
+
             var game = new Game
             {
                 BotInfologging = infoLogging,
             };
+
+            if (performTests)
+            {
+                Assert.IsFalse(_testTimedOut, "Test timed out");
+                timer = new TimedTest(game, 60000);
+                timer.Elapsed += HandleElapsedTestTime;
+            }
 
             var start = new EstablishPlayers(game) { ApplicableRules = rules.ToArray(), FactionsInPlay = factions, MaximumTurns = nrOfTurns, MaximumNumberOfPlayers = nrOfPlayers, Players = Array.Empty<string>(), Seed = new Random().Next() };
             start.Execute(false, true);
@@ -577,28 +616,28 @@ namespace Treachery.Test
                 {
                     if (evt == null)
                     {
-                        File.WriteAllText("novalidbotevent.json", GameState.GetStateAsString(game));
+                        File.WriteAllText("novalidbotevent" + game.Seed + ".json", GameState.GetStateAsString(game));
                     }
                     Assert.IsNotNull(evt, "bots couldn't come up with a valid event");
 
                     var illegalCase = TestIllegalCases(game, evt);
                     if (illegalCase != "")
                     {
-                        File.WriteAllText("illegalcase.json", GameState.GetStateAsString(game));
+                        File.WriteAllText("illegalcase" + game.Seed + ".json", GameState.GetStateAsString(game));
                     }
                     Assert.AreEqual("", illegalCase);
 
                     var strangeCase = TestSpecialCases(game, evt);
                     if (strangeCase != "")
                     {
-                        File.WriteAllText("strangecase.json", GameState.GetStateAsString(game));
+                        File.WriteAllText("strangecase" + game.Seed + ".json", GameState.GetStateAsString(game));
                     }
 
                     Assert.AreEqual("", strangeCase);
 
                     if (game.History.Count == 5000)
                     {
-                        File.WriteAllText("stuck.json", GameState.GetStateAsString(game));
+                        File.WriteAllText("stuck" + game.Seed + ".json", GameState.GetStateAsString(game));
                     }
 
                     Assert.AreNotEqual(5000, game.History.Count, "bots got stuck at 5000 events");
@@ -611,10 +650,17 @@ namespace Treachery.Test
 
             }
 
+            timer.Stop();
+
             return game;
         }
 
-
+        private void HandleElapsedTestTime(object sender, ElapsedEventArgs e)
+        {
+            var game = sender as Game;
+            File.WriteAllText("timeout" + game.Seed + ".json", GameState.GetStateAsString(game));
+            _testTimedOut = true;
+        }
 
         private GameEvent PerformBotEvent(Game game, bool performTests)
         {
@@ -629,7 +675,7 @@ namespace Treachery.Test
                     var executeResult = evt.Execute(performTests, true);
                     if (performTests && executeResult != "")
                     {
-                        File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
+                        File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
                     }
                     if (performTests) Assert.AreEqual("", executeResult);
                     return evt;
@@ -645,7 +691,7 @@ namespace Treachery.Test
                     var executeResult = evt.Execute(performTests, true);
                     if (performTests && executeResult != "")
                     {
-                        File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
+                        File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
                     }
                     if (performTests) Assert.AreEqual("", executeResult);
                     return evt;
@@ -661,7 +707,7 @@ namespace Treachery.Test
                     var executeResult = evt.Execute(performTests, true);
                     if (performTests && executeResult != "")
                     {
-                        File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
+                        File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
                     }
                     if (performTests) Assert.AreEqual("", executeResult);
                     return evt;
@@ -677,7 +723,7 @@ namespace Treachery.Test
                     var result = evt.Execute(performTests, true);
                     if (performTests)
                     {
-                        if (result != "") File.WriteAllText("error.json", GameState.GetStateAsString(game));
+                        if (result != "") File.WriteAllText("error" + game.Seed + ".json", GameState.GetStateAsString(game));
                         Assert.AreEqual("", result);
                     }
                     return evt;
@@ -693,6 +739,7 @@ namespace Treachery.Test
             ProfileGames();
 
             _cardcount = new();
+            _leadercount = new();
 
             try
             {
