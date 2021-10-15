@@ -314,7 +314,7 @@ namespace Treachery.Test
 
                     var fs = File.OpenText(f);
                     var state = GameState.Load(fs.ReadToEnd());
-                    var game = new Game(state.Version);
+                    var game = new Game(state.Version, false);
                     var testcase = new Testcase();
 
                     foreach (var e in state.Events)
@@ -441,7 +441,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 5000;
+            int nrOfGames = 1000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
@@ -590,67 +590,82 @@ namespace Treachery.Test
                 BotInfologging = infoLogging,
             };
 
-            if (performTests)
+            try
             {
-                Assert.IsFalse(_testTimedOut, "Test timed out");
-                timer = new TimedTest(game, 60000);
-                timer.Elapsed += HandleElapsedTestTime;
-            }
-
-            var start = new EstablishPlayers(game) { ApplicableRules = rules.ToArray(), FactionsInPlay = factions, MaximumTurns = nrOfTurns, MaximumNumberOfPlayers = nrOfPlayers, Players = Array.Empty<string>(), Seed = new Random().Next() };
-            start.Execute(false, true);
-
-            if (p != null)
-            {
-                foreach (var kvp in p)
-                {
-                    game.Players.Single(p => p.Faction == kvp.Key).Param = kvp.Value;
-                }
-            }
-
-            while (game.CurrentPhase != Phase.GameEnded)
-            {
-                var evt = PerformBotEvent(game, performTests);
+                var start = new EstablishPlayers(game) { ApplicableRules = rules.ToArray(), FactionsInPlay = factions, MaximumTurns = nrOfTurns, MaximumNumberOfPlayers = nrOfPlayers, Players = Array.Empty<string>(), Seed = new Random().Next() };
+                start.Time = DateTime.Now;
+                start.Execute(false, true);
 
                 if (performTests)
                 {
-                    if (evt == null)
+                    //Assert.IsFalse(_testTimedOut, "Test timed out");
+                    timer = new TimedTest(game, 1800);
+                    timer.Elapsed += HandleElapsedTestTime;
+                }
+
+                if (p != null)
+                {
+                    foreach (var kvp in p)
                     {
-                        File.WriteAllText("novalidbotevent" + game.Seed + ".json", GameState.GetStateAsString(game));
+                        game.Players.Single(p => p.Faction == kvp.Key).Param = kvp.Value;
                     }
-                    Assert.IsNotNull(evt, "bots couldn't come up with a valid event");
+                }
 
-                    var illegalCase = TestIllegalCases(game, evt);
-                    if (illegalCase != "")
+                while (game.CurrentPhase != Phase.GameEnded)
+                {
+                    var evt = PerformBotEvent(game, performTests);
+                    evt.Time = DateTime.Now;
+
+                    if (performTests)
                     {
-                        File.WriteAllText("illegalcase" + game.Seed + ".json", GameState.GetStateAsString(game));
+                        if (evt == null)
+                        {
+                            File.WriteAllText("novalidbotevent" + game.Seed + ".json", GameState.GetStateAsString(game));
+                        }
+                        Assert.IsNotNull(evt, "bots couldn't come up with a valid event");
+
+                        var illegalCase = TestIllegalCases(game, evt);
+                        if (illegalCase != "")
+                        {
+                            File.WriteAllText("illegalcase" + game.Seed + ".json", GameState.GetStateAsString(game));
+                        }
+                        Assert.AreEqual("", illegalCase);
+
+                        var strangeCase = TestSpecialCases(game, evt);
+                        if (strangeCase != "")
+                        {
+                            File.WriteAllText("strangecase" + game.Seed + ".json", GameState.GetStateAsString(game));
+                        }
+                        Assert.AreEqual("", strangeCase);
+
+                        if (game.History.Count == 5000)
+                        {
+                            File.WriteAllText("stuck" + game.Seed + ".json", GameState.GetStateAsString(game));
+                        }
+                        Assert.AreNotEqual(5000, game.History.Count, "bots got stuck at 5000 events");
                     }
-                    Assert.AreEqual("", illegalCase);
-
-                    var strangeCase = TestSpecialCases(game, evt);
-                    if (strangeCase != "")
-                    {
-                        File.WriteAllText("strangecase" + game.Seed + ".json", GameState.GetStateAsString(game));
-                    }
-
-                    Assert.AreEqual("", strangeCase);
-
-                    if (game.History.Count == 5000)
+                    else if (game.History.Count == 5000)
                     {
                         File.WriteAllText("stuck" + game.Seed + ".json", GameState.GetStateAsString(game));
+                        break;
                     }
 
-                    Assert.AreNotEqual(5000, game.History.Count, "bots got stuck at 5000 events");
                 }
-                else if (game.History.Count == 5000)
+            }
+            catch
+            {
+                if (performTests)
                 {
-                    File.WriteAllText("stuck" + game.Seed + ".json", GameState.GetStateAsString(game));
-                    break;
+                    timer.Stop();
                 }
 
+                throw;
             }
 
-            timer.Stop();
+            if (performTests)
+            {
+                timer.Stop();
+            }
 
             return game;
         }
@@ -752,7 +767,7 @@ namespace Treachery.Test
                     var fs = File.OpenText(f);
                     var state = GameState.Load(fs.ReadToEnd());
                     Console.WriteLine("Checking {0} (version {1})...", f, state.Version);
-                    var game = new Game(state.Version);
+                    var game = new Game(state.Version, false);
 
                     fs = File.OpenText(f + ".testcase");
                     var tc = LoadObject<Testcase>(fs.ReadToEnd());
@@ -1137,7 +1152,7 @@ namespace Treachery.Test
             for (int i = 0; i < 10000; i++)
             {
                 int _playerID = GetRandomId();
-                var game = new Game(_playerID);
+                var game = new Game(_playerID, false);
 
                 game.HandleEvent(new EstablishPlayers() { Players = joined, FactionsInPlay = factions, MaximumTurns = 10, ApplicableRules = Game.RulesetDefinition[Ruleset.AdvancedGame], Seed = _playerID });
 

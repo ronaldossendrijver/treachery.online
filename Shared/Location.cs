@@ -29,6 +29,7 @@ namespace Treachery.Shared
         }
 
         public virtual Point Center { get; set; }
+
         public virtual Point SpiceLocation { get; set; }
 
         public virtual List<Location> Neighbours { get; set; } = new List<Location>();
@@ -55,13 +56,8 @@ namespace Treachery.Shared
         }
 
         public int Id { get; set; }
-        public bool IsStronghold
-        {
-            get
-            {
-                return Territory.IsStronghold;
-            }
-        }
+        
+        public bool IsStronghold => Territory.IsStronghold;
 
         public bool IsProtectedFromStorm => Territory.IsProtectedFromStorm;
 

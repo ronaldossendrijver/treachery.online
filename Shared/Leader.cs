@@ -8,31 +8,25 @@ namespace Treachery.Shared
 {
     public class Leader : IHero
     {
-        public Leader(int id)
-        {
-            Id = id;
-        }
+        public int Id { get; private set; }
+
 
         public const int VARIABLEVALUE = 99;
 
         public Faction Faction { get; set; }
 
-        public string Name
-        {
-            get
-            {
-                return Skin.Current.GetPersonName(this);
-            }
-        }
-
-        public bool Is(Faction f)
-        {
-            return Faction == f;
-        }
-
         public int Value { get; set; }
 
+        public Leader(int id)
+        {
+            Id = id;
+        }
+
+        public string Name => Skin.Current.GetPersonName(this);
+        
         public HeroType HeroType { get; set; }
+
+        public bool Is(Faction f) => Faction == f;
 
         public int ValueInCombatAgainst(IHero opposingHero)
         {
@@ -68,15 +62,7 @@ namespace Treachery.Shared
             }
         }
 
-        public int Id { get; private set; }
-
-        public int SkinId
-        {
-            get
-            {
-                return Id;
-            }
-        }
+        public int SkinId => Id;
 
         public override bool Equals(object obj)
         {
@@ -101,71 +87,6 @@ namespace Treachery.Shared
         public bool IsFaceDancer(IHero hero)
         {
             return hero == this;
-        }
-    }
-
-    public class LeaderState : ICloneable
-    {
-        private static int moment;
-
-        public Territory CurrentTerritory { get; set; }
-
-        //even = alive, odd = dead
-        public int DeathCounter { get; set; }
-
-        public int TimeOfDeath { get; set; }
-
-        public LeaderSkill Skill { get; set; }
-
-        public bool InFrontOfShield { get; set; }
-
-        public bool Alive
-        {
-            get
-            {
-                return (DeathCounter % 2) == 0;
-            }
-        }
-
-        public bool IsFaceDownDead
-        {
-            get
-            {
-                return (DeathCounter % 4) == 3;
-            }
-        }
-
-        public void Kill(Game g)
-        {
-            if (Skill != LeaderSkill.None)
-            {
-                g.SkillDeck.PutOnTop(Skill);
-                Skill = LeaderSkill.None;
-                InFrontOfShield = false;
-            }
-
-            DeathCounter++;
-            TimeOfDeath = moment++;
-        }
-
-        public void Assassinate(Game g)
-        {
-            Kill(g);
-            if (!IsFaceDownDead)
-            {
-                Revive();
-                Kill(g);
-            }
-        }
-
-        public void Revive()
-        {
-            DeathCounter++;
-        }
-
-        public object Clone()
-        {
-            return MemberwiseClone();
         }
     }
 }

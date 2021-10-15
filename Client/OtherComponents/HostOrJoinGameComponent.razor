@@ -225,7 +225,7 @@
                     restoredGameData = null;
 
                     loadedGame = null;
-                    var result = Game.TryLoad(state, true, true, ref loadedGame);
+                    var result = Game.TryLoad(state, true, true, ref loadedGame, true);
 
                     if (result != "")
                     {
@@ -263,7 +263,7 @@
 
     private void RestoreGame_Continued()
     {
-        var message = Game.TryLoad(recentGameState, false, true, ref restoredGame);
+        var message = Game.TryLoad(recentGameState, false, true, ref restoredGame, true);
         restoredGameData = recentGameData;
         _restoring = false;
         StateHasChanged();

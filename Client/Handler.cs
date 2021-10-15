@@ -467,7 +467,7 @@ namespace Treachery.Client
 
                 var state = GameState.Load(stateData);
 
-                var result = Game.TryLoad(state, false, false, ref Game);
+                var result = Game.TryLoad(state, false, false, ref Game, true);
                 Game.MessageHandler += Game_MessageHandler;
 
                 if (result != "")

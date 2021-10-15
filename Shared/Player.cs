@@ -60,7 +60,6 @@ namespace Treachery.Shared
 
         public IDictionary<Location, Battalion> ForcesOnPlanet { get; set; } = new Dictionary<Location, Battalion>();
 
-
         public Faction PredictedFaction { get; set; } = 0;
 
         public int PredictedTurn { get; set; } = 0;
@@ -99,26 +98,11 @@ namespace Treachery.Shared
             IsBot = isBot;
         }
 
-        public Player AlliedPlayer
-        {
+        public Player AlliedPlayer => Game.GetPlayer(Ally);
+    
+        public bool Has(TreacheryCardType cardtype) => TreacheryCards.Any(c => c.Type == cardtype);
 
-            get
-            {
-                return Game.GetPlayer(Ally);
-            }
-        }
-
-        public bool Has(TreacheryCardType cardtype)
-        {
-            return TreacheryCards.Any(c => c.Type == cardtype);
-        }
-
-        public bool Is(Faction f)
-        {
-            return Faction == f;
-        }
-
-
+        public bool Is(Faction f) => Faction == f;
 
         private Battalion GetAndCreateIfNeeded(Location location)
         {
@@ -538,31 +522,11 @@ namespace Treachery.Shared
             }
         }
 
-        public bool HasRoomForCards
-        {
-            get
-            {
-                return TreacheryCards.Count < MaximumNumberOfCards;
-            }
-        }
+        public bool HasRoomForCards => TreacheryCards.Count < MaximumNumberOfCards;
 
+        public int NumberOfTraitors => Faction == Faction.Black ? 4 : 1;
 
-
-        public int NumberOfTraitors
-        {
-            get
-            {
-                return Faction == Faction.Black ? 4 : 1;
-            }
-        }
-
-        public int NumberOfFacedancers
-        {
-            get
-            {
-                return Faction == Faction.Purple ? 3 : 0;
-            }
-        }
+        public int NumberOfFacedancers => Faction == Faction.Purple ? 3 : 0;
 
         public FactionForce Force
         {

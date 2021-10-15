@@ -214,7 +214,7 @@ else if (IsVisible(HELP))
                 if (state.Version > 0)
                 {
                     Game game = null;
-                    var result = Game.TryLoad(state, true, true, ref game);
+                    var result = Game.TryLoad(state, true, true, ref game, true);
 
                     if (result != "")
                     {

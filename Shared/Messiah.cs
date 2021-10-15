@@ -10,49 +10,19 @@ namespace Treachery.Shared
         {
         }
 
-        public int Value
-        {
-            get
-            {
-                return 2;
-            }
-        }
+        public int Value => 2;
 
-        public int ValueInCombatAgainst(IHero opposingHero)
-        {
-            return Value;
-        }
+        public int ValueInCombatAgainst(IHero opposingHero) => Value;
 
-        public string Name
-        {
-            get
-            {
-                return Skin.Current.Describe(Concept.Messiah);
-            }
-        }
+        public string Name => Skin.Current.Describe(Concept.Messiah);
 
-        public Faction Faction
-        {
-            get
-            {
-                return Faction.Green;
-            }
-        }
+        public Faction Faction => Faction.Green;
 
         public HeroType HeroType => HeroType.Messiah;
 
-        public bool Is(Faction f)
-        {
-            return Faction == f;
-        }
+        public bool Is(Faction f) => Faction == f;
 
-        public int CostToRevive
-        {
-            get
-            {
-                return Value;
-            }
-        }
+        public int CostToRevive => Value;
 
         public int Id { get; set; }
 
@@ -63,14 +33,8 @@ namespace Treachery.Shared
             return Skin.Current.Describe(Concept.Messiah);
         }
 
-        public bool IsTraitor(IHero hero)
-        {
-            return false;
-        }
+        public bool IsTraitor(IHero hero) => false;
 
-        public bool IsFaceDancer(IHero hero)
-        {
-            return false;
-        }
+        public bool IsFaceDancer(IHero hero) => false;
     }
 }

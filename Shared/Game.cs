@@ -30,6 +30,7 @@ namespace Treachery.Shared
         public Rule[] RulesForBots { get; set; } = new Rule[0];
         public Rule[] AllRules { get; set; } = new Rule[0];
         public IList<GameEvent> History { get; set; } = new List<GameEvent>();
+        public bool TrackStatesForReplay { get; set; } = true;
         public IList<Game> States { get; set; } = new List<Game>();
         public int CurrentTurn { get; set; } = 0;
         public MainPhase CurrentMainPhase { get; set; } = MainPhase.Started;
@@ -57,12 +58,12 @@ namespace Treachery.Shared
 
         #region Initialization
 
-        public Game() : this(LatestVersion)
+        public Game() : this(LatestVersion, true)
         {
 
         }
 
-        public Game(int version)
+        public Game(int version, bool trackStatesForReplay)
         {
             if (version < LowestSupportedVersion)
             {
@@ -70,6 +71,7 @@ namespace Treachery.Shared
             }
 
             Version = version;
+            TrackStatesForReplay = trackStatesForReplay;
             InitializeLeaderState();
             EnterPhaseAwaitingPlayers();
         }
@@ -96,12 +98,16 @@ namespace Treachery.Shared
         {
             if (!justEnteredStartOfPhase && !(e is AllyPermission) && !(e is DealOffered) && !(e is DealAccepted)) MainPhaseMiddle();
             History.Add(e);
-            States.Add(Clone());
+
+            if (TrackStatesForReplay)
+            {
+                States.Add(Clone());
+            }
         }
 
         public Game Undo(int untilEventNr)
         {
-            var result = new Game(Version);
+            var result = new Game(Version, TrackStatesForReplay);
             for (int i = 0; i < untilEventNr; i++)
             {
                 var clone = History[i].Clone();
@@ -128,11 +134,11 @@ namespace Treachery.Shared
 
         public GameEvent LatestEvent() => History.Count > 0 ? History[^1] : null;
 
-        public static string TryLoad(GameState state, bool performValidation, bool isHost, ref Game result)
+        public static string TryLoad(GameState state, bool performValidation, bool isHost, ref Game result, bool trackStatesForReplay)
         {
             try
             {
-                result = new Game(state.Version);
+                result = new Game(state.Version, trackStatesForReplay);
                 string message;
 
                 int nr = 0;
