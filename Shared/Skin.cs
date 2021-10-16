@@ -1662,7 +1662,7 @@ namespace Treachery.Shared
                 [20] = "Play at any time to revive up to 5 forces or 1 leader.",
                 [21] = "Can be played after turn 1 just before the storm moves if you have forces on the Shield Wall or an adjacent territory. Destroys the Shield Wall and all forces on it, causing Arrakeen, Carthag and the Imperial Basin to be vulnerable to storms for the rest of the game. This card is then removed from play.",
                 [22] = "Play during your turn at the Movement phase to perform an additional move.",
-                [23] = "Allows you to bid any amount of spice on a card or immediately win a card on bid. Allows you to ship at half price. In the advanced game, allows use of your Special Karama Power once during the game and can be used to prevent a Faction Advantage. Discard after use.",
+                [23] = "Allows you to prevent use of a Faction Advantage. Allows you to bid any amount of spice on a card or immediately win a card on bid. Allows you to ship at half price. In the advanced game, allows use of your Special Karama Power once during the game. Discard after use.",
                 [25] = "Publicly ask one player a yes or no question about the game. That question must be answered truthfully.",
                 [27] = "Can be played after turn 1 just before the storm moves. Instead of normal storm moved, you can move the storm 0 to 10 sectors.",
                 [28] = "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",

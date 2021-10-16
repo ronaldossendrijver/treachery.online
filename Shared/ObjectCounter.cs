@@ -43,6 +43,16 @@ namespace Treachery.Shared
             }
         }
 
+        public void SetToN(T obj, int n)
+        {
+            if (counters.ContainsKey(obj))
+            {
+                counters.Remove(obj);
+            }
+            
+            counters.Add(obj, n);
+        }
+
         public int CountOf(T obj)
         {
             if (counters.ContainsKey(obj))

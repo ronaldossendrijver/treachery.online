@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Treachery.Shared;
@@ -44,6 +43,11 @@ namespace Treachery.Client
         public bool StatisticsSent = false;
         public bool IsFullScreen = false;
         public bool BotsArePaused { get; private set; } = false;
+
+        private Battle RevisablePlan = null;
+        private BattleInitiated RevisablePlanBattle = null;
+
+
 
         public bool IsGameMaster => !IsObserver && Player.Faction == Faction.None && CurrentPhase > Phase.TradingFactions;
 
@@ -86,7 +90,46 @@ namespace Treachery.Client
 
         public void Refresh()
         {
-            RefreshHandler.Invoke();
+            RefreshHandler?.Invoke();
+        }
+
+        public void Restart()
+        {
+            PlayerName = "";
+            Game = new Game();
+            UpdateStatus();
+            Game.MessageHandler += Game_MessageHandler;
+
+            HostProxy = null;
+            Host.Stop();
+            Host = null;
+            IsObserver = false;
+            
+            _joinError = new();
+            _gameinprogressHostId = 0;
+            _battleUnderConstruction = null;
+            BidAutoPassThreshold = 0;
+            Autopass = false;
+            KeepAutopassSetting = false;
+            ShowWheelsAndHMS = true;
+            StatisticsSent = false;
+
+            howThisPlayerJoined = null;
+            howThisObserverJoined = null;
+            howThisPlayerRejoined = null;
+            howThisObserverRejoined = null;
+            hostLastSeen = DateTime.Now;
+            nrOfHeartbeats = 0;
+            _pending = new();
+            _player = null;
+            Messages = new();
+            itAlreadyWasMyTurn = false;
+            savegameSent = false;
+            previousPhase = Phase.None;
+            awaitingBotAction = false;
+            _localStorageCleared = false;
+
+            Refresh();
         }
 
         private void Game_MessageHandler(object sender, ChatMessage e)
@@ -118,9 +161,6 @@ namespace Treachery.Client
                 _logger.LogError(ex.ToString());
             }
         }
-
-        private Battle RevisablePlan = null;
-        private BattleInitiated RevisablePlanBattle = null;
 
         public void SetRevisablePlan(Battle plan)
         {
@@ -216,7 +256,7 @@ namespace Treachery.Client
                 IsObserver = false;
                 hostLastSeen = DateTime.Now;
 
-                var _ = Heartbeat();
+                var _ = Heartbeat(_gameinprogressHostId);
             }
             else
             {
@@ -236,7 +276,7 @@ namespace Treachery.Client
                 HostProxy = new HostProxy(hostID, _connection);
                 IsObserver = true;
                 hostLastSeen = DateTime.Now;
-                var _ = Heartbeat();
+                var _ = Heartbeat(_gameinprogressHostId);
             }
             else
             {
@@ -259,10 +299,10 @@ namespace Treachery.Client
         public DateTime hostLastSeen = DateTime.Now;
         private int nrOfHeartbeats = 0;
         private string oldConnectionId = "";
-
-        public async Task Heartbeat()
+        
+        public async Task Heartbeat(int gameInProgressHostId)
         {
-            if (nrOfHeartbeats++ < MAX_HEARTBEATS)
+            if (gameInProgressHostId == _gameinprogressHostId && nrOfHeartbeats++ < MAX_HEARTBEATS)
             {
                 try
                 {
@@ -296,7 +336,7 @@ namespace Treachery.Client
                     Support.Log(e.ToString());
                 }
 
-                _ = Task.Delay(HEARTBEAT_DELAY).ContinueWith(e => Heartbeat());
+                _ = Task.Delay(HEARTBEAT_DELAY).ContinueWith(e => Heartbeat(gameInProgressHostId));
             }
         }
 
@@ -626,7 +666,7 @@ namespace Treachery.Client
             Refresh();
         }
 
-        private bool awaitingBotAction;
+        private bool awaitingBotAction = false;
         private void PerformBotAction(GameEvent e)
         {
             if (!awaitingBotAction && Game.Players.Any(p => p.IsBot))

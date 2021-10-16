@@ -106,6 +106,16 @@
             <path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z" />
         </svg>
     </a>
+    
+    @if (h.Game.EventCount > 0)
+    {
+        <a class="btn btn-link p-1" @onclick="e => SetVisible(RESTART)" title="Exit Game">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" class="bi bi-box-arrow-left" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0v2z"/>
+              <path fill-rule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3z"/>
+            </svg>
+        </a>
+    }
 
     <div class="ml-2 mr-3">
         <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" class="form-group form-inline mt-1 mb-0 p-0">
@@ -130,20 +140,30 @@
 else if (IsVisible(HELP))
 {
     <div class="card p-1 mb-2">
-        <div class="card-body">
+        <div class="card-body text-center">
 
             @if (h.HostProxy != null)
             {
-                <button class="btn btn-secondary mt-1 mr-1" data-toggle="modal" data-target="#mentatModal">List of Cards</button>
+                <button class="btn btn-primary mt-1 mr-1" data-toggle="modal" data-target="#mentatModal">List of Cards</button>
             }
 
-            <a class="btn btn-secondary mt-1" href="https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf" target="_blank">Dune Rulebook</a>
-            <a class="btn btn-secondary mt-1" href="https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf" target="_blank">Dune FAQ</a>
-            <a class="btn btn-secondary mt-1" href="https://www.gf9games.com/dunegame/wp-content/uploads/2020/09/IxianAndTleilaxuRulebook.pdf" target="_blank">Expansion Rulebook</a>
-            <a class="btn btn-secondary mt-1" href="https://www.gf9games.com/dune/dune-the-boardgame/" target="_blank">Buy boardgame from GF9</a>
-            <button class="btn btn-secondary mt-1" data-toggle="modal" data-target="#tutorialModal">Tutorial: how to play</button>
-            <a class="btn btn-secondary mt-1" href="https://dune.games" target="_blank">Dune Dashboard</a>
-            <button class="btn btn-secondary mt-1" data-toggle="modal" data-target="#creditModal">Credits</button>
+            <a class="btn btn-primary mt-1" href="https://www.gf9games.com/dunegame/wp-content/uploads/Dune-Rulebook.pdf" target="_blank">Dune Rulebook</a>
+            <a class="btn btn-primary mt-1" href="https://www.gf9games.com/dune/wp-content/uploads/2020/11/Dune-FAQ-Nov-2020.pdf" target="_blank">Dune FAQ</a>
+            <a class="btn btn-primary mt-1" href="https://www.gf9games.com/dunegame/wp-content/uploads/2020/09/IxianAndTleilaxuRulebook.pdf" target="_blank">Expansion Rulebook</a>
+            <a class="btn btn-primary mt-1" href="https://www.gf9games.com/dune/classic-dune/" target="_blank">Buy boardgame from GF9</a>
+            <button class="btn btn-primary mt-1" data-toggle="modal" data-target="#tutorialModal">Tutorial: how to play</button>
+            <a class="btn btn-primary mt-1" href="https://dune.games" target="_blank">Dune Dashboard</a>
+            <button class="btn btn-primary mt-1" data-toggle="modal" data-target="#creditModal">Credits</button>
+        </div>
+    </div>
+}
+else if (IsVisible(RESTART))
+{
+    <div class="card p-1 mb-2">
+        <div class="card-body text-center">
+            <p class="text-warning mb-1">Are you sure you wish to exit this game and go back to the main screen?</p>
+            <button class="btn btn-danger mt-1 mr-1" @onclick="RestartGame">Yes</button>
+            <button class="btn btn-primary mt-1" @onclick="e => SetVisible(null)">No</button>
         </div>
     </div>
 }
@@ -162,6 +182,7 @@ else if (IsVisible(HELP))
     private const string HOST = "host";
     private const string HELP = "help";
     private const string VOLUME = "volume";
+    private const string RESTART = "restart";
 
     private const int MAX_SAVEGAME_SIZE = 4194304;
     private const int MAX_SKINFILE_SIZE = 262144;
@@ -169,11 +190,16 @@ else if (IsVisible(HELP))
     [Parameter]
     public object Visible { get; set; } = null;
 
+    private void RestartGame()
+    {
+        SetVisible(null);
+        h.Restart();
+    }
+
     private void SetVisible(object o)
     {
         if (Visible == o)
         {
-
             Visible = null;
         }
         else

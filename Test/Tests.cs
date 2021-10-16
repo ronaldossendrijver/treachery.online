@@ -115,13 +115,13 @@ namespace Treachery.Test
                     + (g.WhiteCache != null ? g.WhiteCache.Count : 0) 
                     + (g.CardsOnAuction != null ? g.CardsOnAuction.Items.Count : 0)
                     + (g.Players.Any(player => g.GetCardSetAsideForBid(player) != null) ? 1 : 0)
-                    + g.RemovedTreacheryCards.Count();
+                    + g.RemovedTreacheryCards.Count;
 
                 if (previousNumberOfCardsInPlay == 0)
                 {
                     lock (_cardcount) {
 
-                        _cardcount.CountN(g.Seed, currentNumberOfCards);
+                        _cardcount.SetToN(g.Seed, currentNumberOfCards);
                     }
                 }
                 else if (currentNumberOfCards != previousNumberOfCardsInPlay)
@@ -131,25 +131,26 @@ namespace Treachery.Test
                         currentNumberOfCards);
                 }
             }
-
+            
             if (g.CurrentTurn >= 1)
             {
-                int previousNumberOfLeaderssInPlay = _leadercount.CountOf(g.Seed);
+                int previousNumberOfLeadersInPlay = _leadercount.CountOf(g.Seed);
                 int currentNumberOfLeaders = g.Players.Sum(player => player.Leaders.Count);
-                if (previousNumberOfLeaderssInPlay == 0)
+                if (previousNumberOfLeadersInPlay == 0)
                 {
-                    lock (_cardcount)
+                    lock (_leadercount)
                     {
-                        _leadercount.CountN(g.Seed, currentNumberOfLeaders);
+                        _leadercount.SetToN(g.Seed, currentNumberOfLeaders);
                     }
                 }
-                else if (currentNumberOfLeaders != previousNumberOfLeaderssInPlay)
+                else if (currentNumberOfLeaders != previousNumberOfLeadersInPlay)
                 {
                     return string.Format("Total number of leaders has changed: {0} -> {1}.",
-                        previousNumberOfLeaderssInPlay,
+                        previousNumberOfLeadersInPlay,
                         currentNumberOfLeaders);
                 }
             }
+            
 
             if (g.TreacheryDeck != null)
             {
@@ -418,7 +419,9 @@ namespace Treachery.Test
             int countPoints = 0;
             int countForcesOnPlanet = 0;
 
-            Parallel.For(0, nrOfGames,
+            ParallelOptions po = new ParallelOptions();
+            po.MaxDegreeOfParallelism = Environment.ProcessorCount;
+            Parallel.For(0, nrOfGames, po,
                 i =>
                 {
                     var game = LetBotsPlay(rules, factions, nrOfPlayers, nrOfTurns, p, false, false);
@@ -441,7 +444,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 1000;
+            int nrOfGames = 5000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
@@ -544,9 +547,9 @@ namespace Treachery.Test
             var rulesAsArray = rules.ToArray();
             var wincounter = new ObjectCounter<Faction>();
 
-            //ParallelOptions po = new ParallelOptions();
-            //po.MaxDegreeOfParallelism = Environment.ProcessorCount;
-            Parallel.For(0, nrOfGames,
+            ParallelOptions po = new ParallelOptions();
+            po.MaxDegreeOfParallelism = Environment.ProcessorCount;
+            Parallel.For(0, nrOfGames, po,
                    index =>
                    {
                        PlayGameAndRecordResults(factions, nrOfPlayers, nrOfTurns, rulesAsArray, wincounter);
@@ -580,7 +583,6 @@ namespace Treachery.Test
             }
         }
 
-        private bool _testTimedOut = false;
         private Game LetBotsPlay(Rule[] rules, List<Faction> factions, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool infoLogging, bool performTests)
         {
             TimedTest timer = null;
@@ -598,8 +600,7 @@ namespace Treachery.Test
 
                 if (performTests)
                 {
-                    //Assert.IsFalse(_testTimedOut, "Test timed out");
-                    timer = new TimedTest(game, 1800);
+                    timer = new TimedTest(game, 30);
                     timer.Elapsed += HandleElapsedTestTime;
                 }
 
@@ -674,7 +675,6 @@ namespace Treachery.Test
         {
             var game = sender as Game;
             File.WriteAllText("timeout" + game.Seed + ".json", GameState.GetStateAsString(game));
-            _testTimedOut = true;
         }
 
         private GameEvent PerformBotEvent(Game game, bool performTests)
@@ -761,7 +761,9 @@ namespace Treachery.Test
                 Console.WriteLine("Re-playing all savegame files in {0}...", Directory.GetCurrentDirectory());
 
                 int gamesTested = 0;
-                Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), f =>
+                ParallelOptions po = new ParallelOptions();
+                po.MaxDegreeOfParallelism = Environment.ProcessorCount;
+                Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), po, f =>
                 {
                     gamesTested++;
                     var fs = File.OpenText(f);
@@ -798,7 +800,7 @@ namespace Treachery.Test
                         {
                             File.WriteAllText("illegalcase.json", GameState.GetStateAsString(game));
                         }
-                        Assert.AreEqual("", strangeCase);
+                        Assert.AreEqual("", strangeCase, f + ", " + strangeCase);
 
                         valueId++;
                     }
@@ -825,7 +827,9 @@ namespace Treachery.Test
                 var leaderCalledAsTraitor = new ObjectCounter<string>();
 
                 int gamesTested = 0;
-                Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), f =>
+                ParallelOptions po = new ParallelOptions();
+                po.MaxDegreeOfParallelism = Environment.ProcessorCount;
+                Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), po, f =>
                 {
                     gamesTested++;
                     var fs = File.OpenText(f);
