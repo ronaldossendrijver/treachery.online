@@ -107,7 +107,7 @@
         </svg>
     </a>
     
-    @if (h.Game.EventCount > 0)
+    @if (h.HostProxy != null)
     {
         <a class="btn btn-link p-1" @onclick="e => SetVisible(RESTART)" title="Exit Game">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" class="bi bi-box-arrow-left" viewBox="0 0 16 16">

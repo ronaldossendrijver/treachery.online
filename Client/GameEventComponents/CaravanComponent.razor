@@ -19,11 +19,11 @@
 
             @if (Game.CurrentPlanetology != null && Game.CurrentPlanetology.MoveFromTwoTerritories && Game.CurrentPlanetology.Initiator == Faction)
             {
-                <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="forces" Locations="Game.LocationsWithAnyForcesNotInStorm(Player)" AlwaysShowLocation="true" AllowMultipleTerritories="true" InitializeToMaximum=true/>
+                <ForceSelectionComponent h="h" OnChanged="SelectValidToLocation" Forces="forces" Locations="Game.LocationsWithAnyForcesNotInStorm(Player)" AlwaysShowLocation="true" AllowMultipleTerritories="true" InitializeToMaximum=true/>
             }
             else
             {
-                <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="forces" Locations="Player.LocationsWithAnyForcesInTerritory(fromTerritory)" InitializeToMaximum=true/>
+                <ForceSelectionComponent h="h" OnChanged="SelectValidToLocation" Forces="forces" Locations="Player.LocationsWithAnyForcesInTerritory(fromTerritory)" InitializeToMaximum=true/>
             }
 
             <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="toLocation" Values="ValidTargets">

@@ -117,6 +117,7 @@
                     _value = value;
                     ValueAsString = GetValueAsString(value);
                     ValueChanged.InvokeAsync(value);
+                    OnChanged?.Invoke();
                 }
             }
         }
@@ -124,6 +125,9 @@
 
     [Parameter]
     public EventCallback<T> ValueChanged { get; set; }
+
+    [Parameter]
+    public Action OnChanged { get; set; }
 
     [Parameter]
     public RenderFragment Label { get; set; }

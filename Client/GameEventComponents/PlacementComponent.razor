@@ -53,6 +53,12 @@
         }
     }
 
+    protected void SelectValidToLocation() {
+
+        toLocation = ValidTargets.FirstOrDefault();
+        StateHasChanged();
+    }
+
     private void HandleLocationSelected(object sender, Location l)
     {
         SetIfValid(ref toLocation, ValidTargets, l);

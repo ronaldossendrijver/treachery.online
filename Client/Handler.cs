@@ -95,16 +95,8 @@ namespace Treachery.Client
 
         public void Restart()
         {
-            PlayerName = "";
-            Game = new Game();
-            UpdateStatus();
-            Game.MessageHandler += Game_MessageHandler;
+            if (Host != null) Host.Stop();
 
-            HostProxy = null;
-            Host.Stop();
-            Host = null;
-            IsObserver = false;
-            
             _joinError = new();
             _gameinprogressHostId = 0;
             _battleUnderConstruction = null;
@@ -129,6 +121,14 @@ namespace Treachery.Client
             awaitingBotAction = false;
             _localStorageCleared = false;
 
+            PlayerName = "";
+            Game = new Game();
+            Game.MessageHandler += Game_MessageHandler;
+            HostProxy = null;
+            IsObserver = false;
+            Host = null;
+
+            UpdateStatus();
             Refresh();
         }
 
