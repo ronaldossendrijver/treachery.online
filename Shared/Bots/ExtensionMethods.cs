@@ -23,6 +23,54 @@ namespace Treachery.Shared
             return RandomOrDefault(source.Where(v => selector(v).Equals(best)));
         }
 
+        public static T OneOfHighestNOrDefault<T>(this IEnumerable<T> source, Func<T, IComparable> selector, int n)
+        {
+            if (source is null || n <= 0)
+            {
+                return default;
+            }
+
+            List<T> toSelectFrom = new List<T>();
+            int i = 0;
+            foreach (var item in source.OrderByDescending(selector))
+            {
+                i++;
+                toSelectFrom.Add(item);
+                if (i == n) break;
+            }
+
+            if (i == 0)
+            {
+                return default;
+            }
+
+            return RandomOrDefault(toSelectFrom);
+        }
+
+        public static T OneOfLowestNOrDefault<T>(this IEnumerable<T> source, Func<T, IComparable> selector, int n)
+        {
+            if (source is null || n <= 0)
+            {
+                return default;
+            }
+
+            List<T> toSelectFrom = new List<T>();
+            int i = 0;
+            foreach (var item in source.OrderBy(selector))
+            {
+                i++;
+                toSelectFrom.Add(item);
+                if (i == n) break;
+            }
+
+            if (i == 0)
+            {
+                return default;
+            }
+
+            return RandomOrDefault(toSelectFrom);
+        }
+
         public static T LowestOrDefault<T>(this IEnumerable<T> source, Func<T, IComparable> selector)
         {
             if (source is null)

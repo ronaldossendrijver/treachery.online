@@ -491,7 +491,12 @@ namespace Treachery.Shared
                 countForcesForWhite = Game.LatestRevealedNoFieldValue == 5 ? 3 : 5;
             }
 
-            return MaxDial(p.Resources, p.ForcesIn(t) + countForcesForWhite, p.Faction != Faction.White ? p.SpecialForcesIn(t) : 0, p, opponent.Faction);
+            return MaxDial(
+                p.Resources, 
+                p.ForcesIn(t) + countForcesForWhite, 
+                p.Faction != Faction.White ? p.SpecialForcesIn(t) : 0, 
+                p, 
+                opponent != null ? opponent.Faction : Faction.Black);
         }
 
         protected virtual float MaxDial(int resources, Battalion battalion, Faction opponent)

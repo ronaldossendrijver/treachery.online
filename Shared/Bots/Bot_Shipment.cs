@@ -29,28 +29,21 @@ namespace Treachery.Shared
             bool inGreatNeedOfSpice = (Faction == Faction.Black || Faction == Faction.Green || Faction == Faction.White) && ResourcesIncludingAllyContribution <= 2;
             bool stillNeedsResources = ResourcesIncludingAllyContribution < 15 + D(1, 20);
 
-            try
-            {
-                DetermineShipment_PreventNormalWin(LastTurn && willDoEverythingToPreventNormalWin ? 99 : Param.Shipment_MinimumOtherPlayersITrustToPreventAWin - NrOfNonWinningPlayersToShipAndMoveIncludingMe, extraForces, Param.Shipment_DialShortageToAccept, minResourcesToKeep, Param.Battle_MaximumUnsupportedForces);
-                if (decidedShipment == null && Faction == Faction.Yellow && Game.CurrentTurn < 3 && !winning) DetermineShipment_ShipDirectlyToSpiceAsYellow();
-                if (decidedShipment == null && Faction != Faction.Yellow && Ally != Faction.Yellow) DetermineShipment_PreventFremenWin();
-                if (decidedShipment == null && !winning && !AlmostLastTurn && inGreatNeedOfSpice) DetermineShipment_ShipToStrongholdNearSpice();
-                if (decidedShipment == null && Faction == Faction.Grey && decidedShipment == null && AnyForcesIn(Game.Map.HiddenMobileStronghold) == 0) DetermineShipment_AttackWeakHMS(1, Param.Shipment_DialShortageToAccept, 0, LastTurn ? 99 : Param.Battle_MaximumUnsupportedForces);
-                if (decidedShipment == null && winning) DetermineShipment_StrengthenWeakestStronghold(false, extraForces, Param.Shipment_DialShortageToAccept, !MayFlipToAdvisors);
-                if (decidedShipment == null && !winning) DetermineShipment_TakeVacantStronghold(extraForces, minResourcesToKeep, Param.Battle_MaximumUnsupportedForces);
-                if (decidedShipment == null && !winning) DetermineShipment_AttackWeakStronghold(extraForces, minResourcesToKeep, LastTurn ? 99 : Param.Battle_MaximumUnsupportedForces);
-                if (decidedShipment == null && Faction != Faction.Yellow && !winning && !AlmostLastTurn && stillNeedsResources) DetermineShipment_ShipToStrongholdNearSpice();
-                if (decidedShipment == null && Faction == Faction.Yellow && !winning && !LastTurn && stillNeedsResources) DetermineShipment_ShipDirectlyToSpiceAsYellow();
-                if (decidedShipment == null && Game.MayShipAsGuild(this) && !winning && !AlmostLastTurn && stillNeedsResources) DetermineShipment_ShipDirectlyToSpiceAsOrangeOrOrangeAlly();
-                if (decidedShipment == null && Faction == Faction.Orange && !LastTurn) DetermineShipment_BackToReserves();
-                if (decidedShipment == null) DetermineShipment_DummyAttack(minResourcesToKeep);
-                if (decidedShipment == null) DetermineShipment_StrengthenWeakestStronghold(true, extraForces, Param.Shipment_DialShortageToAccept, !MayFlipToAdvisors);
-                if (decidedShipment == null && Faction == Faction.Yellow && AnyForcesIn(Game.Map.PolarSink) <= 2 && (LastTurn || ForcesInReserve + SpecialForcesInReserve * 2 > 8)) DetermineShipment_PolarSink();
-            }
-            catch (Exception e)
-            {
-                LogInfo(e.Message);
-            }
+            DetermineShipment_PreventNormalWin(LastTurn && willDoEverythingToPreventNormalWin ? 99 : Param.Shipment_MinimumOtherPlayersITrustToPreventAWin - NrOfNonWinningPlayersToShipAndMoveIncludingMe, extraForces, Param.Shipment_DialShortageToAccept, minResourcesToKeep, Param.Battle_MaximumUnsupportedForces);
+            if (decidedShipment == null && Faction == Faction.Yellow && Game.CurrentTurn < 3 && !winning) DetermineShipment_ShipDirectlyToSpiceAsYellow();
+            if (decidedShipment == null && Faction != Faction.Yellow && Ally != Faction.Yellow) DetermineShipment_PreventFremenWin();
+            if (decidedShipment == null && !winning && !AlmostLastTurn && inGreatNeedOfSpice) DetermineShipment_ShipToStrongholdNearSpice();
+            if (decidedShipment == null && Faction == Faction.Grey && decidedShipment == null && AnyForcesIn(Game.Map.HiddenMobileStronghold) == 0) DetermineShipment_AttackWeakHMS(1, Param.Shipment_DialShortageToAccept, 0, LastTurn ? 99 : Param.Battle_MaximumUnsupportedForces);
+            if (decidedShipment == null && winning) DetermineShipment_StrengthenWeakestStronghold(false, extraForces, Param.Shipment_DialShortageToAccept, !MayFlipToAdvisors);
+            if (decidedShipment == null && !winning) DetermineShipment_TakeVacantStronghold(extraForces, minResourcesToKeep, Param.Battle_MaximumUnsupportedForces);
+            if (decidedShipment == null && !winning) DetermineShipment_AttackWeakStronghold(extraForces, minResourcesToKeep, LastTurn ? 99 : Param.Battle_MaximumUnsupportedForces);
+            if (decidedShipment == null && Faction != Faction.Yellow && !winning && !AlmostLastTurn && stillNeedsResources) DetermineShipment_ShipToStrongholdNearSpice();
+            if (decidedShipment == null && Faction == Faction.Yellow && !winning && !LastTurn && stillNeedsResources) DetermineShipment_ShipDirectlyToSpiceAsYellow();
+            if (decidedShipment == null && Game.MayShipAsGuild(this) && !winning && !AlmostLastTurn && stillNeedsResources) DetermineShipment_ShipDirectlyToSpiceAsOrangeOrOrangeAlly();
+            if (decidedShipment == null && Faction == Faction.Orange && !LastTurn) DetermineShipment_BackToReserves();
+            if (decidedShipment == null) DetermineShipment_DummyAttack(minResourcesToKeep);
+            if (decidedShipment == null) DetermineShipment_StrengthenWeakestStronghold(true, extraForces, Param.Shipment_DialShortageToAccept, !MayFlipToAdvisors);
+            if (decidedShipment == null && Faction == Faction.Yellow && AnyForcesIn(Game.Map.PolarSink) <= 2 && (LastTurn || ForcesInReserve + SpecialForcesInReserve * 2 > 8)) DetermineShipment_PolarSinkAsYellow();
 
             if (decidedShipment == null)
             {
@@ -63,9 +56,9 @@ namespace Treachery.Shared
 
         protected virtual void DetermineShipment_ShipDirectlyToSpiceAsOrangeOrOrangeAlly()
         {
-            LogInfo("DetermineShipment_ShipToSpice()");
+            LogInfo("DetermineShipment_ShipDirectlyToSpiceAsOrangeOrOrangeAlly()");
 
-            var safeLocationWithMostUnclaimedResources = Game.ResourcesOnPlanet.Where(kvp =>
+            var locationsWithUnclaimedResources = Game.ResourcesOnPlanet.Where(kvp =>
                 ValidShipmentLocations.Contains(kvp.Key) &&
                 TotalMaxDialOfOpponents(kvp.Key.Territory) <= Param.Shipment_MaxEnemyForceStrengthFightingForSpice &&
                 AllyNotIn(kvp.Key.Territory) &&
@@ -73,15 +66,13 @@ namespace Treachery.Shared
                 ProbablySafeFromShaiHulud(kvp.Key.Territory)
                 ).HighestOrDefault(kvp => kvp.Value);
 
-            if (safeLocationWithMostUnclaimedResources.Key != null)
+            if (locationsWithUnclaimedResources.Key != null)
             {
-                var forcesNeededForCollection = MakeEvenIfEfficientForShipping(Math.Min((float)Game.ResourcesOnPlanet[safeLocationWithMostUnclaimedResources.Key] / Game.ResourceCollectionRate(this), 4) + TotalMaxDialOfOpponents(safeLocationWithMostUnclaimedResources.Key.Territory));
+                var forcesNeededForCollection = MakeEvenIfEfficientForShipping(Math.Min((float)Game.ResourcesOnPlanet[locationsWithUnclaimedResources.Key] / Game.ResourceCollectionRate(this), 4) + TotalMaxDialOfOpponents(locationsWithUnclaimedResources.Key.Territory));
 
-                int nrOfForces = 0;
-                int nrOfSpecialForces = 0;
-                DetermineValidForcesInShipment(forcesNeededForCollection, false, safeLocationWithMostUnclaimedResources.Key, Faction.Black, ForcesInReserve, 0, out nrOfForces, out nrOfSpecialForces, 0, 99, false);
+                DetermineValidForcesInShipment(forcesNeededForCollection, false, locationsWithUnclaimedResources.Key, Faction.Black, ForcesInReserve, 0, out int nrOfForces, out int nrOfSpecialForces, 0, 99, false);
 
-                var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, safeLocationWithMostUnclaimedResources.Key, true, true);
+                var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, locationsWithUnclaimedResources.Key, true, true);
 
                 if (shipment.IsValid)
                 {
@@ -154,9 +145,7 @@ namespace Treachery.Shared
             {
                 var dialNeeded = GetDialNeeded(Game.Map.HiddenMobileStronghold.Territory, opponent, true);
 
-                int forces = 0;
-                int specialForces = 0;
-                if (DetermineValidForcesInShipment(dialNeeded + extraForces, true, Game.Map.HiddenMobileStronghold, opponent.Faction, ForcesInReserve, SpecialForcesInReserve, out forces, out specialForces, minResourcesToKeep, maxUnsupportedForces, !(Faction == Faction.Red && opponent.Faction == Faction.Yellow)) <= riskAppitite)
+                if (DetermineValidForcesInShipment(dialNeeded + extraForces, true, Game.Map.HiddenMobileStronghold, opponent.Faction, ForcesInReserve, SpecialForcesInReserve, out int forces, out int specialForces, minResourcesToKeep, maxUnsupportedForces, !(Faction == Faction.Red && opponent.Faction == Faction.Yellow)) <= riskAppitite)
                 {
                     var shipment = ConstructShipment(forces, specialForces, Game.Map.HiddenMobileStronghold, true, true);
 
@@ -173,9 +162,9 @@ namespace Treachery.Shared
             }
         }
 
-        protected virtual void DetermineShipment_PolarSink()
+        protected virtual void DetermineShipment_PolarSinkAsYellow()
         {
-            LogInfo("DetermineShipment_PolarSink()");
+            LogInfo("DetermineShipment_PolarSinkAsYellow()");
 
             int nrOfForces;
             int nrOfSpecialForces;
@@ -323,7 +312,7 @@ namespace Treachery.Shared
         {
             if (
                 HasKarma && !Game.KarmaPrevented(Faction) &&
-                ((Faction != Faction.Black || Faction != Faction.Red) || SpecialKarmaPowerUsed) &&
+                (!Param.Karma_SaveCardToUseSpecialKarmaAbility || SpecialKarmaPowerUsed) &&
                 !Game.MayShipAsGuild(this) &&
                 Shipment.DetermineCost(Game, this, shipment) > 7)
             {
@@ -428,7 +417,7 @@ namespace Treachery.Shared
 
             LogInfo("WeakestEnemyStronghold:" + weakestEnemyStronghold);
 
-            if (weakestEnemyStronghold.DialNeeded < Param.Shipment_MaxStrengthOfShippedForces && weakestEnemyStronghold != null)
+            if (weakestEnemyStronghold != null && weakestEnemyStronghold.DialNeeded < Param.Shipment_MaxStrengthOfShippedForces)
             {
                 DetermineValidForcesInShipment(
                     MakeEvenIfEfficientForShipping(weakestEnemyStronghold.DialNeeded + extraForces),
@@ -480,9 +469,17 @@ namespace Treachery.Shared
 
             if (targetOfDummyAttack != null)
             {
-                DetermineValidForcesInShipment(0.5f, true, targetOfDummyAttack, OccupyingOpponentIn(targetOfDummyAttack.Territory).Faction, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, minResourcesToKeep, 1, false);
-
-                var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, targetOfDummyAttack, false, true);
+                Shipment shipment = null;
+                if (Faction == Faction.White && Shipment.ValidNoFieldValues(Game, this).Contains(0))
+                {
+                    shipment = ConstructZeroNoFieldShipment(targetOfDummyAttack);
+                }
+                else
+                {
+                    DetermineValidForcesInShipment(0.5f, true, targetOfDummyAttack, OccupyingOpponentIn(targetOfDummyAttack.Territory).Faction, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, minResourcesToKeep, 1, false);
+                    shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, targetOfDummyAttack, false, true);
+                }
+                                
 
                 if (shipment.IsValid)
                 {
@@ -494,6 +491,22 @@ namespace Treachery.Shared
                     LogInfo(shipment.Validate());
                 }
             }
+        }
+
+        private Shipment ConstructZeroNoFieldShipment(Location location)
+        {
+            return new Shipment(Game)
+            {
+                Initiator = Faction,
+                ForceAmount = 0,
+                SpecialForceAmount = 1,
+                Passed = false,
+                From = null,
+                KarmaCard = null,
+                KarmaShipment = false,
+                NoFieldValue = 0,
+                To = location
+            };
         }
 
         private bool OpponentIsSuitableForTraitorLure(Player opponent)
@@ -510,8 +523,6 @@ namespace Treachery.Shared
 
             return !(Game.Applicable(Rule.BlackCapturesOrKillsLeaders) && opponent.Faction == Faction.Black) && !KnownOpponentWeapons(opponent).Any();
         }
-
-
 
         protected virtual void DetermineShipment_TakeVacantStronghold(int forcestrength, int minResourcesToKeep, int maxUnsupportedForces)
         {
@@ -804,7 +815,6 @@ namespace Treachery.Shared
             return result;
         }
 
-
         protected Battalion FindOneTroopThatCanSafelyMove(Location from, Location to)
         {
             if (ForcesOnPlanet.ContainsKey(from) && from.Sector != Game.SectorInStorm && NotOccupiedByOthers(from.Territory))
@@ -829,5 +839,4 @@ namespace Treachery.Shared
         }
 
     }
-
 }

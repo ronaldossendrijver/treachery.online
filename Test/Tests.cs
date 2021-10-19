@@ -615,7 +615,6 @@ namespace Treachery.Test
                 while (game.CurrentPhase != Phase.GameEnded)
                 {
                     var evt = PerformBotEvent(game, performTests);
-                    evt.Time = DateTime.Now;
 
                     if (performTests)
                     {
@@ -624,6 +623,8 @@ namespace Treachery.Test
                             File.WriteAllText("novalidbotevent" + game.Seed + ".json", GameState.GetStateAsString(game));
                         }
                         Assert.IsNotNull(evt, "bots couldn't come up with a valid event");
+
+                        evt.Time = DateTime.Now;
 
                         var illegalCase = TestIllegalCases(game, evt);
                         if (illegalCase != "")

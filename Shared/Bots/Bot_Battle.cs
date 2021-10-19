@@ -737,7 +737,7 @@ namespace Treachery.Shared
 
             var unknownOpponentCards = OpponentCardsUnknownToMe(opponent);
 
-            mostEffectiveWeapon = availableWeapons.FirstOrDefault(w => !knownEnemyDefenses.Any(defense => w.CounteredBy(defense, null)));
+            mostEffectiveWeapon = availableWeapons.Where(w => !knownEnemyDefenses.Any(defense => w.CounteredBy(defense, null))).RandomOrDefault();
             LogInfo("ChanceOfLeaderDying(): {0} is a weapon without a known defense.", mostEffectiveWeapon);
             if (mostEffectiveWeapon != null)
             {
@@ -751,7 +751,7 @@ namespace Treachery.Shared
                 }
             }
 
-            mostEffectiveWeapon = availableWeapons.FirstOrDefault(w => !IsKnownToOpponent(opponent, w));
+            mostEffectiveWeapon = availableWeapons.Where(w => !IsKnownToOpponent(opponent, w)).RandomOrDefault();
             LogInfo("ChanceOfLeaderDying(): {0} is weapon unknown to my enemy.", mostEffectiveWeapon);
             if (mostEffectiveWeapon != null)
             {
@@ -806,7 +806,7 @@ namespace Treachery.Shared
             else
             {
                 safeHero = safeLeaders.LowestOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader));
-                unsafeHero = HeroesForBattle(this, includeInFrontOfShield).LowestOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader));
+                unsafeHero = HeroesForBattle(this, includeInFrontOfShield).OneOfLowestNOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader), 3);
             }
 
             if (safeHero == null ||
