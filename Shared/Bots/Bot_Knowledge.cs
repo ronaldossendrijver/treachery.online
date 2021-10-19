@@ -31,7 +31,7 @@ namespace Treachery.Shared
 
         protected virtual bool AlmostLastTurn => Game.CurrentTurn >= Game.MaximumNumberOfTurns - 1;
 
-        protected virtual int NrOfOpponentsToShipAndMove => Opponents.Where(p => !Game.HasActedOrPassed.Contains(p.Faction)).Count();
+        protected virtual IEnumerable<Player> OpponentsToShipAndMove => Opponents.Where(p => !Game.HasActedOrPassed.Contains(p.Faction));
 
         protected virtual int NrOfNonWinningPlayersToShipAndMoveIncludingMe => Game.Players.Where(p => !Game.MeetsNormalVictoryCondition(p, true)).Count() - Game.HasActedOrPassed.Count;
 
@@ -307,6 +307,11 @@ namespace Treachery.Shared
             return Game.Players.Where(p => p.Faction != Faction && p.Faction != Ally && p.Occupies(t)).FirstOrDefault();
         }
 
+        protected virtual IEnumerable<Player> OccupyingOpponentsIn(Territory t)
+        {
+            return Game.Players.Where(p => p.Faction != Faction && p.Faction != Ally && p.Occupies(t));
+        }
+
         protected virtual bool InStorm(Location l)
         {
             return l.Sector == Game.SectorInStorm;
@@ -556,6 +561,8 @@ namespace Treachery.Shared
 
         protected virtual float MaxReinforcedDialTo(Player player, Territory to)
         {
+            if (player == null || to == null) return 0;
+
             if (CanShip(player))
             {
                 int specialForces = 0;

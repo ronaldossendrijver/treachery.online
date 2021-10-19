@@ -6,6 +6,8 @@ namespace Treachery.Shared
 {
     public class BotParameters
     {
+        public static float PenaltyForAttackingBots = 2.0f;
+
         public int Bidding_ResourcesToKeepWhenCardIsPerfect { get; set; }
         public int Bidding_ResourcesToKeepWhenCardIsntPerfect { get; set; }
         public int Bidding_PassingTreshold { get; set; }
@@ -18,6 +20,7 @@ namespace Treachery.Shared
         public float Shipment_MaxEnemyForceStrengthFightingForSpice { get; set; }
         public int Shipment_ExpectedStormMovesWhenUnknown { get; set; }
         public int Shipment_DialForExtraForcesToShip { get; set; }
+        public float Shipment_MaxStrengthOfShippedForces { get; set; }
 
         public int Battle_MaximumUnsupportedForces { get; set; }
         public float Battle_MimimumChanceToAssumeEnemyHeroSurvives { get; set; }
@@ -37,10 +40,11 @@ namespace Treachery.Shared
             Shipment_DialForExtraForcesToShip = 3,
             Shipment_MaxEnemyForceStrengthFightingForSpice = 3,
             Shipment_ExpectedStormMovesWhenUnknown = 3,
+            Shipment_MaxStrengthOfShippedForces = 8,
             Battle_MaximumUnsupportedForces = 6,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.6f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
-            Battle_DialShortageThresholdForThrowing = 7
+            Battle_DialShortageThresholdForThrowing = 6
         };
 
         public static BotParameters GreenParameters = new BotParameters()
@@ -55,10 +59,11 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 4,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 2,
+            Shipment_MaxStrengthOfShippedForces = 8,
             Battle_MaximumUnsupportedForces = 6,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.3f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
-            Battle_DialShortageThresholdForThrowing = 4
+            Battle_DialShortageThresholdForThrowing = 3
         };
 
         public static BotParameters YellowParameters = new BotParameters()
@@ -73,10 +78,11 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 4,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 8,
+            Shipment_MaxStrengthOfShippedForces = 20,
             Battle_MaximumUnsupportedForces = 20,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.6f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
-            Battle_DialShortageThresholdForThrowing = 4
+            Battle_DialShortageThresholdForThrowing = 3
         };
 
         public static BotParameters RedParameters = new BotParameters()
@@ -91,10 +97,11 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 4,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 8,
+            Shipment_MaxStrengthOfShippedForces = 10,
             Battle_MaximumUnsupportedForces = 2,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.4f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.8f,
-            Battle_DialShortageThresholdForThrowing = 4
+            Battle_DialShortageThresholdForThrowing = 5
         };
 
         public static BotParameters OrangeParameters = new BotParameters()
@@ -109,10 +116,11 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 4,
             Shipment_MinimumResourcesToKeepForBattle = 6,
             Shipment_DialForExtraForcesToShip = 6,
+            Shipment_MaxStrengthOfShippedForces = 10,
             Battle_MaximumUnsupportedForces = 0,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.4f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.8f,
-            Battle_DialShortageThresholdForThrowing = 4
+            Battle_DialShortageThresholdForThrowing = 3
         };
 
         public static BotParameters BlueParameters = new BotParameters()
@@ -127,10 +135,11 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 2,
             Shipment_MinimumResourcesToKeepForBattle = 3,
             Shipment_DialForExtraForcesToShip = 4,
+            Shipment_MaxStrengthOfShippedForces = 8,
             Battle_MaximumUnsupportedForces = 2,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.3f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
-            Battle_DialShortageThresholdForThrowing = 5
+            Battle_DialShortageThresholdForThrowing = 3
         };
 
         public static BotParameters GreyParameters = new BotParameters()
@@ -145,10 +154,11 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 4,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 6,
+            Shipment_MaxStrengthOfShippedForces = 8,
             Battle_MaximumUnsupportedForces = 2,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.6f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
-            Battle_DialShortageThresholdForThrowing = 7
+            Battle_DialShortageThresholdForThrowing = 3
         };
 
         public static BotParameters PurpleParameters = new BotParameters()
@@ -163,6 +173,7 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 6,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 8,
+            Shipment_MaxStrengthOfShippedForces = 20,
             Battle_MaximumUnsupportedForces = 6,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.2f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.8f,
@@ -181,10 +192,11 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 4,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 8,
+            Shipment_MaxStrengthOfShippedForces = 10,
             Battle_MaximumUnsupportedForces = 2,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.4f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.8f,
-            Battle_DialShortageThresholdForThrowing = 4
+            Battle_DialShortageThresholdForThrowing = 5
         };
 
         public static BotParameters WhiteParameters = new BotParameters()
@@ -199,10 +211,11 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 4,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 6,
+            Shipment_MaxStrengthOfShippedForces = 8,
             Battle_MaximumUnsupportedForces = 2,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.6f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
-            Battle_DialShortageThresholdForThrowing = 7
+            Battle_DialShortageThresholdForThrowing = 3
         };
 
         public static BotParameters PinkParameters = new BotParameters()
@@ -217,10 +230,11 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 4,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 6,
+            Shipment_MaxStrengthOfShippedForces = 8,
             Battle_MaximumUnsupportedForces = 2,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.7f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
-            Battle_DialShortageThresholdForThrowing = 7
+            Battle_DialShortageThresholdForThrowing = 3
         };
 
         public static BotParameters CyanParameters = new BotParameters()
@@ -235,10 +249,11 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 4,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 6,
+            Shipment_MaxStrengthOfShippedForces = 8,
             Battle_MaximumUnsupportedForces = 2,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.7f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
-            Battle_DialShortageThresholdForThrowing = 7
+            Battle_DialShortageThresholdForThrowing = 3
         };
 
         public static BotParameters GetDefaultParameters(Faction f)

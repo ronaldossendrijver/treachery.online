@@ -270,6 +270,8 @@ namespace Treachery.Shared
         {
             if (!territory.IsStronghold) return false;
 
+            if (IAmWinning) return true;
+
             var opponent = GetOpponentThatOccupies(territory);
 
             if (opponent != null)
