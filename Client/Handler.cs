@@ -113,7 +113,6 @@ namespace Treachery.Client
             hostLastSeen = DateTime.Now;
             nrOfHeartbeats = 0;
             _pending = new();
-            _player = null;
             Messages = new();
             itAlreadyWasMyTurn = false;
             savegameSent = false;
@@ -460,17 +459,18 @@ namespace Treachery.Client
             }
         }
 
-        Player _player = null;
         public Player Player
         {
             get
             {
-                _player = Game.Players.SingleOrDefault(p => p.Name.ToLower().Trim() == PlayerName.ToLower().Trim());
+                var result = Game.Players.SingleOrDefault(p => p.Name.ToLower().Trim() == PlayerName.ToLower().Trim());
 
-                if (_player != null) return _player;
+                if (result == null)
+                {
+                    result = new Player(Game, PlayerName) { Faction = Faction.None };
+                }
 
-                _player = new Player(Game, PlayerName) { Faction = Faction.None };
-                return _player;
+                return result;
             }
         }
 

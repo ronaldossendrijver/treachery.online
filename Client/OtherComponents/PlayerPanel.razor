@@ -18,7 +18,7 @@
             </div>
         }
 
-        @if (!Collapsed)
+        @if (!Collapsed || !ShowHeader)
         {
             <div class="card-body p-0 bg-transparent text-center" style="background-image: url('@Skin.Current.GetImageURL(ShownPlayer.Faction)'); background-position:center; background-size:300px 300px; background-clip:content-box; background-repeat: no-repeat">
 
