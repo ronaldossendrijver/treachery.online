@@ -537,6 +537,7 @@ namespace Treachery.Client
                 else if (latestEvent is BattleConcluded battleconcluded && g.TraitorsDeciphererCanLookAt.Count > 0) result.Add(CardInfo(latestEvent, LeaderSkill.Decipherer));
                 else if (latestEvent is Thought) result.Add(CardInfo(latestEvent, LeaderSkill.Thinker));
                 else if (latestEvent is EstablishPlayers && g.CurrentPhase != Phase.SelectingFactions) result.Add(CardInfo(Player.Faction));
+                else if (latestEvent is FactionTradeOffered fto && (fto.Initiator == Faction || fto.Target == Faction) && !g.CurrentTradeOffers.Any(t => t.Initiator == Faction)) result.Add(CardInfo(Player.Faction));
 
             }
 

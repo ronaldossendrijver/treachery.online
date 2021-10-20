@@ -28,11 +28,6 @@ namespace Treachery.Shared
 
         public override string Validate()
         {
-            if (Game.Version >= 77)
-            {
-                //if (Target == Faction.None) return "Invalid faction.";
-            }
-
             return "";
         }
 
