@@ -302,7 +302,7 @@ namespace Treachery.Client
         
         public async Task Heartbeat(int gameInProgressHostId)
         {
-            if (gameInProgressHostId == _gameinprogressHostId && nrOfHeartbeats++ < MAX_HEARTBEATS)
+            if (gameInProgressHostId == _gameinprogressHostId && nrOfHeartbeats++ < MAX_HEARTBEATS && HostProxy != null)
             {
                 try
                 {
