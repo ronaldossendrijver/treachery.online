@@ -12,6 +12,65 @@ namespace Treachery.Shared
     {
         protected virtual Move DetermineMove()
         {
+            LogInfo("DetermineMove()");
+
+            var moved = DetermineMovedBatallion(true);
+
+            if (moved == null)
+            {
+                return new Move(Game) { Initiator = Faction, Passed = true };
+            }
+
+            var forces = new Dictionary<Location, Battalion>
+            {
+                { moved.From, moved.Batallion }
+            };
+
+            bool asAdvisors = Faction == Faction.Blue && SpecialForcesIn(moved.To.Territory) > 0;
+            var result = new Move(Game) { Initiator = Faction, Passed = false, To = moved.To, ForceLocations = forces, AsAdvisors = asAdvisors };
+
+            if (!result.IsValid)
+            {
+                LogInfo(result.Validate());
+            }
+
+            return result;
+        }
+
+        protected virtual Caravan DetermineCaravan()
+        {
+            LogInfo("DetermineCaravan()");
+
+            if (ForcesOnPlanet.Count(kvp => !kvp.Key.IsStronghold) <= 1)
+            {
+                return null;
+            }
+
+            var moved = DetermineMovedBatallion(false);
+
+            if (moved == null)
+            {
+                return null;
+            }
+
+            var forces = new Dictionary<Location, Battalion>
+            {
+                { moved.From, moved.Batallion }
+            };
+
+            bool asAdvisors = Faction == Faction.Blue && SpecialForcesIn(moved.To.Territory) > 0;
+            var result = new Caravan(Game) { Initiator = Faction, Passed = false, To = moved.To, ForceLocations = forces, AsAdvisors = asAdvisors };
+
+            if (!result.IsValid)
+            {
+                LogInfo(result.Validate());
+            }
+
+            return result;
+        }
+
+        private MovedBatallion DetermineMovedBatallion(bool includeLowPrioMoves)
+        {
             bool winning = IAmWinning;
             LogInfo("DetermineMove(). AllIn: {0}, Winning: {1}.", LastTurn, winning);
 
@@ -25,7 +84,6 @@ namespace Treachery.Shared
 
             //Move biggest batallion threatened by ally presence
             var battalionThreatenedByAllyPresence = BattalionThatShouldBeMovedDueToAllyPresence;
-            LogInfo("BattalionThreatenedByAllyPresence: " + BattalionThatShouldBeMovedDueToAllyPresence);
             if (battalionThreatenedByAllyPresence.Key != null)
             {
                 var moveTo = DetermineMostSuitableNearbyLocation(battalionThreatenedByAllyPresence, true, true);
@@ -41,7 +99,6 @@ namespace Treachery.Shared
             if (!LastTurn && !winning)
             {
                 var biggestBattalionThreatenedByStorm = BiggestBattalionThreatenedByStormWithoutSpice;
-                LogInfo("BiggestBattalionThreatenedByStormWithoutSpice: " + BiggestBattalionThreatenedByStormWithoutSpice.Key);
                 if (biggestBattalionThreatenedByStorm.Key != null)
                 {
                     var moveTo = DetermineMostSuitableNearbyLocation(biggestBattalionThreatenedByStorm, true, false);
@@ -56,7 +113,6 @@ namespace Treachery.Shared
 
             //Move from spiceless non-stronghold location (if not needed for atomics) to safe stronghold or spice or rock
             var biggestBattalionInSpicelessNonStronghold = BiggestBattalionInSpicelessNonStrongholdLocationOnRock;
-            LogInfo("BiggestBattalionInSpicelessNonStrongholdLocationOnRock: " + BiggestBattalionInSpicelessNonStrongholdLocationOnRock.Key);
             if (biggestBattalionInSpicelessNonStronghold.Key != null)
             {
                 var moveTo = DetermineMostSuitableNearbyLocation(biggestBattalionInSpicelessNonStronghold, false, false);
@@ -70,7 +126,6 @@ namespace Treachery.Shared
 
             //Move from useless location (if not needed for atomics) to safe stronghold or spice or rock
             var biggestBattalionInSpicelessNonStrongholdNotNearStronghold = BiggestBattalionInSpicelessNonStrongholdLocationInSandOrNotNearStronghold;
-            LogInfo("BiggestBattalionInSpicelessNonStrongholdLocationInSandOrNotNearStronghold: " + BiggestBattalionInSpicelessNonStrongholdLocationInSandOrNotNearStronghold.Key);
             if (biggestBattalionInSpicelessNonStrongholdNotNearStronghold.Key != null)
             {
                 var moveTo = DetermineMostSuitableNearbyLocation(biggestBattalionInSpicelessNonStrongholdNotNearStronghold, true, false);
@@ -86,7 +141,6 @@ namespace Treachery.Shared
             {
                 //Move a stack of advisors from a stronghold to a nearby vacant stronghold
                 var biggestStackOfAdvisorsInStrongholdNearVacantStronghold = BiggestMovableStackOfAdvisorsInStrongholdNearVacantStronghold;
-                LogInfo("BiggestMovableStackOfAdvisorsInStrongholdNearVacantStronghold: " + BiggestMovableStackOfAdvisorsInStrongholdNearVacantStronghold.Key);
                 if (biggestStackOfAdvisorsInStrongholdNearVacantStronghold.Key != null)
                 {
                     var moveTo = VacantAndSafeNearbyStronghold(biggestStackOfAdvisorsInStrongholdNearVacantStronghold);
@@ -99,11 +153,12 @@ namespace Treachery.Shared
                 }
             }
 
+            if (!includeLowPrioMoves) return null;
+
             //Move partly from unthreatened stronghold location with enough forces to nearby vacant stronghold
             if (!winning)
             {
                 var bigUnthreatenedBattalionNearVacantStronghold = BiggestLargeUnthreatenedMovableBattalionInStrongholdNearVacantStronghold;
-                LogInfo("bigUnthreatenedBattalionNearVacantStronghold: " + bigUnthreatenedBattalionNearVacantStronghold.Key);
                 if (bigUnthreatenedBattalionNearVacantStronghold.Key != null)
                 {
                     var moveTo = VacantAndSafeNearbyStronghold(bigUnthreatenedBattalionNearVacantStronghold);
@@ -120,7 +175,6 @@ namespace Treachery.Shared
             if (!LastTurn && !winning)
             {
                 var bigUnthreatenedBattalionNearSpice = BiggestLargeUnthreatenedMovableBattalionInStrongholdNearSpice;
-                LogInfo("BiggestLargeUnthreatenedMovableBattalionInStrongholdNearSpice: " + BiggestLargeUnthreatenedMovableBattalionInStrongholdNearSpice.Key);
                 if (bigUnthreatenedBattalionNearSpice.Key != null)
                 {
                     var moveTo = BestSafeAndNearbyResources(bigUnthreatenedBattalionNearSpice.Key, bigUnthreatenedBattalionNearSpice.Value, false);
@@ -157,150 +211,20 @@ namespace Treachery.Shared
 
             LogInfo("I'm deciding not to move");
             decidedShipmentAction = ShipmentDecision.None;
-            return new Move(Game) { Initiator = Faction, Passed = true };
-        }
-
-        protected virtual Caravan DetermineCaravan()
-        {
-            LogInfo("DetermineCaravan()");
-
-            if (ForcesOnPlanet.Count(kvp => !kvp.Key.IsStronghold) <= 1)
-            {
-                return null;
-            }
-
-            if (decidedShipmentAction == ShipmentDecision.StrongholdNearResources)
-            {
-                decidedShipmentAction = ShipmentDecision.None;
-                LogInfo("Hajr to spice: {0} -> {1}", decidedShipment.To, finalDestination);
-                var toMove = ForcesOnPlanet[decidedShipment.To].Take(decidedShipment.ForceAmount + decidedShipment.SpecialForceAmount, Faction == Faction.Grey);
-                return ConstructCaravan(finalDestination, decidedShipment.To, toMove);
-            }
-
-            bool winning = IAmWinning;
-
-            //Move biggest batallion threatened by ally presence
-            var battalionThreatenedByAllyPresence = BattalionThatShouldBeMovedDueToAllyPresence;
-            if (battalionThreatenedByAllyPresence.Key != null)
-            {
-                var moveTo = DetermineMostSuitableNearbyLocation(battalionThreatenedByAllyPresence, true, true);
-                if (moveTo != null)
-                {
-                    LogInfo("Move biggest batallion threatened by ally presence");
-                    return ConstructCaravan(moveTo, battalionThreatenedByAllyPresence.Key, battalionThreatenedByAllyPresence.Value);
-                }
-            }
-
-            //Hajr biggest batallion threatened by storm
-            if (!LastTurn && !winning)
-            {
-                var biggestBattalionThreatenedByStorm = BiggestBattalionThreatenedByStormWithoutSpice;
-                if (biggestBattalionThreatenedByStorm.Key != null)
-                {
-                    var moveTo = DetermineMostSuitableNearbyLocation(biggestBattalionThreatenedByStorm, true, false);
-                    if (moveTo != null)
-                    {
-                        LogInfo("Hajr biggest batallion threatened by storm");
-                        return ConstructCaravan(moveTo, biggestBattalionThreatenedByStorm.Key, biggestBattalionThreatenedByStorm.Value);
-                    }
-                }
-            }
-
-            //Hajr from spiceless non-stronghold location (if not needed for atomics) to safe stronghold or spice or rock
-            var biggestBattalionInSpicelessNonStronghold = BiggestBattalionInSpicelessNonStrongholdLocationOnRock;
-            if (biggestBattalionInSpicelessNonStronghold.Key != null)
-            {
-                var moveTo = DetermineMostSuitableNearbyLocation(biggestBattalionInSpicelessNonStronghold, false, false);
-                if (moveTo != null)
-                {
-                    LogInfo("Hajr from spiceless non-stronghold location (if not needed for atomics) to safe stronghold or spice or rock");
-                    return ConstructCaravan(moveTo, biggestBattalionInSpicelessNonStronghold.Key, biggestBattalionInSpicelessNonStronghold.Value);
-                }
-            }
-
-            //Hajr from useless location (if not needed for atomics) to safe stronghold or spice or rock
-            var biggestBattalionInSpicelessNonStrongholdNotNearStronghold = BiggestBattalionInSpicelessNonStrongholdLocationInSandOrNotNearStronghold;
-            if (biggestBattalionInSpicelessNonStrongholdNotNearStronghold.Key != null)
-            {
-                var moveTo = DetermineMostSuitableNearbyLocation(biggestBattalionInSpicelessNonStrongholdNotNearStronghold, true, false);
-                if (moveTo != null)
-                {
-                    LogInfo("Hajr from useless location (if not needed for atomics) to safe stronghold or spice or rock");
-                    return ConstructCaravan(moveTo, biggestBattalionInSpicelessNonStrongholdNotNearStronghold.Key, biggestBattalionInSpicelessNonStrongholdNotNearStronghold.Value);
-                }
-            }
-
-            //Move partly from unthreatened stronghold location with enough forces to nearby vacant stronghold
-            if (!winning)
-            {
-                var bigUnthreatenedBattalionNearVacantStronghold = BiggestLargeUnthreatenedMovableBattalionInStrongholdNearVacantStronghold;
-                if (bigUnthreatenedBattalionNearVacantStronghold.Key != null)
-                {
-                    var moveTo = VacantAndSafeNearbyStronghold(bigUnthreatenedBattalionNearVacantStronghold);
-                    if (moveTo != null)
-                    {
-                        LogInfo("Move partly from unthreatened stronghold location with enough forces to nearby vacant stronghold");
-                        return ConstructCaravan(moveTo, bigUnthreatenedBattalionNearVacantStronghold.Key, bigUnthreatenedBattalionNearVacantStronghold.Value.TakeHalf());
-                    }
-                }
-            }
-
-            //Move partly from unthreatened stronghold location with enough forces to nearby spice
-            if (!LastTurn && !winning)
-            {
-                var bigUnthreatenedBattalionNearSpice = BiggestLargeUnthreatenedMovableBattalionInStrongholdNearSpice;
-                if (bigUnthreatenedBattalionNearSpice.Key != null)
-                {
-                    var moveTo = BestSafeAndNearbyResources(bigUnthreatenedBattalionNearSpice.Key, bigUnthreatenedBattalionNearSpice.Value, false);
-                    if (moveTo == null) moveTo = BestSafeAndNearbyResources(bigUnthreatenedBattalionNearSpice.Key, bigUnthreatenedBattalionNearSpice.Value, true);
-                    if (moveTo != null)
-                    {
-                        LogInfo("Hajr partly from unthreatened stronghold location with enough forces to nearby spice");
-                        int forcesForCollection = Math.Max(2, Math.Min(DetermineForcesNeededForCollection(moveTo), bigUnthreatenedBattalionNearSpice.Value.TotalAmountOfForces / 2));
-                        return ConstructCaravan(moveTo, bigUnthreatenedBattalionNearSpice.Key, bigUnthreatenedBattalionNearSpice.Value.Take(forcesForCollection, Faction == Faction.Grey));
-                    }
-                }
-            }
-
-            LogInfo("I'm deciding not to Hajr");
             return null;
         }
 
-
-        protected virtual Move ConstructMove(Location to, Location from, Battalion battalion)
+        protected virtual MovedBatallion ConstructMove(Location to, Location from, Battalion battalion)
         {
-            var forces = new Dictionary<Location, Battalion>
-            {
-                { from, battalion }
-            };
-
-            bool asAdvisors = Faction == Faction.Blue && SpecialForcesIn(to.Territory) > 0;
-            var result = new Move(Game) { Initiator = Faction, Passed = false, To = to, ForceLocations = forces, AsAdvisors = asAdvisors };
-
-            if (!result.IsValid)
-            {
-                LogInfo(result.Validate());
-                return null;
-            }
-
-            return result;
+            return new MovedBatallion() { To = to, From = from, Batallion = battalion };
         }
 
-        protected virtual Caravan ConstructCaravan(Location to, Location from, Battalion battalion)
-        {
-            var forces = new Dictionary<Location, Battalion>
-            {
-                { from, battalion }
-            };
 
-            bool asAdvisors = Faction == Faction.Blue && SpecialForcesIn(to) > 0;
-            var result = new Caravan(Game) { Initiator = Faction, Passed = false, To = to, ForceLocations = forces, AsAdvisors = asAdvisors };
-            if (!result.IsValid)
-            {
-                LogInfo(result.Validate());
-                throw new ArgumentException(result.GetMessage().ToString());
-            }
-            return result;
+        protected class MovedBatallion
+        {
+            internal Location From;
+            internal Location To;
+            internal Battalion Batallion;
         }
 
         protected virtual Battalion DetermineBattalionThatWillDestroyShieldWall(ref Location from, ref Location to)
