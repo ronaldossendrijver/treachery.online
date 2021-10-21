@@ -170,7 +170,7 @@ namespace Treachery.Shared
             int forcesAvailable = Battle.MaxForces(Game, this, false);
             int specialForcesAvailable = Battle.MaxForces(Game, this, true);
 
-            var dialNeeded = GetDialNeeded(
+            var dialNeeded = GetDialNeededForBattle(
                 IWillBeAggressorAgainst(opponent),
                 opponent,
                 Game.CurrentBattle.Territory,
@@ -832,18 +832,17 @@ namespace Treachery.Shared
             var prescience = Prescience.MayUsePrescience(Game, this) ? BestPrescience(opponent, strength) : null;
 
             //More could be done with the information obtained in the below call
-            return GetDialNeeded(IWillBeAggressorAgainst(opponent), opponent, territory, voicePlan, prescience, takeReinforcementsIntoAccount, true, out _, out _, out _, out _, out _, out _, out _, out _);
+            return GetDialNeededForBattle(IWillBeAggressorAgainst(opponent), opponent, territory, voicePlan, prescience, takeReinforcementsIntoAccount, true, out _, out _, out _, out _, out _, out _, out _, out _);
         }
 
-        protected float GetDialNeeded(
+        protected float GetDialNeededForBattle(
             bool iAmAggressor, Player opponent, Territory territory, VoicePlan voicePlan, Prescience prescience, bool takeReinforcementsIntoAccount, bool includeInFrontOfShield,
             out TreacheryCard bestDefense, out TreacheryCard bestWeapon, out IHero hero, out bool messiah, out bool isTraitor, out bool lasgunShieldDetected, out bool stoneBurnerDetected, out int bankerBoost)
         {
-            bool enemyCanDefendPoisonTooth = false;
             float chanceOfMyHeroSurviving;
             float chanceOfEnemyHeroSurviving;
 
-            chanceOfEnemyHeroSurviving = 1 - ChanceOfEnemyLeaderDying(opponent, voicePlan, prescience, out bestWeapon, out enemyCanDefendPoisonTooth);
+            chanceOfEnemyHeroSurviving = 1 - ChanceOfEnemyLeaderDying(opponent, voicePlan, prescience, out bestWeapon, out bool enemyCanDefendPoisonTooth);
 
             LogInfo("Chance of enemy hero surviving: {0} with {1}", chanceOfEnemyHeroSurviving, bestWeapon);
 
@@ -932,10 +931,8 @@ namespace Treachery.Shared
             var myHeroToFightAgainst = hero;
             var opponentLeader = (prescience != null && prescience.Aspect == PrescienceAspect.Leader && opponentPlan != null) ? opponentPlan.Hero : HeroesForBattle(opponent, true).OrderByDescending(l => l.ValueInCombatAgainst(myHeroToFightAgainst)).FirstOrDefault(l => !Traitors.Contains(l));
             int opponentLeaderValue = opponentLeader == null ? 0 : opponentLeader.ValueInCombatAgainst(hero);
-
             int opponentMessiahBonus = Battle.MessiahAvailableForBattle(Game, opponent) ? 2 : 0;
             int maxReinforcements = takeReinforcementsIntoAccount ? (int)Math.Ceiling(MaxReinforcedDialTo(opponent, territory)) : 0;
-            //int myHeroValue = hero == null ? 0 : hero.ValueInCombatAgainst(opponentLeader);
 
             var opponentDial = (prescience != null && prescience.Aspect == PrescienceAspect.Dial && opponentPlan != null) ? opponentPlan.Dial(Game, Faction) : MaxDial(opponent, territory, this);
 

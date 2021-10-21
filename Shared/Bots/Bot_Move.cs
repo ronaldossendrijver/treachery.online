@@ -346,5 +346,45 @@ namespace Treachery.Shared
                 return null;
             }
         }
+
+        private Location DetermineMostSuitableNearbyLocation(KeyValuePair<Location, Battalion> battalionAtLocation, bool includeSecondBestLocations, bool mustMove)
+        {
+            return DetermineMostSuitableNearbyLocation(battalionAtLocation.Key, battalionAtLocation.Value, includeSecondBestLocations, mustMove);
+        }
+
+        private Location DetermineMostSuitableNearbyLocation(Location location, Battalion battalion, bool includeSecondBestLocations, bool mustMove)
+        {
+            var result = VacantAndSafeNearbyStronghold(location, battalion);
+            LogInfo("Suitable EmptyAndSafeNearbyStronghold: {0}", result);
+
+            if (result == null) result = WeakAndSafeNearbyStronghold(location, battalion);
+            LogInfo("Suitable WeakAndSafeNearbyStronghold: {0}", result);
+
+            if (result == null && !LastTurn) result = BestSafeAndNearbyResources(location, battalion, false);
+            LogInfo("Suitable BestSafeAndNearbyResources without fighting: {0}", result);
+
+            if (result == null) result = UnthreatenedAndSafeNearbyStronghold(location, battalion);
+            LogInfo("Suitable UnthreatenedAndSafeNearbyStronghold: {0}", result);
+
+            if (result == null) result = WinnableNearbyStronghold(location, battalion);
+            LogInfo("Suitable WinnableNearbyStronghold: {0}", result);
+
+            if (result == null && !LastTurn) result = BestSafeAndNearbyResources(location, battalion, true);
+            LogInfo("Suitable BestSafeAndNearbyResources with fighting: {0}", result);
+
+            if (includeSecondBestLocations)
+            {
+                if (result == null && !LastTurn && WithinRange(location, Game.Map.PolarSink, battalion)) result = Game.Map.PolarSink;
+                LogInfo("Suitable - Polar Sink nearby? {0}", result);
+
+                if (result == null && location != Game.Map.PolarSink) result = Game.Map.Locations.Where(l => Game.IsProtectedFromStorm(l) && WithinRange(location, l, battalion) && NotOccupiedByOthers(l.Territory) && l.Territory != location.Territory).FirstOrDefault();
+                LogInfo("Suitable nearby Rock: {0}", result);
+            }
+
+            if (result == null && mustMove) result = PlacementEvent.ValidTargets(Game, this, location, battalion).FirstOrDefault(l => AllyNotIn(l.Territory) && l != location);
+            LogInfo("Suitable - any location without my ally: {0}", result);
+
+            return result;
+        }
     }
 }

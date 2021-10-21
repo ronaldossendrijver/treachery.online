@@ -99,7 +99,9 @@ namespace Treachery.Shared
         }
 
         public Player AlliedPlayer => Game.GetPlayer(Ally);
-    
+
+        public bool HasAlly => Ally != Faction.None;
+
         public bool Has(TreacheryCardType cardtype) => TreacheryCards.Any(c => c.Type == cardtype);
 
         public bool Is(Faction f) => Faction == f;
