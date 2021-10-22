@@ -12,7 +12,7 @@
     <Header>Choose a territory in which you have advisors and wish to battle, flipping them to fighters.</Header>
     <Body>
 
-        @if (Player.ForcesInReserve > 0 && Game.Applicable(Rule.BlueAccompaniesToShipmentLocation))
+        @if (Game.Applicable(Rule.BlueAccompaniesToShipmentLocation))
         {
             <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="BlueBattleAnnouncement.ValidTerritories(Game, Player)">
                 <Label>Territory</Label>
