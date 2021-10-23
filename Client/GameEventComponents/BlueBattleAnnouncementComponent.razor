@@ -12,14 +12,11 @@
     <Header>Choose a territory in which you have advisors and wish to battle, flipping them to fighters.</Header>
     <Body>
 
-        @if (Game.Applicable(Rule.BlueAccompaniesToShipmentLocation))
-        {
-            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="BlueBattleAnnouncement.ValidTerritories(Game, Player)">
-                <Label>Territory</Label>
-            </SelectComponent>
+        <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="BlueBattleAnnouncement.ValidTerritories(Game, Player)">
+            <Label>Territory</Label>
+        </SelectComponent>
 
-            <ButtonRowComponent Confirm="Confirm" ConfirmText="Flip to Fighters" ConfirmError="@Validation" />
-        }
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Flip to Fighters" ConfirmError="@Validation" />
 
     </Body>
 
