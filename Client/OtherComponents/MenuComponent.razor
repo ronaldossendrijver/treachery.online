@@ -190,10 +190,10 @@ else if (IsVisible(RESTART))
     [Parameter]
     public object Visible { get; set; } = null;
 
-    private void RestartGame()
+    private async Task RestartGame()
     {
         SetVisible(null);
-        h.Restart();
+        await h.Restart();
     }
 
     private void SetVisible(object o)

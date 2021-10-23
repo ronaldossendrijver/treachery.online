@@ -93,9 +93,11 @@ namespace Treachery.Client
             RefreshHandler?.Invoke();
         }
 
-        public void Restart()
+        public async Task Restart()
         {
             if (Host != null) Host.Stop();
+
+            await Browser.StopSounds();
 
             _joinError = new();
             _gameinprogressHostId = 0;

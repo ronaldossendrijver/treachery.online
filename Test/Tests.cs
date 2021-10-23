@@ -419,7 +419,7 @@ namespace Treachery.Test
             int countPoints = 0;
             int countForcesOnPlanet = 0;
 
-            ParallelOptions po = new ParallelOptions();
+            var po = new ParallelOptions();
             po.MaxDegreeOfParallelism = Environment.ProcessorCount;
             Parallel.For(0, nrOfGames, po,
                 i =>
@@ -444,7 +444,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 5000;
+            int nrOfGames = 1000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 

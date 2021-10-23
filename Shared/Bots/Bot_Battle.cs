@@ -791,9 +791,13 @@ namespace Treachery.Shared
             var knownNonTraitorsByAlly = ally != null ? ally.Traitors.Union(ally.KnownNonTraitors) : Array.Empty<IHero>();
             var revealedTraitorsByNonOpponents = Game.Players.Where(p => p != opponent && (p.Ally != Faction.Black || p.Faction != opponent.Ally)).SelectMany(p => p.RevealedTraitors);
             var knownNonTraitors = Traitors.Union(KnownNonTraitors).Union(knownNonTraitorsByAlly).Union(revealedTraitorsByNonOpponents);
-            var revealedTraitorsByOpponentsInBattle = Game.Players.Where(p => p == opponent || (p.Faction == Faction.Black && p.Faction == opponent.Ally)).SelectMany(p => p.RevealedTraitors);
+
+            var knownTraitorsForOpponentsInBattle = Game.Players.
+                Where(p => p == opponent || (p.Faction == Faction.Black && p.Faction == opponent.Ally)).SelectMany(p => p.RevealedTraitors)
+                .Union(Leaders.Where(l => Game.Applicable(Rule.CapturedLeadersAreTraitorsToOwnFaction) && l.Faction == opponent.Faction));
+
             var highestOpponentLeader = HeroesForBattle(opponent, true).OrderByDescending(l => l.Value).FirstOrDefault();
-            var safeLeaders = HeroesForBattle(this, includeInFrontOfShield).Where(l => messiahUsed || (knownNonTraitors.Contains(l) && !revealedTraitorsByOpponentsInBattle.Contains(l)));
+            var safeLeaders = HeroesForBattle(this, includeInFrontOfShield).Where(l => messiahUsed || (knownNonTraitors.Contains(l) && !knownTraitorsForOpponentsInBattle.Contains(l)));
             LogInfo("Available leaders: {0}, safe leaders: {1}", HeroesForBattle(this, includeInFrontOfShield), safeLeaders);
             IHero safeHero = null;
             IHero unsafeHero = null;
@@ -810,7 +814,7 @@ namespace Treachery.Shared
             }
 
             if (safeHero == null ||
-                opponent.Faction != Faction.Black && !revealedTraitorsByOpponentsInBattle.Contains(unsafeHero) && safeHero.ValueInCombatAgainst(highestOpponentLeader) < unsafeHero.ValueInCombatAgainst(highestOpponentLeader) - 2)
+                opponent.Faction != Faction.Black && !knownTraitorsForOpponentsInBattle.Contains(unsafeHero) && safeHero.ValueInCombatAgainst(highestOpponentLeader) < unsafeHero.ValueInCombatAgainst(highestOpponentLeader) - 2)
             {
                 hero = unsafeHero;
             }
@@ -819,7 +823,7 @@ namespace Treachery.Shared
                 hero = safeHero;
             }
 
-            isTraitor = !messiahUsed && revealedTraitorsByOpponentsInBattle.Contains(hero);
+            isTraitor = !messiahUsed && knownTraitorsForOpponentsInBattle.Contains(hero);
 
             return hero != null ? hero.ValueInCombatAgainst(highestOpponentLeader) + Battle.DetermineSkillBonus(Game, this, hero, weapon, defense, Resources > 3 ? 3 : 0, out _) : 0;
         }
