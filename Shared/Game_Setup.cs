@@ -110,6 +110,7 @@ namespace Treachery.Shared
         }
         private void AddBots()
         {
+            //Can be removed later, this was replaced by filling empty seats with bots.
             if (Applicable(Rule.OrangeBot)) Players.Add(new Player(this, UniquePlayerName("Edric*"), Faction.Orange, true));
             if (Applicable(Rule.RedBot)) Players.Add(new Player(this, UniquePlayerName("Shaddam IV*"), Faction.Red, true));
             if (Applicable(Rule.BlackBot)) Players.Add(new Player(this, UniquePlayerName("The Baron*"), Faction.Black, true));
@@ -118,9 +119,8 @@ namespace Treachery.Shared
             if (Applicable(Rule.GreenBot)) Players.Add(new Player(this, UniquePlayerName("Paul Atreides*"), Faction.Green, true));
             if (Applicable(Rule.YellowBot)) Players.Add(new Player(this, UniquePlayerName("Liet Kynes*"), Faction.Yellow, true));
             if (Applicable(Rule.GreyBot)) Players.Add(new Player(this, UniquePlayerName("Prince Rhombur*"), Faction.Grey, true));
-            //if (Applicable(Rule.BrownBot)) Players.Add(new Player(this, UniquePlayerName("Brown*"), Faction.Brown, true));
-            //if (Applicable(Rule.WhiteBot)) Players.Add(new Player(this, UniquePlayerName("White*"), Faction.White, true));
         }
+
         private string UniquePlayerName(string name)
         {
             var result = name;
@@ -142,19 +142,19 @@ namespace Treachery.Shared
                 {
                     var bot = available.Draw() switch
                     {
-                        Faction.Black => new Player(this, "The Baron*", Faction.Black, true),
-                        Faction.Blue => new Player(this, "Mother Mohiam*", Faction.Blue, true),
-                        Faction.Green => new Player(this, "Paul Atreides*", Faction.Green, true),
-                        Faction.Yellow => new Player(this, "Liet Kynes*", Faction.Yellow, true),
-                        Faction.Red => new Player(this, "Shaddam IV*", Faction.Red, true),
-                        Faction.Orange => new Player(this, "Edric*", Faction.Orange, true),
-                        Faction.Grey => new Player(this, "Prince Rhombur*", Faction.Grey, true),
-                        Faction.Purple => new Player(this, "Scytale*", Faction.Purple, true),
-                        Faction.Brown => new Player(this, "Brown*", Faction.Brown, true),
-                        Faction.White => new Player(this, "White*", Faction.White, true),
-                        Faction.Pink => new Player(this, "Pink*", Faction.Pink, true),
-                        Faction.Cyan => new Player(this, "Cyan*", Faction.Cyan, true),
-                        _ => new Player(this, "?*", Faction.Black, true)
+                        Faction.Black => new Player(this, UniquePlayerName("The Baron*"), Faction.Black, true),
+                        Faction.Blue => new Player(this, UniquePlayerName("Mother Mohiam*"), Faction.Blue, true),
+                        Faction.Green => new Player(this, UniquePlayerName("Paul Atreides*"), Faction.Green, true),
+                        Faction.Yellow => new Player(this, UniquePlayerName("Liet Kynes*"), Faction.Yellow, true),
+                        Faction.Red => new Player(this, UniquePlayerName("Shaddam IV*"), Faction.Red, true),
+                        Faction.Orange => new Player(this, UniquePlayerName("Edric*"), Faction.Orange, true),
+                        Faction.Grey => new Player(this, UniquePlayerName("Prince Rhombur*"), Faction.Grey, true),
+                        Faction.Purple => new Player(this, UniquePlayerName("Scytale*"), Faction.Purple, true),
+                        Faction.Brown => new Player(this, UniquePlayerName("Brown*"), Faction.Brown, true),
+                        Faction.White => new Player(this, UniquePlayerName("White*"), Faction.White, true),
+                        Faction.Pink => new Player(this, UniquePlayerName("Pink*"), Faction.Pink, true),
+                        Faction.Cyan => new Player(this, UniquePlayerName("Cyan*"), Faction.Cyan, true),
+                        _ => new Player(this, UniquePlayerName("The Baron*"), Faction.Black, true)
                     };
 
                     Players.Add(bot);
@@ -271,19 +271,21 @@ namespace Treachery.Shared
                 p.AssignLeaders(this);
             }
 
-            Enter(IsPlaying(Faction.Blue), Phase.BluePredicting, DealTraitorCards);
+            Enter(IsPlaying(Faction.Blue), Phase.BluePredicting, TreacheryCardsBeforeTraitors, DealStartingTreacheryCards, DealTraitors);
         }
+
+        private bool TreacheryCardsBeforeTraitors => Version >= 121 && Applicable(Rule.BrownAndWhiteLeaderSkills);
 
         public void HandleEvent(BluePrediction e)
         {
             GetPlayer(e.Initiator).PredictedFaction = e.ToWin;
             GetPlayer(e.Initiator).PredictedTurn = e.Turn;
             CurrentReport.Add(e);
-            DealTraitorCards();
+            Enter(TreacheryCardsBeforeTraitors, DealStartingTreacheryCards, DealTraitors);
         }
 
         private Deck<IHero> TraitorDeck { get; set; }
-        private void DealTraitorCards()
+        private void DealTraitors()
         {
             RecentMilestones.Add(Milestone.Shuffled);
             TraitorDeck = CreateAndShuffleTraitorDeck(Players.Select(p => p.Faction), Random);
@@ -424,7 +426,7 @@ namespace Treachery.Shared
                 }
             }
 
-            AssignLeaderSkills();
+            Enter(TreacheryCardsBeforeTraitors, SetupSpiceAndForces, AssignLeaderSkills);
         }
 
         private void AssignLeaderSkills()
@@ -448,7 +450,7 @@ namespace Treachery.Shared
             }
             else
             {
-                SetupSpiceAndForces();
+                Enter(TreacheryCardsBeforeTraitors, DealTraitors, SetupSpiceAndForces);
             }
         }
 
@@ -466,7 +468,7 @@ namespace Treachery.Shared
             if (!Players.Any(p => p.SkillsToChooseFrom.Any()))
             {
                 SkillDeck.Shuffle();
-                Enter(CurrentPhase != Phase.AssigningInitialSkills, PhaseBeforeSkillAssignment, SetupSpiceAndForces);
+                Enter(CurrentPhase != Phase.AssigningInitialSkills, PhaseBeforeSkillAssignment, TreacheryCardsBeforeTraitors, DealTraitors, SetupSpiceAndForces);
             }
         }
 
@@ -489,10 +491,20 @@ namespace Treachery.Shared
                     SetupPlayerSpiceAndForces(p);
                 }
 
-                Enter(
-                    IsPlaying(Faction.Yellow), Phase.YellowSettingUp,
-                    IsPlaying(Faction.Blue) && Applicable(Rule.BlueFirstForceInAnyTerritory), Phase.BlueSettingUp,
-                    DrawStartingTreacheryCards);
+                if (TreacheryCardsBeforeTraitors)
+                {
+                    Enter(
+                        IsPlaying(Faction.Yellow), Phase.YellowSettingUp,
+                        IsPlaying(Faction.Blue) && Applicable(Rule.BlueFirstForceInAnyTerritory), Phase.BlueSettingUp,
+                        EnterStormPhase);
+                }
+                else
+                {
+                    Enter(
+                        IsPlaying(Faction.Yellow), Phase.YellowSettingUp,
+                        IsPlaying(Faction.Blue) && Applicable(Rule.BlueFirstForceInAnyTerritory), Phase.BlueSettingUp,
+                        DealStartingTreacheryCards);
+                }
             }
         }
 
@@ -649,7 +661,7 @@ namespace Treachery.Shared
 
             if (Players.Count == HasActedOrPassed.Count)
             {
-                DrawStartingTreacheryCards();
+                Enter(TreacheryCardsBeforeTraitors, EnterStormPhase, DealStartingTreacheryCards);
             }
         }
 
@@ -665,7 +677,7 @@ namespace Treachery.Shared
             }
 
             CurrentReport.Add(e);
-            Enter(IsPlaying(Faction.Blue) && Applicable(Rule.BlueFirstForceInAnyTerritory), Phase.BlueSettingUp, DrawStartingTreacheryCards);
+            Enter(IsPlaying(Faction.Blue) && Applicable(Rule.BlueFirstForceInAnyTerritory), Phase.BlueSettingUp, TreacheryCardsBeforeTraitors, EnterStormPhase, DealStartingTreacheryCards);
         }
 
         public void HandleEvent(PerformBluePlacement e)
@@ -681,7 +693,7 @@ namespace Treachery.Shared
             }
 
             CurrentReport.Add(e);
-            DrawStartingTreacheryCards();
+            Enter(TreacheryCardsBeforeTraitors, EnterStormPhase, DealStartingTreacheryCards);
         }
 
         private void FlipBeneGesseritWhenAlone()
@@ -701,7 +713,7 @@ namespace Treachery.Shared
         public Deck<TreacheryCard> StartingTreacheryCards;
         private TreacheryCard ExtraStartingCardForBlack = null;
 
-        private void DrawStartingTreacheryCards()
+        private void DealStartingTreacheryCards()
         {
             StartingTreacheryCards = new Deck<TreacheryCard>(Random);
             foreach (var p in Players)
@@ -742,7 +754,7 @@ namespace Treachery.Shared
                 }
             }
 
-            EnterStormPhase();
+            Enter(TreacheryCardsBeforeTraitors, AssignLeaderSkills, EnterStormPhase);
         }
 
         #endregion SettingUp

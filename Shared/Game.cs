@@ -11,9 +11,9 @@ namespace Treachery.Shared
     public partial class Game
     {
         public const int LowestSupportedVersion = 86;
-        public const int LatestVersion = 120;
+        public const int LatestVersion = 121;
 
-        public bool BotInfologging = false;
+        public bool BotInfologging = true;
 
         #region GameState
 
@@ -345,6 +345,22 @@ namespace Treachery.Shared
             else if (condition2)
             {
                 Enter(phaseIf2True);
+            }
+            else
+            {
+                methodOtherwise();
+            }
+        }
+
+        private void Enter(bool condition1, Phase phaseIf1True, bool condition2, EnterPhaseMethod methodIf2True, EnterPhaseMethod methodOtherwise)
+        {
+            if (condition1)
+            {
+                Enter(phaseIf1True);
+            }
+            else if (condition2)
+            {
+                methodIf2True();
             }
             else
             {
