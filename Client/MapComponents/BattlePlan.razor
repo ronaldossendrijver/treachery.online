@@ -37,6 +37,14 @@
                      BorderWidth="Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
                      Align="@TextAlignment.Center" />
         }
+
+        if (Game.HasStrongholdAdvantage(Plan.Initiator, StrongholdAdvantage.FreeResourcesForBattles, Game.CurrentBattle.Territory))
+        {
+            <Image X="@(forceX + 380)" Y="@(forceY - 0.2f * Skin.Current.BattleWheelCardHeight)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" 
+            Src="@Skin.Current.GetImageURL(Game.Map.Arrakeen)" 
+            ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="3" ShadowY="3" ShadowBlur="1" 
+            Popover="@Support.GetOwnedStrongholdHTML(Game.Map.Arrakeen, Plan.Initiator)"/>
+        }
     }
 
     if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Leader)

@@ -197,6 +197,7 @@ namespace Treachery.Shared
                 forcesAvailable,
                 specialForcesAvailable,
                 Resources - bankerBoost,
+                Game.CurrentBattle.Territory,
                 out int forcesAtFullStrength,
                 out int forcesAtHalfStrength,
                 out int specialForcesAtFullStrength,
@@ -301,14 +302,17 @@ namespace Treachery.Shared
 
             if (Battle.MustPayForForcesInBattle(Game, this))
             {
+                int strongholdFreeForces = Game.HasStrongholdAdvantage(Faction, StrongholdAdvantage.FreeResourcesForBattles, Game.CurrentBattle.Territory) ? 2 : 0;
+                int specialAtFull = Math.Min(2, Battle.MaxForces(Game, this, true));
+                int normalAtFull = Math.Min(2 - specialAtFull, Battle.MaxForces(Game, this, false));
                 return new Battle(Game)
                 {
                     Initiator = Faction,
                     Hero = lowestAvailableHero,
-                    Forces = 0,
-                    ForcesAtHalfStrength = Battle.MaxForces(Game, this, false),
-                    SpecialForces = 0,
-                    SpecialForcesAtHalfStrength = Battle.MaxForces(Game, this, true),
+                    Forces = normalAtFull,
+                    ForcesAtHalfStrength = Battle.MaxForces(Game, this, false) - normalAtFull,
+                    SpecialForces = specialAtFull,
+                    SpecialForcesAtHalfStrength = Battle.MaxForces(Game, this, true) - specialAtFull,
                     Defense = uselessAsDefense,
                     Weapon = uselessAsWeapon,
                     BankerBonus = 0
@@ -368,16 +372,18 @@ namespace Treachery.Shared
             }
         }
 
-        protected float DetermineRemainingDialInBattle(float dialNeeded, Faction opponent, int forcesAvailable, int specialForcesAvailable, int resourcesAvailable)
+        protected float DetermineRemainingDialInBattle(float dialNeeded, Faction opponent, Territory territory, int forcesAvailable, int specialForcesAvailable, int resourcesAvailable)
         {
-            return DetermineRemainingDialInBattle(dialNeeded, opponent, forcesAvailable, specialForcesAvailable, resourcesAvailable, out _, out _, out _, out _);
+            return DetermineRemainingDialInBattle(dialNeeded, opponent, forcesAvailable, specialForcesAvailable, resourcesAvailable, territory, out _, out _, out _, out _);
         }
 
-        protected float DetermineRemainingDialInBattle(float dialNeeded, Faction opponent, int forcesAvailable, int specialForcesAvailable, int resourcesAvailable, out int forcesAtFullStrength, out int forcesAtHalfStrength, out int specialForcesAtFullStrength, out int specialForcesAtHalfStrength)
+        protected float DetermineRemainingDialInBattle(float dialNeeded, Faction opponent, int forcesAvailable, int specialForcesAvailable, int resourcesAvailable, Territory territory,
+            out int forcesAtFullStrength, out int forcesAtHalfStrength, out int specialForcesAtFullStrength, out int specialForcesAtHalfStrength)
         {
             var normalStrength = Battle.DetermineNormalForceStrength(Faction);
             var specialStrength = Battle.DetermineSpecialForceStrength(Game, Faction, opponent);
-            int spiceLeft = resourcesAvailable;
+            int strongholdBonus = Game.HasStrongholdAdvantage(Faction, StrongholdAdvantage.FreeResourcesForBattles, territory) ? 2 : 0;
+            int spiceLeft = resourcesAvailable + strongholdBonus;
             int costPerForce = Battle.NormalForceCost(Game, this);
             int costPerSpecialForce = Battle.SpecialForceCost(Game, this);
 

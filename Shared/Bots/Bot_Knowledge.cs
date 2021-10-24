@@ -464,7 +464,7 @@ namespace Treachery.Shared
 
             var winnableNearbyStronghold = enemyWeakStrongholds.Where(s =>
                 WinWasPredictedByMeThisTurn(s.Opponent) ||
-                DetermineRemainingDialInBattle(s.DialNeeded, s.Opponent, battalion.AmountOfForces + ForcesIn(s.Stronghold), battalion.AmountOfSpecialForces + SpecialForcesIn(s.Stronghold), Resources) <= 0
+                DetermineRemainingDialInBattle(s.DialNeeded, s.Opponent, s.Stronghold.Territory, battalion.AmountOfForces + ForcesIn(s.Stronghold), battalion.AmountOfSpecialForces + SpecialForcesIn(s.Stronghold), Resources) <= 0
                 ).OrderBy(s => s.DialNeeded).FirstOrDefault();
 
             if (winnableNearbyStronghold == null)
