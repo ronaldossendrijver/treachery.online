@@ -24,7 +24,7 @@ namespace Treachery.Shared
 
             if (Version < 122)
             {
-                StartRevivals();
+                StartResurrection();
             }
             else
             {
@@ -32,7 +32,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void StartRevivals()
+        private void StartResurrection()
         {
             Enter(Phase.Resurrection);
         }

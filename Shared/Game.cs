@@ -228,7 +228,7 @@ namespace Treachery.Shared
                     break;
 
                 case Phase.BeginningOfResurrection:
-                    StartCollection();
+                    StartResurrection();
                     break;
 
                 case Phase.Resurrection:
