@@ -12,9 +12,17 @@
     <div class="card-body">
         <label class="mb-0" for="undoEventNr">Select up to (including) which action should be undone</label>
         <select class="custom-select" @bind="undoEventId" id="undoEventNr">
-            @foreach (var i in UndoableEvents)
-            {
-                <option value=@i.Key>@i.Value</option>
+
+            @foreach (var group in UndoableEvents) {
+
+                <optgroup label="@group.Key">
+
+                    @foreach (var evt in group.Value)
+                    {
+                        <option value=@evt.Key>@DetermineEventDescription(evt.Key, evt.Value)</option>
+                    }
+
+                </optgroup>
             }
         </select>
         <button class="btn btn-primary mt-1" @onclick="ConfirmUndo">Confirm</button>
@@ -50,17 +58,30 @@
         }
     }
 
-    private Dictionary<int, string> UndoableEvents
+    private string DetermineEventDescription(int eventnumber, GameEvent e) => "" + eventnumber + ". " + e.GetMessage();
+
+    private string DetermineGroup(Game g) => "Turn " + g.CurrentTurn + " - " + Skin.Current.Describe(g.CurrentMainPhase);
+
+    private Dictionary<string,Dictionary<int, GameEvent>> UndoableEvents
     {
         get
         {
-            var result = new Dictionary<int, string>();
+            var result = new Dictionary<string,Dictionary<int, GameEvent>>();
+
             for (int i = h.Game.History.Count - 1; i > 0; i--)
             {
+                var group = DetermineGroup(h.Game.States[i-1]);
+                if (!result.ContainsKey(group))
+                {
+                    result.Add(group, new());
+                }
+
+                var groupedEvents = result[group];
+
                 var e = h.Game.History[i];
                 if (!(e is AllyPermission) && !(e is BattleRevision))
                 {
-                    result.Add(i, "" + i + ". " + e.GetMessage());
+                    groupedEvents.Add(i, e);
                 }
             }
             return result;

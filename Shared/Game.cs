@@ -11,7 +11,7 @@ namespace Treachery.Shared
     public partial class Game
     {
         public const int LowestSupportedVersion = 86;
-        public const int LatestVersion = 121;
+        public const int LatestVersion = 122;
 
         public bool BotInfologging = true;
 
@@ -207,7 +207,15 @@ namespace Treachery.Shared
                     EnterCharityPhase();
                     break;
 
+                case Phase.BeginningOfCharity:
+                    StartClaimingCharity();
+                    break;
+
                 case Phase.ClaimingCharity:
+                    EndCharityPhase();
+                    break;
+
+                case Phase.CharityReport:
                     EnterBiddingPhase();
                     break;
 
@@ -219,7 +227,15 @@ namespace Treachery.Shared
                     EnterRevivalPhase();
                     break;
 
+                case Phase.BeginningOfResurrection:
+                    StartCollection();
+                    break;
+
                 case Phase.Resurrection:
+                    EndResurrectionPhase();
+                    break;
+
+                case Phase.ResurrectionReport:
                     EnterShipmentAndMovePhase();
                     break;
 
@@ -238,6 +254,10 @@ namespace Treachery.Shared
                 case Phase.BattleReport:
                     ResetBattle();
                     Enter(NextPlayerToBattle != null, Phase.BattlePhase, EnterSpiceCollectionPhase);
+                    break;
+
+                case Phase.BeginningOfCollection:
+                    StartCollection();
                     break;
 
                 case Phase.CollectionReport:

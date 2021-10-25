@@ -298,7 +298,7 @@ namespace Treachery.Shared
             }
             else
             {
-                CostForEmperor = DetermineCostForEmperor(initiator.Faction, costForForceRevival, amountOfForces, amountOfSpecialForces, emperorsSpice, amountPaidForByEmperor);
+                CostForEmperor = DetermineCostForEmperor(g, initiator.Faction, costForForceRevival, amountOfForces, amountOfSpecialForces, emperorsSpice, amountPaidForByEmperor);
             }
 
             CostForForceRevivalForPlayer = costForForceRevival - CostForEmperor;
@@ -312,9 +312,10 @@ namespace Treachery.Shared
 
         public int TotalCostForForceRevival => CostForForceRevivalForPlayer + CostForEmperor;
 
-        public static int DetermineCostForEmperor(Faction initiator, int totalCostForForceRevival, int amountOfForces, int amountOfSpecialForces, int emperorsSpice, int amountPaidForByEmperor)
+        public static int DetermineCostForEmperor(Game g, Faction initiator, int totalCostForForceRevival, int amountOfForces, int amountOfSpecialForces, int emperorsSpice, int amountPaidForByEmperor)
         {
             int priceOfSpecialForces = initiator == Faction.Grey ? 3 : 2;
+            int priceOfNormalForces = initiator == Faction.Brown && !g.Prevented(FactionAdvantage.BrownRevival) && g.Version >= 122 ? 1 : 2;
 
             int specialForcesPaidByEmperor = 0;
             while (
@@ -328,13 +329,13 @@ namespace Treachery.Shared
             int forcesPaidByEmperor = 0;
             while (
                 (forcesPaidByEmperor + 1) <= amountOfForces &&
-                specialForcesPaidByEmperor * priceOfSpecialForces + (forcesPaidByEmperor + 1) * 2 <= emperorsSpice &&
+                specialForcesPaidByEmperor * priceOfSpecialForces + (forcesPaidByEmperor + 1) * priceOfNormalForces <= emperorsSpice &&
                 specialForcesPaidByEmperor + forcesPaidByEmperor + 1 <= amountPaidForByEmperor)
             {
                 forcesPaidByEmperor++;
             }
 
-            int costForEmperor = specialForcesPaidByEmperor * priceOfSpecialForces + forcesPaidByEmperor * 2;
+            int costForEmperor = specialForcesPaidByEmperor * priceOfSpecialForces + forcesPaidByEmperor * priceOfNormalForces;
             return Math.Min(totalCostForForceRevival, Math.Min(costForEmperor, emperorsSpice));
         }
     }

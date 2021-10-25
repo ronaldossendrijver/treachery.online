@@ -12,13 +12,23 @@ namespace Treachery.Shared
         {
             MainPhaseStart(MainPhase.Charity);
             HasActedOrPassed.Clear();
-
             Monsters.Clear();
             ResourceTechTokenIncome = false;
-
             Allow(FactionAdvantage.YellowControlsMonster);
             Allow(FactionAdvantage.YellowProtectedFromMonster);
 
+            if (Version < 122)
+            {
+                StartClaimingCharity();
+            }
+            else
+            {
+                Enter(Phase.BeginningOfCharity);
+            }
+        }
+
+        private void StartClaimingCharity()
+        {
             if (!Prevented(FactionAdvantage.BrownControllingCharity))
             {
                 var brown = GetPlayer(Faction.Brown);
@@ -51,8 +61,21 @@ namespace Treachery.Shared
             }
 
             MainPhaseMiddle();
-
             Enter(Phase.ClaimingCharity);
+        }
+
+        public void EndCharityPhase()
+        {
+            ReceiveResourceTechIncome();
+
+            if (Version < 122)
+            {
+                EnterBiddingPhase();
+            }
+            else
+            {
+                Enter(Phase.CharityReport);
+            }
         }
 
         private int CurrentCharityMultiplier

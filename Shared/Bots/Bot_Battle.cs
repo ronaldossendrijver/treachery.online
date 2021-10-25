@@ -303,8 +303,8 @@ namespace Treachery.Shared
             if (Battle.MustPayForForcesInBattle(Game, this))
             {
                 int strongholdFreeForces = Game.HasStrongholdAdvantage(Faction, StrongholdAdvantage.FreeResourcesForBattles, Game.CurrentBattle.Territory) ? 2 : 0;
-                int specialAtFull = Math.Min(2, Battle.MaxForces(Game, this, true));
-                int normalAtFull = Math.Min(2 - specialAtFull, Battle.MaxForces(Game, this, false));
+                int specialAtFull = Math.Min(strongholdFreeForces, Battle.MaxForces(Game, this, true));
+                int normalAtFull = Math.Min(strongholdFreeForces - specialAtFull, Battle.MaxForces(Game, this, false));
                 return new Battle(Game)
                 {
                     Initiator = Faction,
@@ -860,6 +860,8 @@ namespace Treachery.Shared
 
             UseDestructiveWeaponIfApplicable(enemyCanDefendPoisonTooth, ref chanceOfMyHeroSurviving, ref chanceOfEnemyHeroSurviving, ref bestDefense, ref bestWeapon);
 
+            bool iAssumeMyLeaderWillDie = chanceOfMyHeroSurviving < Param.Battle_MimimumChanceToAssumeMyLeaderSurvives;
+
             var opponentPlan = Game.CurrentBattle?.PlanOf(opponent);
             lasgunShieldDetected = HasLasgunShield(
                 bestWeapon,
@@ -881,7 +883,7 @@ namespace Treachery.Shared
             }
 
             isTraitor = false;
-            int myHeroValue = SelectHeroForBattle(opponent, !lasgunShieldDetected && chanceOfMyHeroSurviving > 0, messiah, bestWeapon, bestDefense, out hero, out isTraitor, includeInFrontOfShield);
+            int myHeroValue = SelectHeroForBattle(opponent, !lasgunShieldDetected && !iAssumeMyLeaderWillDie, messiah, bestWeapon, bestDefense, out hero, out isTraitor, includeInFrontOfShield);
 
             var opponentPenalty = Battle.DetermineSkillPenalty(Game, hero, opponent, out _);
 
@@ -926,7 +928,7 @@ namespace Treachery.Shared
                 return 0.5f;
             }
 
-            if (Game.SkilledAs(hero, LeaderSkill.Banker) && chanceOfMyHeroSurviving >= Param.Battle_MimimumChanceToAssumeMyLeaderSurvives)
+            if (Game.SkilledAs(hero, LeaderSkill.Banker) && !iAssumeMyLeaderWillDie)
             {
                 bankerBoost = Math.Min(Resources, 3);
             }
@@ -943,7 +945,6 @@ namespace Treachery.Shared
             int opponentLeaderValue = opponentLeader == null ? 0 : opponentLeader.ValueInCombatAgainst(hero);
             int opponentMessiahBonus = Battle.MessiahAvailableForBattle(Game, opponent) ? 2 : 0;
             int maxReinforcements = takeReinforcementsIntoAccount ? (int)Math.Ceiling(MaxReinforcedDialTo(opponent, territory)) : 0;
-
             var opponentDial = (prescience != null && prescience.Aspect == PrescienceAspect.Dial && opponentPlan != null) ? opponentPlan.Dial(Game, Faction) : MaxDial(opponent, territory, this);
 
             var result =
@@ -951,7 +952,7 @@ namespace Treachery.Shared
                 maxReinforcements +
                 (chanceOfEnemyHeroSurviving < Param.Battle_MimimumChanceToAssumeEnemyHeroSurvives ? 0 : 1) * (opponentLeaderValue + opponentMessiahBonus) +
                 (iAmAggressor ? 0 : 0.5f) -
-                (chanceOfMyHeroSurviving < Param.Battle_MimimumChanceToAssumeMyLeaderSurvives ? 0 : 1) * (myHeroValue + opponentPenalty + myMessiahBonus);
+                (iAssumeMyLeaderWillDie ? 0 : 1) * (myHeroValue + opponentPenalty + myMessiahBonus);
 
             LogInfo("opponentDial ({0}) + maxReinforcements ({8}) + (chanceOfEnemyHeroSurviving ({7}) < Battle_MimimumChanceToAssumeEnemyHeroSurvives ({10}) ? 0 : 1) * (highestleader ({1}) + messiahbonus ({2})) + defenderpenalty ({3}) - (chanceOfMyHeroSurviving ({4}) < Battle_MimimumChanceToAssumeMyLeaderSurvives ({11}) ? 0 : 1) * (myHeroValue ({5}) + messiahbonus ({9}) + bankerBoost ({12}) = ({6}))",
                 opponentDial,

@@ -519,7 +519,7 @@ namespace Treachery.Shared
                 Battle.DetermineSpecialForceStrength(Game, player.Faction, opponentFaction) * (specialForcesAtFullStrength + 0.5f * specialForcesAtHalfStrength) +
                 Battle.DetermineNormalForceStrength(player.Faction) * (forcesAtFullStrength + 0.5f * forcesAtHalfStrength);
 
-            LogInfo("MaxDial: {0} (SpecialForceStrength {1} * (specialForcesAtFullStrength {2} + 0.5 * specialForcesAtHalfStrength {3}) + NormalForceStrength {4} * (forcesAtFullStrength {5} + 0.5 * forcesAtHalfStrength {6}))", 
+            /*LogInfo("MaxDial: {0} (SpecialForceStrength {1} * (specialForcesAtFullStrength {2} + 0.5 * specialForcesAtHalfStrength {3}) + NormalForceStrength {4} * (forcesAtFullStrength {5} + 0.5 * forcesAtHalfStrength {6}))", 
                 result, 
                 Battle.DetermineSpecialForceStrength(Game, player.Faction, opponentFaction), 
                 specialForcesAtFullStrength, 
@@ -527,7 +527,7 @@ namespace Treachery.Shared
                 Battle.DetermineNormalForceStrength(player.Faction),
                 forcesAtFullStrength,
                 forcesAtHalfStrength
-                );
+                );*/
 
             return result;
         }

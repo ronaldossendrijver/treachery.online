@@ -148,7 +148,10 @@ namespace Treachery.Shared
         YellowRidingMonsterB = 190,
 
         BlowReport = 194,
+
+        BeginningOfCharity = 1941,
         ClaimingCharity = 195,
+        CharityReport = 1951,
 
         GreySelectingCard = 196,
         GreyRemovingCardFromBid = 197,
@@ -158,7 +161,10 @@ namespace Treachery.Shared
         ReplacingCardJustWon = 201,
         WaitingForNextBiddingRound = 205,
         BiddingReport = 208,
+        
+        BeginningOfResurrection = 209,
         Resurrection = 210,
+        ResurrectionReport = 215,
 
         BeginningOfShipAndMove = 219,
 
@@ -197,6 +203,7 @@ namespace Treachery.Shared
 
         BattleReport = 330,
 
+        BeginningOfCollection = 339,
         CollectionReport = 340,
 
         PerformingKarmaHandSwap = 350,

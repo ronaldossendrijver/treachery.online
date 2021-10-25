@@ -17,6 +17,19 @@ namespace Treachery.Shared
         {
             MainPhaseStart(MainPhase.Collection);
             CallHeroesHome();
+
+            if (Version < 122)
+            {
+                StartCollection();
+            }
+            else
+            {
+                Enter(Phase.BeginningOfCollection);
+            }
+        }
+
+        private void StartCollection()
+        {
             CollectResourcesFromTerritories();
             CollectResourcesFromStrongholds();
             MainPhaseEnd();

@@ -194,6 +194,11 @@ namespace Treachery.Test
         private string TestSpecialCases(Game g, GameEvent e)
         {
             var p = e.Player;
+
+            if (g.CurrentPhase == Phase.Resurrection && p.Faction == Faction.Brown && p.Ally == Faction.Red && p.ForcesKilled >= 6 && p.AlliedPlayer.Resources > 10)
+            {
+                WriteSavegameIfApplicable(g, p, "Red can revive");
+            }
             /*
             if ((g.CurrentPhase == Phase.BeginningOfShipAndMove ||
                 g.CurrentPhase == Phase.WaitingForNextBiddingRound ||

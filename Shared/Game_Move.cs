@@ -23,7 +23,6 @@ namespace Treachery.Shared
             MainPhaseStart(MainPhase.ShipmentAndMove);
             FactionsWithOrnithoptersAtStartOfMovement = Players.Where(p => OccupiesArrakeenOrCarthag(p)).Select(p => p.Faction).ToList();
             RecentMoves.Clear();
-            ReceiveGraveyardTechIncome();
             BeginningOfShipmentAndMovePhase = true;
             FactionsWithIncreasedRevivalLimits = new Faction[] { };
             AllowedEarlyRevivals.Clear();

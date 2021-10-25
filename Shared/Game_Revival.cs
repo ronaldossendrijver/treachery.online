@@ -15,13 +15,26 @@ namespace Treachery.Shared
         private void EnterRevivalPhase()
         {
             MainPhaseStart(MainPhase.Resurrection);
-            HasActedOrPassed.Clear();
-            Enter(Phase.Resurrection);
             Allow(FactionAdvantage.BlackFreeCard);
             Allow(FactionAdvantage.RedReceiveBid);
             Allow(FactionAdvantage.GreyAllyDiscardingCard);
             RevivalTechTokenIncome = false;
             FactionsThatTookFreeRevival.Clear();
+            HasActedOrPassed.Clear();
+
+            if (Version < 122)
+            {
+                StartRevivals();
+            }
+            else
+            {
+                Enter(Phase.BeginningOfResurrection);
+            }
+        }
+
+        private void StartRevivals()
+        {
+            Enter(Phase.Resurrection);
         }
 
         public List<Faction> FactionsThatRevivedSpecialForcesThisTurn = new List<Faction>();
@@ -396,6 +409,20 @@ namespace Treachery.Shared
             Discard(e.CardUsed());
             CurrentFreeRevivalPrevention = e;
             RecentMilestones.Add(Milestone.SpecialUselessPlayed);
+        }
+
+        public void EndResurrectionPhase()
+        {
+            ReceiveGraveyardTechIncome();
+
+            if (Version < 122)
+            {
+                EnterShipmentAndMovePhase();
+            }
+            else
+            {
+                Enter(Phase.ResurrectionReport);
+            }
         }
     }
 }

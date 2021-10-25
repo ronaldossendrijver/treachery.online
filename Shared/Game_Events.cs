@@ -50,14 +50,19 @@ namespace Treachery.Shared
                 case Phase.AllianceA:
                 case Phase.AllianceB:
                 case Phase.BlowReport:
+                case Phase.BeginningOfCharity:
                 case Phase.ClaimingCharity:
+                case Phase.CharityReport:
                 case Phase.WaitingForNextBiddingRound:
                 case Phase.BiddingReport:
+                case Phase.BeginningOfResurrection:
                 case Phase.Resurrection:
+                case Phase.ResurrectionReport:
                 case Phase.BeginningOfShipAndMove:
                 case Phase.ShipmentAndMoveConcluded:
                 case Phase.BeginningOfBattle:
                 case Phase.BattleReport:
+                case Phase.BeginningOfCollection:
                 case Phase.CollectionReport:
                 case Phase.Contemplate:
                 case Phase.TurnConcluded:
@@ -640,6 +645,9 @@ namespace Treachery.Shared
             CurrentMoment == MainPhaseMoment.Start &&
             (CurrentMainPhase == MainPhase.Bidding && CurrentMainPhase == MainPhase.ShipmentAndMove);
 
-        private bool ConsiderAsStartOfPhase => CurrentMoment == MainPhaseMoment.Start || (CurrentMainPhase == MainPhase.Blow && CurrentMoment == MainPhaseMoment.End) || Version < 109 && CurrentMoment == MainPhaseMoment.End;
+        private bool ConsiderAsStartOfPhase => 
+            CurrentMoment == MainPhaseMoment.Start || 
+            (CurrentMainPhase == MainPhase.Blow && CurrentMoment == MainPhaseMoment.End) || 
+            Version < 109 && CurrentMoment == MainPhaseMoment.End;
     }
 }

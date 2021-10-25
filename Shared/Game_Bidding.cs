@@ -29,7 +29,6 @@ namespace Treachery.Shared
             MainPhaseStart(MainPhase.Bidding);
             Allow(FactionAdvantage.BrownControllingCharity);
             Allow(FactionAdvantage.BlueCharity);
-            ReceiveResourceTechIncome();
             CardsOnAuction = new Deck<TreacheryCard>(Random);
             GreySwappedCardOnBid = false;
             CardSoldOnBlackMarket = null;

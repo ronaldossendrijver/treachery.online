@@ -25,7 +25,9 @@ namespace Treachery.Client
             {
                 case Phase.StormReport:
                 case Phase.BlowReport:
+                case Phase.CharityReport:
                 case Phase.BiddingReport:
+                case Phase.ResurrectionReport:
                 case Phase.BattleReport:
                 case Phase.CollectionReport:
                 case Phase.TurnConcluded:
@@ -194,6 +196,12 @@ namespace Treachery.Client
 
                 /* Charity */
 
+                case Phase.BeginningOfCharity:
+                    return S(
+                        Skin.Current.Format("You may now continue with the {0} phase...", MainPhase.Charity),
+                        Skin.Current.Format("Waiting for the host to continue the {0} phase...", MainPhase.Charity));
+
+
                 case Phase.ClaimingCharity: return S(Skin.Current.Format("Factions may now claim charity if eligible."));
 
                 /* Bidding */
@@ -278,6 +286,11 @@ namespace Treachery.Client
 
                 /* Revival */
 
+                case Phase.BeginningOfResurrection:
+                    return S(
+                        Skin.Current.Format("You may now continue with the {0} phase...", MainPhase.Resurrection),
+                        Skin.Current.Format("Waiting for the host to continue the {0} phase...", MainPhase.Resurrection));
+
                 case Phase.Resurrection: return S(Skin.Current.Format("Factions may now reclaim forces and leaders."));
 
                 /* Ship & Move */
@@ -330,6 +343,8 @@ namespace Treachery.Client
                     Faction.Orange, Game.LatestEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move)));
 
                 case Phase.ShipmentAndMoveConcluded: return S(Skin.Current.Format("Waiting for factions to be ready to enter the Battle phase..."));
+
+                /* Battle */
 
                 case Phase.BeginningOfBattle: 
                     return S(
@@ -412,6 +427,15 @@ namespace Treachery.Client
                     Skin.Current.Format("You may reveal a leader to be one of your face dancers."),
                     Skin.Current.Format("Waiting for {0} to reveal a face dancer...", Faction.Purple),
                     Faction.Purple);
+
+                /* Collection */
+
+                case Phase.BeginningOfCollection:
+                    return S(
+                        Skin.Current.Format("You may now continue with the {0} phase...", MainPhase.Collection),
+                        Skin.Current.Format("Waiting for the host to continue the {0} phase...", MainPhase.Collection));
+
+                /* Mentat */
 
                 case Phase.ReplacingFaceDancer:
                     return S(
