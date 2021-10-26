@@ -195,115 +195,6 @@ namespace Treachery.Test
         {
             var p = e.Player;
 
-            if (g.CurrentPhase == Phase.Resurrection && p.Faction == Faction.Brown && p.Ally == Faction.Red && p.ForcesKilled >= 6 && p.AlliedPlayer.Resources > 10)
-            {
-                WriteSavegameIfApplicable(g, p, "Red can revive");
-            }
-            /*
-            if ((g.CurrentPhase == Phase.BeginningOfShipAndMove ||
-                g.CurrentPhase == Phase.WaitingForNextBiddingRound ||
-                g.CurrentPhase == Phase.BeginningOfBattle ) && g.Players.Any(p => p.Has(TreacheryCardType.Juice)))
-            {
-                WriteSavegameIfApplicable(g, g.Players.First(p => p.Has(TreacheryCardType.Juice)), string.Format("Juice in {0}", g.CurrentPhase));
-            }
-
-            if (e is KarmaHandSwap)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Handswap");
-            }
-              */          
-            /*
-            if (e is Battle b && b.Initiator == Faction.Black &&
-                g.CurrentBattle.OpponentOf(Faction.Black).Faction != Faction.Purple &&
-                Battle.ValidBattleHeroes(g, b.Player).Any(l => l.Faction == g.CurrentBattle.OpponentOf(Faction.Black).Faction))
-            {
-                WriteSavegameIfApplicable(g, b.Player, Skin.Current.Format("MAY USE TRAITOR LEADER {0}", StrongholdAdvantage.FreeResourcesForBattles));
-            }
-            */
-            /*
-            WriteSavegameIfApplicable(g, typeof(BrownEconomics));
-            WriteSavegameIfApplicable(g, typeof(DiscardedTaken));
-            WriteSavegameIfApplicable(g, typeof(Diplomacy));
-            WriteSavegameIfApplicable(g, typeof(Bureaucracy));
-            WriteSavegameIfApplicable(g, typeof(Planetology));
-            WriteSavegameIfApplicable(g, typeof(HMSAdvantageChosen));
-            WriteSavegameIfApplicable(g, typeof(Retreat));
-            WriteSavegameIfApplicable(g, typeof(RockWasMelted));
-            WriteSavegameIfApplicable(g, typeof(AuditCancelled));
-
-            if (g.CurrentPhase == Phase.ReplacingCardJustWon)
-            {
-                if (g.CardJustWon == g.CardSoldOnBlackMarket)
-                {
-                    WriteSavegameIfApplicable(g, g.GetPlayer(Faction.Grey).AlliedPlayer, Skin.Current.Format("REPLACING black market card"));
-                }
-
-                if (g.CardJustWon.Rule == Rule.WhiteTreacheryCards)
-                {
-                    WriteSavegameIfApplicable(g, g.GetPlayer(Faction.Grey).AlliedPlayer, Skin.Current.Format("REPLACING richese card"));
-                }
-            }
-
-            if (e is WhiteRevealedNoField w )
-            {
-                WriteSavegameIfApplicable(g, w.Player, "White reveals a no-field");
-            }
-
-            if (e is BattleConcluded conc && conc.Initiator == Faction.Grey)
-            {
-                var plan = g.CurrentBattle.PlanOf(Faction.Grey);
-                if (g.SkilledAs(plan.Hero, LeaderSkill.Graduate) && plan.SpecialForces + plan.SpecialForcesAtHalfStrength > 0 && plan.Forces + plan.ForcesAtHalfStrength > 0)
-                {
-                    WriteSavegameIfApplicable(g, conc.Player, "Ixian Suk Graduate");
-                }
-            }
-
-            var otherPlayerWithKarama = g.Players.FirstOrDefault(p => p.Faction != Faction.Grey && p.HasKarma);
-            if (e is GreySwappedCardOnBid ba && otherPlayerWithKarama != null)
-            {
-                WriteSavegameIfApplicable(g, ba.Player, "Preventable swap by " + otherPlayerWithKarama.Faction);
-            }
-
-            if (e is Bureaucracy bc)
-            {
-                WriteSavegameIfApplicable(g, bc.Player, Skin.Current.Format("Bureaucracy during {0}", g.CurrentMainPhase));
-            }
-
-            if (e is Battle b && g.Skilled(b.Hero))
-            {
-                WriteSavegameIfApplicable(g, b.Player, Skin.Current.Format("{0} in battle", g.Skill(b.Hero)));
-            }
-
-            if (e is BattleConcluded bc1 && g.HasStrongholdAdvantage(bc1.Initiator, StrongholdAdvantage.CollectResourcesForDial, g.CurrentBattle.Territory))
-            {
-                WriteSavegameIfApplicable(g, bc1.Player, Skin.Current.Format("advantage {0}", StrongholdAdvantage.CollectResourcesForDial));
-            }
-
-            if (e is Battle bc2 && (bc2.Weapon != null && bc2.Weapon.IsUseless || bc2.Defense != null && bc2.Defense.IsUseless) && g.HasStrongholdAdvantage(bc2.Initiator, StrongholdAdvantage.CollectResourcesForUseless, g.CurrentBattle.Territory))
-            {
-                WriteSavegameIfApplicable(g, bc2.Player, Skin.Current.Format("advantage {0}", StrongholdAdvantage.CollectResourcesForUseless));
-            }
-
-            if (e is BattleConcluded bc3 && g.CurrentBattle.PlanOfOpponent(bc3.Player).HasPoison && !g.CurrentBattle.PlanOf(bc3.Initiator).HasAntidote && g.CurrentBattle.PlanOf(bc3.Initiator).Defense != null && g.HasStrongholdAdvantage(bc3.Initiator, StrongholdAdvantage.CountDefensesAsAntidote, g.CurrentBattle.Territory))
-            {
-                WriteSavegameIfApplicable(g, bc3.Player, Skin.Current.Format("advantage {0}", StrongholdAdvantage.CountDefensesAsAntidote));
-            }
-
-            if (e is BattleConcluded bc4 && bc4.Initiator == g.CurrentBattle.Target && g.HasStrongholdAdvantage(bc4.Initiator, StrongholdAdvantage.WinTies, g.CurrentBattle.Territory))
-            {
-                var outcome = g.DetermineBattleOutcome(g.CurrentBattle.PlanOf(bc4.Initiator), g.CurrentBattle.PlanOfOpponent(bc4.Player), g.CurrentBattle.Territory);
-                if (outcome.AggTotal == outcome.DefTotal)
-                {
-                    WriteSavegameIfApplicable(g, bc4.Player, Skin.Current.Format("advantage {0}", StrongholdAdvantage.WinTies));
-                }
-            }
-
-            if (e is Battle bc5 && bc5.Forces > 0 && g.HasStrongholdAdvantage(bc5.Initiator, StrongholdAdvantage.FreeResourcesForBattles, g.CurrentBattle.Territory))
-            {
-                WriteSavegameIfApplicable(g, bc5.Player, Skin.Current.Format("advantage {0}", StrongholdAdvantage.FreeResourcesForBattles));
-            }
-            */
-
             return "";
         }
 
@@ -335,28 +226,24 @@ namespace Treachery.Test
             }
         }
 
-        //[TestMethod]
+        [TestMethod]
         public void ImproveBots()
         {
             //Console.WriteLine("");
 
             //Expansion, advanced game:
-            var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
+            var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
             rules.Add(Rule.FillWithBots);
-            var factions = new List<Faction> { Faction.Grey, Faction.Green, Faction.Orange, Faction.Red, Faction.Blue, Faction.Yellow, Faction.Purple, Faction.Black };
-            int nrOfPlayers = 8;
-            int nrOfTurns = 8;
+            var allFactions = new List<Faction> { Faction.Grey, Faction.Green, Faction.Orange, Faction.Red, Faction.Blue, Faction.Yellow, Faction.Purple, Faction.Black, Faction.White, Faction.Brown };
+            int nrOfPlayers = 6;
+            int nrOfTurns = 10;
             rules.Add(Rule.BotsCannotAlly);
             var rulesAsArray = rules.ToArray();
 
-            File.AppendAllLines("results.csv", new string[] { string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}", //;{9};{10};{11};{12}
-                                                        "Bidding_ResourcesToKeepWhenCardIsntPerfect",
-                                                        //"Shipment_DialShortageToAccept",
-                                                        //"Shipment_MaxEnemyForceStrengthFightingForSpice",
-                                                        "Shipment_DialForExtraForcesToShip",
-                                                        //"Bidding_PassingTreshold",
-                                                        //"Battle_MimimumChanceToAssumeEnemyHeroSurvives",
+            File.AppendAllLines("results.csv", new string[] { string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
+                                                        "Battle_MimimumChanceToAssumeEnemyHeroSurvives",
                                                         "Battle_MimimumChanceToAssumeMyLeaderSurvives",
+                                                        "Battle_MaxStrengthOfDialledForces",
                                                         "Battle_DialShortageThresholdForThrowing",
                                                         "Wins",
                                                         "Spice",
@@ -365,50 +252,32 @@ namespace Treachery.Test
                                                         "Faction") });
 
 
-            foreach (Faction toTest in factions)
+            foreach (Faction toTest in allFactions) //10
             {
-                //int x0 = 6;
-                for (int x0 = 2; x0 <= 10; x0 += 4) // 3
+                for (float battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.1f; battle_MimimumChanceToAssumeEnemyHeroSurvives <= 1; battle_MimimumChanceToAssumeEnemyHeroSurvives += 0.2f) // 5
                 {
-                    //for (int x1 = 0; x1 <= 6; x1 += 3) //3
-                    //int x1 = 2;
+                    for (float battle_MimimumChanceToAssumeMyLeaderSurvives = 0.1f; battle_MimimumChanceToAssumeMyLeaderSurvives <= 1; battle_MimimumChanceToAssumeMyLeaderSurvives += 0.2f) //5
                     {
-                        //for (int x2 = 0; x2 <= 4; x2 += 2) //3
+                        for (int Battle_MaxStrengthOfDialledForces = 4; Battle_MaxStrengthOfDialledForces <= 16; Battle_MaxStrengthOfDialledForces += 4) //4
                         {
-                            //int x3 = 3;
-                            for (int x3 = 2; x3 <= 12; x3 += 2) //6
+                            for (int Battle_DialShortageThresholdForThrowing = 1; Battle_DialShortageThresholdForThrowing <= 7; Battle_DialShortageThresholdForThrowing += 2) //4
                             {
-                                //for (int x4 = 0; x4 <= 4; x4 += 2) //3
-                                {
-                                    //for (float x5 = 0.1f; x5 <= 1f; x5 += 0.4f) //3
-                                    {
-                                        for (float x6 = 0.1f; x6 <= 1f; x6 += 0.2f) //5
-                                        {
-                                            for (int x7 = 1; x7 <= 7; x7 += 2) //4
-                                            {
-                                                //8 * 600 = 4800 lines
-                                                //52488 lines
-                                                var p = BotParameters.GetDefaultParameters(toTest);
-                                                p.Bidding_ResourcesToKeepWhenCardIsntPerfect = x0;
-                                                //p.Shipment_DialShortageToAccept = x1;
-                                                //p.Shipment_MaxEnemyForceStrengthFightingForSpice = x2;
-                                                p.Shipment_DialForExtraForcesToShip = x3;
-                                                //p.Bidding_PassingTreshold = x4;
-                                                //p.Battle_MimimumChanceToAssumeEnemyHeroSurvives = x5;
-                                                p.Battle_MimimumChanceToAssumeMyLeaderSurvives = x6;
-                                                p.Battle_DialShortageThresholdForThrowing = x7;
+                                //10*5*5*4*4 = 4000 lines
+                                var p = BotParameters.GetDefaultParameters(toTest);
+                                p.Battle_MimimumChanceToAssumeEnemyHeroSurvives = battle_MimimumChanceToAssumeEnemyHeroSurvives;
+                                p.Battle_MimimumChanceToAssumeMyLeaderSurvives = battle_MimimumChanceToAssumeMyLeaderSurvives;
+                                p.Battle_MaxStrengthOfDialledForces = Battle_MaxStrengthOfDialledForces;
+                                p.Battle_DialShortageThresholdForThrowing = Battle_DialShortageThresholdForThrowing;
 
-                                                var pDict = new Dictionary<Faction, BotParameters>() { { toTest, p } };
+                                var pDict = new Dictionary<Faction, BotParameters>() { { toTest, p } };
 
-                                                DetermineWins(24, rulesAsArray, factions, nrOfPlayers, nrOfTurns, pDict, toTest, out int wins, out int spice, out int points, out int forcesOnPlanet);
+                                var factions = allFactions.Where(f => f != toTest).TakeRandomN(nrOfPlayers - 1).ToList();
+                                factions.Add(toTest);
+                                DetermineWins(32, rulesAsArray, factions, nrOfPlayers, nrOfTurns, pDict, toTest, out int wins, out int spice, out int points, out int forcesOnPlanet);
 
-                                                File.AppendAllLines("results.csv", new string[] { string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}", //;{9};{10};{11};{12}
-                                                        x0, /*x1, x2,*/ x3, /*x4, x5,*/ x6, x7,
+                                File.AppendAllLines("results.csv", new string[] { string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
+                                                        battle_MimimumChanceToAssumeEnemyHeroSurvives, battle_MimimumChanceToAssumeMyLeaderSurvives, Battle_MaxStrengthOfDialledForces, Battle_DialShortageThresholdForThrowing,
                                                         wins, spice, points, forcesOnPlanet, toTest) });
-                                            }
-                                        }
-                                    }
-                                }
                             }
                         }
                     }
@@ -592,7 +461,7 @@ namespace Treachery.Test
         {
             TimedTest timer = null;
 
-            var game = new Game
+            var game = new Game(false)
             {
                 BotInfologging = infoLogging,
             };

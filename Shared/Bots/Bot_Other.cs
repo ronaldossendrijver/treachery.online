@@ -586,7 +586,32 @@ namespace Treachery.Shared
 
         public SkillAssigned DetermineSkillAssigned()
         {
-            return new SkillAssigned(Game) { Initiator = Faction, Passed = false, Leader = RandomItemFrom(SkillAssigned.ValidLeaders(Game, this)), Skill = SkillAssigned.ValidSkills(this).First() };
+            LeaderSkill skill = LeaderSkill.None;
+            var skills = SkillAssigned.ValidSkills(this);
+
+            if (skill == LeaderSkill.None && TreacheryCards.Any(c => c.IsProjectileWeapon)) skill = skills.FirstOrDefault(s => s == LeaderSkill.Swordmaster);
+            if (skill == LeaderSkill.None && TreacheryCards.Any(c => c.IsPoisonWeapon)) skill = skills.FirstOrDefault(s => s == LeaderSkill.MasterOfAssassins);
+            if (skill == LeaderSkill.None && TreacheryCards.Any(c => c.IsProjectileDefense)) skill = skills.FirstOrDefault(s => s == LeaderSkill.Adept);
+            if (skill == LeaderSkill.None && TreacheryCards.Any(c => c.IsPoisonDefense)) skill = skills.FirstOrDefault(s => s == LeaderSkill.KillerMedic);
+            if (skill == LeaderSkill.None && TreacheryCards.Any(c => c.IsUseless)) skill = skills.FirstOrDefault(s => s == LeaderSkill.Warmaster);
+
+            if (skill == LeaderSkill.None) skill = skills.FirstOrDefault(s => s == LeaderSkill.Graduate);
+            if (skill == LeaderSkill.None && !Is(Faction.Green)) skill = skills.FirstOrDefault(s => s == LeaderSkill.Thinker);
+
+            if (skill == LeaderSkill.None && Is(Faction.Yellow)) skill = skills.FirstOrDefault(s => s == LeaderSkill.Sandmaster);
+            if (skill == LeaderSkill.None && !Is(Faction.Yellow)) skill = skills.FirstOrDefault(s => s == LeaderSkill.Smuggler);
+
+            bool isEconomicFaction = Is(Faction.Red) || Is(Faction.Orange) || Is(Faction.Brown) || Is(Faction.Purple);
+            if (skill == LeaderSkill.None && !isEconomicFaction) skill = skills.FirstOrDefault(s => s == LeaderSkill.Bureaucrat);
+            if (skill == LeaderSkill.None && !isEconomicFaction) skill = skills.FirstOrDefault(s => s == LeaderSkill.Banker);
+
+            if (skill == LeaderSkill.None && !Is(Faction.Purple)) skill = skills.FirstOrDefault(s => s == LeaderSkill.Decipherer);
+
+            if (skill == LeaderSkill.None) skill = skills.FirstOrDefault(s => s != LeaderSkill.Planetologist);
+
+            if (skill == LeaderSkill.None) skill = skills.First();
+
+            return new SkillAssigned(Game) { Initiator = Faction, Passed = false, Leader = RandomItemFrom(SkillAssigned.ValidLeaders(Game, this)), Skill = skill };
         }
 
         public T RandomItemFrom<T>(IEnumerable<T> items)

@@ -28,11 +28,11 @@ namespace Treachery.Shared
         {
             if (Passed)
             {
-                return new Message(Initiator, "{0} don't capture a leader.", Initiator);
+                return new Message(Initiator, "{0} don't capture or kill a leader.", Initiator);
             }
             else
             {
-                return new Message(Initiator, "{0} capture a leader.", Initiator);
+                return new Message(Initiator, "{0} will capture or kill a random leader...", Initiator);
             }
         }
     }

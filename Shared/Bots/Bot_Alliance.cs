@@ -210,9 +210,9 @@ namespace Treachery.Shared
                 var karmaCard = TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
 
                 int allowedResources;
-                if (Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasActedOrPassed.Contains(Faction))
+                if (Game.CurrentMainPhase >= MainPhase.Battle)
                 {
-                    allowedResources = Math.Max(Resources - 5, 0);
+                    allowedResources = Resources;
                 }
                 else
                 {

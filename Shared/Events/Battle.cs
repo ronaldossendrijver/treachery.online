@@ -211,6 +211,8 @@ namespace Treachery.Shared
 
         public bool HasRockMelter => Weapon != null && Weapon.IsRockmelter;
 
+        public bool HasUseless => Weapon != null && Weapon.IsUseless || Defense != null && Defense.IsUseless;
+
         public static float DetermineSpecialForceStrength(Game g, Faction player, Faction opponent)
         {
             if (player == Faction.Yellow && g.Prevented(FactionAdvantage.YellowSpecialForceBonus))
@@ -362,7 +364,7 @@ namespace Treachery.Shared
             if (Game.IsInFrontOfShield(Hero)) return Skin.Current.Format("{0} is currently in front of your player shield", Hero);
             if (BankerBonus > 0 && !Game.SkilledAs(Hero, LeaderSkill.Banker)) return Skin.Current.Format("Only a leader skilled as {0} can be boosted by {1}", LeaderSkill.Banker, Concept.Resource);
             if (BankerBonus > MaxBankerBoost(Game, Player, Hero)) return Skin.Current.Format("You cannot boost your leader this much");
-            if (cost + BankerBonus > p.Resources) return Skin.Current.Format("You can't pay this {0} bonus", LeaderSkill.Banker);
+            if (cost + BankerBonus > p.Resources + AllyContributionAmount) return Skin.Current.Format("You can't pay this {0} bonus", LeaderSkill.Banker);
 
             if (Hero != null &&
                 AffectedByVoice(Game, Player, Game.CurrentVoice) &&

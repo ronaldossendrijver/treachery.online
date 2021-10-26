@@ -63,6 +63,11 @@ namespace Treachery.Shared
 
         }
 
+        public Game(bool trackStatesForReplay) : this(LatestVersion, trackStatesForReplay)
+        {
+
+        }
+
         public Game(int version, bool trackStatesForReplay)
         {
             if (version < LowestSupportedVersion)

@@ -111,5 +111,15 @@ namespace Treachery.Shared
                 return sourceArray[_random.Next(sourceArray.Length)];
             }
         }
+
+        public static IEnumerable<T> TakeRandomN<T>(this IEnumerable<T> source, int n)
+        {
+            if (source is null)
+            {
+                return Array.Empty<T>();
+            }
+
+            return source.OrderBy(x => _random.Next()).Take(n);
+        }
     }
 }

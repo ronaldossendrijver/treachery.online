@@ -278,8 +278,14 @@ namespace Treachery.Shared
 
         private Location DetermineMostSuitableNearbyLocation(Location location, Battalion battalion, bool includeSecondBestLocations, bool mustMove)
         {
-            var result = VacantAndSafeNearbyStronghold(location, battalion);
-            LogInfo("Suitable EmptyAndSafeNearbyStronghold: {0}", result);
+            var result = NearbyStrongholdOfWinningOpponent(location, battalion);
+            LogInfo("Suitable NearbyStrongholdOfWinningOpponent: {0}", result);
+
+            if (result == null) result = VacantAndSafeNearbyStronghold(location, battalion);
+            LogInfo("Suitable VacantAndSafeNearbyStronghold: {0}", result);
+
+            if (result == null) result = NearbyStrongholdOfAlmostWinningOpponent(location, battalion);
+            LogInfo("Suitable NearbyStrongholdOfAlmostWinningOpponent: {0}", result);
 
             if (result == null) result = WeakAndSafeNearbyStronghold(location, battalion);
             LogInfo("Suitable WeakAndSafeNearbyStronghold: {0}", result);

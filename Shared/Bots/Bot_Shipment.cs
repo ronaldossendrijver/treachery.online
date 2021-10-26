@@ -279,29 +279,17 @@ namespace Treachery.Shared
                 }
             }
         }
-
+                
         protected virtual void DetermineShipment_PreventNormalWin(int maximumChallengedStrongholds, int extraForces, float riskAppetite, int minResourcesToKeep, int maxUnsupportedForces)
         {
             LogInfo("DetermineShipment_PreventNormalWin()");
 
-            var potentialWinningOpponents = Game.Players.Where(p => 
-                p != this && 
-                p != AlliedPlayer && 
-                Game.MeetsNormalVictoryCondition(p, true) && 
-                Game.CountChallengedStongholds(p) <= maximumChallengedStrongholds && 
-                !WinWasPredictedByMeThisTurn(p.Faction));
-
+            var potentialWinningOpponents = WinningOpponentsIWishToAttack(maximumChallengedStrongholds);
             LogInfo("potentialWinningOpponents with too many unchallenged strongholds:" + string.Join(",", potentialWinningOpponents));
 
             if (!potentialWinningOpponents.Any())
             {
-                potentialWinningOpponents = Game.Players.Where(p => 
-                    p != this && p != AlliedPlayer && 
-                    Game.NumberOfVictoryPoints(p, true) + 1 >= Game.TresholdForWin(p) && 
-                    (CanShip(p) || p.HasAlly && CanShip(p.AlliedPlayer)) && 
-                    Game.CountChallengedStongholds(p) <= maximumChallengedStrongholds && 
-                    !WinWasPredictedByMeThisTurn(p.Faction));
-
+                potentialWinningOpponents = AlmostWinningOpponentsIWishToAttack(maximumChallengedStrongholds);
                 LogInfo("potentialWinningOpponents with too many victory points:" + string.Join(",", potentialWinningOpponents));
             }
 
@@ -593,7 +581,7 @@ namespace Treachery.Shared
 
         protected virtual void UseAllyResources(Shipment shipment)
         {
-            shipment.AllyContributionAmount = Math.Min(shipment.DetermineCostToInitiator(Game), Game.GetPermittedUseOfAllySpice(Faction));
+            shipment.AllyContributionAmount = Math.Min(shipment.DetermineCostToInitiator(Game), Game.SpiceYourAllyCanPay(this));
         }
 
         class Attack

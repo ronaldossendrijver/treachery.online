@@ -317,7 +317,7 @@ namespace Treachery.Shared
 
             if (opponent != null)
             {
-                var dialNeeded = GetDialNeeded(territory, opponent, true);
+                var dialNeeded = GetDialNeeded(territory, opponent, false);
                 var forcesIn = SpecialForcesIn(territory);
 
                 if (territory.IsStronghold && WinWasPredictedByMeThisTurn(opponent.Faction) || dialNeeded <= forcesIn + MaxReinforcedDialTo(this, territory))

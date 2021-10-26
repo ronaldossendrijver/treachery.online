@@ -16,7 +16,6 @@ namespace Treachery.Shared
 
             if (skilledLeader != null)
             {
-
                 if (skilledLeader != null && Game.IsInFrontOfShield(skilledLeader) && skilledLeader == DetermineBattle(true, true)?.Hero)
                 {
                     return new SwitchedSkilledLeader(Game) { Initiator = Faction };
@@ -58,11 +57,6 @@ namespace Treachery.Shared
             {
                 return new TreacheryCalled(Game) { Initiator = Faction, TraitorCalled = TreacheryCalled.MayCallTreachery(Game, this) };
             }
-        }
-
-        public bool HasNoFieldIn(Territory territory)
-        {
-            return Faction == Faction.White && SpecialForcesIn(territory) > 0;
         }
 
         protected virtual AuditCancelled DetermineAuditCancelled()
@@ -139,22 +133,7 @@ namespace Treachery.Shared
         {
             LogInfo("DetermineBattle()");
 
-            /*
-            foreach (var l in Leaders)
-            {
-                LogInfo("{0}: {1} {2} {3}", l, Game.IsAlive(l), Game.Skill(l), Game.IsInFrontOfShield(l));
-            }
-
-            LogInfo("Heroes for battle:");
-
-            foreach (var l in HeroesForBattle(this))
-            {
-                LogInfo("{0}: {1} {2} {3}", l, Game.IsAlive(l), Game.Skill(l), Game.IsInFrontOfShield(l));
-            }
-            */
-
             var opponent = Game.CurrentBattle.OpponentOf(this);
-            //LogInfo("Opponent of " + this + " in current battle: " + opponent);
             var prescience = MyPrescience;
 
             if (waitForPrescience && Prescience.MayUsePrescience(Game, this) || waitForPrescience && prescience != null && Game.CurrentBattle.PlanOf(opponent) == null)
@@ -169,12 +148,13 @@ namespace Treachery.Shared
 
             int forcesAvailable = Battle.MaxForces(Game, this, false);
             int specialForcesAvailable = Battle.MaxForces(Game, this, true);
+            var voice = voicePlan != null && voicePlan.battle == Game.CurrentBattle ? voicePlan : null;
 
             var dialNeeded = GetDialNeededForBattle(
                 IWillBeAggressorAgainst(opponent),
                 opponent,
                 Game.CurrentBattle.Territory,
-                voicePlan != null && voicePlan.battle == Game.CurrentBattle ? voicePlan : null,
+                voice,
                 prescience,
                 false,
                 includeLeaderInFrontOfShield,
@@ -191,12 +171,15 @@ namespace Treachery.Shared
 
             LogInfo("AGAINST {0} in {1}, WITH {2} + {3} as WEAP + {4} as DEF, I need a force dial of {5}", opponent, Game.CurrentBattle.Territory, hero, weapon, defense, dialNeeded);
 
-            var remainingDial = DetermineRemainingDialInBattle(
+            int resourcesFromAlly = Ally == Faction.Brown ? Game.SpiceYourAllyCanPay(this) : 0;
+            int resourcesForBattle = Resources + resourcesFromAlly;
+
+            var dialShortage = DetermineDialShortageForBattle(
                 lasgunShield ? 0.5f : dialNeeded,
                 opponent.Faction,
                 forcesAvailable,
                 specialForcesAvailable,
-                Resources - bankerBoost,
+                resourcesForBattle - bankerBoost,
                 Game.CurrentBattle.Territory,
                 out int forcesAtFullStrength,
                 out int forcesAtHalfStrength,
@@ -205,7 +188,7 @@ namespace Treachery.Shared
 
             bool predicted = WinWasPredictedByMeThisTurn(opponent.Faction);
             float dialShortageToAccept = prescience != null && prescience.Aspect == PrescienceAspect.Dial ? 0 : Param.Battle_DialShortageThresholdForThrowing;
-            bool minimizeSpendingsInThisLostFight = predicted || isTraitor && !messiah || remainingDial >= dialShortageToAccept;
+            bool minimizeSpendingsInThisLostFight = predicted || isTraitor && !messiah || dialShortage >= dialShortageToAccept;
 
             if (!minimizeSpendingsInThisLostFight)
             {
@@ -214,20 +197,9 @@ namespace Treachery.Shared
 
                 RemoveIllegalChoices(ref hero, ref weapon, ref defense);
 
-                //Avoid Lasgun/Shield suicide
-                if (weapon != null && weapon.Type == TreacheryCardType.Laser && defense != null && defense.IsShield)
-                {
-                    if (MayPlayNoWeapon(defense))
-                    {
-                        weapon = null;
-                    }
-                    else
-                    {
-                        defense = null;
-                    }
-                }
+                AvoidLasgunShieldExplosion(ref weapon, ref defense);
 
-                LogInfo("Leader: {0}, Weapon: {1}, Defense: {2}, Forces: {3} {4} {5} {6}", hero, weapon, defense, forcesAtFullStrength, forcesAtHalfStrength, specialForcesAtFullStrength, specialForcesAtHalfStrength);
+                LogInfo("Leader: {0}, Weapon: {1}, Defense: {2}, Forces: {3} (supp) {4} (non-supp) {5} (spec supp) {6} (spec non-supp)", hero, weapon, defense, forcesAtFullStrength, forcesAtHalfStrength, specialForcesAtFullStrength, specialForcesAtHalfStrength);
                 return new Battle(Game)
                 {
                     Initiator = Faction,
@@ -237,6 +209,7 @@ namespace Treachery.Shared
                     ForcesAtHalfStrength = forcesAtHalfStrength,
                     SpecialForces = specialForcesAtFullStrength,
                     SpecialForcesAtHalfStrength = specialForcesAtHalfStrength,
+                    AllyContributionAmount = Math.Min(resourcesFromAlly, Battle.MaxAllyResources(Game, this, forcesAtFullStrength, specialForcesAtFullStrength)),
                     Defense = defense,
                     Weapon = weapon,
                     BankerBonus = bankerBoost
@@ -248,21 +221,6 @@ namespace Treachery.Shared
                 return ConstructLostBattleMinimizingLosses(opponent);
             }
         }
-
-        /*private int DetermineAvailableForcesForBattle(Game game, Player player, Territory t, bool special)
-        {
-            if (player.Faction == Faction.White)
-            {
-                if (special)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return 
-                }
-            }
-        }*/
 
         private void UseDestructiveWeaponIfApplicable(bool enemyCanDefendPoisonTooth, ref float myHeroSurviving, ref float enemyHeroSurviving, ref TreacheryCard defense, ref TreacheryCard weapon)
         {
@@ -372,12 +330,27 @@ namespace Treachery.Shared
             }
         }
 
-        protected float DetermineRemainingDialInBattle(float dialNeeded, Faction opponent, Territory territory, int forcesAvailable, int specialForcesAvailable, int resourcesAvailable)
+        private void AvoidLasgunShieldExplosion(ref TreacheryCard weapon, ref TreacheryCard defense)
         {
-            return DetermineRemainingDialInBattle(dialNeeded, opponent, forcesAvailable, specialForcesAvailable, resourcesAvailable, territory, out _, out _, out _, out _);
+            if (weapon != null && weapon.Type == TreacheryCardType.Laser && defense != null && defense.IsShield)
+            {
+                if (MayPlayNoWeapon(defense))
+                {
+                    weapon = null;
+                }
+                else
+                {
+                    defense = null;
+                }
+            }
         }
 
-        protected float DetermineRemainingDialInBattle(float dialNeeded, Faction opponent, int forcesAvailable, int specialForcesAvailable, int resourcesAvailable, Territory territory,
+        protected float DetermineDialShortageForBattle(float dialNeeded, Faction opponent, Territory territory, int forcesAvailable, int specialForcesAvailable, int resourcesAvailable)
+        {
+            return DetermineDialShortageForBattle(dialNeeded, opponent, forcesAvailable, specialForcesAvailable, resourcesAvailable, territory, out _, out _, out _, out _);
+        }
+
+        protected float DetermineDialShortageForBattle(float dialNeeded, Faction opponent, int forcesAvailable, int specialForcesAvailable, int resourcesAvailable, Territory territory,
             out int forcesAtFullStrength, out int forcesAtHalfStrength, out int specialForcesAtFullStrength, out int specialForcesAtHalfStrength)
         {
             var normalStrength = Battle.DetermineNormalForceStrength(Faction);
@@ -897,20 +870,20 @@ namespace Treachery.Shared
             if (isTraitor)
             {
                 LogInfo("My leader is a traitor: chanceOfMyHeroSurviving = 0");
+                bestWeapon = null;
+                bestDefense = null;
                 chanceOfMyHeroSurviving = 0;
                 chanceOfEnemyHeroSurviving = 1;
                 return 99;
             }
 
-            if (opponent.Leaders.All(l =>
-                !opponent.MessiahAvailable && Traitors.Contains(l) ||
-                FaceDancers.Contains(l) ||
-                !opponent.MessiahAvailable && (Ally == Faction.Black && AlliedPlayer.Traitors.Contains(l)) ||
-                (Ally == Faction.Purple && AlliedPlayer.FaceDancers.Contains(l))))
+            if (CanOnlyUseTraitorsOrFacedancers(opponent))
             {
                 LogInfo("Opponent leader only has traitors or facedancers to use!");
                 bestWeapon = null;
                 bestDefense = null;
+                chanceOfMyHeroSurviving = 1;
+                chanceOfEnemyHeroSurviving = 0;
                 return 0.5f;
             }
 
@@ -972,6 +945,16 @@ namespace Treachery.Shared
             return result;
         }
 
+        private bool CanOnlyUseTraitorsOrFacedancers(Player player)
+        {
+            return player.Leaders.All(l =>
+                !player.MessiahAvailable && Traitors.Contains(l) ||
+                FaceDancers.Contains(l) ||
+                !player.MessiahAvailable && Ally == Faction.Black && AlliedPlayer.Traitors.Contains(l) ||
+                Ally == Faction.Purple && AlliedPlayer.FaceDancers.Contains(l));
+        }
+
+
         private bool HasLasgunShield(TreacheryCard myWeapon, TreacheryCard myDefense, TreacheryCard enemyWeapon, TreacheryCard enemyDefense)
         {
             return
@@ -981,15 +964,9 @@ namespace Treachery.Shared
 
         protected RockWasMelted DetermineRockWasMelted()
         {
-            /*
-            var myPlan = Game.CurrentBattle.PlanOf(this);
-            var opponent = Game.CurrentBattle.OpponentOf(this);
-            var opponentPlan = Game.CurrentBattle.PlanOf(opponent);
-            */
             var outcome = Game.DetermineBattleOutcome(Game.AggressorBattleAction, Game.DefenderBattleAction, Game.CurrentBattle.Territory);
             LogInfo(outcome.ToString());
             return new RockWasMelted(Game) { Initiator = Faction, Kill = outcome.Winner == this };
-            //opponentPlan.Hero != null && (Faction == Faction.Purple || myPlan.Hero == null || myPlan.Hero.Value < opponentPlan.Hero.Value)
         }
 
         protected ResidualPlayed DetermineResidualPlayed()
@@ -1035,8 +1012,18 @@ namespace Treachery.Shared
 
         protected HMSAdvantageChosen DetermineHMSAdvantageChosen()
         {
-            //This can be improved!
-            return new HMSAdvantageChosen(Game) { Initiator = Faction, Advantage = HMSAdvantageChosen.ValidAdvantages(Game, this).FirstOrDefault() };
+            var adv = StrongholdAdvantage.None;
+
+            var plan = DetermineBattle(false, false);
+            if (adv == StrongholdAdvantage.None && !plan.HasPoison && !plan.HasAntidote) adv = HMSAdvantageChosen.ValidAdvantages(Game, this).FirstOrDefault(a => a == StrongholdAdvantage.CountDefensesAsAntidote); 
+            if (adv == StrongholdAdvantage.None && Resources < 5) adv = HMSAdvantageChosen.ValidAdvantages(Game, this).FirstOrDefault(a => a == StrongholdAdvantage.FreeResourcesForBattles);
+            if (adv == StrongholdAdvantage.None) adv = HMSAdvantageChosen.ValidAdvantages(Game, this).FirstOrDefault(a => a == StrongholdAdvantage.CollectResourcesForDial);
+            if (adv == StrongholdAdvantage.None && !plan.HasUseless) adv = HMSAdvantageChosen.ValidAdvantages(Game, this).FirstOrDefault(a => a == StrongholdAdvantage.CollectResourcesForUseless);
+            if (adv == StrongholdAdvantage.None) adv = HMSAdvantageChosen.ValidAdvantages(Game, this).FirstOrDefault(a => a == StrongholdAdvantage.FreeResourcesForBattles);
+            if (adv == StrongholdAdvantage.None) adv = HMSAdvantageChosen.ValidAdvantages(Game, this).FirstOrDefault(a => a == StrongholdAdvantage.WinTies);
+            if (adv == StrongholdAdvantage.None) adv = HMSAdvantageChosen.ValidAdvantages(Game, this).FirstOrDefault();
+
+            return new HMSAdvantageChosen(Game) { Initiator = Faction, Advantage = adv };
         }
 
         protected Retreat DetermineRetreat()
