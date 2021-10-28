@@ -464,6 +464,7 @@ namespace Treachery.Test
         }
 
         private List<TimedTest> timedTests = new List<TimedTest>();
+        private List<Game> failedGames = new List<Game>();
         private Game LetBotsPlay(Rule[] rules, List<Faction> factions, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool infoLogging, bool performTests)
         {
             var game = new Game(false)
@@ -522,20 +523,31 @@ namespace Treachery.Test
                             File.WriteAllText("stuck" + game.Seed + ".json", GameState.GetStateAsString(game));
                         }
                         Assert.AreNotEqual(5000, game.History.Count, "bots got stuck at 5000 events");
+
+                        if (failedGames.Contains(game))
+                        {
+                            File.WriteAllText("timeout" + game.Seed + ".json", GameState.GetStateAsString(game));
+                            failedGames.Remove(game);
+                        }
+                        Assert.IsFalse(failedGames.Contains(game), "timeout");
                     }
                     else if (game.History.Count == 5000)
                     {
                         File.WriteAllText("stuck" + game.Seed + ".json", GameState.GetStateAsString(game));
                         break;
                     }
-
+                    else if (failedGames.Contains(game))
+                    {
+                        File.WriteAllText("timeout" + game.Seed + ".json", GameState.GetStateAsString(game));
+                        failedGames.Remove(game);
+                        break;
+                    }
                 }
             }
             catch
             {
                 timer.Stop();
                 timedTests.Remove(timer);
-
                 throw;
             }
 
@@ -548,7 +560,7 @@ namespace Treachery.Test
         private void HandleElapsedTestTime(object sender, ElapsedEventArgs e)
         {
             var game = sender as Game;
-            File.WriteAllText("timeout" + game.Seed + ".json", GameState.GetStateAsString(game));
+            failedGames.Add(game);
         }
 
         private GameEvent PerformBotEvent(Game game, bool performTests)
