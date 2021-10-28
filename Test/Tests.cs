@@ -193,9 +193,15 @@ namespace Treachery.Test
 
         private string TestSpecialCases(Game g, GameEvent e)
         {
+            /*
             var p = e.Player;
-
+            if (e is Shipment s && s.IsNoField && s.Initiator != Faction.White)
+            {
+                WriteSavegameIfApplicable(g, s.Player, "NoField shipment");
+            }
+            */
             return "";
+            
         }
 
         private void ProfileGames()
@@ -226,17 +232,17 @@ namespace Treachery.Test
             }
         }
 
-        //[TestMethod]
+        [TestMethod]
         public void ImproveBots()
         {
             //Console.WriteLine("");
 
             //Expansion, advanced game:
-            var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
+            var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
             rules.Add(Rule.FillWithBots);
             var allFactions = new List<Faction> { Faction.White, Faction.Brown, Faction.Grey, Faction.Green, Faction.Orange, Faction.Red, Faction.Blue, Faction.Yellow, Faction.Purple, Faction.Black };
             int nrOfPlayers = 6;
-            int nrOfTurns = 10;
+            int nrOfTurns = 7;
             rules.Add(Rule.BotsCannotAlly);
             var rulesAsArray = rules.ToArray();
 
@@ -258,11 +264,11 @@ namespace Treachery.Test
                 {
                     for (float battle_MimimumChanceToAssumeMyLeaderSurvives = 0.1f; battle_MimimumChanceToAssumeMyLeaderSurvives <= 1; battle_MimimumChanceToAssumeMyLeaderSurvives += 0.2f) //5
                     {
-                        for (int Battle_MaxStrengthOfDialledForces = 4; Battle_MaxStrengthOfDialledForces <= 16; Battle_MaxStrengthOfDialledForces += 4) //4
+                        for (int Battle_MaxStrengthOfDialledForces = 8; Battle_MaxStrengthOfDialledForces <= 18; Battle_MaxStrengthOfDialledForces += 5) //3
                         {
-                            for (int Battle_DialShortageThresholdForThrowing = 1; Battle_DialShortageThresholdForThrowing <= 7; Battle_DialShortageThresholdForThrowing += 2) //4
+                            for (int Battle_DialShortageThresholdForThrowing = 0; Battle_DialShortageThresholdForThrowing <= 6; Battle_DialShortageThresholdForThrowing += 3) //3
                             {
-                                //10*5*5*4*4 = 4000 lines
+                                //10*5*5*3*3 = 2250 lines
                                 var p = BotParameters.GetDefaultParameters(toTest);
                                 p.Battle_MimimumChanceToAssumeEnemyHeroSurvives = battle_MimimumChanceToAssumeEnemyHeroSurvives;
                                 p.Battle_MimimumChanceToAssumeMyLeaderSurvives = battle_MimimumChanceToAssumeMyLeaderSurvives;
@@ -273,7 +279,7 @@ namespace Treachery.Test
 
                                 var factions = allFactions.Where(f => f != toTest).TakeRandomN(nrOfPlayers - 1).ToList();
                                 factions.Add(toTest);
-                                DetermineWins(32, rulesAsArray, factions, nrOfPlayers, nrOfTurns, pDict, toTest, out int wins, out int spice, out int points, out int forcesOnPlanet);
+                                DetermineWins(Environment.ProcessorCount * 3, rulesAsArray, factions, nrOfPlayers, nrOfTurns, pDict, toTest, out int wins, out int spice, out int points, out int forcesOnPlanet);
 
                                 File.AppendAllLines("results.csv", new string[] { string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
                                                         battle_MimimumChanceToAssumeEnemyHeroSurvives, battle_MimimumChanceToAssumeMyLeaderSurvives, Battle_MaxStrengthOfDialledForces, Battle_DialShortageThresholdForThrowing,
@@ -318,12 +324,12 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 500;
+            int nrOfGames = 100;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
             //Expansion, advanced game, all expansions, all factions:
-            var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
+            var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
             rules.Add(Rule.FillWithBots);
             rules.Add(Rule.AssistedNotekeeping);
             var factions = EstablishPlayers.AvailableFactions().ToList();
@@ -457,27 +463,24 @@ namespace Treachery.Test
             }
         }
 
+        private List<TimedTest> timedTests = new List<TimedTest>();
         private Game LetBotsPlay(Rule[] rules, List<Faction> factions, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool infoLogging, bool performTests)
         {
-            TimedTest timer = null;
-
             var game = new Game(false)
             {
                 BotInfologging = infoLogging,
             };
+
+            var timer = new TimedTest(game, 30);
+            timer.Elapsed += HandleElapsedTestTime;
+            timedTests.Add(timer);
 
             try
             {
                 var start = new EstablishPlayers(game) { ApplicableRules = rules.ToArray(), FactionsInPlay = factions, MaximumTurns = nrOfTurns, MaximumNumberOfPlayers = nrOfPlayers, Players = Array.Empty<string>(), Seed = new Random().Next() };
                 start.Time = DateTime.Now;
                 start.Execute(false, true);
-
-                if (performTests)
-                {
-                    timer = new TimedTest(game, 30);
-                    timer.Elapsed += HandleElapsedTestTime;
-                }
-
+                
                 if (p != null)
                 {
                     foreach (var kvp in p)
@@ -530,18 +533,14 @@ namespace Treachery.Test
             }
             catch
             {
-                if (performTests)
-                {
-                    timer.Stop();
-                }
+                timer.Stop();
+                timedTests.Remove(timer);
 
                 throw;
             }
 
-            if (performTests)
-            {
-                timer.Stop();
-            }
+            timer.Stop();
+            timedTests.Remove(timer);
 
             return game;
         }

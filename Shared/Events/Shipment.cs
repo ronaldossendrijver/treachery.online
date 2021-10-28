@@ -301,7 +301,7 @@ namespace Treachery.Shared
             }
         }
 
-        private string NoFieldMessage => IsNoField ? "(using a No-Field) " : "";
+        private string NoFieldMessage => IsNoField && Initiator != Faction.White ? "(using a No-Field) " : "";
 
         private MessagePart ForceMessage
         {

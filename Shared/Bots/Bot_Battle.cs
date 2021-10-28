@@ -603,12 +603,6 @@ namespace Treachery.Shared
 
             var result = 1 - (float)CumulativeChance(unknownCards.Count - numberOfUnknownDefensesThatCouldCounterThisWeapon, unknownCards.Count, nrOfUnknownOpponentCards);
 
-            LogInfo("ChanceOfAnUnknownOpponentCardSavingHisLeader: unknownCards.Length {0}, numberOfUnknownDefensesThatCouldCounterThisWeapon {1}, NrOfUnknownOpponentCards {2} = {3}",
-                unknownCards.Count,
-                numberOfUnknownDefensesThatCouldCounterThisWeapon,
-                nrOfUnknownOpponentCards,
-                result);
-
             return result;
         }
 

@@ -64,6 +64,8 @@ namespace Treachery.Shared
             bool asAdvisors = Faction == Faction.Blue && SpecialForcesIn(moved.To.Territory) > 0;
             var result = new Caravan(Game) { Initiator = Faction, Passed = false, To = moved.To, ForceLocations = forces, AsAdvisors = asAdvisors };
 
+            decidedShipmentAction = ShipmentDecision.None;
+
             if (!result.IsValid)
             {
                 LogInfo(result.Validate());
