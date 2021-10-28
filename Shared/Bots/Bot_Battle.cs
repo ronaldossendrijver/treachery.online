@@ -549,8 +549,6 @@ namespace Treachery.Shared
                 def.Type != TreacheryCardType.Useless
                 ).ToArray();
 
-            LogInfo("availableDefenses: " + Skin.Current.Join(availableDefenses));
-
             var defenseQuality = new ObjectCounter<TreacheryCard>();
 
             var unknownCards = CardsUnknownToMe;
@@ -593,12 +591,6 @@ namespace Treachery.Shared
             var nrOfUnknownOpponentCards = NrOfUnknownOpponentCards(opponent);
 
             var result = 1 - (float)CumulativeChance(unknownCards.Count - numberOfUnknownWeaponsThatCouldKillMeWithThisDefense, unknownCards.Count, nrOfUnknownOpponentCards);
-
-            LogInfo("ChanceOfAnUnknownOpponentCardKillingMyLeader: unknownCards.Length {0}, numberOfUnknownWeaponsThatCouldKillMeWithThisDefense {1}, NrOfUnknownOpponentCards {2} = {3}",
-                unknownCards.Count,
-                numberOfUnknownWeaponsThatCouldKillMeWithThisDefense,
-                nrOfUnknownOpponentCards,
-                result);
 
             return result;
         }
@@ -717,7 +709,7 @@ namespace Treachery.Shared
             var unknownOpponentCards = OpponentCardsUnknownToMe(opponent);
 
             mostEffectiveWeapon = availableWeapons.Where(w => !knownEnemyDefenses.Any(defense => w.CounteredBy(defense, null))).RandomOrDefault();
-            LogInfo("ChanceOfLeaderDying(): {0} is a weapon without a known defense.", mostEffectiveWeapon);
+            
             if (mostEffectiveWeapon != null)
             {
                 if (!unknownOpponentCards.Any())
@@ -731,7 +723,7 @@ namespace Treachery.Shared
             }
 
             mostEffectiveWeapon = availableWeapons.Where(w => !IsKnownToOpponent(opponent, w)).RandomOrDefault();
-            LogInfo("ChanceOfLeaderDying(): {0} is weapon unknown to my enemy.", mostEffectiveWeapon);
+            
             if (mostEffectiveWeapon != null)
             {
                 return 0.5f;
@@ -777,7 +769,7 @@ namespace Treachery.Shared
 
             var highestOpponentLeader = HeroesForBattle(opponent, true).OrderByDescending(l => l.Value).FirstOrDefault();
             var safeLeaders = HeroesForBattle(this, includeInFrontOfShield).Where(l => messiahUsed || (knownNonTraitors.Contains(l) && !knownTraitorsForOpponentsInBattle.Contains(l)));
-            LogInfo("Available leaders: {0}, safe leaders: {1}", HeroesForBattle(this, includeInFrontOfShield), safeLeaders);
+            
             IHero safeHero = null;
             IHero unsafeHero = null;
 
@@ -927,7 +919,7 @@ namespace Treachery.Shared
                 (iAmAggressor ? 0 : 0.5f) -
                 (iAssumeMyLeaderWillDie ? 0 : 1) * (myHeroValue + opponentPenalty + myMessiahBonus);
 
-            LogInfo("opponentDial ({0}) + maxReinforcements ({8}) + (chanceOfEnemyHeroSurviving ({7}) < Battle_MimimumChanceToAssumeEnemyHeroSurvives ({10}) ? 0 : 1) * (highestleader ({1}) + messiahbonus ({2})) + defenderpenalty ({3}) - (chanceOfMyHeroSurviving ({4}) < Battle_MimimumChanceToAssumeMyLeaderSurvives ({11}) ? 0 : 1) * (myHeroValue ({5}) + messiahbonus ({9}) + bankerBoost ({12}) = ({6}))",
+            LogInfo("{13}/{14}: opponentDial ({0}) + maxReinforcements ({8}) + (chanceOfEnemyHeroSurviving ({7}) < Battle_MimimumChanceToAssumeEnemyHeroSurvives ({10}) ? 0 : 1) * (highestleader ({1}) + messiahbonus ({2})) + defenderpenalty ({3}) - (chanceOfMyHeroSurviving ({4}) < Battle_MimimumChanceToAssumeMyLeaderSurvives ({11}) ? 0 : 1) * (myHeroValue ({5}) + messiahbonus ({9}) + bankerBoost ({12}) => *{6}*)",
                 opponentDial,
                 opponentLeaderValue,
                 opponentMessiahBonus,
@@ -940,7 +932,9 @@ namespace Treachery.Shared
                 myMessiahBonus,
                 Param.Battle_MimimumChanceToAssumeEnemyHeroSurvives,
                 Param.Battle_MimimumChanceToAssumeMyLeaderSurvives,
-                bankerBoost);
+                bankerBoost,
+                territory,
+                opponent.Faction);
 
             return result;
         }

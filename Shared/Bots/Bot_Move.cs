@@ -32,9 +32,12 @@ namespace Treachery.Shared
             if (!result.IsValid)
             {
                 LogInfo(result.Validate());
+                return null;
             }
-
-            return result;
+            else
+            {
+                return result;
+            }
         }
 
         protected virtual Caravan DetermineCaravan()
@@ -64,9 +67,12 @@ namespace Treachery.Shared
             if (!result.IsValid)
             {
                 LogInfo(result.Validate());
+                return null;
             }
-
-            return result;
+            else
+            {
+                return result;
+            }
         }
 
         private MovedBatallion DetermineMovedBatallion(bool includeLowPrioMoves)

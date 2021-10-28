@@ -295,11 +295,13 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    var baseMessage = Initiator == Faction.Yellow ? "{0} rally {1} in {2}{3}.{4}{5}" : "{0} ship {1} to {2}{3}.{4}{5}";
-                    return new Message(Initiator, baseMessage, Initiator, ForceMessage, To, CostMessage(cost), KaramaMessage(ownerOfKarma), orangeIncome);
+                    var baseMessage = Initiator == Faction.Yellow ? "{0} rally {1} in {2}{3}.{4}{5}" : "{0} ship {6}{1} to {2}{3}.{4}{5}";
+                    return new Message(Initiator, baseMessage, Initiator, ForceMessage, To, CostMessage(cost), KaramaMessage(ownerOfKarma), orangeIncome, NoFieldMessage);
                 }
             }
         }
+
+        private string NoFieldMessage => IsNoField ? "(using a No-Field) " : "";
 
         private MessagePart ForceMessage
         {

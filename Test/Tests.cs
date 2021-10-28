@@ -226,7 +226,7 @@ namespace Treachery.Test
             }
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void ImproveBots()
         {
             //Console.WriteLine("");
@@ -234,7 +234,7 @@ namespace Treachery.Test
             //Expansion, advanced game:
             var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
             rules.Add(Rule.FillWithBots);
-            var allFactions = new List<Faction> { Faction.Grey, Faction.Green, Faction.Orange, Faction.Red, Faction.Blue, Faction.Yellow, Faction.Purple, Faction.Black, Faction.White, Faction.Brown };
+            var allFactions = new List<Faction> { Faction.White, Faction.Brown, Faction.Grey, Faction.Green, Faction.Orange, Faction.Red, Faction.Blue, Faction.Yellow, Faction.Purple, Faction.Black };
             int nrOfPlayers = 6;
             int nrOfTurns = 10;
             rules.Add(Rule.BotsCannotAlly);
