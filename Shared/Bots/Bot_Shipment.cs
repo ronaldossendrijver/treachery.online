@@ -621,8 +621,6 @@ namespace Treachery.Shared
 
         private Battalion SampleBattalion(Location l)
         {
-            //Does not take into account Cyborg movement
-
             if (Faction == Faction.Blue && SpecialForcesIn(l.Territory) > 0)
             {
                 //Forces shipped by BG into a territory with advisors must become advisors
@@ -630,7 +628,7 @@ namespace Treachery.Shared
             }
             else
             {
-                return new Battalion() { Faction = Faction, AmountOfForces = 1, AmountOfSpecialForces = 0 };
+                return new Battalion() { Faction = Faction, AmountOfForces = 1, AmountOfSpecialForces = 1 };
             }
         }
 

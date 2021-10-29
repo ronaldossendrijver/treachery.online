@@ -141,7 +141,7 @@ namespace Treachery.Shared
         {
             int maximumDistance = g.DetermineMaximumMoveDistance(p, moved);
             bool mayMoveIntoStorm = p.Faction == Faction.Yellow && g.Applicable(Rule.YellowMayMoveIntoStorm) && g.Applicable(Rule.YellowStormLosses);
-            var neighbours = Map.FindNeighbours(from, maximumDistance, mayMoveIntoStorm, p.Faction, g.SectorInStorm, g.ForcesOnPlanet, g.CurrentBlockedTerritories);
+            var neighbours = g.Map.FindNeighbours(from, maximumDistance, mayMoveIntoStorm, p.Faction, g);
             return neighbours;
         }
 

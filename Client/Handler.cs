@@ -606,7 +606,7 @@ namespace Treachery.Client
         private bool savegameSent = false;
         private async Task PerformEndOfGameTasks()
         {
-            if (IsHost && Game.RecentMilestones.Contains(Milestone.GameWon) && !savegameSent)
+            if (IsHost && Game.RecentMilestones.Contains(Milestone.GameWon) && !savegameSent && Game.Players.Count(p => p.IsBot) < Game.Players.Count(p => !p.IsBot))
             {
                 savegameSent = true;
                 await Host.HandleGameFinished(Game);
@@ -687,11 +687,11 @@ namespace Treachery.Client
             }
             else if (phase == MainPhase.Resurrection || phase == MainPhase.Charity || e is AllyPermission || e is DealOffered || e is DealAccepted)
             {
-                return 200;
+                return 400;
             }
             else if (e is Bid)
             {
-                return 1000;
+                return 1500;
             }
             else if (phase == MainPhase.Battle || phase == MainPhase.ShipmentAndMove)
             {

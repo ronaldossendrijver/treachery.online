@@ -191,7 +191,7 @@ namespace Treachery.Test
             return "";
         }
 
-        private string TestSpecialCases(Game g, GameEvent e)
+        private void SaveSpecialCases(Game g, GameEvent e)
         {
             /*
             var p = e.Player;
@@ -200,8 +200,6 @@ namespace Treachery.Test
                 WriteSavegameIfApplicable(g, s.Player, "NoField shipment");
             }
             */
-            return "";
-            
         }
 
         private void ProfileGames()
@@ -232,7 +230,7 @@ namespace Treachery.Test
             }
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void ImproveBots()
         {
             //Console.WriteLine("");
@@ -329,7 +327,7 @@ namespace Treachery.Test
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
             //Expansion, advanced game, all expansions, all factions:
-            var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
+            var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
             rules.Add(Rule.FillWithBots);
             rules.Add(Rule.AssistedNotekeeping);
             var factions = EstablishPlayers.AvailableFactions().ToList();
@@ -439,7 +437,6 @@ namespace Treachery.Test
             {
                 Console.WriteLine("{0}: {1} ({2}%)", f, wincounter.CountOf(f), (100f * wincounter.CountOf(f) / nrOfGames));
             }
-
         }
 
         private void PlayGameAndRecordResults(List<Faction> factions, int nrOfPlayers, int nrOfTurns, Rule[] rulesAsArray, ObjectCounter<Faction> wincounter)
@@ -472,7 +469,7 @@ namespace Treachery.Test
                 BotInfologging = infoLogging,
             };
 
-            var timer = new TimedTest(game, 30);
+            var timer = new TimedTest(game, 60);
             timer.Elapsed += HandleElapsedTestTime;
             timedTests.Add(timer);
 
@@ -494,16 +491,29 @@ namespace Treachery.Test
                 {
                     var evt = PerformBotEvent(game, performTests);
 
+                    if (evt == null)
+                    {
+                        File.WriteAllText("novalidbotevent" + game.Seed + ".json", GameState.GetStateAsString(game));
+                    }
+                    Assert.IsNotNull(evt, "bots couldn't come up with a valid event");
+
+                    evt.Time = DateTime.Now;
+
+                    if (game.History.Count == 5000)
+                    {
+                        File.WriteAllText("stuck" + game.Seed + ".json", GameState.GetStateAsString(game));
+                    }
+                    Assert.AreNotEqual(5000, game.History.Count, "bots got stuck at 5000 events");
+
+                    if (failedGames.Contains(game))
+                    {
+                        File.WriteAllText("timeout" + game.Seed + ".json", GameState.GetStateAsString(game));
+                        failedGames.Remove(game);
+                    }
+                    Assert.IsFalse(failedGames.Contains(game), "timeout");
+
                     if (performTests)
                     {
-                        if (evt == null)
-                        {
-                            File.WriteAllText("novalidbotevent" + game.Seed + ".json", GameState.GetStateAsString(game));
-                        }
-                        Assert.IsNotNull(evt, "bots couldn't come up with a valid event");
-
-                        evt.Time = DateTime.Now;
-
                         var illegalCase = TestIllegalCases(game, evt);
                         if (illegalCase != "")
                         {
@@ -511,36 +521,7 @@ namespace Treachery.Test
                         }
                         Assert.AreEqual("", illegalCase);
 
-                        var strangeCase = TestSpecialCases(game, evt);
-                        if (strangeCase != "")
-                        {
-                            File.WriteAllText("strangecase" + game.Seed + ".json", GameState.GetStateAsString(game));
-                        }
-                        Assert.AreEqual("", strangeCase);
-
-                        if (game.History.Count == 5000)
-                        {
-                            File.WriteAllText("stuck" + game.Seed + ".json", GameState.GetStateAsString(game));
-                        }
-                        Assert.AreNotEqual(5000, game.History.Count, "bots got stuck at 5000 events");
-
-                        if (failedGames.Contains(game))
-                        {
-                            File.WriteAllText("timeout" + game.Seed + ".json", GameState.GetStateAsString(game));
-                            failedGames.Remove(game);
-                        }
-                        Assert.IsFalse(failedGames.Contains(game), "timeout");
-                    }
-                    else if (game.History.Count == 5000)
-                    {
-                        File.WriteAllText("stuck" + game.Seed + ".json", GameState.GetStateAsString(game));
-                        break;
-                    }
-                    else if (failedGames.Contains(game))
-                    {
-                        File.WriteAllText("timeout" + game.Seed + ".json", GameState.GetStateAsString(game));
-                        failedGames.Remove(game);
-                        break;
+                        SaveSpecialCases(game, evt);
                     }
                 }
             }

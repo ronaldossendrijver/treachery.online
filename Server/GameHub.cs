@@ -326,15 +326,15 @@ namespace Treachery.Server
 
                     MailMessage mailMessage = new MailMessage
                     {
-                        From = new MailAddress(from)
+                        From = new MailAddress(from),
+                        Subject = subject,
+                        IsBodyHtml = true,
+                        Body = "Game finished!",
+                        Priority = info.NumberOfBots < 0.5f * info.Players.Length ? MailPriority.Normal : MailPriority.Low
                     };
 
                     mailMessage.To.Add(new MailAddress(to));
-                    mailMessage.Subject = subject;
-                    mailMessage.IsBodyHtml = true;
-                    mailMessage.Body = "Game finished!";
-                    mailMessage.Priority = info.NumberOfBots < 0.5f * info.Players.Length ? MailPriority.Normal : MailPriority.Low;
-
+                    
                     var savegameToAttach = new Attachment(GenerateStreamFromString(content), "savegame" + DateTime.Now.ToString("yyyyMMdd.HHmm") + ".json");
                     mailMessage.Attachments.Add(savegameToAttach);
 

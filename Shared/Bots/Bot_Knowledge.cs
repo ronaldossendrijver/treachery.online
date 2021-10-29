@@ -283,14 +283,15 @@ namespace Treachery.Shared
 
             int moveDistance = Math.Max(willGetOrnithopters, Game.DetermineMaximumMoveDistance(this, new Battalion[] { b }));
 
-            var result = Map.FindNeighbours(from, moveDistance, false, Faction, Game.SectorInStorm, null, Game.CurrentBlockedTerritories).Contains(to);
+            //Game.ForcesOnPlanet used to be null
+            var result = Game.Map.FindNeighbours(from, moveDistance, false, Faction, Game, true).Contains(to);
 
             return result;
         }
 
         protected virtual bool WithinDistance(Location from, Location to, int distance)
         {
-            return Map.FindNeighbours(from, distance, false, Faction, Game.SectorInStorm, Game.ForcesOnPlanet, Game.CurrentBlockedTerritories).Contains(to);
+            return Game.Map.FindNeighbours(from, distance, false, Faction, Game).Contains(to);
         }
 
         protected bool ProbablySafeFromShaiHulud(Territory t)

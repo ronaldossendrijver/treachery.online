@@ -2,6 +2,7 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -1661,61 +1662,113 @@ namespace Treachery.Shared
             Locations[13].Neighbours.Add(Locations[16]);
         }
 
-        public static List<Location> FindNeighbours(Location start, int distance, bool ignoreStorm, Faction f, int sectorInStorm, Dictionary<Location, List<Battalion>> forceLocations, List<Territory> blockedTerritories)
+        struct NeighbourCacheKey
         {
-            List<Location> neighbours = new List<Location>();
-            FindNeighbours(neighbours, start, null, 0, distance, ignoreStorm, f, sectorInStorm, forceLocations, blockedTerritories);
-            neighbours.Remove(start);
-            return neighbours;
-        }
+            internal Location start;
+            internal int distance;
+            internal Faction faction;
+            internal bool ignoreStorm;
 
-        public static List<Location> FindNeighboursForHmsMovement(Location start, int distance, bool ignoreStorm, int sectorInStorm)
-        {
-            List<Location> neighbours = new List<Location>();
-            FindNeighboursForHmsMovement(neighbours, start, null, 0, distance, ignoreStorm, sectorInStorm);
-            neighbours.Remove(start);
-            return neighbours;
-        }
-
-        private static void FindNeighbours(List<Location> found, Location current, Location previous, int currentDistance, int maxDistance, bool ignoreStorm, Faction f, int sectorInStorm, Dictionary<Location, List<Battalion>> forceLocations, List<Territory> blockedTerritories)
-        {
-            if (!found.Contains(current))
+            public override bool Equals(object obj)
             {
-                found.Add(current);
+                return
+                    obj is NeighbourCacheKey c &&
+                    c.start == this.start &&
+                    c.distance == this.distance &&
+                    c.faction == this.faction &&
+                    c.ignoreStorm == this.ignoreStorm;
             }
 
-            foreach (var neighbour in current.Neighbours)
+            public override int GetHashCode()
             {
-                if (neighbour != previous)
-                {
-                    if (ignoreStorm || neighbour.Sector != sectorInStorm)
-                    {
-                        if (blockedTerritories == null || !blockedTerritories.Any(t => t == neighbour.Territory))
-                        {
-                            if (!neighbour.IsStronghold || forceLocations == null || !forceLocations.ContainsKey(neighbour) || forceLocations[neighbour].Any(b => b.Faction == f) || forceLocations[neighbour].Count(b => b.Faction != f && b.CanOccupy) < 2)
-                            {
-                                int distance = (current.Territory == neighbour.Territory) ? 0 : 1;
+                return HashCode.Combine(start, distance, faction);
+            }
+        }
 
-                                if (currentDistance + distance <= maxDistance)
-                                {
-                                    FindNeighbours(found, neighbour, current, currentDistance + distance, maxDistance, ignoreStorm, f, sectorInStorm, forceLocations, blockedTerritories);
-                                }
-                            }
-                        }
-                    }
+        private int NeighbourCacheTimestamp = -1;
+        private readonly Dictionary<NeighbourCacheKey, List<Location>> NeighbourCache = new Dictionary<NeighbourCacheKey, List<Location>>();
+
+        public List<Location> FindNeighbours(Location start, int distance, bool ignoreStorm, Faction f, Game game, bool checkForceObstacles = true)
+        {
+            var cacheKey = new NeighbourCacheKey() { start = start, distance = distance, faction = f, ignoreStorm = ignoreStorm };
+
+            if (checkForceObstacles)
+            {
+                if (NeighbourCacheTimestamp != game.History.Count)
+                {
+                    NeighbourCache.Clear();
+                    NeighbourCacheTimestamp = game.History.Count;
+                }
+                else if (NeighbourCache.ContainsKey(cacheKey))
+                {
+                    return NeighbourCache[cacheKey];
+                }
+            }
+
+            var forceObstacles = new List<Location>();
+            if (checkForceObstacles)
+            {
+                forceObstacles = DetermineForceObstacles(f, game);
+            }
+
+            List<Location> neighbours = new List<Location>();
+            FindNeighbours(neighbours, start, null, 0, distance, f, ignoreStorm ? 99 : game.SectorInStorm, forceObstacles);
+
+            neighbours.Remove(start);
+
+            if (checkForceObstacles)
+            {
+                NeighbourCache.Add(cacheKey, neighbours);
+            }
+
+            return neighbours;
+        }
+
+        private static List<Location> DetermineForceObstacles(Faction f, Game game)
+        {
+            return game.ForcesOnPlanet.Where(kvp =>
+                kvp.Key.IsStronghold &&
+                !kvp.Value.Any(b => b.Faction == f) &&
+                kvp.Value.Count(b => b.CanOccupy) >= 2)
+                .Select(kvp => kvp.Key)
+                .Distinct()
+                .Union(game.CurrentBlockedTerritories.SelectMany(t => t.Locations))
+                .ToList();
+        }
+
+        private static void FindNeighbours(
+            List<Location> found, 
+            Location current, 
+            Location previous, 
+            int currentDistance, 
+            int maxDistance, 
+            Faction f, 
+            int sectorInStorm, 
+            List<Location> forceObstacles)
+        {
+            found.Add(current);
+
+            foreach (var neighbour in current.Neighbours.Where(n => n != previous && n.Sector != sectorInStorm && !forceObstacles.Contains(n)))
+            {
+                int distance = (current.Territory == neighbour.Territory) ? 0 : 1;
+
+                if (currentDistance + distance <= maxDistance)
+                {
+                    FindNeighbours(found, neighbour, current, currentDistance + distance, maxDistance, f, sectorInStorm, forceObstacles);
                 }
             }
         }
 
-        public static List<List<Location>> FindPaths(Location start, Location destination, int distance, bool ignoreStorm, Faction f, int sectorInStorm, Dictionary<Location, List<Battalion>> forceLocations, List<Territory> blockedTerritories)
+        public static List<List<Location>> FindPaths(Location start, Location destination, int distance, bool ignoreStorm, Faction f, Game game)
         {
             var paths = new List<List<Location>>();
             var route = new Stack<Location>();
-            FindPaths(paths, route, start, destination, null, 0, distance, ignoreStorm, f, sectorInStorm, forceLocations, blockedTerritories);
+            var obstacles = DetermineForceObstacles(f, game);
+            FindPaths(paths, route, start, destination, null, 0, distance, f, ignoreStorm ? 99 : game.SectorInStorm, obstacles);
             return paths;
         }
 
-        private static void FindPaths(List<List<Location>> foundPaths, Stack<Location> currentPath, Location current, Location destination, Location previous, int currentDistance, int maxDistance, bool ignoreStorm, Faction f, int sectorInStorm, Dictionary<Location, List<Battalion>> forceLocations, List<Territory> blockedTerritories)
+        private static void FindPaths(List<List<Location>> foundPaths, Stack<Location> currentPath, Location current, Location destination, Location previous, int currentDistance, int maxDistance, Faction f, int sectorInStorm, List<Location> obstacles)
         {
             currentPath.Push(current);
 
@@ -1725,21 +1778,19 @@ namespace Treachery.Shared
             }
             else
             {
-                foreach (var neighbour in current.Neighbours.Where(neighbour => neighbour != previous && !currentPath.Contains(neighbour)))
+                foreach (var neighbour in current.Neighbours.Where(neighbour => 
+                    neighbour != previous &&
+                    neighbour.Sector != sectorInStorm &&
+                    !currentPath.Contains(neighbour) &&
+                    !obstacles.Contains(neighbour)))
                 {
-                    if (ignoreStorm || neighbour.Sector != sectorInStorm)
+                    if (neighbour.Sector != sectorInStorm)
                     {
-                        if (blockedTerritories == null || !blockedTerritories.Any(t => t == neighbour.Territory))
-                        {
-                            if (!neighbour.IsStronghold || forceLocations == null || !forceLocations.ContainsKey(neighbour) || forceLocations[neighbour].Any(b => b.Faction == f) || forceLocations[neighbour].Count(b => b.Faction != f && b.CanOccupy) < 2)
-                            {
-                                int distance = (current.Territory == neighbour.Territory) ? 0 : 1;
+                        int distance = (current.Territory == neighbour.Territory) ? 0 : 1;
 
-                                if (currentDistance + distance <= maxDistance)
-                                {
-                                    FindPaths(foundPaths, currentPath, neighbour, destination, current, currentDistance + distance, maxDistance, ignoreStorm, f, sectorInStorm, forceLocations, blockedTerritories);
-                                }
-                            }
+                        if (currentDistance + distance <= maxDistance)
+                        {
+                            FindPaths(foundPaths, currentPath, neighbour, destination, current, currentDistance + distance, maxDistance, f, sectorInStorm, obstacles);
                         }
                     }
                 }
@@ -1749,6 +1800,13 @@ namespace Treachery.Shared
         }
 
 
+        public static List<Location> FindNeighboursForHmsMovement(Location start, int distance, bool ignoreStorm, int sectorInStorm)
+        {
+            List<Location> neighbours = new List<Location>();
+            FindNeighboursForHmsMovement(neighbours, start, null, 0, distance, ignoreStorm, sectorInStorm);
+            neighbours.Remove(start);
+            return neighbours;
+        }
 
         private static void FindNeighboursForHmsMovement(List<Location> found, Location current, Location previous, int currentDistance, int maxDistance, bool ignoreStorm, int sectorInStorm)
         {

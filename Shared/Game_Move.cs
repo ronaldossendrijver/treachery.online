@@ -460,7 +460,7 @@ namespace Treachery.Shared
         {
             if (SkilledAs(initiator, LeaderSkill.Sandmaster))
             {
-                var paths = Map.FindPaths(fl.Key, to, dist, initiator.Faction == Faction.Yellow && Applicable(Rule.YellowMayMoveIntoStorm), initiator.Faction, SectorInStorm, ForcesOnPlanetExcludingEmptyLocations, CurrentBlockedTerritories);
+                var paths = Map.FindPaths(fl.Key, to, dist, initiator.Faction == Faction.Yellow && Applicable(Rule.YellowMayMoveIntoStorm), initiator.Faction, this);
                 int mostSpice = 0;
                 List<Location> pathWithMostSpice = null;
                 foreach (var p in paths)
@@ -536,8 +536,8 @@ namespace Treachery.Shared
             if (from == null || to == null) return false;
 
             var max = DetermineMaximumMoveDistance(initiator, new Battalion[] { moved });
-            var targetsAvoidingStorm = Map.FindNeighbours(from, max, false, initiator.Faction, SectorInStorm, ForcesOnPlanet, CurrentBlockedTerritories);
-            var targetsIgnoringStorm = Map.FindNeighbours(from, max, true, initiator.Faction, SectorInStorm, ForcesOnPlanet, CurrentBlockedTerritories);
+            var targetsAvoidingStorm = Map.FindNeighbours(from, max, false, initiator.Faction, this);
+            var targetsIgnoringStorm = Map.FindNeighbours(from, max, true, initiator.Faction, this);
             return !targetsAvoidingStorm.Contains(to) && targetsIgnoringStorm.Contains(to);
         }
 

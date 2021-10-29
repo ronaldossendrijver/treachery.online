@@ -1012,7 +1012,7 @@ namespace Treachery.Shared
                 <p><strong>Free revival:</strong> 1.</p>
                 <h5>Basic Advantages</h5>
                 <p>You have access to great wealth.</p>
-                <p>Whenever any other player pays for {16} for a treachery card, he pays it to you instead of to the {16} bank.</p>" +
+                <p>Whenever any other player pays {16} for a treachery card, he pays it to you instead of to the {16} bank.</p>" +
 
               (g.Applicable(Rule.RedSupportingNonAllyBids) ? "<p>You may support bids of non-allied players. Any {16} paid this way flows back to you at the end of the bidding phase.</p>" : "") +
 

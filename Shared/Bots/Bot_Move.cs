@@ -86,8 +86,12 @@ namespace Treachery.Shared
             {
                 LogInfo("Move to spice");
                 var toMove = ForcesOnPlanet[decidedShipment.To].Take(decidedShipment.ForceAmount + decidedShipment.SpecialForceAmount, Faction == Faction.Grey);
-                var move = ConstructMove(finalDestination, decidedShipment.To, toMove);
-                if (move != null) return move;
+
+                if (WithinRange(decidedShipment.To, finalDestination, toMove))
+                {
+                    var move = ConstructMove(finalDestination, decidedShipment.To, toMove);
+                    if (move != null) return move;
+                }
             }
 
             //Move biggest batallion threatened by ally presence
