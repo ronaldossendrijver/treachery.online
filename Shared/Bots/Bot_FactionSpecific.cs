@@ -822,10 +822,13 @@ namespace Treachery.Shared
         }
 
         private readonly Dictionary<IHero, int> priceSetEarlier = new Dictionary<IHero, int>();
+        private int turnWhenRevivalWasRequested = -1;
 
         protected virtual RequestPurpleRevival DetermineRequestPurpleRevival()
         {
             if (Game.CurrentPurpleRevivalRequest != null || Game.AllowedEarlyRevivals.Keys.Any(h => h.Faction == Faction)) return null;
+
+            if (turnWhenRevivalWasRequested == Game.CurrentTurn) return null;
 
             var toRevive = RequestPurpleRevival.ValidTargets(Game, this).Where(l => SafeLeaders.Contains(l)).HighestOrDefault(l => l.Value);
 
@@ -842,6 +845,7 @@ namespace Treachery.Shared
 
             if (toRevive != null)
             {
+                turnWhenRevivalWasRequested = Game.CurrentTurn;
                 return new RequestPurpleRevival(Game) { Initiator = Faction, Hero = toRevive };
             }
 
@@ -855,20 +859,23 @@ namespace Treachery.Shared
                 var hero = Game.CurrentPurpleRevivalRequest.Hero;
 
                 int price;
-                if (priceSetEarlier.ContainsKey(hero))
+                if (Game.CurrentPurpleRevivalRequest.Initiator == Ally)
+                {
+                    price = 0;
+                }
+                else if (priceSetEarlier.ContainsKey(hero))
                 {
                     price = priceSetEarlier[hero];
                 }
                 else
                 {
-                    price = 2 + D(2, hero.Value);
-                    if (Game.CurrentPurpleRevivalRequest.Initiator == Ally)
+                    if (FaceDancers.Contains(hero) && !RevealedDancers.Contains(hero) || (Ally != Faction.None && AlliedPlayer.Traitors.Contains(hero) && !AlliedPlayer.RevealedTraitors.Contains(hero)))
                     {
-                        price = 0;
+                        price = 1 + D(1, hero.Value);
                     }
-                    else if (FaceDancers.Contains(hero) && !RevealedDancers.Contains(hero) || (Ally != Faction.None && AlliedPlayer.Traitors.Contains(hero)))
+                    else
                     {
-                        price = D(1, hero.Value);
+                        price = 2 + D(2, hero.Value);
                     }
 
                     priceSetEarlier.Add(hero, price);

@@ -37,7 +37,7 @@ namespace Treachery.Shared
                 if (decidedShipment == null && !winning && !AlmostLastTurn && inGreatNeedOfSpice) DetermineShipment_ShipToStrongholdNearSpice();
                 if (decidedShipment == null && Faction == Faction.Grey && decidedShipment == null && AnyForcesIn(Game.Map.HiddenMobileStronghold) == 0) DetermineShipment_AttackWeakHMS(1, Param.Shipment_DialShortageToAccept, 0, LastTurn ? 99 : Param.Battle_MaximumUnsupportedForces);
                 if (decidedShipment == null && winning) DetermineShipment_StrengthenWeakestStronghold(false, extraForces, Param.Shipment_DialShortageToAccept, !MayFlipToAdvisors);
-                if (decidedShipment == null && !winning) DetermineShipment_TakeVacantStronghold(extraForces, minResourcesToKeep, Param.Battle_MaximumUnsupportedForces);
+                if (decidedShipment == null && !winning) DetermineShipment_TakeVacantStronghold(OpponentsToShipAndMove.Count() + extraForces, minResourcesToKeep, Param.Battle_MaximumUnsupportedForces);
                 if (decidedShipment == null && !winning) DetermineShipment_AttackWeakStronghold(extraForces, minResourcesToKeep, LastTurn ? 20 : 0);
                 if (decidedShipment == null && Faction != Faction.Yellow && !winning && !AlmostLastTurn && stillNeedsResources) DetermineShipment_ShipToStrongholdNearSpice();
                 if (decidedShipment == null && Faction == Faction.Yellow && !winning && !LastTurn && stillNeedsResources) DetermineShipment_ShipDirectlyToSpiceAsYellow();
@@ -167,7 +167,8 @@ namespace Treachery.Shared
 
             if (richestLocation != null)
             {
-                var locationToShipTo = ValidShipmentLocations.FirstOrDefault(sh => 
+                var locationToShipTo = ValidShipmentLocations.FirstOrDefault(sh =>
+                    !InStorm(sh) &&
                     AnyForcesIn(sh) <= 8 && 
                     sh.IsStronghold && 
                     WithinRange(sh, richestLocation, SampleBattalion(sh)));
@@ -188,7 +189,7 @@ namespace Treachery.Shared
             LogInfo("DetermineShipment_StrengthenWeakStronghold()");
 
             var myWeakStrongholds = ValidShipmentLocations
-                .Where(s => s.IsStronghold && OccupyingForces(s) > 0 && AllyNotIn(s.Territory) && (!onlyIfThreatened || OccupyingOpponentIn(s.Territory) != null))
+                .Where(s => s.IsStronghold && OccupyingForces(s) > 0 && AllyNotIn(s.Territory) && (!onlyIfThreatened || OccupyingOpponentIn(s.Territory) != null) && !InStorm(s))
                 .Select(s => new { Location = s, Difference = MaxPotentialForceShortage(takeReinforcementsIntoAccount, s) });
 
             LogInfo("MyWeakStrongholds:" + string.Join(",", myWeakStrongholds));
@@ -215,14 +216,14 @@ namespace Treachery.Shared
             LogInfo("DetermineShipment_DummyAttack()");
 
             var targetOfDummyAttack = ValidShipmentLocations
-                .FirstOrDefault(l => AnyForcesIn(l) == 0 && AllyNotIn(l.Territory) && l.Territory.IsStronghold && !StormWillProbablyHit(l) && OpponentIsSuitableForTraitorLure(OccupyingOpponentIn(l.Territory)));
+                .FirstOrDefault(l => AnyForcesIn(l) == 0 && AllyNotIn(l.Territory) && !InStorm(l) && l.Territory.IsStronghold && !StormWillProbablyHit(l) && OpponentIsSuitableForTraitorLure(OccupyingOpponentIn(l.Territory)));
 
             LogInfo("OpponentIsSuitableForTraitorLure: " + targetOfDummyAttack);
 
             if (targetOfDummyAttack == null && !MayUseUselessAsKarma && TreacheryCards.Any(c => c.Type == TreacheryCardType.Useless))
             {
                 targetOfDummyAttack = ValidShipmentLocations
-                .FirstOrDefault(l => AnyForcesIn(l) == 0 && AllyNotIn(l.Territory) && l.Territory.IsStronghold && !StormWillProbablyHit(l) && OpponentIsSuitableForUselessCardDumpAttack(OccupyingOpponentIn(l.Territory)));
+                .FirstOrDefault(l => AnyForcesIn(l) == 0 && AllyNotIn(l.Territory) && !InStorm(l) && l.Territory.IsStronghold && !StormWillProbablyHit(l) && OpponentIsSuitableForUselessCardDumpAttack(OccupyingOpponentIn(l.Territory)));
                 LogInfo("OpponentIsSuitableForDummyAttack: " + targetOfDummyAttack);
             }
 
@@ -306,6 +307,7 @@ namespace Treachery.Shared
 
             var shippableStrongholdsOfWinningOpponents = ValidShipmentLocations.Where(l => 
                 (l.Territory.IsStronghold || Game.IsSpecialStronghold(l.Territory)) && 
+                !InStorm(l) &&
                 AllyNotIn(l.Territory) && 
                 potentialWinningOpponents.Any(p => p.Occupies(l)) && 
                 IDontHaveAdvisorsIn(l))
@@ -332,7 +334,7 @@ namespace Treachery.Shared
             LogInfo("DetermineShipment_AttackWeakStronghold()");
 
             var possibleAttacks = ValidShipmentLocations
-                .Where(l => l.Territory.IsStronghold && AnyForcesIn(l) == 0 && AllyNotIn(l.Territory) && !StormWillProbablyHit(l))
+                .Where(l => l.Territory.IsStronghold && AnyForcesIn(l) == 0 && AllyNotIn(l.Territory) && !StormWillProbablyHit(l) && !InStorm(l))
                 .Select(l => ConstructAttack(l, extraForces, minResourcesToKeep, maxUnsupportedForces))
                 .Where(s => s.HasOpponent && !WinWasPredictedByMeThisTurn(s.Opponent.Faction));
 

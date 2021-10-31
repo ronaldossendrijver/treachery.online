@@ -1746,7 +1746,10 @@ namespace Treachery.Shared
             int sectorInStorm, 
             List<Location> forceObstacles)
         {
-            found.Add(current);
+            if (!found.Contains(current))
+            {
+                found.Add(current);
+            }
 
             foreach (var neighbour in current.Neighbours.Where(n => n != previous && n.Sector != sectorInStorm && !forceObstacles.Contains(n)))
             {

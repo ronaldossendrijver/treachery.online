@@ -21,24 +21,32 @@
                 {
                     @if (MaySelectFromStorm || l.Sector != Game.SectorInStorm)
                     {
-                        <td><SelectForcesComponent Value="@ForceAmount(l, false)" OnDown="(e => ForceAmountButton(l, -1, false))" OnUp="(e => ForceAmountButton(l, 1, false))" Min="Min" Max="Max(l)" Faction="Faction" Special="false"/></td>
+                        <td><SelectForcesComponent Value="@ForceAmount(l, false)" OnDown="(e => ChangeForceAmount(l, -1, false))" OnUp="(e => ChangeForceAmount(l, 1, false))" Min="Min" Max="Max(l)" Faction="Faction" Special="false"/></td>
                     }
                     else
                     {
                         <td class="font-italic text-danger">cannot move from storm</td>
                     }
                 }
+                else
+                {
+                    SetForceAmount(l, 0, false);
+                }
 
                 @if (MaxSpecial(l) > 0)
                 {
                     if (MaySelectFromStorm || l.Sector != Game.SectorInStorm)
                     {
-                        <td><SelectForcesComponent Value="@ForceAmount(l, true)" OnDown="(e => ForceAmountButton(l, -1, true))" OnUp="(e => ForceAmountButton(l, 1, true))" Min="Min" Max="MaxSpecial(l)" Faction="Faction" Special="true" /></td>
+                        <td><SelectForcesComponent Value="@ForceAmount(l, true)" OnDown="(e => ChangeForceAmount(l, -1, true))" OnUp="(e => ChangeForceAmount(l, 1, true))" Min="Min" Max="MaxSpecial(l)" Faction="Faction" Special="true" /></td>
                     }
                     else
                     {
                         <td class="font-italic text-danger">cannot move from storm</td>
                     }
+                }
+                else
+                {
+                    SetForceAmount(l, 0, true);
                 }
 
             </tr>
@@ -127,7 +135,7 @@
         }
     }
 
-    private void ForceAmountButton(Location location, int amount, bool specialForces)
+    private void ChangeForceAmount(Location location, int amount, bool specialForces)
     {
         if (!AllowMultipleTerritories)
         {
@@ -162,5 +170,44 @@
         }
 
         OnChanged?.Invoke();
+    }
+
+    private void SetForceAmount(Location location, int amount, bool specialForces)
+    {
+        if (!AllowMultipleTerritories)
+        {
+            var currentLocation = Forces.Keys.FirstOrDefault();
+            if (currentLocation != null && currentLocation.Territory != location.Territory)
+            {
+                Forces.Clear();
+            }
+        }
+
+        if (Forces.ContainsKey(location))
+        {
+            if (specialForces && Forces[location].AmountOfSpecialForces != amount)
+            {
+                Forces[location].AmountOfSpecialForces = amount;
+                OnChanged?.Invoke();
+            }
+            else if (!specialForces && Forces[location].AmountOfForces != amount)
+            {
+                Forces[location].AmountOfForces = amount;
+                OnChanged?.Invoke();
+            }
+        }
+        else
+        {
+            if (specialForces)
+            {
+                Forces.Add(location, new Battalion() { AmountOfSpecialForces = amount, AmountOfForces = 0 });
+            }
+            else
+            {
+                Forces.Add(location, new Battalion() { AmountOfSpecialForces = 0, AmountOfForces = amount });
+            }
+
+            OnChanged?.Invoke();
+        }
     }
 }

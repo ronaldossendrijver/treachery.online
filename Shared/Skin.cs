@@ -580,7 +580,7 @@ namespace Treachery.Shared
             return r switch
             {
                 Rule.AdvancedCombat => "Advanced Combat",
-                Rule.IncreasedResourceFlow => "Increased Resource Flow",
+                Rule.IncreasedResourceFlow => "Increased Spice Flow",
                 Rule.AdvancedKarama => "Advanced Karama Cards",
                 Rule.YellowSeesStorm => Format("{0} can look at the storm dial", Faction.Yellow),
                 Rule.YellowStormLosses => Format("{0} storm losses are halved", Faction.Yellow),

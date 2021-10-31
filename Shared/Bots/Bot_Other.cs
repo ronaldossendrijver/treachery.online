@@ -476,6 +476,8 @@ namespace Treachery.Shared
 
         protected virtual Revival DetermineRevival()
         {
+            if (Game.CurrentPurpleRevivalRequest != null) return null;
+
             int availableResources = Resources - 4;
             int nrOfLivingLeaders = Leaders.Count(l => Game.IsAlive(l));
             int minimumValue = Faction == Faction.Purple && nrOfLivingLeaders > 2 ? 4 : 0;

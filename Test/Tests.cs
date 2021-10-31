@@ -193,13 +193,14 @@ namespace Treachery.Test
 
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            /*
+
+            
             var p = e.Player;
-            if (e is Shipment s && s.IsNoField && s.Initiator != Faction.White)
+            if (e is RequestPurpleRevival s)
             {
-                WriteSavegameIfApplicable(g, s.Player, "NoField shipment");
+                WriteSavegameIfApplicable(g, s.Player, "Request purple revival");
             }
-            */
+            
         }
 
         private void ProfileGames()
@@ -322,7 +323,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 100;
+            int nrOfGames = 500;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
