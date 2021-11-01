@@ -156,11 +156,11 @@ namespace Treachery.Shared
 
             if (Game.CurrentPhase == Phase.Bidding && !HasRoomForCards)
             {
-                var bestLeaderToAskAbout = Leaders.HighestOrDefault(l => Game.IsAlive(l) && !SafeLeaders.Contains(l));
+                var bestLeaderToAskAbout = Leaders.Where(l => Game.IsAlive(l) && !SafeLeaders.Contains(l)).HighestOrDefault(l => l.Value);
                 var bestPlayerToAsk = Opponents.HighestOrDefault(p => p.Traitors.Count - p.RevealedTraitors.Count);
                 if (bestLeaderToAskAbout != null && bestPlayerToAsk != null)
                 {
-                    return new ClairVoyancePlayed(Game) { Initiator = Faction, Target = bestPlayerToAsk.Faction, Question = ClairvoyanceQuestion.LeaderAsTraitor, Parameter1 = bestLeaderToAskAbout };
+                    return new ClairVoyancePlayed(Game) { Initiator = Faction, Target = bestPlayerToAsk.Faction, Question = ClairvoyanceQuestion.LeaderAsTraitor, Parameter1 = bestLeaderToAskAbout.Id };
                 }
             }
 
