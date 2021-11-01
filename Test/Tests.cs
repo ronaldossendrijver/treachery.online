@@ -193,12 +193,10 @@ namespace Treachery.Test
 
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-
-            
             var p = e.Player;
-            if (e is RequestPurpleRevival s)
+            if (g.CurrentMainPhase != MainPhase.Battle && e is ClairVoyancePlayed s)
             {
-                WriteSavegameIfApplicable(g, s.Player, "Request purple revival");
+                WriteSavegameIfApplicable(g, p, "Clairvoyance");
             }
             
         }
@@ -271,7 +269,6 @@ namespace Treachery.Test
                                 var p = BotParameters.GetDefaultParameters(toTest);
                                 p.Battle_MimimumChanceToAssumeEnemyHeroSurvives = battle_MimimumChanceToAssumeEnemyHeroSurvives;
                                 p.Battle_MimimumChanceToAssumeMyLeaderSurvives = battle_MimimumChanceToAssumeMyLeaderSurvives;
-                                p.Battle_MaxStrengthOfDialledForces = Battle_MaxStrengthOfDialledForces;
                                 p.Battle_DialShortageThresholdForThrowing = Battle_DialShortageThresholdForThrowing;
 
                                 var pDict = new Dictionary<Faction, BotParameters>() { { toTest, p } };

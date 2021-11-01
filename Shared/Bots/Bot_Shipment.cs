@@ -299,12 +299,6 @@ namespace Treachery.Shared
             var potentialWinningOpponents = WinningOpponentsIWishToAttack(maximumChallengedStrongholds);
             LogInfo("potentialWinningOpponents with too many unchallenged strongholds:" + string.Join(",", potentialWinningOpponents));
 
-            if (!potentialWinningOpponents.Any())
-            {
-                potentialWinningOpponents = AlmostWinningOpponentsIWishToAttack(maximumChallengedStrongholds);
-                LogInfo("potentialWinningOpponents with too many victory points:" + string.Join(",", potentialWinningOpponents));
-            }
-
             var shippableStrongholdsOfWinningOpponents = ValidShipmentLocations.Where(l => 
                 (l.Territory.IsStronghold || Game.IsSpecialStronghold(l.Territory)) && 
                 !InStorm(l) &&
@@ -317,7 +311,6 @@ namespace Treachery.Shared
 
             var attack = shippableStrongholdsOfWinningOpponents.Where(a => 
                 a.HasForces &&
-                a.DialNeeded + DeterminePenalty(a.Opponent) <= Param.Battle_MaxStrengthOfDialledForces &&
                 a.ShortageForShipment <= riskAppetite)
                 .LowestOrDefault(a => a.DialNeeded);
 
@@ -341,7 +334,6 @@ namespace Treachery.Shared
             var attack = possibleAttacks
                 .Where(s =>
                 s.HasForces &&
-                s.DialNeeded + DeterminePenalty(s.Opponent) <= Param.Battle_MaxStrengthOfDialledForces &&
                 s.ShortageForShipment - UnlockedForcesInPolarSink(s.Location) <= 0)
                 .LowestOrDefault(s => s.DialNeeded);
 
@@ -699,7 +691,7 @@ namespace Treachery.Shared
 
             override public string ToString()
             {
-                return "" + Location + "->" + Opponent;
+                return Skin.Current.Format("{0} -> {1} (ToShip: {2}/{3}*, Shortage: {4}, DialNeeded: {5})", Location, Opponent, ForcesToShip, SpecialForcesToShip, ShortageForShipment, DialNeeded);
             }
         }
 
@@ -710,7 +702,7 @@ namespace Treachery.Shared
             if (opponent != null) {
 
                 var dialNeeded = GetDialNeeded(location.Territory, opponent, true);
-                var shortageForShipment = DetermineShortageForShipment(Math.Min(dialNeeded, 0.5f) + extraForces, true, location, opponent.Faction, ForcesInReserve, SpecialForcesInReserve, out int forcesToShip, out int specialForcesToShip, out int noFieldValue, minResourcesToKeep, maxUnsupportedForces, !RedVersusYellow(opponent));
+                var shortageForShipment = DetermineShortageForShipment(Math.Max(dialNeeded, 0.5f) + extraForces, true, location, opponent.Faction, ForcesInReserve, SpecialForcesInReserve, out int forcesToShip, out int specialForcesToShip, out int noFieldValue, minResourcesToKeep, maxUnsupportedForces, !RedVersusYellow(opponent));
 
                 return new Attack()
                 {
@@ -804,14 +796,14 @@ namespace Treachery.Shared
             if (opponent == null) return false;
 
             return opponent.Leaders.Any(l => Game.IsAlive(l) && (Traitors.Contains(l) || FaceDancers.Contains(l)))
-                && !KnownOpponentWeapons(opponent).Any();
+                && (!KnownOpponentWeapons(opponent).Any() || Has(TreacheryCardType.Mercenary));
         }
 
         private bool OpponentIsSuitableForUselessCardDumpAttack(Player opponent)
         {
             if (opponent == null) return false;
 
-            return !(Game.Applicable(Rule.BlackCapturesOrKillsLeaders) && opponent.Faction == Faction.Black) && !KnownOpponentWeapons(opponent).Any();
+            return !(Game.Applicable(Rule.BlackCapturesOrKillsLeaders) && opponent.Faction == Faction.Black) && (!KnownOpponentWeapons(opponent).Any() || Has(TreacheryCardType.Mercenary));
         }
     }
 }

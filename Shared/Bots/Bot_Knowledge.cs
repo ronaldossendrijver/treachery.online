@@ -668,7 +668,7 @@ namespace Treachery.Shared
 
         protected virtual TreacheryCard UselessAsWeapon(TreacheryCard usingThisDefense) => Weapons(usingThisDefense, null).FirstOrDefault(c => c.Type == TreacheryCardType.Useless);
 
-        protected virtual TreacheryCard UselessAsDefense(TreacheryCard usingThisWeapon) => Defenses(usingThisWeapon).FirstOrDefault(c => c.Type == TreacheryCardType.Useless);
+        protected virtual TreacheryCard UselessAsDefense(TreacheryCard usingThisWeapon) => Defenses(usingThisWeapon).LastOrDefault(c => c.Type == TreacheryCardType.Useless);
 
         protected bool MayPlayNoWeapon(TreacheryCard usingThisDefense) => Battle.ValidWeapons(Game, this, usingThisDefense, null, true).Contains(null);
 

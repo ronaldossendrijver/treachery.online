@@ -251,7 +251,11 @@ namespace Treachery.Shared
 
         private Battle ConstructLostBattleMinimizingLosses(Player opponent)
         {
-            SelectHeroForBattle(opponent, false, false, null, null, out IHero lowestAvailableHero, out _);
+            IHero lowestAvailableHero = Battle.ValidBattleHeroes(Game, this).FirstOrDefault(h => h is TreacheryCard);
+            if (lowestAvailableHero == null)
+            {
+                SelectHeroForBattle(opponent, false, false, null, null, out lowestAvailableHero, out _);
+            }
 
             var uselessAsWeapon = lowestAvailableHero == null || MayUseUselessAsKarma || Faction == Faction.Brown ? null : UselessAsWeapon(null);
             var uselessAsDefense = lowestAvailableHero == null || MayUseUselessAsKarma || Faction == Faction.Brown ? null : UselessAsDefense(uselessAsWeapon);
