@@ -30,7 +30,8 @@
 
         @foreach (var valueAndLabel in Values.Zip(LabelsForValues, (v, l) => new { Value = v, Label = l }))
         {
-            <option value="@GetValueAsString(valueAndLabel.Value)">@valueAndLabel.Label</option>
+            var valueAsString = GetValueAsString(valueAndLabel.Value);
+            <option value="@valueAsString" selected=@(valueAsString == ValueAsString)>@valueAndLabel.Label</option>
         }
 
     </select>

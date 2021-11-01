@@ -65,6 +65,7 @@ namespace Treachery.Shared
         {
             get
             {
+                Console.WriteLine("Player: " + Player);
                 return ParseForceLocations(Game, Player.Faction, _forceLocations);
             }
             set
