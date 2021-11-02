@@ -79,7 +79,6 @@ namespace Treachery.Shared
 
             IEnumerable<Location> locationsInRange = locationsInRange = g.Map.Locations.Where(l =>
                 (mayMoveIntoStorm || l.Sector != g.SectorInStorm) &&
-                (l != g.Map.HiddenMobileStronghold || p.Is(Faction.Grey)) &&
                 (!l.Territory.IsStronghold || g.NrOfOccupantsExcludingPlayer(l, p) < 2));
 
             return RemoveLocationsBlockedByAlly(g, p, locationsInRange);
