@@ -22,7 +22,7 @@ namespace Treachery.Shared
             decidedShipment = null;
             finalDestination = null;
 
-            if (ForcesInReserve + SpecialForcesInReserve > 0 && ResourcesIncludingAllyContribution > 0)
+            if (!Game.PreventedFromShipping(Faction) && ForcesInReserve + SpecialForcesInReserve > 0 && ResourcesIncludingAllyContribution > 0)
             {
                 bool winning = IAmWinning;
                 bool willDoEverythingToPreventNormalWin = Faction == Faction.Orange || Ally == Faction.Orange || Faction == Faction.Yellow && !Game.IsPlaying(Faction.Orange);

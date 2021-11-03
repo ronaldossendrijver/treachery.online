@@ -106,7 +106,7 @@ namespace Treachery.Shared
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 8,
             Bidding_PassingTreshold = 0,
-            Karma_SaveCardToUseSpecialKarmaAbility = false,
+            Karma_SaveCardToUseSpecialKarmaAbility = true,
             Shipment_MinimumOtherPlayersITrustToPreventAWin = 4,
             Shipment_DialShortageToAccept = 4,
             Shipment_MinimumResourcesToKeepForBattle = 6,

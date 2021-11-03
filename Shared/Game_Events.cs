@@ -34,6 +34,9 @@ namespace Treachery.Shared
                 case Phase.AwaitingPlayers:
                     result.Add(typeof(EstablishPlayers));
                     break;
+                case Phase.CustomizingDecks:
+                    result.Add(typeof(CardsDetermined));
+                    break;
                 case Phase.PerformCustomSetup:
                     result.Add(typeof(PerformSetup));
                     break;
@@ -410,8 +413,7 @@ namespace Treachery.Shared
             }
 
             //Events that are (amost) always valid
-            if (!SecretsRemainHidden.Contains(faction) &&
-                (Version <= 97 && CurrentPhase < Phase.MetheorAndStormSpell) || (Version >= 98 && CurrentPhase == Phase.TradingFactions))
+            if (Version <= 123)
             {
                 result.Add(typeof(HideSecrets));
             }
@@ -522,6 +524,16 @@ namespace Treachery.Shared
                     Applicable(Rule.AdvancedKarama))
                 {
                     result.Add(typeof(KarmaHandSwapInitiated));
+                }
+
+                if (faction == Faction.Orange &&
+                    !KarmaPrevented(faction) &&
+                    !player.SpecialKarmaPowerUsed &&
+                    player.Has(TreacheryCardType.Karma) &&
+                    CurrentMainPhase == MainPhase.ShipmentAndMove &&
+                    Applicable(Rule.AdvancedKarama))
+                {
+                    result.Add(typeof(KarmaShipmentPrevention));
                 }
 
                 if (faction == Faction.Brown &&

@@ -11,7 +11,7 @@ namespace Treachery.Shared
     public partial class Game
     {
         public const int LowestSupportedVersion = 86;
-        public const int LatestVersion = 123;
+        public const int LatestVersion = 124;
 
         public bool BotInfologging = true;
 
@@ -26,9 +26,9 @@ namespace Treachery.Shared
         public IList<Milestone> RecentMilestones { get; private set; } = new List<Milestone>();
         public int Version { get; set; }
         public Map Map { get; set; } = new Map();
-        public Rule[] Rules { get; set; } = new Rule[0];
-        public Rule[] RulesForBots { get; set; } = new Rule[0];
-        public Rule[] AllRules { get; set; } = new Rule[0];
+        public List<Rule> Rules { get; set; } = new List<Rule>();
+        public List<Rule> RulesForBots { get; set; } = new List<Rule>();
+        public List<Rule> AllRules { get; set; } = new List<Rule>();
         public IList<GameEvent> History { get; set; } = new List<GameEvent>();
         public bool TrackStatesForReplay { get; set; } = true;
         public IList<Game> States { get; set; } = new List<Game>();
@@ -102,9 +102,10 @@ namespace Treachery.Shared
         public void PerformPostEventTasks(GameEvent e, bool justEnteredStartOfPhase)
         {
             if (!justEnteredStartOfPhase && !(e is AllyPermission) && !(e is DealOffered) && !(e is DealAccepted)) MainPhaseMiddle();
+
             History.Add(e);
 
-            if (TrackStatesForReplay)
+            if (TrackStatesForReplay && !Applicable(Rule.DisableEndOfGameReport))
             {
                 States.Add(Clone());
             }

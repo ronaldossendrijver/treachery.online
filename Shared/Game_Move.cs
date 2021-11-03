@@ -774,6 +774,7 @@ namespace Treachery.Shared
 
         private void ConcludeShipmentAndMove()
         {
+            CurrentKarmaShipmentPrevention = null;
             MainPhaseEnd();
             Enter(Phase.ShipmentAndMoveConcluded);
             ReceiveShipsTechIncome();
@@ -810,6 +811,18 @@ namespace Treachery.Shared
                     CurrentReport.Add(techTokenOwner.Faction, "{0} receive {1} from {2}.", techTokenOwner.Faction, amount, TechToken.Ships);
                 }
             }
+        }
+
+        public bool PreventedFromShipping(Faction f) => CurrentKarmaShipmentPrevention != null && CurrentKarmaShipmentPrevention.Target == f;
+
+        private KarmaShipmentPrevention CurrentKarmaShipmentPrevention = null;
+        public void HandleEvent(KarmaShipmentPrevention e)
+        {
+            CurrentKarmaShipmentPrevention = e;
+            Discard(e.Player, TreacheryCardType.Karma);
+            e.Player.SpecialKarmaPowerUsed = true;
+            CurrentReport.Add(e);
+            RecentMilestones.Add(Milestone.Karma);
         }
     }
 }

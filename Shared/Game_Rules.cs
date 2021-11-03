@@ -117,30 +117,13 @@ namespace Treachery.Shared
                 Rule.RedSpecialForces,
             },
 
-            [Ruleset.AdvancedGameWithoutPayingForBattles] = new Rule[] {
-                Rule.IncreasedResourceFlow,
-                Rule.AdvancedKarama,
-                Rule.YellowSeesStorm,
-                Rule.YellowStormLosses,
-                Rule.YellowSendingMonster,
-                Rule.YellowSpecialForces,
-                Rule.GreenMessiah,
-                Rule.BlackCapturesOrKillsLeaders,
-                Rule.BlueFirstForceInAnyTerritory,
-                Rule.BlueAutoCharity,
-                Rule.BlueWorthlessAsKarma,
-                Rule.BlueAdvisors,
-                Rule.BlueAccompaniesToShipmentLocation,
-                Rule.OrangeDetermineShipment,
-                Rule.RedSpecialForces,
-            },
-
             [Ruleset.AllExpansionsBasicGame] = new Rule[] {
                 Rule.GreyAndPurpleExpansionTechTokens,
                 Rule.GreyAndPurpleExpansionCheapHeroTraitor,
-                Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal,
+                Rule.GreyAndPurpleExpansionTreacheryCards,
+                /*Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal,
                 Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS,
-                Rule.GreyAndPurpleExpansionTreacheryCardsAmal,
+                Rule.GreyAndPurpleExpansionTreacheryCardsAmal,*/
                 Rule.GreyAndPurpleExpansionSandTrout,
                 Rule.BrownAndWhiteLeaderSkills
             },
@@ -148,9 +131,10 @@ namespace Treachery.Shared
             [Ruleset.ExpansionBasicGame] = new Rule[] {
                 Rule.GreyAndPurpleExpansionTechTokens,
                 Rule.GreyAndPurpleExpansionCheapHeroTraitor,
-                Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal,
+                Rule.GreyAndPurpleExpansionTreacheryCards,
+                /*Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal,
                 Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS,
-                Rule.GreyAndPurpleExpansionTreacheryCardsAmal,
+                Rule.GreyAndPurpleExpansionTreacheryCardsAmal,*/
                 Rule.GreyAndPurpleExpansionSandTrout
             },
 
@@ -177,9 +161,10 @@ namespace Treachery.Shared
                 Rule.RedSpecialForces,
                 Rule.GreyAndPurpleExpansionTechTokens,
                 Rule.GreyAndPurpleExpansionCheapHeroTraitor,
-                Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal,
+                Rule.GreyAndPurpleExpansionTreacheryCards,
+                /*Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal,
                 Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS,
-                Rule.GreyAndPurpleExpansionTreacheryCardsAmal,
+                Rule.GreyAndPurpleExpansionTreacheryCardsAmal,*/
                 Rule.GreyAndPurpleExpansionSandTrout,
                 Rule.GreyAndPurpleExpansionGreySwappingCardOnBid,
                 Rule.GreyAndPurpleExpansionPurpleGholas,
@@ -208,9 +193,10 @@ namespace Treachery.Shared
                 Rule.RedSpecialForces,
                 Rule.GreyAndPurpleExpansionTechTokens,
                 Rule.GreyAndPurpleExpansionCheapHeroTraitor,
-                Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal,
+                Rule.GreyAndPurpleExpansionTreacheryCards,
+                /*Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal,
                 Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS,
-                Rule.GreyAndPurpleExpansionTreacheryCardsAmal,
+                Rule.GreyAndPurpleExpansionTreacheryCardsAmal,*/
                 Rule.GreyAndPurpleExpansionSandTrout,
                 Rule.GreyAndPurpleExpansionGreySwappingCardOnBid,
                 Rule.GreyAndPurpleExpansionPurpleGholas
@@ -218,86 +204,6 @@ namespace Treachery.Shared
 
             [Ruleset.Expansion2AdvancedGame] = new Rule[] {
                 Rule.AdvancedCombat,
-                Rule.IncreasedResourceFlow,
-                Rule.AdvancedKarama,
-                Rule.YellowSeesStorm,
-                Rule.YellowStormLosses,
-                Rule.YellowSendingMonster,
-                Rule.YellowSpecialForces,
-                Rule.GreenMessiah,
-                Rule.BlackCapturesOrKillsLeaders,
-                Rule.BlueFirstForceInAnyTerritory,
-                Rule.BlueAutoCharity,
-                Rule.BlueWorthlessAsKarma,
-                Rule.BlueAdvisors,
-                Rule.BlueAccompaniesToShipmentLocation,
-                Rule.OrangeDetermineShipment,
-                Rule.RedSpecialForces,
-                Rule.BrownAndWhiteLeaderSkills,
-                Rule.BrownAndWhiteStrongholdBonus,
-                Rule.BrownAuditor,
-                Rule.WhiteBlackMarket,
-                Rule.BrownAndWhiteStrongholdBonus
-            },
-
-            [Ruleset.AllExpansionsAdvancedGameWithoutPayingForBattles] = new Rule[] {
-                Rule.IncreasedResourceFlow,
-                Rule.AdvancedKarama,
-                Rule.YellowSeesStorm,
-                Rule.YellowStormLosses,
-                Rule.YellowSendingMonster,
-                Rule.YellowSpecialForces,
-                Rule.GreenMessiah,
-                Rule.BlackCapturesOrKillsLeaders,
-                Rule.BlueFirstForceInAnyTerritory,
-                Rule.BlueAutoCharity,
-                Rule.BlueWorthlessAsKarma,
-                Rule.BlueAdvisors,
-                Rule.BlueAccompaniesToShipmentLocation,
-                Rule.OrangeDetermineShipment,
-                Rule.RedSpecialForces,
-                Rule.GreyAndPurpleExpansionTechTokens,
-                Rule.GreyAndPurpleExpansionCheapHeroTraitor,
-                Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal,
-                Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS,
-                Rule.GreyAndPurpleExpansionTreacheryCardsAmal,
-                Rule.GreyAndPurpleExpansionSandTrout,
-                Rule.GreyAndPurpleExpansionGreySwappingCardOnBid,
-                Rule.GreyAndPurpleExpansionPurpleGholas,
-                Rule.BrownAndWhiteLeaderSkills,
-                Rule.BrownAndWhiteStrongholdBonus,
-                Rule.BrownAuditor,
-                Rule.WhiteBlackMarket,
-                Rule.BrownAndWhiteStrongholdBonus
-            },
-
-            [Ruleset.ExpansionAdvancedGameWithoutPayingForBattles] = new Rule[] {
-                Rule.IncreasedResourceFlow,
-                Rule.AdvancedKarama,
-                Rule.YellowSeesStorm,
-                Rule.YellowStormLosses,
-                Rule.YellowSendingMonster,
-                Rule.YellowSpecialForces,
-                Rule.GreenMessiah,
-                Rule.BlackCapturesOrKillsLeaders,
-                Rule.BlueFirstForceInAnyTerritory,
-                Rule.BlueAutoCharity,
-                Rule.BlueWorthlessAsKarma,
-                Rule.BlueAdvisors,
-                Rule.BlueAccompaniesToShipmentLocation,
-                Rule.OrangeDetermineShipment,
-                Rule.RedSpecialForces,
-                Rule.GreyAndPurpleExpansionTechTokens,
-                Rule.GreyAndPurpleExpansionCheapHeroTraitor,
-                Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal,
-                Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS,
-                Rule.GreyAndPurpleExpansionTreacheryCardsAmal,
-                Rule.GreyAndPurpleExpansionSandTrout,
-                Rule.GreyAndPurpleExpansionGreySwappingCardOnBid,
-                Rule.GreyAndPurpleExpansionPurpleGholas
-            },
-
-            [Ruleset.Expansion2AdvancedGameWithoutPayingForBattles] = new Rule[] {
                 Rule.IncreasedResourceFlow,
                 Rule.AdvancedKarama,
                 Rule.YellowSeesStorm,
@@ -395,6 +301,7 @@ namespace Treachery.Shared
                     return RuleGroup.CoreAdvancedExceptions;
 
                 case Rule.CustomInitialForcesAndResources:
+                case Rule.CustomDecks:
                 case Rule.HMSwithoutGrey:
                 case Rule.SSW:
                 case Rule.BlackMulligan:
@@ -406,6 +313,7 @@ namespace Treachery.Shared
                 case Rule.ResourceBonusForStrongholds:
                 case Rule.BattleWithoutLeader:
                 case Rule.CapturedLeadersAreTraitorsToOwnFaction:
+                case Rule.DisableEndOfGameReport:
                     return RuleGroup.House;
 
                 case Rule.FillWithBots:
@@ -414,9 +322,10 @@ namespace Treachery.Shared
 
                 case Rule.GreyAndPurpleExpansionTechTokens:
                 case Rule.GreyAndPurpleExpansionCheapHeroTraitor:
-                case Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal:
+                case Rule.GreyAndPurpleExpansionTreacheryCards:
+                /*case Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal:
                 case Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS:
-                case Rule.GreyAndPurpleExpansionTreacheryCardsAmal:
+                case Rule.GreyAndPurpleExpansionTreacheryCardsAmal:*/
                 case Rule.GreyAndPurpleExpansionSandTrout:
                     return RuleGroup.ExpansionIxAndBtBasic;
 

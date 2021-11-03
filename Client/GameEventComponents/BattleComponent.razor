@@ -227,6 +227,7 @@
     private bool lastmessiah = false;
     private TreacheryCard lastdefense;
     private TreacheryCard lastweapon;
+    private int lastbankerBoost;
 
     private void RedrawIfNeeded(bool firstRender)
     {
@@ -239,7 +240,8 @@
         hero != lasthero ||
         messiah != lastmessiah ||
         defense != lastdefense ||
-        weapon != lastweapon)
+        weapon != lastweapon ||
+        bankerBoost != lastbankerBoost)
         {
             lastforces = forces;
             lastspecialForces = specialForces;
@@ -249,6 +251,7 @@
             lastmessiah = messiah;
             lastdefense = defense;
             lastweapon = weapon;
+            lastbankerBoost = bankerBoost;
 
             h._battleUnderConstruction = ConfirmedResult;
             h.Refresh();

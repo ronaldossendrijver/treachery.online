@@ -47,7 +47,16 @@
                 <label class="mt-1 mb-0">@Skin.Current.Describe(rulegroup)</label>
                 @foreach (var rule in Game.GetRulesInGroup(rulegroup))
                 {
-                    <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" />
+                    @if (IsNew(rule))
+                    {
+                        <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules">
+                            <span class="badge badge-info">new!</span>
+                        </ChecklistItemComponent>
+                    }
+                    else
+                    {
+                        <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" />
+                    }
                 }
             }
         }
@@ -151,4 +160,6 @@
     private bool Readonly => h.Host.LoadedGame != null;
 
     private string StartButtonLabel => string.Format("{0} Game!", h.Host.LoadedGame == null ? "Start" : "Continue");
+
+    private bool IsNew(Rule rule) => rule == Rule.CustomDecks || rule == Rule.DisableEndOfGameReport;
 }

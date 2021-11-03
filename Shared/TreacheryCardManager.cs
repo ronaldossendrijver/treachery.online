@@ -99,11 +99,9 @@ namespace Treachery.Shared
             Items.Add(new TreacheryCard(102, 23, TreacheryCardType.Karma, Rule.ExtraKaramaCards));
         }
 
-        public static Deck<TreacheryCard> CreateAndShuffleTreacheryDeck(Game g, Random random)
+        public static Deck<TreacheryCard> CreateTreacheryDeck(Game g, Random random)
         {
-            var result = new Deck<TreacheryCard>(GetCardsInPlay(g), random);
-            result.Shuffle();
-            return result;
+            return new Deck<TreacheryCard>(GetCardsInPlay(g), random);
         }
 
         public static List<TreacheryCard> GetWhiteCards(Game g)

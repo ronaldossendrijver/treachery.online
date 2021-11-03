@@ -140,7 +140,14 @@
 
         <div class="mt-1 text-right">Total cost of shipment: <span class="badge badge-primary badge-pill">@Cost</span></div>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Ship" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
+        @if (shipmentType == SHIPMENT_NORMAL && Faction != Faction.Yellow && Game.PreventedFromShipping(Faction))
+        {
+            <ButtonRowComponent Pass="Pass" PassText="Pass" />
+        }
+        else 
+        {
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="Ship" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
+        }
 
     </Body>
 

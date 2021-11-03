@@ -1,0 +1,31 @@
+﻿<!--
+ * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<KarmaShipmentPrevention>
+
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to prevent shipment</Header>
+    <Body>
+
+        <SelectFactionComponent @bind-Value="target" Values="Game.ValidTargets(Player)">
+            <Label>Target</Label>
+        </SelectFactionComponent>
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Prevent Shipment" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override Faction IsFactionSpecific => Faction.Orange;
+
+    private Faction target;
+
+    protected override KarmaShipmentPrevention ConfirmedResult => new KarmaShipmentPrevention(Game) { Initiator = Faction, Target = target };
+}

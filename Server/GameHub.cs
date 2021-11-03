@@ -64,6 +64,7 @@ namespace Treachery.Server
         public async Task RequestFactionSelected(int hostID, FactionSelected e) { await Request(hostID, e); }
         public async Task RequestFactionTradeOffered(int hostID, FactionTradeOffered e) { await Request(hostID, e); }
         public async Task RequestPerformSetup(int hostID, PerformSetup e) { await Request(hostID, e); }
+        public async Task RequestCardsDetermined(int hostID, CardsDetermined e) { await Request(hostID, e); }
         public async Task RequestPerformYellowSetup(int hostID, PerformYellowSetup e) { await Request(hostID, e); }
         public async Task RequestBluePrediction(int hostID, BluePrediction e) { await Request(hostID, e); }
         public async Task RequestCharityClaimed(int hostID, CharityClaimed e) { await Request(hostID, e); }
@@ -95,6 +96,7 @@ namespace Treachery.Server
         public async Task RequestRaiseDeadPlayed(int hostID, RaiseDeadPlayed e) { await Request(hostID, e); }
         public async Task RequestKarma(int hostID, Karma e) { await Request(hostID, e); }
         public async Task RequestKarmaFreeRevival(int hostID, KarmaFreeRevival e) { await Request(hostID, e); }
+        public async Task RequestKarmaShipmentPrevention(int hostID, KarmaShipmentPrevention e) { await Request(hostID, e); }
         public async Task RequestKarmaHandSwapInitiated(int hostID, KarmaHandSwapInitiated e) { await Request(hostID, e); }
         public async Task RequestKarmaHandSwap(int hostID, KarmaHandSwap e) { await Request(hostID, e); }
         public async Task RequestKarmaMonster(int hostID, KarmaMonster e) { await Request(hostID, e); }

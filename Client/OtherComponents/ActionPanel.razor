@@ -47,6 +47,11 @@
                     <StormDialledComponent h="@h" />
                 }
                 break;
+            case "CardsDetermined":
+                {
+                    <CardsDeterminedComponent h="@h" />
+                }
+                break;
             case "PerformSetup":
                 {
                     <PerformSetupComponent h="@h" />
@@ -225,6 +230,11 @@
             case "KarmaHandSwapInitiated":
                 {
                     <KarmaHandSwapInitiatedComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
+                }
+                break;
+            case "KarmaShipmentPrevention":
+                {
+                    <KarmaShipmentPreventionComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
                 }
                 break;
             case "KarmaHandSwap":

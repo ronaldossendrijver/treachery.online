@@ -26,13 +26,16 @@ namespace Treachery.Shared
             CurrentMainPhase = MainPhase.Setup;
             CurrentReport = new Report(MainPhase.Setup);
 
+            CurrentReport.Add("Game started.");
+
             Seed = e.Seed;
             Name = e.GameName;
             Random = new Random(Seed);
 
-            AllRules = e.ApplicableRules;
-            Rules = e.ApplicableRules.Where(r => GetRuleGroup(r) != RuleGroup.Bots).ToArray();
-            RulesForBots = e.ApplicableRules.Where(r => GetRuleGroup(r) == RuleGroup.Bots).ToArray();
+            AllRules = e.ApplicableRules.ToList();
+            Rules = e.ApplicableRules.Where(r => GetRuleGroup(r) != RuleGroup.Bots).ToList();
+
+            RulesForBots = e.ApplicableRules.Where(r => GetRuleGroup(r) == RuleGroup.Bots).ToList();
 
             var usedRuleset = Ruleset;
             CurrentReport.Add("Ruleset: {0}.",
@@ -40,8 +43,22 @@ namespace Treachery.Shared
                 string.Format("Custom ({0})", string.Join(", ", Rules.Select(r => Skin.Current.Describe(r)))) :
                 Skin.Current.Describe(usedRuleset));
 
+            if (Applicable(Rule.GreyAndPurpleExpansionTreacheryCards))
+            {
+                if (!Rules.Contains(Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal)) Rules.Add(Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal);
+                if (!Rules.Contains(Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS)) Rules.Add(Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS);
+                if (!Rules.Contains(Rule.GreyAndPurpleExpansionTreacheryCardsAmal)) Rules.Add(Rule.GreyAndPurpleExpansionTreacheryCardsAmal);
+            }
+
             ResourceCardDeck = CreateAndShuffleResourceCardDeck();
-            TreacheryDeck = TreacheryCardManager.CreateAndShuffleTreacheryDeck(this, Random);
+            TreacheryDeck = TreacheryCardManager.CreateTreacheryDeck(this, Random);
+
+            if (!Applicable(Rule.CustomDecks))
+            {
+                TreacheryDeck.Shuffle();
+                RecentMilestones.Add(Milestone.Shuffled);
+            }
+
             TreacheryDiscardPile = new Deck<TreacheryCard>(Random);
             ResourceCardDiscardPileA = new Deck<ResourceCard>(Random);
             ResourceCardDiscardPileB = new Deck<ResourceCard>(Random);
@@ -161,6 +178,15 @@ namespace Treachery.Shared
                 }
             }
         }
+        public void HandleEvent(CardsDetermined e)
+        {
+            TreacheryDeck = new Deck<TreacheryCard>(e.TreacheryCards, Random);
+            TreacheryDeck.Shuffle();
+            RecentMilestones.Add(Milestone.Shuffled);
+            WhiteCache = new List<TreacheryCard>(e.WhiteCards);
+            CurrentReport.Add(e.GetVerboseMessage());
+            EnterPhaseTradingFactions();
+        }
 
         public void HandleEvent(FactionSelected e)
         {
@@ -191,8 +217,7 @@ namespace Treachery.Shared
 
             DeterminePositionsAtTable();
 
-            CurrentReport.Add("Game started.");
-            EnterPhaseTradingFactions();
+            Enter(Applicable(Rule.CustomDecks), Phase.CustomizingDecks, EnterPhaseTradingFactions);
         }
 
         private void DeterminePositionsAtTable()

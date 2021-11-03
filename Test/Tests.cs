@@ -22,6 +22,16 @@ namespace Treachery.Test
     [TestClass]
     public class Tests
     {
+        private void SaveSpecialCases(Game g, GameEvent e)
+        {
+            var p = e.Player;
+            /*if (e is KarmaShipmentPrevention)
+            {
+                WriteSavegameIfApplicable(g, p, "KarmaShipmentPrevention");
+            }*/
+
+        }
+
         private List<Type> Written = new List<Type>();
         private void WriteSavegameIfApplicable(Game g, Type t)
         {
@@ -191,15 +201,7 @@ namespace Treachery.Test
             return "";
         }
 
-        private void SaveSpecialCases(Game g, GameEvent e)
-        {
-            var p = e.Player;
-            if (g.CurrentMainPhase != MainPhase.Battle && e is ClairVoyancePlayed s)
-            {
-                WriteSavegameIfApplicable(g, p, "Clairvoyance");
-            }
-            
-        }
+        
 
         private void ProfileGames()
         {

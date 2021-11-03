@@ -252,6 +252,47 @@ namespace Treachery.Shared
             }
         }
 
+        public string JoinSummarized<T>(IEnumerable<T> items)
+        {
+            if (items == null) return "";
+
+            var result = "";
+            string lastItem = null;
+            int nrOfRepeats = 1;
+            foreach (var item in items)
+            {
+                var toAdd = item == null ? "-" : item.ToString();
+
+                if (toAdd == lastItem)
+                {
+                    nrOfRepeats++;
+                }
+                else
+                {
+                    if (nrOfRepeats > 1)
+                    {
+                        result += " (" + nrOfRepeats + ")";
+                        nrOfRepeats = 1;
+                    }
+                    
+                    if (result.Length > 0) result += ", ";
+
+                    result += toAdd;
+                }
+
+                lastItem = toAdd;
+            }
+
+            if (result.Length == 0)
+            {
+                return "-";
+            }
+            else
+            {
+                return result;
+            }
+        }
+
         public string Describe(object value, bool capitalize = false)
         {
             string result;
@@ -444,19 +485,19 @@ namespace Treachery.Shared
             {
                 Ruleset.BasicGame => "Standard Dune - Basic",
                 Ruleset.AdvancedGame => "Standard Dune - Advanced",
-                Ruleset.AdvancedGameWithoutPayingForBattles => "Standard Dune - Advanced without Advanced Combat",
+                //Ruleset.AdvancedGameWithoutPayingForBattles => "Standard Dune - Advanced without Advanced Combat",
 
                 Ruleset.ExpansionBasicGame => "Expansion - Basic",
                 Ruleset.ExpansionAdvancedGame => "Expansion - Advanced",
-                Ruleset.ExpansionAdvancedGameWithoutPayingForBattles => "Expansion - Advanced without Advanced Combat",
+                //Ruleset.ExpansionAdvancedGameWithoutPayingForBattles => "Expansion - Advanced without Advanced Combat",
 
                 Ruleset.Expansion2BasicGame => "Expansion 2 - Basic",
                 Ruleset.Expansion2AdvancedGame => "Expansion 2 - Advanced",
-                Ruleset.Expansion2AdvancedGameWithoutPayingForBattles => "Expansion 2 - Advanced without Advanced Combat",
+                //Ruleset.Expansion2AdvancedGameWithoutPayingForBattles => "Expansion 2 - Advanced without Advanced Combat",
 
                 Ruleset.AllExpansionsBasicGame => "Both Expansions - Basic",
                 Ruleset.AllExpansionsAdvancedGame => "Both Expansions - Advanced",
-                Ruleset.AllExpansionsAdvancedGameWithoutPayingForBattles => "Both Expansions - Advanced without Advanced Combat",
+                //Ruleset.AllExpansionsAdvancedGameWithoutPayingForBattles => "Both Expansions - Advanced without Advanced Combat",
 
                 Ruleset.ServerClassic => "Server Classic",
                 Ruleset.Custom => "Custom",
@@ -604,11 +645,12 @@ namespace Treachery.Shared
                 Rule.SSW => Format("SSW: {0} counts for victory after fourth {1}", "Shield Wall", Concept.Monster),
                 Rule.BlackMulligan => Format("{0} mulligan traitors when they drew > 1 of their own", Faction.Black),
 
-                Rule.GreyAndPurpleExpansionTechTokens => Format("Tech Tokens"),
+                Rule.GreyAndPurpleExpansionTechTokens => "Tech Tokens",
+                Rule.GreyAndPurpleExpansionTreacheryCards => "Expansion Treachery Cards",
                 Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal => Format("Treachery Cards: all except {0}, {1} and {2}", TreacheryCardType.ProjectileAndPoison, TreacheryCardType.ShieldAndAntidote, TreacheryCardType.Amal),
                 Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS => Format("Treachery Cards: {0} and {1}", TreacheryCardType.ProjectileAndPoison, TreacheryCardType.ShieldAndAntidote),
                 Rule.GreyAndPurpleExpansionTreacheryCardsAmal => Format("Treachery Card: {0}", TreacheryCardType.Amal),
-                Rule.GreyAndPurpleExpansionCheapHeroTraitor => Format("Cheap Hero Traitor"),
+                Rule.GreyAndPurpleExpansionCheapHeroTraitor => "Cheap Hero Traitor",
                 Rule.GreyAndPurpleExpansionSandTrout => Describe(Concept.BabyMonster),
                 Rule.GreyAndPurpleExpansionPurpleGholas => Format("{0} may revive leaders as Gholas", Faction.Purple),
                 Rule.GreyAndPurpleExpansionGreySwappingCardOnBid => Format("{0} may swap one card on bid with on card from their hand", Faction.Grey),
@@ -618,6 +660,7 @@ namespace Treachery.Shared
                 Rule.BrownAuditor => Format("{0} gains the Auditor leader", Faction.Brown),
                 Rule.WhiteBlackMarket => Format("{0} Black Market bidding", Faction.White),
 
+                Rule.CustomDecks => "Customized Treachery Card Deck",
                 Rule.ExtraKaramaCards => Format("Add three extra {0} cards to the game", TreacheryCardType.Karma),
                 Rule.FullPhaseKarma => Format("Full phase {0} (instead of single instance)", TreacheryCardType.Karma),
                 Rule.YellowMayMoveIntoStorm => Format("{0} may move into storm", Faction.Yellow),
@@ -644,6 +687,7 @@ namespace Treachery.Shared
                 Rule.RedSupportingNonAllyBids => Format("{0} may support bids of non-ally players", Faction.Red),
                 Rule.BattleWithoutLeader => "Allow leaderless battles even if leaders are available", 
                 Rule.CapturedLeadersAreTraitorsToOwnFaction => "Captured leaders can be called as traitors by their original factions",
+                Rule.DisableEndOfGameReport => "Disable end-of-game report (don't reveal player shields)",
                 _ => "unknown rule",
             };
         }

@@ -68,6 +68,7 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(HMSAdvantageChosen))) action = DetermineHMSAdvantageChosen();
                 if (action == null && possibleEvents.Contains(typeof(Planetology))) action = DeterminePlanetology();
                 if (action == null && possibleEvents.Contains(typeof(Prescience))) action = DeterminePrescience();
+                if (action == null && possibleEvents.Contains(typeof(KarmaShipmentPrevention))) action = DetermineKarmaShipmentPrevention();
             }
             catch (Exception e)
             {

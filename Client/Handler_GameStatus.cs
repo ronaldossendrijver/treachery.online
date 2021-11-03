@@ -109,6 +109,9 @@ namespace Treachery.Client
                     Skin.Current.Format("Factions are selecting traitors..."),
                     PlayersThatHaventActedOrPassed);
 
+                case Phase.CustomizingDecks:
+                    return S("Please customize the cards in play.", "The host is customizing the cards in play.");
+
                 case Phase.PerformCustomSetup:
                     return S(
                     Skin.Current.Format("Please set up {0} initial {1} and force positions.", Game.NextFactionToPerformCustomSetup, Concept.Resource),
@@ -560,7 +563,7 @@ namespace Treachery.Client
                 else if (latestEvent is Planetology) result.Add(CardInfo(latestEvent, LeaderSkill.Planetologist));
                 else if (latestEvent is BattleConcluded battleconcluded && g.TraitorsDeciphererCanLookAt.Count > 0) result.Add(CardInfo(latestEvent, LeaderSkill.Decipherer));
                 else if (latestEvent is Thought) result.Add(CardInfo(latestEvent, LeaderSkill.Thinker));
-                else if (latestEvent is EstablishPlayers && g.CurrentPhase != Phase.SelectingFactions) result.Add(CardInfo(Player.Faction));
+                else if (latestEvent is EstablishPlayers && g.CurrentPhase != Phase.SelectingFactions && IsPlayer) result.Add(CardInfo(Player.Faction));
                 else if (latestEvent is FactionTradeOffered fto && (fto.Initiator == Faction || fto.Target == Faction) && !g.CurrentTradeOffers.Any(t => t.Initiator == Faction)) result.Add(CardInfo(Player.Faction));
 
             }

@@ -50,6 +50,24 @@ namespace Treachery.Shared
             return new KarmaHandSwap(Game) { Initiator = Faction, ReturnedCards = toReturn };
         }
 
+        protected KarmaShipmentPrevention DetermineKarmaShipmentPrevention()
+        {
+            if (Game.CurrentPhase == Phase.NonOrangeShip)
+            {
+                var winningOpponentThatCanShipMost = OpponentsToShipAndMove
+                    .Where(p => IsWinningOpponent(p) && p.ForcesInReserve + p.SpecialForcesInReserve > 2 && p.Resources + p.AlliedPlayer?.Resources > 2)
+                    .OrderByDescending(p => Math.Min(p.ForcesInReserve + p.SpecialForcesInReserve, p.Resources + (p.AlliedPlayer != null ? p.AlliedPlayer.Resources : 0)))
+                    .FirstOrDefault();
+
+                if (winningOpponentThatCanShipMost != null && Game.ShipmentAndMoveSequence.CurrentPlayer == winningOpponentThatCanShipMost)
+                {
+                    return new KarmaShipmentPrevention(Game) { Initiator = Faction, Target = winningOpponentThatCanShipMost.Faction };
+                }
+            }
+
+            return null;
+        }
+
         protected KarmaHandSwapInitiated DetermineKarmaHandSwapInitiated()
         {
             if (Game.CurrentPhase == Phase.BiddingReport)

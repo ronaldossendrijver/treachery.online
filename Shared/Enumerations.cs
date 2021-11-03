@@ -108,8 +108,10 @@ namespace Treachery.Shared
     {
         None = 0,
         AwaitingPlayers = 10,
+        
         SelectingFactions = 29,
         TradingFactions = 30,
+        CustomizingDecks = 31,
 
         BluePredicting = 50,
 
@@ -229,7 +231,7 @@ namespace Treachery.Shared
         Bureaucracy = 508,
         AssigningSkill = 509,
         Thought = 510,
-        MeltingRock = 511,
+        MeltingRock = 511
     }
 
     public enum Milestone : int
@@ -373,21 +375,21 @@ namespace Treachery.Shared
     {
         None = 0,
         BasicGame = 10,
-        AdvancedGameWithoutPayingForBattles = 20,
+        //AdvancedGameWithoutPayingForBattles = 20,
         AdvancedGame = 30,
 
         ExpansionBasicGame = 110,
-        ExpansionAdvancedGameWithoutPayingForBattles = 120,
+        //ExpansionAdvancedGameWithoutPayingForBattles = 120,
         ExpansionAdvancedGame = 130,
 
         ServerClassic = 140,
 
         Expansion2BasicGame = 150,
-        Expansion2AdvancedGameWithoutPayingForBattles = 160,
+        //Expansion2AdvancedGameWithoutPayingForBattles = 160,
         Expansion2AdvancedGame = 170,
 
         AllExpansionsBasicGame = 180,
-        AllExpansionsAdvancedGameWithoutPayingForBattles = 190,
+        //AllExpansionsAdvancedGameWithoutPayingForBattles = 190,
         AllExpansionsAdvancedGame = 200,
 
         Custom = 1000
@@ -429,6 +431,7 @@ namespace Treachery.Shared
 
         //Expansion
         GreyAndPurpleExpansionTechTokens = 200,
+        GreyAndPurpleExpansionTreacheryCards = 209,
         GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal = 210,
         GreyAndPurpleExpansionTreacheryCardsPBandSS = 211,
         GreyAndPurpleExpansionTreacheryCardsAmal = 212,
@@ -464,6 +467,7 @@ namespace Treachery.Shared
 
         //House Rules
         CustomInitialForcesAndResources = 100,
+        CustomDecks = 101,
         HMSwithoutGrey = 104,
         SSW = 105,
         BlackMulligan = 106,
@@ -482,6 +486,7 @@ namespace Treachery.Shared
         RedSupportingNonAllyBids = 1012,
         BattleWithoutLeader = 1013,
         CapturedLeadersAreTraitorsToOwnFaction = 1014,
+        DisableEndOfGameReport = 1015
     }
 
     public enum RuleGroup
