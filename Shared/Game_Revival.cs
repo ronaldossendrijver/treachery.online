@@ -43,7 +43,7 @@ namespace Treachery.Shared
             var initiator = GetPlayer(r.Initiator);
 
             //Payment
-            var cost = Revival.DetermineCost(this, initiator, r.Hero, r.AmountOfForces, r.AmountOfSpecialForces);
+            var cost = Revival.DetermineCost(this, initiator, r.Hero, r.AmountOfForces, r.AmountOfSpecialForces, r.ExtraForcesPaidByRed, r.ExtraSpecialForcesPaidByRed);
             if (cost.CostForEmperor > 0)
             {
                 var emperor = GetPlayer(Faction.Red);
@@ -52,8 +52,8 @@ namespace Treachery.Shared
             initiator.Resources -= cost.TotalCostForPlayer;
 
             //Force revival
-            initiator.ReviveForces(r.AmountOfForces);
-            initiator.ReviveSpecialForces(r.AmountOfSpecialForces);
+            initiator.ReviveForces(r.AmountOfForces + r.ExtraForcesPaidByRed);
+            initiator.ReviveSpecialForces(r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed);
 
             if (r.AmountOfSpecialForces > 0)
             {
@@ -249,16 +249,16 @@ namespace Treachery.Shared
 
         private void LogRevival(Revival r, Player initiator, RevivalCost cost, int purpleReceivedResources, bool asGhola)
         {
-            if (cost.CostForEmperor > 0)
+            if (r.ExtraForcesPaidByRed > 0 || r.ExtraSpecialForcesPaidByRed > 0)
             {
-                if (r.AmountOfSpecialForces > 0)
+                if (r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed > 0)
                 {
                     CurrentReport.Add(r.Initiator, "{0} revive {1}{2} {3} and {4} {5} for {6}, of which {7} pay {8}.{9}",
                         r.Initiator,
                         HeroRevivalMessage(r.Hero, asGhola),
-                        r.AmountOfForces,
+                        r.AmountOfForces + r.ExtraForcesPaidByRed,
                         initiator.Force,
-                        r.AmountOfSpecialForces,
+                        r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed,
                         initiator.SpecialForce,
                         cost.TotalCostForPlayer + cost.CostForEmperor,
                         Faction.Red,
@@ -270,7 +270,7 @@ namespace Treachery.Shared
                     CurrentReport.Add(r.Initiator, "{0} revive {1}{2} {3} for {4}, of which {5} pay {6}.{7}",
                         r.Initiator,
                         HeroRevivalMessage(r.Hero, asGhola),
-                        r.AmountOfForces,
+                        r.AmountOfForces + r.ExtraForcesPaidByRed,
                         initiator.Force,
                         cost.TotalCostForPlayer + cost.CostForEmperor,
                         Faction.Red,

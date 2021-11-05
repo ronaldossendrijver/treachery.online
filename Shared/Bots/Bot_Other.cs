@@ -506,7 +506,7 @@ namespace Treachery.Shared
         {
             if (Game.CurrentPurpleRevivalRequest != null) return null;
 
-            int availableResources = Resources - 4;
+            int availableResources = (int)(0.5f * Resources - 4);
             int nrOfLivingLeaders = Leaders.Count(l => Game.IsAlive(l));
             int minimumValue = Faction == Faction.Purple && nrOfLivingLeaders > 2 ? 4 : 0;
             int maxToSpendOnHeroRevival = Math.Min(availableResources, 7);
@@ -527,15 +527,37 @@ namespace Treachery.Shared
                     ).HighestOrDefault(l => l.Value + HeroRevivalPenalty(l));
             }
 
-            int specialForcesToRevive = SpecialForcesKilled > 0 && !Game.FactionsThatRevivedSpecialForcesThisTurn.Contains(Faction) ? 1 : 0;
-            int normalForcesToRevive = Math.Min(ForcesKilled, Game.FreeRevivals(this) - specialForcesToRevive);
-            int maxRevivals = ((Ally == Faction.Red) ? Game.RedWillPayForExtraRevival : 0) + Game.GetRevivalLimit(Game, this);
+            //int maxSpecialForces = Revival.ValidMaxRevivals(Game, this, true);
 
+            DetermineOptimalUseOfRedRevivals(Game, this, out int specialForcesRevivedByRed, out int forcesRevivedByRed);
+
+            //int specialForcesToRevive = Revival.ValidMaxRevivals(Game, this, true) - specialForcesRevivedByRed;
+
+            //int maxRevivals = Game.GetRevivalLimit(Game, this);
+            int specialForcesToRevive = 0;
             while (
-                normalForcesToRevive + 1 + specialForcesToRevive <= maxRevivals &&
-                normalForcesToRevive + 1 <= ForcesKilled &&
-                (ForcesKilled + SpecialForcesKilled) * 2 > ForcesInReserve + SpecialForcesInReserve &&
-                Revival.DetermineCost(Game, this, leaderToRevive, normalForcesToRevive + 1, specialForcesToRevive).TotalCostForPlayer <= availableResources)
+                //check limit of special forces
+                specialForcesRevivedByRed + specialForcesToRevive + 1 <= Revival.ValidMaxRevivals(Game, this, true) &&
+
+                //check if there are enough forces killed
+                specialForcesRevivedByRed + specialForcesToRevive + 1 <= SpecialForcesKilled &&
+
+                //check if i have enough spice
+                Revival.DetermineCost(Game, this, leaderToRevive, 0, specialForcesToRevive + 1, forcesRevivedByRed, specialForcesRevivedByRed).TotalCostForPlayer <= availableResources)
+            {
+                specialForcesToRevive++;
+            }
+
+            int normalForcesToRevive = 0;
+            while (
+                //check limit of total amount of forces
+                specialForcesRevivedByRed + specialForcesToRevive + forcesRevivedByRed + normalForcesToRevive + 1 <= Revival.ValidMaxRevivals(Game, this, false) &&
+
+                //check if there are enough forces killed
+                forcesRevivedByRed + normalForcesToRevive + 1 <= ForcesKilled &&
+
+                //check if i have enough spice
+                Revival.DetermineCost(Game, this, leaderToRevive, normalForcesToRevive + 1, specialForcesToRevive, forcesRevivedByRed, specialForcesRevivedByRed).TotalCostForPlayer <= availableResources)
             {
                 normalForcesToRevive++;
             }
@@ -544,7 +566,14 @@ namespace Treachery.Shared
 
             if (leaderToRevive != null || specialForcesToRevive + normalForcesToRevive > 0)
             {
-                return new Revival(Game) { Initiator = Faction, Hero = leaderToRevive, AmountOfForces = normalForcesToRevive, AmountOfSpecialForces = specialForcesToRevive, AssignSkill = assignSkill };
+                return new Revival(Game) { 
+                    Initiator = Faction, 
+                    Hero = leaderToRevive, 
+                    AmountOfForces = normalForcesToRevive, 
+                    ExtraForcesPaidByRed = forcesRevivedByRed,
+                    AmountOfSpecialForces = specialForcesToRevive,
+                    ExtraSpecialForcesPaidByRed = specialForcesRevivedByRed,
+                    AssignSkill = assignSkill };
             }
             else
             {
@@ -552,6 +581,35 @@ namespace Treachery.Shared
             }
         }
 
+        private static void DetermineOptimalUseOfRedRevivals(Game g, Player p, out int forces, out int specialForces)
+        {
+            forces = 0;
+            specialForces = 0;
+
+            if (p.Ally != Faction.Red) return;
+
+            var red = g.GetPlayer(Faction.Red);
+
+            int potentialMaximumByRed = p.Ally == Faction.Red && (g.Version < 113 || !g.Prevented(FactionAdvantage.RedLetAllyReviveExtraForces)) ? g.RedWillPayForExtraRevival : 0;
+
+            int maxSpecialForces = Revival.ValidMaxRevivals(g, p, true);
+            while (
+                specialForces + 1 <= maxSpecialForces &&
+                specialForces + 1 <= potentialMaximumByRed &&
+                Revival.DetermineCostOfForcesForRed(g, red, p.Faction, 0, specialForces + 1) <= red.Resources )
+            {
+                specialForces++;
+            }
+
+            int maxForces = Revival.ValidMaxRevivals(g, p, false);
+            while (
+                forces + 1 <= maxForces &&
+                specialForces + forces + 1 <= potentialMaximumByRed &&
+                Revival.DetermineCostOfForcesForRed(g, red, p.Faction, forces + 1, specialForces) <= red.Resources )
+            {
+                forces++;
+            }
+        }
 
         public DiscardedSearchedAnnounced DetermineDiscardedSearchedAnnounced()
         {

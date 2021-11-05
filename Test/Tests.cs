@@ -25,10 +25,10 @@ namespace Treachery.Test
         private void SaveSpecialCases(Game g, GameEvent e)
         {
             var p = e.Player;
-            /*if (e is KarmaShipmentPrevention)
+            if (e is Revival r && r.ExtraForcesPaidByRed == 2 && r.ExtraSpecialForcesPaidByRed == 1)
             {
-                WriteSavegameIfApplicable(g, p, "KarmaShipmentPrevention");
-            }*/
+                WriteSavegameIfApplicable(g, p, "Red Extra Revival");
+            }
 
         }
 
