@@ -82,7 +82,6 @@ namespace Treachery.Client
             _logger = logger;
             Game = new Game();
             UpdateStatus();
-            Game.MessageHandler += Game_MessageHandler;
             RegisterHandlers();
         }
 
@@ -124,7 +123,6 @@ namespace Treachery.Client
 
             PlayerName = "";
             Game = new Game();
-            Game.MessageHandler += Game_MessageHandler;
             HostProxy = null;
             IsObserver = false;
             Host = null;
@@ -510,7 +508,6 @@ namespace Treachery.Client
                 var state = GameState.Load(stateData);
 
                 var result = Game.TryLoad(state, false, false, ref Game, true);
-                Game.MessageHandler += Game_MessageHandler;
 
                 if (result != "")
                 {
@@ -536,7 +533,6 @@ namespace Treachery.Client
             try
             {
                 Game = Game.Undo(untilEventNr);
-                Game.MessageHandler += Game_MessageHandler;
                 _pending.Clear();
                 await PerformPostEventTasks(null);
             }
@@ -630,7 +626,7 @@ namespace Treachery.Client
         #region ClientUpdates
         private async Task PerformPostEventTasks(GameEvent e)
         {
-            if (!(e is AllyPermission || e is DealOffered || e is DealAccepted))
+            if (!(e is AllyPermission || e is DealOffered))
             {
                 UpdateStatus();
 
@@ -685,7 +681,7 @@ namespace Treachery.Client
             {
                 return 5000;
             }
-            else if (phase == MainPhase.Resurrection || phase == MainPhase.Charity || e is AllyPermission || e is DealOffered || e is DealAccepted)
+            else if (phase == MainPhase.Resurrection || phase == MainPhase.Charity || e is AllyPermission || e is DealOffered)
             {
                 return 400;
             }

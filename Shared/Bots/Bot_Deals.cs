@@ -10,24 +10,6 @@ namespace Treachery.Shared
 {
     public partial class Player
     {
-        List<Deal> AnsweredDeals = new List<Deal>();
-        protected void Speak()
-        {
-            ChatMessage message = null;
-
-            var toAnswer = Game.Deals.FirstOrDefault(deal => deal.BoundFaction == Faction && deal.Type == DealType.TellDiscardedTraitors && !AnsweredDeals.Contains(deal));
-            if (toAnswer != null)
-            {
-                message = new ChatMessage() { SourcePlayerName = Name, TargetPlayerName = Game.GetPlayer(toAnswer.ConsumingFaction).Name, Body = "I discarded: " + Skin.Current.Join(KnownNonTraitors) };
-            }
-
-            if (message != null)
-            {
-                AnsweredDeals.Add(toAnswer);
-                Game.SendMessage(message);
-            }
-        }
-
         protected virtual DealAccepted DetermineDealAccepted()
         {
             if (!DealAccepted.MayAcceptDeals(Game, this, 1)) return null;

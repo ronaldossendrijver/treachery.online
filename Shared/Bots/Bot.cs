@@ -176,8 +176,6 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(WhiteSpecifiesAuction))) action = DetermineWhiteSpecifiesAuction();
                 if (action == null && possibleEvents.Contains(typeof(WhiteKeepsUnsoldCard))) action = DetermineWhiteKeepsUnsoldCard();
                 if (action == null && possibleEvents.Contains(typeof(WhiteRevealedNoField))) action = DetermineWhiteRevealedNoField();
-
-                Speak();
             }
             catch (Exception e)
             {

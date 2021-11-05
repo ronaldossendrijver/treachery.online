@@ -281,13 +281,6 @@ namespace Treachery.Shared
             }
         }
 
-        public event EventHandler<ChatMessage> MessageHandler;
-
-        public void SendMessage(ChatMessage message)
-        {
-            MessageHandler?.Invoke(this, message);
-        }
-
         #endregion EventHandling
 
         #region PhaseTransitions
@@ -302,6 +295,10 @@ namespace Treachery.Shared
             BureaucratWasUsedThisPhase = false;
             BankerWasUsedThisPhase = false;
         }
+
+        public int NumberOfHumanPlayers => Players.Count(p => !p.IsBot);
+
+        public int NumberOfNots => Players.Count(p => p.IsBot);
 
         private void MainPhaseMiddle()
         {

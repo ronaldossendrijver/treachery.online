@@ -2,6 +2,7 @@
  * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -46,6 +47,20 @@ namespace Treachery.Shared
                     ExchangeResourcesInBribe(GetPlayer(e.Initiator), GetPlayer(offer.Initiator), e.Price);
                     RecentMilestones.Add(Milestone.Bribe);
                 }
+
+                if (offer.Player.IsBot)
+                {
+                    HandleAcceptedBotDeal(offer, e);
+                }
+            }
+        }
+
+        private void HandleAcceptedBotDeal(DealOffered offer, DealAccepted accepted)
+        {
+            if (offer.Type == DealType.TellDiscardedTraitors)
+            {
+                CurrentReport.Add(offer.Initiator, accepted.Initiator, "{0} discarded: {1}", offer.Initiator, offer.Player.DiscardedTraitors);
+                CurrentReport.Add(offer.Initiator, "{0} gave {1} the agreed information.", offer.Initiator, accepted.Initiator);
             }
         }
 
