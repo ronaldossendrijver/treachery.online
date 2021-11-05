@@ -3,7 +3,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Treachery.Shared
@@ -110,7 +109,7 @@ namespace Treachery.Shared
                     Type = DealType.TellDiscardedTraitors,
                     EndPhase = Phase.TurnConcluded,
                     Price = D(3, 3),
-                    Text = "tell (in chat) which traitors I discarded"
+                    Text = "tell which traitors I discarded"
                 };
             }
 
