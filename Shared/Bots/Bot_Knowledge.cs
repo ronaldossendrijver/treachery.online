@@ -305,15 +305,12 @@ namespace Treachery.Shared
 
         public bool HasNoFieldIn(Territory territory) => Faction == Faction.White && SpecialForcesIn(territory) > 0;
 
-        protected virtual Player OccupyingOpponentIn(Territory t)
-        {
-            return Game.Players.Where(p => p.Faction != Faction && p.Faction != Ally && p.Occupies(t)).FirstOrDefault();
-        }
+        protected virtual Player OccupyingOpponentIn(Territory t) => Game.Players.Where(p => p.Faction != Faction && p.Faction != Ally && p.Occupies(t)).HighestOrDefault(p => MaxDial(p, t, this));
 
-        protected virtual IEnumerable<Player> OccupyingOpponentsIn(Territory t)
-        {
-            return Game.Players.Where(p => p.Faction != Faction && p.Faction != Ally && p.Occupies(t));
-        }
+        protected virtual IEnumerable<Player> OccupyingOpponentsIn(Territory t) => Game.Players.Where(p => p.Faction != Faction && p.Faction != Ally && p.Occupies(t));
+
+        protected virtual IEnumerable<Player> OccupyingOpponentsIn(Location l) => OccupyingOpponentsIn(l.Territory);
+
 
         protected virtual bool InStorm(Location l)
         {

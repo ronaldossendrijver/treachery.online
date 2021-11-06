@@ -188,7 +188,7 @@ namespace Treachery.Shared
 
             bool predicted = WinWasPredictedByMeThisTurn(opponent.Faction);
             float dialShortageToAccept = prescience != null && prescience.Aspect == PrescienceAspect.Dial ? 0 : Param.Battle_DialShortageThresholdForThrowing;
-            bool minimizeSpendingsInThisLostFight = predicted || isTraitor && !messiah || dialShortage >= dialShortageToAccept;
+            bool minimizeSpendingsInThisLostFight = predicted || isTraitor && !messiah || Resources < 10 && forcesAtFullStrength + forcesAtHalfStrength + specialForcesAtFullStrength + specialForcesAtHalfStrength < 10 && dialShortage >= dialShortageToAccept;
 
             if (!minimizeSpendingsInThisLostFight)
             {
