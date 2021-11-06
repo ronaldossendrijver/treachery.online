@@ -86,8 +86,6 @@ namespace Treachery.Shared
         {
             if (Game.CurrentMainPhase == MainPhase.Bidding || Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
             {
-                LogInfo("DetermineAlliancePermissions()");
-
                 var karmaCard = SpecialKarmaPowerUsed ? TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma) : null;
 
                 int allowedResources;
@@ -116,8 +114,6 @@ namespace Treachery.Shared
         {
             if (Game.CurrentMainPhase == MainPhase.Bidding || Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
             {
-                LogInfo("DetermineAlliancePermissions()");
-
                 var karmaCard = TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
 
                 int allowedResources;
@@ -145,8 +141,6 @@ namespace Treachery.Shared
         {
             if (Game.CurrentMainPhase == MainPhase.Bidding || Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
             {
-                LogInfo("DetermineAlliancePermissions()");
-
                 var karmaCard = TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
 
                 int allowedResources;
@@ -175,8 +169,6 @@ namespace Treachery.Shared
         {
             if (Game.CurrentMainPhase == MainPhase.Bidding || Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
             {
-                LogInfo("DetermineAlliancePermissions()");
-
                 var karmaCard = TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
 
                 int allowedResources;
@@ -205,8 +197,6 @@ namespace Treachery.Shared
         {
             if (Game.CurrentMainPhase == MainPhase.Bidding || Game.CurrentMainPhase == MainPhase.ShipmentAndMove || Game.CurrentMainPhase == MainPhase.Battle)
             {
-                LogInfo("DetermineAlliancePermissions()");
-
                 var karmaCard = TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
 
                 int allowedResources;
@@ -235,8 +225,6 @@ namespace Treachery.Shared
         {
             if (Game.CurrentMainPhase == MainPhase.Bidding || Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
             {
-                LogInfo("DetermineAlliancePermissions()");
-
                 var karmaCard = TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
 
                 int allowedResources;
@@ -265,8 +253,6 @@ namespace Treachery.Shared
         {
             if (Game.CurrentMainPhase == MainPhase.Bidding || Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
             {
-                LogInfo("DetermineAlliancePermissions()");
-
                 var karmaCard = TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
 
                 int allowedResources;
@@ -295,8 +281,6 @@ namespace Treachery.Shared
         {
             if (Game.CurrentMainPhase == MainPhase.Bidding || Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
             {
-                LogInfo("DetermineAlliancePermissions()");
-
                 var karmaCard = TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
 
                 int allowedResources;
@@ -325,8 +309,6 @@ namespace Treachery.Shared
         {
             if (Game.CurrentMainPhase == MainPhase.Bidding || Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
             {
-                LogInfo("DetermineAlliancePermissions()");
-
                 var karmaCard = TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
 
                 int allowedResources;
@@ -359,8 +341,6 @@ namespace Treachery.Shared
         {
             if (Game.CurrentMainPhase == MainPhase.Bidding || Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
             {
-                LogInfo("DetermineAlliancePermissions()");
-
                 var karmaCard = TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
 
                 int allowedResources;
