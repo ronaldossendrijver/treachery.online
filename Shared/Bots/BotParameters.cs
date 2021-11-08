@@ -40,15 +40,13 @@ namespace Treachery.Shared
             Shipment_MaxEnemyForceStrengthFightingForSpice = 3,
             Shipment_ExpectedStormMovesWhenUnknown = 3,
             Battle_MaximumUnsupportedForces = 6,
-            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.7f,
-            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.4f,
+            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.6f,
+            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.5f,
             Battle_DialShortageThresholdForThrowing = 3
         };
 
         public static BotParameters GreenParameters = new BotParameters()
         {
-            Shipment_MaxEnemyForceStrengthFightingForSpice = 2,
-            Shipment_ExpectedStormMovesWhenUnknown = 3,
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 4,
             Bidding_PassingTreshold = 2,
@@ -57,16 +55,16 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 4,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 2,
+            Shipment_MaxEnemyForceStrengthFightingForSpice = 2,
+            Shipment_ExpectedStormMovesWhenUnknown = 3,
             Battle_MaximumUnsupportedForces = 6,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.8f,
-            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.4f,
+            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
             Battle_DialShortageThresholdForThrowing = 3
         };
 
         public static BotParameters YellowParameters = new BotParameters()
         {
-            Shipment_MaxEnemyForceStrengthFightingForSpice = 8,
-            Shipment_ExpectedStormMovesWhenUnknown = 0,
             Bidding_ResourcesToKeepWhenCardIsPerfect = 0,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 4,
             Bidding_PassingTreshold = 0,
@@ -75,16 +73,16 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 4,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 8,
+            Shipment_MaxEnemyForceStrengthFightingForSpice = 8,
+            Shipment_ExpectedStormMovesWhenUnknown = 0,
             Battle_MaximumUnsupportedForces = 20,
-            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.6f,
-            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.7f,
+            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.8f,
+            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.8f,
             Battle_DialShortageThresholdForThrowing = 4
         };
 
         public static BotParameters RedParameters = new BotParameters()
         {
-            Shipment_MaxEnemyForceStrengthFightingForSpice = 0,
-            Shipment_ExpectedStormMovesWhenUnknown = 6,
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 8,
             Bidding_PassingTreshold = 3,
@@ -93,16 +91,16 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 4,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 8,
+            Shipment_MaxEnemyForceStrengthFightingForSpice = 0,
+            Shipment_ExpectedStormMovesWhenUnknown = 6,
             Battle_MaximumUnsupportedForces = 2,
-            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.8f,
-            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.3f,
+            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.7f,
+            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.7f,
             Battle_DialShortageThresholdForThrowing = 3
         };
 
         public static BotParameters OrangeParameters = new BotParameters()
         {
-            Shipment_MaxEnemyForceStrengthFightingForSpice = 0,
-            Shipment_ExpectedStormMovesWhenUnknown = 6,
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 8,
             Bidding_PassingTreshold = 0,
@@ -111,16 +109,16 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 4,
             Shipment_MinimumResourcesToKeepForBattle = 6,
             Shipment_DialForExtraForcesToShip = 2,
+            Shipment_MaxEnemyForceStrengthFightingForSpice = 0,
+            Shipment_ExpectedStormMovesWhenUnknown = 6,
             Battle_MaximumUnsupportedForces = 0,
-            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.3f,
+            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.8f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.7f,
             Battle_DialShortageThresholdForThrowing = 6
         };
 
         public static BotParameters BlueParameters = new BotParameters()
         {
-            Shipment_MaxEnemyForceStrengthFightingForSpice = 0,
-            Shipment_ExpectedStormMovesWhenUnknown = 6,
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 7,
             Bidding_PassingTreshold = 0,
@@ -129,16 +127,16 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 2,
             Shipment_MinimumResourcesToKeepForBattle = 3,
             Shipment_DialForExtraForcesToShip = 2,
+            Shipment_MaxEnemyForceStrengthFightingForSpice = 0,
+            Shipment_ExpectedStormMovesWhenUnknown = 6,
             Battle_MaximumUnsupportedForces = 2,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.7f,
-            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.3f,
+            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.7f,
             Battle_DialShortageThresholdForThrowing = 6
         };
 
         public static BotParameters GreyParameters = new BotParameters()
         {
-            Shipment_MaxEnemyForceStrengthFightingForSpice = 2,
-            Shipment_ExpectedStormMovesWhenUnknown = 5,
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 5,
             Bidding_PassingTreshold = 4,
@@ -147,16 +145,16 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 4,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 4,
+            Shipment_MaxEnemyForceStrengthFightingForSpice = 2,
+            Shipment_ExpectedStormMovesWhenUnknown = 5,
             Battle_MaximumUnsupportedForces = 2,
-            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.1f,
-            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.3f,
+            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.6f,
+            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.5f,
             Battle_DialShortageThresholdForThrowing = 4
         };
 
         public static BotParameters PurpleParameters = new BotParameters()
         {
-            Shipment_MaxEnemyForceStrengthFightingForSpice = 6,
-            Shipment_ExpectedStormMovesWhenUnknown = 0,
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 5,
             Bidding_PassingTreshold = 3,
@@ -165,16 +163,16 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 6,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 6,
+            Shipment_MaxEnemyForceStrengthFightingForSpice = 6,
+            Shipment_ExpectedStormMovesWhenUnknown = 0,
             Battle_MaximumUnsupportedForces = 6,
-            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.3f,
-            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.1f,
+            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.8f,
+            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.8f,
             Battle_DialShortageThresholdForThrowing = 6
         };
 
         public static BotParameters BrownParameters = new BotParameters()
         {
-            Shipment_MaxEnemyForceStrengthFightingForSpice = 0,
-            Shipment_ExpectedStormMovesWhenUnknown = 6,
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 8,
             Bidding_PassingTreshold = 3,
@@ -183,16 +181,16 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 4,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 4,
+            Shipment_MaxEnemyForceStrengthFightingForSpice = 0,
+            Shipment_ExpectedStormMovesWhenUnknown = 6,
             Battle_MaximumUnsupportedForces = 2,
-            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.5f,
-            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.3f,
+            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.7f,
+            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.7f,
             Battle_DialShortageThresholdForThrowing = 3
         };
 
         public static BotParameters WhiteParameters = new BotParameters()
         {
-            Shipment_MaxEnemyForceStrengthFightingForSpice = 2,
-            Shipment_ExpectedStormMovesWhenUnknown = 5,
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 5,
             Bidding_PassingTreshold = 4,
@@ -201,16 +199,16 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 4,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 2,
+            Shipment_MaxEnemyForceStrengthFightingForSpice = 2,
+            Shipment_ExpectedStormMovesWhenUnknown = 5,
             Battle_MaximumUnsupportedForces = 2,
-            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.5f,
-            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.5f,
+            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.7f,
+            Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.7f,
             Battle_DialShortageThresholdForThrowing = 6
         };
 
         public static BotParameters PinkParameters = new BotParameters()
         {
-            Shipment_MaxEnemyForceStrengthFightingForSpice = 2,
-            Shipment_ExpectedStormMovesWhenUnknown = 5,
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 5,
             Bidding_PassingTreshold = 4,
@@ -219,6 +217,8 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 4,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 6,
+            Shipment_MaxEnemyForceStrengthFightingForSpice = 2,
+            Shipment_ExpectedStormMovesWhenUnknown = 5,
             Battle_MaximumUnsupportedForces = 2,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.7f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
@@ -227,8 +227,6 @@ namespace Treachery.Shared
 
         public static BotParameters CyanParameters = new BotParameters()
         {
-            Shipment_MaxEnemyForceStrengthFightingForSpice = 2,
-            Shipment_ExpectedStormMovesWhenUnknown = 5,
             Bidding_ResourcesToKeepWhenCardIsPerfect = 1,
             Bidding_ResourcesToKeepWhenCardIsntPerfect = 5,
             Bidding_PassingTreshold = 4,
@@ -237,6 +235,8 @@ namespace Treachery.Shared
             Shipment_DialShortageToAccept = 4,
             Shipment_MinimumResourcesToKeepForBattle = 0,
             Shipment_DialForExtraForcesToShip = 6,
+            Shipment_MaxEnemyForceStrengthFightingForSpice = 2,
+            Shipment_ExpectedStormMovesWhenUnknown = 5,
             Battle_MaximumUnsupportedForces = 2,
             Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.7f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,

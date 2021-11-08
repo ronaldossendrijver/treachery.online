@@ -125,7 +125,7 @@
             shipmentAllyContributionAmount = 0;
         }
 
-        @if (Shipment.CanKarma(Game, Player) && (Faction != Faction.Yellow || shipmentType == SHIPMENT_SITETOSITE))
+        @if (Shipment.CanKarma(Game, Player) && (Faction != Faction.Yellow || shipmentType == SHIPMENT_SITETOSITE) && !MayShipAsGuild)
         {
             <div class="mt-1">
                 <SelectCardComponent @bind-Value="karmaCard" Values="Shipment.ValidKarmaCards(Game, Player)" Required="false">

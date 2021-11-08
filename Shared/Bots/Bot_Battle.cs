@@ -187,8 +187,8 @@ namespace Treachery.Shared
                 out int specialForcesAtHalfStrength);
 
             bool predicted = WinWasPredictedByMeThisTurn(opponent.Faction);
-            float dialShortageToAccept = prescience != null && prescience.Aspect == PrescienceAspect.Dial ? 0 : Param.Battle_DialShortageThresholdForThrowing;
-            bool minimizeSpendingsInThisLostFight = predicted || isTraitor && !messiah || Resources < 10 && forcesAtFullStrength + forcesAtHalfStrength + specialForcesAtFullStrength + specialForcesAtHalfStrength < 10 && dialShortage >= dialShortageToAccept;
+            var totalForces = forcesAtFullStrength + forcesAtHalfStrength + specialForcesAtFullStrength + specialForcesAtHalfStrength;
+            bool minimizeSpendingsInThisLostFight = predicted || isTraitor && !messiah || Resources + ResourcesFromAlly < 10 && totalForces <= 8 && dialShortage > Param.Battle_DialShortageThresholdForThrowing;
 
             if (!minimizeSpendingsInThisLostFight)
             {
@@ -217,7 +217,9 @@ namespace Treachery.Shared
             }
             else
             {
-                LogInfo("I'm spending as little as possible on this fight.");
+                LogInfo("I'm spending as little as possible on this fight: predicted:{0}, isTraitor:{1} && !messiah:{2}, Resources:{3} < 10 && totalForces:{4} < 10 && dialShortage:{5} >= dialShortageToAccept:{6}",
+                    predicted, isTraitor, messiah, Resources, totalForces, dialShortage, Param.Battle_DialShortageThresholdForThrowing);
+
                 return ConstructLostBattleMinimizingLosses(opponent);
             }
         }
@@ -254,7 +256,7 @@ namespace Treachery.Shared
             IHero lowestAvailableHero = Battle.ValidBattleHeroes(Game, this).FirstOrDefault(h => h is TreacheryCard);
             if (lowestAvailableHero == null)
             {
-                SelectHeroForBattle(opponent, false, false, null, null, out lowestAvailableHero, out _);
+                SelectHeroForBattle(opponent, false, true, false, null, null, out lowestAvailableHero, out _);
             }
 
             var uselessAsWeapon = lowestAvailableHero == null || MayUseUselessAsKarma || Faction == Faction.Brown ? null : UselessAsWeapon(null);
@@ -750,7 +752,7 @@ namespace Treachery.Shared
 
         protected IEnumerable<IHero> HeroesForBattle(Player player, bool includeInFrontOfShield) => Battle.ValidBattleHeroes(Game, player).Where(l => includeInFrontOfShield || !Game.IsInFrontOfShield(l));
 
-        protected int SelectHeroForBattle(Player opponent, bool highest, bool messiahUsed, TreacheryCard weapon, TreacheryCard defense, out IHero hero, out bool isTraitor, bool includeInFrontOfShield = false)
+        protected int SelectHeroForBattle(Player opponent, bool highest, bool forfeit, bool messiahUsed, TreacheryCard weapon, TreacheryCard defense, out IHero hero, out bool isTraitor, bool includeInFrontOfShield = false)
         {
             isTraitor = false;
 
@@ -771,7 +773,13 @@ namespace Treachery.Shared
             IHero safeHero = null;
             IHero unsafeHero = null;
 
-            if (highest)
+            if (forfeit)
+            {
+                safeHero = null;
+                unsafeHero = HeroesForBattle(this, includeInFrontOfShield).Where(l => !safeLeaders.Contains(l)).LowestOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader));
+                if (unsafeHero == null) unsafeHero = HeroesForBattle(this, includeInFrontOfShield).LowestOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader));
+            }
+            else if (highest)
             {
                 safeHero = safeLeaders.HighestOrDefault(l => l.ValueInCombatAgainst(highestOpponentLeader));
                 unsafeHero = HeroesForBattle(this, includeInFrontOfShield).HighestOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader));
@@ -779,7 +787,7 @@ namespace Treachery.Shared
             else
             {
                 safeHero = safeLeaders.LowestOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader));
-                unsafeHero = HeroesForBattle(this, includeInFrontOfShield).OneOfLowestNOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader), 3);
+                unsafeHero = HeroesForBattle(this, includeInFrontOfShield).OneOfLowestNOrDefault(l => l.HeroType == HeroType.Auditor ? 10 : l.ValueInCombatAgainst(highestOpponentLeader), 2);
             }
 
             if (safeHero == null ||
@@ -846,7 +854,7 @@ namespace Treachery.Shared
             }
 
             isTraitor = false;
-            int myHeroValue = SelectHeroForBattle(opponent, !lasgunShieldDetected && !iAssumeMyLeaderWillDie, messiah, bestWeapon, bestDefense, out hero, out isTraitor, includeInFrontOfShield);
+            int myHeroValue = SelectHeroForBattle(opponent, !lasgunShieldDetected && !iAssumeMyLeaderWillDie, false, messiah, bestWeapon, bestDefense, out hero, out isTraitor, includeInFrontOfShield);
 
             var opponentPenalty = Battle.DetermineSkillPenalty(Game, hero, opponent, out _);
 

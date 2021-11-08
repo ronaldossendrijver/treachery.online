@@ -72,11 +72,10 @@ namespace Treachery.Shared
                 int limit = Game.GetRevivalLimit(Game, p);
 
                 if (AmountOfForces + AmountOfSpecialForces > limit + emperorRevivals) return "You can't revive that much.";
-
-                var costOfRevival = DetermineCost(Game, p, Hero, AmountOfForces, AmountOfSpecialForces, ExtraForcesPaidByRed, ExtraSpecialForcesPaidByRed);
-                if (costOfRevival.TotalCostForPlayer > p.Resources) return "You can't pay that much.";
             }
 
+            var costOfRevival = DetermineCost(Game, p, Hero, AmountOfForces, AmountOfSpecialForces, ExtraForcesPaidByRed, ExtraSpecialForcesPaidByRed);
+            if (costOfRevival.TotalCostForPlayer > p.Resources) return "You can't pay that much.";
 
             return "";
         }

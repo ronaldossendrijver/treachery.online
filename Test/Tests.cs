@@ -322,7 +322,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 1000;
+            int nrOfGames = 5000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
@@ -433,7 +433,7 @@ namespace Treachery.Test
                        PlayGameAndRecordResults(factions, nrOfPlayers, nrOfTurns, rulesAsArray, wincounter);
                    });
 
-            foreach (var f in wincounter.Counted)
+            foreach (var f in wincounter.Counted.OrderByDescending(f => wincounter.CountOf(f)))
             {
                 Console.WriteLine("{0}: {1} ({2}%)", f, wincounter.CountOf(f), (100f * wincounter.CountOf(f) / nrOfGames));
             }

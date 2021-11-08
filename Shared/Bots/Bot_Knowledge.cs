@@ -101,6 +101,18 @@ namespace Treachery.Shared
             if (cardToRate.Type == TreacheryCardType.Laser) return 5;
             if (cardToRate.Type == TreacheryCardType.Karma && Faction == Faction.Black && !SpecialKarmaPowerUsed) return 5;
 
+            int qualityWhenObtainingBothKinds = (Faction == Faction.Green || Faction == Faction.Blue) ? 5 : 4;
+            if (cardToRate.IsProjectileDefense && !TreacheryCards.Any(c => c != cardToRate && c.IsProjectileDefense) && TreacheryCards.Any(c => c != cardToRate && c.IsPoisonDefense)) return qualityWhenObtainingBothKinds;
+            if (cardToRate.IsPoisonDefense && !TreacheryCards.Any(c => c != cardToRate && c.IsPoisonDefense) && TreacheryCards.Any(c => c != cardToRate && c.IsProjectileDefense)) return qualityWhenObtainingBothKinds;
+            if (cardToRate.IsProjectileWeapon && !TreacheryCards.Any(c => c != cardToRate && c.IsProjectileWeapon) && TreacheryCards.Any(c => c != cardToRate && c.IsPoisonWeapon)) return qualityWhenObtainingBothKinds;
+            if (cardToRate.IsPoisonWeapon && !TreacheryCards.Any(c => c != cardToRate && c.IsPoisonWeapon) && TreacheryCards.Any(c => c != cardToRate && c.IsProjectileWeapon)) return qualityWhenObtainingBothKinds;
+
+            if (Faction == Faction.Blue)
+            {
+                if (cardToRate.IsProjectileWeapon && !TreacheryCards.Any(c => c != cardToRate && c.IsProjectileWeapon)) return 5;
+                if (cardToRate.IsPoisonWeapon && !TreacheryCards.Any(c => c != cardToRate && c.IsPoisonWeapon)) return 5;
+            }
+
             if (cardToRate.Type == TreacheryCardType.Chemistry) return 4;
             if (cardToRate.Type == TreacheryCardType.WeirdingWay) return 4;
 
@@ -152,6 +164,14 @@ namespace Treachery.Shared
             get
             {
                 return Game.SpiceForBidsRedCanPay(Faction);
+            }
+        }
+
+        protected virtual int AllyResources
+        {
+            get
+            {
+                return Ally != Faction.None ? AlliedPlayer.Resources : 0;
             }
         }
 
