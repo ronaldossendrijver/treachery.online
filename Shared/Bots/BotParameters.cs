@@ -6,7 +6,7 @@ namespace Treachery.Shared
 {
     public class BotParameters
     {
-        public static float PenaltyForAttackingBots = 2.0f;
+        public static float PenaltyForAttackingBots = 4.0f;
 
         public int Bidding_ResourcesToKeepWhenCardIsPerfect { get; set; }
         public int Bidding_ResourcesToKeepWhenCardIsntPerfect { get; set; }

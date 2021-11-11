@@ -20,32 +20,7 @@ namespace Treachery.Client
             _runtime = runtime;
             Storage = new LocalStorage(runtime);
         }
-
-        public static async Task<T> JsInvoke<T>(string method, params object[] args)
-        {
-            try
-            {
-                return await _runtime.InvokeAsync<T>(method, args);
-            }
-            catch (Exception e)
-            {
-                Support.Log("Error invoking method: {0}", e);
-                return default;
-            }
-        }
-
-        public static async Task JsInvoke(string method, params object[] args)
-        {
-            try
-            {
-                await _runtime.InvokeVoidAsync(method, args);
-            }
-            catch (Exception e)
-            {
-                Support.Log("Error invoking method: {0}", e.Message);
-            }
-        }
-
+                
         public static async Task EnablePopovers()
         {
             await JsInvoke("EnablePopovers");
@@ -104,12 +79,6 @@ namespace Treachery.Client
         public static async Task<Dimensions> GetWindowDimensions()
         {
             return await JsInvoke<Dimensions>("GetWindowDimensions");
-        }
-
-        public static async Task FadeAndPlaySound(string sound, float volume = 100f, bool loop = false)
-        {
-            await PlaySound(sound, 0, loop);
-            await FadeSound(sound, 0, volume, 5000);
         }
 
         public static async Task PlaySound(string sound, float volume = 100f, bool loop = false)
@@ -229,6 +198,31 @@ namespace Treachery.Client
             catch (Exception e)
             {
                 Support.Log(e);
+            }
+        }
+
+        private static async Task<T> JsInvoke<T>(string method, params object[] args)
+        {
+            try
+            {
+                return await _runtime.InvokeAsync<T>(method, args);
+            }
+            catch (Exception e)
+            {
+                Support.Log("Error invoking method: {0}", e);
+                return default;
+            }
+        }
+
+        private static async Task JsInvoke(string method, params object[] args)
+        {
+            try
+            {
+                await _runtime.InvokeVoidAsync(method, args);
+            }
+            catch (Exception e)
+            {
+                Support.Log("Error invoking method: {0}", e.Message);
             }
         }
     }

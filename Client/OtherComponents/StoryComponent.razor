@@ -84,7 +84,7 @@
                 <StoryBattleComponent Game="replay" />
             }
 
-            if (replay.CurrentMainPhase != previousMainPhase && (replay.CurrentMainPhase == MainPhase.Contemplate || replay.CurrentMainPhase == MainPhase.Ended))
+            if (replay.CurrentMainPhase != previousMainPhase && replay.CurrentMainPhase == MainPhase.Contemplate)
             {
                 <h5>Situation at the end of turn @replay.CurrentTurn:</h5>
                 <StoryPlayerInfoComponent Game="replay" ShowAlly="ShowAllies(replay)" ShowForces="true" ShowTanks="true" ShowResources="true" ShowTechTokens="true" ShowPoints="true" />

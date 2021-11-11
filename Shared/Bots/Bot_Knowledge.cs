@@ -467,21 +467,21 @@ namespace Treachery.Shared
                 ).FirstOrDefault();
         }
 
-        protected virtual Location NearbyStrongholdOfWinningOpponent(Location from, Battalion battalion)
+        protected virtual Location NearbyStrongholdOfWinningOpponent(Location from, Battalion battalion, bool includeBots)
         {
             return ValidMovementLocations(from, battalion).Where(to =>
                 IsStronghold(to) &&
                 AllyNotIn(to.Territory) &&
-                WinningOpponentsIWishToAttack(20).Any(opponent => opponent.Occupies(to)) 
+                WinningOpponentsIWishToAttack(20, includeBots).Any(opponent => opponent.Occupies(to)) 
                 ).LowestOrDefault(l => TotalMaxDialOfOpponents(l.Territory));
         }
 
-        protected virtual Location NearbyStrongholdOfAlmostWinningOpponent(Location from, Battalion battalion)
+        protected virtual Location NearbyStrongholdOfAlmostWinningOpponent(Location from, Battalion battalion, bool includeBots)
         {
             return ValidMovementLocations(from, battalion).Where(to =>
                 IsStronghold(to) &&
                 AllyNotIn(to.Territory) &&
-                AlmostWinningOpponentsIWishToAttack(20).Any(opponent => opponent.Occupies(to)) 
+                AlmostWinningOpponentsIWishToAttack(20, includeBots).Any(opponent => opponent.Occupies(to)) 
                 ).LowestOrDefault(l => TotalMaxDialOfOpponents(l.Territory));
         }
 
@@ -492,11 +492,11 @@ namespace Treachery.Shared
             Game.NumberOfVictoryPoints(p, true) + 1 >= Game.TresholdForWin(p) &&
             (CanShip(p) || p.HasAlly && CanShip(p.AlliedPlayer));
 
-        private IEnumerable<Player> WinningOpponentsIWishToAttack(int maximumChallengedStrongholds) =>
-            Game.Players.Where(p => IsWinningOpponent(p) && Game.CountChallengedStongholds(p) <= maximumChallengedStrongholds && !WinWasPredictedByMeThisTurn(p.Faction));
+        private IEnumerable<Player> WinningOpponentsIWishToAttack(int maximumChallengedStrongholds, bool includeBots) =>
+            Game.Players.Where(p => (includeBots || !p.IsBot) && IsWinningOpponent(p) && Game.CountChallengedStongholds(p) <= maximumChallengedStrongholds && !WinWasPredictedByMeThisTurn(p.Faction));
 
-        private IEnumerable<Player> AlmostWinningOpponentsIWishToAttack(int maximumChallengedStrongholds) =>
-            Game.Players.Where(p => IsAlmostWinningOpponent(p) && Game.CountChallengedStongholds(p) <= maximumChallengedStrongholds && !WinWasPredictedByMeThisTurn(p.Faction));
+        private IEnumerable<Player> AlmostWinningOpponentsIWishToAttack(int maximumChallengedStrongholds, bool includeBots) =>
+            Game.Players.Where(p => (includeBots || !p.IsBot) && IsAlmostWinningOpponent(p) && Game.CountChallengedStongholds(p) <= maximumChallengedStrongholds && !WinWasPredictedByMeThisTurn(p.Faction));
 
 
         protected virtual Location WinnableNearbyStronghold(Location from, Battalion battalion)
@@ -542,7 +542,7 @@ namespace Treachery.Shared
             int countForcesForWhite = 0;
             if (p.Faction == Faction.White && p.SpecialForcesIn(t) > 0)
             {
-                countForcesForWhite = Game.LatestRevealedNoFieldValue == 5 ? 3 : 5;
+                countForcesForWhite = Faction == Faction.White || Ally == Faction.White ? Game.CurrentNoFieldValue : (Game.LatestRevealedNoFieldValue == 5 ? 3 : 5);
             }
 
             return MaxDial(

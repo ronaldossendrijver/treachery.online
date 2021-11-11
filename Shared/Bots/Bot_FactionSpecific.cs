@@ -280,10 +280,12 @@ namespace Treachery.Shared
                 var amountICanReinforce = MaxReinforcedDialTo(this, territory);
                 var maxDial = MaxDial(this, territory, opponent);
 
-                if (WinWasPredictedByMeThisTurn(opponent.Faction) || 
-                    GetDialNeeded(territory, opponent, false) <= maxDial ||
-                    LastTurn && GetDialNeeded(territory, opponent, false) - 3 <= maxDial ||
-                    potentialWinningOpponents.Contains(opponent) && GetDialNeeded(territory, opponent, false) <= amountICanReinforce + maxDial)
+                var dialNeeded = GetDialNeeded(territory, opponent, false);
+
+                if (WinWasPredictedByMeThisTurn(opponent.Faction) ||
+                    dialNeeded <= maxDial ||
+                    LastTurn && dialNeeded - 1 <= amountICanReinforce + maxDial ||
+                    potentialWinningOpponents.Contains(opponent) && dialNeeded <= amountICanReinforce + maxDial)
                 {
                     return true;
                 }
@@ -318,15 +320,11 @@ namespace Treachery.Shared
             if (opponent != null)
             {
                 var dialNeeded = GetDialNeeded(territory, opponent, false);
-                var forcesIn = SpecialForcesIn(territory);
 
-                if (territory.IsStronghold && WinWasPredictedByMeThisTurn(opponent.Faction) || dialNeeded <= forcesIn + MaxReinforcedDialTo(this, territory))
+                if (territory.IsStronghold && WinWasPredictedByMeThisTurn(opponent.Faction) || dialNeeded <= MaxDial(this, territory, opponent) + MaxReinforcedDialTo(this, territory))
                 {
-                    LogInfo("IWantToAnnounceBattleIn {0}, {1} <= {2}", territory, dialNeeded, forcesIn);
                     return true;
                 }
-
-                LogInfo("IDontWantToAnnounceBattleIn {0}, {1} > {2}", territory, dialNeeded, forcesIn);
             }
 
             return false;
