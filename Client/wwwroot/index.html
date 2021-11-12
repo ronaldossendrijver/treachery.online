@@ -359,6 +359,12 @@
             $printSection.appendChild(domClone);
             window.print();
         }
+
+        function Reload() {
+
+            window.onbeforeunload = null;
+            location.reload();
+        }
         
     </script>
 

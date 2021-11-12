@@ -91,51 +91,6 @@ namespace Treachery.Client
         {
             RefreshHandler?.Invoke();
         }
-
-        public async Task Restart()
-        {
-            if (Host != null) Host.Stop();
-
-            await Browser.StopSounds();
-
-            _joinError = new();
-            _gameinprogressHostId = 0;
-            _battleUnderConstruction = null;
-            BidAutoPassThreshold = 0;
-            Autopass = false;
-            KeepAutopassSetting = false;
-            ShowWheelsAndHMS = true;
-            StatisticsSent = false;
-
-            howThisPlayerJoined = null;
-            howThisObserverJoined = null;
-            howThisPlayerRejoined = null;
-            howThisObserverRejoined = null;
-            hostLastSeen = DateTime.Now;
-            nrOfHeartbeats = 0;
-            _pending = new();
-            Messages = new();
-            itAlreadyWasMyTurn = false;
-            savegameSent = false;
-            previousPhase = Phase.None;
-            awaitingBotAction = false;
-            _localStorageCleared = false;
-
-            PlayerName = "";
-            Game = new Game();
-            HostProxy = null;
-            IsObserver = false;
-            Host = null;
-
-            UpdateStatus();
-            Refresh();
-        }
-
-        private void Game_MessageHandler(object sender, ChatMessage e)
-        {
-            _ = HandleChatMessage(e);
-        }
-
         private void LogSerializationError(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs e)
         {
             Support.Log(e.ErrorContext.Error.ToString());
@@ -166,6 +121,7 @@ namespace Treachery.Client
             RevisablePlan = plan;
             RevisablePlanBattle = Game.CurrentBattle;
         }
+
         public Battle GetRevisablePlan()
         {
             if (RevisablePlan != null && RevisablePlanBattle == Game.CurrentBattle)
@@ -328,7 +284,7 @@ namespace Treachery.Client
                         await HostProxy.SendHeartbeat(PlayerName);
                     }
 
-                    if ((nrOfHeartbeats % 6) == 0) await Browser.RefreshPopovers();
+                    if ((nrOfHeartbeats % 10) == 0) await Browser.RefreshPopovers();
                 }
                 catch (Exception e)
                 {

@@ -113,6 +113,11 @@ a, .btn-link {
     src: url("../Advokat.ttf");
 }
 
+@font-face {
+    font-family: "OrthodoxHerbertarian";
+    src: url("../OrthodoxHerbertarian.ttf");
+}
+
 #mapdiv {
     position: relative;
 }

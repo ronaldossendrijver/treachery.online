@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\tutorial\**" />
+    <Content Remove="wwwroot\tutorial\**" />
+    <EmbeddedResource Remove="wwwroot\tutorial\**" />
+    <None Remove="wwwroot\tutorial\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.0-rc.1.21452.15" />
 
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.0-rc.1.21452.15" PrivateAssets="all" />
@@ -18,10 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Shared\Treachery.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\tutorial\" />
   </ItemGroup>
 
 </Project>

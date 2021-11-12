@@ -192,8 +192,7 @@ else if (IsVisible(RESTART))
 
     private async Task RestartGame()
     {
-        SetVisible(null);
-        await h.Restart();
+        await Browser.ReloadPage();
     }
 
     private void SetVisible(object o)

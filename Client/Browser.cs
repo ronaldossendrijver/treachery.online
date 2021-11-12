@@ -20,7 +20,12 @@ namespace Treachery.Client
             _runtime = runtime;
             Storage = new LocalStorage(runtime);
         }
-                
+
+        public static async Task ReloadPage()
+        {
+            await JsInvoke("Reload");
+        }
+
         public static async Task EnablePopovers()
         {
             await JsInvoke("EnablePopovers");
