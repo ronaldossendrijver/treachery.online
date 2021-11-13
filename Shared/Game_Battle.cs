@@ -475,7 +475,14 @@ namespace Treachery.Shared
             CurrentReport.Add(e);
             if (!e.Passed)
             {
-                CaptureLeader();
+                if (Version >= 125 && Prevented(FactionAdvantage.BlackCaptureLeader))
+                {
+                    CurrentReport.Add(Faction.Black, "{0} prevents {1} from capturing a leader.", TreacheryCardType.Karma, Faction.Black);
+                }
+                else
+                {
+                    CaptureLeader();
+                }
             }
 
             Enter(Phase.BattleConclusion);
