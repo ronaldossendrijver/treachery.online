@@ -475,7 +475,7 @@ namespace Treachery.Shared
             CurrentReport.Add(e);
             if (!e.Passed)
             {
-                if (Version >= 125 && Prevented(FactionAdvantage.BlackCaptureLeader))
+                if (Version > 125 && Prevented(FactionAdvantage.BlackCaptureLeader))
                 {
                     CurrentReport.Add(Faction.Black, "{0} prevents {1} from capturing a leader.", TreacheryCardType.Karma, Faction.Black);
                 }
@@ -868,13 +868,20 @@ namespace Treachery.Shared
         {
             if (e.By(Faction.Black) && Applicable(Rule.BlackCapturesOrKillsLeaders) && BlackVictim != null)
             {
-                if (e.Initiator == CurrentBattle.Aggressor)
+                if (Version > 125 && Prevented(FactionAdvantage.BlackCaptureLeader))
                 {
-                    CaptureOrAssassinateLeader(AggressorBattleAction, DefenderBattleAction, e.DecisionToCapture);
+                    CurrentReport.Add(Faction.Black, "{0} prevents {1} from capturing a leader.", TreacheryCardType.Karma, Faction.Black);
                 }
                 else
                 {
-                    CaptureOrAssassinateLeader(DefenderBattleAction, AggressorBattleAction, e.DecisionToCapture);
+                    if (e.Initiator == CurrentBattle.Aggressor)
+                    {
+                        CaptureOrAssassinateLeader(AggressorBattleAction, DefenderBattleAction, e.DecisionToCapture);
+                    }
+                    else
+                    {
+                        CaptureOrAssassinateLeader(DefenderBattleAction, AggressorBattleAction, e.DecisionToCapture);
+                    }
                 }
             }
         }

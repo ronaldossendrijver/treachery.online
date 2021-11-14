@@ -16,12 +16,21 @@
 
 @if (h.Host != null && h.Host.JoinedObservers.Count(o => o != "$RonaldAdmin$") > 0)
 {
-    <MapText ToShow="@string.Format("observers: {0}", h.Host.JoinedObservers.Count(o => o != "$RonaldAdmin$"))"
+    <MapText ToShow="@string.Format("observers: {0}", Observers.Count())"
              X="@(Skin.Current.PlanetCenter.X)"
              Y="@(Skin.Current.MapDimensions.Y - 60)"
+             Popover="@ObserverPopover"
              Font="@Skin.Current.FORCETOKEN_FONT"
              FontColor="@Skin.Current.TURN_FONT_COLOR"
              BorderWidth="@Skin.Current.FORCETOKEN_FONT_BORDERWIDTH"
              BorderColor="@Skin.Current.FORCETOKEN_FONT_BORDERCOLOR"
              Align="@TextAlignment.Center"/>
+}
+
+@code {
+    
+    private string ObserverPopover => string.Join(", ", Observers);
+
+    private IEnumerable<string> Observers => h.Host.JoinedObservers.Where(o => o != "$RonaldAdmin$");
+
 }

@@ -1,5 +1,6 @@
 ﻿@using Treachery.Shared
 @inherits MapComponent
+@implements IDisposable
 
 @{
     <Image X="@(X)" Y="@(Y)" Diameter="@(Skin.Current.BattleScreenWidth)" Src="@Skin.Current.BattleScreen_URL" 
@@ -187,5 +188,10 @@
             skill == LeaderSkill.Swordmaster ||
             skill == LeaderSkill.KillerMedic ||
             skill == LeaderSkill.MasterOfAssassins;
+    }
+
+    public void Dispose()
+    {
+        _ = Browser.RefreshPopovers();
     }
 }
