@@ -44,8 +44,15 @@ namespace Treachery.Shared
 
                 foreach (var shieldwallLocation in g.Map.ShieldWall.Locations)
                 {
+                    if (shieldwallLocation.Neighbours.Any(l => p.Occupies(l)))
+                    {
+                        //checks locations that are immediately adjacent to the shield wall
+                        return true;
+                    }
+
                     if (g.Map.FindNeighbours(shieldwallLocation, 1, false, p.Faction, g, false).Any(l => p.Occupies(l)))
                     {
+                        //checks locations that are in a territory adjacent to the shield wall (but may be further away and separated by storm)
                         return true;
                     }
                 }
