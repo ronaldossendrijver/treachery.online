@@ -134,9 +134,20 @@ namespace Treachery.Client
             }
         }
 
-        public void StartHost(string hostPWD, string loadedGameData, Game loadedGame)
+        public async Task StartHost(string hostPWD, string loadedGameData, Game loadedGame)
         {
             Host = new Host(PlayerName, hostPWD, this, loadedGameData, loadedGame);
+            await LetHostJoin();
+        }
+
+        private async Task LetHostJoin()
+        {
+            if (IsHost && !Host.JoinedPlayers.Any())
+            {
+                _joinError[Host.HostID] = "";
+                await Request(Host.HostID, new PlayerJoined() { HashedPassword = Support.GetHash(Host.gamePassword), Name = PlayerName });
+                await Task.Delay(5000).ContinueWith(e => LetHostJoin());
+            }
         }
 
         #endregion FieldsAndConstructor

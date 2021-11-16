@@ -148,8 +148,7 @@
 
     private async Task StartNewGame()
     {
-        h.StartHost(hostPWD, loadedGameData != null ? loadedGameData : restoredGameData, loadedGame != null ? loadedGame : restoredGame);
-        await JoinGameAsPlayer(h.Host.HostID, hostPWD);
+        await h.StartHost(hostPWD, loadedGameData != null ? loadedGameData : restoredGameData, loadedGame != null ? loadedGame : restoredGame);
     }
 
     private async Task JoinGameAsPlayer(int hostID, string pwd)

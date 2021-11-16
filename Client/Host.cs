@@ -20,7 +20,7 @@ namespace Treachery.Client
         public int GameID;
         private readonly HubConnection connection;
         private readonly string Name;
-        private readonly string gamePassword;
+        public readonly string gamePassword;
         private readonly Handler h;
         private Game GameAtHost;
         public readonly string LoadedGameData;

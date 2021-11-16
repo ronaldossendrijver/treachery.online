@@ -152,10 +152,7 @@
 
     private IEnumerable<RuleGroup> RuleGroups => EstablishPlayers.AvailableRuleGroups();
 
-    private string StyleDef(Faction f)
-    {
-        return string.Format("background-color:{0}", Skin.Current.GetFactionColorTransparant(f));
-    }
+    private string StyleDef(Faction f) => string.Format("background-color:{0}", Skin.Current.GetFactionColorTransparant(f));
 
     private bool Readonly => h.Host.LoadedGame != null;
 

@@ -13,7 +13,7 @@ namespace Treachery.Shared
         public const int LowestSupportedVersion = 86;
         public const int LatestVersion = 126;
 
-        public bool BotInfologging = true;
+        public bool BotInfologging = false;
 
         #region GameState
 
