@@ -13,14 +13,14 @@ namespace Treachery.Shared
         public const int LowestSupportedVersion = 86;
         public const int LatestVersion = 126;
 
-        public bool BotInfologging = false;
+        public bool BotInfologging = true;
 
         #region GameState
 
         public int MaximumNumberOfTurns = 10;
         public int MaximumNumberOfPlayers = 6;
 
-        public int Seed = -1;
+        public int Seed { get; private set; } = -1;
         public string Name;
         private Random Random { get; set; }
         public IList<Milestone> RecentMilestones { get; private set; } = new List<Milestone>();

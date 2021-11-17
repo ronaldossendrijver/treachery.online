@@ -23,6 +23,8 @@ namespace Treachery.Shared
 
         public void HandleEvent(EstablishPlayers e)
         {
+            RecentMilestones.Add(Milestone.GameStarted);
+
             CurrentMainPhase = MainPhase.Setup;
             CurrentReport = new Report(MainPhase.Setup);
 
@@ -81,8 +83,8 @@ namespace Treachery.Shared
             FactionsInPlay = e.FactionsInPlay;
 
             AddPlayersToGame(e);
-            RecentMilestones.Add(Milestone.GameStarted);
 
+            FillEmptySeatsWithBots();
             RemoveClaimedFactions();
 
             Enter(Applicable(Rule.PlayersChooseFactions), Phase.SelectingFactions, AssignFactionsAndEnterFactionTrade);
@@ -122,8 +124,6 @@ namespace Treachery.Shared
                 Players.Add(p);
                 CurrentReport.Add("{0} joined the game.", p.Name);
             }
-
-            FillEmptySeatsWithBots();
         }
         private void AddBots()
         {
@@ -152,29 +152,41 @@ namespace Treachery.Shared
         {
             if (Applicable(Rule.FillWithBots))
             {
-                var available = new Deck<Faction>(FactionsInPlay.Where(f => Version <= 95 || !IsPlaying(f)), Random);
-                available.Shuffle();
-
-                while (Players.Count < MaximumNumberOfPlayers)
+                if (Version <= 125)
                 {
-                    var bot = available.Draw() switch
-                    {
-                        Faction.Black => new Player(this, UniquePlayerName("The Baron*"), Faction.Black, true),
-                        Faction.Blue => new Player(this, UniquePlayerName("Mother Mohiam*"), Faction.Blue, true),
-                        Faction.Green => new Player(this, UniquePlayerName("Paul Atreides*"), Faction.Green, true),
-                        Faction.Yellow => new Player(this, UniquePlayerName("Liet Kynes*"), Faction.Yellow, true),
-                        Faction.Red => new Player(this, UniquePlayerName("Shaddam IV*"), Faction.Red, true),
-                        Faction.Orange => new Player(this, UniquePlayerName("Edric*"), Faction.Orange, true),
-                        Faction.Grey => new Player(this, UniquePlayerName("Prince Rhombur*"), Faction.Grey, true),
-                        Faction.Purple => new Player(this, UniquePlayerName("Scytale*"), Faction.Purple, true),
-                        Faction.Brown => new Player(this, UniquePlayerName("Brown*"), Faction.Brown, true),
-                        Faction.White => new Player(this, UniquePlayerName("White*"), Faction.White, true),
-                        Faction.Pink => new Player(this, UniquePlayerName("Pink*"), Faction.Pink, true),
-                        Faction.Cyan => new Player(this, UniquePlayerName("Cyan*"), Faction.Cyan, true),
-                        _ => new Player(this, UniquePlayerName("The Baron*"), Faction.Black, true)
-                    };
+                    var available = new Deck<Faction>(FactionsInPlay.Where(f => Version <= 95 || !IsPlaying(f)), Random);
+                    available.Shuffle();
 
-                    Players.Add(bot);
+                    while (Players.Count < MaximumNumberOfPlayers)
+                    {
+                        var bot = available.Draw() switch
+                        {
+                            Faction.Black => new Player(this, UniquePlayerName("The Baron*"), Faction.Black, true),
+                            Faction.Blue => new Player(this, UniquePlayerName("Mother Mohiam*"), Faction.Blue, true),
+                            Faction.Green => new Player(this, UniquePlayerName("Paul Atreides*"), Faction.Green, true),
+                            Faction.Yellow => new Player(this, UniquePlayerName("Liet Kynes*"), Faction.Yellow, true),
+                            Faction.Red => new Player(this, UniquePlayerName("Shaddam IV*"), Faction.Red, true),
+                            Faction.Orange => new Player(this, UniquePlayerName("Edric*"), Faction.Orange, true),
+                            Faction.Grey => new Player(this, UniquePlayerName("Prince Rhombur*"), Faction.Grey, true),
+                            Faction.Purple => new Player(this, UniquePlayerName("Scytale*"), Faction.Purple, true),
+                            Faction.Brown => new Player(this, UniquePlayerName("Brown*"), Faction.Brown, true),
+                            Faction.White => new Player(this, UniquePlayerName("White*"), Faction.White, true),
+                            Faction.Pink => new Player(this, UniquePlayerName("Pink*"), Faction.Pink, true),
+                            Faction.Cyan => new Player(this, UniquePlayerName("Cyan*"), Faction.Cyan, true),
+                            _ => new Player(this, UniquePlayerName("The Baron*"), Faction.Black, true)
+                        };
+
+                        Players.Add(bot);
+                    }
+                }
+                else
+                {
+                    int botNr = 1;
+
+                    while (Players.Count < MaximumNumberOfPlayers)
+                    {
+                        Players.Add(new Player(this, UniquePlayerName(string.Format("Bot{0}", botNr++)), Faction.None, true));
+                    }
                 }
             }
         }
