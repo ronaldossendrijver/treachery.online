@@ -13,12 +13,12 @@
 @inject ILogger<Index> logger
 @inject IJSRuntime JSRuntime
 
-@if (scheduledMaintenance > DateTime.Now &&
-   (scheduledMaintenance.Subtract(DateTime.Now).TotalHours < 12 && h.CurrentPhase <= Phase.AwaitingPlayers ||
-    scheduledMaintenance.Subtract(DateTime.Now).TotalHours < 1))
+@if (scheduledMaintenance.AddMinutes(15) > DateTime.UtcNow &&
+   (scheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 8 && h.CurrentPhase <= Phase.AwaitingPlayers ||
+    scheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 1))
 {
     <div class="alert alert-danger text-center p-0" role="alert">
-        treachery.online will be down for maintenance for one hour starting @scheduledMaintenance.ToLocalTime() (in @((int)scheduledMaintenance.Subtract(DateTime.Now).TotalHours) hours)
+        treachery.online will be down for maintenance from @scheduledMaintenance.ToLocalTime() until @scheduledMaintenance.AddMinutes(15).ToLocalTime()
     </div>
 }
 
