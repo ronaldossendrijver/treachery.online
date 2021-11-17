@@ -74,9 +74,7 @@ namespace Treachery.Shared
             {
                 n--;
                 int k = random.Next(n + 1);
-                var value = items[k];
-                items[k] = items[n];
-                items[n] = value;
+                (items[n], items[k]) = (items[k], items[n]);
             }
         }
 
