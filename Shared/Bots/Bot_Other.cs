@@ -506,7 +506,7 @@ namespace Treachery.Shared
         {
             if (Game.CurrentPurpleRevivalRequest != null) return null;
 
-            int availableResources = Math.Max(0, (int)(0.5f * Resources - 4));
+            int availableResources = Math.Max(0, (int)(0.5f * Resources - 2));
             int nrOfLivingLeaders = Leaders.Count(l => Game.IsAlive(l));
             int minimumValue = Faction == Faction.Purple && nrOfLivingLeaders > 2 ? 4 : 0;
             int maxToSpendOnHeroRevival = Math.Min(availableResources, 7);

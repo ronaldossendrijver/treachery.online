@@ -58,7 +58,7 @@ namespace Treachery.Shared
             Shipment_MaxEnemyForceStrengthFightingForSpice = 2,
             Shipment_ExpectedStormMovesWhenUnknown = 3,
             Battle_MaximumUnsupportedForces = 6,
-            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.8f,
+            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.5f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.5f,
             Battle_DialShortageThresholdForThrowing = 3
         };
@@ -76,7 +76,7 @@ namespace Treachery.Shared
             Shipment_MaxEnemyForceStrengthFightingForSpice = 8,
             Shipment_ExpectedStormMovesWhenUnknown = 0,
             Battle_MaximumUnsupportedForces = 20,
-            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.8f,
+            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.4f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
             Battle_DialShortageThresholdForThrowing = 4
         };
@@ -94,7 +94,7 @@ namespace Treachery.Shared
             Shipment_MaxEnemyForceStrengthFightingForSpice = 0,
             Shipment_ExpectedStormMovesWhenUnknown = 6,
             Battle_MaximumUnsupportedForces = 2,
-            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.7f,
+            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.4f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
             Battle_DialShortageThresholdForThrowing = 3
         };
@@ -112,7 +112,7 @@ namespace Treachery.Shared
             Shipment_MaxEnemyForceStrengthFightingForSpice = 0,
             Shipment_ExpectedStormMovesWhenUnknown = 6,
             Battle_MaximumUnsupportedForces = 0,
-            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.8f,
+            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.4f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
             Battle_DialShortageThresholdForThrowing = 6
         };
@@ -130,7 +130,7 @@ namespace Treachery.Shared
             Shipment_MaxEnemyForceStrengthFightingForSpice = 0,
             Shipment_ExpectedStormMovesWhenUnknown = 6,
             Battle_MaximumUnsupportedForces = 2,
-            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.7f,
+            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.4f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
             Battle_DialShortageThresholdForThrowing = 6
         };
@@ -166,7 +166,7 @@ namespace Treachery.Shared
             Shipment_MaxEnemyForceStrengthFightingForSpice = 6,
             Shipment_ExpectedStormMovesWhenUnknown = 0,
             Battle_MaximumUnsupportedForces = 6,
-            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.8f,
+            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.3f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.7f,
             Battle_DialShortageThresholdForThrowing = 6
         };
@@ -184,7 +184,7 @@ namespace Treachery.Shared
             Shipment_MaxEnemyForceStrengthFightingForSpice = 0,
             Shipment_ExpectedStormMovesWhenUnknown = 6,
             Battle_MaximumUnsupportedForces = 2,
-            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.7f,
+            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.4f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
             Battle_DialShortageThresholdForThrowing = 3
         };
@@ -202,7 +202,7 @@ namespace Treachery.Shared
             Shipment_MaxEnemyForceStrengthFightingForSpice = 2,
             Shipment_ExpectedStormMovesWhenUnknown = 5,
             Battle_MaximumUnsupportedForces = 2,
-            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.7f,
+            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.4f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.6f,
             Battle_DialShortageThresholdForThrowing = 6
         };
@@ -220,7 +220,7 @@ namespace Treachery.Shared
             Shipment_MaxEnemyForceStrengthFightingForSpice = 2,
             Shipment_ExpectedStormMovesWhenUnknown = 5,
             Battle_MaximumUnsupportedForces = 2,
-            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.7f,
+            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.5f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.5f,
             Battle_DialShortageThresholdForThrowing = 3
         };
@@ -238,7 +238,7 @@ namespace Treachery.Shared
             Shipment_MaxEnemyForceStrengthFightingForSpice = 2,
             Shipment_ExpectedStormMovesWhenUnknown = 5,
             Battle_MaximumUnsupportedForces = 2,
-            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.7f,
+            Battle_MimimumChanceToAssumeEnemyHeroSurvives = 0.5f,
             Battle_MimimumChanceToAssumeMyLeaderSurvives = 0.5f,
             Battle_DialShortageThresholdForThrowing = 3
         };
