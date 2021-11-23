@@ -1188,8 +1188,8 @@ namespace Treachery.Shared
 
             CurrentReport.Add(outcome.Winner.Faction, "{0} WIN THE BATTLE.", outcome.Winner.Faction);
 
-            ProcessWinnerLosses(territory, outcome.Winner, outcome.WinnerBattlePlan);
-            ProcessLoserLosses(territory, outcome.Loser, outcome.LoserBattlePlan);
+            ProcessWinnerLosses(territory, outcome.Winner, outcome.WinnerBattlePlan, false);
+            ProcessLoserLosses(territory, outcome.Loser, outcome.LoserBattlePlan, false);
         }
 
 
@@ -1217,14 +1217,14 @@ namespace Treachery.Shared
             }
         }
 
-        private void ProcessLoserLosses(Territory territory, Player loser, Battle loserGambit)
+        private void ProcessLoserLosses(Territory territory, Player loser, Battle loserGambit, bool traitorWasRevealed)
         {
             bool hadMessiahBeforeLosses = loser.MessiahAvailable;
 
             CurrentReport.Add(loser.Faction, "{0} lose all ({1}) forces in {2}.", loser.Faction, loser.AnyForcesIn(territory), territory);
             loser.KillAllForces(territory, true);
             LoseCards(loserGambit);
-            PayDialedSpice(loser, loserGambit);
+            PayDialedSpice(loser, loserGambit, traitorWasRevealed);
 
             if (loser.MessiahAvailable && !hadMessiahBeforeLosses)
             {
@@ -1232,7 +1232,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void PayDialedSpice(Player p, Battle plan)
+        private void PayDialedSpice(Player p, Battle plan, bool traitorWasRevealed)
         {
             int cost = plan.Cost(this);
             int costToBrown = p.Ally == Faction.Brown ? plan.AllyContributionAmount : 0;
@@ -1259,7 +1259,7 @@ namespace Treachery.Shared
                 }
 
                 var brown = GetPlayer(Faction.Brown);
-                if (brown != null && p.Faction != Faction.Brown)
+                if (brown != null && p.Faction != Faction.Brown && !traitorWasRevealed)
                 {
                     receiverProfit = (int)Math.Floor(0.5f * (cost - costToBrown));
 
@@ -1295,9 +1295,9 @@ namespace Treachery.Shared
             }
         }
 
-        private void ProcessWinnerLosses(Territory territory, Player winner, Battle plan)
+        private void ProcessWinnerLosses(Territory territory, Player winner, Battle plan, bool traitorWasRevealed)
         {
-            PayDialedSpice(winner, plan);
+            PayDialedSpice(winner, plan, traitorWasRevealed);
             ProcessForceLosses(territory, winner, plan);
         }
 
@@ -1443,7 +1443,7 @@ namespace Treachery.Shared
             CurrentReport.Add(loser.Faction, "{0} lose all ({1}) forces in {2}.", loser.Faction, loser.SpecialForcesIn(territory) + loser.ForcesIn(territory), territory);
             loser.KillAllForces(territory, true);
             LoseCards(loserGambit);
-            PayDialedSpice(loser, loserGambit);
+            PayDialedSpice(loser, loserGambit, true);
 
             if (loser.MessiahAvailable && !hadMessiahBeforeLosses)
             {
@@ -1468,10 +1468,10 @@ namespace Treachery.Shared
             aggressor.KillAllForces(territory, true);
 
             LoseCards(def);
-            PayDialedSpice(defender, def);
+            PayDialedSpice(defender, def, true);
 
             LoseCards(agg);
-            PayDialedSpice(aggressor, agg);
+            PayDialedSpice(aggressor, agg, true);
 
             if ((aggressor.MessiahAvailable || defender.MessiahAvailable) && !hadMessiahBeforeLosses)
             {
@@ -1505,10 +1505,10 @@ namespace Treachery.Shared
             }
 
             LoseCards(agg);
-            PayDialedSpice(aggressor, agg);
+            PayDialedSpice(aggressor, agg, false);
 
             LoseCards(def);
-            PayDialedSpice(defender, def);
+            PayDialedSpice(defender, def, false);
 
             int removed = RemoveResources(territory);
             if (removed > 0)

@@ -49,6 +49,7 @@ namespace Treachery.Shared
             if (Card == null && Resources <= 0) return "Invalid amount";
             if (p.Resources < Resources) return "You can't give that much";
             if (Initiator != Faction.Red && Target == p.Ally) return "You can't bribe your ally";
+            if (!FromBank && (Game.EconomicsStatus == BrownEconomicsStatus.Double || Game.EconomicsStatus == BrownEconomicsStatus.DoubleFlipped)) return "No bribes can be made during Double Inflation.";
 
             var targetPlayer = Game.GetPlayer(Target);
             if (Card != null && !targetPlayer.HasRoomForCards) return "Target faction's hand is full";

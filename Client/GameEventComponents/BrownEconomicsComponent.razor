@@ -8,12 +8,12 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Play Economics?</Header>
+    <Header>Play Inflation?</Header>
     <Body>
 
         <RadioComponent @bind-Value="status" Values="new BrownEconomicsStatus[] { BrownEconomicsStatus.Double, BrownEconomicsStatus.Cancel }"/>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm Economics" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm Inflation" ConfirmError="@Validation" />
 
     </Body>
 
