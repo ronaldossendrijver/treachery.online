@@ -24,11 +24,11 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            /*var p = e.Player;
-            if (e is Revival r && r.ExtraForcesPaidByRed == 2 && r.ExtraSpecialForcesPaidByRed == 1)
+            var p = e.Player;
+            if (e is TreacheryCalled tc && tc.TraitorCalled && g.CurrentBattle.PlanOfOpponent(tc.Player).Hero.HeroType == HeroType.Auditor)
             {
-                WriteSavegameIfApplicable(g, p, "Red Extra Revival");
-            }*/
+                WriteSavegameIfApplicable(g, p, "Auditor is traitor");
+            }
 
         }
 
@@ -322,7 +322,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 2000;
+            int nrOfGames = 1000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 

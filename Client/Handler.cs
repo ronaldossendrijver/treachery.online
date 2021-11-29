@@ -662,7 +662,7 @@ namespace Treachery.Client
             }
             else
             {
-                return 1500;
+                return 2000;
             }
         }
 

@@ -195,6 +195,45 @@ namespace Treachery.Shared
             }
         }
 
+        public TreacheryCalled TreacheryOfOpponent(Player p)
+        {
+            return TreacheryOf(OpponentOf(p));
+        }
+
+        public TreacheryCalled TreacheryOf(Player p)
+        {
+            if (p == null) return null;
+
+            if (p.Faction == Aggressor)
+            {
+                return Game.AggressorTraitorAction;
+            }
+            else if (p.Faction == Defender)
+            {
+                return Game.DefenderTraitorAction;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public TreacheryCalled TreacheryOf(Faction f)
+        {
+            if (f == Aggressor)
+            {
+                return Game.AggressorTraitorAction;
+            }
+            else if (f == Defender)
+            {
+                return Game.DefenderTraitorAction;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         [JsonIgnore]
         public Battle AggressorAction => Game.AggressorBattleAction;
 

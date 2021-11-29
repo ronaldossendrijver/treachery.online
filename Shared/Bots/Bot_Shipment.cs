@@ -218,14 +218,14 @@ namespace Treachery.Shared
             LogInfo("DetermineShipment_DummyAttack()");
 
             var targetOfDummyAttack = ValidShipmentLocations
-                .FirstOrDefault(l => AnyForcesIn(l) == 0 && AllyNotIn(l.Territory) && !InStorm(l) && l.Territory.IsStronghold && !StormWillProbablyHit(l) && OpponentIsSuitableForTraitorLure(OccupyingOpponentIn(l.Territory)));
+                .FirstOrDefault(l => AnyForcesIn(l) == 0 && AllyNotIn(l.Territory) && !InStorm(l) && l.Territory.IsStronghold && OpponentIsSuitableForTraitorLure(OccupyingOpponentIn(l.Territory)));
 
             LogInfo("OpponentIsSuitableForTraitorLure: " + targetOfDummyAttack);
 
-            if (targetOfDummyAttack == null && !MayUseUselessAsKarma && TreacheryCards.Any(c => c.Type == TreacheryCardType.Useless))
+            if (targetOfDummyAttack == null && !MayUseUselessAsKarma && TreacheryCards.Any(c => c.Type == TreacheryCardType.Useless) && !TechTokens.Any())
             {
                 targetOfDummyAttack = ValidShipmentLocations
-                .FirstOrDefault(l => AnyForcesIn(l) == 0 && AllyNotIn(l.Territory) && !InStorm(l) && l.Territory.IsStronghold && !StormWillProbablyHit(l) && OpponentIsSuitableForUselessCardDumpAttack(OccupyingOpponentIn(l.Territory)));
+                .FirstOrDefault(l => AnyForcesIn(l) == 0 && AllyNotIn(l.Territory) && !InStorm(l) && l.Territory.IsStronghold && OpponentIsSuitableForUselessCardDumpAttack(OccupyingOpponentIn(l.Territory)));
                 LogInfo("OpponentIsSuitableForDummyAttack: " + targetOfDummyAttack);
             }
 

@@ -348,7 +348,8 @@ namespace Treachery.Shared
             if (Version < 116) CaptureLeaderIfApplicable();
 
             FlipBeneGesseritWhenAlone();
-            DetermineAudit();
+
+            DetermineHowToProceedAfterRevealingBattlePlans();
 
             if (BattleTriggeredBureaucracy != null)
             {
@@ -438,9 +439,9 @@ namespace Treachery.Shared
 
         }
 
-        private void DetermineAudit()
+        private void DetermineHowToProceedAfterRevealingBattlePlans()
         {
-            if (Auditee != null)
+            if (Auditee != null && !BrownLeaderWasRevealedAsTraitor)
             {
                 var auditableCards = new Deck<TreacheryCard>(AuditCancelled.GetCardsThatMayBeAudited(this), Random);
 
@@ -467,6 +468,20 @@ namespace Treachery.Shared
                 Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
             }
         }
+
+        private bool BrownLeaderWasRevealedAsTraitor
+        {
+            get
+            {
+                var brown = GetPlayer(Faction.Brown);
+                if (brown != null && CurrentBattle.IsAggressorOrDefender(brown))
+                {
+                    return CurrentBattle.TreacheryOfOpponent(brown).TraitorCalled;
+                }
+                return false;
+            }
+        }
+                
 
         private bool BlackMustDecideToCapture => Version >= 116 && BattleWinner == Faction.Black && Applicable(Rule.BlackCapturesOrKillsLeaders) && !Prevented(FactionAdvantage.BlackCaptureLeader);
 
@@ -1259,7 +1274,7 @@ namespace Treachery.Shared
                 }
 
                 var brown = GetPlayer(Faction.Brown);
-                if (brown != null && p.Faction != Faction.Brown && !traitorWasRevealed)
+                if (brown != null && p.Faction != Faction.Brown && (Version < 126 || !traitorWasRevealed))
                 {
                     receiverProfit = (int)Math.Floor(0.5f * (cost - costToBrown));
 
