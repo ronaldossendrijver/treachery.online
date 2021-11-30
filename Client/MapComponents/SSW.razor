@@ -4,11 +4,7 @@
 @{
     if (Game.Applicable(Rule.SSW))
     {
-        if (Game.IsSpecialStronghold(Game.Map.ShieldWall))
-        {
-            <MapTerritory h="h" ToShow="Game.Map.ShieldWall" FillColor="#FF6F34" FillOpacity="0.5f" StrokeColor="transparant" StrokeWidth="0" />
-        }
-        else
+        if (!Game.IsSpecialStronghold(Game.Map.ShieldWall))
         {
             var position = Game.Map.ShieldWall.MiddleLocation.Center;
 

@@ -11,24 +11,14 @@
         {
         <div style="width:100%; height:100%;">
 
-            <ShieldWall h="h" />
             <SSW h="h" />
             <Turn h="h" />
             <ResourcesOnPlanet h="h" />
             <Monsters h="h" />
-            <StormAndStormPrescience h="h" />
             <Phases h="h" />
-            <Highlights h="h" />
             <CardPiles h="h" />
-
             <Players h="h" />
-
-            @foreach (var l in h.Game.Map.Locations.Where(l => l != Game.Map.HiddenMobileStronghold))
-            {
-                <MapLocation h="@h" ToShow="l" FillColor="transparent" FillOpacity="0" OnLocationClick="@OnLocationClick" />
-            }
-            
-            <HMS h="h" OnLocationClick="@OnLocationClick"/>
+            <Planet h="h" OnLocationClick="@OnLocationClick"/>
             <StrongholdOwnership h="h" />
             <RecentMoves h="h" />
             <ForcesOnPlanet h="h" />

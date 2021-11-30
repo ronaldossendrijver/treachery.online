@@ -1,0 +1,134 @@
+﻿@using Treachery.Shared
+@inherits MapComponent
+ 
+<svg width="563" height="626" viewBox="0 0 563 626" 
+     version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" 
+     style="position: absolute; left: 0px; top: 0px; height: 100%; width: 100%;" pointer-events="none">
+
+    <!-- Clipping areas of each sector -->
+    @for (int i = 0; i < Map.NUMBER_OF_SECTORS; i++) {
+
+        <clipPath id="@SectorClipName(@i)">
+            <path d="
+                M @Round(ScaleX * Skin.Current.PlanetCenter.X),@Round(ScaleY * Skin.Current.PlanetCenter.Y)
+                L @Round(ScaleX * StartX(i)),@Round(ScaleY * StartY(i)) 
+                A @Round(ScaleX * Skin.Current.PlanetRadius) @Round(ScaleY * Skin.Current.PlanetRadius) @Angle 0 0 @Round(ScaleX * EndX(i)) @Round(ScaleY * EndY(i))
+                Z"/>
+        </clipPath>
+    }
+
+    <clipPath id="@SectorClipName(-1)">
+        <rect x="0" y="0" width="563" height="626"/>
+    </clipPath>
+
+    <!-- Shield Wall -->
+    <path d="@Skin.Current.GetTerritoryBorder(Game.Map.ShieldWall)" fill="@Skin.Current.BLOWNSHIELDWALL_OVERLAY_COLOR" fill-opacity="1" stroke="transparent"/>
+    <path d="@Skin.Current.GetTerritoryBorder(Game.Map.Arrakeen.Territory)" fill="@Skin.Current.METHEOR_OVERLAY_COLOR" fill-opacity="1" stroke="transparent"/>
+    <path d="@Skin.Current.GetTerritoryBorder(Game.Map.Carthag.Territory)" fill="@Skin.Current.METHEOR_OVERLAY_COLOR" fill-opacity="1" stroke="transparent"/>
+    <path d="@Skin.Current.GetTerritoryBorder(Game.Map.ImperialBasin)" fill="@Skin.Current.METHEOR_OVERLAY_COLOR" fill-opacity="1" stroke="transparent"/>
+
+    <!-- SSW -->
+    @if (Game.Applicable(Rule.SSW) && Game.IsSpecialStronghold(Game.Map.ShieldWall))
+    {
+        <path d="@Skin.Current.GetTerritoryBorder(Game.Map.ShieldWall)" fill="#FF6F34" fill-opacity="0.6f" stroke="transparent"/>
+    }
+
+    <!-- Highlighted Territories -->
+    @foreach (var territory in h.HighlightedTerritories.Where(t => t != Game.Map.HiddenMobileStronghold.Territory)) {
+
+        <path d="@Skin.Current.GetTerritoryBorder(territory)" fill="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" fill-opacity="1" stroke="red" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+    }
+
+    <!-- Locations -->
+    @foreach (var location in Game.Map.Locations.Where(l => l != Game.Map.HiddenMobileStronghold)) {
+
+        <g clip-path="url(#@SectorClipName(location.Sector))">
+            <g
+                fill="@StormColor(location)"
+                cursor="pointer" pointer-events="all" @onclick="@(e => OnClick(e, location))"
+                data-trigger="hover" data-toggle="popover" data-html="true" data-animation="false" data-delay="50" data-content="@Intel(location)" data-template="@PopoverTemplate">
+
+                    <path d="@Skin.Current.GetTerritoryBorder(location.Territory)"/>
+            </g>
+        </g>
+    }
+
+
+
+</svg>
+
+@if (h.Game.Map.HiddenMobileStronghold.Visible)
+{
+    bool isInFrontOfPlayerToken = h.Game.Players.Any(p => Near(h.Game.Map.HiddenMobileStronghold.Center, PlayerTokenPosition(h.Game, p.PositionAtTable), 100));
+
+    <Image X="@(h.Game.Map.HiddenMobileStronghold.Center.X - HiddenMobileStronghold.RADIUS)" 
+            Y="@(h.Game.Map.HiddenMobileStronghold.Center.Y - HiddenMobileStronghold.RADIUS)" 
+            Width=@(HiddenMobileStronghold.RADIUS + Math.Abs(HiddenMobileStronghold.DX)) Height="@(2 * HiddenMobileStronghold.RADIUS)" 
+            Src="@Skin.Current.HMS_URL" 
+            ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="8" ShadowY="8" ShadowBlur="3"
+            Opacity="@(!isInFrontOfPlayerToken && h.ShowWheelsAndHMS ? 1.0f : 0.4f)"
+            Popover="@Intel(h.Game.Map.HiddenMobileStronghold)"
+            OnClick="@(e => OnClick(e, h.Game.Map.HiddenMobileStronghold))"/>
+
+    @if (h.HighlightedTerritories.Contains(h.Game.Map.HiddenMobileStronghold.Territory))
+    {
+        <Circle X="(h.Game.Map.HiddenMobileStronghold.Center.X+14)" Y="h.Game.Map.HiddenMobileStronghold.Center.Y" Radius="(HiddenMobileStronghold.RADIUS-4)"
+                FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="8"/>
+    }
+}
+
+@code {
+
+    private string StormColor(Location l) {
+
+        if (Game.SectorInStorm >= 0 && l.Sector == Game.SectorInStorm)
+        {
+            return Skin.Current.STORM_OVERLAY_COLOR;
+        }
+        else if (Game.HasStormPrescience(Player) && NextStormWillPassOver(l))
+        {
+            return Skin.Current.STORM_PRESCIENCE_OVERLAY_COLOR;
+        }
+
+        return "transparent";
+    }
+
+    private bool NextStormWillPassOver(Location l)
+    {
+        for (int i = 1; i <= Game.NextStormMoves; i++)
+        {
+            if ((Game.SectorInStorm + i) % Map.NUMBER_OF_SECTORS == l.Sector)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    [Parameter]
+    public EventCallback<LocationEventArgs> OnLocationClick { get; set; }
+
+    [Parameter]
+    public EventCallback<TerritoryEventArgs> OnTerritoryClick { get; set; }
+
+    private async Task OnClick(MouseEventArgs e, Location l)
+    {
+        await OnLocationClick.InvokeAsync(new LocationEventArgs() { Location = l, AltKey = e.AltKey, CtrlKey = e.CtrlKey, ShiftKey = e.ShiftKey });
+    }
+
+    private float Angle => 360f / Map.NUMBER_OF_SECTORS;
+
+    private float StartX(int sector) => (float)Math.Cos(2f * Math.PI * (6 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.X;
+    private float StartY(int sector) => (float)Math.Sin(2f * Math.PI * (6 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.Y;
+    private float EndX(int sector) => (float)Math.Cos(2f * Math.PI * (5 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.X;
+    private float EndY(int sector) => (float)Math.Sin(2f * Math.PI * (5 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.Y;
+
+    private float ScaleX = 563f / Skin.Current.MapDimensions.X;
+
+    private float ScaleY = 626f / Skin.Current.MapDimensions.Y;
+
+    private string PointerEvents => OnLocationClick.HasDelegate || OnTerritoryClick.HasDelegate ? "all" : "none";
+
+    private string SectorClipName(int i) => "clipOfSector" + i;
+}
