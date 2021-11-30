@@ -818,10 +818,108 @@ namespace Treachery.Test
             Assert.AreEqual(oldName, skinToTest.GetPersonName(leader));
         }
 
-        //[TestMethod]
-        public static void SaveBuiltInSkins()
+
+        [TestMethod]
+        public void ApplyTransforms()
         {
-            SaveObject(Skin.Dune1979, "e:\\Skin.Dune.treachery.online.json");
+            string filename = "e:\\map.svg";
+
+            var accumulatedTransforms = new Stack<SvgTransformCollection>();
+
+            var doc = SvgDocument.Open(filename);
+
+            ApplyTransforms(doc, accumulatedTransforms);
+
+            doc.Write(filename + ".svg");
+        }
+
+        private static void ApplyTransforms(SvgElement element, Stack<SvgTransformCollection> accumulatedTransforms)
+        {
+            if (element.Transforms != null)
+            {
+                accumulatedTransforms.Push(element.Transforms);
+            }
+
+            if (element is SvgPath path)
+            {
+                foreach (var pathSegment in path.PathData)
+                {
+                    //pathSegment.Start = Transform(pathSegment.Start, accumulatedTransforms, 0);
+                    //pathSegment.End = Transform(pathSegment.End, accumulatedTransforms, 0);
+                                        
+                    if (pathSegment is SvgCubicCurveSegment svgCubicCurveSegment)
+                    {
+                        svgCubicCurveSegment.Start = Transform(svgCubicCurveSegment.Start, accumulatedTransforms, 0);
+                        svgCubicCurveSegment.End = Transform(svgCubicCurveSegment.End, accumulatedTransforms, 0);
+                        svgCubicCurveSegment.FirstControlPoint = Transform(svgCubicCurveSegment.FirstControlPoint, accumulatedTransforms, 0);
+                        svgCubicCurveSegment.SecondControlPoint = Transform(svgCubicCurveSegment.SecondControlPoint, accumulatedTransforms, 0);
+                    }
+                    else 
+                    {
+                        pathSegment.Start = Transform(pathSegment.Start, accumulatedTransforms, 0);
+                        pathSegment.End = Transform(pathSegment.End, accumulatedTransforms, 0);
+                    }
+                }
+            }
+            else if (element is SvgCircle circle)
+            {
+                var transformedCenter = Transform(circle.Center, accumulatedTransforms, 0);
+                circle.CenterX = new SvgUnit(transformedCenter.X);
+                circle.CenterY = new SvgUnit(transformedCenter.Y);
+
+                circle.Radius = new SvgUnit();
+            }
+            else if (element is SvgUse use)
+            {
+                var point = new PointF() { X = use.X.Value, Y = use.Y.Value };
+                var transformedPoint = Transform(point, accumulatedTransforms, 0);
+                use.X = new SvgUnit(transformedPoint.X);
+                use.Y = new SvgUnit(transformedPoint.Y);
+            }
+            else
+            {
+                Console.WriteLine("Skipped {0} ({1})", element.GetType(), element.ToString());
+            }
+
+            //if (!(element is SvgDefinitionList))
+            //{
+                foreach (var child in element.Children)
+                {
+                    ApplyTransforms(child, accumulatedTransforms);
+                }
+            //}
+
+            if (element.Transforms != null)
+            {
+                accumulatedTransforms.Pop();
+                element.Transforms.Clear();
+            }
+        }
+
+        private static PointF Transform(SvgPoint p, IEnumerable<SvgTransformCollection> transforms, int digits)
+        {
+            var point = new PointF() { X = p.X.Value, Y = p.Y.Value };
+            return Transform(point, transforms, digits);
+        }
+
+        private static PointF Transform(PointF p, IEnumerable<SvgTransformCollection> transforms, int digits)
+        {
+            var thePoints = new PointF[] { p };
+
+            foreach (var tc in transforms)
+            {
+                foreach (var t in tc)
+                {
+                    t.Matrix.TransformPoints(thePoints);
+                }
+            }
+
+            return new PointF() { X = (float)Math.Round(thePoints[0].X, digits), Y = (float)Math.Round(thePoints[0].Y, digits) };
+        }
+
+        private static PointF Scale(PointF p, IEnumerable<SvgTransformCollection> transforms, int digits)
+        {
+            
         }
 
         [TestMethod]
@@ -894,17 +992,17 @@ namespace Treachery.Test
                 else if (elt is SvgCubicCurveSegment)
                 {
                     var x = elt as SvgCubicCurveSegment;
-                    shape.Add(new BezierTo(Transform(x.Start, accumulatedTransforms), Transform(x.End, accumulatedTransforms), Transform(x.FirstControlPoint, accumulatedTransforms), Transform(x.SecondControlPoint, accumulatedTransforms)));
+                    shape.Add(new BezierTo(TransformPoint(x.Start, accumulatedTransforms), TransformPoint(x.End, accumulatedTransforms), TransformPoint(x.FirstControlPoint, accumulatedTransforms), TransformPoint(x.SecondControlPoint, accumulatedTransforms)));
                 }
                 else if (elt is SvgLineSegment)
                 {
                     var x = elt as SvgLineSegment;
-                    shape.Add(new LineTo(Transform(x.Start, accumulatedTransforms), Transform(x.End, accumulatedTransforms)));
+                    shape.Add(new LineTo(TransformPoint(x.Start, accumulatedTransforms), TransformPoint(x.End, accumulatedTransforms)));
                 }
                 else if (elt is SvgMoveToSegment)
                 {
                     var x = elt as SvgMoveToSegment;
-                    shape.Add(new MoveTo(Transform(x.Start, accumulatedTransforms), Transform(x.End, accumulatedTransforms)));
+                    shape.Add(new MoveTo(TransformPoint(x.Start, accumulatedTransforms), TransformPoint(x.End, accumulatedTransforms)));
                 }
             }
 
@@ -932,7 +1030,7 @@ namespace Treachery.Test
             }
         }
 
-        private static PointF Transform(PointF p, IEnumerable<SvgTransformCollection> transforms)
+        private static PointF TransformPoint(PointF p, IEnumerable<SvgTransformCollection> transforms)
         {
             var thePoints = new PointF[] { p };
 
@@ -940,7 +1038,7 @@ namespace Treachery.Test
             {
                 foreach (var t in tc)
                 {
-                    t.Matrix.TransformPoints(thePoints);
+                    //t.Matrix.TransformPoints(thePoints);
                 }
             }
 
