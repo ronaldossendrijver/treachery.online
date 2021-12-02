@@ -10,11 +10,13 @@ using Svg.Transforms;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Treachery.Shared;
 using System.Timers;
+
 
 namespace Treachery.Test
 {
@@ -822,25 +824,26 @@ namespace Treachery.Test
         [TestMethod]
         public void ApplyTransforms()
         {
-            string filename = "C:\\Users\\ronal\\Desktop\\map.svg";
+            string filename = "e:\\map.svg";
 
             var accumulatedTransforms = new Stack<SvgTransformCollection>();
 
             var doc = SvgDocument.Open(filename);
 
-            ApplyTransforms(doc, accumulatedTransforms);
+            ApplyTransforms(doc, accumulatedTransforms, 1);
 
             doc.Write(filename + ".svg");
         }
 
-        private static void ApplyTransforms(SvgElement element, Stack<SvgTransformCollection> transforms)
+        private static void ApplyTransforms(SvgElement element, Stack<SvgTransformCollection> transforms, int digits)
         {
-            if (element.Transforms != null)
+            bool hadTransforms = element.Transforms != null;
+            var newTransforms = new SvgTransformCollection();
+
+            if (hadTransforms)
             {
                 transforms.Push(element.Transforms);
             }
-
-            element.StrokeWidth = transforms.Count;
 
             if (element is SvgPath path)
             {
@@ -851,31 +854,56 @@ namespace Treachery.Test
                                         
                     if (pathSegment is SvgCubicCurveSegment svgCubicCurveSegment)
                     {
-                        svgCubicCurveSegment.Start = Transform(svgCubicCurveSegment.Start, transforms, 0);
-                        svgCubicCurveSegment.End = Transform(svgCubicCurveSegment.End, transforms, 0);
-                        svgCubicCurveSegment.FirstControlPoint = Transform(svgCubicCurveSegment.FirstControlPoint, transforms, 0);
-                        svgCubicCurveSegment.SecondControlPoint = Transform(svgCubicCurveSegment.SecondControlPoint, transforms, 0);
+                        svgCubicCurveSegment.Start = Translate(svgCubicCurveSegment.Start, transforms, digits);
+                        svgCubicCurveSegment.End = Translate(svgCubicCurveSegment.End, transforms, digits);
+                        svgCubicCurveSegment.FirstControlPoint = Translate(svgCubicCurveSegment.FirstControlPoint, transforms, digits);
+                        svgCubicCurveSegment.SecondControlPoint = Translate(svgCubicCurveSegment.SecondControlPoint, transforms, digits);
                     }
                     else 
                     {
-                        pathSegment.Start = Transform(pathSegment.Start, transforms, 0);
-                        pathSegment.End = Transform(pathSegment.End, transforms, 0);
+                        pathSegment.Start = Translate(pathSegment.Start, transforms, digits);
+                        pathSegment.End = Translate(pathSegment.End, transforms, digits);
                     }
                 }
             }
             else if (element is SvgCircle circle)
             {
-                var transformedCenter = Transform(circle.Center, transforms, 0);
+                var transformedCenter = Translate(circle.Center, transforms, digits);
                 circle.CenterX = new SvgUnit(transformedCenter.X);
                 circle.CenterY = new SvgUnit(transformedCenter.Y);
-                circle.Radius = new SvgUnit(Scale(circle.Radius, transforms, 0));
+                circle.Radius = new SvgUnit(Scale(circle.Radius, transforms, digits));
             }
             else if (element is SvgUse use)
             {
                 var point = new PointF() { X = use.X.Value, Y = use.Y.Value };
-                var transformedPoint = Transform(point, transforms, 0);
+                var transformedPoint = Translate(point, transforms, digits);
                 use.X = new SvgUnit(transformedPoint.X);
                 use.Y = new SvgUnit(transformedPoint.Y);
+            }
+            else if (element is SvgText text)
+            {
+                var point = new PointF();
+                foreach (var x in text.X)
+                {
+                    point.X = x;
+                }
+                foreach (var y in text.Y)
+                {
+                    point.Y = y;
+                }
+                
+                var transformedPoint = Translate(point, transforms, digits);
+                text.X.Clear();
+                text.X.Add(new SvgUnit(transformedPoint.X));
+                text.Y.Clear();
+                text.Y.Add(new SvgUnit(transformedPoint.Y));
+
+                float rotation = Rotation(transforms, 1);
+                //float scale = Scale(1f, transforms, 1);
+                if (Math.Abs(rotation) > 0.005)
+                {
+                    newTransforms.Add(new SvgRotate(rotation * 57.2957795f, transformedPoint.X, transformedPoint.Y));
+                }
             }
             else
             {
@@ -886,27 +914,32 @@ namespace Treachery.Test
             //{
                 foreach (var child in element.Children)
                 {
-                    ApplyTransforms(child, transforms);
+                    ApplyTransforms(child, transforms, digits);
                 }
             //}
-
-            if (element.Transforms != null)
+            
+            if (hadTransforms)
             {
                 transforms.Pop();
                 element.Transforms.Clear();
             }
+
+            if (newTransforms.Any())
+            {
+                element.Transforms = newTransforms;
+            }
         }
 
-        private static PointF Transform(SvgPoint p, IEnumerable<SvgTransformCollection> transforms, int digits)
+        private static PointF Translate(SvgPoint p, IEnumerable<SvgTransformCollection> transforms, int digits)
         {
             var point = new PointF() { X = p.X.Value, Y = p.Y.Value };
-            return Transform(point, transforms, digits);
+            return Translate(point, transforms, digits);
         }
 
-        private static PointF Transform(PointF p, IEnumerable<SvgTransformCollection> transforms, int digits)
+        private static PointF Translate(PointF p, IEnumerable<SvgTransformCollection> transforms, int digits)
         {
             var thePoints = new PointF[] { p };
-
+            
             foreach (var tc in transforms)
             {
                 foreach (var t in tc)
@@ -916,6 +949,22 @@ namespace Treachery.Test
             }
 
             return new PointF() { X = (float)Math.Round(thePoints[0].X, digits), Y = (float)Math.Round(thePoints[0].Y, digits) };
+        }
+
+        private static float Rotation(IEnumerable<SvgTransformCollection> transforms, int digits)
+        {
+            Matrix combinedMatrix = new Matrix();
+            foreach (var tc in transforms)
+            {
+                foreach (var t in tc)
+                {
+                    combinedMatrix.Multiply(t.Matrix);
+                }
+            }
+
+            return (float)Math.Asin(combinedMatrix.MatrixElements.M12);
+
+            //return new PointF() { X = (float)Math.Round(thePoints[0].X, digits), Y = (float)Math.Round(thePoints[0].Y, digits) };
         }
 
         private static float Scale(float radius, IEnumerable<SvgTransformCollection> transforms, int digits)

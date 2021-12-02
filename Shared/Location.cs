@@ -28,6 +28,8 @@ namespace Treachery.Shared
             }
         }
 
+        public int SkinId => Id;
+
         public virtual Point Center { get; set; }
 
         public virtual Point SpiceLocation { get; set; }

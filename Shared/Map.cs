@@ -16,10 +16,6 @@ namespace Treachery.Shared
         public readonly LocationFetcher LocationLookup;
         public readonly TerritoryFetcher TerritoryLookup;
 
-        public Point TurnMarkerPosition { get; set; }
-
-        public IDictionary<MainPhase, Point> PhaseMarkerPositions { get; set; }
-
         public Location TheGreaterFlat { get; set; }
 
         public Location PolarSink { get; set; }
@@ -91,42 +87,33 @@ namespace Treachery.Shared
         {
             InitializeLocations();
             InitializeLocationNeighbours();
-            InitializePositions();
-        }
 
-        public IEnumerable<Territory> Territories
-        {
-            get
+            Console.WriteLine("Centers");
+            foreach (var l in Locations)
             {
-                return Locations.Select(l => l.Territory).Distinct();
+                Console.WriteLine("[{0}] = new Point({1},{2}), //{3}", l.SkinId, ScaleAndRoundX(l.Center.X), ScaleAndRoundY(l.Center.Y), l.ToString());
+            }
+
+            Console.WriteLine("Spice");
+            foreach (var l in Locations.Where(l => l.SpiceBlowAmount > 0))
+            {
+                Console.WriteLine("[{0}] = new Point({1},{2}), //{3}", l.SkinId, ScaleAndRoundX(l.SpiceLocation.X), ScaleAndRoundY(l.SpiceLocation.Y), l.ToString());
             }
         }
 
-        public IEnumerable<Location> Strongholds
+        private float ScaleAndRoundX(float x)
         {
-            get
-            {
-                return Locations.Where(l => l.Territory.IsStronghold);
-            }
+            return (float)Math.Round(7.362344583f * x, 0);
         }
 
-        private void InitializePositions()
+        private float ScaleAndRoundY(float y)
         {
-            TurnMarkerPosition = new Point(500, 495);
-
-            PhaseMarkerPositions = new Dictionary<MainPhase, Point>()
-            {
-                [MainPhase.Storm] = new Point(1050, 222),
-                [MainPhase.Blow] = new Point(1305, 222),
-                [MainPhase.Charity] = new Point(1560, 222),
-                [MainPhase.Bidding] = new Point(1820, 222),
-                [MainPhase.Resurrection] = new Point(2325, 222),
-                [MainPhase.ShipmentAndMove] = new Point(2580, 222),
-                [MainPhase.Battle] = new Point(2835, 222),
-                [MainPhase.Collection] = new Point(3090, 222),
-                [MainPhase.Contemplate] = new Point(3090, 222)
-            };
+            return (float)Math.Round(7.349840256f * y, 0);
         }
+
+        public IEnumerable<Territory> Territories => Locations.Select(l => l.Territory).Distinct();
+
+        public IEnumerable<Location> Strongholds => Locations.Where(l => l.Territory.IsStronghold);
 
         public static IEnumerable<ResourceCard> GetResourceCardsInAndOutsidePlay(Map m)
         {

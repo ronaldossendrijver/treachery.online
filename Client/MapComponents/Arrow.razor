@@ -31,7 +31,9 @@
     var y2 = Radius * (u[1] * Math.Cos(t2) + v[1] * Math.Sin(t2));
     var alpha = -Math.Atan2((x2 - x), (y2 - y)) / Math.PI * 180 + 90;
 
-    <g transform="translate(@Round(x + Radius),@Round(y + Radius)) rotate(@Round(alpha))" filter="url(#ArrowShadow)" fill="url(#ArrowGradient)"><use href="#@ArrowTemplateId" /></g>
+    <g transform="translate(@Round(x + Radius),@Round(y + Radius)) rotate(@Round(alpha))" filter="url(#ArrowShadow)" fill="url(#ArrowGradient)">
+        <use href="#@ArrowTemplateId" />
+    </g>
 }
 
 @code {
