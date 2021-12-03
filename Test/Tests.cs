@@ -936,6 +936,7 @@ namespace Treachery.Test
             return Translate(point, transforms, digits);
         }
 
+
         private static PointF Translate(PointF p, IEnumerable<SvgTransformCollection> transforms, int digits)
         {
             var thePoints = new PointF[] { p };
@@ -944,7 +945,10 @@ namespace Treachery.Test
             {
                 foreach (var t in tc)
                 {
-                    t.Matrix.TransformPoints(thePoints);
+                    if (OperatingSystem.IsWindows())
+                    {
+                        t.Matrix.TransformPoints(thePoints);
+                    }
                 }
             }
 
@@ -953,17 +957,23 @@ namespace Treachery.Test
 
         private static float Rotation(IEnumerable<SvgTransformCollection> transforms, int digits)
         {
-            Matrix combinedMatrix = new Matrix();
-            foreach (var tc in transforms)
+            if (OperatingSystem.IsWindows())
             {
-                foreach (var t in tc)
+                Matrix combinedMatrix = new Matrix();
+                foreach (var tc in transforms)
                 {
-                    combinedMatrix.Multiply(t.Matrix);
+                    foreach (var t in tc)
+                    {
+                        combinedMatrix.Multiply(t.Matrix);
+                    }
                 }
+
+                return (float)Math.Asin(combinedMatrix.MatrixElements.M12);
             }
-
-            return (float)Math.Asin(combinedMatrix.MatrixElements.M12);
-
+            else
+            {
+                return 0;
+            }
             //return new PointF() { X = (float)Math.Round(thePoints[0].X, digits), Y = (float)Math.Round(thePoints[0].Y, digits) };
         }
 
@@ -973,7 +983,10 @@ namespace Treachery.Test
             {
                 foreach (var t in tc)
                 {
-                    radius *= t.Matrix.MatrixElements.M11;
+                    if (OperatingSystem.IsWindows())
+                    {
+                        radius *= t.Matrix.MatrixElements.M11;
+                    }
                 }
             }
 

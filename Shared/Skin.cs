@@ -16,7 +16,7 @@ namespace Treachery.Shared
     {
         #region Attributes
 
-        public const int CurrentVersion = 15;
+        public const int CurrentVersion = 19;
 
         //public const string DEFAULT_ART_LOCATION = "https://treachery.online"; //Used for debugging
         public const string DEFAULT_ART_LOCATION = ".";
@@ -102,7 +102,7 @@ namespace Treachery.Shared
 
         public Point SpiceDeckLocation = new Point(0, 0);
         public Point TreacheryDeckLocation = new Point(0, 0);
-        public Point CardSize = new Point(30, 42);
+        public Point CardSize = new Point(40, 56);
 
         public int BattleScreenWidth = -1;
         public int BattleScreenHeight = -1;
@@ -2478,9 +2478,9 @@ namespace Treachery.Shared
             PlanetCenter = new Point(281, 311),
             PlayerTokenRadius = 11,
 
-            SpiceDeckLocation = new Point(0, 511),
-            TreacheryDeckLocation = new Point(455, 511),
-            CardSize = new Point(50, 70),
+            SpiceDeckLocation = new Point(0, 540),
+            TreacheryDeckLocation = new Point(470, 540),
+            CardSize = new Point(40, 56),
 
             BattleScreenWidth = 273,
             BattleScreenHeight = 273,
