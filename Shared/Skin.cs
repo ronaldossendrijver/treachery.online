@@ -2479,7 +2479,7 @@ namespace Treachery.Shared
             PlayerTokenRadius = 11,
 
             SpiceDeckLocation = new Point(0, 540),
-            TreacheryDeckLocation = new Point(470, 540),
+            TreacheryDeckLocation = new Point(475, 540),
             CardSize = new Point(40, 56),
 
             BattleScreenWidth = 273,
@@ -2579,7 +2579,6 @@ namespace Treachery.Shared
             FACTION_INFORMATIONCARDSTYLE = "font: normal normal normal 14px Calibri, Tahoma, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; line-height: 95%; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;",
             TRACKER_FONT = "normal normal normal 12px Calibri, Tahoma, sans-serif;",
             JSPANEL_DEFAULTSTYLE = "font-family: Calibri, Tahoma, sans-serif"
-
         };
 
         public static Skin Current = Dune1979;

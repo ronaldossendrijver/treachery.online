@@ -2,10 +2,36 @@
 @inherits MapComponent
 
 @{
+    if (Game.CurrentTurn >= 1)
+    {
+        <MapText ToShow="@string.Format("Turn {0} of {1}", h.Game.CurrentTurn, h.Game.MaximumNumberOfTurns)"
+                 X="Skin.Current.MapDimensions.X"
+                 Y="(0.75f * fontHeight)"
+                 Font="@Skin.Current.TURN_FONT"
+                 FontColor="@Skin.Current.TURN_FONT_COLOR"
+                 BorderWidth="@Skin.Current.TURN_FONT_BORDERWIDTH"
+                 BorderColor="@Skin.Current.TURN_FONT_BORDERCOLOR"
+                 Align="@TextAlignment.Right"/>
+    }
+
+    if (h.Host != null && h.Host.JoinedObservers.Count(o => o != "$RonaldAdmin$") > 0)
+    {
+        <MapText ToShow="@string.Format("observers: {0}", Observers.Count())"
+                 X="@(Skin.Current.PlanetCenter.X)"
+                 Y="@(Skin.Current.MapDimensions.Y - fontHeight)"
+                 Popover="@ObserverPopover"
+                 Font="@Skin.Current.FORCETOKEN_FONT"
+                 FontColor="@Skin.Current.TURN_FONT_COLOR"
+                 BorderWidth="@Skin.Current.FORCETOKEN_FONT_BORDERWIDTH"
+                 BorderColor="@Skin.Current.FORCETOKEN_FONT_BORDERCOLOR"
+                 Align="@TextAlignment.Center"/>
+    }
+
     if (Game.CurrentMainPhase > MainPhase.Setup)
     {
         float posX = Skin.Current.MapDimensions.X;
-        float posY = 0;
+        float posY = fontHeight;
+
         foreach (var phase in Enumerations.GetValues<MainPhase>(typeof(MainPhase)).Where(p => p >= MainPhase.Storm && p <= MainPhase.Contemplate))
         {
             if (phase == Game.CurrentMainPhase)
@@ -22,7 +48,7 @@
                 {
                     var diameter = 2 * Skin.Current.PlayerTokenRadius;
 
-                    <Image X="@(posX - diameter)" Y="@(posY - Skin.Current.PlayerTokenRadius)" Diameter=diameter Src="@Skin.Current.GetImageURL(Faction.Brown)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
+                    <Image X="@(posX - diameter)" Y="@(posY - 1.5f * Skin.Current.PlayerTokenRadius)" Diameter=diameter Src="@Skin.Current.GetImageURL(Faction.Brown)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
 
                     <MapText ToShow="@Skin.Current.Describe(Game.EconomicsStatus)"
                              X="@(posX - Skin.Current.PlayerTokenRadius)" Y="@(posY)"
@@ -62,12 +88,18 @@
 
 @code {
 
+    private float fontHeight;
     private float activeFontHeight;
     private float passiveFontHeight;   
 
     protected override async Task OnInitializedAsync()
     {
+        fontHeight = (await Browser.MeasureText("Turn", Skin.Current.TURN_FONT)).Height;
         activeFontHeight = (await Browser.MeasureText("X", Skin.Current.PHASE_ACTIVE_FONT)).Height;
         passiveFontHeight = (await Browser.MeasureText("X", Skin.Current.PHASE_FONT)).Height;   
     }
+
+    private string ObserverPopover => string.Join(", ", Observers);
+
+    private IEnumerable<string> Observers => h.Host.JoinedObservers.Where(o => o != "$RonaldAdmin$");
 }
