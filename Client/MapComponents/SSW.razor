@@ -2,18 +2,15 @@
 @inherits MapComponent
 
 @{
-    if (Game.Applicable(Rule.SSW))
+    if (Game.Applicable(Rule.SSW) && !Game.IsSpecialStronghold(Game.Map.ShieldWall))
     {
-        if (!Game.IsSpecialStronghold(Game.Map.ShieldWall))
-        {
-            var position = Game.Map.ShieldWall.MiddleLocation.Center;
+        var position = Game.Map.ShieldWall.MiddleLocation.Center;
 
-            for (int i = 0; i < Game.NumberOfMonsters; i++)
-            {
-                <Image X="@(i * 0.7f * Skin.Current.MONSTERTOKEN_RADIUS + position.X - 0.35f * Skin.Current.MONSTERTOKEN_RADIUS - 20)" 
-                       Y="position.Y - 50" Width=@(0.7f * Skin.Current.MONSTERTOKEN_RADIUS) Height=@(0.7f * Skin.Current.MONSTERTOKEN_RADIUS) Src=@Skin.Current.Monster_URL 
-                       ShadowColor="white" ShadowX="2" ShadowY="2" ShadowBlur="4"/>
-            }
+        for (int i = 0; i < Game.NumberOfMonsters; i++)
+        {
+            <Image X="@(i * 0.7f * Skin.Current.MONSTERTOKEN_RADIUS + position.X - 0.35f * Skin.Current.MONSTERTOKEN_RADIUS)" 
+                   Y="position.Y" Width=@(0.7f * Skin.Current.MONSTERTOKEN_RADIUS) Height=@(0.7f * Skin.Current.MONSTERTOKEN_RADIUS) Src=@Skin.Current.Monster_URL 
+                   ShadowColor="white" ShadowX="1" ShadowY="1" ShadowBlur="1"/>
         }
     }
 }

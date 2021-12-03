@@ -4,13 +4,13 @@
 @{
     if (Game.CurrentMainPhase > MainPhase.Setup)
     {
-        int posX = Skin.Current.MapDimensions.X;
-        int posY = 40;
+        float posX = Skin.Current.MapDimensions.X;
+        float posY = 0;
         foreach (var phase in Enumerations.GetValues<MainPhase>(typeof(MainPhase)).Where(p => p >= MainPhase.Storm && p <= MainPhase.Contemplate))
         {
             if (phase == Game.CurrentMainPhase)
             {
-                posY += 75;
+                posY += activeFontHeight;
 
                 <MapText ToShow="@Skin.Current.Describe(phase)"
                          X="@(posX)" Y="@(posY)"
@@ -20,20 +20,22 @@
 
                 if (Game.EconomicsStatus != BrownEconomicsStatus.None && Game.EconomicsStatus != BrownEconomicsStatus.RemovedFromGame && phase == MainPhase.Charity)
                 {
-                    <Image X="@(posX - 950)" Y="@(posY - 140)" Diameter=@(120) Src="@Skin.Current.GetImageURL(Faction.Brown)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1" />
+                    var diameter = 2 * Skin.Current.PlayerTokenRadius;
+
+                    <Image X="@(posX - diameter)" Y="@(posY - Skin.Current.PlayerTokenRadius)" Diameter=diameter Src="@Skin.Current.GetImageURL(Faction.Brown)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
 
                     <MapText ToShow="@Skin.Current.Describe(Game.EconomicsStatus)"
-                             X="@(posX - 890)" Y="@(posY-10)"
+                             X="@(posX - Skin.Current.PlayerTokenRadius)" Y="@(posY)"
                              Font="@Skin.Current.SKILL_FONT" FontColor="white"
                              BorderWidth="1" BorderColor="black"
                              Align="@TextAlignment.Center"/>
                 }
 
-                posY += 35;
+                posY += 0.5f * activeFontHeight;
             }
             else
             {
-                posY += 60;
+                posY += passiveFontHeight;
 
                 <MapText ToShow="@Skin.Current.Describe(phase)"
                          X="@(posX)" Y="@(posY)"
@@ -43,17 +45,29 @@
 
                 if (Game.EconomicsStatus != BrownEconomicsStatus.None && Game.EconomicsStatus != BrownEconomicsStatus.RemovedFromGame && phase == MainPhase.Charity)
                 {
-                    <Image X="@(posX - 640)" Y="@(posY - 90)" Diameter=@(80) Src="@Skin.Current.GetImageURL(Faction.Brown)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1" />
+                    <Image X="@(posX - Skin.Current.PlayerTokenRadius)" Y="@(posY - 0.5f * Skin.Current.PlayerTokenRadius)" Diameter=Skin.Current.PlayerTokenRadius Src="@Skin.Current.GetImageURL(Faction.Brown)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
 
                     <MapText ToShow="@Skin.Current.Describe(Game.EconomicsStatus)"
-                             X="@(posX - 600)" Y="@(posY)"
+                             X="@(posX - 0.5f * Skin.Current.PlayerTokenRadius)" Y="@(posY)"
                              Font="@Skin.Current.SKILL_FONT" FontColor="white"
                              BorderWidth="1" BorderColor="black"
                              Align="@TextAlignment.Center"/>
                 }
 
-                posY += 30;
+                posY += 0.5f * passiveFontHeight;
             }
         }
+    }
+}
+
+@code {
+
+    private float activeFontHeight;
+    private float passiveFontHeight;   
+
+    protected override async Task OnInitializedAsync()
+    {
+        activeFontHeight = (await Browser.MeasureText("X", Skin.Current.PHASE_ACTIVE_FONT)).Height;
+        passiveFontHeight = (await Browser.MeasureText("X", Skin.Current.PHASE_FONT)).Height;   
     }
 }

@@ -87,7 +87,7 @@ namespace Treachery.Shared
         {
             InitializeLocations();
             InitializeLocationNeighbours();
-
+            /*
             Console.WriteLine("Centers");
             foreach (var l in Locations)
             {
@@ -98,19 +98,19 @@ namespace Treachery.Shared
             foreach (var l in Locations.Where(l => l.SpiceBlowAmount > 0))
             {
                 Console.WriteLine("[{0}] = new Point({1},{2}), //{3}", l.SkinId, ScaleAndRoundX(l.SpiceLocation.X), ScaleAndRoundY(l.SpiceLocation.Y), l.ToString());
-            }
+            }*/
         }
-
+        /*
         private float ScaleAndRoundX(float x)
         {
-            return (float)Math.Round(7.362344583f * x, 0);
+            return (float)Math.Round(x / 7.362344583f, 0);
         }
 
         private float ScaleAndRoundY(float y)
         {
-            return (float)Math.Round(7.349840256f * y, 0);
+            return (float)Math.Round(y / 7.349840256f, 0);
         }
-
+        */
         public IEnumerable<Territory> Territories => Locations.Select(l => l.Territory).Distinct();
 
         public IEnumerable<Location> Strongholds => Locations.Where(l => l.Territory.IsStronghold);
@@ -171,8 +171,7 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "",
                     Sector = -1,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2040, Y = 2311 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(PolarSink);
             }
@@ -189,16 +188,14 @@ namespace Treachery.Shared
                     Territory = ImperialBasin,
                     Name = "East",
                     Sector = 8,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2405, Y = 1785 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {//2
                     Territory = ImperialBasin,
                     Name = "Center",
                     Sector = 9,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2375, Y = 1500 }
+                    SpiceBlowAmount = 0
 
                 });
                 Locations.Add(new Location(id++)
@@ -206,8 +203,7 @@ namespace Treachery.Shared
                     Territory = ImperialBasin,
                     Name = "West",
                     Sector = 10,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2140, Y = 1500 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -223,8 +219,7 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "",
                     Sector = 10,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2020, Y = 1240 }
+                    SpiceBlowAmount = 0
                 };
                 Locations.Add(Carthag);
             }
@@ -241,8 +236,7 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "",
                     Sector = 9,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2565, Y = 1070 }
+                    SpiceBlowAmount = 0
 
                 };
                 Locations.Add(Arrakeen);
@@ -260,8 +254,7 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "",
                     Sector = 4,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 3320, Y = 2990 }
+                    SpiceBlowAmount = 0
                 };
                 Locations.Add(TueksSietch);
             }
@@ -278,9 +271,7 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "",
                     Sector = 13,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 810, Y = 1475 }
-
+                    SpiceBlowAmount = 0
                 };
                 Locations.Add(SietchTabr);
             }
@@ -297,9 +288,7 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "",
                     Sector = 16,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 800, Y = 3000 }
-
+                    SpiceBlowAmount = 0
                 };
                 Locations.Add(HabbanyaSietch);
             }
@@ -316,25 +305,21 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "West",
                     Sector = 0,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1775, Y = 3066 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Name = "Center",
                     Sector = 1,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2055, Y = 3096 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Name = "East",
                     Sector = 2,
-                    SpiceBlowAmount = 8,
-                    SpiceLocation = new Point { X = 2275, Y = 2885 },
-                    Center = new Point { X = 2330, Y = 3056 }
+                    SpiceBlowAmount = 8
                 });
             }
 
@@ -350,24 +335,21 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "West",
                     Sector = 0,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1740, Y = 3361 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Name = "Center",
                     Sector = 1,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2040, Y = 3336 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Name = "East",
                     Sector = 2,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2385, Y = 3391 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -383,16 +365,14 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "West",
                     Sector = 0,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1585, Y = 3741 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Name = "East",
                     Sector = 1,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1860, Y = 3841 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -408,17 +388,14 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "West",
                     Sector = 1,
-                    SpiceBlowAmount = 12,
-                    SpiceLocation = new Point { X = 2138, Y = 3960 },
-                    Center = new Point { X = 2180, Y = 3661 }
+                    SpiceBlowAmount = 12
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Name = "East",
                     Sector = 2,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2400, Y = 3651 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -434,16 +411,14 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "West",
                     Sector = 2,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2600, Y = 3396 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Name = "East",
                     Sector = 3,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2800, Y = 3441 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -459,16 +434,14 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "West",
                     Sector = 3,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2300, Y = 2611 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Name = "East",
                     Sector = 4,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2455, Y = 2546 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -484,16 +457,14 @@ namespace Treachery.Shared
                     Territory = FalseWallSouth,
                     Name = "West",
                     Sector = 3,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2860, Y = 3191 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = FalseWallSouth,
                     Name = "East",
                     Sector = 4,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2900, Y = 2891 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -509,40 +480,35 @@ namespace Treachery.Shared
                     Territory = FalseWallEast,
                     Name = "Far South",
                     Sector = 4,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2350, Y = 2451 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = FalseWallEast,
                     Name = "South",
                     Sector = 5,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2400, Y = 2351 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = FalseWallEast,
                     Name = "Middle",
                     Sector = 6,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2445, Y = 2225 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = FalseWallEast,
                     Name = "North",
                     Sector = 7,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2390, Y = 2090 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = FalseWallEast,
                     Name = "Far North",
                     Sector = 8,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2325, Y = 2025 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -558,33 +524,28 @@ namespace Treachery.Shared
                     Territory = TheMinorErg,
                     Name = "Far South",
                     Sector = 4,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2700, Y = 2606 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = TheMinorErg,
                     Name = "South",
                     Sector = 5,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2655, Y = 2396 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = TheMinorErg,
                     Name = "North",
                     Sector = 6,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2790, Y = 2165 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = TheMinorErg,
                     Name = "Far North",
                     Sector = 7,
-                    SpiceBlowAmount = 8,
-                    SpiceLocation = new Point { X = 2665, Y = 1996 },
-                    Center = new Point { X = 2730, Y = 1970 }
+                    SpiceBlowAmount = 8
                 });
             }
 
@@ -600,32 +561,28 @@ namespace Treachery.Shared
                     Territory = PastyMesa,
                     Name = "Far South",
                     Sector = 4,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 3005, Y = 2686 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = PastyMesa,
                     Name = "South",
                     Sector = 5,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 3190, Y = 2471 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = PastyMesa,
                     Name = "North",
                     Sector = 6,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 3235, Y = 2045 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = PastyMesa,
                     Name = "Far North",
                     Sector = 7,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 3170, Y = 1720 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -641,9 +598,7 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "",
                     Sector = 6,
-                    SpiceBlowAmount = 8,
-                    SpiceLocation = new Point { X = 3755, Y = 2145 },
-                    Center = new Point { X = 3600, Y = 2050 }
+                    SpiceBlowAmount = 8
                 });
             }
 
@@ -659,25 +614,21 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "South",
                     Sector = 3,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 3285, Y = 3476 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Name = "Middle",
                     Sector = 4,
-                    SpiceBlowAmount = 10,
-                    SpiceLocation = new Point { X = 3618, Y = 2945 },
-                    Center = new Point { X = 3385, Y = 3301 }
+                    SpiceBlowAmount = 10
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Name = "North",
                     Sector = 5,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 3730, Y = 2546 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -693,8 +644,7 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "",
                     Sector = 8,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 3150, Y = 950 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -710,8 +660,7 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "",
                     Sector = 8,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2700, Y = 1315 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -727,8 +676,7 @@ namespace Treachery.Shared
                     Territory = HoleInTheRock,
                     Name = "",
                     Sector = 8,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2890, Y = 1375 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -744,9 +692,7 @@ namespace Treachery.Shared
                     Territory = SihayaRidge,
                     Name = "",
                     Sector = 8,
-                    SpiceBlowAmount = 6,
-                    SpiceLocation = new Point { X = 3258, Y = 1055 },
-                    Center = new Point { X = 3150, Y = 1170 }
+                    SpiceBlowAmount = 6
                 });
             }
 
@@ -762,16 +708,14 @@ namespace Treachery.Shared
                     Territory = ShieldWall,
                     Name = "South",
                     Sector = 7,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2820, Y = 1730 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = ShieldWall,
                     Name = "North",
                     Sector = 8,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2615, Y = 1725 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -787,8 +731,7 @@ namespace Treachery.Shared
                     Territory = GaraKulon,
                     Name = "",
                     Sector = 7,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 3415, Y = 1360 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -804,25 +747,21 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "East",
                     Sector = 8,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2945, Y = 865 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Name = "Middle",
                     Sector = 9,
-                    SpiceBlowAmount = 6,
-                    SpiceLocation = new Point { X = 2465, Y = 633 },
-                    Center = new Point { X = 2625, Y = 685 }
+                    SpiceBlowAmount = 6
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Name = "West",
                     Sector = 10,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2300, Y = 590 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -838,17 +777,14 @@ namespace Treachery.Shared
                     Territory = BrokenLand,
                     Name = "East",
                     Sector = 10,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2050, Y = 605 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = BrokenLand,
                     Name = "West",
                     Sector = 11,
-                    SpiceBlowAmount = 8,
-                    SpiceLocation = new Point { X = 1443, Y = 728 },
-                    Center = new Point { X = 1615, Y = 715 }
+                    SpiceBlowAmount = 8
                 });
             }
 
@@ -864,24 +800,21 @@ namespace Treachery.Shared
                     Territory = Tsimpo,
                     Name = "East",
                     Sector = 10,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2000, Y = 840 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = Tsimpo,
                     Name = "Middle",
                     Sector = 11,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1690, Y = 1010 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = Tsimpo,
                     Name = "West",
                     Sector = 12,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1410, Y = 1305 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -897,16 +830,14 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "East",
                     Sector = 10,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 2025, Y = 1640 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Name = "West",
                     Sector = 11,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1960, Y = 1970 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -922,17 +853,14 @@ namespace Treachery.Shared
                     Territory = RockOutcroppings,
                     Name = "North",
                     Sector = 12,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 915, Y = 1150 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = RockOutcroppings,
                     Name = "South",
                     Sector = 13,
-                    SpiceBlowAmount = 6,
-                    SpiceLocation = new Point { X = 695, Y = 1290 },
-                    Center = new Point { X = 600, Y = 1320 }
+                    SpiceBlowAmount = 6
                 });
             }
 
@@ -948,24 +876,21 @@ namespace Treachery.Shared
                     Territory = PlasticBasin,
                     Name = "North",
                     Sector = 11,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1460, Y = 970 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = PlasticBasin,
                     Name = "Middle",
                     Sector = 12,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1185, Y = 1180 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = PlasticBasin,
                     Name = "South",
                     Sector = 13,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1270, Y = 1865 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -981,17 +906,14 @@ namespace Treachery.Shared
                     Territory = HaggaBasin,
                     Name = "East",
                     Sector = 11,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1730, Y = 1385 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = HaggaBasin,
                     Name = "West",
                     Sector = 12,
-                    SpiceBlowAmount = 6,
-                    SpiceLocation = new Point { X = 1592, Y = 1715 },
-                    Center = new Point { X = 1465, Y = 1495 }
+                    SpiceBlowAmount = 6
                 });
             }
 
@@ -1007,16 +929,14 @@ namespace Treachery.Shared
                     Territory = BightOfTheCliff,
                     Name = "North",
                     Sector = 13,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 520, Y = 1575 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = BightOfTheCliff,
                     Name = "South",
                     Sector = 14,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 490, Y = 1795 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -1032,9 +952,7 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "",
                     Sector = 14,
-                    SpiceBlowAmount = 6,
-                    SpiceLocation = new Point { X = 435, Y = 1955 },
-                    Center = new Point { X = 625, Y = 1920 }
+                    SpiceBlowAmount = 6
                 };
                 Locations.Add(FuneralPlain);
             }
@@ -1051,9 +969,7 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "",
                     Sector = 14,
-                    SpiceLocation = new Point { X = 405, Y = 2155 },
-                    SpiceBlowAmount = 10,
-                    Center = new Point { X = 1050, Y = 2170 }
+                    SpiceBlowAmount = 10
                 };
                 Locations.Add(TheGreatFlat);
             }
@@ -1070,32 +986,28 @@ namespace Treachery.Shared
                     Territory = WindPass,
                     Name = "Far North",
                     Sector = 13,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1740, Y = 2110 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = WindPass,
                     Name = "North",
                     Sector = 14,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1670, Y = 2230 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = WindPass,
                     Name = "South",
                     Sector = 15,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1570, Y = 2406 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = WindPass,
                     Name = "Far South",
                     Sector = 16,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1525, Y = 2626 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -1111,8 +1023,7 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "",
                     Sector = 15,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1142, Y = 2401 }
+                    SpiceBlowAmount = 0
                 };
 
                 Locations.Add(TheGreaterFlat);
@@ -1130,17 +1041,14 @@ namespace Treachery.Shared
                     Territory = HabbanyaErg,
                     Name = "West",
                     Sector = 15,
-                    SpiceBlowAmount = 8,
-                    SpiceLocation = new Point { X = 445, Y = 2700 },
-                    Center = new Point { X = 620, Y = 2726 }
+                    SpiceBlowAmount = 8
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = HabbanyaErg,
                     Name = "East",
                     Sector = 16,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1065, Y = 2756 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -1156,24 +1064,21 @@ namespace Treachery.Shared
                     Territory = FalseWallWest,
                     Name = "North",
                     Sector = 15,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1410, Y = 2456 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = FalseWallWest,
                     Name = "Middle",
                     Sector = 16,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1340, Y = 2676 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = FalseWallWest,
                     Name = "South",
                     Sector = 17,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1200, Y = 3300 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -1189,17 +1094,14 @@ namespace Treachery.Shared
                     Territory = WindPassNorth,
                     Name = "North",
                     Sector = 16,
-                    SpiceBlowAmount = 6,
-                    SpiceLocation = new Point { X = 1715, Y = 2500 },
-                    Center = new Point { X = 1775, Y = 2470 }
+                    SpiceBlowAmount = 6
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = WindPassNorth,
                     Name = "South",
                     Sector = 17,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1820, Y = 2610 }
+                    SpiceBlowAmount = 0
                 });
             }
 
@@ -1215,17 +1117,14 @@ namespace Treachery.Shared
                     Territory = t,
                     Name = "West",
                     Sector = 16,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 580, Y = 3001 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Name = "East",
                     Sector = 17,
-                    SpiceBlowAmount = 10,
-                    SpiceLocation = new Point { X = 980, Y = 3552 },
-                    Center = new Point { X = 1200, Y = 3580 }
+                    SpiceBlowAmount = 10
                 });
             }
 
@@ -1241,16 +1140,14 @@ namespace Treachery.Shared
                     Territory = CielagoWest,
                     Name = "North",
                     Sector = 17,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1510, Y = 2951 }
+                    SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
                     Territory = CielagoWest,
                     Name = "South",
                     Sector = 00,
-                    SpiceBlowAmount = 0,
-                    Center = new Point { X = 1480, Y = 3406 }
+                    SpiceBlowAmount = 0
                 });
             }
 

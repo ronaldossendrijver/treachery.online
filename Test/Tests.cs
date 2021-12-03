@@ -26,11 +26,11 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            var p = e.Player;
+            /*var p = e.Player;
             if (e is TreacheryCalled tc && tc.TraitorCalled && g.CurrentBattle.PlanOfOpponent(tc.Player).Hero.HeroType == HeroType.Auditor)
             {
                 WriteSavegameIfApplicable(g, p, "Auditor is traitor");
-            }
+            }*/
 
         }
 
@@ -821,7 +821,7 @@ namespace Treachery.Test
         }
 
 
-        [TestMethod]
+        //[TestMethod]
         public void ApplyTransforms()
         {
             string filename = "e:\\map.svg";

@@ -1,34 +1,34 @@
 ﻿@using Treachery.Shared
 @inherits MapComponent
 
-<div id="planetmap" style="position: absolute; left: 0px; transform: scale(0.2)">
+<div id="planetmap" style="position:absolute; left:0px">
 
-    <div style="position:absolute; width:@Px(Skin.Current.MapDimensions.X); height:@Px(Skin.Current.MapDimensions.Y);">
+    <div id="planetmap_inner" style="position:absolute; width:@Px(Skin.Current.MapDimensions.X); height:@Px(Skin.Current.MapDimensions.Y);">
 
         <Image X="0" Y="0" Width=@Skin.Current.MapDimensions.X Height=@Skin.Current.MapDimensions.Y Src=@Skin.Current.Map_URL/>
 
         @if (h.Game.CurrentPhase > Phase.AwaitingPlayers)
         {
-        <div style="width:100%; height:100%;">
+            <div style="width:100%; height:100%;">
 
-            <SSW h="h" />
-            <Turn h="h" />
-            <ResourcesOnPlanet h="h" />
-            <Monsters h="h" />
-            <Phases h="h" />
-            <CardPiles h="h" />
-            <Players h="h" />
-            <Planet h="h" OnLocationClick="@OnLocationClick"/>
-            <StrongholdOwnership h="h" />
-            <RecentMoves h="h" />
-            <ForcesOnPlanet h="h" />
-            <Bids h="h" />
-            <Tanks h="h" />
-            <Disconnection h="h" />
-            <BattlePlans h="h" />
-            <Options h="h" />
+                <SSW h="h" />
+                <Turn h="h" />
+                <ResourcesOnPlanet h="h" />
+                <Monsters h="h" />
+                <Phases h="h" />
+                <CardPiles h="h" />
+                <Players h="h" />
+                <Planet h="h" OnLocationClick="@OnLocationClick"/>
+                <StrongholdOwnership h="h" />
+                <RecentMoves h="h" />
+                <ForcesOnPlanet h="h" />
+                <Bids h="h" />
+                <Tanks h="h" />
+                <Disconnection h="h" />
+                <BattlePlans h="h" />
+                <Options h="h" />
 
-        </div>
+            </div>
         }
 
     </div>

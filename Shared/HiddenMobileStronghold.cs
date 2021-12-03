@@ -8,8 +8,8 @@ namespace Treachery.Shared
 {
     public class HiddenMobileStronghold : Location
     {
-        public const int DX = -271;
-        public const int RADIUS = 120;
+        public static int DX => -5 * Skin.Current.PlayerTokenRadius;
+        public static int Radius => 2 * Skin.Current.PlayerTokenRadius;
 
         public Location AttachedToLocation { get; private set; } = null;
 

@@ -18,14 +18,17 @@
     }
 
     <clipPath id="@SectorClipName(-1)">
-        <rect x="0" y="0" width="563" height="626"/>
+        <rect x="0" y="0" width="@Skin.Current.MapDimensions.X" height="@Skin.Current.MapDimensions.Y"/>
     </clipPath>
 
     <!-- Shield Wall -->
-    <path d="@Skin.Current.GetTerritoryBorder(Game.Map.ShieldWall)" fill="@Skin.Current.BLOWNSHIELDWALL_OVERLAY_COLOR" fill-opacity="1" stroke="transparent"/>
-    <path d="@Skin.Current.GetTerritoryBorder(Game.Map.Arrakeen.Territory)" fill="@Skin.Current.METHEOR_OVERLAY_COLOR" fill-opacity="1" stroke="transparent"/>
-    <path d="@Skin.Current.GetTerritoryBorder(Game.Map.Carthag.Territory)" fill="@Skin.Current.METHEOR_OVERLAY_COLOR" fill-opacity="1" stroke="transparent"/>
-    <path d="@Skin.Current.GetTerritoryBorder(Game.Map.ImperialBasin)" fill="@Skin.Current.METHEOR_OVERLAY_COLOR" fill-opacity="1" stroke="transparent"/>
+    @if (Game.ShieldWallDestroyed)
+    {
+        <path d="@Skin.Current.GetTerritoryBorder(Game.Map.ShieldWall)" fill="@Skin.Current.BLOWNSHIELDWALL_OVERLAY_COLOR" fill-opacity="1" stroke="transparent"/>
+        <path d="@Skin.Current.GetTerritoryBorder(Game.Map.Arrakeen.Territory)" fill="@Skin.Current.METHEOR_OVERLAY_COLOR" fill-opacity="1" stroke="transparent"/>
+        <path d="@Skin.Current.GetTerritoryBorder(Game.Map.Carthag.Territory)" fill="@Skin.Current.METHEOR_OVERLAY_COLOR" fill-opacity="1" stroke="transparent"/>
+        <path d="@Skin.Current.GetTerritoryBorder(Game.Map.ImperialBasin)" fill="@Skin.Current.METHEOR_OVERLAY_COLOR" fill-opacity="1" stroke="transparent"/>
+    }
 
     <!-- SSW -->
     @if (Game.Applicable(Rule.SSW) && Game.IsSpecialStronghold(Game.Map.ShieldWall))
@@ -53,27 +56,25 @@
         </g>
     }
 
-
-
 </svg>
 
 @if (h.Game.Map.HiddenMobileStronghold.Visible)
 {
     bool isInFrontOfPlayerToken = h.Game.Players.Any(p => Near(h.Game.Map.HiddenMobileStronghold.Center, PlayerTokenPosition(h.Game, p.PositionAtTable), 100));
 
-    <Image X="@(h.Game.Map.HiddenMobileStronghold.Center.X - HiddenMobileStronghold.RADIUS)" 
-            Y="@(h.Game.Map.HiddenMobileStronghold.Center.Y - HiddenMobileStronghold.RADIUS)" 
-            Width=@(HiddenMobileStronghold.RADIUS + Math.Abs(HiddenMobileStronghold.DX)) Height="@(2 * HiddenMobileStronghold.RADIUS)" 
+    <Image X="@(h.Game.Map.HiddenMobileStronghold.Center.X - HiddenMobileStronghold.Radius)" 
+            Y="@(h.Game.Map.HiddenMobileStronghold.Center.Y - HiddenMobileStronghold.Radius)" 
+            Width=@(HiddenMobileStronghold.Radius + Math.Abs(HiddenMobileStronghold.DX)) Height="@(2 * HiddenMobileStronghold.Radius)" 
             Src="@Skin.Current.HMS_URL" 
-            ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="8" ShadowY="8" ShadowBlur="3"
+            ShadowColor="@Skin.Current.SHADOW" ShadowX="8" ShadowY="8" ShadowBlur="1"
             Opacity="@(!isInFrontOfPlayerToken && h.ShowWheelsAndHMS ? 1.0f : 0.4f)"
             Popover="@Intel(h.Game.Map.HiddenMobileStronghold)"
             OnClick="@(e => OnClick(e, h.Game.Map.HiddenMobileStronghold))"/>
 
     @if (h.HighlightedTerritories.Contains(h.Game.Map.HiddenMobileStronghold.Territory))
     {
-        <Circle X="(h.Game.Map.HiddenMobileStronghold.Center.X+14)" Y="h.Game.Map.HiddenMobileStronghold.Center.Y" Radius="(HiddenMobileStronghold.RADIUS-4)"
-                FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="8"/>
+        <Circle X="(h.Game.Map.HiddenMobileStronghold.Center.X)" Y="h.Game.Map.HiddenMobileStronghold.Center.Y" Radius="(HiddenMobileStronghold.Radius-4)"
+                FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1"/>
     }
 }
 

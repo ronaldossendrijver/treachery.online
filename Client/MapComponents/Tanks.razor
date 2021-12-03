@@ -4,7 +4,7 @@
 @if (h.Game.CurrentPhase >= Phase.MetheorAndStormSpell)
 {
     float y = 2 * Skin.Current.FORCETOKEN_RADIUS;
-    float x = Skin.Current.FORCETOKEN_RADIUS;
+    float x = 1.5f * Skin.Current.FORCETOKEN_RADIUS;
     float leaderDiameter = 3.5f * Skin.Current.FORCETOKEN_RADIUS;
     float leaderPctHeight = .25f * leaderDiameter * Skin.Current.BattleWheelHeroHeight / Skin.Current.BattleWheelHeroWidth;
     float spacing = 0.9f;
@@ -39,7 +39,7 @@
         {
             y += spacing * (leaderPctHeight * (corpses.Count() - 1));
             int dy = 0;
-            int displaceX = 40;
+            int displaceX = (int)(0.2f * leaderDiameter);
             foreach (var leader in corpses)
             {
                 var l = new Point((int)x, (int)y - dy);
@@ -48,7 +48,8 @@
                 {
                     <Image X="@(l.X + displaceX)" Y="@(l.Y)" Diameter="@(leaderDiameter)"
                            Src="@Skin.Current.GetFactionFacedownImageURL(p.Faction)"
-                           ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="2" />
+                           Popover="@Popover(leader)"
+                           ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" />
                 }
                 else
                 {
@@ -68,7 +69,8 @@
             var l = new Point((int)x, (int)y);
             <Image X="@(x)" Y="@(y)" Diameter="@(0.5f * leaderDiameter)"
                    Src="@Skin.Current.Messiah_URL"
-                   ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="2" Popover="@Skin.Current.Describe(Concept.Messiah)"/>
+                   ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" Popover="@Skin.Current.Describe(Concept.Messiah)"/>
+            
             y += spacing * leaderDiameter;
         }
 
@@ -86,4 +88,6 @@
             x += 5 * Skin.Current.FORCETOKEN_RADIUS;
         }
     }
+
+    private string Popover(Leader l) => Player.Is(l.Faction) || Player.Is(Faction.Purple) ? Support.GetHeroHoverHTML(l, Game) : "?";
 }

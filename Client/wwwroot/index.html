@@ -51,18 +51,22 @@
         }
         
         function SetPlanetMapScale() {
-
+            
             planetmap = document.getElementById('planetmap');
-            planetmap_filler = document.getElementById('planetmap-filler');
             if (planetmap != null) {
+
+                planetmap_inner = document.getElementById('planetmap_inner');
+                planetmap_filler = document.getElementById('planetmap-filler');
                 mapdiv = document.getElementById('mapdiv');
+
                 if (mapdiv != null) {
-                    scale = mapdiv.offsetWidth / 4145;
+                    scale = mapdiv.offsetWidth / planetmap_inner.offsetWidth;
                     planetmap.style.transform = 'scale(' + scale + ')';
                     planetmap_filler.style.width = mapdiv.offsetWidth + "px";
                     planetmap_filler.style.height = 1.110012062726176 * mapdiv.offsetWidth + "px";
                 }
             }
+            
         }
         
         function GetWindowDimensions() {

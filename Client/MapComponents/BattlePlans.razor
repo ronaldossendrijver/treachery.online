@@ -11,30 +11,36 @@
     bool AggressorCallsTraitor = Game.AggressorTraitorAction != null && Game.AggressorTraitorAction.TraitorCalled;
     bool DefenderCallsTraitor = Game.DefenderTraitorAction != null && Game.DefenderTraitorAction.TraitorCalled;
 
+    var x = 0.1f * Skin.Current.MapDimensions.X;
+    var y = 0.1f * Skin.Current.MapDimensions.Y;
+
     if (MaySeeAggressorBattlePlan || MaySeeBothBattlePlans)
     {
-        <BattlePlan h="h" Plan="Game.AggressorBattleAction" Opponent="Game.CurrentBattle.DefendingPlayer" TraitorCalled="DefenderCallsTraitor" IsAggressor="true" X="500" Y="200" />
+        <BattlePlan h="h" Plan="Game.AggressorBattleAction" Opponent="Game.CurrentBattle.DefendingPlayer" TraitorCalled="DefenderCallsTraitor" IsAggressor="true" X="x" Y="y" />
     }
     else if (MaySeeAggressorBattlePlanUnderConstruction)
     {
-        <BattlePlan h="h" Plan="h._battleUnderConstruction" Opponent="Game.CurrentBattle.DefendingPlayer" TraitorCalled="false" IsAggressor="true" X="500" Y="200" />
+        <BattlePlan h="h" Plan="h._battleUnderConstruction" Opponent="Game.CurrentBattle.DefendingPlayer" TraitorCalled="false" IsAggressor="true" X="x" Y="y" />
     }
     else if (AggressorIsAffectedByPartialPrescience)
     {
-        <BattlePlan h="h" Plan="Game.AggressorBattleAction" Opponent="Game.CurrentBattle.DefendingPlayer" TraitorCalled="false" IsAggressor="true" X="500" Y="200" Aspect="Game.CurrentPrescience.Aspect" Opacity="0.5f"/>
+        <BattlePlan h="h" Plan="Game.AggressorBattleAction" Opponent="Game.CurrentBattle.DefendingPlayer" TraitorCalled="false" IsAggressor="true" X="x" Y="y" Aspect="Game.CurrentPrescience.Aspect" Opacity="0.5f"/>
     }
+
+    x = 0.5f * Skin.Current.MapDimensions.X;
+    y = 0.5f * Skin.Current.MapDimensions.Y;
 
     if (MaySeeDefenderBattlePlan || MaySeeBothBattlePlans)
     {
-        <BattlePlan h="h" Plan="Game.DefenderBattleAction" Opponent="Game.CurrentBattle.Player" TraitorCalled="AggressorCallsTraitor" IsAggressor="false" X="Skin.Current.MapDimensions.X / 2 - 500" Y="Skin.Current.MapDimensions.Y / 2" />
+        <BattlePlan h="h" Plan="Game.DefenderBattleAction" Opponent="Game.CurrentBattle.Player" TraitorCalled="AggressorCallsTraitor" IsAggressor="false" X="x" Y="y" />
     }
     else if (MaySeeDefenderBattlePlanUnderConstruction)
     {
-        <BattlePlan h="h" Plan="h._battleUnderConstruction" Opponent="Game.CurrentBattle.Player" TraitorCalled="false" IsAggressor="false" X="Skin.Current.MapDimensions.X / 2 - 500" Y="Skin.Current.MapDimensions.Y / 2" />
+        <BattlePlan h="h" Plan="h._battleUnderConstruction" Opponent="Game.CurrentBattle.Player" TraitorCalled="false" IsAggressor="false" X="x" Y="y" />
     }
     else if (DefenderIsAffectedByPartialPrescience)
     {
-        <BattlePlan h="h" Plan="Game.DefenderBattleAction" Opponent="Game.CurrentBattle.Player" TraitorCalled="false" IsAggressor="false" X="Skin.Current.MapDimensions.X / 2 - 500" Y="Skin.Current.MapDimensions.Y / 2" Aspect="Game.CurrentPrescience.Aspect" Opacity="0.5f"/>
+        <BattlePlan h="h" Plan="Game.DefenderBattleAction" Opponent="Game.CurrentBattle.Player" TraitorCalled="false" IsAggressor="false" X="x" Y="y" Aspect="Game.CurrentPrescience.Aspect" Opacity="0.5f"/>
     }
 }
 

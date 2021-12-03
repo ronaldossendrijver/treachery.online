@@ -30,9 +30,9 @@ namespace Treachery.Shared
 
         public int SkinId => Id;
 
-        public virtual Point Center { get; set; }
+        public virtual Point Center => Skin.Current.LocationCenter_Point[SkinId];
 
-        public virtual Point SpiceLocation { get; set; }
+        public virtual Point SpiceLocation => SpiceBlowAmount != 0 ? Skin.Current.LocationSpice_Point[SkinId] : null;
 
         public virtual List<Location> Neighbours { get; set; } = new List<Location>();
 

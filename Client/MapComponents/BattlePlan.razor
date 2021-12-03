@@ -4,7 +4,7 @@
 
 @{
     <Image X="@(X)" Y="@(Y)" Diameter="@(Skin.Current.BattleScreenWidth)" Src="@Skin.Current.BattleScreen_URL" 
-           ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="10" ShadowY="10" ShadowBlur="4" 
+           ShadowColor="@Skin.Current.SHADOW" ShadowX="3" ShadowY="3" ShadowBlur="1" 
            Opacity="Opacity"/>
 
     <Image X="@(X)" Y="@(Y)" Diameter="@(Skin.Current.BattleScreenWidth)" Src="@Skin.Current.FactionTableImage_URL[Plan.Initiator]" 
@@ -18,7 +18,7 @@
         var dial = Plan.Dial(Game, IsAggressor ? Game.CurrentBattle.Defender : Game.CurrentBattle.Aggressor).ToString();
 
         <MapText ToShow="@dial"
-                 X="@(forceX)" Y="@(forceY - 20)"
+                 X="@(forceX)" Y="@(forceY)"
                  Font="@Skin.Current.WHEEL_FONT" FontColor="@Skin.Current.WHEEL_FONTCOLOR"
                  BorderWidth="Skin.Current.WHEEL_FONT_BORDERWIDTH" BorderColor="@(IsAggressor ? Skin.Current.WHEEL_FONT_AGGRESSOR_BORDERCOLOR : Skin.Current.WHEEL_FONT_DEFENDER_BORDERCOLOR)"
                  Align="@TextAlignment.Center" />
@@ -29,11 +29,11 @@
         int costsOfBattle = Plan.Cost(Game);
         if (costsOfBattle > 0)
         {
-            <Image X="@(forceX + 300 - Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY + 55 - Skin.Current.RESOURCETOKEN_RADIUS)" Diameter="@(Skin.Current.RESOURCETOKEN_RADIUS * 2)" 
-                   Src="@Skin.Current.Harvester_URL" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="2" />
+            <Image X="@(forceX + 3 * Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY - Skin.Current.RESOURCETOKEN_RADIUS)" Diameter="@(Skin.Current.RESOURCETOKEN_RADIUS * 2)" 
+                   Src="@Skin.Current.Harvester_URL" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
 
             <MapText ToShow="@costsOfBattle.ToString()"
-                     X="@(forceX + 300)" Y="@(forceY + 100)"
+                     X="@(forceX + 4.1f * Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY)"
                      Font="@Skin.Current.RESOURCETOKEN_FONT" FontColor="@Skin.Current.RESOURCETOKEN_FONTCOLOR"
                      BorderWidth="Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
                      Align="@TextAlignment.Center" />
@@ -43,7 +43,7 @@
         {
             <Image X="@(forceX + 380)" Y="@(forceY - 0.2f * Skin.Current.BattleWheelCardHeight)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" 
             Src="@Skin.Current.GetImageURL(Game.Map.Arrakeen)" 
-            ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="3" ShadowY="3" ShadowBlur="1" 
+            ShadowColor="@Skin.Current.SHADOW" ShadowX="3" ShadowY="3" ShadowBlur="1" 
             Popover="@Support.GetOwnedStrongholdHTML(Game.Map.Arrakeen, Plan.Initiator)"/>
         }
     }
@@ -74,14 +74,14 @@
                 var skillY = Y + Skin.Current.BattleScreenHeroY - 0.6f * Skin.Current.BattleWheelHeroHeight;
 
                 <Image X="@(skillX)" Y="@(skillY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageURL(skill)" 
-                       ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="3" ShadowY="3" ShadowBlur="1" 
+                       ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" 
                        Popover="@Support.GetSkillCardHoverHTML(skill)"/>
 
                 int bonus = Battle.DetermineSkillBonus(Game, Plan, out _);
                 if (bonus != 0)
                 {
                     <MapText ToShow="@("+" + bonus)"
-                             X="@(skillX + 0.4f * Skin.Current.BattleWheelCardWidth)" Y="@(skillY + 100)"
+                             X="@(skillX + 0.3f * Skin.Current.BattleWheelCardWidth)" Y="@(skillY + 0.1f * Skin.Current.BattleWheelCardHeight)"
                              Font="@Skin.Current.CARDPILE_FONT" FontColor="green"
                              BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
                              Align="@TextAlignment.Right" />
@@ -92,7 +92,7 @@
                     if (penalty != 0)
                     {
                         <MapText ToShow="@("-" + penalty)"
-                                 X="@(skillX + 0.4f * Skin.Current.BattleWheelCardWidth)" Y="@(skillY + 100)"
+                                 X="@(skillX + 0.3f * Skin.Current.BattleWheelCardWidth)" Y="@(skillY + 0.1f * Skin.Current.BattleWheelCardHeight)"
                                  Font="@Skin.Current.CARDPILE_FONT" FontColor="red"
                                  BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
                                  Align="@TextAlignment.Right" />
@@ -105,14 +105,14 @@
         else if (Plan.Hero is TreacheryCard)
         {
             <Image X="@(X + Skin.Current.BattleScreenHeroX)" Y="@(Y + Skin.Current.BattleScreenHeroY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
-                   Src="@Skin.Current.GetImageURL(Plan.Hero as TreacheryCard)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="1" 
+                   Src="@Skin.Current.GetImageURL(Plan.Hero as TreacheryCard)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                    Popover="@Support.GetTreacheryCardHoverHTML(Plan.Hero as TreacheryCard)"/>
         }
 
         if (TraitorCalled)
         {
             <MapText ToShow="TRAITOR!"
-                     X="@(X + Skin.Current.BattleScreenHeroX + Skin.Current.BattleWheelHeroWidth / 2)" Y="@(Y + Skin.Current.BattleScreenHeroY + Skin.Current.BattleWheelHeroWidth / 2 + 100)"
+                     X="@(X + Skin.Current.BattleScreenHeroX + Skin.Current.BattleWheelHeroWidth / 2)" Y="@(Y + Skin.Current.BattleScreenHeroY + Skin.Current.BattleWheelHeroWidth / 1.5f)"
                      Font="@Skin.Current.CARDPILE_FONT" FontColor="red"
                      BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
                      Align="@TextAlignment.Center" />
@@ -120,7 +120,7 @@
 
         if (Plan.Initiator == Faction.Green && Plan.Messiah)
         {
-            <Image X="@(X + Skin.Current.BattleScreenHeroX + Skin.Current.BattleWheelHeroWidth / 1.5f)" Y="@(Y + Skin.Current.BattleScreenHeroY - 50)" Diameter="@(0.5f * Skin.Current.BattleWheelHeroWidth)" Src="@Skin.Current.Messiah_URL" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="2" ShadowY="2" ShadowBlur="1" />
+            <Image X="@(X + Skin.Current.BattleScreenHeroX + Skin.Current.BattleWheelHeroWidth / 1.5f)" Y="@(Y + 0.8f * Skin.Current.BattleScreenHeroY)" Diameter="@(0.5f * Skin.Current.BattleWheelHeroWidth)" Src="@Skin.Current.Messiah_URL" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
         }
     }
 
@@ -128,14 +128,14 @@
     {
         if (Plan.Defense != null)
         {
-            <Image X="@(X + Skin.Current.BattleWheelCardX + Skin.Current.BattleWheelCardWidth + 30)" Y="@(Y + Skin.Current.BattleWheelCardY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
-                   Src="@Skin.Current.GetImageURL(Plan.Defense)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="1" 
+            <Image X="@(X + Skin.Current.BattleWheelCardX + 1.1f * Skin.Current.BattleWheelCardWidth)" Y="@(Y + Skin.Current.BattleWheelCardY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
+                   Src="@Skin.Current.GetImageURL(Plan.Defense)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                    Popover="@Support.GetTreacheryCardHoverHTML(Plan.Defense)"/>
         }
         else if (Aspect == PrescienceAspect.Defense)
         {
             <MapText ToShow="no defense"
-                     X="@(X + Skin.Current.BattleWheelCardX + 1.5f * Skin.Current.BattleWheelCardWidth + 30)" Y="@(Y + Skin.Current.BattleWheelCardY + 20 + Skin.Current.BattleWheelCardHeight / 2)"
+                     X="@(X + Skin.Current.BattleWheelCardX + 1.6f * Skin.Current.BattleWheelCardWidth)" Y="@(Y + 1.1f * Skin.Current.BattleWheelCardY + Skin.Current.BattleWheelCardHeight / 2)"
                      Font="@Skin.Current.TURN_FONT" FontColor="white"
                      BorderWidth="Skin.Current.TURN_FONT_BORDERWIDTH" BorderColor="black"
                      Align="@TextAlignment.Center" />
@@ -147,13 +147,13 @@
         if (Plan.Weapon != null)
         {
             <Image X="@(X + Skin.Current.BattleWheelCardX)" Y="@(Y + Skin.Current.BattleWheelCardY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
-                   Src="@Skin.Current.GetImageURL(Plan.Weapon)" ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="1" 
+                   Src="@Skin.Current.GetImageURL(Plan.Weapon)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                    Popover="@Support.GetTreacheryCardHoverHTML(Plan.Weapon)"/>
         }
         else if (Aspect == PrescienceAspect.Weapon)
         {
             <MapText ToShow="no weapon"
-                     X="@(X + Skin.Current.BattleWheelCardX + Skin.Current.BattleWheelCardWidth / 2)" Y="@(Y + Skin.Current.BattleWheelCardY + 20 + Skin.Current.BattleWheelCardHeight / 2)"
+                     X="@(X + Skin.Current.BattleWheelCardX + Skin.Current.BattleWheelCardWidth / 2)" Y="@(Y + 1.1f * Skin.Current.BattleWheelCardY + Skin.Current.BattleWheelCardHeight / 2)"
                      Font="@Skin.Current.TURN_FONT" FontColor="white"
                      BorderWidth="Skin.Current.TURN_FONT_BORDERWIDTH" BorderColor="black"
                      Align="@TextAlignment.Center" />

@@ -1,12 +1,11 @@
 ﻿@using Treachery.Shared
 @inherits MapComponent
 
-
 @if (Game.CurrentTurn >= 1)
 {
     <MapText ToShow="@string.Format("Turn {0} of {1}", h.Game.CurrentTurn, h.Game.MaximumNumberOfTurns)"
              X="@(Skin.Current.PlanetCenter.X)"
-             Y="@(100)"
+             Y="@fontHeight"
              Font="@Skin.Current.TURN_FONT"
              FontColor="@Skin.Current.TURN_FONT_COLOR"
              BorderWidth="@Skin.Current.TURN_FONT_BORDERWIDTH"
@@ -18,7 +17,7 @@
 {
     <MapText ToShow="@string.Format("observers: {0}", Observers.Count())"
              X="@(Skin.Current.PlanetCenter.X)"
-             Y="@(Skin.Current.MapDimensions.Y - 60)"
+             Y="@(Skin.Current.MapDimensions.Y - fontHeight)"
              Popover="@ObserverPopover"
              Font="@Skin.Current.FORCETOKEN_FONT"
              FontColor="@Skin.Current.TURN_FONT_COLOR"
@@ -33,4 +32,10 @@
 
     private IEnumerable<string> Observers => h.Host.JoinedObservers.Where(o => o != "$RonaldAdmin$");
 
+    private float fontHeight;
+
+    protected override async Task OnInitializedAsync()
+    {
+        fontHeight = (await Browser.MeasureText("Turn", Skin.Current.TURN_FONT)).Height;
+    }
 }

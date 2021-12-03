@@ -16,7 +16,7 @@ namespace Treachery.Shared
     {
         #region Attributes
 
-        public const int CurrentVersion = 5;
+        public const int CurrentVersion = 15;
 
         //public const string DEFAULT_ART_LOCATION = "https://treachery.online"; //Used for debugging
         public const string DEFAULT_ART_LOCATION = ".";
@@ -67,6 +67,7 @@ namespace Treachery.Shared
         public Dictionary<int, string> TerritoryName_STR;
         public Dictionary<int, string> TerritoryBorder_SVG;
         public Dictionary<int, Point> LocationCenter_Point;
+        public Dictionary<int, Point> LocationSpice_Point;
         public Dictionary<Faction, string> FactionName_STR;
         public Dictionary<Faction, string> FactionImage_URL;
         public Dictionary<Faction, string> FactionTableImage_URL;
@@ -93,14 +94,15 @@ namespace Treachery.Shared
         public string Sound_YourTurn_URL = null;
         public string Sound_Chatmessage_URL = null;
 
-        public Point MapDimensions = new Point(4145, 4601);
-        public Point PlanetCenter = new Point(2070, 2287);
-        public int PlanetRadius = 1790;
-        public int MapRadius = 1940;
-        public int PlayerTokenRadius = 95;
+        public Point MapDimensions = new Point(0, 0);
+        public Point PlanetCenter = new Point(0, 0);
+        public int PlanetRadius = -1;
+        public int MapRadius = -1;
+        public int PlayerTokenRadius = -1;
 
-        public Point SpiceDeckLocation = new Point(3750, 3490);
-        public Point TreacheryDeckLocation = new Point(3350, 4050);
+        public Point SpiceDeckLocation = new Point(0, 0);
+        public Point TreacheryDeckLocation = new Point(0, 0);
+        public Point CardSize = new Point(30, 42);
 
         public int BattleScreenWidth = -1;
         public int BattleScreenHeight = -1;
@@ -119,86 +121,85 @@ namespace Treachery.Shared
         public int MONSTERTOKEN_RADIUS = 100;
 
         //Force tokens
-        public string FORCETOKEN_FONT = "normal normal bold 80px Calibri, Tahoma, sans-serif";
-        public string FORCETOKEN_FONTCOLOR = "white";
-        public string FORCETOKEN_SPECIAL_FONTCOLOR = "gold";
-        public string FORCETOKEN_FONT_BORDERCOLOR = "black";
-        public int FORCETOKEN_FONT_BORDERWIDTH = 3;
-        public string FORCETOKEN_SPECIAL_BORDERCOLOR = "gold";
-        public string FORCETOKEN_BORDERCOLOR = "white";
-        public int FORCETOKEN_BORDERWIDTH = 5;
-        public int FORCETOKEN_SPECIAL_BORDERWIDTH = 10;
-        public int FORCETOKEN_RADIUS = 60;
+        public string FORCETOKEN_FONT;
+        public string FORCETOKEN_FONTCOLOR;
+        public string FORCETOKEN_SPECIAL_FONTCOLOR;
+        public string FORCETOKEN_FONT_BORDERCOLOR;
+        public int FORCETOKEN_FONT_BORDERWIDTH;
+        public string FORCETOKEN_SPECIAL_BORDERCOLOR;
+        public string FORCETOKEN_BORDERCOLOR;
+        public int FORCETOKEN_BORDERWIDTH;
+        public int FORCETOKEN_SPECIAL_BORDERWIDTH;
+        public int FORCETOKEN_RADIUS;
 
         //Spice tokens
-        public string RESOURCETOKEN_FONT = "normal normal bold 80px Calibri, Tahoma, sans-serif";
-        public string RESOURCETOKEN_FONTCOLOR = "white";
-        public string RESOURCETOKEN_FONT_BORDERCOLOR = "black";
-        public int RESOURCETOKEN_FONT_BORDERWIDTH = 3;
-        public string RESOURCETOKEN_COLOR = "rgba(255,140,60,0.9)";
-        public string RESOURCETOKEN_BORDERCOLOR = "white";
-        public int RESOURCETOKEN_RADIUS = 80;
+        public string RESOURCETOKEN_FONT;
+        public string RESOURCETOKEN_FONTCOLOR;
+        public string RESOURCETOKEN_FONT_BORDERCOLOR;
+        public int RESOURCETOKEN_FONT_BORDERWIDTH;
+        public string RESOURCETOKEN_COLOR;
+        public string RESOURCETOKEN_BORDERCOLOR;
+        public int RESOURCETOKEN_RADIUS;
 
         //Other highlights
-        public string HIGHLIGHT_OVERLAY_COLOR = "rgba(255,255,255,0.5)";
-        public string METHEOR_OVERLAY_COLOR = "rgba(209,247,137,0.5)";
-        public string BLOWNSHIELDWALL_OVERLAY_COLOR = "rgba(137,238,247,0.5)";
-        public string STORM_OVERLAY_COLOR = "rgba(255,100,100,0.5)";
-        public string STORM_PRESCIENCE_OVERLAY_COLOR = "rgba(255,100,100,0.2)";
+        public string HIGHLIGHT_OVERLAY_COLOR;
+        public string METHEOR_OVERLAY_COLOR;
+        public string BLOWNSHIELDWALL_OVERLAY_COLOR;
+        public string STORM_OVERLAY_COLOR;
+        public string STORM_PRESCIENCE_OVERLAY_COLOR;
 
         //Card piles
-        public string CARDPILE_FONT = "normal normal normal 140px Advokat, Calibri, Tahoma, sans-serif";
-        public string CARDPILE_FONTCOLOR = "white";
-        public string CARDPILE_FONT_BORDERCOLOR = "black";
-        public int CARDPILE_FONT_BORDERWIDTH = 3;
+        public string CARDPILE_FONT;
+        public string CARDPILE_FONTCOLOR;
+        public string CARDPILE_FONT_BORDERCOLOR;
+        public int CARDPILE_FONT_BORDERWIDTH;
 
         //Phases
-        public string PHASE_FONT = "normal normal normal 80px Advokat, Calibri, Tahoma, sans-serif";
-        public string PHASE_ACTIVE_FONT = "normal normal normal 120px Advokat, Calibri, Tahoma, sans-serif";
-        public string PHASE_FONTCOLOR = "white";
-        public string PHASE_ACTIVE_FONTCOLOR = "rgb(231,191,60)";
-        public string PHASE_FONT_BORDERCOLOR = "black";
-        public int PHASE_FONT_BORDERWIDTH = 3;
-        public int PHASE_ACTIVE_FONT_BORDERWIDTH = 3;
+        public string PHASE_FONT;
+        public string PHASE_ACTIVE_FONT;
+        public string PHASE_FONTCOLOR;
+        public string PHASE_ACTIVE_FONTCOLOR;
+        public string PHASE_FONT_BORDERCOLOR;
+        public int PHASE_FONT_BORDERWIDTH;
+        public int PHASE_ACTIVE_FONT_BORDERWIDTH;
 
         //Player names
-        public string PLAYERNAME_FONT = "normal normal normal 80px Advokat, Calibri, Tahoma, sans-serif";
-        public string PLAYERNAME_FONTCOLOR = "white";
-        public string PLAYERNAME_FONT_BORDERCOLOR = "black";
-        public int PLAYERNAME_FONT_BORDERWIDTH = 3;
+        public string PLAYERNAME_FONT;
+        public string PLAYERNAME_FONTCOLOR;
+        public string PLAYERNAME_FONT_BORDERCOLOR;
+        public int PLAYERNAME_FONT_BORDERWIDTH;
 
         //Skill names
-        public string SKILL_FONT = "normal normal normal 50px Advokat, Calibri, Tahoma, sans-serif";
-        public string SKILL_FONTCOLOR = "white";
-        public string SKILL_FONT_BORDERCOLOR = "black";
-        public int SKILL_FONT_BORDERWIDTH = 1;
+        public string SKILL_FONT;
+        public string SKILL_FONTCOLOR;
+        public string SKILL_FONT_BORDERCOLOR;
+        public int SKILL_FONT_BORDERWIDTH;
 
         //Player positions
-        public string TABLEPOSITION_BACKGROUNDCOLOR = "rgb(231,191,60)";
+        public string TABLEPOSITION_BACKGROUNDCOLOR;
 
         //Turns
-        public string TURN_FONT = "normal normal normal 120px Advokat, Calibri, Tahoma, sans-serif";
-        public string TURN_FONT_COLOR = "white";
-        public string TURN_FONT_BORDERCOLOR = "black";
-        public int TURN_FONT_BORDERWIDTH = 3;
+        public string TURN_FONT;
+        public string TURN_FONT_COLOR;
+        public string TURN_FONT_BORDERCOLOR;
+        public int TURN_FONT_BORDERWIDTH;
 
         //Wheel
         public string WHEEL_FONT;
         public string WHEEL_FONTCOLOR;
         public string WHEEL_FONT_AGGRESSOR_BORDERCOLOR;
         public string WHEEL_FONT_DEFENDER_BORDERCOLOR;
-        public int WHEEL_FONT_BORDERWIDTH = 4;
+        public int WHEEL_FONT_BORDERWIDTH;
 
         //Shadows
-        public string SHADOW_DARK = "black";
-        public string SHADOW_LIGHT = "#505050";
+        public string SHADOW = "black";
 
         //General
-        public string GAMEVERSION_FONT = "normal normal normal 16px Advokat, Calibri, Tahoma, sans-serif;";
-        public string PLAYEDCARD_MESSAGE_FONT = "normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif";
-        public string FACTION_INFORMATIONCARDSTYLE = "font: normal normal normal 14px Calibri, Tahoma, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; line-height: 95%; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;";
-        public string TRACKER_FONT = "normal normal normal 12px Calibri, Tahoma, sans-serif;";
-        public string JSPANEL_DEFAULTSTYLE = "font-family: Calibri, Tahoma, sans-serif";
+        public string GAMEVERSION_FONT;
+        public string PLAYEDCARD_MESSAGE_FONT;
+        public string FACTION_INFORMATIONCARDSTYLE;
+        public string TRACKER_FONT;
+        public string JSPANEL_DEFAULTSTYLE;
 
         #endregion Attributes
 
@@ -769,6 +770,16 @@ namespace Treachery.Shared
         public string GetTerritoryBorder(Territory t)
         {
             return GetLabel(TerritoryBorder_SVG, t.SkinId);
+        }
+
+        public Point GetLocationCenter(int locationSkinId)
+        {
+            return LocationCenter_Point[locationSkinId];
+        }
+
+        public Point GetLocationSpice(int locationSkinId)
+        {
+            return LocationSpice_Point[locationSkinId];
         }
 
         public string GetImageURL(TreacheryCard c)
@@ -1364,6 +1375,8 @@ namespace Treachery.Shared
             var tPersonImage_URL = FixDictionaryIfMissing("PersonImage_URL", true, PersonImage_URL, Dune1979.PersonImage_URL, errors, UrlExists);
             var tTerritoryName_STR = FixDictionaryIfMissing("TerritoryName_STR", false, TerritoryName_STR, Dune1979.TerritoryName_STR, errors, UrlExists);
             var tTerritoryBorder_SVG = FixDictionaryIfMissing("TerritoryBorder_SVG", false, TerritoryBorder_SVG, Dune1979.TerritoryBorder_SVG, errors, UrlExists);
+            var tLocationCenter_Point = FixDictionaryIfMissing("LocationCenter_Point", false, LocationCenter_Point, Dune1979.LocationCenter_Point, errors, UrlExists);
+            var tLocationSpice_Point = FixDictionaryIfMissing("LocationSpice_Point", false, LocationSpice_Point, Dune1979.LocationSpice_Point, errors, UrlExists);
             var tFactionName_STR = FixDictionaryIfMissing("FactionName_STR", false, FactionName_STR, Dune1979.FactionName_STR, errors, UrlExists);
             var tFactionImage_URL = FixDictionaryIfMissing("FactionImage_URL", true, FactionImage_URL, Dune1979.FactionImage_URL, errors, UrlExists);
             var tFactionForceImage_URL = FixDictionaryIfMissing("FactionForceImage_URL", true, FactionForceImage_URL, Dune1979.FactionForceImage_URL, errors, UrlExists);
@@ -1489,7 +1502,7 @@ namespace Treachery.Shared
             return toCheck;
         }
 
-        private async Task<Dictionary<T, string>> FixDictionaryIfMissing<T>(string propertyName, bool checkIfUrlExists, Dictionary<T, string> toCheck, Dictionary<T, string> referenceValues, List<string> errors, Func<string, Task<bool>> UrlExists)
+        private async Task<Dictionary<K, V>> FixDictionaryIfMissing<K,V>(string propertyName, bool checkIfUrlExists, Dictionary<K, V> toCheck, Dictionary<K, V> referenceValues, List<string> errors, Func<string, Task<bool>> UrlExists)
         {
             if (toCheck == null)
             {
@@ -1504,7 +1517,7 @@ namespace Treachery.Shared
                     errors.Add(string.Format("{0} does not contain \"{1}\"", propertyName, key));
                     toCheck.Add(key, referenceValues[key]);
                 }
-                else if (checkIfUrlExists && !await UrlExists(toCheck[key]))
+                else if (checkIfUrlExists && !await UrlExists(toCheck[key].ToString()))
                 {
                     errors.Add("Resource \"" + toCheck[key] + "\" (" + propertyName + "." + key + ") not found.");
                     toCheck.Remove(key);
@@ -2017,11 +2030,11 @@ namespace Treachery.Shared
             {
                 [0] = "M243.4 297.6 L236.2 311.3 L233.7 326.2 L238.9 332 L242.4 332.3 L248.8 338.5 L256.8 341.8 L264.1 340.8 L268.6 348.9 L273.6 353.9 L288.7 354.5 L301 345.8 L301.4 337.3 L305.7 332 L310.1 321.9 L317.7 311.3 L320.2 297.1 L312 285.4 L302.7 285.5 L298.3 287.3 L291.4 287.1 L286.2 281.9 L281 281.9 L276.5 285.3 L267.7 288.3 L254.9 289.4 L243.4 297.6 z",
                 [1] = "M345.8 221.8 L355.3 195.8 L353.8 193.3 L355.8 190.1 L354.6 183.9 L361.1 172.7 L354.7 170.7 L347.7 171.9 L343.9 162.8 L330.4 152.6 L329.5 145 L336.4 137.1 L342.3 126.1 L343.4 121 L340.8 110.7 L341.9 106.9 L336.6 99.3 L330.8 98.6 L320 90.4 L306.4 107.4 L297.6 127.7 L292.9 132.2 L297.6 140.5 L297.5 159 L287.6 182.5 L283.8 207.7 L286.4 217 L286.2 235.3 L288.3 237.8 L287.8 241.9 L287.9 260.2 L289.3 264.5 L286.2 281.9 L291.4 287.1 L298.3 287.3 L302.7 285.5 L302.7 280.5 L312.5 271.2 L317.2 262 L333.1 243.9 L331.6 240.5 L342.5 222.4 L345.8 221.8 z",
-                [2] = "M287.6 182.5 L297.5 159 L297.6 140.5 L292.9 132.2 L277.5 129.2 L269.4 133.8 L250.7 139.1 L257.5 178 L261.6 178.3 L267.9 185.3 L275.2 182.6 L287.6 182.5 z M281.9 173.9 L288.8 157.3 L288.9 142.8 L287.3 140 L279 138.3 L272.8 141.9 L260.6 145.3 L264.9 169.8 L265.8 169.9 L270.4 175.1 L273.6 173.9 L281.9 173.9 z",
-                [3] = "M341.9 106.9 L340.8 110.7 L343.4 121 L342.3 126.1 L336.4 137.1 L329.5 145 L330.4 152.6 L343.9 162.8 L347.7 171.9 L354.7 170.7 L361.1 172.7 L383.3 134.2 L383.1 124.6 L370.6 110.3 L358 106.3 L341.9 106.9 z M350.9 115.3 L352.3 120.8 L350.6 129.2 L343.5 142 L338.6 147.7 L338.6 147.9 L350.9 157.3 L353 162.2 L355.3 161.8 L357.1 162.4 L374.6 132 L374.5 128 L365.6 117.8 L356.8 115 L350.9 115.3 z",
-                [4] = "M451.4 447.4 L470.7 430.2 L479.3 414.8 L479.1 402.4 L482.6 390.3 L469.5 386.4 L464.4 381.1 L453.8 379.9 L443.5 377.4 L434.9 392.5 L433.7 404 L437.2 420.2 L435.7 433.8 L437.4 441 L451.4 447.4 z M449.8 437.2 L463.8 424.7 L470.6 412.6 L470.4 401.2 L471.9 396.1 L464.9 394 L460.3 389.4 L452.2 388.4 L447.8 387.4 L443.3 395.2 L442.5 403.6 L445.9 419.8 L444.5 433.2 L444.9 434.9 L449.8 437.2 z",
-                [5] = "M128.8 234 L133.9 216.7 L131 213.6 L130.5 208.7 L127.9 206.7 L127.7 200.5 L122 191 L120 181.5 L111.1 177.2 L91.1 195.1 L90.4 200 L86.2 207.7 L81 209.4 L79.5 218 L89.4 228.9 L94.9 229.7 L100.2 226.6 L112.8 232 L120.6 231.9 L128.8 234 z M122.8 223.5 L124.2 219 L122.7 217.4 L122.2 213.3 L119.4 211.1 L119.1 203 L113.8 194.1 L112.5 187.6 L99.3 199.4 L98.8 202.8 L92.1 214.9 L89.2 215.8 L93.5 220.5 L99.6 217 L114.5 223.3 L121.6 223.2 L122.8 223.5 z",
-                [6] = "M139.6 430 L129.1 409 L128.6 401.4 L125.9 395 L112.3 391.7 L97.8 396.8 L91.2 407.5 L96.8 427.1 L117 449 L139.6 430 z M128.8 427.8 L120.6 411.3 L120 403.4 L119.6 402.4 L112.8 400.8 L103.6 404 L100.6 408.8 L104.6 422.8 L117.8 437.1 L128.8 427.8 z",
+                [2] = "M287.6 182.5 L297.5 159 L297.6 140.5 L292.9 132.2 L277.5 129.2 L269.4 133.8 L250.7 139.1 L257.5 178 L261.6 178.3 L267.9 185.3 L275.2 182.6 L287.6 182.5 z",
+                [3] = "M341.9 106.9 L340.8 110.7 L343.4 121 L342.3 126.1 L336.4 137.1 L329.5 145 L330.4 152.6 L343.9 162.8 L347.7 171.9 L354.7 170.7 L361.1 172.7 L383.3 134.2 L383.1 124.6 L370.6 110.3 L358 106.3 L341.9 106.9",
+                [4] = "M451.4 447.4 L470.7 430.2 L479.3 414.8 L479.1 402.4 L482.6 390.3 L469.5 386.4 L464.4 381.1 L453.8 379.9 L443.5 377.4 L434.9 392.5 L433.7 404 L437.2 420.2 L435.7 433.8 L437.4 441 L451.4 447.4",
+                [5] = "M128.8 234 L133.9 216.7 L131 213.6 L130.5 208.7 L127.9 206.7 L127.7 200.5 L122 191 L120 181.5 L111.1 177.2 L91.1 195.1 L90.4 200 L86.2 207.7 L81 209.4 L79.5 218 L89.4 228.9 L94.9 229.7 L100.2 226.6 L112.8 232 L120.6 231.9 L128.8 234 z",
+                [6] = "M139.6 430 L129.1 409 L128.6 401.4 L125.9 395 L112.3 391.7 L97.8 396.8 L91.2 407.5 L96.8 427.1 L117 449 L139.6 430",
                 [7] = "M224.1 410 L219.8 417.5 L221.1 424.6 L233.7 436.2 L263.8 439.1 L268.6 435.7 L280 435.6 L305.8 451.9 L314 446.6 L323.8 431.9 L330.4 424.6 L336 406.5 L301 345.8 L288.7 354.5 L273.6 353.9 L268.6 348.9 L264.1 340.8 L224.1 410 z",
                 [8] = "M336.2 473.2 L324.9 474.3 L311 480.9 L301.1 481.1 L277.8 486.5 L245.5 486.1 L228.7 478.4 L218 479.5 L208.8 474 L210.1 462.8 L217.3 453.4 L219.7 438.3 L218 432.7 L224.5 427.7 L233.7 436.2 L263.8 439.1 L268.6 435.7 L280 435.6 L305.8 451.9 L314 446.6 L323.8 431.9 L327.9 446.4 L340.9 463.4 L336.2 473.2 z",
                 [9] = "M259.7 552.8 L259.8 536.1 L264.3 529.4 L259.8 515.6 L260.2 494.4 L267 486.4 L245.5 486.1 L228.7 478.4 L218 479.5 L208.8 474 L195.1 486.8 L179.5 487.3 L159.8 521.3 C191.7 539.8 226.7 550 259.7 552.8 z",
@@ -2055,13 +2068,117 @@ namespace Treachery.Shared
                 [37] = "M168.8 352.2 L157.5 346.2 L146.1 347 L138.2 344.2 L128.5 346.4 L106.7 348 L90 352.2 L71 351.3 L48.7 347.8 L41.8 350.3 C44.2 364.9 47.9 379.7 53.2 394.3 L106.3 375 L117.3 375.9 L123.7 381.8 L129.2 381.5 L140.1 387.4 L149.2 389.6 L153.5 379 L169.2 362 L169.5 354.8 L168.8 352.2 z",
                 [38] = "M203 321.8 L184 323.6 L181.7 329.7 L171.4 334.5 L170.7 336.9 L169 338.4 L168.8 352.2 L169.5 354.8 L169.2 362 L153.5 379 L149.2 389.6 L151.8 392.5 L154.6 397.9 L154.7 405.1 L149.7 409.5 L150.7 420.7 L159 438.5 L160.5 453.3 L169.6 459.3 L178.4 459.3 L176.5 428.8 L186.5 417.4 L193.6 384.7 L202.8 339.8 L203 321.8 z",
                 [39] = "M235.3 328 L225.7 331.5 L212.5 368.9 L213.3 388.3 L224.1 410 L264.1 340.8 L256.8 341.8 L248.8 338.5 L242.4 332.3 L238.9 332 L235.3 328 z",
-                [40] = "M178.4 459.3 L169.6 459.3 L160.5 453.3 L159 438.5 L150.7 420.7 L149.7 409.5 L154.7 405.1 L154.6 397.9 L151.8 392.5 L149.2 389.6 L140.1 387.4 L129.2 381.5 L123.7 381.8 L117.3 375.9 L106.3 375 L53.2 394.3 C71.3 445.4 110.7 493.5 159.8 521.3 L179.5 487.3 L183.1 466.8 L178.4 459.3 z M139.6 430 L129.1 409 L128.6 401.4 L125.9 395 L112.3 391.7 L97.8 396.8 L91.2 407.5 L96.8 427.1 L117 449 L139.6 430 z",
+                [40] = "M178.419 459.259L169.587 459.259L160.505 453.319L158.971 438.467L150.68 420.751L149.705 409.503L154.737 405.115L154.583 397.874L151.821 392.536L149.214 389.651L140.11 387.414L129.214 381.509L123.695 381.768L117.344 375.877L106.295 374.956L53.249 394.264C71.319 445.451 110.68 493.501 159.847 521.302L179.48 487.295L183.096 466.835L178.419 459.259ZM139.629 430.025L139.629 430.025L117.001 449.011L96.807 427.145L91.241 407.55L97.789 396.841L112.334 391.744L125.942 395.017L128.561 401.424L129.122 408.954Z",
                 [41] = "M193.6 384.7 L186.5 417.4 L176.5 428.8 L178.4 459.3 L183.1 466.8 L179.5 487.3 L195.1 486.8 L208.8 474 L210.1 462.8 L217.3 453.4 L219.7 438.3 L218 432.7 L224.5 427.7 L221.1 424.6 L219.8 417.5 L224.1 410 L213.3 388.3 L212.5 368.9 L193.6 384.7 z",
             },
 
             LocationCenter_Point = new Dictionary<int, Point>()
             {
+                [0] = new Point(277, 314), //Polar Sink
+                [1] = new Point(327, 243), //Imperial Basin (East Sector)
+                [2] = new Point(323, 204), //Imperial Basin (Center Sector)
+                [3] = new Point(291, 204), //Imperial Basin (West Sector)
+                [4] = new Point(274, 169), //Carthag
+                [5] = new Point(348, 146), //Arrakeen
+                [6] = new Point(451, 407), //Tuek's Sietch
+                [7] = new Point(110, 201), //Sietch Tabr
+                [8] = new Point(109, 408), //Habbanya Sietch
+                [9] = new Point(241, 417), //Cielago North (West Sector)
+                [10] = new Point(279, 421), //Cielago North (Center Sector)
+                [11] = new Point(316, 416), //Cielago North (East Sector)
+                [12] = new Point(236, 457), //Cielago Depression (West Sector)
+                [13] = new Point(277, 454), //Cielago Depression (Center Sector)
+                [14] = new Point(324, 461), //Cielago Depression (East Sector)
+                [15] = new Point(215, 509), //Meridian (West Sector)
+                [16] = new Point(253, 523), //Meridian (East Sector)
+                [17] = new Point(296, 498), //Cielago South (West Sector)
+                [18] = new Point(326, 497), //Cielago South (East Sector)
+                [19] = new Point(353, 462), //Cielago East (West Sector)
+                [20] = new Point(380, 468), //Cielago East (East Sector)
+                [21] = new Point(312, 355), //Harg Pass (West Sector)
+                [22] = new Point(333, 346), //Harg Pass (East Sector)
+                [23] = new Point(388, 434), //False Wall South (West Sector)
+                [24] = new Point(394, 393), //False Wall South (East Sector)
+                [25] = new Point(319, 333), //False Wall East (Far South Sector)
+                [26] = new Point(326, 320), //False Wall East (South Sector)
+                [27] = new Point(332, 303), //False Wall East (Middle Sector)
+                [28] = new Point(325, 284), //False Wall East (North Sector)
+                [29] = new Point(316, 276), //False Wall East (Far North Sector)
+                [30] = new Point(367, 355), //The Minor Erg (Far South Sector)
+                [31] = new Point(361, 326), //The Minor Erg (South Sector)
+                [32] = new Point(379, 295), //The Minor Erg (North Sector)
+                [33] = new Point(371, 268), //The Minor Erg (Far North Sector)
+                [34] = new Point(408, 365), //Pasty Mesa (Far South Sector)
+                [35] = new Point(433, 336), //Pasty Mesa (South Sector)
+                [36] = new Point(439, 278), //Pasty Mesa (North Sector)
+                [37] = new Point(431, 234), //Pasty Mesa (Far North Sector)
+                [38] = new Point(489, 279), //Red Chasm
+                [39] = new Point(446, 473), //South Mesa (South Sector)
+                [40] = new Point(460, 449), //South Mesa (Middle Sector)
+                [41] = new Point(507, 346), //South Mesa (North Sector)
+                [42] = new Point(428, 129), //Basin
+                [43] = new Point(367, 179), //Rim Wall West
+                [44] = new Point(393, 187), //Hole In The Rock
+                [45] = new Point(428, 159), //Sihaya Ridge
+                [46] = new Point(383, 235), //Shield Wall (South Sector)
+                [47] = new Point(355, 235), //Shield Wall (North Sector)
+                [48] = new Point(464, 185), //Gara Kulon
+                [49] = new Point(400, 118), //OH Gap (East Sector)
+                [50] = new Point(357, 93), //OH Gap (Middle Sector)
+                [51] = new Point(312, 80), //OH Gap (West Sector)
+                [52] = new Point(278, 82), //Broken Land (East Sector)
+                [53] = new Point(219, 97), //Broken Land (West Sector)
+                [54] = new Point(272, 114), //Tsimpo (East Sector)
+                [55] = new Point(230, 137), //Tsimpo (Middle Sector)
+                [56] = new Point(192, 178), //Tsimpo (West Sector)
+                [57] = new Point(275, 223), //Arsunt (East Sector)
+                [58] = new Point(266, 268), //Arsunt (West Sector)
+                [59] = new Point(124, 156), //Rock Outcroppings (North Sector)
+                [60] = new Point(81, 180), //Rock Outcroppings (South Sector)
+                [61] = new Point(198, 132), //Plastic Basin (North Sector)
+                [62] = new Point(161, 161), //Plastic Basin (Middle Sector)
+                [63] = new Point(172, 254), //Plastic Basin (South Sector)
+                [64] = new Point(235, 188), //Hagga Basin (East Sector)
+                [65] = new Point(199, 203), //Hagga Basin (West Sector)
+                [66] = new Point(71, 214), //Bight Of The Cliff (North Sector)
+                [67] = new Point(67, 244), //Bight Of The Cliff (South Sector)
+                [68] = new Point(85, 261), //Funeral Plain
+                [69] = new Point(143, 295), //The Great Flat
+                [70] = new Point(236, 287), //Wind Pass (Far North Sector)
+                [71] = new Point(227, 303), //Wind Pass (North Sector)
+                [72] = new Point(213, 327), //Wind Pass (South Sector)
+                [73] = new Point(207, 357), //Wind Pass (Far South Sector)
+                [74] = new Point(155, 327), //The Greater Flat
+                [75] = new Point(84, 371), //Habbanya Erg (West Sector)
+                [76] = new Point(145, 375), //Habbanya Erg (East Sector)
+                [77] = new Point(192, 334), //False Wall West (North Sector)
+                [78] = new Point(182, 364), //False Wall West (Middle Sector)
+                [79] = new Point(163, 449), //False Wall West (South Sector)
+                [80] = new Point(241, 336), //Wind Pass North (North Sector)
+                [81] = new Point(247, 355), //Wind Pass North (South Sector)
+                [82] = new Point(79, 408), //Habbanya Ridge Flat (West Sector)
+                [83] = new Point(163, 487), //Habbanya Ridge Flat (East Sector)
+                [84] = new Point(205, 402), //Cielago West (North Sector)
+                [85] = new Point(201, 463), //Cielago West (South Sector)
+            },
 
+            LocationSpice_Point = new Dictionary<int, Point>()
+            {
+                [11] = new Point(309, 393), //Cielago North (East Sector)
+                [17] = new Point(290, 539), //Cielago South (West Sector)
+                [33] = new Point(362, 272), //The Minor Erg (Far North Sector)
+                [38] = new Point(510, 292), //Red Chasm
+                [40] = new Point(491, 401), //South Mesa (Middle Sector)
+                [45] = new Point(443, 144), //Sihaya Ridge
+                [50] = new Point(335, 86), //OH Gap (Middle Sector)
+                [53] = new Point(196, 99), //Broken Land (West Sector)
+                [60] = new Point(94, 176), //Rock Outcroppings (South Sector)
+                [65] = new Point(216, 233), //Hagga Basin (West Sector)
+                [68] = new Point(59, 266), //Funeral Plain
+                [69] = new Point(55, 293), //The Great Flat
+                [75] = new Point(60, 367), //Habbanya Erg (West Sector)
+                [80] = new Point(233, 340), //Wind Pass North (North Sector)
+                [83] = new Point(133, 483), //Habbanya Ridge Flat (East Sector)
             },
 
             FactionName_STR = new Dictionary<Faction, string>()
@@ -2355,54 +2472,55 @@ namespace Treachery.Shared
                 [Milestone.SpecialUselessPlayed] = DEFAULT_ART_LOCATION + "/art/karma.mp3",
             },
 
-            MapDimensions = new Point(4145, 4601),
-            PlanetRadius = 1790,
-            MapRadius = 1940,
-            PlanetCenter = new Point(2070, 2287),
-            PlayerTokenRadius = 95,
+            MapDimensions = new Point(563, 626),
+            PlanetRadius = 242,
+            MapRadius = 260,
+            PlanetCenter = new Point(281, 311),
+            PlayerTokenRadius = 11,
 
-            SpiceDeckLocation = new Point(10, 4050),
-            TreacheryDeckLocation = new Point(3300, 4050),
+            SpiceDeckLocation = new Point(0, 511),
+            TreacheryDeckLocation = new Point(455, 511),
+            CardSize = new Point(50, 70),
 
-            BattleScreenWidth = 2037,
-            BattleScreenHeight = 2037,
+            BattleScreenWidth = 273,
+            BattleScreenHeight = 273,
 
-            BattleScreenHeroX = (int)(2.0329 * 173),
-            BattleScreenHeroY = (int)(2.0329 * 551),
-            BattleWheelHeroWidth = (int)(2.0329 * 317),
-            BattleWheelHeroHeight = (int)(2.0329 * 317),
+            BattleScreenHeroX = 47,
+            BattleScreenHeroY = 150,
+            BattleWheelHeroWidth = 86,
+            BattleWheelHeroHeight = 86,
 
-            BattleWheelForcesX = (int)(2.0329 * 505),
-            BattleWheelForcesY = (int)(2.0329 * 100),
+            BattleWheelForcesX = 137,
+            BattleWheelForcesY = 26,
 
-            BattleWheelCardX = (int)(2.0329 * 545),
-            BattleWheelCardY = (int)(2.0329 * 375),
-            BattleWheelCardWidth = (int)(2.0329 * 316),
-            BattleWheelCardHeight = (int)(2.0329 * 440),
+            BattleWheelCardX = 148,
+            BattleWheelCardY = 102,
+            BattleWheelCardWidth = 86,
+            BattleWheelCardHeight = 120,
 
             //Monster token
-            MONSTERTOKEN_RADIUS = 100,
+            MONSTERTOKEN_RADIUS = 13,
 
             //Force tokens
-            FORCETOKEN_FONT = "normal normal bold 80px Calibri, Tahoma, sans-serif",
+            FORCETOKEN_FONT = "normal normal bold 10px Calibri, Tahoma, sans-serif",
             FORCETOKEN_FONTCOLOR = "white",
             FORCETOKEN_SPECIAL_FONTCOLOR = "gold",
             FORCETOKEN_FONT_BORDERCOLOR = "black",
             FORCETOKEN_SPECIAL_BORDERCOLOR = "gold",
-            FORCETOKEN_FONT_BORDERWIDTH = 3,
+            FORCETOKEN_FONT_BORDERWIDTH = 1,
             FORCETOKEN_BORDERCOLOR = "white",
-            FORCETOKEN_BORDERWIDTH = 5,
-            FORCETOKEN_SPECIAL_BORDERWIDTH = 10,
-            FORCETOKEN_RADIUS = 60,
+            FORCETOKEN_BORDERWIDTH = 1,
+            FORCETOKEN_SPECIAL_BORDERWIDTH = 2,
+            FORCETOKEN_RADIUS = 8,
 
             //Spice tokens
-            RESOURCETOKEN_FONT = "normal normal bold 80px Calibri, Tahoma, sans-serif",
+            RESOURCETOKEN_FONT = "normal normal bold 10px Calibri, Tahoma, sans-serif",
             RESOURCETOKEN_FONTCOLOR = "white",
             RESOURCETOKEN_FONT_BORDERCOLOR = "black",
-            RESOURCETOKEN_FONT_BORDERWIDTH = 3,
+            RESOURCETOKEN_FONT_BORDERWIDTH = 1,
             RESOURCETOKEN_COLOR = "rgba(255,140,60,0.9)",
             RESOURCETOKEN_BORDERCOLOR = "white",
-            RESOURCETOKEN_RADIUS = 80,
+            RESOURCETOKEN_RADIUS = 10,
 
             //Other highlights
             HIGHLIGHT_OVERLAY_COLOR = "rgba(255,255,255,0.5)",
@@ -2412,27 +2530,27 @@ namespace Treachery.Shared
             STORM_PRESCIENCE_OVERLAY_COLOR = "rgba(255,100,100,0.2)",
 
             //Card piles
-            CARDPILE_FONT = "normal normal normal 140px Advokat, Calibri, Tahoma, sans-serif",
+            CARDPILE_FONT = "normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif",
             CARDPILE_FONTCOLOR = "white",
             CARDPILE_FONT_BORDERCOLOR = "black",
-            CARDPILE_FONT_BORDERWIDTH = 3,
+            CARDPILE_FONT_BORDERWIDTH = 1,
 
             //Phases
-            PHASE_FONT = "normal normal normal 80px Advokat, Calibri, Tahoma, sans-serif",
-            PHASE_ACTIVE_FONT = "normal normal normal 120px Advokat, Calibri, Tahoma, sans-serif",
+            PHASE_FONT = "normal normal normal 10px Advokat, Calibri, Tahoma, sans-serif",
+            PHASE_ACTIVE_FONT = "normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif",
             PHASE_FONTCOLOR = "white",
             PHASE_ACTIVE_FONTCOLOR = "rgb(231,191,60)",
             PHASE_FONT_BORDERCOLOR = "black",
-            PHASE_FONT_BORDERWIDTH = 3,
-            PHASE_ACTIVE_FONT_BORDERWIDTH = 2,
+            PHASE_FONT_BORDERWIDTH = 1,
+            PHASE_ACTIVE_FONT_BORDERWIDTH = 1,
 
             //Player names
-            PLAYERNAME_FONT = "normal normal normal 80px Advokat, Calibri, Tahoma, sans-serif",
+            PLAYERNAME_FONT = "normal normal normal 10px Advokat, Calibri, Tahoma, sans-serif",
             PLAYERNAME_FONTCOLOR = "white",
             PLAYERNAME_FONT_BORDERCOLOR = "black",
-            PLAYERNAME_FONT_BORDERWIDTH = 2,
+            PLAYERNAME_FONT_BORDERWIDTH = 1,
 
-            SKILL_FONT = "normal normal normal 50px Advokat, Calibri, Tahoma, sans-serif",
+            SKILL_FONT = "normal normal normal 7px Advokat, Calibri, Tahoma, sans-serif",
             SKILL_FONTCOLOR = "white",
             SKILL_FONT_BORDERCOLOR = "black",
             SKILL_FONT_BORDERWIDTH = 1,
@@ -2440,21 +2558,20 @@ namespace Treachery.Shared
             TABLEPOSITION_BACKGROUNDCOLOR = "rgb(231,191,60)",
 
             //Turns
-            TURN_FONT = "normal normal normal 120px Advokat, Calibri, Tahoma, sans-serif",
+            TURN_FONT = "normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif",
             TURN_FONT_COLOR = "white",
             TURN_FONT_BORDERCOLOR = "black",
-            TURN_FONT_BORDERWIDTH = 3,
+            TURN_FONT_BORDERWIDTH = 1,
 
             //Wheel
-            WHEEL_FONT = "normal normal normal 190px Advokat, Calibri, Tahoma, sans-serif",
+            WHEEL_FONT = "normal normal normal 24px Advokat, Calibri, Tahoma, sans-serif",
             WHEEL_FONTCOLOR = "black",
             WHEEL_FONT_AGGRESSOR_BORDERCOLOR = "white",
             WHEEL_FONT_DEFENDER_BORDERCOLOR = "white",
-            WHEEL_FONT_BORDERWIDTH = 6,
+            WHEEL_FONT_BORDERWIDTH = 2,
 
             //Shadows
-            SHADOW_DARK = "black",
-            SHADOW_LIGHT = "#505050",
+            SHADOW = "black",
 
             //General
             GAMEVERSION_FONT = "normal normal normal 16px Advokat, Calibri, Tahoma, sans-serif;",
@@ -2467,6 +2584,6 @@ namespace Treachery.Shared
 
         public static Skin Current = Dune1979;
 
-        public static string TextBorder(int borderwidth, string bordercolor) => string.Format("text-shadow: {2}px {2}px {0}px {1}, 0px {2}px {0}px {1}, -{2}px {2}px {0}px {1}, {2}px 0px {0}px {1}, 0px 0px {0}px {1}, -{2}px 0px {0}px {1}, {2}px -{2}px {0}px {1}, 0px -{2}px {0}px {1}, -{2}px 0px {0}px {1};", 2*borderwidth, bordercolor, borderwidth);
+        public static string TextBorder(int borderwidth, string bordercolor) => string.Format("text-shadow: {2}px {2}px {0}px {1}, 0px {2}px {0}px {1}, -{2}px {2}px {0}px {1}, {2}px 0px {0}px {1}, 0px 0px {0}px {1}, -{2}px 0px {0}px {1}, {2}px -{2}px {0}px {1}, 0px -{2}px {0}px {1}, -{2}px 0px {0}px {1};", borderwidth+1, bordercolor, borderwidth);
     }
 }

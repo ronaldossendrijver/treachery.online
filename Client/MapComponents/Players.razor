@@ -4,7 +4,7 @@
 @{
     if (Game.CurrentPhase > Phase.SelectingFactions)
     {
-        var techtokenOrbitRadius = Skin.Current.MapRadius + 30;
+        var techtokenOrbitRadius = 1.01f * Skin.Current.MapRadius;
 
         foreach (var p in Game.Players)
         {
@@ -12,21 +12,21 @@
             var position = PlayerTokenPosition(Game, p.PositionAtTable);
             if (h.HighlightPlayer(p))
             {
-                radiusModifier = 1.6f;
+                radiusModifier = 1.4f;
             }
             var x = position.X - radiusModifier * Skin.Current.PlayerTokenRadius;
             var y = position.Y - radiusModifier * Skin.Current.PlayerTokenRadius;
 
-            <Circle X="@position.X" Y="@position.Y" Radius="@(1.5f * Skin.Current.PlayerTokenRadius)" FillColor="@Skin.Current.TABLEPOSITION_BACKGROUNDCOLOR" />
+            <Circle X="@position.X" Y="@position.Y" Radius="@(1.4f * Skin.Current.PlayerTokenRadius)" FillColor="@Skin.Current.TABLEPOSITION_BACKGROUNDCOLOR" />
 
             <Image X="@(x)" Y="@(y)" Diameter=@(radiusModifier * Skin.Current.PlayerTokenRadius * 2) Src="@Skin.Current.GetFactionTableImageURL(p.Faction)" 
-                   ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="3" ShadowY="3" ShadowBlur="3" 
+                   ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                    Popover="@Intel(p)"/>
 
             if (p.Ally != Faction.None)
             {
-                <Image X="@(position.X)" Y="@(position.Y + 20)" Diameter=@(1.2f * Skin.Current.PlayerTokenRadius) Src="@Skin.Current.GetFactionTableImageURL(p.Ally)" 
-                       ShadowColor="@Skin.Current.SHADOW_LIGHT" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+                <Image X="@(position.X)" Y="@(position.Y + 0.25f * Skin.Current.PlayerTokenRadius)" Diameter=@(1.2f * Skin.Current.PlayerTokenRadius) Src="@Skin.Current.GetFactionTableImageURL(p.Ally)" 
+                       ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                        Title="@p.AlliedPlayer.Name"/>
             }
 
@@ -39,7 +39,7 @@
                 <Image X="@(Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad) * techtokenOrbitRadius) - Skin.Current.PlayerTokenRadius)"
                        Y="@(Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad) * techtokenOrbitRadius) - Skin.Current.PlayerTokenRadius)"
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
-                       Src="@Skin.Current.GetImageURL(tt)" ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+                       Src="@Skin.Current.GetImageURL(tt)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                        Popover="@Support.GetTechTokenHTML(tt)"/>
             }
 
@@ -53,11 +53,11 @@
                 <Image X="@(ttx)"
                        Y="@(tty)"
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
-                       Src="@Skin.Current.GetImageURL(skilledLeader)" ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+                       Src="@Skin.Current.GetImageURL(skilledLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                        Popover="@Support.GetSkilledLeaderHTML(skilledLeader, h.Game.Skill(skilledLeader))"/>
 
                 <MapText ToShow="@Skin.Current.Describe(Game.Skill(skilledLeader))"
-                         X="@(ttx + Skin.Current.PlayerTokenRadius)" Y="@(tty + 2 * Skin.Current.PlayerTokenRadius)"
+                         X="@(ttx + Skin.Current.PlayerTokenRadius)" Y="@(tty + Skin.Current.PlayerTokenRadius)"
                          Font="@Skin.Current.SKILL_FONT" FontColor="@Skin.Current.SKILL_FONTCOLOR"
                          BorderWidth="@Skin.Current.SKILL_FONT_BORDERWIDTH" BorderColor="@Skin.Current.SKILL_FONT_BORDERCOLOR"
                          Align="@TextAlignment.Center" MaxWidth="2.2f * Skin.Current.PlayerTokenRadius"/>
@@ -69,32 +69,32 @@
                 var ttx = Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad)) * techtokenOrbitRadius - Skin.Current.FORCETOKEN_RADIUS;
                 var tty = Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad)) * techtokenOrbitRadius - Skin.Current.FORCETOKEN_RADIUS;
 
-                <Image X="@(ttx + Skin.Current.FORCETOKEN_RADIUS)" Y="@(tty + Skin.Current.FORCETOKEN_RADIUS)" Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS) Src="@Skin.Current.FactionSpecialForceImage_URL[Faction.White]" 
-                       ShadowColor="@Skin.Current.SHADOW_DARK" ShadowX="1" ShadowY="1" ShadowBlur="1"
+                <Image X="@(ttx)" Y="@(tty)" Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS) Src="@Skin.Current.FactionSpecialForceImage_URL[Faction.White]" 
+                       ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
                        Popover="@Skin.Current.Format("Latest revealed No-Field: {0}", Game.LatestRevealedNoFieldValue)"/>
 
                 <MapText ToShow="@Game.LatestRevealedNoFieldValue.ToString()"
-                         X="@(ttx + 2 * Skin.Current.FORCETOKEN_RADIUS)" Y="@(tty + 3f * Skin.Current.FORCETOKEN_RADIUS)"
-                         Font="@Skin.Current.TURN_FONT" FontColor="@Skin.Current.TURN_FONT_COLOR"
-                         BorderWidth="@Skin.Current.TURN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.TURN_FONT_BORDERCOLOR"
+                         X="@(ttx + Skin.Current.FORCETOKEN_RADIUS)" Y="@(tty + Skin.Current.FORCETOKEN_RADIUS)"
+                         Font="@Skin.Current.FORCETOKEN_FONT" FontColor="@Skin.Current.FORCETOKEN_FONTCOLOR"
+                         BorderWidth="@Skin.Current.FORCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.FORCETOKEN_FONT_BORDERCOLOR"
                          Align="@TextAlignment.Center"/>
             }
 
             var align = TextAlignment.Center;
             int textPositionX = position.X;
-            if (position.X < 200)
+            if (position.X < 0.2f * Skin.Current.MapDimensions.X)
             {
                 align = TextAlignment.Left;
                 textPositionX = (int)(position.X - 1.6 * Skin.Current.PlayerTokenRadius);
             }
-            else if (position.X > Skin.Current.MapDimensions.X - 200)
+            else if (position.X > 0.8f * Skin.Current.MapDimensions.X)
             {
                 align = TextAlignment.Right;
                 textPositionX = (int)(position.X + 1.6 * Skin.Current.PlayerTokenRadius);
             }
 
             <MapText ToShow="@p.Name"
-                     X="@(textPositionX)" Y="@(y + 60)"
+                     X="@(textPositionX)" Y="@y"
                      Font="@Skin.Current.PLAYERNAME_FONT" FontColor="@Skin.Current.PLAYERNAME_FONTCOLOR"
                      BorderWidth="@Skin.Current.PLAYERNAME_FONT_BORDERWIDTH" BorderColor="@Skin.Current.PLAYERNAME_FONT_BORDERCOLOR"
                      Align="@align" MaxWidth="6 * Skin.Current.PlayerTokenRadius"/>

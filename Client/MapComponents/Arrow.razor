@@ -3,10 +3,10 @@
 @inherits MapComponent
  
 <defs>
-    <path id="@ArrowTemplateId" d="M-50,-50L0,0L-50,50L0,100L100,0L0,-100L-50,-50Z" fill="@FillColor" fill-opacity="@Round(FillOpacity)" stroke="@StrokeColor" stroke-width="@Round(StrokeWidth)" stroke-linejoin="round" transform="scale(@Round(Scale))" />
-    <linearGradient id="ArrowGradient" x1="20%" y1="30%" x2="40%" y2="80%">
-        <stop offset="0%" stop-color="#B8D0DE"></stop>
-        <stop offset="100%" stop-color="#73A2BD"></stop>
+    <path id="@ArrowTemplateId" d="M-50,-50L0,0L-50,50L0,100L100,0L0,-100L-50,-50Z" fill="@FillColor" fill-opacity="@Round(FillOpacity)" stroke="@StrokeColor" stroke-width="@Round(StrokeWidth)" stroke-linejoin="round" transform="scale(@Round(ArrowScale))" />
+    <linearGradient id="ArrowGradient" x1="40%" y1="70%" x2="80%" y2="90%">
+        <stop offset="0%" stop-color="transparant"></stop>
+        <stop offset="100%" stop-color="black"></stop>
     </linearGradient>
     <filter id="ArrowShadow" xmlns="http://www.w3.org/2000/svg" height="200%" width="200%">
         <feGaussianBlur in="SourceAlpha" stdDeviation="@(ShadowBlur)" />
@@ -54,13 +54,13 @@
     public Point To { get; set; }
 
     [Parameter]
-    public float Scale { get; set; } = 0.3f;
+    public float ArrowScale { get; set; } = 0.3f;
 
     [Parameter]
-    public int ShadowDistance { get; set; } = 12;
+    public int ShadowDistance { get; set; } = 4;
 
     [Parameter]
-    public int ShadowBlur { get; set; } = 4;
+    public int ShadowBlur { get; set; } = 1;
 
     [Parameter]
     public string FillColor { get; set; } = "white";
