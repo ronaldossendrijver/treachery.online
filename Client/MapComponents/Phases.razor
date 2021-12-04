@@ -6,7 +6,7 @@
     {
         <MapText ToShow="@string.Format("Turn {0} of {1}", h.Game.CurrentTurn, h.Game.MaximumNumberOfTurns)"
                  X="Skin.Current.MapDimensions.X"
-                 Y="(0.75f * fontHeight)"
+                 Y="(0.75f * turnFontHeight)"
                  Font="@Skin.Current.TURN_FONT"
                  FontColor="@Skin.Current.TURN_FONT_COLOR"
                  BorderWidth="@Skin.Current.TURN_FONT_BORDERWIDTH"
@@ -18,10 +18,10 @@
     {
         <MapText ToShow="@string.Format("observers: {0}", Observers.Count())"
                  X="@(Skin.Current.PlanetCenter.X)"
-                 Y="@(Skin.Current.MapDimensions.Y - fontHeight)"
+                 Y="@(Skin.Current.MapDimensions.Y - turnFontHeight)"
                  Popover="@ObserverPopover"
                  Font="@Skin.Current.FORCETOKEN_FONT"
-                 FontColor="@Skin.Current.TURN_FONT_COLOR"
+                 FontColor="@Skin.Current.FORCETOKEN_FONTCOLOR"
                  BorderWidth="@Skin.Current.FORCETOKEN_FONT_BORDERWIDTH"
                  BorderColor="@Skin.Current.FORCETOKEN_FONT_BORDERCOLOR"
                  Align="@TextAlignment.Center"/>
@@ -30,13 +30,13 @@
     if (Game.CurrentMainPhase > MainPhase.Setup)
     {
         float posX = Skin.Current.MapDimensions.X;
-        float posY = fontHeight;
+        float posY = turnFontHeight;
 
         foreach (var phase in Enumerations.GetValues<MainPhase>(typeof(MainPhase)).Where(p => p >= MainPhase.Storm && p <= MainPhase.Contemplate))
         {
             if (phase == Game.CurrentMainPhase)
             {
-                posY += activeFontHeight;
+                posY += 0.9f * activeFontHeight;
 
                 <MapText ToShow="@Skin.Current.Describe(phase)"
                          X="@(posX)" Y="@(posY)"
@@ -57,7 +57,7 @@
                              Align="@TextAlignment.Center"/>
                 }
 
-                posY += 0.5f * activeFontHeight;
+                posY += 0.6f * activeFontHeight;
             }
             else
             {
@@ -88,15 +88,15 @@
 
 @code {
 
-    private float fontHeight;
+    private float turnFontHeight;
     private float activeFontHeight;
     private float passiveFontHeight;   
 
     protected override async Task OnInitializedAsync()
     {
-        fontHeight = (await Browser.MeasureText("Turn", Skin.Current.TURN_FONT)).Height;
-        activeFontHeight = (await Browser.MeasureText("X", Skin.Current.PHASE_ACTIVE_FONT)).Height;
-        passiveFontHeight = (await Browser.MeasureText("X", Skin.Current.PHASE_FONT)).Height;   
+        turnFontHeight = (await Browser.MeasureText("Turn", Skin.Current.TURN_FONT)).Height;
+        activeFontHeight = 0.6f * (await Browser.MeasureText("X", Skin.Current.PHASE_ACTIVE_FONT)).Height;
+        passiveFontHeight = 0.6f * (await Browser.MeasureText("X", Skin.Current.PHASE_FONT)).Height;   
     }
 
     private string ObserverPopover => string.Join(", ", Observers);

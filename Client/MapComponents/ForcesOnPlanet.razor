@@ -40,7 +40,6 @@
 
         if (Game.AnyForcesIn(location.Territory) ? forceLocations.ContainsKey(location) : location == location.Territory.MiddleLocation)
         {
-
             xOffset = 0;
             foreach (var hero in Game.LeaderState.Where(state => state.Key is IHero && state.Value.Alive && state.Value.CurrentTerritory == location.Territory).Select(state => state.Key))
             {

@@ -6,6 +6,7 @@ using Microsoft.JSInterop;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Treachery.Client
 {
@@ -41,9 +42,29 @@ namespace Treachery.Client
             await JsInvoke("RemoveFocusFromButtons");
         }
 
+        private static Dictionary<string, Dimensions> measuredText = new Dictionary<string, Dimensions>();
         public static async Task<Dimensions> MeasureText(string text, string font)
         {
-            return await JsInvoke<Dimensions>("MeasureText", text, font);
+            string key = text + font;
+
+            if (measuredText.ContainsKey(key))
+            {
+                return measuredText[key];
+            }
+            else { 
+
+                var value = await JsInvoke<Dimensions>("MeasureText", text, font);
+
+                lock (measuredText)
+                {
+                    if (!measuredText.ContainsKey(key))
+                    {
+                        measuredText.Add(key, value);
+                    }
+                }
+            }
+
+            return measuredText[key];
         }
 
         public static async Task HideModal(string modalId)
