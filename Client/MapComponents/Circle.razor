@@ -1,6 +1,6 @@
 ﻿@inherits MapComponent
 
-<svg width="@Px(2*Radius)" height="@Px(2*Radius)" style="position:absolute;left:@Px(X-Radius);top:@Px(Y-Radius)" pointer-events="none">
+<svg width="@Px(2*Radius)" height="@Px(2*Radius)" viewBox="0 0 @(RoundedDiameter) @(RoundedDiameter)" style="position:absolute;left:@Px(X-Radius);top:@Px(Y-Radius)" pointer-events="none">
     <circle 
             cx="@Round(Radius)" cy="@Round(Radius)" r="@Round(Radius)" 
             fill="@FillColor" fill-opacity="@Round(FillOpacity)"
@@ -26,5 +26,7 @@
 
     [Parameter]
     public float StrokeWidth { get; set; } = 0;
+
+    private int RoundedDiameter => (int)Math.Ceiling(Radius * 2);
 
 }
