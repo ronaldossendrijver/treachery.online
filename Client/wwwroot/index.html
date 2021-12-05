@@ -44,10 +44,20 @@
             context.font = font;
             const metrics = context.measureText(text);
 
-            return {
-                Width: metrics.width,
-                Height: metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent,
-            };
+            if ("fontBoundingBoxAscent" in metrics) {
+
+                return {
+                    Width: metrics.width,
+                    Height: metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent,
+                };
+            }
+            else {
+
+                return {
+                    Width: metrics.width,
+                    Height: 1.4 * (metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent),
+                };
+            }
         }
         
         function SetPlanetMapScale() {

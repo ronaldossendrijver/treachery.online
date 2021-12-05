@@ -1,6 +1,6 @@
 ﻿@inherits MapComponent
 
-<svg width="@(2*Radius)" height="@(2*Radius)" style="position:absolute;left:@Px(X-Radius);top:@Px(Y-Radius)" pointer-events="none">
+<svg width="@Px(2*Radius)" height="@Px(2*Radius)" style="position:absolute;left:@Px(X-Radius);top:@Px(Y-Radius)" pointer-events="none">
     <circle 
             cx="@Round(Radius)" cy="@Round(Radius)" r="@Round(Radius)" 
             fill="@FillColor" fill-opacity="@Round(FillOpacity)"
