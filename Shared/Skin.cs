@@ -16,7 +16,7 @@ namespace Treachery.Shared
     {
         #region Attributes
 
-        public const int CurrentVersion = 21;
+        public const int CurrentVersion = 23;
 
         //public const string DEFAULT_ART_LOCATION = "https://treachery.online"; //Used for debugging
         public const string DEFAULT_ART_LOCATION = ".";
@@ -2571,7 +2571,7 @@ namespace Treachery.Shared
             WHEEL_FONT_BORDERWIDTH = 2,
 
             //Shadows
-            SHADOW = "black",
+            SHADOW = "#000000AA",
 
             //General
             GAMEVERSION_FONT = "normal normal normal 16px Advokat, Verdana, Open Sans, Calibri, Tahoma, sans-serif;",

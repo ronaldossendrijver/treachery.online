@@ -2,12 +2,12 @@
 
 @if (Popover != null)
 {
-    <img @onclick="@OnClick" title="@Title" style="@Style" src=@Src 
+    <img @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" style="@Style" src=@Src 
          data-trigger="hover" data-toggle="popover" data-html="true" data-animation="false" data-delay="50" data-container="body" data-content="@Popover" data-template="@PopoverTemplate" />
 }
 else
 {
-    <img @onclick="@OnClick" title="@Title" style="@Style" src=@Src />
+    <img @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" style="@Style" src=@Src />
 }
 
 @code {
@@ -34,6 +34,12 @@ else
     public EventCallback<MouseEventArgs> OnClick { get; set; }
 
     [Parameter]
+    public EventCallback<MouseEventArgs> OnMouseOver { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnMouseExited { get; set; }
+
+    [Parameter]
     public string Popover { get; set; } = null;
 
     private string Style
@@ -42,7 +48,7 @@ else
         {
             var result = string.Format("position:absolute;left:{0};top:{1};width:{2};height:{3};opacity:{4};", Px(X), Px(Y), Px(Width), Px(Height), Round(Opacity));
 
-            if (OnClick.HasDelegate || Popover != null)
+            if (OnClick.HasDelegate || OnMouseOver.HasDelegate || Popover != null)
             {
                 result += "cursor:pointer;pointer-events:all;";
             }
