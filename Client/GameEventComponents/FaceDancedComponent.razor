@@ -21,11 +21,11 @@
             @if (FaceDanced.ValidSourceLocations(Game, Player).Any())
             {
                 <label class="mt-2 mb-0">From somewhere on the planet:</label>
-                <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="forces" Locations="FaceDanced.ValidSourceLocations(Game, Player)" MaySelectFromStorm="true" AlwaysShowLocation="true" AllowMultipleTerritories="true"/>
+                <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces="forces" Locations="FaceDanced.ValidSourceLocations(Game, Player)" MaySelectFromStorm="true" AlwaysShowLocation="true" AllowMultipleTerritories="true"/>
             }
 
             <label class="mt-2 mb-0">Select where to put your replacements:</label>
-            <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="targetForces" Locations="FaceDanced.ValidTargetLocations(Game)" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="@FaceDanced.MaximumNumberOfForces(Game, Player)" />
+            <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces="targetForces" Locations="FaceDanced.ValidTargetLocations(Game)" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="@FaceDanced.MaximumNumberOfForces(Game, Player)" />
 
             <ButtonRowComponent Confirm="Confirm" ConfirmText="Reveal & Place Forces" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
         }

@@ -1,0 +1,13 @@
+﻿@using Treachery.Shared
+
+<img class="img-fluid" src="@Skin.Current.GetImageURL(Faction)" width="@Diameter" height="@Diameter" title=@Skin.Current.Describe(Faction)/>
+
+@code {
+
+    [Parameter]
+    public Faction Faction { get; set; } = Faction.Black;
+
+    [Parameter]
+    public int Diameter { get; set; } = 30;
+
+}

@@ -10,15 +10,22 @@
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
     <Header>
-        Set <span class="badge badge-primary badge-pill" style="@Color(Game.NextFactionToPerformCustomSetup)">@Skin.Current.Describe(Game.NextFactionToPerformCustomSetup)</span> initial @Skin.Current.Describe(Concept.Resource) and forces.
+        Set <FactionComponent Faction=CurrentFaction/> initial @Skin.Current.Describe(Concept.Resource) and forces.
     </Header>
 
     <Body>
 
         <SelectResourcesComponent @bind-Value="resources" Min="0" Max="100" Label="@Skin.Current.Describe(Concept.Resource)" />
 
-        <label class="mt-1">Initial forces on planet:</label>
-        <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="20" AllowMultipleTerritories="true"/>
+        <div class="mt-1">Initial forces on planet (you may use the planet map):</div>
+        <div class="small">Add / Remove @currentPlayer.ForceName: <ClickHintComponent Button="ClickHintButton.LMB" /> / <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.SHIFT" /></div>
+
+        @if (currentPlayer.HasSpecialForces && !currentPlayer.Is(Faction.White))
+        {
+            <div class="small">Add / Remove @currentPlayer.SpecialForceName: <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL" /> / <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.CTRL | ClickHintModifier.SHIFT" /></div>
+        }
+
+        <ForceSelectionComponent Game=h.Game Player=currentPlayer OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="20" FixedMaxSpecialForces=MaxSpecialForces AllowMultipleTerritories="true"/>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
@@ -30,21 +37,23 @@
 
     protected override bool IsUrgent => true;
 
-    private Faction currentfaction;
+    private Player currentPlayer;
     private int resources;
     private Dictionary<Location, Battalion> forces = new Dictionary<Location, Battalion>();
 
     protected override PerformSetup ConfirmedResult => new PerformSetup(Game) { Initiator = Faction, Passed = false, Resources = resources, ForceLocations = forces };
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override void OnParametersSet()
     {
-        if (currentfaction != Game.NextFactionToPerformCustomSetup)
+        if (currentPlayer == null || currentPlayer.Faction != Game.NextFactionToPerformCustomSetup)
         {
             forces = new Dictionary<Location, Battalion>();
-            currentfaction = Game.NextFactionToPerformCustomSetup;
-            StateHasChanged();
+            currentPlayer = CurrentPlayer;
         }
+    }
 
+    protected override void OnAfterRender(bool firstRender)
+    {
         if (firstRender)
         {
             h.OnLocationSelected += HandleAddForce;
@@ -62,13 +71,7 @@
         h.OnLocationSelectedWithShiftAndWithCtrlOrAlt -= HandleRemoveSpecialForce;
     }
 
-    private Player CurrentPlayer
-    {
-        get
-        {
-            return Game.GetPlayer(Game.NextFactionToPerformCustomSetup);
-        }
-    }
+    private Player CurrentPlayer => Game.GetPlayer(Game.NextFactionToPerformCustomSetup);
 
     private void HandleAddForce(object sender, Location l)
     {
@@ -150,5 +153,9 @@
 
         StateHasChanged();
     }
+
+    private Faction CurrentFaction => currentPlayer != null ? currentPlayer.Faction : Faction.Black;
+
+    private int MaxSpecialForces => currentPlayer != null && currentPlayer.HasSpecialForces ? 20 : 0;
 }
 

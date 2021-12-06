@@ -3,7 +3,7 @@
 --->
 
 @using Treachery.Shared;
-@inherits GameComponent
+
 
 <table class="table table-borderless table-sm m-0 w-auto">
     <tbody>
@@ -21,7 +21,7 @@
                 {
                     @if (MaySelectFromStorm || l.Sector != Game.SectorInStorm)
                     {
-                        <td><SelectForcesComponent Value="@ForceAmount(l, false)" OnDown="(e => ChangeForceAmount(l, -1, false))" OnUp="(e => ChangeForceAmount(l, 1, false))" Min="Min" Max="Max(l)" Faction="Faction" Special="false"/></td>
+                        <td><SelectForcesComponent Value="@ForceAmount(l, false)" OnDown="(e => ChangeForceAmount(l, -1, false))" OnUp="(e => ChangeForceAmount(l, 1, false))" Min="Min" Max="Max(l)" Faction="Player.Faction" Special="false"/></td>
                     }
                     else
                     {
@@ -37,7 +37,7 @@
                 {
                     if (MaySelectFromStorm || l.Sector != Game.SectorInStorm)
                     {
-                        <td><SelectForcesComponent Value="@ForceAmount(l, true)" OnDown="(e => ChangeForceAmount(l, -1, true))" OnUp="(e => ChangeForceAmount(l, 1, true))" Min="Min" Max="MaxSpecial(l)" Faction="Faction" Special="true" /></td>
+                        <td><SelectForcesComponent Value="@ForceAmount(l, true)" OnDown="(e => ChangeForceAmount(l, -1, true))" OnUp="(e => ChangeForceAmount(l, 1, true))" Min="Min" Max="MaxSpecial(l)" Faction="Player.Faction" Special="true" /></td>
                     }
                     else
                     {
@@ -56,6 +56,12 @@
 </table>
 
 @code {
+
+    [Parameter]
+    public Game Game { get; set; }
+
+    [Parameter]
+    public Player Player { get; set; }
 
     [Parameter]
     public Dictionary<Location, Battalion> Forces { get; set; }

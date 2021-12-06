@@ -12,7 +12,7 @@
     <Header>Distribute @(10 - forces.Sum(fl => fl.Value.AmountOfForces + fl.Value.AmountOfSpecialForces)) forces on @Game.Map.SietchTabr.ToString(), @Game.Map.FalseWallSouth.ToString(), and @Game.Map.FalseWallWest.ToString().</Header>
     <Body>
 
-        <ForceSelectionComponent h="h" OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="true" FixedMaxForces="10" FixedMaxSpecialForces="@(Player.HasSpecialForces ? 10 : 0)" AllowMultipleTerritories="true" />
+        <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="true" FixedMaxForces="10" FixedMaxSpecialForces="@(Player.HasSpecialForces ? 10 : 0)" AllowMultipleTerritories="true" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
 
