@@ -30,7 +30,7 @@
     if (Game.CurrentMainPhase > MainPhase.Setup)
     {
         float posX = Skin.Current.MapDimensions.X;
-        float posY = turnFontHeight;
+        float posY = 1.2f * turnFontHeight;
 
         foreach (var phase in Enumerations.GetValues<MainPhase>(typeof(MainPhase)).Where(p => p >= MainPhase.Storm && p <= MainPhase.Contemplate))
         {

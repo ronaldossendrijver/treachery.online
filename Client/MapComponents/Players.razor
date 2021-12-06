@@ -12,12 +12,12 @@
             var position = PlayerTokenPosition(Game, p.PositionAtTable);
             if (h.HighlightPlayer(p))
             {
-                radiusModifier = 1.5f;
+                radiusModifier = 1.4f;
             }
             var x = position.X - radiusModifier * Skin.Current.PlayerTokenRadius;
             var y = position.Y - radiusModifier * Skin.Current.PlayerTokenRadius;
 
-            <Circle X="@position.X" Y="@position.Y" Radius="@(1.4f * Skin.Current.PlayerTokenRadius)" FillColor="@Skin.Current.TABLEPOSITION_BACKGROUNDCOLOR" />
+            <Circle X="@position.X" Y="@position.Y" Radius="@(1.35f * Skin.Current.PlayerTokenRadius)" FillColor="@Skin.Current.TABLEPOSITION_BACKGROUNDCOLOR" />
 
             <Image X="@(x)" Y="@(y)" Diameter=@(radiusModifier * Skin.Current.PlayerTokenRadius * 2) Src="@Skin.Current.GetFactionTableImageURL(p.Faction)" 
                    ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
