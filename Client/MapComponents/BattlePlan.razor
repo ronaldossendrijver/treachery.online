@@ -33,7 +33,7 @@
                    Src="@Skin.Current.Harvester_URL" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
 
             <MapText ToShow="@costsOfBattle.ToString()"
-                     X="@(forceX + 4.1f * Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY)"
+                     X="@(forceX + 4f * Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY)"
                      Font="@Skin.Current.RESOURCETOKEN_FONT" FontColor="@Skin.Current.RESOURCETOKEN_FONTCOLOR"
                      BorderWidth="Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
                      Align="@TextAlignment.Center" />
@@ -41,7 +41,7 @@
 
         if (Game.HasStrongholdAdvantage(Plan.Initiator, StrongholdAdvantage.FreeResourcesForBattles, Game.CurrentBattle.Territory))
         {
-            <Image X="@(forceX + 380)" Y="@(forceY - 0.2f * Skin.Current.BattleWheelCardHeight)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" 
+            <Image X="@(forceX + 6f * Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY - 0.2f * Skin.Current.BattleWheelCardHeight)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" 
             Src="@Skin.Current.GetImageURL(Game.Map.Arrakeen)" 
             ShadowColor="@Skin.Current.SHADOW" ShadowX="3" ShadowY="3" ShadowBlur="1" 
             Popover="@Support.GetOwnedStrongholdHTML(Game.Map.Arrakeen, Plan.Initiator)"/>
@@ -120,7 +120,7 @@
 
         if (Plan.Initiator == Faction.Green && Plan.Messiah)
         {
-            <Image X="@(X + Skin.Current.BattleScreenHeroX + Skin.Current.BattleWheelHeroWidth / 1.5f)" Y="@(Y + 0.8f * Skin.Current.BattleScreenHeroY)" Diameter="@(0.5f * Skin.Current.BattleWheelHeroWidth)" Src="@Skin.Current.Messiah_URL" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
+            <Image X="@(X + Skin.Current.BattleScreenHeroX + Skin.Current.BattleWheelHeroWidth / 1.5f)" Y="@(Y + 0.8f * Skin.Current.BattleScreenHeroY)" Diameter="@(0.5f * Skin.Current.BattleWheelHeroWidth)" Src="@Skin.Current.Messiah_URL" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@Skin.Current.Describe(Concept.Messiah) />
         }
     }
 
