@@ -2491,7 +2491,7 @@ namespace Treachery.Shared
             BattleWheelHeroHeight = 86,
 
             BattleWheelForcesX = 137,
-            BattleWheelForcesY = 26,
+            BattleWheelForcesY = 22,
 
             BattleWheelCardX = 148,
             BattleWheelCardY = 102,

@@ -104,7 +104,7 @@
 
                         @if (ShownPlayer.Faction == Faction.Blue && h.CurrentPhase > Phase.BluePredicting)
                         {
-                            <div>Prediction: <span class="badge badge-primary badge-pill" style="@Color(ShownPlayer.PredictedFaction)">@Skin.Current.Describe(ShownPlayer.PredictedFaction)</span> win turn <span class="badge badge-primary badge-pill">@ShownPlayer.PredictedTurn</span></div>
+                            <div>Prediction: <FactionComponent Faction=@ShownPlayer.PredictedFaction/> win turn <span class="badge badge-primary badge-pill">@ShownPlayer.PredictedTurn</span></div>
                         }
 
                         @if (ShownPlayer.Faction == Faction.Green)
