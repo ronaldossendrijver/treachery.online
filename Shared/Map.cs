@@ -87,30 +87,8 @@ namespace Treachery.Shared
         {
             InitializeLocations();
             InitializeLocationNeighbours();
-            /*
-            Console.WriteLine("Centers");
-            foreach (var l in Locations)
-            {
-                Console.WriteLine("[{0}] = new Point({1},{2}), //{3}", l.SkinId, ScaleAndRoundX(l.Center.X), ScaleAndRoundY(l.Center.Y), l.ToString());
-            }
-
-            Console.WriteLine("Spice");
-            foreach (var l in Locations.Where(l => l.SpiceBlowAmount > 0))
-            {
-                Console.WriteLine("[{0}] = new Point({1},{2}), //{3}", l.SkinId, ScaleAndRoundX(l.SpiceLocation.X), ScaleAndRoundY(l.SpiceLocation.Y), l.ToString());
-            }*/
-        }
-        /*
-        private float ScaleAndRoundX(float x)
-        {
-            return (float)Math.Round(x / 7.362344583f, 0);
         }
 
-        private float ScaleAndRoundY(float y)
-        {
-            return (float)Math.Round(y / 7.349840256f, 0);
-        }
-        */
         public IEnumerable<Territory> Territories => Locations.Select(l => l.Territory).Distinct();
 
         public IEnumerable<Location> Strongholds => Locations.Where(l => l.Territory.IsStronghold);
@@ -1686,6 +1664,50 @@ namespace Treachery.Shared
             currentPath.Pop();
         }
 
+        public static List<Location> FindFirstShortestPath(Location start, Location destination, bool ignoreStorm, Faction f, Game game)
+        {
+            var route = new Stack<Location>();
+            var obstacles = DetermineForceObstacles(f, game);
+            for (int i = 0; i <= 4; i++)
+            {
+                var path = FindPath(route, start, destination, null, 0, i, f, ignoreStorm ? 99 : game.SectorInStorm, obstacles);
+                if (path != null) return path;
+            }
+            return null;
+        }
+
+        private static List<Location> FindPath(Stack<Location> currentRoute, Location current, Location destination, Location previous, int currentDistance, int maxDistance, Faction f, int sectorInStorm, List<Location> obstacles)
+        {
+            currentRoute.Push(current);
+
+            if (current.Equals(destination))
+            {
+                return currentRoute.Reverse().ToList();
+            }
+            else
+            {
+                foreach (var neighbour in current.Neighbours.Where(neighbour =>
+                    neighbour != previous &&
+                    neighbour.Sector != sectorInStorm &&
+                    !currentRoute.Contains(neighbour) &&
+                    !obstacles.Contains(neighbour)))
+                {
+                    if (neighbour.Sector != sectorInStorm)
+                    {
+                        int distance = (current.Territory == neighbour.Territory) ? 0 : 1;
+
+                        if (currentDistance + distance <= maxDistance)
+                        {
+                            var found = FindPath(currentRoute, neighbour, destination, current, currentDistance + distance, maxDistance, f, sectorInStorm, obstacles);
+                            if (found != null) return found;
+                        }
+                    }
+                }
+            }
+
+            currentRoute.Pop();
+            return null;
+        }
 
         public static List<Location> FindNeighboursForHmsMovement(Location start, int distance, bool ignoreStorm, int sectorInStorm)
         {

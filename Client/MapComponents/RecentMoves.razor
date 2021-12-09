@@ -11,18 +11,30 @@
             
             @foreach (var move in h.Game.RecentMoves.Where(move => !move.Passed))
             {
-                var to = move.To.Center;
-
-                foreach (var from in move.ForceLocations.Keys)
+                foreach (var origin in move.ForceLocations.Keys)
                 {
-                    var a = CloserTo(from.Center, to, 0.05f);
-                    var b = CloserTo(to, from.Center, 0.05f);
+                    var path = Map.FindFirstShortestPath(origin, move.To, false, move.Initiator, Game);
 
-                    <Arrow FillColor="@Skin.Current.FactionColor[move.Initiator]" StrokeColor="@Skin.Current.FactionColorTransparant[move.Initiator]"
-                            MarginX="0" MarginY="0"
-                            Radius="@((int)(1.1 * Skin.Current.PlanetRadius))"
-                            From="from.Center" To="to" ArrowScale="0.05f" />
+                    if (path != null) {
 
+                        Location from = null;
+                        foreach (var to in path)
+                        {
+                            if (from != null && (to == move.To || to.Territory != from.Territory))
+                            {
+                                var a = CloserTo(from.Center, to.Center, 0.05f);
+                                var b = CloserTo(to.Center, from.Center, 0.05f);
+
+                                <Arrow FillColor="@Skin.Current.FactionColor[move.Initiator]" StrokeColor="@Skin.Current.FactionColorTransparant[move.Initiator]"
+                                       MarginX="0" MarginY="0" Radius="@((int)(1.1 * Skin.Current.PlanetRadius))" From="from.Center" To="to.Center" ArrowScale="0.05f" />
+                            }
+
+                            if (from == null || to.Territory != from.Territory)
+                            {
+                                from = to;
+                            }
+                        }
+                    }
                 }
             }
 

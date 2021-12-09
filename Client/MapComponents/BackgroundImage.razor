@@ -1,0 +1,18 @@
+﻿@inherits MapComponent
+
+@if (Src.Substring(Src.Length - 3).ToUpper() == "SVG")
+{
+    <object style="@Style" type="image/svg+xml" data=@Src/>
+}
+else {
+
+    <img style="@Style" src=@Src />
+}
+
+@code {
+
+    [Parameter]
+    public string Src { get; set; }
+
+    private string Style => string.Format("position:absolute;left:{0};top:{1};width:{2};height:{3};pointer-events:none;", Px(X), Px(Y), Px(Width), Px(Height));
+}

@@ -26,11 +26,12 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            /*var p = e.Player;
-            if (e is TreacheryCalled tc && tc.TraitorCalled && g.CurrentBattle.PlanOfOpponent(tc.Player).Hero.HeroType == HeroType.Auditor)
+            var p = e.Player;
+            var haggabasin = g.Map.HaggaBasin.Locations.FirstOrDefault(l => l.SpiceBlowAmount != 0);
+            if (e is Move m && g.SectorInStorm == 11 && m.To == haggabasin && m.ForceLocations.Any(kvp => kvp.Key == g.Map.Carthag))
             {
-                WriteSavegameIfApplicable(g, p, "Auditor is traitor");
-            }*/
+                WriteSavegameIfApplicable(g, p, "Move around storm");
+            }
 
         }
 

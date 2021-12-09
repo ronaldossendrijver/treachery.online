@@ -60,7 +60,7 @@
 
 @if (h.Game.Map.HiddenMobileStronghold.Visible)
 {
-    bool isInFrontOfPlayerToken = h.Game.Players.Any(p => Near(h.Game.Map.HiddenMobileStronghold.Center, PlayerTokenPosition(h.Game, p.PositionAtTable), 100));
+    bool isInFrontOfPlayerToken = h.Game.Players.Any(p => Near(h.Game.Map.HiddenMobileStronghold.Center, PlayerTokenPosition(h.Game, p.PositionAtTable), Skin.Current.PlayerTokenRadius));
 
     <Image X="@(h.Game.Map.HiddenMobileStronghold.Center.X - HiddenMobileStronghold.Radius)" 
             Y="@(h.Game.Map.HiddenMobileStronghold.Center.Y - HiddenMobileStronghold.Radius)" 
