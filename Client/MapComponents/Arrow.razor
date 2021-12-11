@@ -3,12 +3,11 @@
 @inherits MapComponent
  
 <defs>
-    <path id="@ArrowTemplateId" d="M-50,-50L0,0L-50,50L0,100L100,0L0,-100L-50,-50Z" fill="@FillColor" fill-opacity="@Round(FillOpacity)" stroke="@StrokeColor" stroke-width="@Round(StrokeWidth)" stroke-linejoin="round" transform="scale(@Round(ArrowScale))" />
-    <linearGradient id="ArrowGradient" x1="40%" y1="70%" x2="80%" y2="90%">
-        <stop offset="0%" stop-color="transparant"></stop>
+    <linearGradient id="@ArrowGradientId" x1="60%" y1="60%" x2="80%" y2="80%">
+        <stop offset="0%" stop-color="@FillColor"></stop>
         <stop offset="100%" stop-color="black"></stop>
     </linearGradient>
-    <filter id="ArrowShadow" xmlns="http://www.w3.org/2000/svg" height="200%" width="200%">
+    <filter id="@ArrowShadowId" xmlns="http://www.w3.org/2000/svg" height="200%" width="200%">
         <feGaussianBlur in="SourceAlpha" stdDeviation="@(ShadowBlur)" />
         <feOffset dx="@(ShadowDistance)" dy="@(ShadowDistance)" result="offsetblur" />
         <feComponentTransfer>
@@ -19,9 +18,10 @@
             <feMergeNode in="SourceGraphic"></feMergeNode>
         </feMerge>
     </filter>
+    <path id="@ArrowTemplateId" d="M-50,-50L0,0L-50,50L0,100L100,0L0,-100L-50,-50Z" stroke="@StrokeColor" stroke-width="@Round(StrokeWidth)" stroke-linejoin="round" transform="scale(@Round(ArrowScale))" />
 </defs>
 
-@for (float i = 0; i <= n; i++)
+@for (float i = 1; i <= n; i++)
 {
     var t = -tMax * (i / n);
     var t2 = -tMax * ((i + 1) / n);
@@ -31,7 +31,7 @@
     var y2 = Radius * (u[1] * Math.Cos(t2) + v[1] * Math.Sin(t2));
     var alpha = -Math.Atan2((x2 - x), (y2 - y)) / Math.PI * 180 + 90;
 
-    <g transform="translate(@Round(x + Radius),@Round(y + Radius)) rotate(@Round(alpha))" filter="url(#ArrowShadow)" fill="url(#ArrowGradient)">
+    <g transform="translate(@Round(x + Radius),@Round(y + Radius)) rotate(@Round(alpha))" fill="url(#@ArrowGradientId)" filter="url(#@ArrowShadowId)">
         <use href="#@ArrowTemplateId" />
     </g>
 }
@@ -39,13 +39,13 @@
 @code {
 
     [Parameter]
-    public int MarginX { get; set; }
+    public float MarginX { get; set; }
 
     [Parameter]
-    public int MarginY { get; set; }
+    public float MarginY { get; set; }
 
     [Parameter]
-    public int Radius { get; set; }
+    public float Radius { get; set; }
 
     [Parameter]
     public Point From { get; set; }
@@ -81,14 +81,14 @@
 
     protected override void OnParametersSet()
     {
-        int fromX;
-        int fromY;
-        int fromZ;
+        float fromX;
+        float fromY;
+        float fromZ;
         float[] fromAsArray;
 
-        int toX;
-        int toY;
-        int toZ;
+        float toX;
+        float toY;
+        float toZ;
         float[] toAsArray;
 
         float[] w;
@@ -125,4 +125,6 @@
     private float length(float[] vector) => (float)Math.Sqrt(vector.Select(v => v * v).Sum());
 
     private string ArrowTemplateId => "arrowtemplate" + Id;
+    private string ArrowShadowId => "arrowshadow" + Id;
+    private string ArrowGradientId => "arrowgradient" + Id;
 }

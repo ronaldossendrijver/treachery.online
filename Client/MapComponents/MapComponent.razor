@@ -45,9 +45,7 @@
 
     protected Player Player => h.Player;
 
-    protected string Px(float x) => Math.Round(x, 2).ToString(CultureInfo.InvariantCulture) + "px";
-
-    protected string Round(float x) => Math.Round(x, 2).ToString(CultureInfo.InvariantCulture);
+    protected string Px(double x) => Round(x) + "px";
 
     protected string Round(double x) => Math.Round(x, 2).ToString(CultureInfo.InvariantCulture);
 
