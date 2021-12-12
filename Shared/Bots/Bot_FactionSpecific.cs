@@ -681,12 +681,11 @@ namespace Treachery.Shared
         {
             var opponent = Game.CurrentBattle.OpponentOf(Faction);
 
-            //Wait for voice or finalized battle plan
             if (Voice.MayUseVoice(Game, opponent))
             {
                 if (Game.CurrentVoice == null && Game.CurrentBattle.PlanOf(opponent) == null)
                 {
-                    //Wait for voice or finalized plan
+                    //Wait for voice or finalized battle plan
                     return null;
                 }
             }
