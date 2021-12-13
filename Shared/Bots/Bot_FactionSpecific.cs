@@ -680,9 +680,10 @@ namespace Treachery.Shared
         protected virtual Prescience DeterminePrescience()
         {
             var opponent = Game.CurrentBattle.OpponentOf(Faction);
-
+            
             if (Voice.MayUseVoice(Game, opponent))
             {
+                LogInfo("Opponent may use voice: {0} {1}", Game.CurrentVoice == null, Game.CurrentBattle.PlanOf(opponent) == null);
                 if (Game.CurrentVoice == null && Game.CurrentBattle.PlanOf(opponent) == null)
                 {
                     //Wait for voice or finalized battle plan

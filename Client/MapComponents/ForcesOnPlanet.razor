@@ -4,7 +4,7 @@
 @{
     var forceLocations = Game.ForcesOnPlanetExcludingEmptyLocations;
 
-    foreach (var location in Game.Map.Locations)
+    foreach (var location in Game.Map.Locations.OrderBy(l => l.Center.Y))
     {
         int xOffset = 0;
         int yOffset = 0;

@@ -47,7 +47,7 @@
 
     protected string Px(double x) => Round(x) + "px";
 
-    protected string Round(double x) => Math.Round(x, 2).ToString(CultureInfo.InvariantCulture);
+    protected string Round(double x) => Math.Round(x, 1).ToString(CultureInfo.InvariantCulture);
 
     private string _id = null;
     protected string Id
@@ -90,7 +90,7 @@
 
     protected string PopoverTemplate => string.Format("<div class=\"popover\" role=\"tooltip\" style=\"{0}\"><div class=\"arrow\"></div><h3 class=\"popover-header\"></h3><div class=\"popover-body\"></div></div>", PopoverStyle);
 
-    protected string Intel(Treachery.Shared.Location intelligenceLocation)
+    protected string Intel(Location intelligenceLocation)
     {
         string result = "<div style='width:300px'>";
 
@@ -142,14 +142,16 @@
             {
                 result += Skin.Current.Format("<p>May contain <strong>{0} {1}</strong> after {2}.</p>", intelligenceLocation.SpiceBlowAmount, Concept.Resource, MainPhase.Blow);
             }
-
-            if (Game.ResourcesOnPlanet.ContainsKey(intelligenceLocation))
-            {
-                result += Skin.Current.Format("<p>Current amount of {0}: <strong>{1}</strong>.</p>", Concept.Resource, Game.ResourcesOnPlanet[intelligenceLocation]);
-            }
         }
 
         result += "<div class=\"row m-0 bg-dark text-center\">";
+
+        if (Game.ResourcesOnPlanet.ContainsKey(intelligenceLocation))
+        {
+            result += string.Format("<div class=\"col p-0\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
+                Skin.Current.Harvester_URL,
+                Game.ResourcesOnPlanet[intelligenceLocation]);
+        }
 
         if (Game.ForcesOnPlanetExcludingEmptyLocations.ContainsKey(intelligenceLocation))
         {
@@ -194,5 +196,32 @@
     private string ProtectedFromStormText(Treachery.Shared.Location l)
     {
         return h.Game.IsProtectedFromStorm(l) ? "Protected" : "NOT protected";
+    }
+
+    protected string ScaledFont(string font, float scale)
+    {
+        var fontsizeLower = font.ToLower();
+        var result = "";
+
+        foreach (var fontDefinitionPart in fontsizeLower.Split(' ')) {
+
+            if (fontDefinitionPart.Contains("px")) {
+
+                if (float.TryParse(fontDefinitionPart.Remove(fontDefinitionPart.IndexOf("px")), out float fontsizeNumber))
+                {
+                    result += " " + Px(scale * fontsizeNumber);
+                }
+                else
+                {
+                    result += " " + fontDefinitionPart;
+                }
+            }
+            else
+            {
+                result += " " + fontDefinitionPart;
+            }
+        }
+
+        return result;
     }
 }

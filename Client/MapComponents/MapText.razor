@@ -5,7 +5,7 @@
 @if (Popover != null) {
 
     <span 
-        style="position: absolute; white-space: nowrap; left: @Px(AlignedX); top: @Px(Y-TextHeight); user-select: none; font: @Font;   color: @FontColor; max-width: @Px(MaxWidth); @Border" 
+        style="position: absolute; white-space: nowrap; left: @Px(AlignedX); top: @Px(Y-TextHeight); user-select: none; font: @Font; color: @FontColor; max-width: @Px(MaxWidth); @Border" 
         data-trigger="hover" data-toggle="popover" data-html="true" data-animation="false" data-delay="50" data-container="body" data-content="@Popover" data-template="@PopoverTemplate">
         @ToShow
         @ChildContent
