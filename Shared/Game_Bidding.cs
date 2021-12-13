@@ -217,7 +217,7 @@ namespace Treachery.Shared
             }
             else
             {
-                Enter(IsPlaying(Faction.White) && WhiteCache.Count > 0, Phase.WhiteAnnouncingAuction, StartRegularBidding);
+                Enter(IsPlaying(Faction.White) && WhiteCache.Count > 0 && !Prevented(FactionAdvantage.WhiteAuction), Phase.WhiteAnnouncingAuction, StartRegularBidding);
             }
         }
 
