@@ -490,7 +490,7 @@ namespace Treachery.Shared
         private bool IsAlmostWinningOpponent(Player p) =>
             p != this && p != AlliedPlayer &&
             Game.NumberOfVictoryPoints(p, true) + 1 >= Game.TresholdForWin(p) &&
-            (CanShip(p) || p.HasAlly && CanShip(p.AlliedPlayer));
+            (CanShip(p) || p.HasAlly && CanShip(p.AlliedPlayer) || p.TechTokens.Count >= 2);
 
         private IEnumerable<Player> WinningOpponentsIWishToAttack(int maximumChallengedStrongholds, bool includeBots) =>
             Game.Players.Where(p => (includeBots || !p.IsBot) && IsWinningOpponent(p) && Game.CountChallengedStongholds(p) <= maximumChallengedStrongholds && !WinWasPredictedByMeThisTurn(p.Faction));
