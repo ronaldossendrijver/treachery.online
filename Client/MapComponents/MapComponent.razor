@@ -47,7 +47,7 @@
 
     protected string Px(double x) => Round(x) + "px";
 
-    protected string Round(double x) => Math.Round(x, 1).ToString(CultureInfo.InvariantCulture);
+    protected string Round(double x) => Math.Round(x, 3).ToString(CultureInfo.InvariantCulture);
 
     private string _id = null;
     protected string Id

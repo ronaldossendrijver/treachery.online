@@ -44,23 +44,27 @@
             }
 
             var skilledLeader = Game.GetSkilledLeader(p);
-            if (skilledLeader != null && Game.IsInFrontOfShield(skilledLeader))
+            if (skilledLeader != null)
             {
                 ttRad += (TWOPI / 90);
                 var ttx = Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad) * techtokenOrbitRadius) - Skin.Current.PlayerTokenRadius;
                 var tty = Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad) * techtokenOrbitRadius) - Skin.Current.PlayerTokenRadius;
 
-                <Image X="@(ttx)"
-                       Y="@(tty)"
-                       Diameter=@(2 * Skin.Current.PlayerTokenRadius)
-                       Src="@Skin.Current.GetImageURL(skilledLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                       Popover="@Support.GetSkilledLeaderHTML(skilledLeader, h.Game.Skill(skilledLeader))"/>
+                if (Game.IsInFrontOfShield(skilledLeader)) {
+
+                    <Image X="@(ttx)"
+                           Y="@(tty)"
+                           Diameter=@(2 * Skin.Current.PlayerTokenRadius)
+                           Src="@Skin.Current.GetImageURL(skilledLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+                           Popover="@Support.GetSkilledLeaderHTML(skilledLeader, h.Game.Skill(skilledLeader))"/>
+                }
 
                 <MapText ToShow="@Skin.Current.Describe(Game.Skill(skilledLeader))"
                          X="@(ttx + Skin.Current.PlayerTokenRadius)" Y="@(tty + Skin.Current.PlayerTokenRadius)"
                          Font="@Skin.Current.SKILL_FONT" FontColor="@Skin.Current.SKILL_FONTCOLOR"
                          BorderWidth="@Skin.Current.SKILL_FONT_BORDERWIDTH" BorderColor="@Skin.Current.SKILL_FONT_BORDERCOLOR"
-                         Align="@TextAlignment.Center" MaxWidth="2.2f * Skin.Current.PlayerTokenRadius"/>
+                         Align="@TextAlignment.Center" MaxWidth="2.2f * Skin.Current.PlayerTokenRadius"
+                         Popover="@Support.GetSkilledLeaderHTML(skilledLeader, h.Game.Skill(skilledLeader))"/>
             }
 
             if (p.Faction == Faction.White && Game.LatestRevealedNoFieldValue >= 0)

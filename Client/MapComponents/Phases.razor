@@ -48,7 +48,7 @@
                 {
                     var diameter = 2 * Skin.Current.PlayerTokenRadius;
 
-                    <Image X="@(posX - diameter)" Y="@(posY - 1.5f * Skin.Current.PlayerTokenRadius)" Diameter=diameter Src="@Skin.Current.GetImageURL(Faction.Brown)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
+                    <Image X="@(posX - diameter)" Y="@(posY - Skin.Current.PlayerTokenRadius)" Diameter=diameter Src="@Skin.Current.GetImageURL(Faction.Brown)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
 
                     <MapText ToShow="@Skin.Current.Describe(Game.EconomicsStatus)"
                              X="@(posX - Skin.Current.PlayerTokenRadius)" Y="@(posY)"
@@ -71,7 +71,7 @@
 
                 if (Game.EconomicsStatus != BrownEconomicsStatus.None && Game.EconomicsStatus != BrownEconomicsStatus.RemovedFromGame && phase == MainPhase.Charity)
                 {
-                    <Image X="@(posX - Skin.Current.PlayerTokenRadius)" Y="@(posY - Skin.Current.PlayerTokenRadius)" Diameter=Skin.Current.PlayerTokenRadius Src="@Skin.Current.GetImageURL(Faction.Brown)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
+                    <Image X="@(posX - Skin.Current.PlayerTokenRadius)" Y="@(posY - 0.5f * Skin.Current.PlayerTokenRadius)" Diameter=Skin.Current.PlayerTokenRadius Src="@Skin.Current.GetImageURL(Faction.Brown)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
 
                     <MapText ToShow="@Skin.Current.Describe(Game.EconomicsStatus)"
                              X="@(posX - 0.5f * Skin.Current.PlayerTokenRadius)" Y="@(posY)"
