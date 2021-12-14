@@ -1,8 +1,8 @@
 ﻿@inherits MapComponent
 
-<svg width="@Px(2*Radius)" height="@Px(2*Radius)" style="position:absolute;left:@Px(X-Radius);top:@Px(Y-Radius)" pointer-events="none">
+<svg width="@Round(2f*Radius)" height="@Round(2f*Radius)" style="position:absolute;left:@Px(X-Radius);top:@Px(Y-Radius)" pointer-events="none">
     <circle 
-            cx="@Round(Radius)" cy="@Round(Radius)" r="@Round(Radius)" 
+            cx="@Round(Radius)" cy="@Round(Radius)" r="@Round(Radius - StrokeWidth)" 
             fill="@FillColor" fill-opacity="@Round(FillOpacity)"
             stroke="@StrokeColor" stroke-width="@Px(StrokeWidth)" />
 </svg>

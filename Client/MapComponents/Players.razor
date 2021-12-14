@@ -84,24 +84,11 @@
                          Align="@TextAlignment.Center"/>
             }
 
-            var align = TextAlignment.Center;
-            int textPositionX = position.X;
-            if (position.X < 0.2f * Skin.Current.MapDimensions.X)
-            {
-                align = TextAlignment.Left;
-                textPositionX = (int)(position.X - 1.6 * Skin.Current.PlayerTokenRadius);
-            }
-            else if (position.X > 0.8f * Skin.Current.MapDimensions.X)
-            {
-                align = TextAlignment.Right;
-                textPositionX = (int)(position.X + 1.6 * Skin.Current.PlayerTokenRadius);
-            }
-
             <MapText ToShow="@p.Name"
-                     X="@(textPositionX)" Y="@y"
+                     X="@position.X" Y="@y"
                      Font="@Skin.Current.PLAYERNAME_FONT" FontColor="@Skin.Current.PLAYERNAME_FONTCOLOR"
                      BorderWidth="@Skin.Current.PLAYERNAME_FONT_BORDERWIDTH" BorderColor="@Skin.Current.PLAYERNAME_FONT_BORDERCOLOR"
-                     Align="@align" MaxWidth="6 * Skin.Current.PlayerTokenRadius"/>
+                     Align="TextAlignment.Center" MaxWidth="6 * Skin.Current.PlayerTokenRadius"/>
         }
     }
 }

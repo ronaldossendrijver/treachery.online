@@ -66,14 +66,14 @@
            Y="@(h.Game.Map.HiddenMobileStronghold.Center.Y - HiddenMobileStronghold.Radius)" 
            Width=@(HiddenMobileStronghold.Radius + Math.Abs(HiddenMobileStronghold.DX)) Height="@(2 * HiddenMobileStronghold.Radius)" 
            Src="@Skin.Current.HMS_URL" 
-           ShadowColor="@Skin.Current.SHADOW" ShadowX="6" ShadowY="6" ShadowBlur="1"
-           Opacity="@(!isInFrontOfPlayerToken && h.ShowWheelsAndHMS ? 1.0f : 0.4f)"
+           ShadowColor="@Skin.Current.SHADOW" ShadowX="5" ShadowY="5" ShadowBlur="1"
+           Opacity="@(!isInFrontOfPlayerToken && h.ShowWheelsAndHMS ? 0.95f : 0.4f)"
            Popover="@Intel(h.Game.Map.HiddenMobileStronghold)"
            OnClick="@(e => OnClick(e, h.Game.Map.HiddenMobileStronghold))"/>
 
-    @if (hovered == h.Game.Map.HiddenMobileStronghold || h.HighlightedTerritories.Contains(h.Game.Map.HiddenMobileStronghold.Territory))
+    @if (h.ShowWheelsAndHMS && (hovered == h.Game.Map.HiddenMobileStronghold || h.HighlightedTerritories.Contains(h.Game.Map.HiddenMobileStronghold.Territory)))
     {
-        <Circle X="(h.Game.Map.HiddenMobileStronghold.Center.X)" Y="h.Game.Map.HiddenMobileStronghold.Center.Y" Radius="(HiddenMobileStronghold.Radius-4)"
+        <Circle X="(h.Game.Map.HiddenMobileStronghold.Center.X + 0.1f * HiddenMobileStronghold.Radius)" Y="h.Game.Map.HiddenMobileStronghold.Center.Y" Radius="(0.9f * HiddenMobileStronghold.Radius)"
                 FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1"/>
     }
 }

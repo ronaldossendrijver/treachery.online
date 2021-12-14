@@ -822,10 +822,10 @@ namespace Treachery.Test
         }
 
 
-        //[TestMethod]
+        [TestMethod]
         public void ApplyTransforms()
         {
-            string filename = "e:\\map.svg";
+            string filename = "e:\\svg\\techtoken2.svg";
 
             var accumulatedTransforms = new Stack<SvgTransformCollection>();
 
