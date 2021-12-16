@@ -1,0 +1,72 @@
+﻿@inherits MapComponent
+
+@if (Popover != null)
+{
+    <svg @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" width=@Round(Width) height=@Round(Height) style="@Style"
+        data-trigger="hover" data-toggle="popover" data-html="true" data-animation="false" data-delay="50" data-container="body" data-content="@Popover" data-template="@PopoverTemplate">
+        @ChildContent
+    </svg>
+}
+else
+{
+    <svg @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" width=@Round(Width) height=@Round(Height) style="@Style">
+        @ChildContent
+    </svg>
+}
+
+@code {
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public int ShadowX { get; set; } = 0;
+
+    [Parameter]
+    public int ShadowY { get; set; } = 0;
+
+    [Parameter]
+    public int ShadowBlur { get; set; } = 0;
+
+    [Parameter]
+    public string ShadowColor { get; set; } = "black";
+
+    [Parameter]
+    public string Title { get; set; } = "";
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnMouseOver { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnMouseExited { get; set; }
+
+    [Parameter]
+    public string Popover { get; set; } = null;
+
+    private string Style
+    {
+        get
+        {
+            var result = string.Format("position:absolute;left:{0};top:{1};opacity:{2};", Px(X), Px(Y), Round(Opacity));
+
+            if (OnClick.HasDelegate || OnMouseOver.HasDelegate || Popover != null)
+            {
+                result += "cursor:pointer;pointer-events:all;";
+            }
+            else
+            {
+                result += "pointer-events:none;";
+            }
+
+            if (ShadowX > 0 || ShadowY > 0)
+            {
+                result += string.Format("filter:drop-shadow({0} {1} {2} {3});", Px(ShadowX), Px(ShadowY), Px(ShadowBlur), ShadowColor);
+            }
+
+            return result;
+        }
+    }
+}
