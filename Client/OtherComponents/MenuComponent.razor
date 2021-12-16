@@ -216,7 +216,8 @@ else if (IsVisible(RESTART))
 
     private async Task ToggleFullScreen()
     {
-        await h.ToggleFullScreen();
+        await Browser.ToggleFullScreen();
+        await Task.Delay(2000).ContinueWith(e => h.Refresh());
     }
 
     private async Task Save()

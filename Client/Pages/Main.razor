@@ -155,17 +155,23 @@
         h.RefreshHandler += Refresh;
         await h.Start();
         scheduledMaintenance = await h.GetScheduledMaintenance();
+        await LoadSkinDataIfSaved();
     }
 
+    private bool isFullscreen = false;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        var checkFullscreen = await Browser.IsFullScreen();
+        if (isFullscreen != checkFullscreen)
         {
-            await LoadSkinDataIfSaved();
+            isFullscreen = checkFullscreen;
+            StateHasChanged();
         }
-
-        await Browser.SetPlanetMapScale();
-        await Browser.EnablePopovers();
+        else
+        {
+            await Browser.SetPlanetMapScale();
+            await Browser.EnablePopovers();
+        }
     }
 
     private async Task LoadSkinDataIfSaved()
@@ -190,5 +196,5 @@
 
     private string InformationSize => h.IsObserver ? "col-lg-4" : "col-lg-2";
 
-    private string Scrollbars => h.IsFullScreen ? "vh-100 overflow-auto" : "";
+    private string Scrollbars => isFullscreen? "vh-100 overflow-auto" : "";
 }

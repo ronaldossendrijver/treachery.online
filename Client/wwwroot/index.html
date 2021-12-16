@@ -346,12 +346,17 @@
 
             var element = document.body;
 
-            var isFullscreen = document.webkitIsFullScreen || document.mozFullScreen || false;
+            var isFullscreen = IsFullScreen();
 
             element.requestFullScreen = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || function () { return false; };
             document.cancelFullScreen = document.cancelFullScreen || document.webkitCancelFullScreen || document.mozCancelFullScreen || function () { return false; };
 
             isFullscreen ? document.cancelFullScreen() : element.requestFullScreen();
+        }
+
+        function IsFullScreen() {
+
+            return document.fullscreenElement != null
         }
 
         function Print(elementId) {

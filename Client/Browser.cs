@@ -215,6 +215,11 @@ namespace Treachery.Client
             await _runtime.InvokeVoidAsync("ToggleFullScreen");
         }
 
+        public static async Task<bool> IsFullScreen()
+        {
+            return (await _runtime.InvokeAsync<bool>("IsFullScreen"));
+        }
+
         public static async Task Print(string elementName)
         {
             try

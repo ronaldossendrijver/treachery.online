@@ -41,13 +41,10 @@ namespace Treachery.Client
         public float CurrentChatVolume = -1;
         public bool ShowWheelsAndHMS = true;
         public bool StatisticsSent = false;
-        public bool IsFullScreen = false;
-        public bool BotsArePaused { get; private set; } = false;
-
         private Battle RevisablePlan = null;
         private BattleInitiated RevisablePlanBattle = null;
 
-
+        public bool BotsArePaused { get; private set; } = false;
 
         public bool IsGameMaster => !IsObserver && Player.Faction == Faction.None && CurrentPhase > Phase.TradingFactions;
 
@@ -730,13 +727,6 @@ namespace Treachery.Client
         #endregion ClientUpdates
 
         #region SupportMethods
-
-        public async Task ToggleFullScreen()
-        {
-            await Browser.ToggleFullScreen();
-            IsFullScreen = !IsFullScreen;
-            Refresh();
-        }
 
         public IEnumerable<Type> Actions => Game.GetApplicableEvents(Player, IsHost);
 
