@@ -387,7 +387,7 @@ namespace Treachery.Shared
                 TraitorsDeciphererCanLookAt.Add(traitor);
                 plan.Player.KnownNonTraitors.Add(traitor);
 
-                DeciphererMayReplaceTraitor = plan.Initiator != Faction.Purple && leaderIsSkilled;
+                DeciphererMayReplaceTraitor = plan.Initiator != Faction.Purple && leaderIsSkilled && BattleConcluded.ValidTraitorsToReplace(this, plan.Player).Any();
             }
         }
 

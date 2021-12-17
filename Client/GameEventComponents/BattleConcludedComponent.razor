@@ -70,13 +70,13 @@
 
             if (Game.TraitorsDeciphererCanLookAt.Any())
             {
-                <SelectHeroComponent Game="Game" @bind-Value="selectedNewTraitor" Values=" Game.TraitorsDeciphererCanLookAt" Required="false">
+                <SelectHeroComponent Game="Game" @bind-Value="selectedNewTraitor" Values="Game.TraitorsDeciphererCanLookAt" Required="false">
                     <Label>@Skin.Current.Describe(LeaderSkill.Decipherer) shows you the following traitors from the traitor deck:</Label>
                 </SelectHeroComponent>
 
                 @if (Game.DeciphererMayReplaceTraitor)
                 {
-                    <SelectHeroComponent Game="Game" @bind-Value="traitorToReplace" Values="Player.Traitors" Required="false">
+                    <SelectHeroComponent Game="Game" @bind-Value="traitorToReplace" Values="BattleConcluded.ValidTraitorsToReplace(Game, Player)" Required="false">
                         <Label>If you wish, you may select one of the above traitors to reveal and replace one of your current traitors:</Label>
                     </SelectHeroComponent>
                 }

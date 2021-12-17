@@ -822,7 +822,7 @@ namespace Treachery.Test
         }
 
 
-        [TestMethod]
+        //[TestMethod]
         public void ApplyTransforms()
         {
             string filename = "e:\\svg\\techtoken2.svg";

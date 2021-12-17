@@ -168,5 +168,11 @@ namespace Treachery.Shared
                 return new CaptureDecision[] { CaptureDecision.Capture, CaptureDecision.Kill };
             }
         }
+
+        public static IEnumerable<IHero> ValidTraitorsToReplace(Game g, Player p)
+        {
+            return p.Traitors.Where(h => !p.RevealedTraitors.Contains(h));
+        }
+
     }
 }
