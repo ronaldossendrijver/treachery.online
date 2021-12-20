@@ -394,8 +394,6 @@ namespace Treachery.Shared
                 FactionForce.Purple => ForceName_STR[Faction.Purple],
                 FactionForce.Brown => ForceName_STR[Faction.Brown],
                 FactionForce.White => ForceName_STR[Faction.White],
-                FactionForce.Pink => ForceName_STR[Faction.Pink],
-                FactionForce.Cyan => ForceName_STR[Faction.Cyan],
                 _ => "-",
             };
         }
@@ -1711,7 +1709,7 @@ namespace Treachery.Shared
 
             TreacheryCardDescription_STR = new Dictionary<int, string>
             {
-                [0] = "Play as part of your Battle Plan. Automatically kills your opponent's leader. Causes an explosion when a Shield is used in the same battle, killing both leaders and all forces in the territory, cause both factions to loose the battle.",
+                [0] = "Weapon - Special - Play as part of your Battle Plan. Automatically kills your opponent's leader. Causes an explosion when a Shield is used in the same battle, killing both leaders and all forces in the territory, cause both factions to loose the battle.",
                 [1] = "Weapon - Projectile - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Shield. You may keep this card if you win the battle.",
                 [2] = "Weapon - Projectile - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Shield. You may keep this card if you win the battle.",
                 [3] = "Weapon - Projectile - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Shield. You may keep this card if you win the battle.",
@@ -1737,29 +1735,29 @@ namespace Treachery.Shared
                 [31] = "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
                 [32] = "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
 
-                [33] = "Play as part of your Battle Plan. This weapon counts as both projectile and poison. You may keep this card if you win this battle.",
+                [33] = "Weapon - Special - Play as part of your Battle Plan. This weapon counts as both projectile and poison. You may keep this card if you win this battle.",
                 [34] = "Weapon - Projectile - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Shield. You may keep this card if you win the battle.",
                 [35] = "Weapon - Poison - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Snooper. You may keep this card if you win the battle.",
-                [36] = "Play as part of your Battle Plan. Counts as a projectile weapon but has the same effect as a projectile defense when played as a defense with another weapon. You may keep this card if you win this battle.",
-                [37] = "Play as part of your Battle Plan. Kills both leaders, and is not stopped by a Snooper. After seeing the battle results, you may choose not to use this weapon in which case you don't need to discard it if you win the battle.",
-                [38] = "Play as part of your Battle Plan. Counts as both a Shield (projectile defense) and Snooper (poison defense). You may keep this card if you win this battle.",
-                [39] = "Play as part of your Battle Plan. Counts as a poison defense but has the same effect as a poison weapon when played as a weapon with another defense. You may keep this card if you win this battle.",
-                [40] = "Play as part of your Battle Plan. Kills both leaders (no spice is paid for them). Both players may use Shields to protect their leader against the Artillery Strike. Surviving (shielded) leaders do not count towards the battle total, the side that dialed higher wins the battle. Discard after use.",
+                [36] = "Weapon - Special - Play as part of your Battle Plan. Counts as a projectile weapon but has the same effect as a projectile defense when played as a defense with another weapon. You may keep this card if you win this battle.",
+                [37] = "Weapon - Special - Play as part of your Battle Plan. Kills both leaders, and is not stopped by a Snooper. After seeing the battle results, you may choose not to use this weapon in which case you don't need to discard it if you win the battle.",
+                [38] = "Defense - Special - Play as part of your Battle Plan. Counts as both a Shield (projectile defense) and Snooper (poison defense). You may keep this card if you win this battle.",
+                [39] = "Defense - Special - Play as part of your Battle Plan. Counts as a poison defense but has the same effect as a poison weapon when played as a weapon with another defense. You may keep this card if you win this battle.",
+                [40] = "Weapon - Special - Play as part of your Battle Plan. Kills both leaders (no spice is paid for them). Both players may use Shields to protect their leader against the Artillery Strike. Surviving (shielded) leaders do not count towards the battle total, the side that dialed higher wins the battle. Discard after use.",
                 [41] = "Play just after a spice blow comes up. Doubles the Spice blow. Place double the amount of spice in the territory.",
                 [42] = "Play at beginning of Spice Blow Phase instead of revealing the Spice Blow card. Causes a Shai-Hulud to appear. Play proceeds as though Shai-Hulud has been revealed.",
                 [43] = "At the beginning of any phase, cause all players to discard half of the spice behind their shields, rounded up, to the Spice Bank.",
                 [44] = "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
 
-                [45] = "",
-                [46] = "",
-                [47] = "",
-                [48] = "",
-                [49] = "",
-                [50] = "",
-                [51] = "",
-                [52] = "",
-                [53] = "",
-                [54] = "",
+                [45] = "Distrans - Give another player a treachery card from your hand at any time except during a bid and if their hand size permits. Discard after use.",
+                [46] = "Choose one: (1) be considered aggressor in a battle or (2) play at the beginning of a phase or action that requires turn order to go first or (3) go last in a phase or action that requires turn order. Discard after use.",
+                [47] = "Weapon - Special - Play as part of your Battle Plan. Becomes a copy of your opponent's weapon. Discard after use.",
+                [48] = "Defense - Poison - You may play this after revealing your battle plan if you did not play a defense and if Voice permits. Discard after use.",
+                [49] = "Ornithopter - As part of your movement you may move one group of forces up to 3 territories or two groups of forces up to your normal move distance. Discard after use.",
+                [50] = "Nullentropy Box - At any time, pay 2 spice to secretly search and take one card from the treachery discard pile. Then shuffle the discard pilem discarding this card on top.",
+                [51] = "Semuta Drug - Add a treachery card to your hand immediately after another player discards it. You choose if multiple cards are discarded at the same time. Discard after use.",
+                [52] = "Residual Poison - Play against your opponent in battle before making battle plans. Kills one of their available leaders at random. No spice is collected for it. Discard after use.",
+                [53] = "Weapon - Special - Play as part of your Battle Plan. You choose after pland are revealed to either kill both leaders or reduce the strength of both leaders to 0. The player with the highest number of undialed forces wins the battle. Dialed forces are lost normally. Discard after use.",
+                [54] = "Allows you to prevent use of a Faction Advantage. Allows you to bid any amount of spice on a card or immediately win a card on bid. Allows you to ship at half price. In the advanced game, allows use of your Special Karama Power once during the game. Discard after use.",
             },
 
             TechTokenDescription_STR = new Dictionary<TechToken, string>
@@ -1809,16 +1807,16 @@ namespace Treachery.Shared
                 [43] = DEFAULT_ART_LOCATION + "/art/Amal.gif",
                 [44] = DEFAULT_ART_LOCATION + "/art/KullWahad.gif",
 
-                [45] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [46] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [47] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [48] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [49] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [50] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [51] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [52] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [53] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [54] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
+                [45] = DEFAULT_ART_LOCATION + "/art/Distrans.gif",
+                [46] = DEFAULT_ART_LOCATION + "/art/JuiceOfSapho.gif",
+                [47] = DEFAULT_ART_LOCATION + "/art/MirrorWeapon.gif",
+                [48] = DEFAULT_ART_LOCATION + "/art/PortableSnooper.gif",
+                [49] = DEFAULT_ART_LOCATION + "/art/Ornithopter.gif",
+                [50] = DEFAULT_ART_LOCATION + "/art/Nullentropy.gif",
+                [51] = DEFAULT_ART_LOCATION + "/art/SemutaDrug.gif",
+                [52] = DEFAULT_ART_LOCATION + "/art/ResidualPoison.gif",
+                [53] = DEFAULT_ART_LOCATION + "/art/StoneBurner.gif",
+                [54] = DEFAULT_ART_LOCATION + "/art/WhiteKarama.gif",
             },
 
             ResourceCardImage_URL = new Dictionary<int, string>()
@@ -1955,17 +1953,18 @@ namespace Treachery.Shared
                 [1039] = DEFAULT_ART_LOCATION + "/art/person38.png",
                 [1040] = DEFAULT_ART_LOCATION + "/art/person39.png",
 
-                [1041] = DEFAULT_ART_LOCATION + "/art/person1041.png",
-                [1042] = DEFAULT_ART_LOCATION + "/art/person1042.png",
-                [1043] = DEFAULT_ART_LOCATION + "/art/person1043.png",
-                [1044] = DEFAULT_ART_LOCATION + "/art/person1044.png",
-                [1045] = DEFAULT_ART_LOCATION + "/art/person1045.png",
-                [1046] = DEFAULT_ART_LOCATION + "/art/person1046.png",
-                [1047] = DEFAULT_ART_LOCATION + "/art/person1047.png",
-                [1048] = DEFAULT_ART_LOCATION + "/art/person1048.png",
-                [1049] = DEFAULT_ART_LOCATION + "/art/person1049.png",
-                [1050] = DEFAULT_ART_LOCATION + "/art/person1050.png",
-                [1051] = DEFAULT_ART_LOCATION + "/art/person1051.png",
+                [1041] = DEFAULT_ART_LOCATION + "/art/person1041.gif",
+                [1042] = DEFAULT_ART_LOCATION + "/art/person1042.gif",
+                [1043] = DEFAULT_ART_LOCATION + "/art/person1043.gif",
+                [1044] = DEFAULT_ART_LOCATION + "/art/person1044.gif",
+                [1045] = DEFAULT_ART_LOCATION + "/art/person1045.gif",
+                [1046] = DEFAULT_ART_LOCATION + "/art/person1046.gif",
+                [1047] = DEFAULT_ART_LOCATION + "/art/person1047.gif",
+                [1048] = DEFAULT_ART_LOCATION + "/art/person1048.gif",
+                [1049] = DEFAULT_ART_LOCATION + "/art/person1049.gif",
+                [1050] = DEFAULT_ART_LOCATION + "/art/person1050.gif",
+                [1051] = DEFAULT_ART_LOCATION + "/art/person1051.gif",
+
                 [1052] = DEFAULT_ART_LOCATION + "/art/person1052.png",
                 [1053] = DEFAULT_ART_LOCATION + "/art/person1053.png",
                 [1054] = DEFAULT_ART_LOCATION + "/art/person1054.png",
@@ -2194,9 +2193,7 @@ namespace Treachery.Shared
                 [Faction.Purple] = "Tleilaxu",
 
                 [Faction.Brown] = "CHOAM",
-                [Faction.White] = "Richese",
-                [Faction.Pink] = "Ecaz",
-                [Faction.Cyan] = "Moritani"
+                [Faction.White] = "Richese"
             },
 
             FactionImage_URL = new Dictionary<Faction, string>()
@@ -2210,10 +2207,8 @@ namespace Treachery.Shared
                 [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7.svg",
                 [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8.svg",
 
-                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.svg",
-                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.svg",
-                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11.svg",
-                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12.svg"
+                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.png",
+                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.png",
             },
 
             FactionTableImage_URL = new Dictionary<Faction, string>()
@@ -2227,10 +2222,8 @@ namespace Treachery.Shared
                 [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7.svg",
                 [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8.svg",
 
-                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.svg",
-                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.svg",
-                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11.svg",
-                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12.svg"
+                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.png",
+                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.png",
             },
 
             FactionFacedownImage_URL = new Dictionary<Faction, string>()
@@ -2244,10 +2237,8 @@ namespace Treachery.Shared
                 [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7.svg",
                 [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8.svg",
 
-                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.svg",
-                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.svg",
-                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11.svg",
-                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12.svg"
+                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.png",
+                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.png",
             },
 
             FactionForceImage_URL = new Dictionary<Faction, string>()
@@ -2261,10 +2252,8 @@ namespace Treachery.Shared
                 { Faction.Grey, DEFAULT_ART_LOCATION + "/art/faction7force.svg" },
                 { Faction.Purple, DEFAULT_ART_LOCATION + "/art/faction8force.svg" },
 
-                { Faction.Brown, DEFAULT_ART_LOCATION + "/art/faction9force.svg" },
-                { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10force.svg" },
-                { Faction.Pink, DEFAULT_ART_LOCATION + "/art/faction11force.svg" },
-                { Faction.Cyan, DEFAULT_ART_LOCATION + "/art/faction12force.svg" }
+                { Faction.Brown, DEFAULT_ART_LOCATION + "/art/faction9force.png" },
+                { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10force.png" },
             },
 
             FactionSpecialForceImage_URL = new Dictionary<Faction, string>()
@@ -2273,7 +2262,8 @@ namespace Treachery.Shared
                 { Faction.Red, DEFAULT_ART_LOCATION + "/art/faction4specialforce.svg" },
                 { Faction.Blue, DEFAULT_ART_LOCATION + "/art/faction6specialforce.svg" },
                 { Faction.Grey, DEFAULT_ART_LOCATION + "/art/faction7specialforce.svg" },
-                { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10specialforce.svg" }
+
+                { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10specialforce.png" }
             },
 
             TechTokenName_STR = new Dictionary<TechToken, string>()
@@ -2303,9 +2293,7 @@ namespace Treachery.Shared
                 [Faction.Purple] = "#602d8bbb",
 
                 [Faction.Brown] = "#582d1bbb",
-                [Faction.White] = "#b3afa4bb",
-                [Faction.Pink] = "#ac65a9bb",
-                [Faction.Cyan] = "#28a4bcbb",
+                [Faction.White] = "#b3afa4bb"
             },
 
             FactionColor = new Dictionary<Faction, string>()
@@ -2321,9 +2309,7 @@ namespace Treachery.Shared
                 [Faction.Purple] = "#602d8b",
 
                 [Faction.Brown] = "#582d1b",
-                [Faction.White] = "#b3afa4",
-                [Faction.Pink] = "#ac65a9",
-                [Faction.Cyan] = "#28a4bc",
+                [Faction.White] = "#b3afa4"
             },
 
             ForceName_STR = new Dictionary<Faction, string>()
@@ -2337,11 +2323,8 @@ namespace Treachery.Shared
                 [Faction.Blue] = "fighters",
                 [Faction.Grey] = "suboids",
                 [Faction.Purple] = "forces",
-
                 [Faction.Brown] = "forces",
-                [Faction.White] = "forces",
-                [Faction.Pink] = "forces",
-                [Faction.Cyan] = "forces"
+                [Faction.White] = "forces"
             },
 
             SpecialForceName_STR = new Dictionary<Faction, string>()
@@ -2357,9 +2340,7 @@ namespace Treachery.Shared
                 [Faction.Purple] = "-",
 
                 [Faction.Brown] = "-",
-                [Faction.White] = "No-Field",
-                [Faction.Pink] = "-",
-                [Faction.Cyan] = "-"
+                [Faction.White] = "No-Field"
             },
 
             LeaderSkillCardName_STR = new Dictionary<LeaderSkill, string>()
@@ -2382,20 +2363,20 @@ namespace Treachery.Shared
 
             LeaderSkillCardImage_URL = new Dictionary<LeaderSkill, string>()
             {
-                [LeaderSkill.Bureaucrat] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [LeaderSkill.Diplomat] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [LeaderSkill.Decipherer] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [LeaderSkill.Smuggler] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [LeaderSkill.Graduate] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [LeaderSkill.Planetologist] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [LeaderSkill.Warmaster] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [LeaderSkill.Adept] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [LeaderSkill.Swordmaster] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [LeaderSkill.KillerMedic] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [LeaderSkill.MasterOfAssassins] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [LeaderSkill.Sandmaster] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [LeaderSkill.Thinker] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif",
-                [LeaderSkill.Banker] = DEFAULT_ART_LOCATION + "/art/EmptyCard.gif"
+                [LeaderSkill.Bureaucrat] = DEFAULT_ART_LOCATION + "/art/Bureaucrat.gif",
+                [LeaderSkill.Diplomat] = DEFAULT_ART_LOCATION + "/art/Diplomat.gif",
+                [LeaderSkill.Decipherer] = DEFAULT_ART_LOCATION + "/art/Decipherer.gif",
+                [LeaderSkill.Smuggler] = DEFAULT_ART_LOCATION + "/art/Smuggler.gif",
+                [LeaderSkill.Graduate] = DEFAULT_ART_LOCATION + "/art/Graduate.gif",
+                [LeaderSkill.Planetologist] = DEFAULT_ART_LOCATION + "/art/Planetologist.gif",
+                [LeaderSkill.Warmaster] = DEFAULT_ART_LOCATION + "/art/Warmaster.gif",
+                [LeaderSkill.Adept] = DEFAULT_ART_LOCATION + "/art/Adept.gif",
+                [LeaderSkill.Swordmaster] = DEFAULT_ART_LOCATION + "/art/Swordmaster.gif",
+                [LeaderSkill.KillerMedic] = DEFAULT_ART_LOCATION + "/art/KillerMedic.gif",
+                [LeaderSkill.MasterOfAssassins] = DEFAULT_ART_LOCATION + "/art/MasterOfAssassins.gif",
+                [LeaderSkill.Sandmaster] = DEFAULT_ART_LOCATION + "/art/Sandmaster.gif",
+                [LeaderSkill.Thinker] = DEFAULT_ART_LOCATION + "/art/Mentat.gif",
+                [LeaderSkill.Banker] = DEFAULT_ART_LOCATION + "/art/Banker.gif"
             },
 
             StrongholdCardName_STR = new Dictionary<int, string>()

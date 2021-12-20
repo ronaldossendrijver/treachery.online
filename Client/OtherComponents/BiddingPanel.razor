@@ -145,7 +145,7 @@
                 if (Game.CurrentBid != null && h.Autopass && Game.CurrentBid.TotalAmount + 1 > h.BidAutoPassThreshold ||
                     Game.CurrentBid == null && h.Autopass && h.BidAutoPassThreshold == 0)
                 {
-                    _ = Task.Delay(500).ContinueWith(e => Pass());
+                    _ = Task.Delay(400 + Random.Shared.Next(800)).ContinueWith(e => AutoPass());
                 }
             }
 
@@ -169,6 +169,14 @@
             int bidToDo = Game.CurrentBid != null ? Game.CurrentBid.TotalAmount + 1 : 1;
             allyContributionAmount = Math.Min(bidToDo, allyResources);
             amount = Math.Min(bidToDo - allyContributionAmount, playerResources);
+        }
+    }
+
+    private async Task AutoPass()
+    {
+        if (_canBid)
+        {
+            await Pass();
         }
     }
 

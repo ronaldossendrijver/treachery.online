@@ -31,7 +31,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} choose {1} for the {2}.", Initiator, Advantage, Game.Map.HiddenMobileStronghold);
+            return new Message(Initiator, "{0} use the {1} stronghold advantage for this battle.", Initiator, Advantage);
         }
 
         public static bool CanBePlayed(Game g, Player p)
