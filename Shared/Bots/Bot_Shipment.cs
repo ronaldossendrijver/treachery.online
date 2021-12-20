@@ -177,7 +177,7 @@ namespace Treachery.Shared
 
                 if (locationToShipTo != null && AnyForcesIn(locationToShipTo) < 10)
                 {
-                    var forcesNeededForCollection = MakeEvenIfEfficientForShipping(DetermineForcesNeededForCollection(richestLocation));
+                    var forcesNeededForCollection = MakeEvenIfEfficientForShipping(Math.Min(6, DetermineForcesNeededForCollection(richestLocation)));
                     var opponent = OccupyingOpponentsIn(richestLocation.Territory).FirstOrDefault();
                     var opponentFaction = opponent != null ? opponent.Faction : Faction.Black;
                     DetermineShortageForShipment(forcesNeededForCollection + TotalMaxDialOfOpponents(richestLocation.Territory), false, locationToShipTo, opponentFaction, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, 0, 99, Faction == Faction.Grey);

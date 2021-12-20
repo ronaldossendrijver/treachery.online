@@ -24,6 +24,7 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(DealAccepted))) action = DetermineDealAccepted();
                 if (action == null && possibleEvents.Contains(typeof(AcceptOrCancelPurpleRevival))) action = DetermineAcceptOrCancelPurpleRevival();
                 if (action == null && possibleEvents.Contains(typeof(ThoughtAnswered))) action = DetermineThoughtAnswered();
+                if (action == null && possibleEvents.Contains(typeof(Thought))) action = DetermineThought();
             }
             catch (Exception e)
             {
@@ -63,7 +64,6 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(PortableAntidoteUsed))) action = DeterminePortableAntidoteUsed();
                 if (action == null && possibleEvents.Contains(typeof(Diplomacy))) action = DetermineDiplomacy();
                 if (action == null && possibleEvents.Contains(typeof(SwitchedSkilledLeader))) action = DetermineSwitchedSkilledLeader();
-                if (action == null && possibleEvents.Contains(typeof(Thought))) action = DetermineThought();
                 if (action == null && possibleEvents.Contains(typeof(Retreat))) action = DetermineRetreat();
                 if (action == null && possibleEvents.Contains(typeof(HMSAdvantageChosen))) action = DetermineHMSAdvantageChosen();
                 if (action == null && possibleEvents.Contains(typeof(Planetology))) action = DeterminePlanetology();
