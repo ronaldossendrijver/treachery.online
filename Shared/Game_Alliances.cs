@@ -144,7 +144,7 @@ namespace Treachery.Shared
             }
         }
 
-        public void DecreasePermittedUseOfAllySpice(Faction f, int amount)
+        private void DecreasePermittedUseOfAllySpice(Faction f, int amount)
         {
             if (PermittedUseOfAllySpice.ContainsKey(f))
             {

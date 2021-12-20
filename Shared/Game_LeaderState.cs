@@ -9,7 +9,7 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public void KillHero(IHero l)
+        private void KillHero(IHero l)
         {
             if (l is Leader || l is Messiah)
             {
@@ -36,7 +36,7 @@ namespace Treachery.Shared
             }
         }
 
-        public void AssassinateLeader(Leader l)
+        private void AssassinateLeader(Leader l)
         {
             LeaderState[l].Assassinate(this);
         }
@@ -96,17 +96,17 @@ namespace Treachery.Shared
             }
         }
 
-        public void SetSkill(Leader l, LeaderSkill skill)
+        private void SetSkill(Leader l, LeaderSkill skill)
         {
             LeaderState[l].Skill = skill;
         }
 
-        public void SwitchInFrontOfShield(Leader l)
+        private void SwitchInFrontOfShield(Leader l)
         {
             LeaderState[l].InFrontOfShield = !LeaderState[l].InFrontOfShield;
         }
 
-        public void SetInFrontOfShield(Leader l, bool value)
+        private void SetInFrontOfShield(Leader l, bool value)
         {
             LeaderState[l].InFrontOfShield = value;
         }

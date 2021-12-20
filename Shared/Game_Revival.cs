@@ -411,7 +411,7 @@ namespace Treachery.Shared
             RecentMilestones.Add(Milestone.SpecialUselessPlayed);
         }
 
-        public void EndResurrectionPhase()
+        private void EndResurrectionPhase()
         {
             ReceiveGraveyardTechIncome();
 

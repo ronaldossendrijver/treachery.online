@@ -486,7 +486,7 @@ namespace Treachery.Shared
 
         private readonly List<FactionAdvantage> PreventedAdvantages = new List<FactionAdvantage>();
 
-        public void Prevent(Faction initiator, FactionAdvantage advantage)
+        private void Prevent(Faction initiator, FactionAdvantage advantage)
         {
             if (!PreventedAdvantages.Contains(advantage))
             {
@@ -495,7 +495,7 @@ namespace Treachery.Shared
             }
         }
 
-        public void Allow(FactionAdvantage advantage)
+        private void Allow(FactionAdvantage advantage)
         {
             if (PreventedAdvantages.Contains(advantage))
             {
@@ -504,10 +504,7 @@ namespace Treachery.Shared
             }
         }
 
-        public bool Prevented(FactionAdvantage advantage)
-        {
-            return PreventedAdvantages.Contains(advantage);
-        }
+        public bool Prevented(FactionAdvantage advantage) => PreventedAdvantages.Contains(advantage);
 
         public bool BribesDuringMentat => !Applicable(Rule.BribesAreImmediate);
 

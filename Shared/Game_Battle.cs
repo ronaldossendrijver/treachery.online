@@ -920,7 +920,7 @@ namespace Treachery.Shared
             BattleTriggeredBureaucracy = null;
         }
 
-        public void ResolveBattle(BattleInitiated b, Battle agg, Battle def, TreacheryCalled aggtrt, TreacheryCalled deftrt)
+        private void ResolveBattle(BattleInitiated b, Battle agg, Battle def, TreacheryCalled aggtrt, TreacheryCalled deftrt)
         {
             var aggressor = GetPlayer(agg.Initiator);
             var defender = GetPlayer(def.Initiator);

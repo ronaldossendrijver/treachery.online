@@ -64,7 +64,7 @@ namespace Treachery.Shared
             Enter(Phase.ClaimingCharity);
         }
 
-        public void EndCharityPhase()
+        private void EndCharityPhase()
         {
             ReceiveResourceTechIncome();
 

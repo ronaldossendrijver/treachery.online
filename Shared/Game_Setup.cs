@@ -98,7 +98,7 @@ namespace Treachery.Shared
             }
         }
 
-        public Deck<ResourceCard> CreateAndShuffleResourceCardDeck()
+        private Deck<ResourceCard> CreateAndShuffleResourceCardDeck()
         {
             var result = new Deck<ResourceCard>(Random);
             foreach (var c in Map.GetResourceCardsInAndOutsidePlay(Map).Where(c => !c.IsSandTrout || Applicable(Rule.GreyAndPurpleExpansionSandTrout)))
