@@ -14,7 +14,7 @@
                  Align="@TextAlignment.Right"/>
     }
 
-    if (h.Host != null && h.Host.JoinedObservers.Count(o => o != "$RonaldAdmin$") > 0)
+    if (h.Host != null && h.Host.JoinedObservers.Count(o => o != h.ServerSettings.AdminName) > 0)
     {
         <MapText ToShow="@string.Format("observers: {0}", Observers.Count())"
                  X="@(Skin.Current.PlanetCenter.X)"
@@ -101,5 +101,5 @@
 
     private string ObserverPopover => string.Join(", ", Observers);
 
-    private IEnumerable<string> Observers => h.Host.JoinedObservers.Where(o => o != "$RonaldAdmin$");
+    private IEnumerable<string> Observers => h.Host.JoinedObservers.Where(o => o != h.ServerSettings.AdminName);
 }

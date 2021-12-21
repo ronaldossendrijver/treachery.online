@@ -13,12 +13,12 @@
 @inject ILogger<Index> logger
 @inject IJSRuntime JSRuntime
 
-@if (scheduledMaintenance.AddMinutes(15) > DateTime.UtcNow &&
-   (scheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 8 && h.CurrentPhase <= Phase.AwaitingPlayers ||
-    scheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 1))
+@if (h.ServerSettings != null && h.ServerSettings.ScheduledMaintenance.AddMinutes(15) > DateTime.UtcNow &&
+   (h.ServerSettings.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 8 && h.CurrentPhase <= Phase.AwaitingPlayers ||
+    h.ServerSettings.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 1))
 {
     <div class="alert alert-danger text-center p-0" role="alert">
-        treachery.online will be down for maintenance from @scheduledMaintenance.ToLocalTime() until @scheduledMaintenance.AddMinutes(15).ToLocalTime()
+        treachery.online will be down for maintenance from @h.ServerSettings.ScheduledMaintenance.ToLocalTime() until @h.ServerSettings.ScheduledMaintenance.AddMinutes(15).ToLocalTime()
     </div>
 }
 
@@ -123,7 +123,7 @@
 
     <!--Global Components-->
 
-    @if ((!h.IsObserver || h.PlayerName == "$RonaldAdmin$") && h.CurrentPhase > Phase.AwaitingPlayers && h.Game.NumberOfHumanPlayers > 1)
+    @if ((!h.IsObserver || h.PlayerName == h.ServerSettings.AdminName) && h.CurrentPhase > Phase.AwaitingPlayers && h.Game.NumberOfHumanPlayers > 1)
     {
         <ChatComponent h="@h" />
     }
@@ -146,15 +146,13 @@
 @code {
 
     private Handler h;
-    private DateTime scheduledMaintenance;
 
     protected override async Task OnInitializedAsync()
     {
         Browser.Initialize(JSRuntime);
         h = new Handler(NavigationManager.ToAbsoluteUri("/gameHub"), logger);
-        h.RefreshHandler += Refresh;
         await h.Start();
-        scheduledMaintenance = await h.GetScheduledMaintenance();
+        h.RefreshHandler += Refresh;
         await LoadSkinDataIfSaved();
     }
 

@@ -30,6 +30,7 @@ namespace Treachery.Client
         public HostProxy HostProxy = null;
         public Host Host = null;
         public bool IsObserver = false;
+        public ServerSettings ServerSettings { get; private set; } 
 
         public Dictionary<int, string> _joinError = new();
         public int _gameinprogressHostId;
@@ -77,6 +78,7 @@ namespace Treachery.Client
             .Build();
 
             _logger = logger;
+
             Game = new Game();
             UpdateStatus();
             RegisterHandlers();
@@ -103,14 +105,8 @@ namespace Treachery.Client
 
         public async Task Start()
         {
-            try
-            {
-                await _connection.StartAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.ToString());
-            }
+            await _connection.StartAsync();
+            await GetServerSettings();
         }
 
         public void SetRevisablePlan(Battle plan)
@@ -763,18 +759,18 @@ namespace Treachery.Client
             }
         }
 
-        public async Task<DateTime> GetScheduledMaintenance()
+        private async Task GetServerSettings()
         {
             try
             {
-                return await _connection.InvokeAsync<DateTime>("GetScheduledMaintenance");
+                ServerSettings = await _connection.InvokeAsync<ServerSettings>("GetServerSettings");
             }
             catch (Exception ex)
             {
                 Support.Log(ex.ToString());
             }
 
-            return default;
+            Console.WriteLine("Retreived ServerSettings. {0} {1}", ServerSettings.ScheduledMaintenance, ServerSettings.AdminName);
         }
 
         #endregion SupportMethods

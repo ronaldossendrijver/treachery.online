@@ -9,6 +9,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using Treachery.Shared;
+using Treachery.Client;
 
 namespace Treachery.Server
 {
@@ -284,18 +285,15 @@ namespace Treachery.Server
             }
         }
 
-        public DateTime GetScheduledMaintenance()
+        public ServerSettings GetServerSettings()
         {
-            var maintenanceDateTime = Configuration["GameMaintenanceDateTime"];
+            var result = new ServerSettings()
+            {
+                ScheduledMaintenance = DateTime.Parse(Configuration["GameMaintenanceDateTime"]),
+                AdminName = Configuration["GameAdminUsername"]
+            };
 
-            try
-            {
-                return DateTime.Parse(maintenanceDateTime);
-            }
-            catch (Exception)
-            {
-                return default;
-            }
+            return result;
         }
 
         #endregion MessagesFromHost
