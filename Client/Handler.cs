@@ -769,8 +769,6 @@ namespace Treachery.Client
             {
                 Support.Log(ex.ToString());
             }
-
-            Console.WriteLine("Retreived ServerSettings. {0} {1}", ServerSettings.ScheduledMaintenance, ServerSettings.AdminName);
         }
 
         #endregion SupportMethods

@@ -1889,25 +1889,11 @@ namespace Treachery.Shared
                 [1044] = "Lady Jalma",
                 [1045] = "Frankos Aru",
                 [1046] = "Auditor",
-
                 [1047] = "Talis Balt",
                 [1048] = "Haloa Rund",
                 [1049] = "Flinto Kinnis",
                 [1050] = "Lady Helena",
-                [1051] = "Premier Ein Calimar",
-
-                [1052] = "Bindikk Narvi",
-                [1053] = "Rivvy Dinari",
-                [1054] = "Ilesa Ecaz",
-                [1055] = "Whitmore Bludd",
-                [1056] = "Sanya Ecaz",
-                [1057] = "Duke Vidal",
-
-                [1058] = "Vando Terboli",
-                [1059] = "Trin Kronos",
-                [1060] = "Hiir Resser",
-                [1061] = "Grieu Kronos",
-                [1062] = "Lupino Ord",
+                [1051] = "Premier Ein Calimar"
             },
 
             PersonImage_URL = new Dictionary<int, string>()
@@ -1964,18 +1950,6 @@ namespace Treachery.Shared
                 [1049] = DEFAULT_ART_LOCATION + "/art/person1049.gif",
                 [1050] = DEFAULT_ART_LOCATION + "/art/person1050.gif",
                 [1051] = DEFAULT_ART_LOCATION + "/art/person1051.gif",
-
-                [1052] = DEFAULT_ART_LOCATION + "/art/person1052.png",
-                [1053] = DEFAULT_ART_LOCATION + "/art/person1053.png",
-                [1054] = DEFAULT_ART_LOCATION + "/art/person1054.png",
-                [1055] = DEFAULT_ART_LOCATION + "/art/person1055.png",
-                [1056] = DEFAULT_ART_LOCATION + "/art/person1056.png",
-                [1057] = DEFAULT_ART_LOCATION + "/art/person1057.png",
-                [1058] = DEFAULT_ART_LOCATION + "/art/person1058.png",
-                [1059] = DEFAULT_ART_LOCATION + "/art/person1059.png",
-                [1060] = DEFAULT_ART_LOCATION + "/art/person1060.png",
-                [1061] = DEFAULT_ART_LOCATION + "/art/person1061.png",
-                [1062] = DEFAULT_ART_LOCATION + "/art/person1062.png",
             },
 
             TerritoryName_STR = new Dictionary<int, string>()
@@ -2501,7 +2475,7 @@ namespace Treachery.Shared
             RESOURCETOKEN_FONT_BORDERWIDTH = 1,
             RESOURCETOKEN_COLOR = "rgba(255,140,60,0.9)",
             RESOURCETOKEN_BORDERCOLOR = "white",
-            RESOURCETOKEN_RADIUS = 10,
+            RESOURCETOKEN_RADIUS = 8,
 
             //Other highlights
             HIGHLIGHT_OVERLAY_COLOR = "rgba(255,255,255,0.5)",

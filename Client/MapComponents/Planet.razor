@@ -92,12 +92,22 @@
         {
             return Skin.Current.STORM_OVERLAY_COLOR;
         }
-        else if (Game.HasStormPrescience(Player) && NextStormWillPassOver(l))
+        if (Game.HasStormPrescience(Player) && NextStormWillPassOver(l))
         {
             return Skin.Current.STORM_PRESCIENCE_OVERLAY_COLOR;
         }
 
         return "transparent";
+    }
+
+    private string LocationTexture(Location l) {
+
+        if (Game.SectorInStorm >= 0 && l.Sector == Game.SectorInStorm)
+        {
+            return "url(#clouds)";
+        }
+
+        return "";
     }
 
     private bool NextStormWillPassOver(Location l)

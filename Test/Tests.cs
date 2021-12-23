@@ -26,13 +26,11 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            var p = e.Player;
-            var haggabasin = g.Map.HaggaBasin.Locations.FirstOrDefault(l => l.SpiceBlowAmount != 0);
-            if (e is Move m && g.SectorInStorm == 11 && m.To == haggabasin && m.ForceLocations.Any(kvp => kvp.Key == g.Map.Carthag))
+            /*var p = e.Player;
+            if (e is KarmaHandSwap && g.CurrentTurn > 3)
             {
-                WriteSavegameIfApplicable(g, p, "Move around storm");
-            }
-
+                WriteSavegameIfApplicable(g, p, "Hand swap");
+            }*/
         }
 
         private List<Type> Written = new List<Type>();
@@ -822,10 +820,10 @@ namespace Treachery.Test
         }
 
 
-        //[TestMethod]
+        [TestMethod]
         public void ApplyTransforms()
         {
-            string filename = "e:\\svg\\techtoken2.svg";
+            string filename = "e:\\svg2\\monster.svg";
 
             var accumulatedTransforms = new Stack<SvgTransformCollection>();
 
@@ -880,6 +878,29 @@ namespace Treachery.Test
                 var transformedPoint = Translate(point, transforms, digits);
                 use.X = new SvgUnit(transformedPoint.X);
                 use.Y = new SvgUnit(transformedPoint.Y);
+            }
+            else if (element is SvgRectangle rect)
+            {
+                var point = new PointF() { X = rect.X.Value, Y = rect.Y.Value };
+                var transformedPoint = Translate(point, transforms, digits);
+                rect.X = new SvgUnit(transformedPoint.X);
+                rect.Y = new SvgUnit(transformedPoint.Y);
+                rect.Width = new SvgUnit(Scale(rect.Width, transforms, digits));
+                rect.Height = new SvgUnit(Scale(rect.Height, transforms, digits));
+            }
+            else if (element is SvgLinearGradientServer linearGradient && linearGradient.GradientUnits == SvgCoordinateUnits.UserSpaceOnUse)
+            {
+                //linearGradient.GradientTransform
+                transforms.Push(linearGradient.GradientTransform);
+                var gradientTransform = new SvgTransformCollection[] { linearGradient.GradientTransform };
+                var point1 = Translate(new PointF() { X = linearGradient.X1, Y = linearGradient.Y1 }, transforms, digits);
+                linearGradient.X1 = point1.X;
+                linearGradient.Y1 = point1.Y;
+                var point2 = Translate(new PointF() { X = linearGradient.X2, Y = linearGradient.Y2 }, transforms, digits);
+                linearGradient.X2 = point2.X;
+                linearGradient.Y2 = point2.Y;
+                transforms.Pop();
+                linearGradient.GradientTransform.Clear();
             }
             else if (element is SvgText text)
             {
