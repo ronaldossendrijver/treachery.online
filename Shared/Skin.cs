@@ -16,7 +16,7 @@ namespace Treachery.Shared
     {
         #region Attributes
 
-        public const int CurrentVersion = 23;
+        public const int CurrentVersion = 31;
 
         //public const string DEFAULT_ART_LOCATION = "https://treachery.online"; //Used for debugging
         public const string DEFAULT_ART_LOCATION = ".";
@@ -27,14 +27,6 @@ namespace Treachery.Shared
         public bool DrawResourceIconsOnMap = false;
         public bool ShowVerboseToolipsOnMap = true;
         public bool ShowArrowsForRecentMoves = true;
-
-        public string ReportBackground_ShipmentAndMove_URL = null;
-        public string ReportBackground_StormAndResourceBlow_URL = null;
-        public string ReportBackground_Resurrection_URL = null;
-        public string ReportBackground_EndOfTurn_URL = null;
-        public string PanelBackground_Bidding_URL = null;
-        public string PanelBackground_EndOfGame_URL = null;
-        public string PanelBackground_Battle_URL = null;
 
         public Dictionary<TreacheryCardType, string> TreacheryCardType_STR;
         public Dictionary<int, string> TreacheryCardName_STR;
@@ -729,36 +721,6 @@ namespace Treachery.Shared
         #endregion Descriptions
 
         #region NamesAndImages
-
-        public string GetReportBackground(Report report)
-        {
-            return report.About switch
-            {
-                MainPhase.ShipmentAndMove => ReportBackground_ShipmentAndMove_URL,
-                MainPhase.Storm => ReportBackground_StormAndResourceBlow_URL,
-                MainPhase.Resurrection => ReportBackground_Resurrection_URL,
-                MainPhase.Contemplate => ReportBackground_EndOfTurn_URL,
-                MainPhase.Bidding => PanelBackground_Bidding_URL,
-                MainPhase.Ended => PanelBackground_EndOfGame_URL,
-                MainPhase.Battle => PanelBackground_Battle_URL,
-                _ => "?",
-            };
-        }
-
-        public string GetBackground(MainPhase phase)
-        {
-            return phase switch
-            {
-                MainPhase.ShipmentAndMove => ReportBackground_ShipmentAndMove_URL,
-                MainPhase.Storm => ReportBackground_StormAndResourceBlow_URL,
-                MainPhase.Resurrection => ReportBackground_Resurrection_URL,
-                MainPhase.Contemplate => ReportBackground_EndOfTurn_URL,
-                MainPhase.Bidding => PanelBackground_Bidding_URL,
-                MainPhase.Ended => PanelBackground_EndOfGame_URL,
-                MainPhase.Battle => PanelBackground_Battle_URL,
-                _ => "?",
-            };
-        }
 
         public string GetTerritoryName(Territory t)
         {
@@ -1573,15 +1535,6 @@ namespace Treachery.Shared
             Resource_URL = DEFAULT_ART_LOCATION + "/art/PassiveSpice.svg",
             Harvester_URL = DEFAULT_ART_LOCATION + "/art/ActiveSpice.svg",
             HMS_URL = DEFAULT_ART_LOCATION + "/art/hms.svg",
-
-            ReportBackground_ShipmentAndMove_URL = DEFAULT_ART_LOCATION + "/art/vortex.gif",
-            ReportBackground_StormAndResourceBlow_URL = DEFAULT_ART_LOCATION + "/art/storm.gif",
-            ReportBackground_EndOfTurn_URL = DEFAULT_ART_LOCATION + "/art/collection.gif",
-            ReportBackground_Resurrection_URL = DEFAULT_ART_LOCATION + "/art/storm.gif",
-
-            PanelBackground_Bidding_URL = DEFAULT_ART_LOCATION + "/art/spacetravel.gif",
-            PanelBackground_EndOfGame_URL = DEFAULT_ART_LOCATION + "/art/blueeyes.gif",
-            PanelBackground_Battle_URL = DEFAULT_ART_LOCATION + "/art/battle.gif",
 
             Concept_STR = new Dictionary<Concept, string>()
             {
@@ -2485,14 +2438,14 @@ namespace Treachery.Shared
             STORM_PRESCIENCE_OVERLAY_COLOR = "rgba(255,100,100,0.2)",
 
             //Card piles
-            CARDPILE_FONT = "normal normal normal 20px Advokat, Verdana, Open Sans, Calibri, Tahoma, sans-serif",
+            CARDPILE_FONT = "normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif",
             CARDPILE_FONTCOLOR = "white",
             CARDPILE_FONT_BORDERCOLOR = "black",
             CARDPILE_FONT_BORDERWIDTH = 1,
 
             //Phases
-            PHASE_FONT = "normal normal normal 10px Advokat, Verdana, Open Sans, Calibri, Tahoma, sans-serif",
-            PHASE_ACTIVE_FONT = "normal normal normal 18px Advokat, Verdana, Open Sans, Calibri, Tahoma, sans-serif",
+            PHASE_FONT = "normal normal normal 10px Advokat, Calibri, Tahoma, sans-serif",
+            PHASE_ACTIVE_FONT = "normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif",
             PHASE_FONTCOLOR = "white",
             PHASE_ACTIVE_FONTCOLOR = "rgb(231,191,60)",
             PHASE_FONT_BORDERCOLOR = "black",
@@ -2500,12 +2453,12 @@ namespace Treachery.Shared
             PHASE_ACTIVE_FONT_BORDERWIDTH = 1,
 
             //Player names
-            PLAYERNAME_FONT = "normal normal normal 10px Advokat, Verdana, Open Sans, Calibri, Tahoma, sans-serif",
+            PLAYERNAME_FONT = "normal normal normal 10px Advokat, Calibri, Tahoma, sans-serif",
             PLAYERNAME_FONTCOLOR = "white",
             PLAYERNAME_FONT_BORDERCOLOR = "black",
             PLAYERNAME_FONT_BORDERWIDTH = 1,
 
-            SKILL_FONT = "normal normal normal 7px Advokat, Verdana, Open Sans, Calibri, Tahoma, sans-serif",
+            SKILL_FONT = "normal normal normal 7px Advokat, Calibri, Tahoma, sans-serif",
             SKILL_FONTCOLOR = "white",
             SKILL_FONT_BORDERCOLOR = "black",
             SKILL_FONT_BORDERWIDTH = 1,
@@ -2513,13 +2466,13 @@ namespace Treachery.Shared
             TABLEPOSITION_BACKGROUNDCOLOR = "rgb(231,191,60)",
 
             //Turns
-            TURN_FONT = "normal normal normal 18px Advokat, Verdana, Open Sans, Calibri, Tahoma, sans-serif",
+            TURN_FONT = "normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif",
             TURN_FONT_COLOR = "white",
             TURN_FONT_BORDERCOLOR = "black",
             TURN_FONT_BORDERWIDTH = 1,
 
             //Wheel
-            WHEEL_FONT = "normal normal normal 24px Advokat, Verdana, Open Sans, Calibri, Tahoma, sans-serif",
+            WHEEL_FONT = "normal normal normal 24px Advokat, Calibri, Tahoma, sans-serif",
             WHEEL_FONTCOLOR = "black",
             WHEEL_FONT_AGGRESSOR_BORDERCOLOR = "white",
             WHEEL_FONT_DEFENDER_BORDERCOLOR = "white",
@@ -2529,8 +2482,8 @@ namespace Treachery.Shared
             SHADOW = "#000000AA",
 
             //General
-            GAMEVERSION_FONT = "normal normal normal 16px Advokat, Verdana, Open Sans, Calibri, Tahoma, sans-serif;",
-            PLAYEDCARD_MESSAGE_FONT = "normal normal normal 20px Advokat, Verdana, Open Sans, Calibri, Tahoma, sans-serif",
+            GAMEVERSION_FONT = "normal normal normal 16px Advokat, Calibri, Tahoma, sans-serif;",
+            PLAYEDCARD_MESSAGE_FONT = "normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif",
             FACTION_INFORMATIONCARDSTYLE = "font: normal normal normal 14px Verdana, Open Sans, Calibri, Tahoma, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; line-height: 95%; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;",
             TRACKER_FONT = "normal normal normal 12px Verdana, Open Sans, Calibri, Tahoma, sans-serif;",
             JSPANEL_DEFAULTSTYLE = "font-family: Verdana, Open Sans, Calibri, Tahoma, sans-serif"

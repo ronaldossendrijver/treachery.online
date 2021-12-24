@@ -40,9 +40,6 @@
     [Parameter]
     public string Title { get; set; }
 
-    [Parameter]
-    public string Background { get; set; }
-
     private string TextColor(Faction f) => f == Faction.White || f == Faction.Grey ? "color:black;" : "";
 
     private string FontStyle(Message m) => m.Target == Faction.None ? "" : "font-style: italic;";

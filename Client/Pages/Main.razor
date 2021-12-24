@@ -108,7 +108,7 @@
 
         @if (h.Game.CurrentReport != null)
         {
-            <ReportComponent h="@h" Report="h.Game.CurrentReport" Title="@h.Game.CurrentReport.Title" Background="@Skin.Current.GetReportBackground(h.Game.CurrentReport)" />
+            <ReportComponent h="@h" Report="h.Game.CurrentReport" Title="@h.Game.CurrentReport.Title" />
         }
 
         @if (!h.IsObserver && h.Player.Faction == Faction.None && h.CurrentPhase > Phase.TradingFactions)
