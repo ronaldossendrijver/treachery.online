@@ -13,7 +13,7 @@ namespace Treachery.Shared
         public const int LowestSupportedVersion = 86;
         public const int LatestVersion = 128;
 
-        public bool BotInfologging = false;
+        public bool BotInfologging = true;
 
         #region GameState
 
@@ -426,6 +426,11 @@ namespace Treachery.Shared
         #endregion
 
         #region CardKnowledge
+
+        public IEnumerable<TreacheryCard> KnownCards(Faction f)
+        {
+            return KnownCards(GetPlayer(f));
+        }
 
         public IEnumerable<TreacheryCard> KnownCards(Player p)
         {

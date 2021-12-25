@@ -43,7 +43,7 @@
         }
 
         @{
-            string lastWonCardName = Tracker.h.Game.CardJustWon != null ? Tracker.h.Game.CardJustWon.Name : "";
+            string lastWonCardName = Tracker.h.Game.CardJustWon != null && Tracker.h.Game.KnownCards(Faction.Green).Contains(Tracker.h.Game.CardJustWon) ? Tracker.h.Game.CardJustWon.Name : "";
 
             @foreach (var v in Tracker.CardsToPick)
             {

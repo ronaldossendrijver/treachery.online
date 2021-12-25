@@ -17,7 +17,6 @@
             <img width="48" src="@Skin.Current.GetImageURL(Player.Ally)" />
         </div>
 
-
         @if (Player.AlliedPlayer.IsBot)
         {
             var ally = Player.AlliedPlayer;
@@ -59,14 +58,14 @@
 
         <div class="mt-1">
             <label class="mt-2 mb-0">How much are you willing to pay for their @(Faction == Faction.Brown ? "battles, " : "")bids and shipments (currently: <strong>@Game.GetPermittedUseOfAllySpice(Player.Ally)</strong>)? @(Faction == Faction.Red ? "Payments for bids flow back to you." : "")</label>
-            <SelectResourcesComponent @bind-Value="spice" Min="0" Max="Player.Resources" />
+            <SelectResourcesComponent @bind-Value="spice" Min="0" Max="Player.Resources" OnChanged=SetEdited/>
         </div>
 
         @if (Karma.CanKarma(Game, Player))
         {
             var permittedKarma = Game.GetPermittedUseOfAllyKarma(Player.Ally);
 
-            <SelectCardComponent @bind-Value="karmaCard" Values="Karma.ValidKarmaCards(Game, Player)" Required="false">
+            <SelectCardComponent @bind-Value="karmaCard" Values="Karma.ValidKarmaCards(Game, Player)" Required="false" OnChanged=SetEdited>
                 <Label>Select a @Skin.Current.Describe(TreacheryCardType.Karma) card they may use to ship at @Skin.Current.Describe(Faction.Orange) rates (currently: <strong>@(permittedKarma == null ? "none" : permittedKarma.Name)</strong>)?</Label>
             </SelectCardComponent>
         }
@@ -79,64 +78,64 @@
         {
             <div class="mt-1">
                 <label class="mt-1 mb-0">How many revivals will you pay for them (currently: <strong>@(Game.RedWillPayForExtraRevival)</strong>)?</label>
-                <SelectForcesComponent @bind-Value="emperorWillPayForExtraRevival" Min="0" Max="3" Faction="Player.Ally" Special="false" />
+                <SelectForcesComponent @bind-Value="emperorWillPayForExtraRevival" Min="0" Max="3" Faction="Player.Ally" Special="false" OnChanged=SetEdited/>
             </div>
         }
         else if (Faction == Faction.Orange)
         {
-            <CheckboxComponent @bind-Value="guildAllyMayShipAsGuild">
+            <CheckboxComponent @bind-Value="guildAllyMayShipAsGuild" OnChanged=SetEdited>
                 Allow shipment at @Skin.Current.Describe(Faction.Orange) rates and site-to-site (currently: <strong>@(Game.OrangeAllyMayShipAsGuild ? "yes" : "no")</strong>)
             </CheckboxComponent>
         }
         else if (Faction == Faction.Purple)
         {
-            <CheckboxComponent @bind-Value="purpleAllyMyReviveAsPurple">
+            <CheckboxComponent @bind-Value="purpleAllyMyReviveAsPurple" OnChanged=SetEdited>
                 Allow revival at @Skin.Current.Describe(Faction.Purple) rates (currently: <strong>@(Game.PurpleAllyMayReviveAsPurple ? "yes" : "no")</strong>)
             </CheckboxComponent>
         }
         else if (Faction == Faction.Grey)
         {
-            <CheckboxComponent @bind-Value="greyAllyMayReplace">
+            <CheckboxComponent @bind-Value="greyAllyMayReplace" OnChanged=SetEdited>
                 Allow replacing treachery cards they win (currently: <strong>@(Game.GreyAllyMayReplaceCards ? "yes" : "no")</strong>)
             </CheckboxComponent>
         }
         else if (Faction == Faction.Yellow)
         {
-            <CheckboxComponent @bind-Value="fremenAllowsThreeFreeRevivals">
+            <CheckboxComponent @bind-Value="fremenAllowsThreeFreeRevivals" OnChanged=SetEdited>
                 Allow 3 free revivals (currently: <strong>@(Game.YellowAllowsThreeFreeRevivals ? "yes" : "no")</strong>)
             </CheckboxComponent>
 
-            <CheckboxComponent @bind-Value="fremenWillProtectFromShaiHulud">
+            <CheckboxComponent @bind-Value="fremenWillProtectFromShaiHulud" OnChanged=SetEdited>
                 Protect them from @Skin.Current.Describe(Concept.Monster) (currently: <strong>@(Game.YellowWillProtectFromShaiHulud ? "yes" : "no")</strong>)
             </CheckboxComponent>
 
             @if (Game.Applicable(Rule.YellowSeesStorm))
             {
-                <CheckboxComponent @bind-Value="fremenShareStormPrescience">
+                <CheckboxComponent @bind-Value="fremenShareStormPrescience" OnChanged=SetEdited>
                     Share storm knowledge (currently: <strong>@(Game.YellowSharesPrescience ? "yes" : "no")</strong>)
                 </CheckboxComponent>
             }
         }
         else if (Faction == Faction.Green)
         {
-            <CheckboxComponent @bind-Value="greenSharePrescience">
+            <CheckboxComponent @bind-Value="greenSharePrescience" OnChanged=SetEdited>
                 Share your Prescience (currently: <strong>@(Game.GreenSharesPrescience ? "yes" : "no")</strong>)
             </CheckboxComponent>
         }
         else if (Faction == Faction.Blue)
         {
-            <CheckboxComponent @bind-Value="blueAllyMayUseVoice">
+            <CheckboxComponent @bind-Value="blueAllyMayUseVoice" OnChanged=SetEdited>
                 Allow use of Voice (currently: <strong>@(Game.BlueAllyMayUseVoice ? "yes" : "no")</strong>)
             </CheckboxComponent>
         }
         else if (Faction == Faction.White)
         {
-            <CheckboxComponent @bind-Value="whiteAllyMayUseNoField">
+            <CheckboxComponent @bind-Value="whiteAllyMayUseNoField" OnChanged=SetEdited>
                 Allow shipment by No-Field (currently: <strong>@(Game.WhiteAllyMayUseNoField ? "yes" : "no")</strong>)
             </CheckboxComponent>
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm Changes" ConfirmError="@Validation" Disabled="@(!Dirty)"/>
+        <ButtonRowComponent Confirm="ConfirmAndSetUnedited" ConfirmText="Confirm Changes" ConfirmError="@Validation" Disabled="@(!Dirty)"/>
 
     </Body>
 
@@ -157,41 +156,50 @@
 
     private int spice;
     private TreacheryCard karmaCard;
+    private bool edited = false;
 
     protected override void OnParametersSet()
     {
-        spice = Game.GetPermittedUseOfAllySpice(Player.Ally);
-        karmaCard = Game.GetPermittedUseOfAllyKarma(Player.Ally);
-
-        switch (Faction)
+        if (!edited)
         {
-            case Faction.Purple:
-                purpleAllyMyReviveAsPurple = Game.PurpleAllyMayReviveAsPurple;
-                break;
-            case Faction.Grey:
-                greyAllyMayReplace = Game.GreyAllyMayReplaceCards;
-                break;
-            case Faction.Orange:
-                guildAllyMayShipAsGuild = Game.OrangeAllyMayShipAsGuild;
-                break;
-            case Faction.Red:
-                emperorWillPayForExtraRevival = Game.RedWillPayForExtraRevival;
-                break;
-            case Faction.Yellow:
-                fremenWillProtectFromShaiHulud = Game.YellowWillProtectFromShaiHulud;
-                fremenAllowsThreeFreeRevivals = Game.YellowAllowsThreeFreeRevivals;
-                fremenShareStormPrescience = Game.YellowSharesPrescience;
-                break;
-            case Faction.Green:
-                greenSharePrescience = Game.GreenSharesPrescience;
-                break;
-            case Faction.Blue:
-                blueAllyMayUseVoice = Game.BlueAllyMayUseVoice;
-                break;
-            case Faction.White:
-                whiteAllyMayUseNoField = Game.WhiteAllyMayUseNoField;
-                break;
+            spice = Game.GetPermittedUseOfAllySpice(Player.Ally);
+            karmaCard = Game.GetPermittedUseOfAllyKarma(Player.Ally);
+
+            switch (Faction)
+            {
+                case Faction.Purple:
+                    purpleAllyMyReviveAsPurple = Game.PurpleAllyMayReviveAsPurple;
+                    break;
+                case Faction.Grey:
+                    greyAllyMayReplace = Game.GreyAllyMayReplaceCards;
+                    break;
+                case Faction.Orange:
+                    guildAllyMayShipAsGuild = Game.OrangeAllyMayShipAsGuild;
+                    break;
+                case Faction.Red:
+                    emperorWillPayForExtraRevival = Game.RedWillPayForExtraRevival;
+                    break;
+                case Faction.Yellow:
+                    fremenWillProtectFromShaiHulud = Game.YellowWillProtectFromShaiHulud;
+                    fremenAllowsThreeFreeRevivals = Game.YellowAllowsThreeFreeRevivals;
+                    fremenShareStormPrescience = Game.YellowSharesPrescience;
+                    break;
+                case Faction.Green:
+                    greenSharePrescience = Game.GreenSharesPrescience;
+                    break;
+                case Faction.Blue:
+                    blueAllyMayUseVoice = Game.BlueAllyMayUseVoice;
+                    break;
+                case Faction.White:
+                    whiteAllyMayUseNoField = Game.WhiteAllyMayUseNoField;
+                    break;
+            }
         }
+    }
+
+    private void SetEdited()
+    {
+        edited = true;
     }
 
     private bool Dirty
@@ -257,5 +265,11 @@
                 PermittedResources = spice,
                 PermittedKarmaCard = karmaCard
             };
+
+    private async Task ConfirmAndSetUnedited()
+    {
+        await Confirm();
+        edited = false;
+    }
 }
 

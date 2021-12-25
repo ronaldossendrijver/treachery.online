@@ -23,6 +23,13 @@
                 <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError="@Validation" />
             }
 
+            @if (AllowAutoConfirm)
+            {
+                <div class="mt-0 text-right">
+                    <CheckboxComponent @bind-Value=autoConfirm OnChanged=SaveAutoConfirmSetting>Next time, auto @ConfirmLabel after 3 seconds</CheckboxComponent>
+                </div>
+            }
+
         </Body>
 
     </GameEventComponentLayout>
@@ -33,6 +40,7 @@
     protected override bool IsUrgent => Alert;
 
     private bool dismissed = false;
+    private bool autoConfirm = false;
 
     [Parameter]
     public string Title { get; set; }
@@ -59,11 +67,60 @@
         set { base.IsFactionSpecific = value; }
     }
 
+    [Parameter]
+    public bool AllowAutoConfirm { get; set; } = false;
+
     protected override GameEventType ConfirmedResult => new GameEventType() { Game = Game, Initiator = Faction };
+
+    protected override void OnInitialized()
+    {
+        autoConfirm = GetAutoConfirmSetting();
+
+        if (autoConfirm)
+        {
+            _ = Task.Delay(3000).ContinueWith(e => AutoPass());
+        }
+    }
+
+    private async Task AutoPass()
+    {
+        if (autoConfirm && ConfirmedResult.IsValid)
+        {
+            await Confirm();
+        }
+    }
 
     private void Dismiss()
     {
         dismissed = true;
+    }
+
+    private static Dictionary<Type, bool> AutoConfirmSettings = new Dictionary<Type, bool>();
+
+    private void SaveAutoConfirmSetting()
+    {
+        var type = typeof(GameEventType);
+
+        if (AutoConfirmSettings.ContainsKey(type))
+        {
+            AutoConfirmSettings.Remove(type);
+        }
+
+        AutoConfirmSettings.Add(type, autoConfirm);
+    }
+
+    private bool GetAutoConfirmSetting()
+    {
+        var type = typeof(GameEventType);
+
+        if (AutoConfirmSettings.ContainsKey(type))
+        {
+            return AutoConfirmSettings[type];
+        }
+        else {
+
+            return false;
+        }
     }
 }
 

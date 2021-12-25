@@ -123,7 +123,7 @@
 
     <!--Global Components-->
 
-    @if ((!h.IsObserver || h.PlayerName == h.ServerSettings.AdminName) && h.CurrentPhase > Phase.AwaitingPlayers && h.Game.NumberOfHumanPlayers > 1)
+    @if ((!h.IsObserver || h.PlayerName == h.ServerSettings.AdminName) && h.CurrentPhase > Phase.AwaitingPlayers)
     {
         <ChatComponent h="@h" />
     }
