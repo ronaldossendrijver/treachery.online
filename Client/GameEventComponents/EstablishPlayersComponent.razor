@@ -158,5 +158,5 @@
 
     private string StartButtonLabel => string.Format("{0} Game!", h.Host.LoadedGame == null ? "Start" : "Continue");
 
-    private bool IsNew(Rule rule) => rule == Rule.CustomDecks || rule == Rule.DisableEndOfGameReport;
+    private bool IsNew(Rule rule) => false; // rule == Rule.CustomDecks || rule == Rule.DisableEndOfGameReport;
 }

@@ -106,7 +106,7 @@
         {
             <Image X="@(X + Skin.Current.BattleScreenHeroX)" Y="@(Y + Skin.Current.BattleScreenHeroY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
                    Src="@Skin.Current.GetImageURL(Plan.Hero as TreacheryCard)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                   Popover="@Support.GetTreacheryCardHoverHTML(Plan.Hero as TreacheryCard)"/>
+                   Popover="@Support.GetTreacheryCardHoverHTML(Plan.Hero as TreacheryCard)" PopoverStyle=""/>
         }
 
         if (TraitorCalled)
@@ -130,7 +130,7 @@
         {
             <Image X="@(X + Skin.Current.BattleWheelCardX + 1.1f * Skin.Current.BattleWheelCardWidth)" Y="@(Y + Skin.Current.BattleWheelCardY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
                    Src="@Skin.Current.GetImageURL(Plan.Defense)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                   Popover="@Support.GetTreacheryCardHoverHTML(Plan.Defense)"/>
+                   Popover="@Support.GetTreacheryCardHoverHTML(Plan.Defense)" PopoverStyle=""/>
         }
         else if (Aspect == PrescienceAspect.Defense)
         {
@@ -148,7 +148,7 @@
         {
             <Image X="@(X + Skin.Current.BattleWheelCardX)" Y="@(Y + Skin.Current.BattleWheelCardY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
                    Src="@Skin.Current.GetImageURL(Plan.Weapon)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                   Popover="@Support.GetTreacheryCardHoverHTML(Plan.Weapon)"/>
+                   Popover="@Support.GetTreacheryCardHoverHTML(Plan.Weapon)" PopoverStyle=""/>
         }
         else if (Aspect == PrescienceAspect.Weapon)
         {

@@ -1,16 +1,10 @@
 {
-  "Description": "Default Skin - 1979 Art",
-  "Version": 4,
+  "Description": "1979 Art",
+  "Version": 31,
   "DrawResourceIconsOnMap": true,
   "ShowVerboseToolipsOnMap": true,
   "ShowArrowsForRecentMoves": true,
-  "ReportBackground_ShipmentAndMove_URL": "https://treachery.online/art/vortex.gif",
-  "ReportBackground_StormAndResourceBlow_URL": "https://treachery.online/art/storm.gif",
-  "ReportBackground_Resurrection_URL": "https://treachery.online/art/storm.gif",
-  "ReportBackground_EndOfTurn_URL": "https://treachery.online/art/collection.gif",
-  "PanelBackground_Bidding_URL": "https://treachery.online/art/spacetravel.gif",
-  "PanelBackground_EndOfGame_URL": "https://treachery.online/art/blueeyes.gif",
-  "PanelBackground_Battle_URL": "https://treachery.online/art/battle.gif",
+
   "TreacheryCardType_STR": {
     "None": "None",
     "Laser": "Lasegun",
@@ -95,7 +89,7 @@
     "20": "Play at any time to revive up to 5 forces or 1 leader.",
     "21": "Can be played after turn 1 just before the storm moves if you have forces on the Shield Wall or an adjacent territory. Destroys the Shield Wall and all forces on it, causing Arrakeen, Carthag and the Imperial Basin to be vulnerable to storms for the rest of the game. This card is then removed from play.",
     "22": "Play during your turn at the Movement phase to perform an additional move.",
-    "23": "Allows you to bid any amount of spice on a card or immediately win a card on bid. Allows you to ship at half price. In the advanced game, allows use of your Special Karama Power once during the game and can be used to prevent a Faction Advantage. Discard after use.",
+    "23": "Allows you to prevent use of a Faction Advantage. Allows you to bid any amount of spice on a card or immediately win a card on bid. Allows you to ship at half price. In the advanced game, allows use of your Special Karama Power once during the game. Discard after use.",
     "25": "Publicly ask one player a yes or no question about the game. That question must be answered truthfully.",
     "27": "Can be played after turn 1 just before the storm moves. Instead of normal storm moved, you can move the storm 0 to 10 sectors.",
     "28": "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
@@ -116,80 +110,81 @@
     "43": "At the beginning of any phase, cause all players to discard half of the spice behind their shields, rounded up, to the Spice Bank.",
     "44": "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan."
   },
+  "TreacheryCardImage_URL": {
+    "0": "./art/Lasegun.gif",
+    "1": "./art/Chrysknife.gif",
+    "2": "./art/MaulaPistol.gif",
+    "3": "./art/Slip-Tip.gif",
+    "4": "./art/Stunner.gif",
+    "5": "./art/Chaumas.gif",
+    "6": "./art/Chaumurky.gif",
+    "7": "./art/EllacaDrug.gif",
+    "8": "./art/GomJabbar.gif",
+    "9": "./art/Shield.gif",
+    "13": "./art/Snooper.gif",
+    "17": "./art/CheapHero.gif",
+    "19": "./art/CheapHeroine.gif",
+    "20": "./art/TleilaxuGhola.gif",
+    "21": "./art/FamilyAtomics.gif",
+    "22": "./art/Hajr.gif",
+    "23": "./art/Karama.gif",
+    "25": "./art/Truthtrance.gif",
+    "27": "./art/WeatherControl.gif",
+    "28": "./art/Baliset.gif",
+    "29": "./art/JubbaCloak.gif",
+    "30": "./art/Kulon.gif",
+    "31": "./art/LaLaLa.gif",
+    "32": "./art/TripToGamont.gif",
+    "33": "./art/PoisonBlade.gif",
+    "34": "./art/Hunter-Seeker.gif",
+    "35": "./art/BasiliaWeapon.gif",
+    "36": "./art/WeirdingWay.gif",
+    "37": "./art/PoisonTooth.gif",
+    "38": "./art/ShieldSnooper.gif",
+    "39": "./art/Chemistry.gif",
+    "40": "./art/ArtilleryStrike.gif",
+    "41": "./art/Harvester.gif",
+    "42": "./art/Thumper.gif",
+    "43": "./art/Amal.gif",
+    "44": "./art/KullWahad.gif"
+  },
   "TechTokenDescription_STR": {
     "Graveyard": "At the end of the Revival phase, yields 1 spice per tech token you own if any player except Tleilaxu used free revival.",
     "Resources": "At the end of the Charity phase, yields 1 spice per tech token you own if any player except Bene Gesserit claimed charity.",
     "Ships": "At the end of the Shipment & Move phase, yields 1 spice per tech token you own if any player except Guild shipped forces from off-planet."
   },
-  "TreacheryCardImage_URL": {
-    "0": "https://treachery.online/art/Lasegun.gif",
-    "1": "https://treachery.online/art/Chrysknife.gif",
-    "2": "https://treachery.online/art/MaulaPistol.gif",
-    "3": "https://treachery.online/art/Slip-Tip.gif",
-    "4": "https://treachery.online/art/Stunner.gif",
-    "5": "https://treachery.online/art/Chaumas.gif",
-    "6": "https://treachery.online/art/Chaumurky.gif",
-    "7": "https://treachery.online/art/EllacaDrug.gif",
-    "8": "https://treachery.online/art/GomJabbar.gif",
-    "9": "https://treachery.online/art/Shield.gif",
-    "13": "https://treachery.online/art/Snooper.gif",
-    "17": "https://treachery.online/art/CheapHero.gif",
-    "19": "https://treachery.online/art/CheapHeroine.gif",
-    "20": "https://treachery.online/art/TleilaxuGhola.gif",
-    "21": "https://treachery.online/art/FamilyAtomics.gif",
-    "22": "https://treachery.online/art/Hajr.gif",
-    "23": "https://treachery.online/art/Karama.gif",
-    "25": "https://treachery.online/art/Truthtrance.gif",
-    "27": "https://treachery.online/art/WeatherControl.gif",
-    "28": "https://treachery.online/art/Baliset.gif",
-    "29": "https://treachery.online/art/JubbaCloak.gif",
-    "30": "https://treachery.online/art/Kulon.gif",
-    "31": "https://treachery.online/art/LaLaLa.gif",
-    "32": "https://treachery.online/art/TripToGamont.gif",
-    "33": "https://treachery.online/art/PoisonBlade.gif",
-    "34": "https://treachery.online/art/Hunter-Seeker.gif",
-    "35": "https://treachery.online/art/BasiliaWeapon.gif",
-    "36": "https://treachery.online/art/WeirdingWay.gif",
-    "37": "https://treachery.online/art/PoisonTooth.gif",
-    "38": "https://treachery.online/art/ShieldSnooper.gif",
-    "39": "https://treachery.online/art/Chemistry.gif",
-    "40": "https://treachery.online/art/ArtilleryStrike.gif",
-    "41": "https://treachery.online/art/Harvester.gif",
-    "42": "https://treachery.online/art/Thumper.gif",
-    "43": "https://treachery.online/art/Amal.gif",
-    "44": "https://treachery.online/art/KullWahad.gif"
-  },
   "ResourceCardImage_URL": {
-    "7": "https://treachery.online/art/CielagoNorth.gif",
-    "10": "https://treachery.online/art/CielagoSouth.gif",
-    "15": "https://treachery.online/art/TheMinorErg.gif",
-    "17": "https://treachery.online/art/RedChasm.gif",
-    "18": "https://treachery.online/art/SouthMesa.gif",
-    "22": "https://treachery.online/art/SihayaRidge.gif",
-    "25": "https://treachery.online/art/OHGap.gif",
-    "26": "https://treachery.online/art/BrokenLand.gif",
-    "29": "https://treachery.online/art/RockOutcroppings.gif",
-    "31": "https://treachery.online/art/HaggaBasin.gif",
-    "33": "https://treachery.online/art/FuneralPlain.gif",
-    "34": "https://treachery.online/art/TheGreatFlat.gif",
-    "37": "https://treachery.online/art/HabbanyaErg.gif",
-    "39": "https://treachery.online/art/WindPassNorth.gif",
-    "40": "https://treachery.online/art/HabbanyaRidgeFlat.gif",
-    "98": "https://treachery.online/art/Shai-Hulud.gif",
-    "99": "https://treachery.online/art/Sandtrout.gif"
+    "7": "./art/CielagoNorth.gif",
+    "10": "./art/CielagoSouth.gif",
+    "15": "./art/TheMinorErg.gif",
+    "17": "./art/RedChasm.gif",
+    "18": "./art/SouthMesa.gif",
+    "22": "./art/SihayaRidge.gif",
+    "25": "./art/OHGap.gif",
+    "26": "./art/BrokenLand.gif",
+    "29": "./art/RockOutcroppings.gif",
+    "31": "./art/HaggaBasin.gif",
+    "33": "./art/FuneralPlain.gif",
+    "34": "./art/TheGreatFlat.gif",
+    "37": "./art/HabbanyaErg.gif",
+    "39": "./art/WindPassNorth.gif",
+    "40": "./art/HabbanyaRidgeFlat.gif",
+    "98": "./art/Shai-Hulud.gif",
+    "99": "./art/Sandtrout.gif"
   },
-  "Map_URL": "https://treachery.online/art/map.svg",
-  "Eye_URL": "https://treachery.online/art/eye.svg",
-  "EyeSlash_URL": "https://treachery.online/art/eyeslash.svg",
-  "Planet_URL": "https://treachery.online/art/planet.png",
-  "CardBack_ResourceCard_URL": "https://treachery.online/art/SpiceBack.gif",
-  "CardBack_TreacheryCard_URL": "https://treachery.online/art/TreacheryBack.gif",
-  "BattleScreen_URL": "https://treachery.online/art/wheel.png",
-  "Messiah_URL": "https://treachery.online/art/messiah.svg",
-  "Monster_URL": "https://treachery.online/art/monster.svg",
-  "Harvester_URL": "https://treachery.online/art/ActiveSpice.svg",
-  "Resource_URL": "https://treachery.online/art/PassiveSpice.svg",
-  "HMS_URL": "https://treachery.online/art/hms.png",
+
+  "Map_URL": "./art/map.svg",
+  "Eye_URL": "./art/eye.svg",
+  "EyeSlash_URL": "./art/eyeslash.svg",
+  "Planet_URL": "./art/planet.png",
+  "CardBack_ResourceCard_URL": "./art/SpiceBack.gif",
+  "CardBack_TreacheryCard_URL": "./art/TreacheryBack.gif",
+  "BattleScreen_URL": "./art/wheel.png",
+  "Messiah_URL": "./art/messiah.svg",
+  "Monster_URL": "./art/monster.svg",
+  "Harvester_URL": "./art/ActiveSpice.svg",
+  "Resource_URL": "./art/PassiveSpice.svg",
+  "HMS_URL": "./art/hms.svg",
   "Concept_STR": {
     "Messiah": "Kwisatz Haderach",
     "Monster": "Shai Hulud",
@@ -208,7 +203,7 @@
     "Resurrection": "Revival",
     "ShipmentAndMove": "Ship & Move",
     "Battle": "Battle",
-    "Collection": "Spice Collection",
+    "Collection": "Collection",
     "Contemplate": "Mentat",
     "Ended": "Game Ended"
   },
@@ -255,46 +250,46 @@
     "1040": "Blin"
   },
   "PersonImage_URL": {
-    "1001": "https://treachery.online/art/person0.png",
-    "1002": "https://treachery.online/art/person1.png",
-    "1003": "https://treachery.online/art/person2.png",
-    "1004": "https://treachery.online/art/person3.png",
-    "1005": "https://treachery.online/art/person4.png",
-    "1006": "https://treachery.online/art/person20.png",
-    "1007": "https://treachery.online/art/person21.png",
-    "1008": "https://treachery.online/art/person22.png",
-    "1009": "https://treachery.online/art/person23.png",
-    "1010": "https://treachery.online/art/person24.png",
-    "1011": "https://treachery.online/art/person15.png",
-    "1012": "https://treachery.online/art/person16.png",
-    "1013": "https://treachery.online/art/person17.png",
-    "1014": "https://treachery.online/art/person18.png",
-    "1015": "https://treachery.online/art/person19.png",
-    "1016": "https://treachery.online/art/person10.png",
-    "1017": "https://treachery.online/art/person11.png",
-    "1018": "https://treachery.online/art/person12.png",
-    "1019": "https://treachery.online/art/person13.png",
-    "1020": "https://treachery.online/art/person14.png",
-    "1021": "https://treachery.online/art/person25.png",
-    "1022": "https://treachery.online/art/person26.png",
-    "1023": "https://treachery.online/art/person27.png",
-    "1024": "https://treachery.online/art/person28.png",
-    "1025": "https://treachery.online/art/person29.png",
-    "1026": "https://treachery.online/art/person5.png",
-    "1027": "https://treachery.online/art/person6.png",
-    "1028": "https://treachery.online/art/person7.png",
-    "1029": "https://treachery.online/art/person8.png",
-    "1030": "https://treachery.online/art/person9.png",
-    "1031": "https://treachery.online/art/person30.png",
-    "1032": "https://treachery.online/art/person31.png",
-    "1033": "https://treachery.online/art/person32.png",
-    "1034": "https://treachery.online/art/person33.png",
-    "1035": "https://treachery.online/art/person34.png",
-    "1036": "https://treachery.online/art/person35.png",
-    "1037": "https://treachery.online/art/person36.png",
-    "1038": "https://treachery.online/art/person37.png",
-    "1039": "https://treachery.online/art/person38.png",
-    "1040": "https://treachery.online/art/person39.png"
+    "1001": "./art/person0.png",
+    "1002": "./art/person1.png",
+    "1003": "./art/person2.png",
+    "1004": "./art/person3.png",
+    "1005": "./art/person4.png",
+    "1006": "./art/person20.png",
+    "1007": "./art/person21.png",
+    "1008": "./art/person22.png",
+    "1009": "./art/person23.png",
+    "1010": "./art/person24.png",
+    "1011": "./art/person15.png",
+    "1012": "./art/person16.png",
+    "1013": "./art/person17.png",
+    "1014": "./art/person18.png",
+    "1015": "./art/person19.png",
+    "1016": "./art/person10.png",
+    "1017": "./art/person11.png",
+    "1018": "./art/person12.png",
+    "1019": "./art/person13.png",
+    "1020": "./art/person14.png",
+    "1021": "./art/person25.png",
+    "1022": "./art/person26.png",
+    "1023": "./art/person27.png",
+    "1024": "./art/person28.png",
+    "1025": "./art/person29.png",
+    "1026": "./art/person5.png",
+    "1027": "./art/person6.png",
+    "1028": "./art/person7.png",
+    "1029": "./art/person8.png",
+    "1030": "./art/person9.png",
+    "1031": "./art/person30.png",
+    "1032": "./art/person31.png",
+    "1033": "./art/person32.png",
+    "1034": "./art/person33.png",
+    "1035": "./art/person34.png",
+    "1036": "./art/person35.png",
+    "1037": "./art/person36.png",
+    "1038": "./art/person37.png",
+    "1039": "./art/person38.png",
+    "1040": "./art/person39.png"
   },
   "TerritoryName_STR": {
     "0": "Polar Sink",
@@ -341,6 +336,458 @@
     "41": "Cielago West",
     "42": "Hidden Mobile Stronghold"
   },
+  "TerritoryBorder_SVG": {
+    "0": "M243.4 297.6 L236.2 311.3 L233.7 326.2 L238.9 332 L242.4 332.3 L248.8 338.5 L256.8 341.8 L264.1 340.8 L268.6 348.9 L273.6 353.9 L288.7 354.5 L301 345.8 L301.4 337.3 L305.7 332 L310.1 321.9 L317.7 311.3 L320.2 297.1 L312 285.4 L302.7 285.5 L298.3 287.3 L291.4 287.1 L286.2 281.9 L281 281.9 L276.5 285.3 L267.7 288.3 L254.9 289.4 L243.4 297.6 z",
+    "1": "M345.8 221.8 L355.3 195.8 L353.8 193.3 L355.8 190.1 L354.6 183.9 L361.1 172.7 L354.7 170.7 L347.7 171.9 L343.9 162.8 L330.4 152.6 L329.5 145 L336.4 137.1 L342.3 126.1 L343.4 121 L340.8 110.7 L341.9 106.9 L336.6 99.3 L330.8 98.6 L320 90.4 L306.4 107.4 L297.6 127.7 L292.9 132.2 L297.6 140.5 L297.5 159 L287.6 182.5 L283.8 207.7 L286.4 217 L286.2 235.3 L288.3 237.8 L287.8 241.9 L287.9 260.2 L289.3 264.5 L286.2 281.9 L291.4 287.1 L298.3 287.3 L302.7 285.5 L302.7 280.5 L312.5 271.2 L317.2 262 L333.1 243.9 L331.6 240.5 L342.5 222.4 L345.8 221.8 z",
+    "2": "M287.6 182.5 L297.5 159 L297.6 140.5 L292.9 132.2 L277.5 129.2 L269.4 133.8 L250.7 139.1 L257.5 178 L261.6 178.3 L267.9 185.3 L275.2 182.6 L287.6 182.5 z",
+    "3": "M341.9 106.9 L340.8 110.7 L343.4 121 L342.3 126.1 L336.4 137.1 L329.5 145 L330.4 152.6 L343.9 162.8 L347.7 171.9 L354.7 170.7 L361.1 172.7 L383.3 134.2 L383.1 124.6 L370.6 110.3 L358 106.3 L341.9 106.9",
+    "4": "M451.4 447.4 L470.7 430.2 L479.3 414.8 L479.1 402.4 L482.6 390.3 L469.5 386.4 L464.4 381.1 L453.8 379.9 L443.5 377.4 L434.9 392.5 L433.7 404 L437.2 420.2 L435.7 433.8 L437.4 441 L451.4 447.4",
+    "5": "M128.8 234 L133.9 216.7 L131 213.6 L130.5 208.7 L127.9 206.7 L127.7 200.5 L122 191 L120 181.5 L111.1 177.2 L91.1 195.1 L90.4 200 L86.2 207.7 L81 209.4 L79.5 218 L89.4 228.9 L94.9 229.7 L100.2 226.6 L112.8 232 L120.6 231.9 L128.8 234 z",
+    "6": "M139.6 430 L129.1 409 L128.6 401.4 L125.9 395 L112.3 391.7 L97.8 396.8 L91.2 407.5 L96.8 427.1 L117 449 L139.6 430",
+    "7": "M224.1 410 L219.8 417.5 L221.1 424.6 L233.7 436.2 L263.8 439.1 L268.6 435.7 L280 435.6 L305.8 451.9 L314 446.6 L323.8 431.9 L330.4 424.6 L336 406.5 L301 345.8 L288.7 354.5 L273.6 353.9 L268.6 348.9 L264.1 340.8 L224.1 410 z",
+    "8": "M336.2 473.2 L324.9 474.3 L311 480.9 L301.1 481.1 L277.8 486.5 L245.5 486.1 L228.7 478.4 L218 479.5 L208.8 474 L210.1 462.8 L217.3 453.4 L219.7 438.3 L218 432.7 L224.5 427.7 L233.7 436.2 L263.8 439.1 L268.6 435.7 L280 435.6 L305.8 451.9 L314 446.6 L323.8 431.9 L327.9 446.4 L340.9 463.4 L336.2 473.2 z",
+    "9": "M259.7 552.8 L259.8 536.1 L264.3 529.4 L259.8 515.6 L260.2 494.4 L267 486.4 L245.5 486.1 L228.7 478.4 L218 479.5 L208.8 474 L195.1 486.8 L179.5 487.3 L159.8 521.3 C191.7 539.8 226.7 550 259.7 552.8 z",
+    "10": "M336.2 473.2 L324.9 474.3 L311 480.9 L301.1 481.1 L277.8 486.5 L267 486.4 L260.2 494.4 L259.8 515.6 L264.3 529.4 L259.8 536.1 L259.7 552.8 C268.3 553.6 276.8 553.9 285.2 553.7 C304.8 553.4 325.5 550.6 346.3 544.8 L342.6 539.1 L342.5 520.6 L346.1 510.3 L344.6 494.6 L337 481.3 L336.2 473.2 z",
+    "11": "M346.3 544.8 C372.2 537.6 398.2 525.6 421.6 508.9 L422 487.5 L420.8 485.6 L414 486 L403.3 483.9 L398.7 477 L396.1 465.4 L387.2 455.7 L373.2 449 L357.5 434 L336 406.5 L330.4 424.6 L323.8 431.9 L327.9 446.4 L340.9 463.4 L336.2 473.2 L337 481.3 L344.6 494.6 L346.1 510.3 L342.5 520.6 L342.6 539.1 L346.3 544.8 z",
+    "12": "M321.6 381.5 L325.3 369.6 L325 357.5 L327.5 357.4 L330.9 360.1 L339.7 360.6 L344.6 342 L334 336.9 L319.2 343.4 L305.7 332 L301.4 337.3 L301 345.8 L321.6 381.5 z",
+    "13": "M451.4 447.4 L437.4 441 L435.7 433.8 L437.2 420.2 L433.7 404 L434.9 392.5 L420.3 381.2 L413.4 381.6 L400 372.9 L393 374 L379.5 362.5 L372.4 376.6 L368.4 376.5 L361.8 366.5 L356.7 347.4 L349.8 341.5 L344.6 342 L339.7 360.6 L330.9 360.1 L327.5 357.4 L325 357.5 L325.3 369.6 L321.6 381.5 L336 406.5 L357.5 434 L373.2 449 L387.2 455.7 L396.1 465.4 L398.7 477 L403.3 483.9 L414 486 L420.8 485.6 L426 483.3 L427.2 480 L431.8 473.4 L433.4 462.8 L440.2 455.2 L451.4 447.4 z",
+    "14": "M334 336.9 L341 319.9 L341 314 L343 311.3 L342.2 289.1 L329.5 270.7 L317.2 262 L312.5 271.2 L302.7 280.5 L302.7 285.5 L312 285.4 L320.2 297.1 L317.7 311.3 L310.1 321.9 L305.7 332 L319.2 343.4 L334 336.9 z",
+    "15": "M344.6 342 L349.8 341.5 L356.7 347.4 L361.8 366.5 L368.4 376.5 L372.4 376.6 L379.5 362.5 L376.1 345.9 L388.7 311.3 L392.5 295.2 L391.9 273.8 L385.7 260.7 L385.6 245.2 L378.7 248.4 L375.5 252.5 L371.6 254.4 L368.3 261.3 L362 260.9 L349.1 265.7 L345.8 269.8 L333.3 276.3 L342.2 289.1 L343 311.3 L341 314 L341 319.9 L334 336.9 L344.6 342 z",
+    "16": "M482.6 390.3 L491.5 364.8 L495.8 356.2 L496.5 342.4 L494.6 336 L495.7 334.1 L493.6 328.8 L495.6 319.7 L501.6 311.3 L502.1 303.7 L495.9 303.7 L486.8 292.2 L484.5 279.6 L488.2 269.5 L497 262.8 L497.9 258.8 L513.4 242.2 C510 230.6 505.6 219.1 500.3 207.8 L490.8 208.1 L487.8 210.3 L484.4 208.6 L475.4 215 L468.8 210.9 L453.9 215.4 L449 210 L437 210.5 L433.3 207.7 L430.8 199 L412.5 213.9 L407.2 227.3 L400.3 233.9 L396 235.2 L395.6 238.6 L392.6 242.1 L385.6 245.2 L385.7 260.7 L391.9 273.8 L392.5 295.2 L388.7 311.3 L376.1 345.9 L379.5 362.5 L393 374 L400 372.9 L413.4 381.6 L420.3 381.2 L434.9 392.5 L443.5 377.4 L453.8 379.9 L464.4 381.1 L469.5 386.4 L482.6 390.3 z",
+    "17": "M523.5 307.3 C523.1 286.3 520 264.2 513.4 242.2 L497.9 258.8 L497 262.8 L488.2 269.5 L484.5 279.6 L486.8 292.2 L495.9 303.7 L502.1 303.7 L501.6 311.3 L523.5 311.3 L523.5 307.3 z",
+    "18": "M421.6 508.9 C454.2 486 481.1 453.8 498.4 418.7 C515.8 383.7 523.6 345.7 523.5 311.3 L501.6 311.3 L495.6 319.7 L493.6 328.8 L495.7 334.1 L494.6 336 L496.5 342.4 L495.8 356.2 L491.5 364.8 L482.6 390.3 L479.1 402.4 L479.3 414.8 L470.7 430.2 L451.4 447.4 L440.2 455.2 L433.4 462.8 L431.8 473.4 L427.2 480 L426 483.3 L420.8 485.6 L422 487.5 L421.6 508.9 z",
+    "19": "M383.7 163.9 L388.7 164.5 L397.6 160.1 L405 158.9 L415 153 L424 152 L428.3 143.7 L442.7 130.6 C434.1 123 425 115.9 415.5 109.6 L404.1 126.1 L393.5 132.1 L393.5 142.1 L389.1 147.4 L386.9 158.4 L383.7 163.9 z",
+    "20": "M355.3 195.8 L367.4 187.2 L367.3 183.9 L374.5 179.6 L375 176.7 L378.2 176.5 L378.9 172.2 L386.9 158.4 L389.1 147.4 L393.5 142.1 L393.5 132.1 L390.2 130.6 L386.5 134.2 L383.3 134.2 L361.1 172.7 L354.6 183.9 L355.8 190.1 L353.8 193.3 L355.3 195.8 z",
+    "21": "M418.9 168.3 L424.2 161.4 L424 152 L415 153 L405 158.9 L397.6 160.1 L388.7 164.5 L383.7 163.9 L378.9 172.2 L378.2 176.5 L375 176.7 L374.5 179.6 L367.3 183.9 L367.4 187.2 L355.3 195.8 L345.8 221.8 L350.4 220.9 L384.3 201.4 L391 200.7 L407.4 188.2 L407.8 182.8 L418.9 168.3 z",
+    "22": "M418.9 168.3 L435.6 165.8 L449 170.4 L466.8 155.5 C459.4 146.7 451.3 138.3 442.7 130.6 L428.3 143.7 L424 152 L424.2 161.4 L418.9 168.3 z",
+    "23": "M333.3 276.3 L345.8 269.8 L349.1 265.7 L362 260.9 L368.3 261.3 L371.6 254.4 L375.5 252.5 L378.7 248.4 L392.6 242.1 L395.6 238.6 L396 235.2 L400.3 233.9 L407.2 227.3 L412.5 213.9 L439.7 191.8 L448.9 174.6 L449 170.4 L435.6 165.8 L418.9 168.3 L407.8 182.8 L407.4 188.2 L391 200.7 L384.3 201.4 L350.4 220.9 L342.5 222.4 L331.6 240.5 L333.1 243.9 L317.2 262 L329.5 270.7 L333.3 276.3 z",
+    "24": "M449 170.4 L448.9 174.6 L439.7 191.8 L430.8 199 L433.3 207.7 L437 210.5 L449 210 L453.9 215.4 L468.8 210.9 L475.4 215 L484.4 208.6 L487.8 210.3 L490.8 208.1 L500.3 207.8 C491.6 189.4 480.3 171.6 466.8 155.5 L449 170.4 z",
+    "25": "M320 90.4 L330.8 98.6 L336.6 99.3 L341.9 106.9 L358 106.3 L370.6 110.3 L383.1 124.6 L383.3 134.2 L386.5 134.2 L390.2 130.6 L393.5 132.1 L404.1 126.1 L415.5 109.6 C380.6 86.2 340.6 73.2 303.3 69.9 L303.3 79.1 L297.8 88.1 L305 86.7 L320 90.4 z",
+    "26": "M166 112.1 L179 116.4 L198.1 116.4 L207.8 108.2 L223.8 105.9 L243.5 98.2 L266.5 93.1 L286.1 94.3 L290.7 89.5 L297.8 88.1 L303.3 79.1 L303.3 69.9 C294.4 69.1 285.6 68.8 277 68.9 C239.3 69.5 197.5 79.5 159.8 101.4 L166 112.1 z",
+    "27": "M320 90.4 L305 86.7 L290.7 89.5 L286.1 94.3 L266.5 93.1 L243.5 98.2 L223.8 105.9 L222.6 109.6 L222.1 120.2 L220 121 L212.6 136.5 L210.3 136.6 L208.3 141.4 L202.9 145.1 L199.9 149.3 L195.4 151.5 L193.4 159.5 L186.6 170.4 L181.8 180.9 L183.2 184.6 L185.6 187.3 L194.8 184.1 L201.2 173 L218.1 159.2 L233.5 156.5 L237.7 159.1 L252.9 151.8 L250.7 139.1 L269.4 133.8 L277.5 129.2 L292.9 132.2 L297.6 127.7 L306.4 107.4 z",
+    "28": "M257.5 178 L261.6 178.3 L267.9 185.3 L275.2 182.6 L287.6 182.5 L283.8 207.7 L286.4 217 L286.2 235.3 L288.3 237.8 L287.8 241.9 L287.9 260.2 L289.3 264.5 L286.2 281.9 L281 281.9 L276.5 285.3 L267.7 288.3 L258.4 272.1 L259.4 259.7 L257.7 254.1 L253.7 249.6 L253 232.3 L254.8 215.2 L261.7 201.4 L257.5 178 z",
+    "29": "M159.8 101.4 C126 120.8 96 149.6 75.3 183.1 L84.6 192.7 L89.3 193 L91.1 195.1 L111.1 177.2 L120 181.5 L130.2 170.5 L139.8 141.9 L148 129.2 L157.9 123.1 L166 112.1 L159.8 101.4 z",
+    "30": "M235.5 273.1 L188.3 233.5 L188.4 227 L184.2 222.9 L182 212.2 L179.1 204.6 L180.7 201.7 L181.2 192.2 L183.2 184.6 L181.8 180.9 L186.6 170.4 L193.4 159.5 L195.4 151.5 L199.9 149.3 L202.9 145.1 L208.3 141.4 L210.3 136.6 L212.6 136.5 L220 121 L222.1 120.2 L222.6 109.6 L223.8 105.9 L207.8 108.2 L198.1 116.4 L179 116.4 L166 112.1 L157.9 123.1 L148 129.2 L139.8 141.9 L130.2 170.5 L120 181.5 L122 191 L127.7 200.5 L127.9 206.7 L130.5 208.7 L131 213.6 L133.9 216.7 L128.8 234 L126.2 242.8 L123.1 243.1 L121 247.5 L120.5 252.9 L185 276.4 L220 289.1 L235.5 273.1 z",
+    "31": "M267.7 288.3 L258.4 272.1 L259.4 259.7 L257.7 254.1 L253.7 249.6 L253 232.3 L254.8 215.2 L261.7 201.4 L252.9 151.8 L237.7 159.1 L233.5 156.5 L218.1 159.2 L201.2 173 L194.8 184.1 L185.6 187.3 L183.2 184.6 L181.2 192.2 L180.7 201.7 L179.1 204.6 L182 212.2 L184.2 222.9 L188.4 227 L188.3 233.5 L235.5 273.1 L254.9 289.4 L267.7 288.3 z",
+    "32": "M47 248.2 L55.4 249.7 L60.3 255 L71.3 254 L85.8 249.4 L88.5 251.2 L95.9 254.8 L99.6 258.6 L110.9 257.8 L120.5 252.9 L121 247.5 L123.1 243.1 L126.2 242.8 L128.8 234 L120.6 231.9 L112.8 232 L100.2 226.6 L94.9 229.7 L89.4 228.9 L79.5 218 L81 209.4 L86.2 207.7 L90.4 200 L91.1 195.1 L89.3 193 L84.6 192.7 L75.3 183.1 C62.4 203.7 53 225.9 47 248.2 z",
+    "33": "M42.1 270.3 L53.5 278.2 L81.4 279.1 L96.3 283.5 L115.1 282.7 L142.5 277.2 L161 279.3 L167.4 283.5 L185.2 280 L185 276.4 L120.5 252.9 L110.9 257.8 L99.6 258.6 L95.9 254.8 L88.5 251.2 L85.8 249.4 L71.3 254 L60.3 255 L55.4 249.7 L47 248.2 C45 255.5 43.4 262.9 42.1 270.3 z",
+    "34": "M185 276.4 L185.2 280 L167.4 283.5 L161 279.3 L142.5 277.2 L115.1 282.7 L96.3 283.5 L81.4 279.1 L53.5 278.2 L42.1 270.3 C39.7 284.2 38.6 298 38.6 311.3 L205.6 311.3 L216.8 300.7 L220 289.1 L185 276.4 z",
+    "35": "M212.5 368.9 L225.7 331.5 L235.3 328 L233.7 326.2 L236.2 311.3 L243.4 297.6 L254.9 289.4 L235.5 273.1 L220 289.1 L216.8 300.7 L205.6 311.3 L203 321.8 L202.8 339.8 L193.6 384.7 L212.5 368.9 z",
+    "36": "M41.8 350.3 L48.7 347.8 L71 351.3 L90 352.2 L106.7 348 L128.5 346.4 L138.2 344.2 L146.1 347 L157.5 346.2 L168.8 352.2 L169 338.4 L170.7 336.9 L171.4 334.5 L181.7 329.7 L184 323.6 L203 321.8 L205.6 311.3 L38.6 311.3 L38.7 315.4 C38.9 326.8 39.9 338.5 41.8 350.3 z",
+    "37": "M168.8 352.2 L157.5 346.2 L146.1 347 L138.2 344.2 L128.5 346.4 L106.7 348 L90 352.2 L71 351.3 L48.7 347.8 L41.8 350.3 C44.2 364.9 47.9 379.7 53.2 394.3 L106.3 375 L117.3 375.9 L123.7 381.8 L129.2 381.5 L140.1 387.4 L149.2 389.6 L153.5 379 L169.2 362 L169.5 354.8 L168.8 352.2 z",
+    "38": "M203 321.8 L184 323.6 L181.7 329.7 L171.4 334.5 L170.7 336.9 L169 338.4 L168.8 352.2 L169.5 354.8 L169.2 362 L153.5 379 L149.2 389.6 L151.8 392.5 L154.6 397.9 L154.7 405.1 L149.7 409.5 L150.7 420.7 L159 438.5 L160.5 453.3 L169.6 459.3 L178.4 459.3 L176.5 428.8 L186.5 417.4 L193.6 384.7 L202.8 339.8 L203 321.8 z",
+    "39": "M235.3 328 L225.7 331.5 L212.5 368.9 L213.3 388.3 L224.1 410 L264.1 340.8 L256.8 341.8 L248.8 338.5 L242.4 332.3 L238.9 332 L235.3 328 z",
+    "40": "M178.419 459.259L169.587 459.259L160.505 453.319L158.971 438.467L150.68 420.751L149.705 409.503L154.737 405.115L154.583 397.874L151.821 392.536L149.214 389.651L140.11 387.414L129.214 381.509L123.695 381.768L117.344 375.877L106.295 374.956L53.249 394.264C71.319 445.451 110.68 493.501 159.847 521.302L179.48 487.295L183.096 466.835L178.419 459.259ZM139.629 430.025L139.629 430.025L117.001 449.011L96.807 427.145L91.241 407.55L97.789 396.841L112.334 391.744L125.942 395.017L128.561 401.424L129.122 408.954Z",
+    "41": "M193.6 384.7 L186.5 417.4 L176.5 428.8 L178.4 459.3 L183.1 466.8 L179.5 487.3 L195.1 486.8 L208.8 474 L210.1 462.8 L217.3 453.4 L219.7 438.3 L218 432.7 L224.5 427.7 L221.1 424.6 L219.8 417.5 L224.1 410 L213.3 388.3 L212.5 368.9 L193.6 384.7 z"
+  },
+  "LocationCenter_Point": {
+    "0": {
+      "X": 277,
+      "Y": 314
+    },
+    "1": {
+      "X": 327,
+      "Y": 243
+    },
+    "2": {
+      "X": 323,
+      "Y": 204
+    },
+    "3": {
+      "X": 291,
+      "Y": 204
+    },
+    "4": {
+      "X": 274,
+      "Y": 169
+    },
+    "5": {
+      "X": 348,
+      "Y": 146
+    },
+    "6": {
+      "X": 451,
+      "Y": 407
+    },
+    "7": {
+      "X": 110,
+      "Y": 201
+    },
+    "8": {
+      "X": 109,
+      "Y": 408
+    },
+    "9": {
+      "X": 241,
+      "Y": 417
+    },
+    "10": {
+      "X": 279,
+      "Y": 421
+    },
+    "11": {
+      "X": 316,
+      "Y": 416
+    },
+    "12": {
+      "X": 236,
+      "Y": 457
+    },
+    "13": {
+      "X": 277,
+      "Y": 454
+    },
+    "14": {
+      "X": 324,
+      "Y": 461
+    },
+    "15": {
+      "X": 215,
+      "Y": 509
+    },
+    "16": {
+      "X": 253,
+      "Y": 523
+    },
+    "17": {
+      "X": 296,
+      "Y": 498
+    },
+    "18": {
+      "X": 326,
+      "Y": 497
+    },
+    "19": {
+      "X": 353,
+      "Y": 462
+    },
+    "20": {
+      "X": 380,
+      "Y": 468
+    },
+    "21": {
+      "X": 312,
+      "Y": 355
+    },
+    "22": {
+      "X": 333,
+      "Y": 346
+    },
+    "23": {
+      "X": 388,
+      "Y": 434
+    },
+    "24": {
+      "X": 394,
+      "Y": 393
+    },
+    "25": {
+      "X": 319,
+      "Y": 333
+    },
+    "26": {
+      "X": 326,
+      "Y": 320
+    },
+    "27": {
+      "X": 332,
+      "Y": 303
+    },
+    "28": {
+      "X": 325,
+      "Y": 284
+    },
+    "29": {
+      "X": 316,
+      "Y": 276
+    },
+    "30": {
+      "X": 367,
+      "Y": 355
+    },
+    "31": {
+      "X": 361,
+      "Y": 326
+    },
+    "32": {
+      "X": 379,
+      "Y": 295
+    },
+    "33": {
+      "X": 371,
+      "Y": 268
+    },
+    "34": {
+      "X": 408,
+      "Y": 365
+    },
+    "35": {
+      "X": 433,
+      "Y": 336
+    },
+    "36": {
+      "X": 439,
+      "Y": 278
+    },
+    "37": {
+      "X": 431,
+      "Y": 234
+    },
+    "38": {
+      "X": 489,
+      "Y": 279
+    },
+    "39": {
+      "X": 446,
+      "Y": 473
+    },
+    "40": {
+      "X": 460,
+      "Y": 449
+    },
+    "41": {
+      "X": 507,
+      "Y": 346
+    },
+    "42": {
+      "X": 428,
+      "Y": 129
+    },
+    "43": {
+      "X": 367,
+      "Y": 179
+    },
+    "44": {
+      "X": 393,
+      "Y": 187
+    },
+    "45": {
+      "X": 428,
+      "Y": 159
+    },
+    "46": {
+      "X": 383,
+      "Y": 235
+    },
+    "47": {
+      "X": 355,
+      "Y": 235
+    },
+    "48": {
+      "X": 464,
+      "Y": 185
+    },
+    "49": {
+      "X": 400,
+      "Y": 118
+    },
+    "50": {
+      "X": 357,
+      "Y": 93
+    },
+    "51": {
+      "X": 312,
+      "Y": 80
+    },
+    "52": {
+      "X": 278,
+      "Y": 82
+    },
+    "53": {
+      "X": 219,
+      "Y": 97
+    },
+    "54": {
+      "X": 272,
+      "Y": 114
+    },
+    "55": {
+      "X": 230,
+      "Y": 137
+    },
+    "56": {
+      "X": 192,
+      "Y": 178
+    },
+    "57": {
+      "X": 275,
+      "Y": 223
+    },
+    "58": {
+      "X": 266,
+      "Y": 268
+    },
+    "59": {
+      "X": 124,
+      "Y": 156
+    },
+    "60": {
+      "X": 81,
+      "Y": 180
+    },
+    "61": {
+      "X": 198,
+      "Y": 132
+    },
+    "62": {
+      "X": 161,
+      "Y": 161
+    },
+    "63": {
+      "X": 172,
+      "Y": 254
+    },
+    "64": {
+      "X": 235,
+      "Y": 188
+    },
+    "65": {
+      "X": 199,
+      "Y": 203
+    },
+    "66": {
+      "X": 71,
+      "Y": 214
+    },
+    "67": {
+      "X": 67,
+      "Y": 244
+    },
+    "68": {
+      "X": 85,
+      "Y": 261
+    },
+    "69": {
+      "X": 143,
+      "Y": 295
+    },
+    "70": {
+      "X": 236,
+      "Y": 287
+    },
+    "71": {
+      "X": 227,
+      "Y": 303
+    },
+    "72": {
+      "X": 213,
+      "Y": 327
+    },
+    "73": {
+      "X": 207,
+      "Y": 357
+    },
+    "74": {
+      "X": 155,
+      "Y": 327
+    },
+    "75": {
+      "X": 84,
+      "Y": 371
+    },
+    "76": {
+      "X": 145,
+      "Y": 375
+    },
+    "77": {
+      "X": 192,
+      "Y": 334
+    },
+    "78": {
+      "X": 182,
+      "Y": 364
+    },
+    "79": {
+      "X": 163,
+      "Y": 449
+    },
+    "80": {
+      "X": 241,
+      "Y": 336
+    },
+    "81": {
+      "X": 247,
+      "Y": 355
+    },
+    "82": {
+      "X": 79,
+      "Y": 408
+    },
+    "83": {
+      "X": 163,
+      "Y": 487
+    },
+    "84": {
+      "X": 205,
+      "Y": 402
+    },
+    "85": {
+      "X": 201,
+      "Y": 463
+    }
+  },
+  "LocationSpice_Point": {
+    "11": {
+      "X": 309,
+      "Y": 393
+    },
+    "17": {
+      "X": 290,
+      "Y": 539
+    },
+    "33": {
+      "X": 362,
+      "Y": 272
+    },
+    "38": {
+      "X": 510,
+      "Y": 292
+    },
+    "40": {
+      "X": 491,
+      "Y": 401
+    },
+    "45": {
+      "X": 443,
+      "Y": 144
+    },
+    "50": {
+      "X": 335,
+      "Y": 86
+    },
+    "53": {
+      "X": 196,
+      "Y": 99
+    },
+    "60": {
+      "X": 94,
+      "Y": 176
+    },
+    "65": {
+      "X": 216,
+      "Y": 233
+    },
+    "68": {
+      "X": 59,
+      "Y": 266
+    },
+    "69": {
+      "X": 55,
+      "Y": 293
+    },
+    "75": {
+      "X": 60,
+      "Y": 367
+    },
+    "80": {
+      "X": 233,
+      "Y": 340
+    },
+    "83": {
+      "X": 133,
+      "Y": 483
+    }
+  },
   "FactionName_STR": {
     "None": "None",
     "Green": "Atreides",
@@ -353,50 +800,50 @@
     "Purple": "Tleilaxu"
   },
   "FactionImage_URL": {
-    "Green": "https://treachery.online/art/faction1.svg",
-    "Black": "https://treachery.online/art/faction2.svg",
-    "Yellow": "https://treachery.online/art/faction3.svg",
-    "Red": "https://treachery.online/art/faction4.svg",
-    "Orange": "https://treachery.online/art/faction5.svg",
-    "Blue": "https://treachery.online/art/faction6.svg",
-    "Grey": "https://treachery.online/art/faction7.svg",
-    "Purple": "https://treachery.online/art/faction8.svg"
+    "Green": "./art/faction1.svg",
+    "Black": "./art/faction2.svg",
+    "Yellow": "./art/faction3.svg",
+    "Red": "./art/faction4.svg",
+    "Orange": "./art/faction5.svg",
+    "Blue": "./art/faction6.svg",
+    "Grey": "./art/faction7.svg",
+    "Purple": "./art/faction8.svg"
   },
   "FactionTableImage_URL": {
-    "Green": "https://treachery.online/art/faction1.svg",
-    "Black": "https://treachery.online/art/faction2.svg",
-    "Yellow": "https://treachery.online/art/faction3.svg",
-    "Red": "https://treachery.online/art/faction4.svg",
-    "Orange": "https://treachery.online/art/faction5.svg",
-    "Blue": "https://treachery.online/art/faction6.svg",
-    "Grey": "https://treachery.online/art/faction7.svg",
-    "Purple": "https://treachery.online/art/faction8.svg"
+    "Green": "./art/faction1.svg",
+    "Black": "./art/faction2.svg",
+    "Yellow": "./art/faction3.svg",
+    "Red": "./art/faction4.svg",
+    "Orange": "./art/faction5.svg",
+    "Blue": "./art/faction6.svg",
+    "Grey": "./art/faction7.svg",
+    "Purple": "./art/faction8.svg"
   },
   "FactionFacedownImage_URL": {
-    "Green": "https://treachery.online/art/faction1.svg",
-    "Black": "https://treachery.online/art/faction2.svg",
-    "Yellow": "https://treachery.online/art/faction3.svg",
-    "Red": "https://treachery.online/art/faction4.svg",
-    "Orange": "https://treachery.online/art/faction5.svg",
-    "Blue": "https://treachery.online/art/faction6.svg",
-    "Grey": "https://treachery.online/art/faction7.svg",
-    "Purple": "https://treachery.online/art/faction8.svg"
+    "Green": "./art/faction1.svg",
+    "Black": "./art/faction2.svg",
+    "Yellow": "./art/faction3.svg",
+    "Red": "./art/faction4.svg",
+    "Orange": "./art/faction5.svg",
+    "Blue": "./art/faction6.svg",
+    "Grey": "./art/faction7.svg",
+    "Purple": "./art/faction8.svg"
   },
   "FactionForceImage_URL": {
-    "Green": "https://treachery.online/art/faction1force.svg",
-    "Black": "https://treachery.online/art/faction2force.svg",
-    "Yellow": "https://treachery.online/art/faction3force.svg",
-    "Red": "https://treachery.online/art/faction4force.svg",
-    "Orange": "https://treachery.online/art/faction5force.svg",
-    "Blue": "https://treachery.online/art/faction6force.svg",
-    "Grey": "https://treachery.online/art/faction7force.svg",
-    "Purple": "https://treachery.online/art/faction8force.svg"
+    "Green": "./art/faction1force.svg",
+    "Black": "./art/faction2force.svg",
+    "Yellow": "./art/faction3force.svg",
+    "Red": "./art/faction4force.svg",
+    "Orange": "./art/faction5force.svg",
+    "Blue": "./art/faction6force.svg",
+    "Grey": "./art/faction7force.svg",
+    "Purple": "./art/faction8force.svg"
   },
   "FactionSpecialForceImage_URL": {
-    "Yellow": "https://treachery.online/art/faction3specialforce.svg",
-    "Red": "https://treachery.online/art/faction4specialforce.svg",
-    "Blue": "https://treachery.online/art/faction6specialforce.svg",
-    "Grey": "https://treachery.online/art/faction7specialforce.svg"
+    "Yellow": "./art/faction3specialforce.svg",
+    "Red": "./art/faction4specialforce.svg",
+    "Blue": "./art/faction6specialforce.svg",
+    "Grey": "./art/faction7specialforce.svg"
   },
   "FactionColorTransparant": {
     "None": "#646464bb",
@@ -448,132 +895,153 @@
     "Resources": "Spice Production"
   },
   "TechTokenImage_URL": {
-    "Graveyard": "https://treachery.online/art/techtoken0.svg",
-    "Ships": "https://treachery.online/art/techtoken1.svg",
-    "Resources": "https://treachery.online/art/techtoken2.svg"
+    "Graveyard": "./art/techtoken0.svg",
+    "Ships": "./art/techtoken1.svg",
+    "Resources": "./art/techtoken2.svg"
   },
   "Sound": {
-    "GameStarted": "https://treachery.online/art/intro.mp3",
-    "Shuffled": "https://treachery.online/art/shuffleanddeal.mp3",
-    "BabyMonster": "https://treachery.online/art/monster.mp3",
-    "Monster": "https://treachery.online/art/monster.mp3",
-    "Resource": "https://treachery.online/art/resource.mp3",
-    "MetheorUsed": "https://treachery.online/art/explosion.mp3",
-    "CharityClaimed": "https://treachery.online/art/bid.mp3",
-    "CardOnBidSwapped": "https://treachery.online/art/cardflip.mp3",
-    "Bid": "https://treachery.online/art/bid.mp3",
-    "CardWonSwapped": "https://treachery.online/art/cardflip.mp3",
-    "AuctionWon": "https://treachery.online/art/bell.mp3",
-    "Revival": "https://treachery.online/art/revival.mp3",
-    "Shipment": "https://treachery.online/art/shipment.mp3",
-    "Move": "https://treachery.online/art/move.mp3",
-    "Explosion": "https://treachery.online/art/explosion.mp3",
-    "LeaderKilled": "https://treachery.online/art/scream.mp3",
+    "GameStarted": "./art/intro.mp3",
+    "Shuffled": "./art/shuffleanddeal.mp3",
+    "BabyMonster": "./art/monster.mp3",
+    "Monster": "./art/monster.mp3",
+    "Resource": "./art/resource.mp3",
+    "MetheorUsed": "./art/explosion.mp3",
+    "CharityClaimed": "./art/bid.mp3",
+    "CardOnBidSwapped": "./art/cardflip.mp3",
+    "Bid": "./art/bid.mp3",
+    "CardWonSwapped": "./art/cardflip.mp3",
+    "AuctionWon": "./art/bell.mp3",
+    "Revival": "./art/revival.mp3",
+    "Shipment": "./art/shipment.mp3",
+    "Move": "./art/move.mp3",
+    "Explosion": "./art/explosion.mp3",
+    "LeaderKilled": "./art/scream.mp3",
     "Messiah": "",
-    "TreacheryCalled": "https://treachery.online/art/laughter.mp3",
-    "FaceDanced": "https://treachery.online/art/laughter.mp3",
-    "Clairvoyance": "https://treachery.online/art/clairvoyance.mp3",
-    "Karma": "https://treachery.online/art/karma.mp3",
-    "Bribe": "https://treachery.online/art/bribe.mp3",
-    "GameWon": "https://treachery.online/art/win.mp3",
-    "Amal": "https://treachery.online/art/flute.mp3",
-    "Thumper": "https://treachery.online/art/thumping.mp3",
-    "Harvester": "https://treachery.online/art/engine.mp3",
-    "HmsMovement": "https://treachery.online/art/hms.mp3",
-    "RaiseDead": "https://treachery.online/art/bubbles.mp3",
-    "WeatherControlled": "https://treachery.online/art/thunder.mp3",
-    "Storm": "https://treachery.online/art/thunder.mp3",
-    "Voice": "https://treachery.online/art/voice.mp3",
-    "Prescience": "https://treachery.online/art/clairvoyance.mp3"
+    "TreacheryCalled": "./art/laughter.mp3",
+    "FaceDanced": "./art/laughter.mp3",
+    "Clairvoyance": "./art/clairvoyance.mp3",
+    "Karma": "./art/karma.mp3",
+    "Bribe": "./art/bribe.mp3",
+    "GameWon": "./art/win.mp3",
+    "Amal": "./art/flute.mp3",
+    "Thumper": "./art/thumping.mp3",
+    "Harvester": "./art/engine.mp3",
+    "HmsMovement": "./art/hms.mp3",
+    "RaiseDead": "./art/bubbles.mp3",
+    "WeatherControlled": "./art/thunder.mp3",
+    "Storm": "./art/thunder.mp3",
+    "Voice": "./art/voice.mp3",
+    "Prescience": "./art/clairvoyance.mp3",
+    "ResourcesReceived": "./art/bid.mp3",
+    "Economics": "./art/bribe.mp3",
+    "CardTraded": "./art/cardflip.mp3",
+    "Discard": "./art/cardflip.mp3",
+    "SpecialUselessPlayed": "./art/karma.mp3"
   },
-  "MusicGeneral_URL": "https://treachery.online/art/101_-_Dune_-_DOS_-_Arrakis.mp3",
-  "MusicResourceBlow_URL": "https://treachery.online/art/104_-_Dune_-_DOS_-_Sequence.mp3",
-  "MusicSetup_URL": "https://treachery.online/art/109_-_Dune_-_DOS_-_Water.mp3",
-  "MusicBidding_URL": "https://treachery.online/art/103_-_Dune_-_DOS_-_Baghdad.mp3",
-  "MusicShipmentAndMove_URL": "https://treachery.online/art/106_-_Dune_-_DOS_-_Wormsuit.mp3",
-  "MusicBattle_URL": "https://treachery.online/art/105_-_Dune_-_DOS_-_Worm_Intro.mp3",
-  "MusicBattleClimax_URL": "https://treachery.online/art/108_-_Dune_-_DOS_-_War_Song.mp3",
-  "MusicMentat_URL": "https://treachery.online/art/102_-_Dune_-_DOS_-_Morning.mp3",
-  "Sound_YourTurn_URL": "https://treachery.online/art/yourturn.mp3",
-  "Sound_Chatmessage_URL": "https://treachery.online/art/whisper.mp3",
+
+  "MusicGeneral_URL": "./art/101_-_Dune_-_DOS_-_Arrakis.mp3",
+  "MusicResourceBlow_URL": "./art/104_-_Dune_-_DOS_-_Sequence.mp3",
+  "MusicSetup_URL": "./art/109_-_Dune_-_DOS_-_Water.mp3",
+  "MusicBidding_URL": "./art/103_-_Dune_-_DOS_-_Baghdad.mp3",
+  "MusicShipmentAndMove_URL": "./art/106_-_Dune_-_DOS_-_Wormsuit.mp3",
+  "MusicBattle_URL": "./art/105_-_Dune_-_DOS_-_Worm_Intro.mp3",
+  "MusicBattleClimax_URL": "./art/108_-_Dune_-_DOS_-_War_Song.mp3",
+  "MusicMentat_URL": "./art/102_-_Dune_-_DOS_-_Morning.mp3",
+  
+  "Sound_YourTurn_URL": "./art/yourturn.mp3",
+  "Sound_Chatmessage_URL": "./art/whisper.mp3",
+
   "MapDimensions": {
-    "X": 4145,
-    "Y": 4601
+    "X": 563,
+    "Y": 626
   },
   "PlanetCenter": {
-    "X": 2070,
-    "Y": 2287
+    "X": 281,
+    "Y": 311
   },
-  "PlanetRadius": 1790,
-  "MapRadius": 1940,
-  "PlayerTokenRadius": 95,
+  "PlanetRadius": 242,
+  "MapRadius": 260,
+  "PlayerTokenRadius": 11,
   "SpiceDeckLocation": {
-    "X": 10,
-    "Y": 4050
+    "X": 0,
+    "Y": 540
   },
   "TreacheryDeckLocation": {
-    "X": 3300,
-    "Y": 4050
+    "X": 475,
+    "Y": 540
   },
-  "BattleScreenWidth": 2037,
-  "BattleScreenHeight": 2037,
-  "BattleScreenHeroX": 351,
-  "BattleScreenHeroY": 1120,
-  "BattleWheelHeroWidth": 644,
-  "BattleWheelHeroHeight": 644,
-  "BattleWheelForcesX": 1026,
-  "BattleWheelForcesY": 203,
-  "BattleWheelCardX": 1107,
-  "BattleWheelCardY": 762,
-  "BattleWheelCardWidth": 642,
-  "BattleWheelCardHeight": 894,
-
-  "MONSTERTOKEN_RADIUS": 100,
-  "FORCETOKEN_FONT": "normal normal bold 80px Candara,sans-serif",
+  "CardSize": {
+    "X": 40,
+    "Y": 56
+  },
+  "BattleScreenWidth": 273,
+  "BattleScreenHeight": 273,
+  "BattleScreenHeroX": 47,
+  "BattleScreenHeroY": 150,
+  "BattleWheelHeroWidth": 86,
+  "BattleWheelHeroHeight": 86,
+  "BattleWheelForcesX": 137,
+  "BattleWheelForcesY": 22,
+  "BattleWheelCardX": 148,
+  "BattleWheelCardY": 102,
+  "BattleWheelCardWidth": 86,
+  "BattleWheelCardHeight": 120,
+  "MONSTERTOKEN_RADIUS": 13,
+  "FORCETOKEN_FONT": "normal normal bold 8px Verdana, Open Sans, Calibri, Tahoma, sans-serif",
   "FORCETOKEN_FONTCOLOR": "white",
   "FORCETOKEN_SPECIAL_FONTCOLOR": "gold",
   "FORCETOKEN_FONT_BORDERCOLOR": "black",
+  "FORCETOKEN_FONT_BORDERWIDTH": 1,
   "FORCETOKEN_SPECIAL_BORDERCOLOR": "gold",
   "FORCETOKEN_BORDERCOLOR": "white",
-  "FORCETOKEN_BORDERWIDTH": 5,
-  "FORCETOKEN_SPECIAL_BORDERWIDTH": 10,
-  "FORCETOKEN_RADIUS": 60,
-  "RESOURCETOKEN_FONT": "normal normal bold 80px Candara,sans-serif",
+  "FORCETOKEN_BORDERWIDTH": 1,
+  "FORCETOKEN_SPECIAL_BORDERWIDTH": 2,
+  "FORCETOKEN_RADIUS": 8,
+  "RESOURCETOKEN_FONT": "normal normal bold 8px Verdana, Open Sans, Calibri, Tahoma, sans-serif",
   "RESOURCETOKEN_FONTCOLOR": "white",
   "RESOURCETOKEN_FONT_BORDERCOLOR": "black",
+  "RESOURCETOKEN_FONT_BORDERWIDTH": 1,
   "RESOURCETOKEN_COLOR": "rgba(255,140,60,0.9)",
   "RESOURCETOKEN_BORDERCOLOR": "white",
-  "RESOURCETOKEN_RADIUS": 80,
+  "RESOURCETOKEN_RADIUS": 8,
   "HIGHLIGHT_OVERLAY_COLOR": "rgba(255,255,255,0.5)",
   "METHEOR_OVERLAY_COLOR": "rgba(209,247,137,0.5)",
   "BLOWNSHIELDWALL_OVERLAY_COLOR": "rgba(137,238,247,0.5)",
   "STORM_OVERLAY_COLOR": "rgba(255,100,100,0.5)",
   "STORM_PRESCIENCE_OVERLAY_COLOR": "rgba(255,100,100,0.2)",
-  "CARDPILE_FONT": "normal normal normal 140px Advokat,sans-serif",
+  "CARDPILE_FONT": "normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif",
   "CARDPILE_FONTCOLOR": "white",
   "CARDPILE_FONT_BORDERCOLOR": "black",
-  "PHASE_FONT": "normal normal bold 90px Advokat,sans-serif",
-  "PHASE_ACTIVE_FONT": "normal normal normal 130px Advokat,sans-serif",
+  "CARDPILE_FONT_BORDERWIDTH": 1,
+  "PHASE_FONT": "normal normal normal 10px Advokat, Calibri, Tahoma, sans-serif",
+  "PHASE_ACTIVE_FONT": "normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif",
   "PHASE_FONTCOLOR": "white",
   "PHASE_ACTIVE_FONTCOLOR": "rgb(231,191,60)",
   "PHASE_FONT_BORDERCOLOR": "black",
-  "PLAYERNAME_FONT": "normal normal bold 95px Advokat,sans-serif",
+  "PHASE_FONT_BORDERWIDTH": 1,
+  "PHASE_ACTIVE_FONT_BORDERWIDTH": 1,
+  "PLAYERNAME_FONT": "normal normal normal 10px Advokat, Calibri, Tahoma, sans-serif",
   "PLAYERNAME_FONTCOLOR": "white",
   "PLAYERNAME_FONT_BORDERCOLOR": "black",
+  "PLAYERNAME_FONT_BORDERWIDTH": 1,
+  "SKILL_FONT": "normal normal normal 7px Advokat, Calibri, Tahoma, sans-serif",
+  "SKILL_FONTCOLOR": "white",
+  "SKILL_FONT_BORDERCOLOR": "black",
+  "SKILL_FONT_BORDERWIDTH": 1,
   "TABLEPOSITION_BACKGROUNDCOLOR": "rgb(231,191,60)",
-  "TURN_FONT": "normal normal normal 130px Advokat,sans-serif",
+  "TURN_FONT": "normal normal normal 18px Advokat, Calibri, Tahoma, sans-serif",
   "TURN_FONT_COLOR": "white",
   "TURN_FONT_BORDERCOLOR": "black",
-  "WHEEL_FONT": "normal normal normal 200px Advokat,sans-serif",
+  "TURN_FONT_BORDERWIDTH": 1,
+  "WHEEL_FONT": "normal normal normal 24px Advokat, Calibri, Tahoma, sans-serif",
   "WHEEL_FONTCOLOR": "black",
   "WHEEL_FONT_AGGRESSOR_BORDERCOLOR": "white",
   "WHEEL_FONT_DEFENDER_BORDERCOLOR": "white",
-  "WHEEL_FONT_BORDERWIDTH": 6,
-  "SHADOW_DARK": "black",
-  "SHADOW_LIGHT": "rgba(0,0,0,0.5)",
-  "GAMEVERSION_FONT": "normal normal normal 16px Candara, sans-serif;",
-  "PLAYEDCARD_MESSAGE_FONT": "normal normal normal 16px Candara, sans-serif",
-  "FACTION_INFORMATIONCARDSTYLE": "font: normal normal normal 14px Candara, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; line-height: 95%; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;",
-  "TRACKER_FONT": "normal normal normal 12px Candara, sans-serif;",
-  "JSPANEL_DEFAULTSTYLE": "font-family: Candara, sans-serif"
+  "WHEEL_FONT_BORDERWIDTH": 2,
+  "SHADOW": "#000000AA",
+  "GAMEVERSION_FONT": "normal normal normal 16px Advokat, Calibri, Tahoma, sans-serif;",
+  "PLAYEDCARD_MESSAGE_FONT": "normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif",
+  "FACTION_INFORMATIONCARDSTYLE": "font: normal normal normal 14px Verdana, Open Sans, Calibri, Tahoma, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; line-height: 95%; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;",
+  "TRACKER_FONT": "normal normal normal 12px Verdana, Open Sans, Calibri, Tahoma, sans-serif;",
+  "JSPANEL_DEFAULTSTYLE": "font-family: Verdana, Open Sans, Calibri, Tahoma, sans-serif"
 }

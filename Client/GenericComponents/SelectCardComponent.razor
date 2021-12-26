@@ -4,6 +4,7 @@
 
 @using System.Collections.Generic;
 @using Treachery.Shared;
+@implements IDisposable
 
 <SelectFromImageComponent @bind-Value="Value" Selected="@Selected" Values="Values" ImageURLs="Values.Select(c => Skin.Current.GetImageURL(c))" PopupHTMLs="Values.Select(c => Support.GetTreacheryCardHoverHTML(c))" Required="Required" ImageWidth="80" OnChanged="@OnChanged">
     <Label>@Label</Label>
@@ -47,5 +48,10 @@
 
     [Parameter]
     public Action OnChanged { get; set; }
+
+    public void Dispose()
+    {
+        _ = Browser.RefreshPopovers();
+    }
 }
 

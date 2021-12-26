@@ -282,7 +282,7 @@ namespace Treachery.Shared
 
                 var dialNeeded = GetDialNeeded(territory, opponent, false);
 
-                if (WinWasPredictedByMeThisTurn(opponent.Faction) ||
+                if (!opponent.Is(Faction.Black) && WinWasPredictedByMeThisTurn(opponent.Faction) ||
                     dialNeeded <= maxDial ||
                     LastTurn && dialNeeded - 1 <= amountICanReinforce + maxDial ||
                     potentialWinningOpponents.Contains(opponent) && dialNeeded <= amountICanReinforce + maxDial)
