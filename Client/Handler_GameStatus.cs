@@ -99,7 +99,7 @@ namespace Treachery.Client
 
                 case Phase.BlackMulligan:
                     return S(
-                    Skin.Current.Format("You may draw a new set of traitors if you were dealt two or more of your own leaders. Otherwise, pass."),
+                    Skin.Current.Format("You may draw a new set of traitors if you were dealt two or more of your own leaders."),
                     Skin.Current.Format("{0} may draw a new set of traitors if they were dealt two or more of their own leaders...", Faction.Black),
                     Faction.Black);
 

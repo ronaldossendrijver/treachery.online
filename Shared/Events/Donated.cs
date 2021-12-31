@@ -81,13 +81,7 @@ namespace Treachery.Shared
             return true;
         }
 
-        private string CardMessage
-        {
-            get
-            {
-                return Card == null ? "" : " and a card ";
-            }
-        }
+        private string CardMessage => Card == null ? "" : " and a card ";
 
         public static IEnumerable<int> ValidAmounts(Game g, Player p)
         {
