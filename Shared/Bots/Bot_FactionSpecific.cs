@@ -332,24 +332,34 @@ namespace Treachery.Shared
 
         private BlueAccompanies DetermineBlueAccompanies()
         {
-            var target = BlueAccompanies.ValidTargets(Game, this).FirstOrDefault(l => l.IsStronghold || !Game.Applicable(Rule.BlueAccompaniesToShipmentLocation));
+            var target = BlueAccompanies.ValidTargets(Game, this).FirstOrDefault(l => l.IsStronghold);
 
             bool shippingOpponentCanWin = false;
-            if (target != null && target != Game.Map.PolarSink)
+            if (target != null)
             {
                 var opponent = GetOpponentThatOccupies(target);
                 var potentialWinningOpponents = Game.Players.Where(p => p != this && p != AlliedPlayer && Game.MeetsNormalVictoryCondition(p, true) && Game.CountChallengedStongholds(p) < 2);
                 shippingOpponentCanWin = potentialWinningOpponents.Contains(opponent);
             }
 
-            if (target != null && !shippingOpponentCanWin && ForcesInReserve > 3 && (AnyForcesIn(target) > 0 || ForcesOnPlanet.Count() < 4 && ForcesOnPlanet.Count(kvp => IsStronghold(kvp.Key)) < 3) && (target != Game.Map.PolarSink || AnyForcesIn(target) < 8))
+            if (target != null && 
+                !shippingOpponentCanWin && 
+                ForcesInReserve > 3 &&
+                AnyForcesIn(target) < 8 &&
+                (!LastTurn && AnyForcesIn(target) > 0 || !HasAlly && ForcesOnPlanet.Count(kvp => IsStronghold(kvp.Key)) < 3))
             {
                 return new BlueAccompanies(Game) { Initiator = Faction, Location = target, Accompanies = true };
             }
-            else
+
+            if (BlueAccompanies.ValidTargets(Game, this).Contains(Game.Map.PolarSink) && 
+                ForcesInReserve > 3 && 
+                !(LastTurn && Game.HasActedOrPassed.Contains(Faction)) &&
+                AnyForcesIn(Game.Map.PolarSink) < 8)
             {
-                return new BlueAccompanies(Game) { Initiator = Faction, Location = null, Accompanies = false };
+                return new BlueAccompanies(Game) { Initiator = Faction, Location = Game.Map.PolarSink, Accompanies = true };
             }
+
+            return new BlueAccompanies(Game) { Initiator = Faction, Location = null, Accompanies = false };
         }
 
         private BluePrediction DetermineBluePrediction()

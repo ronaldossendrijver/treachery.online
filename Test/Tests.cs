@@ -820,7 +820,7 @@ namespace Treachery.Test
         }
 
 
-        [TestMethod]
+        //[TestMethod]
         public void ApplyTransforms()
         {
             string filename = "e:\\svg2\\monster.svg";

@@ -643,19 +643,19 @@ namespace Treachery.Shared
             return result;
         }
 
+        public bool HasOrnithopters(Player p) => 
+            (Applicable(Rule.MovementBonusRequiresOccupationBeforeMovement) ? FactionsWithOrnithoptersAtStartOfMovement.Contains(p.Faction) : OccupiesArrakeenOrCarthag(p)) ||
+            CurrentFlightUsed != null && CurrentFlightUsed.MoveThreeTerritories;
+
         public int DetermineMaximumMoveDistance(Player p, IEnumerable<Battalion> moved)
         {
-            bool hasOrnithopters =
-                (Applicable(Rule.MovementBonusRequiresOccupationBeforeMovement) ? FactionsWithOrnithoptersAtStartOfMovement.Contains(p.Faction) : OccupiesArrakeenOrCarthag(p)) ||
-                CurrentFlightUsed != null && CurrentFlightUsed.MoveThreeTerritories;
-
             int brownExtraMoveBonus = p.Faction == Faction.Brown && BrownHasExtraMove ? 1 : 0;
 
             int planetologyBonus = CurrentPlanetology != null && CurrentPlanetology.AddOneToMovement && CurrentPlanetology.Initiator == p.Faction ? 1 : 0;
 
             int result = 1 + planetologyBonus;
 
-            if (hasOrnithopters)
+            if (HasOrnithopters(p))
             {
                 result = 3;
             }

@@ -701,6 +701,12 @@ namespace Treachery.Shared
 
             if (skill == LeaderSkill.None && !Is(Faction.Purple)) skill = skills.FirstOrDefault(s => s == LeaderSkill.Decipherer);
 
+            if (skill == LeaderSkill.None) skill = skills.FirstOrDefault(s => s == LeaderSkill.Swordmaster);
+            if (skill == LeaderSkill.None) skill = skills.FirstOrDefault(s => s == LeaderSkill.MasterOfAssassins);
+            if (skill == LeaderSkill.None) skill = skills.FirstOrDefault(s => s == LeaderSkill.Adept);
+            if (skill == LeaderSkill.None) skill = skills.FirstOrDefault(s => s == LeaderSkill.KillerMedic);
+            if (skill == LeaderSkill.None) skill = skills.FirstOrDefault(s => s == LeaderSkill.Warmaster);
+
             if (skill == LeaderSkill.None) skill = skills.FirstOrDefault(s => s != LeaderSkill.Planetologist);
 
             if (skill == LeaderSkill.None) skill = skills.First();

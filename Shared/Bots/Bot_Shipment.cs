@@ -43,6 +43,7 @@ namespace Treachery.Shared
                 if (decidedShipment == null && Faction != Faction.Yellow && !winning && !AlmostLastTurn && stillNeedsResources) DetermineShipment_ShipToStrongholdNearSpice();
                 if (decidedShipment == null && Faction == Faction.Yellow && !winning && !LastTurn && stillNeedsResources) DetermineShipment_ShipDirectlyToSpiceAsYellow();
                 if (decidedShipment == null && Game.MayShipAsGuild(this) && !winning && !AlmostLastTurn && stillNeedsResources) DetermineShipment_ShipDirectlyToSpiceAsOrangeOrOrangeAlly();
+                if (decidedShipment == null) DetermineShipment_UnlockMoveBonus(minResourcesToKeep);
                 if (decidedShipment == null && Faction == Faction.Orange && !LastTurn) DetermineShipment_BackToReserves();
                 if (decidedShipment == null) DetermineShipment_DummyAttack(minResourcesToKeep);
                 if (decidedShipment == null) DetermineShipment_StrengthenWeakestStronghold(true, extraForces, Param.Shipment_DialShortageToAccept, !MayFlipToAdvisors);
@@ -238,6 +239,34 @@ namespace Treachery.Shared
                 else if (DetermineShortageForShipment(0.5f, true, targetOfDummyAttack, OccupyingOpponentIn(targetOfDummyAttack.Territory).Faction, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, minResourcesToKeep, 1, false) <= 0)
                 {
                     DoShipment(ShipmentDecision.DummyShipment, nrOfForces, nrOfSpecialForces, noFieldValue, targetOfDummyAttack, false, true);
+                }
+            }
+        }
+
+        protected virtual void DetermineShipment_UnlockMoveBonus(int minResourcesToKeep)
+        {
+            if (!Game.HasOrnithopters(this) && AnyForcesIn(Game.Map.PolarSink) > 0)
+            {
+                LogInfo("DetermineShipment_UnlockMoveBonus()");
+
+                var target = ValidShipmentLocations
+                    .Where(l => l == Game.Map.Arrakeen || l == Game.Map.Carthag)
+                    .LowestOrDefault(l => TotalMaxDialOfOpponents(l.Territory));
+
+                if (target != null)
+                {
+                    var opponent = OccupyingOpponentIn(target.Territory);
+
+                    var needed = 0.5f;
+                    if (opponent != null)
+                    {
+                        needed = Math.Max(0.5f, MaxPotentialForceShortage(opponent != null && OpponentsToShipAndMove.Contains(opponent), target) - AnyForcesIn(Game.Map.PolarSink));
+                    }
+                    
+                    if (DetermineShortageForShipment(needed, true, target, opponent != null ? opponent.Faction : Faction.Black, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, minResourcesToKeep, 1, false) <= 0)
+                    {
+                        DoShipment(ShipmentDecision.DummyShipment, nrOfForces, nrOfSpecialForces, noFieldValue, target, false, true);
+                    }
                 }
             }
         }
