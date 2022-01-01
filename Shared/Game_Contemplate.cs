@@ -356,14 +356,14 @@ namespace Treachery.Shared
                 Winners.Add(fremen);
                 if (fremen.Ally != Faction.None) Winners.Add(GetPlayer(fremen.Ally));
             }
-            else if (guild != null)
+            else if (guild != null && !Applicable(Rule.DisableOrangeSpecialVictory))
             {
                 CurrentReport.Add(Faction.Orange, "{0} special victory conditions are met!", Faction.Orange);
                 WinMethod = WinMethod.OrangeSpecial;
                 Winners.Add(guild);
                 if (guild.Ally != Faction.None) Winners.Add(GetPlayer(guild.Ally));
             }
-            else if (fremen != null)
+            else if (fremen != null && !Applicable(Rule.DisableOrangeSpecialVictory))
             {
                 CurrentReport.Add(Faction.Yellow, "{0} win because {1} is not playing and no one else won.", Faction.Yellow, Faction.Orange);
                 WinMethod = WinMethod.YellowSpecial;

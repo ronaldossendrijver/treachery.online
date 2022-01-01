@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         protected virtual DealAccepted DetermineDealAccepted()
         {
-            if (!DealAccepted.MayAcceptDeals(Game, this, 1)) return null;
+            if (!DealAccepted.MayAcceptDeals(Game, this, 1) || Game.Applicable(Rule.DisableResourceTransfers)) return null;
 
             DealAccepted result = null;
 
@@ -59,7 +59,7 @@ namespace Treachery.Shared
         {
             DealOffered result = null;
 
-            if (Game.CurrentMainPhase > MainPhase.Setup)
+            if (Game.CurrentMainPhase > MainPhase.Setup && !Game.Applicable(Rule.DisableResourceTransfers))
             {
                 result = DetermineOutdatedDealOffers();
                 if (result == null) result = DetermineDealOffered_BiddingPrescienceEntirePhaseYellowTurn1();

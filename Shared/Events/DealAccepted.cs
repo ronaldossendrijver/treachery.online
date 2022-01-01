@@ -35,6 +35,7 @@ namespace Treachery.Shared
         {
             if (!MayAcceptDeals(Game, Player, Price)) return "You currently have an outstanding bid";
             if (Price > Player.Resources) return "You can't pay that much";
+            if (Price > 0 && Game.Applicable(Rule.DisableResourceTransfers)) return Skin.Current.Format("{0} transfers are disabled by house rule", Concept.Resource);
             if (!Game.DealOffers.Any(offer => offer.IsAcceptedBy(this))) return "Offer is not valid (anymore)";
 
             return "";

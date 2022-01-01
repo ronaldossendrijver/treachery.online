@@ -478,6 +478,8 @@ namespace Treachery.Shared
         MovementBonusRequiresOccupationBeforeMovement = 111,
         AssistedNotekeeping = 112,
         ResourceBonusForStrongholds = 113,
+        DisableOrangeSpecialVictory = 114,
+        DisableResourceTransfers = 115,
 
         ExtraKaramaCards = 999,
 

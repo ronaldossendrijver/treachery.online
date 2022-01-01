@@ -331,6 +331,7 @@ namespace Treachery.Test
             var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
             rules.Add(Rule.FillWithBots);
             rules.Add(Rule.AssistedNotekeeping);
+            rules.Add(Rule.DisableOrangeSpecialVictory);
             var factions = EstablishPlayers.AvailableFactions().ToList();
             int nrOfTurns = 7;
             int nrOfPlayers = 6;
@@ -702,7 +703,7 @@ namespace Treachery.Test
                     gamesTested++;
                     var fs = File.OpenText(f);
                     var state = GameState.Load(fs.ReadToEnd());
-                    var game = new Game(state.Version);
+                    var game = new Game(state.Version, false);
 
                     fs = File.OpenText(f + ".testcase");
                     var tc = LoadObject<Testcase>(fs.ReadToEnd());

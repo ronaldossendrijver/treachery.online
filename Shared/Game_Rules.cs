@@ -314,6 +314,8 @@ namespace Treachery.Shared
                 case Rule.BattleWithoutLeader:
                 case Rule.CapturedLeadersAreTraitorsToOwnFaction:
                 case Rule.DisableEndOfGameReport:
+                case Rule.DisableOrangeSpecialVictory:
+                case Rule.DisableResourceTransfers:
                     return RuleGroup.House;
 
                 case Rule.FillWithBots:
