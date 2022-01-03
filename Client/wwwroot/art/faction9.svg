@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:serif="http://www.serif.com/" width="91" height="91" viewBox="0, 0, 91, 91" xml:space="preserve" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" style="clip-rule:evenodd;">
+    <g>
+        <clipPath id="Clip">
+            <circle cx="45.5" cy="45.5" r="45.5"/>
+        </clipPath>
+		
+        <g clip-path="url(#Clip)">
+            <rect x="0" y="0" width="91" height="59.03" style="fill:#D12026;" />
+            <rect x="0" y="45.46" width="91" height="66.21" style="fill:#171717;" />
+        </g>
+    </g>
+	
+	<circle cx="45.5" cy="45.5" r="45.0" fill="transparent" stroke="#FFFFFF80" stroke-width="1"/>
+	
+</svg>

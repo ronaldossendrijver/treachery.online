@@ -1934,7 +1934,7 @@ namespace Treachery.Shared
                 [22] = "Sihaya Ridge",
                 [23] = "Shield Wall",
                 [24] = "Gara Kulon",
-                [25] = "OH Gap",
+                [25] = "Old Gap",
                 [26] = "Broken Land",
                 [27] = "Tsimpo",
                 [28] = "Arsunt",
@@ -2136,8 +2136,8 @@ namespace Treachery.Shared
                 [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7.svg",
                 [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8.svg",
 
-                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.png",
-                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.png",
+                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.svg",
+                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.svg",
             },
 
             FactionTableImage_URL = new Dictionary<Faction, string>()
@@ -2151,8 +2151,8 @@ namespace Treachery.Shared
                 [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7.svg",
                 [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8.svg",
 
-                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.png",
-                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.png",
+                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.svg",
+                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.svg",
             },
 
             FactionFacedownImage_URL = new Dictionary<Faction, string>()
@@ -2166,8 +2166,8 @@ namespace Treachery.Shared
                 [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7.svg",
                 [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8.svg",
 
-                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.png",
-                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.png",
+                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.svg",
+                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.svg",
             },
 
             FactionForceImage_URL = new Dictionary<Faction, string>()
@@ -2192,7 +2192,7 @@ namespace Treachery.Shared
                 { Faction.Blue, DEFAULT_ART_LOCATION + "/art/faction6specialforce.svg" },
                 { Faction.Grey, DEFAULT_ART_LOCATION + "/art/faction7specialforce.svg" },
 
-                { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10specialforce.png" }
+                { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10specialforce.svg" }
             },
 
             TechTokenName_STR = new Dictionary<TechToken, string>()

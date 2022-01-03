@@ -821,16 +821,16 @@ namespace Treachery.Test
         }
 
 
-        //[TestMethod]
+        [TestMethod]
         public void ApplyTransforms()
         {
-            string filename = "e:\\svg2\\monster.svg";
+            string filename = "e:\\svg2\\faction9.svg";
 
             var accumulatedTransforms = new Stack<SvgTransformCollection>();
 
             var doc = SvgDocument.Open(filename);
 
-            ApplyTransforms(doc, accumulatedTransforms, 1);
+            ApplyTransforms(doc, accumulatedTransforms, 3);
 
             doc.Write(filename + ".svg");
         }
@@ -849,9 +849,6 @@ namespace Treachery.Test
             {
                 foreach (var pathSegment in path.PathData)
                 {
-                    //pathSegment.Start = Transform(pathSegment.Start, accumulatedTransforms, 0);
-                    //pathSegment.End = Transform(pathSegment.End, accumulatedTransforms, 0);
-                                        
                     if (pathSegment is SvgCubicCurveSegment svgCubicCurveSegment)
                     {
                         svgCubicCurveSegment.Start = Translate(svgCubicCurveSegment.Start, transforms, digits);
@@ -891,9 +888,7 @@ namespace Treachery.Test
             }
             else if (element is SvgLinearGradientServer linearGradient && linearGradient.GradientUnits == SvgCoordinateUnits.UserSpaceOnUse)
             {
-                //linearGradient.GradientTransform
                 transforms.Push(linearGradient.GradientTransform);
-                var gradientTransform = new SvgTransformCollection[] { linearGradient.GradientTransform };
                 var point1 = Translate(new PointF() { X = linearGradient.X1, Y = linearGradient.Y1 }, transforms, digits);
                 linearGradient.X1 = point1.X;
                 linearGradient.Y1 = point1.Y;
@@ -922,7 +917,7 @@ namespace Treachery.Test
                 text.Y.Add(new SvgUnit(transformedPoint.Y));
 
                 float rotation = Rotation(transforms, 1);
-                //float scale = Scale(1f, transforms, 1);
+
                 if (Math.Abs(rotation) > 0.005)
                 {
                     newTransforms.Add(new SvgRotate(rotation * 57.2957795f, transformedPoint.X, transformedPoint.Y));
@@ -933,13 +928,10 @@ namespace Treachery.Test
                 Console.WriteLine("Skipped {0} ({1})", element.GetType(), element.ToString());
             }
 
-            //if (!(element is SvgDefinitionList))
-            //{
-                foreach (var child in element.Children)
-                {
-                    ApplyTransforms(child, transforms, digits);
-                }
-            //}
+            foreach (var child in element.Children)
+            {
+                ApplyTransforms(child, transforms, digits);
+            }
             
             if (hadTransforms)
             {
@@ -997,7 +989,6 @@ namespace Treachery.Test
             {
                 return 0;
             }
-            //return new PointF() { X = (float)Math.Round(thePoints[0].X, digits), Y = (float)Math.Round(thePoints[0].Y, digits) };
         }
 
         private static float Scale(float radius, IEnumerable<SvgTransformCollection> transforms, int digits)
