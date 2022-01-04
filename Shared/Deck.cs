@@ -118,11 +118,4 @@ namespace Treachery.Shared
             return string.Join(", ", Items);
         }
     }
-
-    public enum ReshuffleOption : int
-    {
-        None = 0,
-        UseEntireDiscardPile = 1,
-        UseDiscardPileButLeaveTop = 2
-    }
 }

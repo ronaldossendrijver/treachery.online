@@ -115,7 +115,7 @@ namespace Treachery.Shared
 
             if (result.Count == 0)
             {
-                return g.ValidFreeRevivalHeroes(p).Where(h => g.AllowedEarlyRevivals.ContainsKey(h));
+                return g.KilledHeroes(p).Where(h => g.AllowedEarlyRevivals.ContainsKey(h));
             }
 
             if (p.Is(Faction.Purple) && g.Applicable(Rule.GreyAndPurpleExpansionPurpleGholas) && p.Leaders.Count(l => g.LeaderState[l].Alive) < 5)

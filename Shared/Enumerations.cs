@@ -375,21 +375,18 @@ namespace Treachery.Shared
     {
         None = 0,
         BasicGame = 10,
-        //AdvancedGameWithoutPayingForBattles = 20,
+        
         AdvancedGame = 30,
 
         ExpansionBasicGame = 110,
-        //ExpansionAdvancedGameWithoutPayingForBattles = 120,
         ExpansionAdvancedGame = 130,
 
         ServerClassic = 140,
 
         Expansion2BasicGame = 150,
-        //Expansion2AdvancedGameWithoutPayingForBattles = 160,
         Expansion2AdvancedGame = 170,
 
         AllExpansionsBasicGame = 180,
-        //AllExpansionsAdvancedGameWithoutPayingForBattles = 190,
         AllExpansionsAdvancedGame = 200,
 
         Custom = 1000
@@ -398,6 +395,13 @@ namespace Treachery.Shared
     public enum Rule : int
     {
         None = 0,
+
+        //Basic classic game
+        HasCharityPhase = 10001,
+
+
+
+
 
         //Advanced Game
         AdvancedCombat = 10,

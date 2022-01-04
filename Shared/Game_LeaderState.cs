@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Treachery.Shared
 {
@@ -128,9 +129,32 @@ namespace Treachery.Shared
             return !LeaderState[l].IsFaceDownDead;
         }
 
-        public Player GetPlayer(Faction f)
+        private bool HasSomethingToRevive(Player player)
         {
-            return Players.FirstOrDefault(p => p.Faction == f);
+            if (player.ForcesKilled > 0 || player.SpecialForcesKilled > 0 || Revival.ValidRevivalHeroes(this, player).Any())
+            {
+                return true;
+            }
+            else if (player.Is(Faction.Purple) && player.Ally != Faction.None)
+            {
+                var ally = GetPlayer(player.Ally);
+                return HasSomethingToRevive(ally);
+            }
+
+            return false;
+        }
+
+        public IEnumerable<IHero> KilledHeroes(Player p)
+        {
+            var result = new List<IHero>();
+            result.AddRange(p.Leaders.Where(l => !IsAlive(l)));
+
+            if (p.Is(Faction.Green) && !IsAlive(LeaderManager.Messiah))
+            {
+                result.Add(LeaderManager.Messiah);
+            }
+
+            return result;
         }
     }
 }

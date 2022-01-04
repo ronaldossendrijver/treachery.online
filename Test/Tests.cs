@@ -26,10 +26,10 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (e is PortableAntidoteUsed && g.PlayerSkilledAs(LeaderSkill.KillerMedic) == e.Player)
+            /*if (e is PortableAntidoteUsed && g.PlayerSkilledAs(LeaderSkill.KillerMedic) == e.Player)
             {
                 WriteSavegameIfApplicable(g, e.Player, "Portable antidote");
-            }
+            }*/
         }
 
         private List<Type> Written = new List<Type>();
@@ -322,7 +322,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 50000;
+            int nrOfGames = 1000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 

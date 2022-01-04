@@ -155,24 +155,28 @@ namespace Treachery.Shared
 
         public int SpiceYourAllyCanPay(Player p)
         {
-            int result = 0;
             if (PermittedUseOfAllySpice.ContainsKey(p.Faction))
             {
                 var ally = GetPlayer(p.Ally);
-                result = Math.Min(PermittedUseOfAllySpice[p.Faction], ally.Resources);
+                return Math.Min(PermittedUseOfAllySpice[p.Faction], ally.Resources);
             }
-            return result;
+            else
+            {
+                return 0;
+            }
         }
 
         public int SpiceForBidsRedCanPay(Faction f)
         {
-            int result = 0;
             if (PermittedUseOfRedSpice.ContainsKey(f))
             {
                 var red = GetPlayer(Faction.Red);
-                result = Math.Min(PermittedUseOfRedSpice[f], red.Resources);
+                return Math.Min(PermittedUseOfRedSpice[f], red.Resources);
             }
-            return result;
+            else
+            {
+                return 0;
+            }
         }
 
         public void HandleEvent(WhiteGaveCard e)

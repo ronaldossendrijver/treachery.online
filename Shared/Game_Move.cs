@@ -479,7 +479,7 @@ namespace Treachery.Shared
                     {
                         if (ResourcesOnPlanet.ContainsKey(loc))
                         {
-                            ChangeSpiceOnPlanet(loc, -1);
+                            ChangeResourcesOnPlanet(loc, -1);
                         }
                     }
 

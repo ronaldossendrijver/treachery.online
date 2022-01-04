@@ -209,7 +209,7 @@ namespace Treachery.Shared
                 case Phase.Resurrection:
                     if (IsPlaying(Faction.Purple) && faction != Faction.Purple &&
                         (Version <= 78 || !HasActedOrPassed.Contains(faction)) &&
-                        ValidFreeRevivalHeroes(player).Any() &&
+                        KilledHeroes(player).Any() &&
                         !Revival.NormallyRevivableHeroes(this, player).Any() &&
                         (Version < 102 || CurrentPurpleRevivalRequest == null)) result.Add(typeof(RequestPurpleRevival));
 

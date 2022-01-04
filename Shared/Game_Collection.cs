@@ -71,7 +71,7 @@ namespace Treachery.Shared
                     int forcesCollecting3Spice = p.Is(Faction.Grey) ? p.SpecialForcesIn(l.Key) : 0;
                     int maximumSpiceThatCanBeCollected = forcesCollectingDefaultAmountOfSpice * collectionRate + forcesCollecting3Spice * 3;
                     int collectedAmount = Math.Min(l.Value, maximumSpiceThatCanBeCollected);
-                    ChangeSpiceOnPlanet(l.Key, -collectedAmount);
+                    ChangeResourcesOnPlanet(l.Key, -collectedAmount);
                     CurrentReport.Add(p.Faction, "{0} collect {1} from {2}.", p.Faction, collectedAmount, l.Key);
                     p.Resources += collectedAmount;
                 }

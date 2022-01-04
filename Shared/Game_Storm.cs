@@ -201,7 +201,7 @@ namespace Treachery.Shared
             if (ResourcesOnPlanet.ContainsKey(l))
             {
                 int collected = Math.Min(ResourcesOnPlanet[l], maximumAmount);
-                ChangeSpiceOnPlanet(l, -collected);
+                ChangeResourcesOnPlanet(l, -collected);
                 var collector = GetPlayer(faction);
                 collector.Resources += collected;
                 CurrentReport.Add(faction, "{0} collect {1} {2} from {3}.", faction, collected, Concept.Resource, l);

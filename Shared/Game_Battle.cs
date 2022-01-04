@@ -159,7 +159,7 @@ namespace Treachery.Shared
                     if (collected > 0)
                     {
                         CurrentReport.Add(player.Faction, "{0} {1} collects {2} {3} from {4}", player.Faction, LeaderSkill.Smuggler, collected, Concept.Resource, territory);
-                        ChangeSpiceOnPlanet(locationWithResources, -collected);
+                        ChangeResourcesOnPlanet(locationWithResources, -collected);
                         player.Resources += collected;
                     }
                 }
@@ -365,7 +365,7 @@ namespace Treachery.Shared
             if (locationWithResources != null && SkilledAs(plan.Hero, LeaderSkill.Sandmaster) && plan.Player.AnyForcesIn(CurrentBattle.Territory) > 0)
             {
                 CurrentReport.Add(plan.Initiator, "{0} adds 3 {1} to {2}", LeaderSkill.Sandmaster, Concept.Resource, CurrentBattle.Territory);
-                ChangeSpiceOnPlanet(locationWithResources, 3);
+                ChangeResourcesOnPlanet(locationWithResources, 3);
             }
         }
 

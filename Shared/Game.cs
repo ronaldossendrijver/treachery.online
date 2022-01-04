@@ -10,49 +10,48 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public const int LowestSupportedVersion = 86;
-        public const int LatestVersion = 130;
+        public const int LowestSupportedVersion = 100;
+        public const int LatestVersion = 131;
 
         public bool BotInfologging = true;
 
         #region GameState
 
-        public int MaximumNumberOfTurns = 10;
-        public int MaximumNumberOfPlayers = 6;
-
         public int Seed { get; private set; } = -1;
-        public string Name;
-        private Random Random { get; set; }
+        public int MaximumNumberOfTurns { get; private set; }
+        public int MaximumNumberOfPlayers { get; private set; }
+        public string Name { get; private set; }
         public IList<Milestone> RecentMilestones { get; private set; } = new List<Milestone>();
-        public int Version { get; set; }
-        public Map Map { get; set; } = new Map();
-        public List<Rule> Rules { get; set; } = new List<Rule>();
-        public List<Rule> RulesForBots { get; set; } = new List<Rule>();
-        public List<Rule> AllRules { get; set; } = new List<Rule>();
-        public IList<GameEvent> History { get; set; } = new List<GameEvent>();
-        public bool TrackStatesForReplay { get; set; } = true;
-        public IList<Game> States { get; set; } = new List<Game>();
-        public int CurrentTurn { get; set; } = 0;
-        public MainPhase CurrentMainPhase { get; set; } = MainPhase.Started;
-        public MainPhaseMoment CurrentMoment { get; set; } = MainPhaseMoment.None;
-        public Phase CurrentPhase { get; set; } = Phase.None;
-        public IList<Faction> HasActedOrPassed { get; set; } = new List<Faction>();
-        public IList<Player> Players { get; set; } = new List<Player>();
-        public Report CurrentReport { get; set; }
-        public Deck<TreacheryCard> TreacheryDeck { get; set; }
-        public Deck<TreacheryCard> TreacheryDiscardPile { get; set; }
-        public List<TreacheryCard> RemovedTreacheryCards { get; set; } = new List<TreacheryCard>();
-        public List<TreacheryCard> WhiteCache { get; set; } = new List<TreacheryCard>();
-        public Deck<ResourceCard> ResourceCardDeck { get; set; }
-        public Deck<ResourceCard> ResourceCardDiscardPileA { get; set; }
-        public Deck<ResourceCard> ResourceCardDiscardPileB { get; set; }
-        public int SectorInStorm { get; set; } = -1;
-        public int NextStormMoves { get; set; } = -1;
-        public bool ShieldWallDestroyed { get; set; } = false;
-        public BrownEconomicsStatus EconomicsStatus { get; set; } = BrownEconomicsStatus.None;
-        public IDictionary<Location, int> ResourcesOnPlanet { get; set; } = new Dictionary<Location, int>();
-        public IDictionary<IHero, LeaderState> LeaderState { get; set; } = new Dictionary<IHero, LeaderState>();
-        public Deck<LeaderSkill> SkillDeck { get; set; }
+        public int Version { get; private set; }
+        public Map Map { get; private set; } = new Map();
+        public List<Rule> Rules { get; private set; } = new List<Rule>();
+        public List<Rule> RulesForBots { get; private set; } = new List<Rule>();
+        public List<Rule> AllRules { get; private set; } = new List<Rule>();
+        public IList<GameEvent> History { get; private set; } = new List<GameEvent>();
+        public bool TrackStatesForReplay { get; private set; } = true;
+        public IList<Game> States { get; private set; } = new List<Game>();
+        public int CurrentTurn { get; private set; } = 0;
+        public MainPhase CurrentMainPhase { get; private set; } = MainPhase.Started;
+        public MainPhaseMoment CurrentMoment { get; private set; } = MainPhaseMoment.None;
+        public Phase CurrentPhase { get; private set; } = Phase.None;
+        public IList<Faction> HasActedOrPassed { get; private set; } = new List<Faction>();
+        public IList<Player> Players { get; private set; } = new List<Player>();
+        public Report CurrentReport { get; private set; }
+        public Deck<TreacheryCard> TreacheryDeck { get; private set; }
+        public Deck<TreacheryCard> TreacheryDiscardPile { get; private set; }
+        public List<TreacheryCard> RemovedTreacheryCards { get; private set; } = new List<TreacheryCard>();
+        public List<TreacheryCard> WhiteCache { get; private set; } = new List<TreacheryCard>();
+        public Deck<ResourceCard> ResourceCardDeck { get; private set; }
+        public Deck<ResourceCard> ResourceCardDiscardPileA { get; private set; }
+        public Deck<ResourceCard> ResourceCardDiscardPileB { get; private set; }
+        public int SectorInStorm { get; private set; } = -1;
+        public int NextStormMoves { get; private set; } = -1;
+        public bool ShieldWallDestroyed { get; private set; } = false;
+        public BrownEconomicsStatus EconomicsStatus { get; private set; } = BrownEconomicsStatus.None;
+        public IDictionary<Location, int> ResourcesOnPlanet { get; private set; } = new Dictionary<Location, int>();
+        public IDictionary<IHero, LeaderState> LeaderState { get; private set; } = new Dictionary<IHero, LeaderState>();
+        public Deck<LeaderSkill> SkillDeck { get; private set; }
+        private Random Random { get; set; }
 
         #endregion GameState
 
@@ -210,7 +209,14 @@ namespace Treachery.Shared
                     break;
 
                 case Phase.BlowReport:
-                    EnterCharityPhase();
+                    if (Applicable(Rule.HasCharityPhase))
+                    {
+                        EnterCharityPhase();
+                    }
+                    else
+                    {
+                        EnterBiddingPhase();
+                    }
                     break;
 
                 case Phase.BeginningOfCharity:
@@ -295,10 +301,6 @@ namespace Treachery.Shared
             BureaucratWasUsedThisPhase = false;
             BankerWasUsedThisPhase = false;
         }
-
-        public int NumberOfHumanPlayers => Players.Count(p => !p.IsBot);
-
-        public int NumberOfNots => Players.Count(p => p.IsBot);
 
         private void MainPhaseMiddle()
         {
@@ -495,22 +497,13 @@ namespace Treachery.Shared
 
         #endregion
 
-        #region MapInfo
+        #region Forces
 
-        public bool IsInStorm(Location l)
-        {
-            return l.Sector == SectorInStorm;
-        }
+        public bool IsInStorm(Location l) => l.Sector == SectorInStorm;
 
-        public bool IsOccupied(Location l)
-        {
-            return Players.Any(p => p.Occupies(l));
-        }
+        public bool IsOccupied(Location l) => Players.Any(p => p.Occupies(l));
 
-        public bool IsOccupied(Territory t)
-        {
-            return Players.Any(p => p.Occupies(t));
-        }
+        public bool IsOccupied(Territory t) => Players.Any(p => p.Occupies(t));
 
         public Dictionary<Location, List<Battalion>> ForcesOnPlanet
         {
@@ -555,18 +548,6 @@ namespace Treachery.Shared
                 }
 
                 return result;
-            }
-        }
-
-        public List<Battalion> GetOccupyingForces(Location l)
-        {
-            if (OccupyingForcesOnPlanet.ContainsKey(l))
-            {
-                return OccupyingForcesOnPlanet[l];
-            }
-            else
-            {
-                return new List<Battalion>();
             }
         }
 
@@ -680,7 +661,7 @@ namespace Treachery.Shared
 
         #region Resources
 
-        private void ChangeSpiceOnPlanet(Location location, int amount)
+        private void ChangeResourcesOnPlanet(Location location, int amount)
         {
             if (ResourcesOnPlanet.ContainsKey(location))
             {
@@ -787,11 +768,15 @@ namespace Treachery.Shared
             return Players.FirstOrDefault(p => p.Name == name);
         }
 
-        public override string ToString()
+        public Player GetPlayer(Faction f)
         {
-            return Skin.Current.Format("Players: {0}, Phase: {1}", Players.Count, CurrentPhase);
+            return Players.FirstOrDefault(p => p.Faction == f);
         }
 
+        public IEnumerable<Faction> ValidTargets(Player p)
+        {
+            return Players.Where(x => x.Faction != p.Faction).Select(x => x.Faction);
+        }
 
         private TreacheryCard Discard(Player player, TreacheryCardType cardType)
         {
@@ -852,45 +837,6 @@ namespace Treachery.Shared
             return StrongholdOwnership.ContainsKey(stronghold) ? GetPlayer(StrongholdOwnership[stronghold]) : null;
         }
 
-        private bool HasSomethingToRevive(Player player)
-        {
-            if (player.ForcesKilled > 0 || player.SpecialForcesKilled > 0 || Revival.ValidRevivalHeroes(this, player).Any())
-            {
-                return true;
-            }
-            else if (player.Is(Faction.Purple) && player.Ally != Faction.None)
-            {
-                var ally = GetPlayer(player.Ally);
-                return HasSomethingToRevive(ally);
-            }
-
-            return false;
-        }
-
-        #endregion SupportMethods
-
-        #region Validation
-
-        public IEnumerable<Faction> ValidTargets(Player p)
-        {
-            return Players.Where(x => x.Faction != p.Faction).Select(x => x.Faction);
-        }
-
-        public IEnumerable<IHero> ValidFreeRevivalHeroes(Player p)
-        {
-            var result = new List<IHero>();
-            result.AddRange(p.Leaders.Where(l => !IsAlive(l)));
-
-            if (p.Is(Faction.Green) && !IsAlive(LeaderManager.Messiah))
-            {
-                result.Add(LeaderManager.Messiah);
-            }
-
-            return result;
-        }
-
-
-
         public DateTime Started
         {
             get
@@ -906,6 +852,11 @@ namespace Treachery.Shared
             }
         }
 
-        #endregion Validation
+        public override string ToString()
+        {
+            return Skin.Current.Format("Players: {0}, Phase: {1}", Players.Count, CurrentPhase);
+        }
+
+        #endregion SupportMethods
     }
 }

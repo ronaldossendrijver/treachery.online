@@ -36,8 +36,12 @@ namespace Treachery.Shared
 
             AllRules = e.ApplicableRules.ToList();
             Rules = e.ApplicableRules.Where(r => GetRuleGroup(r) != RuleGroup.Bots).ToList();
-
             RulesForBots = e.ApplicableRules.Where(r => GetRuleGroup(r) == RuleGroup.Bots).ToList();
+
+            if (Version < 131)
+            {
+                Rules.AddRange(GetRulesInGroup(RuleGroup.CoreBasic));
+            }
 
             var usedRuleset = Ruleset;
             CurrentReport.Add("Ruleset: {0}.",

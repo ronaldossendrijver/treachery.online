@@ -189,7 +189,7 @@ namespace Treachery.Shared
                 int spiceFactor = SandTroutDoublesResources ? 2 : 1;
                 CurrentReport.Add("{1} detected in {0}{2}.", blowCard.Location, Concept.Resource, SandtroutMessage(SandTroutDoublesResources));
                 SandTroutDoublesResources = false;
-                ChangeSpiceOnPlanet(blowCard.Location, spiceFactor * blowCard.Location.SpiceBlowAmount);
+                ChangeResourcesOnPlanet(blowCard.Location, spiceFactor * blowCard.Location.SpiceBlowAmount);
             }
             else
             {
@@ -219,7 +219,7 @@ namespace Treachery.Shared
 
             if (currentAmountOfSpice > 0)
             {
-                ChangeSpiceOnPlanet(lastResourceCard.Location, currentAmountOfSpice);
+                ChangeResourcesOnPlanet(lastResourceCard.Location, currentAmountOfSpice);
             }
 
             CurrentReport.Add(e);

@@ -37,7 +37,7 @@ namespace Treachery.Shared
         public override string Validate()
         {
             var p = Player;
-            if (!Game.ValidFreeRevivalHeroes(p).Contains(Hero)) return Skin.Current.Format("{0} can't be revived this way.", Hero);
+            if (!Game.KilledHeroes(p).Contains(Hero)) return Skin.Current.Format("{0} can't be revived this way.", Hero);
 
             return "";
         }
@@ -54,7 +54,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<IHero> ValidTargets(Game g, Player p)
         {
-            return g.ValidFreeRevivalHeroes(p);
+            return g.KilledHeroes(p);
         }
     }
 

@@ -17,22 +17,9 @@ namespace Treachery.Shared
             return Faction == f;
         }
 
-        public bool CanOccupy
-        {
-            get
-            {
-                return AmountOfForces > 0 || (Faction != Faction.Blue && AmountOfSpecialForces > 0);
-            }
-        }
+        public bool CanOccupy => AmountOfForces > 0 || (Faction != Faction.Blue && AmountOfSpecialForces > 0);
 
-        public int TotalAmountOfForces
-        {
-
-            get
-            {
-                return AmountOfForces + AmountOfSpecialForces;
-            }
-        }
+        public int TotalAmountOfForces => AmountOfForces + AmountOfSpecialForces;
 
         public void ChangeForces(int amount)
         {

@@ -95,7 +95,7 @@ namespace Treachery.Shared
         {
 
             [Ruleset.BasicGame] = new Rule[] {
-
+                Rule.HasCharityPhase
             },
 
             [Ruleset.AdvancedGame] = new Rule[] {
@@ -121,9 +121,6 @@ namespace Treachery.Shared
                 Rule.GreyAndPurpleExpansionTechTokens,
                 Rule.GreyAndPurpleExpansionCheapHeroTraitor,
                 Rule.GreyAndPurpleExpansionTreacheryCards,
-                /*Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal,
-                Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS,
-                Rule.GreyAndPurpleExpansionTreacheryCardsAmal,*/
                 Rule.GreyAndPurpleExpansionSandTrout,
                 Rule.BrownAndWhiteLeaderSkills
             },
@@ -132,9 +129,6 @@ namespace Treachery.Shared
                 Rule.GreyAndPurpleExpansionTechTokens,
                 Rule.GreyAndPurpleExpansionCheapHeroTraitor,
                 Rule.GreyAndPurpleExpansionTreacheryCards,
-                /*Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal,
-                Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS,
-                Rule.GreyAndPurpleExpansionTreacheryCardsAmal,*/
                 Rule.GreyAndPurpleExpansionSandTrout
             },
 
@@ -162,9 +156,6 @@ namespace Treachery.Shared
                 Rule.GreyAndPurpleExpansionTechTokens,
                 Rule.GreyAndPurpleExpansionCheapHeroTraitor,
                 Rule.GreyAndPurpleExpansionTreacheryCards,
-                /*Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal,
-                Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS,
-                Rule.GreyAndPurpleExpansionTreacheryCardsAmal,*/
                 Rule.GreyAndPurpleExpansionSandTrout,
                 Rule.GreyAndPurpleExpansionGreySwappingCardOnBid,
                 Rule.GreyAndPurpleExpansionPurpleGholas,
@@ -194,9 +185,6 @@ namespace Treachery.Shared
                 Rule.GreyAndPurpleExpansionTechTokens,
                 Rule.GreyAndPurpleExpansionCheapHeroTraitor,
                 Rule.GreyAndPurpleExpansionTreacheryCards,
-                /*Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal,
-                Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS,
-                Rule.GreyAndPurpleExpansionTreacheryCardsAmal,*/
                 Rule.GreyAndPurpleExpansionSandTrout,
                 Rule.GreyAndPurpleExpansionGreySwappingCardOnBid,
                 Rule.GreyAndPurpleExpansionPurpleGholas
@@ -252,7 +240,6 @@ namespace Treachery.Shared
                 Rule.SSW,
                 Rule.BlackMulligan
             },
-
         };
 
         public static IEnumerable<Rule> GetRulesInGroup(RuleGroup group)
@@ -269,6 +256,9 @@ namespace Treachery.Shared
         {
             switch (rule)
             {
+                case Rule.HasCharityPhase:
+                    return RuleGroup.CoreBasic;
+
                 case Rule.AdvancedCombat:
                 case Rule.IncreasedResourceFlow:
                 case Rule.AdvancedKarama:
@@ -325,9 +315,6 @@ namespace Treachery.Shared
                 case Rule.GreyAndPurpleExpansionTechTokens:
                 case Rule.GreyAndPurpleExpansionCheapHeroTraitor:
                 case Rule.GreyAndPurpleExpansionTreacheryCards:
-                /*case Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal:
-                case Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS:
-                case Rule.GreyAndPurpleExpansionTreacheryCardsAmal:*/
                 case Rule.GreyAndPurpleExpansionSandTrout:
                     return RuleGroup.ExpansionIxAndBtBasic;
 
