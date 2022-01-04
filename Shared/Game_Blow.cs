@@ -9,8 +9,6 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-
-        #region SpiceBlowPhase
         public List<Territory> Monsters { get; set; } = new List<Territory>();
         private readonly List<ResourceCard> ignoredMonsters = new List<ResourceCard>();
 
@@ -51,7 +49,7 @@ namespace Treachery.Shared
                         break;
                     }
                 }
-                else if (Version >= 81 && drawn.IsShaiHulud && CurrentTurn == 1)
+                else if (drawn.IsShaiHulud && CurrentTurn == 1)
                 {
                     CurrentReport.Add("{0} on turn 1 was ignored.", Concept.Monster);
                     ignoredMonsters.Add(CurrentDiscardPile.Draw());
@@ -270,14 +268,14 @@ namespace Treachery.Shared
                         }
                         else
                         {
-                            if (Version >= 73) Monsters.Add(t);
+                            Monsters.Add(t);
                             CurrentReport.Add(Faction.Yellow, "{0} prevents {1} from sending {2} where they want.", TreacheryCardType.Karma, Faction.Yellow, Concept.Monster);
                             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.YellowControlsMonster);
                         }
                     }
                     else
                     {
-                        if (Version >= 73) Monsters.Add(t);
+                        Monsters.Add(t);
                     }
                 }
                 else if (Monsters.Count == 0)
@@ -288,7 +286,6 @@ namespace Treachery.Shared
             }
             else
             {
-                //pre version 81 code, can be removed after a while.
                 CurrentReport.Add("{0} on turn 1 was ignored.", Concept.Monster);
             }
         }
@@ -560,7 +557,5 @@ namespace Treachery.Shared
             MainPhaseEnd();
             Enter(Phase.BlowReport);
         }
-
-        #endregion SpiceBlowPhase
     }
 }

@@ -95,6 +95,7 @@ namespace Treachery.Shared
         {
 
             [Ruleset.BasicGame] = new Rule[] {
+                Rule.BasicTreacheryCards,
                 Rule.HasCharityPhase
             },
 
@@ -257,6 +258,7 @@ namespace Treachery.Shared
             switch (rule)
             {
                 case Rule.HasCharityPhase:
+                case Rule.BasicTreacheryCards:
                     return RuleGroup.CoreBasic;
 
                 case Rule.AdvancedCombat:

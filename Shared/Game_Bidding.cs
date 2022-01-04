@@ -10,14 +10,15 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public PlayerSequence BidSequence { get; set; }
+        public PlayerSequence BidSequence { get; private set; }
         public Deck<TreacheryCard> CardsOnAuction { get; private set; }
         public AuctionType CurrentAuctionType { get; private set; }
         public int CardNumber { get; private set; }
-        public IBid CurrentBid { get; private set; } = null;
+        public IBid CurrentBid { get; private set; }
         public Dictionary<Faction, IBid> Bids { get; private set; } = new Dictionary<Faction, IBid>();
+        public TreacheryCard CardSoldOnBlackMarket { get; private set; }
+        
         private bool GreySwappedCardOnBid { get; set; }
-        public TreacheryCard CardSoldOnBlackMarket { get; set; }
         private bool RegularBiddingIsDone { get; set; }
         private bool BiddingRoundWasStarted { get; set; }
         private bool WhiteAuctionShouldStillHappen { get; set; }
@@ -260,14 +261,7 @@ namespace Treachery.Shared
                 var card = DrawTreacheryCard();
                 if (card != null)
                 {
-                    if (Version <= 86)
-                    {
-                        CardsOnAuction.PutOnTop(card);
-                    }
-                    else
-                    {
-                        CardsOnAuction.PutOnBottom(card);
-                    }
+                    CardsOnAuction.PutOnBottom(card);
                 }
             }
 
@@ -750,7 +744,7 @@ namespace Treachery.Shared
             if (bidAllyContributionAmount > 0)
             {
                 GetPlayer(initiator.Ally).Resources -= bidAllyContributionAmount;
-                if (Version >= 76) DecreasePermittedUseOfAllySpice(initiator.Faction, bidAllyContributionAmount);
+                DecreasePermittedUseOfAllySpice(initiator.Faction, bidAllyContributionAmount);
             }
 
             if (bidRedContributionAmount > 0)
@@ -859,21 +853,14 @@ namespace Treachery.Shared
 
             if (winner != null && winner.Ally == Faction.Grey && GreyAllyMayReplaceCards)
             {
-                if (Version <= 93)
+                if (Prevented(FactionAdvantage.GreyAllyDiscardingCard))
                 {
-                    Enter(Phase.ReplacingCardJustWon);
+                    if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyAllyDiscardingCard);
+                    DetermineNextStepAfterCardWasSold();
                 }
                 else
                 {
-                    if (Prevented(FactionAdvantage.GreyAllyDiscardingCard))
-                    {
-                        if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyAllyDiscardingCard);
-                        DetermineNextStepAfterCardWasSold();
-                    }
-                    else
-                    {
-                        Enter(Phase.ReplacingCardJustWon);
-                    }
+                    Enter(Phase.ReplacingCardJustWon);
                 }
             }
             else

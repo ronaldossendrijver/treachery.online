@@ -397,6 +397,7 @@ namespace Treachery.Shared
         None = 0,
 
         //Basic classic game
+        BasicTreacheryCards = 10000,
         HasCharityPhase = 10001,
 
 

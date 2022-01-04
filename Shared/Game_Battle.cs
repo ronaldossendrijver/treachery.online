@@ -10,16 +10,17 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public PlayerSequence BattleSequence { get; set; }
-        public BattleInitiated CurrentBattle { get; private set; } = null;
-        public Battle AggressorBattleAction { get; private set; } = null;
+        public PlayerSequence BattleSequence { get; private set; }
+        public BattleInitiated CurrentBattle { get; private set; }
+        public Battle AggressorBattleAction { get; private set; }
         public TreacheryCalled AggressorTraitorAction { get; private set; }
-        public Battle DefenderBattleAction { get; private set; } = null;
+        public Battle DefenderBattleAction { get; private set; }
         public TreacheryCalled DefenderTraitorAction { get; private set; }
         public Faction BattleWinner { get; private set; }
         public Faction BattleLoser { get; private set; }
         public int GreySpecialForceLossesToTake { get; private set; }
         public int NrOfBattlesFought { get; private set; } = 0;
+        
         private TriggeredBureaucracy BattleTriggeredBureaucracy { get; set; }
 
         private void EnterBattlePhase()
@@ -241,14 +242,14 @@ namespace Treachery.Shared
             }
         }
 
-        private bool PoisonToothCancelled = false;
+        private bool PoisonToothCancelled { get; set; } = false;
         public void HandleEvent(PoisonToothCancelled e)
         {
             PoisonToothCancelled = true;
             CurrentReport.Add(e);
         }
 
-        public PortableAntidoteUsed CurrentPortableAntidoteUsed = null;
+        public PortableAntidoteUsed CurrentPortableAntidoteUsed { get; private set; }
         public void HandleEvent(PortableAntidoteUsed e)
         {
             CurrentReport.Add(e);
@@ -411,17 +412,17 @@ namespace Treachery.Shared
         {
             if (HasStrongholdAdvantage(playerPlan.Initiator, StrongholdAdvantage.CollectResourcesForUseless, CurrentBattle.Territory))
             {
-                if (playerPlan.Weapon?.Type == TreacheryCardType.Useless)
-                {
-                    CurrentReport.Add(playerPlan.Initiator, "{0} stronghold advantage: {1} collect 2 for playing {2}", Map.TueksSietch, playerPlan.Initiator, playerPlan.Weapon);
-                    playerPlan.Player.Resources += 2;
-                }
+                CollectTueksSietchBonus(playerPlan.Player, playerPlan.Weapon);
+                CollectTueksSietchBonus(playerPlan.Player, playerPlan.Defense);
+            }
+        }
 
-                if (playerPlan.Defense?.Type == TreacheryCardType.Useless)
-                {
-                    CurrentReport.Add(playerPlan.Initiator, "{0} stronghold advantage: {1} collect 2 for playing {2}", Map.TueksSietch, playerPlan.Initiator, playerPlan.Defense);
-                    playerPlan.Player.Resources += 2;
-                }
+        private void CollectTueksSietchBonus(Player player, TreacheryCard card)
+        {
+            if (card != null && card.Type == TreacheryCardType.Useless)
+            {
+                CurrentReport.Add(player.Faction, "{0} stronghold advantage: {1} collect 2 for playing {2}", Map.TueksSietch, player.Faction, card);
+                player.Resources += 2;
             }
         }
 
@@ -443,28 +444,33 @@ namespace Treachery.Shared
         {
             if (Auditee != null && !BrownLeaderWasRevealedAsTraitor)
             {
-                var auditableCards = new Deck<TreacheryCard>(AuditCancelled.GetCardsThatMayBeAudited(this), Random);
-
-                if (auditableCards.Items.Count > 0)
-                {
-                    var nrOfAuditedCards = AuditCancelled.GetNumberOfCardsThatMayBeAudited(this);
-                    AuditedCards = new List<TreacheryCard>();
-                    auditableCards.Shuffle();
-                    for (int i = 0; i < nrOfAuditedCards; i++)
-                    {
-                        AuditedCards.Add(auditableCards.Draw());
-                    }
-
-                    Enter(Phase.AvoidingAudit);
-                }
-                else
-                {
-                    CurrentReport.Add(Auditee.Faction, "{0} don't have any cards to audit", Auditee.Faction);
-                    Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
-                }
+                PrepareAudit();
             }
             else
             {
+                Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
+            }
+        }
+
+        private void PrepareAudit()
+        {
+            var auditableCards = new Deck<TreacheryCard>(AuditCancelled.GetCardsThatMayBeAudited(this), Random);
+
+            if (auditableCards.Items.Count > 0)
+            {
+                var nrOfAuditedCards = AuditCancelled.GetNumberOfCardsThatMayBeAudited(this);
+                AuditedCards = new List<TreacheryCard>();
+                auditableCards.Shuffle();
+                for (int i = 0; i < nrOfAuditedCards; i++)
+                {
+                    AuditedCards.Add(auditableCards.Draw());
+                }
+
+                Enter(Phase.AvoidingAudit);
+            }
+            else
+            {
+                CurrentReport.Add(Auditee.Faction, "{0} don't have any cards to audit", Auditee.Faction);
                 Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
             }
         }
@@ -526,6 +532,7 @@ namespace Treachery.Shared
         public void HandleEvent(AuditCancelled e)
         {
             CurrentReport.Add(e.GetDynamicMessage());
+
             if (e.Cancelled)
             {
                 e.Player.Resources -= e.Cost();
@@ -599,23 +606,27 @@ namespace Treachery.Shared
 
             if (e.ReplacedTraitor != null && e.NewTraitor != null)
             {
-                CurrentReport.Add(e.Initiator, "{0} replaced {1} by another traitor from the deck.", e.Initiator, e.ReplacedTraitor);
-
-                e.Player.Traitors.Add(e.NewTraitor);
-                TraitorsDeciphererCanLookAt.Remove(e.NewTraitor);
-
-                e.Player.Traitors.Remove(e.ReplacedTraitor);
-                TraitorDeck.PutOnTop(e.ReplacedTraitor);
-
-                RecentMilestones.Add(Milestone.Shuffled);
-                TraitorDeck.Shuffle();
+                DeciphererReplacesTraitors(e);
             }
 
             DecideFateOfCapturedLeader(e);
             TakeTechToken(e, winner);
             ProcessGreyForceLossesAndSubstitutions(e, winner);
-
             Enter(IsPlaying(Faction.Purple) && BattleWinner != Faction.Purple, Phase.Facedancing, FinishBattle);
+        }
+
+        private void DeciphererReplacesTraitors(BattleConcluded e)
+        {
+            CurrentReport.Add(e.Initiator, "{0} replaced {1} by another traitor from the deck.", e.Initiator, e.ReplacedTraitor);
+
+            e.Player.Traitors.Add(e.NewTraitor);
+            TraitorsDeciphererCanLookAt.Remove(e.NewTraitor);
+
+            e.Player.Traitors.Remove(e.ReplacedTraitor);
+            TraitorDeck.PutOnTop(e.ReplacedTraitor);
+
+            RecentMilestones.Add(Milestone.Shuffled);
+            TraitorDeck.Shuffle();
         }
 
         public void HandleEvent(FaceDanced f)
@@ -761,40 +772,16 @@ namespace Treachery.Shared
 
         private void AllowPreventedBattleFactionAdvantages()
         {
-            if (Version >= 88 || AggressorBattleAction.By(Faction.Green) || DefenderBattleAction.By(Faction.Green))
-            {
-                Allow(FactionAdvantage.GreenUseMessiah);
-                Allow(FactionAdvantage.GreenBattlePlanPrescience);
-            }
-
-            if (Version >= 88 || AggressorBattleAction.By(Faction.Blue) || DefenderBattleAction.By(Faction.Blue))
-            {
-                Allow(FactionAdvantage.BlueUsingVoice);
-            }
-
-            if (Version >= 88 || AggressorBattleAction.By(Faction.Yellow) || DefenderBattleAction.By(Faction.Yellow))
-            {
-                Allow(FactionAdvantage.YellowSpecialForceBonus);
-                Allow(FactionAdvantage.YellowNotPayingForBattles);
-            }
-
-            if (Version >= 88 || AggressorBattleAction.By(Faction.Red) || DefenderBattleAction.By(Faction.Red))
-            {
-                Allow(FactionAdvantage.RedSpecialForceBonus);
-            }
-
-            if (Version >= 88 || AggressorBattleAction.By(Faction.Grey) || DefenderBattleAction.By(Faction.Grey))
-            {
-                Allow(FactionAdvantage.GreySpecialForceBonus);
-                Allow(FactionAdvantage.GreyReplacingSpecialForces);
-            }
-
-            if (Version >= 88 || GetPlayer(AggressorBattleAction.Initiator).Ally == Faction.Black || GetPlayer(DefenderBattleAction.Initiator).Ally == Faction.Black)
-            {
-                Allow(FactionAdvantage.BlackCallTraitorForAlly);
-                Allow(FactionAdvantage.BlackCaptureLeader);
-            }
-
+            Allow(FactionAdvantage.GreenUseMessiah);
+            Allow(FactionAdvantage.GreenBattlePlanPrescience);
+            Allow(FactionAdvantage.BlueUsingVoice);
+            Allow(FactionAdvantage.YellowSpecialForceBonus);
+            Allow(FactionAdvantage.YellowNotPayingForBattles);
+            Allow(FactionAdvantage.RedSpecialForceBonus);
+            Allow(FactionAdvantage.GreySpecialForceBonus);
+            Allow(FactionAdvantage.GreyReplacingSpecialForces);
+            Allow(FactionAdvantage.BlackCallTraitorForAlly);
+            Allow(FactionAdvantage.BlackCaptureLeader);
             Allow(FactionAdvantage.BrownReceiveForcePayment);
         }
 
@@ -927,12 +914,6 @@ namespace Treachery.Shared
 
             var outcome = DetermineBattleOutcome(agg, def, b.Territory);
 
-            if (Version <= 93)
-            {
-                SetHeroLocations(agg, b.Territory);
-                SetHeroLocations(def, b.Territory);
-            }
-
             bool lasgunShield = !aggtrt.TraitorCalled && !deftrt.TraitorCalled && (agg.HasLaser || def.HasLaser) && (agg.HasShield || def.HasShield);
             bool aggHeroSurvives = !deftrt.TraitorCalled && (aggtrt.TraitorCalled || !lasgunShield && !outcome.DefHeroKilled);
             bool defHeroSurvives = !aggtrt.TraitorCalled && (deftrt.TraitorCalled || !lasgunShield && !outcome.AggHeroKilled);
@@ -959,11 +940,8 @@ namespace Treachery.Shared
             }
             else
             {
-                if (Version >= 94)
-                {
-                    SetHeroLocations(agg, b.Territory);
-                    SetHeroLocations(def, b.Territory);
-                }
+                SetHeroLocations(agg, b.Territory);
+                SetHeroLocations(def, b.Territory);
 
                 DetermineAndHandleBattleOutcome(agg, def, b.Territory);
             }
@@ -1207,7 +1185,6 @@ namespace Treachery.Shared
             ProcessLoserLosses(territory, outcome.Loser, outcome.LoserBattlePlan, false);
         }
 
-
         private void DetermineCauseOfDeath(Battle playerPlan, Battle opponentPlan, IHero theHero, bool poisonToothUsed, bool artilleryUsed, bool rockMelterWasUsedToKill, Territory battleTerritory, ref bool heroDies, ref TreacheryCardType causeOfDeath, ref bool savedByCarthag)
         {
             heroDies = false;
@@ -1251,7 +1228,7 @@ namespace Treachery.Shared
         {
             int cost = plan.Cost(this);
             int costToBrown = p.Ally == Faction.Brown ? plan.AllyContributionAmount : 0;
-            int receiverProfit = 0;
+
 
             if (cost > 0)
             {
@@ -1273,29 +1250,7 @@ namespace Treachery.Shared
                     if (Version >= 117) DecreasePermittedUseOfAllySpice(p.Faction, plan.AllyContributionAmount);
                 }
 
-                var brown = GetPlayer(Faction.Brown);
-                if (brown != null && p.Faction != Faction.Brown && (Version < 126 || !traitorWasRevealed))
-                {
-                    receiverProfit = (int)Math.Floor(0.5f * (cost - costToBrown));
-
-                    if (receiverProfit > 0)
-                    {
-                        if (!Prevented(FactionAdvantage.BrownReceiveForcePayment))
-                        {
-                            brown.Resources += receiverProfit;
-                            CurrentReport.Add(Faction.Brown, "{0} receive {1} from supported forces", Faction.Brown, receiverProfit);
-
-                            if (receiverProfit >= 5)
-                            {
-                                BattleTriggeredBureaucracy = new TriggeredBureaucracy() { PaymentFrom = p.Faction, PaymentTo = Faction.Brown };
-                            }
-                        }
-                        else
-                        {
-                            CurrentReport.Add(Faction.Brown, "{0} prevents {1}", Faction.Brown, FactionAdvantage.BrownReceiveForcePayment);
-                        }
-                    }
-                }
+                int receiverProfit = HandleBrownIncome(p, cost - costToBrown, traitorWasRevealed);
 
                 if (cost - receiverProfit >= 4)
                 {
@@ -1308,6 +1263,37 @@ namespace Treachery.Shared
                 p.Resources -= plan.BankerBonus;
                 CurrentReport.Add(p.Faction, "{0} paid {1} for {2} Bonus", p.Faction, plan.BankerBonus, LeaderSkill.Banker);
             }
+        }
+
+        private int HandleBrownIncome(Player paidBy, int costsExcludingPaymentByBrownAlly, bool traitorWasRevealed)
+        {
+            int result = 0;
+
+            var brown = GetPlayer(Faction.Brown);
+            if (brown != null && paidBy.Faction != Faction.Brown && (Version < 126 || !traitorWasRevealed))
+            {
+                result = (int)Math.Floor(0.5f * costsExcludingPaymentByBrownAlly);
+
+                if (result > 0)
+                {
+                    if (!Prevented(FactionAdvantage.BrownReceiveForcePayment))
+                    {
+                        brown.Resources += result;
+                        CurrentReport.Add(Faction.Brown, "{0} receive {1} from supported forces", Faction.Brown, result);
+
+                        if (result >= 5)
+                        {
+                            BattleTriggeredBureaucracy = new TriggeredBureaucracy() { PaymentFrom = paidBy.Faction, PaymentTo = Faction.Brown };
+                        }
+                    }
+                    else
+                    {
+                        CurrentReport.Add(Faction.Brown, "{0} prevents {1}", Faction.Brown, FactionAdvantage.BrownReceiveForcePayment);
+                    }
+                }
+            }
+
+            return result;
         }
 
         private void ProcessWinnerLosses(Territory territory, Player winner, Battle plan, bool traitorWasRevealed)
@@ -1549,12 +1535,10 @@ namespace Treachery.Shared
             }
         }
 
-
-
-        private void LoseCards(Battle gambit)
+        private void LoseCards(Battle plan)
         {
-            Discard(gambit.Weapon);
-            Discard(gambit.Defense);
+            Discard(plan.Weapon);
+            Discard(plan.Defense);
         }
 
         public bool CanJoinCurrentBattle(IHero hero)
@@ -1563,7 +1547,7 @@ namespace Treachery.Shared
             return currentTerritory == null || currentTerritory == CurrentBattle?.Territory;
         }
 
-        public Leader BlackVictim = null;
+        public Leader BlackVictim { get; set; }
         private void SelectVictimOfBlackWinner(Battle harkonnenAction, Battle victimAction)
         {
             var harkonnen = GetPlayer(harkonnenAction.Initiator);
@@ -1663,7 +1647,7 @@ namespace Treachery.Shared
             ChosenHMSAdvantage = e.Advantage;
         }
 
-        public Retreat CurrentRetreat { get; private set; } = null;
+        public Retreat CurrentRetreat { get; private set; }
         public void HandleEvent(Retreat e)
         {
             CurrentRetreat = e;
