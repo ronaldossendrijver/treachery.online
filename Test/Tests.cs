@@ -26,11 +26,10 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            /*var p = e.Player;
-            if (e is KarmaHandSwap && g.CurrentTurn > 3)
+            if (e is PortableAntidoteUsed && g.PlayerSkilledAs(LeaderSkill.KillerMedic) == e.Player)
             {
-                WriteSavegameIfApplicable(g, p, "Hand swap");
-            }*/
+                WriteSavegameIfApplicable(g, e.Player, "Portable antidote");
+            }
         }
 
         private List<Type> Written = new List<Type>();
@@ -323,7 +322,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 1000;
+            int nrOfGames = 50000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
@@ -821,7 +820,7 @@ namespace Treachery.Test
         }
 
 
-        [TestMethod]
+        //[TestMethod]
         public void ApplyTransforms()
         {
             string filename = "e:\\svg2\\faction9.svg";

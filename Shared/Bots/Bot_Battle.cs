@@ -983,7 +983,6 @@ namespace Treachery.Shared
 
             if (opponentPlan.Weapon != null && opponentPlan.Weapon.CounteredBy(defense, myPlan.Weapon))
             {
-
                 return new PortableAntidoteUsed(Game) { Initiator = Faction };
             }
 

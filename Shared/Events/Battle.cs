@@ -760,7 +760,7 @@ namespace Treachery.Shared
                 }
             }
 
-            if (defense != null && defense.IsPoisonDefense)
+            if (defense != null && defense.IsPoisonDefense || g.CurrentPortableAntidoteUsed != null && g.CurrentPortableAntidoteUsed.Player == player)
             {
                 if (g.SkilledAs(hero, LeaderSkill.KillerMedic))
                 {
