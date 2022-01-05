@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2021 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
  */
 using System;
 
