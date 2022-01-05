@@ -372,36 +372,40 @@ namespace Treachery.Shared
             return TechTokenName_STR[tt];
         }
 
-        public string Describe(FactionForce f)
+        private Faction GetFaction(FactionForce f)
         {
             return f switch
             {
-                FactionForce.Green => ForceName_STR[Faction.Green],
-                FactionForce.Black => ForceName_STR[Faction.Black],
-                FactionForce.Yellow => ForceName_STR[Faction.Yellow],
-                FactionForce.Red => ForceName_STR[Faction.Red],
-                FactionForce.Orange => ForceName_STR[Faction.Orange],
-                FactionForce.Blue => ForceName_STR[Faction.Blue],
-                FactionForce.Grey => ForceName_STR[Faction.Grey],
-                FactionForce.Purple => ForceName_STR[Faction.Purple],
-                FactionForce.Brown => ForceName_STR[Faction.Brown],
-                FactionForce.White => ForceName_STR[Faction.White],
-                _ => "-",
+                FactionForce.Green => Faction.Green,
+                FactionForce.Black => Faction.Black,
+                FactionForce.Yellow => Faction.Yellow,
+                FactionForce.Red => Faction.Red,
+                FactionForce.Orange => Faction.Orange,
+                FactionForce.Blue => Faction.Blue,
+                FactionForce.Grey => Faction.Grey,
+                FactionForce.Purple => Faction.Purple,
+                FactionForce.Brown => Faction.Brown,
+                FactionForce.White => Faction.White,
+                _ => Faction.None,
             };
         }
 
-        public string Describe(FactionSpecialForce f)
+        public string Describe(FactionForce f) => ForceName_STR[GetFaction(f)];
+
+        private Faction GetFaction(FactionSpecialForce f)
         {
             return f switch
             {
-                FactionSpecialForce.Red => SpecialForceName_STR[Faction.Red],
-                FactionSpecialForce.Yellow => SpecialForceName_STR[Faction.Yellow],
-                FactionSpecialForce.Blue => SpecialForceName_STR[Faction.Blue],
-                FactionSpecialForce.Grey => SpecialForceName_STR[Faction.Grey],
-                FactionSpecialForce.White => SpecialForceName_STR[Faction.White],
-                _ => "-",
+                FactionSpecialForce.Red => Faction.Red,
+                FactionSpecialForce.Yellow => Faction.Yellow,
+                FactionSpecialForce.Blue => Faction.Blue,
+                FactionSpecialForce.Grey => Faction.Grey,
+                FactionSpecialForce.White => Faction.White,
+                _ => Faction.None,
             };
         }
+
+        public string Describe(FactionSpecialForce f) => SpecialForceName_STR[GetFaction(f)];
 
         public string Describe(MessagePart part)
         {
@@ -758,6 +762,17 @@ namespace Treachery.Shared
         {
             return GetURL(ResourceCardImage_URL, c.SkinId);
         }
+
+        public string GetImageURL(FactionForce ff)
+        {
+            return GetFactionForceImageURL(GetFaction(ff));
+        }
+
+        public string GetImageURL(FactionSpecialForce fsf)
+        {
+            return GetFactionSpecialForceImageURL(GetFaction(fsf));
+        }
+
 
         public string GetImageURL(LeaderSkill s)
         {

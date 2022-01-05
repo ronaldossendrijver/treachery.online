@@ -1,0 +1,57 @@
+﻿@using Treachery.Shared;
+
+
+@{
+    for (int elementnr = 0; elementnr < Expression.Elements.Length; elementnr++)
+    {
+        var part = Expression.Elements[elementnr];
+        var nextPart = elementnr < Expression.Elements.Length - 1 ? Expression.Elements[elementnr + 1] : null;
+
+        if (part is string)
+        {
+            <span>@part</span>
+        }
+        else if (part is MessagePart mp)
+        {
+            <ExpressionComponent Expression=mp.Expression/>
+        }
+        else if (part is int number)
+        {
+            if (nextPart != null && nextPart is Concept concept && concept == Concept.Resource)
+            {
+                <span><NumberComponent Value=number SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" Size=12/></span>
+                elementnr++;
+            }
+            else
+            {
+                <span class="badge badge-primary badge-pill">@number</span>
+            }
+        }
+        else if (part is Faction faction)
+        {
+            <FactionComponent Faction=faction Diameter=14/>
+        }
+        else if (part is TechToken tt)
+        {
+            <img src=@Skin.Current.GetImageURL(tt) title=@Skin.Current.Describe(tt) width=14 height=14/>
+        }
+        else if (part is FactionForce ff)
+        {
+            <img src=@Skin.Current.GetImageURL(ff) title=@Skin.Current.Describe(ff) width=14 height=14/>
+        }
+        else if (part is FactionSpecialForce fsf)
+        {
+            <img src=@Skin.Current.GetImageURL(fsf) title=@Skin.Current.Describe(fsf) width=14 height=14/>
+        }
+        else
+        {
+            <span class="font-weight-bold">@Skin.Current.Describe(part)</span>
+        }
+    }
+}
+
+@code {
+
+    [Parameter]
+    public Expression Expression { get; set; }
+}
