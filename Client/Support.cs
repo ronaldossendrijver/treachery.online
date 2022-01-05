@@ -89,7 +89,11 @@ namespace Treachery.Client
             }
         }
 
-        public static string GetHeroHoverHTML(IHero h, Game g)
+        public static string GetHeroHoverHTML(IHero h) => GetHeroHoverHTML(h, LeaderSkill.None);
+
+        public static string GetHeroHoverHTML(IHero h, Game g) => GetHeroHoverHTML(h, g.Skill(h));
+
+        public static string GetHeroHoverHTML(IHero h, LeaderSkill skill)
         {
             if (h == null)
             {
@@ -97,7 +101,6 @@ namespace Treachery.Client
             }
             else
             {
-                var skill = g.Skill(h);
                 if (skill == LeaderSkill.None)
                 {
                     return string.Format("<img src='{0}' width=200 class='img-fluid' title='{1}'/>", Skin.Current.GetImageURL(h), h.Name);

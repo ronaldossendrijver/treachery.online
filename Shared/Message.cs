@@ -75,12 +75,18 @@ namespace Treachery.Shared
                 {
                     int parameternr = int.Parse(part.Substring(0, index));
                     elements.Add(parameters[parameternr]);
-                    elements.Add(part.Substring(index + 1));
-                    
+
+                    if (index < part.Length - 1)
+                    {
+                        elements.Add(part.Substring(index + 1));
+                    }
                 }
                 else
                 {
-                    elements.Add(part);
+                    if (part.Length > 0) {
+                        
+                        elements.Add(part);
+                    }
                 }
             }
 

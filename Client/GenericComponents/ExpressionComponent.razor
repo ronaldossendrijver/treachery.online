@@ -5,7 +5,15 @@
     for (int elementnr = 0; elementnr < Expression.Elements.Length; elementnr++)
     {
         var part = Expression.Elements[elementnr];
+
         var nextPart = elementnr < Expression.Elements.Length - 1 ? Expression.Elements[elementnr + 1] : null;
+        int nextPartPos = 1;
+
+        if (elementnr < Expression.Elements.Length - 2 && nextPart is string str && str.Trim().Length == 0)
+        {
+            nextPart = Expression.Elements[elementnr + 2];
+            nextPartPos = 2;
+        }
 
         if (part is string)
         {
@@ -13,14 +21,17 @@
         }
         else if (part is MessagePart mp)
         {
-            <ExpressionComponent Expression=mp.Expression/>
+            <ExpressionComponent Expression=mp.Expression Size=@Size/>
         }
         else if (part is int number)
         {
             if (nextPart != null && nextPart is Concept concept && concept == Concept.Resource)
             {
-                <span><NumberComponent Value=number SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" Size=12/></span>
-                elementnr++;
+                <div style="position: relative; display: inline;">
+                    <img src="@Skin.Current.Harvester_URL" width=@Size height=@Size title=@Skin.Current.Describe(Concept.Resource)/>
+                    <div style="width: @SizePx; height: @SizePx; text-align:center; font-weight: bold; position: absolute; top: -1px; left: 0px; @Border">@number</div>
+                </div>
+                elementnr += nextPartPos;
             }
             else
             {
@@ -29,19 +40,27 @@
         }
         else if (part is Faction faction)
         {
-            <FactionComponent Faction=faction Diameter=14/>
+            <FactionComponent Faction=faction Diameter=@Size/>
+        }
+        else if (part is IHero hero)
+        {
+            <span class="font-weight-bold" data-content="@Support.GetHeroHoverHTML(hero)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(hero)</span>
+        }
+        else if (part is TreacheryCard tc)
+        {
+            <span class="font-weight-bold" data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(tc)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(tc)</span>
         }
         else if (part is TechToken tt)
         {
-            <img src=@Skin.Current.GetImageURL(tt) title=@Skin.Current.Describe(tt) width=14 height=14/>
+            <img src=@Skin.Current.GetImageURL(tt) width=@Size height=@Size data-animation="true" data-content="@Support.GetTechTokenHTML(tt)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover"/>
         }
         else if (part is FactionForce ff)
         {
-            <img src=@Skin.Current.GetImageURL(ff) title=@Skin.Current.Describe(ff) width=14 height=14/>
+            <img src=@Skin.Current.GetImageURL(ff) title=@Skin.Current.Describe(ff) width=@Size height=@Size />
         }
         else if (part is FactionSpecialForce fsf)
         {
-            <img src=@Skin.Current.GetImageURL(fsf) title=@Skin.Current.Describe(fsf) width=14 height=14/>
+            <img src=@Skin.Current.GetImageURL(fsf) title=@Skin.Current.Describe(fsf) width=@Size height=@Size/>
         }
         else
         {
@@ -54,4 +73,11 @@
 
     [Parameter]
     public Expression Expression { get; set; }
+
+    [Parameter]
+    public int Size { get; set; } = 14;
+
+    private string SizePx => "" + Size + "px";
+
+    private string Border => Skin.TextBorder(1, "black");
 }
