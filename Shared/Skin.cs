@@ -2507,7 +2507,5 @@ namespace Treachery.Shared
         };
 
         public static Skin Current = Dune1979;
-
-        public static string TextBorder(int borderwidth, string bordercolor) => string.Format("text-shadow: {2}px {2}px {0}px {1}, 0px {2}px {0}px {1}, -{2}px {2}px {0}px {1}, {2}px 0px {0}px {1}, 0px 0px {0}px {1}, -{2}px 0px {0}px {1}, {2}px -{2}px {0}px {1}, 0px -{2}px {0}px {1}, -{2}px 0px {0}px {1};", borderwidth, bordercolor, 0);
     }
 }

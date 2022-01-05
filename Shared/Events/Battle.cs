@@ -393,23 +393,33 @@ namespace Treachery.Shared
         {
             if (Game.Applicable(Rule.AdvancedCombat))
             {
-                return new Message(Initiator, "{0} leader: {1}, dial: {2}, weapon: {3}, defense: {4}, {5}: {6}{7}.",
+                return Message.Express(
                     Initiator,
-                    Hero != null ? Hero.ToString() : "none",
+                    ": leader: ",
+                    Hero,
+                    ", dial: ",
                     Dial(Game, Game.CurrentBattle.OpponentOf(Initiator).Faction),
-                    Weapon != null ? Weapon.ToString() : "none", Defense != null ? Defense.ToString() : "none",
-                    Concept.Resource,
+                    "/",
                     Cost(Game),
-                    AllyContributionAmount > 0 ? string.Format(" ({0} from ally)", AllyContributionAmount) : "");
+                    Concept.Resource,
+                    MessagePart.ExpressIf(AllyContributionAmount > 0, "(", AllyContributionAmount, Concept.Resource, " by ", Player.Ally, ")"),
+                    ", weapon: ",
+                    Weapon,
+                    ", defense: ",
+                    Defense);
             }
             else
             {
-                return new Message(Initiator, "{0} leader: {1}, dial: {2}, weapon: {3}, defense: {4}.",
+                return Message.Express(
                     Initiator,
-                    Hero != null ? Hero.ToString() : "none",
+                    "leader: ",
+                    Hero,
+                    ", dial: ",
                     Dial(Game, Game.CurrentBattle.OpponentOf(Initiator).Faction),
-                    Weapon != null ? Weapon.ToString() : "none",
-                    Defense != null ? Defense.ToString() : "none");
+                    ", weapon: ",
+                    Weapon,
+                    ", defense: ",
+                    Defense);
             }
         }
 

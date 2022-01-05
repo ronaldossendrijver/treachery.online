@@ -15,7 +15,11 @@
             nextPartPos = 2;
         }
 
-        if (part is string)
+        if (part == null)
+        {
+            <span>-</span>
+        }
+        else if (part is string)
         {
             <span>@part</span>
         }
@@ -27,10 +31,7 @@
         {
             if (nextPart != null && nextPart is Concept concept && concept == Concept.Resource)
             {
-                <div style="position: relative; display: inline;">
-                    <img src="@Skin.Current.Harvester_URL" width=@Size height=@Size title=@Skin.Current.Describe(Concept.Resource)/>
-                    <div style="width: @SizePx; height: @SizePx; text-align:center; font-weight: bold; position: absolute; top: -1px; left: 0px; @Border">@number</div>
-                </div>
+                <TextBeforeImage ImageURL="@Skin.Current.Harvester_URL" Size=@Size Title="@Skin.Current.Describe(Concept.Resource)">@number</TextBeforeImage>
                 elementnr += nextPartPos;
             }
             else
@@ -44,15 +45,15 @@
         }
         else if (part is IHero hero)
         {
-            <span class="font-weight-bold" data-content="@Support.GetHeroHoverHTML(hero)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(hero)</span>
+            <span class="font-weight-bold" data-content="@Support.GetHeroHoverHTML(hero)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(hero)</span>
         }
         else if (part is TreacheryCard tc)
         {
-            <span class="font-weight-bold" data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(tc)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(tc)</span>
+            <span class="font-weight-bold" data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(tc)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(tc)</span>
         }
         else if (part is TechToken tt)
         {
-            <img src=@Skin.Current.GetImageURL(tt) width=@Size height=@Size data-animation="true" data-content="@Support.GetTechTokenHTML(tt)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover"/>
+            <img src=@Skin.Current.GetImageURL(tt) width=@Size height=@Size data-animation="true" data-content="@Support.GetTechTokenHTML(tt)" data-html="true" data-trigger="hover" data-toggle="popover"/>
         }
         else if (part is FactionForce ff)
         {
@@ -64,7 +65,7 @@
         }
         else
         {
-            <span class="font-weight-bold">@Skin.Current.Describe(part)</span>
+            <span>@Skin.Current.Describe(part)</span>
         }
     }
 }
@@ -76,8 +77,4 @@
 
     [Parameter]
     public int Size { get; set; } = 14;
-
-    private string SizePx => "" + Size + "px";
-
-    private string Border => Skin.TextBorder(1, "black");
 }

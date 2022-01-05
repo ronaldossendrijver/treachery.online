@@ -256,6 +256,6 @@ namespace Treachery.Client
             return serializer.Deserialize<Skin>(jsonReader);
         }
 
-
+        public static string TextBorder(int borderwidth, string bordercolor) => string.Format("text-shadow: {0}px {0}px {1}px {2}, 0px {0}px {1}px {2}, -{0}px {0}px {1}px {2}, -{0}px 0px {1}px {2}, -{0}px -{0}px {1}px {2}, 0px -{0}px {1}px {2}, {0}px -{0}px {1}px {2}, {0}px 0px {1}px {2}, 0px 0px {1}px {2};", borderwidth, 2 * borderwidth, bordercolor);
     }
 }

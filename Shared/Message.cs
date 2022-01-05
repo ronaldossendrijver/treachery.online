@@ -11,41 +11,61 @@ namespace Treachery.Shared
     {
         private static int Counter = 0;
 
-        public string UnformattedBody { private get; set; }
-
-        public object[] Parameters { get; set; }
-
         public int Nr { get; } = Counter++;
 
         public Faction Initiator { get; set; }
 
         public Faction Target { get; set; }
 
+        private string _unformattedBody;
+
+        private object[] _parameters;
+
         private Expression _expression;
 
         public override string ToString()
         {
-            return Skin.Current.Format(UnformattedBody, Parameters);
+            return Skin.Current.Format(_unformattedBody, _parameters);
         }
+
+        public Message(Expression e)
+        {
+            _expression = e;
+            Initiator = Faction.None;
+        }
+
+        public Message(Faction f, Expression e)
+        {
+            _expression = e;
+            Initiator = f;
+        }
+
+        public Message(Faction from, Faction to, Expression e)
+        {
+            _expression = e;
+            Initiator = from;
+            Target = to;
+        }
+
 
         public Message(string m, params object[] list)
         {
-            UnformattedBody = m;
-            Parameters = list;
+            _unformattedBody = m;
+            _parameters = list;
             Initiator = Faction.None;
         }
 
         public Message(Faction f, string m, params object[] list)
         {
-            UnformattedBody = m;
-            Parameters = list;
+            _unformattedBody = m;
+            _parameters = list;
             Initiator = f;
         }
 
         public Message(Faction from, Faction to, string m, params object[] list)
         {
-            UnformattedBody = m;
-            Parameters = list;
+            _unformattedBody = m;
+            _parameters = list;
             Initiator = from;
             Target = to;
         }
@@ -56,7 +76,7 @@ namespace Treachery.Shared
             {
                 if (_expression == null)
                 {
-                    _expression = DetermineExpression(UnformattedBody, Parameters);
+                    _expression = DetermineExpression(_unformattedBody, _parameters);
                 }
 
                 return _expression;
@@ -92,20 +112,46 @@ namespace Treachery.Shared
 
             return new Expression(elements);
         }
+
+        public static Message Express(params object[] list)
+        {
+            return new Message(new Expression(list));
+        }
+
+        /*
+        public static Message Express(Faction f, params object[] list)
+        {
+            return new Message(f, new Expression(list));
+        }
+        */
+        public static Message ExpressTo(Faction from, Faction to, params object[] list)
+        {
+            return new Message(from, to, new Expression(list));
+        }
     }
 
     public class MessagePart
     {
-        public string UnformattedBody { private get; set; }
+        private string _unformattedBody;
 
-        public object[] Parameters { get; set; }
+        private object[] _parameters;
 
         private Expression _expression;
 
+        public MessagePart()
+        {
+            _expression = new Expression();
+        }
+
+        public MessagePart(Expression e)
+        {
+            _expression = e;
+        }
+
         public MessagePart(string unformattedBody, params object[] parameters)
         {
-            UnformattedBody = unformattedBody;
-            Parameters = parameters;
+            _unformattedBody = unformattedBody;
+            _parameters = parameters;
         }
 
         public Expression Expression
@@ -114,16 +160,33 @@ namespace Treachery.Shared
             {
                 if (_expression == null)
                 {
-                    _expression = Message.DetermineExpression(UnformattedBody, Parameters);
+                    _expression = Message.DetermineExpression(_unformattedBody, _parameters);
                 }
 
                 return _expression;
             }
         }
 
+        public static MessagePart Express(params object[] list)
+        {
+            return new MessagePart(new Expression(list));
+        }
+
+        public static MessagePart ExpressIf(bool condition, params object[] list)
+        {
+            if (condition)
+            {
+                return new MessagePart(new Expression(list));
+            }
+            else
+            {
+                return new MessagePart(new Expression());
+            }
+        }
+
         public override string ToString()
         {
-            return Skin.Current.Format(UnformattedBody, Parameters);
+            return Skin.Current.Format(_unformattedBody, _parameters);
         }
     }
 }

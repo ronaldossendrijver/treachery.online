@@ -16,7 +16,7 @@ namespace Treachery.Shared
             int nrOfUnalliedHumans = Game.Players.Count(p => !(p.IsBot) && p.Ally == Faction.None);
 
             var offer = Game.CurrentAllianceOffers.FirstOrDefault(offer => offer.Target == Faction && !offer.Player.IsBot);
-            if (offer == null) Game.CurrentAllianceOffers.FirstOrDefault(offer => offer.Target == Faction);
+            if (offer == null) offer = Game.CurrentAllianceOffers.FirstOrDefault(offer => offer.Target == Faction);
 
             if (offer != null)
             {

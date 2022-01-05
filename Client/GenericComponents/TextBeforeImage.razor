@@ -1,0 +1,27 @@
+﻿@using Treachery.Shared;
+
+<div style="position: relative; display: inline;">
+    <img src=@ImageURL width=@Size height=@Size title=@Title/>
+    <div style="width: @SizePx; height: @SizePx; text-align:center; font-weight: bold; position: absolute; top: -1px; left: 0px; @TextBorder">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string ImageURL { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public int Size { get; set; } = 14;
+        
+    private string SizePx => "" + Size + "px";
+
+    private string TextBorder => Support.TextBorder(1, "black");
+}
