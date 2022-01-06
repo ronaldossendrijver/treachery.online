@@ -39,6 +39,14 @@
                 <span class="badge badge-primary badge-pill">@number</span>
             }
         }
+        else if (part is Payment payment)
+        {
+            <TextBeforeImage ImageURL="@Skin.Current.Harvester_URL" Size=@Size Title="@Skin.Current.Describe(Concept.Resource)">@payment.Amount</TextBeforeImage>
+            @if (payment.By != Faction.None)
+            {
+                <span> by <FactionComponent Faction=payment.By Diameter=@Size/></span>    
+            }
+        }
         else if (part is Faction faction)
         {
             <FactionComponent Faction=faction Diameter=@Size/>

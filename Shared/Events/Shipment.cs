@@ -316,15 +316,15 @@ namespace Treachery.Shared
 
                 if (ForceAmount > 0 && SpecialForceAmount > 0)
                 {
-                    return new MessagePart("{0} {1} and {2} {3}", ForceAmount, p.Force, SpecialForceAmount, p.SpecialForce);
+                    return MessagePart.Express(ForceAmount, p.Force, " and ", SpecialForceAmount, p.SpecialForce);
                 }
                 else if (ForceAmount > 0 && SpecialForceAmount == 0)
                 {
-                    return new MessagePart("{0} {1}", ForceAmount, p.Force);
+                    return MessagePart.Express(ForceAmount, p.Force);
                 }
                 else
                 {
-                    return new MessagePart("{0} {1}", SpecialForceAmount, p.SpecialForce);
+                    return MessagePart.Express(SpecialForceAmount, p.SpecialForce);
                 }
             }
         }
@@ -335,15 +335,15 @@ namespace Treachery.Shared
 
             if (AllyContributionAmount > 0)
             {
-                return new MessagePart(" for {0}, of which {1} pay {2}", cost, p.Ally, AllyContributionAmount);
+                return MessagePart.Express(" for ", cost, Concept.Resource, " (", AllyContributionAmount, Concept.Resource, " by ", p.Ally, ")" );
             }
             else if (cost > 0)
             {
-                return new MessagePart(" for {0}", cost);
+                return MessagePart.Express(" for ", cost, Concept.Resource);
             }
             else
             {
-                return new MessagePart("", cost);
+                return new MessagePart();
             }
         }
 

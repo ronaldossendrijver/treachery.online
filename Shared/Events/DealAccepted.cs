@@ -23,6 +23,8 @@ namespace Treachery.Shared
 
         public int Price;
 
+        public int Benefit;
+
         public DealAccepted(Game game) : base(game)
         {
         }
@@ -35,6 +37,10 @@ namespace Treachery.Shared
         {
             if (!MayAcceptDeals(Game, Player, Price)) return "You currently have an outstanding bid";
             if (Price > Player.Resources) return "You can't pay that much";
+            
+            var boundPlayer = Game.GetPlayer(BoundFaction);
+            if (Benefit > boundPlayer.Resources) return "Offer is not valid (anymore)";
+
             if (Price > 0 && Game.Applicable(Rule.DisableResourceTransfers)) return Skin.Current.Format("{0} transfers are disabled by house rule", Concept.Resource);
             if (!Game.DealOffers.Any(offer => offer.IsAcceptedBy(this))) return "Offer is not valid (anymore)";
 
@@ -56,7 +62,7 @@ namespace Treachery.Shared
                 Initiator,
                 BoundFaction,
                 Price,
-                Deal.DealContentsDescription(Game, Type, Text, End, DealParameter1, DealParameter2));
+                Deal.DealContentsDescription(Game, Type, Text, Benefit, End, DealParameter1, DealParameter2));
         }
 
         protected override void ExecuteConcreteEvent()

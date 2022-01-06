@@ -2,8 +2,8 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
  */
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Treachery.Shared
 {
@@ -25,7 +25,14 @@ namespace Treachery.Shared
 
         public override string ToString()
         {
-            return Skin.Current.Format(_unformattedBody, _parameters);
+            if (_expression == null)
+            {
+                return Skin.Current.Format(_unformattedBody, _parameters);
+            }
+            else
+            {
+                return string.Join("", Expression.Elements.Select(e => Skin.Current.Describe(e)));
+            }
         }
 
         public Message(Expression e)

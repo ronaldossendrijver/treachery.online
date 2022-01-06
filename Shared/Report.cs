@@ -21,15 +21,6 @@ namespace Treachery.Shared
         {
             Add(Message.Express(list));
         }
-        public void Express(Faction f, params object[] list)
-        {
-            Add(Message.Express(f, list));
-        }
-
-        public void Express(Faction from, Faction to, params object[] list)
-        {
-            Add(Message.Express(from, to, list));
-        }
 
         public void Add(string m, params object[] list)
         {

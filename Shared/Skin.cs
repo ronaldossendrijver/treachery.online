@@ -296,6 +296,7 @@ namespace Treachery.Shared
             else if (value is string str) result = str;
             else if (value is bool b) result = b ? "Yes" : "No";
             else if (value is MessagePart part) result = Describe(part);
+            else if (value is Payment payment) result = Format("{0} {1}", payment.Amount, Concept.Resource);
             else if (value is Concept c) result = Describe(c);
             else if (value is Faction faction) result = Describe(faction);
             else if (value is FactionForce ff) result = Describe(ff);

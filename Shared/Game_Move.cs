@@ -10,13 +10,14 @@ namespace Treachery.Shared
     public partial class Game
     {
         public Location LastShippedOrMovedTo { get; private set; }
-        public PlayerSequence ShipmentAndMoveSequence { get; set; }
-        public bool ShipsTechTokenIncome;
-        public List<PlacementEvent> RecentMoves = new List<PlacementEvent>();
-        private List<Faction> FactionsWithOrnithoptersAtStartOfMovement;
-        private bool BeginningOfShipmentAndMovePhase;
+        public PlayerSequence ShipmentAndMoveSequence { get; private set; }
+        public bool ShipsTechTokenIncome { get; private set; }
+        public List<PlacementEvent> RecentMoves { get; private set; } = new List<PlacementEvent>();
         public int CurrentNoFieldValue { get; private set; } = -1;
         public int LatestRevealedNoFieldValue { get; private set; } = -1;
+
+        private List<Faction> FactionsWithOrnithoptersAtStartOfMovement;
+        private bool BeginningOfShipmentAndMovePhase;
 
         private void EnterShipmentAndMovePhase()
         {
@@ -65,7 +66,7 @@ namespace Treachery.Shared
                 {
                     var amount = techTokenOwner.TechTokens.Count;
                     techTokenOwner.Resources += amount;
-                    CurrentReport.Add(techTokenOwner.Faction, "{0} receive {1} from {2}.", techTokenOwner.Faction, amount, TechToken.Graveyard);
+                    CurrentReport.Express(techTokenOwner.Faction, " receive ", Payment(amount), " from ", TechToken.Graveyard);
                 }
             }
         }
@@ -90,7 +91,7 @@ namespace Treachery.Shared
             BGMayAccompany = false;
             var initiator = GetPlayer(s.Initiator);
 
-            MessagePart orangeIncome = new MessagePart("");
+            MessagePart orangeIncome = new MessagePart();
             int totalCost = 0;
 
             if (!s.Passed)
@@ -141,7 +142,7 @@ namespace Treachery.Shared
                     RecentMilestones.Add(Milestone.Shipment);
                 }
 
-                if (Version >= 89 || mustBeAdvisors) initiator.FlipForces(s.To, mustBeAdvisors);
+                initiator.FlipForces(s.To, mustBeAdvisors);
 
                 DetermineNextShipmentAndMoveSubPhase(DetermineIntrusionCaused(s), BGMayAccompany);
 
@@ -194,7 +195,7 @@ namespace Treachery.Shared
             if (s.AllyContributionAmount > 0)
             {
                 GetPlayer(initiator.Ally).Resources -= s.AllyContributionAmount;
-                if (Version >= 76) DecreasePermittedUseOfAllySpice(initiator.Faction, s.AllyContributionAmount);
+                DecreasePermittedUseOfAllySpice(initiator.Faction, s.AllyContributionAmount);
             }
 
             return costToInitiator + s.AllyContributionAmount;
@@ -359,11 +360,7 @@ namespace Treachery.Shared
 
             DetermineNextShipmentAndMoveSubPhase(intrusionCaused, false);
             CheckIfForcesShouldBeDestroyedByAllyPresence(initiator);
-
-            if (Version >= 87)
-            {
-                FlipBeneGesseritWhenAlone();
-            }
+            FlipBeneGesseritWhenAlone();
 
             MayPerformExtraMove = (CurrentFlightUsed != null && CurrentFlightUsed.ExtraMove);
             CurrentFlightUsed = null;
@@ -388,7 +385,7 @@ namespace Treachery.Shared
             var bgPlayer = GetPlayer(Faction.Blue);
 
             return
-                (Version <= 72 || territory != Map.PolarSink.Territory) &&
+                territory != Map.PolarSink.Territory &&
                 Applicable(Rule.BlueAdvisors) &&
                 bgPlayer != null &&
                 initiator != bgPlayer.Ally &&
@@ -578,14 +575,7 @@ namespace Treachery.Shared
 
             CurrentReport.Add(e.GetDynamicMessage(this));
 
-            if (Version < 77)
-            {
-                initiator.FlipForces(LastShippedOrMovedTo, e.AsAdvisors);
-            }
-            else
-            {
-                initiator.FlipForces(LastShippedOrMovedTo.Territory, e.AsAdvisors);
-            }
+            initiator.FlipForces(LastShippedOrMovedTo.Territory, e.AsAdvisors);
 
             if (Version >= 102) FlipBeneGesseritWhenAlone();
             DetermineNextShipmentAndMoveSubPhase(false, BGMayAccompany);
@@ -676,17 +666,14 @@ namespace Treachery.Shared
         {
             if (p.Ally != Faction.None)
             {
-                if (Version >= 86)
+                //Forces that must be destroyed because moves ended where allies are
+                foreach (var t in ChosenDestinationsWithAllies)
                 {
-                    //Forces that must be destroyed because moves ended where allies are
-                    foreach (var t in ChosenDestinationsWithAllies)
+                    if (p.AnyForcesIn(t) > 0)
                     {
-                        if (p.AnyForcesIn(t) > 0)
-                        {
-                            CurrentReport.Add(p.Faction, "All {0} forces in {1} were killed due to ally presence.", p.Faction, t);
-                            RevealCurrentNoField(p, t);
-                            p.KillAllForces(t, false);
-                        }
+                        CurrentReport.Add(p.Faction, "All {0} forces in {1} were killed due to ally presence.", p.Faction, t);
+                        RevealCurrentNoField(p, t);
+                        p.KillAllForces(t, false);
                     }
                 }
 

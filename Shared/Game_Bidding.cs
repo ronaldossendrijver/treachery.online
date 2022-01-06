@@ -121,7 +121,7 @@ namespace Treachery.Shared
                 else
                 {
                     GetPlayer(Faction.White).TreacheryCards.Add(CardsOnAuction.Draw());
-                    CurrentReport.Add("{0} keep their card as no faction bid on it.", Faction.White);
+                    CurrentReport.Add("{0} keep their card as no faction bid on it", Faction.White);
                     EnterWhiteBidding();
                 }
             }
@@ -146,7 +146,7 @@ namespace Treachery.Shared
                 else if (CurrentBid == null && Bids.Count >= PlayersThatCanBid.Count())
                 {
                     GetPlayer(Faction.White).TreacheryCards.Add(CardsOnAuction.Draw());
-                    CurrentReport.Add("{0} keep their card as no faction bid on it.", Faction.White);
+                    CurrentReport.Add("{0} keep their card as no faction bid on it", Faction.White);
                     EnterWhiteBidding();
                 }
             }
@@ -254,7 +254,7 @@ namespace Treachery.Shared
                 numberOfCardsToDraw++;
             }
 
-            CurrentReport.Add("{0} cards were drawn for bidding.", numberOfCardsToDraw);
+            CurrentReport.Add("{0} cards were drawn for bidding", numberOfCardsToDraw);
 
             for (int i = 0; i < numberOfCardsToDraw; i++)
             {
@@ -409,7 +409,7 @@ namespace Treachery.Shared
 
             if (Players.Count == 1 && CardsOnAuction.Items.Count == 1)
             {
-                CurrentReport.Add(Players[0].Faction, "{0} are playing alone and therefore win the auction.", Players[0].Faction);
+                CurrentReport.Add(Players[0].Faction, "{0} are playing alone and therefore win the auction", Players[0].Faction);
                 var drawnCard = CardsOnAuction.Draw();
                 Players[0].TreacheryCards.Add(drawnCard);
                 GiveHarkonnenExtraCard(Players[0]);
@@ -432,7 +432,7 @@ namespace Treachery.Shared
                 {
                     var amount = techTokenOwner.TechTokens.Count;
                     techTokenOwner.Resources += amount;
-                    CurrentReport.Add(techTokenOwner.Faction, "{0} receive {1} from {2}.", techTokenOwner.Faction, amount, TechToken.Resources);
+                    CurrentReport.Add(techTokenOwner.Faction, "{0} receive {1} from {2}", techTokenOwner.Faction, amount, TechToken.Resources);
                 }
             }
         }
@@ -496,7 +496,7 @@ namespace Treachery.Shared
             {
                 if (CurrentAuctionType == AuctionType.WhiteSilent)
                 {
-                    CurrentReport.Add(string.Join(", ", Bids.Select(b => Skin.Current.Format("{0} bid {1}", b.Key, b.Value.TotalAmount))));
+                    CurrentReport.Add(string.Join(", ", Bids.Select(b => Skin.Current.Format("{0} bid {1}.", b.Key, b.Value.TotalAmount))));
                 }
 
                 var highestBid = DetermineHighestBid(Bids);
@@ -514,7 +514,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    CurrentReport.Add("Card not sold as no faction bid on it.");
+                    CurrentReport.Add("Card not sold as no faction bid on it");
                     var white = GetPlayer(Faction.White);
                     if (white.HasRoomForCards)
                     {
@@ -525,7 +525,7 @@ namespace Treachery.Shared
                         var card = CardsOnAuction.Draw();
                         RemovedTreacheryCards.Add(card);
                         RegisterWonCardAsKnown(card);
-                        CurrentReport.Add(Faction.None, "{0} was removed from the game.", card);
+                        CurrentReport.Add(Faction.None, "{0} was removed from the game", card);
                         FinishBid(null, card);
                     }
                 }
@@ -586,7 +586,7 @@ namespace Treachery.Shared
             if (!e.Passed)
             {
                 e.Player.TreacheryCards.Add(card);
-                CurrentReport.Add(Faction.None, e.Initiator, "You get: {0}.", card);
+                CurrentReport.Add(Faction.None, e.Initiator, "You get: {0}", card);
                 FinishBid(e.Player, card);
             }
             else
@@ -623,7 +623,7 @@ namespace Treachery.Shared
             var card = toDrawFrom.Draw();
             RegisterWonCardAsKnown(card);
             winner.TreacheryCards.Add(card);
-            CurrentReport.Add(Faction.None, winner.Faction, "You won: {0}.", card);
+            CurrentReport.Add(Faction.None, winner.Faction, "You won: {0}", card);
             GiveHarkonnenExtraCard(winner);
             return card;
         }
@@ -637,35 +637,35 @@ namespace Treachery.Shared
         private void LogBid(Player initiator, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, MessagePart redIncome)
         {
             int bidTotalAmount = bidAmount + bidAllyContributionAmount + bidRedContributionAmount;
-            string cardNumberText = CurrentAuctionType == AuctionType.Normal ? CardNumber + " " : "";
+            var cardNumber = MessagePart.ExpressIf(CurrentAuctionType == AuctionType.Normal, CardNumber);
 
             if (bidAllyContributionAmount > 0)
             {
                 if (bidRedContributionAmount > 0)
                 {
-                    CurrentReport.Add(initiator.Faction, "Card {0} won by {1} for {2}, of which {3} paid {4} and {5} paid {6}.{7}", cardNumberText, initiator.Faction, bidTotalAmount, initiator.Ally, bidAllyContributionAmount, Faction.Red, bidRedContributionAmount, redIncome);
+                    CurrentReport.Express("Card ", cardNumber, " won by ", initiator.Faction, " for ", Payment(bidTotalAmount), "(", Payment(bidAllyContributionAmount, initiator.Ally), " and ", Payment(bidRedContributionAmount, Faction.Red), ") ", redIncome);
                 }
                 else
                 {
-                    CurrentReport.Add(initiator.Faction, "Card {0} won by {1} for {2}, of which {3} paid {4}.{5}", cardNumberText, initiator.Faction, bidTotalAmount, initiator.Ally, bidAllyContributionAmount, redIncome);
+                    CurrentReport.Express("Card ", cardNumber, " won by ", initiator.Faction, " for ", Payment(bidTotalAmount), "(", Payment(bidAllyContributionAmount, initiator.Ally), ") ", redIncome);
                 }
             }
             else
             {
                 if (bidRedContributionAmount > 0)
                 {
-                    CurrentReport.Add(initiator.Faction, "Card {0} won by {1} for {2}, of which {3} paid {4}.{5}", cardNumberText, initiator.Faction, bidTotalAmount, Faction.Red, bidRedContributionAmount, redIncome);
+                    CurrentReport.Express("Card ", cardNumber, " won by ", initiator.Faction, " for ", Payment(bidTotalAmount), "(", Payment(bidRedContributionAmount, Faction.Red), ") ", redIncome);
                 }
                 else
                 {
-                    CurrentReport.Add(initiator.Faction, "Card {0} won by {1} for {2}.{3}", cardNumberText, initiator.Faction, bidAmount, redIncome);
+                    CurrentReport.Express("Card ", cardNumber, " won by ", initiator.Faction, " for ", Payment(bidTotalAmount), redIncome);
                 }
             }
         }
 
         private void EveryonePassed()
         {
-            CurrentReport.Add("Card is passed on by everyone; bidding ends and remaining cards are returned to the Treachery Deck.");
+            CurrentReport.Add("Card is passed on by everyone; bidding ends and remaining cards are returned to the Treachery Deck");
             RecentMilestones.Add(Milestone.AuctionWon);
 
             while (!CardsOnAuction.IsEmpty)
@@ -685,7 +685,7 @@ namespace Treachery.Shared
             var card = toDrawFrom.Draw();
             RegisterWonCardAsKnown(card);
             winner.TreacheryCards.Add(card);
-            CurrentReport.Add(Faction.None, winner.Faction, "You won: {0}.", card);
+            CurrentReport.Add(Faction.None, winner.Faction, "You won: {0}", card);
             GiveHarkonnenExtraCard(winner);
             return card;
         }
@@ -707,11 +707,11 @@ namespace Treachery.Shared
 
             if (karmaCard.Type == TreacheryCardType.Karma)
             {
-                CurrentReport.Add(bid.Initiator, "Card {2} won by {0} using {1}.", bid.Initiator, TreacheryCardType.Karma, CardNumber);
+                CurrentReport.Add(bid.Initiator, "Card {2} won by {0} using {1}", bid.Initiator, TreacheryCardType.Karma, CardNumber);
             }
             else
             {
-                CurrentReport.Add(bid.Initiator, "Card {2} won by {0} using {1} for {3}.", bid.Initiator, karmaCard, CardNumber, TreacheryCardType.Karma);
+                CurrentReport.Add(bid.Initiator, "Card {2} won by {0} using {1} for {3}", bid.Initiator, karmaCard, CardNumber, TreacheryCardType.Karma);
             }
 
             RecentMilestones.Add(Milestone.AuctionWon);
@@ -720,7 +720,7 @@ namespace Treachery.Shared
             var card = toDrawFrom.Draw();
             winner.TreacheryCards.Add(card);
             RegisterWonCardAsKnown(card);
-            CurrentReport.Add(Faction.None, winner.Faction, "You won: {0}.", card);
+            CurrentReport.Add(Faction.None, winner.Faction, "You won: {0}", card);
             GiveHarkonnenExtraCard(winner);
             return card;
         }
@@ -762,14 +762,14 @@ namespace Treachery.Shared
                     {
                         receiverProfit = bidAmount + bidAllyContributionAmount;
                         receiverProfitAfterBidding = bidRedContributionAmount;
-                        message = new MessagePart(" {0} receive {1} immediately and {2} at the end of the bidding phase.", receiver, receiverProfit, receiverProfitAfterBidding);
+                        message = new MessagePart(" ", receiver , " get ", Payment(receiverProfit), " immediately and ", Payment(receiverProfitAfterBidding), " at the end of the bidding phase.");
                         receiver.Resources += receiverProfit;
                         receiver.ResourcesAfterBidding += receiverProfitAfterBidding;
                     }
                     else
                     {
                         receiverProfit = bidAmount + bidAllyContributionAmount + bidRedContributionAmount;
-                        message = new MessagePart(" {0} receive {1}.", paymentReceiver, receiverProfit);
+                        message = new MessagePart(" ", paymentReceiver, " get ", Payment(receiverProfit), ".");
                         receiver.Resources += receiverProfit;
 
                         if (receiverProfit >= 5)
@@ -802,13 +802,13 @@ namespace Treachery.Shared
                     if (extraCard != null)
                     {
                         initiator.TreacheryCards.Add(extraCard);
-                        CurrentReport.Add(initiator.Faction, "{0} receive an extra treachery card.", initiator.Faction);
-                        CurrentReport.Add(Faction.None, initiator.Faction, "Your extra card is: {0}.", extraCard);
+                        CurrentReport.Add(initiator.Faction, "{0} receive an extra treachery card", initiator.Faction);
+                        CurrentReport.Add(Faction.None, initiator.Faction, "Your extra card is: {0}", extraCard);
                     }
                 }
                 else
                 {
-                    CurrentReport.Add(initiator.Faction, "{0} prevented {1} from receiving an extra treachery card.", TreacheryCardType.Karma, initiator.Faction);
+                    CurrentReport.Add(initiator.Faction, "{0} prevented {1} from receiving an extra treachery card", TreacheryCardType.Karma, initiator.Faction);
                     if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.BlackFreeCard);
                 }
             }
@@ -818,7 +818,7 @@ namespace Treachery.Shared
         {
             if (TreacheryDeck.IsEmpty)
             {
-                CurrentReport.Add("Reshuffled {0} cards from the treachery discard pile.", TreacheryDiscardPile.Items.Count);
+                CurrentReport.Add("Shuffled {0} cards from the treachery discard pile into a new deck", TreacheryDiscardPile.Items.Count);
 
                 foreach (var i in TreacheryDiscardPile.Items)
                 {
@@ -883,7 +883,7 @@ namespace Treachery.Shared
                 var initiator = GetPlayer(e.Initiator);
                 var newCard = DrawTreacheryCard();
                 initiator.TreacheryCards.Add(newCard);
-                CurrentReport.Add(Faction.None, initiator.Faction, "You replaced your {0} with {1}.", CardJustWon, newCard);
+                CurrentReport.Add(Faction.None, initiator.Faction, "You replaced your {0} with {1}", CardJustWon, newCard);
                 RecentMilestones.Add(Milestone.CardWonSwapped);
             }
 

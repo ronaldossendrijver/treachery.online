@@ -15,8 +15,10 @@
             <Label>Offer to whom (select none to offer to all)</Label>
         </SelectFactionComponent>
 
-        <SelectResourcesComponent @bind-Value="price" Min="0" Max="50" />
+        <SelectResourcesComponent @bind-Value="price" Min="0" Max="50" Label="How much will it cost them to accept this deal?"/>
 
+        <SelectResourcesComponent @bind-Value="benefit" Min="0" Max="50" Label="How much will they get from you when they accept?"/>
+            
         <SelectComponent @bind-Value="type" Values="DealOffered.GetHumanDealTypes(Game, Player)">
             <Label>Type of Deal</Label>
         </SelectComponent>
@@ -37,6 +39,7 @@
 
     private List<Faction> to = new List<Faction>();
     private int price;
+    private int benefit;
     private DealType type;
     private string text = "";
     private Phase until;
@@ -51,7 +54,7 @@
         StateHasChanged();
     }
 
-    protected override DealOffered ConfirmedResult => new DealOffered(Game) { Initiator = Faction, To = to.Count >= Game.Players.Count - 1 ? Array.Empty<Faction>() : to.ToArray(), Price = price, Type = type, Text = text, EndPhase = until };
+    protected override DealOffered ConfirmedResult => new DealOffered(Game) { Initiator = Faction, To = to.Count >= Game.Players.Count - 1 ? Array.Empty<Faction>() : to.ToArray(), Price = price, Benefit = benefit, Type = type, Text = text, EndPhase = until };
 
     private async Task ConfirmOffer()
     {

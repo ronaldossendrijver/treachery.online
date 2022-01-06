@@ -39,12 +39,18 @@ namespace Treachery.Shared
 
             if (offer != null)
             {
-                var newDeal = new Deal() { BoundFaction = offer.Initiator, ConsumingFaction = e.Initiator, DealParameter1 = e.DealParameter1, DealParameter2 = e.DealParameter2, End = e.End, Text = e.Text, Type = e.Type };
+                var newDeal = new Deal() { BoundFaction = offer.Initiator, ConsumingFaction = e.Initiator, DealParameter1 = e.DealParameter1, DealParameter2 = e.DealParameter2, End = e.End, Text = e.Text, Benefit = e.Benefit, Type = e.Type };
                 StartDeal(newDeal);
 
                 if (e.Price > 0)
                 {
                     ExchangeResourcesInBribe(GetPlayer(e.Initiator), GetPlayer(offer.Initiator), e.Price);
+                    RecentMilestones.Add(Milestone.Bribe);
+                }
+
+                if (e.Benefit > 0)
+                {
+                    ExchangeResourcesInBribe(GetPlayer(offer.Initiator), GetPlayer(e.Initiator), e.Benefit);
                     RecentMilestones.Add(Milestone.Bribe);
                 }
 

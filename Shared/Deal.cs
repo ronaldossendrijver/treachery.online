@@ -18,6 +18,8 @@ namespace Treachery.Shared
 
         public string Text { get; set; }
 
+        public int Benefit { get; set; }
+
         public Phase End { get; set; }
 
         public T GetParameter1<T>(Game g)
@@ -39,28 +41,36 @@ namespace Treachery.Shared
             return default;
         }
 
-        public static string DealContentsDescription(Game g, DealType Type, string Text, Phase End, string Parameter1, string Parameter2)
+        public static string DealContentsDescription(Game g, DealType Type, string Text, int benefit, Phase End, string Parameter1, string Parameter2)
         {
+            string description;
             if (Text != null && Text.Length > 0)
             {
-                return Text;
+                description = Text;
             }
             else
             {
-                return Skin.Current.Format("{0} until {1}",
+                description = Skin.Current.Format("{0} until {1}",
                     string.Format(Skin.Current.Describe(Type), GetParameter1<object>(g, Type, Parameter1), GetParameter2<object>()),
                     End);
             }
+
+            if (benefit > 0)
+            {
+                description = "Receive " + benefit + " and " + description;
+            }
+
+            return description;
         }
 
         public string DealContentsDescription(Game g)
         {
-            return DealContentsDescription(g, Type, Text, End, DealParameter1, DealParameter2);
+            return DealContentsDescription(g, Type, Text, Benefit, End, DealParameter1, DealParameter2);
         }
 
         public string ToString(Game g)
         {
-            var description = DealContentsDescription(g, Type, Text, End, DealParameter1, DealParameter2);
+            var description = DealContentsDescription(g, Type, Text, Benefit, End, DealParameter1, DealParameter2);
             return Skin.Current.Format("{0} ⇔ {1}: {2}", BoundFaction, ConsumingFaction, description);
         }
     }

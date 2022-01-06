@@ -24,6 +24,8 @@ namespace Treachery.Shared
 
         public int Price;
 
+        public int Benefit;
+
         public bool Cancel;
 
         public DealOffered(Game game) : base(game)
@@ -43,33 +45,28 @@ namespace Treachery.Shared
         {
             if (!Cancel)
             {
-                return new Message(Initiator, "{0} offer{1} for {2}: {3}",
-                    Initiator,
-                    TargetsToString(),
-                    Price,
-                    Deal.DealContentsDescription(Game, Type, Text, EndPhase, DealParameter1, DealParameter2));
+                return Message.Express(Initiator, " offer ", MessagePart.ExpressIf(To.Any(), ToObjects(To)), " for ", new Payment(Price), ": ", Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1, DealParameter2));
             }
             else
             {
-                return new Message(Initiator, "{0} cancel their offer", Initiator);
+                return Message.Express(Initiator, " withdraw a deal offer");
             }
+        }
+
+        private object[] ToObjects(IEnumerable<Faction> factions)
+        {
+            var result = new List<object>();
+            foreach (var faction in factions)
+            {
+                result.Add(faction);
+            }
+            result.Add(" ");
+            return result.ToArray();
         }
 
         public string GetDealDescription()
         {
-            return Deal.DealContentsDescription(Game, Type, Text, EndPhase, DealParameter1, DealParameter2);
-        }
-
-        private string TargetsToString()
-        {
-            if (To.Length > 0)
-            {
-                return string.Format(" to {0}", Skin.Current.Join(To));
-            }
-            else
-            {
-                return "";
-            }
+            return Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1, DealParameter2);
         }
 
         protected override void ExecuteConcreteEvent()
@@ -95,6 +92,7 @@ namespace Treachery.Shared
                 DealParameter1 = DealParameter1,
                 DealParameter2 = DealParameter2,
                 Text = Text,
+                Benefit = Benefit,
                 End = EndPhase
             };
         }
@@ -107,6 +105,7 @@ namespace Treachery.Shared
                 offeredDeal.DealParameter1 == DealParameter1 &&
                 offeredDeal.DealParameter2 == DealParameter2 &&
                 offeredDeal.Text == Text &&
+                offeredDeal.Benefit == Benefit &&
                 offeredDeal.EndPhase == EndPhase &&
                 offeredDeal.To.SequenceEqual(To);
         }
@@ -120,6 +119,7 @@ namespace Treachery.Shared
                 acceptedDeal.DealParameter1 == DealParameter1 &&
                 acceptedDeal.DealParameter2 == DealParameter2 &&
                 acceptedDeal.Text == Text &&
+                acceptedDeal.Benefit == Benefit &&
                 acceptedDeal.End == EndPhase &&
                 (To.Length == 0 || To.Contains(acceptedDeal.Initiator));
         }

@@ -707,6 +707,16 @@ namespace Treachery.Shared
 
         #region SupportMethods
 
+        private Payment Payment(int amount)
+        {
+            return new Payment() { Amount = amount };
+        }
+
+        private Payment Payment(int amount, Faction by)
+        {
+            return new Payment() { Amount = amount, By = by };
+        }
+
         private void AllowAllPreventedFactionAdvantages(IEnumerable<FactionAdvantage> exceptions)
         {
             foreach (var adv in Enumerations.GetValuesExceptDefault(typeof(FactionAdvantage), FactionAdvantage.None))
