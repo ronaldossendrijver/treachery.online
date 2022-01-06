@@ -269,15 +269,15 @@ namespace Treachery.Shared
         {
             if (Passed)
             {
-                return new Message(Initiator, "{0} pass shipment.", Initiator);
+                return Message.Express(Initiator, " pass shipment");
             }
             else if (IsBackToReserves)
             {
-                return new Message(Initiator, "{0} ship from {1} to reserves.", Initiator, To);
+                return Message.Express(Initiator, " ship from ", To, " to reserves");
             }
             else
             {
-                return new Message(Initiator, "{0} ship to {1}.", Initiator, To);
+                return Message.Express(Initiator, " ship to ", To);
             }
         }
 
@@ -285,23 +285,22 @@ namespace Treachery.Shared
         {
             if (Passed)
             {
-                return new Message(Initiator, "{0} pass shipment.", Initiator);
+                return Message.Express(Initiator, " pass shipment");
             }
             else
             {
                 if (IsBackToReserves)
                 {
-                    return new Message(Initiator, "{0} ship from {1} back to reserves{2}.{3}{4}", Initiator, To, CostMessage(cost), KaramaMessage(ownerOfKarma), orangeIncome);
+                    return Message.Express(Initiator, " ship from ", To, " back to reserves", CostMessage(cost), KaramaMessage(ownerOfKarma), orangeIncome);
                 }
                 else if (IsSiteToSite)
                 {
-                    var baseMessage = "{0} site-to-site ship {1} from {5} to {2}{3}.{4}{6}";
-                    return new Message(Initiator, baseMessage, Initiator, ForceMessage, To.ToString(), CostMessage(cost), KaramaMessage(ownerOfKarma), From, orangeIncome);
+                    return Message.Express(Initiator, " site-to-site ship ", ForceMessage, " from ", From, " to ", To, CostMessage(cost), KaramaMessage(ownerOfKarma), orangeIncome);
                 }
                 else
                 {
-                    var baseMessage = Initiator == Faction.Yellow ? "{0} rally {1} in {2}{3}.{4}{5}" : "{0} ship {6}{1} to {2}{3}.{4}{5}";
-                    return new Message(Initiator, baseMessage, Initiator, ForceMessage, To, CostMessage(cost), KaramaMessage(ownerOfKarma), orangeIncome, NoFieldMessage);
+                    var shipmentform = Initiator == Faction.Yellow ? " rally " : " ship ";
+                    return Message.Express(Initiator, shipmentform, ForceMessage, " in ", To, CostMessage(cost), KaramaMessage(ownerOfKarma), orangeIncome, NoFieldMessage);
                 }
             }
         }
@@ -335,11 +334,11 @@ namespace Treachery.Shared
 
             if (AllyContributionAmount > 0)
             {
-                return MessagePart.Express(" for ", cost, Concept.Resource, " (", AllyContributionAmount, Concept.Resource, " by ", p.Ally, ")" );
+                return MessagePart.Express(" for ", new Payment(cost), " (", new Payment(AllyContributionAmount, p.Ally), ")." );
             }
             else if (cost > 0)
             {
-                return MessagePart.Express(" for ", cost, Concept.Resource);
+                return MessagePart.Express(" for ", new Payment(cost), ".");
             }
             else
             {
@@ -356,28 +355,28 @@ namespace Treachery.Shared
                 {
                     if (KarmaCard.Type != TreacheryCardType.Karma)
                     {
-                        return new MessagePart(" They used their allies' {0} ({1}).", TreacheryCardType.Karma, KarmaCard);
+                        return MessagePart.Express(" using their allies' ", TreacheryCardType.Karma, " (", KarmaCard, ").");
                     }
                     else
                     {
-                        return new MessagePart(" They used their allies' {0}.", TreacheryCardType.Karma);
+                        return MessagePart.Express(" using their allies' ", TreacheryCardType.Karma, ".");
                     }
                 }
                 else
                 {
                     if (KarmaCard.Type != TreacheryCardType.Karma)
                     {
-                        return new MessagePart(" They used {0} ({1}).", TreacheryCardType.Karma, KarmaCard);
+                        return MessagePart.Express(" using ", TreacheryCardType.Karma, " (", KarmaCard, ").");
                     }
                     else
                     {
-                        return new MessagePart(" They used {0}.", TreacheryCardType.Karma);
+                        return MessagePart.Express(" using ", TreacheryCardType.Karma, ".");
                     }
                 }
             }
             else
             {
-                return new MessagePart("");
+                return new MessagePart();
             }
         }
 

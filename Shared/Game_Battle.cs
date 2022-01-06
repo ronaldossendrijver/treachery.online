@@ -78,7 +78,7 @@ namespace Treachery.Shared
         {
             if (!Battle.ValidBattleHeroes(this, p).Any())
             {
-                CurrentReport.Add(p.Faction, "{0} don't have leaders available for this battle.", p.Faction);
+                CurrentReport.Express(p.Faction, " have no leaders available for this battle");
             }
         }
 
@@ -159,7 +159,7 @@ namespace Treachery.Shared
                     int collected = Math.Min(ResourcesOnPlanet[locationWithResources], hero.ValueInCombatAgainst(opponentHero));
                     if (collected > 0)
                     {
-                        CurrentReport.Add(player.Faction, "{0} {1} collects {2} {3} from {4}", player.Faction, LeaderSkill.Smuggler, collected, Concept.Resource, territory);
+                        CurrentReport.Express(player.Faction, LeaderSkill.Smuggler, " collects ", Payment(collected), " from ", territory);
                         ChangeResourcesOnPlanet(locationWithResources, -collected);
                         player.Resources += collected;
                     }
@@ -365,7 +365,7 @@ namespace Treachery.Shared
 
             if (locationWithResources != null && SkilledAs(plan.Hero, LeaderSkill.Sandmaster) && plan.Player.AnyForcesIn(CurrentBattle.Territory) > 0)
             {
-                CurrentReport.Add(plan.Initiator, "{0} adds 3 {1} to {2}", LeaderSkill.Sandmaster, Concept.Resource, CurrentBattle.Territory);
+                CurrentReport.Express(LeaderSkill.Sandmaster, " adds ", Payment(3), " to ", CurrentBattle.Territory);
                 ChangeResourcesOnPlanet(locationWithResources, 3);
             }
         }
@@ -403,7 +403,6 @@ namespace Treachery.Shared
 
                 TraitorDeck.Shuffle();
                 RecentMilestones.Add(Milestone.Shuffled);
-
                 TraitorsDeciphererCanLookAt.Clear();
             }
         }
@@ -421,7 +420,7 @@ namespace Treachery.Shared
         {
             if (card != null && card.Type == TreacheryCardType.Useless)
             {
-                CurrentReport.Add(player.Faction, "{0} stronghold advantage: {1} collect 2 for playing {2}", Map.TueksSietch, player.Faction, card);
+                CurrentReport.Express(Map.TueksSietch, " stronghold advantage: ", player.Faction, " collect ", Payment(2), " for playing ", card);
                 player.Resources += 2;
             }
         }
@@ -433,11 +432,10 @@ namespace Treachery.Shared
                 int collected = (int)Math.Floor(opponentPlan.Dial(this, playerPlan.Initiator));
                 if (collected > 0)
                 {
-                    CurrentReport.Add(playerPlan.Initiator, "{0} stronghold advantage: {1} collect {2} for enemy force dial", Map.SietchTabr, playerPlan.Initiator, collected);
+                    CurrentReport.Express(Map.SietchTabr, " stronghold advantage: ", playerPlan.Initiator, " collect ", Payment(collected), " from enemy force dial");
                     playerPlan.Player.Resources += collected;
                 }
             }
-
         }
 
         private void DetermineHowToProceedAfterRevealingBattlePlans()
@@ -470,7 +468,7 @@ namespace Treachery.Shared
             }
             else
             {
-                CurrentReport.Add(Auditee.Faction, "{0} don't have any cards to audit", Auditee.Faction);
+                CurrentReport.Express(Auditee.Faction, " don't have cards to audit");
                 Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
             }
         }
@@ -498,7 +496,7 @@ namespace Treachery.Shared
             {
                 if (Version > 125 && Prevented(FactionAdvantage.BlackCaptureLeader))
                 {
-                    CurrentReport.Add(Faction.Black, "{0} prevents {1} from capturing a leader.", TreacheryCardType.Karma, Faction.Black);
+                    CurrentReport.Express(TreacheryCardType.Karma, " prevents ", Faction.Black, " from capturing a leader");
                 }
                 else
                 {
@@ -594,14 +592,14 @@ namespace Treachery.Shared
 
             foreach (var c in e.DiscardedCards)
             {
-                CurrentReport.Add(e.Initiator, "{0} discard {1}.", e.Initiator, c);
+                CurrentReport.Express(e.Initiator, " discard ", c);
                 winner.TreacheryCards.Remove(c);
                 TreacheryDiscardPile.PutOnTop(c);
             }
 
             if (TraitorsDeciphererCanLookAt.Count > 0)
             {
-                CurrentReport.Add(e.Initiator, "{0} look at {1} leaders in the traitor deck.", e.Initiator, TraitorsDeciphererCanLookAt.Count);
+                CurrentReport.Express(e.Initiator, " look at ", TraitorsDeciphererCanLookAt.Count, " leaders in the traitor deck");
             }
 
             if (e.ReplacedTraitor != null && e.NewTraitor != null)
@@ -617,7 +615,7 @@ namespace Treachery.Shared
 
         private void DeciphererReplacesTraitors(BattleConcluded e)
         {
-            CurrentReport.Add(e.Initiator, "{0} replaced {1} by another traitor from the deck.", e.Initiator, e.ReplacedTraitor);
+            CurrentReport.Express(e.Initiator, " replaced ", e.ReplacedTraitor, " by another traitor from the deck");
 
             e.Player.Traitors.Add(e.NewTraitor);
             TraitorsDeciphererCanLookAt.Remove(e.NewTraitor);
@@ -635,7 +633,7 @@ namespace Treachery.Shared
             {
                 var initiator = GetPlayer(f.Initiator);
                 var facedancer = initiator.FaceDancers.FirstOrDefault(f => WinnerHero.IsFaceDancer(f));
-                CurrentReport.Add(f.Initiator, "{0} reveal {1} as one of their Face Dancers!", f.Initiator, facedancer);
+                CurrentReport.Express(f.Initiator, " reveal ", facedancer, " as one of their Face Dancers!");
 
                 RecentMilestones.Add(Milestone.FaceDanced);
 
@@ -670,7 +668,7 @@ namespace Treachery.Shared
             }
             else
             {
-                CurrentReport.Add(f.Initiator, "{0} don't reveal a Face Dancer.", f.Initiator);
+                CurrentReport.Express(f.Initiator, " don't reveal a Face Dancer");
             }
 
             FinishBattle();
@@ -700,7 +698,7 @@ namespace Treachery.Shared
                     initiator.ChangeSpecialForces(location, fl.Value.AmountOfSpecialForces);
                 }
 
-                CurrentReport.Add(f.Initiator, "{0} {1} forces go back to reserves and are replaced by {2} {3} forces ({4} from reserves{5}).", nrOfRemovedForces, winner.Faction, f.TargetForceLocations.Sum(b => b.Value.TotalAmountOfForces), f.Initiator, f.ForcesFromReserve, DetermineSourceLocations(f));
+                CurrentReport.Express(nrOfRemovedForces, " ", winner.Faction, " forces go back to reserves and are replaced by ", f.TargetForceLocations.Sum(b => b.Value.TotalAmountOfForces), f.Initiator, " forces (", f.ForcesFromReserve, " from reserves", DetermineSourceLocations(f), ")");
             }
         }
 
@@ -715,19 +713,12 @@ namespace Treachery.Shared
             {
                 purple.FaceDancers.Add(TraitorDeck.Draw());
             }
-            CurrentReport.Add(f.Initiator, "{0} draw 3 new Face Dancers.", f.Initiator);
+            CurrentReport.Express(f.Initiator, " draw 3 new Face Dancers.");
         }
 
         private MessagePart DetermineSourceLocations(FaceDanced f)
         {
-            if (f.ForceLocations.Count == 0)
-            {
-                return new MessagePart("");
-            }
-            else
-            {
-                return new MessagePart(", {0}", string.Join(", ", f.ForceLocations.Select(fl => string.Format("{0} from {1}", fl.Value.AmountOfForces + fl.Value.AmountOfSpecialForces, fl.Key))));
-            }
+            return MessagePart.ExpressIf(f.ForceLocations.Count > 0, ", {0}", string.Join(", ", f.ForceLocations.Select(fl => string.Format("{0} from {1}", fl.Value.AmountOfForces + fl.Value.AmountOfSpecialForces, fl.Key))));
         }
 
         public IHero WinnerHero

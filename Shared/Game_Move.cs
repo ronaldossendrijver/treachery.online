@@ -218,7 +218,7 @@ namespace Treachery.Shared
 
                         if (receiverProfit > 0)
                         {
-                            profitMessage = new MessagePart(" {0} receive {1}.", Faction.Orange, receiverProfit);
+                            profitMessage = MessagePart.Express(Faction.Orange, " receive ", Payment(receiverProfit));
                         }
 
                         if (receiverProfit >= 5)
@@ -228,7 +228,7 @@ namespace Treachery.Shared
                     }
                     else
                     {
-                        profitMessage = new MessagePart(" {0} prevents {1} from receiving {2}.", TreacheryCardType.Karma, Faction.Orange, Concept.Resource);
+                        profitMessage = MessagePart.Express(TreacheryCardType.Karma, " prevents ", Faction.Orange, " from receiving", new Payment(receiverProfit));
                         if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.OrangeReceiveShipment);
                     }
                 }

@@ -20,6 +20,7 @@ namespace Treachery.Shared
         public bool YellowAllowsThreeFreeRevivals { get; private set; } = false;
         public bool YellowSharesPrescience { get; private set; } = false;
         public bool GreenSharesPrescience { get; private set; } = false;
+
         private Dictionary<Faction, int> PermittedUseOfAllySpice { get; } = new Dictionary<Faction, int>();
         private Dictionary<Faction, int> PermittedUseOfRedSpice { get; set; } = new Dictionary<Faction, int>();
         private Dictionary<Faction, TreacheryCard> PermittedUseOfAllyKarma { get; } = new Dictionary<Faction, TreacheryCard>();
@@ -94,7 +95,7 @@ namespace Treachery.Shared
             }
             else
             {
-                CurrentReport.Add(e.Initiator, "{0} and {1} trade a card.", e.Initiator, CurrentCardTradeOffer.Initiator);
+                CurrentReport.Express(e.Initiator, " and ", CurrentCardTradeOffer.Initiator, " exchange a card");
 
                 if (CurrentCardTradeOffer.Player.TreacheryCards.Count > 1 || e.Player.TreacheryCards.Count > 1)
                 {

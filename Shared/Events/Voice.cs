@@ -103,11 +103,11 @@ namespace Treachery.Shared
         {
             if (Must)
             {
-                return new Message(Faction.Blue, "By Voice, {0} force the use of {1}.", Faction.Blue, Type);
+                return Message.Express("By Voice, ", Faction.Blue, " force the use of ", Type);
             }
             else
             {
-                return new Message(Faction.Blue, "By Voice, {0} deny the use of {1}.", Faction.Blue, Type);
+                return Message.Express("By Voice, ", Faction.Blue, " deny the use of ", Type);
             }
         }
 

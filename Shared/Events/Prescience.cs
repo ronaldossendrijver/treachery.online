@@ -67,7 +67,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Faction.Green, "By Prescience, {0} see the enemy {1}.", Faction.Green, Aspect);
+            return Message.Express("By Prescience, ", Faction.Green, " see the enemy ", Aspect);
         }
     }
 
