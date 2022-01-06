@@ -23,17 +23,7 @@ namespace Treachery.Shared
 
         private Expression _expression;
 
-        public override string ToString()
-        {
-            if (_expression == null)
-            {
-                return Skin.Current.Format(_unformattedBody, _parameters);
-            }
-            else
-            {
-                return string.Join("", Expression.Elements.Select(e => Skin.Current.Describe(e)));
-            }
-        }
+        private string _toString = null;
 
         public Message(Expression e)
         {
@@ -53,7 +43,6 @@ namespace Treachery.Shared
             Initiator = from;
             Target = to;
         }
-
 
         public Message(string m, params object[] list)
         {
@@ -120,17 +109,28 @@ namespace Treachery.Shared
             return new Expression(elements);
         }
 
+        public override string ToString()
+        {
+            if (_toString == null)
+            {
+                if (_expression == null)
+                {
+                    _toString = Skin.Current.Format(_unformattedBody, _parameters);
+                }
+                else
+                {
+                    _toString = string.Join("", Expression.Elements.Select(e => Skin.Current.Describe(e)));
+                }
+            }
+
+            return _toString;
+        }
+
         public static Message Express(params object[] list)
         {
             return new Message(new Expression(list));
         }
 
-        /*
-        public static Message Express(Faction f, params object[] list)
-        {
-            return new Message(f, new Expression(list));
-        }
-        */
         public static Message ExpressTo(Faction from, Faction to, params object[] list)
         {
             return new Message(from, to, new Expression(list));
@@ -191,9 +191,22 @@ namespace Treachery.Shared
             }
         }
 
+        private string _toString = null;
         public override string ToString()
         {
-            return Skin.Current.Format(_unformattedBody, _parameters);
+            if (_toString == null)
+            {
+                if (_expression == null)
+                {
+                    _toString = Skin.Current.Format(_unformattedBody, _parameters);
+                }
+                else
+                {
+                    _toString = string.Join("", Expression.Elements.Select(e => Skin.Current.Describe(e)));
+                }
+            }
+
+            return _toString;
         }
     }
 }

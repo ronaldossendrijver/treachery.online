@@ -59,9 +59,10 @@ namespace Treachery.Shared
         {
             DealOffered result = null;
 
-            if (Game.CurrentMainPhase > MainPhase.Setup && !Game.Applicable(Rule.DisableResourceTransfers))
+            result = DetermineOutdatedDealOffers();
+
+            if (result == null && !LastTurn && Game.CurrentMainPhase > MainPhase.Setup && !Game.Applicable(Rule.DisableResourceTransfers))
             {
-                result = DetermineOutdatedDealOffers();
                 if (result == null) result = DetermineDealOffered_BiddingPrescienceEntirePhaseYellowTurn1();
                 if (result == null) result = DetermineDealOffered_BiddingPrescienceEntirePhase();
                 if (result == null) result = DetermineDealOffered_BiddingPrescienceOneCard();
@@ -78,6 +79,7 @@ namespace Treachery.Shared
             DealOffered outdated = FindOutdatedDealOffer(MainPhase.Bidding, DealType.ShareBiddingPrescience);
             if (outdated == null) outdated = FindOutdatedDealOffer(MainPhase.Battle, DealType.ShareResourceDeckPrescience);
             if (outdated == null) outdated = FindOutdatedDealOffer(MainPhase.Battle, DealType.ShareStormPrescience);
+            if (LastTurn && outdated == null) outdated = Game.DealOffers.FirstOrDefault();
 
             if (outdated != null)
             {
