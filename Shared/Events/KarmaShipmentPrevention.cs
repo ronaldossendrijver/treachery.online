@@ -28,7 +28,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "Using {2}, {0} prevent shipment by {1}.", Initiator, Target, TreacheryCardType.Karma);
+            return Message.Express("Using ", TreacheryCardType.Karma, ", ", Initiator, " prevent shipment by ", Target);
         }
     }
 }

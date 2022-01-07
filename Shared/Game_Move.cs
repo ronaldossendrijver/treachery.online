@@ -269,7 +269,7 @@ namespace Treachery.Shared
 
                 if (killCount > 0)
                 {
-                    CurrentReport.Add(initiator.Faction, "{0} {1} {2} are killed by the storm.", killCount, initiator.Faction, initiator.Force);
+                    CurrentReport.Express(killCount, initiator.Faction, " forces are killed by the storm");
                 }
             }
 
@@ -306,18 +306,18 @@ namespace Treachery.Shared
                 if (BlueMustBeFighterIn(c.Location))
                 {
                     benegesserit.ShipForces(c.Location, 1);
-                    CurrentReport.Add(c.Initiator, "{0} ship a fighter to {1}.", c.Initiator, c.Location);
+                    CurrentReport.Express(c.Initiator, " accompany ", FactionForce.Blue, " to ", c.Location);
                 }
                 else
                 {
                     benegesserit.ShipAdvisors(c.Location, 1);
-                    CurrentReport.Add(c.Initiator, "{0} ship an advisor to {1}.", c.Initiator, c.Location);
+                    CurrentReport.Express(c.Initiator, " accompany ", FactionSpecialForce.Blue, " to ", c.Location);
                 }
             }
             else
             {
 
-                CurrentReport.Add(c.Initiator, "{0} don't accompany this shipment.", c.Initiator);
+                CurrentReport.Express(c.Initiator, " don't accompany shipment");
             }
 
             DetermineNextShipmentAndMoveSubPhase(false, BGMayAccompany);
@@ -355,7 +355,7 @@ namespace Treachery.Shared
             }
             else
             {
-                CurrentReport.Add(m.Initiator, "{0} pass movement.", m.Initiator);
+                CurrentReport.Express(m.Initiator, " pass movement");
             }
 
             DetermineNextShipmentAndMoveSubPhase(intrusionCaused, false);
@@ -481,7 +481,7 @@ namespace Treachery.Shared
                     }
 
                     initiator.Resources += mostSpice;
-                    CurrentReport.Add(initiator.Faction, "{0} {1} collects {2} {3} along the way.", initiator.Faction, LeaderSkill.Sandmaster, mostSpice, Concept.Resource);
+                    CurrentReport.Express(initiator.Faction, LeaderSkill.Sandmaster, " collects ", Payment(mostSpice), " along the way");
                 }
             }
         }
@@ -507,7 +507,7 @@ namespace Treachery.Shared
 
                 if (killCount > 0)
                 {
-                    CurrentReport.Add(initiator.Faction, "{0} {1} {2} are killed by the storm while travelling.", killCount, initiator.Faction, initiator.Force);
+                    CurrentReport.Express(killCount, initiator.Faction, "forces are killed by the storm while travelling");
                 }
             }
             else
@@ -542,32 +542,19 @@ namespace Treachery.Shared
         {
             if (initiator.Is(Faction.Blue))
             {
-                CurrentReport.Add(initiator.Faction, "{5}{0} move {1} forces from {2} to {3} as {4}.",
-                    initiator.Faction, forceAmount + specialForceAmount, from, to, asAdvisors ? (object)initiator.SpecialForce : initiator.Force, CaravanMessage(byCaravan));
+                CurrentReport.Express(CaravanMessage(byCaravan), initiator.Faction, " move ", forceAmount + specialForceAmount, " forces from ", from, " to ", to, " as ", asAdvisors ? (object)initiator.SpecialForce : initiator.Force);
             }
             else if (specialForceAmount > 0)
             {
-                CurrentReport.Add(initiator.Faction, "{7}{0} move {1} {6} and {2} {5} from {3} to {4}.",
-                    initiator.Faction, forceAmount, specialForceAmount, from, to, initiator.SpecialForce, initiator.Force, CaravanMessage(byCaravan));
+                CurrentReport.Express(CaravanMessage(byCaravan), initiator.Faction, " move ", forceAmount, initiator.Force, " and ", specialForceAmount, initiator.SpecialForce, " from ", from, " to ", to);
             }
             else
             {
-                CurrentReport.Add(initiator.Faction, "{5}{0} move {1} {2} from {3} to {4}.",
-                    initiator.Faction, forceAmount, initiator.Force, from, to, CaravanMessage(byCaravan));
+                CurrentReport.Express(CaravanMessage(byCaravan), initiator.Faction, " move ", forceAmount, initiator.Force, " from ", from, " to ", to);
             }
         }
 
-        private MessagePart CaravanMessage(bool byCaravan)
-        {
-            if (byCaravan)
-            {
-                return new MessagePart("By {0}, ", TreacheryCardType.Caravan);
-            }
-            else
-            {
-                return new MessagePart("");
-            }
-        }
+        private MessagePart CaravanMessage(bool byCaravan) => MessagePart.ExpressIf(byCaravan, "By ", TreacheryCardType.Caravan, ", ");
 
         public void HandleEvent(BlueFlip e)
         {
@@ -671,7 +658,7 @@ namespace Treachery.Shared
                 {
                     if (p.AnyForcesIn(t) > 0)
                     {
-                        CurrentReport.Add(p.Faction, "All {0} forces in {1} were killed due to ally presence.", p.Faction, t);
+                        CurrentReport.Express("All ", p.Faction, " forces in ", t, " were killed due to ally presence");
                         RevealCurrentNoField(p, t);
                         p.KillAllForces(t, false);
                     }
@@ -688,7 +675,7 @@ namespace Treachery.Shared
                     {
                         if (t != Map.PolarSink.Territory)
                         {
-                            CurrentReport.Add(p.Faction, "All {0} forces in {1} were killed due to ally presence.", p.Faction, t);
+                            CurrentReport.Express("All ", p.Faction, " forces in ", t, " were killed due to ally presence");
                             RevealCurrentNoField(p, t);
                             p.KillAllForces(t, false);
                         }
@@ -795,7 +782,7 @@ namespace Treachery.Shared
                 {
                     var amount = techTokenOwner.TechTokens.Count;
                     techTokenOwner.Resources += amount;
-                    CurrentReport.Add(techTokenOwner.Faction, "{0} receive {1} from {2}.", techTokenOwner.Faction, amount, TechToken.Ships);
+                    CurrentReport.Express(techTokenOwner.Faction, " receive ", Payment(amount), " from ", TechToken.Ships);
                 }
             }
         }

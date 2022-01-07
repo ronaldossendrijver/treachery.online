@@ -51,7 +51,7 @@ namespace Treachery.Shared
                 }
                 else if (drawn.IsShaiHulud && CurrentTurn == 1)
                 {
-                    CurrentReport.Add("{0} on turn 1 was ignored.", Concept.Monster);
+                    CurrentReport.Express(Concept.Monster, " on turn 1 was ignored");
                     ignoredMonsters.Add(CurrentDiscardPile.Draw());
                 }
                 else if (drawn.IsShaiHulud)
@@ -73,20 +73,16 @@ namespace Treachery.Shared
                     {
                         SandTroutOccured = false;
                         SandTroutDoublesResources = true;
-                        CurrentReport.Add("{0} is ignored due to {1}.", Concept.Monster, Concept.BabyMonster);
+                        CurrentReport.Express(Concept.Monster, " is ignored due to ", Concept.BabyMonster);
                     }
                 }
                 else if (drawn.IsSandTrout)
                 {
                     RecentMilestones.Add(Milestone.BabyMonster);
-                    CurrentReport.Add(Faction.None, "{0} detected! All alliances are cancelled.", Concept.BabyMonster);
+                    CurrentReport.Express(Concept.BabyMonster, " detected! All alliances are cancelled.");
                     CancelAllAlliances();
                     CurrentDiscardPile.Items.Remove(drawn);
                     SandTroutOccured = true;
-                }
-                else
-                {
-                    CurrentReport.Add(Faction.None, "Unexpected card...");
                 }
             }
 
@@ -108,13 +104,7 @@ namespace Treachery.Shared
             }
         }
 
-        private Deck<ResourceCard> CurrentDiscardPile
-        {
-            get
-            {
-                return (CurrentPhase == Phase.BlowA) ? ResourceCardDiscardPileA : ResourceCardDiscardPileB;
-            }
-        }
+        private Deck<ResourceCard> CurrentDiscardPile => (CurrentPhase == Phase.BlowA) ? ResourceCardDiscardPileA : ResourceCardDiscardPileB;
 
         public ResourceCard LatestSpiceCardA = null;
         public ResourceCard LatestSpiceCardB = null;
@@ -154,11 +144,11 @@ namespace Treachery.Shared
         {
             if (Applicable(Rule.IncreasedResourceFlow))
             {
-                CurrentReport.Add("{0} cards were shuffled from {1} discard piles A en B into a new deck.", ResourceCardDiscardPileA.Items.Count + ResourceCardDiscardPileB.Items.Count, Concept.Resource);
+                CurrentReport.Express(ResourceCardDiscardPileA.Items.Count + ResourceCardDiscardPileB.Items.Count, " cards were shuffled from ", Concept.Resource, " discard piles A en B into a new deck.");
             }
             else
             {
-                CurrentReport.Add("{0} cards were shuffled from the {1} discard pile into a new deck.", ResourceCardDiscardPileA.Items.Count, Concept.Resource);
+                CurrentReport.Express(ResourceCardDiscardPileA.Items.Count, " cards were shuffled from the ", Concept.Resource, " discard pile into a new deck");
             }
 
             foreach (var i in ResourceCardDiscardPileA.Items)
@@ -182,32 +172,24 @@ namespace Treachery.Shared
         {
             RecentMilestones.Add(Milestone.Resource);
 
+            int spiceFactor = SandTroutDoublesResources ? 2 : 1;
+            int spiceAmount = spiceFactor * blowCard.Location.SpiceBlowAmount;
+
             if (blowCard.Location.Sector != SectorInStorm)
             {
-                int spiceFactor = SandTroutDoublesResources ? 2 : 1;
-                CurrentReport.Add("{1} detected in {0}{2}.", blowCard.Location, Concept.Resource, SandtroutMessage(SandTroutDoublesResources));
+                CurrentReport.Express(Payment(spiceAmount), " detected in ", blowCard.Location, SandtroutMessage(SandTroutDoublesResources));
                 SandTroutDoublesResources = false;
-                ChangeResourcesOnPlanet(blowCard.Location, spiceFactor * blowCard.Location.SpiceBlowAmount);
+                ChangeResourcesOnPlanet(blowCard.Location, spiceAmount);
             }
             else
             {
-                CurrentReport.Add("{1} in {0} is destroyed by the storm.", blowCard.Location, Concept.Resource);
+                CurrentReport.Express(Payment(spiceAmount), " in ", blowCard.Location, " is lost in the storm");
             }
 
             Enter(Applicable(Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal), CurrentPhase == Phase.BlowA ? Phase.HarvesterA : Phase.HarvesterB, MoveToNextPhaseAfterResourceBlow);
         }
 
-        private MessagePart SandtroutMessage(bool SandTroutDoublesResources)
-        {
-            if (SandTroutDoublesResources)
-            {
-                return new MessagePart(", doubled by {0}", Concept.BabyMonster);
-            }
-            else
-            {
-                return new MessagePart("");
-            }
-        }
+        private MessagePart SandtroutMessage(bool SandTroutDoublesResources) => MessagePart.ExpressIf(SandTroutDoublesResources, ", doubled by ", Concept.BabyMonster);
 
         public void HandleEvent(HarvesterPlayed e)
         {
@@ -244,7 +226,7 @@ namespace Treachery.Shared
             {
                 if (Monsters.Count > 0)
                 {
-                    CurrentReport.Add("{0} appears a {1} time during this {2}...", Concept.Monster, Natural(Monsters.Count + 1), MainPhase.Blow);
+                    CurrentReport.Express(Concept.Monster, " appears a ", Natural(Monsters.Count + 1), " time during this ", MainPhase.Blow);
                 }
                 else
                 {
