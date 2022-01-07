@@ -78,15 +78,12 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            if (SpecialForceAmount > 0)
-            {
-                var p = Player;
-                return new Message(Initiator, "The storm kills {0} {1} forces and {2} {3}.", ForceAmount, Initiator, SpecialForceAmount, p.SpecialForce);
-            }
-            else
-            {
-                return new Message(Initiator, "The storm kills {0} {1} forces.", ForceAmount, Initiator);
-            }
+            var p = Player;
+            return Message.Express(
+                "The storm kills ",
+                ForceAmount,
+                p.Force,
+                MessagePart.ExpressIf(SpecialForceAmount > 0, " and ", SpecialForceAmount, p.SpecialForce));
         }
     }
 }

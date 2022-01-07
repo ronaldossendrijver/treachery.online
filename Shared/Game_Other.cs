@@ -618,7 +618,7 @@ namespace Treachery.Shared
 
         private void LogPrevention(FactionAdvantage prevented)
         {
-            CurrentReport.Add("{0} prevents {1}.", TreacheryCardType.Karma, prevented);
+            CurrentReport.Express(TreacheryCardType.Karma, " prevents ", prevented);
         }
     }
 

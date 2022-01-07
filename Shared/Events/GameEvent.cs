@@ -130,8 +130,20 @@ namespace Treachery.Shared
             return new Message(Initiator, "{0} by {1}", this.GetType().Name, Initiator);
         }
 
+        private Player _player;
         [JsonIgnore]
-        public virtual Player Player => Game.GetPlayer(Initiator);
+        public virtual Player Player
+        {
+            get
+            {
+                if (_player == null)
+                {
+                    _player = Game.GetPlayer(Initiator);
+                }
+
+                return _player;
+            }
+        }
 
         public virtual bool IsApplicable(bool isHost)
         {

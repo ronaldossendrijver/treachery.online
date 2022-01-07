@@ -97,7 +97,7 @@ namespace Treachery.Shared
                 {
                     purpleReceivedResourcesForFreeRevival = 0;
                     purpleReceivedResourcesForPaidForceRevival = 0;
-                    CurrentReport.Add("{0} prevents {1} receiving {2} for this revival.", TreacheryCardType.Karma, Faction.Purple, Concept.Resource);
+                    LogPrevention(FactionAdvantage.PurpleReceiveRevive);
                     if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.PurpleReceiveRevive);
                 }
 
@@ -249,86 +249,18 @@ namespace Treachery.Shared
 
         private void LogRevival(Revival r, Player initiator, RevivalCost cost, int purpleReceivedResources, bool asGhola)
         {
-            if (r.ExtraForcesPaidByRed > 0 || r.ExtraSpecialForcesPaidByRed > 0)
-            {
-                if (r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed > 0)
-                {
-                    CurrentReport.Add(r.Initiator, "{0} revive {1}{2} {3} and {4} {5} for {6}, of which {7} pay {8}.{9}",
-                        r.Initiator,
-                        HeroRevivalMessage(r.Hero, asGhola),
-                        r.AmountOfForces + r.ExtraForcesPaidByRed,
-                        initiator.Force,
-                        r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed,
-                        initiator.SpecialForce,
-                        cost.TotalCostForPlayer + cost.CostForEmperor,
-                        Faction.Red,
-                        cost.CostForEmperor,
-                        RevivalCostReceivedByPurple(purpleReceivedResources));
-                }
-                else
-                {
-                    CurrentReport.Add(r.Initiator, "{0} revive {1}{2} {3} for {4}, of which {5} pay {6}.{7}",
-                        r.Initiator,
-                        HeroRevivalMessage(r.Hero, asGhola),
-                        r.AmountOfForces + r.ExtraForcesPaidByRed,
-                        initiator.Force,
-                        cost.TotalCostForPlayer + cost.CostForEmperor,
-                        Faction.Red,
-                        cost.CostForEmperor,
-                        RevivalCostReceivedByPurple(purpleReceivedResources));
-                }
-            }
-            else
-            {
-                if (r.AmountOfSpecialForces > 0)
-                {
-                    CurrentReport.Add(r.Initiator, "{0} revive {1}{2} {3} and {4} {5} for {6}.{7}",
-                        r.Initiator,
-                        HeroRevivalMessage(r.Hero, asGhola),
-                        r.AmountOfForces,
-                        initiator.Force,
-                        r.AmountOfSpecialForces,
-                        initiator.SpecialForce,
-                        cost.TotalCostForPlayer,
-                        RevivalCostReceivedByPurple(purpleReceivedResources));
-                }
-                else
-                {
-                    CurrentReport.Add(r.Initiator, "{0} revive {1}{2} {3} for {4}.{5}",
-                        r.Initiator,
-                        HeroRevivalMessage(r.Hero, asGhola),
-                        r.AmountOfForces,
-                        initiator.Force,
-                        cost.TotalCostForPlayer,
-                        RevivalCostReceivedByPurple(purpleReceivedResources));
-                }
-            }
+            CurrentReport.Express(
+                r.Initiator,
+                " revive ",
+                MessagePart.ExpressIf(r.Hero != null, r.Hero, asGhola ? " as Ghola" : "", " and "),
+                r.AmountOfForces + r.ExtraForcesPaidByRed,
+                initiator.Force,
+                MessagePart.ExpressIf(r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed > 0, " and ", r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed, initiator.SpecialForce),
+                " for ",
+                Payment(cost.TotalCostForPlayer + cost.CostForEmperor),
+                MessagePart.ExpressIf(r.ExtraForcesPaidByRed > 0 || r.ExtraSpecialForcesPaidByRed > 0, " (", Payment(cost.CostForEmperor, Faction.Red), ")"),
+                MessagePart.ExpressIf(purpleReceivedResources > 0, Faction.Purple, " get ", Payment(purpleReceivedResources)));
         }
-
-        private MessagePart HeroRevivalMessage(IHero hero, bool asGhola)
-        {
-            if (hero != null)
-            {
-                return new MessagePart("{0}{1} and ", hero, asGhola ? " as Ghola" : "");
-            }
-            else
-            {
-                return new MessagePart("");
-            }
-        }
-
-        private MessagePart RevivalCostReceivedByPurple(int v)
-        {
-            if (v > 0)
-            {
-                return new MessagePart(" {0} receive {1}.", Faction.Purple, v);
-            }
-            else
-            {
-                return new MessagePart("");
-            }
-        }
-
 
         public void HandleEvent(RaiseDeadPlayed r)
         {
@@ -341,7 +273,7 @@ namespace Treachery.Shared
             if (purple != null)
             {
                 purple.Resources += 1;
-                CurrentReport.Add(Faction.Purple, "{0} receive 1 for revival by {1}.", Faction.Purple, TreacheryCardType.RaiseDead);
+                CurrentReport.Express(Faction.Purple, " get ", Payment(1), " for revival by ", TreacheryCardType.RaiseDead);
             }
 
             if (r.Hero != null)

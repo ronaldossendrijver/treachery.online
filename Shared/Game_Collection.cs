@@ -3,16 +3,12 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Treachery.Shared
 {
     public partial class Game
     {
-
-        #region SpiceCollectionPhase
-
         private void EnterSpiceCollectionPhase()
         {
             MainPhaseStart(MainPhase.Collection);
@@ -42,19 +38,19 @@ namespace Treachery.Shared
             {
                 foreach (var playerInArrakeen in Players.Where(p => p.Controls(this, Map.Arrakeen, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
                 {
-                    CurrentReport.Add(playerInArrakeen.Faction, "{0} earn 2 for {1}.", playerInArrakeen.Faction, Map.Arrakeen);
+                    CurrentReport.Express(playerInArrakeen.Faction, " collect ", Payment(2), " for ", Map.Arrakeen);
                     playerInArrakeen.Resources += 2;
                 }
 
                 foreach (var playerInCarthag in Players.Where(p => p.Controls(this, Map.Carthag, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
                 {
-                    CurrentReport.Add(playerInCarthag.Faction, "{0} earn 2 for {1}.", playerInCarthag.Faction, Map.Carthag);
+                    CurrentReport.Express(playerInCarthag.Faction, " collect ", Payment(2), " for ", Map.Carthag);
                     playerInCarthag.Resources += 2;
                 }
 
                 foreach (var playerInTueksSietch in Players.Where(p => p.Controls(this, Map.TueksSietch, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
                 {
-                    CurrentReport.Add(playerInTueksSietch.Faction, "{0} earn 1 for {1}.", playerInTueksSietch.Faction, Map.TueksSietch);
+                    CurrentReport.Express(playerInTueksSietch.Faction, " collect ", Payment(1), " for ", Map.TueksSietch);
                     playerInTueksSietch.Resources += 1;
                 }
             }
@@ -72,7 +68,7 @@ namespace Treachery.Shared
                     int maximumSpiceThatCanBeCollected = forcesCollectingDefaultAmountOfSpice * collectionRate + forcesCollecting3Spice * 3;
                     int collectedAmount = Math.Min(l.Value, maximumSpiceThatCanBeCollected);
                     ChangeResourcesOnPlanet(l.Key, -collectedAmount);
-                    CurrentReport.Add(p.Faction, "{0} collect {1} from {2}.", p.Faction, collectedAmount, l.Key);
+                    CurrentReport.Express(p.Faction, " collect ", Payment(collectedAmount), " from ", l.Key);
                     p.Resources += collectedAmount;
                 }
             }
@@ -82,7 +78,5 @@ namespace Treachery.Shared
         {
             return (p.Controls(this, Map.Arrakeen, Applicable(Rule.ContestedStongholdsCountAsOccupied)) || p.Controls(this, Map.Carthag, Applicable(Rule.ContestedStongholdsCountAsOccupied))) ? 3 : 2;
         }
-        #endregion SpiceCollectionPhase
-
     }
 }

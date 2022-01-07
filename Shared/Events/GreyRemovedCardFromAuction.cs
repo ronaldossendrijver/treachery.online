@@ -47,11 +47,11 @@ namespace Treachery.Shared
         {
             if (PutOnTop)
             {
-                return new Message(Initiator, "{0} put one card on top of the Treachery Card deck.", Initiator);
+                return Message.Express(Initiator, " put a card on top of the Treachery Card deck");
             }
             else
             {
-                return new Message(Initiator, "{0} put one card on the bottom of the Treachery Card deck.", Initiator);
+                return Message.Express(Initiator, " put a card at the bottom of the Treachery Card deck");
             }
         }
     }

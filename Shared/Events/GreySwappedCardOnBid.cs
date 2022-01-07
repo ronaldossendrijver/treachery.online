@@ -47,11 +47,11 @@ namespace Treachery.Shared
         {
             if (!Passed)
             {
-                return new Message(Initiator, "{0} swapped one card from hand with the next card on bid.", Initiator);
+                return Message.Express(Initiator, " swap a card from hand with the next card on bid");
             }
             else
             {
-                return new Message(Initiator, "{0} don't swap a card from hand with the next card on bid.", Initiator);
+                return Message.Express(Initiator, " don't swap a card from hand with the next card on bid");
             }
         }
     }

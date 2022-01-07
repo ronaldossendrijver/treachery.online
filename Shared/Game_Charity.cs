@@ -36,12 +36,12 @@ namespace Treachery.Shared
                 {
                     int toCollect = Players.Count * 2 * CurrentCharityMultiplier;
                     brown.Resources += toCollect;
-                    CurrentReport.Add(Faction.Brown, "{0} collect {1} {2}.", Faction.Brown, toCollect, Concept.Resource);
+                    CurrentReport.Express(Faction.Brown, " collect ", Payment(toCollect));
                 }
             }
             else
             {
-                CurrentReport.Add(Faction.Brown, "{0} prevents {1}", Faction.Brown, FactionAdvantage.BrownControllingCharity);
+                LogPrevention(FactionAdvantage.BrownControllingCharity);
             }
 
             var blue = GetPlayer(Faction.Blue);
@@ -55,7 +55,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    CurrentReport.Add(Faction.Blue, "{0} are prevented from receiving charity.", Faction.Blue);
+                    LogPrevention(FactionAdvantage.BlueCharity);
                     if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.BlueCharity);
                 }
             }
@@ -107,16 +107,16 @@ namespace Treachery.Shared
                 if (brown.Resources >= amount)
                 {
                     brown.Resources -= amount;
-                    CurrentReport.Add(to.Faction, "{0} receive {1} charity from {2}.", to.Faction, amount, Faction.Brown);
+                    CurrentReport.Express(to.Faction, " claim ", Payment(amount), " from ", Faction.Brown);
                 }
                 else
                 {
-                    CurrentReport.Add(to.Faction, "{0} are unable to give {1} {2}.", Faction.Brown, amount, Concept.Resource);
+                    CurrentReport.Express(to.Faction, " are unable to claim ", Payment(amount), " from ", Faction.Brown);
                 }
             }
             else
             {
-                CurrentReport.Add(to.Faction, "{0} claim {1} charity.", to.Faction, amount);
+                CurrentReport.Express(to.Faction, " claim ", Payment(amount));
             }
         }
 

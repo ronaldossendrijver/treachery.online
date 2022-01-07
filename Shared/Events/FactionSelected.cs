@@ -36,7 +36,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} selects {1}.", InitiatorPlayerName, Faction);
+            return Message.Express(InitiatorPlayerName, " plays ", Faction);
         }
 
         public static IEnumerable<Faction> ValidFactions(Game g)

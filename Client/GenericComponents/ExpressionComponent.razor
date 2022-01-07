@@ -36,7 +36,7 @@
             }
             else
             {
-                <span class="badge badge-primary badge-pill">@number</span>
+                <TextBeforeImage Size=@Size>@number</TextBeforeImage>
             }
         }
         else if (part is Payment payment)
@@ -73,7 +73,7 @@
         }
         else
         {
-            <span>@Skin.Current.Describe(part)</span>
+            <span class="font-weight-bold">@Skin.Current.Describe(part)</span>
         }
     }
 }

@@ -847,6 +847,20 @@ namespace Treachery.Shared
             return StrongholdOwnership.ContainsKey(stronghold) ? GetPlayer(StrongholdOwnership[stronghold]) : null;
         }
 
+        private void FlipBeneGesseritWhenAlone()
+        {
+            var bg = GetPlayer(Faction.Blue);
+            if (bg != null)
+            {
+                var territoriesWhereAdvisorsAreAlone = Map.Territories.Where(t => bg.SpecialForcesIn(t) > 0 && !Players.Any(p => p.Faction != Faction.Blue && p.AnyForcesIn(t) > 0));
+                foreach (var t in territoriesWhereAdvisorsAreAlone)
+                {
+                    bg.FlipForces(t, false);
+                    CurrentReport.Express(Faction.Blue, " are alone and flip to ", FactionForce.Blue, " in ", t);
+                }
+            }
+        }
+
         public DateTime Started
         {
             get

@@ -22,6 +22,11 @@ namespace Treachery.Shared
             Add(Message.Express(list));
         }
 
+        public void ExpressTo(Faction to, params object[] list)
+        {
+            Add(Message.ExpressTo(Faction.None, to, list));
+        }
+
         public void Add(string m, params object[] list)
         {
             Add(new Message(m, list));

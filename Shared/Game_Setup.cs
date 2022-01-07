@@ -44,7 +44,7 @@ namespace Treachery.Shared
             //}
 
             var usedRuleset = Ruleset;
-            CurrentReport.Add("Ruleset: {0}.",
+            CurrentReport.Express("Ruleset: ",
                 usedRuleset == Ruleset.Custom ?
                 string.Format("Custom ({0})", string.Join(", ", Rules.Select(r => Skin.Current.Describe(r)))) :
                 Skin.Current.Describe(usedRuleset));
@@ -75,14 +75,15 @@ namespace Treachery.Shared
             RedWillPayForExtraRevival = 0;
             YellowWillProtectFromShaiHulud = true;
             YellowAllowsThreeFreeRevivals = true;
-            YellowSharesPrescience = Version > 78;
-            GreenSharesPrescience = Version > 78;
-            BlueAllyMayUseVoice = Version > 78;
+            YellowSharesPrescience = true;
+            GreenSharesPrescience = true;
+            BlueAllyMayUseVoice = true;
+            WhiteAllyMayUseNoField = true;
 
             MaximumNumberOfTurns = e.MaximumTurns;
             MaximumNumberOfPlayers = e.MaximumNumberOfPlayers;
 
-            CurrentReport.Add("The maximum number of turns is: {0}.", MaximumNumberOfTurns);
+            CurrentReport.Express("The maximum number of turns is: ", MaximumNumberOfTurns);
 
             FactionsInPlay = e.FactionsInPlay;
 
@@ -126,7 +127,7 @@ namespace Treachery.Shared
             {
                 var p = new Player(this, newPlayer);
                 Players.Add(p);
-                CurrentReport.Add("{0} joined the game.", p.Name);
+                CurrentReport.Express(p.Name, " joined the game");
             }
         }
         private void AddBots()
@@ -158,7 +159,7 @@ namespace Treachery.Shared
             {
                 if (Version <= 125)
                 {
-                    var available = new Deck<Faction>(FactionsInPlay.Where(f => Version <= 95 || !IsPlaying(f)), Random);
+                    var available = new Deck<Faction>(FactionsInPlay.Where(f => !IsPlaying(f)), Random);
                     available.Shuffle();
 
                     while (Players.Count < MaximumNumberOfPlayers)
@@ -273,7 +274,7 @@ namespace Treachery.Shared
             var match = CurrentTradeOffers.SingleOrDefault(matchingOffer => matchingOffer.Initiator == thisOffer.Target && matchingOffer.Target == thisOffer.Initiator);
             if (match != null)
             {
-                CurrentReport.Add("{0} and {1} traded factions.", thisOffer.Initiator, match.Initiator);
+                CurrentReport.Express(thisOffer.Initiator, " and ", match.Initiator, " traded factions");
                 var initiator = GetPlayer(thisOffer.Initiator);
                 var target = GetPlayer(thisOffer.Target);
                 var initiatorsFaction = initiator.Faction;
@@ -288,7 +289,7 @@ namespace Treachery.Shared
             }
             else
             {
-                CurrentReport.Add(thisOffer.GetMessage());
+                CurrentReport.Express(thisOffer.GetMessage());
                 if (!CurrentTradeOffers.Any(o => o.Initiator == thisOffer.Initiator && o.Target == thisOffer.Target))
                 {
                     CurrentTradeOffers.Add(thisOffer);
@@ -386,7 +387,7 @@ namespace Treachery.Shared
         {
             for (int i = 1; i <= 4; i++)
             {
-                foreach (var p in Players.Where(p => p.Faction != Faction.Black && (Version <= 90 || p.Faction != Faction.Purple)))
+                foreach (var p in Players.Where(p => p.Faction != Faction.Black && p.Faction != Faction.Purple))
                 {
                     p.Traitors.Add(TraitorDeck.Draw());
                 }
@@ -697,7 +698,7 @@ namespace Treachery.Shared
 
             player.Resources = e.Resources;
 
-            CurrentReport.Add(faction, "{0} initial positions and {1} ({2}) determined.", faction, Concept.Resource, e.Resources);
+            CurrentReport.Express(faction, " initial positions set, starting with ", Payment(e.Resources));
             HasActedOrPassed.Add(faction);
 
             if (Players.Count == HasActedOrPassed.Count)
@@ -737,20 +738,6 @@ namespace Treachery.Shared
             Enter(TreacheryCardsBeforeTraitors, EnterStormPhase, DealStartingTreacheryCards);
         }
 
-        private void FlipBeneGesseritWhenAlone()
-        {
-            var bg = GetPlayer(Faction.Blue);
-            if (bg != null)
-            {
-                var territoriesWhereAdvisorsAreAlone = Map.Territories.Where(t => bg.SpecialForcesIn(t) > 0 && !Players.Any(p => p.Faction != Faction.Blue && p.AnyForcesIn(t) > 0));
-                foreach (var t in territoriesWhereAdvisorsAreAlone)
-                {
-                    bg.FlipForces(t, false);
-                    CurrentReport.Add(Faction.Blue, "{0} are alone and flip to fighters in {1}", Faction.Blue, t);
-                }
-            }
-        }
-
         public Deck<TreacheryCard> StartingTreacheryCards;
         private TreacheryCard ExtraStartingCardForBlack = null;
 
@@ -786,12 +773,12 @@ namespace Treachery.Shared
             {
                 var card = StartingTreacheryCards.Draw();
                 p.TreacheryCards.Add(card);
-                CurrentReport.Add(Faction.None, p.Faction, "You were dealt a starting treachery card.");
+                CurrentReport.ExpressTo(p.Faction, "Your starting treachery card is: ", card);
 
                 if (p.Is(Faction.Black))
                 {
                     p.TreacheryCards.Add(ExtraStartingCardForBlack);
-                    CurrentReport.Add(Faction.None, Faction.Black, "Your extra card is: {0}.", ExtraStartingCardForBlack);
+                    CurrentReport.ExpressTo(Faction.Black, "Your extra card is: ", ExtraStartingCardForBlack);
                 }
             }
 

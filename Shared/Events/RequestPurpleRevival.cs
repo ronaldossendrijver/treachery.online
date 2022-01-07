@@ -44,7 +44,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} request {1} revival of a leader.", Initiator, Faction.Purple);
+            return Message.Express(Initiator, " request ", Faction.Purple, " revival of a leader.");
         }
 
         protected override void ExecuteConcreteEvent()

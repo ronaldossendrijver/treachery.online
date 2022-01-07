@@ -10,8 +10,6 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        #region StormPhase
-
         public int HmsMovesLeft;
         public List<Faction> HasBattleWheel = new List<Faction>();
         private List<int> Dials = new List<int>();
@@ -25,7 +23,7 @@ namespace Treachery.Shared
 
             if (CurrentTurn == 1)
             {
-                if (Version >= 88 && Players.Count() > 1)
+                if (Players.Count() > 1)
                 {
                     Dials.Clear();
                     HasActedOrPassed.Clear();
@@ -50,7 +48,7 @@ namespace Treachery.Shared
 
             if (HasBattleWheel.All(f => HasActedOrPassed.Contains(f)))
             {
-                CurrentReport.Add("Storm dial: {0} ({1}) + {2} ({3}) = {4}", Dials[0], HasActedOrPassed[0], Dials[1], HasActedOrPassed[1], Dials[0] + Dials[1]);
+                CurrentReport.Express("Storm dial: ", Dials[0], HasActedOrPassed[0], " + ", Dials[1], HasActedOrPassed[1], " = ", Dials[0] + Dials[1]);
                 NextStormMoves = Dials.Sum();
 
                 if (CurrentTurn == 1)
@@ -67,7 +65,7 @@ namespace Treachery.Shared
         private void PositionFirstStorm()
         {
             SectorInStorm = NextStormMoves % Map.NUMBER_OF_SECTORS;
-            CurrentReport.Add("The first storm moves {0} sectors.", SectorInStorm);
+            CurrentReport.Express("The first storm moves ", SectorInStorm, " sectors");
             PerformStorm();
 
             if (Applicable(Rule.GreyAndPurpleExpansionTechTokens))
@@ -75,7 +73,7 @@ namespace Treachery.Shared
                 AssignTechTokens();
             }
 
-            if (Version < 88 || IsPlaying(Faction.Yellow) && Applicable(Rule.YellowSeesStorm))
+            if (IsPlaying(Faction.Yellow) && Applicable(Rule.YellowSeesStorm))
             {
                 if (IsPlaying(Faction.Yellow) && Applicable(Rule.YellowSeesStorm))
                 {
@@ -96,9 +94,9 @@ namespace Treachery.Shared
             {
                 if (!Prevented(FactionAdvantage.GreyMovingHMS))
                 {
-                    if (Version >= 85 && Map.HiddenMobileStronghold.AttachedToLocation.Sector == SectorInStorm)
+                    if (Map.HiddenMobileStronghold.AttachedToLocation.Sector == SectorInStorm)
                     {
-                        CurrentReport.Add("The storm prevents {0} from moving.", Map.HiddenMobileStronghold);
+                        CurrentReport.Express("The storm prevents ", Map.HiddenMobileStronghold, " from moving");
                         DetermineStorm();
                     }
                     else
@@ -109,7 +107,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    CurrentReport.Add("{0} prevents {1} moving {2}", TreacheryCardType.Karma, Faction.Grey, Map.HiddenMobileStronghold);
+                    LogPrevention(FactionAdvantage.GreyMovingHMS);
                     if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyMovingHMS);
                     DetermineStorm();
                 }
@@ -137,14 +135,14 @@ namespace Treachery.Shared
 
         private void DetermineStorm()
         {
-            if (IsPlaying(Faction.Yellow) && Applicable(Rule.YellowSeesStorm) || Version < 88)
+            if (IsPlaying(Faction.Yellow) && Applicable(Rule.YellowSeesStorm))
             {
                 //Storm dial has already been determined
                 RevealStorm();
             }
             else
             {
-                if (Version >= 88 && Players.Count() > 1)
+                if (Players.Count() > 1)
                 {
                     Dials.Clear();
                     HasActedOrPassed.Clear();
@@ -314,7 +312,7 @@ namespace Treachery.Shared
                 PerformStorm();
             }
 
-            if (Version < 88 || IsPlaying(Faction.Yellow) && Applicable(Rule.YellowSeesStorm))
+            if (IsPlaying(Faction.Yellow) && Applicable(Rule.YellowSeesStorm))
             {
                 NextStormMoves = DetermineLaterStormWithStormDeck();
             }
@@ -383,7 +381,7 @@ namespace Treachery.Shared
             if (e.UseUselessCard)
             {
                 var card = TakeLosses.ValidUselessCardToPreventLosses(this, e.Player);
-                CurrentReport.Add(e.Initiator, "{0} use a {1} card to prevent losing forces in {2}.", e.Initiator, TreacheryCardType.Useless, StormLossesToTake[0].Location);
+                CurrentReport.Express(e.Initiator, " use ", card , " to prevent losing forces in ", StormLossesToTake[0].Location);
                 StormLossesToTake.RemoveAt(0);
                 Discard(e.Player, card);
                 RecentMilestones.Add(Milestone.SpecialUselessPlayed);
@@ -444,8 +442,6 @@ namespace Treachery.Shared
                 Enter(Version >= 103, Phase.StormReport, EnterSpiceBlowPhase);
             }
         }
-
-        #endregion StormPhase
     }
 
     public class LossToTake

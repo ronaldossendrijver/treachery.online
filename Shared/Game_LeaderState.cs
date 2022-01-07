@@ -156,5 +156,13 @@ namespace Treachery.Shared
 
             return result;
         }
+
+        private void CallHeroesHome()
+        {
+            foreach (var ls in LeaderState)
+            {
+                ls.Value.CurrentTerritory = null;
+            }
+        }
     }
 }
