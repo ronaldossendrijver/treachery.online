@@ -5,11 +5,6 @@
     {
         var part = Expression.Elements[elementnr];
 
-        if (part != null)
-        {
-            <span>@part.GetType().Name</span>
-        }
-
         if (part == null)
         {
             <span>-</span>
@@ -22,9 +17,9 @@
         {
             <ExpressionComponent Expression=mp.Expression Size=@Size/>
         }
-        else if (part is int number)
+        else if (part is int || part is float || part is double)
         {
-            <TextBeforeImage Size=@Size>@number</TextBeforeImage>
+            <TextBeforeImage Size=@Size>@part</TextBeforeImage>
         }
         else if (part is Payment payment)
         {
@@ -38,13 +33,13 @@
         {
             <FactionComponent Faction=faction Diameter=@Size/>
         }
-        else if (part is IHero hero)
-        {
-            <span class="font-weight-bold" style="color:@Skin.Current.GetFactionColor(hero.Faction);" data-content="@Support.GetHeroHoverHTML(hero)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(hero)</span>
-        }
         else if (part is TreacheryCard tc)
         {
             <span class="font-weight-bold" data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(tc)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(tc)</span>
+        }
+        else if (part is IHero hero)
+        {
+            <span class="font-weight-bold" style="color:@Skin.Current.GetFactionColor(hero.Faction);" data-content="@Support.GetHeroHoverHTML(hero)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(hero)</span>
         }
         else if (part is Concept monster && monster == Concept.Monster)
         {

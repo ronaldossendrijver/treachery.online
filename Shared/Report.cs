@@ -32,7 +32,7 @@ namespace Treachery.Shared
 
         public void ExpressTo(Faction to, params object[] list)
         {
-            Add(Message.ExpressTo(Faction.None, to, list));
+            Add(Message.ExpressTo(to, list));
         }
 
         public void Express(Message m)
