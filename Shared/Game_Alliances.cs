@@ -88,7 +88,7 @@ namespace Treachery.Shared
         {
             if (CurrentCardTradeOffer == null)
             {
-                CurrentReport.Add(e);
+                CurrentReport.Express(e);
                 CurrentCardTradeOffer = e;
                 PhaseBeforeCardTrade = CurrentPhase;
                 Enter(Phase.TradingCards);
@@ -195,7 +195,7 @@ namespace Treachery.Shared
                 UnregisterKnown(p, target.TreacheryCards);
             }
 
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
         }
 
         private bool AreAllies(Faction a, Faction b)

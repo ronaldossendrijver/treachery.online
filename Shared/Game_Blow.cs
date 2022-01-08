@@ -24,7 +24,7 @@ namespace Treachery.Shared
         public void HandleEvent(ThumperPlayed e)
         {
             Discard(GetPlayer(e.Initiator), TreacheryCardType.Thumper);
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             RecentMilestones.Add(Milestone.Thumper);
             ThumperUsed = true;
             EnterBlowA();
@@ -202,7 +202,7 @@ namespace Treachery.Shared
                 ChangeResourcesOnPlanet(lastResourceCard.Location, currentAmountOfSpice);
             }
 
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             MoveToNextPhaseAfterResourceBlow();
             RecentMilestones.Add(Milestone.Harvester);
         }
@@ -230,14 +230,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    if (t != null)
-                    {
-                        CurrentReport.Add("{0} appears in {1}.", Concept.Monster, t);
-                    }
-                    else
-                    {
-                        CurrentReport.Add("{0} appears somewhere.", Concept.Monster);
-                    }
+                    CurrentReport.Express(Concept.Monster, " appears in ", t);
                 }
 
                 if (Monsters.Count > 0)
@@ -251,7 +244,7 @@ namespace Treachery.Shared
                         else
                         {
                             Monsters.Add(t);
-                            CurrentReport.Add(Faction.Yellow, "{0} prevents {1} from sending {2} where they want.", TreacheryCardType.Karma, Faction.Yellow, Concept.Monster);
+                            LogPrevention(FactionAdvantage.YellowControlsMonster);
                             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.YellowControlsMonster);
                         }
                     }
@@ -268,7 +261,7 @@ namespace Treachery.Shared
             }
             else
             {
-                CurrentReport.Add("{0} on turn 1 was ignored.", Concept.Monster);
+                CurrentReport.Express(Concept.Monster, " on turn 1 was ignored");
             }
         }
 
@@ -292,16 +285,16 @@ namespace Treachery.Shared
 
         public void HandleEvent(YellowSentMonster e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             Monsters.Add(e.Territory);
             PerformMonster(e.Territory);
             Enter(CurrentPhase == Phase.YellowSendingMonsterA, Phase.BlowA, Phase.BlowB);
             DrawSpiceCard();
         }
 
-        private void PerformMonster(Territory t)
+        private void PerformMonster(Territory territory)
         {
-            foreach (var l in t.Locations)
+            foreach (var l in territory.Locations)
             {
                 foreach (var p in Players)
                 {
@@ -311,7 +304,7 @@ namespace Treachery.Shared
                         {
                             RevealCurrentNoField(p);
 
-                            CurrentReport.Add("{3} devours {0} {1} forces in {2}.", p.AnyForcesIn(l), p.Faction, l, Concept.Monster);
+                            CurrentReport.Express(Concept.Monster, " devours ", p.AnyForcesIn(l), p.Faction, " forces in ", l);
                             p.KillAllForces(l, false);
 
                             if (p.Is(Faction.Yellow))
@@ -325,17 +318,14 @@ namespace Treachery.Shared
                         }
                         else
                         {
-                            CurrentReport.Add("{0} survive {1} in {2}.", p.Faction, Concept.Monster, l);
+                            CurrentReport.Express(p.Faction, " survive ", Concept.Monster, " in ", l);
                         }
                     }
                 }
             }
 
-            var devouredResources = RemoveResources(t);
-            if (devouredResources > 0)
-            {
-                CurrentReport.Add("{2} devours {0} {3} in {1}.", devouredResources, t, Concept.Monster, Concept.Resource);
-            }
+            var devouredResources = RemoveResources(territory);
+            CurrentReport.ExpressIf(devouredResources > 0, Concept.Monster, " devours ", Payment(devouredResources), " in ", territory);
 
             FlipBeneGesseritWhenAlone();
         }
@@ -363,7 +353,7 @@ namespace Treachery.Shared
                 var target = GetPlayer(e.Target);
                 initiator.Ally = e.Target;
                 target.Ally = e.Initiator;
-                CurrentReport.Add("{0} and {1} are now allies.", e.Initiator, matchingOffer.Initiator);
+                CurrentReport.Express(e.Initiator, " and ", matchingOffer.Initiator, " are now allies");
 
                 AllianceOffered invalidOffer;
                 while ((invalidOffer = CurrentAllianceOffers.FirstOrDefault(x => x.By(e.Initiator) || x.Initiator == e.Target)) != null)
@@ -373,14 +363,14 @@ namespace Treachery.Shared
             }
             else
             {
-                CurrentReport.Add(e);
+                CurrentReport.Express(e);
                 CurrentAllianceOffers.Add(e);
             }
         }
 
         public void HandleEvent(AllianceBroken e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             BreakAlliance(e.Initiator);
         }
 
@@ -469,15 +459,23 @@ namespace Treachery.Shared
                     initiator.MoveSpecialForces(from, e.To, fl.Value.AmountOfSpecialForces);
                     totalNumberOfForces += fl.Value.AmountOfForces;
                     totalNumberOfSpecialForces += fl.Value.AmountOfSpecialForces;
-                    CurrentReport.Add(e.Initiator, "{0} {4} {7} and {1} {5} ride {6} from {2} to {3}.",
-                        fl.Value.AmountOfForces, fl.Value.AmountOfSpecialForces, from, e.To, e.Initiator, initiator.SpecialForce, Concept.Monster, initiator.Force);
+                    CurrentReport.Express(
+                        fl.Value.AmountOfForces,
+                        initiator.Force,
+                        MessagePart.ExpressIf(fl.Value.AmountOfSpecialForces > 0, " and ", fl.Value.AmountOfSpecialForces, initiator.SpecialForce),
+                        " ride ",
+                        Concept.Monster,
+                        " from ",
+                        from,
+                        " to ",
+                        e.To);
                 }
 
                 FlipBeneGesseritWhenAlone();
             }
             else
             {
-                CurrentReport.Add(e.Initiator, "{0} pass a ride on {1}.", e.Initiator, Concept.Monster);
+                CurrentReport.Express(e.Initiator, " pass a ride on ", Concept.Monster);
             }
 
             bool bgIntruded = DetermineIntrusionCaused(e);
@@ -510,7 +508,7 @@ namespace Treachery.Shared
             Enter(Phase.BlowA);
             if (Applicable(Rule.IncreasedResourceFlow))
             {
-                CurrentReport.Add("*** Spice Blow A ***");
+                CurrentReport.Express("*** Spice Blow A ***");
             }
             DrawSpiceCard();
         }
@@ -519,7 +517,7 @@ namespace Treachery.Shared
         {
             Monsters.Clear();
             Enter(Phase.BlowB);
-            CurrentReport.Add("*** Spice Blow B ***");
+            CurrentReport.Express("*** Spice Blow B ***");
             DrawSpiceCard();
         }
 
@@ -527,7 +525,7 @@ namespace Treachery.Shared
         {
             if (CurrentTurn == 1 && ignoredMonsters.Count > 0)
             {
-                CurrentReport.Add("{0} ignored {1}-cards were shuffled back into the {2} deck.", ignoredMonsters.Count, Concept.Monster, Concept.Resource);
+                CurrentReport.Express(ignoredMonsters.Count, " ignored ", Concept.Monster, "cards were shuffled back into the ", Concept.Resource, " deck");
                 foreach (var c in ignoredMonsters)
                 {
                     ResourceCardDeck.Items.Add(c);

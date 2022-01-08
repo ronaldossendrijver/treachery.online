@@ -74,7 +74,7 @@ namespace Treachery.Shared
         public void HandleEvent(OrangeDelay e)
         {
             BeginningOfShipmentAndMovePhase = false;
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             Enter(Phase.NonOrangeShip);
         }
 
@@ -147,7 +147,7 @@ namespace Treachery.Shared
                 DetermineNextShipmentAndMoveSubPhase(DetermineIntrusionCaused(s), BGMayAccompany);
 
                 int orangeProfit = HandleOrangeProfit(s, initiator, ref orangeIncome);
-                CurrentReport.Add(s.GetVerboseMessage(totalCost, orangeIncome, ownerOfKarma));
+                CurrentReport.Express(s.GetVerboseMessage(totalCost, orangeIncome, ownerOfKarma));
 
                 if (totalCost - orangeProfit >= 4)
                 {
@@ -158,7 +158,7 @@ namespace Treachery.Shared
             }
             else
             {
-                CurrentReport.Add(s.GetVerboseMessage(totalCost, orangeIncome, null));
+                CurrentReport.Express(s.GetVerboseMessage(totalCost, orangeIncome, null));
                 DetermineNextShipmentAndMoveSubPhase(false, BGMayAccompany);
             }
         }
@@ -523,7 +523,7 @@ namespace Treachery.Shared
         private FlightUsed CurrentFlightUsed = null;
         public void HandleEvent(FlightUsed e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             Discard(e.Player, TreacheryCardType.Flight);
             CurrentFlightUsed = e;
         }
@@ -560,7 +560,7 @@ namespace Treachery.Shared
         {
             var initiator = GetPlayer(e.Initiator);
 
-            CurrentReport.Add(e.GetDynamicMessage(this));
+            CurrentReport.Express(e.GetDynamicMessage(this));
 
             initiator.FlipForces(LastShippedOrMovedTo.Territory, e.AsAdvisors);
 
@@ -758,7 +758,7 @@ namespace Treachery.Shared
         public List<Territory> CurrentBlockedTerritories = new List<Territory>();
         public void HandleEvent(BrownMovePrevention e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             Discard(e.CardUsed());
             CurrentBlockedTerritories.Add(e.Territory);
             RecentMilestones.Add(Milestone.SpecialUselessPlayed);
@@ -767,7 +767,7 @@ namespace Treachery.Shared
         private bool BrownHasExtraMove { get; set; } = false;
         public void HandleEvent(BrownExtraMove e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             Discard(e.CardUsed());
             BrownHasExtraMove = true;
             RecentMilestones.Add(Milestone.SpecialUselessPlayed);
@@ -795,7 +795,7 @@ namespace Treachery.Shared
             CurrentKarmaShipmentPrevention = e;
             Discard(e.Player, TreacheryCardType.Karma);
             e.Player.SpecialKarmaPowerUsed = true;
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             RecentMilestones.Add(Milestone.Karma);
         }
     }

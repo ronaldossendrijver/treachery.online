@@ -135,13 +135,13 @@ namespace Treachery.Shared
         public void HandleEvent(BrownEconomics e)
         {
             EconomicsStatus = e.Status;
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             RecentMilestones.Add(Milestone.Economics);
         }
 
         public void HandleEvent(BrownRemoveForce e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             Discard(e.CardUsed());
             var target = GetPlayer(e.Target);
 
@@ -231,7 +231,7 @@ namespace Treachery.Shared
                 if (!player.KnownNonTraitors.Contains(leader)) player.KnownNonTraitors.Add(leader);
             }
 
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             Enter(Phase.TurnConcluded);
         }
 

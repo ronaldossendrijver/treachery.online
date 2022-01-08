@@ -45,12 +45,12 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} use Diplomacy to turn {1} into a copy of the opponent's defense.", Initiator, Card);
+            return Message.Express(Initiator, " use Diplomacy to turn ", Card, " into a copy of the opponent's defense");
         }
 
         public Message GetDynamicMessage()
         {
-            return new Message(Initiator, "{0} use Diplomacy to turn {1} into a {2}.", Initiator, Card, Game.CurrentBattle?.PlanOfOpponent(Player)?.Defense);
+            return Message.Express(Initiator, " use Diplomacy to turn ", Card, " into a ", Game.CurrentBattle?.PlanOfOpponent(Player)?.Defense);
         }
 
         public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)

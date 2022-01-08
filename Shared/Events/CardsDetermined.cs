@@ -61,18 +61,18 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message("Card decks were customized.");
+            return Message.Express("Card decks were customized.");
         }
 
         public Message GetVerboseMessage()
         {
             if (WhiteCards.Any())
             {
-                return new Message("Treachery Cards: {0}. {1} cards: {2}.", Skin.Current.JoinSummarized(TreacheryCards), Faction.White, Skin.Current.JoinSummarized(WhiteCards));
+                return Message.Express("Treachery Cards: ", Skin.Current.JoinSummarized(TreacheryCards), ". ", Faction.White, " Cards: ", Skin.Current.JoinSummarized(WhiteCards));
             }
             else
             {
-                return new Message("Treachery Cards: {0}.", Skin.Current.JoinSummarized(TreacheryCards));
+                return Message.Express("Treachery Cards: ", Skin.Current.JoinSummarized(TreacheryCards));
             }
                 
         }

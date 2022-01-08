@@ -29,7 +29,7 @@ namespace Treachery.Shared
                         player.SpecialForcesToReserves(noFieldLocation, 1);
                         int nrOfForces = Math.Min(player.ForcesInReserve, CurrentNoFieldValue);
                         player.ShipForces(noFieldLocation, nrOfForces);
-                        CurrentReport.Add(player.Faction, "{0} reveal {1} forces under the No-Field of value {2} in {3}", player.Faction, nrOfForces, CurrentNoFieldValue, noFieldLocation);
+                        CurrentReport.Express(player.Faction, " reveal ", nrOfForces, FactionForce.White, " under a value ", CurrentNoFieldValue, FactionSpecialForce.White, " in ", noFieldLocation);
                         CurrentNoFieldValue = -1;
                     }
                 }
@@ -51,7 +51,7 @@ namespace Treachery.Shared
         {
             var initiator = GetPlayer(e.Initiator);
             initiator.FlipForces(e.Territory, false);
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
         }
 
         public void HandleEvent(Donated e)
@@ -77,7 +77,7 @@ namespace Treachery.Shared
                     }
                 }
 
-                CurrentReport.Add(e);
+                CurrentReport.Express(e);
                 RecentMilestones.Add(Milestone.Bribe);
             }
             else
@@ -85,12 +85,12 @@ namespace Treachery.Shared
                 if (e.Resources < 0)
                 {
                     int resourcesToTake = Math.Min(Math.Abs(e.Resources), target.Resources);
-                    CurrentReport.Add(e.Initiator, "Host takes {0} {1} from {2} and puts it in the {1} Bank", resourcesToTake, Concept.Resource, e.Target);
+                    CurrentReport.Express("Host puts ", Payment(resourcesToTake), " from ", e.Target, " into the ", Concept.Resource, " Bank");
                     target.Resources -= resourcesToTake;
                 }
                 else
                 {
-                    CurrentReport.Add(e.Initiator, "Host gives {0} {1} {2} from the {2} Bank", e.Target, e.Resources, Concept.Resource);
+                    CurrentReport.Express("Host gives ", e.Target, Payment(e.Resources), " from the ", Concept.Resource, " Bank");
                     target.Resources += e.Resources;
                 }
             }
@@ -118,7 +118,7 @@ namespace Treachery.Shared
                 }
             }
 
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
 
             CheckIfBiddingForPlayerShouldBeSkipped(target, targetHadRoomForCards);
         }
@@ -137,7 +137,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(DiscardedTaken e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             RecentlyDiscarded.Remove(e.Card);
             TreacheryDiscardPile.Items.Remove(e.Card);
             e.Player.TreacheryCards.Add(e.Card);
@@ -148,7 +148,7 @@ namespace Treachery.Shared
         private Phase PhaseBeforeSearchingDiscarded { get; set; }
         public void HandleEvent(DiscardedSearchedAnnounced e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             PhaseBeforeSearchingDiscarded = CurrentPhase;
             e.Player.Resources -= 2;
             Enter(Phase.SearchingDiscarded);
@@ -157,7 +157,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(DiscardedSearched e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             foreach (var p in Players)
             {
                 UnregisterKnown(p, TreacheryDiscardPile.Items);
@@ -176,38 +176,13 @@ namespace Treachery.Shared
 
             if (BribesDuringMentat)
             {
-                if (Version >= 89)
+                if (from.Faction == Faction.Red && target.Faction == from.Ally)
                 {
-                    if (from.Faction == Faction.Red && target.Faction == from.Ally)
-                    {
-                        target.Resources += amount;
-                    }
-                    else
-                    {
-                        target.Bribes += amount;
-                    }
-                }
-                else if (Version >= 75)
-                {
-                    if (from.Faction == Faction.Red || target.Faction == from.Ally)
-                    {
-                        target.Resources += amount;
-                    }
-                    else
-                    {
-                        target.Bribes += amount;
-                    }
+                    target.Resources += amount;
                 }
                 else
                 {
-                    if (from.Faction == Faction.Red && target.Faction != from.Ally)
-                    {
-                        target.Resources += amount;
-                    }
-                    else
-                    {
-                        target.Bribes += amount;
-                    }
+                    target.Bribes += amount;
                 }
             }
             else
@@ -229,11 +204,11 @@ namespace Treachery.Shared
             if (card != null)
             {
                 Discard(card);
-                CurrentReport.Add(e);
+                CurrentReport.Express(e);
                 RecentMilestones.Add(Milestone.Clairvoyance);
             }
 
-            if (Version >= 77 && e.Target != Faction.None)
+            if (e.Target != Faction.None)
             {
                 LatestClairvoyance = e;
                 LatestClairvoyanceQandA = null;
@@ -246,7 +221,7 @@ namespace Treachery.Shared
         public void HandleEvent(ClairVoyanceAnswered e)
         {
             LatestClairvoyanceQandA = new ClairVoyanceQandA(LatestClairvoyance, e);
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
 
             if (LatestClairvoyance.Question == ClairvoyanceQuestion.WillAttackX && e.Answer == ClairVoyanceAnswer.No)
             {
@@ -260,12 +235,12 @@ namespace Treachery.Shared
         public void HandleEvent(AmalPlayed e)
         {
             Discard(GetPlayer(e.Initiator), TreacheryCardType.Amal);
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             foreach (var p in Players)
             {
                 int resourcesPaid = (int)Math.Ceiling(0.5 * p.Resources);
                 p.Resources -= resourcesPaid;
-                CurrentReport.Add(p.Faction, "{0} lose {1}.", p.Faction, resourcesPaid);
+                CurrentReport.Express(p.Faction, " lose ", Payment(resourcesPaid));
             }
             RecentMilestones.Add(Milestone.Amal);
         }
@@ -273,7 +248,7 @@ namespace Treachery.Shared
         public void HandleEvent(BrownDiscarded e)
         {
             Discard(e.Card);
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             if (e.Card.Type == TreacheryCardType.Useless)
             {
                 e.Player.Resources += 2;
@@ -292,7 +267,7 @@ namespace Treachery.Shared
         {
             var initiator = GetPlayer(e.Initiator);
             int collectionRate = initiator.AnyForcesIn(Map.HiddenMobileStronghold) * 2;
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
 
             if (!initiator.SpecialKarmaPowerUsed)
             {
@@ -321,7 +296,7 @@ namespace Treachery.Shared
         {
             RecentMilestones.Add(Milestone.Discard);
             Discard(e.Player, TreacheryCardType.Karma);
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
 
             foreach (var card in e.Cards)
             {
@@ -336,7 +311,7 @@ namespace Treachery.Shared
         {
             RecentMilestones.Add(Milestone.AuctionWon);
             Discard(e.Player, TreacheryCardType.Karma);
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             e.Player.TreacheryCards.Add(e.Card);
             WhiteCache.Remove(e.Card);
             e.Player.Resources -= 3;
@@ -346,7 +321,7 @@ namespace Treachery.Shared
         public void HandleEvent(KarmaFreeRevival e)
         {
             RecentMilestones.Add(Milestone.Revival);
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             var initiator = GetPlayer(e.Initiator);
 
             Discard(initiator, TreacheryCardType.Karma);
@@ -379,7 +354,7 @@ namespace Treachery.Shared
             var initiator = GetPlayer(e.Initiator);
             Discard(initiator, TreacheryCardType.Karma);
             initiator.SpecialKarmaPowerUsed = true;
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             RecentMilestones.Add(Milestone.Karma);
             NumberOfMonsters++;
             ProcessMonsterCard(e.Territory);
@@ -396,7 +371,7 @@ namespace Treachery.Shared
             var initiator = GetPlayer(e.Initiator);
             Discard(initiator, TreacheryCardType.Karma);
             initiator.SpecialKarmaPowerUsed = true;
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             RecentMilestones.Add(Milestone.Karma);
             GreenKarma = true;
         }
@@ -404,7 +379,7 @@ namespace Treachery.Shared
         public void HandleEvent(Karma e)
         {
             Discard(e.Card);
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             RecentMilestones.Add(Milestone.Karma);
 
             if (e.Prevented != FactionAdvantage.None)
@@ -414,12 +389,12 @@ namespace Treachery.Shared
 
             RevokeBattlePlansIfNeeded(e);
 
-            if (Version >= 77 && e.Prevented == FactionAdvantage.BlueUsingVoice)
+            if (e.Prevented == FactionAdvantage.BlueUsingVoice)
             {
                 CurrentVoice = null;
             }
 
-            if (Version >= 77 && e.Prevented == FactionAdvantage.GreenBattlePlanPrescience)
+            if (e.Prevented == FactionAdvantage.GreenBattlePlanPrescience)
             {
                 CurrentPrescience = null;
             }
@@ -491,7 +466,7 @@ namespace Treachery.Shared
             if (!PreventedAdvantages.Contains(advantage))
             {
                 PreventedAdvantages.Add(advantage);
-                CurrentReport.Add(initiator, "Using {0}, {1} prevent {2}.", TreacheryCardType.Karma, initiator, advantage);
+                CurrentReport.Express("Using ", TreacheryCardType.Karma, ", ", initiator, " prevent ", advantage);
             }
         }
 
@@ -500,7 +475,7 @@ namespace Treachery.Shared
             if (PreventedAdvantages.Contains(advantage))
             {
                 PreventedAdvantages.Remove(advantage);
-                CurrentReport.Add("{0} no longer prevents {1}.", TreacheryCardType.Karma, advantage);
+                CurrentReport.Express(TreacheryCardType.Karma, " no longer prevents ", advantage);
             }
         }
 
@@ -511,7 +486,7 @@ namespace Treachery.Shared
         public void HandleEvent(PlayerReplaced e)
         {
             GetPlayer(e.ToReplace).IsBot = !GetPlayer(e.ToReplace).IsBot;
-            CurrentReport.Add(e.ToReplace, "{0} will now be played by a {1}.", e.ToReplace, GetPlayer(e.ToReplace).IsBot ? "Bot" : "Human");
+            CurrentReport.Express(e.ToReplace, " will now be played by a ", GetPlayer(e.ToReplace).IsBot ? "Bot" : "Human");
         }
 
         public bool KarmaPrevented(Faction f)
@@ -522,7 +497,7 @@ namespace Treachery.Shared
         public BrownKarmaPrevention CurrentKarmaPrevention { get; set; } = null;
         public void HandleEvent(BrownKarmaPrevention e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             Discard(e.CardUsed());
             CurrentKarmaPrevention = e;
             RecentMilestones.Add(Milestone.SpecialUselessPlayed);
@@ -536,7 +511,7 @@ namespace Treachery.Shared
         public JuicePlayed CurrentJuice { get; set; }
         public void HandleEvent(JuicePlayed e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
 
             var aggressorBeforeJuiceIsPlayed = CurrentBattle?.AggressivePlayer; 
 
@@ -584,7 +559,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(Bureaucracy e)
         {
-            CurrentReport.Add(e.GetDynamicMessage());
+            CurrentReport.Express(e.GetDynamicMessage());
             if (!e.Passed)
             {
                 GetPlayer(TargetOfBureaucracy).Resources -= 2;
@@ -603,7 +578,7 @@ namespace Treachery.Shared
                 if (banker != null && banker != playerWhoPaid)
                 {
                     BankerWasUsedThisPhase = true;
-                    CurrentReport.Add(banker.Faction, "{0} will receive 1 from {1} at {2}", banker.Faction, LeaderSkill.Banker, MainPhase.Collection);
+                    CurrentReport.Express(banker.Faction, " will receive ", Payment(1), " from ", LeaderSkill.Banker, " at ", MainPhase.Collection);
                     banker.BankedResources += 1;
                 }
             }
@@ -612,7 +587,7 @@ namespace Treachery.Shared
         public Planetology CurrentPlanetology { get; private set; }
         public void HandleEvent(Planetology e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             CurrentPlanetology = e;
         }
 

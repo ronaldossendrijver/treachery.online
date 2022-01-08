@@ -47,7 +47,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(WhiteAnnouncesBlackMarket e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
 
             if (!e.Passed)
             {
@@ -102,7 +102,7 @@ namespace Treachery.Shared
             {
                 if (CurrentAuctionType == AuctionType.BlackMarketSilent)
                 {
-                    CurrentReport.Add(string.Join(", ", Bids.Select(b => Skin.Current.Format("{0} bid {1}", b.Key, b.Value.TotalAmount))));
+                    CurrentReport.Express(Bids.Select(b => MessagePart.Express(b.Key, " bid ", Payment(b.Value.TotalAmount), ".")));
                 }
 
                 var highestBid = DetermineHighestBid(Bids);
@@ -224,7 +224,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(WhiteAnnouncesAuction e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
 
             if (!e.First && NumberOfCardsOnAuction > 1)
             {
@@ -274,7 +274,7 @@ namespace Treachery.Shared
         public void HandleEvent(WhiteSpecifiesAuction e)
         {
             WhiteAuctionShouldStillHappen = false;
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             CardsOnAuction.PutOnTop(e.Card);
             WhiteCache.Remove(e.Card);
             RegisterKnown(e.Card);
@@ -339,7 +339,7 @@ namespace Treachery.Shared
             RegisterKnown(Faction.Grey, e.Card);
             CardsOnAuction.Shuffle();
             RecentMilestones.Add(Milestone.Shuffled);
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
 
             if (GreyMaySwapCardOnBid)
             {
@@ -388,7 +388,7 @@ namespace Treachery.Shared
                 RecentMilestones.Add(Milestone.CardOnBidSwapped);
             }
 
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
 
             if (!BiddingRoundWasStarted)
             {
@@ -578,7 +578,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(WhiteKeepsUnsoldCard e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             var card = CardsOnAuction.Draw();
             RegisterWonCardAsKnown(card);
 
@@ -630,7 +630,7 @@ namespace Treachery.Shared
         public void HandleEvent(RedBidSupport e)
         {
             PermittedUseOfRedSpice = e.Amounts;
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
         }
 
         private void LogBid(Player initiator, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, MessagePart redIncome)
@@ -891,7 +891,7 @@ namespace Treachery.Shared
                 RecentMilestones.Add(Milestone.CardWonSwapped);
             }
 
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
 
             if (CardJustWon == CardSoldOnBlackMarket)
             {
@@ -997,7 +997,7 @@ namespace Treachery.Shared
                 initiator.TreacheryCards.Add(card);
             }
 
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             RecentMilestones.Add(Milestone.Karma);
         }
 
@@ -1023,7 +1023,7 @@ namespace Treachery.Shared
                 RegisterKnown(initiator, returned);
             }
 
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             Enter(KarmaHandSwapPausedPhase);
         }
 

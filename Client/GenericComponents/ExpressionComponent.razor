@@ -1,18 +1,13 @@
 ﻿@using Treachery.Shared;
 
-
 @{
     for (int elementnr = 0; elementnr < Expression.Elements.Length; elementnr++)
     {
         var part = Expression.Elements[elementnr];
 
-        var nextPart = elementnr < Expression.Elements.Length - 1 ? Expression.Elements[elementnr + 1] : null;
-        int nextPartPos = 1;
-
-        if (elementnr < Expression.Elements.Length - 2 && nextPart is string str && str.Trim().Length == 0)
+        if (part != null)
         {
-            nextPart = Expression.Elements[elementnr + 2];
-            nextPartPos = 2;
+            <span>@part.GetType().Name</span>
         }
 
         if (part == null)
@@ -29,15 +24,7 @@
         }
         else if (part is int number)
         {
-            if (nextPart != null && nextPart is Concept concept && concept == Concept.Resource)
-            {
-                <TextBeforeImage ImageURL="@Skin.Current.Harvester_URL" Size=@Size Title="@Skin.Current.Describe(Concept.Resource)">@number</TextBeforeImage>
-                elementnr += nextPartPos;
-            }
-            else
-            {
-                <TextBeforeImage Size=@Size>@number</TextBeforeImage>
-            }
+            <TextBeforeImage Size=@Size>@number</TextBeforeImage>
         }
         else if (part is Payment payment)
         {
@@ -53,11 +40,15 @@
         }
         else if (part is IHero hero)
         {
-            <span class="font-weight-bold" data-content="@Support.GetHeroHoverHTML(hero)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(hero)</span>
+            <span class="font-weight-bold" style="color:@Skin.Current.GetFactionColor(hero.Faction);" data-content="@Support.GetHeroHoverHTML(hero)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(hero)</span>
         }
         else if (part is TreacheryCard tc)
         {
             <span class="font-weight-bold" data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(tc)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(tc)</span>
+        }
+        else if (part is Concept monster && monster == Concept.Monster)
+        {
+            <img src=@Skin.Current.Monster_URL width=@Size height=@Size title=@Skin.Current.Describe(Concept.Monster)/>
         }
         else if (part is TechToken tt)
         {
@@ -71,9 +62,13 @@
         {
             <img src=@Skin.Current.GetImageURL(fsf) title=@Skin.Current.Describe(fsf) width=@Size height=@Size/>
         }
-        else
+        else if (part is Location || part is Territory || part is AuctionType || part is BrownEconomicsStatus || part is LeaderSkill)
         {
             <span class="font-weight-bold">@Skin.Current.Describe(part)</span>
+        }
+        else
+        {
+            <span>@Skin.Current.Describe(part)</span>
         }
     }
 }

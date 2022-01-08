@@ -38,19 +38,19 @@ namespace Treachery.Shared
             {
                 foreach (var playerInArrakeen in Players.Where(p => p.Controls(this, Map.Arrakeen, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
                 {
-                    CurrentReport.Express(playerInArrakeen.Faction, " collect ", Payment(2), " for ", Map.Arrakeen);
+                    CurrentReport.Express(playerInArrakeen.Faction, " collect ", Payment(2), " from ", Map.Arrakeen);
                     playerInArrakeen.Resources += 2;
                 }
 
                 foreach (var playerInCarthag in Players.Where(p => p.Controls(this, Map.Carthag, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
                 {
-                    CurrentReport.Express(playerInCarthag.Faction, " collect ", Payment(2), " for ", Map.Carthag);
+                    CurrentReport.Express(playerInCarthag.Faction, " collect ", Payment(2), " from ", Map.Carthag);
                     playerInCarthag.Resources += 2;
                 }
 
                 foreach (var playerInTueksSietch in Players.Where(p => p.Controls(this, Map.TueksSietch, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
                 {
-                    CurrentReport.Express(playerInTueksSietch.Faction, " collect ", Payment(1), " for ", Map.TueksSietch);
+                    CurrentReport.Express(playerInTueksSietch.Faction, " collect ", Payment(1), " from ", Map.TueksSietch);
                     playerInTueksSietch.Resources += 1;
                 }
             }

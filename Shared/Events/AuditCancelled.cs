@@ -36,11 +36,11 @@ namespace Treachery.Shared
         {
             if (Cancelled)
             {
-                return new Message(Initiator, "{0} pay {1} to cancel an audit.", Initiator, Faction.Brown);
+                return Message.Express(Initiator, " pay to cancel an audit");
             }
             else
             {
-                return new Message(Initiator, "{0} don't pay to cancel an audit", Initiator);
+                return Message.Express(Initiator, " don't pay to cancel an audit");
             }
         }
 
@@ -48,11 +48,11 @@ namespace Treachery.Shared
         {
             if (Cancelled)
             {
-                return new Message(Initiator, "{0} pay {1} {2} to cancel an audit of {3} cards.", Initiator, Faction.Brown, Cost(Game), GetNumberOfCardsThatMayBeAudited(Game));
+                return Message.Express(Initiator, " pay ", Faction.Brown, new Payment(Cost(Game)), " to cancel an audit of ", GetNumberOfCardsThatMayBeAudited(Game), " cards");
             }
             else
             {
-                return new Message(Initiator, "{0} don't cancel an audit targeting {1} of their cards.", Initiator, GetNumberOfCardsThatMayBeAudited(Game));
+                return Message.Express(Initiator, " don't cancel an audit targeting ", GetNumberOfCardsThatMayBeAudited(Game), " of their cards");
             }
         }
 

@@ -223,7 +223,7 @@ namespace Treachery.Shared
                     Type = DealType.ShareBiddingPrescience,
                     EndPhase = Phase.Bidding,
                     Price = 1 + (int)Math.Floor(0.05 * ResourcesIncludingAllyContribution) + (Ally == Faction.None ? 0 : 1),
-                    Text = "share bidding prescience (one card)"
+                    Text = "share bidding prescience (1 card)"
                 };
             }
 

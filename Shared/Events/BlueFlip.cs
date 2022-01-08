@@ -38,10 +38,10 @@ namespace Treachery.Shared
             var blue = g.GetPlayer(Faction.Blue);
             bool hasAdvisorsThere = blue != null && blue.SpecialForcesIn(territory) > 0;
 
-            return new Message(Initiator, "{0} {1} {2}.", 
+            return Message.Express(
                 Initiator,
-                hasAdvisorsThere ^ AsAdvisors ? "become" : "stay as", 
-                AsAdvisors ? "advisors" : "fighters");
+                hasAdvisorsThere ^ AsAdvisors ? " become " : " stay as ", 
+                AsAdvisors ? (object)FactionSpecialForce.Blue : FactionForce.Blue);
         }
 
         public static Territory GetTerritory(Game g)

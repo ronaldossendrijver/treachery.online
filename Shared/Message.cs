@@ -31,12 +31,6 @@ namespace Treachery.Shared
             Initiator = Faction.None;
         }
 
-        public Message(Faction f, Expression e)
-        {
-            _expression = e;
-            Initiator = f;
-        }
-
         public Message(Faction from, Faction to, Expression e)
         {
             _expression = e;
@@ -131,9 +125,9 @@ namespace Treachery.Shared
             return new Message(new Expression(list));
         }
 
-        public static Message ExpressTo(Faction from, Faction to, params object[] list)
+        public static Message ExpressTo(Faction to, params object[] list)
         {
-            return new Message(from, to, new Expression(list));
+            return new Message(Faction.None, to, new Expression(list));
         }
     }
 

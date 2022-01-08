@@ -228,7 +228,7 @@ namespace Treachery.Shared
         public void HandleEvent(SetIncreasedRevivalLimits e)
         {
             FactionsWithIncreasedRevivalLimits = e.Factions;
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
         }
 
         public int GetRevivalLimit(Game g, Player p)
@@ -265,7 +265,7 @@ namespace Treachery.Shared
         public void HandleEvent(RaiseDeadPlayed r)
         {
             RecentMilestones.Add(Milestone.RaiseDead);
-            CurrentReport.Add(r.GetMessage());
+            CurrentReport.Express(r);
             var player = GetPlayer(r.Initiator);
             Discard(player, TreacheryCardType.RaiseDead);
 
@@ -307,14 +307,14 @@ namespace Treachery.Shared
         public RequestPurpleRevival CurrentPurpleRevivalRequest = null;
         public void HandleEvent(RequestPurpleRevival e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             CurrentPurpleRevivalRequest = e;
         }
 
         public Dictionary<IHero, int> AllowedEarlyRevivals = new Dictionary<IHero, int>();
         public void HandleEvent(AcceptOrCancelPurpleRevival e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
 
             if (AllowedEarlyRevivals.ContainsKey(e.Hero))
             {
@@ -337,7 +337,7 @@ namespace Treachery.Shared
         public BrownFreeRevivalPrevention CurrentFreeRevivalPrevention { get; set; } = null;
         public void HandleEvent(BrownFreeRevivalPrevention e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             Discard(e.CardUsed());
             CurrentFreeRevivalPrevention = e;
             RecentMilestones.Add(Milestone.SpecialUselessPlayed);

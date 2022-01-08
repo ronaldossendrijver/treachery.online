@@ -59,7 +59,7 @@ namespace Treachery.Shared
             ChosenHMSAdvantage = StrongholdAdvantage.None;
             CurrentRetreat = null;
             NrOfBattlesFought++;
-            CurrentReport.Add(b.GetMessage());
+            CurrentReport.Express(b);
             CheckHeroAvailability(b.AggressivePlayer);
             CheckHeroAvailability(b.DefendingPlayer);
             AssignBattleWheels(b.AggressivePlayer, b.DefendingPlayer);
@@ -97,7 +97,7 @@ namespace Treachery.Shared
                 }
             }
 
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             RecentMilestones.Add(Milestone.Voice);
         }
 
@@ -105,7 +105,7 @@ namespace Treachery.Shared
         public void HandleEvent(Prescience e)
         {
             CurrentPrescience = e;
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             RecentMilestones.Add(Milestone.Prescience);
         }
 
@@ -125,8 +125,8 @@ namespace Treachery.Shared
                 RevealCurrentNoField(AggressorBattleAction.Player, CurrentBattle.Territory);
                 RevealCurrentNoField(DefenderBattleAction.Player, CurrentBattle.Territory);
 
-                CurrentReport.Add(AggressorBattleAction.GetBattlePlanMessage());
-                CurrentReport.Add(DefenderBattleAction.GetBattlePlanMessage());
+                CurrentReport.Express(AggressorBattleAction.GetBattlePlanMessage());
+                CurrentReport.Express(DefenderBattleAction.GetBattlePlanMessage());
 
                 RegisterKnownCards(AggressorBattleAction);
                 RegisterKnownCards(DefenderBattleAction);
@@ -246,20 +246,20 @@ namespace Treachery.Shared
         public void HandleEvent(PoisonToothCancelled e)
         {
             PoisonToothCancelled = true;
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
         }
 
         public PortableAntidoteUsed CurrentPortableAntidoteUsed { get; private set; }
         public void HandleEvent(PortableAntidoteUsed e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             CurrentPortableAntidoteUsed = e;
         }
 
         public Diplomacy CurrentDiplomacy { get; private set; }
         public void HandleEvent(Diplomacy e)
         {
-            CurrentReport.Add(e.GetDynamicMessage());
+            CurrentReport.Express(e.GetDynamicMessage());
             CurrentDiplomacy = e;
         }
 
@@ -281,11 +281,11 @@ namespace Treachery.Shared
                 }
 
                 KillHero(toKill);
-                CurrentReport.Add(e.Initiator, "{0} kills {1}", TreacheryCardType.Residual, toKill);
+                CurrentReport.Express(TreacheryCardType.Residual, " kills ", toKill);
             }
             else
             {
-                CurrentReport.Add(opponent.Faction, "{0} have no available leaders to kill");
+                CurrentReport.Express(opponent.Faction, " have no available leaders to kill");
             }
         }
 
@@ -297,7 +297,7 @@ namespace Treachery.Shared
                 AggressorTraitorAction = e;
                 if (e.TraitorCalled)
                 {
-                    CurrentReport.Add(e);
+                    CurrentReport.Express(e);
                     RecentMilestones.Add(Milestone.TreacheryCalled);
                     e.Player.RevealedTraitors.Add(DefenderBattleAction.Hero);
                 }
@@ -308,7 +308,7 @@ namespace Treachery.Shared
                 DefenderTraitorAction = e;
                 if (e.TraitorCalled)
                 {
-                    CurrentReport.Add(e);
+                    CurrentReport.Express(e);
                     RecentMilestones.Add(Milestone.TreacheryCalled);
                     e.Player.RevealedTraitors.Add(AggressorBattleAction.Hero);
                 }
@@ -323,7 +323,7 @@ namespace Treachery.Shared
         private RockWasMelted CurrentRockWasMelted { get; set; }
         public void HandleEvent(RockWasMelted e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             Discard(e.Player, TreacheryCardType.Rockmelter);
             CurrentRockWasMelted = e;
             Enter(Phase.CallTraitorOrPass);
@@ -491,12 +491,12 @@ namespace Treachery.Shared
 
         public void HandleEvent(Captured e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             if (!e.Passed)
             {
                 if (Version > 125 && Prevented(FactionAdvantage.BlackCaptureLeader))
                 {
-                    CurrentReport.Express(TreacheryCardType.Karma, " prevents ", Faction.Black, " from capturing a leader");
+                    LogPrevention(FactionAdvantage.BlackCaptureLeader);
                 }
                 else
                 {
@@ -529,7 +529,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(AuditCancelled e)
         {
-            CurrentReport.Add(e.GetDynamicMessage());
+            CurrentReport.Express(e.GetDynamicMessage());
 
             if (e.Cancelled)
             {
@@ -549,7 +549,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(Audited e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
 
             foreach (var card in AuditedCards)
             {
@@ -569,7 +569,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    CurrentReport.Add(Faction.Black, "{0} prevents {1} from capturing a leader.", TreacheryCardType.Karma, Faction.Black);
+                    LogPrevention(FactionAdvantage.BlackCaptureLeader);
                 }
             }
         }
@@ -755,7 +755,7 @@ namespace Treachery.Shared
             {
                 if (ls.Key is Leader l && Skilled(l) && !CapturedLeaders.ContainsKey(l) && !ls.Value.InFrontOfShield)
                 {
-                    CurrentReport.Add(l.Faction, "{0} {1} is placed back in front of shield.", Skill(l), l);
+                    CurrentReport.Express(Skill(l), " ", l, " is placed back in front of shield");
                     ls.Value.InFrontOfShield = true;
                 }
             }
@@ -787,7 +787,7 @@ namespace Treachery.Shared
                 int forcesToLose = winnerGambit.Forces + winnerGambit.ForcesAtHalfStrength + e.SpecialForceLossesReplaced;
                 int specialForcesToLose = winnerGambit.SpecialForces + winnerGambit.SpecialForcesAtHalfStrength - e.SpecialForceLossesReplaced;
 
-                CurrentReport.Add(winner.Faction, "{0} substitute {1} {2} losses by {3} losses.", winner.Faction, e.SpecialForceLossesReplaced, winner.SpecialForce, winner.Force);
+                CurrentReport.Express(winner.Faction, " substitute ", e.SpecialForceLossesReplaced, winner.SpecialForce, " losses by ", winner.Force, " losses");
 
                 int specialForcesToSaveToReserves = 0;
                 int forcesToSaveToReserves = 0;
@@ -814,27 +814,17 @@ namespace Treachery.Shared
 
                     if (forcesToSaveToReserves > 0) winner.ForcesToReserves(territory, forcesToSaveToReserves, false);
 
-                    if (specialForcesToSaveInTerritory > 0 || specialForcesToSaveToReserves > 0)
-                    {
-                        CurrentReport.Add(winner.Faction, "{0} rescues {1} {2} and {3} {4} on site and {5} {6} and {7} {8} to reserves.",
-                            LeaderSkill.Graduate,
-                            forcesToSaveInTerritory,
-                            winner.Force,
-                            specialForcesToSaveInTerritory,
-                            winner.SpecialForce,
-                            forcesToSaveToReserves,
-                            winner.Force,
-                            specialForcesToSaveToReserves,
-                            winner.SpecialForce);
-                    }
-                    else
-                    {
-                        CurrentReport.Add(winner.Faction, "{0} rescues {1} {2} on site and {3} to reserves.",
-                            LeaderSkill.Graduate,
-                            forcesToSaveInTerritory,
-                            winner.Force,
-                            forcesToSaveToReserves);
-                    }
+                    CurrentReport.Express(
+                        LeaderSkill.Graduate,
+                        " rescues ",
+                        forcesToSaveInTerritory,
+                        winner.Force,
+                        MessagePart.ExpressIf(specialForcesToSaveInTerritory > 0, " and ", specialForcesToSaveInTerritory, winner.SpecialForce),
+                        " on site and ",
+                        forcesToSaveToReserves,
+                        winner.Force,
+                        MessagePart.ExpressIf(specialForcesToSaveToReserves > 0, " and ", specialForcesToSaveToReserves, winner.SpecialForce),
+                        " to reserves");
                 }
 
                 HandleLoserLosses(territory, winner, 
@@ -852,7 +842,7 @@ namespace Treachery.Shared
                 {
                     loser.TechTokens.Remove(e.StolenToken);
                     winner.TechTokens.Add(e.StolenToken);
-                    CurrentReport.Add(e.Initiator, "{0} take {1} from {2}.", e.Initiator, e.StolenToken, BattleLoser);
+                    CurrentReport.Express(e.Initiator, " steal ", e.StolenToken, " from ", BattleLoser);
                 }
             }
         }
@@ -863,7 +853,7 @@ namespace Treachery.Shared
             {
                 if (Version > 125 && Prevented(FactionAdvantage.BlackCaptureLeader))
                 {
-                    CurrentReport.Add(Faction.Black, "{0} prevents {1} from capturing a leader.", TreacheryCardType.Karma, Faction.Black);
+                    LogPrevention(FactionAdvantage.BlackCaptureLeader);
                 }
                 else
                 {
@@ -1020,7 +1010,7 @@ namespace Treachery.Shared
                 {
                     SetInFrontOfShield(toReturn, true);
                 }
-                CurrentReport.Add(originalPlayer.Faction, "{0} returns to {1} after service for {2}", toReturn, originalPlayer.Faction, currentOwner.Faction);
+                CurrentReport.Express(toReturn, " returns to ", originalPlayer.Faction, " after working for ", currentOwner.Faction);
             }
         }
 
@@ -1122,21 +1112,14 @@ namespace Treachery.Shared
         {
             var outcome = DetermineBattleOutcome(agg, def, territory);
 
-            if (outcome.AggHeroSkillBonus != 0)
-            {
-                CurrentReport.Add(agg.Initiator, "{0} bonus: {1}", outcome.AggActivatedBonusSkill, outcome.AggHeroSkillBonus);
-            }
+            CurrentReport.ExpressIf(outcome.AggHeroSkillBonus != 0, agg.Hero, " ", outcome.AggActivatedBonusSkill, " bonus: ", outcome.AggHeroSkillBonus);
+            CurrentReport.ExpressIf(outcome.DefHeroSkillBonus != 0, def.Hero, " ", outcome.DefActivatedBonusSkill, " bonus: ", outcome.DefHeroSkillBonus);
 
-            if (outcome.DefHeroSkillBonus != 0)
-            {
-                CurrentReport.Add(def.Initiator, "{0} bonus: {1}", outcome.DefActivatedBonusSkill, outcome.DefHeroSkillBonus);
-            }
+            CurrentReport.ExpressIf(outcome.AggBattlePenalty != 0, agg.Hero, " ", outcome.DefActivatedPenaltySkill, " penalty: ", outcome.AggBattlePenalty);
+            CurrentReport.ExpressIf(outcome.DefBattlePenalty != 0, def.Hero, " ", outcome.AggActivatedPenaltySkill, " penalty: ", outcome.DefBattlePenalty);
 
-            if (outcome.AggBattlePenalty != 0) CurrentReport.Add(agg.Initiator, "{0} penalty: {1}", outcome.DefActivatedPenaltySkill, outcome.AggBattlePenalty);
-            if (outcome.DefBattlePenalty != 0) CurrentReport.Add(def.Initiator, "{0} penalty: {1}", outcome.AggActivatedPenaltySkill, outcome.DefBattlePenalty);
-
-            if (outcome.AggMessiahContribution > 0) CurrentReport.Add(agg.Initiator, "{0} bonus: {1}", Concept.Messiah, outcome.AggMessiahContribution);
-            if (outcome.DefMessiahContribution > 0) CurrentReport.Add(def.Initiator, "{0} bonus: {1}", Concept.Messiah, outcome.DefMessiahContribution);
+            CurrentReport.ExpressIf(outcome.AggMessiahContribution > 0, agg.Hero, " ", Concept.Messiah, " bonus: ", outcome.AggMessiahContribution);
+            CurrentReport.ExpressIf(outcome.DefMessiahContribution > 0, agg.Hero, " ", Concept.Messiah, " bonus: ", outcome.DefMessiahContribution);
 
             BattleWinner = outcome.Winner.Faction;
             BattleLoser = outcome.Loser.Faction;
@@ -1145,32 +1128,32 @@ namespace Treachery.Shared
             {
                 KillLeaderInBattle(agg.Hero, def.Hero, outcome.AggHeroCauseOfDeath, outcome.Winner, outcome.AggHeroEffectiveStrength);
             }
-            else if (outcome.AggSavedByCarthag)
+            else
             {
-                CurrentReport.Add(agg.Initiator, "{0} stronghold advantage protects {1} from death by {2}.", Map.Carthag, agg.Hero, TreacheryCardType.Poison);
+                CurrentReport.ExpressIf(outcome.AggSavedByCarthag, Map.Carthag, "{0} stronghold advantage saves ", agg.Hero, " from death by ", TreacheryCardType.Poison);
             }
 
             if (outcome.DefHeroKilled)
             {
                 KillLeaderInBattle(def.Hero, agg.Hero, outcome.DefHeroCauseOfDeath, outcome.Winner, outcome.DefHeroEffectiveStrength);
             }
-            else if (outcome.DefSavedByCarthag)
+            else
             {
-                CurrentReport.Add(def.Initiator, "{0} stronghold advantage protects {1} from death by {2}.", Map.Carthag, def.Hero, TreacheryCardType.Poison);
+                CurrentReport.ExpressIf(outcome.DefSavedByCarthag, Map.Carthag, "{0} stronghold advantage saves ", def.Hero, " from death by ", TreacheryCardType.Poison);
             }
 
             if (BattleInitiated.IsAggressorByJuice(this, def.Player.Faction))
             {
-                CurrentReport.Add(agg.Initiator, "{0} (defending) strength: {1}.", agg.Initiator, outcome.AggTotal);
-                CurrentReport.Add(def.Initiator, "{0} (aggressor due to {2}) strength: {1}.", def.Initiator, outcome.DefTotal, TreacheryCardType.Juice);
+                CurrentReport.Express(agg.Initiator, " (defending) strength: ", outcome.AggTotal);
+                CurrentReport.Express(def.Initiator, " (aggressor by ", TreacheryCardType.Juice, ") strength: ", outcome.DefTotal);
             }
             else
             {
-                CurrentReport.Add(agg.Initiator, "{0} (aggressor) strength: {1}.", agg.Initiator, outcome.AggTotal);
-                CurrentReport.Add(def.Initiator, "{0} (defending) strength: {1}.", def.Initiator, outcome.DefTotal);
+                CurrentReport.Express(agg.Initiator, " (aggressor) strength: ", outcome.AggTotal);
+                CurrentReport.Express(def.Initiator, " (defending) strength: ", outcome.DefTotal);
             }
 
-            CurrentReport.Add(outcome.Winner.Faction, "{0} WIN THE BATTLE.", outcome.Winner.Faction);
+            CurrentReport.Express(outcome.Winner.Faction, " WIN THE BATTLE");
 
             ProcessWinnerLosses(territory, outcome.Winner, outcome.WinnerBattlePlan, false);
             ProcessLoserLosses(territory, outcome.Loser, outcome.LoserBattlePlan, false);
@@ -1204,7 +1187,7 @@ namespace Treachery.Shared
         {
             bool hadMessiahBeforeLosses = loser.MessiahAvailable;
 
-            CurrentReport.Add(loser.Faction, "{0} lose all ({1}) forces in {2}.", loser.Faction, loser.AnyForcesIn(territory), territory);
+            CurrentReport.Express(loser.Faction, " lose all ", loser.AnyForcesIn(territory), " forces in ", territory);
             loser.KillAllForces(territory, true);
             LoseCards(loserGambit);
             PayDialedSpice(loser, loserGambit, traitorWasRevealed);
@@ -1228,11 +1211,8 @@ namespace Treachery.Shared
                 if (costForPlayer > 0)
                 {
                     p.Resources -= costForPlayer;
-
-                    if (HasStrongholdAdvantage(p.Faction, StrongholdAdvantage.FreeResourcesForBattles, CurrentBattle.Territory))
-                    {
-                        CurrentReport.Add(p.Faction, "{0} stronghold advantage: supporting forces costs 2 less.", Map.Arrakeen);
-                    }
+                    CurrentReport.ExpressIf(HasStrongholdAdvantage(p.Faction, StrongholdAdvantage.FreeResourcesForBattles, CurrentBattle.Territory), 
+                        Map.Arrakeen, " stronghold advantage: supporting forces costs ", Payment(2), " less");
                 }
 
                 if (plan.AllyContributionAmount > 0)
@@ -1252,7 +1232,7 @@ namespace Treachery.Shared
             if (plan.BankerBonus > 0)
             {
                 p.Resources -= plan.BankerBonus;
-                CurrentReport.Add(p.Faction, "{0} paid {1} for {2} Bonus", p.Faction, plan.BankerBonus, LeaderSkill.Banker);
+                CurrentReport.Express(p.Faction, " paid ", Payment(plan.BankerBonus), " for as ", LeaderSkill.Banker);
             }
         }
 
@@ -1270,7 +1250,7 @@ namespace Treachery.Shared
                     if (!Prevented(FactionAdvantage.BrownReceiveForcePayment))
                     {
                         brown.Resources += result;
-                        CurrentReport.Add(Faction.Brown, "{0} receive {1} from supported forces", Faction.Brown, result);
+                        CurrentReport.Express(Faction.Brown, " get ", Payment(result), " from supported forces");
 
                         if (result >= 5)
                         {
@@ -1279,7 +1259,7 @@ namespace Treachery.Shared
                     }
                     else
                     {
-                        CurrentReport.Add(Faction.Brown, "{0} prevents {1}", Faction.Brown, FactionAdvantage.BrownReceiveForcePayment);
+                        LogPrevention(FactionAdvantage.BrownReceiveForcePayment);
                     }
                 }
             }
@@ -1326,27 +1306,17 @@ namespace Treachery.Shared
 
                 if (forcesToSaveToReserves > 0) player.ForcesToReserves(territory, forcesToSaveToReserves, false);
 
-                if (specialForcesToSaveInTerritory > 0 || specialForcesToSaveToReserves > 0)
-                {
-                    CurrentReport.Add(player.Faction, "{0} rescues {1} {2} and {3} {4} on site and {5} {6} and {7} {8} to reserves.",
-                        LeaderSkill.Graduate,
-                        forcesToSaveInTerritory,
-                        player.Force,
-                        specialForcesToSaveInTerritory,
-                        player.SpecialForce,
-                        forcesToSaveToReserves,
-                        player.Force,
-                        specialForcesToSaveToReserves,
-                        player.SpecialForce);
-                }
-                else
-                {
-                    CurrentReport.Add(player.Faction, "{0} rescues {1} {2} on site and {3} to reserves.",
-                        LeaderSkill.Graduate,
-                        forcesToSaveInTerritory,
-                        player.Force,
-                        forcesToSaveToReserves);
-                }
+                CurrentReport.Express(
+                    LeaderSkill.Graduate,
+                    " rescues ",
+                    forcesToSaveInTerritory,
+                    player.Force,
+                    MessagePart.ExpressIf(specialForcesToSaveInTerritory > 0, " and ", specialForcesToSaveInTerritory, player.SpecialForce),
+                    " on site and ",
+                    forcesToSaveToReserves, 
+                    player.Force,
+                    MessagePart.ExpressIf(specialForcesToSaveToReserves > 0, specialForcesToSaveToReserves, player.SpecialForce),
+                    " to reserves");
             }
 
             if (!MaySubstituteForceLosses(player) || specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory == 0 || player.ForcesIn(territory) <= plan.Forces + plan.ForcesAtHalfStrength)
@@ -1379,7 +1349,7 @@ namespace Treachery.Shared
 
         private void KillLeaderInBattle(IHero killedHero, IHero opposingHero, TreacheryCardType causeOfDeath, Player winner, int heroValue)
         {
-            CurrentReport.Add(winner.Faction, "{1} kills {0}. {2} earn {3}.", killedHero, causeOfDeath, winner.Faction, heroValue);
+            CurrentReport.Express(causeOfDeath, " kills ", killedHero, ". ", winner.Faction, " collect ", Payment(heroValue));
             RecentMilestones.Add(Milestone.LeaderKilled);
             if (killedHero is Leader) KillHero(killedHero as Leader);
             winner.Resources += heroValue;
@@ -1387,13 +1357,14 @@ namespace Treachery.Shared
 
         private void LogLosses(Player player, int forcesLost, int specialForcesLost)
         {
-            if (specialForcesLost > 0)
+            if (forcesLost > 0 || specialForcesLost > 0)
             {
-                CurrentReport.Add(player.Faction, "{0} lose {1} {2} and {3} {4} during battle.", player.Faction, forcesLost, player.Force, specialForcesLost, player.SpecialForce);
-            }
-            else if (forcesLost > 0)
-            {
-                CurrentReport.Add(player.Faction, "{0} lose {1} {2} during battle.", player.Faction, forcesLost, player.Force);
+                CurrentReport.Express(
+                    player.Faction,
+                    " lose ",
+                    forcesLost, player.Force,
+                    MessagePart.ExpressIf(specialForcesLost > 0, " and ", specialForcesLost, player.SpecialForce),
+                    " during battle ");
             }
         }
 
@@ -1418,13 +1389,13 @@ namespace Treachery.Shared
             var traitorValue = traitor.ValueInCombatAgainst(winnerGambit.Hero);
             var traitorOwner = winner.Traitors.Any(t => t.IsTraitor(traitor)) ? winner.Faction : Faction.Black;
 
-            CurrentReport.Add(traitorOwner, "{0} is a {1} traitor! {2} lose everything.", traitor, traitorOwner, loser.Faction);
+            CurrentReport.Express(traitor, " is a ", traitorOwner, " traitor! ", loser.Faction, " lose everything");
 
             RecentMilestones.Add(Milestone.LeaderKilled);
 
             if (traitor is Leader)
             {
-                CurrentReport.Add(loser.Faction, "Treachery kills {0}. {1} earn {2}.", traitor, winner.Faction, traitorValue);
+                CurrentReport.Express("Treachery kills ", traitor, ". ", winner.Faction, " collect ", Payment(traitorValue));
                 KillHero(traitor);
                 winner.Resources += traitorValue;
             }
@@ -1432,7 +1403,7 @@ namespace Treachery.Shared
             BattleWinner = winner.Faction;
             BattleLoser = loser.Faction;
 
-            CurrentReport.Add(loser.Faction, "{0} lose all ({1}) forces in {2}.", loser.Faction, loser.SpecialForcesIn(territory) + loser.ForcesIn(territory), territory);
+            CurrentReport.Express(loser.Faction, " lose all ", loser.SpecialForcesIn(territory) + loser.ForcesIn(territory), " forces in ", territory);
             loser.KillAllForces(territory, true);
             LoseCards(loserGambit);
             PayDialedSpice(loser, loserGambit, true);
@@ -1445,18 +1416,16 @@ namespace Treachery.Shared
 
         private void TwoTraitorsCalled(Battle agg, Battle def, Player aggressor, Player defender, Territory territory, IHero aggLeader, IHero defLeader)
         {
-            CurrentReport.Add("Both leaders are traitors, everyone gets killed!");
             RecentMilestones.Add(Milestone.LeaderKilled);
 
             bool hadMessiahBeforeLosses = aggressor.MessiahAvailable || defender.MessiahAvailable;
 
-            CurrentReport.Add(defender.Faction, "Treachery kills {0}.", defLeader);
+            CurrentReport.Express("Treachery kills both ", defLeader, " and ", aggLeader);
             KillHero(defLeader);
-            CurrentReport.Add(aggressor.Faction, "Treachery kills {0}.", aggLeader);
             KillHero(aggLeader);
-            CurrentReport.Add(defender.Faction, "{0} lose all ({1}) forces in {2}.", defender.Faction, defender.SpecialForcesIn(territory) + defender.ForcesIn(territory), territory);
+            CurrentReport.Express(defender.Faction, " lose all ", defender.SpecialForcesIn(territory) + defender.ForcesIn(territory), " forces in ", territory);
             defender.KillAllForces(territory, true);
-            CurrentReport.Add(aggressor.Faction, "{0} lose all ({1}) forces in {2}.", aggressor.Faction, aggressor.SpecialForcesIn(territory) + aggressor.ForcesIn(territory), territory);
+            CurrentReport.Express(aggressor.Faction, " lose all ", aggressor.SpecialForcesIn(territory) + aggressor.ForcesIn(territory), " forces in ", territory);
             aggressor.KillAllForces(territory, true);
 
             LoseCards(def);
@@ -1475,24 +1444,24 @@ namespace Treachery.Shared
         {
             bool hadMessiahBeforeLosses = aggressor.MessiahAvailable || defender.MessiahAvailable;
 
-            CurrentReport.Add(Faction.None, "A {0}/{1} explosion occurs!", TreacheryCardType.Laser, TreacheryCardType.Shield);
+            CurrentReport.Express("A ", TreacheryCardType.Laser, "/", TreacheryCardType.Shield, " explosion occurs!");
             RecentMilestones.Add(Milestone.Explosion);
 
             if (aggLeader != null)
             {
-                CurrentReport.Add(aggressor.Faction, "The explosion kills {0}.", aggLeader);
+                CurrentReport.Express("The explosion kills ", aggLeader);
                 KillHero(aggLeader);
             }
 
             if (defLeader != null)
             {
-                CurrentReport.Add(defender.Faction, "The explosion kills {0}.", defLeader);
+                CurrentReport.Express("The explosion kills ", defLeader);
                 KillHero(def.Hero);
             }
 
             if (agg.Messiah || def.Messiah)
             {
-                CurrentReport.Add(aggressor.Faction, "The explosion kills the {0}.", Concept.Messiah);
+                CurrentReport.Express("The explosion kills the ", Concept.Messiah);
                 KillHero(LeaderManager.Messiah);
             }
 
@@ -1505,7 +1474,7 @@ namespace Treachery.Shared
             int removed = RemoveResources(territory);
             if (removed > 0)
             {
-                CurrentReport.Add(Faction.None, "The explosion destroys {0} {1} in {2}.", removed, Concept.Resource, territory);
+                CurrentReport.Express("The explosion destroys ", Payment(removed), " in ", territory);
             }
 
             foreach (var p in Players)
@@ -1515,7 +1484,7 @@ namespace Treachery.Shared
                 int numberOfForces = p.AnyForcesIn(territory);
                 if (numberOfForces > 0)
                 {
-                    CurrentReport.Add(p.Faction, "The explosion kills {0} {1} forces in {2}.", numberOfForces, p.Faction, territory);
+                    CurrentReport.Express("The explosion kills all ", numberOfForces, p.Faction, " forces in ", territory);
                     p.KillAllForces(territory, true);
                 }
             }
@@ -1556,7 +1525,7 @@ namespace Treachery.Shared
             else
             {
                 BlackVictim = null;
-                CurrentReport.Add(Faction.Black, "{0} don't have any leaders {1} can capture or kill.", victim.Faction, Faction.Black);
+                CurrentReport.Express(victim.Faction, " don't have any leaders for ", Faction.Black, " to capture or kill");
             }
         }
 
@@ -1568,7 +1537,7 @@ namespace Treachery.Shared
 
             if (decision == CaptureDecision.Capture)
             {
-                CurrentReport.Add(Faction.Black, "{0} capture a leader!", Faction.Black);
+                CurrentReport.Express(Faction.Black, " capture a leader!");
                 harkonnen.Leaders.Add(BlackVictim);
                 target.Leaders.Remove(BlackVictim);
                 SetInFrontOfShield(BlackVictim, false);
@@ -1576,14 +1545,14 @@ namespace Treachery.Shared
             }
             else if (decision == CaptureDecision.Kill)
             {
-                CurrentReport.Add(Faction.Black, "{0} kill a leader for 2!", Faction.Black);
+                CurrentReport.Express(Faction.Black, " kill a leader for ", Payment(2));
                 RecentMilestones.Add(Milestone.LeaderKilled);
                 AssassinateLeader(BlackVictim);
                 harkonnen.Resources += 2;
             }
             else if (decision == CaptureDecision.DontCapture)
             {
-                CurrentReport.Add(Faction.Black, "{0} decide not to capture or kill a leader.", Faction.Black);
+                CurrentReport.Express(Faction.Black, " decide not to capture or kill a leader");
             }
         }
 
@@ -1591,7 +1560,7 @@ namespace Treachery.Shared
         {
             var leader = e.Player.Leaders.FirstOrDefault(l => Skilled(l) && !CapturedLeaders.ContainsKey(l));
             SwitchInFrontOfShield(leader);
-            CurrentReport.Add(e.Initiator, "{0} place {1} {2} {3} their shield", e.Initiator, Skill(leader), leader, IsInFrontOfShield(leader) ? "in front of" : "behind");
+            CurrentReport.Express(e.Initiator, " place ", Skill(leader), " ", leader, IsInFrontOfShield(leader) ? " in front of" : " behind", " their shield");
         }
 
         public Battle WinnerBattleAction
@@ -1605,27 +1574,26 @@ namespace Treachery.Shared
             }
         }
 
-
         public Thought CurrentThought { get; private set; }
         public void HandleEvent(Thought e)
         {
             CurrentThought = e;
             var opponent = CurrentBattle.OpponentOf(e.Initiator).Faction;
-            CurrentReport.Add(e.Initiator, "By {0}, {1} ask {2} if they have a {3}.", LeaderSkill.Thinker, e.Initiator, opponent, e.Card);
+            CurrentReport.Express("By ", LeaderSkill.Thinker, ", ", e.Initiator, " ask ", opponent, " if they have a ", e.Card);
 
             Enter(Phase.Thought);
         }
 
         public void HandleEvent(ThoughtAnswered e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             if (e.Card == null)
             {
-                CurrentReport.Add(e.Initiator, CurrentThought.Initiator, "In response, {0} say they don't own any cards.", e.Initiator);
+                CurrentReport.Express(e.Initiator, " don't own any cards", e.Initiator);
             }
             else
             {
-                CurrentReport.Add(e.Initiator, CurrentThought.Initiator, "In response, {0} show a {1}.", e.Initiator, e.Card);
+                CurrentReport.ExpressTo(CurrentThought.Initiator, "In response, ", e.Initiator, " show you a ", e.Card);
                 RegisterKnown(CurrentThought.Initiator, e.Card);
             }
 
@@ -1634,7 +1602,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(HMSAdvantageChosen e)
         {
-            CurrentReport.Add(e);
+            CurrentReport.Express(e);
             ChosenHMSAdvantage = e.Advantage;
         }
 
@@ -1642,7 +1610,7 @@ namespace Treachery.Shared
         public void HandleEvent(Retreat e)
         {
             CurrentRetreat = e;
-            CurrentReport.Add(CurrentRetreat);
+            CurrentReport.Express(CurrentRetreat);
         }
     }
 }

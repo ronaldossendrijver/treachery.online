@@ -806,7 +806,7 @@ namespace Treachery.Shared
             }
             else
             {
-                CurrentReport.Add("{0} not found", cardType);
+                CurrentReport.Express(cardType, " card not found");
             }
 
             return card;
@@ -824,7 +824,7 @@ namespace Treachery.Shared
         {
             if (player != null && card != null)
             {
-                CurrentReport.Add(player.Faction, "{0} discard {1}.", player.Faction, card);
+                CurrentReport.Express(player.Faction, " discard ", card);
                 player.TreacheryCards.Remove(card);
                 TreacheryDiscardPile.PutOnTop(card);
                 RegisterKnown(card);

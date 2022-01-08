@@ -386,41 +386,23 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} finalize their battle plan.", Initiator);
+            return Message.Express(Initiator, " finalize their battle plan");
         }
 
         public Message GetBattlePlanMessage()
         {
-            if (Game.Applicable(Rule.AdvancedCombat))
-            {
-                return Message.Express(
-                    Initiator,
-                    ": leader: ",
-                    Hero,
-                    ", dial: ",
-                    Dial(Game, Game.CurrentBattle.OpponentOf(Initiator).Faction),
-                    "/",
-                    Cost(Game),
-                    Concept.Resource,
-                    MessagePart.ExpressIf(AllyContributionAmount > 0, "(", AllyContributionAmount, Concept.Resource, " by ", Player.Ally, ")"),
-                    ", weapon: ",
-                    Weapon,
-                    ", defense: ",
-                    Defense);
-            }
-            else
-            {
-                return Message.Express(
-                    Initiator,
-                    "leader: ",
-                    Hero,
-                    ", dial: ",
-                    Dial(Game, Game.CurrentBattle.OpponentOf(Initiator).Faction),
-                    ", weapon: ",
-                    Weapon,
-                    ", defense: ",
-                    Defense);
-            }
+            return Message.Express(
+                Initiator,
+                ": leader: ",
+                Hero,
+                ", dial: ",
+                Dial(Game, Game.CurrentBattle.OpponentOf(Initiator).Faction),
+                MessagePart.ExpressIf(Game.Applicable(Rule.AdvancedCombat), "/", Cost(Game), Concept.Resource),
+                MessagePart.ExpressIf(AllyContributionAmount > 0, " (", AllyContributionAmount, Concept.Resource, " by ", Player.Ally, ")"),
+                ", weapon: ",
+                Weapon,
+                ", defense: ",
+                Defense);
         }
 
         public static int MaxResources(Game g, Player p, int forces, int specialForces) => Math.Min(p.Resources, Math.Max(0, forces + specialForces - CostReduction(g, p)));
