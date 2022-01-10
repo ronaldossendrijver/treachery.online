@@ -127,7 +127,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} conclude the battle.", Initiator);
+            return Message.Express(Initiator, " conclude the battle");
         }
 
         public static IEnumerable<int> ValidReplacementForceAmounts(Game g, Player p)

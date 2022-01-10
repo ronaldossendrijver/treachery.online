@@ -35,7 +35,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} have set up forces.", Initiator);
+            return Message.Express(Initiator, " have set up forces");
         }
     }
 }

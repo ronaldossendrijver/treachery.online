@@ -397,7 +397,7 @@ namespace Treachery.Shared
                 Hero,
                 ", dial: ",
                 Dial(Game, Game.CurrentBattle.OpponentOf(Initiator).Faction),
-                MessagePart.ExpressIf(Game.Applicable(Rule.AdvancedCombat), "/", new Payment(Cost(Game))),
+                MessagePart.ExpressIf(Game.Applicable(Rule.AdvancedCombat), new Payment(Cost(Game))),
                 MessagePart.ExpressIf(AllyContributionAmount > 0, " (", new Payment(AllyContributionAmount, Player.Ally), ")"),
                 ", weapon: ",
                 Weapon,

@@ -28,7 +28,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "Using {2}, {0} swap cards with {1}.", Initiator, Target, TreacheryCardType.Karma);
+            return Message.Express(Initiator, "Using ", TreacheryCardType.Karma, ", ", Initiator, " swap cards with ", Target);
         }
     }
 }

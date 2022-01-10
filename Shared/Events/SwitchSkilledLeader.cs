@@ -28,7 +28,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} switch their skilled leader.", Initiator);
+            return Message.Express(Initiator, " switch their skilled leader");
         }
 
         public static bool CanBePlayed(Game game, Player player)

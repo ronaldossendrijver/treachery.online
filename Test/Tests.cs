@@ -36,10 +36,11 @@ namespace Treachery.Test
 
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            /*if (e is PortableAntidoteUsed && g.PlayerSkilledAs(LeaderSkill.KillerMedic) == e.Player)
+            var choam = g.GetPlayer(Faction.Brown);
+            if (choam != null && choam.Has(TreacheryCardType.Karma))
             {
-                WriteSavegameIfApplicable(g, e.Player, "Portable antidote");
-            }*/
+                WriteSavegameIfApplicable(g, e.Player, "CHOAM with Karama");
+            }
         }
 
         private List<Type> Written = new List<Type>();
@@ -833,7 +834,7 @@ namespace Treachery.Test
         //[TestMethod]
         public void ApplyTransforms()
         {
-            string filename = "e:\\svg2\\faction9.svg";
+            string filename = "e:\\svg2\\faction10force.svg";
 
             var accumulatedTransforms = new Stack<SvgTransformCollection>();
 

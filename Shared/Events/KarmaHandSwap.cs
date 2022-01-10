@@ -47,7 +47,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} return {1} cards.", Initiator, ReturnedCards.Count());
+            return Message.Express(Initiator, " return ", ReturnedCards.Count(), " cards");
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} end their alliance.", Initiator);
+            return Message.Express(Initiator, " end their alliance");
         }
 
         protected override void ExecuteConcreteEvent()

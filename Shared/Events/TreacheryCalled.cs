@@ -37,11 +37,11 @@ namespace Treachery.Shared
         {
             if (TraitorCalled)
             {
-                return new Message(Initiator, "{0} call TREACHERY!", Initiator);
+                return Message.Express(Initiator, " call TREACHERY!");
             }
             else
             {
-                return new Message(Initiator, "{0} don't call treachery.", Initiator);
+                return Message.Express(Initiator, " don't call treachery");
             }
         }
 

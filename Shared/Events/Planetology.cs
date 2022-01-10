@@ -35,11 +35,11 @@ namespace Treachery.Shared
         {
             if (AddOneToMovement)
             {
-                return new Message(Initiator, "{0} adds 1 to force movement.", LeaderSkill.Planetologist);
+                return Message.Express(LeaderSkill.Planetologist, " adds ", 1, " to force movement");
             }
             else
             {
-                return new Message(Initiator, "{0} allows movement from 2 different territories.", LeaderSkill.Planetologist);
+                return Message.Express(LeaderSkill.Planetologist, " allows movement from ", 2, "different territories");
             }
         }
 

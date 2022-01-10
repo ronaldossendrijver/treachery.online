@@ -26,7 +26,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} use a {1}.", Initiator, TreacheryCardType.Thumper);
+            return Message.Express(Initiator, " use a ", TreacheryCardType.Thumper, " to attract ", Concept.Monster);
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} use {1} to move the storm {2} sectors.", Initiator, TreacheryCardType.StormSpell, MoveAmount);
+            return Message.Express(Initiator, " use ", TreacheryCardType.StormSpell, " to move the storm ", MoveAmount, " sectors");
         }
     }
 }

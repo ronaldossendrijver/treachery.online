@@ -46,7 +46,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} ask a {1} question.", Initiator, LeaderSkill.Thinker);
+            return Message.Express("By ", LeaderSkill.Thinker, ", ", Initiator, " ask a question");
         }
 
         public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)

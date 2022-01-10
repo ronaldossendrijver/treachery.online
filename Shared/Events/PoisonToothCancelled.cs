@@ -26,7 +26,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} don't use their {1}.", Initiator, TreacheryCardType.PoisonTooth);
+            return Message.Express(Initiator, " don't use their ", TreacheryCardType.PoisonTooth);
         }
     }
 }

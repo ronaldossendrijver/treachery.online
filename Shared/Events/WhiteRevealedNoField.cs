@@ -19,7 +19,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} reveal a No-Field.", Initiator);
+            return Message.Express(Initiator, " reveal a ", FactionSpecialForce.White);
         }
 
         protected override void ExecuteConcreteEvent()

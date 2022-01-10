@@ -34,15 +34,11 @@ namespace Treachery.Shared
 
             if (Passed)
             {
-                return new Message(Initiator, "{0} pass move.", Initiator);
-            }
-            else if (location != null)
-            {
-                return new Message(Initiator, "{0} move from {1} to {2}.", Initiator, location.Territory, To);
+                return Message.Express(Initiator, " pass move", Initiator);
             }
             else
             {
-                return new Message(Initiator, "{0} move from ? to {1}.", Initiator, To);
+                return Message.Express(Initiator, " move from ", location.Territory, " to ", To);
             }
         }
     }

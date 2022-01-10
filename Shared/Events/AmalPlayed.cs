@@ -26,7 +26,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} perform {1}.", Initiator, TreacheryCardType.Amal);
+            return Message.Express(Initiator, " perform ", TreacheryCardType.Amal);
         }
     }
 }

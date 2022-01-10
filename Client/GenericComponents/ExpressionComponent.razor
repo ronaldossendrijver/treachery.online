@@ -1,4 +1,6 @@
 ﻿@using Treachery.Shared;
+@using System.Collections;
+@using System.Linq;
 
 @{
     for (int elementnr = 0; elementnr < Expression.Elements.Length; elementnr++)
@@ -13,13 +15,24 @@
         {
             <span>@part</span>
         }
+        else if (part is IEnumerable e)
+        {
+            var elts = new List<object>();
+            foreach (var elt in e)
+            {
+                elts.Add(elt);
+            }
+            var expression = new Expression(elts);
+
+            <ExpressionComponent Expression=expression Size=@Size/>
+        }
         else if (part is MessagePart mp)
         {
             <ExpressionComponent Expression=mp.Expression Size=@Size/>
         }
         else if (part is int || part is float || part is double)
         {
-            <TextBeforeImage Size=@Size>@part</TextBeforeImage>
+            <span class="badge badge-light">@part</span>
         }
         else if (part is Payment payment)
         {

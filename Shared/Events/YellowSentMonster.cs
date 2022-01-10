@@ -38,7 +38,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} send {1} to {2}.", Initiator, Concept.Monster, Territory);
+            return Message.Express(Initiator, "Using ", TreacheryCardType.Karma, ", ", Initiator, " send ", Concept.Monster, " to ", Territory);
         }
 
         public static IEnumerable<Territory> ValidTargets(Game g)

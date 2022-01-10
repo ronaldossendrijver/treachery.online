@@ -54,7 +54,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} dials.", Initiator);
+            return Message.Express(Initiator, " dials for the storm");
         }
 
     }

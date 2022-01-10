@@ -64,23 +64,24 @@ namespace Treachery.Shared
             {
                 if (!Game.LeaderState[Hero].IsFaceDownDead)
                 {
-                    return new Message(Initiator, "Using {2}, {0} revive {1}.", Initiator, Hero, TreacheryCardType.Karma);
+                    return Message.Express("Using ", TreacheryCardType.Karma, ", ", Initiator, " revive ", Hero);
                 }
                 else
                 {
-                    return new Message(Initiator, "Using {1}, {0} revive a leader.", Initiator, TreacheryCardType.Karma);
+                    return Message.Express("Using ", TreacheryCardType.Karma, ", ", Initiator, " revive a face down leader");
                 }
             }
             else
             {
-                if (AmountOfSpecialForces > 0)
-                {
-                    return new Message(Initiator, "Using {3}, {0} revive {1} {5} and {2} {4}.", Initiator, AmountOfForces, AmountOfSpecialForces, TreacheryCardType.Karma, p.SpecialForce, p.Force);
-                }
-                else
-                {
-                    return new Message(Initiator, "Using {2}, {0} revive {1} {3}.", Initiator, AmountOfForces, TreacheryCardType.Karma, p.Force);
-                }
+                return Message.Express(
+                    "Using ",
+                    TreacheryCardType.Karma, 
+                    ", ", 
+                    Initiator,
+                    " revive ", 
+                    AmountOfForces,
+                    p.Force,
+                    MessagePart.ExpressIf(AmountOfSpecialForces > 0, " and ", AmountOfSpecialForces, p.SpecialForce));
             }
         }
 

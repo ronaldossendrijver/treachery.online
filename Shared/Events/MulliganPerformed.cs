@@ -30,7 +30,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0}{1} mulligan.", Initiator, Passed ? " pass" : "");
+            return Message.Express(Initiator, MessagePart.ExpressIf(Passed, " pass"), " mulligan");
         }
 
         public static bool MayMulligan(Player p)

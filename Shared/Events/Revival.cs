@@ -97,7 +97,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} perform revival.", Initiator);
+            return Message.Express(Initiator, " perform revival");
         }
 
         public static IEnumerable<IHero> ValidRevivalHeroes(Game g, Player p)

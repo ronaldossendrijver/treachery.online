@@ -48,7 +48,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "Using {0}, {1} discard {2} to gain {3}.", TreacheryCardType.Karma, Initiator, Cards, Cards.Count() * 3);
+            return Message.Express(Initiator, "Using ", TreacheryCardType.Karma, ", ", Initiator, " discard ", Cards.Select(c => MessagePart.Express(" ", c, " ")), "to get ", new Payment(Cards.Count() * 3));
         }
 
         public static IEnumerable<TreacheryCard> ValidCards(Player p)

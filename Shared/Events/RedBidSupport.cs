@@ -17,8 +17,6 @@ namespace Treachery.Shared
         {
         }
 
-        //public Faction[] Factions { get; set; }
-
         public Dictionary<Faction, int> Amounts { get; set; }
 
         public override string Validate()
@@ -35,38 +33,12 @@ namespace Treachery.Shared
         {
             if (Amounts.Sum(kvp => kvp.Value) > 0)
             {
-                return new Message(Initiator, "{0} supports bids by: {1}.", Initiator, string.Join(", ", Amounts.Where(kvp => kvp.Value > 0).Select(f => Skin.Current.Describe(f.Key) + " (" + f.Value + ")")));
+                return Message.Express(Initiator, " supports ", Amounts.Where(kvp => kvp.Value > 0).Select(f => MessagePart.Express(f.Key, ":", new Payment(f.Value), " ")));
             }
             else
             {
-                return new Message(Initiator, "{0} doesn't support bids by opponents.", Initiator);
+                return Message.Express(Initiator, " doesn't support bids by other factions");
             }
         }
-
-
-        /*
-        [JsonIgnore]
-        public Dictionary<Faction, int> AmountsOfFactions
-        {
-            get {
-
-                var result = new Dictionary<Faction, int>();
-                for (int i = 0; i < Factions.Length; i++)
-                {
-                    result.Add(Factions[i], Amounts[i]);
-                }
-                return result;
-            }
-
-            set
-            {
-                Factions = value.Keys.ToArray();
-                Amounts = new int[Factions.Length];
-                for (int i = 0; i < Factions.Length; i++)
-                {
-                    Amounts[i] = value[Factions[i]];
-                }
-            }
-        }*/
     }
 }

@@ -49,7 +49,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} will be {1}.", Leader, Skill);
+            return Message.Express(Leader, " becomes ", Skill);
         }
 
         public static IEnumerable<LeaderSkill> ValidSkills(Player p)

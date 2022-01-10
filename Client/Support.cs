@@ -257,7 +257,9 @@ namespace Treachery.Client
             return serializer.Deserialize<Skin>(jsonReader);
         }
 
-        public static string TextBorder(int borderwidth, string bordercolor) => string.Format("text-shadow: {0}px {0}px {1}px {2}, 0px {0}px {1}px {2}, -{0}px {0}px {1}px {2}, -{0}px 0px {1}px {2}, -{0}px -{0}px {1}px {2}, 0px -{0}px {1}px {2}, {0}px -{0}px {1}px {2}, {0}px 0px {1}px {2}, 0px 0px {1}px {2};", Round(0.5f * borderwidth), borderwidth, bordercolor);
+        public static string TextBorder(int borderwidth, string bordercolor) => TextBorder(borderwidth, borderwidth, bordercolor);
+
+        public static string TextBorder(int borderwidth, int blur, string bordercolor) => string.Format("text-shadow: {0}px {0}px {1}px {2}, 0px {0}px {1}px {2}, -{0}px {0}px {1}px {2}, -{0}px 0px {1}px {2}, -{0}px -{0}px {1}px {2}, 0px -{0}px {1}px {2}, {0}px -{0}px {1}px {2}, {0}px 0px {1}px {2}, 0px 0px {1}px {2};", Round(0.5f * borderwidth), blur, bordercolor);
 
         public static string Round(double x) => Math.Round(x, 3).ToString(CultureInfo.InvariantCulture);
     }

@@ -51,11 +51,11 @@ namespace Treachery.Shared
         {
             if (Card == null)
             {
-                return new Message(Initiator, "{0} don't have a card to show.", Initiator);
+                return Message.Express(Initiator, " don't have a card to show");
             }
             else
             {
-                return new Message(Initiator, "{0} show one of their cards.", Initiator);
+                return Message.Express(Initiator, " show one of their cards");
             }
             
         }

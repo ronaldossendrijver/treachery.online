@@ -2197,8 +2197,8 @@ namespace Treachery.Shared
                 { Faction.Grey, DEFAULT_ART_LOCATION + "/art/faction7force.svg" },
                 { Faction.Purple, DEFAULT_ART_LOCATION + "/art/faction8force.svg" },
 
-                { Faction.Brown, DEFAULT_ART_LOCATION + "/art/faction9force.png" },
-                { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10force.png" },
+                { Faction.Brown, DEFAULT_ART_LOCATION + "/art/faction9force.svg" },
+                { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10force.svg" },
             },
 
             FactionSpecialForceImage_URL = new Dictionary<Faction, string>()

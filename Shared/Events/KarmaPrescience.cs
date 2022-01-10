@@ -26,7 +26,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "Using {0}, {1} see the entire enemy battle plan.", TreacheryCardType.Karma, Initiator);
+            return Message.Express("Using ", TreacheryCardType.Karma, Initiator, " see the entire enemy battle plan");
         }
     }
 }

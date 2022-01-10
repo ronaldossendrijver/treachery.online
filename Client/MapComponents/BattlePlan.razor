@@ -120,7 +120,14 @@
 
         if (Plan.Initiator == Faction.Green && Plan.Messiah)
         {
-            <Image X="@(X + Skin.Current.BattleScreenHeroX + Skin.Current.BattleWheelHeroWidth / 1.5f)" Y="@(Y + 0.8f * Skin.Current.BattleScreenHeroY)" Diameter="@(0.5f * Skin.Current.BattleWheelHeroWidth)" Src="@Skin.Current.Messiah_URL" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@Skin.Current.Describe(Concept.Messiah) />
+            <Image X="@(X + Skin.Current.BattleScreenHeroX + Skin.Current.BattleWheelHeroWidth / 1.5f)" Y="@(Y + 0.8f * Skin.Current.BattleScreenHeroY)" 
+                Diameter="@(0.5f * Skin.Current.BattleWheelHeroWidth)" 
+                Src="@Skin.Current.Messiah_URL" 
+                ShadowColor="@Skin.Current.SHADOW" 
+                ShadowX="1" 
+                ShadowY="1" 
+                ShadowBlur="1" 
+                Popover=@Skin.Current.Describe(Concept.Messiah) />
         }
     }
 

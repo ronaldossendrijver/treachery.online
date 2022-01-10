@@ -37,7 +37,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} position themselves in {1}.", Initiator, Target);
+            return Message.Express(Initiator, " position themselves in ", Target);
         }
 
         public static IEnumerable<Location> ValidLocations(Game g)

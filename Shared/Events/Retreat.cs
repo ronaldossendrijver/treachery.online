@@ -62,14 +62,13 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            if (SpecialForces > 0)
-            {
-                return new Message(Initiator, "{0} try to retreat {1} {2} and {3} {4} to {5}.", Initiator, Forces, Player.Force, SpecialForces, Player.SpecialForce, Location);
-            }
-            else
-            {
-                return new Message(Initiator, "{0} try to retreat {1} {2} to {3}.", Initiator, Forces, Player.Force, Location);
-            }
+            return Message.Express(
+                Initiator, 
+                " try to retreat {1} {2} and {3} {4} to {5}", 
+                Forces, 
+                Player.Force, 
+                MessagePart.ExpressIf(SpecialForces > 0, " and ", SpecialForces, Player.SpecialForce), 
+                Location);
         }
     }
 }

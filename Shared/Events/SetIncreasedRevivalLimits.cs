@@ -38,11 +38,11 @@ namespace Treachery.Shared
         {
             if (Factions.Any())
             {
-                return new Message(Initiator, "{0} grant a revival limit of 5 to {1}.", Initiator, string.Join(", ", Factions.Select(f => Skin.Current.Describe(f))));
+                return Message.Express(Initiator, " grant a revival limit of ", 5, " to ", Factions);
             }
             else
             {
-                return new Message(Initiator, "{0} don't grant increased revival limits.", Initiator);
+                return Message.Express(Initiator, " don't grant increased revival limits");
             }
         }
     }

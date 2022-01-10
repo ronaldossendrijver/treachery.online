@@ -28,7 +28,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} use {1} to kill a random opponent leader.", Initiator, TreacheryCardType.Residual);
+            return Message.Express(Initiator, " use ", TreacheryCardType.Residual, " to kill a random opponent leader");
         }
 
         public static bool MayPlay(Game g, Player p)

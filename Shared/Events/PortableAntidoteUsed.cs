@@ -29,7 +29,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} use a {1}.", Initiator, TreacheryCardType.PortableAntidote);
+            return Message.Express(Initiator, " equip a ", TreacheryCardType.PortableAntidote);
         }
 
         public static bool CanBePlayed(Game g, Player p)

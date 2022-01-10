@@ -28,7 +28,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} will auction a card from their cache {1}", Initiator, First ? "first" : "last");
+            return Message.Express(Initiator, " will auction a card from their cache ", First ? "first" : "last");
         }
     }
 }

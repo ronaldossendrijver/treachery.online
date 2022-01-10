@@ -26,7 +26,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Faction.Brown, "{0} finish their audit.", Faction.Brown);
+            return Message.Express(Faction.Brown, " finish their audit");
         }
 
     }

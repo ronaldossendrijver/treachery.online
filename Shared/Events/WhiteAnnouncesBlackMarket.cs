@@ -68,11 +68,11 @@ namespace Treachery.Shared
 
             if (!Passed)
             {
-                return new Message(Initiator, "{0} put a card on the black market by {1} auction{2}", Initiator, AuctionType, directionText);
+                return Message.Express(Initiator, " put a card on the black market by ", AuctionType, " auction", directionText);
             }
             else
             {
-                return new Message(Initiator, "{0} don't put a card on the black market", Initiator);
+                return Message.Express(Initiator, " don't put a card on the black market");
             }
         }
 

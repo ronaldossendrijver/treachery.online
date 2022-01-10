@@ -30,11 +30,11 @@ namespace Treachery.Shared
         {
             if (Passed)
             {
-                return new Message(Initiator, "{0} keep the card they just won.", Initiator);
+                return Message.Express(Initiator, " keep the card they just won");
             }
             else
             {
-                return new Message(Initiator, "{0} discard the card they just won and draw a new card.", Initiator);
+                return Message.Express(Initiator, " discard the card they just won and draw a new card");
             }
         }
     }

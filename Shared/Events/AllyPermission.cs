@@ -61,7 +61,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} change ally permissions", Initiator);
+            return Message.Express(Initiator, " change ally permissions");
         }
     }
 }
