@@ -2,12 +2,12 @@
 
     @if (Other.HasDelegate)
     {
-        <button class="btn btn-secondary mr-1" @onclick="Other" disabled=@Disabled>@OtherText</button>
+        <button class="btn btn-primary mr-1" @onclick="Other" disabled=@Disabled>@OtherText</button>
     }
 
     @if (Pass.HasDelegate)
     {
-        <button class="btn btn-secondary mr-1" @onclick="Pass" disabled=@Disabled>@PassText</button>
+        <button class="btn btn-primary mr-1" @onclick="Pass" disabled=@Disabled>@PassText</button>
     }
 
     @if (Confirm.HasDelegate)

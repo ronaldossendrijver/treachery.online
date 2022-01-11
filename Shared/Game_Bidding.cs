@@ -102,7 +102,7 @@ namespace Treachery.Shared
             {
                 if (CurrentAuctionType == AuctionType.BlackMarketSilent)
                 {
-                    CurrentReport.Express(Bids.Select(b => MessagePart.Express(b.Key, " bid ", Payment(b.Value.TotalAmount), ".")));
+                    CurrentReport.Express(Bids.Select(b => MessagePart.Express(b.Key, Payment(b.Value.TotalAmount), " ")).ToList());
                 }
 
                 var highestBid = DetermineHighestBid(Bids);
@@ -495,7 +495,7 @@ namespace Treachery.Shared
             {
                 if (CurrentAuctionType == AuctionType.WhiteSilent)
                 {
-                    CurrentReport.Express(Bids.Select(b => MessagePart.Express(b.Key, " bid ", Payment(b.Value.TotalAmount), ".")));
+                    CurrentReport.Express(Bids.Select(b => MessagePart.Express(b.Key, Payment(b.Value.TotalAmount), " ")).ToList());
                 }
 
                 var highestBid = DetermineHighestBid(Bids);

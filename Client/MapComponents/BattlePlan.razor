@@ -86,7 +86,7 @@
                              BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
                              Align="@TextAlignment.Right" />
                 }
-                else
+                else if (Game.CurrentPhase < Phase.BattleConclusion)
                 {
                     int penalty = Battle.DetermineSkillPenalty(Game, Plan, Opponent, out _);
                     if (penalty != 0)
