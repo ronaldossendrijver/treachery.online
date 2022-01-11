@@ -17,7 +17,7 @@ namespace Treachery.Shared
         public IBid CurrentBid { get; private set; }
         public Dictionary<Faction, IBid> Bids { get; private set; } = new Dictionary<Faction, IBid>();
         public TreacheryCard CardSoldOnBlackMarket { get; private set; }
-        
+
         private bool GreySwappedCardOnBid { get; set; }
         private bool RegularBiddingIsDone { get; set; }
         private bool BiddingRoundWasStarted { get; set; }
@@ -52,7 +52,7 @@ namespace Treachery.Shared
             if (!e.Passed)
             {
                 Enter(Phase.BlackMarketBidding);
-                e.Player.TreacheryCards.Remove(e.Card); 
+                e.Player.TreacheryCards.Remove(e.Card);
                 CardsOnAuction.PutOnTop(e.Card);
                 RegisterKnown(e.Initiator, e.Card);
                 Bids.Clear();
@@ -185,7 +185,7 @@ namespace Treachery.Shared
         {
             int highestBidValue = bids.Values.Max(b => b.TotalAmount);
             var determineBidWinnerSequence = new PlayerSequence(this, false, 1);
-            
+
             for (int i = 0; i < MaximumNumberOfPlayers; i++)
             {
                 var f = determineBidWinnerSequence.CurrentFaction;
@@ -639,15 +639,15 @@ namespace Treachery.Shared
             var cardNumber = MessagePart.ExpressIf(CurrentAuctionType == AuctionType.Normal, CardNumber);
 
             CurrentReport.Express(
-                "Card ", 
-                cardNumber, 
-                " won by ", 
-                initiator.Faction, 
-                " for ", 
-                Payment(bidTotalAmount), 
+                "Card ",
+                cardNumber,
+                " won by ",
+                initiator.Faction,
+                " for ",
+                Payment(bidTotalAmount),
                 MessagePart.ExpressIf(
-                    bidAllyContributionAmount > 0 || bidRedContributionAmount > 0, 
-                    "(", Payment(bidAllyContributionAmount, initiator.Ally), MessagePart.ExpressIf(bidRedContributionAmount > 0, " and ", Payment(bidRedContributionAmount, Faction.Red)), ") "), 
+                    bidAllyContributionAmount > 0 || bidRedContributionAmount > 0,
+                    "(", Payment(bidAllyContributionAmount, initiator.Ally), MessagePart.ExpressIf(bidRedContributionAmount > 0, " and ", Payment(bidRedContributionAmount, Faction.Red)), ") "),
                 receiverIncome);
         }
 
@@ -755,7 +755,7 @@ namespace Treachery.Shared
                     {
                         receiverProfit = bidAmount + bidAllyContributionAmount;
                         receiverProfitAfterBidding = bidRedContributionAmount;
-                        message = MessagePart.Express(" → ", receiver , " get ", Payment(receiverProfit), " immediately and ", Payment(receiverProfitAfterBidding), " at the end of the bidding phase");
+                        message = MessagePart.Express(" → ", receiver, " get ", Payment(receiverProfit), " immediately and ", Payment(receiverProfitAfterBidding), " at the end of the bidding phase");
                         receiver.Resources += receiverProfit;
                         receiver.ResourcesAfterBidding += receiverProfitAfterBidding;
                     }

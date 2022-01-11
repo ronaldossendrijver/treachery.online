@@ -76,9 +76,9 @@ namespace Treachery.Shared
 
             var discarded = new List<TreacheryCard>();
 
-            if (myBattleplan.Weapon != null && 
-                TreacheryCards.Contains(myBattleplan.Weapon) && 
-                myBattleplan.Weapon.Type == TreacheryCardType.Useless && 
+            if (myBattleplan.Weapon != null &&
+                TreacheryCards.Contains(myBattleplan.Weapon) &&
+                myBattleplan.Weapon.Type == TreacheryCardType.Useless &&
                 Faction != Faction.Brown &&
                 !Game.SkilledAs(this, LeaderSkill.Warmaster) &&
                 !Game.OwnsStronghold(Faction, Game.Map.TueksSietch))
@@ -86,10 +86,10 @@ namespace Treachery.Shared
                 discarded.Add(myBattleplan.Weapon);
             }
 
-            if (myBattleplan.Defense != null && 
-                TreacheryCards.Contains(myBattleplan.Defense) && 
-                myBattleplan.Defense.Type == TreacheryCardType.Useless && 
-                Faction != Faction.Brown && 
+            if (myBattleplan.Defense != null &&
+                TreacheryCards.Contains(myBattleplan.Defense) &&
+                myBattleplan.Defense.Type == TreacheryCardType.Useless &&
+                Faction != Faction.Brown &&
                 !Game.SkilledAs(this, LeaderSkill.Warmaster) &&
                 !Game.OwnsStronghold(Faction, Game.Map.TueksSietch))
             {
@@ -709,7 +709,7 @@ namespace Treachery.Shared
             var unknownOpponentCards = OpponentCardsUnknownToMe(opponent);
 
             mostEffectiveWeapon = availableWeapons.Where(w => !knownEnemyDefenses.Any(defense => w.CounteredBy(defense, null))).RandomOrDefault();
-            
+
             if (mostEffectiveWeapon != null)
             {
                 if (!unknownOpponentCards.Any())
@@ -723,7 +723,7 @@ namespace Treachery.Shared
             }
 
             mostEffectiveWeapon = availableWeapons.Where(w => !IsKnownToOpponent(opponent, w)).RandomOrDefault();
-            
+
             if (mostEffectiveWeapon != null)
             {
                 return 0.5f;
@@ -769,7 +769,7 @@ namespace Treachery.Shared
 
             var highestOpponentLeader = HeroesForBattle(opponent, true).OrderByDescending(l => l.Value).FirstOrDefault();
             var safeLeaders = HeroesForBattle(this, includeInFrontOfShield).Where(l => messiahUsed || (knownNonTraitors.Contains(l) && !knownTraitorsForOpponentsInBattle.Contains(l)));
-            
+
             IHero safeHero = null;
             IHero unsafeHero = null;
 
@@ -1014,7 +1014,7 @@ namespace Treachery.Shared
             var adv = StrongholdAdvantage.None;
 
             var plan = DetermineBattle(false, false);
-            if (adv == StrongholdAdvantage.None && !plan.HasPoison && !plan.HasAntidote) adv = HMSAdvantageChosen.ValidAdvantages(Game, this).FirstOrDefault(a => a == StrongholdAdvantage.CountDefensesAsAntidote); 
+            if (adv == StrongholdAdvantage.None && !plan.HasPoison && !plan.HasAntidote) adv = HMSAdvantageChosen.ValidAdvantages(Game, this).FirstOrDefault(a => a == StrongholdAdvantage.CountDefensesAsAntidote);
             if (adv == StrongholdAdvantage.None && Resources < 5) adv = HMSAdvantageChosen.ValidAdvantages(Game, this).FirstOrDefault(a => a == StrongholdAdvantage.FreeResourcesForBattles);
             if (adv == StrongholdAdvantage.None) adv = HMSAdvantageChosen.ValidAdvantages(Game, this).FirstOrDefault(a => a == StrongholdAdvantage.CollectResourcesForDial);
             if (adv == StrongholdAdvantage.None && !plan.HasUseless) adv = HMSAdvantageChosen.ValidAdvantages(Game, this).FirstOrDefault(a => a == StrongholdAdvantage.CollectResourcesForUseless);

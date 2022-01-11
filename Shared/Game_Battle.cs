@@ -20,7 +20,7 @@ namespace Treachery.Shared
         public Faction BattleLoser { get; private set; }
         public int GreySpecialForceLossesToTake { get; private set; }
         public int NrOfBattlesFought { get; private set; } = 0;
-        
+
         private TriggeredBureaucracy BattleTriggeredBureaucracy { get; set; }
 
         private void EnterBattlePhase()
@@ -132,7 +132,7 @@ namespace Treachery.Shared
                 RegisterKnownCards(DefenderBattleAction);
 
                 PassPurpleTraitorAction();
-                
+
                 Enter(AggressorBattleAction.HasRockMelter || DefenderBattleAction.HasRockMelter, Phase.MeltingRock, Phase.CallTraitorOrPass);
             }
         }
@@ -485,7 +485,7 @@ namespace Treachery.Shared
                 return false;
             }
         }
-                
+
 
         private bool BlackMustDecideToCapture => Version >= 116 && BattleWinner == Faction.Black && Applicable(Rule.BlackCapturesOrKillsLeaders) && !Prevented(FactionAdvantage.BlackCaptureLeader);
 
@@ -807,7 +807,7 @@ namespace Treachery.Shared
                     specialForcesToSaveToReserves = Math.Min(specialForcesToLose, 1);
                     forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose, 1 - specialForcesToSaveToReserves));
                 }
-                
+
                 if (specialForcesToSaveInTerritory + forcesToSaveInTerritory + specialForcesToSaveToReserves + forcesToSaveToReserves > 0)
                 {
                     if (specialForcesToSaveToReserves > 0) winner.ForcesToReserves(territory, specialForcesToSaveToReserves, true);
@@ -825,7 +825,7 @@ namespace Treachery.Shared
                         MessagePart.ExpressIf(forcesToSaveToReserves > 0 || specialForcesToSaveToReserves > 0, " to reserves"));
                 }
 
-                HandleLoserLosses(territory, winner, 
+                HandleLoserLosses(territory, winner,
                     forcesToLose - forcesToSaveToReserves - forcesToSaveInTerritory,
                     specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory);
             }
@@ -1209,7 +1209,7 @@ namespace Treachery.Shared
                 if (costForPlayer > 0)
                 {
                     p.Resources -= costForPlayer;
-                    CurrentReport.ExpressIf(HasStrongholdAdvantage(p.Faction, StrongholdAdvantage.FreeResourcesForBattles, CurrentBattle.Territory), 
+                    CurrentReport.ExpressIf(HasStrongholdAdvantage(p.Faction, StrongholdAdvantage.FreeResourcesForBattles, CurrentBattle.Territory),
                         Map.Arrakeen, " stronghold advantage: supporting forces costs ", Payment(2), " less");
                 }
 

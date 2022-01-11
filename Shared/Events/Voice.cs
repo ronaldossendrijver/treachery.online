@@ -126,7 +126,7 @@ namespace Treachery.Shared
             {
                 return true;
             }
-            else 
+            else
             {
                 if (!g.Applicable(Rule.BlueVoiceMustNameSpecialCards))
                 {

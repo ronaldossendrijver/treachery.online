@@ -58,7 +58,7 @@ namespace Treachery.Shared
         }
 
         public int Id { get; set; }
-        
+
         public bool IsStronghold => Territory.IsStronghold;
 
         public bool IsProtectedFromStorm => Territory.IsProtectedFromStorm;

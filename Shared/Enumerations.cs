@@ -108,7 +108,7 @@ namespace Treachery.Shared
     {
         None = 0,
         AwaitingPlayers = 10,
-        
+
         SelectingFactions = 29,
         TradingFactions = 30,
         CustomizingDecks = 31,
@@ -163,7 +163,7 @@ namespace Treachery.Shared
         ReplacingCardJustWon = 201,
         WaitingForNextBiddingRound = 205,
         BiddingReport = 208,
-        
+
         BeginningOfResurrection = 209,
         Resurrection = 210,
         ResurrectionReport = 215,
@@ -375,7 +375,7 @@ namespace Treachery.Shared
     {
         None = 0,
         BasicGame = 10,
-        
+
         AdvancedGame = 30,
 
         ExpansionBasicGame = 110,

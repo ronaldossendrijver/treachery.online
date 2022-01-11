@@ -8,8 +8,8 @@ using System.Net.Http;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
-using Treachery.Shared;
 using Treachery.Client;
+using Treachery.Shared;
 
 namespace Treachery.Server
 {
@@ -334,7 +334,7 @@ namespace Treachery.Server
                     };
 
                     mailMessage.To.Add(new MailAddress(to));
-                    
+
                     var savegameToAttach = new Attachment(GenerateStreamFromString(content), "savegame" + DateTime.Now.ToString("yyyyMMdd.HHmm") + ".json");
                     mailMessage.Attachments.Add(savegameToAttach);
 

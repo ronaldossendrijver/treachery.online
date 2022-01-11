@@ -342,8 +342,8 @@ namespace Treachery.Shared
                 shippingOpponentCanWin = potentialWinningOpponents.Contains(opponent);
             }
 
-            if (target != null && 
-                !shippingOpponentCanWin && 
+            if (target != null &&
+                !shippingOpponentCanWin &&
                 ForcesInReserve > 3 &&
                 AnyForcesIn(target) < 8 &&
                 (!LastTurn && AnyForcesIn(target) > 0 || !HasAlly && ForcesOnPlanet.Count(kvp => IsStronghold(kvp.Key)) < 3))
@@ -351,8 +351,8 @@ namespace Treachery.Shared
                 return new BlueAccompanies(Game) { Initiator = Faction, Location = target, Accompanies = true };
             }
 
-            if (BlueAccompanies.ValidTargets(Game, this).Contains(Game.Map.PolarSink) && 
-                ForcesInReserve > 3 && 
+            if (BlueAccompanies.ValidTargets(Game, this).Contains(Game.Map.PolarSink) &&
+                ForcesInReserve > 3 &&
                 !(LastTurn && Game.HasActedOrPassed.Contains(Faction)) &&
                 AnyForcesIn(Game.Map.PolarSink) < 8)
             {
@@ -690,7 +690,7 @@ namespace Treachery.Shared
         protected virtual Prescience DeterminePrescience()
         {
             var opponent = Game.CurrentBattle.OpponentOf(Faction);
-            
+
             if (Voice.MayUseVoice(Game, opponent))
             {
                 LogInfo("Opponent may use voice: {0} {1}", Game.CurrentVoice == null, Game.CurrentBattle.PlanOf(opponent) == null);

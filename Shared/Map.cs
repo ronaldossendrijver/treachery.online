@@ -1599,13 +1599,13 @@ namespace Treachery.Shared
         }
 
         private static void FindNeighbours(
-            List<Location> found, 
-            Location current, 
-            Location previous, 
-            int currentDistance, 
-            int maxDistance, 
-            Faction f, 
-            int sectorInStorm, 
+            List<Location> found,
+            Location current,
+            Location previous,
+            int currentDistance,
+            int maxDistance,
+            Faction f,
+            int sectorInStorm,
             List<Location> forceObstacles)
         {
             if (!found.Contains(current))
@@ -1643,7 +1643,7 @@ namespace Treachery.Shared
             }
             else
             {
-                foreach (var neighbour in current.Neighbours.Where(neighbour => 
+                foreach (var neighbour in current.Neighbours.Where(neighbour =>
                     neighbour != previous &&
                     neighbour.Sector != sectorInStorm &&
                     !currentPath.Contains(neighbour) &&

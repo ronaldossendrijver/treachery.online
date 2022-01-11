@@ -17,7 +17,7 @@ namespace Treachery.Shared
         public int Id { get; private set; }
 
         public int SkinId => Id;
-        
+
         public string Name => Skin.Current.GetTerritoryName(this);
 
         public bool IsStronghold { get; set; }

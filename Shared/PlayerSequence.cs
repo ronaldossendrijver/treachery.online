@@ -23,7 +23,7 @@ namespace Treachery.Shared
             _skipPlayersThatCantBidOnCards = skipPlayersThatCantBidOnCards;
             _direction = direction;
             _round = 1;
-            
+
             Players = _game.Players.OrderBy(p => _direction * p.PositionAtTable).ToList();
             FirstPlayer = toStartWith;
 
@@ -171,10 +171,10 @@ namespace Treachery.Shared
             }
             else
             {*/
-                if (NumberOfPlayersThatMayGetTurn == 0)
-                {
-                    _played.Clear();
-                }
+            if (NumberOfPlayersThatMayGetTurn == 0)
+            {
+                _played.Clear();
+            }
             //}
 
             if (_game.Version <= 117)

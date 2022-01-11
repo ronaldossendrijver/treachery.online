@@ -58,16 +58,16 @@ namespace Treachery.Shared
 
         public static bool CanBePlayedBy(Game g, Player player)
         {
-            bool applicablePhase = 
+            bool applicablePhase =
 
-                g.CurrentMainPhase == MainPhase.Bidding || 
-                
+                g.CurrentMainPhase == MainPhase.Bidding ||
+
                 g.CurrentPhase == Phase.BeginningOfShipAndMove ||
                 g.CurrentPhase == Phase.OrangeShip ||
                 g.CurrentPhase == Phase.NonOrangeShip ||
-                
-                g.CurrentMainPhase == MainPhase.Battle || 
-                
+
+                g.CurrentMainPhase == MainPhase.Battle ||
+
                 g.CurrentPhase == Phase.Contemplate;
 
             return applicablePhase && player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Juice);

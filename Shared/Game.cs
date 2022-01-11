@@ -128,7 +128,8 @@ namespace Treachery.Shared
         {
             for (int i = History.Count - 1; i >= 0; i--)
             {
-                if (eventType.Any(t => t == History[i].GetType())) {
+                if (eventType.Any(t => t == History[i].GetType()))
+                {
 
                     return History[i];
                 }
@@ -624,7 +625,7 @@ namespace Treachery.Shared
             return result;
         }
 
-        public bool HasOrnithopters(Player p) => 
+        public bool HasOrnithopters(Player p) =>
             (Applicable(Rule.MovementBonusRequiresOccupationBeforeMovement) ? FactionsWithOrnithoptersAtStartOfMovement.Contains(p.Faction) : OccupiesArrakeenOrCarthag(p)) ||
             CurrentFlightUsed != null && CurrentFlightUsed.MoveThreeTerritories;
 

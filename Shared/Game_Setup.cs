@@ -40,7 +40,7 @@ namespace Treachery.Shared
 
             //if (Version < 131)
             //{
-                Rules.AddRange(GetRulesInGroup(RuleGroup.CoreBasic));
+            Rules.AddRange(GetRulesInGroup(RuleGroup.CoreBasic));
             //}
 
             var usedRuleset = Ruleset;

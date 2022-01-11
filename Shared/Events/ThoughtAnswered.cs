@@ -57,7 +57,7 @@ namespace Treachery.Shared
             {
                 return Message.Express(Initiator, " show one of their cards");
             }
-            
+
         }
 
         public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)

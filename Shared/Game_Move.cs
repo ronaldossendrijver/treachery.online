@@ -98,7 +98,7 @@ namespace Treachery.Shared
             {
                 var ownerOfKarma = s.KarmaCard != null ? OwnerOf(s.KarmaCard) : null;
                 totalCost = PayForShipment(s, initiator);
-                
+
                 if (s.IsNoField)
                 {
                     RevealCurrentNoField(GetPlayer(Faction.White));
@@ -541,14 +541,14 @@ namespace Treachery.Shared
         private void LogMove(Player initiator, Territory from, Location to, int forceAmount, int specialForceAmount, bool asAdvisors, bool byCaravan)
         {
             CurrentReport.Express(
-                CaravanMessage(byCaravan), 
-                initiator.Faction, 
-                " move ", 
+                CaravanMessage(byCaravan),
+                initiator.Faction,
+                " move ",
                 MessagePart.ExpressIf(forceAmount > 0, forceAmount, initiator.Force),
                 MessagePart.ExpressIf(specialForceAmount > 0, specialForceAmount, initiator.SpecialForce),
-                " from ", 
-                from, 
-                " to ", 
+                " from ",
+                from,
+                " to ",
                 to,
                 MessagePart.ExpressIf(initiator.Is(Faction.Blue) && Applicable(Rule.BlueAdvisors), " as ", asAdvisors ? (object)initiator.SpecialForce : initiator.Force));
         }

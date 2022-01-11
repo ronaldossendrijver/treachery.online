@@ -2,8 +2,6 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
  */
 
-using System;
-
 namespace Treachery.Shared
 {
     public class Leader : IHero
@@ -23,7 +21,7 @@ namespace Treachery.Shared
         }
 
         public string Name => Skin.Current.GetPersonName(this);
-        
+
         public HeroType HeroType { get; set; }
 
         public bool Is(Faction f) => Faction == f;

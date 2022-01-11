@@ -37,7 +37,7 @@ namespace Treachery.Shared
         {
             if (!MayAcceptDeals(Game, Player, Price)) return "You currently have an outstanding bid";
             if (Price > Player.Resources) return "You can't pay that much";
-            
+
             var boundPlayer = Game.GetPlayer(BoundFaction);
             if (Benefit > boundPlayer.Resources) return "Offer is not valid (anymore)";
 
@@ -59,7 +59,7 @@ namespace Treachery.Shared
         public override Message GetMessage()
         {
             return Message.Express(
-                Initiator, 
+                Initiator,
                 " accept ",
                 BoundFaction,
                 " offer for ",

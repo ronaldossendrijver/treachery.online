@@ -513,7 +513,7 @@ namespace Treachery.Shared
         {
             CurrentReport.Express(e);
 
-            var aggressorBeforeJuiceIsPlayed = CurrentBattle?.AggressivePlayer; 
+            var aggressorBeforeJuiceIsPlayed = CurrentBattle?.AggressivePlayer;
 
             CurrentJuice = e;
             Discard(e.Player, TreacheryCardType.Juice);
@@ -553,7 +553,7 @@ namespace Treachery.Shared
                     _phaseBeforeBureaucratWasActivated = CurrentPhase;
                     TargetOfBureaucracy = receiver;
                     Enter(Phase.Bureaucracy);
-                 }
+                }
             }
         }
 

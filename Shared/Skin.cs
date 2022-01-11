@@ -38,7 +38,7 @@ namespace Treachery.Shared
         public Dictionary<LeaderSkill, string> LeaderSkillCardImage_URL;
         public Dictionary<int, string> StrongholdCardName_STR;
         public Dictionary<int, string> StrongholdCardImage_URL;
-        
+
         public string Map_URL = null;
         public string Eye_URL = null;
         public string EyeSlash_URL = null;
@@ -269,7 +269,7 @@ namespace Treachery.Shared
                         result += " (" + nrOfRepeats + ")";
                         nrOfRepeats = 1;
                     }
-                    
+
                     if (result.Length > 0) result += ", ";
 
                     result += toAdd;
@@ -589,7 +589,7 @@ namespace Treachery.Shared
                 _ => "None"
             };
         }
-        
+
         public string Describe(CaptureDecision c)
         {
             return c switch
@@ -683,7 +683,7 @@ namespace Treachery.Shared
                 Rule.CardsCanBeTraded => Format("Allow players to give cards to each other"),
                 Rule.PlayersChooseFactions => Format("Let players choose their factions at start"),
                 Rule.RedSupportingNonAllyBids => Format("{0} may support bids of non-ally players", Faction.Red),
-                Rule.BattleWithoutLeader => "Allow leaderless battles even if leaders are available", 
+                Rule.BattleWithoutLeader => "Allow leaderless battles even if leaders are available",
                 Rule.CapturedLeadersAreTraitorsToOwnFaction => "Captured leaders can be called as traitors by their original factions",
                 Rule.DisableEndOfGameReport => "Disable end-of-game report (don't reveal player shields)",
                 Rule.DisableOrangeSpecialVictory => Format("Disable {0} special victory condition", Faction.Orange),
@@ -1480,7 +1480,7 @@ namespace Treachery.Shared
             return toCheck;
         }
 
-        private async Task<Dictionary<K, V>> FixDictionaryIfMissing<K,V>(string propertyName, bool checkIfUrlExists, Dictionary<K, V> toCheck, Dictionary<K, V> referenceValues, List<string> errors, Func<string, Task<bool>> UrlExists)
+        private async Task<Dictionary<K, V>> FixDictionaryIfMissing<K, V>(string propertyName, bool checkIfUrlExists, Dictionary<K, V> toCheck, Dictionary<K, V> referenceValues, List<string> errors, Func<string, Task<bool>> UrlExists)
         {
             if (toCheck == null)
             {

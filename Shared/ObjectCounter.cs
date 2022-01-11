@@ -49,7 +49,7 @@ namespace Treachery.Shared
             {
                 counters.Remove(obj);
             }
-            
+
             counters.Add(obj, n);
         }
 

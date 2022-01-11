@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Timers;
-using Treachery.Shared;
 
 namespace Treachery.Test
 {
@@ -9,7 +8,7 @@ namespace Treachery.Test
         public event EventHandler<ElapsedEventArgs> Elapsed;
         private Timer _timer;
         private object _toTest;
-        
+
         public TimedTest(object toTest, int seconds)
         {
             _toTest = toTest;

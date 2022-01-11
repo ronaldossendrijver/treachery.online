@@ -305,8 +305,8 @@ namespace Treachery.Shared
 
         private bool Covers(TreacheryCardType typeToCheck, object coveredByType)
         {
-            return 
-                ClairVoyanceAnswered.IsQuestionedBy(Game, true,  typeToCheck, (TreacheryCardType)coveredByType) || 
+            return
+                ClairVoyanceAnswered.IsQuestionedBy(Game, true, typeToCheck, (TreacheryCardType)coveredByType) ||
                 ClairVoyanceAnswered.IsQuestionedBy(Game, false, typeToCheck, (TreacheryCardType)coveredByType);
         }
 
@@ -565,14 +565,16 @@ namespace Treachery.Shared
 
             if (leaderToRevive != null || specialForcesToRevive + normalForcesToRevive > 0)
             {
-                return new Revival(Game) { 
-                    Initiator = Faction, 
-                    Hero = leaderToRevive, 
-                    AmountOfForces = normalForcesToRevive, 
+                return new Revival(Game)
+                {
+                    Initiator = Faction,
+                    Hero = leaderToRevive,
+                    AmountOfForces = normalForcesToRevive,
                     ExtraForcesPaidByRed = forcesRevivedByRed,
                     AmountOfSpecialForces = specialForcesToRevive,
                     ExtraSpecialForcesPaidByRed = specialForcesRevivedByRed,
-                    AssignSkill = assignSkill };
+                    AssignSkill = assignSkill
+                };
             }
             else
             {
@@ -602,7 +604,7 @@ namespace Treachery.Shared
             while (
                 specialForces + 1 <= maxSpecialForces &&
                 specialForces + 1 <= potentialMaximumByRed &&
-                Revival.DetermineCostOfForcesForRed(g, red, p.Faction, 0, specialForces + 1) <= red.Resources )
+                Revival.DetermineCostOfForcesForRed(g, red, p.Faction, 0, specialForces + 1) <= red.Resources)
             {
                 specialForces++;
             }
@@ -611,7 +613,7 @@ namespace Treachery.Shared
             while (
                 forces + 1 <= maxForces &&
                 specialForces + forces + 1 <= potentialMaximumByRed &&
-                Revival.DetermineCostOfForcesForRed(g, red, p.Faction, forces + 1, specialForces) <= red.Resources )
+                Revival.DetermineCostOfForcesForRed(g, red, p.Faction, forces + 1, specialForces) <= red.Resources)
             {
                 forces++;
             }

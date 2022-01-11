@@ -74,10 +74,10 @@ namespace Treachery.Shared
             else
             {
                 return Message.Express(
-                    "Using ", 
-                    TreacheryCardType.RaiseDead, 
-                    ", ", 
-                    Initiator, 
+                    "Using ",
+                    TreacheryCardType.RaiseDead,
+                    ", ",
+                    Initiator,
                     " revive ",
                     MessagePart.ExpressIf(AmountOfForces > 0, " and ", AmountOfForces, Player.Force),
                     MessagePart.ExpressIf(AmountOfSpecialForces > 0, " and ", AmountOfSpecialForces, Player.SpecialForce));

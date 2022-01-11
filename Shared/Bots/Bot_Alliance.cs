@@ -30,7 +30,7 @@ namespace Treachery.Shared
             {
                 var opponentBotWithoutAlly = Game.Players.Where(p => p != this && p.IsBot && p.Ally == Faction.None).HighestOrDefault(p =>
                     2 * p.TreacheryCards.Count() +
-                    p.Resources + 
+                    p.Resources +
                     6 * p.LocationsWithAnyForces.Count(l => l.Territory.IsStronghold) +
                     p.ForcesOnPlanet.Sum(b => b.Value.TotalAmountOfForces) +
                     p.ForcesInReserve +

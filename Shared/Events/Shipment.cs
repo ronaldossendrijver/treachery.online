@@ -315,17 +315,17 @@ namespace Treachery.Shared
         private MessagePart CostMessage(int cost)
         {
             return MessagePart.Express(
-                " for ", 
-                new Payment(cost), 
+                " for ",
+                new Payment(cost),
                 MessagePart.ExpressIf(AllyContributionAmount > 0, " (", new Payment(AllyContributionAmount, Player.Ally), ")"));
         }
 
         private MessagePart KaramaMessage(Player ownerOfKarma)
         {
-            return MessagePart.ExpressIf(KarmaCard != null, 
-                " using ", 
-                MessagePart.ExpressIf(ownerOfKarma != Player, "their allies "), 
-                TreacheryCardType.Karma, 
+            return MessagePart.ExpressIf(KarmaCard != null,
+                " using ",
+                MessagePart.ExpressIf(ownerOfKarma != Player, "their allies "),
+                TreacheryCardType.Karma,
                 MessagePart.ExpressIf(KarmaCard != null && KarmaCard.Type != TreacheryCardType.Karma, " (", KarmaCard, ")"));
         }
 

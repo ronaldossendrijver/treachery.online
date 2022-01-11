@@ -472,7 +472,7 @@ namespace Treachery.Shared
             return ValidMovementLocations(from, battalion).Where(to =>
                 IsStronghold(to) &&
                 AllyNotIn(to.Territory) &&
-                WinningOpponentsIWishToAttack(20, includeBots).Any(opponent => opponent.Occupies(to)) 
+                WinningOpponentsIWishToAttack(20, includeBots).Any(opponent => opponent.Occupies(to))
                 ).LowestOrDefault(l => TotalMaxDialOfOpponents(l.Territory));
         }
 
@@ -481,7 +481,7 @@ namespace Treachery.Shared
             return ValidMovementLocations(from, battalion).Where(to =>
                 IsStronghold(to) &&
                 AllyNotIn(to.Territory) &&
-                AlmostWinningOpponentsIWishToAttack(20, includeBots).Any(opponent => opponent.Occupies(to)) 
+                AlmostWinningOpponentsIWishToAttack(20, includeBots).Any(opponent => opponent.Occupies(to))
                 ).LowestOrDefault(l => TotalMaxDialOfOpponents(l.Territory));
         }
 
@@ -546,10 +546,10 @@ namespace Treachery.Shared
             }
 
             return MaxDial(
-                p.Resources, 
-                p.ForcesIn(t) + countForcesForWhite, 
-                p.Faction != Faction.White ? p.SpecialForcesIn(t) : 0, 
-                p, 
+                p.Resources,
+                p.ForcesIn(t) + countForcesForWhite,
+                p.Faction != Faction.White ? p.SpecialForcesIn(t) : 0,
+                p,
                 opponent != null ? opponent.Faction : Faction.Black);
         }
 

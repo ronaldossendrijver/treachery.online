@@ -4,9 +4,9 @@
 
 using Microsoft.JSInterop;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace Treachery.Client
 {
@@ -51,7 +51,8 @@ namespace Treachery.Client
             {
                 return measuredText[key];
             }
-            else { 
+            else
+            {
 
                 var value = await JsInvoke<Dimensions>("MeasureText", text, font);
 

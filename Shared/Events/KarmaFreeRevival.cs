@@ -75,10 +75,10 @@ namespace Treachery.Shared
             {
                 return Message.Express(
                     "Using ",
-                    TreacheryCardType.Karma, 
-                    ", ", 
+                    TreacheryCardType.Karma,
+                    ", ",
                     Initiator,
-                    " revive ", 
+                    " revive ",
                     MessagePart.ExpressIf(AmountOfForces > 0, " and ", AmountOfForces, p.Force),
                     MessagePart.ExpressIf(AmountOfSpecialForces > 0, " and ", AmountOfSpecialForces, p.SpecialForce));
             }

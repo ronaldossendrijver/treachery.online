@@ -189,7 +189,7 @@ namespace Treachery.Client
                 case Phase.HarvesterA:
                 case Phase.HarvesterB:
                     return S(
-                    Skin.Current.Format("Factions may use a {0} to double the {1} blow in {2}...", 
+                    Skin.Current.Format("Factions may use a {0} to double the {1} blow in {2}...",
                     TreacheryCardType.Harvester, Concept.Resource, CurrentPhase == Phase.HarvesterA ? Game.LatestSpiceCardA : Game.LatestSpiceCardB));
 
                 case Phase.AllianceA:
@@ -298,9 +298,9 @@ namespace Treachery.Client
 
                 /* Ship & Move */
 
-                case Phase.BeginningOfShipAndMove: 
+                case Phase.BeginningOfShipAndMove:
                     return S(
-                        Skin.Current.Format("You may now start the ship & move sequence..."), 
+                        Skin.Current.Format("You may now start the ship & move sequence..."),
                         Skin.Current.Format("Waiting for the host to start the ship & move sequence..."),
                         Game.ShipmentAndMoveSequence.GetPlayersInSequence().Select(ps => ps.Player));
 
@@ -349,9 +349,9 @@ namespace Treachery.Client
 
                 /* Battle */
 
-                case Phase.BeginningOfBattle: 
+                case Phase.BeginningOfBattle:
                     return S(
-                        Skin.Current.Format("You may proceed to the first battle when ready."), 
+                        Skin.Current.Format("You may proceed to the first battle when ready."),
                         Skin.Current.Format("Waiting for the host to proceed to the first battle..."),
                         Game.BattleSequence.GetPlayersInSequence().Select(ps => ps.Player));
 
@@ -646,16 +646,16 @@ namespace Treachery.Client
             return result;
         }
 
-        private GameStatus S(string description, GameEvent timedEvent = null) => 
+        private GameStatus S(string description, GameEvent timedEvent = null) =>
             new GameStatus(description, timedEvent);
 
-        private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, GameEvent timedEvent = null) => 
+        private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, GameEvent timedEvent = null) =>
             new GameStatus(descriptionWhenAwaited, descriptionWhenWaiting, timedEvent);
 
-        private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Player> waitingForPlayers, GameEvent timedEvent = null) => 
+        private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Player> waitingForPlayers, GameEvent timedEvent = null) =>
             new GameStatus(descriptionWhenAwaited, descriptionWhenWaiting, waitingForPlayers, timedEvent);
 
-        private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Faction> waitingForFactions, GameEvent timedEvent = null) => 
+        private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Faction> waitingForFactions, GameEvent timedEvent = null) =>
             new GameStatus(descriptionWhenAwaited, descriptionWhenWaiting, waitingForFactions.Select(f => Game.GetPlayer(f)), timedEvent);
 
         private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, Player waitingForPlayer, GameEvent timedEvent = null) =>
@@ -672,7 +672,7 @@ namespace Treachery.Client
             {
                 var victim = Game.CurrentBattle.OpponentOf(t.Initiator);
                 var victimPlan = Game.CurrentBattle.PlanOf(victim);
-                result.Message = Message.Express(victimPlan.Hero, " is a ", t.Initiator , " traitor!");
+                result.Message = Message.Express(victimPlan.Hero, " is a ", t.Initiator, " traitor!");
                 result.Url = Skin.Current.GetImageURL(victimPlan.Hero);
             }
             else if (e is FaceDanced)

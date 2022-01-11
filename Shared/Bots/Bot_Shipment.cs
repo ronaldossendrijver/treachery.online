@@ -77,7 +77,7 @@ namespace Treachery.Shared
             {
                 var forcesNeededForCollection = MakeEvenIfEfficientForShipping(Math.Min((float)Game.ResourcesOnPlanet[bestLocationWithSpice] / Game.ResourceCollectionRate(this), 4) + TotalMaxDialOfOpponents(bestLocationWithSpice.Territory));
                 //LogInfo("" + bestLocationWithSpice + " -> " + forcesNeededForCollection);
-                
+
                 if (DetermineShortageForShipment(forcesNeededForCollection, false, bestLocationWithSpice, Faction.Black, ForcesInReserve, 0, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, 0, 99, false) <= 0)
                 {
                     DoShipment(ShipmentDecision.AtResources, nrOfForces, nrOfSpecialForces, noFieldValue, bestLocationWithSpice, true, true);
@@ -92,7 +92,7 @@ namespace Treachery.Shared
             var battaltionToEvacuate = BiggestBattalionInSpicelessNonStrongholdLocationNotNearStrongholdAndSpice;
             if (battaltionToEvacuate.Key != null)
             {
-                DoShipment(ShipmentDecision.BackToReserves , -battaltionToEvacuate.Value.AmountOfForces, -battaltionToEvacuate.Value.AmountOfSpecialForces, -1, battaltionToEvacuate.Key, false, true);
+                DoShipment(ShipmentDecision.BackToReserves, -battaltionToEvacuate.Value.AmountOfForces, -battaltionToEvacuate.Value.AmountOfSpecialForces, -1, battaltionToEvacuate.Key, false, true);
             }
         }
 
@@ -172,8 +172,8 @@ namespace Treachery.Shared
             {
                 var locationToShipTo = ValidShipmentLocations.FirstOrDefault(sh =>
                     !InStorm(sh) &&
-                    AnyForcesIn(sh) <= 8 && 
-                    sh.IsStronghold && 
+                    AnyForcesIn(sh) <= 8 &&
+                    sh.IsStronghold &&
                     WithinRange(sh, richestLocation, SampleBattalion(sh)));
 
                 if (locationToShipTo != null && AnyForcesIn(locationToShipTo) < 10)
@@ -186,7 +186,7 @@ namespace Treachery.Shared
                 }
             }
         }
-                
+
         protected virtual void DetermineShipment_StrengthenWeakestStronghold(bool onlyIfThreatened, int extraForces, float shortageToAccept, bool takeReinforcementsIntoAccount)
         {
             LogInfo("DetermineShipment_StrengthenWeakStronghold()");
@@ -262,7 +262,7 @@ namespace Treachery.Shared
                     {
                         needed = Math.Max(0.5f, MaxPotentialForceShortage(opponent != null && OpponentsToShipAndMove.Contains(opponent), target) - AnyForcesIn(Game.Map.PolarSink));
                     }
-                    
+
                     if (DetermineShortageForShipment(needed, true, target, opponent != null ? opponent.Faction : Faction.Black, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, minResourcesToKeep, 1, false) <= 0)
                     {
                         DoShipment(ShipmentDecision.DummyShipment, nrOfForces, nrOfSpecialForces, noFieldValue, target, false, true);
@@ -322,7 +322,7 @@ namespace Treachery.Shared
                 }
             }
         }
-                
+
         protected virtual void DetermineShipment_PreventNormalWin(int maximumChallengedStrongholds, int extraForces, float riskAppetite, int minResourcesToKeep, int maxUnsupportedForces)
         {
             LogInfo("DetermineShipment_PreventNormalWin()");
@@ -332,17 +332,17 @@ namespace Treachery.Shared
 
             LogInfo("potentialWinningOpponents with too many unchallenged strongholds:" + string.Join(",", potentialWinningOpponents));
 
-            var shippableStrongholdsOfWinningOpponents = ValidShipmentLocations.Where(l => 
-                (l.Territory.IsStronghold || Game.IsSpecialStronghold(l.Territory)) && 
+            var shippableStrongholdsOfWinningOpponents = ValidShipmentLocations.Where(l =>
+                (l.Territory.IsStronghold || Game.IsSpecialStronghold(l.Territory)) &&
                 !InStorm(l) &&
-                AllyNotIn(l.Territory) && 
-                potentialWinningOpponents.Any(p => p.Occupies(l)) && 
+                AllyNotIn(l.Territory) &&
+                potentialWinningOpponents.Any(p => p.Occupies(l)) &&
                 IDontHaveAdvisorsIn(l))
                 .Select(s => ConstructAttack(s, extraForces, minResourcesToKeep, maxUnsupportedForces));
 
             LogInfo("shippableStrongholdsOfWinningOpponents:" + string.Join(",", shippableStrongholdsOfWinningOpponents));
 
-            var attack = shippableStrongholdsOfWinningOpponents.Where(a => 
+            var attack = shippableStrongholdsOfWinningOpponents.Where(a =>
                 a.HasForces &&
                 a.ShortageForShipment <= riskAppetite)
                 .LowestOrDefault(a => a.DialNeeded);
@@ -407,17 +407,17 @@ namespace Treachery.Shared
         }
 
         protected virtual float DetermineShortageForShipment(
-            float dialNeeded, 
-            bool diallingForBattle, 
-            Location location, 
-            Faction opponent, 
-            int forcesAvailable, 
-            int specialForcesAvailable, 
-            out int forces, 
-            out int specialForces, 
+            float dialNeeded,
+            bool diallingForBattle,
+            Location location,
+            Faction opponent,
+            int forcesAvailable,
+            int specialForcesAvailable,
+            out int forces,
+            out int specialForces,
             out int noFieldValue,
-            int minResourcesToKeep, 
-            int maxUnsupportedForces, 
+            int minResourcesToKeep,
+            int maxUnsupportedForces,
             bool preferSpecialForces)
         {
             /*LogInfo("DetermineValidForcesInShipment(dialNeeded: {0}, tolocation: {1}, opponent: {2}, forcesAvailable: {3}, specialForcesAvailable: {4}, forces: {5}, specialForces: {6})",
@@ -732,7 +732,8 @@ namespace Treachery.Shared
         {
             var opponent = OccupyingOpponentIn(location.Territory);
 
-            if (opponent != null) {
+            if (opponent != null)
+            {
 
                 var dialNeeded = GetDialNeeded(location.Territory, opponent, true);
                 var shortageForShipment = DetermineShortageForShipment(Math.Max(dialNeeded, 0.5f) + extraForces, true, location, opponent.Faction, ForcesInReserve, SpecialForcesInReserve, out int forcesToShip, out int specialForcesToShip, out int noFieldValue, minResourcesToKeep, maxUnsupportedForces, !RedVersusYellow(opponent));

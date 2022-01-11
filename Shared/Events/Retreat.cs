@@ -63,7 +63,7 @@ namespace Treachery.Shared
         public override Message GetMessage()
         {
             return Message.Express(
-                Initiator, 
+                Initiator,
                 " try to retreat ",
                 MessagePart.ExpressIf(Forces > 0, " and ", Forces, Player.Force),
                 MessagePart.ExpressIf(SpecialForces > 0, " and ", SpecialForces, Player.SpecialForce),

@@ -74,7 +74,7 @@ namespace Treachery.Shared
             {
                 return Message.Express("Treachery Cards: ", Skin.Current.JoinSummarized(TreacheryCards));
             }
-                
+
         }
     }
 }

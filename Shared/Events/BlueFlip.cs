@@ -40,7 +40,7 @@ namespace Treachery.Shared
 
             return Message.Express(
                 Initiator,
-                hasAdvisorsThere ^ AsAdvisors ? " become " : " stay as ", 
+                hasAdvisorsThere ^ AsAdvisors ? " become " : " stay as ",
                 AsAdvisors ? (object)FactionSpecialForce.Blue : FactionForce.Blue);
         }
 

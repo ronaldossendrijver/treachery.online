@@ -30,7 +30,7 @@ namespace Treachery.Client
         public HostProxy HostProxy = null;
         public Host Host = null;
         public bool IsObserver = false;
-        public ServerSettings ServerSettings { get; private set; } 
+        public ServerSettings ServerSettings { get; private set; }
 
         public Dictionary<int, string> _joinError = new();
         public int _gameinprogressHostId;
@@ -258,7 +258,7 @@ namespace Treachery.Client
         public DateTime hostLastSeen = DateTime.Now;
         private int nrOfHeartbeats = 0;
         private string oldConnectionId = "";
-        
+
         public async Task Heartbeat(int gameInProgressHostId)
         {
             if (gameInProgressHostId == _gameinprogressHostId && nrOfHeartbeats++ < MAX_HEARTBEATS && HostProxy != null)

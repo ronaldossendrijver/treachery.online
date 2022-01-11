@@ -14,8 +14,8 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Treachery.Shared;
 using System.Timers;
+using Treachery.Shared;
 
 
 namespace Treachery.Test
@@ -81,8 +81,8 @@ namespace Treachery.Test
 
             if (g.CurrentTurn >= 1)
             {
-                p = g.Players.FirstOrDefault(p => 
-                    p.ForcesInReserve + p.ForcesKilled + p.ForcesOnPlanet.Sum(b => b.Value.AmountOfForces) + 
+                p = g.Players.FirstOrDefault(p =>
+                    p.ForcesInReserve + p.ForcesKilled + p.ForcesOnPlanet.Sum(b => b.Value.AmountOfForces) +
                     (p.Faction != Faction.White ? p.SpecialForcesInReserve + p.SpecialForcesKilled + p.ForcesOnPlanet.Sum(b => b.Value.AmountOfSpecialForces) : 0) != 20);
 
                 if (p != null)
@@ -119,18 +119,19 @@ namespace Treachery.Test
             if (g.CurrentTurn >= 1)
             {
                 int previousNumberOfCardsInPlay = _cardcount.CountOf(g.Seed);
-                int currentNumberOfCards = 
-                    g.Players.Sum(player => player.TreacheryCards.Count) 
-                    + g.TreacheryDeck.Items.Count 
-                    + g.TreacheryDiscardPile.Items.Count 
-                    + (g.WhiteCache != null ? g.WhiteCache.Count : 0) 
+                int currentNumberOfCards =
+                    g.Players.Sum(player => player.TreacheryCards.Count)
+                    + g.TreacheryDeck.Items.Count
+                    + g.TreacheryDiscardPile.Items.Count
+                    + (g.WhiteCache != null ? g.WhiteCache.Count : 0)
                     + (g.CardsOnAuction != null ? g.CardsOnAuction.Items.Count : 0)
                     + (g.Players.Any(player => g.GetCardSetAsideForBid(player) != null) ? 1 : 0)
                     + g.RemovedTreacheryCards.Count;
 
                 if (previousNumberOfCardsInPlay == 0)
                 {
-                    lock (_cardcount) {
+                    lock (_cardcount)
+                    {
 
                         _cardcount.SetToN(g.Seed, currentNumberOfCards);
                     }
@@ -142,7 +143,7 @@ namespace Treachery.Test
                         currentNumberOfCards);
                 }
             }
-            
+
             if (g.CurrentTurn >= 1)
             {
                 int previousNumberOfLeadersInPlay = _leadercount.CountOf(g.Seed);
@@ -161,7 +162,7 @@ namespace Treachery.Test
                         currentNumberOfLeaders);
                 }
             }
-            
+
 
             if (g.TreacheryDeck != null)
             {
@@ -202,7 +203,7 @@ namespace Treachery.Test
             return "";
         }
 
-        
+
 
         private void ProfileGames()
         {
@@ -480,7 +481,7 @@ namespace Treachery.Test
                 var start = new EstablishPlayers(game) { ApplicableRules = rules.ToArray(), FactionsInPlay = factions, MaximumTurns = nrOfTurns, MaximumNumberOfPlayers = nrOfPlayers, Players = Array.Empty<string>(), Seed = new Random().Next() };
                 start.Time = DateTime.Now;
                 start.Execute(false, true);
-                
+
                 if (p != null)
                 {
                     foreach (var kvp in p)
@@ -856,7 +857,7 @@ namespace Treachery.Test
                         svgCubicCurveSegment.FirstControlPoint = Translate(svgCubicCurveSegment.FirstControlPoint, transforms, digits);
                         svgCubicCurveSegment.SecondControlPoint = Translate(svgCubicCurveSegment.SecondControlPoint, transforms, digits);
                     }
-                    else 
+                    else
                     {
                         pathSegment.Start = Translate(pathSegment.Start, transforms, digits);
                         pathSegment.End = Translate(pathSegment.End, transforms, digits);
@@ -909,7 +910,7 @@ namespace Treachery.Test
                 {
                     point.Y = y;
                 }
-                
+
                 var transformedPoint = Translate(point, transforms, digits);
                 text.X.Clear();
                 text.X.Add(new SvgUnit(transformedPoint.X));
@@ -932,7 +933,7 @@ namespace Treachery.Test
             {
                 ApplyTransforms(child, transforms, digits);
             }
-            
+
             if (hadTransforms)
             {
                 transforms.Pop();
@@ -955,7 +956,7 @@ namespace Treachery.Test
         private static PointF Translate(PointF p, IEnumerable<SvgTransformCollection> transforms, int digits)
         {
             var thePoints = new PointF[] { p };
-            
+
             foreach (var tc in transforms)
             {
                 foreach (var t in tc)
@@ -1185,7 +1186,7 @@ namespace Treachery.Test
 
             return standardDeviation;
         }
-                
+
         [TestMethod]
         public void DetermineBias()
         {

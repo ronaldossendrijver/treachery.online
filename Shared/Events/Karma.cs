@@ -47,7 +47,7 @@ namespace Treachery.Shared
         public override Message GetMessage()
         {
             return Message.Express(
-                Initiator, 
+                Initiator,
                 " play ",
                 MessagePart.ExpressIf(Card.Type != TreacheryCardType.Karma, Card, " as "),
                 " a ",
