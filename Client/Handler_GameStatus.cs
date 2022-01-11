@@ -596,12 +596,12 @@ namespace Treachery.Client
                         }
                     case Milestone.BabyMonster:
                         {
-                            result.Add(CardInfo(Map.GetResourceCardsInAndOutsidePlay(g.Map).FirstOrDefault(c => c.IsSandTrout), new Message("{0} detected!", Concept.BabyMonster)));
+                            result.Add(CardInfo(Map.GetResourceCardsInAndOutsidePlay(g.Map).FirstOrDefault(c => c.IsSandTrout), Message.Express(Concept.BabyMonster, " detected!")));
                             break;
                         }
                     case Milestone.Monster:
                         {
-                            result.Add(CardInfo(Map.GetResourceCardsInAndOutsidePlay(g.Map).FirstOrDefault(c => c.IsShaiHulud), new Message("{0} detected!", Concept.Monster)));
+                            result.Add(CardInfo(Map.GetResourceCardsInAndOutsidePlay(g.Map).FirstOrDefault(c => c.IsShaiHulud), Message.Express(Concept.Monster, " detected!")));
                             break;
                         }
                     case Milestone.Resource:
@@ -634,7 +634,7 @@ namespace Treachery.Client
 
                             if (cardToShow != null)
                             {
-                                result.Add(CardInfo(cardToShow, new Message("{0} in {1}", Concept.Resource, cardToShow.ToString())));
+                                result.Add(CardInfo(cardToShow, Message.Express(Concept.Resource, " in ", cardToShow.ToString())));
                             }
 
                             break;
@@ -672,13 +672,13 @@ namespace Treachery.Client
             {
                 var victim = Game.CurrentBattle.OpponentOf(t.Initiator);
                 var victimPlan = Game.CurrentBattle.PlanOf(victim);
-                result.Message = new Message("{0} is a {1} traitor!", victimPlan.Hero, t.Initiator);
+                result.Message = Message.Express(victimPlan.Hero, " is a ", t.Initiator , " traitor!");
                 result.Url = Skin.Current.GetImageURL(victimPlan.Hero);
             }
             else if (e is FaceDanced)
             {
                 var dancer = Game.WinnerHero;
-                result.Message = new Message("{0} is revealed as a facedancer!", dancer);
+                result.Message = Message.Express(dancer, " is a ", e.Initiator, " facedancer!");
                 result.Url = Skin.Current.GetImageURL(dancer);
             }
             else
@@ -710,7 +710,7 @@ namespace Treachery.Client
         {
             FlashInfo result;
             result.Url = Skin.Current.GetImageURL(f);
-            result.Message = new Message("You play {0}", f);
+            result.Message = Message.Express("You play ", f);
             return result;
         }
 
@@ -721,7 +721,7 @@ namespace Treachery.Client
 
             if ((c.Type == TreacheryCardType.Karma || c.Type == TreacheryCardType.Useless) && e is Bid && (e as Bid).Passed)
             {
-                result.Message = new Message("Card was won using {0}", TreacheryCardType.Karma);
+                result.Message = Message.Express("Card was won using ", TreacheryCardType.Karma);
             }
             else
             {

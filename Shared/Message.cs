@@ -13,8 +13,6 @@ namespace Treachery.Shared
 
         public int Nr { get; } = Counter++;
 
-        public Faction Initiator { get; set; }
-
         public Faction Target { get; set; }
 
         private string _unformattedBody;
@@ -28,36 +26,18 @@ namespace Treachery.Shared
         public Message(Expression e)
         {
             _expression = e;
-            Initiator = Faction.None;
         }
 
-        public Message(Faction from, Faction to, Expression e)
+        private Message(Faction to, Expression e)
         {
             _expression = e;
-            Initiator = from;
             Target = to;
-        }
-
-        public Message(string m, params object[] list)
-        {
-            _unformattedBody = m;
-            _parameters = list;
-            Initiator = Faction.None;
         }
 
         public Message(Faction f, string m, params object[] list)
         {
             _unformattedBody = m;
             _parameters = list;
-            Initiator = f;
-        }
-
-        public Message(Faction from, Faction to, string m, params object[] list)
-        {
-            _unformattedBody = m;
-            _parameters = list;
-            Initiator = from;
-            Target = to;
         }
 
         public Expression Expression
@@ -127,7 +107,7 @@ namespace Treachery.Shared
 
         public static Message ExpressTo(Faction to, params object[] list)
         {
-            return new Message(Faction.None, to, new Expression(list));
+            return new Message(to, new Expression(list));
         }
     }
 
