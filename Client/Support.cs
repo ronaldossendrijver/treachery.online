@@ -38,7 +38,7 @@ namespace Treachery.Client
             }
             else
             {
-                return string.Format("<div><img src='{0}' width=300 class='img-fluid' title='{2}'/></div><div class='bg-dark text-white text-center' style='width:300px'>{1}</div>", Skin.Current.GetImageURL(c), Skin.Current.GetTreacheryCardDescription(c), c.Name);
+                return string.Format("<div><img src='{0}' width=300 class='img-fluid' style='filter:drop-shadow(-3px 3px 2px black);'/></div><div class='bg-dark text-white text-center' style='width:300px'>{1}</div>", Skin.Current.GetImageURL(c), Skin.Current.GetTreacheryCardDescription(c));
             }
         }
 
@@ -50,7 +50,7 @@ namespace Treachery.Client
             }
             else
             {
-                return string.Format("<div><img src='{0}' width=200 class='img-fluid' title='{2}'/></div><div class='bg-dark text-white text-center small' style='width:200px'>{1}</div>", Skin.Current.GetImageURL(c), Skin.Current.GetTreacheryCardDescription(c), c.Name);
+                return string.Format("<div><img src='{0}' width=200 class='img-fluid' style='filter:drop-shadow(-3px 3px 2px black);'/></div><div class='bg-dark text-white text-center small' style='width:200px'>{1}</div>", Skin.Current.GetImageURL(c), Skin.Current.GetTreacheryCardDescription(c));
             }
         }
 
@@ -62,7 +62,7 @@ namespace Treachery.Client
             }
             else
             {
-                return string.Format("<img src='{0}' width=300 class='img-fluid' title='{1}'/>", Skin.Current.GetImageURL(c), c.ToString());
+                return string.Format("<img src='{0}' width=300 class='img-fluid' style='filter:drop-shadow(-3px 3px 2px black);'/>", Skin.Current.GetImageURL(c));
             }
         }
 
@@ -74,7 +74,7 @@ namespace Treachery.Client
             }
             else
             {
-                return string.Format("<img src='{0}' width=300 class='img-fluid' title='{1}'/>", Skin.Current.GetImageURL(c), c.ToString());
+                return string.Format("<img src='{0}' width=300 class='img-fluid' style='filter:drop-shadow(-3px 3px 2px black);'/>", Skin.Current.GetImageURL(c));
             }
         }
 
@@ -86,7 +86,7 @@ namespace Treachery.Client
             }
             else
             {
-                return string.Format("<img src='{0}' width=200 class='img-fluid' title='{1}'/>", Skin.Current.GetImageURL(c), c.ToString());
+                return string.Format("<img src='{0}' width=200 class='img-fluid' style='filter:drop-shadow(-3px 3px 2px black);'/>", Skin.Current.GetImageURL(c));
             }
         }
 
@@ -104,7 +104,7 @@ namespace Treachery.Client
             {
                 if (skill == LeaderSkill.None)
                 {
-                    return string.Format("<img src='{0}' width=200 class='img-fluid' title='{1}'/>", Skin.Current.GetImageURL(h), h.Name);
+                    return string.Format("<img src='{0}' width=200 class='img-fluid' style='filter:drop-shadow(-3px 3px 2px black);'/>", Skin.Current.GetImageURL(h));
                 }
                 else
                 {
@@ -121,7 +121,7 @@ namespace Treachery.Client
             }
             else
             {
-                return string.Format("<img class='img-fluid' src='{0}' width=80 title='{1}'/>", Skin.Current.GetImageURL(l), l.Name);
+                return string.Format("<img class='img-fluid' src='{0}' width=80 style='filter:drop-shadow(-3px 3px 2px black);'/>", Skin.Current.GetImageURL(l));
             }
         }
 
@@ -133,7 +133,7 @@ namespace Treachery.Client
             }
             else
             {
-                return string.Format("<div style='position:relative'><img style='position:relative' src='{0}' width=300/><div style='position:absolute;left:240px;top:120px'><img src='{1}' width=120 style='filter:drop-shadow -2px 0px 2px black'/></div></div>", Skin.Current.GetImageURL(s), Skin.Current.GetImageURL(l));
+                return string.Format("<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{0}' width=300/><img src='{1}' width=200 style='position:absolute;left:200px;top:80px;filter:drop-shadow(-3px 3px 2px black);'/></div>", Skin.Current.GetImageURL(s), Skin.Current.GetImageURL(l));
             }
         }
 
@@ -145,7 +145,7 @@ namespace Treachery.Client
             }
             else
             {
-                return string.Format("<img src='{0}' width=300/>", Skin.Current.GetImageURL(l));
+                return string.Format("<img src='{0}' width=300 style='filter:drop-shadow(-3px 3px 2px black);'/>", Skin.Current.GetImageURL(l));
             }
         }
 
@@ -157,7 +157,7 @@ namespace Treachery.Client
             }
             else
             {
-                return string.Format("<div style='position:relative'><img src='{0}' width=300/><img style='position:absolute;left:210px;top:10px' src='{1}' width=80/></div>", Skin.Current.GetImageURL(l), Skin.Current.GetImageURL(f));
+                return string.Format("<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{0}' width=300/><img src='{1}' width=100 style='position:absolute;left:220px;top:40px;filter:drop-shadow(-3px 3px 2px black);'/></div>", Skin.Current.GetImageURL(l), Skin.Current.GetImageURL(f));
             }
         }
 
@@ -169,25 +169,13 @@ namespace Treachery.Client
             }
             else
             {
-                return string.Format("<img src='{0}' width=200/>", Skin.Current.GetImageURL(tt));
+                return string.Format("<img src='{0}' width=200 style='filter:drop-shadow(-3px 3px 2px black);'/>", Skin.Current.GetImageURL(tt));
             }
         }
 
         public static string Color(Faction f)
         {
             return string.Format("background-color:{0}", Skin.Current.GetFactionColor(f));
-        }
-
-        public static string GetHeroHoverHTMLSmall(IHero h)
-        {
-            if (h == null)
-            {
-                return "";
-            }
-            else
-            {
-                return string.Format("<img src='{0}' width=150 class='img-fluid'/>", Skin.Current.GetImageURL(h));
-            }
         }
 
         public static void Log(object o)
@@ -259,7 +247,7 @@ namespace Treachery.Client
 
         public static string TextBorder(int borderwidth, string bordercolor) => TextBorder(borderwidth, borderwidth, bordercolor);
 
-        public static string TextBorder(int borderwidth, int blur, string bordercolor) => string.Format("text-shadow: {0}px {0}px {1}px {2}, 0px {0}px {1}px {2}, -{0}px {0}px {1}px {2}, -{0}px 0px {1}px {2}, -{0}px -{0}px {1}px {2}, 0px -{0}px {1}px {2}, {0}px -{0}px {1}px {2}, {0}px 0px {1}px {2}, 0px 0px {1}px {2};", Round(0.5f * borderwidth), blur, bordercolor);
+        public static string TextBorder(int borderwidth, int blur, string bordercolor) => string.Format("text-shadow: {0}px {0}px {1}px {2}, 0px {0}px {1}px {2}, -{0}px {0}px {1}px {2}, -{0}px 0px {1}px {2}, -{0}px -{0}px {1}px {2}, 0px -{0}px {1}px {2}, {0}px -{0}px {1}px {2}, {0}px 0px {1}px {2}, 0px 0px {1}px {2};", Round(0.5f * borderwidth), Round(0.5f * blur), bordercolor);
 
         public static string Round(double x) => Math.Round(x, 3).ToString(CultureInfo.InvariantCulture);
     }

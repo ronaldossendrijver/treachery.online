@@ -698,7 +698,7 @@ namespace Treachery.Shared
                     initiator.ChangeSpecialForces(location, fl.Value.AmountOfSpecialForces);
                 }
 
-                CurrentReport.Express(nrOfRemovedForces, " ", winner.Faction, " forces go back to reserves and are replaced by ", f.TargetForceLocations.Sum(b => b.Value.TotalAmountOfForces), f.Initiator, " forces (", f.ForcesFromReserve, " from reserves", DetermineSourceLocations(f), ")");
+                CurrentReport.Express(nrOfRemovedForces, " ", winner.Faction, " forces go back to reserves and are replaced by ", f.TargetForceLocations.Sum(b => b.Value.TotalAmountOfForces), f.Player.Force, " (", f.ForcesFromReserve, " from reserves", DetermineSourceLocations(f), ")");
             }
         }
 
@@ -718,7 +718,7 @@ namespace Treachery.Shared
 
         private MessagePart DetermineSourceLocations(FaceDanced f)
         {
-            return MessagePart.ExpressIf(f.ForceLocations.Count > 0, ", {0}", string.Join(", ", f.ForceLocations.Select(fl => string.Format("{0} from {1}", fl.Value.AmountOfForces + fl.Value.AmountOfSpecialForces, fl.Key))));
+            return MessagePart.ExpressIf(f.ForceLocations.Count > 0, f.ForceLocations.Select(fl => MessagePart.Express(", ", fl.Value.AmountOfForces, " from ", fl.Key)));
         }
 
         public IHero WinnerHero

@@ -27,7 +27,7 @@
             {
                 <Image X="@(position.X)" Y="@(position.Y + 0.25f * Skin.Current.PlayerTokenRadius)" Diameter=@(1.2f * Skin.Current.PlayerTokenRadius) Src="@Skin.Current.GetFactionTableImageURL(p.Ally)" 
                        ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                       Title="@p.AlliedPlayer.Name"/>
+                       Popover="@Intel(p.AlliedPlayer)"/>
             }
 
             var positionSector = Math.Floor((float)p.PositionAtTable * Map.NUMBER_OF_SECTORS / Game.MaximumNumberOfPlayers);
@@ -40,7 +40,7 @@
                        Y="@(Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad) * techtokenOrbitRadius) - Skin.Current.PlayerTokenRadius)"
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(tt)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                       Popover="@Support.GetTechTokenHTML(tt)"/>
+                       Popover="@Support.GetTechTokenHTML(tt)" PopoverStyle=""/>
             }
 
             var skilledLeader = Game.GetSkilledLeader(p);
@@ -56,7 +56,7 @@
                            Y="@(tty)"
                            Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                            Src="@Skin.Current.GetImageURL(skilledLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                           Popover="@Support.GetSkilledLeaderHTML(skilledLeader, h.Game.Skill(skilledLeader))"/>
+                           Popover="@Support.GetSkilledLeaderHTML(skilledLeader, h.Game.Skill(skilledLeader))" PopoverStyle=""/>
                 }
 
                 <MapText ToShow="@Skin.Current.Describe(Game.Skill(skilledLeader))"
@@ -64,7 +64,7 @@
                          Font="@Skin.Current.SKILL_FONT" FontColor="@Skin.Current.SKILL_FONTCOLOR"
                          BorderWidth="@Skin.Current.SKILL_FONT_BORDERWIDTH" BorderColor="@Skin.Current.SKILL_FONT_BORDERCOLOR"
                          Align="@TextAlignment.Center" MaxWidth="2.2f * Skin.Current.PlayerTokenRadius"
-                         Popover="@Support.GetSkilledLeaderHTML(skilledLeader, h.Game.Skill(skilledLeader))"/>
+                         Popover="@Support.GetSkilledLeaderHTML(skilledLeader, h.Game.Skill(skilledLeader))" PopoverStyle=""/>
             }
 
             if (p.Faction == Faction.White && Game.LatestRevealedNoFieldValue >= 0)
