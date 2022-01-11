@@ -260,7 +260,7 @@ namespace Treachery.Shared
                 " for ",
                 Payment(cost.TotalCostForPlayer + cost.CostForEmperor),
                 MessagePart.ExpressIf(r.ExtraForcesPaidByRed > 0 || r.ExtraSpecialForcesPaidByRed > 0, " (", Payment(cost.CostForEmperor, Faction.Red), ")"),
-                MessagePart.ExpressIf(purpleReceivedResources > 0, Faction.Purple, " get ", Payment(purpleReceivedResources)));
+                MessagePart.ExpressIf(purpleReceivedResources > 0, " → ", Faction.Purple, " get ", Payment(purpleReceivedResources)));
         }
 
         public void HandleEvent(RaiseDeadPlayed r)

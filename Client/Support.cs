@@ -38,19 +38,7 @@ namespace Treachery.Client
             }
             else
             {
-                return string.Format("<div><img src='{0}' width=300 class='img-fluid' style='filter:drop-shadow(-3px 3px 2px black);'/></div><div class='bg-dark text-white text-center' style='width:300px'>{1}</div>", Skin.Current.GetImageURL(c), Skin.Current.GetTreacheryCardDescription(c));
-            }
-        }
-
-        public static string GetTreacheryCardHoverHTMLSmall(TreacheryCard c)
-        {
-            if (c == null)
-            {
-                return "";
-            }
-            else
-            {
-                return string.Format("<div><img src='{0}' width=200 class='img-fluid' style='filter:drop-shadow(-3px 3px 2px black);'/></div><div class='bg-dark text-white text-center small' style='width:200px'>{1}</div>", Skin.Current.GetImageURL(c), Skin.Current.GetTreacheryCardDescription(c));
+                return string.Format("<div style='filter:drop-shadow(-3px 3px 2px black);'><img src='{0}' width=300 class='img-fluid'/></div><div class='bg-dark text-white text-center' style='width:300px'>{1}</div>", Skin.Current.GetImageURL(c), Skin.Current.GetTreacheryCardDescription(c));
             }
         }
 

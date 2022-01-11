@@ -755,14 +755,14 @@ namespace Treachery.Shared
                     {
                         receiverProfit = bidAmount + bidAllyContributionAmount;
                         receiverProfitAfterBidding = bidRedContributionAmount;
-                        message = MessagePart.Express(". ", receiver , " get ", Payment(receiverProfit), " immediately and ", Payment(receiverProfitAfterBidding), " at the end of the bidding phase");
+                        message = MessagePart.Express(" → ", receiver , " get ", Payment(receiverProfit), " immediately and ", Payment(receiverProfitAfterBidding), " at the end of the bidding phase");
                         receiver.Resources += receiverProfit;
                         receiver.ResourcesAfterBidding += receiverProfitAfterBidding;
                     }
                     else
                     {
                         receiverProfit = bidAmount + bidAllyContributionAmount + bidRedContributionAmount;
-                        message = MessagePart.Express(". ", paymentReceiver, " get ", Payment(receiverProfit));
+                        message = MessagePart.Express(" → ", paymentReceiver, " get ", Payment(receiverProfit));
                         receiver.Resources += receiverProfit;
 
                         if (receiverProfit >= 5)

@@ -44,7 +44,7 @@ namespace Treachery.Shared
             }
             else
             {
-                return Message.Express(Initiator, " apply Bureaucracy. ", Game.TargetOfBureaucracy, " lose ", new Payment(2));
+                return Message.Express(Initiator, " apply Bureaucracy → ", Game.TargetOfBureaucracy, " lose ", new Payment(2));
             }
         }
     }
