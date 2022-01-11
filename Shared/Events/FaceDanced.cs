@@ -61,14 +61,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            if (FaceDancerCalled)
-            {
-                return new Message(Initiator, "{0} reveal a Face Dancer!", Initiator);
-            }
-            else
-            {
-                return new Message(Initiator, "{0} don't reveal a Face Dancer.", Initiator);
-            }
+            return Message.Express(Initiator, MessagePart.ExpressIf(!FaceDancerCalled, " don't"), " reveal a Face Dancer!");
         }
 
         public static int MaximumNumberOfForces(Game g, Player p)

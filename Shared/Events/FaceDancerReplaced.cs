@@ -43,14 +43,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            if (!Passed)
-            {
-                return new Message(Initiator, "{0} replace a Face Dancer.", Initiator);
-            }
-            else
-            {
-                return new Message(Initiator, "{0} don't replace a Face Dancer.", Initiator);
-            }
+            return Message.Express(Initiator, MessagePart.ExpressIf(Passed, " don't"), " replace a Face Dancer");
         }
 
         public static IEnumerable<IHero> ValidFaceDancers(Player p)

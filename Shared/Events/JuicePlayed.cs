@@ -31,7 +31,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} use {1} to {2}.", Initiator, TreacheryCardType.Juice, Type);
+            return Message.Express(Initiator, " use ", TreacheryCardType.Juice, " to ", Type);
         }
 
         public static IEnumerable<JuiceType> ValidTypes(Game g, Player p)

@@ -119,7 +119,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} initiate battle with {1} in {2}.", Initiator, Target, Territory);
+            return Message.Express(Initiator, " initiate battle with ", Target, " in ", Territory);
         }
 
         public Player OpponentOf(Player p)

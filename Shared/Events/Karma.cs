@@ -46,14 +46,13 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            if (Card.Type == TreacheryCardType.Karma)
-            {
-                return new Message(Initiator, "{0} play a {1} card.", Initiator, TreacheryCardType.Karma);
-            }
-            else
-            {
-                return new Message(Initiator, "{0} play {1} as a {2} card.", Initiator, Card, TreacheryCardType.Karma);
-            }
+            return Message.Express(
+                Initiator, 
+                " play ",
+                MessagePart.ExpressIf(Card.Type != TreacheryCardType.Karma, Card, " as "),
+                " a ",
+                TreacheryCardType.Karma,
+                " card");
         }
 
         public static IEnumerable<FactionAdvantage> ValidFactionAdvantages(Game g, Player p)

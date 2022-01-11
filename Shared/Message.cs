@@ -34,7 +34,7 @@ namespace Treachery.Shared
             Target = to;
         }
 
-        public Message(Faction f, string m, params object[] list)
+        private Message(Faction f, string m, params object[] list)
         {
             _unformattedBody = m;
             _parameters = list;

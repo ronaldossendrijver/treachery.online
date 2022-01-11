@@ -58,10 +58,13 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} accept {1} offer for {2}: {3}",
-                Initiator,
+            return Message.Express(
+                Initiator, 
+                " accept ",
                 BoundFaction,
-                Price,
+                " offer for ",
+                new Payment(Price),
+                ": ",
                 Deal.DealContentsDescription(Game, Type, Text, Benefit, End, DealParameter1, DealParameter2));
         }
 

@@ -34,15 +34,11 @@ namespace Treachery.Shared
 
             if (Passed)
             {
-                return new Message(Initiator, "{0} pass {1}.", Initiator, TreacheryCardType.Caravan);
-            }
-            else if (location != null)
-            {
-                return new Message(Initiator, "{0} move from {1} to {2} by {3}.", Initiator, location.Territory, To, TreacheryCardType.Caravan);
+                return Message.Express(Initiator, " pass ", TreacheryCardType.Caravan);
             }
             else
             {
-                return new Message(Initiator, "{0} move from ? to {1}.", Initiator, To);
+                return Message.Express(Initiator, " move from ", location.Territory, " to ", To, " by ", TreacheryCardType.Caravan);
             }
         }
     }

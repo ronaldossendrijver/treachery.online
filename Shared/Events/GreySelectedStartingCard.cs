@@ -43,7 +43,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} select their starting treachery card.", Initiator);
+            return Message.Express(Initiator, " pick their starting treachery card");
         }
     }
 }

@@ -34,7 +34,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} use {1} to move 3 territories once OR move 2 different force groups.", Initiator, TreacheryCardType.Flight);
+            return Message.Express(Initiator, " use an ", TreacheryCardType.Flight);
         }
 
         public static bool IsAvailable(Player p)
