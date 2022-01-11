@@ -34,7 +34,7 @@ namespace Treachery.Shared
 
             if (Passed)
             {
-                return Message.Express(Initiator, " pass move", Initiator);
+                return Message.Express(Initiator, " pass move");
             }
             else
             {

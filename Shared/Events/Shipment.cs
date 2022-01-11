@@ -299,34 +299,18 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    var shipmentform = Initiator == Faction.Yellow ? " rally " : " ship ";
-                    return Message.Express(Initiator, shipmentform, ForceMessage, " in ", To, CostMessage(cost), KaramaMessage(ownerOfKarma), orangeIncome, NoFieldMessage);
+                    var shipmentformHow = Initiator == Faction.Yellow ? " rally " : " ship ";
+                    var shipmentformTo = Initiator == Faction.Yellow ? " in " : " to ";
+                    return Message.Express(Initiator, shipmentformHow, ForceMessage, shipmentformTo, To, CostMessage(cost), KaramaMessage(ownerOfKarma), orangeIncome, NoFieldMessage);
                 }
             }
         }
 
         private MessagePart NoFieldMessage => MessagePart.ExpressIf(IsNoField && Initiator != Faction.White, " (using a ", FactionSpecialForce.White, ")");
 
-        private MessagePart ForceMessage
-        {
-            get
-            {
-                var p = Player;
-
-                if (ForceAmount > 0 && SpecialForceAmount > 0)
-                {
-                    return MessagePart.Express(ForceAmount, p.Force, " and ", SpecialForceAmount, p.SpecialForce);
-                }
-                else if (ForceAmount > 0 && SpecialForceAmount == 0)
-                {
-                    return MessagePart.Express(ForceAmount, p.Force);
-                }
-                else
-                {
-                    return MessagePart.Express(SpecialForceAmount, p.SpecialForce);
-                }
-            }
-        }
+        private MessagePart ForceMessage => MessagePart.Express(
+                    MessagePart.ExpressIf(ForceAmount > 0, ForceAmount, Player.Force),
+                    MessagePart.ExpressIf(SpecialForceAmount > 0, SpecialForceAmount, Player.SpecialForce));
 
         private MessagePart CostMessage(int cost)
         {
@@ -334,11 +318,11 @@ namespace Treachery.Shared
 
             if (AllyContributionAmount > 0)
             {
-                return MessagePart.Express(" for ", new Payment(cost), " (", new Payment(AllyContributionAmount, p.Ally), ")." );
+                return MessagePart.Express(" for ", new Payment(cost), " (", new Payment(AllyContributionAmount, p.Ally), ")" );
             }
             else if (cost > 0)
             {
-                return MessagePart.Express(" for ", new Payment(cost), ".");
+                return MessagePart.Express(" for ", new Payment(cost));
             }
             else
             {

@@ -633,33 +633,22 @@ namespace Treachery.Shared
             CurrentReport.Express(e);
         }
 
-        private void LogBid(Player initiator, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, MessagePart redIncome)
+        private void LogBid(Player initiator, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, MessagePart receiverIncome)
         {
             int bidTotalAmount = bidAmount + bidAllyContributionAmount + bidRedContributionAmount;
             var cardNumber = MessagePart.ExpressIf(CurrentAuctionType == AuctionType.Normal, CardNumber);
 
-            if (bidAllyContributionAmount > 0)
-            {
-                if (bidRedContributionAmount > 0)
-                {
-                    CurrentReport.Express("Card ", cardNumber, " won by ", initiator.Faction, " for ", Payment(bidTotalAmount), "(", Payment(bidAllyContributionAmount, initiator.Ally), " and ", Payment(bidRedContributionAmount, Faction.Red), ") ", redIncome);
-                }
-                else
-                {
-                    CurrentReport.Express("Card ", cardNumber, " won by ", initiator.Faction, " for ", Payment(bidTotalAmount), "(", Payment(bidAllyContributionAmount, initiator.Ally), ") ", redIncome);
-                }
-            }
-            else
-            {
-                if (bidRedContributionAmount > 0)
-                {
-                    CurrentReport.Express("Card ", cardNumber, " won by ", initiator.Faction, " for ", Payment(bidTotalAmount), "(", Payment(bidRedContributionAmount, Faction.Red), ") ", redIncome);
-                }
-                else
-                {
-                    CurrentReport.Express("Card ", cardNumber, " won by ", initiator.Faction, " for ", Payment(bidTotalAmount), redIncome);
-                }
-            }
+            CurrentReport.Express(
+                "Card ", 
+                cardNumber, 
+                " won by ", 
+                initiator.Faction, 
+                " for ", 
+                Payment(bidTotalAmount), 
+                MessagePart.ExpressIf(
+                    bidAllyContributionAmount > 0 || bidRedContributionAmount > 0, 
+                    "(", Payment(bidAllyContributionAmount, initiator.Ally), MessagePart.ExpressIf(bidRedContributionAmount > 0, " and ", Payment(bidRedContributionAmount, Faction.Red)), ") "), 
+                receiverIncome);
         }
 
         private void EveryonePassed()
@@ -766,14 +755,14 @@ namespace Treachery.Shared
                     {
                         receiverProfit = bidAmount + bidAllyContributionAmount;
                         receiverProfitAfterBidding = bidRedContributionAmount;
-                        message = MessagePart.Express(" ", receiver , " get ", Payment(receiverProfit), " immediately and ", Payment(receiverProfitAfterBidding), " at the end of the bidding phase.");
+                        message = MessagePart.Express(". ", receiver , " get ", Payment(receiverProfit), " immediately and ", Payment(receiverProfitAfterBidding), " at the end of the bidding phase");
                         receiver.Resources += receiverProfit;
                         receiver.ResourcesAfterBidding += receiverProfitAfterBidding;
                     }
                     else
                     {
                         receiverProfit = bidAmount + bidAllyContributionAmount + bidRedContributionAmount;
-                        message = MessagePart.Express(" ", paymentReceiver, " get ", Payment(receiverProfit), ".");
+                        message = MessagePart.Express(". ", paymentReceiver, " get ", Payment(receiverProfit));
                         receiver.Resources += receiverProfit;
 
                         if (receiverProfit >= 5)
@@ -784,7 +773,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    message = MessagePart.Express(" {0} prevents {1} from receiving {2} for this card.", TreacheryCardType.Karma, paymentReceiver, Concept.Resource);
+                    message = MessagePart.Express(" {0} prevents {1} from receiving {2} for this card", TreacheryCardType.Karma, paymentReceiver, Concept.Resource);
                     if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.RedReceiveBid);
                 }
             }

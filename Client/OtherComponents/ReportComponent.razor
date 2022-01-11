@@ -20,13 +20,13 @@
                 foreach (var message in Report.Messages.Where(m => m.Target == Faction.None || m.Target == h.Faction).OrderByDescending(m => m.Nr))
                 {
                     <div style="@FontStyle(message)">
-                        <ExpressionComponent Expression=message.Expression Size=18/>
+                        <ExpressionComponent Expression=message.Expression Size=20/>
                     </div>
                 }
             }
             else
             {
-                <div class="mt-1 pl-1 pr-1"><i>Nothing to report.</i></div>
+                <div class="mt-1 pl-1 pr-1"><i>Nothing to report</i></div>
             }
 
         </div>

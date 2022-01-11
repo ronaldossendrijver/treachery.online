@@ -306,18 +306,18 @@ namespace Treachery.Shared
                 if (BlueMustBeFighterIn(c.Location))
                 {
                     benegesserit.ShipForces(c.Location, 1);
-                    CurrentReport.Express(c.Initiator, " accompany ", FactionForce.Blue, " to ", c.Location);
                 }
                 else
                 {
                     benegesserit.ShipAdvisors(c.Location, 1);
-                    CurrentReport.Express(c.Initiator, " accompany ", FactionSpecialForce.Blue, " to ", c.Location);
                 }
+
+                CurrentReport.Express(c.Initiator, " accompany to ", c.Location);
             }
             else
             {
 
-                CurrentReport.Express(c.Initiator, " don't accompany shipment");
+                CurrentReport.Express(c.Initiator, " don't accompany");
             }
 
             DetermineNextShipmentAndMoveSubPhase(false, BGMayAccompany);
@@ -540,18 +540,17 @@ namespace Treachery.Shared
 
         private void LogMove(Player initiator, Territory from, Location to, int forceAmount, int specialForceAmount, bool asAdvisors, bool byCaravan)
         {
-            if (initiator.Is(Faction.Blue))
-            {
-                CurrentReport.Express(CaravanMessage(byCaravan), initiator.Faction, " move ", forceAmount + specialForceAmount, " forces from ", from, " to ", to, " as ", asAdvisors ? (object)initiator.SpecialForce : initiator.Force);
-            }
-            else if (specialForceAmount > 0)
-            {
-                CurrentReport.Express(CaravanMessage(byCaravan), initiator.Faction, " move ", forceAmount, initiator.Force, " and ", specialForceAmount, initiator.SpecialForce, " from ", from, " to ", to);
-            }
-            else
-            {
-                CurrentReport.Express(CaravanMessage(byCaravan), initiator.Faction, " move ", forceAmount, initiator.Force, " from ", from, " to ", to);
-            }
+            CurrentReport.Express(
+                CaravanMessage(byCaravan), 
+                initiator.Faction, 
+                " move ", 
+                MessagePart.ExpressIf(forceAmount > 0, forceAmount, initiator.Force),
+                MessagePart.ExpressIf(specialForceAmount > 0, specialForceAmount, initiator.SpecialForce),
+                " from ", 
+                from, 
+                " to ", 
+                to,
+                MessagePart.ExpressIf(initiator.Is(Faction.Blue) && Applicable(Rule.BlueAdvisors), " as ", asAdvisors ? (object)initiator.SpecialForce : initiator.Force));
         }
 
         private MessagePart CaravanMessage(bool byCaravan) => MessagePart.ExpressIf(byCaravan, "By ", TreacheryCardType.Caravan, ", ");

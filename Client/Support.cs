@@ -133,7 +133,7 @@ namespace Treachery.Client
             }
             else
             {
-                return string.Format("<div style='position:relative'><img style='position:relative' src='{0}' width=300/><div style='position:absolute;left:210px;top:10px'><img src='{1}' width=80/></div></div>", Skin.Current.GetImageURL(s), Skin.Current.GetImageURL(l));
+                return string.Format("<div style='position:relative'><img style='position:relative' src='{0}' width=300/><div style='position:absolute;left:240px;top:120px'><img src='{1}' width=120 style='filter:drop-shadow -2px 0px 2px black'/></div></div>", Skin.Current.GetImageURL(s), Skin.Current.GetImageURL(l));
             }
         }
 

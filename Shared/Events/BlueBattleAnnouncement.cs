@@ -101,7 +101,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} flip to fighters in {1}.", Initiator, Territory);
+            return Message.Express(Initiator, " flip to ", FactionForce.Blue, " in ", Territory);
         }
     }
 }

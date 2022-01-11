@@ -817,13 +817,11 @@ namespace Treachery.Shared
                     CurrentReport.Express(
                         LeaderSkill.Graduate,
                         " rescues ",
-                        forcesToSaveInTerritory,
-                        winner.Force,
-                        MessagePart.ExpressIf(specialForcesToSaveInTerritory > 0, " and ", specialForcesToSaveInTerritory, winner.SpecialForce),
+                        MessagePart.ExpressIf(forcesToSaveInTerritory > 0, forcesToSaveInTerritory, winner.Force),
+                        MessagePart.ExpressIf(specialForcesToSaveInTerritory > 0, specialForcesToSaveInTerritory, winner.SpecialForce),
                         " on site and ",
-                        forcesToSaveToReserves,
-                        winner.Force,
-                        MessagePart.ExpressIf(specialForcesToSaveToReserves > 0, " and ", specialForcesToSaveToReserves, winner.SpecialForce),
+                        MessagePart.ExpressIf(forcesToSaveToReserves > 0, forcesToSaveToReserves, winner.Force),
+                        MessagePart.ExpressIf(specialForcesToSaveToReserves > 0, specialForcesToSaveToReserves, winner.SpecialForce),
                         " to reserves");
                 }
 
@@ -1309,12 +1307,10 @@ namespace Treachery.Shared
                 CurrentReport.Express(
                     LeaderSkill.Graduate,
                     " rescues ",
-                    forcesToSaveInTerritory,
-                    player.Force,
-                    MessagePart.ExpressIf(specialForcesToSaveInTerritory > 0, " and ", specialForcesToSaveInTerritory, player.SpecialForce),
+                    MessagePart.ExpressIf(forcesToSaveInTerritory > 0, forcesToSaveInTerritory, player.Force),
+                    MessagePart.ExpressIf(specialForcesToSaveInTerritory > 0, specialForcesToSaveInTerritory, player.SpecialForce),
                     " on site and ",
-                    forcesToSaveToReserves, 
-                    player.Force,
+                    MessagePart.ExpressIf(forcesToSaveToReserves > 0, forcesToSaveToReserves, player.Force),
                     MessagePart.ExpressIf(specialForcesToSaveToReserves > 0, specialForcesToSaveToReserves, player.SpecialForce),
                     " to reserves");
             }
@@ -1362,8 +1358,8 @@ namespace Treachery.Shared
                 CurrentReport.Express(
                     player.Faction,
                     " lose ",
-                    forcesLost, player.Force,
-                    MessagePart.ExpressIf(specialForcesLost > 0, " and ", specialForcesLost, player.SpecialForce),
+                    MessagePart.ExpressIf(forcesLost > 0, forcesLost, player.Force),
+                    MessagePart.ExpressIf(specialForcesLost > 0, specialForcesLost, player.SpecialForce),
                     " during battle ");
             }
         }

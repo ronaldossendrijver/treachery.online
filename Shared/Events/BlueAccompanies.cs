@@ -71,11 +71,11 @@ namespace Treachery.Shared
         {
             if (Accompanies)
             {
-                return new Message(Initiator, "{0} accompany a shipment to {1}.", Initiator, Location);
+                return Message.Express(Initiator, " accompany shipment to ", Location);
             }
             else
             {
-                return new Message(Initiator, "{0} don't accompany shipment.", Initiator);
+                return Message.Express(Initiator, " don't accompany shipment");
             }
         }
     }

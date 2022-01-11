@@ -32,7 +32,7 @@
         }
         else if (part is int || part is float || part is double)
         {
-            <span class="badge badge-light">@part</span>
+            <span class="badge badge-info">@part</span>
         }
         else if (part is Payment payment)
         {
@@ -50,9 +50,13 @@
         {
             <span class="font-weight-bold" data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(tc)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(tc)</span>
         }
+        else if (part is LeaderSkill skill)
+        {
+            <span class="font-weight-bold" data-animation="true" data-content="@Support.GetSkillCardHoverHTML(skill)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(skill)</span>
+        }
         else if (part is IHero hero)
         {
-            <span class="font-weight-bold" style="color:@Skin.Current.GetFactionColor(hero.Faction);" data-content="@Support.GetHeroHoverHTML(hero)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(hero)</span>
+            <span class="font-weight-bold" style="color:@Skin.Current.GetFactionColor(hero.Faction);@WhiteBorder" data-content="@Support.GetHeroHoverHTML(hero)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(hero)</span>
         }
         else if (part is Concept monster && monster == Concept.Monster)
         {
@@ -70,7 +74,7 @@
         {
             <img src=@Skin.Current.GetImageURL(fsf) title=@Skin.Current.Describe(fsf) width=@Size height=@Size/>
         }
-        else if (part is Location || part is Territory || part is AuctionType || part is BrownEconomicsStatus || part is LeaderSkill)
+        else if (part is Location || part is Territory || part is AuctionType || part is BrownEconomicsStatus)
         {
             <span class="font-weight-bold">@Skin.Current.Describe(part)</span>
         }
@@ -88,4 +92,6 @@
 
     [Parameter]
     public int Size { get; set; } = 14;
+
+    private string @WhiteBorder => @Support.TextBorder(1, "white");
 }

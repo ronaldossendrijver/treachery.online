@@ -460,9 +460,8 @@ namespace Treachery.Shared
                     totalNumberOfForces += fl.Value.AmountOfForces;
                     totalNumberOfSpecialForces += fl.Value.AmountOfSpecialForces;
                     CurrentReport.Express(
-                        fl.Value.AmountOfForces,
-                        initiator.Force,
-                        MessagePart.ExpressIf(fl.Value.AmountOfSpecialForces > 0, " and ", fl.Value.AmountOfSpecialForces, initiator.SpecialForce),
+                        MessagePart.ExpressIf(fl.Value.AmountOfForces > 0, fl.Value.AmountOfForces, initiator.Force),
+                        MessagePart.ExpressIf(fl.Value.AmountOfSpecialForces > 0, fl.Value.AmountOfSpecialForces, initiator.SpecialForce),
                         " ride ",
                         Concept.Monster,
                         " from ",

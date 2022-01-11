@@ -81,8 +81,7 @@ namespace Treachery.Shared
             var p = Player;
             return Message.Express(
                 "The storm kills ",
-                ForceAmount,
-                p.Force,
+                MessagePart.ExpressIf(ForceAmount > 0, " and ", ForceAmount, p.Force),
                 MessagePart.ExpressIf(SpecialForceAmount > 0, " and ", SpecialForceAmount, p.SpecialForce));
         }
     }

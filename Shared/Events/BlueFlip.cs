@@ -29,7 +29,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} flip to {1}.", Initiator, AsAdvisors ? "advisors" : "fighters");
+            return Message.Express(Initiator, " flip to ", AsAdvisors ? (object)FactionSpecialForce.Blue : FactionForce.Blue);
         }
 
         public Message GetDynamicMessage(Game g)

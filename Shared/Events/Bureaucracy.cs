@@ -28,11 +28,11 @@ namespace Treachery.Shared
         {
             if (Passed)
             {
-                return Message.Express(Initiator, " don't apply Bureaucracy", Initiator);
+                return Message.Express(Initiator, " don't apply Bureaucracy");
             }
             else
             {
-                return Message.Express(Initiator, " apply Bureaucracy", Initiator);
+                return Message.Express(Initiator, " apply Bureaucracy");
             }
         }
 
@@ -40,11 +40,11 @@ namespace Treachery.Shared
         {
             if (Passed)
             {
-                return Message.Express(Initiator, " don't apply Bureaucracy.", Initiator);
+                return Message.Express(Initiator, " don't apply Bureaucracy");
             }
             else
             {
-                return Message.Express(Initiator, " apply Bureaucracy; ", Game.TargetOfBureaucracy, " lose ", new Payment(2));
+                return Message.Express(Initiator, " apply Bureaucracy. ", Game.TargetOfBureaucracy, " lose ", new Payment(2));
             }
         }
     }
