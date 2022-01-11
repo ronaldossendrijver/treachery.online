@@ -40,17 +40,17 @@ namespace Treachery.Shared
         {
             if (Target == Faction.None)
             {
-                return new Message(Initiator, "{0} perform {1}.", Initiator, TreacheryCardType.Clairvoyance);
+                return Message.Express(Initiator, " perform ", TreacheryCardType.Clairvoyance);
             }
             else
             {
                 if (Question == ClairvoyanceQuestion.None)
                 {
-                    return new Message(Initiator, "By {0}, {1} ask {2} a question.", TreacheryCardType.Clairvoyance, Initiator, Target);
+                    return Message.Express("By ", TreacheryCardType.Clairvoyance, ", ", Initiator, " ask ", Target, " a question", TreacheryCardType.Clairvoyance, Initiator, Target);
                 }
                 else
                 {
-                    return new Message(Initiator, "By {0}, {1} ask {2}: \"{3}\"", TreacheryCardType.Clairvoyance, Initiator, Target, GetQuestion());
+                    return Message.Express("By ", TreacheryCardType.Clairvoyance, ", ", Initiator, " ask ", Target, ": \"", GetQuestion(), "\"", TreacheryCardType.Clairvoyance, Initiator, Target, GetQuestion());
                 }
             }
         }

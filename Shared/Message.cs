@@ -2,7 +2,7 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
  */
 
-using System.Collections.Generic;
+using System;
 using System.Linq;
 
 namespace Treachery.Shared
@@ -15,90 +15,20 @@ namespace Treachery.Shared
 
         public Faction Target { get; set; }
 
-        private string _unformattedBody;
-
-        private object[] _parameters;
-
-        private Expression _expression;
-
-        private string _toString = null;
-
-        public Message(Expression e)
+        private Message(Expression e)
         {
-            _expression = e;
+            Expression = e;
         }
 
         private Message(Faction to, Expression e)
         {
-            _expression = e;
+            Expression = e;
             Target = to;
         }
 
-        private Message(Faction f, string m, params object[] list)
-        {
-            _unformattedBody = m;
-            _parameters = list;
-        }
+        public Expression Expression { get; private set; }
 
-        public Expression Expression
-        {
-            get
-            {
-                if (_expression == null)
-                {
-                    _expression = DetermineExpression(_unformattedBody, _parameters);
-                }
-
-                return _expression;
-            }
-        }
-
-        public static Expression DetermineExpression(string unformattedBody, object[] parameters)
-        {
-            var elements = new List<object>();
-
-            foreach (var part in unformattedBody.Split('{'))
-            {
-                int index = part.IndexOf('}');
-
-                if (index > 0)
-                {
-                    int parameternr = int.Parse(part.Substring(0, index));
-                    elements.Add(parameters[parameternr]);
-
-                    if (index < part.Length - 1)
-                    {
-                        elements.Add(part.Substring(index + 1));
-                    }
-                }
-                else
-                {
-                    if (part.Length > 0) {
-                        
-                        elements.Add(part);
-                    }
-                }
-            }
-
-            return new Expression(elements);
-        }
-
-        public override string ToString()
-        {
-            if (_toString == null)
-            {
-                if (_expression == null)
-                {
-                    _toString = Skin.Current.Format(_unformattedBody, _parameters);
-                }
-                else
-                {
-                    _toString = string.Join("", Expression.Elements.Select(e => Skin.Current.Describe(e)));
-                }
-            }
-
-            return _toString;
-        }
+        public override string ToString() => string.Join("", Expression.Elements.Select(e => Skin.Current.Describe(e)));
 
         public static Message Express(params object[] list)
         {
@@ -113,40 +43,17 @@ namespace Treachery.Shared
 
     public class MessagePart
     {
-        private string _unformattedBody;
-
-        private object[] _parameters;
-
-        private Expression _expression;
-
-        public MessagePart()
+        private MessagePart()
         {
-            _expression = new Expression();
+            Expression = new Expression();
         }
 
-        public MessagePart(Expression e)
+        private MessagePart(Expression e)
         {
-            _expression = e;
+            Expression = e;
         }
 
-        public MessagePart(string unformattedBody, params object[] parameters)
-        {
-            _unformattedBody = unformattedBody;
-            _parameters = parameters;
-        }
-
-        public Expression Expression
-        {
-            get
-            {
-                if (_expression == null)
-                {
-                    _expression = Message.DetermineExpression(_unformattedBody, _parameters);
-                }
-
-                return _expression;
-            }
-        }
+        public Expression Expression { get; private set; }
 
         public static MessagePart Express(params object[] list)
         {
@@ -165,22 +72,6 @@ namespace Treachery.Shared
             }
         }
 
-        private string _toString = null;
-        public override string ToString()
-        {
-            if (_toString == null)
-            {
-                if (_expression == null)
-                {
-                    _toString = Skin.Current.Format(_unformattedBody, _parameters);
-                }
-                else
-                {
-                    _toString = string.Join("", Expression.Elements.Select(e => Skin.Current.Describe(e)));
-                }
-            }
-
-            return _toString;
-        }
+        public override string ToString() => string.Join("", Expression.Elements.Select(e => Skin.Current.Describe(e)));
     }
 }

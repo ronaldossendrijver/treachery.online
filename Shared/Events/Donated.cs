@@ -70,7 +70,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} give {1}{3} to {2}.", Initiator, Resources, Target, CardMessage);
+            return Message.Express(Initiator, " give ", new Payment(Resources), MessagePart.ExpressIf(Card != null, " and a card"), " to ", Target);
         }
 
         public static bool MayDonate(Game g, Player p)
@@ -80,20 +80,6 @@ namespace Treachery.Shared
             if (g.Version >= 100 && g.CurrentPhase == Phase.Bidding && g.CurrentBid != null && g.CurrentBid.AllyContributionAmount > 0 && g.CurrentBid.Player.Ally == p.Faction) return false;
 
             return true;
-        }
-
-        private string CardMessage => Card == null ? "" : " and a card ";
-
-        public static IEnumerable<int> ValidAmounts(Game g, Player p)
-        {
-            if (!g.Applicable(Rule.CardsCanBeTraded))
-            {
-                return Enumerable.Range(1, p.Resources);
-            }
-            else
-            {
-                return Enumerable.Range(0, p.Resources + 1);
-            }
         }
 
         public static int MinAmount(Game g, Player p)

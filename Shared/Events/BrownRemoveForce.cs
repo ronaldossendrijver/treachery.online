@@ -101,15 +101,7 @@ namespace Treachery.Shared
         public override Message GetMessage()
         {
             var targetPlayer = Game.GetPlayer(Target);
-
-            if (SpecialForce)
-            {
-                return new Message(Initiator, "{0} use a {1} card to remove 1 {2} {3} from {4}.", Initiator, TreacheryCardType.Useless, Target, targetPlayer.SpecialForce, Location);
-            }
-            else
-            {
-                return new Message(Initiator, "{0} use a {1} card to remove 1 {2} {3} from {4}.", Initiator, TreacheryCardType.Useless, Target, targetPlayer.Force, Location);
-            }
+            return Message.Express(Initiator, " use a ", TreacheryCardType.Useless, " card to remove ", 1, SpecialForce ? (object)targetPlayer.SpecialForce : targetPlayer.Force, " from ", Location);
         }
 
         public TreacheryCard CardUsed() => CardToUse(Player);

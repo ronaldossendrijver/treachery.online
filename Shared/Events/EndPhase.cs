@@ -26,7 +26,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "Phase ended by {0}.", Initiator);
+            return Message.Express("Phase ended by ", Initiator);
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} play Economics: {1}.", Initiator, Status);
+            return Message.Express(Initiator, " play Inflation: ", Status);
         }
 
         public static IEnumerable<BrownEconomicsStatus> ValidStates(Game g, Player p)

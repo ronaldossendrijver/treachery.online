@@ -26,7 +26,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} hide their secrets at end of game.", Initiator);
+            return Message.Express(Initiator, " hide their secrets at end of game");
         }
     }
 }

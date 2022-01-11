@@ -35,7 +35,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} predict who will win and when.", Initiator);
+            return Message.Express(Initiator, " predict who will win and when");
         }
 
         public static IEnumerable<Faction> ValidTargets(Game g, Player p)

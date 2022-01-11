@@ -28,7 +28,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} answer: {1}", Initiator, ToString(Answer));
+            return Message.Express(Initiator, " answer: ", ToString(Answer));
         }
 
         private string ToString(ClairVoyanceAnswer answer)

@@ -28,7 +28,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} use {1} to destroy the {2}! All forces there are destroyed.", Initiator, TreacheryCardType.Metheor, Game.Map.ShieldWall);
+            return Message.Express(Initiator, " use ", TreacheryCardType.Metheor, " to destroy the ", Game.Map.ShieldWall, "!");
         }
 
         public static bool MayPlayMetheor(Game g, Player p)

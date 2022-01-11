@@ -301,7 +301,7 @@ namespace Treachery.Shared
                 {
                     var shipmentformHow = Initiator == Faction.Yellow ? " rally " : " ship ";
                     var shipmentformTo = Initiator == Faction.Yellow ? " in " : " to ";
-                    return Message.Express(Initiator, shipmentformHow, ForceMessage, shipmentformTo, To, CostMessage(cost), KaramaMessage(ownerOfKarma), orangeIncome, NoFieldMessage);
+                    return Message.Express(Initiator, shipmentformHow, ForceMessage, shipmentformTo, To, NoFieldMessage, CostMessage(cost), KaramaMessage(ownerOfKarma), orangeIncome);
                 }
             }
         }
@@ -314,54 +314,19 @@ namespace Treachery.Shared
 
         private MessagePart CostMessage(int cost)
         {
-            var p = Player;
-
-            if (AllyContributionAmount > 0)
-            {
-                return MessagePart.Express(" for ", new Payment(cost), " (", new Payment(AllyContributionAmount, p.Ally), ")" );
-            }
-            else if (cost > 0)
-            {
-                return MessagePart.Express(" for ", new Payment(cost));
-            }
-            else
-            {
-                return new MessagePart();
-            }
+            return MessagePart.Express(
+                " for ", 
+                new Payment(cost), 
+                MessagePart.ExpressIf(AllyContributionAmount > 0, " (", new Payment(AllyContributionAmount, Player.Ally), ")"));
         }
 
         private MessagePart KaramaMessage(Player ownerOfKarma)
         {
-            if (KarmaCard != null)
-            {
-                var initiator = Player;
-                if (ownerOfKarma != initiator)
-                {
-                    if (KarmaCard.Type != TreacheryCardType.Karma)
-                    {
-                        return MessagePart.Express(" using their allies' ", TreacheryCardType.Karma, " (", KarmaCard, ").");
-                    }
-                    else
-                    {
-                        return MessagePart.Express(" using their allies' ", TreacheryCardType.Karma, ".");
-                    }
-                }
-                else
-                {
-                    if (KarmaCard.Type != TreacheryCardType.Karma)
-                    {
-                        return MessagePart.Express(" using ", TreacheryCardType.Karma, " (", KarmaCard, ").");
-                    }
-                    else
-                    {
-                        return MessagePart.Express(" using ", TreacheryCardType.Karma, ".");
-                    }
-                }
-            }
-            else
-            {
-                return new MessagePart();
-            }
+            return MessagePart.ExpressIf(KarmaCard != null, 
+                " using ", 
+                MessagePart.ExpressIf(ownerOfKarma != Player, "their allies "), 
+                TreacheryCardType.Karma, 
+                MessagePart.ExpressIf(KarmaCard != null && KarmaCard.Type != TreacheryCardType.Karma, " (", KarmaCard, ")"));
         }
 
         [JsonIgnore]

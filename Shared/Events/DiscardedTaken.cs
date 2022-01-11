@@ -45,7 +45,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} use {1} to take the recently discarded {2}.", Initiator, TreacheryCardType.TakeDiscarded, Card);
+            return Message.Express(Initiator, " use ", TreacheryCardType.TakeDiscarded, " to acquire the discarded ", Card);
         }
 
         public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)

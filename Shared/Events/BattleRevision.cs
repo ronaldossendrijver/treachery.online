@@ -26,7 +26,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} revise their battle plan", Initiator);
+            return Message.Express(Initiator, " revise their battle plan");
         }
     }
 }

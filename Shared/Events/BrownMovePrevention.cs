@@ -55,7 +55,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} use a {1} card to prevent forces moving into {2}.", Initiator, TreacheryCardType.Useless, Territory);
+            return Message.Express(Initiator, " use a ", TreacheryCardType.Useless, " card to prevent forces moving into ", Territory);
         }
 
         public TreacheryCard CardUsed() => CardToUse(Player);

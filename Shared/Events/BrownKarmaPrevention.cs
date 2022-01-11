@@ -30,7 +30,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} use a {1} card to prevent {2} from using {3} this phase.", Initiator, TreacheryCardType.Useless, Target, TreacheryCardType.Karma);
+            return Message.Express(Initiator, " use a ", TreacheryCardType.Useless, " card to prevent ", Target, " from using ", TreacheryCardType.Karma, " this phase");
         }
 
         public static bool CanBePlayedBy(Game g, Player p)

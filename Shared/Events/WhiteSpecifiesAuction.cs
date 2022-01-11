@@ -64,7 +64,7 @@ namespace Treachery.Shared
                 }
             }
 
-            return new Message(Initiator, "{0} put {1} on {2} auction{3}", Initiator, Card, AuctionType, directionText);
+            return Message.Express(Initiator, " put ", Card, " on ", AuctionType, " auction", directionText);
         }
 
         public static IEnumerable<TreacheryCard> ValidCards(Game g)

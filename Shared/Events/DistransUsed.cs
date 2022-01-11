@@ -57,7 +57,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} use {1} to give a card to {2}.", Initiator, TreacheryCardType.Distrans, Target);
+            return Message.Express(Initiator, " use ", TreacheryCardType.Distrans, " to give a card to ", Target);
         }
 
         public static bool CanBePlayed(Game game, Player player)

@@ -48,12 +48,12 @@ namespace Treachery.Shared
         {
             if (Passed)
             {
-                return new Message(Initiator, "{0} pass a ride on {1}.", Initiator, Concept.Monster);
+                return Message.Express(Initiator, " pass a ride on ", Concept.Monster);
             }
             else
             {
                 var from = ForceLocations.Keys.First().Territory;
-                return new Message(Initiator, "{0} ride {1} from {2} to {3}.", Initiator, Concept.Monster, from, To);
+                return Message.Express(Initiator, " ride ", Concept.Monster, " to ", To);
             }
         }
 

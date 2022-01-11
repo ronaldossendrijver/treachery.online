@@ -32,7 +32,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(ToReplace, "{0} player has been replaced.", ToReplace);
+            return Message.Express(ToReplace, " player has been replaced");
         }
 
         public static IEnumerable<Faction> ValidTargets(Game g)

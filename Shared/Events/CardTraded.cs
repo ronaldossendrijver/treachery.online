@@ -69,7 +69,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} offer their ally a card trade.", Initiator, TreacheryCardType.Useless);
+            return Message.Express(Initiator, " offer their ally a card trade");
         }
 
         public static IEnumerable<TreacheryCard> ValidCards(Player p)

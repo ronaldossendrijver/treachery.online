@@ -44,7 +44,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} take one card from the treachery discard pile and shuffle it.", Initiator, TreacheryCardType.SearchDiscarded);
+            return Message.Express(Initiator, " take one card. The Treachery Discard Pile is then shuffled");
         }
 
         public static IEnumerable<TreacheryCard> ValidCards(Game g)

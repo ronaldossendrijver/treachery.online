@@ -29,7 +29,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} claim charity.", Initiator);
+            return Message.Express(Initiator, " claim charity");
         }
     }
 }

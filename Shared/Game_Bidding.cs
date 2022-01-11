@@ -615,7 +615,7 @@ namespace Treachery.Shared
         {
             CurrentBid = bid;
             var winner = GetPlayer(CurrentBid.Initiator);
-            var receiverIncomeMessage = new MessagePart("");
+            var receiverIncomeMessage = MessagePart.Express();
             PayForCard(winner, CurrentBid.Amount, CurrentBid.AllyContributionAmount, CurrentBid.RedContributionAmount, paymentReceiver, ref receiverIncomeMessage);
             LogBid(winner, CurrentBid.Amount, CurrentBid.AllyContributionAmount, CurrentBid.RedContributionAmount, receiverIncomeMessage);
             RecentMilestones.Add(Milestone.AuctionWon);
@@ -671,7 +671,7 @@ namespace Treachery.Shared
 
         private TreacheryCard WinByHighestBid(Player winner, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, Faction paymentReceiver, Deck<TreacheryCard> toDrawFrom)
         {
-            var receiverIncomeMessage = new MessagePart();
+            var receiverIncomeMessage = MessagePart.Express();
             PayForCard(winner, bidAmount, bidAllyContributionAmount, bidRedContributionAmount, paymentReceiver, ref receiverIncomeMessage);
             LogBid(winner, bidAmount, bidAllyContributionAmount, bidRedContributionAmount, receiverIncomeMessage);
             RecentMilestones.Add(Milestone.AuctionWon);
@@ -773,7 +773,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    message = MessagePart.Express(" {0} prevents {1} from receiving {2} for this card", TreacheryCardType.Karma, paymentReceiver, Concept.Resource);
+                    message = MessagePart.Express(TreacheryCardType.Karma, " prevents ", paymentReceiver, " from receiving ", Concept.Resource, " for this card");
                     if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.RedReceiveBid);
                 }
             }

@@ -30,11 +30,11 @@ namespace Treachery.Shared
         {
             if (!Passed)
             {
-                return new Message(Initiator, "{0} keep the card no faction bid on.", Initiator);
+                return Message.Express(Initiator, " keep the card no faction bid on");
             }
             else
             {
-                return new Message(Initiator, "{0} remove the card no faction bid on from the game.", Initiator);
+                return Message.Express(Initiator, " remove the card no faction bid on from the game");
             }
         }
     }

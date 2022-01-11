@@ -408,7 +408,7 @@ namespace Treachery.Shared
             {
                 Winners.Add(withMostPoints);
                 WinMethod = WinMethod.Strongholds;
-                CurrentReport.Express(withMostPoints.Faction, "{0} are the first after the storm with most victory points");
+                CurrentReport.Express(withMostPoints.Faction, " are the first after the storm with most victory points");
 
                 if (withMostPoints.Ally != Faction.None)
                 {

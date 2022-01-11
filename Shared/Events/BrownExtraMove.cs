@@ -28,7 +28,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return new Message(Initiator, "{0} use a {1} card for extra movement.", Initiator, TreacheryCardType.Useless);
+            return Message.Express(Initiator, " use a ", TreacheryCardType.Useless, " card to gain extra movement");
         }
 
         public static bool CanBePlayedBy(Game g, Player p)

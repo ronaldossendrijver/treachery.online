@@ -1128,7 +1128,7 @@ namespace Treachery.Shared
             }
             else
             {
-                CurrentReport.ExpressIf(outcome.AggSavedByCarthag, Map.Carthag, "{0} stronghold advantage saves ", agg.Hero, " from death by ", TreacheryCardType.Poison);
+                CurrentReport.ExpressIf(outcome.AggSavedByCarthag, Map.Carthag, " stronghold advantage saves ", agg.Hero, " from death by ", TreacheryCardType.Poison);
             }
 
             if (outcome.DefHeroKilled)
@@ -1137,7 +1137,7 @@ namespace Treachery.Shared
             }
             else
             {
-                CurrentReport.ExpressIf(outcome.DefSavedByCarthag, Map.Carthag, "{0} stronghold advantage saves ", def.Hero, " from death by ", TreacheryCardType.Poison);
+                CurrentReport.ExpressIf(outcome.DefSavedByCarthag, Map.Carthag, " stronghold advantage saves ", def.Hero, " from death by ", TreacheryCardType.Poison);
             }
 
             if (BattleInitiated.IsAggressorByJuice(this, def.Player.Faction))

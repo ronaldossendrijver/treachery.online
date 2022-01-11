@@ -24,16 +24,6 @@ namespace Treachery.Test
     [TestClass]
     public class Tests
     {
-        [TestMethod]
-        public void Expression()
-        {
-            var m = new Message(Faction.Red, "{0} give {1} to {2}", Faction.Red, 20, Faction.Green);
-            foreach (var part in m.Expression.Elements)
-            {
-                Console.WriteLine("{0} -> [{1}]", part == null ? "null" : part.GetType(), part);
-            }
-        }
-
         private void SaveSpecialCases(Game g, GameEvent e)
         {
             var choam = g.GetPlayer(Faction.Brown);

@@ -123,16 +123,16 @@ namespace Treachery.Shared
             {
                 if (KarmaBid)
                 {
-                    return new Message(Initiator, "{0} win the bid using {1}", Initiator, TreacheryCardType.Karma);
+                    return Message.Express(Initiator, " win the bid using ", TreacheryCardType.Karma);
                 }
                 else
                 {
-                    return new Message(Initiator, "{0} bid", Initiator);
+                    return Message.Express(Initiator, " bid");
                 }
             }
             else
             {
-                return new Message(Initiator, "{0} pass", Initiator);
+                return Message.Express(Initiator, " pass");
             }
         }
 

@@ -64,9 +64,10 @@ namespace Treachery.Shared
         {
             return Message.Express(
                 Initiator, 
-                " try to retreat {1} {2} and {3} {4} to {5}", 
+                " try to retreat ",
                 MessagePart.ExpressIf(Forces > 0, " and ", Forces, Player.Force),
-                MessagePart.ExpressIf(SpecialForces > 0, " and ", SpecialForces, Player.SpecialForce), 
+                MessagePart.ExpressIf(SpecialForces > 0, " and ", SpecialForces, Player.SpecialForce),
+                " to ",
                 Location);
         }
     }

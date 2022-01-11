@@ -49,11 +49,11 @@ namespace Treachery.Shared
         {
             if (Card.Type == TreacheryCardType.Useless)
             {
-                return new Message(Initiator, "{0} receive 2 by discarding a {1} card.", Initiator, TreacheryCardType.Useless);
+                return Message.Express(Initiator, " get ", new Payment(2), " by discarding a ", TreacheryCardType.Useless, " card");
             }
             else
             {
-                return new Message(Initiator, "{0} receive 3 by discarding a duplicate {1}.", Initiator, Card);
+                return Message.Express(Initiator, " get ", new Payment(3), " by discarding a duplicate ", Card);
             }
         }
 
