@@ -55,5 +55,5 @@
 
     protected override TakeLosses OtherResult => new TakeLosses(Game) { Initiator = Faction, ForceAmount = forceAmount, SpecialForceAmount = specialForceAmount, UseUselessCard = true };
 
-    private string UseUselessLabel => Skin.Current.Format("Use {0}", TakeLosses.ValidUselessCardToPreventLosses(Game, Player));
+    private string UseUselessLabel => Skin.Current.Format("Use {0} to prevent losses", TakeLosses.ValidUselessCardToPreventLosses(Game, Player));
 }

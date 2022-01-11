@@ -46,11 +46,11 @@ namespace Treachery.Shared
             {
                 if (Question == ClairvoyanceQuestion.None)
                 {
-                    return Message.Express("By ", TreacheryCardType.Clairvoyance, ", ", Initiator, " ask ", Target, " a question", TreacheryCardType.Clairvoyance, Initiator, Target);
+                    return Message.Express("By ", TreacheryCardType.Clairvoyance, ", ", Initiator, " ask ", Target, " a question");
                 }
                 else
                 {
-                    return Message.Express("By ", TreacheryCardType.Clairvoyance, ", ", Initiator, " ask ", Target, ": \"", GetQuestion(), "\"", TreacheryCardType.Clairvoyance, Initiator, Target, GetQuestion());
+                    return Message.Express("By ", TreacheryCardType.Clairvoyance, ", ", Initiator, " ask ", Target, ": \"", GetQuestion(), "\"");
                 }
             }
         }

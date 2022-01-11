@@ -819,10 +819,10 @@ namespace Treachery.Shared
                         " rescues ",
                         MessagePart.ExpressIf(forcesToSaveInTerritory > 0, forcesToSaveInTerritory, winner.Force),
                         MessagePart.ExpressIf(specialForcesToSaveInTerritory > 0, specialForcesToSaveInTerritory, winner.SpecialForce),
-                        " on site and ",
+                        MessagePart.ExpressIf(forcesToSaveInTerritory > 0 || specialForcesToSaveInTerritory > 0, " on site and "),
                         MessagePart.ExpressIf(forcesToSaveToReserves > 0, forcesToSaveToReserves, winner.Force),
                         MessagePart.ExpressIf(specialForcesToSaveToReserves > 0, specialForcesToSaveToReserves, winner.SpecialForce),
-                        " to reserves");
+                        MessagePart.ExpressIf(forcesToSaveToReserves > 0 || specialForcesToSaveToReserves > 0, " to reserves"));
                 }
 
                 HandleLoserLosses(territory, winner, 
@@ -1309,10 +1309,10 @@ namespace Treachery.Shared
                     " rescues ",
                     MessagePart.ExpressIf(forcesToSaveInTerritory > 0, forcesToSaveInTerritory, player.Force),
                     MessagePart.ExpressIf(specialForcesToSaveInTerritory > 0, specialForcesToSaveInTerritory, player.SpecialForce),
-                    " on site and ",
+                    MessagePart.ExpressIf(forcesToSaveInTerritory > 0 || specialForcesToSaveInTerritory > 0, " on site and "),
                     MessagePart.ExpressIf(forcesToSaveToReserves > 0, forcesToSaveToReserves, player.Force),
                     MessagePart.ExpressIf(specialForcesToSaveToReserves > 0, specialForcesToSaveToReserves, player.SpecialForce),
-                    " to reserves");
+                    MessagePart.ExpressIf(forcesToSaveToReserves > 0 || specialForcesToSaveToReserves > 0, " to reserves"));
             }
 
             if (!MaySubstituteForceLosses(player) || specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory == 0 || player.ForcesIn(territory) <= plan.Forces + plan.ForcesAtHalfStrength)

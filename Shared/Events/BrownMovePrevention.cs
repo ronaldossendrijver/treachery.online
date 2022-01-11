@@ -40,7 +40,7 @@ namespace Treachery.Shared
 
         public static bool CanBePlayedBy(Game g, Player p)
         {
-            return p.Faction == Faction.Brown && !g.Prevented(FactionAdvantage.BrownDiscarding) && CardToUse(p) != null;
+            return p.Faction == Faction.Brown && ValidTerritories(g, p).Any() && CardToUse(p) != null;
         }
 
         public static TreacheryCard CardToUse(Player p)
