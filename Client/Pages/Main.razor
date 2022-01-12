@@ -12,12 +12,10 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 
-@if (h.ServerSettings != null && h.ServerSettings.ScheduledMaintenance.AddMinutes(15) > DateTime.UtcNow &&
-   (h.ServerSettings.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 8 && h.CurrentPhase <= Phase.AwaitingPlayers ||
-    h.ServerSettings.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 1))
+@if (h.InScheduledMaintenance)
 {
     <div class="alert alert-danger text-center p-0" role="alert">
-        treachery.online will be down for maintenance from @h.ServerSettings.ScheduledMaintenance.ToLocalTime() until @h.ServerSettings.ScheduledMaintenance.AddMinutes(15).ToLocalTime()
+        treachery.online will be down for maintenance from @h.ServerSettings.ScheduledMaintenance.ToLocalTime() until @h.ServerSettings.ScheduledMaintenance.AddMinutes(15).ToLocalTime() (your local time)
     </div>
 }
 
@@ -191,6 +189,7 @@
         }
     }
 
+    private static int times;
     public void Refresh()
     {
         StateHasChanged();

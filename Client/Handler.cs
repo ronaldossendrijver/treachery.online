@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -219,6 +218,7 @@ namespace Treachery.Client
                     JoinErrors[hostID] = denyMessage;
                 }
             }
+
             Refresh();
         }
 
@@ -239,6 +239,7 @@ namespace Treachery.Client
                     JoinErrors[hostID] = denyMessage;
                 }
             }
+
             Refresh();
         }
 
@@ -718,6 +719,12 @@ namespace Treachery.Client
         #endregion ClientUpdates
 
         #region SupportMethods
+
+        public bool InScheduledMaintenance =>
+            ServerSettings != null && 
+            ServerSettings.ScheduledMaintenance.AddMinutes(15) > DateTime.UtcNow &&
+           (ServerSettings.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 6 && CurrentPhase <= Phase.AwaitingPlayers ||
+            ServerSettings.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 1);
 
         public IEnumerable<Type> Actions => Game.GetApplicableEvents(Player, IsHost);
 
