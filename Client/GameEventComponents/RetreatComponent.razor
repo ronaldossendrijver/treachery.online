@@ -12,7 +12,7 @@
     <Header>Try to retreat any number of undial forces to an adjacent empty non-stronghold territory?</Header>
     <Body>
 
-        <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="Retreat.ValidTargets(Game, Player)">
+        <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="Retreat.ValidTargets(Game)">
             <Label>To</Label>
         </SelectComponent>
 
@@ -68,6 +68,6 @@
 
     private void HandleLocationSelected(object sender, Location l)
     {
-        SetIfValid<Location, Location>(ref target, Retreat.ValidTargets(Game, Player), l);
+        SetIfValid<Location, Location>(ref target, Retreat.ValidTargets(Game), l);
     }
 }
