@@ -82,7 +82,7 @@ namespace Treachery.Shared
 
         public static int DetermineCostOfForcesForRed(Game g, Player red, Faction ally, int forces, int specialForces)
         {
-            return (int)Math.Ceiling(forces * GetPricePerForce(g, red, ally) + specialForces * GetPricePerSpecialForce(g, red, ally));
+            return (int)Math.Ceiling(forces * GetPricePerForce(g, red) + specialForces * GetPricePerSpecialForce(g, red, ally));
         }
 
         public static RevivalCost DetermineCost(Game g, Player initiator, IHero hero, int amountOfForces, int amountOfSpecialForces, int extraForcesPaidByRed, int extraSpecialForcesPaidByRed)
@@ -271,7 +271,7 @@ namespace Treachery.Shared
             return price;
         }
 
-        public static float GetPricePerForce(Game g, Player revivingPlayer, Faction ofRevivedForces) =>
+        public static float GetPricePerForce(Game g, Player revivingPlayer) =>
             (MayReviveWithDiscount(g, revivingPlayer) ? 0.5f : 1) * (revivingPlayer.Is(Faction.Brown) && !g.Prevented(FactionAdvantage.BrownRevival) ? 1 : 2);
 
         public static float GetPricePerSpecialForce(Game g, Player revivingPlayer, Faction ofRevivedForces) =>

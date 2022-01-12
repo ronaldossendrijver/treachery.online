@@ -27,7 +27,7 @@ namespace Treachery.Client
         public readonly Game LoadedGame;
         private bool _stopped = false;
 
-        public GameInfo GameBeingEstablished = new GameInfo()
+        public GameInfo GameBeingEstablished = new()
         {
             MaximumNumberOfTurns = 10,
             MaximumNumberOfPlayers = 6,
@@ -237,7 +237,7 @@ namespace Treachery.Client
             }
         }
 
-        public List<string> JoinedObservers = new List<string>();
+        public List<string> JoinedObservers = new();
         private async Task ReceiveRequest_ObserverJoined(string playerConnectionId, ObserverJoined e)
         {
             try
@@ -352,7 +352,7 @@ namespace Treachery.Client
         {
             try
             {
-                int undoNr = eventNr > 0 ? eventNr : GameAtHost.History.Count() - 1;
+                int undoNr = eventNr > 0 ? eventNr : GameAtHost.History.Count - 1;
                 await connection.SendAsync("Undo", GameID, undoNr);
                 GameAtHost = GameAtHost.Undo(undoNr);
             }

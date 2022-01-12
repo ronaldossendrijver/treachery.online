@@ -106,7 +106,7 @@ namespace Treachery.Shared
 
         public static List<TreacheryCard> GetWhiteCards(Game g)
         {
-            return GetCardsInPlay(g, Rule.WhiteTreacheryCards).ToList();
+            return GetCardsInPlay(Rule.WhiteTreacheryCards).ToList();
         }
 
         public static IEnumerable<TreacheryCard> GetCardsInPlay(Game g)
@@ -119,7 +119,7 @@ namespace Treachery.Shared
                 g.Version <= 104 && c.Type == TreacheryCardType.Amal && g.Applicable(Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal));
         }
 
-        public static IEnumerable<TreacheryCard> GetCardsInPlay(Game g, Rule rule)
+        public static IEnumerable<TreacheryCard> GetCardsInPlay(Rule rule)
         {
             return Items.Where(c => c.Rule == rule);
         }

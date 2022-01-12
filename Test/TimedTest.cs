@@ -7,13 +7,15 @@ namespace Treachery.Test
     {
         public event EventHandler<ElapsedEventArgs> Elapsed;
         private readonly Timer _timer;
-        private object _toTest;
+        private readonly object _toTest;
 
         public TimedTest(object toTest, int seconds)
         {
             _toTest = toTest;
-            _timer = new Timer(1000 * seconds);
-            _timer.AutoReset = false;
+            _timer = new Timer(1000 * seconds)
+            {
+                AutoReset = false
+            };
             _timer.Elapsed += Timer_Elapsed;
             //Console.WriteLine(DateTime.Now.ToLongTimeString() + ";Starting timer for game;" + ((Game)toTest).Seed);
             _timer.Start();

@@ -35,10 +35,10 @@ namespace Treachery.Shared
         public static bool CanBePlayed(Game g, Player p)
         {
             var plan = g.CurrentBattle.PlanOf(p);
-            return g.CurrentRetreat == null && plan != null && g.SkilledAs(plan.Hero, LeaderSkill.Diplomat) && MaxForces(g, p) > 0 && ValidTargets(g, p).Any();
+            return g.CurrentRetreat == null && plan != null && g.SkilledAs(plan.Hero, LeaderSkill.Diplomat) && MaxForces(g, p) > 0 && ValidTargets(g).Any();
         }
 
-        public static IEnumerable<Location> ValidTargets(Game g, Player p)
+        public static IEnumerable<Location> ValidTargets(Game g)
         {
             return g.CurrentBattle.Territory.Locations.SelectMany(l => l.Neighbours.Where(neighbour => !g.AnyForcesIn(neighbour.Territory) && !neighbour.IsStronghold)).Distinct();
         }

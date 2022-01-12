@@ -47,7 +47,7 @@ namespace Treachery.Client
 
         private Battle _revisablePlan = null;
         private BattleInitiated _revisablePlanBattle = null;
-        private HubConnection _connection;
+        private readonly HubConnection _connection;
 
         public Handler(Uri uri)
         {

@@ -532,8 +532,6 @@ namespace Treachery.Shared
             return dialNeeded;
         }
 
-        private IEnumerable<Battalion> NearbyBattalions(Location l) => ForcesOnPlanet.Where(kvp => WithinRange(kvp.Key, l, kvp.Value)).Select(kvp => kvp.Value);
-
         private IEnumerable<Battalion> NearbyBattalionsOutsideStrongholds(Location l) => ForcesOnPlanet.Where(kvp => !kvp.Key.IsStronghold && WithinRange(kvp.Key, l, kvp.Value)).Select(kvp => kvp.Value);
 
         protected virtual bool IsSafeAndNearby(Location source, Location destination, Battalion b, bool mayFight)
@@ -582,7 +580,7 @@ namespace Treachery.Shared
 
         private void DoShipment(ShipmentDecision decision, Location destination, int nrOfForces, int nrOfSpecialForces, int noFieldValue, Location destinationforMove, bool useKarma, bool useAllyResources)
         {
-            var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, noFieldValue, destination, true, true);
+            var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, noFieldValue, destination, useKarma, useAllyResources);
 
             if (shipment.IsValid)
             {
@@ -603,44 +601,6 @@ namespace Treachery.Shared
 
             result = new Shipment(Game) { Initiator = Faction, ForceAmount = nrOfForces, SpecialForceAmount = nrOfSpecialForces, NoFieldValue = noFieldValue, Passed = false, From = null, KarmaCard = null, KarmaShipment = false, To = location };
             if (useKarma && noFieldValue < 0) UseKarmaIfApplicable(result);
-            /*
-            int usableNoField = Shipment.ValidNoFieldValues(Game, this).Where(v => v >= nrOfForces + nrOfSpecialForces + 1 - D(1, 3)).OrderByDescending(v => v).DefaultIfEmpty(-1).First();
-            Shipment result;
-            if (Shipment.ValidNoFieldValues(Game, this).Contains(usableNoField))
-            {
-                int forces = nrOfForces;
-                int specialForces = nrOfSpecialForces;
-
-                if (Faction == Faction.White)
-                {
-                    forces = 0;
-                    specialForces = 1;
-                }
-                else
-                {
-                    forces = Math.Min(usableNoField, ForcesInReserve);
-                    specialForces = Math.Min(usableNoField - forces, SpecialForcesInReserve);
-                }
-
-                result = new Shipment(Game)
-                {
-                    Initiator = Faction,
-                    ForceAmount = forces,
-                    SpecialForceAmount = specialForces,
-                    Passed = false,
-                    From = null,
-                    KarmaCard = null,
-                    KarmaShipment = false,
-                    NoFieldValue = usableNoField,
-                    To = location
-                };
-            }
-            else
-            {
-                result = new Shipment(Game) { Initiator = Faction, ForceAmount = nrOfForces, SpecialForceAmount = nrOfSpecialForces, Passed = false, From = null, KarmaCard = null, KarmaShipment = false, To = location };
-                if (useKarma) UseKarmaIfApplicable(result);
-            }
-            */
             if (useAllyResources) UseAllyResources(result);
             return result;
         }

@@ -299,8 +299,10 @@ namespace Treachery.Test
             int countPoints = 0;
             int countForcesOnPlanet = 0;
 
-            var po = new ParallelOptions();
-            po.MaxDegreeOfParallelism = Environment.ProcessorCount;
+            var po = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = Environment.ProcessorCount
+            };
             Parallel.For(0, nrOfGames, po,
                 i =>
                 {

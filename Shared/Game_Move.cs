@@ -187,7 +187,7 @@ namespace Treachery.Shared
 
             if (s.UsingKarma(this))
             {
-                var karmaCard = s.GetKarmaCard(this, initiator);
+                var karmaCard = s.KarmaCard;
                 Discard(karmaCard);
                 RecentMilestones.Add(Milestone.Karma);
             }

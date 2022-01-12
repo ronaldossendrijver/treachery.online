@@ -1038,9 +1038,9 @@ namespace Treachery.Shared
                 specialForcesToRetreat--;
             }
 
-            var to = Retreat.ValidTargets(Game, this).Where(l => ResourcesIn(l) > 0).HighestOrDefault(l => ResourcesIn(l));
-            if (to == null) to = Retreat.ValidTargets(Game, this).FirstOrDefault(l => l.IsProtectedFromStorm);
-            if (to == null) to = Retreat.ValidTargets(Game, this).FirstOrDefault();
+            var to = Retreat.ValidTargets(Game).Where(l => ResourcesIn(l) > 0).HighestOrDefault(l => ResourcesIn(l));
+            if (to == null) to = Retreat.ValidTargets(Game).FirstOrDefault(l => l.IsProtectedFromStorm);
+            if (to == null) to = Retreat.ValidTargets(Game).FirstOrDefault();
 
             if (forcesToRetreat > 0 || specialForcesToRetreat > 0)
             {

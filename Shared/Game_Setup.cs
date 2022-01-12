@@ -277,10 +277,7 @@ namespace Treachery.Shared
                 CurrentReport.Express(thisOffer.Initiator, " and ", match.Initiator, " traded factions");
                 var initiator = GetPlayer(thisOffer.Initiator);
                 var target = GetPlayer(thisOffer.Target);
-                var initiatorsFaction = initiator.Faction;
-                initiator.Faction = target.Faction;
-                target.Faction = initiatorsFaction;
-
+                (target.Faction, initiator.Faction) = (initiator.Faction, target.Faction);
                 FactionTradeOffered invalidOffer;
                 while ((invalidOffer = CurrentTradeOffers.FirstOrDefault(x => x.Initiator == thisOffer.Initiator || x.Initiator == thisOffer.Target)) != null)
                 {
@@ -330,7 +327,7 @@ namespace Treachery.Shared
         private void DealTraitors()
         {
             RecentMilestones.Add(Milestone.Shuffled);
-            TraitorDeck = CreateAndShuffleTraitorDeck(Players.Select(p => p.Faction), Random);
+            TraitorDeck = CreateAndShuffleTraitorDeck(Random);
 
             if (Applicable(Rule.BlackMulligan) && IsPlaying(Faction.Black))
             {
@@ -367,7 +364,7 @@ namespace Treachery.Shared
             }
         }
 
-        private Deck<IHero> CreateAndShuffleTraitorDeck(IEnumerable<Faction> factions, Random random)
+        private Deck<IHero> CreateAndShuffleTraitorDeck(Random random)
         {
             var result = new Deck<IHero>(TraitorsInPlay, random);
             result.Shuffle();

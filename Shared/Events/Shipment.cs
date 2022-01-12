@@ -82,11 +82,6 @@ namespace Treachery.Shared
             }
         }
 
-        public TreacheryCard GetKarmaCard(Game g, Player p)
-        {
-            return KarmaCard;
-        }
-
         public bool UsingKarma(Game g)
         {
             return KarmaCard != null;
