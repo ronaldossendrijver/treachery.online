@@ -42,7 +42,7 @@ namespace Treachery.Client
             await JsInvoke("RemoveFocusFromButtons");
         }
 
-        private static Dictionary<string, Dimensions> measuredText = new Dictionary<string, Dimensions>();
+        private static readonly Dictionary<string, Dimensions> measuredText = new();
         public static async Task<Dimensions> MeasureText(string text, string font)
         {
             string key = text + font;

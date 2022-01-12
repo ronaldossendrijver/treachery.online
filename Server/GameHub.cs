@@ -324,7 +324,7 @@ namespace Treachery.Server
                     var from = Configuration["GameEndEmailFrom"];
                     var to = Configuration["GameEndEmailTo"];
 
-                    MailMessage mailMessage = new MailMessage
+                    MailMessage mailMessage = new()
                     {
                         From = new MailAddress(from),
                         Subject = subject,
@@ -338,7 +338,7 @@ namespace Treachery.Server
                     var savegameToAttach = new Attachment(GenerateStreamFromString(content), "savegame" + DateTime.Now.ToString("yyyyMMdd.HHmm") + ".json");
                     mailMessage.Attachments.Add(savegameToAttach);
 
-                    SmtpClient client = new SmtpClient
+                    SmtpClient client = new()
                     {
                         Credentials = new System.Net.NetworkCredential(username, password),
                         Host = "smtp.strato.com",

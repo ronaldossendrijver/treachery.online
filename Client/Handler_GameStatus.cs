@@ -229,7 +229,7 @@ namespace Treachery.Client
                         return S(
                         Skin.Current.Format("Please bid."),
                         Skin.Current.Format("Factions are thinking about their bids...", Game.BidSequence.CurrentFaction),
-                        Game.Players.Where(p => p.HasRoomForCards && !Game.Bids.Keys.Contains(p.Faction)));
+                        Game.Players.Where(p => p.HasRoomForCards && !Game.Bids.ContainsKey(p.Faction)));
                     }
 
                 case Phase.WhiteAnnouncingAuction:
@@ -276,7 +276,7 @@ namespace Treachery.Client
                         return S(
                         Skin.Current.Format("Please bid."),
                         Skin.Current.Format("Factions are thinking about their bids..."),
-                        Game.Players.Where(p => p.HasRoomForCards && !Game.Bids.Keys.Contains(p.Faction)), Game.LatestEvent());
+                        Game.Players.Where(p => p.HasRoomForCards && !Game.Bids.ContainsKey(p.Faction)), Game.LatestEvent());
                     }
 
                 case Phase.ReplacingCardJustWon:
@@ -646,23 +646,21 @@ namespace Treachery.Client
             return result;
         }
 
-        private GameStatus S(string description, GameEvent timedEvent = null) =>
-            new GameStatus(description, timedEvent);
+        private static GameStatus S(string description, GameEvent timedEvent = null) => new(description, timedEvent);
 
-        private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, GameEvent timedEvent = null) =>
-            new GameStatus(descriptionWhenAwaited, descriptionWhenWaiting, timedEvent);
+        private static GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, GameEvent timedEvent = null) => new(descriptionWhenAwaited, descriptionWhenWaiting, timedEvent);
 
-        private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Player> waitingForPlayers, GameEvent timedEvent = null) =>
-            new GameStatus(descriptionWhenAwaited, descriptionWhenWaiting, waitingForPlayers, timedEvent);
+        private static GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Player> waitingForPlayers, GameEvent timedEvent = null) =>
+            new(descriptionWhenAwaited, descriptionWhenWaiting, waitingForPlayers, timedEvent);
 
         private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, IEnumerable<Faction> waitingForFactions, GameEvent timedEvent = null) =>
-            new GameStatus(descriptionWhenAwaited, descriptionWhenWaiting, waitingForFactions.Select(f => Game.GetPlayer(f)), timedEvent);
+            new(descriptionWhenAwaited, descriptionWhenWaiting, waitingForFactions.Select(f => Game.GetPlayer(f)), timedEvent);
 
-        private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, Player waitingForPlayer, GameEvent timedEvent = null) =>
-            new GameStatus(descriptionWhenAwaited, descriptionWhenWaiting, waitingForPlayer, timedEvent);
+        private static GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, Player waitingForPlayer, GameEvent timedEvent = null) =>
+            new(descriptionWhenAwaited, descriptionWhenWaiting, waitingForPlayer, timedEvent);
 
         private GameStatus S(string descriptionWhenAwaited, string descriptionWhenWaiting, Faction waitingForFaction, GameEvent timedEvent = null) =>
-            new GameStatus(descriptionWhenAwaited, descriptionWhenWaiting, Game.GetPlayer(waitingForFaction), timedEvent);
+            new(descriptionWhenAwaited, descriptionWhenWaiting, Game.GetPlayer(waitingForFaction), timedEvent);
 
 
         private FlashInfo EventInfo(GameEvent e)
@@ -690,7 +688,7 @@ namespace Treachery.Client
             return result;
         }
 
-        private FlashInfo CardInfo(GameEvent e, TreacheryCardType t)
+        private static FlashInfo CardInfo(GameEvent e, TreacheryCardType t)
         {
             FlashInfo result;
             result.Url = Skin.Current.GetImageURL(TreacheryCardManager.GetCardsInAndOutsidePlay().First(card => card.Type == t));
@@ -698,7 +696,7 @@ namespace Treachery.Client
             return result;
         }
 
-        private FlashInfo CardInfo(GameEvent e, LeaderSkill s)
+        private static FlashInfo CardInfo(GameEvent e, LeaderSkill s)
         {
             FlashInfo result;
             result.Url = Skin.Current.GetImageURL(s);
@@ -706,7 +704,7 @@ namespace Treachery.Client
             return result;
         }
 
-        private FlashInfo CardInfo(Faction f)
+        private static FlashInfo CardInfo(Faction f)
         {
             FlashInfo result;
             result.Url = Skin.Current.GetImageURL(f);
@@ -714,7 +712,7 @@ namespace Treachery.Client
             return result;
         }
 
-        private FlashInfo CardInfo(GameEvent e, TreacheryCard c)
+        private static FlashInfo CardInfo(GameEvent e, TreacheryCard c)
         {
             FlashInfo result;
             result.Url = Skin.Current.GetImageURL(c);
@@ -731,7 +729,7 @@ namespace Treachery.Client
             return result;
         }
 
-        private FlashInfo CardInfo(ResourceCard c, Message m)
+        private static FlashInfo CardInfo(ResourceCard c, Message m)
         {
             FlashInfo result;
             result.Url = Skin.Current.GetImageURL(c);

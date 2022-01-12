@@ -51,7 +51,7 @@
                         if (!joinPWD.ContainsKey(av.HostID))
                         {
                             joinPWD.Add(av.HostID, "");
-                            h._joinError.Add(av.HostID, "");
+                            h.JoinErrors.Add(av.HostID, "");
                         }
 
                         <tr class="small">
@@ -70,7 +70,7 @@
                                     }
                                     <button class="btn btn-primary btn-sm" @onclick="@(e => JoinGameAsPlayer(av.HostID, joinPWD[av.HostID]))">Join</button>
                                     <button class="btn btn-primary btn-sm" @onclick="@(e => JoinGameAsObserver(av.HostID, joinPWD[av.HostID]))">Observe</button>
-                                    <div class="text-danger">@h._joinError[av.HostID]</div>
+                                    <div class="text-danger">@h.JoinErrors[av.HostID]</div>
                                 </td>
                             }
                             else
@@ -79,7 +79,7 @@
                                     @GameInfoMessage(av)
                                 </td>
                                 <td>
-                                    @if (h._gameinprogressHostId == av.HostID)
+                                    @if (h.GameInProgressHostId == av.HostID)
                                     {
                                         <div class="form-inline">
                                             @if (av.HasPassword)
@@ -88,7 +88,7 @@
                                             }
                                             <button class="btn btn-primary btn-sm" @onclick="@(e => RejoinGameAsPlayer(av.HostID, joinPWD[av.HostID]))">Reconnect</button>
                                         </div>
-                                        <div class="text-danger">@h._joinError[av.HostID]</div>
+                                        <div class="text-danger">@h.JoinErrors[av.HostID]</div>
                                     }
                                     <button class="btn btn-primary btn-sm" @onclick="@(e => RejoinGameAsObserver(av.HostID, joinPWD[av.HostID]))">Observe</button>
                                 </td>
@@ -153,25 +153,25 @@
 
     private async Task JoinGameAsPlayer(int hostID, string pwd)
     {
-        h._joinError[hostID] = "";
+        h.JoinErrors[hostID] = "";
         await h.Request(hostID, new PlayerJoined() { HashedPassword = Support.GetHash(pwd), Name = h.PlayerName });
     }
 
     private async Task RejoinGameAsPlayer(int hostID, string pwd)
     {
-        h._joinError[hostID] = "";
-        await h.Request(h._gameinprogressHostId, new PlayerRejoined() { HashedPassword = Support.GetHash(pwd), Name = h.PlayerName });
+        h.JoinErrors[hostID] = "";
+        await h.Request(h.GameInProgressHostId, new PlayerRejoined() { HashedPassword = Support.GetHash(pwd), Name = h.PlayerName });
     }
 
     private async Task JoinGameAsObserver(int hostID, string pwd)
     {
-        h._joinError[hostID] = "";
+        h.JoinErrors[hostID] = "";
         await h.Request(hostID, new ObserverJoined() { HashedPassword = Support.GetHash(pwd), Name = h.PlayerName });
     }
 
     private async Task RejoinGameAsObserver(int hostID, string pwd)
     {
-        h._joinError[hostID] = "";
+        h.JoinErrors[hostID] = "";
         await h.Request(hostID, new ObserverRejoined() { HashedPassword = Support.GetHash(pwd), Name = h.PlayerName });
     }
 

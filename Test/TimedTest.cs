@@ -6,7 +6,7 @@ namespace Treachery.Test
     internal class TimedTest : IDisposable
     {
         public event EventHandler<ElapsedEventArgs> Elapsed;
-        private Timer _timer;
+        private readonly Timer _timer;
         private object _toTest;
 
         public TimedTest(object toTest, int seconds)

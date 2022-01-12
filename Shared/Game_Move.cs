@@ -79,7 +79,7 @@ namespace Treachery.Shared
         }
 
         private bool BGMayAccompany;
-        private List<Territory> ChosenDestinationsWithAllies = new List<Territory>();
+        private readonly List<Territory> ChosenDestinationsWithAllies = new List<Territory>();
 
         public void HandleEvent(Shipment s)
         {

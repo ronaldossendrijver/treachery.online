@@ -63,8 +63,7 @@
                          X="@(ttx + Skin.Current.PlayerTokenRadius)" Y="@(tty + Skin.Current.PlayerTokenRadius)"
                          Font="@Skin.Current.SKILL_FONT" FontColor="@Skin.Current.SKILL_FONTCOLOR"
                          BorderWidth="@Skin.Current.SKILL_FONT_BORDERWIDTH" BorderColor="@Skin.Current.SKILL_FONT_BORDERCOLOR"
-                         Align="@TextAlignment.Center" MaxWidth="2.2f * Skin.Current.PlayerTokenRadius"
-                         Popover="@Support.GetSkilledLeaderHTML(skilledLeader, h.Game.Skill(skilledLeader))" PopoverStyle=""/>
+                         Align="@TextAlignment.Center" MaxWidth="2.2f * Skin.Current.PlayerTokenRadius"/>
             }
 
             if (p.Faction == Faction.White && Game.LatestRevealedNoFieldValue >= 0)

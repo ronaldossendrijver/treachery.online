@@ -22,35 +22,49 @@ namespace Treachery.Client
         public const int DISCONNECT_TIMEOUT = 25000;
         public const int CHATMESSAGE_LIFETIME = 120;
 
-        public readonly HubConnection _connection;
-        private readonly ILogger _logger;
-
-        public string PlayerName = "";
         public Game Game;
-        public HostProxy HostProxy = null;
-        public Host Host = null;
-        public bool IsObserver = false;
+        public string PlayerName { get; private set; } = "";
+        public HostProxy HostProxy { get; private set; } = null;
+        public Host Host { get; private set; } = null;
+        public bool IsObserver { get; private set; } = false;
         public ServerSettings ServerSettings { get; private set; }
-
-        public Dictionary<int, string> _joinError = new();
-        public int _gameinprogressHostId;
-        public Battle _battleUnderConstruction = null;
-        public int BidAutoPassThreshold = 0;
-        public bool Autopass = false;
-        public bool KeepAutopassSetting = false;
-        public float CurrentEffectVolume = -1;
-        public float CurrentChatVolume = -1;
-        public bool ShowWheelsAndHMS = true;
-        public bool StatisticsSent = false;
-        private Battle RevisablePlan = null;
-        private BattleInitiated RevisablePlanBattle = null;
-
-        public bool BotsArePaused { get; private set; } = false;
-
-        public bool IsGameMaster => !IsObserver && Player.Faction == Faction.None && CurrentPhase > Phase.TradingFactions;
-
-
+        public Dictionary<int, string> JoinErrors { get; private set; } = new();
+        public int GameInProgressHostId { get; private set; }
         public DateTime Disconnected { get; private set; } = default;
+
+        public Battle BattleUnderConstruction { get; set; } = null;
+        
+        public int BidAutoPassThreshold { get; set; } = 0;
+        public bool Autopass { get; set; } = false;
+        public bool KeepAutopassSetting { get; set; } = false;
+        
+        public float CurrentEffectVolume { get; set; } = -1;
+        public float CurrentChatVolume { get; set; } = -1;
+        
+        public bool ShowWheelsAndHMS { get; set; } = true;
+        public bool StatisticsSent { get; set; } = false;
+        public bool BotsArePaused { get; set; } = false;
+
+        private Battle _revisablePlan = null;
+        private BattleInitiated _revisablePlanBattle = null;
+        private HubConnection _connection;
+
+        public Handler(Uri uri)
+        {
+            _connection = new HubConnectionBuilder()
+            .WithUrl(uri)
+            .WithAutomaticReconnect(new RetryPolicy())
+            .AddNewtonsoftJsonProtocol(configuration =>
+            {
+                configuration.PayloadSerializerSettings.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All;
+                configuration.PayloadSerializerSettings.Error += LogSerializationError;
+            })
+            .Build();
+
+            Game = new Game();
+            UpdateStatus();
+            RegisterHandlers();
+        }
 
         public bool IsDisconnected
         {
@@ -63,25 +77,6 @@ namespace Treachery.Client
             {
                 Disconnected = default;
             }
-        }
-
-        public Handler(Uri uri, ILogger logger)
-        {
-            _connection = new HubConnectionBuilder()
-            .WithUrl(uri)
-            .WithAutomaticReconnect(new RetryPolicy())
-            .AddNewtonsoftJsonProtocol(configuration =>
-            {
-                configuration.PayloadSerializerSettings.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All;
-                configuration.PayloadSerializerSettings.Error += LogSerializationError;
-            })
-            .Build();
-
-            _logger = logger;
-
-            Game = new Game();
-            UpdateStatus();
-            RegisterHandlers();
         }
 
         public event Action RefreshHandler;
@@ -111,15 +106,15 @@ namespace Treachery.Client
 
         public void SetRevisablePlan(Battle plan)
         {
-            RevisablePlan = plan;
-            RevisablePlanBattle = Game.CurrentBattle;
+            _revisablePlan = plan;
+            _revisablePlanBattle = Game.CurrentBattle;
         }
 
         public Battle GetRevisablePlan()
         {
-            if (RevisablePlan != null && RevisablePlanBattle == Game.CurrentBattle)
+            if (_revisablePlan != null && _revisablePlanBattle == Game.CurrentBattle)
             {
-                return RevisablePlan;
+                return _revisablePlan;
             }
             else
             {
@@ -129,7 +124,7 @@ namespace Treachery.Client
 
         public async Task StartHost(string hostPWD, string loadedGameData, Game loadedGame)
         {
-            Host = new Host(PlayerName, hostPWD, this, loadedGameData, loadedGame);
+            Host = new Host(PlayerName, hostPWD, this, loadedGameData, loadedGame, _connection);
             await LetHostJoin();
         }
 
@@ -137,7 +132,7 @@ namespace Treachery.Client
         {
             if (IsHost && !Host.JoinedPlayers.Any())
             {
-                _joinError[Host.HostID] = "";
+                JoinErrors[Host.HostID] = "";
                 await Request(Host.HostID, new PlayerJoined() { HashedPassword = Support.GetHash(Host.gamePassword), Name = PlayerName });
                 await Task.Delay(5000).ContinueWith(e => LetHostJoin());
             }
@@ -215,13 +210,13 @@ namespace Treachery.Client
                 IsObserver = false;
                 hostLastSeen = DateTime.Now;
 
-                var _ = Heartbeat(_gameinprogressHostId);
+                var _ = Heartbeat(GameInProgressHostId);
             }
             else
             {
-                if (_joinError.ContainsKey(hostID))
+                if (JoinErrors.ContainsKey(hostID))
                 {
-                    _joinError[hostID] = denyMessage;
+                    JoinErrors[hostID] = denyMessage;
                 }
             }
             Refresh();
@@ -235,13 +230,13 @@ namespace Treachery.Client
                 HostProxy = new HostProxy(hostID, _connection);
                 IsObserver = true;
                 hostLastSeen = DateTime.Now;
-                var _ = Heartbeat(_gameinprogressHostId);
+                var _ = Heartbeat(GameInProgressHostId);
             }
             else
             {
-                if (_joinError.ContainsKey(hostID))
+                if (JoinErrors.ContainsKey(hostID))
                 {
-                    _joinError[hostID] = denyMessage;
+                    JoinErrors[hostID] = denyMessage;
                 }
             }
             Refresh();
@@ -261,7 +256,7 @@ namespace Treachery.Client
 
         public async Task Heartbeat(int gameInProgressHostId)
         {
-            if (gameInProgressHostId == _gameinprogressHostId && nrOfHeartbeats++ < MAX_HEARTBEATS && HostProxy != null)
+            if (gameInProgressHostId == GameInProgressHostId && nrOfHeartbeats++ < MAX_HEARTBEATS && HostProxy != null)
             {
                 try
                 {
@@ -735,7 +730,7 @@ namespace Treachery.Client
 
         public async Task CheckIfPlayerCanReconnect()
         {
-            _gameinprogressHostId = 0;
+            GameInProgressHostId = 0;
 
             int currentGameHostID = await Browser.LoadSetting<int>(string.Format("treachery.online;currentgame;{0};hostid", PlayerName.ToLower().Trim()));
             if (currentGameHostID == 0) return;
@@ -743,7 +738,7 @@ namespace Treachery.Client
             DateTime currentGameDateTime = await Browser.LoadSetting<DateTime>(string.Format("treachery.online;currentgame;{0};time", PlayerName.ToLower().Trim()));
             if (DateTime.Now.Subtract(currentGameDateTime).TotalSeconds > 900) return;
 
-            _gameinprogressHostId = currentGameHostID;
+            GameInProgressHostId = currentGameHostID;
         }
 
         public async Task ToggleBotPause()
@@ -808,6 +803,4 @@ namespace Treachery.Client
 
         #endregion
     }
-
-
 }

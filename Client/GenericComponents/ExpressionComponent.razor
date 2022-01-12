@@ -2,86 +2,84 @@
 @using System.Collections;
 @using System.Linq;
 
-@{
-    for (int elementnr = 0; elementnr < Expression.Elements.Length; elementnr++)
+@for (int elementnr = 0; elementnr < Expression.Elements.Length; elementnr++)
+{
+    var part = Expression.Elements[elementnr];
+
+    if (part == null)
     {
-        var part = Expression.Elements[elementnr];
+        <span>-</span>
+    }
+    else if (part is string)
+    {
+        <span>@part</span>
+    }
+    else if (part is IEnumerable e)
+    {
+        var elts = new List<object>();
+        foreach (var elt in e)
+        {
+            elts.Add(elt);
+        }
+        var expression = new Expression(elts);
 
-        if (part == null)
+        <ExpressionComponent Expression=expression Size=@Size/>
+    }
+    else if (part is MessagePart mp)
+    {
+        <ExpressionComponent Expression=mp.Expression Size=@Size/>
+    }
+    else if (part is int || part is float || part is double)
+    {
+        <span class="badge badge-light">@part</span>
+    }
+    else if (part is Payment payment)
+    {
+        <TextBeforeImage ImageURL="@Skin.Current.Harvester_URL" Size=@Size Title="@Skin.Current.Describe(Concept.Resource)">@payment.Amount</TextBeforeImage>
+        @if (payment.By != Faction.None)
         {
-            <span>-</span>
+            <span> by <FactionComponent Faction=payment.By Diameter=@Size/></span>    
         }
-        else if (part is string)
-        {
-            <span>@part</span>
-        }
-        else if (part is IEnumerable e)
-        {
-            var elts = new List<object>();
-            foreach (var elt in e)
-            {
-                elts.Add(elt);
-            }
-            var expression = new Expression(elts);
-
-            <ExpressionComponent Expression=expression Size=@Size/>
-        }
-        else if (part is MessagePart mp)
-        {
-            <ExpressionComponent Expression=mp.Expression Size=@Size/>
-        }
-        else if (part is int || part is float || part is double)
-        {
-            <span class="badge badge-light">@part</span>
-        }
-        else if (part is Payment payment)
-        {
-            <TextBeforeImage ImageURL="@Skin.Current.Harvester_URL" Size=@Size Title="@Skin.Current.Describe(Concept.Resource)">@payment.Amount</TextBeforeImage>
-            @if (payment.By != Faction.None)
-            {
-                <span> by <FactionComponent Faction=payment.By Diameter=@Size/></span>    
-            }
-        }
-        else if (part is Faction faction)
-        {
-            <FactionComponent Faction=faction Diameter=@Size/>
-        }
-        else if (part is TreacheryCard tc)
-        {
-            <span class="font-weight-bold" data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(tc)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(tc)</span>
-        }
-        else if (part is LeaderSkill skill)
-        {
-            <span class="font-weight-bold" data-animation="true" data-content="@Support.GetSkillCardHoverHTML(skill)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(skill)</span>
-        }
-        else if (part is IHero hero)
-        {
-            <span class="font-weight-bold" style="@Support.TextBorder(2, Skin.Current.FactionColor[hero.Faction])" data-content="@Support.GetHeroHoverHTML(hero)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(hero)</span>
-        }
-        else if (part is Concept monster && monster == Concept.Monster)
-        {
-            <img src=@Skin.Current.Monster_URL width=@Size height=@Size title=@Skin.Current.Describe(Concept.Monster)/>
-        }
-        else if (part is TechToken tt)
-        {
-            <img src=@Skin.Current.GetImageURL(tt) width=@Size height=@Size data-animation="true" data-content="@Support.GetTechTokenHTML(tt)" data-html="true" data-trigger="hover" data-toggle="popover"/>
-        }
-        else if (part is FactionForce ff)
-        {
-            <img src=@Skin.Current.GetImageURL(ff) title=@Skin.Current.Describe(ff) width=@Size height=@Size />
-        }
-        else if (part is FactionSpecialForce fsf)
-        {
-            <img src=@Skin.Current.GetImageURL(fsf) title=@Skin.Current.Describe(fsf) width=@Size height=@Size/>
-        }
-        else if (part is Location || part is Territory || part is AuctionType || part is BrownEconomicsStatus || part is TreacheryCardType)
-        {
-            <span class="font-weight-bold">@Skin.Current.Describe(part)</span>
-        }
-        else
-        {
-            <span>@Skin.Current.Describe(part)</span>
-        }
+    }
+    else if (part is Faction faction)
+    {
+        <FactionComponent Faction=faction Diameter=@Size/>
+    }
+    else if (part is TreacheryCard tc)
+    {
+        <span class="font-weight-bold" data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(tc)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(tc)</span>
+    }
+    else if (part is LeaderSkill skill)
+    {
+        <span class="font-weight-bold" data-animation="true" data-content="@Support.GetSkillCardHoverHTML(skill)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(skill)</span>
+    }
+    else if (part is IHero hero)
+    {
+        <span class="font-weight-bold" style="@Support.TextBorder(2, Skin.Current.FactionColor[hero.Faction])" data-content="@Support.GetHeroHoverHTML(hero)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(hero)</span>
+    }
+    else if (part is Concept monster && monster == Concept.Monster)
+    {
+        <img src=@Skin.Current.Monster_URL width=@Size height=@Size title=@Skin.Current.Describe(Concept.Monster)/>
+    }
+    else if (part is TechToken tt)
+    {
+        <img src=@Skin.Current.GetImageURL(tt) width=@Size height=@Size data-animation="true" data-content="@Support.GetTechTokenHTML(tt)" data-html="true" data-trigger="hover" data-toggle="popover"/>
+    }
+    else if (part is FactionForce ff)
+    {
+        <img src=@Skin.Current.GetImageURL(ff) title=@Skin.Current.Describe(ff) width=@Size height=@Size />
+    }
+    else if (part is FactionSpecialForce fsf)
+    {
+        <img src=@Skin.Current.GetImageURL(fsf) title=@Skin.Current.Describe(fsf) width=@Size height=@Size/>
+    }
+    else if (part is Location || part is Territory || part is AuctionType || part is BrownEconomicsStatus || part is TreacheryCardType)
+    {
+        <span class="font-weight-bold">@Skin.Current.Describe(part)</span>
+    }
+    else
+    {
+        <span>@Skin.Current.Describe(part)</span>
     }
 }
 

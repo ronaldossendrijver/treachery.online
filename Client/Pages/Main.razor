@@ -10,7 +10,6 @@
 @using Microsoft.Extensions.Logging;
 
 @inject NavigationManager NavigationManager
-@inject ILogger<Index> logger
 @inject IJSRuntime JSRuntime
 
 @if (h.ServerSettings != null && h.ServerSettings.ScheduledMaintenance.AddMinutes(15) > DateTime.UtcNow &&
@@ -155,7 +154,7 @@
     protected override async Task OnInitializedAsync()
     {
         Browser.Initialize(JSRuntime);
-        h = new Handler(NavigationManager.ToAbsoluteUri("/gameHub"), logger);
+        h = new Handler(NavigationManager.ToAbsoluteUri("/gameHub"));
         await h.Start();
         h.RefreshHandler += Refresh;
         await LoadSkinDataIfSaved();

@@ -33,7 +33,7 @@ namespace Treachery.Test
             }
         }
 
-        private List<Type> Written = new List<Type>();
+        private readonly List<Type> Written = new();
         private void WriteSavegameIfApplicable(Game g, Type t)
         {
             if (!Written.Contains(t))
@@ -50,7 +50,7 @@ namespace Treachery.Test
             }
         }
 
-        private List<string> WrittenCases = new List<string>();
+        private readonly List<string> WrittenCases = new();
         private void WriteSavegameIfApplicable(Game g, Player playerWithAction, string c)
         {
             if (!WrittenCases.Contains(c))
@@ -428,7 +428,7 @@ namespace Treachery.Test
             var rulesAsArray = rules.ToArray();
             var wincounter = new ObjectCounter<Faction>();
 
-            ParallelOptions po = new ParallelOptions();
+            ParallelOptions po = new();
             po.MaxDegreeOfParallelism = Environment.ProcessorCount;
             Parallel.For(0, nrOfGames, po,
                    index =>
@@ -463,8 +463,8 @@ namespace Treachery.Test
             }
         }
 
-        private List<TimedTest> timedTests = new List<TimedTest>();
-        private List<Game> failedGames = new List<Game>();
+        private readonly List<TimedTest> timedTests = new();
+        private readonly List<Game> failedGames = new();
         private Game LetBotsPlay(Rule[] rules, List<Faction> factions, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool infoLogging, bool performTests)
         {
             var game = new Game(false)
@@ -547,7 +547,7 @@ namespace Treachery.Test
             failedGames.Add(game);
         }
 
-        private GameEvent PerformBotEvent(Game game, bool performTests)
+        private static GameEvent PerformBotEvent(Game game, bool performTests)
         {
             var bots = Deck<Player>.Randomize(game.Players.Where(p => p.IsBot));
 
@@ -631,7 +631,7 @@ namespace Treachery.Test
                 Console.WriteLine("Re-playing all savegame files in {0}...", Directory.GetCurrentDirectory());
 
                 int gamesTested = 0;
-                ParallelOptions po = new ParallelOptions();
+                ParallelOptions po = new();
                 po.MaxDegreeOfParallelism = Environment.ProcessorCount;
                 Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), po, f =>
                 {
@@ -975,7 +975,7 @@ namespace Treachery.Test
         {
             if (OperatingSystem.IsWindows())
             {
-                Matrix combinedMatrix = new Matrix();
+                Matrix combinedMatrix = new();
                 foreach (var tc in transforms)
                 {
                     foreach (var t in tc)
@@ -1102,7 +1102,7 @@ namespace Treachery.Test
 
         public static void TranslatePoints()
         {
-            Game g = new Game();
+            Game g = new();
             foreach (var l in g.Map.Locations)
             {
                 Console.WriteLine("{0};{1};{2};{3};{4};{5};{6}",

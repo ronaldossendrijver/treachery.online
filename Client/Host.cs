@@ -37,7 +37,7 @@ namespace Treachery.Client
             FactionsInPlay = EstablishPlayers.AvailableFactions().ToList()
         };
 
-        public Host(string hostName, string gamePassword, Handler h, string loadedGameData, Game loadedGame)
+        public Host(string hostName, string gamePassword, Handler h, string loadedGameData, Game loadedGame, HubConnection hubConnection)
         {
             HostID = (new Random()).Next();
             Name = hostName;
@@ -46,7 +46,7 @@ namespace Treachery.Client
             this.h = h;
             LoadedGameData = loadedGameData;
             LoadedGame = loadedGame;
-            connection = h._connection;
+            connection = hubConnection;
             GameAtHost = new Game();
             RegisterHandlers();
             _ = Heartbeat();

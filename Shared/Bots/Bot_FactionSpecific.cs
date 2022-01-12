@@ -192,8 +192,10 @@ namespace Treachery.Shared
 
         protected PerformYellowSetup DeterminePerformYellowSetup()
         {
-            var forceLocations = new Dictionary<Location, Battalion>();
-            forceLocations.Add(Game.Map.FalseWallSouth.MiddleLocation, new Battalion() { Faction = Faction, AmountOfForces = 3 + D(1, 4), AmountOfSpecialForces = SpecialForcesInReserve > 0 ? 1 : 0 });
+            var forceLocations = new Dictionary<Location, Battalion>
+            {
+                { Game.Map.FalseWallSouth.MiddleLocation, new Battalion() { Faction = Faction, AmountOfForces = 3 + D(1, 4), AmountOfSpecialForces = SpecialForcesInReserve > 0 ? 1 : 0 } }
+            };
 
             int forcesLeft = 10 - forceLocations.Sum(kvp => kvp.Value.TotalAmountOfForces);
 
