@@ -751,7 +751,7 @@ namespace Treachery.Test
         }
         */
 
-        private Testvalues DetermineTestvalues(Game game)
+        private static Testvalues DetermineTestvalues(Game game)
         {
             var result = new Testvalues
             {
@@ -1009,7 +1009,7 @@ namespace Treachery.Test
 
             return (float)Math.Round(radius, digits);
         }
-
+        /*
         [TestMethod]
         public static void SVG()
         {
@@ -1101,7 +1101,9 @@ namespace Treachery.Test
             var newPath = string.Join(' ', shape.Select(s => s.ToSvgString()));
             //Console.WriteLine( "{0}{1}{2}", xml.Substring(0, 9), newPath, xml.Substring(end, xml.Length - end));
         }
+        */
 
+        /*
         public static void TranslatePoints()
         {
             Game g = new();
@@ -1132,6 +1134,7 @@ namespace Treachery.Test
 
             return new PointF((int)(7.362344583f * thePoints[0].X), (int)(7.349840256f * thePoints[0].Y));
         }
+        */
 
         private static void SaveObject(object toSave, string filename)
         {
@@ -1143,11 +1146,13 @@ namespace Treachery.Test
             var skinData = writer.ToString();
             File.WriteAllText(filename, skinData);
         }
+        
 
         private static int GetRandomId()
         {
             return (new Random()).Next();
         }
+        
 
         [TestMethod]
         public void TestShuffleMethod()
@@ -1170,7 +1175,7 @@ namespace Treachery.Test
             }
         }
 
-        private double CalculateStandardDeviation(IEnumerable<double> values)
+        private static double CalculateStandardDeviation(IEnumerable<double> values)
         {
             double standardDeviation = 0;
 

@@ -62,29 +62,14 @@ namespace Treachery.Shared
 
         public int SkinId => Id;
 
-        public override bool Equals(object obj)
-        {
-            return (obj is Leader l && l.Id == Id);
-        }
+        public override bool Equals(object obj) => (obj is Leader l && l.Id == Id);
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
-        public override string ToString()
-        {
-            return Name;
-        }
+        public override string ToString() => Name;
 
-        public bool IsTraitor(IHero hero)
-        {
-            return hero == this;
-        }
+        public bool IsTraitor(IHero hero) => hero == this;
 
-        public bool IsFaceDancer(IHero hero)
-        {
-            return hero == this;
-        }
+        public bool IsFaceDancer(IHero hero) => hero == this;
     }
 }

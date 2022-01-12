@@ -101,9 +101,6 @@ namespace Treachery.Shared
         RemovedFromGame = 50
     }
 
-    /// <summary>
-    /// When adding a new phase, make sure you add it to Treachery.online.Client.Handler_GameStatus and Treachery.Shared.Skin
-    /// </summary>
     public enum Phase : int
     {
         None = 0,

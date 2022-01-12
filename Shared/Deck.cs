@@ -85,13 +85,7 @@ namespace Treachery.Shared
             return deck.Items;
         }
 
-        public bool IsEmpty
-        {
-            get
-            {
-                return Items.Count == 0;
-            }
-        }
+        public bool IsEmpty => Items.Count == 0;
 
         public T Top
         {

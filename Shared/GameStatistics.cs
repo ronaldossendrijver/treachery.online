@@ -2,6 +2,8 @@
 
 namespace Treachery.Shared
 {
+    #pragma warning disable IDE1006 // Naming Styles
+
     public class GameStatistics
     {
         public DateTime date { get; set; }
@@ -26,4 +28,6 @@ namespace Treachery.Shared
         public string id { get; set; }
     }
 
+    #pragma warning restore IDE1006 // Naming Styles
+    
 }

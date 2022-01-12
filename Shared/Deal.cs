@@ -41,7 +41,7 @@ namespace Treachery.Shared
             return default;
         }
 
-        public static string DealContentsDescription(Game g, DealType Type, string Text, int benefit, Phase End, string Parameter1, string Parameter2)
+        public static string DealContentsDescription(Game g, DealType Type, string Text, int benefit, Phase End, string Parameter1)
         {
             string description;
             if (Text != null && Text.Length > 0)
@@ -65,12 +65,12 @@ namespace Treachery.Shared
 
         public string DealContentsDescription(Game g)
         {
-            return DealContentsDescription(g, Type, Text, Benefit, End, DealParameter1, DealParameter2);
+            return DealContentsDescription(g, Type, Text, Benefit, End, DealParameter1);
         }
 
         public string ToString(Game g)
         {
-            var description = DealContentsDescription(g, Type, Text, Benefit, End, DealParameter1, DealParameter2);
+            var description = DealContentsDescription(g, Type, Text, Benefit, End, DealParameter1);
             return Skin.Current.Format("{0} ⇔ {1}: {2}", BoundFaction, ConsumingFaction, description);
         }
     }

@@ -45,7 +45,7 @@ namespace Treachery.Shared
         {
             if (!Cancel)
             {
-                return Message.Express(Initiator, " offer ", MessagePart.ExpressIf(To.Any(), ToObjects(To)), " for ", new Payment(Price), ": ", Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1, DealParameter2));
+                return Message.Express(Initiator, " offer ", MessagePart.ExpressIf(To.Any(), ToObjects(To)), " for ", new Payment(Price), ": ", Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1));
             }
             else
             {
@@ -66,7 +66,7 @@ namespace Treachery.Shared
 
         public string GetDealDescription()
         {
-            return Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1, DealParameter2);
+            return Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1);
         }
 
         protected override void ExecuteConcreteEvent()

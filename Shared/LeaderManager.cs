@@ -108,12 +108,6 @@ namespace Treachery.Shared
             return Leaders.Where(l => l.Faction == faction);
         }
 
-
-        public static Leader Find(string leaderName)
-        {
-            return Leaders.Where(l => l.Name == leaderName).SingleOrDefault();
-        }
-
         public class LeaderFetcher : IFetcher<Leader>
         {
             public Leader Find(int id)

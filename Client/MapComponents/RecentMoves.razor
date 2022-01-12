@@ -1,53 +1,43 @@
-﻿@using Treachery.Shared
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+ 
+@using Treachery.Shared
 @inherits MapComponent
 
-@{
-    if (Skin.Current.ShowArrowsForRecentMoves && h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
-    {
-        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-             width="@(Skin.Current.PlanetRadius * 2)" height="@(Skin.Current.PlanetRadius * 2)" 
-             style="position: absolute; left:0px; top:0px; height: 100%; width: 100%;"
-             pointer-events="none">
+
+@if (Skin.Current.ShowArrowsForRecentMoves && h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
+{
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+            width="@(Skin.Current.PlanetRadius * 2)" height="@(Skin.Current.PlanetRadius * 2)" 
+            style="position: absolute; left:0px; top:0px; height: 100%; width: 100%;"
+            pointer-events="none">
             
-            @foreach (var move in h.Game.RecentMoves.Where(move => !move.Passed))
+        @foreach (var move in h.Game.RecentMoves.Where(move => !move.Passed))
+        {
+            foreach (var origin in move.ForceLocations.Keys)
             {
-                foreach (var origin in move.ForceLocations.Keys)
-                {
-                    var path = Map.FindFirstShortestPath(origin, move.To, false, move.Initiator, Game);
+                var path = Map.FindFirstShortestPath(origin, move.To, false, move.Initiator, Game);
 
-                    if (path != null) {
+                if (path != null) {
 
-                        Location from = null;
-                        foreach (var to in path)
+                    Location from = null;
+                    foreach (var to in path)
+                    {
+                        if (from != null && (to == move.To || to.Territory != from.Territory))
                         {
-                            if (from != null && (to == move.To || to.Territory != from.Territory))
-                            {
-                                <Arrow FillColor="@Skin.Current.FactionColor[move.Initiator]" StrokeColor="@Skin.Current.FactionColorTransparant[move.Initiator]"
-                                       MarginX="0" MarginY="0" Radius="@(1.2f * Skin.Current.PlanetRadius)" From="from.Center" To="to.Center" ArrowScale="0.05f" />
-                            }
+                            <Arrow FillColor="@Skin.Current.FactionColor[move.Initiator]" StrokeColor="@Skin.Current.FactionColorTransparant[move.Initiator]"
+                                    MarginX="0" MarginY="0" Radius="@(1.2f * Skin.Current.PlanetRadius)" From="from.Center" To="to.Center" ArrowScale="0.05f" />
+                        }
 
-                            if (from == null || to.Territory != from.Territory)
-                            {
-                                from = to;
-                            }
+                        if (from == null || to.Territory != from.Territory)
+                        {
+                            from = to;
                         }
                     }
                 }
             }
+        }
 
-        </svg>
-    }
-}
-
-@code {
-
-    private static Point CloserTo(Point a, Point b, float percentage)
-    {
-        return new Point()
-        {
-            X = a.X + (int)(percentage * (b.X - a.X)),
-            Y = a.Y + (int)(percentage * (b.Y - a.Y)),
-        };
-    }
-
+    </svg>
 }
