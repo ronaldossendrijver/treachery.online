@@ -11,7 +11,7 @@ namespace Treachery.Shared
 {
     public class EstablishPlayers : GameEvent
     {
-        private const bool EXP2 = true;
+        private const bool EXP2 = false;
 
         public string _players = "";
 

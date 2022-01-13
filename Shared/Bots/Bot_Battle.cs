@@ -767,8 +767,12 @@ namespace Treachery.Shared
                 Where(p => p == opponent || (p.Faction == Faction.Black && p.Faction == opponent.Ally)).SelectMany(p => p.RevealedTraitors)
                 .Union(Leaders.Where(l => Game.Applicable(Rule.CapturedLeadersAreTraitorsToOwnFaction) && l.Faction == opponent.Faction));
 
+            var hasUnknownTraitorsThatMightBeMine = Game.Players.
+                Where(p => p != opponent && (p.Ally != Faction.Black || p.Faction != opponent.Ally)).
+                SelectMany(p => p.Traitors.Where(l => !knownNonTraitors.Contains(l))).Any();
+
             var highestOpponentLeader = HeroesForBattle(opponent, true).OrderByDescending(l => l.Value).FirstOrDefault();
-            var safeLeaders = HeroesForBattle(this, includeInFrontOfShield).Where(l => messiahUsed || (knownNonTraitors.Contains(l) && !knownTraitorsForOpponentsInBattle.Contains(l)));
+            var safeLeaders = HeroesForBattle(this, includeInFrontOfShield).Where(l => messiahUsed || !hasUnknownTraitorsThatMightBeMine || knownNonTraitors.Contains(l));
 
             IHero safeHero = null;
             IHero unsafeHero = null;
