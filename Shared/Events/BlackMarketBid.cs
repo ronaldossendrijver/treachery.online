@@ -64,11 +64,11 @@ namespace Treachery.Shared
         {
             if (!Passed)
             {
-                return Message.Express(Initiator, " bid", Initiator);
+                return Message.Express(Initiator, " bid");
             }
             else
             {
-                return Message.Express(Initiator, " pass", Initiator);
+                return Message.Express(Initiator, " pass");
             }
         }
 

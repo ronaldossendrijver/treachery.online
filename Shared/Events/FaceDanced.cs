@@ -66,27 +66,15 @@ namespace Treachery.Shared
 
         public static int MaximumNumberOfForces(Game g, Player p)
         {
-            if (g.Version < 80)
-            {
-                return g.Players.Select(p => p.AnyForcesIn(g.CurrentBattle.Territory)).DefaultIfEmpty(0).Sum();
-            }
-            else if (g.Version < 83)
+            var ally = p.AlliedPlayer;
+            if (ally == null || g.BattleWinner == p.Ally || ally.AnyForcesIn(g.CurrentBattle.Territory) == 0)
             {
                 var winner = g.GetPlayer(g.BattleWinner);
                 return winner.AnyForcesIn(g.CurrentBattle.Territory);
             }
             else
             {
-                var ally = p.AlliedPlayer;
-                if (ally == null || g.BattleWinner == p.Ally || ally.AnyForcesIn(g.CurrentBattle.Territory) == 0)
-                {
-                    var winner = g.GetPlayer(g.BattleWinner);
-                    return winner.AnyForcesIn(g.CurrentBattle.Territory);
-                }
-                else
-                {
-                    return 0;
-                }
+                return 0;
             }
         }
 
@@ -97,14 +85,7 @@ namespace Treachery.Shared
                 var winnerHero = g.WinnerHero;
                 if (winnerHero != null)
                 {
-                    if (g.Version <= 98)
-                    {
-                        return p.FaceDancers.Any(t => t.IsFaceDancer(winnerHero));
-                    }
-                    else
-                    {
-                        return p.FaceDancers.Any(t => t.IsFaceDancer(winnerHero) && !p.RevealedDancers.Contains(t));
-                    }
+                    return p.FaceDancers.Any(t => t.IsFaceDancer(winnerHero) && !p.RevealedDancers.Contains(t));
                 }
             }
 

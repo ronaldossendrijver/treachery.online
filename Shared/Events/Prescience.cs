@@ -51,14 +51,7 @@ namespace Treachery.Shared
                 }
                 else if (p.Ally == Faction.Green && g.GreenSharesPrescience)
                 {
-                    if (g.Version < 78)
-                    {
-                        return g.CurrentBattle.IsInvolved(p);
-                    }
-                    else
-                    {
-                        return g.CurrentBattle.IsAggressorOrDefender(p);
-                    }
+                    return g.CurrentBattle.IsAggressorOrDefender(p);
                 }
             }
 

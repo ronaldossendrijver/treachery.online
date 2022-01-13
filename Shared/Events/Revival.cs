@@ -340,15 +340,7 @@ namespace Treachery.Shared
                 var emperor = g.GetPlayer(Faction.Red);
                 var emperorsSpice = emperor != null ? emperor.Resources : 0;
 
-                if (g.Version <= 80)
-                {
-                    CostForEmperor = Math.Min(costForForceRevival, Math.Min(amountPaidForByEmperor * 2, emperorsSpice));
-                }
-                else
-                {
-                    CostForEmperor = DetermineCostForEmperor(g, initiator.Faction, costForForceRevival, amountOfForces, amountOfSpecialForces, emperorsSpice, amountPaidForByEmperor);
-                }
-
+                CostForEmperor = DetermineCostForEmperor(g, initiator.Faction, costForForceRevival, amountOfForces, amountOfSpecialForces, emperorsSpice, amountPaidForByEmperor);
                 CostForForceRevivalForPlayer = costForForceRevival - CostForEmperor;
             }
 

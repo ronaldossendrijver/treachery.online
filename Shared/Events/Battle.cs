@@ -617,17 +617,10 @@ namespace Treachery.Shared
 
         private static IEnumerable<TreacheryCard> CardsPlayableAsWeapon(Game g, Player p, TreacheryCard withDefense, bool withPlanetologist)
         {
-            if (g.Version <= 91)
-            {
-                return p.TreacheryCards.Where(c => c.IsWeapon || c.Type == TreacheryCardType.Useless);
-            }
-            else
-            {
-                return p.TreacheryCards.Where(c =>
-                c.Type != TreacheryCardType.Chemistry && (c.IsWeapon || c.Type == TreacheryCardType.Useless) ||
-                c.Type == TreacheryCardType.Chemistry && withDefense != null && withDefense.IsDefense && withDefense.Type != TreacheryCardType.WeirdingWay ||
-                withPlanetologist && !(c.IsWeapon || c.IsDefense || c.IsUseless));
-            }
+            return p.TreacheryCards.Where(c =>
+            c.Type != TreacheryCardType.Chemistry && (c.IsWeapon || c.Type == TreacheryCardType.Useless) ||
+            c.Type == TreacheryCardType.Chemistry && withDefense != null && withDefense.IsDefense && withDefense.Type != TreacheryCardType.WeirdingWay ||
+            withPlanetologist && !(c.IsWeapon || c.IsDefense || c.IsUseless));
         }
 
         public static int MaxBankerBoost(Game g, Player p, IHero hero)
@@ -642,16 +635,9 @@ namespace Treachery.Shared
 
         private static IEnumerable<TreacheryCard> CardsPlayableAsDefense(Game g, Player p, TreacheryCard withWeapon)
         {
-            if (g.Version <= 91)
-            {
-                return p.TreacheryCards.Where(c => c.IsDefense || c.Type == TreacheryCardType.Useless);
-            }
-            else
-            {
-                return p.TreacheryCards.Where(c =>
-                c.Type != TreacheryCardType.WeirdingWay && (c.IsDefense || c.Type == TreacheryCardType.Useless) ||
-                c.Type == TreacheryCardType.WeirdingWay && withWeapon != null && withWeapon.IsWeapon && withWeapon.Type != TreacheryCardType.Chemistry);
-            }
+            return p.TreacheryCards.Where(c =>
+            c.Type != TreacheryCardType.WeirdingWay && (c.IsDefense || c.Type == TreacheryCardType.Useless) ||
+            c.Type == TreacheryCardType.WeirdingWay && withWeapon != null && withWeapon.IsWeapon && withWeapon.Type != TreacheryCardType.Chemistry);
         }
 
         public static bool MessiahAvailableForBattle(Game g, Player p)

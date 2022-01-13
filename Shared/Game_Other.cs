@@ -30,6 +30,12 @@ namespace Treachery.Shared
                         int nrOfForces = Math.Min(player.ForcesInReserve, CurrentNoFieldValue);
                         player.ShipForces(noFieldLocation, nrOfForces);
                         CurrentReport.Express(player.Faction, " reveal ", nrOfForces, FactionForce.White, " under a value ", CurrentNoFieldValue, FactionSpecialForce.White, " in ", noFieldLocation);
+
+                        if (CurrentNoFieldValue == 0)
+                        {
+                            FlipBeneGesseritWhenAlone();
+                        }
+
                         CurrentNoFieldValue = -1;
                     }
                 }

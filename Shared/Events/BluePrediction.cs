@@ -40,7 +40,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<Faction> ValidTargets(Game g, Player p)
         {
-            if (g.Version < 71 || g.Players.Count() <= 1)
+            if (g.Players.Count() <= 1)
             {
                 return g.Players.Select(p => p.Faction);
             }

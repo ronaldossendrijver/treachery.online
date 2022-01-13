@@ -38,39 +38,24 @@ namespace Treachery.Shared
 
         public static bool HasForcesAtOrNearShieldWall(Game g, Player p)
         {
-            if (g.Version >= 100)
+            if (p.Occupies(g.Map.ShieldWall)) return true;
+
+            foreach (var shieldwallLocation in g.Map.ShieldWall.Locations)
             {
-                if (p.Occupies(g.Map.ShieldWall)) return true;
-
-                foreach (var shieldwallLocation in g.Map.ShieldWall.Locations)
+                if (shieldwallLocation.Neighbours.Any(l => p.Occupies(l)))
                 {
-                    if (shieldwallLocation.Neighbours.Any(l => p.Occupies(l)))
-                    {
-                        //checks locations that are immediately adjacent to the shield wall
-                        return true;
-                    }
-
-                    if (g.Map.FindNeighbours(shieldwallLocation, 1, false, p.Faction, g, false).Any(l => p.Occupies(l)))
-                    {
-                        //checks locations that are in a territory adjacent to the shield wall (but may be further away and separated by storm)
-                        return true;
-                    }
+                    //checks locations that are immediately adjacent to the shield wall
+                    return true;
                 }
 
-                return false;
+                if (g.Map.FindNeighbours(shieldwallLocation, 1, false, p.Faction, g, false).Any(l => p.Occupies(l)))
+                {
+                    //checks locations that are in a territory adjacent to the shield wall (but may be further away and separated by storm)
+                    return true;
+                }
             }
-            else
-            {
-                return
-                 p.Occupies(g.Map.ShieldWall) ||
-                 p.Occupies(g.Map.HoleInTheRock) ||
-                 p.Occupies(g.Map.ImperialBasin) ||
-                 p.Occupies(g.Map.FalseWallEast) ||
-                 p.Occupies(g.Map.TheMinorErg) ||
-                 p.Occupies(g.Map.PastyMesa) ||
-                 p.Occupies(g.Map.GaraKulon) ||
-                 p.Occupies(g.Map.SihayaRidge);
-            }
+
+            return false;
         }
     }
 }

@@ -54,14 +54,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<Location> ValidLocations(Game g)
         {
-            if (g.Version < 69)
-            {
-                return Map.FindNeighboursForHmsMovement(g.Map.HiddenMobileStronghold.AttachedToLocation, 1, false, g.SectorInStorm);
-            }
-            else
-            {
-                return Map.FindNeighboursForHmsMovement(g.Map.HiddenMobileStronghold.AttachedToLocation, 1, false, g.SectorInStorm).Where(l => !l.IsStronghold);
-            }
+            return Map.FindNeighboursForHmsMovement(g.Map.HiddenMobileStronghold.AttachedToLocation, 1, false, g.SectorInStorm).Where(l => !l.IsStronghold);
         }
     }
 }

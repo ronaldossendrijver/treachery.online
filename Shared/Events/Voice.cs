@@ -85,14 +85,7 @@ namespace Treachery.Shared
                 }
                 else if (p.Ally == Faction.Blue && g.BlueAllyMayUseVoice)
                 {
-                    if (g.Version < 78)
-                    {
-                        return g.CurrentBattle.IsInvolved(p);
-                    }
-                    else
-                    {
-                        return g.CurrentBattle.IsAggressorOrDefender(p);
-                    }
+                    return g.CurrentBattle.IsAggressorOrDefender(p);
                 }
             }
 

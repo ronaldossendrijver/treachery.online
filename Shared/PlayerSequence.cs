@@ -54,11 +54,9 @@ namespace Treachery.Shared
         {
             if (NumberOfPlayersThatMayGetTurn > 1)
             {
-                //int deadlock = 0;
                 while (!MayGetTurn(FirstPlayer) || JuiceForcesLast(FirstPlayer))
                 {
                     FirstPlayer = PlayerAfter(FirstPlayer);
-                    //if (deadlock++ > 1000) throw new Exception("Deadlock");
                 }
             }
         }
@@ -162,20 +160,10 @@ namespace Treachery.Shared
 
             _played.Add(currentPlayer);
 
-            /*if (_game.Version <= 117)
-            {
-                if (PlayerAfter(currentPlayer) == FirstPlayer && !_game.JuiceForcesLastPlayer)
-                {
-                    _played.Clear();
-                }
-            }
-            else
-            {*/
             if (NumberOfPlayersThatMayGetTurn == 0)
             {
                 _played.Clear();
             }
-            //}
 
             if (_game.Version <= 117)
             {
@@ -207,7 +195,6 @@ namespace Treachery.Shared
                 if (playerWithJuice == null || NumberOfPlayersThatMayGetTurn > 1)
                 {
                     var toAdd = FirstPlayer;
-                    //int deadlock = 0;
                     while (result.Count == 0 || toAdd != result[0])
                     {
                         if (toAdd != playerWithJuice)
@@ -216,7 +203,6 @@ namespace Treachery.Shared
                         }
 
                         toAdd = PlayerAfter(toAdd, true);
-                        //if (deadlock++ > 1000) throw new Exception("Deadlock");
                     }
                 }
 
