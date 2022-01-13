@@ -41,7 +41,7 @@
     public float Opacity { get; set; } = 1.0f;
 
     [Parameter]
-    public string PopoverStyle { get; set; } = "background-color:black;text-align:center;";
+    public string PopoverStyle { get; set; } = "background-color:black;text-align:center;border:2px solid white;padding:0px 0px 0px 0px;";
 
     protected const float TWOPI = 6.2831853072f;
 
@@ -92,7 +92,7 @@
         return new Point(x, y);
     }
 
-    protected string PopoverTemplate => string.Format("<div class=\"popover\" role=\"tooltip\" style=\"{0}\"><div class=\"arrow\"></div><h3 class=\"popover-header\"></h3><div class=\"popover-body\"></div></div>", PopoverStyle);
+    protected string PopoverTemplate => string.Format("<div class=\"popover\" role=\"tooltip\" style=\"{0}\"><div class=\"arrow\"></div><h3 class=\"popover-header p-0\"></h3><div class=\"popover-body p-0\"></div></div>", PopoverStyle);
 
 
     protected string ScaledFont(string font, float scale)
