@@ -840,7 +840,7 @@ namespace Treachery.Shared
 
             if (turnWhenRevivalWasRequested == Game.CurrentTurn) return null;
 
-            var toRevive = RequestPurpleRevival.ValidTargets(Game, this).Where(l => SafeLeaders.Contains(l)).HighestOrDefault(l => l.Value);
+            var toRevive = RequestPurpleRevival.ValidTargets(Game, this).Where(l => SafeOrKnownTraitorLeaders.Contains(l)).HighestOrDefault(l => l.Value);
 
             if (toRevive == null)
             {

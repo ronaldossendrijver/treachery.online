@@ -174,8 +174,8 @@ namespace Treachery.Shared
 
             if (Game.CurrentPhase == Phase.Bidding && !HasRoomForCards)
             {
-                var bestLeaderToAskAbout = Leaders.Where(l => Game.IsAlive(l) && !SafeLeaders.Contains(l)).HighestOrDefault(l => l.Value);
-                var bestPlayerToAsk = Opponents.HighestOrDefault(p => p.Traitors.Count - p.RevealedTraitors.Count);
+                var bestLeaderToAskAbout = Leaders.Where(l => Game.IsAlive(l) && !SafeOrKnownTraitorLeaders.Contains(l)).HighestOrDefault(l => l.Value);
+                var bestPlayerToAsk = Opponents.Where(o => !o.ToldNonTraitors.Contains(bestLeaderToAskAbout)).HighestOrDefault(p => p.Traitors.Count - p.RevealedTraitors.Count);
                 if (bestLeaderToAskAbout != null && bestPlayerToAsk != null)
                 {
                     return new ClairVoyancePlayed(Game) { Initiator = Faction, Target = bestPlayerToAsk.Faction, Question = ClairvoyanceQuestion.LeaderAsTraitor, Parameter1 = bestLeaderToAskAbout.Id };
@@ -332,7 +332,7 @@ namespace Treachery.Shared
                     int minimumValue = Faction == Faction.Purple && nrOfLivingLeaders > 2 ? 4 : 0;
 
                     var leaderToRevive = Revival.ValidRevivalHeroes(Game, this).Where(l =>
-                        SafeLeaders.Contains(l) &&
+                        SafeOrKnownTraitorLeaders.Contains(l) &&
                         l.Faction != Ally &&
                         l.Value >= minimumValue
                         ).HighestOrDefault(l => l.Value + HeroRevivalPenalty(l));
@@ -512,7 +512,7 @@ namespace Treachery.Shared
             int maxToSpendOnHeroRevival = Math.Min(availableResources, 7);
 
             var leaderToRevive = Revival.ValidRevivalHeroes(Game, this).Where(l =>
-                SafeLeaders.Contains(l) &&
+                SafeOrKnownTraitorLeaders.Contains(l) &&
                 Revival.GetPriceOfHeroRevival(Game, this, l) <= maxToSpendOnHeroRevival &&
                 l.Faction != Ally &&
                 l.Value >= minimumValue

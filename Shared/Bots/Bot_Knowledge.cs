@@ -652,16 +652,19 @@ namespace Treachery.Shared
 
         #region BattleInformation_Leaders
 
-        protected virtual IHero LowestAvailableNonMercenaryLeader => Battle.ValidBattleHeroes(Game, this).Where(l => l is Leader).LowestOrDefault(l => l.Value);
-
-        protected virtual IEnumerable<IHero> SafeLeaders
+        protected virtual IEnumerable<IHero> SafeOrKnownTraitorLeaders
         {
             get
             {
                 var ally = Ally != Faction.None ? AlliedPlayer : null;
                 var knownNonTraitorsByAlly = ally != null ? ally.Traitors.Union(ally.KnownNonTraitors) : Array.Empty<IHero>();
                 var knownNonTraitors = Traitors.Union(KnownNonTraitors).Union(knownNonTraitorsByAlly);
-                return Battle.ValidBattleHeroes(Game, this).Where(l => knownNonTraitors.Contains(l));
+
+                var myKnownTraitorsAndNonTraitors = Traitors.Union(KnownNonTraitors);
+                var allyKnownTraitorsAndNonTraitors = HasAlly ? AlliedPlayer.Traitors.Union(AlliedPlayer.KnownNonTraitors) : Array.Empty<IHero>();
+                var revealedOrToldTraitors = Game.Players.SelectMany(p => p.RevealedTraitors.Union(p.ToldTraitors));
+
+                return myKnownTraitorsAndNonTraitors.Union(allyKnownTraitorsAndNonTraitors).Union(revealedOrToldTraitors);
             }
         }
 

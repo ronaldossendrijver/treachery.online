@@ -229,6 +229,46 @@ namespace Treachery.Shared
                 StartDeal(deal);
             }
 
+            if (LatestClairvoyance.Question == ClairvoyanceQuestion.LeaderAsTraitor)
+            {
+                var hero = LatestClairvoyance.Parameter1 as IHero;
+
+                if (e.Answer == ClairVoyanceAnswer.Yes)
+                {
+                    if (e.Player.Traitors.Contains(hero) && !e.Player.ToldTraitors.Contains(hero))
+                    {
+                        e.Player.ToldTraitors.Add(hero);
+                    }
+                }
+                else if (e.Answer == ClairVoyanceAnswer.No)
+                {
+                    if (e.Player.Traitors.Contains(hero) && !e.Player.ToldNonTraitors.Contains(hero))
+                    {
+                        e.Player.ToldNonTraitors.Add(hero);
+                    }
+                }
+            }
+
+            if (LatestClairvoyance.Question == ClairvoyanceQuestion.LeaderAsFacedancer)
+            {
+                var hero = LatestClairvoyance.Parameter1 as IHero;
+
+                if (e.Answer == ClairVoyanceAnswer.Yes)
+                {
+                    if (e.Player.Traitors.Contains(hero) && !e.Player.ToldFacedancers.Contains(hero))
+                    {
+                        e.Player.ToldFacedancers.Add(hero);
+                    }
+                }
+                else if (e.Answer == ClairVoyanceAnswer.No)
+                {
+                    if (e.Player.Traitors.Contains(hero) && !e.Player.ToldNonFacedancers.Contains(hero))
+                    {
+                        e.Player.ToldNonFacedancers.Add(hero);
+                    }
+                }
+            }
+
             Enter(phasePausedByClairvoyance);
         }
 

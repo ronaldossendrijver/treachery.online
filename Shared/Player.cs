@@ -44,6 +44,10 @@ namespace Treachery.Shared
 
         public IList<IHero> RevealedTraitors { get; set; } = new List<IHero>();
 
+        public IList<IHero> ToldTraitors { get; set; } = new List<IHero>();
+
+        public IList<IHero> ToldNonTraitors { get; set; } = new List<IHero>();
+
         public IList<IHero> KnownNonTraitors { get; set; } = new List<IHero>();
 
         public IList<IHero> DiscardedTraitors { get; set; } = new List<IHero>();
@@ -51,6 +55,11 @@ namespace Treachery.Shared
         public IList<IHero> FaceDancers { get; set; } = new List<IHero>();
 
         public IList<IHero> RevealedDancers { get; set; } = new List<IHero>();
+
+        public IList<IHero> ToldFacedancers { get; set; } = new List<IHero>();
+
+        public IList<IHero> ToldNonFacedancers { get; set; } = new List<IHero>();
+
 
         public IList<Leader> Leaders { get; set; } = new List<Leader>();
 
