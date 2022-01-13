@@ -146,8 +146,9 @@
 
     private string CurrentCardHover => Game.HasBiddingPrescience(Player) && Game.CardsOnAuction.Top != null ? Support.GetTreacheryCardHoverHTML(h.Game.CardsOnAuction.Top) : "";
 
-    public void Dispose()
+    public override void Dispose()
     {
+        base.Dispose();
         _ = Browser.RefreshPopovers();
     }
 }

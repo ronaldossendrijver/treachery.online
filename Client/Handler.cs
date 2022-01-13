@@ -284,7 +284,7 @@ namespace Treachery.Client
                         await HostProxy.SendHeartbeat(PlayerName);
                     }
 
-                    if ((nrOfHeartbeats % 10) == 0) await Browser.RefreshPopovers();
+                    //if ((nrOfHeartbeats % 10) == 0) await Browser.RefreshPopovers();
                 }
                 catch (Exception e)
                 {

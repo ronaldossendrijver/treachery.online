@@ -5,7 +5,6 @@
 @using Treachery.Shared
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<AllyPermission>
-@implements IDisposable
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
@@ -241,10 +240,6 @@
 
             return false;
         }
-    }
-
-    public void Dispose()
-    {
     }
 
     protected override AllyPermission ConfirmedResult =>

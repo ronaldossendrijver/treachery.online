@@ -103,12 +103,7 @@
 
     public void Dispose()
     {
-        Task.Run(async () => await Close());
-    }
-
-    private async Task Close()
-    {
-        await JSRuntime.InvokeVoidAsync("CloseJsPanel", panelID);
+        _ = JSRuntime.InvokeVoidAsync("CloseJsPanel", panelID);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -43,8 +43,9 @@
         SetIfValid<Territory, Territory>(ref target, BlueBattleAnnouncement.ValidTerritories(Game, Player), l.Territory);
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
+        base.Dispose();
         h.OnLocationSelected -= HandleLocationSelected;
     }
 }
