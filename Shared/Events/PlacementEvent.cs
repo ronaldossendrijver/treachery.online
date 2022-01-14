@@ -52,9 +52,9 @@ namespace Treachery.Shared
                 if (!AsAdvisors && p.SpecialForcesIn(To.Territory) > 0) return "You have advisors there, so you can't move as fighters.";
             }
 
-            bool hasPlanetologyToMoveFromTwoTerritories = Game.CurrentPlanetology != null && Game.CurrentPlanetology.MoveFromTwoTerritories && Game.CurrentPlanetology.Initiator == Initiator;
+            bool canMoveFromTwoTerritories = Game.CurrentPlanetology != null && Game.CurrentPlanetology.MoveFromTwoTerritories && Game.CurrentPlanetology.Initiator == Initiator;
             int numberOfSelectedTerritories = ForceLocations.Select(fl => fl.Key.Territory).Distinct().Count();
-            if (numberOfSelectedTerritories > 1 && !hasPlanetologyToMoveFromTwoTerritories) return "You can't move from two territories at the same time";
+            if (numberOfSelectedTerritories > 1 && !canMoveFromTwoTerritories) return "You can't move from two territories at the same time";
             if (numberOfSelectedTerritories > 2) return "You can't move from more than two territories at the same time";
 
             return "";

@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace Treachery.Shared
 {
@@ -330,15 +331,21 @@ namespace Treachery.Shared
 
             StormLossesToTake.Clear();
             var initiator = GetPlayer(m.Initiator);
-            HasActedOrPassed.Add(m.Initiator);
 
-            if (CurrentPhase == Phase.NonOrangeMove)
+            MayPerformExtraMove = (CurrentFlightUsed != null && CurrentFlightUsed.Initiator == m.Initiator && CurrentFlightUsed.ExtraMove);
+
+            if (!MayPerformExtraMove)
             {
-                ShipmentAndMoveSequence.NextPlayer();
+                HasActedOrPassed.Add(m.Initiator);
 
-                if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && OrangeMayShipOutOfTurnOrder)
+                if (CurrentPhase == Phase.NonOrangeMove)
                 {
                     ShipmentAndMoveSequence.NextPlayer();
+
+                    if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && OrangeMayShipOutOfTurnOrder)
+                    {
+                        ShipmentAndMoveSequence.NextPlayer();
+                    }
                 }
             }
 
@@ -362,11 +369,10 @@ namespace Treachery.Shared
             CheckIfForcesShouldBeDestroyedByAllyPresence(initiator);
             FlipBeneGesseritWhenAlone();
 
-            MayPerformExtraMove = (CurrentFlightUsed != null && CurrentFlightUsed.ExtraMove);
-            CurrentFlightUsed = null;
-
             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.YellowExtraMove);
             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyCyborgExtraMove);
+
+            CurrentFlightUsed = null;
             CurrentPlanetology = null;
         }
 
@@ -520,7 +526,8 @@ namespace Treachery.Shared
             totalNumberOfSpecialForces += battalion.AmountOfSpecialForces;
         }
 
-        private FlightUsed CurrentFlightUsed = null;
+        private FlightUsed CurrentFlightUsed { get; set; }
+
         public void HandleEvent(FlightUsed e)
         {
             CurrentReport.Express(e);
@@ -714,6 +721,7 @@ namespace Treachery.Shared
 
         private void DetermineNextSubPhaseAfterNonOrangeMove()
         {
+            //Console.WriteLine("DetermineNextSubPhaseAfterNonOrangeMove: " + MayPerformExtraMove);
             if (MayPerformExtraMove)
             {
                 MayPerformExtraMove = false;

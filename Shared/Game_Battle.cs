@@ -1345,7 +1345,7 @@ namespace Treachery.Shared
 
         private void KillLeaderInBattle(IHero killedHero, IHero opposingHero, TreacheryCardType causeOfDeath, Player winner, int heroValue)
         {
-            CurrentReport.Express(causeOfDeath, " kills ", killedHero, ". ", winner.Faction, " collect ", Payment(heroValue));
+            CurrentReport.Express(causeOfDeath, " kills ", killedHero, " → ", winner.Faction, " collect ", Payment(heroValue));
             RecentMilestones.Add(Milestone.LeaderKilled);
             if (killedHero is Leader) KillHero(killedHero as Leader);
             winner.Resources += heroValue;

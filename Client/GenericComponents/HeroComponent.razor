@@ -5,7 +5,7 @@
 @using Treachery.Shared;
 @inherits Component 
 
-<img class="img-float" width=30 height=30 src="@Skin.Current.GetImageURL(Value)" data-animation="true" data-content="@Support.GetHeroHoverHTML(Value, Game)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover"/>
+<img class="img-float" width=@Size height=@Size src="@Skin.Current.GetImageURL(Value)" data-animation="true" data-content="@Support.GetHeroHoverHTML(Value, Game)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover"/>
 
 @code {
 
@@ -14,5 +14,8 @@
 
     [Parameter]
     public Game Game { get; set; }
+
+    [Parameter]
+    public int Size { get; set; } = 30;
 
 }

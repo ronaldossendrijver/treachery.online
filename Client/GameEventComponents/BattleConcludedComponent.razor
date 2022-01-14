@@ -51,10 +51,12 @@
 
             if (BattleConcluded.MayCaptureOrKill(Game, Player))
             {
-                <div>We captured <HeroComponent Game="Game" Value="Game.BlackVictim" />... What are your orders, keep or kill?</div>
+                <div>Our troops captured <HeroComponent Game="Game" Value="Game.BlackVictim" Size=50/></div>
                 <RadioComponent @bind-Value="captureDecision"
-                                Values="@BattleConcluded.ValidCaptureDecisions(Game, Player)"
-                                ValueLabels="@BattleConcluded.ValidCaptureDecisions(Game, Player).Select(c => Skin.Current.Describe(c))" />
+                        Values="@BattleConcluded.ValidCaptureDecisions(Game, Player)"
+                        ValueLabels="@BattleConcluded.ValidCaptureDecisions(Game, Player).Select(c => Skin.Current.Describe(c))">
+                        <Label>What are your orders, keep or kill?</Label>
+                 </RadioComponent>
             }
 
             if (Loser.TechTokens.Count > 0)

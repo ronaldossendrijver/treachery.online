@@ -121,7 +121,7 @@ namespace Treachery.Client
             }
             else
             {
-                return string.Format("<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{0}' width=300/><img src='{1}' width=200 style='position:absolute;left:200px;top:80px;filter:drop-shadow(-3px 3px 2px black);'/></div>", Skin.Current.GetImageURL(s), Skin.Current.GetImageURL(l));
+                return string.Format("<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{0}' width=300/><img src='{1}' width=160 style='position:absolute;left:240px;top:100px;filter:drop-shadow(-3px 3px 2px black);'/></div>", Skin.Current.GetImageURL(s), Skin.Current.GetImageURL(l));
             }
         }
 
