@@ -639,10 +639,9 @@ namespace Treachery.Shared
             var cardNumber = MessagePart.ExpressIf(CurrentAuctionType == AuctionType.Normal, CardNumber);
 
             CurrentReport.Express(
-                "Card ",
-                cardNumber,
-                " won by ",
                 initiator.Faction,
+                " get card ",
+                cardNumber,
                 " for ",
                 Payment(bidTotalAmount),
                 MessagePart.ExpressIf(

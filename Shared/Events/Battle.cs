@@ -393,7 +393,7 @@ namespace Treachery.Shared
         {
             return Message.Express(
                 Initiator,
-                ": leader: ",
+                " Plan → leader: ",
                 Hero,
                 ", dial: ",
                 Dial(Game, Game.CurrentBattle.OpponentOf(Initiator).Faction),
