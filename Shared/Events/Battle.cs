@@ -370,8 +370,8 @@ namespace Treachery.Shared
                 AffectedByVoice(Game, Player, Game.CurrentVoice) &&
                 Game.CurrentVoice.Must &&
                 Game.CurrentVoice.Type != TreacheryCardType.Mercenary &&
-                p.TreacheryCards.Any(c => Voice.IsVoicedBy(Game, true, c.Type, Game.CurrentVoice.Type) || Voice.IsVoicedBy(Game, false, c.Type, Game.CurrentVoice.Type)) &&
-                (Weapon == null || !Voice.IsVoicedBy(Game, true, Weapon.Type, Game.CurrentVoice.Type)) && (Defense == null || !Voice.IsVoicedBy(Game, false, Defense.Type, Game.CurrentVoice.Type)))
+                p.TreacheryCards.Any(c => Voice.IsVoicedBy(Game, true, true, c.Type, Game.CurrentVoice.Type) || Voice.IsVoicedBy(Game, false, true, c.Type, Game.CurrentVoice.Type)) &&
+                (Weapon == null || !Voice.IsVoicedBy(Game, true, true, Weapon.Type, Game.CurrentVoice.Type)) && (Defense == null || !Voice.IsVoicedBy(Game, false, true, Defense.Type, Game.CurrentVoice.Type)))
             {
                 return Skin.Current.Format("You must use a {0} card.", Game.CurrentVoice.Type);
             }
@@ -547,14 +547,14 @@ namespace Treachery.Shared
                         result = CardsPlayableAsWeapon(g, p, selectedDefense, isPlanetologist).ToList();
                         if (includingNone) result.Add(null);
                     }
-                    else if (CardsPlayableAsWeapon(g, p, selectedDefense, isPlanetologist).Any(w => Voice.IsVoicedBy(g, true, w.Type, g.CurrentVoice.Type)))
+                    else if (CardsPlayableAsWeapon(g, p, selectedDefense, isPlanetologist).Any(w => Voice.IsVoicedBy(g, true, true, w.Type, g.CurrentVoice.Type)))
                     {
-                        result = CardsPlayableAsWeapon(g, p, selectedDefense, isPlanetologist).Where(w => Voice.IsVoicedBy(g, true, w.Type, g.CurrentVoice.Type)).ToList();
+                        result = CardsPlayableAsWeapon(g, p, selectedDefense, isPlanetologist).Where(w => Voice.IsVoicedBy(g, true, true, w.Type, g.CurrentVoice.Type)).ToList();
                     }
                 }
                 else if (g.CurrentVoice.MayNot)
                 {
-                    result = CardsPlayableAsWeapon(g, p, selectedDefense, isPlanetologist).Where(w => !Voice.IsVoicedBy(g, true, w.Type, g.CurrentVoice.Type)).ToList();
+                    result = CardsPlayableAsWeapon(g, p, selectedDefense, isPlanetologist).Where(w => !Voice.IsVoicedBy(g, true, false, w.Type, g.CurrentVoice.Type)).ToList();
                     if (includingNone) result.Add(null);
                 }
             }
@@ -588,14 +588,14 @@ namespace Treachery.Shared
                         result = CardsPlayableAsDefense(g, p, selectedWeapon).ToList();
                         if (includingNone) result.Add(null);
                     }
-                    else if (CardsPlayableAsDefense(g, p, selectedWeapon).Any(w => Voice.IsVoicedBy(g, false, w.Type, g.CurrentVoice.Type)))
+                    else if (CardsPlayableAsDefense(g, p, selectedWeapon).Any(w => Voice.IsVoicedBy(g, false, true, w.Type, g.CurrentVoice.Type)))
                     {
-                        result = CardsPlayableAsDefense(g, p, selectedWeapon).Where(w => Voice.IsVoicedBy(g, false, w.Type, g.CurrentVoice.Type)).ToList();
+                        result = CardsPlayableAsDefense(g, p, selectedWeapon).Where(w => Voice.IsVoicedBy(g, false, true, w.Type, g.CurrentVoice.Type)).ToList();
                     }
                 }
                 else if (g.CurrentVoice.MayNot)
                 {
-                    result = CardsPlayableAsDefense(g, p, selectedWeapon).Where(w => !Voice.IsVoicedBy(g, false, w.Type, g.CurrentVoice.Type)).ToList();
+                    result = CardsPlayableAsDefense(g, p, selectedWeapon).Where(w => !Voice.IsVoicedBy(g, false, false, w.Type, g.CurrentVoice.Type)).ToList();
                     if (includingNone) result.Add(null);
                 }
             }

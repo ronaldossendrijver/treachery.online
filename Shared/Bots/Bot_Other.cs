@@ -188,7 +188,7 @@ namespace Treachery.Shared
         private bool OpponentMayNotUse(TreacheryCardType type, bool asWeapon)
         {
             var voice = MyVoice;
-            return voice != null && voice.MayNot && Voice.IsVoicedBy(Game, asWeapon, type, voice.Type);
+            return voice != null && voice.MayNot && Voice.IsVoicedBy(Game, asWeapon, false, type, voice.Type);
         }
 
         private ClairVoyancePlayed UseClairvoyanceInBattle(Faction opponent, ClairvoyanceQuestion question, TreacheryCardType cardtype)

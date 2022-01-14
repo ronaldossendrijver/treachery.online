@@ -26,10 +26,12 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            var choam = g.GetPlayer(Faction.Brown);
-            if (choam != null && choam.Has(TreacheryCardType.Karma))
+            if (e is BattleInitiated bi && 
+                bi.Player.Has(TreacheryCardType.Chemistry) && 
+                bi.Player.Has(TreacheryCardType.PoisonDefense) &&
+                bi.OpponentOf(e.Initiator).Is(Faction.Blue))
             {
-                WriteSavegameIfApplicable(g, e.Player, "CHOAM with Karama");
+                WriteSavegameIfApplicable(g, e.Player, "Chemistry versus Voice");
             }
         }
 
