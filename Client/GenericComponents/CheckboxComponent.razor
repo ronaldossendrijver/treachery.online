@@ -29,7 +29,7 @@
             {
                 _value = value;
                 ValueChanged.InvokeAsync(value);
-                OnChanged?.Invoke();
+                OnChanged?.Invoke(value);
             }
         }
     }
@@ -38,5 +38,5 @@
     public EventCallback<bool> ValueChanged { get; set; }
 
     [Parameter]
-    public Action OnChanged { get; set; }
+    public Action<bool> OnChanged { get; set; }
 }

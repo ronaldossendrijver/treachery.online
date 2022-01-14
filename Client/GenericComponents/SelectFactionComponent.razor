@@ -48,7 +48,7 @@
     public bool Disabled { get; set; } = false;
 
     [Parameter]
-    public Action OnChanged { get; set; }
+    public Action<Faction> OnChanged { get; set; }
 
     private IEnumerable<string> FactionTooltips => Values.Select(f => Skin.Current.Format("<div class='text-white bg-dark'>{0}</div>", f));
 }

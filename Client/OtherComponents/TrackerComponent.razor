@@ -83,74 +83,27 @@
                 @if (p.Faction == Faction.Green)
                 {
                     <div>Traitors discarded at start</div>
-                    <div class="row row-cols-3 m-0">
-
-                        @for (int i = 0; i < 3; i++)
-                        {
-                            var selIndex = i;
-                            var sel = Info.GetDiscardedTraitor(selIndex);
-
-                            <select class="custom-select form-control-sm mt-0" style="font: @Skin.Current.TRACKER_FONT" value="@sel"
-                                    @onchange="eventArgs => { Info.ChangeDiscardedTraitor(selIndex, int.Parse(eventArgs.Value as string)); }"
-                                    data-animation="true" data-content="@Support.GetHeroHoverHTML(LeaderManager.HeroLookup.Find(sel), h.Game)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" data-container="body">
-
-                                <option value="-1">Unknown</option>
-                                @foreach (var c in AllLeadersInPlay)
-                                {
-                                    <option value="@c.Id">@c.Name</option>
-                                }
-                            </select>
-                        }
-                    </div>
-
-
+                    <PickFromImageComponent Value=@LeaderManager.HeroLookup.Find(Info.GetDiscardedTraitor(0)) OnChanged=@(hero => Info.ChangeDiscardedTraitor(0, hero?.Id)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
+                    <PickFromImageComponent Value=@LeaderManager.HeroLookup.Find(Info.GetDiscardedTraitor(1)) OnChanged=@(hero => Info.ChangeDiscardedTraitor(1, hero?.Id)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
+                    <PickFromImageComponent Value=@LeaderManager.HeroLookup.Find(Info.GetDiscardedTraitor(2)) OnChanged=@(hero => Info.ChangeDiscardedTraitor(2, hero?.Id)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
                 }
                 else if (p.Faction != Faction.Purple)
                 {
-                    <div>@(p.NumberOfTraitors > 1 ? "Traitors" : "Traitor")</div>
-                    <div class="row">
-                        @for (int i = 0; i < p.NumberOfTraitors; i++)
-                        {
-                            var selIndex = i;
-                            var sel = Info.GetSelectedTraitor(p.Faction, selIndex);
-
-                            <div class="col-sm-6">
-                                <select class="custom-select form-control-sm mt-0" style="font: @Skin.Current.TRACKER_FONT" value="@sel" @onchange="eventArgs => { Info.ChangeSelectedTraitor(p.Faction, selIndex, int.Parse(eventArgs.Value as string)); }"
-                                        data-animation="true" data-content="@Support.GetHeroHoverHTML(LeaderManager.HeroLookup.Find(sel), h.Game)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" data-container="body">
-
-                                    <option value="-1">Unknown</option>
-                                    @foreach (var c in AllLeadersInPlay)
-                                    {
-                                        <option value="@c.Id">@c.Name</option>
-                                    }
-                                </select>
-                            </div>
-                        }
-                    </div>
+                    <div>Revealed @(p.NumberOfTraitors > 1 ? "Traitors" : "Traitor")</div>
+                    @for (int i = 0; i < p.NumberOfTraitors; i++)
+                    {
+                        var selIndex = i;
+                        <PickFromImageComponent Value=@LeaderManager.HeroLookup.Find(Info.GetSelectedTraitor(p.Faction, selIndex)) OnChanged=@(hero => Info.ChangeSelectedTraitor(p.Faction, selIndex, hero?.Id)) Title="Select Revealed Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
+                    }
                 }
                 else
                 {
-                    <div>Face Dancers</div>
-                    <div class="row">
-                        @for (int i = 0; i < p.NumberOfFacedancers; i++)
-                        {
-                            var selIndex = i;
-                            var sel = Info.GetSelectedTraitor(p.Faction, selIndex);
-
-                            <div class="col-sm-4">
-                                <select class="custom-select form-control-sm mt-0" style="font: @Skin.Current.TRACKER_FONT" value="@sel" @onchange="eventArgs => { Info.ChangeSelectedTraitor(p.Faction, selIndex, int.Parse(eventArgs.Value as string)); }"
-                                        data-animation="true" data-content="@Support.GetHeroHoverHTML(LeaderManager.HeroLookup.Find(sel), Game)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" data-container="body">
-
-                                    <option value="-1">Unknown</option>
-                                    @foreach (var c in AllLeadersInPlay)
-                                    {
-                                        <option value="@c.Id">@c.Name</option>
-                                    }
-                                </select>
-                            </div>
-                        }
-
-                    </div>
+                    <div>Revealed Face Dancers</div>
+                    @for (int i = 0; i < p.NumberOfFacedancers; i++)
+                    {
+                        var selIndex = i;
+                        <PickFromImageComponent Value=@LeaderManager.HeroLookup.Find(Info.GetSelectedTraitor(p.Faction, selIndex)) OnChanged=@(hero => Info.ChangeSelectedTraitor(p.Faction, selIndex, hero?.Id)) Title="Select Revealed Face Dancer" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
+                    }
                 }
             }
 
@@ -182,22 +135,8 @@
 
             else if (Shown == h.Game.ResourceCardDeck)
             {
-                <div class="row mt-1 mb-1">
-                    <div class="col-auto">
-                        <label class="small" for="trackedSpiceCard">Top @Skin.Current.Describe(Concept.Resource) card:</label>
-                    </div>
-                    <div class="col-auto">
-                        <select class="custom-select form-control-sm mt-0 ml-0" style="font: @Skin.Current.TRACKER_FONT" @bind="@Info.TrackedSpiceCard" id="trackedSpiceCard"
-                                data-animation="true" data-content="@Support.GetResourceCardHoverHTMLSmall(SpiceCard(Info.TrackedSpiceCard))" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" data-container="body">
-                            <option value="Unknown">Unknown</option>
-                            <option value="@Skin.Current.Describe(Concept.Monster)">@Skin.Current.Describe(Concept.Monster)</option>
-                            @foreach (var c in AllSpiceCards)
-                            {
-                                <option value="@c">@c</option>
-                            }
-                        </select>
-                    </div>
-                </div>
+                <div>Top @Skin.Current.Describe(Concept.Resource) Card</div>
+                <PickFromImageComponent Value=SpiceCard(Info.TrackedSpiceCard) OnChanged=@(card => Info.TrackedSpiceCard = card?.ToString()) Title="Select Card" Required=false ImageWidth=60 Values="AllSpiceCards" ImageURLs="AllSpiceCards_ImageURLs" PopupHTMLs="AllSpiceCards_Popups"/>
 
                 if (h.Game.Applicable(Rule.IncreasedResourceFlow))
                 {
@@ -231,9 +170,21 @@
 
     private bool popoversNeedUpdate = true;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         Info = new GreenIntelligence(h.Game);
+
+        try
+        {
+            await Load();
+        }
+        catch (Exception e)
+        {
+            Support.Log(e);
+        }
+
+        AllTraitors = h.Game.TraitorsInPlay.OrderBy(l => l.Name).ToList();
+        AllSpiceCards = Game.ResourceCardDeck.Items.OrderBy(rc => rc.ToString()).ToList();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -254,7 +205,6 @@
             await Browser.EnablePopovers();
         }
     }
-
 
     Faction currentlyPickedFaction = Faction.None;
     int currentlyPickedCardId;
@@ -311,13 +261,7 @@
         }
     }
 
-    public IEnumerable<TreacheryCard> CardsToPick
-    {
-        get
-        {
-            return Info.AvailableDistinctCards(currentlyPickedFaction, currentlyPickedCardId);
-        }
-    }
+    public IEnumerable<TreacheryCard> CardsToPick => Info.AvailableDistinctCards(currentlyPickedFaction, currentlyPickedCardId);
 
     private void SetNotDiscarded(TreacheryCard c)
     {
@@ -349,18 +293,6 @@
         return Skin.Current.GetImageURL(card);
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            await Load();
-        }
-        catch (Exception e)
-        {
-            Support.Log(e);
-        }
-    }
-
     private async Task Save()
     {
         await Browser.SaveSetting(string.Format("treachery.online;currentgame;{0};trackerdata", h.Game.Seed), Info.ToString());
@@ -383,42 +315,23 @@
         public int CardId;
     }
 
-    private IEnumerable<IHero> AllLeadersInPlay
-    {
-        get
-        {
-            return h.Game.TraitorsInPlay.OrderBy(l => l.Name);
-        }
-    }
+    private IList<IHero> AllTraitors { get; set; }
 
-    private IEnumerable<string> AllSpiceCards
-    {
-        get
-        {
-            return h.Game.Map
-                .Locations
-                .Where(c => c.SpiceBlowAmount > 0)
-                .Select(c => c.Territory.Name)
-                .OrderBy(c => c)
-                .Distinct();
-        }
-    }
+    private IEnumerable<string> AllTraitors_ImageURLs => AllTraitors.Select(c => Skin.Current.GetImageURL(c));
 
-    private IEnumerable<Player> Players
-    {
-        get
-        {
-            return h.Game.Players.OrderBy(p => Skin.Current.Describe(p.Faction));
-        }
-    }
+    private IEnumerable<string> AllTraitors_Popups => AllTraitors.Select(c => Support.GetHeroHoverHTML(c, Game));
 
-    private string InfoMessage
-    {
-        get
-        {
-            return Skin.Current.Format("Welcome to the {0} Tracker! Use it to take note of (discarded) traitors, the top spice card and treachery cards.<br>When a (possibly unknown) card is won, click on an empty card placeholder and select it.<br>To indicate that a card was discarded, click it and then select the 'trash can' which will move the card to the Discarded section. When an unknown card becomes known and discarded, select it first, then discard it.<br>When the discard pile is shuffled into a new draw pile, click 'reshuffle' to clear the Discarded section.<br>If you sent a card to the Discarded section by mistake, click on the X next to it.", Faction.Green);
-        }
-    }
+    private IList<ResourceCard> AllSpiceCards { get; set; }
+
+    private IEnumerable<string> AllSpiceCards_ImageURLs => AllSpiceCards.Select(c => Skin.Current.GetImageURL(c));
+
+    private IEnumerable<string> AllSpiceCards_Popups => AllSpiceCards.Select(c => Support.GetResourceCardHoverHTML(c));
+
+    private ResourceCard SpiceCard(string name) => AllSpiceCards.FirstOrDefault(c => c.ToString() == name);
+
+    private IEnumerable<Player> Players => h.Game.Players.OrderBy(p => Skin.Current.Describe(p.Faction));
+
+    private string InfoMessage => Skin.Current.Format("Welcome to the {0} Tracker! Use it to take note of (discarded) traitors, the top spice card and treachery cards.<br>When a (possibly unknown) card is won, click on an empty card placeholder and select it.<br>To indicate that a card was discarded, click it and then select the 'trash can' which will move the card to the Discarded section. When an unknown card becomes known and discarded, select it first, then discard it.<br>When the discard pile is shuffled into a new draw pile, click 'reshuffle' to clear the Discarded section.<br>If you sent a card to the Discarded section by mistake, click on the X next to it.", Faction.Green);
 
     private void Toggle(object toShow)
     {
@@ -444,10 +357,5 @@
         {
             return "btn-outline-primary";
         }
-    }
-
-    private ResourceCard SpiceCard(string name)
-    {
-        return Map.GetResourceCardsInAndOutsidePlay(h.Game.Map).FirstOrDefault(c => c.ToString() == name);
     }
 }

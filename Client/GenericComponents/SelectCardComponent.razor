@@ -5,7 +5,7 @@
 @using System.Collections.Generic;
 @using Treachery.Shared;
 
-<SelectFromImageComponent @bind-Value="Value" Selected="@Selected" Values="Values" ImageURLs="Values.Select(c => Skin.Current.GetImageURL(c))" PopupHTMLs="Values.Select(c => Support.GetTreacheryCardHoverHTML(c))" Required="Required" ImageWidth="80" OnChanged="@OnChanged">
+<SelectFromImageComponent @bind-Value="Value" Selected="@Selected" Values="Values" ImageURLs="Values.Select(c => Skin.Current.GetImageURL(c))" PopupHTMLs="Values.Select(c => Support.GetTreacheryCardHoverHTML(c))" Required="Required" ImageWidth="80" OnChanged="@(e => OnChanged(e))">
     <Label>@Label</Label>
 </SelectFromImageComponent>
 
@@ -46,6 +46,6 @@
     public EventCallback<TreacheryCard> ValueChanged { get; set; }
 
     [Parameter]
-    public Action OnChanged { get; set; }
+    public Action<TreacheryCard> OnChanged { get; set; }
 }
 

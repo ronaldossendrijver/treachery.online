@@ -20,7 +20,7 @@
              @onmouseout="e => MouseOut(item.Value)"
              style="@DetermineFilter(item.Value)"
              class="img-fluid pr-1" width=@ImageWidth 
-             data-animation="true" data-content="@item.Popup" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
+             data-animation="true" data-content="@item.Popup" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover"/>
     }
 
 </div>
@@ -42,7 +42,7 @@
             {
                 _value = value;
                 ValueChanged.InvokeAsync(value);
-                OnChanged?.Invoke();
+                OnChanged?.Invoke(value);
             }
         }
     }
@@ -81,7 +81,7 @@
     public bool Disabled { get; set; } = false;
 
     [Parameter]
-    public Action OnChanged { get; set; }
+    public Action<T> OnChanged { get; set; }
 
     protected override void OnParametersSet()
     {
@@ -110,7 +110,7 @@
         }
 
         ValueChanged.InvokeAsync(value);
-        OnChanged?.Invoke();
+        OnChanged?.Invoke(value);
     }
 
     private void Click(T item)

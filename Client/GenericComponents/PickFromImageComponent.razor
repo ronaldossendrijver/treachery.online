@@ -1,0 +1,208 @@
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared;
+@using System.Collections.Generic;
+
+@typeparam T
+
+<a class="btn btn-link p-1" data-toggle="modal" data-target="#@Id">
+    
+    @if (Value != null && !Value.Equals(default))
+    {
+        var selected = Values.Zip(ImageURLs, (v, i) => new { Value = v, Image = i }).Zip(PopupHTMLs, (v, h) => new { Value = v.Value, Image = v.Image, Popup = h }).FirstOrDefault(v => v.Value.Equals(Value));
+
+        <img src=@selected?.Image
+             width=@ImageWidth 
+             data-animation="true" data-content="@selected?.Popup" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover">
+    }
+    else
+    {
+        @if (Placeholder != null)
+        {
+            @Placeholder
+        }
+        else
+        {
+            <svg width=@ImageWidth height=@ImageWidth>
+                <circle cx=@Support.Round(ImageWidth/2) cy=@Support.Round(ImageWidth/2) r=@Support.Round(ImageWidth/2) fill="white"/>
+                <text text-anchor="middle" alignment-baseline="middle" font-size=@Support.Px(ImageWidth/2) font-weight="bold" x="@Support.Round(ImageWidth/2)" y="@Support.Round(ImageWidth/2)" font-style="italic">?</text>
+            </svg>
+        }
+    }
+
+</a>
+
+<ModalComponent Id="@Id" Title=@Title Size="">
+
+    <div class="row row-cols-3 row-cols-md-6 m-0">
+
+    <div class="card p-1 m-0 border-0">
+        <div class="card-img-top" @onclick="e => Click(default(T))" style="@DetermineFilter(default(T))">
+            @if (Placeholder != null)
+            {
+                @Placeholder
+            }
+            else
+            {
+                <svg width=@ImageWidth height=@ImageWidth>
+                    <circle cx=@Support.Round(ImageWidth/2) cy=@Support.Round(ImageWidth/2) r=@Support.Round(ImageWidth/2) fill="white"/>
+                    <text text-anchor="middle" alignment-baseline="middle" font-size=@Support.Px(ImageWidth/2) font-weight="bold" x="@Support.Round(ImageWidth/2)" y="@Support.Round(ImageWidth/2)" font-style="italic">?</text>
+                </svg>
+            }
+        </div>
+    </div>
+
+    @foreach (var item in Values.Zip(ImageURLs, (v, i) => new { Value = v, Image = i }).Zip(PopupHTMLs, (v, h) => new { Value = v.Value, Image = v.Image, Popup = h }))
+    {
+        <div class="card p-1 m-0 border-0">
+            <div class="card-img-top">
+                <img src="@item.Image"
+                     @onclick="e => Click(item.Value)"
+                     @onmouseover="e => MouseOver(item.Value)"
+                     @onmouseout="e => MouseOut(item.Value)"
+                     style="@DetermineFilter(item.Value)"
+                     class="img-fluid pr-1"
+                     data-animation="true" data-content="@item.Popup" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover"/>
+            </div>
+        </div>
+    }
+
+    </div>
+
+</ModalComponent>
+
+@code {
+
+    private T _value;
+
+    [Parameter]
+    public T Value
+    {
+        get
+        {
+            return _value;
+        }
+        set
+        {
+            if (!Equals(_value, value))
+            {
+                _value = value;
+                ValueChanged.InvokeAsync(value);
+                OnChanged?.Invoke(value);
+                _ = Browser.HideModal(Id);
+            }
+        }
+    }
+
+    private string Id { get; } = "picker" + new Random().Next();
+
+    [Parameter]
+    public T Highlighted { get; set; } = default;
+
+    [Parameter]
+    public EventCallback<T> ValueChanged { get; set; }
+
+    [Parameter]
+    public IEnumerable<T> Values { get; set; }
+
+    [Parameter]
+    public IEnumerable<string> ImageURLs { get; set; } = null;
+
+    [Parameter]
+    public int ImageWidth { get; set; } = 60;
+
+    [Parameter]
+    public RenderFragment Placeholder { get; set; }
+
+    [Parameter]
+    public IEnumerable<string> PopupHTMLs { get; set; } = null;
+
+    [Parameter]
+    public string UnselectedFilter { get; set; } = "grayscale(50%) brightness(50%) contrast(80%)";
+
+    [Parameter]
+    public string HoverFilter { get; set; } = "brightness(130%)";
+
+    [Parameter]
+    public string HighlightFilter { get; set; } = "hue-rotate(90deg);";
+
+    [Parameter]
+    public bool Required { get; set; } = true;
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
+    [Parameter]
+    public Action<T> OnChanged { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildComponent { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        var nrOfValues = Values.Count();
+        if (ImageURLs == null || ImageURLs.Count() != nrOfValues) ImageURLs = new string[nrOfValues];
+        if (PopupHTMLs == null || PopupHTMLs.Count() != nrOfValues) PopupHTMLs = new string[nrOfValues];
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!Values.Contains(Value))
+        {
+            Value = Required ? Values.FirstOrDefault() : default;
+        }
+    }
+
+    private void Click(T item)
+    {
+        if (!Disabled)
+        {
+            if (Equal(_value, item))
+            {
+                if (!Required)
+                {
+                    Value = default;
+                }
+            }
+            else
+            {
+                Value = item;
+            }
+        }
+    }
+
+    private T _hovered = default;
+
+    private void MouseOver(T item)
+    {
+        _hovered = item;
+    }
+
+    private void MouseOut(T item)
+    {
+        _hovered = default;
+    }
+
+    private string DetermineFilter(T item)
+    {
+        string result = "filter:";
+
+        if (!Equal(_value, item)) result += UnselectedFilter + " ";
+
+        if (!Equal(_hovered, default(T)) && Equal(_hovered, item)) result += HoverFilter;
+
+        if (Equal(Highlighted, item)) result += HighlightFilter;
+
+        return result;
+    }
+
+    private bool Equal(T a, T b)
+    {
+        return a == null && b == null || a != null && a.Equals(b);
+    }
+}

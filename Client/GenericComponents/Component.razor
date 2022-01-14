@@ -66,4 +66,9 @@
         _ = Browser.RefreshPopovers();
         _redrawCycleStarted = false;
     }
+
+    protected void StateHasChanged<T>(T value)
+    {
+        StateHasChanged();
+    }
 }

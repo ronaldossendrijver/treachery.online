@@ -139,7 +139,7 @@ namespace Treachery.Client
             }
         }
 
-        public void ChangeSelectedTraitor(Faction f, int cardNumber, int leaderID)
+        public void ChangeSelectedTraitor(Faction f, int cardNumber, int? leaderID)
         {
             var key = new Tuple<Faction, int>(f, cardNumber);
             if (trackedTraitors.ContainsKey(key))
@@ -147,14 +147,17 @@ namespace Treachery.Client
                 trackedTraitors.Remove(key);
             }
 
-            trackedTraitors.Add(key, leaderID);
+            if (leaderID != null)
+            {
+                trackedTraitors.Add(key, (int)leaderID);
+            }
         }
 
-        public int GetDiscardedTraitor(int cardnr)
+        public int GetDiscardedTraitor(int nr)
         {
-            if (trackedDiscardedTraitors.ContainsKey(cardnr))
+            if (trackedDiscardedTraitors.ContainsKey(nr))
             {
-                return trackedDiscardedTraitors[cardnr];
+                return trackedDiscardedTraitors[nr];
             }
             else
             {
@@ -162,14 +165,17 @@ namespace Treachery.Client
             }
         }
 
-        public void ChangeDiscardedTraitor(int card, int leaderID)
+        public void ChangeDiscardedTraitor(int nr, int? leaderID)
         {
-            if (trackedDiscardedTraitors.ContainsKey(card))
+            if (trackedDiscardedTraitors.ContainsKey(nr))
             {
-                trackedDiscardedTraitors.Remove(card);
+                trackedDiscardedTraitors.Remove(nr);
             }
 
-            trackedDiscardedTraitors.Add(card, leaderID);
+            if (leaderID != null)
+            {
+                trackedDiscardedTraitors.Add(nr, (int)leaderID);
+            }
         }
 
         public void Discard(Faction f, int cardNumber)
