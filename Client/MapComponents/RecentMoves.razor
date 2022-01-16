@@ -19,7 +19,7 @@
             {
                 var path = Map.FindFirstShortestPath(origin, move.To, false, move.Initiator, Game);
 
-                if (path != null) {
+                if (path != null && path.Contains(Game.Map.PolarSink)) {
 
                     Location from = null;
                     foreach (var to in path)
@@ -35,6 +35,11 @@
                             from = to;
                         }
                     }
+                }
+                else
+                {
+                    <Arrow FillColor="@Skin.Current.FactionColor[move.Initiator]" StrokeColor="@Skin.Current.FactionColorTransparant[move.Initiator]"
+                            MarginX="0" MarginY="0" Radius="@(1.2f * Skin.Current.PlanetRadius)" From="origin.Center" To="move.To.Center" ArrowScale="0.05f" />
                 }
             }
         }

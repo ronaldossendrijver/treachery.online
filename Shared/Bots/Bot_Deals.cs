@@ -178,7 +178,7 @@ namespace Treachery.Shared
                     Type = DealType.ShareBiddingPrescience,
                     EndPhase = Phase.BiddingReport,
                     Price = 3,
-                    Text = "share bidding prescience (entire phase)",
+                    Text = "share prescience (phase)",
                     To = new Faction[] { Faction.Yellow }
                 };
             }
@@ -201,7 +201,7 @@ namespace Treachery.Shared
                     Type = DealType.ShareBiddingPrescience,
                     EndPhase = Phase.BiddingReport,
                     Price = (int)((Ally == Faction.None ? 1 : 1.5f) * nrOfCards) + (int)Math.Floor(0.1 * ResourcesIncludingAllyContribution),
-                    Text = "share bidding prescience (entire phase)"
+                    Text = "share prescience (phase)"
                 };
             }
 
@@ -223,7 +223,7 @@ namespace Treachery.Shared
                     Type = DealType.ShareBiddingPrescience,
                     EndPhase = Phase.Bidding,
                     Price = 1 + (int)Math.Floor(0.05 * ResourcesIncludingAllyContribution) + (Ally == Faction.None ? 0 : 1),
-                    Text = "share bidding prescience (1 card)"
+                    Text = "share prescience (1 card)"
                 };
             }
 

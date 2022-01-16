@@ -11,8 +11,9 @@
     <Header>Offer to trade factions</Header>
     <Body>
 
-        <SelectFactionComponent @bind-Value="target" Values="Game.ValidTargets(Player)" />
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Offer Trade" ConfirmError="@Validation" />
+        <SelectFactionComponent @bind-Value="target" Values="FactionTradeOffered.ValidTargets(Game, Player)"/>
+        
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmText" ConfirmError="@Validation" />
 
     </Body>
 
@@ -23,4 +24,6 @@
     private Faction target;
 
     protected override FactionTradeOffered ConfirmedResult => new FactionTradeOffered(Game) { Initiator = Faction, Target = target };
+
+    private string ConfirmText => Game.Players.Any(p => p.Faction == target) ? Skin.Current.Format("Offer Trade with {0}", target) : Skin.Current.Format("Pick {0}", target);
 }

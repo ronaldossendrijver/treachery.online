@@ -161,18 +161,20 @@
         {
             defense = null;
         }
-
-        @if (Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah))
+                
+        @if (Player.MessiahAvailable && !Game.Prevented(FactionAdvantage.GreenUseMessiah))
         {
-            <RadioComponent @bind-Value="messiah" Values="@(new bool[] {false,true})" ValueLabels="@(new string[] {"No","Yes"})">
-                <Label>Should the @Skin.Current.Describe(Concept.Messiah) join the fight?</Label>
-            </RadioComponent>
+            <div class="mt-2">
+                <RadioComponent @bind-Value="messiah" Values="@(new bool[] {false,true})" ValueLabels="@(new string[] {"No","Yes"})">
+                    <Label>Should <img class="img-fluid" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> join the fight?</Label>
+                </RadioComponent>
+            </div>
         }
         else
         {
             messiah = false;
         }
-
+        
         @if (Battle.MaxBankerBoost(Game, Player, hero) > 0)
         {
             <SelectResourcesComponent @bind-Value="bankerBoost" Min="0" Max="Battle.MaxBankerBoost(Game, Player, hero)" Label="@Skin.Current.Format("Boost {0} {1} with {2}?", Skin.Current.Describe(LeaderSkill.Banker), hero, Concept.Resource)"/>

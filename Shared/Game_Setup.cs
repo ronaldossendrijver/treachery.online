@@ -19,7 +19,7 @@ namespace Treachery.Shared
             Enter(Phase.AwaitingPlayers);
         }
 
-        public List<Faction> FactionsInPlay;
+        public List<Faction> FactionsInPlay { get; private set; }
 
         public void HandleEvent(EstablishPlayers e)
         {
@@ -271,25 +271,33 @@ namespace Treachery.Shared
 
         public void HandleEvent(FactionTradeOffered thisOffer)
         {
-            var match = CurrentTradeOffers.SingleOrDefault(matchingOffer => matchingOffer.Initiator == thisOffer.Target && matchingOffer.Target == thisOffer.Initiator);
-            if (match != null)
+            if (!IsPlaying(thisOffer.Target))
             {
-                CurrentReport.Express(thisOffer.Initiator, " and ", match.Initiator, " traded factions");
-                var initiator = GetPlayer(thisOffer.Initiator);
-                var target = GetPlayer(thisOffer.Target);
-                (target.Faction, initiator.Faction) = (initiator.Faction, target.Faction);
-                FactionTradeOffered invalidOffer;
-                while ((invalidOffer = CurrentTradeOffers.FirstOrDefault(x => x.Initiator == thisOffer.Initiator || x.Initiator == thisOffer.Target)) != null)
-                {
-                    CurrentTradeOffers.Remove(invalidOffer);
-                }
+                CurrentReport.Express(thisOffer.Initiator, " switch to ", thisOffer.Target);
+                thisOffer.Player.Faction = thisOffer.Target;
             }
             else
             {
-                CurrentReport.Express(thisOffer.GetMessage());
-                if (!CurrentTradeOffers.Any(o => o.Initiator == thisOffer.Initiator && o.Target == thisOffer.Target))
+                var match = CurrentTradeOffers.SingleOrDefault(matchingOffer => matchingOffer.Initiator == thisOffer.Target && matchingOffer.Target == thisOffer.Initiator);
+                if (match != null)
                 {
-                    CurrentTradeOffers.Add(thisOffer);
+                    CurrentReport.Express(thisOffer.Initiator, " and ", match.Initiator, " traded factions");
+                    var initiator = GetPlayer(thisOffer.Initiator);
+                    var target = GetPlayer(thisOffer.Target);
+                    (target.Faction, initiator.Faction) = (initiator.Faction, target.Faction);
+                    FactionTradeOffered invalidOffer;
+                    while ((invalidOffer = CurrentTradeOffers.FirstOrDefault(x => x.Initiator == thisOffer.Initiator || x.Initiator == thisOffer.Target)) != null)
+                    {
+                        CurrentTradeOffers.Remove(invalidOffer);
+                    }
+                }
+                else
+                {
+                    CurrentReport.Express(thisOffer.GetMessage());
+                    if (!CurrentTradeOffers.Any(o => o.Initiator == thisOffer.Initiator && o.Target == thisOffer.Target))
+                    {
+                        CurrentTradeOffers.Add(thisOffer);
+                    }
                 }
             }
         }

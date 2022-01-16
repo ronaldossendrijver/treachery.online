@@ -27,9 +27,11 @@ namespace Treachery.Test
         private void SaveSpecialCases(Game g, GameEvent e)
         {
             if (e is BattleInitiated bi && 
+                g.CurrentTurn > 3 &&
+                bi.Initiator == Faction.Green &&
                 bi.Player.Has(TreacheryCardType.Chemistry) && 
-                bi.Player.Has(TreacheryCardType.PoisonDefense) &&
-                bi.OpponentOf(e.Initiator).Is(Faction.Blue))
+                bi.Player.Has(TreacheryCardType.Antidote) &&
+                (bi.OpponentOf(e.Initiator).Is(Faction.Blue) || bi.OpponentOf(e.Initiator).Ally == Faction.Blue))
             {
                 WriteSavegameIfApplicable(g, e.Player, "Chemistry versus Voice");
             }
@@ -328,7 +330,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 10000;
+            int nrOfGames = 1000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
