@@ -274,7 +274,9 @@ namespace Treachery.Shared
             if (!IsPlaying(thisOffer.Target))
             {
                 CurrentReport.Express(thisOffer.Initiator, " switch to ", thisOffer.Target);
+                FactionsInPlay.Add(thisOffer.Initiator);
                 thisOffer.Player.Faction = thisOffer.Target;
+
             }
             else
             {

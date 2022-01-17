@@ -46,7 +46,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<Faction> ValidTargets(Game g, Player p)
         {
-            return g.FactionsInPlay.Where(f => f != p.Faction);
+            return g.FactionsInPlay.Union(g.Players.Select(p => p.Faction)).Where(f => f != p.Faction);
         }
     }
 

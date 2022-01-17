@@ -12,13 +12,13 @@
     float movedY = 0.15f * (7 + i);
 
     <Image X=@(X - movedX * Skin.Current.FORCETOKEN_RADIUS) Y=@(Y - movedY * Skin.Current.FORCETOKEN_RADIUS) Diameter=@Diameter Src="@ForceURL" 
-            ShadowColor="@Skin.Current.SHADOW" ShadowX="0.5f" ShadowY="0.5f" ShadowBlur="0.5f"
+            ShadowColor="@ShadowColor" ShadowX=@ShadowSize ShadowY=@ShadowSize ShadowBlur=@ShadowBlur
             Popover="@Popover"/>
 }
 
 @if (!(Faction == Faction.White && Special))
 {
-    <MapText ToShow="@Amount.ToString()" X=@(X) Y=@Y Font=@Skin.Current.FORCETOKEN_FONT BorderWidth=@Skin.Current.FORCETOKEN_FONT_BORDERWIDTH BorderColor=@Skin.Current.FORCETOKEN_FONT_BORDERCOLOR/>
+    <MapText ToShow="@Amount.ToString()" X=@(X) Y=@Y Font=@Skin.Current.FORCETOKEN_FONT BorderWidth=@BorderWidth BorderColor=@BorderColor/>
 }
 
 @code {
@@ -46,4 +46,15 @@
     private string ForceURL => Special ? Skin.Current.GetFactionSpecialForceImageURL(Faction) : Skin.Current.GetFactionForceImageURL(Faction);
 
     private string Popover => ShowPopover ? string.Format("<img style='float:left' src='{0}' width=100/><h3 style='float:right'>{1}</h3>", ForceURL, Amount) : null;
+
+    private string ShadowColor => Threatened ? "red" : Skin.Current.SHADOW;
+
+    private float ShadowSize => Threatened ? 0.5f : 0.5f;
+
+    private float ShadowBlur => Threatened ? 1f : 0.5f;
+
+    private string BorderColor => Threatened ? "red" : Skin.Current.FORCETOKEN_FONT_BORDERCOLOR;
+
+    private int BorderWidth => Threatened ? 2 * Skin.Current.FORCETOKEN_FONT_BORDERWIDTH : Skin.Current.FORCETOKEN_FONT_BORDERWIDTH;
+
 }
