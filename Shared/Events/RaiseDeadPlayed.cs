@@ -79,8 +79,9 @@ namespace Treachery.Shared
                     ", ",
                     Initiator,
                     " revive ",
-                    MessagePart.ExpressIf(AmountOfForces > 0, " and ", AmountOfForces, Player.Force),
-                    MessagePart.ExpressIf(AmountOfSpecialForces > 0, " and ", AmountOfSpecialForces, Player.SpecialForce));
+                    MessagePart.ExpressIf(AmountOfForces > 0, AmountOfForces, Player.Force),
+                    MessagePart.ExpressIf(AmountOfForces > 0 && AmountOfSpecialForces > 0, " and "),
+                    MessagePart.ExpressIf(AmountOfSpecialForces > 0, AmountOfSpecialForces, Player.SpecialForce));
             }
         }
 
