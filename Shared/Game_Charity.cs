@@ -74,6 +74,7 @@ namespace Treachery.Shared
             }
             else
             {
+                if (Version >= 132) MainPhaseEnd();
                 Enter(Phase.CharityReport);
             }
         }

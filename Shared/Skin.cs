@@ -618,6 +618,11 @@ namespace Treachery.Shared
         {
             return r switch
             {
+                Rule.BasicTreacheryCards => "Basic Treachery Cards",
+                Rule.HasCharityPhase => "Charity Phase",
+
+
+
                 Rule.AdvancedCombat => "Advanced Combat",
                 Rule.IncreasedResourceFlow => "Increased Spice Flow",
                 Rule.AdvancedKarama => "Advanced Karama Cards",

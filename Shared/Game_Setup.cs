@@ -46,7 +46,7 @@ namespace Treachery.Shared
             var usedRuleset = Ruleset;
             CurrentReport.Express("Ruleset: ",
                 usedRuleset == Ruleset.Custom ?
-                string.Format("Custom ({0})", string.Join(", ", Rules.Select(r => Skin.Current.Describe(r)))) :
+                string.Format("Custom ({0})", string.Join(", ", Rules.Select(r => "" + r + " (" + (int)r + ") " + Skin.Current.Describe(r)))) :
                 Skin.Current.Describe(usedRuleset));
 
             if (Applicable(Rule.GreyAndPurpleExpansionTreacheryCards))

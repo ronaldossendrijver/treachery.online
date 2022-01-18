@@ -218,10 +218,7 @@
                 result += Support.GetResourceCardHoverHTML(h.Game.LatestSpiceCardB);
                 if (h.Game.Applicable(Rule.AssistedNotekeeping))
                 {
-                    foreach (var c in h.Game.ResourceCardDiscardPileB.Items.Where(c => c != h.Game.LatestSpiceCardB))
-                    {
-                        result += "<p>" + c.ToString() + "</p>";
-                    }
+                    result += "<p>" + Skin.Current.Join(h.Game.ResourceCardDiscardPileB.Items.Where(c => c != h.Game.LatestSpiceCardA)) + "</p>";
                 }
             }
         }

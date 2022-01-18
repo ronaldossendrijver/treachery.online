@@ -19,7 +19,7 @@ namespace Treachery.Shared
 
             int currentBid = Game.CurrentBid == null ? 0 : Game.CurrentBid.TotalAmount;
             bool currentBidIsFromAlly = Game.CurrentBid != null && Game.CurrentBid.Initiator == Ally;
-            bool isKnownCard = Game.HasBiddingPrescience(this) || Game.KnownCards(this).Contains(Game.CardsOnAuction.Top);
+            bool isKnownCard = Game.HasBiddingPrescience(this) || Game.HasBiddingPrescience(AlliedPlayer) || Game.KnownCards(this).Contains(Game.CardsOnAuction.Top);
 
             bool thisCardIsUseless = isKnownCard && !MayUseUselessAsKarma && Game.CardsOnAuction.Top.Type == TreacheryCardType.Useless;
             bool thisCardIsCrappy = isKnownCard && !WannaHave(Game.CardsOnAuction.Top);

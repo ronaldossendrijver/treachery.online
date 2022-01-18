@@ -439,7 +439,15 @@ namespace Treachery.Shared
             }
             else
             {
-                Enter(Version >= 103, Phase.StormReport, EnterSpiceBlowPhase);
+                if (Version >= 103)
+                {
+                    if (Version >= 132) MainPhaseEnd();
+                    Enter(Phase.StormReport);
+                }
+                else
+                {
+                    EnterSpiceBlowPhase();
+                }
             }
         }
     }

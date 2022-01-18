@@ -104,7 +104,7 @@
                 if (Game.CurrentBid != null && h.Autopass && Game.CurrentBid.TotalAmount + 1 > h.BidAutoPassThreshold ||
                     Game.CurrentBid == null && h.Autopass && h.BidAutoPassThreshold == 0)
                 {
-                    _ = Task.Delay(600 + Random.Shared.Next(1400)).ContinueWith(e => AutoPass());
+                    _ = Task.Delay(800 + Random.Shared.Next(1600)).ContinueWith(e => AutoPass());
                 }
             }
 

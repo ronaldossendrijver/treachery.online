@@ -9,13 +9,7 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public Ruleset Ruleset
-        {
-            get
-            {
-                return DetermineRuleset(Rules);
-            }
-        }
+        public Ruleset Ruleset => DetermineRuleset(Rules);
 
         public IEnumerable<Rule> GetCustomRules()
         {

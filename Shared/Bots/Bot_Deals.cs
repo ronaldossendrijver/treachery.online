@@ -133,7 +133,7 @@ namespace Treachery.Shared
                     Type = DealType.ShareResourceDeckPrescience,
                     EndPhase = Phase.TurnConcluded,
                     Price = D(1, 2),
-                    Text = "share next spice card prescience this turn"
+                    Text = "share spice card prescience this turn"
                 };
             }
 
@@ -167,8 +167,7 @@ namespace Treachery.Shared
             if (Faction == Faction.Green &&
                 Game.IsPlaying(Faction.Yellow) &&
                 Game.CurrentTurn == 1 &&
-                Game.CurrentMainPhase <= MainPhase.Bidding &&
-                Game.HasBiddingPrescience(this) &&
+                Game.CurrentMainPhase == MainPhase.Charity &&
                 !Game.DealOffers.Any(deal => deal.Initiator == Faction && deal.Type == DealType.ShareBiddingPrescience && deal.EndPhase == Phase.BiddingReport && deal.To.Length == 1 && deal.To[0] == Faction.Yellow))
             {
                 return new DealOffered(Game)
