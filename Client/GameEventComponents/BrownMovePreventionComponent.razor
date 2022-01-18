@@ -5,6 +5,7 @@
 @using Treachery.Shared
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<BrownMovePrevention>
+@implements IDisposable
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
@@ -30,5 +31,24 @@
 
     private Territory territory;
 
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            h.OnLocationSelected += HandleLocationSelected;
+        }
+    }
+
+     private void HandleLocationSelected(object sender, Location l)
+    {
+        SetIfValid<Territory, Territory>(ref territory, BrownMovePrevention.ValidTerritories(Game, Player), l.Territory);
+    }
+
     protected override BrownMovePrevention ConfirmedResult => new BrownMovePrevention(Game) { Initiator = Faction, Territory = territory };
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        h.OnLocationSelected -= HandleLocationSelected;
+    }
 }
