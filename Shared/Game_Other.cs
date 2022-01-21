@@ -29,7 +29,7 @@ namespace Treachery.Shared
                         player.SpecialForcesToReserves(noFieldLocation, 1);
                         int nrOfForces = Math.Min(player.ForcesInReserve, CurrentNoFieldValue);
                         player.ShipForces(noFieldLocation, nrOfForces);
-                        CurrentReport.Express(player.Faction, " reveal ", nrOfForces, FactionForce.White, " under a value ", CurrentNoFieldValue, FactionSpecialForce.White, " in ", noFieldLocation);
+                        CurrentReport.Express(player.Faction, " reveal ", nrOfForces, FactionForce.White, " under ", FactionSpecialForce.White, CurrentNoFieldValue, " in ", noFieldLocation);
 
                         if (CurrentNoFieldValue == 0)
                         {
@@ -595,7 +595,7 @@ namespace Treachery.Shared
                 var bureaucrat = PlayerSkilledAs(LeaderSkill.Bureaucrat);
                 if (bureaucrat != null && bureaucrat.Faction != payer && bureaucrat.Faction != receiver)
                 {
-                    BureaucratWasUsedThisPhase = true;
+                    if (Version < 133) BureaucratWasUsedThisPhase = true;
                     _phaseBeforeBureaucratWasActivated = CurrentPhase;
                     TargetOfBureaucracy = receiver;
                     Enter(Phase.Bureaucracy);
@@ -608,6 +608,7 @@ namespace Treachery.Shared
             CurrentReport.Express(e.GetDynamicMessage());
             if (!e.Passed)
             {
+                BureaucratWasUsedThisPhase = true;
                 GetPlayer(TargetOfBureaucracy).Resources -= 2;
             }
             Enter(_phaseBeforeBureaucratWasActivated);

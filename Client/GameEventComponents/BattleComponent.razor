@@ -106,11 +106,14 @@
 
             @if (Battle.MustPayForForcesInBattle(Game, Player))
             {
-                <SelectResourcesComponent @bind-Value="resources" Min="0" Max="Battle.MaxResources(Game, Player, forces, specialForces)" /> <span>&nbsp;</span>
+                int maxResources = Battle.MaxResources(Game, Player, forces, specialForces);
+                int maxAllyResources = Battle.MaxAllyResources(Game, Player, forces, specialForces);
 
-                @if (Player.Ally == Faction.Brown && Battle.MaxAllyResources(Game, Player, forces, specialForces) > 0)
+                <SelectResourcesComponent @bind-Value="resources" Min="0" Max=@maxResources /> <span>&nbsp;</span>
+
+                @if (Player.Ally == Faction.Brown && maxAllyResources > 0)
                 {
-                    <SelectResourcesFromFactionComponent @bind-Value="resourcesFromAlly" Min="0" Max="Battle.MaxAllyResources(Game, Player, forces, specialForces)" Faction="Player.Ally" />
+                    <SelectResourcesFromFactionComponent @bind-Value="resourcesFromAlly" Min="0" Max=@maxAllyResources Faction="Player.Ally" />
                 }
                 else
                 {
@@ -211,16 +214,13 @@
     protected override void OnInitialized()
     {
         h.ShowWheelsAndHMS = true;
-    }
 
-    protected override void OnParametersSet()
-    {
         var plan = h.GetRevisablePlan();
         if (plan != null)
         {
             forces = plan.Forces + plan.ForcesAtHalfStrength;
             specialForces = plan.SpecialForces + plan.SpecialForcesAtHalfStrength;
-            resources = plan.Cost(Game) - plan.AllyContributionAmount;
+            resources = plan.Cost(Game);
             resourcesFromAlly = plan.AllyContributionAmount;
             hero = plan.Hero;
             messiah = plan.Messiah;
@@ -248,16 +248,16 @@
     private void RedrawIfNeeded(bool firstRender)
     {
         if (
-        firstRender ||
-        forces != lastforces ||
-        specialForces != lastspecialForces ||
-        resources != lastResources ||
-        resourcesFromAlly != lastResourcesFromAlly ||
-        hero != lasthero ||
-        messiah != lastmessiah ||
-        defense != lastdefense ||
-        weapon != lastweapon ||
-        bankerBoost != lastbankerBoost)
+            firstRender ||
+            forces != lastforces ||
+            specialForces != lastspecialForces ||
+            resources != lastResources ||
+            resourcesFromAlly != lastResourcesFromAlly ||
+            hero != lasthero ||
+            messiah != lastmessiah ||
+            defense != lastdefense ||
+            weapon != lastweapon ||
+            bankerBoost != lastbankerBoost)
         {
             lastforces = forces;
             lastspecialForces = specialForces;
@@ -268,7 +268,6 @@
             lastdefense = defense;
             lastweapon = weapon;
             lastbankerBoost = bankerBoost;
-
             h.BattleUnderConstruction = ConfirmedResult;
             h.Refresh();
         }

@@ -37,16 +37,12 @@ namespace Treachery.Shared
             AllRules = e.ApplicableRules.ToList();
             Rules = e.ApplicableRules.Where(r => GetRuleGroup(r) != RuleGroup.Bots).ToList();
             RulesForBots = e.ApplicableRules.Where(r => GetRuleGroup(r) == RuleGroup.Bots).ToList();
-
-            //if (Version < 131)
-            //{
             Rules.AddRange(GetRulesInGroup(RuleGroup.CoreBasic));
-            //}
 
             var usedRuleset = Ruleset;
             CurrentReport.Express("Ruleset: ",
                 usedRuleset == Ruleset.Custom ?
-                string.Format("Custom ({0})", string.Join(", ", Rules.Select(r => "" + r + " (" + (int)r + ") " + Skin.Current.Describe(r)))) :
+                string.Format("Custom ({0})", Skin.Current.Join(Rules)) :
                 Skin.Current.Describe(usedRuleset));
 
             if (Applicable(Rule.GreyAndPurpleExpansionTreacheryCards))

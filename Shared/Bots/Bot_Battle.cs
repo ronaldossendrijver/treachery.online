@@ -200,6 +200,8 @@ namespace Treachery.Shared
                 AvoidLasgunShieldExplosion(ref weapon, ref defense);
 
                 LogInfo("Leader: {0}, Weapon: {1}, Defense: {2}, Forces: {3} (supp) {4} (non-supp) {5} (spec supp) {6} (spec non-supp)", hero, weapon, defense, forcesAtFullStrength, forcesAtHalfStrength, specialForcesAtFullStrength, specialForcesAtHalfStrength);
+
+                int cost = Battle.Cost(Game, this, forcesAtFullStrength, specialForcesAtFullStrength);
                 return new Battle(Game)
                 {
                     Initiator = Faction,
@@ -209,7 +211,7 @@ namespace Treachery.Shared
                     ForcesAtHalfStrength = forcesAtHalfStrength,
                     SpecialForces = specialForcesAtFullStrength,
                     SpecialForcesAtHalfStrength = specialForcesAtHalfStrength,
-                    AllyContributionAmount = Math.Min(resourcesFromAlly, Battle.MaxAllyResources(Game, this, forcesAtFullStrength, specialForcesAtFullStrength)),
+                    AllyContributionAmount = Math.Min(cost, Math.Min(resourcesFromAlly, Battle.MaxAllyResources(Game, this, forcesAtFullStrength, specialForcesAtFullStrength))),
                     Defense = defense,
                     Weapon = weapon,
                     BankerBonus = bankerBoost

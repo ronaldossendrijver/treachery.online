@@ -65,13 +65,14 @@
             planetmap = document.getElementById('planetmap');
             if (planetmap != null) {
 
-                planetmap_inner = document.getElementById('planetmap_inner');
-                planetmap_filler = document.getElementById('planetmap-filler');
                 mapdiv = document.getElementById('mapdiv');
-
                 if (mapdiv != null) {
+
+                    planetmap_inner = document.getElementById('planetmap_inner');
                     scale = mapdiv.offsetWidth / planetmap_inner.offsetWidth;
                     planetmap.style.transform = 'scale(' + scale + ')';
+
+                    planetmap_filler = document.getElementById('planetmap-filler');
                     planetmap_filler.style.height = 1.110012062726176 * mapdiv.offsetWidth + "px";
                 }
             }
