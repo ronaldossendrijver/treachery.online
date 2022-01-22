@@ -2106,7 +2106,7 @@ namespace Treachery.Shared
                 [80] = new Point(241, 336), //Wind Pass North (North Sector)
                 [81] = new Point(247, 355), //Wind Pass North (South Sector)
                 [82] = new Point(79, 408), //Habbanya Ridge Flat (West Sector)
-                [83] = new Point(163, 487), //Habbanya Ridge Flat (East Sector)
+                [83] = new Point(152, 485), //Habbanya Ridge Flat (East Sector)
                 [84] = new Point(205, 402), //Cielago West (North Sector)
                 [85] = new Point(201, 463), //Cielago West (South Sector)
             },

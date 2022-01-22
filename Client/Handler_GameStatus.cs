@@ -301,8 +301,7 @@ namespace Treachery.Client
                 case Phase.BeginningOfShipAndMove:
                     return S(
                         Skin.Current.Format("You may now start the ship & move sequence..."),
-                        Skin.Current.Format("Waiting for the host to start the ship & move sequence..."),
-                        Game.ShipmentAndMoveSequence.GetPlayersInSequence().Select(ps => ps.Player));
+                        Skin.Current.Format("Waiting for the host to start the ship & move sequence..."));
 
                 case Phase.NonOrangeShip:
                     return S(
