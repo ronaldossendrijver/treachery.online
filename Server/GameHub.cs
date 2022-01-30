@@ -45,7 +45,6 @@ namespace Treachery.Server
 
         public async Task RequestPlayerRejoined(int hostID, PlayerRejoined e)
         {
-            Log("RequestPlayerRejoined", hostID, e);
             await Channel("host", hostID).SendAsync("ReceiveRequest_PlayerRejoined", Context.ConnectionId, e);
         }
 

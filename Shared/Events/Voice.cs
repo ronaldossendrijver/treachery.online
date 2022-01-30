@@ -113,9 +113,9 @@ namespace Treachery.Shared
             }
         }
 
-        public static bool IsVoicedBy(Game g, bool asWeapon, bool must, TreacheryCardType cardType, TreacheryCardType voiced)
+        public static bool IsVoicedBy(Game g, bool asWeapon, bool must, TreacheryCardType cardType, TreacheryCardType voicedType)
         {
-            if (cardType == voiced)
+            if (cardType == voicedType)
             {
                 return true;
             }
@@ -123,7 +123,7 @@ namespace Treachery.Shared
             {
                 if (!g.Applicable(Rule.BlueVoiceMustNameSpecialCards))
                 {
-                    switch (voiced)
+                    switch (voicedType)
                     {
                         case TreacheryCardType.PoisonDefense: 
                             return cardType == TreacheryCardType.Antidote || 
@@ -141,7 +141,7 @@ namespace Treachery.Shared
                         case TreacheryCardType.ProjectileDefense: 
                             return cardType == TreacheryCardType.Shield || 
                                 cardType == TreacheryCardType.ShieldAndAntidote ||
-                                !must && asWeapon && cardType == TreacheryCardType.WeirdingWay;
+                                !must && !asWeapon && cardType == TreacheryCardType.WeirdingWay;
 
                         case TreacheryCardType.Projectile: 
                             return (asWeapon && cardType == TreacheryCardType.WeirdingWay) || 
@@ -150,7 +150,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    switch (voiced)
+                    switch (voicedType)
                     {
                         case TreacheryCardType.PoisonDefense: return cardType == TreacheryCardType.Antidote;
                         case TreacheryCardType.ProjectileDefense: return cardType == TreacheryCardType.Shield;

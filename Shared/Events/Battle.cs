@@ -81,85 +81,31 @@ namespace Treachery.Shared
         public int BankerBonus { get; set; }
 
         [JsonIgnore]
-        public bool HasPoison
-        {
-            get
-            {
-                return Weapon != null && Weapon.IsPoisonWeapon;
-            }
-        }
+        public bool HasPoison => Weapon != null && Weapon.IsPoisonWeapon;
 
         [JsonIgnore]
-        public bool HasProjectile
-        {
-            get
-            {
-                return Weapon != null && Weapon.IsProjectileWeapon;
-            }
-        }
+        public bool HasProjectile => Weapon != null && Weapon.IsProjectileWeapon;
 
         [JsonIgnore]
-        public bool HasProjectileDefense
-        {
-            get
-            {
-                return Defense != null && Defense.IsProjectileDefense;
-            }
-        }
+        public bool HasProjectileDefense => Defense != null && Defense.IsProjectileDefense;
 
         [JsonIgnore]
-        public bool HasShield
-        {
-            get
-            {
-                return Defense != null && Defense.IsShield;
-            }
-        }
+        public bool HasShield => Defense != null && Defense.IsShield;
 
         [JsonIgnore]
-        public bool HasNonAntidotePoisonDefense
-        {
-            get
-            {
-                return Defense != null && Defense.IsNonAntidotePoisonDefense;
-            }
-        }
+        public bool HasNonAntidotePoisonDefense => Defense != null && Defense.IsNonAntidotePoisonDefense;
 
         [JsonIgnore]
-        public bool HasAntidote
-        {
-            get
-            {
-                return Defense != null && Defense.IsPoisonDefense;
-            }
-        }
+        public bool HasAntidote => Defense != null && Defense.IsPoisonDefense;
 
         [JsonIgnore]
-        public bool HasLaser
-        {
-            get
-            {
-                return Weapon != null && Weapon.IsLaser;
-            }
-        }
+        public bool HasLaser => Weapon != null && Weapon.IsLaser;
 
         [JsonIgnore]
-        public bool HasPoisonTooth
-        {
-            get
-            {
-                return Weapon != null && Weapon.IsPoisonTooth;
-            }
-        }
+        public bool HasPoisonTooth => Weapon != null && Weapon.IsPoisonTooth;
 
         [JsonIgnore]
-        public bool HasArtillery
-        {
-            get
-            {
-                return Weapon != null && Weapon.IsArtillery;
-            }
-        }
+        public bool HasArtillery => Weapon != null && Weapon.IsArtillery;
 
         [JsonIgnore]
         public TreacheryCard OriginalWeapon { get; set; } = null;
@@ -289,15 +235,9 @@ namespace Treachery.Shared
             return g.Applicable(Rule.AdvancedCombat) && (g.Prevented(FactionAdvantage.YellowNotPayingForBattles) || p.Faction != Faction.Yellow);
         }
 
-        public static bool KwisatzHaderachMayBeUsedInBattle(Game g, Player p)
-        {
-            return MessiahAvailableForBattle(g, p);
-        }
+        public static bool MessiahMayBeUsedInBattle(Game g, Player p) => MessiahAvailableForBattle(g, p);
 
-        public int Cost(Game g)
-        {
-            return Cost(g, Player, Forces, SpecialForces);
-        }
+        public int Cost(Game g) => Cost(g, Player, Forces, SpecialForces);
 
         public static int Cost(Game g, Player p, int AmountOfForcesAtFullStrength, int AmountOfSpecialForcesAtFullStrength)
         {
@@ -357,7 +297,7 @@ namespace Treachery.Shared
             if (Hero == null && (Weapon != null || Defense != null)) return "Can't use treachery cards without a hero.";
             if (Hero != null && Hero is Leader && Game.LeaderState[Hero as Leader].CurrentTerritory != null && Game.LeaderState[Hero as Leader].CurrentTerritory != Game.CurrentBattle.Territory) return "Selected hero already fought in another territory.";
             if (Hero == null && Messiah) return Skin.Current.Format("Can't use {0} without a hero.", Concept.Messiah);
-            if (Messiah && !KwisatzHaderachMayBeUsedInBattle(Game, p)) return Skin.Current.Format("{0} is not available.", Concept.Messiah);
+            if (Messiah && !MessiahMayBeUsedInBattle(Game, p)) return Skin.Current.Format("{0} is not available.", Concept.Messiah);
             if (Weapon == null && Defense != null && Defense.Type == TreacheryCardType.WeirdingWay) return Skin.Current.Format("You can't use {0} as defense without using a weapon.", TreacheryCardType.WeirdingWay);
             if (Defense == null && Weapon != null && Weapon.Type == TreacheryCardType.Chemistry) return Skin.Current.Format("You can't use {0} as weapon without using a defense.", TreacheryCardType.Chemistry);
             if (!ValidWeapons(Game, p, Defense, Hero, true).Contains(Weapon)) return "Invalid weapon";

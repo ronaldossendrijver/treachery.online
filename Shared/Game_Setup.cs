@@ -126,6 +126,7 @@ namespace Treachery.Shared
                 CurrentReport.Express(p.Name, " joined the game");
             }
         }
+
         private void AddBots()
         {
             //Can be removed later, this was replaced by filling empty seats with bots.
