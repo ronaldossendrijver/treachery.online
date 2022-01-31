@@ -10,63 +10,38 @@ namespace Treachery.Shared
         public const int NONE = -2;
         public const int UNKNOWN = -1;
 
-        public TreacheryCard(int id, int skinId, TreacheryCardType type, Rule rule)
+        public TreacheryCard(int id, int skinId, TreacheryCardType type, Rule[] rules)
         {
             Id = id;
             Type = type;
-            Rule = rule;
+            Rules = rules;
             SkinId = skinId;
+        }
+
+
+        public TreacheryCard(int id, int skinId, TreacheryCardType type, Rule rule) : this(id, skinId, type, new Rule[] { rule })
+        {
         }
 
         public int Id { get; private set; }
 
         public int SkinId { get; private set; }
 
-        public int Value
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public int Value => 0;
 
-        public bool Is(Faction f)
-        {
-            return Faction == f;
-        }
+        public bool Is(Faction f) => Faction == f;
 
-        public int ValueInCombatAgainst(IHero opposingHero)
-        {
-            return Value;
-        }
+        public int ValueInCombatAgainst(IHero opposingHero) => Value;
 
-        public Faction Faction
-        {
-            get
-            {
-                return Faction.None;
-            }
-        }
+        public Faction Faction => Faction.None;
 
-        public int CostToRevive
-        {
-            get
-            {
-                return Value;
-            }
-        }
+        public int CostToRevive => Value;
 
-        public bool IsTraitor(IHero hero)
-        {
-            return hero != null && hero is TreacheryCard;
-        }
+        public bool IsTraitor(IHero hero) => hero != null && hero is TreacheryCard;
 
-        public bool IsFaceDancer(IHero hero)
-        {
-            return hero != null && hero is TreacheryCard;
-        }
+        public bool IsFaceDancer(IHero hero) => hero != null && hero is TreacheryCard;
 
-        public Rule Rule { get; private set; }
+        public Rule[] Rules { get; private set; }
 
         public TreacheryCardType Type { get; private set; }
 
@@ -91,20 +66,11 @@ namespace Treachery.Shared
             }
         }
 
-        public override string ToString()
-        {
-            return Name;
-        }
+        public override string ToString() => Name;
 
-        public override bool Equals(object obj)
-        {
-            return obj is TreacheryCard c && c.Id == Id;
-        }
+        public override bool Equals(object obj) => obj is TreacheryCard c && c.Id == Id;
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
         public bool IsPoisonWeapon => Type == TreacheryCardType.Poison || Type == TreacheryCardType.Chemistry || Type == TreacheryCardType.ProjectileAndPoison;
 

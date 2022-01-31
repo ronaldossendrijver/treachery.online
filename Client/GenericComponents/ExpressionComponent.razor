@@ -16,14 +16,21 @@
     }
     else if (part is IEnumerable e)
     {
-        var elts = new List<object>();
+        var elts = new List<Expression>();
         foreach (var elt in e)
         {
-            elts.Add(elt);
+            elts.Add(new Expression(elt));
         }
-        var expression = new Expression(elts);
 
-        <ExpressionComponent Expression=expression Size=@Size/>
+        for (int i = 0; i < elts.Count; i++)
+        {
+            <ExpressionComponent Expression=elts[i] Size=@Size/>
+
+            @if (i < elts.Count - 1)
+            {
+                <span>, </span>
+            }
+        }
     }
     else if (part is MessagePart mp)
     {
@@ -73,7 +80,7 @@
     {
         <img src=@Skin.Current.GetImageURL(fsf) title=@Skin.Current.Describe(fsf) width=@Size height=@Size/>
     }
-    else if (part is Location || part is Territory || part is AuctionType || part is BrownEconomicsStatus || part is TreacheryCardType || part is StrongholdAdvantage || part is FactionAdvantage)
+    else if (part is Location || part is Territory || part is AuctionType || part is BrownEconomicsStatus || part is TreacheryCardType || part is StrongholdAdvantage || part is FactionAdvantage || part is Ruleset || part is Rule)
     {
         <span class="font-weight-bold">@Skin.Current.Describe(part)</span>
     }

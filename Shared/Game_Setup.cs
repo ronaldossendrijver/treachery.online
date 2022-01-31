@@ -39,11 +39,9 @@ namespace Treachery.Shared
             RulesForBots = e.ApplicableRules.Where(r => GetRuleGroup(r) == RuleGroup.Bots).ToList();
             Rules.AddRange(GetRulesInGroup(RuleGroup.CoreBasic));
 
-            var usedRuleset = Ruleset;
-            CurrentReport.Express("Ruleset: ",
-                usedRuleset == Ruleset.Custom ?
-                string.Format("Custom ({0})", Skin.Current.Join(Rules)) :
-                Skin.Current.Describe(usedRuleset));
+            CurrentReport.Express("Ruleset: ", Ruleset);
+            var customRules = GetCustomRules().ToList();
+            CurrentReport.ExpressIf(customRules.Any(), "House rules: ", customRules);
 
             if (Applicable(Rule.GreyAndPurpleExpansionTreacheryCards))
             {
@@ -192,15 +190,7 @@ namespace Treachery.Shared
                 }
             }
         }
-        public void HandleEvent(CardsDetermined e)
-        {
-            TreacheryDeck = new Deck<TreacheryCard>(e.TreacheryCards, Random);
-            TreacheryDeck.Shuffle();
-            RecentMilestones.Add(Milestone.Shuffled);
-            WhiteCache = new List<TreacheryCard>(e.WhiteCards);
-            CurrentReport.Express(e.GetVerboseMessage());
-            EnterPhaseTradingFactions();
-        }
+
 
         public void HandleEvent(FactionSelected e)
         {
@@ -224,14 +214,9 @@ namespace Treachery.Shared
                 p.Faction = inPlay.Draw();
             }
 
-            if (IsPlaying(Faction.White))
-            {
-                WhiteCache = TreacheryCardManager.GetWhiteCards(this);
-            }
-
             DeterminePositionsAtTable();
 
-            Enter(Applicable(Rule.CustomDecks), Phase.CustomizingDecks, EnterPhaseTradingFactions);
+            Enter(Applicable(Rule.CustomDecks) && Version < 134, Phase.CustomizingDecks, EnterPhaseTradingFactions);
         }
 
         private void DeterminePositionsAtTable()
@@ -304,9 +289,31 @@ namespace Treachery.Shared
         #endregion TradingFactions
 
         #region SettingUp
+        
+        private void EstablishDecks()
+        {
+            if (IsPlaying(Faction.White))
+            {
+                WhiteCache = TreacheryCardManager.GetWhiteCards();
+            }
+
+            Enter(Applicable(Rule.CustomDecks) && Version >= 134, Phase.CustomizingDecks, EnterSetupPhase);
+        }
+        public void HandleEvent(CardsDetermined e)
+        {
+            TreacheryDeck = new Deck<TreacheryCard>(e.TreacheryCards, Random);
+            TreacheryDeck.Shuffle();
+            RecentMilestones.Add(Milestone.Shuffled);
+            WhiteCache = new List<TreacheryCard>(e.WhiteCards);
+            CurrentReport.Express(e.GetVerboseMessage());
+
+            Enter(Version < 134, EnterPhaseTradingFactions, EnterSetupPhase);
+        }
 
         private void EnterSetupPhase()
         {
+            Enter(Applicable(Rule.CustomDecks) && Version >= 134, Phase.CustomizingDecks, EnterPhaseTradingFactions);
+
             CurrentTradeOffers.Clear();
 
             HasBattleWheel.Add(Players.OrderBy(p => p.PositionAtTable).First().Faction);

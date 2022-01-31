@@ -311,7 +311,8 @@ namespace Treachery.Server
 
         private void SendMail(string content, GameInfo info)
         {
-            var subject = string.Format("{0} ({1} Players, {2} Bots, Turn {3} - {4})", info.GameName, info.Players.Length, info.NumberOfBots, info.CurrentTurn, Skin.Current.Describe(info.Ruleset));
+            var ruleset = Game.DetermineApproximateRuleset(info.FactionsInPlay, info.Rules);
+            var subject = string.Format("{0} ({1} Players, {2} Bots, Turn {3} - {4})", info.GameName, info.Players.Length, info.NumberOfBots, info.CurrentTurn, Skin.Current.Describe(ruleset));
 
             try
             {
@@ -367,7 +368,7 @@ namespace Treachery.Server
                         faction = ToString(p.Faction),
                         id = ""
                     }).ToArray(),
-                    ruleset = ToString(game.DetermineApproximateRuleset()),
+                    ruleset = ToString(Game.DetermineApproximateRuleset(game)),
                     time = RoundToHalves((game.History.Last().Time - game.History.First().Time).TotalHours),
                     turn = game.CurrentTurn,
                     winners = game.Winners.Select(p => ToString(p.Faction)).ToArray()

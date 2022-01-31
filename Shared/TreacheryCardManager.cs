@@ -70,12 +70,12 @@ namespace Treachery.Shared
             Items.Add(new TreacheryCard(34, 34, TreacheryCardType.Projectile, Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal));
             Items.Add(new TreacheryCard(35, 35, TreacheryCardType.Poison, Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal));
             Items.Add(new TreacheryCard(36, 36, TreacheryCardType.WeirdingWay, Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal));
-            Items.Add(new TreacheryCard(37, 37, TreacheryCardType.PoisonTooth, Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal));
+            Items.Add(new TreacheryCard(37, 37, TreacheryCardType.PoisonTooth, new Rule[] { Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal, Rule.BrownAndWhiteTreacheryCards }));
             Items.Add(new TreacheryCard(38, 38, TreacheryCardType.ShieldAndAntidote, Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS));
             Items.Add(new TreacheryCard(39, 9, TreacheryCardType.Shield, Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal));
             Items.Add(new TreacheryCard(40, 13, TreacheryCardType.Antidote, Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal));
             Items.Add(new TreacheryCard(41, 39, TreacheryCardType.Chemistry, Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal));
-            Items.Add(new TreacheryCard(42, 40, TreacheryCardType.ArtilleryStrike, Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal));
+            Items.Add(new TreacheryCard(42, 40, TreacheryCardType.ArtilleryStrike, new Rule[] { Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal, Rule.BrownAndWhiteTreacheryCards }));
             Items.Add(new TreacheryCard(43, 41, TreacheryCardType.Harvester, Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal));
             Items.Add(new TreacheryCard(44, 42, TreacheryCardType.Thumper, Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal));
             Items.Add(new TreacheryCard(45, 43, TreacheryCardType.Amal, Rule.GreyAndPurpleExpansionTreacheryCardsAmal));
@@ -104,7 +104,7 @@ namespace Treachery.Shared
             return new Deck<TreacheryCard>(GetCardsInPlay(g), random);
         }
 
-        public static List<TreacheryCard> GetWhiteCards(Game g)
+        public static List<TreacheryCard> GetWhiteCards()
         {
             return GetCardsInPlay(Rule.WhiteTreacheryCards).ToList();
         }
@@ -113,7 +113,7 @@ namespace Treachery.Shared
         {
             return Items.Where(c =>
 
-                g.Applicable(c.Rule) ||
+                c.Rules.Any(rule => g.Applicable(rule)) ||
 
                 //Amal used to be included in the basic set of expansion cards
                 g.Version <= 104 && c.Type == TreacheryCardType.Amal && g.Applicable(Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal));
@@ -121,7 +121,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<TreacheryCard> GetCardsInPlay(Rule rule)
         {
-            return Items.Where(c => c.Rule == rule);
+            return Items.Where(c => c.Rules.Contains(rule));
         }
 
         public static IEnumerable<TreacheryCard> GetCardsInAndOutsidePlay()

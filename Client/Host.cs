@@ -32,7 +32,6 @@ namespace Treachery.Client
             MaximumNumberOfTurns = 10,
             MaximumNumberOfPlayers = 6,
             HostParticipates = true,
-            Ruleset = Ruleset.BasicGame,
             Rules = new List<Rule>() { Rule.FillWithBots },
             FactionsInPlay = EstablishPlayers.AvailableFactions().ToList()
         };
@@ -124,7 +123,6 @@ namespace Treachery.Client
                     {
                         Players = GameAtHost.Players.Select(p => p.Name).ToArray(),
                         NumberOfBots = GameAtHost.Players.Count(p => p.IsBot),
-                        Ruleset = GameAtHost.Ruleset,
                         Rules = GameAtHost.Rules.ToList()
                     };
                 }

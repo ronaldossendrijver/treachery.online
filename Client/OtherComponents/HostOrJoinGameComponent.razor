@@ -60,7 +60,7 @@
                             @if (av.CurrentPhase == Phase.AwaitingPlayers)
                             {
                                 <td class="w-50">
-                                    @av.Players.Count() Players, @Skin.Current.Describe(av.Ruleset)
+                                    @av.Players.Count() Players, @Skin.Current.Describe(Game.DetermineApproximateRuleset(av.FactionsInPlay, av.Rules))
                                 </td>
                                 <td class="w-25">
 
@@ -180,7 +180,7 @@
         return Skin.Current.Format("Started ({0} Players{1}, {2}, Turn {3}: {4})",
             av.Players.Count(),
             NumberOfBotsMessage(av),
-            av.Ruleset,
+            Game.DetermineApproximateRuleset(av.FactionsInPlay, av.Rules),
             av.CurrentTurn,
             av.CurrentMainPhase);
     }

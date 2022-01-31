@@ -13,15 +13,15 @@ namespace Treachery.Client
     {
         public string TrackedSpiceCard;
         public Dictionary<Faction, Dictionary<int, int>> TrackedTreacheryCards;
-        private readonly List<int> discardedCards = new List<int>();
-        private readonly List<int> removedCards = new List<int>();
-        public Dictionary<Tuple<Faction, int>, int> trackedTraitors = new Dictionary<Tuple<Faction, int>, int>();
-        public Dictionary<int, int> trackedDiscardedTraitors = new Dictionary<int, int>();
+        private readonly List<int> discardedCards = new();
+        private readonly List<int> removedCards = new();
+        public Dictionary<Tuple<Faction, int>, int> trackedTraitors = new();
+        public Dictionary<int, int> trackedDiscardedTraitors = new();
         private readonly TreacheryCard[] CardsInPlay;
 
         public GreenIntelligence(Game g)
         {
-            var whiteCards = g.IsPlaying(Faction.White) ? TreacheryCardManager.GetWhiteCards(g).ToArray() : Array.Empty<TreacheryCard>();
+            var whiteCards = g.IsPlaying(Faction.White) ? TreacheryCardManager.GetWhiteCards().ToArray() : Array.Empty<TreacheryCard>();
             CardsInPlay = TreacheryCardManager.GetCardsInPlay(g).Union(whiteCards).ToArray();
             TrackedTreacheryCards = new Dictionary<Faction, Dictionary<int, int>>();
             foreach (var p in g.Players)

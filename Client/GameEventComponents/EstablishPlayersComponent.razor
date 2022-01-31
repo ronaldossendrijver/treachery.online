@@ -71,15 +71,16 @@
 
     private GameInfo info => h.Host.GameBeingEstablished;
 
+    private Ruleset _ruleset;
     private Ruleset Ruleset
     {
         get
         {
-            return info.Ruleset;
+            return _ruleset;
         }
         set
         {
-            info.Ruleset = value;
+            _ruleset = value;
             RulesetChanged(value);
         }
     }
@@ -91,9 +92,9 @@
         info.Rules.Clear();
         info.Rules.AddRange(botRules);
 
-        if (Game.RulesetDefinition.ContainsKey(info.Ruleset))
+        if (Game.RulesetDefinition.ContainsKey(ruleset))
         {
-            info.Rules.AddRange(Game.RulesetDefinition[info.Ruleset]);
+            info.Rules.AddRange(Game.RulesetDefinition[ruleset]);
         }
 
         StateHasChanged();
@@ -120,11 +121,10 @@
     {
         if (h.Host.LoadedGame != null)
         {
-            info.Ruleset = h.Host.LoadedGame.Ruleset;
             info.MaximumNumberOfPlayers = h.Host.LoadedGame.MaximumNumberOfPlayers;
             info.MaximumNumberOfTurns = h.Host.LoadedGame.MaximumNumberOfTurns;
             info.Rules = h.Host.LoadedGame.AllRules.ToList();
-            info.Ruleset = h.Host.LoadedGame.Ruleset;
+            _ruleset = h.Host.LoadedGame.Ruleset;
             info.FactionsInPlay = h.Host.LoadedGame.Players.Select(p => p.Faction).ToList();
         }
     }

@@ -9,7 +9,7 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public Ruleset Ruleset => DetermineRuleset(Rules);
+        public Ruleset Ruleset => DetermineApproximateRuleset(this);
 
         public IEnumerable<Rule> GetCustomRules()
         {
@@ -24,65 +24,57 @@ namespace Treachery.Shared
                 GetRuleGroup(rule) == RuleGroup.CoreBasicExceptions);
         }
 
-        public static Ruleset DetermineRuleset(IEnumerable<Rule> applicableRules)
+        public static Ruleset DetermineApproximateRuleset(Game game)
         {
-            foreach (var rulesetWithRules in RulesetDefinition)
-            {
-                if (rulesetWithRules.Value.OrderBy(r => r).SequenceEqual(applicableRules.OrderBy(r => r)))
-                {
-                    return rulesetWithRules.Key;
-                }
-            }
-
-            return Ruleset.Custom;
+            return DetermineApproximateRuleset(game.Players.Select(p => p.Faction), game.Rules);
         }
 
-        public Ruleset DetermineApproximateRuleset()
+        public static Ruleset DetermineApproximateRuleset(IEnumerable<Faction> factions, IEnumerable<Rule> rules)
         {
-            var hasExpansion1 = Players.Any(p => p.Faction == Faction.Purple || p.Faction == Faction.Grey) ||
-                Applicable(Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS) ||
-                Applicable(Rule.GreyAndPurpleExpansionTreacheryCardsAmal) ||
-                Applicable(Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal) ||
-                Applicable(Rule.GreyAndPurpleExpansionTechTokens);
+            var hasExpansion1 = factions.Contains(Faction.Purple) || factions.Contains(Faction.Grey) ||
+                rules.Contains(Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS) ||
+                rules.Contains(Rule.GreyAndPurpleExpansionTreacheryCardsAmal) ||
+                rules.Contains(Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal) ||
+                rules.Contains(Rule.GreyAndPurpleExpansionTechTokens);
 
-            var hasExpansion2 = Players.Any(p => p.Faction == Faction.Brown || p.Faction == Faction.White) ||
-                Applicable(Rule.BrownAndWhiteLeaderSkills) ||
-                Applicable(Rule.BrownAndWhiteStrongholdBonus);
+            var hasExpansion2 = factions.Contains(Faction.Brown) || factions.Contains(Faction.White) ||
+                rules.Contains(Rule.BrownAndWhiteLeaderSkills) ||
+                rules.Contains(Rule.BrownAndWhiteTreacheryCards) ||
+                rules.Contains(Rule.BrownAndWhiteStrongholdBonus);
 
-            if (AdvancedRulesApply)
+            if (AdvancedRulesApply(rules))
             {
                 if (hasExpansion1 && hasExpansion2) return Ruleset.AllExpansionsAdvancedGame;
-                else if (hasExpansion1 && hasExpansion2) return Ruleset.ExpansionAdvancedGame;
-                else if (hasExpansion1 && hasExpansion2) return Ruleset.Expansion2AdvancedGame;
+                else if (hasExpansion1) return Ruleset.ExpansionAdvancedGame;
+                else if (hasExpansion2) return Ruleset.Expansion2AdvancedGame;
                 else return Ruleset.AdvancedGame;
             }
             else
             {
                 if (hasExpansion1 && hasExpansion2) return Ruleset.AllExpansionsBasicGame;
-                else if (hasExpansion1 && hasExpansion2) return Ruleset.ExpansionBasicGame;
-                else if (hasExpansion1 && hasExpansion2) return Ruleset.Expansion2BasicGame;
+                else if (hasExpansion1) return Ruleset.ExpansionBasicGame;
+                else if (hasExpansion2) return Ruleset.Expansion2BasicGame;
                 else return Ruleset.BasicGame;
             }
         }
 
-        private bool AdvancedRulesApply
+        private static bool AdvancedRulesApply(IEnumerable<Rule> rules)
         {
-            get
-            {
-                return
-                    Applicable(Rule.AdvancedCombat) ||
-                    Applicable(Rule.AdvancedKarama) ||
-                    Applicable(Rule.GreenMessiah) ||
-                    Applicable(Rule.BlackCapturesOrKillsLeaders) ||
-                    Applicable(Rule.YellowSpecialForces) ||
-                    Applicable(Rule.RedSpecialForces) ||
-                    Applicable(Rule.OrangeDetermineShipment) ||
-                    Applicable(Rule.BlueAdvisors) ||
-                    Applicable(Rule.GreyAndPurpleExpansionGreySwappingCardOnBid) ||
-                    Applicable(Rule.GreyAndPurpleExpansionPurpleGholas) ||
-                    Applicable(Rule.BrownAuditor) ||
-                    Applicable(Rule.WhiteBlackMarket);
-            }
+            return
+                rules.Contains(Rule.AdvancedCombat) ||
+                rules.Contains(Rule.IncreasedResourceFlow) ||
+                rules.Contains(Rule.AdvancedKarama) ||
+                rules.Contains(Rule.GreenMessiah) ||
+                rules.Contains(Rule.BlackCapturesOrKillsLeaders) ||
+                rules.Contains(Rule.YellowSpecialForces) ||
+                rules.Contains(Rule.RedSpecialForces) ||
+                rules.Contains(Rule.OrangeDetermineShipment) ||
+                rules.Contains(Rule.BlueAdvisors) ||
+                rules.Contains(Rule.GreyAndPurpleExpansionGreySwappingCardOnBid) ||
+                rules.Contains(Rule.GreyAndPurpleExpansionPurpleGholas) ||
+                rules.Contains(Rule.BrownAuditor) ||
+                rules.Contains(Rule.WhiteBlackMarket) ||
+                rules.Contains(Rule.BrownAndWhiteStrongholdBonus);
         }
 
         public static Dictionary<Ruleset, Rule[]> RulesetDefinition = new Dictionary<Ruleset, Rule[]>
@@ -117,7 +109,8 @@ namespace Treachery.Shared
                 Rule.GreyAndPurpleExpansionCheapHeroTraitor,
                 Rule.GreyAndPurpleExpansionTreacheryCards,
                 Rule.GreyAndPurpleExpansionSandTrout,
-                Rule.BrownAndWhiteLeaderSkills
+                Rule.BrownAndWhiteLeaderSkills,
+                Rule.BrownAndWhiteTreacheryCards
             },
 
             [Ruleset.ExpansionBasicGame] = new Rule[] {
@@ -128,7 +121,8 @@ namespace Treachery.Shared
             },
 
             [Ruleset.Expansion2BasicGame] = new Rule[] {
-                Rule.BrownAndWhiteLeaderSkills
+                Rule.BrownAndWhiteLeaderSkills,
+                Rule.BrownAndWhiteTreacheryCards
             },
 
             [Ruleset.AllExpansionsAdvancedGame] = new Rule[] {
@@ -155,6 +149,7 @@ namespace Treachery.Shared
                 Rule.GreyAndPurpleExpansionGreySwappingCardOnBid,
                 Rule.GreyAndPurpleExpansionPurpleGholas,
                 Rule.BrownAndWhiteLeaderSkills,
+                Rule.BrownAndWhiteTreacheryCards,
                 Rule.BrownAndWhiteStrongholdBonus,
                 Rule.BrownAuditor,
                 Rule.WhiteBlackMarket
@@ -203,6 +198,7 @@ namespace Treachery.Shared
                 Rule.OrangeDetermineShipment,
                 Rule.RedSpecialForces,
                 Rule.BrownAndWhiteLeaderSkills,
+                Rule.BrownAndWhiteTreacheryCards,
                 Rule.BrownAndWhiteStrongholdBonus,
                 Rule.BrownAuditor,
                 Rule.WhiteBlackMarket,
@@ -319,6 +315,7 @@ namespace Treachery.Shared
                     return RuleGroup.ExpansionIxAndBtAdvanced;
 
                 case Rule.BrownAndWhiteLeaderSkills:
+                case Rule.BrownAndWhiteTreacheryCards:
                     return RuleGroup.ExpansionBrownAndWhiteBasic;
 
                 case Rule.BrownAuditor:

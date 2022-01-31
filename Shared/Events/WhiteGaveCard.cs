@@ -40,7 +40,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)
         {
-            return p.TreacheryCards.Where(c => c.Rule == Rule.WhiteTreacheryCards);
+            return p.TreacheryCards.Where(c => c.Rules.Contains(Rule.WhiteTreacheryCards));
         }
 
         protected override void ExecuteConcreteEvent()

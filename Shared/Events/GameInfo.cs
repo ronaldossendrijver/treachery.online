@@ -20,7 +20,6 @@ namespace Treachery.Shared
         public List<Faction> FactionsInPlay;
         public string[] Players;
         public int NumberOfBots;
-        public Ruleset Ruleset;
         public List<Rule> Rules;
 
         public override bool Equals(object obj)

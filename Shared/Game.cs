@@ -11,7 +11,7 @@ namespace Treachery.Shared
     public partial class Game
     {
         public const int LowestSupportedVersion = 100;
-        public const int LatestVersion = 133;
+        public const int LatestVersion = 134;
 
         public bool BotInfologging = true;
 
@@ -183,7 +183,7 @@ namespace Treachery.Shared
                     break;
 
                 case Phase.TradingFactions:
-                    EnterSetupPhase();
+                    EstablishDecks();
                     break;
 
                 case Phase.MetheorAndStormSpell:

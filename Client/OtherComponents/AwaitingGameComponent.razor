@@ -26,7 +26,7 @@
 
             <div class="mt-1 mb-0"><strong>Factions:</strong> @Skin.Current.Join(info.FactionsInPlay)</div>
 
-            <div class="mt-2 mb-0"><strong>Ruleset:</strong> @Skin.Current.Describe(info.Ruleset)</div>
+            <div class="mt-2 mb-0"><strong>Ruleset:</strong> @Skin.Current.Describe(Game.DetermineApproximateRuleset(info.FactionsInPlay, info.Rules))</div>
 
             <label class="mt-1 mb-0 small">Core Game, Advanced Rules</label>
             <ul class="mt-0 mb-1">

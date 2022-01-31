@@ -42,7 +42,9 @@ namespace Treachery.Shared
             BidSequence = new PlayerSequence(this);
 
             var white = GetPlayer(Faction.White);
-            Enter(white != null && !Prevented(FactionAdvantage.WhiteBlackMarket) && white.TreacheryCards.Count > 0 && Players.Count > 1, Phase.BlackMarketAnnouncement, EnterWhiteBidding);
+            Enter(white != null && Applicable(Rule.WhiteBlackMarket) && !Prevented(FactionAdvantage.WhiteBlackMarket) && white.TreacheryCards.Count > 0 && Players.Count > 1, 
+                Phase.BlackMarketAnnouncement, 
+                EnterWhiteBidding);
         }
 
         public void HandleEvent(WhiteAnnouncesBlackMarket e)

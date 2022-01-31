@@ -23,7 +23,7 @@
 
                 <h4 class="h4">Setup</h4>
 
-                <div class="mt-1"><strong>Ruleset:</strong> @Skin.Current.Describe(replay.DetermineApproximateRuleset())</div>
+                <div class="mt-1"><strong>Ruleset:</strong> @Skin.Current.Describe(Game.DetermineApproximateRuleset(replay))</div>
 
                 @if (replay.GetCustomRules().Any())
                 {

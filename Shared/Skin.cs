@@ -659,6 +659,7 @@ namespace Treachery.Shared
                 Rule.GreyAndPurpleExpansionGreySwappingCardOnBid => Format("{0} may swap one card on bid with on card from their hand", Faction.Grey),
 
                 Rule.BrownAndWhiteLeaderSkills => "Leader Skills",
+                Rule.BrownAndWhiteTreacheryCards => Format("Treachery Cards: {0} and {1}", TreacheryCardType.ArtilleryStrike, TreacheryCardType.PoisonTooth),
                 Rule.BrownAndWhiteStrongholdBonus => "Stronghold Bonus",
                 Rule.BrownAuditor => Format("{0} gains the Auditor leader", Faction.Brown),
                 Rule.WhiteBlackMarket => Format("{0} Black Market bidding", Faction.White),

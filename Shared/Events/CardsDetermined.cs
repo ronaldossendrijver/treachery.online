@@ -68,11 +68,11 @@ namespace Treachery.Shared
         {
             if (WhiteCards.Any())
             {
-                return Message.Express("Treachery Cards: ", Skin.Current.JoinSummarized(TreacheryCards), ". ", Faction.White, " Cards: ", Skin.Current.JoinSummarized(WhiteCards));
+                return Message.Express("Treachery Cards: ", TreacheryCards, ". ", Faction.White, " Cards: ", WhiteCards);
             }
             else
             {
-                return Message.Express("Treachery Cards: ", Skin.Current.JoinSummarized(TreacheryCards));
+                return Message.Express("Treachery Cards: ", TreacheryCards);
             }
 
         }

@@ -448,6 +448,7 @@ namespace Treachery.Shared
         BrownAndWhiteLeaderSkills = 400,
         BrownAndWhiteStrongholdBonus = 401,
         WhiteTreacheryCards = 402,
+        BrownAndWhiteTreacheryCards = 403,
 
         //Expansion 2, Advanced Game
         BrownAuditor = 500,
