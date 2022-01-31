@@ -122,6 +122,7 @@ namespace Treachery.Client
                     result = new GameInfo()
                     {
                         Players = GameAtHost.Players.Select(p => p.Name).ToArray(),
+                        FactionsInPlay = GameAtHost.Players.Select(p => p.Faction).ToList(),
                         NumberOfBots = GameAtHost.Players.Count(p => p.IsBot),
                         Rules = GameAtHost.Rules.ToList()
                     };

@@ -39,7 +39,7 @@ namespace Treachery.Shared
             RulesForBots = e.ApplicableRules.Where(r => GetRuleGroup(r) == RuleGroup.Bots).ToList();
             Rules.AddRange(GetRulesInGroup(RuleGroup.CoreBasic));
 
-            CurrentReport.Express("Ruleset: ", Ruleset);
+            CurrentReport.Express("Ruleset: ", DetermineApproximateRuleset(e.FactionsInPlay, Rules));
             var customRules = GetCustomRules().ToList();
             CurrentReport.ExpressIf(customRules.Any(), "House rules: ", customRules);
 
