@@ -155,15 +155,7 @@ namespace Treachery.Client
 
                 case Phase.MetheorAndStormSpell: return S(Skin.Current.Format("Factions may now use {0} or {1}...", TreacheryCardType.Metheor, TreacheryCardType.StormSpell));
 
-                case Phase.Thumper:
-                    if (Game.CurrentTurn > 1)
-                    {
-                        return S(Skin.Current.Format("Factions may now use a {0} to call {1}...", TreacheryCardType.Thumper, Concept.Monster));
-                    }
-                    else
-                    {
-                        return S(Skin.Current.Format("You may now proceed to the first Spice Blow"), Skin.Current.Format("Waiting for the host to proceed to the first Spice Blow"));
-                    }
+                case Phase.Thumper: return S(Skin.Current.Format("You may now proceed to the first Spice Blow"), Skin.Current.Format("Waiting for the host to proceed to the first Spice Blow"));
 
                 case Phase.YellowSendingMonsterA:
                 case Phase.YellowSendingMonsterB:
