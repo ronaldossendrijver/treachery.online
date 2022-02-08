@@ -17,7 +17,16 @@ namespace Treachery.Shared
             MainPhaseStart(MainPhase.Blow);
             ignoredMonsters.Clear();
             var sequenceToDetermineFirstPlayer = new PlayerSequence(this);
-            Enter(Applicable(Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal) && (Version <= 102 || CurrentTurn > 1), Phase.Thumper, EnterBlowA);
+
+            if (Version < 135)
+            {
+                Enter(Applicable(Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal) && (Version <= 102 || CurrentTurn > 1), Phase.Thumper, EnterBlowA);
+            }
+            else
+            {
+                Enter(Phase.Thumper);
+            }
+
         }
 
         private bool ThumperUsed = false;
