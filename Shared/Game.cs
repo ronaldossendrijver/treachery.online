@@ -103,7 +103,7 @@ namespace Treachery.Shared
 
             History.Add(e);
 
-            if (TrackStatesForReplay && !Applicable(Rule.DisableEndOfGameReport))
+            if (TrackStatesForReplay)
             {
                 States.Add(Clone());
             }
@@ -120,7 +120,7 @@ namespace Treachery.Shared
             }
             return result;
         }
-
+        
         public GameEvent LatestEvent(Type eventType) => History.LastOrDefault(e => e.GetType() == eventType);
 
         public GameEvent LatestEvent(params Type[] eventType)
@@ -734,6 +734,7 @@ namespace Treachery.Shared
             result.Players = Utilities.CloneList(Players);
             result.LeaderState = Utilities.CloneDictionary(LeaderState);
             result.SecretsRemainHidden = new List<Faction>(SecretsRemainHidden);
+            result.PreventedAdvantages = new List<FactionAdvantage>(PreventedAdvantages);
             return result;
         }
 

@@ -505,7 +505,7 @@ namespace Treachery.Shared
             }
         }
 
-        private readonly List<FactionAdvantage> PreventedAdvantages = new List<FactionAdvantage>();
+        private List<FactionAdvantage> PreventedAdvantages = new List<FactionAdvantage>();
 
         private void Prevent(Faction initiator, FactionAdvantage advantage)
         {

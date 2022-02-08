@@ -177,10 +177,11 @@
 
     private string GameInfoMessage(GameInfo av)
     {
+        var factions = av.FactionsInPlay != null ? av.FactionsInPlay : new List<Faction>();
         return Skin.Current.Format("Started ({0} Players{1}, {2}, Turn {3}: {4})",
             av.Players.Count(),
             NumberOfBotsMessage(av),
-            Game.DetermineApproximateRuleset(av.FactionsInPlay, av.Rules),
+            Game.DetermineApproximateRuleset(factions, av.Rules),
             av.CurrentTurn,
             av.CurrentMainPhase);
     }
