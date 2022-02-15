@@ -38,7 +38,7 @@
     }
     else if (part is int || part is float || part is double)
     {
-        <span class="badge badge-light">@part</span>
+        <SimpleNumberComponent Size=@Size>@part</SimpleNumberComponent>
     }
     else if (part is Payment payment)
     {

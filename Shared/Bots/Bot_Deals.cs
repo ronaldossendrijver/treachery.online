@@ -15,6 +15,15 @@ namespace Treachery.Shared
 
             DealAccepted result = null;
 
+            if (Game.CurrentPhase == Phase.ClaimingCharity && TechTokens.Any(tt => tt == TechToken.Resources) && Resources <= 3 && !Game.HasBiddingPrescience(this) && !(Ally != Faction.None && Game.HasBiddingPrescience(AlliedPlayer)))
+            {
+                var greenPrescienceDeal = DealAccepted.AcceptableDeals(Game, this).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.BiddingReport && d.Price <= Resources);
+                if (greenPrescienceDeal != null)
+                {
+                    return greenPrescienceDeal.Acceptance(Faction);
+                }
+            }
+            
             if (Game.CurrentPhase == Phase.Bidding)
             {
                 if (!Game.HasBiddingPrescience(this) && !(Ally != Faction.None && Game.HasBiddingPrescience(AlliedPlayer)))

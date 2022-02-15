@@ -1,0 +1,25 @@
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+<svg width=@Support.Round(Size) height=@Support.Round(Size)>
+    <circle cx=@Radius cy=@Radius r=@Radius fill="white"/>
+    <text x=@Radius y=@Radius text-anchor="middle" dominant-baseline="middle" stroke="black">@ChildContent</text>
+</svg>
+
+
+@code {
+
+    [Parameter]
+    public float Size { get; set; } 
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    private string Radius { get; set; } 
+
+    protected override void OnParametersSet()
+    {
+        Radius = Support.Round(0.5f * Size);
+    }
+}
