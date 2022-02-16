@@ -68,7 +68,7 @@ namespace Treachery.Shared
             CurrentReport.Express("The first storm moves ", SectorInStorm, " sectors");
             PerformStorm();
 
-            if (Applicable(Rule.GreyAndPurpleExpansionTechTokens))
+            if (Applicable(Rule.TechTokens))
             {
                 AssignTechTokens();
             }

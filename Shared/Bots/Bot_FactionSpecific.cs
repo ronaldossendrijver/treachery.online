@@ -278,7 +278,7 @@ namespace Treachery.Shared
 
             if (opponent != null)
             {
-                var potentialWinningOpponents = Game.Players.Where(p => p != this && p != AlliedPlayer && Game.MeetsNormalVictoryCondition(p, true) && Game.CountChallengedStongholds(p) < 2);
+                var potentialWinningOpponents = Game.Players.Where(p => p != this && p != AlliedPlayer && Game.MeetsNormalVictoryCondition(p, true) && Game.CountChallengedVictoryPoints(p) < 2);
                 var amountICanReinforce = MaxReinforcedDialTo(this, territory);
                 var maxDial = MaxDial(this, territory, opponent);
 
@@ -340,7 +340,7 @@ namespace Treachery.Shared
             if (target != null)
             {
                 var opponent = GetOpponentThatOccupies(target);
-                var potentialWinningOpponents = Game.Players.Where(p => p != this && p != AlliedPlayer && Game.MeetsNormalVictoryCondition(p, true) && Game.CountChallengedStongholds(p) < 2);
+                var potentialWinningOpponents = Game.Players.Where(p => p != this && p != AlliedPlayer && Game.MeetsNormalVictoryCondition(p, true) && Game.CountChallengedVictoryPoints(p) < 2);
                 shippingOpponentCanWin = potentialWinningOpponents.Contains(opponent);
             }
 

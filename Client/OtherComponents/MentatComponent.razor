@@ -53,7 +53,7 @@
 
     </div>
 
-    @if (h.Game.Applicable(Rule.BrownAndWhiteLeaderSkills))
+    @if (h.Game.Applicable(Rule.LeaderSkills))
     {
         <h5 class="mt-2">Leader Skill Cards</h5>
         <div class="row row-cols-3 row-cols-md-6 ml-0 mr-0">
@@ -70,7 +70,7 @@
         </div>
     }
 
-    @if (h.Game.Applicable(Rule.BrownAndWhiteStrongholdBonus))
+    @if (h.Game.Applicable(Rule.StrongholdBonus))
     {
         <h5 class="mt-2">Stronghold Cards</h5>
         <div class="row row-cols-3 row-cols-md-6 ml-0 mr-0">

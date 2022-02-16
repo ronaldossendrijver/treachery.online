@@ -367,7 +367,7 @@ namespace Treachery.Shared
             get
             {
                 var grey = GetPlayer(Faction.Grey);
-                return grey != null && grey.TreacheryCards.Count > 0 && Applicable(Rule.GreyAndPurpleExpansionGreySwappingCardOnBid) && !GreySwappedCardOnBid;
+                return grey != null && grey.TreacheryCards.Count > 0 && Applicable(Rule.GreySwappingCardOnBid) && !GreySwappedCardOnBid;
             }
         }
 

@@ -35,7 +35,7 @@ namespace Treachery.Shared
 
         private void DetermineStrongholdOwnership()
         {
-            if (Applicable(Rule.BrownAndWhiteStrongholdBonus))
+            if (Applicable(Rule.StrongholdBonus))
             {
                 DetermineStrongholdOwnership(Map.Arrakeen);
                 DetermineStrongholdOwnership(Map.Carthag);
@@ -311,7 +311,7 @@ namespace Treachery.Shared
             return NumberOfVictoryPoints(p, contestedStongholdsCountAsOccupied) >= TresholdForWin(p);
         }
 
-        public int CountChallengedStongholds(Player p)
+        public int CountChallengedVictoryPoints(Player p)
         {
             return NumberOfVictoryPoints(p, true) - NumberOfVictoryPoints(p, false);
         }
@@ -330,15 +330,16 @@ namespace Treachery.Shared
 
         public int NumberOfVictoryPoints(Player p, bool contestedStongholdsCountAsOccupied)
         {
-            int techTokenPoint = p.TechTokens.Count == 3 ? 1 : 0;
             var ally = GetPlayer(p.Ally);
 
             if (ally != null)
             {
+                int techTokenPoint = p.TechTokens.Count == 3 || p.AlliedPlayer.TechTokens.Count == 3 ? 1 : 0;
                 return techTokenPoint + (Map.Locations.Where(l => l.Territory.IsStronghold || IsSpecialStronghold(l.Territory)).Count(l => p.Controls(this, l, contestedStongholdsCountAsOccupied) || ally.Controls(this, l, contestedStongholdsCountAsOccupied)));
             }
             else
             {
+                int techTokenPoint = p.TechTokens.Count == 3 ? 1 : 0;
                 return techTokenPoint + (Map.Locations.Where(l => l.Territory.IsStronghold || IsSpecialStronghold(l.Territory)).Count(l => p.Controls(this, l, contestedStongholdsCountAsOccupied)));
             }
         }

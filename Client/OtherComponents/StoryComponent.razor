@@ -52,7 +52,7 @@
                 <h4 class="h4">Turn @replay.CurrentTurn</h4>
 
                 <h5 class="h5">Situation at the start of Bidding:</h5>
-                <StoryPlayerInfoComponent Game="replay" ShowAlly="ShowAllies(replay)" ShowCards="true" ShowTraitorsAndFacedancers="true" ShowResources="true" ShowTechTokens="@(Game.Applicable(Rule.GreyAndPurpleExpansionTechTokens))" />
+                <StoryPlayerInfoComponent Game="replay" ShowAlly="ShowAllies(replay)" ShowCards="true" ShowTraitorsAndFacedancers="true" ShowResources="true" ShowTechTokens="@(Game.Applicable(Rule.TechTokens))" />
             }
 
             if (replay.CurrentMainPhase != previousMainPhase && (replay.CurrentMainPhase == MainPhase.Resurrection))

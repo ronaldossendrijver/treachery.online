@@ -44,7 +44,7 @@ namespace Treachery.Shared
                 TreacheryCardType.Useless
             };
 
-            if (g.Applicable(Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal))
+            if (g.Applicable(Rule.ExpansionTreacheryCardsExceptPBandSSandAmal))
             {
                 result.Add(TreacheryCardType.ArtilleryStrike);
                 result.Add(TreacheryCardType.Chemistry);
@@ -52,7 +52,7 @@ namespace Treachery.Shared
                 result.Add(TreacheryCardType.WeirdingWay);
             }
 
-            if (g.Applicable(Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS))
+            if (g.Applicable(Rule.ExpansionTreacheryCardsPBandSS))
             {
                 result.Add(TreacheryCardType.ProjectileAndPoison);
                 result.Add(TreacheryCardType.ShieldAndAntidote);

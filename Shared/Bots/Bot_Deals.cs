@@ -30,7 +30,7 @@ namespace Treachery.Shared
                 {
                     var biddingPrescienceDeal = DealAccepted.AcceptableDeals(Game, this).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.BiddingReport && d.Price <= Resources);
                     LogInfo("biddingPrescienceOfferEntirePhaseYellow: {0}", biddingPrescienceDeal);
-                    if (biddingPrescienceDeal != null && Faction == Faction.Yellow && Game.CurrentTurn == 1 && Game.Applicable(Rule.GreyAndPurpleExpansionTechTokens) && Game.CurrentPhase <= Phase.ClaimingCharity)
+                    if (biddingPrescienceDeal != null && Faction == Faction.Yellow && Game.CurrentTurn == 1 && Game.Applicable(Rule.TechTokens) && Game.CurrentPhase <= Phase.ClaimingCharity)
                     {
                         return biddingPrescienceDeal.Acceptance(Faction);
                     }

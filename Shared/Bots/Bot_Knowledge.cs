@@ -493,10 +493,10 @@ namespace Treachery.Shared
             (CanShip(p) || p.HasAlly && CanShip(p.AlliedPlayer) || p.TechTokens.Count >= 2);
 
         private IEnumerable<Player> WinningOpponentsIWishToAttack(int maximumChallengedStrongholds, bool includeBots) =>
-            Game.Players.Where(p => (includeBots || !p.IsBot) && IsWinningOpponent(p) && Game.CountChallengedStongholds(p) <= maximumChallengedStrongholds && !WinWasPredictedByMeThisTurn(p.Faction));
+            Game.Players.Where(p => (includeBots || !p.IsBot || !p.AllyIsBot) && IsWinningOpponent(p) && Game.CountChallengedVictoryPoints(p) <= maximumChallengedStrongholds && !WinWasPredictedByMeThisTurn(p.Faction));
 
         private IEnumerable<Player> AlmostWinningOpponentsIWishToAttack(int maximumChallengedStrongholds, bool includeBots) =>
-            Game.Players.Where(p => (includeBots || !p.IsBot) && IsAlmostWinningOpponent(p) && Game.CountChallengedStongholds(p) <= maximumChallengedStrongholds && !WinWasPredictedByMeThisTurn(p.Faction));
+            Game.Players.Where(p => (includeBots || !p.IsBot || !p.AllyIsBot) && IsAlmostWinningOpponent(p) && Game.CountChallengedVictoryPoints(p) <= maximumChallengedStrongholds && !WinWasPredictedByMeThisTurn(p.Faction));
 
 
         protected virtual Location WinnableNearbyStronghold(Location from, Battalion battalion)

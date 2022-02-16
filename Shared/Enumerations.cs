@@ -432,23 +432,23 @@ namespace Treachery.Shared
         OrangeShipmentContributionsFlowBack = 97,
 
         //Expansion
-        GreyAndPurpleExpansionTechTokens = 200,
-        GreyAndPurpleExpansionTreacheryCards = 209,
-        GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal = 210,
-        GreyAndPurpleExpansionTreacheryCardsPBandSS = 211,
-        GreyAndPurpleExpansionTreacheryCardsAmal = 212,
-        GreyAndPurpleExpansionCheapHeroTraitor = 220,
-        GreyAndPurpleExpansionSandTrout = 230,
+        TechTokens = 200,
+        ExpansionTreacheryCards = 209,
+        ExpansionTreacheryCardsExceptPBandSSandAmal = 210,
+        ExpansionTreacheryCardsPBandSS = 211,
+        ExpansionTreacheryCardsAmal = 212,
+        CheapHeroTraitor = 220,
+        SandTrout = 230,
 
         //Expansion, Advanced Game
-        GreyAndPurpleExpansionGreySwappingCardOnBid = 300,
-        GreyAndPurpleExpansionPurpleGholas = 301,
+        GreySwappingCardOnBid = 300,
+        PurpleGholas = 301,
 
         //Expansion 2
-        BrownAndWhiteLeaderSkills = 400,
-        BrownAndWhiteStrongholdBonus = 401,
+        LeaderSkills = 400,
+        StrongholdBonus = 401,
         WhiteTreacheryCards = 402,
-        BrownAndWhiteTreacheryCards = 403,
+        Expansion2TreacheryCards = 403,
 
         //Expansion 2, Advanced Game
         BrownAuditor = 500,

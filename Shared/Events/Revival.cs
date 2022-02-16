@@ -118,7 +118,7 @@ namespace Treachery.Shared
                 return g.KilledHeroes(p).Where(h => g.AllowedEarlyRevivals.ContainsKey(h));
             }
 
-            if (p.Is(Faction.Purple) && g.Applicable(Rule.GreyAndPurpleExpansionPurpleGholas) && p.Leaders.Count(l => g.LeaderState[l].Alive) < 5)
+            if (p.Is(Faction.Purple) && g.Applicable(Rule.PurpleGholas) && p.Leaders.Count(l => g.LeaderState[l].Alive) < 5)
             {
                 result.AddRange(
                     g.LeaderState.Where(leaderAndState =>
@@ -224,7 +224,7 @@ namespace Treachery.Shared
             return
                 h is Leader &&
                 h.HeroType != HeroType.Auditor &&
-                g.Applicable(Rule.BrownAndWhiteLeaderSkills) &&
+                g.Applicable(Rule.LeaderSkills) &&
                 !g.CapturedLeaders.Any(cl => cl.Value == p.Faction && g.Skilled(cl.Key)) &&
                 !p.Leaders.Any(l => g.Skilled(l));
         }

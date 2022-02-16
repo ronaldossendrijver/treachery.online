@@ -231,6 +231,8 @@ namespace Treachery.Shared
 
         public bool IsBot { get; set; }
 
+        public bool AllyIsBot => Ally != Faction.None && AlliedPlayer.IsBot;
+
         #endregion PublicInterface
 
         #region SupportMethods

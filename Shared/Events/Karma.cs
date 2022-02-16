@@ -123,7 +123,7 @@ namespace Treachery.Shared
                 result.Add(FactionAdvantage.GreyCyborgExtraMove);
                 result.Add(FactionAdvantage.GreyReplacingSpecialForces);
                 result.Add(FactionAdvantage.GreyAllyDiscardingCard);
-                if (g.Applicable(Rule.GreyAndPurpleExpansionGreySwappingCardOnBid)) result.Add(FactionAdvantage.GreySwappingCard);
+                if (g.Applicable(Rule.GreySwappingCardOnBid)) result.Add(FactionAdvantage.GreySwappingCard);
             }
 
             if (p.Faction != Faction.Purple && g.IsPlaying(Faction.Purple))
@@ -134,7 +134,7 @@ namespace Treachery.Shared
                 result.Add(FactionAdvantage.PurpleIncreasingRevivalLimits);
                 result.Add(FactionAdvantage.PurpleReceiveRevive);
                 result.Add(FactionAdvantage.PurpleEarlyLeaderRevive);
-                if (g.Applicable(Rule.GreyAndPurpleExpansionPurpleGholas)) result.Add(FactionAdvantage.PurpleReviveGhola);
+                if (g.Applicable(Rule.PurpleGholas)) result.Add(FactionAdvantage.PurpleReviveGhola);
             }
 
             return result;

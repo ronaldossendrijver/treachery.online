@@ -124,7 +124,7 @@ namespace Treachery.Shared
                 result.Add(new ResourceCard(98));
             }
 
-            if (g.Applicable(Rule.GreyAndPurpleExpansionSandTrout))
+            if (g.Applicable(Rule.SandTrout))
             {
                 result.Add(new ResourceCard(99) { IsSandTrout = true });
             }

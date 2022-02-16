@@ -328,6 +328,8 @@ namespace Treachery.Shared
             LogInfo("DetermineShipment_PreventNormalWin()");
 
             var potentialWinningOpponents = WinningOpponentsIWishToAttack(maximumChallengedStrongholds, false);
+            var p = Game.GetPlayer(Faction.Black);
+
             if (!potentialWinningOpponents.Any()) potentialWinningOpponents = WinningOpponentsIWishToAttack(maximumChallengedStrongholds, true);
 
             LogInfo("potentialWinningOpponents with too many unchallenged strongholds:" + string.Join(",", potentialWinningOpponents));

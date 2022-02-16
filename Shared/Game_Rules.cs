@@ -32,15 +32,15 @@ namespace Treachery.Shared
         public static Ruleset DetermineApproximateRuleset(IEnumerable<Faction> factions, IEnumerable<Rule> rules)
         {
             var hasExpansion1 = factions.Contains(Faction.Purple) || factions.Contains(Faction.Grey) ||
-                rules.Contains(Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS) ||
-                rules.Contains(Rule.GreyAndPurpleExpansionTreacheryCardsAmal) ||
-                rules.Contains(Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal) ||
-                rules.Contains(Rule.GreyAndPurpleExpansionTechTokens);
+                rules.Contains(Rule.ExpansionTreacheryCardsPBandSS) ||
+                rules.Contains(Rule.ExpansionTreacheryCardsAmal) ||
+                rules.Contains(Rule.ExpansionTreacheryCardsExceptPBandSSandAmal) ||
+                rules.Contains(Rule.TechTokens);
 
             var hasExpansion2 = factions.Contains(Faction.Brown) || factions.Contains(Faction.White) ||
-                rules.Contains(Rule.BrownAndWhiteLeaderSkills) ||
-                rules.Contains(Rule.BrownAndWhiteTreacheryCards) ||
-                rules.Contains(Rule.BrownAndWhiteStrongholdBonus);
+                rules.Contains(Rule.LeaderSkills) ||
+                rules.Contains(Rule.Expansion2TreacheryCards) ||
+                rules.Contains(Rule.StrongholdBonus);
 
             if (AdvancedRulesApply(rules))
             {
@@ -70,11 +70,11 @@ namespace Treachery.Shared
                 rules.Contains(Rule.RedSpecialForces) ||
                 rules.Contains(Rule.OrangeDetermineShipment) ||
                 rules.Contains(Rule.BlueAdvisors) ||
-                rules.Contains(Rule.GreyAndPurpleExpansionGreySwappingCardOnBid) ||
-                rules.Contains(Rule.GreyAndPurpleExpansionPurpleGholas) ||
+                rules.Contains(Rule.GreySwappingCardOnBid) ||
+                rules.Contains(Rule.PurpleGholas) ||
                 rules.Contains(Rule.BrownAuditor) ||
                 rules.Contains(Rule.WhiteBlackMarket) ||
-                rules.Contains(Rule.BrownAndWhiteStrongholdBonus);
+                rules.Contains(Rule.StrongholdBonus);
         }
 
         public static Dictionary<Ruleset, Rule[]> RulesetDefinition = new Dictionary<Ruleset, Rule[]>
@@ -102,27 +102,31 @@ namespace Treachery.Shared
                 Rule.BlueAccompaniesToShipmentLocation,
                 Rule.OrangeDetermineShipment,
                 Rule.RedSpecialForces,
+                Rule.GreySwappingCardOnBid,
+                Rule.PurpleGholas,
+                Rule.BrownAuditor,
+                Rule.WhiteBlackMarket,
             },
 
             [Ruleset.AllExpansionsBasicGame] = new Rule[] {
-                Rule.GreyAndPurpleExpansionTechTokens,
-                Rule.GreyAndPurpleExpansionCheapHeroTraitor,
-                Rule.GreyAndPurpleExpansionTreacheryCards,
-                Rule.GreyAndPurpleExpansionSandTrout,
-                Rule.BrownAndWhiteLeaderSkills,
-                Rule.BrownAndWhiteTreacheryCards
+                Rule.TechTokens,
+                Rule.CheapHeroTraitor,
+                Rule.ExpansionTreacheryCards,
+                Rule.SandTrout,
+                Rule.LeaderSkills,
+                Rule.Expansion2TreacheryCards
             },
 
             [Ruleset.ExpansionBasicGame] = new Rule[] {
-                Rule.GreyAndPurpleExpansionTechTokens,
-                Rule.GreyAndPurpleExpansionCheapHeroTraitor,
-                Rule.GreyAndPurpleExpansionTreacheryCards,
-                Rule.GreyAndPurpleExpansionSandTrout
+                Rule.TechTokens,
+                Rule.CheapHeroTraitor,
+                Rule.ExpansionTreacheryCards,
+                Rule.SandTrout
             },
 
             [Ruleset.Expansion2BasicGame] = new Rule[] {
-                Rule.BrownAndWhiteLeaderSkills,
-                Rule.BrownAndWhiteTreacheryCards
+                Rule.LeaderSkills,
+                Rule.Expansion2TreacheryCards
             },
 
             [Ruleset.AllExpansionsAdvancedGame] = new Rule[] {
@@ -142,17 +146,17 @@ namespace Treachery.Shared
                 Rule.BlueAccompaniesToShipmentLocation,
                 Rule.OrangeDetermineShipment,
                 Rule.RedSpecialForces,
-                Rule.GreyAndPurpleExpansionTechTokens,
-                Rule.GreyAndPurpleExpansionCheapHeroTraitor,
-                Rule.GreyAndPurpleExpansionTreacheryCards,
-                Rule.GreyAndPurpleExpansionSandTrout,
-                Rule.GreyAndPurpleExpansionGreySwappingCardOnBid,
-                Rule.GreyAndPurpleExpansionPurpleGholas,
-                Rule.BrownAndWhiteLeaderSkills,
-                Rule.BrownAndWhiteTreacheryCards,
-                Rule.BrownAndWhiteStrongholdBonus,
+                Rule.TechTokens,
+                Rule.CheapHeroTraitor,
+                Rule.ExpansionTreacheryCards,
+                Rule.SandTrout,
+                Rule.GreySwappingCardOnBid,
+                Rule.PurpleGholas,
+                Rule.LeaderSkills,
+                Rule.Expansion2TreacheryCards,
+                Rule.StrongholdBonus,
                 Rule.BrownAuditor,
-                Rule.WhiteBlackMarket
+                Rule.WhiteBlackMarket,
             },
 
             [Ruleset.ExpansionAdvancedGame] = new Rule[] {
@@ -172,12 +176,14 @@ namespace Treachery.Shared
                 Rule.BlueAccompaniesToShipmentLocation,
                 Rule.OrangeDetermineShipment,
                 Rule.RedSpecialForces,
-                Rule.GreyAndPurpleExpansionTechTokens,
-                Rule.GreyAndPurpleExpansionCheapHeroTraitor,
-                Rule.GreyAndPurpleExpansionTreacheryCards,
-                Rule.GreyAndPurpleExpansionSandTrout,
-                Rule.GreyAndPurpleExpansionGreySwappingCardOnBid,
-                Rule.GreyAndPurpleExpansionPurpleGholas
+                Rule.TechTokens,
+                Rule.CheapHeroTraitor,
+                Rule.ExpansionTreacheryCards,
+                Rule.SandTrout,
+                Rule.GreySwappingCardOnBid,
+                Rule.PurpleGholas,
+                Rule.BrownAuditor,
+                Rule.WhiteBlackMarket,
             },
 
             [Ruleset.Expansion2AdvancedGame] = new Rule[] {
@@ -197,12 +203,14 @@ namespace Treachery.Shared
                 Rule.BlueAccompaniesToShipmentLocation,
                 Rule.OrangeDetermineShipment,
                 Rule.RedSpecialForces,
-                Rule.BrownAndWhiteLeaderSkills,
-                Rule.BrownAndWhiteTreacheryCards,
-                Rule.BrownAndWhiteStrongholdBonus,
+                Rule.LeaderSkills,
+                Rule.Expansion2TreacheryCards,
+                Rule.StrongholdBonus,
+                Rule.GreySwappingCardOnBid,
+                Rule.PurpleGholas,
                 Rule.BrownAuditor,
                 Rule.WhiteBlackMarket,
-                Rule.BrownAndWhiteStrongholdBonus
+                Rule.StrongholdBonus
             },
 
             [Ruleset.ServerClassic] = new Rule[] {
@@ -304,23 +312,23 @@ namespace Treachery.Shared
                 case Rule.BotsCannotAlly:
                     return RuleGroup.Bots;
 
-                case Rule.GreyAndPurpleExpansionTechTokens:
-                case Rule.GreyAndPurpleExpansionCheapHeroTraitor:
-                case Rule.GreyAndPurpleExpansionTreacheryCards:
-                case Rule.GreyAndPurpleExpansionSandTrout:
+                case Rule.TechTokens:
+                case Rule.CheapHeroTraitor:
+                case Rule.ExpansionTreacheryCards:
+                case Rule.SandTrout:
                     return RuleGroup.ExpansionIxAndBtBasic;
 
-                case Rule.GreyAndPurpleExpansionGreySwappingCardOnBid:
-                case Rule.GreyAndPurpleExpansionPurpleGholas:
+                case Rule.GreySwappingCardOnBid:
+                case Rule.PurpleGholas:
                     return RuleGroup.ExpansionIxAndBtAdvanced;
 
-                case Rule.BrownAndWhiteLeaderSkills:
-                case Rule.BrownAndWhiteTreacheryCards:
+                case Rule.LeaderSkills:
+                case Rule.Expansion2TreacheryCards:
                     return RuleGroup.ExpansionBrownAndWhiteBasic;
 
                 case Rule.BrownAuditor:
                 case Rule.WhiteBlackMarket:
-                case Rule.BrownAndWhiteStrongholdBonus:
+                case Rule.StrongholdBonus:
                     return RuleGroup.ExpansionBrownAndWhiteAdvanced;
             }
 

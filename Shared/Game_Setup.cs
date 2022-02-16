@@ -43,11 +43,11 @@ namespace Treachery.Shared
             var customRules = GetCustomRules().ToList();
             CurrentReport.ExpressIf(customRules.Any(), "House rules: ", customRules);
 
-            if (Applicable(Rule.GreyAndPurpleExpansionTreacheryCards))
+            if (Applicable(Rule.ExpansionTreacheryCards))
             {
-                if (!Rules.Contains(Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal)) Rules.Add(Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal);
-                if (!Rules.Contains(Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS)) Rules.Add(Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS);
-                if (!Rules.Contains(Rule.GreyAndPurpleExpansionTreacheryCardsAmal)) Rules.Add(Rule.GreyAndPurpleExpansionTreacheryCardsAmal);
+                if (!Rules.Contains(Rule.ExpansionTreacheryCardsExceptPBandSSandAmal)) Rules.Add(Rule.ExpansionTreacheryCardsExceptPBandSSandAmal);
+                if (!Rules.Contains(Rule.ExpansionTreacheryCardsPBandSS)) Rules.Add(Rule.ExpansionTreacheryCardsPBandSS);
+                if (!Rules.Contains(Rule.ExpansionTreacheryCardsAmal)) Rules.Add(Rule.ExpansionTreacheryCardsAmal);
             }
 
             ResourceCardDeck = CreateAndShuffleResourceCardDeck();
@@ -100,7 +100,7 @@ namespace Treachery.Shared
         private Deck<ResourceCard> CreateAndShuffleResourceCardDeck()
         {
             var result = new Deck<ResourceCard>(Random);
-            foreach (var c in Map.GetResourceCardsInAndOutsidePlay(Map).Where(c => !c.IsSandTrout || Applicable(Rule.GreyAndPurpleExpansionSandTrout)))
+            foreach (var c in Map.GetResourceCardsInAndOutsidePlay(Map).Where(c => !c.IsSandTrout || Applicable(Rule.SandTrout)))
             {
                 result.PutOnTop(c);
             }
@@ -327,7 +327,7 @@ namespace Treachery.Shared
             Enter(IsPlaying(Faction.Blue), Phase.BluePredicting, TreacheryCardsBeforeTraitors, DealStartingTreacheryCards, DealTraitors);
         }
 
-        private bool TreacheryCardsBeforeTraitors => Version >= 121 && Applicable(Rule.BrownAndWhiteLeaderSkills);
+        private bool TreacheryCardsBeforeTraitors => Version >= 121 && Applicable(Rule.LeaderSkills);
 
         public void HandleEvent(BluePrediction e)
         {
@@ -369,7 +369,7 @@ namespace Treachery.Shared
 
                 result.AddRange(LeaderManager.Leaders.Where(l => Players.Select(p => p.Faction).Any(f => f == l.Faction)));
 
-                if (Applicable(Rule.GreyAndPurpleExpansionCheapHeroTraitor))
+                if (Applicable(Rule.CheapHeroTraitor))
                 {
                     result.Add(TreacheryCardManager.GetCardsInPlay(this).First(c => c.Type == TreacheryCardType.Mercenary));
                 }
@@ -484,7 +484,7 @@ namespace Treachery.Shared
 
         private void AssignLeaderSkills()
         {
-            if (Applicable(Rule.BrownAndWhiteLeaderSkills))
+            if (Applicable(Rule.LeaderSkills))
             {
                 SkillDeck = new Deck<LeaderSkill>(Enumerations.GetValuesExceptDefault(typeof(LeaderSkill), LeaderSkill.None), Random);
                 SkillDeck.Shuffle();

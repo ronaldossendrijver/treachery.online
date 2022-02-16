@@ -483,20 +483,12 @@ namespace Treachery.Shared
             {
                 Ruleset.BasicGame => "Standard Dune - Basic",
                 Ruleset.AdvancedGame => "Standard Dune - Advanced",
-                //Ruleset.AdvancedGameWithoutPayingForBattles => "Standard Dune - Advanced without Advanced Combat",
-
-                Ruleset.ExpansionBasicGame => "Expansion - Basic",
-                Ruleset.ExpansionAdvancedGame => "Expansion - Advanced",
-                //Ruleset.ExpansionAdvancedGameWithoutPayingForBattles => "Expansion - Advanced without Advanced Combat",
-
-                Ruleset.Expansion2BasicGame => "Expansion 2 - Basic",
-                Ruleset.Expansion2AdvancedGame => "Expansion 2 - Advanced",
-                //Ruleset.Expansion2AdvancedGameWithoutPayingForBattles => "Expansion 2 - Advanced without Advanced Combat",
-
+                Ruleset.ExpansionBasicGame => "Ixians & Tleilaxu Expansion - Basic",
+                Ruleset.ExpansionAdvancedGame => "Ixians & Tleilaxu Expansion - Advanced",
+                Ruleset.Expansion2BasicGame => "CHOAM & Richese Expansion - Basic",
+                Ruleset.Expansion2AdvancedGame => "CHOAM & Richese Expansion - Advanced",
                 Ruleset.AllExpansionsBasicGame => "Both Expansions - Basic",
                 Ruleset.AllExpansionsAdvancedGame => "Both Expansions - Advanced",
-                //Ruleset.AllExpansionsAdvancedGameWithoutPayingForBattles => "Both Expansions - Advanced without Advanced Combat",
-
                 Ruleset.ServerClassic => "Server Classic",
                 Ruleset.Custom => "Custom",
 
@@ -648,19 +640,19 @@ namespace Treachery.Shared
                 Rule.SSW => Format("SSW: {0} counts for victory after fourth {1}", "Shield Wall", Concept.Monster),
                 Rule.BlackMulligan => Format("{0} mulligan traitors when they drew > 1 of their own", Faction.Black),
 
-                Rule.GreyAndPurpleExpansionTechTokens => "Tech Tokens",
-                Rule.GreyAndPurpleExpansionTreacheryCards => "Expansion Treachery Cards",
-                Rule.GreyAndPurpleExpansionTreacheryCardsExceptPBandSSandAmal => Format("Treachery Cards: all except {0}, {1} and {2}", TreacheryCardType.ProjectileAndPoison, TreacheryCardType.ShieldAndAntidote, TreacheryCardType.Amal),
-                Rule.GreyAndPurpleExpansionTreacheryCardsPBandSS => Format("Treachery Cards: {0} and {1}", TreacheryCardType.ProjectileAndPoison, TreacheryCardType.ShieldAndAntidote),
-                Rule.GreyAndPurpleExpansionTreacheryCardsAmal => Format("Treachery Card: {0}", TreacheryCardType.Amal),
-                Rule.GreyAndPurpleExpansionCheapHeroTraitor => "Cheap Hero Traitor",
-                Rule.GreyAndPurpleExpansionSandTrout => Describe(Concept.BabyMonster),
-                Rule.GreyAndPurpleExpansionPurpleGholas => Format("{0} may revive leaders as Gholas", Faction.Purple),
-                Rule.GreyAndPurpleExpansionGreySwappingCardOnBid => Format("{0} may swap one card on bid with on card from their hand", Faction.Grey),
+                Rule.TechTokens => "Tech Tokens",
+                Rule.ExpansionTreacheryCards => "Expansion Treachery Cards",
+                Rule.ExpansionTreacheryCardsExceptPBandSSandAmal => Format("Treachery Cards: all except {0}, {1} and {2}", TreacheryCardType.ProjectileAndPoison, TreacheryCardType.ShieldAndAntidote, TreacheryCardType.Amal),
+                Rule.ExpansionTreacheryCardsPBandSS => Format("Treachery Cards: {0} and {1}", TreacheryCardType.ProjectileAndPoison, TreacheryCardType.ShieldAndAntidote),
+                Rule.ExpansionTreacheryCardsAmal => Format("Treachery Card: {0}", TreacheryCardType.Amal),
+                Rule.CheapHeroTraitor => "Cheap Hero Traitor",
+                Rule.SandTrout => Describe(Concept.BabyMonster),
+                Rule.PurpleGholas => Format("{0} may revive leaders as Gholas", Faction.Purple),
+                Rule.GreySwappingCardOnBid => Format("{0} may swap one card on bid with a card from their hand", Faction.Grey),
 
-                Rule.BrownAndWhiteLeaderSkills => "Leader Skills",
-                Rule.BrownAndWhiteTreacheryCards => Format("Treachery Cards: {0} and {1}", TreacheryCardType.ArtilleryStrike, TreacheryCardType.PoisonTooth),
-                Rule.BrownAndWhiteStrongholdBonus => "Stronghold Bonus",
+                Rule.LeaderSkills => "Leader Skills",
+                Rule.Expansion2TreacheryCards => Format("Treachery Cards: {0} and {1}", TreacheryCardType.ArtilleryStrike, TreacheryCardType.PoisonTooth),
+                Rule.StrongholdBonus => "Stronghold Bonus",
                 Rule.BrownAuditor => Format("{0} gains the Auditor leader", Faction.Brown),
                 Rule.WhiteBlackMarket => Format("{0} Black Market bidding", Faction.White),
 
@@ -1154,7 +1146,7 @@ namespace Treachery.Shared
                 <p>Upon request by a faction for a specific killed leader, you can set a price for its early revival. This can only be done when this leader cannot be revived according to normal revival rules.</p>
                 <p>Zoal’s value in battle matches the value of the opponent’s leader (0 against a Cheap Hero), and for collecting {16} for his death. His discounted price to revive is 3.</p>" +
 
-              (g.Applicable(Rule.GreyAndPurpleExpansionPurpleGholas) ?
+              (g.Applicable(Rule.PurpleGholas) ?
               @"<h5>Advanced Advantages</h5>
                 <p>When you have fewer than five leaders available, you may revive dead leaders of other factions at your discounted rate and add them to your leader pool.</p>" : "") +
 
@@ -1170,7 +1162,7 @@ namespace Treachery.Shared
 
         private string GetGreyTemplate(Game g)
         {
-            bool advancedApplies = g.Applicable(Rule.GreyAndPurpleExpansionGreySwappingCardOnBid) || g.Applicable(Rule.AdvancedCombat);
+            bool advancedApplies = g.Applicable(Rule.GreySwappingCardOnBid) || g.Applicable(Rule.AdvancedCombat);
 
             return
               @"<div style='{25}'>
@@ -1188,7 +1180,7 @@ namespace Treachery.Shared
 
               (advancedApplies ? @"<h5>Advanced Advantages</h5>" : "") +
 
-              (g.Applicable(Rule.GreyAndPurpleExpansionGreySwappingCardOnBid) ? @"<p>Once, during the bidding round, before bidding begins on a card and before {0} gets to look at the card, you may take the Treachery Card about to be bid on, replacing it with one from your hand.</p>" : "") +
+              (g.Applicable(Rule.GreySwappingCardOnBid) ? @"<p>Once, during the bidding round, before bidding begins on a card and before {0} gets to look at the card, you may take the Treachery Card about to be bid on, replacing it with one from your hand.</p>" : "") +
 
               (g.Applicable(Rule.AdvancedCombat) ? @"<p>{32} are always considered half strength for dialing. You can’t increase the effectiveness of {32} in battle by spending {16}.</p>" : "") +
 
