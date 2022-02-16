@@ -347,6 +347,7 @@ namespace Treachery.Shared
                 {
                     //Ally has already acted => move biggest battalion
                     return ForcesOnPlanet.Where(locationWithBattalion =>
+                    !(locationWithBattalion.Key == Game.Map.PolarSink) &&
                     !InStorm(locationWithBattalion.Key) &&
                     !AllyNotIn(locationWithBattalion.Key))
                     .HighestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
@@ -355,6 +356,7 @@ namespace Treachery.Shared
                 {
                     //Ally has not acted yet => move smallest battalion
                     return ForcesOnPlanet.Where(locationWithBattalion =>
+                    !(locationWithBattalion.Key == Game.Map.PolarSink) &&
                     !InStorm(locationWithBattalion.Key) &&
                     !AllyNotIn(locationWithBattalion.Key.Territory))
                     .LowestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);

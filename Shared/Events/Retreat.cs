@@ -40,7 +40,8 @@ namespace Treachery.Shared
 
         public static IEnumerable<Location> ValidTargets(Game g)
         {
-            return g.CurrentBattle.Territory.Locations.SelectMany(l => l.Neighbours.Where(neighbour => !g.AnyForcesIn(neighbour.Territory) && !neighbour.IsStronghold)).Distinct();
+            var neighbouringEmptyNonStrongholdTerritories = g.CurrentBattle.Territory.Locations.SelectMany(l => l.Neighbours).Select(l => l.Territory).Distinct().Where(t => !g.AnyForcesIn(t) && !t.IsStronghold);
+            return neighbouringEmptyNonStrongholdTerritories.SelectMany(t => t.Locations);
         }
 
         public static int MaxForces(Game g, Player p)
@@ -65,8 +66,8 @@ namespace Treachery.Shared
             return Message.Express(
                 Initiator,
                 " try to retreat ",
-                MessagePart.ExpressIf(Forces > 0, " and ", Forces, Player.Force),
-                MessagePart.ExpressIf(SpecialForces > 0, " and ", SpecialForces, Player.SpecialForce),
+                MessagePart.ExpressIf(Forces > 0, Forces, Player.Force),
+                MessagePart.ExpressIf(SpecialForces > 0, SpecialForces, Player.SpecialForce),
                 " to ",
                 Location);
         }

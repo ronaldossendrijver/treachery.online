@@ -248,8 +248,10 @@ else if (IsVisible(RESTART))
                     {
                         _loadValidationError = string.Format("Error loading game ({0})", result);
                     }
-
-                    await h.Host.LoadGame(data, game);
+                    else
+                    {
+                        await h.Host.LoadGame(data, game);
+                    }
                 }
                 else
                 {

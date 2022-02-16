@@ -899,13 +899,13 @@ namespace Treachery.Shared
 
             if (aggHeroSurvives)
             {
-                ExecuteRetreat(agg.Initiator);
+                ExecuteRetreat(agg.Player);
                 ActivateSmuggler(AggressorBattleAction.Player, AggressorBattleAction.Hero, DefenderBattleAction.Hero, CurrentBattle.Territory);
             }
 
             if (defHeroSurvives)
             {
-                ExecuteRetreat(def.Initiator);
+                ExecuteRetreat(def.Player);
                 ActivateSmuggler(DefenderBattleAction.Player, DefenderBattleAction.Hero, AggressorBattleAction.Hero, CurrentBattle.Territory);
             }
 
@@ -935,9 +935,9 @@ namespace Treachery.Shared
             }
         }
 
-        private void ExecuteRetreat(Faction f)
+        private void ExecuteRetreat(Player player)
         {
-            if (CurrentRetreat != null && CurrentRetreat.Initiator == f)
+            if (CurrentRetreat != null && CurrentRetreat.Initiator == player.Faction)
             {
                 int forcesToMove = CurrentRetreat.Forces;
                 foreach (var l in CurrentBattle.Territory.Locations.Where(l => CurrentRetreat.Player.ForcesIn(l) > 0).ToArray())
@@ -956,6 +956,14 @@ namespace Treachery.Shared
                     CurrentRetreat.Player.MoveSpecialForces(l, CurrentRetreat.Location, toMoveFromHere);
                     specialForcesToMove -= toMoveFromHere;
                 }
+
+                CurrentReport.ExpressIf(CurrentRetreat.Forces > 0 || CurrentRetreat.SpecialForces > 0,
+                    player.Faction, 
+                    " retreat ",
+                    MessagePart.ExpressIf(CurrentRetreat.Forces > 0, CurrentRetreat.Forces, player.Force),
+                    MessagePart.ExpressIf(CurrentRetreat.SpecialForces > 0, CurrentRetreat.SpecialForces, player.SpecialForce),
+                    " to ",
+                    CurrentRetreat.Location.Territory);
             }
         }
 
@@ -1606,7 +1614,6 @@ namespace Treachery.Shared
         public void HandleEvent(Retreat e)
         {
             CurrentRetreat = e;
-            CurrentReport.Express(CurrentRetreat);
         }
     }
 }

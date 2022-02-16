@@ -66,8 +66,8 @@ namespace Treachery.Shared
         public static BotParameters YellowParameters = new BotParameters()
         {
             Bidding_ResourcesToKeepWhenCardIsPerfect = 0,
-            Bidding_ResourcesToKeepWhenCardIsntPerfect = 4,
-            Bidding_PassingTreshold = 0,
+            Bidding_ResourcesToKeepWhenCardIsntPerfect = 0,
+            Bidding_PassingTreshold = 4,
             Karma_SaveCardToUseSpecialKarmaAbility = false,
             Shipment_MinimumOtherPlayersITrustToPreventAWin = 4,
             Shipment_DialShortageToAccept = 4,
