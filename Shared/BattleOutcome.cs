@@ -15,9 +15,11 @@
         public Player Winner;
         public Player Loser;
         public bool AggHeroKilled;
+        public bool LoserHeroKilled => Loser == Aggressor ? AggHeroKilled : DefHeroKilled;
         public TreacheryCardType AggHeroCauseOfDeath;
         public int AggHeroEffectiveStrength;
         public bool DefHeroKilled;
+        public bool WinnerHeroKilled => Winner == Aggressor ? AggHeroKilled : DefHeroKilled;
         public TreacheryCardType DefHeroCauseOfDeath;
         public int DefHeroEffectiveStrength;
         public float AggTotal;
@@ -30,6 +32,8 @@
 
         public Player Aggressor;
         public Player Defender;
+
+        
 
         public override string ToString()
         {

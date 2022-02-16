@@ -1,5 +1,5 @@
 ﻿<!--
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+* Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
 --->
 
 @using Treachery.Shared
@@ -9,7 +9,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Try to retreat any number of undial forces to an adjacent empty non-stronghold territory in case your leader survives but while losing this battle?</Header>
+    <Header>You may retreat from the battle any number of undialed forces to an adjacent empty non-stronghold territory</Header>
     <Body>
 
         <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="Retreat.ValidTargets(Game)">
@@ -34,13 +34,15 @@
             specialForces = 0;
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Retreat" />
+        <ButtonRowComponent Pass="Pass" Confirm="Confirm" ConfirmText="Retreat" />
 
     </Body>
 
 </GameEventComponentLayout>
 
 @code {
+
+    protected override bool IsUrgent => true;
 
     private Location target;
     private int forces;
@@ -66,6 +68,8 @@
     }
 
     protected override Retreat ConfirmedResult => new Retreat(Game) { Initiator = Faction, Location = target, Forces = forces, SpecialForces = specialForces };
+
+    protected override Retreat PassedResult => new Retreat(Game) { Initiator = Faction, Location = target, Forces = 0, SpecialForces = 0 };
 
     private void HandleLocationSelected(object sender, Location l)
     {

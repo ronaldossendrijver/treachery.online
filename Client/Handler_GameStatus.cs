@@ -392,6 +392,11 @@ namespace Treachery.Client
                     Skin.Current.Format("Waiting for a faction to call TREACHERY..."),
                     FactionsThatNeedToCallTraitor);
 
+                case Phase.Retreating:
+                    return S(
+                    Skin.Current.Format("Please decide about retreating forces from {0}.", Game.CurrentBattle.Territory),
+                    Skin.Current.Format("{0} are thinking about retreating forces from {1}.", Game.BattleLoser, Game.CurrentBattle.Territory));
+
                 case Phase.AvoidingAudit:
                     return S(
                     Skin.Current.Format("Please decide if you wish to avoid being audited."),

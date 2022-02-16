@@ -16,6 +16,7 @@ namespace Treachery.Shared
         public TreacheryCalled AggressorTraitorAction { get; private set; }
         public Battle DefenderBattleAction { get; private set; }
         public TreacheryCalled DefenderTraitorAction { get; private set; }
+        public BattleOutcome BattleOutcome { get; private set; }
         public Faction BattleWinner { get; private set; }
         public Faction BattleLoser { get; private set; }
         public int GreySpecialForceLossesToTake { get; private set; }
@@ -57,7 +58,7 @@ namespace Treachery.Shared
             CurrentReport = new Report(MainPhase.Battle);
             CurrentBattle = b;
             ChosenHMSAdvantage = StrongholdAdvantage.None;
-            CurrentRetreat = null;
+            BattleOutcome = null;
             NrOfBattlesFought++;
             CurrentReport.Express(b);
             CheckHeroAvailability(b.AggressivePlayer);
@@ -350,12 +351,15 @@ namespace Treachery.Shared
 
             FlipBeneGesseritWhenAlone();
 
-            DetermineHowToProceedAfterRevealingBattlePlans();
-
             if (BattleTriggeredBureaucracy != null)
             {
                 ApplyBureaucracy(BattleTriggeredBureaucracy.PaymentFrom, BattleTriggeredBureaucracy.PaymentTo);
                 BattleTriggeredBureaucracy = null;
+            }
+
+            if (CurrentPhase != Phase.Retreating)
+            {
+                DetermineHowToProceedAfterRevealingBattlePlans();
             }
         }
 
@@ -899,13 +903,11 @@ namespace Treachery.Shared
 
             if (aggHeroSurvives)
             {
-                ExecuteRetreat(agg.Player);
                 ActivateSmuggler(AggressorBattleAction.Player, AggressorBattleAction.Hero, DefenderBattleAction.Hero, CurrentBattle.Territory);
             }
 
             if (defHeroSurvives)
             {
-                ExecuteRetreat(def.Player);
                 ActivateSmuggler(DefenderBattleAction.Player, DefenderBattleAction.Hero, AggressorBattleAction.Hero, CurrentBattle.Territory);
             }
 
@@ -932,38 +934,6 @@ namespace Treachery.Shared
             else if (defender.Is(Faction.Black))
             {
                 ReturnCapturedLeaders(defender, def.Hero);
-            }
-        }
-
-        private void ExecuteRetreat(Player player)
-        {
-            if (CurrentRetreat != null && CurrentRetreat.Initiator == player.Faction)
-            {
-                int forcesToMove = CurrentRetreat.Forces;
-                foreach (var l in CurrentBattle.Territory.Locations.Where(l => CurrentRetreat.Player.ForcesIn(l) > 0).ToArray())
-                {
-                    if (forcesToMove == 0) break;
-                    int toMoveFromHere = Math.Min(forcesToMove, CurrentRetreat.Player.ForcesIn(l));
-                    CurrentRetreat.Player.MoveForces(l, CurrentRetreat.Location, toMoveFromHere);
-                    forcesToMove -= toMoveFromHere;
-                }
-
-                int specialForcesToMove = CurrentRetreat.SpecialForces;
-                foreach (var l in CurrentBattle.Territory.Locations.Where(l => CurrentRetreat.Player.SpecialForcesIn(l) > 0).ToArray())
-                {
-                    if (specialForcesToMove == 0) break;
-                    int toMoveFromHere = Math.Min(specialForcesToMove, CurrentRetreat.Player.SpecialForcesIn(l));
-                    CurrentRetreat.Player.MoveSpecialForces(l, CurrentRetreat.Location, toMoveFromHere);
-                    specialForcesToMove -= toMoveFromHere;
-                }
-
-                CurrentReport.ExpressIf(CurrentRetreat.Forces > 0 || CurrentRetreat.SpecialForces > 0,
-                    player.Faction, 
-                    " retreat ",
-                    MessagePart.ExpressIf(CurrentRetreat.Forces > 0, CurrentRetreat.Forces, player.Force),
-                    MessagePart.ExpressIf(CurrentRetreat.SpecialForces > 0, CurrentRetreat.SpecialForces, player.SpecialForce),
-                    " to ",
-                    CurrentRetreat.Location.Territory);
             }
         }
 
@@ -1116,53 +1086,64 @@ namespace Treachery.Shared
 
         public void DetermineAndHandleBattleOutcome(Battle agg, Battle def, Territory territory)
         {
-            var outcome = DetermineBattleOutcome(agg, def, territory);
+            BattleOutcome = DetermineBattleOutcome(agg, def, territory);
 
-            CurrentReport.ExpressIf(outcome.AggHeroSkillBonus != 0, agg.Hero, " ", outcome.AggActivatedBonusSkill, " bonus: ", outcome.AggHeroSkillBonus);
-            CurrentReport.ExpressIf(outcome.DefHeroSkillBonus != 0, def.Hero, " ", outcome.DefActivatedBonusSkill, " bonus: ", outcome.DefHeroSkillBonus);
+            CurrentReport.ExpressIf(BattleOutcome.AggHeroSkillBonus != 0, agg.Hero, " ", BattleOutcome.AggActivatedBonusSkill, " bonus: ", BattleOutcome.AggHeroSkillBonus);
+            CurrentReport.ExpressIf(BattleOutcome.DefHeroSkillBonus != 0, def.Hero, " ", BattleOutcome.DefActivatedBonusSkill, " bonus: ", BattleOutcome.DefHeroSkillBonus);
 
-            CurrentReport.ExpressIf(outcome.AggBattlePenalty != 0, agg.Hero, " ", outcome.DefActivatedPenaltySkill, " penalty: ", outcome.AggBattlePenalty);
-            CurrentReport.ExpressIf(outcome.DefBattlePenalty != 0, def.Hero, " ", outcome.AggActivatedPenaltySkill, " penalty: ", outcome.DefBattlePenalty);
+            CurrentReport.ExpressIf(BattleOutcome.AggBattlePenalty != 0, agg.Hero, " ", BattleOutcome.DefActivatedPenaltySkill, " penalty: ", BattleOutcome.AggBattlePenalty);
+            CurrentReport.ExpressIf(BattleOutcome.DefBattlePenalty != 0, def.Hero, " ", BattleOutcome.AggActivatedPenaltySkill, " penalty: ", BattleOutcome.DefBattlePenalty);
 
-            CurrentReport.ExpressIf(outcome.AggMessiahContribution > 0, agg.Hero, " ", Concept.Messiah, " bonus: ", outcome.AggMessiahContribution);
-            CurrentReport.ExpressIf(outcome.DefMessiahContribution > 0, agg.Hero, " ", Concept.Messiah, " bonus: ", outcome.DefMessiahContribution);
+            CurrentReport.ExpressIf(BattleOutcome.AggMessiahContribution > 0, agg.Hero, " ", Concept.Messiah, " bonus: ", BattleOutcome.AggMessiahContribution);
+            CurrentReport.ExpressIf(BattleOutcome.DefMessiahContribution > 0, agg.Hero, " ", Concept.Messiah, " bonus: ", BattleOutcome.DefMessiahContribution);
 
-            BattleWinner = outcome.Winner.Faction;
-            BattleLoser = outcome.Loser.Faction;
+            BattleWinner = BattleOutcome.Winner.Faction;
+            BattleLoser = BattleOutcome.Loser.Faction;
 
-            if (outcome.AggHeroKilled)
+            if (BattleOutcome.AggHeroKilled)
             {
-                KillLeaderInBattle(agg.Hero, def.Hero, outcome.AggHeroCauseOfDeath, outcome.Winner, outcome.AggHeroEffectiveStrength);
+                KillLeaderInBattle(agg.Hero, def.Hero, BattleOutcome.AggHeroCauseOfDeath, BattleOutcome.Winner, BattleOutcome.AggHeroEffectiveStrength);
             }
             else
             {
-                CurrentReport.ExpressIf(outcome.AggSavedByCarthag, Map.Carthag, " stronghold advantage saves ", agg.Hero, " from death by ", TreacheryCardType.Poison);
+                CurrentReport.ExpressIf(BattleOutcome.AggSavedByCarthag, Map.Carthag, " stronghold advantage saves ", agg.Hero, " from death by ", TreacheryCardType.Poison);
             }
 
-            if (outcome.DefHeroKilled)
+            if (BattleOutcome.DefHeroKilled)
             {
-                KillLeaderInBattle(def.Hero, agg.Hero, outcome.DefHeroCauseOfDeath, outcome.Winner, outcome.DefHeroEffectiveStrength);
+                KillLeaderInBattle(def.Hero, agg.Hero, BattleOutcome.DefHeroCauseOfDeath, BattleOutcome.Winner, BattleOutcome.DefHeroEffectiveStrength);
             }
             else
             {
-                CurrentReport.ExpressIf(outcome.DefSavedByCarthag, Map.Carthag, " stronghold advantage saves ", def.Hero, " from death by ", TreacheryCardType.Poison);
+                CurrentReport.ExpressIf(BattleOutcome.DefSavedByCarthag, Map.Carthag, " stronghold advantage saves ", def.Hero, " from death by ", TreacheryCardType.Poison);
             }
 
             if (BattleInitiated.IsAggressorByJuice(this, def.Player.Faction))
             {
-                CurrentReport.Express(agg.Initiator, " (defending) strength: ", outcome.AggTotal);
-                CurrentReport.Express(def.Initiator, " (aggressor by ", TreacheryCardType.Juice, ") strength: ", outcome.DefTotal);
+                CurrentReport.Express(agg.Initiator, " (defending) strength: ", BattleOutcome.AggTotal);
+                CurrentReport.Express(def.Initiator, " (aggressor by ", TreacheryCardType.Juice, ") strength: ", BattleOutcome.DefTotal);
             }
             else
             {
-                CurrentReport.Express(agg.Initiator, " (aggressor) strength: ", outcome.AggTotal);
-                CurrentReport.Express(def.Initiator, " (defending) strength: ", outcome.DefTotal);
+                CurrentReport.Express(agg.Initiator, " (aggressor) strength: ", BattleOutcome.AggTotal);
+                CurrentReport.Express(def.Initiator, " (defending) strength: ", BattleOutcome.DefTotal);
             }
 
-            CurrentReport.Express(outcome.Winner.Faction, " WIN THE BATTLE");
+            CurrentReport.Express(BattleOutcome.Winner.Faction, " WIN THE BATTLE");
 
-            ProcessWinnerLosses(territory, outcome.Winner, outcome.WinnerBattlePlan, false);
-            ProcessLoserLosses(territory, outcome.Loser, outcome.LoserBattlePlan, false);
+            bool loserMayRetreat = 
+                !BattleOutcome.LoserHeroKilled &&
+                SkilledAs(BattleOutcome.LoserBattlePlan.Hero, LeaderSkill.Diplomat) && 
+                (Retreat.MaxForces(this, BattleOutcome.Loser) > 0 || Retreat.MaxSpecialForces(this, BattleOutcome.Loser) > 0) && 
+                Retreat.ValidTargets(this).Any();
+
+            Enter(loserMayRetreat, Phase.Retreating, HandleForceLosses);
+        }
+
+        private void HandleForceLosses()
+        {
+            ProcessWinnerLosses(CurrentBattle.Territory, BattleOutcome.Winner, BattleOutcome.WinnerBattlePlan, false);
+            ProcessLoserLosses(CurrentBattle.Territory, BattleOutcome.Loser, BattleOutcome.LoserBattlePlan, false);
         }
 
         private void DetermineCauseOfDeath(Battle playerPlan, Battle opponentPlan, IHero theHero, bool poisonToothUsed, bool artilleryUsed, bool rockMelterWasUsedToKill, Territory battleTerritory, ref bool heroDies, ref TreacheryCardType causeOfDeath, ref bool savedByCarthag)
@@ -1610,10 +1591,29 @@ namespace Treachery.Shared
             ChosenHMSAdvantage = e.Advantage;
         }
 
-        public Retreat CurrentRetreat { get; private set; }
         public void HandleEvent(Retreat e)
         {
-            CurrentRetreat = e;
+            int forcesToMove = e.Forces;
+            foreach (var l in CurrentBattle.Territory.Locations.Where(l => e.Player.ForcesIn(l) > 0).ToArray())
+            {
+                if (forcesToMove == 0) break;
+                int toMoveFromHere = Math.Min(forcesToMove, e.Player.ForcesIn(l));
+                e.Player.MoveForces(l, e.Location, toMoveFromHere);
+                forcesToMove -= toMoveFromHere;
+            }
+
+            int specialForcesToMove = e.SpecialForces;
+            foreach (var l in CurrentBattle.Territory.Locations.Where(l => e.Player.SpecialForcesIn(l) > 0).ToArray())
+            {
+                if (specialForcesToMove == 0) break;
+                int toMoveFromHere = Math.Min(specialForcesToMove, e.Player.SpecialForcesIn(l));
+                e.Player.MoveSpecialForces(l, e.Location, toMoveFromHere);
+                specialForcesToMove -= toMoveFromHere;
+            }
+
+            CurrentReport.Express(e);
+            HandleForceLosses();
+            DetermineHowToProceedAfterRevealingBattlePlans();
         }
     }
 }

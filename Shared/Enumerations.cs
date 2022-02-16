@@ -195,6 +195,7 @@ namespace Treachery.Shared
         AvoidingAudit = 312,
 
         Auditing = 313,
+        Retreating = 314,
 
         BattleConclusion = 315,
 

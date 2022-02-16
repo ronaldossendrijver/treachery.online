@@ -32,12 +32,6 @@ namespace Treachery.Shared
             return "";
         }
 
-        public static bool CanBePlayed(Game g, Player p)
-        {
-            var plan = g.CurrentBattle.PlanOf(p);
-            return g.CurrentRetreat == null && plan != null && g.SkilledAs(plan.Hero, LeaderSkill.Diplomat) && MaxForces(g, p) > 0 && ValidTargets(g).Any();
-        }
-
         public static IEnumerable<Location> ValidTargets(Game g)
         {
             var neighbouringEmptyNonStrongholdTerritories = g.CurrentBattle.Territory.Locations.SelectMany(l => l.Neighbours).Select(l => l.Territory).Distinct().Where(t => !g.AnyForcesIn(t) && !t.IsStronghold);
@@ -63,13 +57,20 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express(
-                Initiator,
-                " try to retreat ",
-                MessagePart.ExpressIf(Forces > 0, Forces, Player.Force),
-                MessagePart.ExpressIf(SpecialForces > 0, SpecialForces, Player.SpecialForce),
-                " to ",
-                Location);
+            if (Forces > 0 || SpecialForces > 0)
+            {
+                return Message.Express(
+                    Initiator,
+                    " retreat ",
+                    MessagePart.ExpressIf(Forces > 0, Forces, " ", Player.Force),
+                    MessagePart.ExpressIf(SpecialForces > 0, SpecialForces, " ", Player.SpecialForce),
+                    " to ",
+                    Location);
+            }
+            else
+            {
+                return Message.Express(Initiator, " don't retreat");
+            }
         }
     }
 }

@@ -353,8 +353,10 @@ namespace Treachery.Shared
 
                     if (Diplomacy.CanBePlayed(this, player)) result.Add(typeof(Diplomacy));
 
-                    if (Retreat.CanBePlayed(this, player)) result.Add(typeof(Retreat));
+                    break;
 
+                case Phase.Retreating:
+                    if (faction == BattleLoser) result.Add(typeof(Retreat));
                     break;
 
                 case Phase.MeltingRock:
