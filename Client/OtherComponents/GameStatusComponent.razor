@@ -78,9 +78,16 @@
 
         <div class="@(StatusDescriptionClass)">@h.Status.GetDescription(Player, h.IsHost)</div>
 
-        @if (CanEndPhase)
+        @if (!autoConfirm && CanEndPhase)
         {
             <ButtonRowComponent Confirm="Confirm" ConfirmText="Continue" ConfirmError="@Validation"/>
+        }
+
+        @if (autoConfirm || CanEndPhase)
+        {
+            <div class="mt-0 text-right" style="color:black">
+                <CheckboxComponent @bind-Value=autoConfirm>Continue automatically</CheckboxComponent>
+            </div>
         }
 
     </div>
@@ -92,9 +99,25 @@
     [Parameter]
     public bool CanEndPhase { get; set; }
 
+    private bool autoConfirm = false;
+    private int ticksPassed = 0;
+
     protected override void OnInitialized()
     {
         StartRedrawCycle(1000);
+    }
+
+    protected override void Redraw()
+    {
+        ticksPassed++;
+
+        if (autoConfirm && CanEndPhase && ticksPassed >= 3)
+        {
+            ticksPassed = 0;
+            _ = Confirm();
+        }
+
+        base.Redraw();
     }
 
     protected override EndPhase ConfirmedResult => new EndPhase(Game) { Initiator = Faction };

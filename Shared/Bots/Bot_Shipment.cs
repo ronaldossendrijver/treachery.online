@@ -47,7 +47,7 @@ namespace Treachery.Shared
                 if (decidedShipment == null && Faction == Faction.Orange && !LastTurn) DetermineShipment_BackToReserves();
                 if (decidedShipment == null) DetermineShipment_DummyAttack(minResourcesToKeep);
                 if (decidedShipment == null) DetermineShipment_StrengthenWeakestStronghold(true, extraForces, Param.Shipment_DialShortageToAccept, !MayFlipToAdvisors);
-                if (decidedShipment == null && Faction == Faction.Yellow && AnyForcesIn(Game.Map.PolarSink) <= 2 && (LastTurn || ForcesInReserve + SpecialForcesInReserve * 2 > 8)) DetermineShipment_PolarSinkAsYellow();
+                if (decidedShipment == null && Faction == Faction.Yellow && AnyForcesIn(Game.Map.PolarSink) <= 2 && (AlmostLastTurn || LastTurn || ForcesInReserve + SpecialForcesInReserve * 2 >= 8)) DetermineShipment_PolarSinkAsYellow();
                 if (decidedShipment == null && !winning) DetermineShipment_AttackWeakStronghold(extraForces, minResourcesToKeep, LastTurn ? 20 : 0);
             }
 
@@ -127,7 +127,7 @@ namespace Treachery.Shared
             else
             {
                 nrOfSpecialForces = Math.Min(1, SpecialForcesInReserve);
-                nrOfForces = Math.Min(ForcesInReserve, 6 - Math.Min(6, 2 * nrOfSpecialForces));
+                nrOfForces = Math.Min(ForcesInReserve, 8 - Math.Min(8, 2 * nrOfSpecialForces));
             }
 
             DoShipment(ShipmentDecision.PolarSink, nrOfForces, nrOfSpecialForces, -1, Game.Map.PolarSink, false, false);

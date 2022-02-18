@@ -1036,16 +1036,8 @@ namespace Treachery.Shared
         {
             int forcesToRetreat = Retreat.MaxForces(Game, this);
             int specialForcesToRetreat = Retreat.MaxSpecialForces(Game, this);
-            if (forcesToRetreat > 0)
-            {
-                forcesToRetreat--;
-            }
-            else
-            {
-                specialForcesToRetreat--;
-            }
-
             var to = Retreat.ValidTargets(Game).Where(l => ResourcesIn(l) > 0).HighestOrDefault(l => ResourcesIn(l));
+
             if (to == null) to = Retreat.ValidTargets(Game).FirstOrDefault(l => l.IsProtectedFromStorm);
             if (to == null) to = Retreat.ValidTargets(Game).FirstOrDefault();
 
