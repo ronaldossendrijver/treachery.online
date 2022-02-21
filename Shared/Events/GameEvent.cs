@@ -81,7 +81,7 @@ namespace Treachery.Shared
                     if (result == "")
                     {
                         Game.RecentMilestones.Clear();
-                        Game.PerformPreEventTasks();
+                        Game.PerformPreEventTasks(this);
                         ExecuteConcreteEvent();
                         Game.PerformPostEventTasks(this, momentJustBeforeEvent != MainPhaseMoment.Start && Game.CurrentMoment == MainPhaseMoment.Start);
                     }
@@ -91,7 +91,7 @@ namespace Treachery.Shared
                 else
                 {
                     Game.RecentMilestones.Clear();
-                    Game.PerformPreEventTasks();
+                    Game.PerformPreEventTasks(this);
                     ExecuteConcreteEvent();
                     Game.PerformPostEventTasks(this, momentJustBeforeEvent != MainPhaseMoment.Start && Game.CurrentMoment == MainPhaseMoment.Start);
                     return "";

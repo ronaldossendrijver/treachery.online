@@ -11,7 +11,7 @@ namespace Treachery.Shared
 {
     public class EstablishPlayers : GameEvent
     {
-        private const bool EXP2 = false;
+        private const bool EXP2 = true;
 
         public string _players = "";
 
@@ -150,7 +150,7 @@ namespace Treachery.Shared
                 var result = Validate();
                 if (result == "")
                 {
-                    Game.PerformPreEventTasks();
+                    Game.PerformPreEventTasks(this);
                     ExecuteConcreteEvent();
                     Game.PerformPostEventTasks(this, true);
                 }
@@ -158,7 +158,7 @@ namespace Treachery.Shared
             }
             else
             {
-                Game.PerformPreEventTasks();
+                Game.PerformPreEventTasks(this);
                 ExecuteConcreteEvent();
                 Game.PerformPostEventTasks(this, true);
                 return "";

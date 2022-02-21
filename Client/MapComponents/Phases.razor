@@ -15,6 +15,7 @@
                  FontColor="@Skin.Current.TURN_FONT_COLOR"
                  BorderWidth="@Skin.Current.TURN_FONT_BORDERWIDTH"
                  BorderColor="@Skin.Current.TURN_FONT_BORDERCOLOR"
+                 Popover=@TurnPopover
                  Align="@TextAlignment.Right"/>
     }
 
@@ -106,4 +107,48 @@
     private string ObserverPopover => string.Join(", ", Observers);
 
     private IEnumerable<string> Observers => h.Host.JoinedObservers.Where(o => o != h.ServerSettings.AdminName);
+
+    private string TurnPopover
+    {
+        get
+        {
+            var result = "<div>";
+            var rulesWithGroups = Game.Rules.Select(r => new { Rule = r, Group = Game.GetRuleGroup(r)});
+            var groups = rulesWithGroups.Where(rg => rg.Group != RuleGroup.CoreBasic && rg.Group != RuleGroup.Bots && rg.Group != RuleGroup.None).Select(rg => rg.Group).Distinct();
+
+            var ruleInfo = "";
+            foreach (var group in groups)
+            {
+                ruleInfo += Skin.Current.Format("<h5>{0}</h5><p class='mt-0 mb-2'>{1}.</p>", group, rulesWithGroups.Where(rg => rg.Group == group).Select(rg => rg.Rule));
+            }
+
+            result += Skin.Current.Format("<h4>{0}</h4>{1}", Game.Ruleset, ruleInfo);
+
+            result += Skin.Current.Format("<h4>Timers</h4>");
+            result += string.Format("<p><string>Game duration:</strong> {0}", Game.Duration.ToString(@"h\:mm\:ss"));
+            result += "<table class='table table-sm table-striped'>";
+            result += "<thead>";
+            result += "<tr><th>Player</th><th>Bidding</th><th>Move</th><th>Battle</th><th>Total</th></tr>";
+            result += "</thead>";
+            result += "<thead>";
+
+            foreach (var p in Game.Players) {
+
+                var timeBidding = Game.TimeSpent(p, MainPhase.Bidding);
+                var timeShipping = Game.TimeSpent(p, MainPhase.ShipmentAndMove);
+                var timeBattling = Game.TimeSpent(p, MainPhase.Battle);
+                var timeTotal = timeBidding + timeShipping + timeBattling;
+
+                result += Skin.Current.Format("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td></tr>", 
+                p.Name, timeBidding.ToString(@"h\:mm\:ss"), timeShipping.ToString(@"h\:mm\:ss"), timeBattling.ToString(@"h\:mm\:ss"), timeTotal.ToString(@"h\:mm\:ss"));
+            }
+
+            result += "</tbody>";
+            result += "</table>";
+
+            result += "</div>";
+
+            return result;
+        }
+    }
 }

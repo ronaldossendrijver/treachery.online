@@ -52,6 +52,8 @@ namespace Treachery.Shared
         public Deck<LeaderSkill> SkillDeck { get; private set; }
         private Random Random { get; set; }
 
+        public Dictionary<Player, Dictionary<MainPhase, TimeSpan>> Timers = new Dictionary<Player, Dictionary<MainPhase, TimeSpan>>();
+
         #endregion GameState
 
         #region Initialization
@@ -92,8 +94,9 @@ namespace Treachery.Shared
 
         #region EventHandling
 
-        public void PerformPreEventTasks()
+        public void PerformPreEventTasks(GameEvent e)
         {
+            UpdateTimers(e);
             RecentlyDiscarded.Clear();
         }
 
@@ -108,6 +111,36 @@ namespace Treachery.Shared
                 States.Add(Clone());
             }
         }
+
+        private void UpdateTimers(GameEvent e)
+        {
+            if (History.Count > 0 && InTimedPhase)
+            {
+                Timers[e.Player][CurrentMainPhase] += e.Time.Subtract(History[History.Count - 1].Time);
+            }
+        }
+
+        public TimeSpan Duration => History.Count > 0 ? History[History.Count - 1].Time.Subtract(History[0].Time) : TimeSpan.Zero;
+
+        public TimeSpan TimeSpent(Player player, MainPhase phase)
+        {
+            if (Timers.ContainsKey(player) && Timers[player].ContainsKey(phase))
+            {
+                return Timers[player][phase];
+            }
+            else
+            {
+                return TimeSpan.Zero;
+            }
+        }
+
+        private bool InTimedPhase => 
+            CurrentPhase == Phase.Bidding || 
+            CurrentPhase == Phase.OrangeShip || 
+            CurrentPhase == Phase.OrangeMove || 
+            CurrentPhase == Phase.NonOrangeShip || 
+            CurrentPhase == Phase.NonOrangeMove || 
+            CurrentPhase == Phase.BattlePhase;
 
         public Game Undo(int untilEventNr)
         {
@@ -876,6 +909,17 @@ namespace Treachery.Shared
                 }
             }
         }
+
+        /*public TimeSpan Duration(GameEvent e)
+        {
+            int eventNr = History.IndexOf(e);
+            if (eventNr > 0)
+            {
+                return e.Time.Subtract(History[eventNr - 1].Time);
+            }
+
+            return TimeSpan.Zero;
+        }*/
 
         public override string ToString()
         {

@@ -368,7 +368,7 @@ namespace Treachery.Server
                         faction = ToString(p.Faction),
                         id = ""
                     }).ToArray(),
-                    ruleset = ToString(Game.DetermineApproximateRuleset(game)),
+                    ruleset = ToString(game.Ruleset),
                     time = RoundToHalves((game.History.Last().Time - game.History.First().Time).TotalHours),
                     turn = game.CurrentTurn,
                     winners = game.Winners.Select(p => ToString(p.Faction)).ToArray()

@@ -111,6 +111,25 @@
                 }
 
                 <div>Current victory points: <strong>@Game.NumberOfVictoryPoints(p, true)</strong></div>
+
+                if (p.Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah))
+                {
+                    if (p.TotalForcesKilledInBattle >= 7)
+                    {
+                        if (p.MessiahAvailable)
+                        {
+                            <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> is available.</div>
+                        }
+                        else
+                        {
+                            <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> is dead.</div>
+                        }
+                    }
+                    else
+                    {
+                        <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> available after <span class="badge badge-primary badge-pill">@(7 - p.TotalForcesKilledInBattle)</span> more forces are killed.</div>
+                    }
+                }
             }
 
         </div>

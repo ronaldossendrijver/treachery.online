@@ -39,7 +39,8 @@ namespace Treachery.Shared
             RulesForBots = e.ApplicableRules.Where(r => GetRuleGroup(r) == RuleGroup.Bots).ToList();
             Rules.AddRange(GetRulesInGroup(RuleGroup.CoreBasic));
 
-            CurrentReport.Express("Ruleset: ", DetermineApproximateRuleset(e.FactionsInPlay, Rules));
+            Ruleset = DetermineApproximateRuleset(e.FactionsInPlay, Rules);
+            CurrentReport.Express("Ruleset: ", Ruleset);
             var customRules = GetCustomRules().ToList();
             CurrentReport.ExpressIf(customRules.Any(), "House rules: ", customRules);
 
@@ -85,8 +86,23 @@ namespace Treachery.Shared
 
             FillEmptySeatsWithBots();
             RemoveClaimedFactions();
+            InitializeTimers();
 
             Enter(Applicable(Rule.PlayersChooseFactions), Phase.SelectingFactions, AssignFactionsAndEnterFactionTrade);
+        }
+
+        private void InitializeTimers()
+        {
+            foreach (var player in Players)
+            {
+                var playerTimers = new Dictionary<MainPhase, TimeSpan>();
+                foreach (var mainphase in Enumerations.GetValuesExceptDefault(typeof(MainPhase), MainPhase.None))
+                {
+                    playerTimers.Add(mainphase, TimeSpan.Zero);
+                }
+
+                Timers.Add(player, playerTimers);
+            }
         }
 
         private void RemoveClaimedFactions()

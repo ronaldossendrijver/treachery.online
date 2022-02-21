@@ -62,7 +62,16 @@ namespace Treachery.Shared
             var fremen = g.GetPlayer(Faction.Yellow);
             if (fremen != null)
             {
-                var firstMonsterLocationWithFremenForces = g.Monsters.FirstOrDefault(t => fremen.AnyForcesIn(t) > 0);
+                Territory firstMonsterLocationWithFremenForces;
+                if (g.Version < 135)
+                {
+                    firstMonsterLocationWithFremenForces = g.Monsters.FirstOrDefault(t => fremen.AnyForcesIn(t) > 0);
+                }
+                else
+                {
+                    firstMonsterLocationWithFremenForces = g.Monsters.FirstOrDefault(t =>
+                        t.Locations.Any(l => (g.Applicable(Rule.YellowMayMoveIntoStorm) || !g.IsInStorm(l)) && fremen.AnyForcesIn(l) > 0));
+                }
 
                 if (firstMonsterLocationWithFremenForces != null)
                 {

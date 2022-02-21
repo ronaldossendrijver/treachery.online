@@ -9,7 +9,7 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public Ruleset Ruleset => DetermineApproximateRuleset(this);
+        public Ruleset Ruleset { get; private set; }
 
         public IEnumerable<Rule> GetCustomRules()
         {
@@ -22,11 +22,6 @@ namespace Treachery.Shared
                 GetRuleGroup(rule) == RuleGroup.ExpansionBrownAndWhiteBasicExceptions ||
                 GetRuleGroup(rule) == RuleGroup.ExpansionBrownAndWhiteAdvancedExceptions ||
                 GetRuleGroup(rule) == RuleGroup.CoreBasicExceptions);
-        }
-
-        public static Ruleset DetermineApproximateRuleset(Game game)
-        {
-            return DetermineApproximateRuleset(game.Players.Select(p => p.Faction), game.Rules);
         }
 
         public static Ruleset DetermineApproximateRuleset(IEnumerable<Faction> factions, IEnumerable<Rule> rules)
