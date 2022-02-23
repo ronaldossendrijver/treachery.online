@@ -11,7 +11,7 @@ namespace Treachery.Shared
     public partial class Game
     {
         public const int LowestSupportedVersion = 100;
-        public const int LatestVersion = 135;
+        public const int LatestVersion = 136;
 
         public bool BotInfologging = true;
 
@@ -114,9 +114,36 @@ namespace Treachery.Shared
 
         private void UpdateTimers(GameEvent e)
         {
-            if (History.Count > 0 && InTimedPhase)
+            if (e.Time != default && History.Count > 0 && InTimedPhase)
             {
-                Timers[e.Player][CurrentMainPhase] += e.Time.Subtract(History[History.Count - 1].Time);
+                Console.WriteLine(e.Time);
+                var previousEvent = History[History.Count - 1];
+
+                int nrOfEventsToLookBack = 2;
+
+                if (e is Battle)
+                {
+                    while (!(previousEvent is BattleInitiated))
+                    {
+                        previousEvent = History[History.Count - nrOfEventsToLookBack++];
+                    }
+                }
+                else if (e is Move)
+                {
+                    while (!(previousEvent is EndPhase || previousEvent is Shipment))
+                    {
+                        previousEvent = History[History.Count - nrOfEventsToLookBack++];
+                    }
+                }
+                else if (e is Shipment)
+                {
+                    while (!(previousEvent is EndPhase || previousEvent is Move))
+                    {
+                        previousEvent = History[History.Count - nrOfEventsToLookBack++];
+                    }
+                }
+
+                Timers[e.Player][CurrentMainPhase] += e.Time.Subtract(previousEvent.Time);
             }
         }
 
