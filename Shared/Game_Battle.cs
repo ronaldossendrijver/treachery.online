@@ -820,10 +820,12 @@ namespace Treachery.Shared
 
                     CurrentReport.Express(
                         LeaderSkill.Graduate,
-                        " rescues ",
+                        " saves ",
                         MessagePart.ExpressIf(forcesToSaveInTerritory > 0, forcesToSaveInTerritory, winner.Force),
                         MessagePart.ExpressIf(specialForcesToSaveInTerritory > 0, specialForcesToSaveInTerritory, winner.SpecialForce),
-                        MessagePart.ExpressIf(forcesToSaveInTerritory > 0 || specialForcesToSaveInTerritory > 0, " on site and "),
+                        MessagePart.ExpressIf(forcesToSaveInTerritory > 0 || specialForcesToSaveInTerritory > 0, " in ", territory),
+
+                        MessagePart.ExpressIf(forcesToSaveInTerritory > 0 || specialForcesToSaveInTerritory > 0 && forcesToSaveToReserves > 0 || specialForcesToSaveToReserves > 0, " and "),
                         MessagePart.ExpressIf(forcesToSaveToReserves > 0, forcesToSaveToReserves, winner.Force),
                         MessagePart.ExpressIf(specialForcesToSaveToReserves > 0, specialForcesToSaveToReserves, winner.SpecialForce),
                         MessagePart.ExpressIf(forcesToSaveToReserves > 0 || specialForcesToSaveToReserves > 0, " to reserves"));

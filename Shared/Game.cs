@@ -13,7 +13,7 @@ namespace Treachery.Shared
         public const int LowestSupportedVersion = 100;
         public const int LatestVersion = 136;
 
-        public bool BotInfologging = true;
+        public bool BotInfologging = false;
 
         #region GameState
         public int Seed { get; private set; } = -1;
@@ -116,35 +116,34 @@ namespace Treachery.Shared
         {
             if (e.Time != default && History.Count > 0 && InTimedPhase)
             {
-                Console.WriteLine(e.Time);
-                var previousEvent = History[History.Count - 1];
+                GameEvent previousEvent;
+                if (e is Battle) previousEvent = FindMostRecentEvent(typeof(BattleInitiated));
+                else if (e is Move) previousEvent = FindMostRecentEvent(typeof(Shipment), typeof(EndPhase));
+                else if (e is Shipment) previousEvent = FindMostRecentEvent(typeof(Move), typeof(EndPhase));
+                else previousEvent = FindMostRecentEvent();
 
-                int nrOfEventsToLookBack = 2;
-
-                if (e is Battle)
+                var elapsedTime = e.Time.Subtract(previousEvent.Time);
+                
+                if (elapsedTime.TotalHours < 1)
                 {
-                    while (!(previousEvent is BattleInitiated))
-                    {
-                        previousEvent = History[History.Count - nrOfEventsToLookBack++];
-                    }
+                    Timers[e.Player][CurrentMainPhase] += e.Time.Subtract(previousEvent.Time);
                 }
-                else if (e is Move)
-                {
-                    while (!(previousEvent is EndPhase || previousEvent is Shipment))
-                    {
-                        previousEvent = History[History.Count - nrOfEventsToLookBack++];
-                    }
-                }
-                else if (e is Shipment)
-                {
-                    while (!(previousEvent is EndPhase || previousEvent is Move))
-                    {
-                        previousEvent = History[History.Count - nrOfEventsToLookBack++];
-                    }
-                }
-
-                Timers[e.Player][CurrentMainPhase] += e.Time.Subtract(previousEvent.Time);
             }
+        }
+
+        private GameEvent FindMostRecentEvent(params Type[] types)
+        {
+            if (types.Length == 0) return History[History.Count - 1];
+
+            for (int i = History.Count - 1; i >= 0; i--)
+            {
+                if (types.Contains(History[i].GetType()))
+                {
+                    return History[i];
+                }
+            }
+
+            return null;
         }
 
         public TimeSpan Duration => History.Count > 0 ? History[History.Count - 1].Time.Subtract(History[0].Time) : TimeSpan.Zero;
