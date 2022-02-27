@@ -42,7 +42,7 @@ namespace Treachery.Shared
         [JsonIgnore]
         public TreacheryCard KarmaCard
         {
-            private get
+            get
             {
                 return TreacheryCardManager.Lookup.Find(_karmaCardId);
             }

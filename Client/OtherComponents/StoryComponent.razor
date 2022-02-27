@@ -47,6 +47,24 @@
                 }
             }
 
+            if (evt is IBid && replay.WinningBid != null)
+            {
+                var e = evt as IBid;
+
+                <div>
+                    <img class="img-fluid" width="24" src="@Skin.Current.GetImageURL(replay.WinningBid.Initiator)" /> 
+                    buy 
+                    <span data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(replay.CardJustWon)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover">
+                    <strong>@replay.CardJustWon.ToString()</strong>
+                    </span>
+                    for @replay.WinningBid.Amount
+                    @if (replay.WinningBid is Bid b && b.KarmaCard != null)
+                    {
+                        <span> (using <strong>@b.KarmaCard.ToString()</strong>)</span>
+                    }
+                </div>
+            }
+
             if (replay.CurrentMainPhase != previousMainPhase && (replay.CurrentMainPhase == MainPhase.Bidding))
             {
                 <h4 class="h4">Turn @replay.CurrentTurn</h4>
@@ -88,18 +106,18 @@
             {
                 <h5>Situation at the end of turn @replay.CurrentTurn:</h5>
                 <StoryPlayerInfoComponent Game="replay" ShowAlly="ShowAllies(replay)" ShowForces="true" ShowTanks="true" ShowResources="true" ShowTechTokens="true" ShowPoints="true" />
+            }
 
-                @if (replay.CurrentPhase == Phase.GameEnded)
+            @if (replay.CurrentMainPhase != previousMainPhase && replay.CurrentMainPhase == MainPhase.Ended)
+            {
+                @foreach (var w in replay.Winners)
                 {
-                    @foreach (var w in replay.Winners)
-                    {
-                        <div>
-                            <h3 class="h3"><img class="img-fluid" width="30" src="@Skin.Current.GetImageURL(w.Faction)" /> @w.Name wins @Skin.Current.Describe(replay.WinMethod)!</h3>
-                        </div>
-                    }
-
-                    <div class="mt-2 mb-0"><strong>Game ended:</strong> @evt.Time.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss \"UTC\"")</div>
+                    <div>
+                        <h3 class="h3"><img class="img-fluid" width="30" src="@Skin.Current.GetImageURL(w.Faction)" /> @w.Name wins @Skin.Current.Describe(replay.WinMethod)!</h3>
+                    </div>
                 }
+
+                <div class="mt-2 mb-0"><strong>Game ended:</strong> @evt.Time.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss \"UTC\"")</div>
             }
 
             previousPhase = replay.CurrentPhase;
@@ -121,11 +139,18 @@
     private bool IsMilestone(GameEvent evt)
     {
         return
-            evt is FaceDanced && ((evt as FaceDanced).FaceDancerCalled) ||
-            evt is TreacheryCalled && ((evt as TreacheryCalled).TraitorCalled) ||
+            evt is FaceDanced fd && fd.FaceDancerCalled ||
+            evt is TreacheryCalled tc && tc.TraitorCalled ||
+            evt is GreySwappedCardOnBid gscob && !gscob.Passed ||
+            evt is PoisonToothCancelled ||
+            evt is ReplacedCardWon ||
             evt is Voice ||
             evt is Prescience ||
+            evt is Thought ||
+            evt is Move ||
+            evt is Caravan ||
             evt is Karma ||
+            evt is Shipment ||
             evt is KarmaHandSwap ||
             evt is KarmaFreeRevival ||
             evt is KarmaMonster ||
@@ -135,6 +160,9 @@
             evt is StormSpellPlayed ||
             evt is AmalPlayed ||
             evt is ClairVoyancePlayed ||
+            evt is BrownEconomics ||
+            evt is RaiseDeadPlayed ||
+            evt is PortableAntidoteUsed ||
             evt is ClairVoyanceAnswered;
     }
 

@@ -40,6 +40,7 @@ namespace Treachery.Shared
             CurrentAuctionType = AuctionType.None;
             BiddingTriggeredBureaucracy = null;
             BidSequence = new PlayerSequence(this);
+            WinningBid = null;
 
             var white = GetPlayer(Faction.White);
             Enter(white != null && Applicable(Rule.WhiteBlackMarket) && !Prevented(FactionAdvantage.WhiteBlackMarket) && white.TreacheryCards.Count > 0 && Players.Count > 1, 
@@ -318,6 +319,7 @@ namespace Treachery.Shared
                     {
                         //Continue where black market bidding left off
                         BidSequence.NextRound();
+                        WinningBid = null;
                     }
                     break;
             }
@@ -835,11 +837,13 @@ namespace Treachery.Shared
             }
         }
 
-        public TreacheryCard CardJustWon = null;
+        public TreacheryCard CardJustWon;
+        public IBid WinningBid;
 
         private void FinishBid(Player winner, TreacheryCard card)
         {
             CardJustWon = card;
+            WinningBid = CurrentBid;
             CurrentBid = null;
             Bids.Clear();
 
@@ -953,6 +957,7 @@ namespace Treachery.Shared
             }
 
             SkipPlayersThatCantBid(BidSequence);
+            WinningBid = null;
             Enter(Phase.Bidding);
         }
 
