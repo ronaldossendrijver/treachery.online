@@ -26,7 +26,7 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (e is BattleInitiated bi && 
+            /*if (e is BattleInitiated bi && 
                 g.CurrentTurn > 3 &&
                 bi.Initiator == Faction.Green &&
                 bi.Player.Has(TreacheryCardType.Chemistry) && 
@@ -34,7 +34,7 @@ namespace Treachery.Test
                 (bi.OpponentOf(e.Initiator).Is(Faction.Blue) || bi.OpponentOf(e.Initiator).Ally == Faction.Blue))
             {
                 WriteSavegameIfApplicable(g, e.Player, "Chemistry versus Voice");
-            }
+            }*/
         }
 
         private readonly List<Type> Written = new();
@@ -526,7 +526,7 @@ namespace Treachery.Test
                         var illegalCase = TestIllegalCases(game, evt);
                         if (illegalCase != "")
                         {
-                            File.WriteAllText("illegalcase" + game.Seed + ".json", GameState.GetStateAsString(game));
+                            File.WriteAllText("illegalcase_" + illegalCase + "_" + game.Seed + ".json", GameState.GetStateAsString(game));
                         }
                         Assert.AreEqual("", illegalCase);
 
@@ -674,7 +674,7 @@ namespace Treachery.Test
                         var strangeCase = TestIllegalCases(game, e);
                         if (strangeCase != "")
                         {
-                            File.WriteAllText("illegalcase.json", GameState.GetStateAsString(game));
+                            File.WriteAllText("illegalcase_" + strangeCase + ".json", GameState.GetStateAsString(game));
                         }
                         Assert.AreEqual("", strangeCase, f + ", " + strangeCase);
 
