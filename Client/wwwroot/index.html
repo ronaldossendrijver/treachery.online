@@ -331,7 +331,7 @@
         /*
          * Other support functions
          */
-
+        
         function ClearSelection() {
 
             if (window.getSelection) { window.getSelection().removeAllRanges(); }
@@ -383,6 +383,84 @@
 
             window.onbeforeunload = null;
             location.reload();
+        }
+
+        /*
+         * Webcam
+         */
+
+        const mimeCodec = 'video/webm;codecs="vp9"';
+
+        async function GetCaptureDevices() {
+
+            return await navigator.mediaDevices.enumerateDevices();
+        }
+
+        let mediaRecorders = new Map();
+        function CaptureMedia(deviceId, videoId, audio, video) {
+
+            navigator.mediaDevices.getUserMedia({ audio: audio, video: video, deviceId: deviceId })
+                .then(function (stream) {
+
+                    preview = document.getElementById(videoId);
+                    if (preview != null) {
+
+                        preview.srcObject = stream;
+                        preview.play();
+                    }
+
+                    let mediaRecorder = new MediaRecorder(stream, { mimeType: mimeCodec });
+                    mediaRecorder.ondataavailable = HandleVideoData
+                    mediaRecorder.start(40);
+                    mediaRecorders.set(deviceId, mediaRecorder);
+                })
+        }
+
+        function StopCapture(deviceId) {
+
+            if (deviceId == null) {
+                for (var m in mediaRecorders) {
+
+                    mediaRecorders[m].stop();
+                }
+
+                mediaRecorders.clear();
+            }
+            else {
+
+                mediaRecorders.get(deviceId).stop();
+                mediaRecorders.delete(deviceId);
+            }
+        }
+        
+        let mediaSources = new Map();
+        function InitializeVideo(videoId) {
+
+            var mediaSource = new MediaSource();
+            var video = document.getElementById(videoId);
+            video.src = URL.createObjectURL(mediaSource);
+            mediaSource.addEventListener('sourceopen', sourceOpen);
+            mediaSources.set(videoId, mediaSource);
+            document.getElementById(videoId).play();
+        }
+
+        function sourceOpen(_) {
+
+            var mediaSource = this;
+            mediaSource.addSourceBuffer(mimeCodec);
+        };
+
+        function PushVideoData(videoId, buffer) {
+
+            var sourceBuffer = mediaSources.get(videoId).sourceBuffers[0];
+            sourceBuffer.appendBuffer(buffer.buffer);
+        }
+
+        async function HandleVideoData(event) {
+
+            var ab = await event.data.arrayBuffer()
+            var bytes = new Uint8Array(ab);
+            DotNet.invokeMethodAsync('Treachery.Client', 'HandleVideoData', bytes);
         }
         
     </script>

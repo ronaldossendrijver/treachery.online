@@ -181,6 +181,11 @@ namespace Treachery.Server
             await Channel("host", hostID).SendAsync("RequestChatMessage", e);
         }
 
+        public async Task SendVideo(int hostID, int playerPosition, byte[] data)
+        {
+            await Channel("viewers", hostID).SendAsync("ReceiveVideo", playerPosition, data);
+        }
+
         #endregion MessagesFromPlayersToHost
 
         #region MessagesFromHost
@@ -200,6 +205,7 @@ namespace Treachery.Server
             if (deniedMessage == "")
             {
                 await AddToChannel("players", gameID, playerConnectionID);
+                await AddToChannel("viewers", hostID, playerConnectionID);
             }
 
             await Clients.Client(playerConnectionID).SendAsync("HandleJoinAsPlayer", hostID, deniedMessage);
@@ -211,6 +217,7 @@ namespace Treachery.Server
             if (deniedMessage == "")
             {
                 await AddToChannel("players", gameID, playerConnectionID);
+                await AddToChannel("viewers", hostID, playerConnectionID);
             }
 
             await Clients.Client(playerConnectionID).SendAsync("HandleJoinAsPlayer", hostID, deniedMessage);
@@ -238,8 +245,6 @@ namespace Treachery.Server
 
         public async Task NotifyUpdate(int gameID, int eventNumber, GameEvent e)
         {
-            Log("NotifyUpdate", gameID, eventNumber, e);
-
             e.Time = DateTime.Now;
             await Channel("players", gameID).SendAsync("HandleEvent", eventNumber, e);
             await Channel("observers", gameID).SendAsync("HandleEvent", eventNumber, e);

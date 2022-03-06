@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace Treachery.Client
 {
@@ -167,6 +168,50 @@ namespace Treachery.Client
             await _runtime.InvokeVoidAsync("StopSounds");
         }
 
+        public static async Task PlayVideo(string source)
+        {
+            await _runtime.InvokeVoidAsync("PlayVideo", source);
+        }
+
+        public static async Task<IEnumerable<CaptureDevice>> GetCaptureDevices()
+        {
+            var devices = await _runtime.InvokeAsync<JsonElement[]>("GetCaptureDevices");
+
+            return devices.Select(d => new CaptureDevice() { 
+                DeviceId = d.GetProperty("deviceId").GetString(),
+                GroupId = d.GetProperty("groupId").GetString(),
+                Kind = d.GetProperty("kind").GetString(),
+                Label = d.GetProperty("label").GetString()});
+        }
+
+        public static async Task InitializeVideo(string videoId)
+        {
+            await _runtime.InvokeVoidAsync("InitializeVideo", videoId);
+        }
+
+        public static async Task PushVideoData(string videoId, byte[] data)
+        {
+            await _runtime.InvokeVoidAsync("PushVideoData", videoId, data);
+        }
+
+        public static async Task CaptureMedia(string deviceId, string videoId, bool audio, bool video)
+        {
+            await _runtime.InvokeVoidAsync("CaptureMedia", deviceId, videoId, audio, video);
+        }
+
+        public static async Task StopCapture(string deviceId)
+        {
+            await _runtime.InvokeVoidAsync("StopCapture", deviceId);
+        }
+
+        public static event Action<byte[]> OnVideoData;
+
+        [JSInvokable("HandleVideoData")]
+        public static void HandleVideoData(byte[] data)
+        {
+            OnVideoData?.Invoke(data);
+        }
+
         public static async Task SaveSetting(string name, object value)
         {
             await Storage.SetAsync(name, value);
@@ -283,5 +328,19 @@ namespace Treachery.Client
     public class PopupChatClear : PopupChatCommand
     {
         public override string type { get; set; } = "PopupChatClear";
+    }
+
+    public class CaptureDevice
+    {
+        public string Label;
+        public string DeviceId;
+
+        public string Kind { get; internal set; }
+        public string GroupId { get; internal set; }
+
+        public override string ToString() {
+
+            return DeviceId;
+        }
     }
 }

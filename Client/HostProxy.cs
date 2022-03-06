@@ -47,11 +47,23 @@ namespace Treachery.Client
             }
         }
 
-        public async Task SendHeartbeat(string PlayerName)
+        public async Task SendHeartbeat(string playerName)
         {
             try
             {
-                await _connection.SendAsync("ProcessHeartbeat", HostID, PlayerName);
+                await _connection.SendAsync("ProcessHeartbeat", HostID, playerName);
+            }
+            catch (Exception)
+            {
+                Support.Log("Disconnected...");
+            }
+        }
+
+        public async Task SendVideo(int playerPosition, byte[] data)
+        {
+            try
+            {
+                await _connection.SendAsync("SendVideo", HostID, playerPosition, data);
             }
             catch (Exception)
             {

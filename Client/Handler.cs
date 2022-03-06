@@ -37,9 +37,12 @@ namespace Treachery.Client
         public bool Autopass { get; set; } = false;
         public bool KeepAutopassSetting { get; set; } = false;
         
+        //Sound and camera
         public float CurrentEffectVolume { get; set; } = -1;
         public float CurrentChatVolume { get; set; } = -1;
-        
+        public CaptureDevice AudioDevice { get; set; }
+        public CaptureDevice VideoDevice { get; set; }
+
         public bool ShowWheelsAndHMS { get; set; } = true;
         public bool StatisticsSent { get; set; } = false;
         public bool BotsArePaused { get; set; } = false;
@@ -63,6 +66,15 @@ namespace Treachery.Client
             Game = new Game();
             UpdateStatus();
             RegisterHandlers();
+            Browser.OnVideoData += ProcessVideoData;
+        }
+
+        private void ProcessVideoData(byte[] data)
+        {
+            if (HostProxy != null)
+            {
+                _ = HostProxy.SendVideo(Player.PositionAtTable, data);
+            }
         }
 
         public bool IsDisconnected
@@ -149,7 +161,13 @@ namespace Treachery.Client
             _connection.On<ChatMessage>("HandleChatMessage", (e) => HandleChatMessage(e));
             _connection.On<int>("HandleUndo", (untilEventNr) => HandleUndo(untilEventNr));
             _connection.On<string>("HandleLoadSkin", (skin) => HandleLoadSkin(skin));
+            _connection.On<int, byte[]>("ReceiveVideo", (name, data) => ReceiveVideo(name, data));
             _connection.On<string, string, string>("HandleLoadGame", (state, playerName, skin) => HandleLoadGame(state, playerName, skin));
+        }
+
+        private async Task ReceiveVideo(int playerPosition, byte[] data)
+        {
+            await Browser.PushVideoData("video" + playerPosition, data);
         }
 
         //Process information about a currently running game on treachery.online

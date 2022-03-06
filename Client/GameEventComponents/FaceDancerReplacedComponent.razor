@@ -12,7 +12,7 @@
     <Body>
 
         <SelectHeroComponent Game="Game" @bind-Value="dancer" Values="FaceDancerReplaced.ValidFaceDancers(Player)"/>
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Replace Face Dancer" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText=@ConfirmLabel ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
 
     </Body>
 
@@ -28,4 +28,6 @@
     protected override FaceDancerReplaced ConfirmedResult => new FaceDancerReplaced(Game) { Initiator = Faction, Passed = false, SelectedDancer = dancer };
 
     protected override FaceDancerReplaced PassedResult => new FaceDancerReplaced(Game) { Initiator = Faction, Passed = true };
+
+    private string ConfirmLabel => dancer != null ? "Replace " + dancer.Name : "Replace";
 }

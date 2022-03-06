@@ -4,6 +4,7 @@
 
 @using Treachery.Shared;
 @using Treachery.Client.GenericComponents;
+@using System.Linq;
 @inherits GameComponent;
  
 @if (Visible)
@@ -22,6 +23,17 @@
                 <label class="mt-0" for="chatVolume">&nbsp;Chat notification volume</label>
                 <input class="mt-2" id="chatVolume" type="range" min="0" max="100" step="1" @bind="@DesiredChatVolume" @bind:event="oninput" />
             </div>
+
+            <div>Camera settings</div>
+            
+            <SelectComponent @bind-Value=h.AudioDevice Values=@audioDevices ValueLabels=@audioDevices.Select(d => d.Label)>
+                <Label>Microphone</Label>
+            </SelectComponent>
+
+            <SelectComponent @bind-Value=h.VideoDevice Values=@videoDevices ValueLabels=@videoDevices.Select(d => d.Label)>
+                <Label>Camera</Label>
+            </SelectComponent>
+
         </div>
     </div>
 
@@ -35,15 +47,18 @@
     private float DesiredMusicVolume = 0;
     private float DesiredEffectVolume = 0;
     private float DesiredChatVolume = 0;
-
     private string CurrentSoundtrack = "";
-
     private float CurrentMusicVolume = -1;
 
+    private List<CaptureDevice> audioDevices = new List<CaptureDevice>();
+    private List<CaptureDevice> videoDevices = new List<CaptureDevice>();
 
     protected override async Task OnInitializedAsync()
     {
         await LoadSettings();
+        var devices = await Browser.GetCaptureDevices();
+        audioDevices = devices.Where(d => d.Kind == "audioinput").ToList();
+        videoDevices = devices.Where(d => d.Kind == "videoinput").ToList();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

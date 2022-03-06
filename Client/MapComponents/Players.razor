@@ -1,5 +1,5 @@
 ﻿<!--
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+* Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
 --->
 
 @using Treachery.Shared
@@ -18,14 +18,30 @@
             {
                 radiusModifier = 1.5f;
             }
+
             var x = position.X - radiusModifier * Skin.Current.PlayerTokenRadius;
             var y = position.Y - radiusModifier * Skin.Current.PlayerTokenRadius;
 
             <Circle X="@position.X" Y="@position.Y" Radius="@(1.35f * Skin.Current.PlayerTokenRadius)" FillColor="@Skin.Current.TABLEPOSITION_BACKGROUNDCOLOR" />
 
-            <Image X="@(x)" Y="@(y)" Diameter=@(radiusModifier * Skin.Current.PlayerTokenRadius * 2) Src="@Skin.Current.GetFactionTableImageURL(p.Faction)" 
+            var FactionTokenDiameter = (radiusModifier * Skin.Current.PlayerTokenRadius * 2);
+
+            <Image X="@(x)" Y="@(y)" Diameter=@FactionTokenDiameter Src="@Skin.Current.GetFactionTableImageURL(p.Faction)" 
                    ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                    Popover="@Intel(p)"/>
+
+            @if (EnableCameras)
+            {
+                var videoposition = x > 0.5f * Skin.Current.PlanetCenter.X ? x + 2*FactionTokenDiameter : x - 2*FactionTokenDiameter;
+                if (p == h.Player)
+                {
+                    <Videocapture h=@h X=@videoposition Y=y Width=2*FactionTokenDiameter Height=2*FactionTokenDiameter/>
+                }
+                else
+                {
+                    <Videostream h=@h X=@videoposition Y=y Width=2*FactionTokenDiameter Height=2*FactionTokenDiameter StreamId=@DetermineVideoStreamId(p)/>
+                }
+            }
 
             if (p.Ally != Faction.None)
             {
@@ -103,6 +119,8 @@
         await Browser.EnablePopovers();
     }
 
+    private bool EnableCameras => true;
+
     private string Intel(Player p)
     {
         string result = Skin.Current.Format("<p><strong>{0} plays {1}</strong></p>", p.Name, p.Faction);
@@ -157,5 +175,7 @@
 
         return result;
     }
+
+    private string DetermineVideoStreamId(Player p) => "video" + p.PositionAtTable;
 
 } 

@@ -1,0 +1,17 @@
+﻿@inherits MapComponent
+
+<video style='position:absolute;left:@Px(X);top:@Px(Y);width=@Px(Width);height=@Px(Height);border-radius:@Px(0.5f*Width);overflow:hidden;' id="@StreamId" width=@Px(Width) />
+
+@code {
+
+    [Parameter]
+    public string StreamId { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Browser.InitializeVideo(StreamId);
+        }
+    }
+}
