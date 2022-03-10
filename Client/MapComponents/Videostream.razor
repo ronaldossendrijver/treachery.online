@@ -1,11 +1,32 @@
 ﻿@inherits MapComponent
 
-<video style='position:absolute;left:@Px(X);top:@Px(Y);width=@Px(Width);height=@Px(Height);border-radius:@Px(0.5f*Width);overflow:hidden;' id="@StreamId" width=@Px(Width) />
+<div style='position:absolute;left:@Px(EffectiveX);top:@Px(EffectiveY);width:@Px(EffectiveHeight);height:@Px(EffectiveHeight);border-radius:@Px(0.5f*EffectiveHeight);overflow:hidden;filter:drop-shadow(0px 0px 1px gold);'>
+    <video id="@StreamId" height=@Px(EffectiveHeight) style="position:absolute;left:@Px(-0.3f*EffectiveHeight)" @onmouseover=VideoMouseOver @onmouseout=VideoMouseOut/>
+</div>
 
 @code {
 
     [Parameter]
     public string StreamId { get; set; }
+    
+    private CaptureDevice capturedVideoDevice;
+    private CaptureDevice capturedAudioDevice;
+
+    private string VideoId => "videocapture" + Id;
+
+    private bool _videoHovered = false;
+    private void VideoMouseOver()
+    {
+        _videoHovered = true;
+    }
+    private void VideoMouseOut()
+    {
+        _videoHovered = false;
+    }
+
+    private float EffectiveX => _videoHovered ? X - 0.5f * Height : X;
+    private float EffectiveY => _videoHovered ? Y - 0.5f * Height : Y;
+    private float EffectiveHeight => _videoHovered ? 2 * Height : Height;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

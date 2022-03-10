@@ -113,7 +113,7 @@ namespace Treachery.Client
         {
             if (sound != null && sound != "" && sound != "?")
             {
-                await _runtime.InvokeVoidAsync("PlaySound", sound, CalculateVolume(volume), loop);
+                await JsInvoke("PlaySound", sound, CalculateVolume(volume), loop);
             }
         }
 
@@ -137,7 +137,7 @@ namespace Treachery.Client
         {
             if (sound != null && sound != null)
             {
-                await _runtime.InvokeVoidAsync("ChangeSoundVolume", sound, CalculateVolume(volume));
+                await JsInvoke("ChangeSoundVolume", sound, CalculateVolume(volume));
             }
         }
 
@@ -145,7 +145,7 @@ namespace Treachery.Client
         {
             if (sound != null && sound != null)
             {
-                await _runtime.InvokeVoidAsync("StopSound", sound);
+                await JsInvoke("StopSound", sound);
             }
         }
 
@@ -153,7 +153,7 @@ namespace Treachery.Client
         {
             if (sound != null && sound != null && fromVolume != toVolume)
             {
-                await _runtime.InvokeVoidAsync("FadeSound", sound, CalculateVolume(fromVolume), CalculateVolume(toVolume), milliseconds);
+                await JsInvoke("FadeSound", sound, CalculateVolume(fromVolume), CalculateVolume(toVolume), milliseconds);
             }
         }
 
@@ -165,43 +165,70 @@ namespace Treachery.Client
 
         public static async Task StopSounds()
         {
-            await _runtime.InvokeVoidAsync("StopSounds");
+            await JsInvoke("StopSounds");
         }
 
         public static async Task PlayVideo(string source)
         {
-            await _runtime.InvokeVoidAsync("PlayVideo", source);
+            await JsInvoke("PlayVideo", source);
         }
 
         public static async Task<IEnumerable<CaptureDevice>> GetCaptureDevices()
         {
-            var devices = await _runtime.InvokeAsync<JsonElement[]>("GetCaptureDevices");
+            var devices = await JsInvoke<JsonElement[]>("GetCaptureDevices");
+            
+            if (devices == null) return new List<CaptureDevice>();
 
             return devices.Select(d => new CaptureDevice() { 
                 DeviceId = d.GetProperty("deviceId").GetString(),
                 GroupId = d.GetProperty("groupId").GetString(),
                 Kind = d.GetProperty("kind").GetString(),
-                Label = d.GetProperty("label").GetString()});
+                Label = DetermineLabel(d.GetProperty("label").GetString(), d.GetProperty("deviceId").GetString(), d.GetProperty("kind").GetString(), d.GetProperty("groupId").GetString())
+            });
+        }
+
+        private static string DetermineLabel(string label, string deviceId, string kind, string groupId)
+        {
+            if (label != null && label.Length > 0)
+            {
+                return label;
+            }
+            else if (deviceId != null && deviceId.Length > 0)
+            {
+                return deviceId;
+            }
+            else if (kind != null && kind.Length > 0)
+            {
+                return kind;
+            }
+            else if (groupId != null && groupId.Length > 0)
+            {
+                return groupId;
+            }
+            else 
+            {
+                return "unknown device";
+            }
         }
 
         public static async Task InitializeVideo(string videoId)
         {
-            await _runtime.InvokeVoidAsync("InitializeVideo", videoId);
+            await JsInvoke("InitializeVideo", videoId);
         }
 
         public static async Task PushVideoData(string videoId, byte[] data)
         {
-            await _runtime.InvokeVoidAsync("PushVideoData", videoId, data);
+            await JsInvoke("PushVideoData", videoId, data);
         }
 
-        public static async Task CaptureMedia(string deviceId, string videoId, bool audio, bool video)
+        public static async Task CaptureMedia(string videoId, string audioDeviceId, string videoDeviceId)
         {
-            await _runtime.InvokeVoidAsync("CaptureMedia", deviceId, videoId, audio, video);
+            await JsInvoke("CaptureMedia", videoId, audioDeviceId, videoDeviceId);
         }
 
-        public static async Task StopCapture(string deviceId)
+        public static async Task StopCapture(string videoId)
         {
-            await _runtime.InvokeVoidAsync("StopCapture", deviceId);
+            await JsInvoke("StopCapture", videoId);
         }
 
         public static event Action<byte[]> OnVideoData;
@@ -248,22 +275,22 @@ namespace Treachery.Client
 
         public static async Task OpenChatPopup()
         {
-            await _runtime.InvokeVoidAsync("OpenChatPopup");
+            await JsInvoke("OpenChatPopup");
         }
 
         public static async Task SendToChatPopup(PopupChatCommand msg)
         {
-            await _runtime.InvokeVoidAsync("SendToChatPopup", msg);
+            await JsInvoke("SendToChatPopup", msg);
         }
 
         public static async Task ToggleFullScreen()
         {
-            await _runtime.InvokeVoidAsync("ToggleFullScreen");
+            await JsInvoke("ToggleFullScreen");
         }
 
         public static async Task<bool> IsFullScreen()
         {
-            return (await _runtime.InvokeAsync<bool>("IsFullScreen"));
+            return await JsInvoke<bool>("IsFullScreen");
         }
 
         public static async Task Print(string elementName)

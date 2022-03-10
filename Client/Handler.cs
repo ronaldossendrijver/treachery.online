@@ -161,7 +161,7 @@ namespace Treachery.Client
             _connection.On<ChatMessage>("HandleChatMessage", (e) => HandleChatMessage(e));
             _connection.On<int>("HandleUndo", (untilEventNr) => HandleUndo(untilEventNr));
             _connection.On<string>("HandleLoadSkin", (skin) => HandleLoadSkin(skin));
-            _connection.On<int, byte[]>("ReceiveVideo", (name, data) => ReceiveVideo(name, data));
+            _connection.On<int, byte[]>("ReceiveVideo", (playerposition, data) => ReceiveVideo(playerposition, data));
             _connection.On<string, string, string>("HandleLoadGame", (state, playerName, skin) => HandleLoadGame(state, playerName, skin));
         }
 

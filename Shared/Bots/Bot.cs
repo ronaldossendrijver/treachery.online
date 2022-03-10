@@ -21,7 +21,7 @@ namespace Treachery.Shared
             try
             {
                 if (action == null && possibleEvents.Contains(typeof(Voice))) action = DetermineVoice();
-                if (action == null && possibleEvents.Contains(typeof(DealAccepted))) action = DetermineDealAccepted();
+                if (action == null && possibleEvents.Contains(typeof(DealOffered))) action = DetermineDealCancelled();
                 if (action == null && possibleEvents.Contains(typeof(AcceptOrCancelPurpleRevival))) action = DetermineAcceptOrCancelPurpleRevival();
                 if (action == null && possibleEvents.Contains(typeof(ThoughtAnswered))) action = DetermineThoughtAnswered();
                 if (action == null && possibleEvents.Contains(typeof(Thought))) action = DetermineThought();
@@ -57,7 +57,7 @@ namespace Treachery.Shared
                 if (action == null && possibleEvents.Contains(typeof(MetheorPlayed))) action = DetermineMetheorPlayed();
                 if (action == null && possibleEvents.Contains(typeof(AmalPlayed))) action = DetermineAmalPlayed();
                 if (action == null && possibleEvents.Contains(typeof(SetIncreasedRevivalLimits))) action = DetermineSetIncreasedRevivalLimits();
-                if (action == null && possibleEvents.Contains(typeof(DealOffered))) action = DetermineDealOffered();
+                if (action == null && possibleEvents.Contains(typeof(DealAccepted))) action = DetermineDealAccepted();
                 if (action == null && possibleEvents.Contains(typeof(RequestPurpleRevival))) action = DetermineRequestPurpleRevival();
                 if (action == null && possibleEvents.Contains(typeof(DistransUsed))) action = DetermineDistransUsed();
                 if (action == null && possibleEvents.Contains(typeof(JuicePlayed))) action = DetermineJuicePlayed();
@@ -99,6 +99,7 @@ namespace Treachery.Shared
             try
             {
                 //Other
+                if (action == null && possibleEvents.Contains(typeof(DealOffered))) action = DetermineDealOffered();
                 if (action == null && possibleEvents.Contains(typeof(FactionTradeOffered))) action = DetermineFactionTradeOffered();
                 if (action == null && possibleEvents.Contains(typeof(SkillAssigned))) action = DetermineSkillAssigned();
                 if (action == null && possibleEvents.Contains(typeof(StormDialled))) action = DetermineStormDialled();

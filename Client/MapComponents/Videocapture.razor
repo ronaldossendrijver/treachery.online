@@ -1,54 +1,77 @@
 ﻿@inherits MapComponent
 
-<div style='position:absolute;left:@Px(X);top:@Px(Y);width=@Px(Width);height=@Px(Height);border-radius:@Px(0.5f*Width);overflow:hidden'>
-
-    <video id="@VideoId" autoplay width=@Px(Width) @onclick=@ToggleCapture title="Click to start or stop camera"/>
-
-    @if (capturedDevice == null && h.VideoDevice != null) {
-
-        <a class="btn btn-link p-1" style='position:absolute' @onclick=@ToggleCapture title="Start Camera">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" class="bi bi-play-fill" viewBox="0 0 16 16">
-                <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z" />
-            </svg>
-        </a>
-    }
-
+<div style='position:absolute;left:@Px(EffectiveX);top:@Px(EffectiveY);width:@Px(EffectiveHeight);height:@Px(EffectiveHeight);border-radius:@Px(0.5f*EffectiveHeight);overflow:hidden;filter:drop-shadow(0px 0px 1px gold);'>
+    <video id="@VideoId" height=@Px(EffectiveHeight) style="position:absolute;left:@Px(-0.3f*EffectiveHeight)" @onclick=@ToggleCapture title="Click to stop camera" @onmouseover=VideoMouseOver @onmouseout=VideoMouseOut/>
 </div>
+
+@if (capturedVideoDevice == null && h.VideoDevice != null && h.AudioDevice != null) {
+
+    <svg xmlns="http://www.w3.org/2000/svg" style='@SymbolStyle' width="10" height="10" fill=@SymbolFill class="bi bi-camera-video-fill" viewBox="0 0 16 16" @onclick=@ToggleCapture title="Start @h.VideoDevice.Label" @onmouseover=SymbolMouseOver @onmouseout=SymbolMouseOut>
+        <path fill-rule="evenodd" d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2V5z"/>
+    </svg>
+}
 
 @code {
 
-    private CaptureDevice capturedDevice;
+    [Parameter]
+    public bool SymbolOnRight { get; set; } 
+
+    private CaptureDevice capturedVideoDevice;
+    private CaptureDevice capturedAudioDevice;
 
     private string VideoId => "videocapture" + Id;
 
-    protected override async Task OnInitializedAsync()
+    private bool _videoHovered = false;
+    private void VideoMouseOver()
     {
-        var devices = await Browser.GetCaptureDevices();
-
-        if (h.VideoDevice == null)
+        if (capturedVideoDevice != null)
         {
-            h.VideoDevice = devices.FirstOrDefault(d => d.Kind == "videoinput");
+            _videoHovered = true;
         }
+    }
+    private void VideoMouseOut()
+    {
+        _videoHovered = false;
+    }
+    private bool _symbolHovered = false;
+    private void SymbolMouseOver()
+    {
+        _symbolHovered = true;
+    }
+    private void SymbolMouseOut()
+    {
+        _symbolHovered = false;
+    }
 
-        if (h.AudioDevice == null)
+    private float EffectiveX => _videoHovered ? X - 0.5f * Height : X;
+    private float EffectiveY => _videoHovered ? Y - 0.5f * Height : Y;
+    private float EffectiveHeight => _videoHovered ? 2 * Height : Height;
+
+    private string SymbolFill => _symbolHovered ? "white" : "#FFFFFFBB";
+    private string SymbolStyle
+    {
+        get
         {
-            h.AudioDevice = devices.FirstOrDefault(d => d.Kind == "audioinput");
+            var left = SymbolOnRight? X + Height - 10: X;
+            return string.Format("position:absolute;left:{0};top:{1};", Px(left), Px(Y + 0.5f * Height - 5));
         }
     }
 
     private void ToggleCapture()
     {
-        if (capturedDevice == null)
+        if (capturedVideoDevice == null)
         {
-            //_ = Browser.CaptureMedia(audioDeviceId, true, false);
-            capturedDevice = h.VideoDevice;
-            Console.WriteLine("Continue capture from " + capturedDevice.Label);
-            _ = Browser.CaptureMedia(capturedDevice.DeviceId, VideoId, false, true);
+            capturedVideoDevice = h.VideoDevice;
+            capturedAudioDevice = h.AudioDevice;
+            _ = Browser.CaptureMedia(VideoId, capturedAudioDevice.DeviceId, capturedVideoDevice.DeviceId);
         }
         else
         {
-            _ = Browser.StopCapture(capturedDevice.DeviceId);
-            capturedDevice = null;
+            _ = Browser.StopCapture(VideoId);
+            capturedVideoDevice = null;
+            capturedAudioDevice = null;
         }
     }
+
+    private string SymbolAlign => SymbolOnRight ? "text-right" : "";
 }

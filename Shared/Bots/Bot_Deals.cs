@@ -64,13 +64,16 @@ namespace Treachery.Shared
             return result;
         }
 
+        protected virtual DealOffered DetermineDealCancelled()
+        {
+            return DetermineOutdatedDealOffers();
+        }
+
         protected virtual DealOffered DetermineDealOffered()
         {
             DealOffered result = null;
 
-            result = DetermineOutdatedDealOffers();
-
-            if (result == null && !LastTurn && Game.CurrentMainPhase > MainPhase.Setup && !Game.Applicable(Rule.DisableResourceTransfers))
+            if (!LastTurn && Game.CurrentMainPhase > MainPhase.Setup && !Game.Applicable(Rule.DisableResourceTransfers))
             {
                 if (result == null) result = DetermineDealOffered_BiddingPrescienceEntirePhaseYellowTurn1();
                 if (result == null) result = DetermineDealOffered_BiddingPrescienceEntirePhase();
@@ -85,14 +88,36 @@ namespace Treachery.Shared
 
         protected virtual DealOffered DetermineOutdatedDealOffers()
         {
-            DealOffered outdated = FindOutdatedDealOffer(MainPhase.Bidding, DealType.ShareBiddingPrescience);
+            DealOffered outdated = FindInvalidDealOffers();
+            if (outdated == null) outdated = FindOutdatedDealOffer(MainPhase.Bidding, DealType.ShareBiddingPrescience);
             if (outdated == null) outdated = FindOutdatedDealOffer(MainPhase.Battle, DealType.ShareResourceDeckPrescience);
             if (outdated == null) outdated = FindOutdatedDealOffer(MainPhase.Battle, DealType.ShareStormPrescience);
-            if (LastTurn && outdated == null) outdated = Game.DealOffers.FirstOrDefault();
+            if (outdated == null && LastTurn) outdated = Game.DealOffers.FirstOrDefault();
 
             if (outdated != null)
             {
                 return outdated.Cancellation();
+            }
+
+            return null;
+        }
+        protected DealOffered FindInvalidDealOffers()
+        {
+            var green = Game.GetPlayer(Faction.Green);
+            if (green != null && Game.CurrentMainPhase == MainPhase.Bidding && !Game.HasBiddingPrescience(green))
+            {
+                return Game.DealOffers.FirstOrDefault(offer => offer.Initiator == Faction.Green && offer.Type == DealType.ShareBiddingPrescience);
+            }
+
+            if (green != null && Game.CurrentMainPhase == MainPhase.ShipmentAndMove && !Game.HasResourceDeckPrescience(green))
+            {
+                return Game.DealOffers.FirstOrDefault(offer => offer.Initiator == Faction.Green && offer.Type == DealType.ShareResourceDeckPrescience);
+            }
+
+            var yellow = Game.GetPlayer(Faction.Yellow);
+            if (yellow != null && !Game.HasStormPrescience(yellow))
+            {
+                return Game.DealOffers.FirstOrDefault(offer => offer.Initiator == Faction.Yellow && offer.Type == DealType.ShareStormPrescience);
             }
 
             return null;
