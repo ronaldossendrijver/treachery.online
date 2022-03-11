@@ -389,12 +389,16 @@
          * Webcam
          */
 
-        const webcamCodec = 'video/webm;codecs="vp9,opus"';
+        const webcamCodec = 'video/webm;codecs="vp8,opus"';
         const webcamInterval = 500;
 
-        async function GetCaptureDevices() {
+        async function GetCaptureDevices(getPermissionsFirst) {
 
-            await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+            if (getPermissionsFirst) {
+
+                await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+            }
+
             var devices = await navigator.mediaDevices.enumerateDevices();
             return devices;
         }
@@ -414,7 +418,6 @@
                     video: {
                         width: { ideal: 320 },
                         height: { ideal: 200 },
-                        resizeMode: { ideal: 'crop-and-scale' },
                         deviceId: { exact: videoDeviceId }
                     }
                 })

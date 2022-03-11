@@ -174,9 +174,9 @@ namespace Treachery.Client
             await JsInvoke("PlayVideo", source);
         }
 
-        public static async Task<IEnumerable<CaptureDevice>> GetCaptureDevices()
+        public static async Task<IEnumerable<CaptureDevice>> GetCaptureDevices(bool getPermissionsFirst)
         {
-            var devices = await JsInvoke<JsonElement[]>("GetCaptureDevices");
+            var devices = await JsInvoke<JsonElement[]>("GetCaptureDevices", getPermissionsFirst);
             
             if (devices == null) return new List<CaptureDevice>();
 

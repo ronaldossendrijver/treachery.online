@@ -56,12 +56,13 @@
     private List<CaptureDevice> audioDevices = new List<CaptureDevice>();
     private List<CaptureDevice> videoDevices = new List<CaptureDevice>();
 
+    private bool _devicesScanned = false;
     protected override async Task OnInitializedAsync()
     {
-        var devices = await Browser.GetCaptureDevices();
+        var devices = await Browser.GetCaptureDevices(false);
         audioDevices = devices.Where(d => d.Kind == "audioinput").ToList();
         videoDevices = devices.Where(d => d.Kind == "videoinput").ToList();
-
+        await ScanDevices();
         await LoadSettings();
     }
 
@@ -69,6 +70,25 @@
     {
         await UpdateMusicAndSound();
         await SaveSettings();
+        await ScanDevices();
+    }
+
+    private async Task ScanDevices()
+    {
+        if ((Visible || h.HostProxy != null) && !_devicesScanned)
+        {
+            var devices = await Browser.GetCaptureDevices(true);
+            audioDevices = devices.Where(d => d.Kind == "audioinput").ToList();
+            videoDevices = devices.Where(d => d.Kind == "videoinput").ToList();
+            _devicesScanned = true;
+            await Task.Delay(1000).ContinueWith(e => LoadAndRefresh());
+        }
+    }
+
+    private async Task LoadAndRefresh()
+    {
+        await LoadSettings();
+        StateHasChanged();
     }
 
     private async Task UpdateMusicAndSound()
