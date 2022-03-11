@@ -41,7 +41,7 @@ namespace Treachery.Shared
         {
             if (!Passed)
             {
-                return Message.Express(Initiator, "Using ", TreacheryCardType.Karma, ", ", Initiator, " move the ", Game.Map.HiddenMobileStronghold, " to ", Target);
+                return Message.Express("Using ", TreacheryCardType.Karma, ", ", Initiator, " move the ", Game.Map.HiddenMobileStronghold, " to ", Target);
             }
             else
             {

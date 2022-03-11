@@ -273,17 +273,33 @@
         function HideJsPanel(panelID) {
 
             if (panelID != null) {
-                var existingPanel = panels.get(panelID);
-                existingPanel.opacity = 0.2;
+
+                try {
+
+                    var existingPanel = panels.get(panelID);
+                    existingPanel.opacity = 0.2;
+                }
+                catch (error) {
+
+                    //
+                }
             }
         }
 
         function CloseJsPanel(panelID) {
 
             if (panelID != null) {
-                var existingPanel = panels.get(panelID);
-                existingPanel.close();
-                panels.delete(panelID);
+
+                try {
+
+                    var existingPanel = panels.get(panelID);
+                    existingPanel.close();
+                    panels.delete(panelID);
+                }
+                catch (error) {
+
+                    //
+                }
             }
         }
 

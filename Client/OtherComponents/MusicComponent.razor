@@ -59,36 +59,36 @@
     private bool _devicesScanned = false;
     protected override async Task OnInitializedAsync()
     {
-        var devices = await Browser.GetCaptureDevices(false);
-        audioDevices = devices.Where(d => d.Kind == "audioinput").ToList();
-        videoDevices = devices.Where(d => d.Kind == "videoinput").ToList();
         await ScanDevices();
         await LoadSettings();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender || !_devicesScanned)
+        {
+            await ScanDevices();
+        }
+
         await UpdateMusicAndSound();
         await SaveSettings();
-        await ScanDevices();
     }
 
     private async Task ScanDevices()
     {
-        if ((Visible || h.HostProxy != null) && !_devicesScanned)
-        {
-            var devices = await Browser.GetCaptureDevices(true);
-            audioDevices = devices.Where(d => d.Kind == "audioinput").ToList();
-            videoDevices = devices.Where(d => d.Kind == "videoinput").ToList();
-            _devicesScanned = true;
-            await Task.Delay(1000).ContinueWith(e => LoadAndRefresh());
-        }
-    }
+        var requestPermissions = (Visible || h.HostProxy != null) && !_devicesScanned;
 
-    private async Task LoadAndRefresh()
-    {
+        if (requestPermissions)
+        {
+            _devicesScanned = true;
+        }
+
+        var devices = await Browser.GetCaptureDevices(requestPermissions);
+        
+        audioDevices = devices.Where(d => d.Kind == "audioinput").ToList();
+        videoDevices = devices.Where(d => d.Kind == "videoinput").ToList();
+
         await LoadSettings();
-        StateHasChanged();
     }
 
     private async Task UpdateMusicAndSound()
@@ -170,7 +170,7 @@
         await Browser.SaveSetting("treachery.online;setting.effect", DesiredEffectVolume);
         await Browser.SaveSetting("treachery.online;setting.chatvolume", DesiredChatVolume);
         await Browser.SaveSetting("treachery.online;setting.videovolume", DesiredVideoVolume);
-        
+
         if (h.AudioDevice != null)
         {
             await Browser.SaveSetting("treachery.online;setting.audiodevice", h.AudioDevice.DeviceId);
@@ -197,10 +197,9 @@
 
             var videoDeviceId = await Browser.LoadSetting<string>("treachery.online;setting.videodevice");
             h.VideoDevice = videoDevices.FirstOrDefault(d => d.DeviceId == videoDeviceId);
-            if (h.VideoDevice == null) h.VideoDevice = videoDevices.FirstOrDefault();
+
             var audioDeviceId = await Browser.LoadSetting<string>("treachery.online;setting.audiodevice");
             h.AudioDevice = audioDevices.FirstOrDefault(d => d.DeviceId == audioDeviceId);
-            if (h.AudioDevice== null) h.AudioDevice = audioDevices.FirstOrDefault();
         }
         catch (Exception)
         {
