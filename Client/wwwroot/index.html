@@ -396,7 +396,6 @@
 
             await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
             var devices = await navigator.mediaDevices.enumerateDevices();
-            //console.log(devices);
             return devices;
         }
 
@@ -408,6 +407,7 @@
                 {
                     audio: {
                         echoCancellation: true,
+                        autoGainControl: true,
                         noiseSuppression: true,
                         deviceId: { exact: audioDeviceId }
                     },
@@ -421,6 +421,7 @@
                 .then(function (stream) {
 
                     recordedStream = stream;
+
                     video = document.getElementById(videoId);
                     if (video != null) {
 
@@ -432,7 +433,7 @@
                     mediaRecorder = new MediaRecorder(stream, { mimeType: webcamCodec });
                     mediaRecorder.ondataavailable = HandleVideoData
                     mediaRecorder.start(webcamInterval);
-                })
+                });
         }
 
         async function HandleVideoData(event) {
@@ -470,55 +471,73 @@
         let mediaSources = new Map();
         function InitializeVideo(videoId) {
 
-            var mediaSource = new MediaSource();
-            mediaSource.addEventListener('sourceopen', function () {
+            try {
 
-                var buffer = mediaSource.addSourceBuffer(webcamCodec);
-                buffer.mode = "sequence";
-            });
+                var mediaSource = new MediaSource();
+                mediaSource.addEventListener('sourceopen', sourceOpen);
+                mediaSources.set(videoId, mediaSource);
 
-            mediaSources.set(videoId, mediaSource);
+                var video = document.getElementById(videoId);
+                video.src = URL.createObjectURL(mediaSource);
+                video.play();
+            }
+            catch (error) {
 
-            var video = document.getElementById(videoId);
-            video.src = URL.createObjectURL(mediaSource);
-            video.play();
+                //console.log(error);
+            }
         }
 
-        function PushVideoData(videoId, buffer) {
+        function sourceOpen(_) {
+
+            if (this.readyState == "open") {
+
+                var buffer = this.addSourceBuffer(webcamCodec);
+                buffer.mode = "sequence";
+            }
+        };
+
+        function PushVideoData(videoId, buffer, volume) {
 
             var mediaSource = mediaSources.get(videoId)
             var video = document.getElementById(videoId);
 
-            if (mediaSource != null && video != null) {
+            if (video != null) {
 
-                if (mediaSource.sourceBuffers.length > 0) {
+                if (mediaSource != null) {
 
-                    var sourceBuffer = mediaSource.sourceBuffers[0];
+                    if (mediaSource.sourceBuffers.length > 0) {
 
-                    if (sourceBuffer.buffered.length > 0) {
+                        video.volume = volume;
 
-                        //console.log("start of buffer: " + video.buffered.start(0) + ", end of buffer: " + video.buffered.end(0) + ", video position:" + video.currentTime);
+                        var sourceBuffer = mediaSource.sourceBuffers[0];
 
-                        if (video.buffered.end(0) - video.currentTime > 1) {
+                        if (sourceBuffer.buffered.length > 0) {
 
-                            video.playbackRate = 1.5;
+                            if (video.buffered.end(0) - video.currentTime > 1) {
+
+                                video.playbackRate = 1.5;
+                            }
+                            else {
+
+                                video.playbackRate = 1;
+                            }
                         }
-                        else {
 
-                            video.playbackRate = 1;
+                        sourceBuffer.appendBuffer(buffer.buffer);
+
+                        if (video.ended) {
+
+                            video.play();
                         }
                     }
+                    else {
 
-                    sourceBuffer.appendBuffer(buffer.buffer);
-
-                    if (video.ended) {
-
-                        video.play();
+                        mediaSources.delete(videoId);
+                        InitializeVideo(videoId);
                     }
                 }
                 else {
 
-                    mediaSources.delete(videoId);
                     InitializeVideo(videoId);
                 }
             }

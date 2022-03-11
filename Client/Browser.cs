@@ -6,6 +6,7 @@ using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Text.Json;
 
@@ -216,14 +217,29 @@ namespace Treachery.Client
             await JsInvoke("InitializeVideo", videoId);
         }
 
-        public static async Task PushVideoData(string videoId, byte[] data)
+        static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+        public static async Task PushVideoData(string videoId, byte[] data, float volume)
         {
-            await JsInvoke("PushVideoData", videoId, data);
+            await semaphoreSlim.WaitAsync();
+
+            try {
+
+                await JsInvoke("PushVideoData", videoId, data, volume);
+            }
+            finally
+            {
+                semaphoreSlim.Release();
+            }
         }
 
         public static async Task CaptureMedia(string videoId, string audioDeviceId, string videoDeviceId)
         {
             await JsInvoke("CaptureMedia", videoId, audioDeviceId, videoDeviceId);
+        }
+
+        public static async Task StopCapture()
+        {
+            await JsInvoke("StopCapture");
         }
 
         public static async Task StopCapture(string videoId)

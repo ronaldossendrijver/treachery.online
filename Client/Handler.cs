@@ -40,6 +40,7 @@ namespace Treachery.Client
         //Sound and camera
         public float CurrentEffectVolume { get; set; } = -1;
         public float CurrentChatVolume { get; set; } = -1;
+        public float CurrentVideoVolume { get; set; } = -1;
         public CaptureDevice AudioDevice { get; set; }
         public CaptureDevice VideoDevice { get; set; }
 
@@ -167,7 +168,7 @@ namespace Treachery.Client
 
         private async Task ReceiveVideo(int playerPosition, byte[] data)
         {
-            await Browser.PushVideoData("video" + playerPosition, data);
+            await Browser.PushVideoData("video" + playerPosition, data, 0.01f * CurrentVideoVolume);
         }
 
         //Process information about a currently running game on treachery.online
