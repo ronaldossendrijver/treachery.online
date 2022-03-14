@@ -408,19 +408,41 @@
         const webcamCodec = 'video/webm;codecs="vp8,opus"';
         const webcamInterval = 500;
 
+        
         async function GetCaptureDevices(getPermissionsFirst) {
 
             if (getPermissionsFirst) {
 
-                await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+                await navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+                    .then(function (stream) {
+
+                        devices = GetDevices(stream);
+                    });
+            }
+            else {
+
+                devices = GetDevices();
             }
 
-            var devices = await navigator.mediaDevices.enumerateDevices();
             return devices;
+        }
+
+        async function GetDevices(stream) {
+
+            var result = await navigator.mediaDevices.enumerateDevices();
+
+            if (stream != null) {
+                stream.getTracks().forEach(function (track) {
+                    track.stop();
+                });
+            }
+
+            return result;
         }
 
         let mediaRecorder = null;
         let recordedStream = null;
+
         function CaptureMedia(videoId, audioDeviceId, videoDeviceId) {
 
             navigator.mediaDevices.getUserMedia(

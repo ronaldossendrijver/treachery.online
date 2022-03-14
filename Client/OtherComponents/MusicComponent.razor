@@ -77,13 +77,13 @@
     private async Task ScanDevices()
     {
         var requestPermissions = (Visible || h.HostProxy != null) && !_devicesScanned;
+        var devices = await Browser.GetCaptureDevices(requestPermissions);
 
         if (requestPermissions)
         {
             _devicesScanned = true;
+            _ = Task.Delay(1000).ContinueWith(StateHasChanged);
         }
-
-        var devices = await Browser.GetCaptureDevices(requestPermissions);
         
         audioDevices = devices.Where(d => d.Kind == "audioinput").ToList();
         videoDevices = devices.Where(d => d.Kind == "videoinput").ToList();
