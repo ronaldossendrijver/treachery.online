@@ -137,7 +137,7 @@ namespace Treachery.Shared
             }
         }
 
-        private static IEnumerable<Location> ValidMoveToTargets(Game g, Player p, Location from, IEnumerable<Battalion> moved)
+        public static IEnumerable<Location> ValidMoveToTargets(Game g, Player p, Location from, IEnumerable<Battalion> moved)
         {
             int maximumDistance = g.DetermineMaximumMoveDistance(p, moved);
             bool mayMoveIntoStorm = p.Faction == Faction.Yellow && g.Applicable(Rule.YellowMayMoveIntoStorm) && g.Applicable(Rule.YellowStormLosses);

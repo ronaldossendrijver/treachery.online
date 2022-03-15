@@ -1137,7 +1137,7 @@ namespace Treachery.Shared
                 !BattleOutcome.LoserHeroKilled &&
                 SkilledAs(BattleOutcome.LoserBattlePlan.Hero, LeaderSkill.Diplomat) && 
                 (Retreat.MaxForces(this, BattleOutcome.Loser) > 0 || Retreat.MaxSpecialForces(this, BattleOutcome.Loser) > 0) && 
-                Retreat.ValidTargets(this).Any();
+                Retreat.ValidTargets(this, BattleOutcome.Loser).Any();
 
             Enter(loserMayRetreat, Phase.Retreating, HandleForceLosses);
         }
@@ -1615,6 +1615,7 @@ namespace Treachery.Shared
 
             CurrentReport.Express(e);
             HandleForceLosses();
+            FlipBeneGesseritWhenAlone();
             DetermineHowToProceedAfterRevealingBattlePlans();
         }
     }

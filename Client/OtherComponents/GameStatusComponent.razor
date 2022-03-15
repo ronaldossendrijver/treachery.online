@@ -107,18 +107,36 @@
         StartRedrawCycle(1000);
     }
 
+    private Phase _previousPhase;
     protected override void Redraw()
     {
-        ticksPassed++;
-
-        if (autoConfirm && CanEndPhase && ticksPassed >= 3)
+        if (CancelAutoConfirm)
         {
             ticksPassed = 0;
-            _ = Confirm();
+            autoConfirm = false;
+            StateHasChanged();
+        }
+        else
+        {
+            ticksPassed++;
+
+            if (autoConfirm && CanEndPhase && ticksPassed >= 3)
+            {
+                ticksPassed = 0;
+                _ = Confirm();
+            }
+
+            base.Redraw();
         }
 
-        base.Redraw();
+        _previousPhase = Game.CurrentPhase;
     }
+
+    private bool CancelAutoConfirm =>
+        Game.CurrentPhase == Phase.AllianceA && _previousPhase != Phase.AllianceA ||
+        Game.CurrentPhase == Phase.AllianceB && _previousPhase != Phase.AllianceB ||
+        Game.CurrentPhase == Phase.BeginningOfResurrection && _previousPhase != Phase.BeginningOfResurrection ||
+        Game.CurrentPhase == Phase.BeginningOfCharity && _previousPhase != Phase.BeginningOfCharity;
 
     protected override EndPhase ConfirmedResult => new EndPhase(Game) { Initiator = Faction };
 

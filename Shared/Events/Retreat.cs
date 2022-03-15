@@ -32,10 +32,10 @@ namespace Treachery.Shared
             return "";
         }
 
-        public static IEnumerable<Location> ValidTargets(Game g)
+        public static IEnumerable<Location> ValidTargets(Game g, Player p)
         {
-            var neighbouringEmptyNonStrongholdTerritories = g.CurrentBattle.Territory.Locations.SelectMany(l => l.Neighbours).Select(l => l.Territory).Distinct().Where(t => !g.AnyForcesIn(t) && !t.IsStronghold);
-            return neighbouringEmptyNonStrongholdTerritories.SelectMany(t => t.Locations);
+            var battalions = p.BattalionsIn(g.CurrentBattle.Territory);
+            return PlacementEvent.ValidTargets(g, p, battalions).Where(t => !g.AnyForcesIn(t.Territory) && !t.IsStronghold);
         }
 
         public static int MaxForces(Game g, Player p)
