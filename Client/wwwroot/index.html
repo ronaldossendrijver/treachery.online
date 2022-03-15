@@ -102,16 +102,16 @@
         
         function SendChatMessage() {
 
-            var msgElt = document.getElementById("messageSentBody");
-            var body = msgElt.value;
+            let msgElt = document.getElementById("messageSentBody");
+            let body = msgElt.value;
             msgElt.value = '';
-            var target = document.getElementById("messageSentTarget").value;
+            let target = document.getElementById("messageSentTarget").value;
             DotNet.invokeMethodAsync('Treachery.Client', 'SendMessage', body, target)
         }
 
         function AddChatEnterListener() {
 
-            var chatMessageBody = document.getElementById('messageSentBody');
+            let chatMessageBody = document.getElementById('messageSentBody');
             if (chatMessageBody != null) {
                 chatMessageBody.addEventListener('keyup', function (event) {
                     if (event.key == "Enter") {
@@ -123,7 +123,7 @@
 
         function AddEnterListeners() {
 
-            var userName = document.getElementById('userName');
+            let userName = document.getElementById('userName');
             if (userName != null) {
                 userName.addEventListener('keyup', function (event) {
                     if (event.key == "Enter") {
@@ -142,7 +142,7 @@
         let sounds = new Map();
         function PlaySound(file, volume, loop) {
 
-            var sound = sounds.get(file);
+            let sound = sounds.get(file);
             if (sound == null) {
 
                 sound = new Howl({ src: file, html5: true, volume: volume, loop: loop });
@@ -160,7 +160,7 @@
 
         function StopSound(file) {
 
-            var sound = sounds.get(file);
+            let sound = sounds.get(file);
             if (sound != null) {
 
                 sound.stop();
@@ -169,7 +169,7 @@
 
         function FadeSound(file, fromVolume, toVolume, seconds) {
 
-            var sound = sounds.get(file);
+            let sound = sounds.get(file);
             if (sound != null) {
 
                 sound.fade(fromVolume, toVolume, seconds);
@@ -178,8 +178,7 @@
 
         function ChangeSoundVolume(file, volume) {
 
-            var sound = sounds.get(file);
-
+            let sound = sounds.get(file);
             if (sound != null) {
 
                 sound.volume(volume);
@@ -197,7 +196,7 @@
 
         function saveFile(filename, data) {
 
-            var link = document.createElement('a');
+            let link = document.createElement('a');
             link.download = filename;
             link.href = "data:text/plain," + data;
             document.body.appendChild(link);
@@ -256,7 +255,7 @@
         let panels = new Map();
         function CreateJsPanel(options) {
 
-            var newPanel = jsPanel.create(options);
+            let newPanel = jsPanel.create(options);
             panels.set(newPanel.id, newPanel);
             return newPanel.id;
         }
@@ -264,9 +263,17 @@
         function UpdateJsPanel(panelID, elementRef, options) {
 
             if (panelID != null) {
-                var existingPanel = panels.get(panelID);
-                existingPanel.content = elementRef;
-                return panelID;
+
+                try {
+
+                    let existingPanel = panels.get(panelID);
+                    existingPanel.content = elementRef;
+                    return panelID;
+                }
+                catch (error) {
+
+                    //
+                }
             }
         }
 
@@ -276,7 +283,7 @@
 
                 try {
 
-                    var existingPanel = panels.get(panelID);
+                    let existingPanel = panels.get(panelID);
                     existingPanel.opacity = 0.2;
                 }
                 catch (error) {
@@ -292,7 +299,7 @@
 
                 try {
 
-                    var existingPanel = panels.get(panelID);
+                    let existingPanel = panels.get(panelID);
                     existingPanel.close();
                     panels.delete(panelID);
                 }
@@ -312,9 +319,9 @@
 
             if (chatPopup == null) {
 
-                var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
-                var eventer = window[eventMethod];
-                var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+                let eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+                let eventer = window[eventMethod];
+                let messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
 
                 // Listen to message from child window
                 eventer(messageEvent, function (e) {
@@ -361,9 +368,8 @@
 
         function ToggleFullScreen() {
 
-            var element = document.body;
-
-            var isFullscreen = IsFullScreen();
+            let element = document.body;
+            let isFullscreen = IsFullScreen();
 
             element.requestFullScreen = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || function () { return false; };
             document.cancelFullScreen = document.cancelFullScreen || document.webkitCancelFullScreen || document.mozCancelFullScreen || function () { return false; };
@@ -378,14 +384,13 @@
 
         function Print(elementId) {
 
-            var elem = document.getElementById(elementId);
-
-            var domClone = elem.cloneNode(true);
-
-            var $printSection = document.getElementById("printSection");
+            let elem = document.getElementById(elementId);
+            let domClone = elem.cloneNode(true);
+            let $printSection = document.getElementById("printSection");
 
             if (!$printSection) {
-                var $printSection = document.createElement("div");
+
+                $printSection = document.createElement("div");
                 $printSection.id = "printSection";
                 document.body.appendChild($printSection);
             }
@@ -406,9 +411,8 @@
          */
 
         const webcamCodec = 'video/webm;codecs="vp8,opus"';
-        const webcamInterval = 500;
-
-        
+        const webcamInterval = 1000;
+                
         async function GetCaptureDevices(getPermissionsFirst) {
 
             if (getPermissionsFirst) {
@@ -429,7 +433,7 @@
 
         async function GetDevices(stream) {
 
-            var result = await navigator.mediaDevices.enumerateDevices();
+            let result = await navigator.mediaDevices.enumerateDevices();
 
             if (stream != null) {
                 stream.getTracks().forEach(function (track) {
@@ -440,9 +444,8 @@
             return result;
         }
 
-        let mediaRecorder = null;
-        let recordedStream = null;
-
+        var mediaRecorder = null;
+        var recordedStream = null;
         function CaptureMedia(videoId, audioDeviceId, videoDeviceId) {
 
             navigator.mediaDevices.getUserMedia(
@@ -479,8 +482,8 @@
 
         async function HandleVideoData(event) {
 
-            var ab = await event.data.arrayBuffer()
-            var bytes = new Uint8Array(ab);
+            let arraybuffer = await event.data.arrayBuffer()
+            let bytes = new Uint8Array(arraybuffer);
             DotNet.invokeMethodAsync('Treachery.Client', 'HandleVideoData', bytes);
         }
 
@@ -509,22 +512,22 @@
             }
         }
         
-        let mediaSources = new Map();
+        var mediaSources = new Map();
         function InitializeVideo(videoId) {
 
             try {
 
-                var mediaSource = new MediaSource();
+                let mediaSource = new MediaSource();
                 mediaSource.addEventListener('sourceopen', sourceOpen);
                 mediaSources.set(videoId, mediaSource);
 
-                var video = document.getElementById(videoId);
+                let video = document.getElementById(videoId);
                 video.src = URL.createObjectURL(mediaSource);
                 video.play();
             }
             catch (error) {
 
-                //console.log(error);
+                //
             }
         }
 
@@ -532,15 +535,15 @@
 
             if (this.readyState == "open") {
 
-                var buffer = this.addSourceBuffer(webcamCodec);
+                let buffer = this.addSourceBuffer(webcamCodec);
                 buffer.mode = "sequence";
             }
         };
 
-        function PushVideoData(videoId, buffer, volume) {
+        async function PushVideoData(videoId, buffer, volume) {
 
-            var mediaSource = mediaSources.get(videoId)
-            var video = document.getElementById(videoId);
+            let mediaSource = mediaSources.get(videoId)
+            let video = document.getElementById(videoId);
 
             if (video != null) {
 
@@ -550,7 +553,7 @@
 
                         video.volume = volume;
 
-                        var sourceBuffer = mediaSource.sourceBuffers[0];
+                        let sourceBuffer = mediaSource.sourceBuffers[0];
 
                         if (sourceBuffer.buffered.length > 0) {
 
@@ -565,6 +568,11 @@
                         }
 
                         sourceBuffer.appendBuffer(buffer.buffer);
+
+                        while (sourceBuffer.updating) {
+
+                            await Sleep(100);
+                        }
 
                         if (video.ended) {
 
@@ -582,6 +590,11 @@
                     InitializeVideo(videoId);
                 }
             }
+        }
+
+        function Sleep(ms) {
+
+            return new Promise(resolve => setTimeout(resolve, ms));
         }
         
     </script>
