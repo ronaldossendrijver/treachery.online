@@ -135,8 +135,9 @@
     private bool CancelAutoConfirm =>
         Game.CurrentPhase == Phase.AllianceA && _previousPhase != Phase.AllianceA ||
         Game.CurrentPhase == Phase.AllianceB && _previousPhase != Phase.AllianceB ||
-        Game.CurrentPhase == Phase.BeginningOfResurrection && _previousPhase != Phase.BeginningOfResurrection ||
-        Game.CurrentPhase == Phase.BeginningOfCharity && _previousPhase != Phase.BeginningOfCharity;
+        Game.CurrentPhase == Phase.ClaimingCharity && _previousPhase != Phase.ClaimingCharity ||
+        Game.CurrentTurn > 1 && Game.CurrentPhase == Phase.Resurrection && _previousPhase != Phase.Resurrection;
+
 
     protected override EndPhase ConfirmedResult => new EndPhase(Game) { Initiator = Faction };
 

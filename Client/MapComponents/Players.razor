@@ -120,7 +120,7 @@
         await Browser.EnablePopovers();
     }
 
-    private bool EnableCameras => h.VideoDevice != null && Game.Players.Count(p => !p.IsBot) > 1;
+    private bool EnableCameras => h.VideoDevice != null && Game.Players.Count(p => !p.IsBot) > 1 && h.Player != null;
 
     private string Intel(Player p)
     {
