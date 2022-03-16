@@ -76,7 +76,7 @@
 
     private async Task ScanDevices()
     {
-        var requestPermissions = (Visible || h.HostProxy != null) && !_devicesScanned;
+        var requestPermissions = Visible && !_devicesScanned;
         var devices = await Browser.GetCaptureDevices(requestPermissions);
 
         if (requestPermissions)

@@ -1200,7 +1200,7 @@ namespace Treachery.Shared
 
             return
               @"<div style='{25}'>
-                <p><strong>At start:</strong> 20 tokens in reserve (off-planet). Start with 5 {16}. You have a separate deck of 10 {25} cards that are not part of your hand.</p>
+                <p><strong>At start:</strong> 20 tokens in reserve (off-planet). Start with 5 {16}. You have a separate deck of 10 {35} cards that are not part of your hand.</p>
                 <p><strong>Free revival:</strong> 2.</p>
                 <h5>Basic Advantages</h5>
                 <p>You have alternative technology.</p>
@@ -1225,7 +1225,7 @@ namespace Treachery.Shared
                 <p>Your ally may ship using one of your available No-Field tokens, revealing it immediately upon shipping. Place the used No-Field token face-up in front of your shield until you reveal another No-Field token.</p>
                 <p>You may give your ally a {35} Card from your hand at any time.</p>
                 <h5>Strategy</h5>
-                <p>To Do</p>
+                <p>You are at a disadvantage by having no forces on the planet, and not much spice to operate. Try to be aware if factions would be inclined to buy one of your special Cards either for their use or to keep it out of the hands of another faction. Selling your cards will be your one regular form of income until you have gained enough spice. Use your No-Field tokens to get forces on the planet cheaply and confuse your opponents.</p>
                 </div>";
         }
 
@@ -1248,7 +1248,7 @@ namespace Treachery.Shared
                 <p mt-0 mb-0><i>{40}</i> - Move your forces one extra territory on your turn during Ship & Move.</p>
                 <p mt-0 mb-0><i>{41}</i> - Prevent a player from taking Free Revival.</p>
                 <p mt-0 mb-0><i>{42}</i> - Force a player to send 1 force back to reserves during Mentat.</p>
-                <p><p>Economics:</strong> during Mentat, you may play your Economics token with either the Double or Cancel side face-up. In the following game turn, Charity is either doubled or canceled for that turn (including {5} in the advanced game). In the next Mentat, flip the Economics token to the other side. If the token has already been flipped it is removed from the game instead.</p>" +
+                <p><p>Economics:</strong> during Mentat, you may play your Economics token with either the Double or Cancel side face-up. In the following game turn, Charity is either doubled or canceled for that turn (including {5} in the advanced game). While Charity is doubled, no bribes can be made. In the next Mentat, flip the Economics token to the other side. If the token has already been flipped it is removed from the game instead.</p>" +
 
               (advancedApplies ?
               @"<h5>Advanced Advantages</h5>" : "") +
@@ -1267,7 +1267,7 @@ namespace Treachery.Shared
                 <p>You may pay for your ally’s forces in battle.</p>
 
                 <h5>Strategy</h5>
-                <p>To Do</p>
+                <p>Your leaders are weak, but you have a steady income. Stockpile Treachery Cards. You start with no forces on the planet and must ship them all in. For this reason, you may want to wait until you can attack with a large force. Use your economics token at a key moment, especially at a time when others aren’t collecting Charity.</p>
                 </div>";
         }
 

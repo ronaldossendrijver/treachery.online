@@ -544,6 +544,7 @@ namespace Treachery.Shared
             if (!e.Cancelled)
             {
                 Enter(Phase.Auditing);
+                CurrentReport.ExpressTo(e.Initiator, Faction.Brown, " see: ", AuditedCards);
             }
             else
             {
