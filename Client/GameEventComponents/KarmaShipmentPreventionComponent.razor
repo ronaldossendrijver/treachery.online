@@ -11,7 +11,7 @@
     <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to prevent shipment</Header>
     <Body>
 
-        <SelectFactionComponent @bind-Value="target" Values="Game.ValidTargets(Player)">
+        <SelectFactionComponent @bind-Value="target" Values="KarmaShipmentPrevention.GetValidTargets(Game, Player)">
             <Label>Target</Label>
         </SelectFactionComponent>
 

@@ -2,6 +2,9 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
  */
 
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Treachery.Shared
 {
     public class KarmaShipmentPrevention : GameEvent
@@ -18,12 +21,19 @@ namespace Treachery.Shared
 
         public override string Validate()
         {
+            if (Game.Version >= 138 && !GetValidTargets(Game, Player).Contains(Target)) return "Invalid target";
+
             return "";
         }
 
         protected override void ExecuteConcreteEvent()
         {
             Game.HandleEvent(this);
+        }
+
+        public static IEnumerable<Faction> GetValidTargets(Game g, Player p)
+        {
+            return g.ValidTargets(p).Where(f => f != Faction.Yellow);
         }
 
         public override Message GetMessage()

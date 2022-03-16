@@ -54,7 +54,10 @@ namespace Treachery.Shared
         {
             if (Game.CurrentPhase == Phase.NonOrangeShip)
             {
+                var validTargets = KarmaShipmentPrevention.GetValidTargets(Game, this).ToList();
+
                 var winningOpponentThatCanShipMost = OpponentsToShipAndMove
+                    .Where(p => validTargets.Contains(p.Faction))
                     .Where(p => IsWinningOpponent(p) && p.ForcesInReserve + p.SpecialForcesInReserve > 2 && p.Resources + p.AlliedPlayer?.Resources > 2)
                     .OrderByDescending(p => Math.Min(p.ForcesInReserve + p.SpecialForcesInReserve, p.Resources + (p.AlliedPlayer != null ? p.AlliedPlayer.Resources : 0)))
                     .FirstOrDefault();
