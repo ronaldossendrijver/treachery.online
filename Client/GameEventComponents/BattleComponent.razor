@@ -108,8 +108,9 @@
             {
                 int maxResources = Battle.MaxResources(Game, Player, forces, specialForces);
                 int maxAllyResources = Battle.MaxAllyResources(Game, Player, forces, specialForces);
+                int maxTotalResources = maxResources + maxAllyResources;
 
-                <SelectResourcesComponent @bind-Value="resources" Min="0" Max=@maxResources /> <span>&nbsp;</span>
+                <SelectResourcesComponent @bind-Value="resources" Min="0" Max=@maxTotalResources /> <span>&nbsp;</span>
 
                 @if (Player.Ally == Faction.Brown && maxAllyResources > 0)
                 {

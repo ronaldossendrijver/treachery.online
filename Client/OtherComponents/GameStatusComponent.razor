@@ -85,7 +85,7 @@
 
         @if (autoConfirm || CanEndPhase)
         {
-            <div class="mt-0 text-right" style="color:black">
+            <div class="mt-1 mb-n3 text-right" style="color:black">
                 <CheckboxComponent @bind-Value=autoConfirm>Continue automatically</CheckboxComponent>
             </div>
         }
@@ -120,7 +120,7 @@
         {
             ticksPassed++;
 
-            if (autoConfirm && CanEndPhase && ticksPassed >= 3)
+            if (autoConfirm && CanEndPhase && ticksPassed >= 4)
             {
                 ticksPassed = 0;
                 _ = Confirm();
