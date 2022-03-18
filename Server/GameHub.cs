@@ -100,6 +100,7 @@ namespace Treachery.Server
         public async Task RequestKarmaHandSwapInitiated(int hostID, KarmaHandSwapInitiated e) { await Request(hostID, e); }
         public async Task RequestKarmaHandSwap(int hostID, KarmaHandSwap e) { await Request(hostID, e); }
         public async Task RequestKarmaMonster(int hostID, KarmaMonster e) { await Request(hostID, e); }
+        public async Task RequestKarmaWhiteBuy(int hostID, KarmaWhiteBuy e) { await Request(hostID, e); }
         public async Task RequestAllyPermission(int hostID, AllyPermission e) { await Request(hostID, e); }
         public async Task RequestMulliganPerformed(int hostID, MulliganPerformed e) { await Request(hostID, e); }
         public async Task RequestFaceDanced(int hostID, FaceDanced e) { await Request(hostID, e); }

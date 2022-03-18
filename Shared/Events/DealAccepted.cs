@@ -2,6 +2,7 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -75,7 +76,14 @@ namespace Treachery.Shared
 
         public static IEnumerable<DealOffered> AcceptableDeals(Game g, Player p)
         {
-            return g.DealOffers.Where(offer => offer.Initiator != p.Faction && offer.Initiator != p.Ally && (offer.To.Length == 0 || offer.To.Contains(p.Faction)));
+            if (g.EconomicsStatus != BrownEconomicsStatus.Double)
+            {
+                return g.DealOffers.Where(offer => offer.Initiator != p.Faction && offer.Initiator != p.Ally && (offer.To.Length == 0 || offer.To.Contains(p.Faction)));
+            }
+            else
+            {
+                return Array.Empty<DealOffered>();
+            }
         }
 
         public static IEnumerable<DealOffered> CancellableDeals(Game g, Player p)

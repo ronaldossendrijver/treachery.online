@@ -262,6 +262,11 @@
                     <SimpleActionComponent GameEventType="KarmaPrescience" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" Title="@Skin.Current.Format("Use {0} to see the entire enemy battle plan", TreacheryCardType.Karma)" Alert="false" Collapsible="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Karma)" />
                 }
                 break;
+            case "KarmaWhiteBuy":
+                {
+                    <KarmaWhiteBuyComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
+                }
+                break;
             case "Karma":
                 {
                     <KarmaComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
