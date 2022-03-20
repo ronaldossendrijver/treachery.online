@@ -13,5 +13,7 @@ namespace Treachery.Shared
         public Faction Initiator { get; }
         public Player Player { get; }
         public bool Passed { get; }
+
+        public Message GetMessage();
     }
 }

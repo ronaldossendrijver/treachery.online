@@ -30,18 +30,15 @@
                    ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                    Popover="@Intel(p)"/>
 
-            @if (EnableCameras)
+            var factionLogoIsOnRightSideOfMap = x > 0.5f * Skin.Current.PlanetCenter.X;
+            var videoposition = factionLogoIsOnRightSideOfMap ? x + FactionTokenDiameter + 1 : x - 2*FactionTokenDiameter - 1;
+            if (p == h.Player && EnableCameras)
             {
-                var factionLogoIsOnRightSideOfMap = x > 0.5f * Skin.Current.PlanetCenter.X;
-                var videoposition = factionLogoIsOnRightSideOfMap ? x + FactionTokenDiameter + 1 : x - 2*FactionTokenDiameter - 1;
-                if (p == h.Player)
-                {
-                    <Videocapture h=@h X=@videoposition Y=(y-0.5f*FactionTokenDiameter) Width=2*FactionTokenDiameter Height=2*FactionTokenDiameter SymbolOnRight=!factionLogoIsOnRightSideOfMap/>
-                }
-                else
-                {
-                    <Videostream h=@h X=@videoposition Y=(y-0.5f*FactionTokenDiameter) Width=2*FactionTokenDiameter Height=2*FactionTokenDiameter StreamId=@DetermineVideoStreamId(p)/>
-                }
+                <Videocapture h=@h X=@videoposition Y=(y-0.5f*FactionTokenDiameter) Width=2*FactionTokenDiameter Height=2*FactionTokenDiameter SymbolOnRight=!factionLogoIsOnRightSideOfMap/>
+            }
+            else
+            {
+                <Videostream h=@h X=@videoposition Y=(y-0.5f*FactionTokenDiameter) Width=2*FactionTokenDiameter Height=2*FactionTokenDiameter StreamId=@DetermineVideoStreamId(p)/>
             }
 
             if (p.Ally != Faction.None)

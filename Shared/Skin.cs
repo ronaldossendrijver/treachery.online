@@ -571,6 +571,20 @@ namespace Treachery.Shared
             };
         }
 
+        public string DescribeDetailed(AuctionType t)
+        {
+            return t switch
+            {
+                AuctionType.Normal => "Normal",
+                AuctionType.BlackMarketNormal => "Black Market / Normal",
+                AuctionType.BlackMarketSilent => "Black Market / Silent",
+                AuctionType.BlackMarketOnceAround => "Black Market / Once Around",
+                AuctionType.WhiteSilent => Format("{0} / Silent", Faction.White),
+                AuctionType.WhiteOnceAround => Format("{0} / Once Around", Faction.White),
+                _ => "None"
+            };
+        }
+
         public string Describe(JuiceType jt)
         {
             return jt switch

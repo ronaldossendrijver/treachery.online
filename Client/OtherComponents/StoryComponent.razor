@@ -10,6 +10,7 @@
     @{
         Phase previousPhase = Phase.AwaitingPlayers;
         MainPhase previousMainPhase = MainPhase.Started;
+        IBid previousWinningBid = null;
 
         for (int i = 0; i < Game.History.Count; i++)
         {
@@ -49,45 +50,52 @@
 
             if (evt is IBid && replay.WinningBid != null)
             {
-                var e = evt as IBid;
+                if (replay.WinningBid != previousWinningBid)
+                {
+                    <div>
+                        <img class="img-fluid" width="24" src="@Skin.Current.GetImageURL(replay.WinningBid.Initiator)" /> 
+                        buy 
+                        <span data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(replay.CardJustWon)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover">
+                            <strong>@replay.CardJustWon.ToString()</strong>
+                        </span>
+                        for @replay.WinningBid.TotalAmount
+                        @if (replay.WinningBid is Bid b && b.KarmaCard != null)
+                        {
+                            <span> using <strong>@b.KarmaCard.ToString() </strong></span>
+                        }
+                        @if (replay.CurrentAuctionType != AuctionType.Normal)
+                        {
+                            <span> (@Skin.Current.DescribeDetailed(replay.CurrentAuctionType))</span>
+                        }
+                    </div>
+                }
 
-                <div>
-                    <img class="img-fluid" width="24" src="@Skin.Current.GetImageURL(replay.WinningBid.Initiator)" /> 
-                    buy 
-                    <span data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(replay.CardJustWon)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover">
-                    <strong>@replay.CardJustWon.ToString()</strong>
-                    </span>
-                    for @replay.WinningBid.Amount
-                    @if (replay.WinningBid is Bid b && b.KarmaCard != null)
-                    {
-                        <span> (using <strong>@b.KarmaCard.ToString()</strong>)</span>
-                    }
-                </div>
+                previousWinningBid = replay.WinningBid;
             }
 
             if (replay.CurrentMainPhase != previousMainPhase && (replay.CurrentMainPhase == MainPhase.Bidding))
             {
                 <h4 class="h4">Turn @replay.CurrentTurn</h4>
 
-                <h5 class="h5">Situation at the start of Bidding:</h5>
+                <h5 class="mt-2">Situation at the start of Bidding:</h5>
                 <StoryPlayerInfoComponent Game="replay" ShowAlly="ShowAllies(replay)" ShowCards="true" ShowTraitorsAndFacedancers="true" ShowResources="true" ShowTechTokens="@(Game.Applicable(Rule.TechTokens))" />
             }
 
             if (replay.CurrentMainPhase != previousMainPhase && (replay.CurrentMainPhase == MainPhase.Resurrection))
             {
-                <h5>Situation at the end of Bidding:</h5>
+                <h5 class="mt-2">Situation at the end of Bidding:</h5>
                 <StoryPlayerInfoComponent Game="replay" ShowCards="true" ShowResources="true" />
             }
 
             if (replay.CurrentMainPhase != previousMainPhase && (replay.CurrentMainPhase == MainPhase.Battle))
             {
-                <h5>Situation at the end of Ship & Move:</h5>
+                <h5 class="mt-2">Situation at the end of Ship & Move:</h5>
                 <StoryPlayerInfoComponent Game="replay" ShowAlly="ShowAllies(replay)" ShowResources="true" ShowForces="true" ShowLeaders="true" ShowPoints="true" />
             }
 
             if (evt is BattleInitiated)
             {
-                <h5>Battle for @replay.CurrentBattle.Territory</h5>
+                <h5 class="mt-2">Battle for @replay.CurrentBattle.Territory</h5>
             }
 
             if (IsMilestone(evt))
@@ -104,7 +112,7 @@
 
             if (replay.CurrentMainPhase != previousMainPhase && replay.CurrentMainPhase == MainPhase.Contemplate)
             {
-                <h5>Situation at the end of turn @replay.CurrentTurn:</h5>
+                <h5 class="mt-2">Situation at the end of turn @replay.CurrentTurn:</h5>
                 <StoryPlayerInfoComponent Game="replay" ShowAlly="ShowAllies(replay)" ShowForces="true" ShowTanks="true" ShowResources="true" ShowTechTokens="true" ShowPoints="true" />
             }
 
@@ -123,7 +131,6 @@
             previousPhase = replay.CurrentPhase;
             previousMainPhase = replay.CurrentMainPhase;
         }
-
     }
 
 </ModalComponent>
@@ -146,7 +153,6 @@
             evt is ReplacedCardWon ||
             evt is Voice ||
             evt is Prescience ||
-            evt is Thought ||
             evt is Move ||
             evt is Caravan ||
             evt is Karma ||

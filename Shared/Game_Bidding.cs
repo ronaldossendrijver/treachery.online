@@ -158,6 +158,7 @@ namespace Treachery.Shared
         private void FinishBlackMarketBid(Player winner, TreacheryCard card)
         {
             CardJustWon = card;
+            WinningBid = CurrentBid;
             CardSoldOnBlackMarket = card;
 
             if (winner != null && winner.Ally == Faction.Grey && GreyAllyMayReplaceCards)
