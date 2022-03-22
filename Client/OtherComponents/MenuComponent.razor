@@ -281,7 +281,7 @@ else if (IsVisible(RESTART))
             {
                 var newSkin = Skin.Load(data);
 
-                if (newSkin.Version > 0)
+                if (newSkin.Version >= Skin.MINIMUM_SUPPORTED_VERSION)
                 {
                     //_loadValidationError = string.Join(", ", await newSkin.ValidateAndFix(Browser.UrlExists));
                     await newSkin.ValidateAndFix(Browser.UrlExists);
@@ -289,7 +289,7 @@ else if (IsVisible(RESTART))
                 }
                 else
                 {
-                    _loadValidationError = "Invalid skin file....";
+                    _loadValidationError = "Unsupported skin file or version....";
                 }
             }
             else

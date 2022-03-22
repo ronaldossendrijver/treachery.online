@@ -17,6 +17,7 @@ namespace Treachery.Shared
         #region Attributes
 
         public const int CurrentVersion = 138;
+        public const int MINIMUM_SUPPORTED_VERSION = 23;
 
         //public const string DEFAULT_ART_LOCATION = "https://treachery.online"; //Used for debugging
         public const string DEFAULT_ART_LOCATION = ".";

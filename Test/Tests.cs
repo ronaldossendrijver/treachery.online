@@ -26,7 +26,7 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-
+            /*
             if (g.CurrentMainPhase == MainPhase.ShipmentAndMove &&
                 g.GetPlayer(Faction.Grey) != null && g.GetPlayer(Faction.Grey).HasKarma)
             {
@@ -45,6 +45,12 @@ namespace Treachery.Test
             if (g.CurrentPhase == Phase.NonOrangeShip && g.ShipmentAndMoveSequence.CurrentFaction == Faction.Red && g.PlayerSkilledAs(LeaderSkill.Smuggler) == g.GetPlayer(Faction.Red))
             {
                 WriteSavegameIfApplicable(g, g.GetPlayer(Faction.Red), "Shipment by emp smuggler");
+            }
+            */
+
+            if (e is BattleConcluded bc && g.CurrentBattle.Territory.Locations.Any(l => g.ResourcesOnPlanet.ContainsKey(l)) && g.SkilledAs(g.CurrentBattle.PlanOf(bc.Initiator).Hero, LeaderSkill.Smuggler))
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Smuggler win in spice territory");
             }
         }
 
