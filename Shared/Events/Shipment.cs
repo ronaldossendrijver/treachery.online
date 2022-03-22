@@ -32,6 +32,10 @@ namespace Treachery.Shared
 
         public int SpecialForceAmount { get; set; }
 
+        public int SmuggledAmount { get; set; }
+
+        public int SmuggledSpecialAmount { get; set; }
+
         //This is needed for compatibility with pre-exp2 game versions where _noFieldValue is 0 by default.
         public int _noFieldValue;
 
@@ -124,8 +128,13 @@ namespace Treachery.Shared
             if (isWhiteNoFieldShipment && SpecialForceAmount != 1) return "Invalid special force value for No-Field shipment.";
             if (p.Faction == Faction.White && SpecialForceAmount > 0 && !ValidNoFieldValues(Game, Player).Contains(NoFieldValue)) return "Invalid No-Field value.";
 
-            if (From == null && ForceAmount > p.ForcesInReserve) return Skin.Current.Format("Not enough {0} in reserve.", p.Force);
-            if (From == null && !isWhiteNoFieldShipment && SpecialForceAmount > p.SpecialForcesInReserve) return Skin.Current.Format("Not enough {0} in reserve.", p.SpecialForce);
+            if (From == null && ForceAmount + SmuggledAmount > p.ForcesInReserve) return Skin.Current.Format("Not enough {0} in reserve.", p.Force);
+            if (From == null && !isWhiteNoFieldShipment && SpecialForceAmount + SmuggledSpecialAmount > p.SpecialForcesInReserve) return Skin.Current.Format("Not enough {0} in reserve.", p.SpecialForce);
+            
+            bool isSmuggling = SmuggledAmount > 0 || SmuggledSpecialAmount > 0;
+            bool isShippingFromOffPlanet = !(IsBackToReserves || IsSiteToSite) && Initiator != Faction.Yellow && (ForceAmount > 0 || SpecialForceAmount > 0);
+            if (isSmuggling && (!isShippingFromOffPlanet || !MaySmuggle(Game, Player, To))) return "You can't smuggle forces here";
+            if (SmuggledAmount + SmuggledSpecialAmount > 1) return "You can't smuggle more than 1 force";
 
             if (From != null && ForceAmount > p.ForcesIn(From)) return Skin.Current.Format("Not enough {0} for site-to-site shipment.", p.Force);
             if (From != null && SpecialForceAmount > p.SpecialForcesIn(From)) return Skin.Current.Format("Not enough {0} for site-to-site shipment.", p.SpecialForce);
@@ -157,7 +166,7 @@ namespace Treachery.Shared
         public static int DetermineCost(Game g, Player p, int amount, Location to, bool karamaShipment, bool backToReserves, bool noField)
         {
             var amountToPayFor = amount;
-            if (amountToPayFor > 1 && g.SkilledAs(p, LeaderSkill.Smuggler) && !g.AnyForcesIn(to.Territory))
+            if (g.Version < 139 && amountToPayFor > 1 && g.SkilledAs(p, LeaderSkill.Smuggler) && !g.AnyForcesIn(to.Territory))
             {
                 amountToPayFor--;
             }
@@ -363,6 +372,11 @@ namespace Treachery.Shared
         public static bool CanKarma(Game g, Player p)
         {
             return ValidKarmaCards(g, p).Any();
+        }
+
+        public static bool MaySmuggle(Game g, Player p, Location l)
+        {
+            return l != null && !g.AnyForcesIn(l.Territory) && p.Faction != Faction.Yellow && g.SkilledAs(p, LeaderSkill.Smuggler);
         }
     }
 }

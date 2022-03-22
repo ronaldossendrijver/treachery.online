@@ -25,11 +25,6 @@
         for (int i = 0; i < elts.Count; i++)
         {
             <ExpressionComponent Expression=elts[i] Size=@Size/>
-
-            @if (i < elts.Count - 1)
-            {
-                <span>, </span>
-            }
         }
     }
     else if (part is MessagePart mp)

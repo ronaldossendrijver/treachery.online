@@ -8,7 +8,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>You may discard duplicate cards for 3 and @Skin.Current.Describe(TreacheryCardType.Useless) cards for 2 @Skin.Current.Describe(Concept.Resource) each</Header>
+    <Header>You may discard surplus duplicate cards for 3 and @Skin.Current.Describe(TreacheryCardType.Useless) cards for 2 @Skin.Current.Describe(Concept.Resource) each</Header>
     <Body>
 
         <SelectCardComponent @bind-Value="card" Values="BrownDiscarded.ValidCards(Game, Player)" Required="true" />

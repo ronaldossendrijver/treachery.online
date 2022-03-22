@@ -27,11 +27,24 @@ namespace Treachery.Test
         private void SaveSpecialCases(Game g, GameEvent e)
         {
 
-            if (e is BattleInitiated bi && 
-                bi.Player.Ally == Faction.Brown &&
-                bi.Player.AlliedPlayer.Resources > 12)
+            if (g.CurrentMainPhase == MainPhase.ShipmentAndMove &&
+                g.GetPlayer(Faction.Grey) != null && g.GetPlayer(Faction.Grey).HasKarma)
             {
-                WriteSavegameIfApplicable(g, e.Player, "Battle by CHOAM ally");
+                WriteSavegameIfApplicable(g, g.GetPlayer(Faction.Grey), "Ixian can use special karama");
+            }
+
+            if (g.CardJustWon != null && g.WinningBid != null && 
+               (g.CurrentAuctionType == AuctionType.WhiteOnceAround || g.CurrentAuctionType == AuctionType.WhiteSilent) && 
+                g.WinningBid.Player.Ally == Faction.White && 
+                g.WinningBid.AllyContributionAmount > 0 && 
+                g.WinningBid.Amount > 0)
+            {
+                WriteSavegameIfApplicable(g, g.WinningBid.Player, "Richese supported a bid on a Richese card");
+            }
+
+            if (g.CurrentPhase == Phase.NonOrangeShip && g.ShipmentAndMoveSequence.CurrentFaction == Faction.Red && g.PlayerSkilledAs(LeaderSkill.Smuggler) == g.GetPlayer(Faction.Red))
+            {
+                WriteSavegameIfApplicable(g, g.GetPlayer(Faction.Red), "Shipment by emp smuggler");
             }
         }
 
@@ -328,7 +341,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 200;
+            int nrOfGames = 100;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 

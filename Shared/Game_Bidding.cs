@@ -750,6 +750,8 @@ namespace Treachery.Shared
             }
 
             var receiver = GetPlayer(paymentReceiver);
+            var receiverAndAllyAreWhite = initiator.Ally == Faction.White && paymentReceiver == Faction.White;
+            var received = bidAmount + (Version >= 139 && receiverAndAllyAreWhite ? 0 : bidAllyContributionAmount);
 
             if (receiver != null && initiator.Faction != paymentReceiver)
             {
@@ -757,7 +759,7 @@ namespace Treachery.Shared
                 {
                     if (bidRedContributionAmount > 0)
                     {
-                        receiverProfit = bidAmount + bidAllyContributionAmount;
+                        receiverProfit = received;
                         receiverProfitAfterBidding = bidRedContributionAmount;
                         message = MessagePart.Express(" → ", receiver, " get ", Payment(receiverProfit), " immediately and ", Payment(receiverProfitAfterBidding), " at the end of the bidding phase");
                         receiver.Resources += receiverProfit;
@@ -765,7 +767,7 @@ namespace Treachery.Shared
                     }
                     else
                     {
-                        receiverProfit = bidAmount + bidAllyContributionAmount + bidRedContributionAmount;
+                        receiverProfit = received + bidRedContributionAmount;
                         message = MessagePart.Express(" → ", paymentReceiver, " get ", Payment(receiverProfit));
                         receiver.Resources += receiverProfit;
 
@@ -782,7 +784,7 @@ namespace Treachery.Shared
                 }
             }
 
-            if (bidAmount + bidAllyContributionAmount + bidRedContributionAmount - receiverProfit - receiverProfitAfterBidding >= 4)
+            if (received + bidRedContributionAmount - receiverProfit - receiverProfitAfterBidding >= 4)
             {
                 ActivateBanker(initiator);
             }

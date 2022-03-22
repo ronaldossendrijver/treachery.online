@@ -602,7 +602,34 @@ namespace Treachery.Shared
         {
             Shipment result;
 
-            result = new Shipment(Game) { Initiator = Faction, ForceAmount = nrOfForces, SpecialForceAmount = nrOfSpecialForces, NoFieldValue = noFieldValue, Passed = false, From = null, KarmaCard = null, KarmaShipment = false, To = location };
+            int nrOfSmuggledForces = 0;
+            int nrOfSmuggledSpecialForces = 0;
+            if (Game.SkilledAs(this, LeaderSkill.Smuggler))
+            {
+                if (nrOfSpecialForces > 0 && Faction != Faction.White)
+                {
+                    nrOfSmuggledSpecialForces = 1;
+                }
+                else if (nrOfForces > 0)
+                {
+                    nrOfSmuggledForces = 1;
+                }
+            }
+
+            result = new Shipment(Game) { 
+                Initiator = Faction, 
+                ForceAmount = nrOfForces - nrOfSmuggledForces, 
+                SpecialForceAmount = nrOfSpecialForces - nrOfSmuggledSpecialForces,
+                SmuggledAmount = nrOfSmuggledForces,
+                SmuggledSpecialAmount = nrOfSmuggledSpecialForces,
+                NoFieldValue = noFieldValue, 
+                Passed = false, 
+                From = null, 
+                KarmaCard = null, 
+                KarmaShipment = false, 
+                To = location 
+            };
+
             if (useKarma && noFieldValue < 0) UseKarmaIfApplicable(result);
             if (useAllyResources) UseAllyResources(result);
             return result;

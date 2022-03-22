@@ -96,6 +96,10 @@
                 {
                     <SelectForcesComponent @bind-Value="shipmentForceAmount" Min="0" Max="ValidShipmentForces" Faction="Faction" Special="false" />
                 }
+                else
+                {
+                    shipmentForceAmount = 0;
+                }
 
                 @if (ValidShipmentSpecialForces > 0 && Faction != Faction.White)
                 {
@@ -112,6 +116,39 @@
         {
             shipmentForceAmount = 0;
             shipmentSpecialForceAmount = 1;
+        }
+
+        
+        @if (shipmentType == SHIPMENT_NORMAL && (shipmentForceAmount > 0 || shipmentSpecialForceAmount > 0) && Shipment.MaySmuggle(Game, Player, shipmentTo))
+        {
+            <div class="mt-1">
+
+                <div>You may smuggle 1 force for free:</div>
+
+                @if (Player.ForcesInReserve > 0)
+                {
+                    <SelectForcesComponent @bind-Value="smuggledForceAmount" Min="0" Max="1" Faction="Faction" Special="false" />
+                }
+                else
+                {
+                    smuggledForceAmount = 0;
+                }
+
+                @if (Player.SpecialForcesInReserve > 0 && Faction != Faction.White)
+                {
+                    <SelectForcesComponent @bind-Value="smuggledSpecialForceAmount" Min="0" Max="1" Faction="Faction" Special="true" />
+                }
+                else
+                {
+                    smuggledSpecialForceAmount = 0;
+                }
+
+            </div>
+        }
+        else
+        {
+            smuggledForceAmount = 0;
+            smuggledSpecialForceAmount = 0;
         }
 
         @if (Player.Ally != Faction.None && Cost > 0 && Game.SpiceYourAllyCanPay(Player) > 0)
@@ -169,6 +206,8 @@
     private Location shipmentTo;
     private int shipmentAllyContributionAmount;
     private int nofieldValue = -1;
+    private int smuggledForceAmount;
+    private int smuggledSpecialForceAmount;
 
     protected override Shipment ConfirmedResult
     {
@@ -182,6 +221,8 @@
                 Initiator = Faction,
                 ForceAmount = direction * shipmentForceAmount,
                 SpecialForceAmount = direction * shipmentSpecialForceAmount,
+                SmuggledAmount = smuggledForceAmount,
+                SmuggledSpecialAmount = smuggledSpecialForceAmount,
                 NoFieldValue = nofieldValue,
                 From = from,
                 To = shipmentTo,
