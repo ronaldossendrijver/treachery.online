@@ -47,11 +47,12 @@ namespace Treachery.Test
                 WriteSavegameIfApplicable(g, g.GetPlayer(Faction.Red), "Shipment by emp smuggler");
             }
             */
-
+            /*
             if (e is BattleConcluded bc && g.CurrentBattle.Territory.Locations.Any(l => g.ResourcesOnPlanet.ContainsKey(l)) && g.SkilledAs(g.CurrentBattle.PlanOf(bc.Initiator).Hero, LeaderSkill.Smuggler))
             {
                 WriteSavegameIfApplicable(g, e.Player, "Smuggler win in spice territory");
             }
+            */
         }
 
         private readonly List<Type> Written = new();
@@ -347,7 +348,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 100;
+            int nrOfGames = 200;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 

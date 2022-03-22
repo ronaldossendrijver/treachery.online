@@ -124,6 +124,7 @@ namespace Treachery.Shared
                     g.LeaderState.Where(leaderAndState =>
                     leaderAndState.Key.Faction != Faction.Purple &&
                     leaderAndState.Key != LeaderManager.Messiah &&
+                    leaderAndState.Key.HeroType != HeroType.Auditor &&
                     !leaderAndState.Value.Alive).Select(kvp => kvp.Key));
             }
 
@@ -201,24 +202,6 @@ namespace Treachery.Shared
                 }
             }
         }
-
-        /*
-        public static int ValidMaxRevivalsByRed(Game g, Player p, bool specialForces)
-        {
-            int redLimit = RedExtraRevivalLimit(g, p);
-
-            if (!specialForces)
-            {
-                return Math.Min(redLimit, p.ForcesKilled);
-            }
-            else
-            {
-                int limit = p.Is(Faction.Grey) ? g.GetRevivalLimit(g, p) : (g.FactionsThatRevivedSpecialForcesThisTurn.Contains(p.Faction) ? 0 : 1);
-                return Math.Min(redLimit, Math.Min(limit, p.SpecialForcesKilled));
-            }
-        }
-        */
-
         public static bool MayAssignSkill(Game g, Player p, IHero h)
         {
             return
