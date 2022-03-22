@@ -555,8 +555,8 @@ namespace Treachery.Client
                 else if (latestEvent is DiscardedTaken) result.Add(CardInfo(latestEvent, TreacheryCardType.TakeDiscarded));
                 else if (latestEvent is DiscardedSearched) result.Add(CardInfo(latestEvent, TreacheryCardType.SearchDiscarded));
                 else if (latestEvent is JuicePlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Juice));
-                else if (latestEvent is Retreat || latestEvent is Diplomacy) result.Add(CardInfo(latestEvent, LeaderSkill.Diplomat));
-                else if (latestEvent is Bureaucracy) result.Add(CardInfo(latestEvent, LeaderSkill.Bureaucrat));
+                else if (latestEvent is Retreat r || latestEvent is Diplomacy) result.Add(CardInfo(latestEvent, LeaderSkill.Diplomat));
+                else if (latestEvent is Bureaucracy bc && !bc.Passed) result.Add(CardInfo(latestEvent, LeaderSkill.Bureaucrat));
                 else if (latestEvent is Planetology) result.Add(CardInfo(latestEvent, LeaderSkill.Planetologist));
                 else if (latestEvent is BattleConcluded battleconcluded && g.TraitorsDeciphererCanLookAt.Count > 0) result.Add(CardInfo(latestEvent, LeaderSkill.Decipherer));
                 else if (latestEvent is Thought) result.Add(CardInfo(latestEvent, LeaderSkill.Thinker));
