@@ -305,11 +305,17 @@ namespace Treachery.Shared
             }
         }
 
-        public RequestPurpleRevival CurrentPurpleRevivalRequest = null;
+        public List<RequestPurpleRevival> CurrentRevivalRequests { get; private set; } = new List<RequestPurpleRevival>();
         public void HandleEvent(RequestPurpleRevival e)
         {
+            var existingRequest = CurrentRevivalRequests.FirstOrDefault(r => r.Hero == e.Hero);
+            if (existingRequest != null)
+            {
+                CurrentRevivalRequests.Remove(existingRequest);
+            }
+
             CurrentReport.Express(e);
-            CurrentPurpleRevivalRequest = e;
+            CurrentRevivalRequests.Add(e);
         }
 
         public Dictionary<IHero, int> AllowedEarlyRevivals = new Dictionary<IHero, int>();
@@ -327,7 +333,11 @@ namespace Treachery.Shared
                 AllowedEarlyRevivals.Add(e.Hero, e.Price);
             }
 
-            CurrentPurpleRevivalRequest = null;
+            var requestToRemove = CurrentRevivalRequests.FirstOrDefault(r => r.Hero == e.Hero);
+            if (requestToRemove != null)
+            {
+                CurrentRevivalRequests.Remove(requestToRemove);
+            }
         }
 
         private bool FreeRevivalPrevented(Faction f)

@@ -12,21 +12,24 @@
 
     <Body>
 
-        @if (Game.CurrentPurpleRevivalRequest != null)
+        @if (Game.CurrentRevivalRequests.Any())
         {
-            <div>@Skin.Current.Describe(Game.CurrentPurpleRevivalRequest.Initiator) have requested revival of <HeroComponent Game="Game" Value="Game.CurrentPurpleRevivalRequest.Hero" />. If you agree, set your price:</div>
-            <SelectResourcesComponent @bind-Value="price" Min="AcceptOrCancelPurpleRevival.MinAmount()" Max="AcceptOrCancelPurpleRevival.MaxAmount()" />
-            <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm offer" ConfirmError="@Validation" />
+            <div>Early revival requests:</div>
+            <SelectHeroComponent Game=Game Required=true @bind-Value=offerHero Values=@Game.CurrentRevivalRequests.Select(req => req.Hero) />
+            <SelectResourcesComponent @bind-Value="price" Min="AcceptOrCancelPurpleRevival.MinAmount()" Max="AcceptOrCancelPurpleRevival.MaxAmount()" Label="Price" />
+            <ButtonRowComponent Alignment="" Confirm="Confirm" ConfirmText=@OfferLabel Other=Other OtherText=@DenyLabel ConfirmError="@Validation" />
         }
-
-        <hr style="border-color:white" />
 
         @if (CurrentRevivalOfferValues.Any())
         {
-            <SelectComponent @bind-Value="hero" Values="CurrentRevivalOfferValues" ValueLabels="CurrentRevivalOfferLabels">
-                <Label>Cancel an existing revival offer:</Label>
-            </SelectComponent>
-            <ButtonRowComponent Confirm="Pass" ConfirmText="Cancel offer" />
+            if (Game.CurrentRevivalRequests.Any())
+            {
+                <hr style="border-color:white" />
+            }
+
+            <div>Existing early revival offers:</div>
+            <SelectHeroComponent Game=Game Required=true @bind-Value=cancelHero Values=@CurrentRevivalOfferValues />
+            <ButtonRowComponent Alignment="" Confirm="Pass" ConfirmText=@CancelLabel />
         }
 
     </Body>
@@ -35,17 +38,26 @@
 
 @code {
 
+    protected override bool IsUrgent => Game.CurrentRevivalRequests.Any();
+
     protected override Faction IsFactionSpecific => Faction.Purple;
 
-    private IHero hero;
+    private IHero offerHero;
     private int price;
 
-    protected override AcceptOrCancelPurpleRevival ConfirmedResult => new AcceptOrCancelPurpleRevival(Game) { Initiator = Faction, Cancel = false, Hero = Game.CurrentPurpleRevivalRequest.Hero, Price = price };
+    private IHero cancelHero;
 
-    protected override AcceptOrCancelPurpleRevival PassedResult => new AcceptOrCancelPurpleRevival(Game) { Initiator = Faction, Cancel = true, Hero = hero };
+    protected override AcceptOrCancelPurpleRevival ConfirmedResult => new AcceptOrCancelPurpleRevival(Game) { Initiator = Faction, Cancel = false, Hero = offerHero, Price = price };
+
+    protected override AcceptOrCancelPurpleRevival PassedResult => new AcceptOrCancelPurpleRevival(Game) { Initiator = Faction, Cancel = true, Hero = cancelHero };
+
+    protected override AcceptOrCancelPurpleRevival OtherResult => new AcceptOrCancelPurpleRevival(Game) { Initiator = Faction, Cancel = false, Hero = offerHero, Price = int.MaxValue };
 
     private IEnumerable<IHero> CurrentRevivalOfferValues => Game.AllowedEarlyRevivals.Select(kvp => kvp.Key);
 
-    private IEnumerable<string> CurrentRevivalOfferLabels => Game.AllowedEarlyRevivals.Select(kvp => Skin.Current.Format("{0} for {1}", kvp.Key, kvp.Value));
+    private string OfferLabel => Skin.Current.Format("Offer {0} for {1}", offerHero, price); 
 
+    private string DenyLabel => Skin.Current.Format("Deny revival of {0}", offerHero); 
+
+    private string CancelLabel => Skin.Current.Format("Cancel offer for {0}", cancelHero); 
 }

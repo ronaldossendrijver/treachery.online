@@ -210,12 +210,11 @@ namespace Treachery.Shared
                     if (IsPlaying(Faction.Purple) && faction != Faction.Purple &&
                         (Version <= 78 || !HasActedOrPassed.Contains(faction)) &&
                         KilledHeroes(player).Any() &&
-                        !Revival.NormallyRevivableHeroes(this, player).Any() &&
-                        (Version < 102 || CurrentPurpleRevivalRequest == null)) result.Add(typeof(RequestPurpleRevival));
+                        !Revival.NormallyRevivableHeroes(this, player).Any()) result.Add(typeof(RequestPurpleRevival));
 
+                    if (faction == Faction.Purple && (CurrentRevivalRequests.Any() || AllowedEarlyRevivals.Any())) result.Add(typeof(AcceptOrCancelPurpleRevival));
                     if (!HasActedOrPassed.Contains(faction) && HasSomethingToRevive(player)) result.Add(typeof(Revival));
                     if (faction == Faction.Purple && Players.Count > 1 && (Version < 113 || !Prevented(FactionAdvantage.PurpleIncreasingRevivalLimits))) result.Add(typeof(SetIncreasedRevivalLimits));
-                    if (faction == Faction.Purple && (CurrentPurpleRevivalRequest != null || AllowedEarlyRevivals.Any())) result.Add(typeof(AcceptOrCancelPurpleRevival));
                     if (Version < 103 && player.Has(TreacheryCardType.Amal) && (Version <= 82 || HasActedOrPassed.Count == 0)) result.Add(typeof(AmalPlayed));
                     break;
                 case Phase.BeginningOfResurrection:

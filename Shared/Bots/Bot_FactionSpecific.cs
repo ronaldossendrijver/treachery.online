@@ -836,7 +836,7 @@ namespace Treachery.Shared
 
         protected virtual RequestPurpleRevival DetermineRequestPurpleRevival()
         {
-            if (Game.CurrentPurpleRevivalRequest != null || Game.AllowedEarlyRevivals.Keys.Any(h => h.Faction == Faction)) return null;
+            if (Game.CurrentRevivalRequests.Any(r => r.Initiator == Faction) || Game.AllowedEarlyRevivals.Keys.Any(h => h.Faction == Faction)) return null;
 
             if (turnWhenRevivalWasRequested == Game.CurrentTurn) return null;
 
@@ -864,12 +864,13 @@ namespace Treachery.Shared
 
         protected virtual AcceptOrCancelPurpleRevival DetermineAcceptOrCancelPurpleRevival()
         {
-            if (Game.CurrentPurpleRevivalRequest != null)
+            var requestToHandle = Game.CurrentRevivalRequests.FirstOrDefault();
+            if (requestToHandle != null)
             {
-                var hero = Game.CurrentPurpleRevivalRequest.Hero;
+                var hero = requestToHandle.Hero;
 
                 int price;
-                if (Game.CurrentPurpleRevivalRequest.Initiator == Ally)
+                if (requestToHandle.Initiator == Ally)
                 {
                     price = 0;
                 }

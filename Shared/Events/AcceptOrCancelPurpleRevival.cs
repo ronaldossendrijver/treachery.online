@@ -47,11 +47,18 @@ namespace Treachery.Shared
         {
             if (!Cancel)
             {
-                return Message.Express(Initiator, " offer revival of a leader for ", new Payment(Price));
+                if (Price == int.MaxValue)
+                {
+                    return Message.Express(Initiator, " deny ", Hero.Faction, " early revival of a leader");
+                }
+                else
+                {
+                    return Message.Express(Initiator, " offer ", Hero.Faction, " revival of a leader for ", new Payment(Price));
+                }
             }
             else
             {
-                return Message.Express(Initiator, " cancel their offer to revive a leader for ", new Payment(Price));
+                return Message.Express(Initiator, " cancel their revival offer to ", Hero.Faction);
             }
         }
 
