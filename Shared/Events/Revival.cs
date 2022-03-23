@@ -118,7 +118,13 @@ namespace Treachery.Shared
                 return g.KilledHeroes(p).Where(h => g.AllowedEarlyRevivals.ContainsKey(h));
             }
 
-            if (p.Is(Faction.Purple) && g.Applicable(Rule.PurpleGholas) && p.Leaders.Count(l => g.LeaderState[l].Alive) < 5)
+            int livingLeaders = p.Leaders.Count(l => g.LeaderState[l].Alive);
+            if (g.Version >= 139)
+            {
+                livingLeaders += g.Players.Where(player => player != p).SelectMany(player => player.Leaders.Where(l => l.Faction == p.Faction)).Count();
+            }
+
+            if (p.Is(Faction.Purple) && g.Applicable(Rule.PurpleGholas) && livingLeaders < 5)
             {
                 result.AddRange(
                     g.LeaderState.Where(leaderAndState =>
