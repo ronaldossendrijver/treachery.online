@@ -39,7 +39,7 @@ namespace Treachery.Shared
             }
             else
             {
-                return Message.Express(LeaderSkill.Planetologist, " allows movement from ", 2, "different territories");
+                return Message.Express(LeaderSkill.Planetologist, " allows movement from ", 2, " different territories");
             }
         }
 

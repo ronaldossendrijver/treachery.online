@@ -76,7 +76,7 @@
 
     private async Task ScanDevices()
     {
-        var requestPermissions = Visible && !_devicesScanned;
+        var requestPermissions = Visible && (!_devicesScanned || !videoDevices.Any());
         var devices = await Browser.GetCaptureDevices(requestPermissions);
 
         if (requestPermissions)

@@ -30,15 +30,13 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            var location = ForceLocations.Keys.FirstOrDefault();
-
             if (Passed)
             {
                 return Message.Express(Initiator, " pass ", TreacheryCardType.Caravan);
             }
             else
             {
-                return Message.Express(Initiator, " move from ", location.Territory, " to ", To, " by ", TreacheryCardType.Caravan);
+                return Message.Express(Initiator, " move to ", To, " by ", TreacheryCardType.Caravan);
             }
         }
     }

@@ -53,7 +53,7 @@ namespace Treachery.Shared
             }
 
             bool canMoveFromTwoTerritories = Game.CurrentPlanetology != null && Game.CurrentPlanetology.MoveFromTwoTerritories && Game.CurrentPlanetology.Initiator == Initiator;
-            int numberOfSelectedTerritories = ForceLocations.Select(fl => fl.Key.Territory).Distinct().Count();
+            int numberOfSelectedTerritories = ForceLocations.Where(kvp => kvp.Value.TotalAmountOfForces > 0).Select(fl => fl.Key.Territory).Distinct().Count();
             if (numberOfSelectedTerritories > 1 && !canMoveFromTwoTerritories) return "You can't move from two territories at the same time";
             if (numberOfSelectedTerritories > 2) return "You can't move from more than two territories at the same time";
 
