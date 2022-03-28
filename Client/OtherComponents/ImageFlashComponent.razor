@@ -12,39 +12,61 @@
 {
     if (_visible)
     {
-        <JsPanel Width="@WindowWidth" Height="@WindowHeight" HeaderShown="false" ShadowHeight="0" Autoclose="@TimeString" Theme="@JsPanelTheme.TRANSPARANT" Position="JsPanel.PanelPosition.Center" ContentOverflow="hidden" Resizable="false">
+        <div style="position:absolute;left:@Support.Px(WindowX);top:@Support.Px(WindowY);width:@Support.Px(WindowWidth);height:@Support.Px(WindowHeight);overflow:hidden;animation:fadeIn 2s;z-index:1000;" @onclick="Hide">
 
-            <div class="row m-0 p-0 w-100 justify-content-center" @onclick="Hide">
+            @foreach (var img in h.Status.FlashInfo)
+            {
+                <div style="position:relative;top:0px;display:inline-block;vertical-align:top;width:@Support.Px(ItemWidth)">
 
-                @foreach (var img in h.Status.FlashInfo)
-                {
-                    <div class="col-4 col-lg-2 p-1 bg-transparent">
+                    <img src="@img.Url" width=@WIDTH style="filter:drop-shadow(4px 4px 3px black);"/>
 
-                        <img src="@img.Url" class="m-0 img-fluid text-center w-100" style="filter:drop-shadow(4px 4px 3px black);"/>
+                    @if (img.Message != null)
+                    {
+                        <div style="@MsgStyle">@img.Message</div>
+                    }
 
-                        @if (img.Message != null)
-                        {
-                            <div class='m-0 bg-transparent text-white text-center container-fluid w-100' style='@MsgStyle(WIDTH)'>@img.Message</div>
-                        }
+                </div>
+            }
 
-                    </div>
-                }
-
-            </div>
-
-        </JsPanel>
+        </div>
     }
 }
 
 @code {
 
     public const int WIDTH = 268;
+    public const int HEIGHT = 378;
+    public const float SPACING_X = 1.1f;
+    private int WindowX = 0;
+    private int WindowY = 0;
     private int WindowWidth = 500;
     private int WindowHeight = 500;
 
     private bool _visible = false;
-    
+
     int afterEventId = -1;
+
+    protected override void OnInitialized()
+    {
+        StartRedrawCycle(1000);
+    }
+
+    int timeLeft = 0;
+    protected override void Redraw()
+    {
+        //Console.WriteLine("redraw - timeLeft: " + timeLeft);
+        if (timeLeft <= 0)
+        {
+            if (_visible) {
+
+                Hide();
+            }
+        }
+        else
+        {
+            timeLeft -= 1000;
+        }
+    }
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -54,9 +76,10 @@
 
             if (h.Status.FlashInfo.Any())
             {
+                timeLeft += Time * 1000 + 1000;
+                //Console.WriteLine("showing - timeLeft: " + timeLeft);
                 _visible = true;
                 StateHasChanged();
-                _ = Task.Delay(Time * 1000 + 1000).ContinueWith(e => Hide());
             }
         }
     }
@@ -64,33 +87,24 @@
     protected override async Task OnParametersSetAsync()
     {
         var dimensions = await Browser.GetWindowDimensions();
-        WindowWidth = (int)(1.0f * dimensions.Width);
+        WindowWidth = (int)(dimensions.Width - h.Status.FlashInfo.Count() * ItemWidth);
+        WindowX = (int)(0.5f * (WindowWidth));
 
-        if (dimensions.Height < dimensions.Width)
-        {
-            WindowHeight = (int)(0.6f * dimensions.Height);
-        }
-        else
-        {
-            WindowHeight = (int)(0.8f * dimensions.Height);
-        }
+        WindowHeight = (int)(1.2f * HEIGHT);
+        WindowY = (int)(0.5f * (dimensions.Height - WindowHeight));
     }
 
-    private string ImgStyle(int width, int height)
-    {
-        return string.Format("width:{0}px; height:{1}px;", width, height);
-    }
-
-    private string MsgStyle(int width)
-    {
-        return string.Format("width:{0}px; font:{1};" + Support.TextBorder(2, "black"), width, "normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif");
-    }
+    private string MsgStyle =>
+        string.Format("width:{0};font:normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif;background-color:transparent;color:white;text-align:center;{1};", 
+            Support.Px(WIDTH), Support.TextBorder(2, "black"));
 
     private void Hide()
     {
         _visible = false;
         StateHasChanged();
     }
+
+    private int ItemWidth => (int)(SPACING_X * WIDTH);
 
     private string TimeString => string.Format("{0}s", Time);
 

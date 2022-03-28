@@ -642,6 +642,8 @@ namespace Treachery.Shared
         {
             CurrentReport.Express(TreacheryCardType.Karma, " prevents ", prevented);
         }
+
+        public bool CharityIsCancelled => EconomicsStatus == BrownEconomicsStatus.Cancel || EconomicsStatus == BrownEconomicsStatus.CancelFlipped;
     }
 
     class TriggeredBureaucracy

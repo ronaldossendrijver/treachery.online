@@ -159,7 +159,7 @@ namespace Treachery.Shared
                     break;
                 case Phase.ClaimingCharity:
                     if (!isHost && faction == Faction.Green) result.Add(typeof(EndPhase));
-                    if (player.Resources <= 1 && !HasActedOrPassed.Contains(faction)) result.Add(typeof(CharityClaimed));
+                    if (player.Resources <= 1 && !HasActedOrPassed.Contains(faction) && (Version <= 139 || !CharityIsCancelled)) result.Add(typeof(CharityClaimed));
                     if (Version < 103 && player.Has(TreacheryCardType.Amal) && (Version <= 82 || HasActedOrPassed.Count == 0)) result.Add(typeof(AmalPlayed));
                     break;
                 case Phase.BlackMarketAnnouncement:

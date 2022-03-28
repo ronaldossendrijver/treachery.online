@@ -560,6 +560,8 @@ namespace Treachery.Client
                 else if (latestEvent is Planetology) result.Add(CardInfo(latestEvent, LeaderSkill.Planetologist));
                 else if (latestEvent is BattleConcluded battleconcluded && g.TraitorsDeciphererCanLookAt.Count > 0) result.Add(CardInfo(latestEvent, LeaderSkill.Decipherer));
                 else if (latestEvent is Thought) result.Add(CardInfo(latestEvent, LeaderSkill.Thinker));
+                else if (latestEvent is GreyRemovedCardFromAuction) result.Add(EventInfo(latestEvent));
+                else if (latestEvent is GreySwappedCardOnBid) result.Add(EventInfo(latestEvent));
                 else if (latestEvent is EstablishPlayers && g.CurrentPhase != Phase.SelectingFactions && IsPlayer) result.Add(CardInfo(Player.Faction));
                 else if (latestEvent is FactionTradeOffered fto && (fto.Initiator == Faction || fto.Target == Faction) && !g.CurrentTradeOffers.Any(t => t.Initiator == Faction)) result.Add(CardInfo(Player.Faction));
 
@@ -678,7 +680,7 @@ namespace Treachery.Client
             else
             {
                 result.Message = e?.GetMessage();
-                result.Url = Skin.Current.Planet_URL;
+                result.Url = Skin.Current.GetImageURL(e.Initiator);
             }
 
             return result;
@@ -700,14 +702,6 @@ namespace Treachery.Client
             return result;
         }
 
-        private static FlashInfo CardInfo(Faction f)
-        {
-            FlashInfo result;
-            result.Url = Skin.Current.GetImageURL(f);
-            result.Message = Message.Express("You play ", f);
-            return result;
-        }
-
         private static FlashInfo CardInfo(GameEvent e, TreacheryCard c)
         {
             FlashInfo result;
@@ -722,6 +716,14 @@ namespace Treachery.Client
                 result.Message = e?.GetMessage();
             }
 
+            return result;
+        }
+
+        private static FlashInfo CardInfo(Faction f)
+        {
+            FlashInfo result;
+            result.Url = Skin.Current.GetImageURL(f);
+            result.Message = Message.Express("You play ", f);
             return result;
         }
 
