@@ -126,7 +126,9 @@ namespace Treachery.Shared
                     switch (voicedType)
                     {
                         case TreacheryCardType.PoisonDefense: 
-                            return cardType == TreacheryCardType.Antidote || 
+                            return 
+                                cardType == TreacheryCardType.Antidote ||
+                                (g.Version >= 140 && cardType == TreacheryCardType.PortableAntidote) ||
                                 (!asWeapon && cardType == TreacheryCardType.Chemistry) || 
                                 cardType == TreacheryCardType.ShieldAndAntidote;
 

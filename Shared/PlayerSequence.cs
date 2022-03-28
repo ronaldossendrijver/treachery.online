@@ -67,8 +67,6 @@ namespace Treachery.Shared
 
         private bool JuiceForcesLast(Player p) => _game.CurrentJuice != null && _game.CurrentJuice.Type == JuiceType.GoLast && _game.CurrentJuice.Player == p;
 
-        private bool JuiceForcesFirst(Player p) => _game.CurrentJuice != null && _game.CurrentJuice.Type == JuiceType.GoFirst && _game.CurrentJuice.Player == p;
-
         public void CheckCurrentPlayer()
         {
             if (_round == 1 && !_played.Any())
@@ -168,6 +166,26 @@ namespace Treachery.Shared
             if (_game.Version <= 117)
             {
                 CurrentPlayer = DetermineCurrentPlayer();
+            }
+        }
+
+        public bool HasPlayersWithRoomForCardsBeforeWhite
+        {
+            get
+            {
+                var playerAfter = PlayerAfter(CurrentPlayer, true);
+
+                while (playerAfter.Faction != Faction.White)
+                {
+                    if (playerAfter.HasRoomForCards)
+                    {
+                        return true;
+                    }
+
+                    playerAfter = PlayerAfter(playerAfter, true);
+                }
+
+                return false;
             }
         }
 

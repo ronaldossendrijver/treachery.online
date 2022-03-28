@@ -94,14 +94,18 @@ namespace Treachery.Shared
 
                 case AuctionType.BlackMarketOnceAround:
                 case AuctionType.BlackMarketSilent:
-                    HandleBlackMarketSpecialBid();
+                    HandleBlackMarketSpecialBid(bid);
                     break;
             }
         }
 
-        private void HandleBlackMarketSpecialBid()
+        private void HandleBlackMarketSpecialBid(BlackMarketBid bid)
         {
-            if (Players.Count(p => p.HasRoomForCards) == Bids.Count)
+            var isLastBid = Version < 140 ? Players.Count(p => p.HasRoomForCards) == Bids.Count :
+                CurrentAuctionType == AuctionType.BlackMarketSilent && Players.Count(p => p.HasRoomForCards) == Bids.Count ||
+                CurrentAuctionType == AuctionType.BlackMarketOnceAround && bid.Initiator == Faction.White || !GetPlayer(Faction.White).HasRoomForCards && !BidSequence.HasPlayersWithRoomForCardsBeforeWhite;
+
+            if (isLastBid)
             {
                 if (CurrentAuctionType == AuctionType.BlackMarketSilent)
                 {
@@ -489,14 +493,18 @@ namespace Treachery.Shared
                 case AuctionType.WhiteOnceAround:
                 case AuctionType.WhiteSilent:
 
-                    HandleSpecialBid();
+                    HandleWhiteBid(bid);
                     break;
             }
         }
 
-        private void HandleSpecialBid()
+        private void HandleWhiteBid(Bid bid)
         {
-            if (Players.Count(p => p.HasRoomForCards) == Bids.Count)
+            var isLastBid = Version < 140 ? Players.Count(p => p.HasRoomForCards) == Bids.Count :
+                CurrentAuctionType == AuctionType.WhiteSilent && Players.Count(p => p.HasRoomForCards) == Bids.Count ||
+                CurrentAuctionType == AuctionType.WhiteOnceAround && bid.Initiator == Faction.White || !GetPlayer(Faction.White).HasRoomForCards && !BidSequence.HasPlayersWithRoomForCardsBeforeWhite;
+
+            if (isLastBid)
             {
                 if (CurrentAuctionType == AuctionType.WhiteSilent)
                 {
