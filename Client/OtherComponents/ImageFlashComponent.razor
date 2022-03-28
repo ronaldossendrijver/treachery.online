@@ -10,15 +10,15 @@
 
 @if (h.Game != null)
 {
-    if (_visible)
+    if (timeLeft > 0)
     {
-        <div style="position:absolute;left:@Support.Px(WindowX);top:@Support.Px(WindowY);width:@Support.Px(WindowWidth);height:@Support.Px(WindowHeight);overflow:hidden;animation:fadeIn 2s;z-index:1000;" @onclick="Hide">
+        <div style="position:absolute;left:@Support.Px(WindowX);top:@Support.Px(WindowY);width:@Support.Px(WindowWidth);overflow:hidden;animation:@AnimationType 2s;z-index:1000;" @onclick="Hide">
 
             @foreach (var img in h.Status.FlashInfo)
             {
                 <div style="position:relative;top:0px;display:inline-block;vertical-align:top;width:@Support.Px(ItemWidth)">
 
-                    <img src="@img.Url" width=@WIDTH style="filter:drop-shadow(4px 4px 3px black);"/>
+                    <img src="@img.Url" width=@CardWidth style="filter:drop-shadow(4px 4px 3px black);"/>
 
                     @if (img.Message != null)
                     {
@@ -34,15 +34,14 @@
 
 @code {
 
-    public const int WIDTH = 268;
-    public const int HEIGHT = 378;
+    //public const int WIDTH = 536; //268
+    //public const int HEIGHT = 756; //378
     public const float SPACING_X = 1.1f;
     private int WindowX = 0;
     private int WindowY = 0;
     private int WindowWidth = 500;
-    private int WindowHeight = 500;
-
-    private bool _visible = false;
+    //private int WindowHeight = 500;
+    private int CardWidth = 100;
 
     int afterEventId = -1;
 
@@ -54,18 +53,18 @@
     int timeLeft = 0;
     protected override void Redraw()
     {
-        //Console.WriteLine("redraw - timeLeft: " + timeLeft);
-        if (timeLeft <= 0)
-        {
-            if (_visible) {
-
-                Hide();
-            }
-        }
-        else
+        if (timeLeft > 0)
         {
             timeLeft -= 1000;
         }
+
+        StateHasChanged();
+    }
+
+    private void Hide()
+    {
+        timeLeft = 0;
+        StateHasChanged();
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -76,9 +75,7 @@
 
             if (h.Status.FlashInfo.Any())
             {
-                timeLeft += Time * 1000 + 1000;
-                //Console.WriteLine("showing - timeLeft: " + timeLeft);
-                _visible = true;
+                timeLeft += Time * 1000 + 2000;
                 StateHasChanged();
             }
         }
@@ -87,27 +84,24 @@
     protected override async Task OnParametersSetAsync()
     {
         var dimensions = await Browser.GetWindowDimensions();
-        WindowWidth = (int)(dimensions.Width - h.Status.FlashInfo.Count() * ItemWidth);
-        WindowX = (int)(0.5f * (WindowWidth));
+        CardWidth = (int)(0.15f * dimensions.Width);
+        WindowWidth = h.Status.FlashInfo.Count() * ItemWidth;
+        WindowX = (int)(0.5f * (dimensions.Width - WindowWidth));
 
-        WindowHeight = (int)(1.2f * HEIGHT);
-        WindowY = (int)(0.5f * (dimensions.Height - WindowHeight));
+        //WindowHeight = (int)(1.2f * HEIGHT);
+        WindowY = (int)(0.5f * (dimensions.Height - 1.41f * CardWidth));
     }
 
     private string MsgStyle =>
-        string.Format("width:{0};font:normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif;background-color:transparent;color:white;text-align:center;{1};", 
-            Support.Px(WIDTH), Support.TextBorder(2, "black"));
+        string.Format("width:{0};font:normal normal normal 24px Advokat, Calibri, Tahoma, sans-serif;background-color:transparent;color:white;text-align:center;{1};", 
+            Support.Px(CardWidth), Support.TextBorder(3, "black"));
 
-    private void Hide()
-    {
-        _visible = false;
-        StateHasChanged();
-    }
-
-    private int ItemWidth => (int)(SPACING_X * WIDTH);
+    private int ItemWidth => (int)(SPACING_X * CardWidth);
 
     private string TimeString => string.Format("{0}s", Time);
 
     private int Time => 2 + h.Status.FlashInfo.Count() * 3;
+
+    private string AnimationType => timeLeft <= 1000 ? "fadeOut" : "fadeIn";
 }
 
