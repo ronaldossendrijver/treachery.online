@@ -561,7 +561,8 @@ namespace Treachery.Client
                 else if (latestEvent is BattleConcluded battleconcluded && g.TraitorsDeciphererCanLookAt.Count > 0) result.Add(CardInfo(latestEvent, LeaderSkill.Decipherer));
                 else if (latestEvent is Thought) result.Add(CardInfo(latestEvent, LeaderSkill.Thinker));
                 else if (latestEvent is GreyRemovedCardFromAuction) result.Add(EventInfo(latestEvent));
-                else if (latestEvent is GreySwappedCardOnBid) result.Add(EventInfo(latestEvent));
+                else if (latestEvent is GreySwappedCardOnBid gsc && !gsc.Passed) result.Add(EventInfo(latestEvent));
+                else if (latestEvent is SwitchedSkilledLeader) result.Add(EventInfo(latestEvent));
                 else if (latestEvent is EstablishPlayers && g.CurrentPhase != Phase.SelectingFactions && IsPlayer) result.Add(CardInfo(Player.Faction));
                 else if (latestEvent is FactionTradeOffered fto && (fto.Initiator == Faction || fto.Target == Faction) && !g.CurrentTradeOffers.Any(t => t.Initiator == Faction)) result.Add(CardInfo(Player.Faction));
 
@@ -676,6 +677,12 @@ namespace Treachery.Client
                 var dancer = Game.WinnerHero;
                 result.Message = Message.Express(dancer, " is a ", e.Initiator, " facedancer!");
                 result.Url = Skin.Current.GetImageURL(dancer);
+            }
+            else if (e is SwitchedSkilledLeader)
+            {
+                var skilledHero = Game.GetSkilledLeader(e.Player);
+                result.Message = e.GetMessage();
+                result.Url = Skin.Current.GetImageURL(skilledHero);
             }
             else
             {

@@ -645,7 +645,7 @@ namespace Treachery.Client
             if (!awaitingBotAction && Game.Players.Any(p => p.IsBot))
             {
                 awaitingBotAction = true;
-                int botDelay = DetermineBotDelay(Game.CurrentMainPhase, e, Status.FlashInfo.Count());
+                int botDelay = DetermineBotDelay(Game.CurrentMainPhase, e, Status.FlashInfo.Count);
                 _ = Task.Delay(botDelay).ContinueWith(e => PerformBotEvent());
             }
         }
@@ -654,7 +654,7 @@ namespace Treachery.Client
         {
             if (nrOfFlashMessages > 0)
             {
-                return 2000 + nrOfFlashMessages * 3000;
+                return 2500 + nrOfFlashMessages * 3000;
             }
             else if (phase == MainPhase.Resurrection || phase == MainPhase.Charity || e is AllyPermission || e is DealOffered)
             {

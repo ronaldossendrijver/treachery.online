@@ -26,6 +26,7 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            /*
             if (g.CurrentPhase == Phase.Bidding && 
                 g.CurrentAuctionType == AuctionType.WhiteOnceAround && 
                 !g.GetPlayer(Faction.White).HasRoomForCards)
@@ -37,7 +38,7 @@ namespace Treachery.Test
                     WriteSavegameIfApplicable(g, full, "interesting bidding");
                 }
             }
-            
+            */
 
             /*
             if (g.CurrentMainPhase == MainPhase.ShipmentAndMove &&
@@ -361,7 +362,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 2000;
+            int nrOfGames = 200;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 

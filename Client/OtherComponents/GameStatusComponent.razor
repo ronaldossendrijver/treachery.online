@@ -120,7 +120,7 @@
         {
             ticksPassed++;
 
-            if (autoConfirm && CanEndPhase && ticksPassed >= 4)
+            if (autoConfirm && CanEndPhase && ticksPassed >= 4 + h.Status.FlashInfo.Count)
             {
                 ticksPassed = 0;
                 _ = Confirm();
