@@ -16,6 +16,7 @@ namespace Treachery.Shared
         private readonly bool _skipPlayersThatCantBidOnCards;
         private readonly int _direction;
         private int _round;
+        private int _fullyCircled;
 
         public PlayerSequence(Game game, bool skipPlayersThatCantBidOnCards, int direction, Player toStartWith, bool beginNextToThatPlayer)
         {
@@ -23,6 +24,7 @@ namespace Treachery.Shared
             _skipPlayersThatCantBidOnCards = skipPlayersThatCantBidOnCards;
             _direction = direction;
             _round = 1;
+            _fullyCircled = 0;
 
             Players = _game.Players.OrderBy(p => _direction * p.PositionAtTable).ToList();
             FirstPlayer = toStartWith;
@@ -167,22 +169,31 @@ namespace Treachery.Shared
             {
                 CurrentPlayer = DetermineCurrentPlayer();
             }
+
+            if (CurrentPlayer == FirstPlayer)
+            {
+                _fullyCircled++;
+            }
         }
 
-        public bool HasPlayersWithRoomForCardsBeforeWhite
+        public bool HasPassedWhite
         {
             get
             {
-                var playerAfter = PlayerAfter(CurrentPlayer, true);
+                if (_fullyCircled > 0) return true;
 
-                while (playerAfter.Faction != Faction.White)
+                var current = CurrentPlayer;
+
+                foreach (var p in PlayersInOrder)
                 {
-                    if (playerAfter.HasRoomForCards)
+                    if (p == current)
+                    {
+                        return false;
+                    }
+                    else if (p.Faction == Faction.White)
                     {
                         return true;
                     }
-
-                    playerAfter = PlayerAfter(playerAfter, true);
                 }
 
                 return false;

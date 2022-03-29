@@ -103,7 +103,7 @@ namespace Treachery.Shared
         {
             var isLastBid = Version < 140 ? Players.Count(p => p.HasRoomForCards) == Bids.Count :
                 CurrentAuctionType == AuctionType.BlackMarketSilent && Players.Count(p => p.HasRoomForCards) == Bids.Count ||
-                CurrentAuctionType == AuctionType.BlackMarketOnceAround && bid.Initiator == Faction.White || !GetPlayer(Faction.White).HasRoomForCards && !BidSequence.HasPlayersWithRoomForCardsBeforeWhite;
+                CurrentAuctionType == AuctionType.BlackMarketOnceAround && bid.Initiator == Faction.White || !GetPlayer(Faction.White).HasRoomForCards && BidSequence.HasPassedWhite;
 
             if (isLastBid)
             {
@@ -502,7 +502,7 @@ namespace Treachery.Shared
         {
             var isLastBid = Version < 140 ? Players.Count(p => p.HasRoomForCards) == Bids.Count :
                 CurrentAuctionType == AuctionType.WhiteSilent && Players.Count(p => p.HasRoomForCards) == Bids.Count ||
-                CurrentAuctionType == AuctionType.WhiteOnceAround && bid.Initiator == Faction.White || !GetPlayer(Faction.White).HasRoomForCards && !BidSequence.HasPlayersWithRoomForCardsBeforeWhite;
+                CurrentAuctionType == AuctionType.WhiteOnceAround && bid.Initiator == Faction.White || !GetPlayer(Faction.White).HasRoomForCards && BidSequence.HasPassedWhite;
 
             if (isLastBid)
             {
