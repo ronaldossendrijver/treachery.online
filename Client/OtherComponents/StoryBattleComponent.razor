@@ -38,7 +38,7 @@
 
             <td>
                 <img class="img-fluid p-1" width=60 src="@(AggressorBattle.Hero == null ? "" : Skin.Current.GetImageURL(AggressorBattle.Hero))"
-                     data-animation="true" data-content="@Support.GetHeroHoverHTML(AggressorBattle.Hero, Game)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
+                     data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(AggressorBattle.Hero, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
 
                 @if (AggressorBattle.Messiah)
                 {
@@ -49,12 +49,12 @@
 
             <td>
                 <img class="img-fluid p-1" width=80 src="@(AggressorBattle.Weapon == null ? "" : Skin.Current.GetImageURL(AggressorBattle.Weapon))"
-                     data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(AggressorBattle.Weapon)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
+                     data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(AggressorBattle.Weapon)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
             </td>
 
             <td>
                 <img class="img-fluid p-1" width=80 src="@(AggressorBattle.Defense == null ? "" : Skin.Current.GetImageURL(AggressorBattle.Defense))"
-                     data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(AggressorBattle.Defense)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
+                     data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(AggressorBattle.Defense)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
             </td>
 
             <td><h2>@AggressorBattle.Dial(Game, DefenderBattle.Initiator)</h2></td>
@@ -80,7 +80,7 @@
 
             <td>
                 <img class="img-fluid p-1" width=60 src="@(DefenderBattle.Hero == null ? "" : Skin.Current.GetImageURL(DefenderBattle.Hero))"
-                     data-animation="true" data-content="@Support.GetHeroHoverHTML(DefenderBattle.Hero, Game)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
+                     data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(DefenderBattle.Hero, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
 
                 @if (DefenderBattle.Messiah)
                 {
@@ -90,12 +90,12 @@
 
             <td>
                 <img class="img-fluid p-1" width=80 src="@(DefenderBattle.Weapon == null ? "" : Skin.Current.GetImageURL(DefenderBattle.Weapon))"
-                     data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(DefenderBattle.Weapon)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
+                     data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(DefenderBattle.Weapon)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
             </td>
 
             <td>
                 <img class="img-fluid p-1" width=80 src="@(DefenderBattle.Defense == null ? "" : Skin.Current.GetImageURL(DefenderBattle.Defense))"
-                     data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(DefenderBattle.Defense)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
+                     data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(DefenderBattle.Defense)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
             </td>
 
             <td><h2>@DefenderBattle.Dial(Game, AggressorBattle.Initiator)</h2></td>

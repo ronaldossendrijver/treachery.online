@@ -49,15 +49,15 @@
     }
     else if (part is TreacheryCard tc)
     {
-        <span class="font-weight-bold" data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(tc)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(tc)</span>
+        <span class="font-weight-bold" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(tc)" data-bs-html="true" data-bs-trigger="hover" data-bs-toggle="popover">@Skin.Current.Describe(tc)</span>
     }
     else if (part is LeaderSkill skill)
     {
-        <span class="font-weight-bold" data-animation="true" data-content="@Support.GetSkillCardHoverHTML(skill)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(skill)</span>
+        <span class="font-weight-bold" data-bs-animation="true" data-bs-content="@Support.GetSkillCardHoverHTML(skill)" data-bs-html="true" data-bs-trigger="hover" data-bs-toggle="popover">@Skin.Current.Describe(skill)</span>
     }
     else if (part is IHero hero)
     {
-        <span class="font-weight-bold" style="@Support.TextBorder(1, Skin.Current.FactionColor[hero.Faction])" data-content="@Support.GetHeroHoverHTML(hero)" data-html="true" data-trigger="hover" data-toggle="popover">@Skin.Current.Describe(hero)</span>
+        <span class="font-weight-bold" style="@Support.TextBorder(1, Skin.Current.FactionColor[hero.Faction])" data-bs-content="@Support.GetHeroHoverHTML(hero)" data-bs-html="true" data-bs-trigger="hover" data-bs-toggle="popover">@Skin.Current.Describe(hero)</span>
     }
     else if (part is Concept monster && monster == Concept.Monster)
     {
@@ -65,7 +65,7 @@
     }
     else if (part is TechToken tt)
     {
-        <img src=@Skin.Current.GetImageURL(tt) width=@Size height=@Size data-animation="true" data-content="@Support.GetTechTokenHTML(tt)" data-html="true" data-trigger="hover" data-toggle="popover"/>
+        <img src=@Skin.Current.GetImageURL(tt) width=@Size height=@Size data-bs-animation="true" data-bs-content="@Support.GetTechTokenHTML(tt)" data-bs-html="true" data-bs-trigger="hover" data-bs-toggle="popover"/>
     }
     else if (part is FactionForce ff)
     {

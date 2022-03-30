@@ -2,7 +2,7 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
 --->
 
-<div class="row ml-0 mt-2 mb-1 mr-0 @Alignment">
+<div class="mt-2 @Alignment">
 
     @if (Other.HasDelegate)
     {
@@ -47,7 +47,7 @@
     public string OtherText { get; set; } = "Other";
 
     [Parameter]
-    public string Alignment { get; set; } = "justify-content-end";
+    public string Alignment { get; set; } = "float-end";
 
     [Parameter]
     public bool Disabled { get; set; } = false;

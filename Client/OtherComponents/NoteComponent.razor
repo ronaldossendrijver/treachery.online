@@ -22,7 +22,7 @@
 
                 @foreach (var p in Players.Where(p => p != h.Player))
                 {
-                    <button class="btn @ButtonStyle(p) p-0 mt-1 mr-1" @onclick="(e => Toggle(p))" data-toggle="tooltip" title="@Skin.Current.Describe(p.Faction)">
+                    <button class="btn @ButtonStyle(p) p-0 mt-1 mr-1" @onclick="(e => Toggle(p))" data-bs-toggle="tooltip" title="@Skin.Current.Describe(p.Faction)">
                         <img class="img-fluid" width="29" height="29" src="@Skin.Current.GetFactionTableImageURL(p.Faction)" />
                     </button>
                 }
@@ -65,7 +65,7 @@
                             bool isKnown = IsKnownCard(c);
                             var popover = isKnown ? Support.GetTreacheryCardHoverHTML(c) : "<div class='p-1 small' style='color:black;background-color:white;border: 1px solid black;'>Unknown</div>";
 
-                            <div class="card border-0 pr-1" data-toggle="popover" data-animation="true" data-content="@popover" data-html="true" data-placement="top" data-trigger="hover">
+                            <div class="card border-0 pr-1" data-bs-toggle="popover" data-bs-animation="true" data-bs-content="@popover" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover">
 
                                 @if (IsKnownCard(c))
                                 {
@@ -93,7 +93,7 @@
                         @foreach (var c in p.RevealedTraitors)
                         {
                             <img class="img-fluid pr-1" width=60 src="@Skin.Current.GetImageURL(c)"
-                                 data-animation="true" data-content="@Support.GetHeroHoverHTML(c, Game)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
+                                 data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
                         }
                     </div>
                 }
@@ -105,7 +105,7 @@
                         @foreach (var c in p.RevealedDancers)
                         {
                             <img class="img-fluid pr-1" width=60 src="@Skin.Current.GetImageURL(c)"
-                                 data-animation="true" data-content="@Support.GetHeroHoverHTML(c, Game)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
+                                 data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
                         }
                     </div>
                 }

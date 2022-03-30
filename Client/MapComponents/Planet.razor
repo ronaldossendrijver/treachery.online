@@ -53,7 +53,7 @@
             <g
                 fill="@LocationColor(location)"
                 cursor="pointer" pointer-events="all" @onclick="@(e => OnClick(e, location))" 
-                data-trigger="hover" data-toggle="popover" data-html="true" data-animation="false" data-delay="50" data-content="@Intel(location)" data-template="@PopoverTemplate">
+                data-bs-trigger="hover" data-bs-toggle="popover" data-bs-html="true" data-bs-animation="false" data-bs-delay="50" data-bs-content="@Intel(location)" data-bs-template="@PopoverTemplate">
 
                     <path d="@Skin.Current.GetTerritoryBorder(location.Territory)"/>
             </g>

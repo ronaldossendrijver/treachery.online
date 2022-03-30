@@ -7,7 +7,7 @@
 @if (Popover != null)
 {
     <img @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" style="@Style" src=@Src 
-        data-trigger="hover" data-toggle="popover" data-html="true" data-animation="false" data-delay="50" data-container="body" data-content="@Popover" data-template="@PopoverTemplate" />
+        data-bs-trigger="hover" data-bs-toggle="popover" data-bs-html="true" data-bs-animation="false" data-bs-delay="50" data-container="body" data-bs-content="@Popover" data-bs-template="@PopoverTemplate" />
 }
 else
 {

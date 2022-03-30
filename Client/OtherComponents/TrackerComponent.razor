@@ -24,16 +24,16 @@
 
                 @foreach (var p in Players)
                 {
-                    <button class="btn @ButtonStyle(p) p-0 mt-1 mr-1" @onclick="(e => Toggle(p))" data-toggle="tooltip" title="@Skin.Current.Describe(p.Faction)">
+                    <button class="btn @ButtonStyle(p) p-0 mt-1 mr-1" @onclick="(e => Toggle(p))" data-bs-toggle="tooltip" title="@Skin.Current.Describe(p.Faction)">
                         <img class="img-fluid" width="29" height="29" src="@Skin.Current.GetFactionTableImageURL(p.Faction)" />
                     </button>
                 }
 
-                <button class="btn @ButtonStyle(h.Game.TreacheryDiscardPile) p-0 mt-1 mr-1" @onclick="(e => Toggle(h.Game.TreacheryDiscardPile))" data-toggle="tooltip" title="Discarded Treachery Cards">
+                <button class="btn @ButtonStyle(h.Game.TreacheryDiscardPile) p-0 mt-1 mr-1" @onclick="(e => Toggle(h.Game.TreacheryDiscardPile))" data-bs-toggle="tooltip" title="Discarded Treachery Cards">
                     <img class="img-fluid ml-1 mr-1" width="21" height="29" src="@Skin.Current.CardBack_TreacheryCard_URL" />
                 </button>
 
-                <button class="btn @ButtonStyle(h.Game.ResourceCardDeck) p-0 mt-1 mr-2" @onclick="(e => Toggle(h.Game.ResourceCardDeck))" data-toggle="tooltip" title="Discarded Spice Cards">
+                <button class="btn @ButtonStyle(h.Game.ResourceCardDeck) p-0 mt-1 mr-2" @onclick="(e => Toggle(h.Game.ResourceCardDeck))" data-bs-toggle="tooltip" title="Discarded Spice Cards">
                     <img class="img-fluid ml-1 mr-1" width="21" height="29" src="@Skin.Current.CardBack_ResourceCard_URL" />
                 </button>
 
@@ -52,11 +52,11 @@
                         int cardId = Info.TrackedTreacheryCards[p.Faction][selIndex];
 
                         <div class="card border-0"
-                             data-toggle="popover" data-animation="true" data-content="@DeterminePopup(Info.TrackedTreacheryCards[p.Faction][selIndex])" data-html="true" data-placement="top" data-trigger="hover">
+                             data-bs-toggle="popover" data-bs-animation="true" data-bs-content="@DeterminePopup(Info.TrackedTreacheryCards[p.Faction][selIndex])" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover">
 
                             @if (cardId == TreacheryCard.NONE)
                             {
-                                <a class="btn btn-link p-1" data-toggle="modal" data-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
+                                <a class="btn btn-link p-1" data-bs-toggle="modal" data-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
                                     <svg class="img-fluid w-100" viewBox="0 0 268 372" xmlns="http://www.w3.org/2000/svg">
                                         <rect width="268" height="372" rx="20" style="fill:rgb(64,64,64);stroke-width:3;stroke:rgb(200,200,200)" />
                                     </svg>
@@ -64,13 +64,13 @@
                             }
                             else if (cardId == TreacheryCard.UNKNOWN)
                             {
-                                <a class="btn btn-link p-1" data-toggle="modal" data-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
+                                <a class="btn btn-link p-1" data-bs-toggle="modal" data-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
                                     <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="img-fluid" />
                                 </a>
                             }
                             else
                             {
-                                <a class="btn btn-link p-1" data-toggle="modal" data-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
+                                <a class="btn btn-link p-1" data-bs-toggle="modal" data-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
                                     <img src="@DetermineImageSrc(cardId)" class="img-fluid" />
                                 </a>
                             }
@@ -116,7 +116,7 @@
                         <li class="list-inline-item">
 
                             <p class="mb-0">
-                                <span class="badge badge-primary badge-pill" data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(c)" data-html="true" data-placement="top" data-trigger="hover" data-toggle="popover" data-container="body">@c</span>
+                                <span class="badge badge-primary badge-pill" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(c)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover" data-container="body">@c</span>
                                 <button class="close" @onclick="@(e => SetNotDiscarded(c))"><span aria-hidden="true">&times;</span></button>
                             </p>
 

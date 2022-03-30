@@ -92,7 +92,7 @@
                             foreach (var c in p.TreacheryCards)
                             {
                                 <img class="img-fluid p-1" width=80 src="@Skin.Current.GetImageURL(c)"
-                                     data-animation="true" data-content="@Support.GetTreacheryCardHoverHTML(c)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
+                                     data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(c)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
                             }
                         }
                         else
@@ -110,17 +110,17 @@
                             @foreach (var c in p.Traitors)
                             {
                                 <img class="img-fluid p-1" width=60 src="@Skin.Current.GetImageURL(c)"
-                                     data-animation="true" data-content="@Support.GetHeroHoverHTML(c, Game)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
+                                     data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
                             }
                             @foreach (var c in p.DiscardedTraitors)
                             {
                                 <img class="img-fluid p-1" width=60 src="@Skin.Current.GetImageURL(c)" style="filter:grayscale(100%) opacity(50%)"
-                                     data-animation="true" data-content="@Support.GetHeroHoverHTML(c, Game)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
+                                     data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
                             }
                             @foreach (var c in p.FaceDancers)
                             {
                                 <img class="img-fluid p-1" width=60 src="@Skin.Current.GetImageURL(c)"
-                                     data-animation="true" data-content="@Support.GetHeroHoverHTML(c, Game)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
+                                     data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
                             }
                         }
                         else
@@ -136,7 +136,7 @@
                         @foreach (var c in p.TechTokens)
                         {
                             <img class="img-fluid p-1" width=60 src="@Skin.Current.GetImageURL(c)"
-                                 data-animation="true" data-content="@Support.GetTechTokenHTML(c)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
+                                 data-bs-animation="true" data-bs-content="@Support.GetTechTokenHTML(c)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
                         }
                     </td>
                 }
@@ -197,7 +197,7 @@
                         @foreach (var c in p.Leaders.Where(l => Game.IsAlive(l)))
                         {
                             <img class="img-fluid p-1" width=60 src="@Skin.Current.GetImageURL(c)"
-                                 data-animation="true" data-content="@Support.GetHeroHoverHTML(c, Game)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
+                                 data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
                         }
 
                         @if (Game.Applicable(Rule.GreenMessiah) && p.Faction == Faction.Green && p.TotalForcesKilledInBattle >= 7 && Game.IsAlive(LeaderManager.Messiah))
@@ -224,7 +224,7 @@
                         @foreach (var c in p.Leaders.Where(l => !Game.IsAlive(l)))
                         {
                             <img class="img-fluid p-1" width=60 src="@Skin.Current.GetImageURL(c)"
-                                 data-animation="true" data-content="@Support.GetHeroHoverHTML(c, Game)" data-html="true" data-placement="bottom" data-trigger="hover" data-toggle="popover" />
+                                 data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
                         }
 
                         @if (p.Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah) && !Game.MessiahIsAlive)
