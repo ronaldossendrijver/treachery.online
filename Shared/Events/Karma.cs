@@ -137,6 +137,23 @@ namespace Treachery.Shared
                 if (g.Applicable(Rule.PurpleGholas)) result.Add(FactionAdvantage.PurpleReviveGhola);
             }
 
+            if (p.Faction != Faction.Brown && g.IsPlaying(Faction.Brown))
+            {
+                result.Add(FactionAdvantage.BrownControllingCharity);
+                result.Add(FactionAdvantage.BrownDiscarding);
+                result.Add(FactionAdvantage.BrownRevival);
+                result.Add(FactionAdvantage.BrownEconomics);
+                result.Add(FactionAdvantage.BrownReceiveForcePayment);
+                if (g.Applicable(Rule.BrownAuditor)) result.Add(FactionAdvantage.BrownAudit);
+            }
+
+            if (p.Faction != Faction.White && g.IsPlaying(Faction.White))
+            {
+                result.Add(FactionAdvantage.WhiteAuction);
+                result.Add(FactionAdvantage.WhiteNofield);
+                if (g.Applicable(Rule.WhiteBlackMarket)) result.Add(FactionAdvantage.WhiteBlackMarket);
+            }
+
             return result;
         }
 
