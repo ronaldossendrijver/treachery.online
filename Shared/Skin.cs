@@ -468,7 +468,7 @@ namespace Treachery.Shared
                 FactionAdvantage.BrownRevival => Format("{0} having unlimited force revival and reduced revival cost", Faction.Brown),
                 FactionAdvantage.BrownEconomics => Format("{0} playing their Economics token during {1}", Faction.Brown, MainPhase.Contemplate),
                 FactionAdvantage.BrownReceiveForcePayment => Format("{0} collecting {1} payment for forces for one battle", Faction.Brown, Concept.Resource),
-                FactionAdvantage.BrownAudit => Format(""),
+                FactionAdvantage.BrownAudit => Format("{0} auditing their opponent after a battle", Faction.Brown),
                 FactionAdvantage.WhiteAuction => Format("{0} auctioning a card from their card cache", Faction.White),
                 FactionAdvantage.WhiteNofield => Format("{0} using a No-Field to ship", Faction.White),
                 FactionAdvantage.WhiteBlackMarket => Format("{0} selling a card from their hand", Faction.White),
