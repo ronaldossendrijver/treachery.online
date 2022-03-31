@@ -675,14 +675,25 @@ namespace Treachery.Shared
 
             var opponentPlan = Game.CurrentBattle?.PlanOf(opponent);
 
-            //Prescience available?
-            if (prescience != null && prescience.Aspect == PrescienceAspect.Defense && opponentPlan != null)
-            {
-                enemyCanDefendPoisonTooth = opponentPlan.Defense != null && opponentPlan.Defense.IsNonAntidotePoisonDefense;
-                mostEffectiveWeapon = availableWeapons.FirstOrDefault(w => opponentPlan.Defense == null || !w.CounteredBy(opponentPlan.Defense, null));
+            var opponentMayBeUsingAWeapon = true;
 
-                return mostEffectiveWeapon != null ? 1f : 0f;
+            //Prescience available?
+            if (prescience != null && opponentPlan != null)
+            {
+                if (prescience.Aspect == PrescienceAspect.Defense) {
+                    enemyCanDefendPoisonTooth = opponentPlan.Defense != null && opponentPlan.Defense.IsNonAntidotePoisonDefense;
+                    mostEffectiveWeapon = availableWeapons.FirstOrDefault(w => opponentPlan.Defense == null || !w.CounteredBy(opponentPlan.Defense, null));
+
+                    return mostEffectiveWeapon != null ? 1f : 0f;
+                }
+
+                if (prescience.Aspect == PrescienceAspect.Weapon && (opponentPlan.Weapon == null || opponentPlan.Weapon.IsUseless))
+                {
+                    opponentMayBeUsingAWeapon = false;
+                }
             }
+
+            var usefulWeapons = opponentMayBeUsingAWeapon ? availableWeapons : availableWeapons.Where(w => w.Type != TreacheryCardType.MirrorWeapon).ToArray();
 
             var knownEnemyDefenses = KnownOpponentDefenses(opponent);
 
@@ -695,12 +706,12 @@ namespace Treachery.Shared
                     if (Game.LatestClairvoyanceQandA.Answer.IsNo())
                     {
                         enemyCanDefendPoisonTooth = knownEnemyDefenses.Any(c => c.IsNonAntidotePoisonDefense);
-                        mostEffectiveWeapon = availableWeapons.FirstOrDefault(d => d.IsProjectileWeapon);
+                        mostEffectiveWeapon = usefulWeapons.FirstOrDefault(d => d.IsProjectileWeapon);
                         if (mostEffectiveWeapon != null) return 1f;
                     }
                     else if (Game.LatestClairvoyanceQandA.Answer.IsYes())
                     {
-                        mostEffectiveWeapon = availableWeapons.FirstOrDefault(d => d.IsPoisonWeapon);
+                        mostEffectiveWeapon = usefulWeapons.FirstOrDefault(d => d.IsPoisonWeapon);
                         if (mostEffectiveWeapon != null) return 1f;
                     }
                 }
@@ -708,13 +719,13 @@ namespace Treachery.Shared
                 {
                     if (Game.LatestClairvoyanceQandA.Answer.IsNo())
                     {
-                        mostEffectiveWeapon = availableWeapons.FirstOrDefault(d => d.IsPoisonWeapon);
+                        mostEffectiveWeapon = usefulWeapons.FirstOrDefault(d => d.IsPoisonWeapon);
                         if (mostEffectiveWeapon != null) return 1f;
                     }
                     else if (Game.LatestClairvoyanceQandA.Answer.IsYes())
                     {
                         enemyCanDefendPoisonTooth = knownEnemyDefenses.Any(c => c.IsNonAntidotePoisonDefense);
-                        mostEffectiveWeapon = availableWeapons.FirstOrDefault(d => d.IsProjectileWeapon);
+                        mostEffectiveWeapon = usefulWeapons.FirstOrDefault(d => d.IsProjectileWeapon);
                         if (mostEffectiveWeapon != null) return 1f;
                     }
                 }
@@ -722,11 +733,18 @@ namespace Treachery.Shared
 
             var unknownOpponentCards = OpponentCardsUnknownToMe(opponent);
 
-            mostEffectiveWeapon = availableWeapons.Where(w => !knownEnemyDefenses.Any(defense => w.CounteredBy(defense, null))).RandomOrDefault();
+            mostEffectiveWeapon = usefulWeapons.Where(w => !knownEnemyDefenses.Any(defense => w.CounteredBy(defense, null))).RandomOrDefault();
 
             if (mostEffectiveWeapon != null)
             {
-                if (!unknownOpponentCards.Any())
+                if (mostEffectiveWeapon.IsMirrorWeapon)
+                {
+                    if (prescience != null && prescience.Aspect == PrescienceAspect.Weapon && opponentPlan != null)
+                    {
+                        return 1f - ChanceOfAnUnknownOpponentCardSavingHisLeader(unknownOpponentCards, opponentPlan.Weapon, opponent);
+                    }
+                }
+                else if (!unknownOpponentCards.Any())
                 {
                     return 1f;
                 }
@@ -736,7 +754,7 @@ namespace Treachery.Shared
                 }
             }
 
-            mostEffectiveWeapon = availableWeapons.Where(w => !IsKnownToOpponent(opponent, w)).RandomOrDefault();
+            mostEffectiveWeapon = usefulWeapons.Where(w => !IsKnownToOpponent(opponent, w)).RandomOrDefault();
 
             if (mostEffectiveWeapon != null)
             {

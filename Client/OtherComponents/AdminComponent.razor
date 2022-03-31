@@ -11,7 +11,7 @@
 
     <div class="card-body">
         <label class="mb-0" for="undoEventNr">Select up to (including) which action should be undone</label>
-        <select class="custom-select" @bind="undoEventId" id="undoEventNr">
+        <select class="form-select" @bind="undoEventId" id="undoEventNr">
 
             @foreach (var group in UndoableEvents) {
 

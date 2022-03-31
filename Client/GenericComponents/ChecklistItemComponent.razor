@@ -7,9 +7,9 @@
 @inherits Component
 @typeparam T
 
-<div class="custom-control custom-checkbox small" style="@style">
-    <input id="@Id" type="checkbox" disabled="@Disabled" class="custom-control-input" checked="@Values.Contains(Value)" @onchange="eventArgs => { CheckboxClicked(Value, eventArgs.Value); }" />
-    <label class="custom-control-label" for="@Id">@Skin.Current.Describe(Value) @ChildContent</label>
+<div class="form-check" style="@style">
+    <input class="form-check-input" id="@Id" type="checkbox" disabled="@Disabled" checked="@Values.Contains(Value)" @onchange="eventArgs => { CheckboxClicked(Value, eventArgs.Value); }" />
+    <label class="form-check-label" for="@Id">@Skin.Current.Describe(Value) @ChildContent</label>
 </div>
 
 @code {

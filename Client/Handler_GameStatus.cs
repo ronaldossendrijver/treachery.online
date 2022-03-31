@@ -681,7 +681,7 @@ namespace Treachery.Client
             else if (e is SwitchedSkilledLeader)
             {
                 var skilledHero = Game.GetSkilledLeader(e.Player);
-                result.Message = e.GetMessage();
+                result.Message = Message.Express(e.Initiator, " place ", Game.Skill(skilledHero), " ", skilledHero, Game.IsInFrontOfShield(skilledHero) ? " in front of" : " behind", " their shield");
                 result.Url = Skin.Current.GetImageURL(skilledHero);
             }
             else
