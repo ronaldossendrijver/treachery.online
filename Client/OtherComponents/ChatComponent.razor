@@ -15,8 +15,8 @@
             <input class="form-control form-control-sm" type="text" maxlength="512" placeholder="Your message..." id="messageSentBody" />
         </div>
 
-        <div class="col-2 text-right">
-            <button type="button" class="btn bg-transparent btn-sm float-right" title="popout chat window" @onclick="@Handler.PopoutChatWindow">
+        <div class="col-2 text-end">
+            <button type="button" class="btn bg-transparent btn-sm float-end" title="popout chat window" @onclick="@Handler.PopoutChatWindow">
                 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="currentColor" width="12" heigh="12" viewBox="0 0 1000 1000" xml:space="preserve">
                 <metadata> Svg Vector Icons : http://www.onlinewebfonts.com/icon </metadata>
                 <g><path d="M485,379.5l130.6,130.6l245.8-245.8l126.9,126.9l0.2-379L607.1,10l123.8,123.7L485,379.5L485,379.5z M986.4,546.3l-94.1-95.4l1.7,441.3l-784.7,0.4l0.8-782.7l438.9-2l-98-98H108C53.9,10,10,54,10,108v784c0,54.1,43.9,98,98,98h784c54.1,0,98-43.9,98-98L986.4,546.3z" /></g>
@@ -36,7 +36,7 @@
             }
         </select>
 
-        <button class="btn btn-primary form-control-sm btn-sm mt-1 ml-1" onclick="SendChatMessage()">Send</button>
+        <button class="btn btn-primary form-control-sm btn-sm mt-1 ms-1" onclick="SendChatMessage()">Send</button>
 
     </div>
 

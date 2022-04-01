@@ -29,7 +29,7 @@
             specialForceAmount = 0;
         }
 
-        <p>Total selected value: <span class="badge badge-primary badge-pill">@(forceAmount + specialForceAmount)</span></p>
+        <p>Total selected value: <span class="badge badge-primary rounded-pill">@(forceAmount + specialForceAmount)</span></p>
 
         @if (Faction == Faction.Brown && TakeLosses.ValidUselessCardToPreventLosses(Game, Player) != null)
         {

@@ -99,12 +99,12 @@
 
                         @if (h.CurrentPhase > Phase.DiallingStorm && h.Game.HasStormPrescience(Player))
                         {
-                            <div>The next storm will move <span class="badge badge-primary badge-pill">@(h.Game.NextStormMoves)</span> sectors.</div>
+                            <div>The next storm will move <span class="badge badge-primary rounded-pill">@(h.Game.NextStormMoves)</span> sectors.</div>
                         }
 
                         @if (ShownPlayer.Faction == Faction.Blue && h.CurrentPhase > Phase.BluePredicting)
                         {
-                            <div>Prediction: <FactionComponent Faction=@ShownPlayer.PredictedFaction/> win turn <span class="badge badge-primary badge-pill">@ShownPlayer.PredictedTurn</span></div>
+                            <div>Prediction: <FactionComponent Faction=@ShownPlayer.PredictedFaction/> win turn <span class="badge badge-primary rounded-pill">@ShownPlayer.PredictedTurn</span></div>
                         }
 
                         @if (ShownPlayer.Faction == Faction.Green)
@@ -124,14 +124,14 @@
                                 }
                                 else
                                 {
-                                    <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> will be available after <span class="badge badge-primary badge-pill">@(7 - ShownPlayer.TotalForcesKilledInBattle)</span> more forces are killed in battle.</div>
+                                    <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> will be available after <span class="badge badge-primary rounded-pill">@(7 - ShownPlayer.TotalForcesKilledInBattle)</span> more forces are killed in battle.</div>
                                 }
                             }
                         }
 
                         @if (h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove && h.Game.HasResourceDeckPrescience(Player))
                         {
-                            <div data-bs-animation="true" data-bs-content="@Support.GetResourceCardHoverHTML(h.Game.ResourceCardDeck.Top)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover">Top card of @Skin.Current.Describe(Concept.Resource) Deck: <span class="badge badge-primary badge-pill">@h.Game.ResourceCardDeck.Top</span></div>
+                            <div data-bs-animation="true" data-bs-content="@Support.GetResourceCardHoverHTML(h.Game.ResourceCardDeck.Top)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover">Top card of @Skin.Current.Describe(Concept.Resource) Deck: <span class="badge badge-primary rounded-pill">@h.Game.ResourceCardDeck.Top</span></div>
                         }
 
                         <!-- Cards -->
@@ -141,7 +141,7 @@
                         }
                         else
                         {
-                            <div class="row row-cols-2 row-cols-xl-4 ml-0 mr-0 mt-1 justify-content-center">
+                            <div class="row row-cols-2 row-cols-xl-4 ms-0 me-0 mt-1 justify-content-center">
 
                                 @foreach (var v in ShownPlayer.TreacheryCards)
                                 {

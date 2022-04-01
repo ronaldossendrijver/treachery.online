@@ -119,7 +119,7 @@
 
         if (h.Game.Applicable(Rule.AssistedNotekeeping))
         {
-            result += "<div class=\"row row-cols-6 ml-0 mr-0 mt-1\">";
+            result += "<div class=\"row row-cols-6 ms-0 me-0 mt-1\">";
             foreach (var c in h.Game.TreacheryDiscardPile.Items)
             {
                 result += string.Format("<img src=\"{0}\" class=\"img-fluid\"/>", Skin.Current.GetImageURL(c));
@@ -144,7 +144,7 @@
 
             if (h.Faction == Faction.White || h.Game.Applicable(Rule.AssistedNotekeeping))
             {
-                result += "<div class=\"row row-cols-6 ml-0 mr-0 mt-1\">";
+                result += "<div class=\"row row-cols-6 ms-0 me-0 mt-1\">";
                 foreach (var c in h.Game.WhiteCache)
                 {
                     result += string.Format("<img src=\"{0}\" class=\"img-fluid\"/>", Skin.Current.GetImageURL(c));

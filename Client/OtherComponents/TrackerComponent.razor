@@ -20,21 +20,21 @@
     {
         <div class="card-body">
 
-            <div class="row mb-2 ml-0">
+            <div>
 
                 @foreach (var p in Players)
                 {
-                    <button class="btn @ButtonStyle(p) p-0 mt-1 mr-1" @onclick="(e => Toggle(p))" data-bs-toggle="tooltip" title="@Skin.Current.Describe(p.Faction)">
+                    <button class="btn @ButtonStyle(p) p-0 mt-1 me-1" @onclick="(e => Toggle(p))" data-bs-toggle="tooltip" title="@Skin.Current.Describe(p.Faction)">
                         <img class="img-fluid" width="29" height="29" src="@Skin.Current.GetFactionTableImageURL(p.Faction)" />
                     </button>
                 }
 
-                <button class="btn @ButtonStyle(h.Game.TreacheryDiscardPile) p-0 mt-1 mr-1" @onclick="(e => Toggle(h.Game.TreacheryDiscardPile))" data-bs-toggle="tooltip" title="Discarded Treachery Cards">
-                    <img class="img-fluid ml-1 mr-1" width="21" height="29" src="@Skin.Current.CardBack_TreacheryCard_URL" />
+                <button class="btn @ButtonStyle(h.Game.TreacheryDiscardPile) p-0 mt-1 me-1" @onclick="(e => Toggle(h.Game.TreacheryDiscardPile))" data-bs-toggle="tooltip" title="Discarded Treachery Cards">
+                    <img class="img-fluid ms-1 me-1" width="21" height="29" src="@Skin.Current.CardBack_TreacheryCard_URL" />
                 </button>
 
-                <button class="btn @ButtonStyle(h.Game.ResourceCardDeck) p-0 mt-1 mr-2" @onclick="(e => Toggle(h.Game.ResourceCardDeck))" data-bs-toggle="tooltip" title="Discarded Spice Cards">
-                    <img class="img-fluid ml-1 mr-1" width="21" height="29" src="@Skin.Current.CardBack_ResourceCard_URL" />
+                <button class="btn @ButtonStyle(h.Game.ResourceCardDeck) p-0 mt-1 me-2" @onclick="(e => Toggle(h.Game.ResourceCardDeck))" data-bs-toggle="tooltip" title="Discarded Spice Cards">
+                    <img class="img-fluid ms-1 me-1" width="21" height="29" src="@Skin.Current.CardBack_ResourceCard_URL" />
                 </button>
 
             </div>
@@ -116,7 +116,7 @@
                         <li class="list-inline-item">
 
                             <p class="mb-0">
-                                <span class="badge badge-primary badge-pill" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(c)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover" data-container="body">@c</span>
+                                <span class="badge badge-primary rounded-pill" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(c)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover" data-container="body">@c</span>
                                 <button class="close" @onclick="@(e => SetNotDiscarded(c))"><span aria-hidden="true">&times;</span></button>
                             </p>
 

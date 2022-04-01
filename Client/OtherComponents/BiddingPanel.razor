@@ -17,7 +17,14 @@
 
                     <td class="align-top" style="position:relative; width: 150px;">
 
-                        <img src="@CurrentCardImageSRC" width="150" data-bs-animation="true" data-bs-content="@CurrentCardHover" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover" />
+                        @if (CardIsVisible) {
+                            
+                            <img src="@CurrentCardImageSRC" width="150" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(h.Game.CardsOnAuction.Top)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover" />
+                        }
+                        else {
+
+                            <img src="@CurrentCardImageSRC" width="150" />
+                        }
 
                         <div style="position: absolute; top: 135px; width: 150px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
                             <div style="font-size: 24px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">
@@ -187,7 +194,7 @@
 
     private string InfoMessage => Skin.Current.Format("If you use a {0} card to bid any amount of {1} you wish, that card will be set aside until someone outbids you and will be discarded only if you win the auction. If you instead use your {0} card to win immediately, it is immediately discarded.", TreacheryCardType.Karma, Concept.Resource);
 
-    private string CurrentCardImageSRC => (Game.HasBiddingPrescience(Player) || Game.WhiteCache.Contains(Game.CardsOnAuction.Top)) && Game.CardsOnAuction.Top != null ? Skin.Current.GetImageURL(Game.CardsOnAuction.Top) : Skin.Current.CardBack_TreacheryCard_URL;
+    private string CurrentCardImageSRC => CardIsVisible ? Skin.Current.GetImageURL(Game.CardsOnAuction.Top) : Skin.Current.CardBack_TreacheryCard_URL;
 
-    private string CurrentCardHover => (Game.HasBiddingPrescience(Player) || Game.WhiteCache.Contains(Game.CardsOnAuction.Top)) && Game.CardsOnAuction.Top != null ? Support.GetTreacheryCardHoverHTML(h.Game.CardsOnAuction.Top) : "";
+    private bool CardIsVisible => (Game.HasBiddingPrescience(Player) || Game.WhiteCache.Contains(Game.CardsOnAuction.Top)) && Game.CardsOnAuction.Top != null;
 }

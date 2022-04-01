@@ -8,7 +8,7 @@
 
     @if (Label != "")
     {
-        <label class="align-top align-text-bottom mr-2">@Label</label>
+        <label class="align-top align-text-bottom me-2">@Label</label>
     }
 
     <NumberPickerComponent Disabled="@Disabled" @bind-Value="@Value" OnDown="OnDown" OnUp="OnUp" Min="Min" Max="Max"
@@ -99,7 +99,7 @@
                 else
                 {
                     //2
-                    return "row ml-0 mt-1 mb-1 justify-content-start";
+                    return "row ms-0 mt-1 mb-1 justify-content-start";
                 }
             }
             else
@@ -112,7 +112,7 @@
                 else
                 {
                     //4
-                    return "row ml-0 mt-1 mb-1";
+                    return "row ms-0 mt-1 mb-1";
                 }
             }
         }

@@ -6,12 +6,12 @@
 
     @if (Other.HasDelegate)
     {
-        <button class="btn btn-primary mr-1" @onclick="Other" disabled=@Disabled>@OtherText</button>
+        <button class="btn btn-primary me-1" @onclick="Other" disabled=@Disabled>@OtherText</button>
     }
 
     @if (Pass.HasDelegate)
     {
-        <button class="btn btn-primary mr-1" @onclick="Pass" disabled=@Disabled>@PassText</button>
+        <button class="btn btn-primary me-1" @onclick="Pass" disabled=@Disabled>@PassText</button>
     }
 
     @if (Confirm.HasDelegate)
@@ -21,7 +21,7 @@
 
 </div>
 
-<div class="row ml-0 mt-0 mb-1 mr-0 text-danger @Alignment"><span class="bg-dark">@ConfirmError</span></div>
+<div class="row ms-0 mt-0 mb-1 me-0 text-danger @Alignment"><span class="bg-dark">@ConfirmError</span></div>
 
 @code {
 

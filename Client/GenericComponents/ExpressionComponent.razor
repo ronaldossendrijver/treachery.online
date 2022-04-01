@@ -8,7 +8,7 @@
 
     if (part == null)
     {
-        <span class="font-weight-bold">none</span>
+        <span class="fw-bold">none</span>
     }
     else if (part is string)
     {
@@ -49,15 +49,15 @@
     }
     else if (part is TreacheryCard tc)
     {
-        <span class="font-weight-bold" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(tc)" data-bs-html="true" data-bs-trigger="hover" data-bs-toggle="popover">@Skin.Current.Describe(tc)</span>
+        <span class="fw-bold" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(tc)" data-bs-html="true" data-bs-trigger="hover" data-bs-toggle="popover">@Skin.Current.Describe(tc)</span>
     }
     else if (part is LeaderSkill skill)
     {
-        <span class="font-weight-bold" data-bs-animation="true" data-bs-content="@Support.GetSkillCardHoverHTML(skill)" data-bs-html="true" data-bs-trigger="hover" data-bs-toggle="popover">@Skin.Current.Describe(skill)</span>
+        <span class="fw-bold" data-bs-animation="true" data-bs-content="@Support.GetSkillCardHoverHTML(skill)" data-bs-html="true" data-bs-trigger="hover" data-bs-toggle="popover">@Skin.Current.Describe(skill)</span>
     }
     else if (part is IHero hero)
     {
-        <span class="font-weight-bold" style="@Support.TextBorder(1, Skin.Current.FactionColor[hero.Faction])" data-bs-content="@Support.GetHeroHoverHTML(hero)" data-bs-html="true" data-bs-trigger="hover" data-bs-toggle="popover">@Skin.Current.Describe(hero)</span>
+        <span class="fw-bold" style="@Support.TextBorder(1, Skin.Current.FactionColor[hero.Faction])" data-bs-content="@Support.GetHeroHoverHTML(hero)" data-bs-html="true" data-bs-trigger="hover" data-bs-toggle="popover">@Skin.Current.Describe(hero)</span>
     }
     else if (part is Concept monster && monster == Concept.Monster)
     {
@@ -77,7 +77,7 @@
     }
     else if (part is Location || part is Territory || part is AuctionType || part is BrownEconomicsStatus || part is TreacheryCardType || part is StrongholdAdvantage || part is FactionAdvantage || part is Ruleset || part is Rule)
     {
-        <span class="font-weight-bold">@Skin.Current.Describe(part)</span>
+        <span class="fw-bold">@Skin.Current.Describe(part)</span>
     }
     else
     {

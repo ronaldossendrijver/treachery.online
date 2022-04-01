@@ -445,6 +445,21 @@ namespace Treachery.Shared
             }
         }
 
+        public IEnumerable<TreacheryCard> CardsOwnedBy(Player p)
+        {
+            var cardSetAside = GetCardSetAsideForBid(p);
+            if (cardSetAside == null)
+            {
+                return p.TreacheryCards;
+            }
+            else
+            {
+                var result = p.TreacheryCards.ToList();
+                result.Add(cardSetAside);
+                return result;
+            }
+        }
+
         public TreacheryCard GetCardSetAsideForBid(Player p)
         {
             if (CardUsedForKarmaBid != null && CardUsedForKarmaBid.Item1 == p)

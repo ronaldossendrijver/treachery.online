@@ -18,11 +18,11 @@
             Opponent forces: 
             @if (Opponent.ForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ml-1" src="@Skin.Current.GetFactionForceImageURL(Opponent.Faction)" width=30 height=30/><span>&nbsp;<strong>@Opponent.ForcesIn(Game.CurrentBattle.Territory)</strong></span>
+                <img class="img-fluid ms-1" src="@Skin.Current.GetFactionForceImageURL(Opponent.Faction)" width=30 height=30/><span>&nbsp;<strong>@Opponent.ForcesIn(Game.CurrentBattle.Territory)</strong></span>
             }
             @if (Opponent.SpecialForcesIn(Game.CurrentBattle.Territory) > 0)
             {
-                <img class="img-fluid ml-1" src="@Skin.Current.GetFactionSpecialForceImageURL(Opponent.Faction)" width=30 height=30/>
+                <img class="img-fluid ms-1" src="@Skin.Current.GetFactionSpecialForceImageURL(Opponent.Faction)" width=30 height=30/>
                 
                 @if (Opponent.Faction != Faction.White) {
 

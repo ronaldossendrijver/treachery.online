@@ -175,7 +175,7 @@
             karmaCard = null;
         }
 
-        <div class="mt-1 text-right">Total cost of shipment: <span class="badge badge-primary badge-pill">@Cost</span></div>
+        <div class="mt-1 text-end">Total cost of shipment: <span class="badge badge-primary rounded-pill">@Cost</span></div>
 
         @if (shipmentType == SHIPMENT_NORMAL && Faction != Faction.Yellow && Game.PreventedFromShipping(Faction))
         {

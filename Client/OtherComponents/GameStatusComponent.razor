@@ -27,14 +27,14 @@
 
                     foreach (var se in ToBid)
                     {
-                        <div class="d-inline-block p-2" style="filter:drop-shadow(1px 1px 1px black)">
-                            <NumberComponent Value="se.Player.TreacheryCards.Count" Size="@(se.Player == hasTurn || showTurnInSequence && se.HasTurn ? 48 : 32)"
+                        <div class="col" style="filter:drop-shadow(1px 1px 1px black)">
+                            <NumberComponent Value="Game.CardsOwnedBy(se.Player).Count()" Size="@(se.Player == hasTurn || showTurnInSequence && se.HasTurn ? 48 : 32)"
                                              SymbolSRC="@Skin.Current.GetImageURL(se.Player.Faction)"
                                              BehindNumberSRC="@Skin.Current.CardBack_TreacheryCard_URL"
                                              Title="@PlayerWithCardsTitle(se.Player)"
                                              NumberColor="@(se.Player.HasRoomForCards ? "black" : "red")" NumberBorderColor="white" NumberBorderWidth=1 NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
                         </div>
-                }
+                    }
                 }
                 else if (currentPlayersToAct.Any())
                 {
@@ -76,7 +76,7 @@
 
         </div>
 
-        <div class="@(StatusDescriptionClass)">@h.Status.GetDescription(Player, h.IsHost)</div>
+        <div class="@StatusDescriptionClass">@h.Status.GetDescription(Player, h.IsHost)</div>
 
         @if (!autoConfirm && CanEndPhase)
         {
@@ -85,7 +85,7 @@
 
         @if (autoConfirm || CanEndPhase)
         {
-            <div class="mt-1 mb-n3 text-right" style="color:black">
+            <div class="mt-1 mb-n3 text-end" style="color:black">
                 <CheckboxComponent @bind-Value=autoConfirm>Continue automatically</CheckboxComponent>
             </div>
         }
@@ -162,7 +162,7 @@
         {
             if (h.Status.WaitingForMe(Player, h.IsHost))
             {
-                return "text-danger font-weight-bold";
+                return "text-danger fw-bold";
             }
             else
             {
@@ -171,7 +171,7 @@
         }
     }
 
-    private string PlayerWithCardsTitle(Player player) => string.Format("{0} has {1} cards", player.Name, player.TreacheryCards.Count);
+    private string PlayerWithCardsTitle(Player player) => player.Name;
 
     protected string TimerText(GameEvent timedEvent)
     {
