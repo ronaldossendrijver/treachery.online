@@ -8,156 +8,159 @@
 @inherits GameComponent
 
 <CardPickerComponent Tracker="this" Id="picker" />
-<div class="card p-1 mb-2">
 
-    <div class="card-header">
-        Card Tracker
-        <InfoComponent Contents="@InfoMessage" />
-        <CollapseButton @bind-Collapsed="Collapsed" />
-    </div>
+<div class="col-sm-12 col-md-6">
+    <div class="card">
 
-    @if (!Collapsed)
-    {
-        <div class="card-body">
+        <div class="card-header">
+            Card Tracker
+            <InfoComponent Contents="@InfoMessage" />
+            <CollapseButton @bind-Collapsed="Collapsed" />
+        </div>
 
-            <div>
+        @if (!Collapsed)
+        {
+            <div class="card-body">
 
-                @foreach (var p in Players)
-                {
-                    <button class="btn @ButtonStyle(p) p-0 mt-1 me-1" @onclick="(e => Toggle(p))" data-bs-toggle="tooltip" title="@Skin.Current.Describe(p.Faction)">
-                        <img class="img-fluid" width="29" height="29" src="@Skin.Current.GetFactionTableImageURL(p.Faction)" />
-                    </button>
-                }
+                <div>
 
-                <button class="btn @ButtonStyle(h.Game.TreacheryDiscardPile) p-0 mt-1 me-1" @onclick="(e => Toggle(h.Game.TreacheryDiscardPile))" data-bs-toggle="tooltip" title="Discarded Treachery Cards">
-                    <img class="img-fluid ms-1 me-1" width="21" height="29" src="@Skin.Current.CardBack_TreacheryCard_URL" />
-                </button>
-
-                <button class="btn @ButtonStyle(h.Game.ResourceCardDeck) p-0 mt-1 me-2" @onclick="(e => Toggle(h.Game.ResourceCardDeck))" data-bs-toggle="tooltip" title="Discarded Spice Cards">
-                    <img class="img-fluid ms-1 me-1" width="21" height="29" src="@Skin.Current.CardBack_ResourceCard_URL" />
-                </button>
-
-            </div>
-
-            @if (Shown is Player)
-            {
-                var p = (Player)Shown;
-
-                <div>Treachery cards</div>
-                <div class="row row-cols-4 m-0">
-
-                    @for (int i = 0; i < p.MaximumNumberOfCards; i++)
+                    @foreach (var p in Players)
                     {
-                        int selIndex = i;
-                        int cardId = Info.TrackedTreacheryCards[p.Faction][selIndex];
-
-                        <div class="card border-0"
-                             data-bs-toggle="popover" data-bs-animation="true" data-bs-content="@DeterminePopup(Info.TrackedTreacheryCards[p.Faction][selIndex])" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover">
-
-                            @if (cardId == TreacheryCard.NONE)
-                            {
-                                <a class="btn btn-link p-1" data-bs-toggle="modal" data-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
-                                    <svg class="img-fluid w-100" viewBox="0 0 268 372" xmlns="http://www.w3.org/2000/svg">
-                                        <rect width="268" height="372" rx="20" style="fill:rgb(64,64,64);stroke-width:3;stroke:rgb(200,200,200)" />
-                                    </svg>
-                                </a>
-                            }
-                            else if (cardId == TreacheryCard.UNKNOWN)
-                            {
-                                <a class="btn btn-link p-1" data-bs-toggle="modal" data-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
-                                    <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="img-fluid" />
-                                </a>
-                            }
-                            else
-                            {
-                                <a class="btn btn-link p-1" data-bs-toggle="modal" data-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
-                                    <img src="@DetermineImageSrc(cardId)" class="img-fluid" />
-                                </a>
-                            }
-
-                        </div>
+                        <button class="btn @ButtonStyle(p) p-0 mt-1 me-1" @onclick="(e => Toggle(p))" data-bs-toggle="tooltip" title="@Skin.Current.Describe(p.Faction)">
+                            <img class="img-fluid" width="29" height="29" src="@Skin.Current.GetFactionTableImageURL(p.Faction)" />
+                        </button>
                     }
+
+                    <button class="btn @ButtonStyle(h.Game.TreacheryDiscardPile) p-0 mt-1 me-1" @onclick="(e => Toggle(h.Game.TreacheryDiscardPile))" data-bs-toggle="tooltip" title="Discarded Treachery Cards">
+                        <img class="img-fluid ms-1 me-1" width="21" height="29" src="@Skin.Current.CardBack_TreacheryCard_URL" />
+                    </button>
+
+                    <button class="btn @ButtonStyle(h.Game.ResourceCardDeck) p-0 mt-1 me-2" @onclick="(e => Toggle(h.Game.ResourceCardDeck))" data-bs-toggle="tooltip" title="Discarded Spice Cards">
+                        <img class="img-fluid ms-1 me-1" width="21" height="29" src="@Skin.Current.CardBack_ResourceCard_URL" />
+                    </button>
 
                 </div>
 
-                @if (p.Faction == Faction.Green)
+                @if (Shown is Player)
                 {
-                    <div>Traitors discarded at start</div>
-                    <PickFromImageComponent Value=@LeaderManager.HeroLookup.Find(Info.GetDiscardedTraitor(0)) OnChanged=@(hero => Info.ChangeDiscardedTraitor(0, hero?.Id)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
-                    <PickFromImageComponent Value=@LeaderManager.HeroLookup.Find(Info.GetDiscardedTraitor(1)) OnChanged=@(hero => Info.ChangeDiscardedTraitor(1, hero?.Id)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
-                    <PickFromImageComponent Value=@LeaderManager.HeroLookup.Find(Info.GetDiscardedTraitor(2)) OnChanged=@(hero => Info.ChangeDiscardedTraitor(2, hero?.Id)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
-                }
-                else if (p.Faction != Faction.Purple)
-                {
-                    <div>Revealed @(p.NumberOfTraitors > 1 ? "Traitors" : "Traitor")</div>
-                    @for (int i = 0; i < p.NumberOfTraitors; i++)
+                    var p = (Player)Shown;
+
+                    <div>Treachery cards</div>
+                    <div class="row row-cols-4 m-0">
+
+                        @for (int i = 0; i < p.MaximumNumberOfCards; i++)
+                        {
+                            int selIndex = i;
+                            int cardId = Info.TrackedTreacheryCards[p.Faction][selIndex];
+
+                            <div class="card border-0"
+                                 data-bs-toggle="popover" data-bs-animation="true" data-bs-content="@DeterminePopup(Info.TrackedTreacheryCards[p.Faction][selIndex])" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover">
+
+                                @if (cardId == TreacheryCard.NONE)
+                                {
+                                    <a class="btn btn-link p-1" data-bs-toggle="modal" data-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
+                                        <svg class="img-fluid w-100" viewBox="0 0 268 372" xmlns="http://www.w3.org/2000/svg">
+                                            <rect width="268" height="372" rx="20" style="fill:rgb(64,64,64);stroke-width:3;stroke:rgb(200,200,200)" />
+                                        </svg>
+                                    </a>
+                                }
+                                else if (cardId == TreacheryCard.UNKNOWN)
+                                {
+                                    <a class="btn btn-link p-1" data-bs-toggle="modal" data-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
+                                        <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="img-fluid" />
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-link p-1" data-bs-toggle="modal" data-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
+                                        <img src="@DetermineImageSrc(cardId)" class="img-fluid" />
+                                    </a>
+                                }
+
+                            </div>
+                        }
+
+                    </div>
+
+                    @if (p.Faction == Faction.Green)
                     {
-                        var selIndex = i;
-                        <PickFromImageComponent Value=@LeaderManager.HeroLookup.Find(Info.GetSelectedTraitor(p.Faction, selIndex)) OnChanged=@(hero => Info.ChangeSelectedTraitor(p.Faction, selIndex, hero?.Id)) Title="Select Revealed Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
+                        <div>Traitors discarded at start</div>
+                        <PickFromImageComponent Value=@LeaderManager.HeroLookup.Find(Info.GetDiscardedTraitor(0)) OnChanged=@(hero => Info.ChangeDiscardedTraitor(0, hero?.Id)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
+                        <PickFromImageComponent Value=@LeaderManager.HeroLookup.Find(Info.GetDiscardedTraitor(1)) OnChanged=@(hero => Info.ChangeDiscardedTraitor(1, hero?.Id)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
+                        <PickFromImageComponent Value=@LeaderManager.HeroLookup.Find(Info.GetDiscardedTraitor(2)) OnChanged=@(hero => Info.ChangeDiscardedTraitor(2, hero?.Id)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
                     }
-                }
-                else
-                {
-                    <div>Revealed Face Dancers</div>
-                    @for (int i = 0; i < p.NumberOfFacedancers; i++)
+                    else if (p.Faction != Faction.Purple)
                     {
-                        var selIndex = i;
-                        <PickFromImageComponent Value=@LeaderManager.HeroLookup.Find(Info.GetSelectedTraitor(p.Faction, selIndex)) OnChanged=@(hero => Info.ChangeSelectedTraitor(p.Faction, selIndex, hero?.Id)) Title="Select Revealed Face Dancer" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
+                        <div>Revealed @(p.NumberOfTraitors > 1 ? "Traitors" : "Traitor")</div>
+                        @for (int i = 0; i < p.NumberOfTraitors; i++)
+                        {
+                            var selIndex = i;
+                            <PickFromImageComponent Value=@LeaderManager.HeroLookup.Find(Info.GetSelectedTraitor(p.Faction, selIndex)) OnChanged=@(hero => Info.ChangeSelectedTraitor(p.Faction, selIndex, hero?.Id)) Title="Select Revealed Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
+                        }
                     }
-                }
-            }
-
-            else if (Shown == h.Game.TreacheryDiscardPile)
-            {
-                <ul class="list-inline mt-0">
-
-                    @foreach (var c in Info.DiscardedCards.Union(Info.RemovedCards))
+                    else
                     {
-                        <li class="list-inline-item">
-
-                            <p class="mb-0">
-                                <span class="badge badge-primary rounded-pill" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(c)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover" data-container="body">@c</span>
-                                <button class="close" @onclick="@(e => SetNotDiscarded(c))"><span aria-hidden="true">&times;</span></button>
-                            </p>
-
-                        </li>
-                    }
-
-                    @if (!Info.DiscardedCards.Any() && !Info.RemovedCards.Any())
-                    {
-                        <li class="list-inline-item text-info">No treachery cards discarded yet.</li>
-                    }
-
-                </ul>
-
-                <button class="btn btn-primary btn-sm" @onclick="@Info.ClearDiscarded">Reshuffle (clear) discarded cards</button>
-            }
-
-            else if (Shown == h.Game.ResourceCardDeck)
-            {
-                <div>Top @Skin.Current.Describe(Concept.Resource) Card</div>
-                <PickFromImageComponent Value=SpiceCard(Info.TrackedSpiceCard) OnChanged=@(card => Info.TrackedSpiceCard = card?.ToString()) Title="Select Card" Required=false ImageWidth=60 Values="AllSpiceCards" ImageURLs="AllSpiceCards_ImageURLs" PopupHTMLs="AllSpiceCards_Popups"/>
-
-                if (h.Game.Applicable(Rule.IncreasedResourceFlow))
-                {
-                    @if (h.Game.ResourceCardDiscardPileA.Items.Any() || h.Game.ResourceCardDiscardPileA.Items.Any())
-                    {
-                        <div class="small"><strong>Discard pile A:</strong> @string.Join(", ", h.Game.ResourceCardDiscardPileA.Items)</div>
-                        <div class="small"><strong>Discard pile B:</strong> @string.Join(", ", h.Game.ResourceCardDiscardPileB.Items)</div>
-                    }
-                }
-                else
-                {
-                    @if (h.Game.ResourceCardDiscardPileA.Items.Any())
-                    {
-                        <div class="small"><strong>Discarded:</strong> @string.Join(", ", h.Game.ResourceCardDiscardPileA.Items)</div>
+                        <div>Revealed Face Dancers</div>
+                        @for (int i = 0; i < p.NumberOfFacedancers; i++)
+                        {
+                            var selIndex = i;
+                            <PickFromImageComponent Value=@LeaderManager.HeroLookup.Find(Info.GetSelectedTraitor(p.Faction, selIndex)) OnChanged=@(hero => Info.ChangeSelectedTraitor(p.Faction, selIndex, hero?.Id)) Title="Select Revealed Face Dancer" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
+                        }
                     }
                 }
-            }
 
-        </div>
-    }
+                else if (Shown == h.Game.TreacheryDiscardPile)
+                {
+                    <ul class="list-inline mt-0">
 
+                        @foreach (var c in Info.DiscardedCards.Union(Info.RemovedCards))
+                        {
+                            <li class="list-inline-item">
+
+                                <p class="mb-0">
+                                    <span class="badge badge-primary rounded-pill" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(c)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover" data-container="body">@c</span>
+                                    <button class="close" @onclick="@(e => SetNotDiscarded(c))"><span aria-hidden="true">&times;</span></button>
+                                </p>
+
+                            </li>
+                        }
+
+                        @if (!Info.DiscardedCards.Any() && !Info.RemovedCards.Any())
+                        {
+                            <li class="list-inline-item text-info">No treachery cards discarded yet.</li>
+                        }
+
+                    </ul>
+
+                    <button class="btn btn-primary btn-sm" @onclick="@Info.ClearDiscarded">Reshuffle (clear) discarded cards</button>
+                }
+
+                else if (Shown == h.Game.ResourceCardDeck)
+                {
+                    <div>Top @Skin.Current.Describe(Concept.Resource) Card</div>
+                    <PickFromImageComponent Value=SpiceCard(Info.TrackedSpiceCard) OnChanged=@(card => Info.TrackedSpiceCard = card?.ToString()) Title="Select Card" Required=false ImageWidth=60 Values="AllSpiceCards" ImageURLs="AllSpiceCards_ImageURLs" PopupHTMLs="AllSpiceCards_Popups"/>
+
+                    if (h.Game.Applicable(Rule.IncreasedResourceFlow))
+                    {
+                        @if (h.Game.ResourceCardDiscardPileA.Items.Any() || h.Game.ResourceCardDiscardPileA.Items.Any())
+                        {
+                            <div class="small"><strong>Discard pile A:</strong> @string.Join(", ", h.Game.ResourceCardDiscardPileA.Items)</div>
+                            <div class="small"><strong>Discard pile B:</strong> @string.Join(", ", h.Game.ResourceCardDiscardPileB.Items)</div>
+                        }
+                    }
+                    else
+                    {
+                        @if (h.Game.ResourceCardDiscardPileA.Items.Any())
+                        {
+                            <div class="small"><strong>Discarded:</strong> @string.Join(", ", h.Game.ResourceCardDiscardPileA.Items)</div>
+                        }
+                    }
+                }
+
+            </div>
+        }
+
+    </div>
 </div>
 
 @code {

@@ -18,9 +18,16 @@
 
                     <td class="align-top" style="position:relative; width: 150px;">
 
-                        <img src="@CurrentCardImageSRC" width="150" data-bs-animation="true" data-bs-content="@CurrentCardHover" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover" />
+                        @if (CardIsVisible)
+                        {
+                            <img src="@Skin.Current.GetImageURL(Game.CardsOnAuction.Top)" width="150" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(h.Game.CardsOnAuction.Top)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover" />
+                        }
+                        else
+                        {
+                            <img src="@Skin.Current.CardBack_TreacheryCard_URL" width="150" />
+                        }
 
-                        <div style="position: absolute; top: 135px; width: 150px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
+                        <div style="position: absolute; top: 100px; width: 150px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
 
                             <div style="font-size: 24px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">
                                 Black Market
@@ -142,9 +149,7 @@
 
     protected override BlackMarketBid PassedResult => new BlackMarketBid(Game) { Initiator = Faction, Passed = true };
 
-    private string CurrentCardImageSRC => Game.HasBiddingPrescience(Player) && Game.CardsOnAuction.Top != null ? Skin.Current.GetImageURL(Game.CardsOnAuction.Top) : Skin.Current.CardBack_TreacheryCard_URL;
-
-    private string CurrentCardHover => Game.HasBiddingPrescience(Player) && Game.CardsOnAuction.Top != null ? Support.GetTreacheryCardHoverHTML(h.Game.CardsOnAuction.Top) : "";
+    private bool CardIsVisible => (Game.HasBiddingPrescience(Player) || Game.WhiteCache.Contains(Game.CardsOnAuction.Top)) && Game.CardsOnAuction.Top != null;
 
     public override void Dispose()
     {

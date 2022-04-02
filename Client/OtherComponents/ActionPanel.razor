@@ -1,7 +1,7 @@
 ﻿@using Treachery.Shared
 @using Treachery.Client.GameEventComponents;
 
-<div class="container">
+<div>
 
     @if (!h.IsHost && h.CurrentPhase == Phase.AwaitingPlayers)
     {
@@ -23,7 +23,7 @@
         <BlackMarketBiddingPanel h="h" CanBid="h.Actions.Contains(typeof(BlackMarketBid))" />
     }
 
-    <div class="row row-cols-1 row-cols-md-2" data-masonry='{"percentPosition": true, "itemSelector": ".col" }'>
+    <div class="row" data-masonry='{"percentPosition": true, "itemSelector": "card"}'>
 
         @foreach (var a in h.Actions)
         {

@@ -7,136 +7,138 @@
 @using System.Linq;
 @inherits GameComponent
 
-<div class="card p-1 mb-2">
+<div class="col-sm-12 col-md-6">
+    <div class="card">
 
-    <div class="card-header">
-        Mentat: Notekeeping Assistant
-        <CollapseButton @bind-Collapsed="Collapsed" />
-    </div>
+        <div class="card-header">
+            Mentat: Notekeeping Assistant
+            <CollapseButton @bind-Collapsed="Collapsed" />
+        </div>
 
-    @if (!Collapsed)
-    {
-        <div class="card-body">
+        @if (!Collapsed)
+        {
+            <div class="card-body">
 
-            <div>
+                <div>
 
-                @foreach (var p in Players.Where(p => p != h.Player))
-                {
-                    <button class="btn @ButtonStyle(p) p-1" @onclick="(e => Toggle(p))" data-bs-toggle="tooltip" title="@Skin.Current.Describe(p.Faction)">
-                        <img class="img-fluid" width="29" height="29" src="@Skin.Current.GetFactionTableImageURL(p.Faction)" />
-                    </button>
-                }
-
-            </div>
-
-            @if (Shown is Player)
-            {
-                var p = (Player)Shown;
-
-                <div class="row m-0">
-
-                    <!-- Resources -->
-                    <div class="col p-0">
-                        <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.Harvester_URL" title="@Skin.Current.Describe(Concept.Resource)" /><strong>&nbsp;@ResourcesText(p)</strong>
-                    </div>
-
-                    <!-- Forces -->
-                    <div class="col p-0">
-                        <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.GetFactionForceImageURL(p.Faction)" title="@(p.ForceName)" /><strong>&nbsp;@p.ForcesInReserve</strong>
-                    </div>
-
-                    <!-- Special Forces -->
-                    @if (p.HasSpecialForces)
+                    @foreach (var p in Players.Where(p => p != h.Player))
                     {
-                        <div class="col p-0">
-                            <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.GetFactionSpecialForceImageURL(p.Faction)" title="@(p.SpecialForceName)" /><strong>&nbsp;@p.SpecialForcesInReserve</strong>
-                        </div>
+                        <button class="btn @ButtonStyle(p) p-1" @onclick="(e => Toggle(p))" data-bs-toggle="tooltip" title="@Skin.Current.Describe(p.Faction)">
+                            <img class="img-fluid" width="29" height="29" src="@Skin.Current.GetFactionTableImageURL(p.Faction)" />
+                        </button>
                     }
 
                 </div>
 
-                var cards = Game.CardsOwnedBy(p).ToList();
-
-                if (cards.Count > 0)
+                @if (Shown is Player)
                 {
-                    <div>Treachery cards</div>
-                    <div class="row row-cols-4 m-0">
+                    var p = (Player)Shown;
 
-                        @foreach (var c in cards)
+                    <div class="row m-0">
+
+                        <!-- Resources -->
+                        <div class="col p-0">
+                            <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.Harvester_URL" title="@Skin.Current.Describe(Concept.Resource)" /><strong>&nbsp;@ResourcesText(p)</strong>
+                        </div>
+
+                        <!-- Forces -->
+                        <div class="col p-0">
+                            <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.GetFactionForceImageURL(p.Faction)" title="@(p.ForceName)" /><strong>&nbsp;@p.ForcesInReserve</strong>
+                        </div>
+
+                        <!-- Special Forces -->
+                        @if (p.HasSpecialForces)
                         {
-                            bool isKnown = IsKnownCard(c);
-                            var popover = isKnown ? Support.GetTreacheryCardHoverHTML(c) : "<div class='p-1 small' style='color:black;background-color:white;border: 1px solid black;'>Unknown</div>";
-
-                            <div class="card border-0 pe-1" data-bs-toggle="popover" data-bs-animation="true" data-bs-content="@popover" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover">
-
-                                @if (IsKnownCard(c))
-                                {
-                                    <img src="@Skin.Current.GetImageURL(c)" class="img-fluid" />
-                                }
-                                else
-                                {
-                                    <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="img-fluid" />
-                                }
-
+                            <div class="col p-0">
+                                <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.GetFactionSpecialForceImageURL(p.Faction)" title="@(p.SpecialForceName)" /><strong>&nbsp;@p.SpecialForcesInReserve</strong>
                             </div>
                         }
 
                     </div>
-                }
-                else
-                {
-                    <div>They don't own any Treachery cards</div>
-                }
 
-                if (p.RevealedTraitors.Count > 0)
-                {
-                    <div class="mt-1">@(p.RevealedTraitors.Count > 1 ? "Revealed Traitors" : "Revealed Traitor")</div>
-                    <div class="row row-cols-4 m-0">
-                        @foreach (var c in p.RevealedTraitors)
-                        {
-                            <img class="img-fluid pe-1" width=60 src="@Skin.Current.GetImageURL(c)"
-                                 data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
-                        }
-                    </div>
-                }
+                    var cards = Game.CardsOwnedBy(p).ToList();
 
-                if (p.RevealedDancers.Count > 0)
-                {
-                    <div class="mt-1">Revealed Face Dancers</div>
-                    <div class="row row-cols-4 m-0">
-                        @foreach (var c in p.RevealedDancers)
-                        {
-                            <img class="img-fluid pe-1" width=60 src="@Skin.Current.GetImageURL(c)"
-                                 data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
-                        }
-                    </div>
-                }
-
-                <div>Current victory points: <strong>@Game.NumberOfVictoryPoints(p, true)</strong></div>
-
-                if (p.Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah))
-                {
-                    if (p.TotalForcesKilledInBattle >= 7)
+                    if (cards.Count > 0)
                     {
-                        if (p.MessiahAvailable)
-                        {
-                            <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> is available.</div>
-                        }
-                        else
-                        {
-                            <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> is dead.</div>
-                        }
+                        <div>Treachery cards</div>
+                        <div class="row row-cols-4 m-0">
+
+                            @foreach (var c in cards)
+                            {
+                                bool isKnown = IsKnownCard(c);
+                                var popover = isKnown ? Support.GetTreacheryCardHoverHTML(c) : "<div class='p-1 small' style='color:black;background-color:white;border: 1px solid black;'>Unknown</div>";
+
+                                <div class="card border-0 pe-1" data-bs-toggle="popover" data-bs-animation="true" data-bs-content="@popover" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover">
+
+                                    @if (IsKnownCard(c))
+                                    {
+                                        <img src="@Skin.Current.GetImageURL(c)" class="img-fluid" />
+                                    }
+                                    else
+                                    {
+                                        <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="img-fluid" />
+                                    }
+
+                                </div>
+                            }
+
+                        </div>
                     }
                     else
                     {
-                        <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> available after <span class="badge badge-primary rounded-pill">@(7 - p.TotalForcesKilledInBattle)</span> more forces are killed.</div>
+                        <div>They don't own any Treachery cards</div>
+                    }
+
+                    if (p.RevealedTraitors.Count > 0)
+                    {
+                        <div class="mt-1">@(p.RevealedTraitors.Count > 1 ? "Revealed Traitors" : "Revealed Traitor")</div>
+                        <div class="row row-cols-4 m-0">
+                            @foreach (var c in p.RevealedTraitors)
+                            {
+                                <img class="img-fluid pe-1" width=60 src="@Skin.Current.GetImageURL(c)"
+                                     data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
+                            }
+                        </div>
+                    }
+
+                    if (p.RevealedDancers.Count > 0)
+                    {
+                        <div class="mt-1">Revealed Face Dancers</div>
+                        <div class="row row-cols-4 m-0">
+                            @foreach (var c in p.RevealedDancers)
+                            {
+                                <img class="img-fluid pe-1" width=60 src="@Skin.Current.GetImageURL(c)"
+                                     data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
+                            }
+                        </div>
+                    }
+
+                    <div>Current victory points: <strong>@Game.NumberOfVictoryPoints(p, true)</strong></div>
+
+                    if (p.Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah))
+                    {
+                        if (p.TotalForcesKilledInBattle >= 7)
+                        {
+                            if (p.MessiahAvailable)
+                            {
+                                <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> is available.</div>
+                            }
+                            else
+                            {
+                                <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> is dead.</div>
+                            }
+                        }
+                        else
+                        {
+                            <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> available after <span class="badge badge-primary rounded-pill">@(7 - p.TotalForcesKilledInBattle)</span> more forces are killed.</div>
+                        }
                     }
                 }
-            }
 
-        </div>
-    }
+            </div>
+        }
 
+    </div>
 </div>
 
 @code {

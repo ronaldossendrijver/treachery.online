@@ -377,13 +377,20 @@ namespace Treachery.Shared
                 EnterSelectTraitors();
             }
         }
+
         public IEnumerable<IHero> TraitorsInPlay
         {
             get
             {
                 var result = new List<IHero>();
 
-                result.AddRange(LeaderManager.Leaders.Where(l => Players.Select(p => p.Faction).Any(f => f == l.Faction)));
+                //Leaders = LeaderManager.GetLeaders(Faction).Where(l => g.Applicable(Rule.BrownAuditor) || l.HeroType != HeroType.Auditor).ToList();
+
+                var factionsInPlay = Players.Select(p => p.Faction);
+                result.AddRange(LeaderManager.Leaders.Where(l => 
+                    factionsInPlay.Contains(l.Faction) && 
+                    (Version <= 140 || l.HeroType != HeroType.Auditor || Applicable(Rule.BrownAuditor))
+                    ));
 
                 if (Applicable(Rule.CheapHeroTraitor))
                 {

@@ -58,18 +58,6 @@ a, .btn-link {
     height: 50px;
 }
 
-@media (min-width: 576px) {
-    .card-columns {
-        column-count: 1;
-    }
-}
-
-@media (min-width: 1920px) {
-    .card-columns {
-        column-count: 2;
-    }
-}
-
 @media screen {
     #printSection {
         display: none;
