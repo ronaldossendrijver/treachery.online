@@ -1,29 +1,25 @@
 ﻿@using Treachery.Shared;
 @inherits Component;
 
-<div class="col-sm-12 col-md-6 mb-2">
+<div class="card @Width @Border mb-2" style="@BackgroundStyle">
 
-    <div class="card @Width @Border" style="@BackgroundStyle">
+    <div class="card-header" style="@HeaderStyle">
 
-        <div class="card-header" style="@HeaderStyle">
-
-            @if (Collapsible)
-            {
-                <CollapseButton @bind-Collapsed="Collapsed" />
-            }
-
-            @Header
-
-        </div>
-
-        @if (!Collapsible || !Collapsed)
+        @if (Collapsible)
         {
-            <div class="card-body" style="@BodyStyle">
-                @Body
-            </div>
+            <CollapseButton @bind-Collapsed="Collapsed" />
         }
 
+        @Header
+
     </div>
+
+    @if (!Collapsible || !Collapsed)
+    {
+        <div class="card-body" style="@BodyStyle">
+            @Body
+        </div>
+    }
 
 </div>
 

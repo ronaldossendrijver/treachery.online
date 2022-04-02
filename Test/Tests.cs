@@ -890,14 +890,14 @@ namespace Treachery.Test
                 {
                     if (pathSegment is SvgCubicCurveSegment svgCubicCurveSegment)
                     {
-                        svgCubicCurveSegment.Start = Translate(svgCubicCurveSegment.Start, transforms, digits);
+                        //svgCubicCurveSegment.Start = Translate(svgCubicCurveSegment.Start, transforms, digits);
                         svgCubicCurveSegment.End = Translate(svgCubicCurveSegment.End, transforms, digits);
                         svgCubicCurveSegment.FirstControlPoint = Translate(svgCubicCurveSegment.FirstControlPoint, transforms, digits);
                         svgCubicCurveSegment.SecondControlPoint = Translate(svgCubicCurveSegment.SecondControlPoint, transforms, digits);
                     }
                     else
                     {
-                        pathSegment.Start = Translate(pathSegment.Start, transforms, digits);
+                        //pathSegment.Start = Translate(pathSegment.Start, transforms, digits);
                         pathSegment.End = Translate(pathSegment.End, transforms, digits);
                     }
                 }

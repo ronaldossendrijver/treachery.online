@@ -6,84 +6,82 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameComponent
 
-<div class="col-sm-12 col-md-6">
-    <div class="card">
+<div class="card mb-2">
 
-        <div class="card-header">
-            Deals
-            <CollapseButton @bind-Collapsed="Collapsed" />
-        </div>
+    <div class="card-header">
+        Deals
+        <CollapseButton @bind-Collapsed="Collapsed" />
+    </div>
 
-        @if (!Collapsed)
-        {
-            <div class="card-body">
+    @if (!Collapsed)
+    {
+        <div class="card-body">
 
-                @if (h.IsPlayer && (DealAccepted.AcceptableDeals(Game, Player).Any() || DealAccepted.CancellableDeals(Game, Player).Any()))
-                {
-                    <label>Deal offers</label>
-                    <table class="table table-striped table-sm">
+            @if (h.IsPlayer && (DealAccepted.AcceptableDeals(Game, Player).Any() || DealAccepted.CancellableDeals(Game, Player).Any()))
+            {
+                <label>Deal offers</label>
+                <table class="table table-striped table-sm">
 
-                        <tbody>
+                    <tbody>
 
-                            @foreach (var offer in DealAccepted.AcceptableDeals(Game, Player))
-                            {
-                                var offerToShow = offer;
-                                var validity = offer.Acceptance(Faction).Validate();
-
-                                <tr>
-                                    <td><img width=24 src="@Skin.Current.GetImageURL(offer.Initiator)" /></td>
-                                    <td>@offer.Price</td>
-                                    <td class="text-break">@offer.GetDealDescription()</td>
-                                    <td>
-                                        <button class="btn btn-primary btn-sm" @onclick="e => Accept(offerToShow)" disabled=@(validity != "")>Accept</button>
-                                    </td>
-                                </tr>
-
-                            }
-
-                            @foreach (var offer in DealAccepted.CancellableDeals(Game, Player))
-                            {
-                                var offerToShow = offer;
-
-                                <tr>
-                                    <td><img width=24 src="@Skin.Current.GetImageURL(offer.Initiator)" /></td>
-                                    <td>@offer.Price</td>
-                                    <td class="text-break">@offer.GetDealDescription()</td>
-                                    <td>
-                                        <button class="btn btn-primary btn-sm" @onclick="e => Cancel(offerToShow)">Withdraw</button>
-                                    </td>
-                                </tr>
-
-                            }
-
-                        </tbody>
-
-                    </table>
-                }
-
-                @if (DealAccepted.CurrentDeals(Game).Any())
-                {
-                    <label>Current deals</label>
-                    <table class="table table-striped table-sm">
-
-                        @foreach (var deal in DealAccepted.CurrentDeals(Game))
+                        @foreach (var offer in DealAccepted.AcceptableDeals(Game, Player))
                         {
+                            var offerToShow = offer;
+                            var validity = offer.Acceptance(Faction).Validate();
+
                             <tr>
-                                <td class="p-0">
-                                    <img width=24 src="@Skin.Current.GetImageURL(deal.BoundFaction)" />
-                                    ⇒
-                                    <img width=24 src="@Skin.Current.GetImageURL(deal.ConsumingFaction)" />
+                                <td><img width=24 src="@Skin.Current.GetImageURL(offer.Initiator)" /></td>
+                                <td>@offer.Price</td>
+                                <td class="text-break">@offer.GetDealDescription()</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" @onclick="e => Accept(offerToShow)" disabled=@(validity != "")>Accept</button>
                                 </td>
-                                <td class="text-break">@deal.DealContentsDescription(Game)</td>
                             </tr>
+
                         }
 
-                    </table>
-                }
-            </div>
-        }
+                        @foreach (var offer in DealAccepted.CancellableDeals(Game, Player))
+                        {
+                            var offerToShow = offer;
 
-    </div>
+                            <tr>
+                                <td><img width=24 src="@Skin.Current.GetImageURL(offer.Initiator)" /></td>
+                                <td>@offer.Price</td>
+                                <td class="text-break">@offer.GetDealDescription()</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" @onclick="e => Cancel(offerToShow)">Withdraw</button>
+                                </td>
+                            </tr>
+
+                        }
+
+                    </tbody>
+
+                </table>
+            }
+
+            @if (DealAccepted.CurrentDeals(Game).Any())
+            {
+                <label>Current deals</label>
+                <table class="table table-striped table-sm">
+
+                    @foreach (var deal in DealAccepted.CurrentDeals(Game))
+                    {
+                        <tr>
+                            <td class="p-0">
+                                <img width=24 src="@Skin.Current.GetImageURL(deal.BoundFaction)" />
+                                ⇒
+                                <img width=24 src="@Skin.Current.GetImageURL(deal.ConsumingFaction)" />
+                            </td>
+                            <td class="text-break">@deal.DealContentsDescription(Game)</td>
+                        </tr>
+                    }
+
+                </table>
+            }
+        </div>
+    }
+
 </div>
 
 @code {
