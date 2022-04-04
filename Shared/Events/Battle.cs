@@ -561,7 +561,7 @@ namespace Treachery.Shared
             return p.TreacheryCards.Where(c =>
             c.Type != TreacheryCardType.Chemistry && (c.IsWeapon || c.Type == TreacheryCardType.Useless) ||
             c.Type == TreacheryCardType.Chemistry && withDefense != null && withDefense.IsDefense && withDefense.Type != TreacheryCardType.WeirdingWay ||
-            withPlanetologist && !(c.IsWeapon || c.IsDefense || c.IsUseless));
+            withPlanetologist && c.IsGreen);
         }
 
         public static int MaxBankerBoost(Game g, Player p, IHero hero)
@@ -670,7 +670,7 @@ namespace Treachery.Shared
                 }
             }
 
-            if (weapon != null && !(weapon.IsWeapon || weapon.IsDefense || weapon.IsUseless))
+            if (weapon != null && weapon.IsGreen)
             {
                 if (g.SkilledAs(hero, LeaderSkill.Planetologist))
                 {

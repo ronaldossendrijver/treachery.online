@@ -102,6 +102,11 @@ namespace Treachery.Shared
 
         public bool IsUseless => Type == TreacheryCardType.Useless;
 
+        public bool IsMercenary => Type == TreacheryCardType.Mercenary;
+
+        public bool IsGreen => !(IsWeapon || IsDefense || IsUseless || IsMercenary);
+
+
         public bool CounteredBy(TreacheryCard defense, TreacheryCard combinedWithWeapon)
         {
             if (Type == TreacheryCardType.MirrorWeapon)
