@@ -13,81 +13,81 @@
 
         <div class="card-body">
 
-            <table class="table table-borderless">
-                <tr>
+            <div class="row">
 
-                    <td class="align-top" style="position:relative; width: 150px;">
+                <div class="col align-top" style="flex:0 0 150px">
 
-                        @if (CardIsVisible)
-                        {
-                            <img src="@Skin.Current.GetImageURL(Game.CardsOnAuction.Top)" width="150" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(h.Game.CardsOnAuction.Top)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover" />
-                        }
-                        else
-                        {
-                            <img src="@Skin.Current.CardBack_TreacheryCard_URL" width="150" />
-                        }
+                    @if (CardIsVisible)
+                    {
+                        <img src="@Skin.Current.GetImageURL(Game.CardsOnAuction.Top)" width="150" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(h.Game.CardsOnAuction.Top)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover" />
+                    }
+                    else
+                    {
+                        <img src="@Skin.Current.CardBack_TreacheryCard_URL" width="150" />
+                    }
 
-                        <div style="position: absolute; top: 100px; width: 150px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
+                    <div style="position: absolute; top: 100px; width: 150px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
 
-                            <div style="font-size: 24px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">
-                                Black Market
-                            </div>
-
-                            @if (Game.CurrentAuctionType != AuctionType.BlackMarketSilent && Game.CurrentBid != null)
-                            {
-                                <img src="@Skin.Current.GetImageURL(Game.CurrentBid.Initiator)" width="36" style="vertical-align: top;" />
-                                <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="36" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
-                            }
+                        <div style="font-size: 24px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">
+                            Black Market
                         </div>
 
-                    </td>
-
-                    <td class="align-top">
-
-                        @if (!h.IsObserver && h.Player.Faction != Faction.None)
+                        @if (Game.CurrentAuctionType != AuctionType.BlackMarketSilent && Game.CurrentBid != null)
                         {
-                            <CheckboxComponent @bind-Value="@h.Autopass">Auto-pass</CheckboxComponent>
-                            @if (h.Autopass)
-                            {
-                                <SelectResourcesComponent @bind-Value="@h.BidAutoPassThreshold" Min="0" Max="50" Label="When above:" />
-                            }
+                            <img src="@Skin.Current.GetImageURL(Game.CurrentBid.Initiator)" width="36" style="vertical-align: top;" />
+                            <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="36" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
+                        }
+                    </div>
 
-                            @if (CanBid)
-                            {
-                                <hr style="border-color:white" />
-                            }
+                </div>
+
+                <div class="col align-top">
+
+                    @if (!h.IsObserver && h.Player.Faction != Faction.None)
+                    {
+                        <CheckboxComponent @bind-Value="@h.Autopass">Auto-pass</CheckboxComponent>
+                        @if (h.Autopass)
+                        {
+                            <SelectResourcesComponent @bind-Value="@h.BidAutoPassThreshold" Min="0" Max="50" Label="When above:" />
                         }
 
                         @if (CanBid)
                         {
-                            <div class="mt-1">
-
-                                @if (Player.Ally != Faction.None && BlackMarketBid.ValidMaxAllyAmount(Game, Player) > 0)
-                                {
-                                    <SelectResourcesFromFactionComponent @bind-Value="amount" Min="0" Max="BlackMarketBid.ValidMaxAmount(Player)" Faction="Faction" />
-                                    <SelectResourcesFromFactionComponent @bind-Value="allyContributionAmount" Min="0" Max="BlackMarketBid.ValidMaxAllyAmount(Game, Player)" Faction="Player.Ally" /> 
-                                }
-                                else
-                                {
-                                    <SelectResourcesComponent @bind-Value="amount" Min="0" Max="BlackMarketBid.ValidMaxAmount(Player)" />
-                                    allyContributionAmount = 0;
-                                }
-
-                                @if (Game.SpiceForBidsRedCanPay(Faction) > 0)
-                                {
-                                    <SelectResourcesFromFactionComponent @bind-Value="redContributionAmount" Min="0" Max="Game.SpiceForBidsRedCanPay(Faction)" Faction="Faction.Red" />
-                                }
-
-                            </div>
-
-                            <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Pass="Pass" PassText="Pass" Alignment="justify-content-start" />
+                            <hr style="border-color:white" />
                         }
+                    }
 
-                    </td>
-                </tr>
-            </table>
+                    @if (CanBid)
+                    {
+                        <div class="mt-1">
+
+                            @if (Player.Ally != Faction.None && BlackMarketBid.ValidMaxAllyAmount(Game, Player) > 0)
+                            {
+                                <SelectResourcesFromFactionComponent @bind-Value="amount" Min="0" Max="BlackMarketBid.ValidMaxAmount(Player)" Faction="Faction" />
+                                <SelectResourcesFromFactionComponent @bind-Value="allyContributionAmount" Min="0" Max="BlackMarketBid.ValidMaxAllyAmount(Game, Player)" Faction="Player.Ally" /> 
+                            }
+                            else
+                            {
+                                <SelectResourcesComponent @bind-Value="amount" Min="0" Max="BlackMarketBid.ValidMaxAmount(Player)" />
+                                allyContributionAmount = 0;
+                            }
+
+                            @if (Game.SpiceForBidsRedCanPay(Faction) > 0)
+                            {
+                                <SelectResourcesFromFactionComponent @bind-Value="redContributionAmount" Min="0" Max="Game.SpiceForBidsRedCanPay(Faction)" Faction="Faction.Red" />
+                            }
+
+                        </div>
+
+                        <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Pass="Pass" PassText="Pass" Alignment="justify-content-start" />
+                    }
+
+                </div>
+
+            </div>
 
         </div>
+
     </div>
 }
 
