@@ -18,7 +18,7 @@
     {
         <div class="card-body">
 
-            <div>
+            <div class="mb-1">
 
                 @foreach (var p in Players.Where(p => p != h.Player))
                 {
@@ -129,7 +129,7 @@
                     }
                     else
                     {
-                        <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> available after <span class="badge badge-primary rounded-pill">@(7 - p.TotalForcesKilledInBattle)</span> more forces are killed.</div>
+                        <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> available after <span class="badge bg-primary rounded-pill">@(7 - p.TotalForcesKilledInBattle)</span> more forces are killed.</div>
                     }
                 }
             }

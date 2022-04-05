@@ -562,6 +562,9 @@ namespace Treachery.Client
                 else if (latestEvent is Thought) result.Add(CardInfo(latestEvent, LeaderSkill.Thinker));
                 else if (latestEvent is GreyRemovedCardFromAuction) result.Add(EventInfo(latestEvent));
                 else if (latestEvent is GreySwappedCardOnBid gsc && !gsc.Passed) result.Add(EventInfo(latestEvent));
+                else if (latestEvent is BrownDiscarded) result.Add(EventInfo(latestEvent));
+                else if (latestEvent is ReplacedCardWon) result.Add(EventInfo(latestEvent));
+                else if (latestEvent is CardTraded) result.Add(EventInfo(latestEvent));
                 else if (latestEvent is SwitchedSkilledLeader) result.Add(EventInfo(latestEvent));
                 else if (latestEvent is EstablishPlayers && g.CurrentPhase != Phase.SelectingFactions && IsPlayer) result.Add(CardInfo(Player.Faction));
                 else if (latestEvent is FactionTradeOffered fto && (fto.Initiator == Faction || fto.Target == Faction) && !g.CurrentTradeOffers.Any(t => t.Initiator == Faction)) result.Add(CardInfo(Player.Faction));
