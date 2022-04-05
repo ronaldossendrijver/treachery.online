@@ -100,7 +100,15 @@
 
         function EnablePopovers() {
 
-            $('[data-bs-toggle="popover"]').popover({ sanitize: false });
+            try {
+                $('[data-bs-toggle="popover"]')
+                    .filter(function (index, item) { return item.getAttribute("data-bs-content") != null && item.getAttribute("data-bs-content").length > 0 })
+                    .popover({ sanitize: false });
+            }
+            catch (error) {
+
+                //
+            }
         }
 
         function SendChatMessage() {
@@ -545,53 +553,59 @@
 
         async function PushVideoData(videoId, buffer, volume) {
 
-            let mediaSource = mediaSources.get(videoId)
-            let video = document.getElementById(videoId);
+            try {
+                let mediaSource = mediaSources.get(videoId)
+                let video = document.getElementById(videoId);
 
-            if (video != null) {
+                if (video != null) {
 
-                if (mediaSource != null) {
+                    if (mediaSource != null) {
 
-                    if (mediaSource.sourceBuffers.length > 0) {
+                        if (mediaSource.sourceBuffers.length > 0) {
 
-                        video.volume = volume;
+                            video.volume = volume;
 
-                        let sourceBuffer = mediaSource.sourceBuffers[0];
+                            let sourceBuffer = mediaSource.sourceBuffers[0];
 
-                        if (sourceBuffer.buffered.length > 0) {
+                            if (sourceBuffer.buffered.length > 0) {
 
-                            if (video.buffered.end(0) - video.currentTime > 1) {
+                                if (video.buffered.end(0) - video.currentTime > 1) {
 
-                                video.playbackRate = 1.5;
+                                    video.playbackRate = 1.5;
+                                }
+                                else {
+
+                                    video.playbackRate = 1;
+                                }
                             }
-                            else {
 
-                                video.playbackRate = 1;
+                            sourceBuffer.appendBuffer(buffer.buffer);
+
+                            while (sourceBuffer.updating) {
+
+                                await Sleep(100);
+                            }
+
+                            if (video.ended) {
+
+                                video.play();
                             }
                         }
+                        else {
 
-                        sourceBuffer.appendBuffer(buffer.buffer);
-
-                        while (sourceBuffer.updating) {
-
-                            await Sleep(100);
-                        }
-
-                        if (video.ended) {
-
-                            video.play();
+                            mediaSources.delete(videoId);
+                            InitializeVideo(videoId);
                         }
                     }
                     else {
 
-                        mediaSources.delete(videoId);
                         InitializeVideo(videoId);
                     }
                 }
-                else {
+            }
+            catch (error) {
 
-                    InitializeVideo(videoId);
-                }
+                //
             }
         }
 

@@ -21,25 +21,25 @@
 
             var x = position.X - radiusModifier * Skin.Current.PlayerTokenRadius;
             var y = position.Y - radiusModifier * Skin.Current.PlayerTokenRadius;
+            var factionTokenDiameter = (radiusModifier * Skin.Current.PlayerTokenRadius * 2);
+
 
             <Circle X="@position.X" Y="@position.Y" Radius="@(1.35f * Skin.Current.PlayerTokenRadius)" FillColor="@Skin.Current.TABLEPOSITION_BACKGROUNDCOLOR" />
 
-            var FactionTokenDiameter = (radiusModifier * Skin.Current.PlayerTokenRadius * 2);
-
-            <Image X="@(x)" Y="@(y)" Diameter=@FactionTokenDiameter Src="@Skin.Current.GetFactionTableImageURL(p.Faction)" 
-                   ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                   Popover="@Intel(p)"/>
-
             var factionLogoIsOnRightSideOfMap = x > 0.5f * Skin.Current.PlanetCenter.X;
-            var videoposition = factionLogoIsOnRightSideOfMap ? x + FactionTokenDiameter + 1 : x - 2*FactionTokenDiameter - 1;
+            var videoposition = factionLogoIsOnRightSideOfMap ? x + factionTokenDiameter + 1 : x - 2*factionTokenDiameter - 1;
             if (p == h.Player && EnableCameras)
             {
-                <Videocapture h=@h X=@videoposition Y=(y-0.5f*FactionTokenDiameter) Width=2*FactionTokenDiameter Height=2*FactionTokenDiameter SymbolOnRight=!factionLogoIsOnRightSideOfMap/>
+                <Videocapture h=@h X=@videoposition Y=(y-0.5f*factionTokenDiameter) Width=2*factionTokenDiameter Height=2*factionTokenDiameter SymbolOnRight=!factionLogoIsOnRightSideOfMap/>
             }
             else
             {
-                <Videostream h=@h X=@videoposition Y=(y-0.5f*FactionTokenDiameter) Width=2*FactionTokenDiameter Height=2*FactionTokenDiameter StreamId=@DetermineVideoStreamId(p)/>
+                <Videostream h=@h X=@videoposition Y=(y-0.5f*factionTokenDiameter) Width=2*factionTokenDiameter Height=2*factionTokenDiameter StreamId=@DetermineVideoStreamId(p)/>
             }
+
+            <Image X="@(x)" Y="@(y)" Diameter=@factionTokenDiameter Src="@Skin.Current.GetFactionTableImageURL(p.Faction)" 
+                   ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+                   Popover="@Intel(p)"/>
 
             if (p.Ally != Faction.None)
             {

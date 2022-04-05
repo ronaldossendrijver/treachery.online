@@ -154,7 +154,7 @@
 
     if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Weapon)
     {
-        if (Plan.Weapon != null && !(!Game.GreenKarma && Plan.Weapon.IsGreen))
+        if (Plan.Weapon != null)
         {
             <Image X="@(X + Skin.Current.BattleWheelCardX)" Y="@(Y + Skin.Current.BattleWheelCardY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
                    Src="@Skin.Current.GetImageURL(Plan.Weapon)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 

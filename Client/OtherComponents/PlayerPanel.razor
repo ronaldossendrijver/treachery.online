@@ -145,7 +145,7 @@
 
                                 @foreach (var v in ShownPlayer.TreacheryCards)
                                 {
-                                    <div class="card bg-transparent">
+                                    <div>
                                         <img src="@Skin.Current.GetImageURL(v)" class="img-fluid" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(v)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover">
                                     </div>
                                 }
@@ -153,7 +153,7 @@
                                 @if (h.Game.GetCardSetAsideForBid(Player) != null)
                                 {
                                     var v = h.Game.GetCardSetAsideForBid(Player);
-                                    <div class="card bg-transparent">
+                                    <div>
                                         <img src="@Skin.Current.GetImageURL(v)" class="img-fluid" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(v)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover">
                                     </div>
                                 }

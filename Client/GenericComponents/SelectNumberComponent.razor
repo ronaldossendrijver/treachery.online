@@ -2,11 +2,11 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
 --->
 
-<div class="d-inline-block justify-content-start">
+<div class="d-flex align-items-center">
 
     @if (Label != "")
     {
-        <label class="align-top align-text-bottom me-2">@Label</label>
+        <label class="me-1">@Label</label>
     }
     
     <NumberPickerComponent Disabled="@Disabled" @bind-Value="Value" Min="Min" Max="Max" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="black" />

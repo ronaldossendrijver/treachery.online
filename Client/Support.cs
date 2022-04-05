@@ -183,32 +183,13 @@ namespace Treachery.Client
                 return "";
             }
 
-            /*
-            using SHA256 sha256Hash = SHA256.Create();
-
-            // Convert the input string to a byte array and compute the hash.
-            byte[] data = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
-
-            // Create a new Stringbuilder to collect the bytes
-            // and create a string.
-            var sBuilder = new StringBuilder();
-
-            // Loop through each byte of the hashed data
-            // and format each one as a hexadecimal string.
-            for (int i = 0; i < data.Length; i++)
-            {
-                sBuilder.Append(data[i].ToString("x2"));
-            }
-
-            // Return the hexadecimal string.
-            return sBuilder.ToString();*/
-
-            UInt64 hashedValue = 3074457345618258791ul;
+            ulong hashedValue = 3074457345618258791ul;
             for (int i = 0; i < input.Length; i++)
             {
                 hashedValue += input[i];
                 hashedValue *= 3074457345618258799ul;
             }
+
             return hashedValue.ToString();
         }
 
@@ -236,10 +217,6 @@ namespace Treachery.Client
         public static string TextBorder(int borderwidth, string bordercolor) => TextBorder(borderwidth, borderwidth, bordercolor);
 
         public static string TextBorder(int borderwidth, int blur, string bordercolor) => string.Format("text-shadow: {0}px {0}px {1}px {2}, 0px {0}px {1}px {2}, -{0}px {0}px {1}px {2}, -{0}px 0px {1}px {2}, -{0}px -{0}px {1}px {2}, 0px -{0}px {1}px {2}, {0}px -{0}px {1}px {2}, {0}px 0px {1}px {2}, 0px 0px {1}px {2};", Round(0.5f * borderwidth), Round(0.5f * blur), bordercolor);
-
-        public static string ShadowBorder(float borderwidth, string bordercolor) => ShadowBorder(borderwidth, borderwidth, bordercolor);
-
-        public static string ShadowBorder(float borderwidth, float blur, string bordercolor) => string.Format("drop-shadow(-{0}px -{0}px {1}px {2}) drop-shadow(-{0}px -0px {1}px {2}) drop-shadow(-{0}px {0}px {1}px {2}) drop-shadow(0px -{0}px {1}px {2}) drop-shadow(0px {0}px {1}px {2}) drop-shadow({0}px -{0}px {1}px {2}) drop-shadow({0}px 0px {1}px {2}) drop-shadow({0}px {0}px {1}px {2})", Round(0.5f * borderwidth), Round(0.5f * blur), bordercolor);
 
         public static string Round(double x) => Math.Round(x, 3).ToString(CultureInfo.InvariantCulture);
 
