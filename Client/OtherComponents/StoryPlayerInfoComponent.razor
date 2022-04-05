@@ -62,188 +62,192 @@
 
             </tr>
         </thead>
+        
+        <tbody>
 
-        @foreach (var p in Players)
-        {
-            <tr>
+            @foreach (var p in Players)
+            {
+                <tr>
 
-                <td><img class="img-fluid p-1" width=60 src="@Skin.Current.GetFactionTableImageURL(p.Faction)" /></td>
+                    <td><img class="img-fluid p-1" width=60 src="@Skin.Current.GetFactionTableImageURL(p.Faction)" /></td>
 
-                @if (ShowName)
-                {
-                    <td><h2>@p.Name</h2></td>
-                }
+                    @if (ShowName)
+                    {
+                        <td><h2>@p.Name</h2></td>
+                    }
 
-                @if (ShowAlly)
-                {
-                    <td>
-                        @if (p.Ally != Faction.None)
-                        {
-                            <img class="img-fluid p-1" width=60 src="@Skin.Current.GetFactionTableImageURL(p.Ally)" />
-                        }
-                    </td>
-                }
-
-                @if (ShowCards)
-                {
-                    <td>
-                        @if (Game.YieldsSecrets(p))
-                        {
-                            foreach (var c in p.TreacheryCards)
+                    @if (ShowAlly)
+                    {
+                        <td>
+                            @if (p.Ally != Faction.None)
                             {
-                                <img class="img-fluid p-1" width=80 src="@Skin.Current.GetImageURL(c)"
-                                     data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(c)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
+                                <img class="img-fluid p-1" width=60 src="@Skin.Current.GetFactionTableImageURL(p.Ally)" />
                             }
-                        }
-                        else
-                        {
-                            <h2>?</h2>
-                        }
-                    </td>
-                }
+                        </td>
+                    }
 
-                @if (ShowTraitorsAndFacedancers)
-                {
-                    <td>
-                        @if (Game.YieldsSecrets(p))
-                        {
-                            @foreach (var c in p.Traitors)
+                    @if (ShowCards)
+                    {
+                        <td>
+                            @if (Game.YieldsSecrets(p))
+                            {
+                                foreach (var c in p.TreacheryCards)
+                                {
+                                    <img class="img-fluid p-1" width=80 src="@Skin.Current.GetImageURL(c)"
+                                         data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(c)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
+                                }
+                            }
+                            else
+                            {
+                                <h2>?</h2>
+                            }
+                        </td>
+                    }
+
+                    @if (ShowTraitorsAndFacedancers)
+                    {
+                        <td>
+                            @if (Game.YieldsSecrets(p))
+                            {
+                                @foreach (var c in p.Traitors)
+                                {
+                                    <img class="img-fluid p-1" width=60 src="@Skin.Current.GetImageURL(c)"
+                                         data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
+                                }
+                                @foreach (var c in p.DiscardedTraitors)
+                                {
+                                    <img class="img-fluid p-1" width=60 src="@Skin.Current.GetImageURL(c)" style="filter:grayscale(100%) opacity(50%)"
+                                         data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
+                                }
+                                @foreach (var c in p.FaceDancers)
+                                {
+                                    <img class="img-fluid p-1" width=60 src="@Skin.Current.GetImageURL(c)"
+                                         data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
+                                }
+                            }
+                            else
+                            {
+                                <h2>?</h2>
+                            }
+                        </td>
+                    }
+
+                    @if (ShowTechTokens)
+                    {
+                        <td>
+                            @foreach (var c in p.TechTokens)
+                            {
+                                <img class="img-fluid p-1" width=60 src="@Skin.Current.GetImageURL(c)"
+                                     data-bs-animation="true" data-bs-content="@Support.GetTechTokenHTML(c)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
+                            }
+                        </td>
+                    }
+
+                    @if (ShowResources)
+                    {
+                        <td>
+                            <h2>@p.Resources</h2>
+                        </td>
+                    }
+
+                    @if (ShowForces)
+                    {
+                        <td>
+                            @foreach (var l in p.LocationsWithAnyForces.OrderByDescending(l => l.IsStronghold).ThenBy(l => l.Name))
+                            {
+                                var isContested = l != Game.Map.PolarSink && p.Occupies(l.Territory) && Game.NrOfOccupantsExcludingPlayer(l.Territory, p) > 0;
+
+                                <div class="@(isContested?"text-danger":"")">
+
+                                    @if (isContested)
+                                    {
+                                        <span>! </span>
+                                    }
+
+                                    @if (l.Territory.IsStronghold || Game.IsSpecialStronghold(l.Territory))
+                                    {
+                                        <strong>@l.Territory.Name</strong>
+                                    }
+                                    else
+                                    {
+                                        @l.Territory.Name
+                                    }
+
+                                    <span>:&nbsp;</span>
+
+                                    @if (p.ForcesIn(l) > 0)
+                                    {
+                                        <img class='img-fluid m-0 p-0' width='24' height='24' src='@Skin.Current.GetFactionForceImageURL(p.Faction)' title='@p.ForceName' /><strong>&nbsp;@p.ForcesIn(l)</strong>
+                                    }
+
+                                    <span>&nbsp;</span>
+
+                                    @if (p.SpecialForcesIn(l) > 0)
+                                    {
+                                        <img class='img-fluid m-0 p-0' width='24' height='24' src='@Skin.Current.GetFactionSpecialForceImageURL(p.Faction)' title='@p.SpecialForceName' /><strong>&nbsp;@p.SpecialForcesIn(l)</strong>
+                                    }
+
+                                </div>
+                            }
+
+                        </td>
+                    }
+
+                    @if (ShowLeaders)
+                    {
+                        <td>
+                            @foreach (var c in p.Leaders.Where(l => Game.IsAlive(l)))
                             {
                                 <img class="img-fluid p-1" width=60 src="@Skin.Current.GetImageURL(c)"
                                      data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
                             }
-                            @foreach (var c in p.DiscardedTraitors)
+
+                            @if (Game.Applicable(Rule.GreenMessiah) && p.Faction == Faction.Green && p.TotalForcesKilledInBattle >= 7 && Game.IsAlive(LeaderManager.Messiah))
                             {
-                                <img class="img-fluid p-1" width=60 src="@Skin.Current.GetImageURL(c)" style="filter:grayscale(100%) opacity(50%)"
-                                     data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
+                                <img class="img-fluid p-1" width=60 src="@Skin.Current.Messiah_URL" />
                             }
-                            @foreach (var c in p.FaceDancers)
+
+                        </td>
+                    }
+
+                    @if (ShowTanks)
+                    {
+                        <td>
+                            @if (p.ForcesKilled > 0)
+                            {
+                                <img class='img-fluid m-0 p-0' width='24' height='24' src='@Skin.Current.GetFactionForceImageURL(p.Faction)' title='@p.ForceName' /><strong>&nbsp;@p.ForcesKilled</strong>
+                            }
+
+                            @if (p.SpecialForcesKilled > 0)
+                            {
+                                <img class='img-fluid m-0 p-0' width='24' height='24' src='@Skin.Current.GetFactionSpecialForceImageURL(p.Faction)' title='@p.SpecialForceName' /><strong>&nbsp;@p.SpecialForcesKilled</strong>
+                            }
+
+                            @foreach (var c in p.Leaders.Where(l => !Game.IsAlive(l)))
                             {
                                 <img class="img-fluid p-1" width=60 src="@Skin.Current.GetImageURL(c)"
                                      data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
                             }
-                        }
-                        else
-                        {
-                            <h2>?</h2>
-                        }
-                    </td>
-                }
 
-                @if (ShowTechTokens)
-                {
-                    <td>
-                        @foreach (var c in p.TechTokens)
-                        {
-                            <img class="img-fluid p-1" width=60 src="@Skin.Current.GetImageURL(c)"
-                                 data-bs-animation="true" data-bs-content="@Support.GetTechTokenHTML(c)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
-                        }
-                    </td>
-                }
+                            @if (p.Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah) && !Game.MessiahIsAlive)
+                            {
+                                <img class="img-fluid p-1" width=60 src="@Skin.Current.Messiah_URL" />
+                            }
 
-                @if (ShowResources)
-                {
-                    <td>
-                        <h2>@p.Resources</h2>
-                    </td>
-                }
+                        </td>
+                    }
 
-                @if (ShowForces)
-                {
-                    <td>
-                        @foreach (var l in p.LocationsWithAnyForces.OrderByDescending(l => l.IsStronghold).ThenBy(l => l.Name))
-                        {
-                            var isContested = l != Game.Map.PolarSink && p.Occupies(l.Territory) && Game.NrOfOccupantsExcludingPlayer(l.Territory, p) > 0;
+                    @if (ShowPoints)
+                    {
+                        <td>
+                            <h2>@Game.NumberOfVictoryPoints(p, Game.Applicable(Rule.ContestedStongholdsCountAsOccupied))</h2>
+                        </td>
+                    }
 
-                            <div class="@(isContested?"text-danger":"")">
-
-                                @if (isContested)
-                                {
-                                    <span>! </span>
-                                }
-
-                                @if (l.Territory.IsStronghold || Game.IsSpecialStronghold(l.Territory))
-                                {
-                                    <strong>@l.Territory.Name</strong>
-                                }
-                                else
-                                {
-                                    @l.Territory.Name
-                                }
-
-                                <span>:&nbsp;</span>
-
-                                @if (p.ForcesIn(l) > 0)
-                                {
-                                    <img class='img-fluid m-0 p-0' width='24' height='24' src='@Skin.Current.GetFactionForceImageURL(p.Faction)' title='@p.ForceName' /><strong>&nbsp;@p.ForcesIn(l)</strong>
-                                }
-
-                                <span>&nbsp;</span>
-
-                                @if (p.SpecialForcesIn(l) > 0)
-                                {
-                                    <img class='img-fluid m-0 p-0' width='24' height='24' src='@Skin.Current.GetFactionSpecialForceImageURL(p.Faction)' title='@p.SpecialForceName' /><strong>&nbsp;@p.SpecialForcesIn(l)</strong>
-                                }
-
-                            </div>
-                        }
-
-                    </td>
-                }
-
-                @if (ShowLeaders)
-                {
-                    <td>
-                        @foreach (var c in p.Leaders.Where(l => Game.IsAlive(l)))
-                        {
-                            <img class="img-fluid p-1" width=60 src="@Skin.Current.GetImageURL(c)"
-                                 data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
-                        }
-
-                        @if (Game.Applicable(Rule.GreenMessiah) && p.Faction == Faction.Green && p.TotalForcesKilledInBattle >= 7 && Game.IsAlive(LeaderManager.Messiah))
-                        {
-                            <img class="img-fluid p-1" width=60 src="@Skin.Current.Messiah_URL" />
-                        }
-
-                    </td>
-                }
-
-                @if (ShowTanks)
-                {
-                    <td>
-                        @if (p.ForcesKilled > 0)
-                        {
-                            <img class='img-fluid m-0 p-0' width='24' height='24' src='@Skin.Current.GetFactionForceImageURL(p.Faction)' title='@p.ForceName' /><strong>&nbsp;@p.ForcesKilled</strong>
-                        }
-
-                        @if (p.SpecialForcesKilled > 0)
-                        {
-                            <img class='img-fluid m-0 p-0' width='24' height='24' src='@Skin.Current.GetFactionSpecialForceImageURL(p.Faction)' title='@p.SpecialForceName' /><strong>&nbsp;@p.SpecialForcesKilled</strong>
-                        }
-
-                        @foreach (var c in p.Leaders.Where(l => !Game.IsAlive(l)))
-                        {
-                            <img class="img-fluid p-1" width=60 src="@Skin.Current.GetImageURL(c)"
-                                 data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
-                        }
-
-                        @if (p.Faction == Faction.Green && Game.Applicable(Rule.GreenMessiah) && !Game.MessiahIsAlive)
-                        {
-                            <img class="img-fluid p-1" width=60 src="@Skin.Current.Messiah_URL" />
-                        }
-
-                    </td>
-                }
-
-                @if (ShowPoints)
-                {
-                    <td>
-                        <h2>@Game.NumberOfVictoryPoints(p, Game.Applicable(Rule.ContestedStongholdsCountAsOccupied))</h2>
-                    </td>
-                }
-
-            </tr>
-        }
+                </tr>
+            }
+        
+        </tbody>
     </table>
 </div>
 

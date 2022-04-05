@@ -7,7 +7,7 @@
 @inherits Component
 @typeparam T
 
-<div class="form-check" style="@style">
+<div class="form-check">
     <input class="form-check-input" id="@Id" type="checkbox" disabled="@Disabled" checked="@Values.Contains(Value)" @onchange="eventArgs => { CheckboxClicked(Value, eventArgs.Value); }" />
     <label class="form-check-label" for="@Id">@Skin.Current.Describe(Value) @ChildContent</label>
 </div>
@@ -22,9 +22,6 @@
 
     [Parameter]
     public Action Callback { get; set; } = null;
-
-    [Parameter]
-    public string style { get; set; } = "";
 
     [Parameter]
     public bool Disabled { get; set; } = false;

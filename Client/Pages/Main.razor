@@ -45,7 +45,7 @@
     <!--Action Column-->
     @if (!h.IsObserver)
     {
-        <div class="col-sm-12 col-lg-4 @Scrollbars">
+        <div class="col-sm-12 col-lg-3 @Scrollbars">
 
             <MenuComponent h="@h" />
 
@@ -189,7 +189,7 @@
         StateHasChanged();
     }
 
-    private string InformationSize => h.IsObserver ? "col-lg-4" : "col-lg-2";
+    private string InformationSize => h.IsObserver ? "col-lg-4" : "col-lg-3";
 
     private string Scrollbars => isFullscreen? "vh-100 overflow-auto" : "";
 }

@@ -9,7 +9,7 @@
 @{
     var messages = Report.Messages.Where(m => m.Target == Faction.None || m.Target == h.Faction).OrderByDescending(m => m.Nr).ToList();
 
-    <div class="card p-1 border-light pb-0">
+    <div class="card p-1 border-light pb-1">
 
         <div class="card-header text-center">@Title</div>
 

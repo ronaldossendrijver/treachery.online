@@ -15,7 +15,7 @@
             <div style="position:absolute;left:5px;top:0px;color:@TimerColor(h.Status.WaitingForMe(Player, h.IsHost));font-weight:bolder;">@TimerText(h.Status.TimedEvent)</div>
         }
 
-        <div class="row justify-content-center align-items-center">
+        <div class="row d-flex justify-content-center">
 
             @{
                 var currentPlayersToAct = h.Status.WaitingForPlayers;
@@ -42,16 +42,18 @@
                         
                         var player = currentPlayersToAct.First();
 
-                        <div style="position: relative">
-                            <img class="align-self-center p-2" title="@player.Name" src="@Skin.Current.GetImageURL(player.Faction)" width="72" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
-                            <img class="align-self-center p-0" src="./art/worm.gif" width="90" style="position: absolute; top: -9px; left: -13px; filter: drop-shadow(1px 1px 1px black)" />
+                        <div style="position: relative; width: 64px;">
+                            <img title="@player.Name" src="@Skin.Current.GetImageURL(player.Faction)" width="64" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
+                            <img src="./art/worm.gif" width="94" style="position: absolute; top: -14px; left: -8px; filter: drop-shadow(1px 1px 1px black)" />
                         </div>
                     }
                     else {
 
                         foreach (var p in currentPlayersToAct)
                         {
-                            <img class="align-self-center p-2" title="@p.Name" src="@Skin.Current.GetImageURL(p.Faction)" width="48" style="filter:drop-shadow(2px 2px 2px black)" />
+                            <div style="position: relative; width: 48px;">
+                                <img class="p-2" title="@p.Name" src="@Skin.Current.GetImageURL(p.Faction)" width="48" style="filter:drop-shadow(2px 2px 2px black)" />
+                            </div>
                         }
                     }
                 }
@@ -59,11 +61,11 @@
                 {
                     foreach (var f in h.Status.WaitingInSequence)
                     {
-                        <div style="position: relative">
+                        <div class="align-self-center p-0 m-0" style="position: relative; width: 64px;">
                             @if (f.HasTurn)
                             {
-                                <img class="align-self-center p-2" title="@f.Player.Name" src="@Skin.Current.GetImageURL(f.Player.Faction)" width="72" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
-                                <img class="align-self-center p-0" src="./art/worm.gif" width="90" style="position: absolute; top: -9px; left: -13px; filter: drop-shadow(1px 1px 1px black)" />
+                                <img title="@f.Player.Name" src="@Skin.Current.GetImageURL(f.Player.Faction)" width="64" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
+                                <img src="./art/worm.gif" width="90" style="position: absolute; top: -12px; left: -18px; filter: drop-shadow(1px 1px 1px black)" />
                             }
                             else
                             {
@@ -85,7 +87,7 @@
 
         @if (autoConfirm || CanEndPhase)
         {
-            <div class="mt-1 mb-n3 text-end" style="color:black">
+            <div class="mt-1 mb-n3 float-end" style="color:black">
                 <CheckboxComponent @bind-Value=autoConfirm>Continue automatically</CheckboxComponent>
             </div>
         }

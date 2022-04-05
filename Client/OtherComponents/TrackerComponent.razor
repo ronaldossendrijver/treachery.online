@@ -57,7 +57,7 @@
 
                             @if (cardId == TreacheryCard.NONE)
                             {
-                                <a class="btn btn-link p-1" data-bs-toggle="modal" data-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
+                                <a class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
                                     <svg class="img-fluid w-100" viewBox="0 0 268 372" xmlns="http://www.w3.org/2000/svg">
                                         <rect width="268" height="372" rx="20" style="fill:rgb(64,64,64);stroke-width:3;stroke:rgb(200,200,200)" />
                                     </svg>
@@ -65,13 +65,13 @@
                             }
                             else if (cardId == TreacheryCard.UNKNOWN)
                             {
-                                <a class="btn btn-link p-1" data-bs-toggle="modal" data-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
+                                <a class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
                                     <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="img-fluid" />
                                 </a>
                             }
                             else
                             {
-                                <a class="btn btn-link p-1" data-bs-toggle="modal" data-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
+                                <a class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
                                     <img src="@DetermineImageSrc(cardId)" class="img-fluid" />
                                 </a>
                             }

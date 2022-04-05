@@ -308,7 +308,7 @@
         switch (aspect)
         {
             case PrescienceAspect.Defense: return plan.Defense == null ? "None" : Skin.Current.Describe(plan.Defense);
-            case PrescienceAspect.Weapon: return plan.Weapon == null ? "None" : Skin.Current.Describe(plan.Weapon);
+            case PrescienceAspect.Weapon: return plan.Weapon == null || (!Game.GreenKarma && plan.Weapon.IsGreen) ? "None" : Skin.Current.Describe(plan.Weapon);
             case PrescienceAspect.Dial: return plan.Dial(Game, Faction).ToString();
             case PrescienceAspect.Leader: return plan.Hero == null ? "None" : Skin.Current.Describe(plan.Hero);
         }
@@ -321,7 +321,7 @@
         switch (aspect)
         {
             case PrescienceAspect.Defense: return plan.Defense == null ? "" : Support.GetTreacheryCardHoverHTML(plan.Defense);
-            case PrescienceAspect.Weapon: return plan.Weapon == null ? "" : Support.GetTreacheryCardHoverHTML(plan.Weapon);
+            case PrescienceAspect.Weapon: return plan.Weapon == null || (!Game.GreenKarma && plan.Weapon.IsGreen)? "" : Support.GetTreacheryCardHoverHTML(plan.Weapon);
             case PrescienceAspect.Dial: return "";
             case PrescienceAspect.Leader: return plan.Hero == null ? "" : Support.GetHeroHoverHTML(plan.Hero, Game);
         }

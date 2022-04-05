@@ -1193,7 +1193,6 @@ namespace Treachery.Shared
             int cost = plan.Cost(this);
             int costToBrown = p.Ally == Faction.Brown ? plan.AllyContributionAmount : 0;
 
-
             if (cost > 0)
             {
                 int costForPlayer = cost - plan.AllyContributionAmount;

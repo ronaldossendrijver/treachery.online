@@ -64,19 +64,19 @@
             {
                 <label>Current deals</label>
                 <table class="table table-striped table-sm">
-
-                    @foreach (var deal in DealAccepted.CurrentDeals(Game))
-                    {
-                        <tr>
-                            <td class="p-0">
-                                <img width=24 src="@Skin.Current.GetImageURL(deal.BoundFaction)" />
-                                ⇒
-                                <img width=24 src="@Skin.Current.GetImageURL(deal.ConsumingFaction)" />
-                            </td>
-                            <td class="text-break">@deal.DealContentsDescription(Game)</td>
-                        </tr>
-                    }
-
+                    <tbody>
+                        @foreach (var deal in DealAccepted.CurrentDeals(Game))
+                        {
+                            <tr>
+                                <td class="p-0">
+                                    <img width=24 src="@Skin.Current.GetImageURL(deal.BoundFaction)" />
+                                    ⇒
+                                    <img width=24 src="@Skin.Current.GetImageURL(deal.ConsumingFaction)" />
+                                </td>
+                                <td class="text-break">@deal.DealContentsDescription(Game)</td>
+                            </tr>
+                        }
+                    </tbody>
                 </table>
             }
         </div>
