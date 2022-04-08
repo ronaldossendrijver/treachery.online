@@ -12,11 +12,11 @@
 {
     if (timeLeft > 0)
     {
-        <div style="position:absolute;left:@Support.Px(WindowX);top:@Support.Px(WindowY);width:@Support.Px(WindowWidth);overflow:hidden;animation:@AnimationType 2s;z-index:1000;" @onclick="Hide">
+        <div style="position:absolute;left:@Support.Px(WindowX);top:@Support.Px(WindowY);width:@Support.Px(FlashWidth);overflow:hidden;animation:@AnimationType 2s;z-index:1000;" @onclick="Hide">
 
             @foreach (var img in h.Status.FlashInfo)
             {
-                <div style="position:relative;top:0px;display:inline-block;vertical-align:top;width:@Support.Px(ItemWidth)">
+                <div style="float:left;position:relative;top:0px;display:inline-block;vertical-align:top;width:@Support.Px(ItemWidth)">
 
                     <img src="@img.Url" width=@CardWidth style="filter:drop-shadow(4px 4px 3px black);"/>
 
@@ -39,7 +39,7 @@
     public const float SPACING_X = 1.1f;
     private int WindowX = 0;
     private int WindowY = 0;
-    private int WindowWidth = 500;
+    private int FlashWidth = 500;
     //private int WindowHeight = 500;
     private int CardWidth = 100;
 
@@ -84,12 +84,39 @@
     protected override async Task OnParametersSetAsync()
     {
         var dimensions = await Browser.GetWindowDimensions();
-        CardWidth = (int)(0.15f * dimensions.Width);
-        WindowWidth = h.Status.FlashInfo.Count() * ItemWidth;
-        WindowX = (int)(0.5f * (dimensions.Width - WindowWidth));
+        var nrOfItems = h.Status.FlashInfo.Count();
 
-        //WindowHeight = (int)(1.2f * HEIGHT);
-        WindowY = (int)(0.5f * (dimensions.Height - 1.41f * CardWidth));
+        if (dimensions.Height > dimensions.Width)
+        {
+            //phone-like screen
+
+            CardWidth = (int)(0.3f * dimensions.Width);
+
+            if (nrOfItems <= 3)
+            {
+                WindowY = (int)(0.5f * (dimensions.Height - 1.41f * CardWidth));
+            }
+            else
+            {
+                WindowY = (int)(0.5f * (dimensions.Height - 2 * 1.41f * CardWidth));
+            }
+        }
+        else
+        {
+            CardWidth = (int)(0.2f * dimensions.Width);
+
+            if (nrOfItems <= 4)
+            {
+                WindowY = (int)(0.5f * (dimensions.Height - 1.41f * CardWidth));
+            }
+            else
+            {
+                WindowY = (int)(0.5f * (dimensions.Height - 2 * 1.41f * CardWidth));
+            }
+        }
+
+        FlashWidth = nrOfItems * (ItemWidth + 20);
+        WindowX = (int)(0.5f * (dimensions.Width - FlashWidth));
     }
 
     private string MsgStyle =>

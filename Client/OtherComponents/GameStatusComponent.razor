@@ -78,7 +78,7 @@
 
         </div>
 
-        <div class="@StatusDescriptionClass">@h.Status.GetDescription(Player, h.IsHost)</div>
+        <div class="@StatusDescriptionClass mt-2">@h.Status.GetDescription(Player, h.IsHost)</div>
 
         @if (!autoConfirm && CanEndPhase)
         {
@@ -139,7 +139,6 @@
         Game.CurrentPhase == Phase.AllianceB && _previousPhase != Phase.AllianceB ||
         Game.CurrentPhase == Phase.ClaimingCharity && _previousPhase != Phase.ClaimingCharity ||
         Game.CurrentTurn > 1 && Game.CurrentPhase == Phase.Resurrection && _previousPhase != Phase.Resurrection;
-
 
     protected override EndPhase ConfirmedResult => new EndPhase(Game) { Initiator = Faction };
 

@@ -6,11 +6,11 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameComponent
 
-<div class="row justify-content-center">
+<div class="row m-0 d-flex justify-content-center">
 
     @if (h.HostProxy == null)
     {
-        <div class="col-sm-auto">
+        <div class="col col-xs-auto p-0">
         <a class="btn btn-link p-1" href="https://discord.gg/rRGEfn4" target="_blank" title="Use Discord to organize and join matches">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" class="bi bi-people-fill" viewBox="0 0 16 16">
                 <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
@@ -25,7 +25,7 @@
     {
         if (h.Host != null || h.PlayerName == h.ServerSettings.AdminName)
         {
-            <div class="col-sm-auto">
+            <div class="col col-xs-auto p-0">
             <a class="btn btn-link p-1" title="Save game..." @onclick="Save">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
                     <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
@@ -37,7 +37,7 @@
 
         if (!h.IsObserver && h.Host != null)
         {
-            <div class="col-sm-auto">
+            <div class="col col-xs-auto p-0">
             <label class="btn btn-link p-1" title="Load game...">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" class="bi bi-file-earmark-arrow-up" viewBox="0 0 16 16">
                     <path d="M8.5 11.5a.5.5 0 0 1-1 0V7.707L6.354 8.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 7.707V11.5z" />
@@ -47,7 +47,7 @@
             </label>
             </div>
 
-            <div class="col-sm-auto">
+            <div class="col col-xs-auto p-0">
             <label class="btn btn-link p-1" title="Apply skin...">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" class="bi bi-palette" viewBox="0 0 16 16">
                     <path d="M8 5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm4 3a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM5.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm.5 6a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
@@ -59,7 +59,7 @@
 
             @if (h.Game.Players.Any(p => p.IsBot))
             {
-                <div class="col-sm-auto">
+                <div class="col col-xs-auto p-0">
                     @if (h.BotsArePaused)
                     {
                         <a class="btn btn-link p-1" @onclick="e => h.ToggleBotPause()" title="Unpause Bots">
@@ -81,7 +81,7 @@
 
             @if (h.Game.EventCount > 1)
             {
-                <div class="col-sm-auto">
+                <div class="col col-xs-auto p-0">
                 <a class="btn btn-link p-1" @onclick="e => SetVisible(HOST)" title="Undo">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" class="bi bi-skip-backward" viewBox="0 0 16 16">
                         <path d="M.5 3.5A.5.5 0 0 1 1 4v3.248l6.267-3.636c.52-.302 1.233.043 1.233.696v2.94l6.267-3.636c.52-.302 1.233.043 1.233.696v7.384c0 .653-.713.998-1.233.696L8.5 8.752v2.94c0 .653-.713.998-1.233.696L1 8.752V12a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5zm7 1.133L1.696 8 7.5 11.367V4.633zm7.5 0L9.196 8 15 11.367V4.633z" />
@@ -92,7 +92,7 @@
         }
     }
 
-    <div class="col-sm-auto">
+    <div class="col col-xs-auto p-0">
     <a class="btn btn-link p-1" @onclick="e => SetVisible(HELP)" title="Help">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" class="bi bi-info-circle" viewBox="0 0 16 16">
             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
@@ -101,7 +101,7 @@
     </a>
     </div>
 
-    <div class="col-sm-auto">
+    <div class="col col-xs-auto p-0">
     <a class="btn btn-link p-1" @onclick="e => SetVisible(VOLUME)" title="Adjust music and sound volume">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" class="bi bi-music-note-beamed" viewBox="0 0 16 16">
             <path d="M6 13c0 1.105-1.12 2-2.5 2S1 14.105 1 13c0-1.104 1.12-2 2.5-2s2.5.896 2.5 2zm9-2c0 1.105-1.12 2-2.5 2s-2.5-.895-2.5-2 1.12-2 2.5-2 2.5.895 2.5 2z" />
@@ -111,7 +111,7 @@
     </a>
     </div>
 
-    <div class="col-sm-auto">
+    <div class="col col-xs-auto p-0">
     <a class="btn btn-link p-1" href="https://trello.com/invite/b/fTA2ujGp/fabaa46d43f4b05c5dbbca69ff3a77c6/treacheryonline" target="_blank" title="Report a bug or suggest improvements">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" class="bi bi-bug" viewBox="0 0 16 16">
             <path d="M4.355.522a.5.5 0 0 1 .623.333l.291.956A4.979 4.979 0 0 1 8 1c1.007 0 1.946.298 2.731.811l.29-.956a.5.5 0 1 1 .957.29l-.41 1.352A4.985 4.985 0 0 1 13 6h.5a.5.5 0 0 0 .5-.5V5a.5.5 0 0 1 1 0v.5A1.5 1.5 0 0 1 13.5 7H13v1h1.5a.5.5 0 0 1 0 1H13v1h.5a1.5 1.5 0 0 1 1.5 1.5v.5a.5.5 0 1 1-1 0v-.5a.5.5 0 0 0-.5-.5H13a5 5 0 0 1-10 0h-.5a.5.5 0 0 0-.5.5v.5a.5.5 0 1 1-1 0v-.5A1.5 1.5 0 0 1 2.5 10H3V9H1.5a.5.5 0 0 1 0-1H3V7h-.5A1.5 1.5 0 0 1 1 5.5V5a.5.5 0 0 1 1 0v.5a.5.5 0 0 0 .5.5H3c0-1.364.547-2.601 1.432-3.503l-.41-1.352a.5.5 0 0 1 .333-.623zM4 7v4a4 4 0 0 0 3.5 3.97V7H4zm4.5 0v7.97A4 4 0 0 0 12 11V7H8.5zM12 6a3.989 3.989 0 0 0-1.334-2.982A3.983 3.983 0 0 0 8 2a3.983 3.983 0 0 0-2.667 1.018A3.989 3.989 0 0 0 4 6h8z" />
@@ -119,7 +119,7 @@
     </a>
     </div>
 
-    <div class="col-sm-auto">
+    <div class="col col-xs-auto p-0">
     <a class="btn btn-link p-1" @onclick="ToggleFullScreen" title="Toggle Fullscreen">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" class="bi bi-fullscreen" viewBox="0 0 16 16">
             <path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z" />
@@ -129,7 +129,7 @@
 
     @if (h.HostProxy != null)
     {
-        <div class="col-sm-auto">
+        <div class="col col-xs-auto p-0">
         <a class="btn btn-link p-1" @onclick="e => SetVisible(RESTART)" title="Exit Game">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" class="bi bi-box-arrow-left" viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0v2z"/>
@@ -139,7 +139,7 @@
         </div>
     }
         
-    <div class="col-sm-auto">
+    <div class="col col-xs-auto p-0">
         <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" class="form-group form-inline mt-1 mb-0 p-0">
             <input type="hidden" name="cmd" value="_s-xclick" />
             <input type="hidden" name="hosted_button_id" value="X6BLRPXHX7HDQ" />

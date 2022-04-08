@@ -565,9 +565,10 @@ namespace Treachery.Client
                 else if (latestEvent is BrownDiscarded) result.Add(EventInfo(latestEvent));
                 else if (latestEvent is ReplacedCardWon) result.Add(EventInfo(latestEvent));
                 else if (latestEvent is CardTraded) result.Add(EventInfo(latestEvent));
+                else if (latestEvent is BrownEconomics) result.Add(EventInfoFaction(latestEvent));
                 else if (latestEvent is SwitchedSkilledLeader) result.Add(EventInfo(latestEvent));
-                else if (latestEvent is EstablishPlayers && g.CurrentPhase != Phase.SelectingFactions && IsPlayer) result.Add(CardInfo(Player.Faction));
-                else if (latestEvent is FactionTradeOffered fto && (fto.Initiator == Faction || fto.Target == Faction) && !g.CurrentTradeOffers.Any(t => t.Initiator == Faction)) result.Add(CardInfo(Player.Faction));
+                else if (latestEvent is EstablishPlayers && g.CurrentPhase != Phase.SelectingFactions && IsPlayer) result.Add(PlayInfo(Player.Faction));
+                else if (latestEvent is FactionTradeOffered fto && (fto.Initiator == Faction || fto.Target == Faction) && !g.CurrentTradeOffers.Any(t => t.Initiator == Faction)) result.Add(PlayInfo(Player.Faction));
 
             }
 
@@ -729,7 +730,7 @@ namespace Treachery.Client
             return result;
         }
 
-        private static FlashInfo CardInfo(Faction f)
+        private static FlashInfo PlayInfo(Faction f)
         {
             FlashInfo result;
             result.Url = Skin.Current.GetImageURL(f);
@@ -742,6 +743,14 @@ namespace Treachery.Client
             FlashInfo result;
             result.Url = Skin.Current.GetImageURL(c);
             result.Message = m;
+            return result;
+        }
+
+        private static FlashInfo EventInfoFaction(GameEvent e)
+        {
+            FlashInfo result;
+            result.Url = Skin.Current.GetFactionTableImageURL(e.Initiator);
+            result.Message = e.GetMessage();
             return result;
         }
     }

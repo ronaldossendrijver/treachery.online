@@ -466,7 +466,7 @@ namespace Treachery.Shared
                 FactionAdvantage.BrownControllingCharity => Format("{0} receiving and giving {1} during {2}", Faction.Brown, Concept.Resource, MainPhase.Charity),
                 FactionAdvantage.BrownDiscarding => Format("{0} discarding cards for {1} or a {2} card for its special effect*", Faction.Brown, Concept.Resource, TreacheryCardType.Useless),
                 FactionAdvantage.BrownRevival => Format("{0} having unlimited force revival and reduced revival cost", Faction.Brown),
-                FactionAdvantage.BrownEconomics => Format("{0} playing their Economics token during {1}", Faction.Brown, MainPhase.Contemplate),
+                FactionAdvantage.BrownEconomics => Format("{0} playing their Inflation token during {1}", Faction.Brown, MainPhase.Contemplate),
                 FactionAdvantage.BrownReceiveForcePayment => Format("{0} collecting {1} payment for forces for one battle", Faction.Brown, Concept.Resource),
                 FactionAdvantage.BrownAudit => Format("{0} auditing their opponent after a battle", Faction.Brown),
                 FactionAdvantage.WhiteAuction => Format("{0} auctioning a card from their card cache", Faction.White),
@@ -1263,7 +1263,7 @@ namespace Treachery.Shared
                 <p mt-0 mb-0><i>{40}</i> - Move your forces one extra territory on your turn during Ship & Move.</p>
                 <p mt-0 mb-0><i>{41}</i> - Prevent a player from taking Free Revival.</p>
                 <p mt-0 mb-0><i>{42}</i> - Force a player to send 1 force back to reserves during Mentat.</p>
-                <p><p>Economics:</strong> during Mentat, you may play your Economics token with either the Double or Cancel side face-up. In the following game turn, Charity is either doubled or canceled for that turn (including {5} in the advanced game). While Charity is doubled, no bribes can be made. In the next Mentat, flip the Economics token to the other side. If the token has already been flipped it is removed from the game instead.</p>" +
+                <p><p>Inflation:</strong> during Mentat, you may play your Inflation token with either the Double or Cancel side face-up. In the following game turn, Charity is either doubled or canceled for that turn (including {5} in the advanced game). While Charity is doubled, no bribes can be made. In the next Mentat the Inflation token is flipped to the other side. If the token has already been flipped it is removed from the game instead.</p>" +
 
               (advancedApplies ?
               @"<h5>Advanced Advantages</h5>" : "") +
@@ -1282,7 +1282,7 @@ namespace Treachery.Shared
                 <p>You may pay for your ally’s forces in battle.</p>
 
                 <h5>Strategy</h5>
-                <p>Your leaders are weak, but you have a steady income. Stockpile Treachery Cards. You start with no forces on the planet and must ship them all in. For this reason, you may want to wait until you can attack with a large force. Use your economics token at a key moment, especially at a time when others aren’t collecting Charity.</p>
+                <p>Your leaders are weak, but you have a steady income. Stockpile Treachery Cards. You start with no forces on the planet and must ship them all in. For this reason, you may want to wait until you can attack with a large force. Use your Inflation token at a key moment, especially at a time when others aren’t collecting Charity.</p>
                 </div>";
         }
 

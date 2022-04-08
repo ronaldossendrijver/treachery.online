@@ -86,6 +86,14 @@
 
 @code {
 
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Collapsed = true;
+        }
+    }
+
     private async Task Accept(DealOffered offered)
     {
         await Request(offered.Acceptance(Faction));
