@@ -357,6 +357,7 @@ namespace Treachery.Shared
         private void EndResurrectionPhase()
         {
             ReceiveGraveyardTechIncome();
+            CurrentKarmaRevivalPrevention = null;
 
             if (Version < 122)
             {
@@ -367,6 +368,18 @@ namespace Treachery.Shared
                 if (Version >= 132) MainPhaseEnd();
                 Enter(Phase.ResurrectionReport);
             }
+        }
+
+        public bool PreventedFromReviving(Faction f) => CurrentKarmaRevivalPrevention != null && CurrentKarmaRevivalPrevention.Target == f;
+
+        private KarmaRevivalPrevention CurrentKarmaRevivalPrevention = null;
+        public void HandleEvent(KarmaRevivalPrevention e)
+        {
+            CurrentKarmaRevivalPrevention = e;
+            Discard(e.Player, TreacheryCardType.Karma);
+            e.Player.SpecialKarmaPowerUsed = true;
+            CurrentReport.Express(e);
+            RecentMilestones.Add(Milestone.Karma);
         }
     }
 }

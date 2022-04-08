@@ -97,6 +97,7 @@ namespace Treachery.Server
         public async Task RequestKarma(int hostID, Karma e) { await Request(hostID, e); }
         public async Task RequestKarmaFreeRevival(int hostID, KarmaFreeRevival e) { await Request(hostID, e); }
         public async Task RequestKarmaShipmentPrevention(int hostID, KarmaShipmentPrevention e) { await Request(hostID, e); }
+        public async Task RequestKarmaRevivalPrevention(int hostID, KarmaRevivalPrevention e) { await Request(hostID, e); }
         public async Task RequestKarmaHandSwapInitiated(int hostID, KarmaHandSwapInitiated e) { await Request(hostID, e); }
         public async Task RequestKarmaHandSwap(int hostID, KarmaHandSwap e) { await Request(hostID, e); }
         public async Task RequestKarmaMonster(int hostID, KarmaMonster e) { await Request(hostID, e); }

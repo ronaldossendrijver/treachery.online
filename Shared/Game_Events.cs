@@ -213,7 +213,7 @@ namespace Treachery.Shared
                         !Revival.NormallyRevivableHeroes(this, player).Any()) result.Add(typeof(RequestPurpleRevival));
 
                     if (faction == Faction.Purple && (CurrentRevivalRequests.Any() || AllowedEarlyRevivals.Any())) result.Add(typeof(AcceptOrCancelPurpleRevival));
-                    if (!HasActedOrPassed.Contains(faction) && HasSomethingToRevive(player)) result.Add(typeof(Revival));
+                    if (!HasActedOrPassed.Contains(faction) && HasSomethingToRevive(player) && !PreventedFromReviving(faction)) result.Add(typeof(Revival));
                     if (faction == Faction.Purple && Players.Count > 1 && (Version < 113 || !Prevented(FactionAdvantage.PurpleIncreasingRevivalLimits))) result.Add(typeof(SetIncreasedRevivalLimits));
                     if (Version < 103 && player.Has(TreacheryCardType.Amal) && (Version <= 82 || HasActedOrPassed.Count == 0)) result.Add(typeof(AmalPlayed));
                     break;
@@ -539,6 +539,17 @@ namespace Treachery.Shared
                 {
                     result.Add(typeof(KarmaShipmentPrevention));
                 }
+
+                if (faction == Faction.Purple &&
+                    !KarmaPrevented(faction) &&
+                    !player.SpecialKarmaPowerUsed &&
+                    player.Has(TreacheryCardType.Karma) &&
+                    CurrentMainPhase == MainPhase.Resurrection &&
+                    Applicable(Rule.AdvancedKarama))
+                {
+                    result.Add(typeof(KarmaRevivalPrevention));
+                }
+
 
                 if (faction == Faction.Brown &&
                     !KarmaPrevented(faction) &&

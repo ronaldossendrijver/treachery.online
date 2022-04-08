@@ -1,0 +1,31 @@
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<KarmaRevivalPrevention>
+
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to prevent revival</Header>
+    <Body>
+
+        <SelectFactionComponent @bind-Value="target" Values="KarmaRevivalPrevention.GetValidTargets(Game, Player)">
+            <Label>Target</Label>
+        </SelectFactionComponent>
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Prevent Revival" ConfirmError="@Validation" />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override Faction IsFactionSpecific => Faction.Purple;
+
+    private Faction target;
+
+    protected override KarmaRevivalPrevention ConfirmedResult => new KarmaRevivalPrevention(Game) { Initiator = Faction, Target = target };
+}
