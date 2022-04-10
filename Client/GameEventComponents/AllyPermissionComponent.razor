@@ -56,8 +56,7 @@
         }
 
         <div class="mt-1">
-            <label class="mt-2 mb-0">How much are you willing to pay for their @(Faction == Faction.Brown ? "battles, " : "")bids and shipments (currently: <strong>@Game.GetPermittedUseOfAllySpice(Player.Ally)</strong>)? @(Faction == Faction.Red ? "Payments for bids flow back to you." : "")</label>
-            <SelectResourcesComponent @bind-Value="spice" Min="0" Max="Player.Resources" OnChanged=SetEdited/>
+            <SelectResourcesComponent @bind-Value="spice" Min="0" Max="Player.Resources" OnChanged=SetEdited Label=@WillingToPayLabel/>
         </div>
 
         @if (Karma.CanKarma(Game, Player))
@@ -276,5 +275,11 @@
         await Confirm();
         edited = false;
     }
+
+    private string WillingToPayLabel =>
+        string.Format("How much are you willing to pay for their {0}bids and shipments (currently: {1})? {2}",
+            Faction == Faction.Brown ? "battles, " : "",
+            Game.GetPermittedUseOfAllySpice(Player.Ally),
+            Faction == Faction.Red ? "Payments for bids flow back to you." : "");
 }
 

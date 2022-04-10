@@ -113,6 +113,10 @@ namespace Treachery.Shared
                 return Skin.Current.Format("{0} prevents you from shipping", TreacheryCardType.Karma);
             }
 
+            if (IsBackToReserves && Initiator != Faction.Orange) return "You can't ship back to reserves";
+            if (IsSiteToSite && !Game.MayShipAsGuild(p)) return "You can't site-to-site ship";
+            if (IsBackToReserves && !Game.MayShipAsGuild(p) && Initiator == Faction.Orange) return "You can't ship back to reserves";
+
             if (!IsBackToReserves && (ForceAmount < 0 || SpecialForceAmount < 0)) return "Can't ship less than zero forces.";
             if (ForceAmount == 0 && SpecialForceAmount == 0) return "Select forces to ship.";
             if (To == null) return "Target location not selected";

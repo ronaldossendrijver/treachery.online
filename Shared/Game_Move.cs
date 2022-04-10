@@ -282,7 +282,7 @@ namespace Treachery.Shared
 
         public bool MayShipAsGuild(Player p)
         {
-            return ((!Prevented(FactionAdvantage.OrangeSpecialShipments) && p.Is(Faction.Orange)) || p.Ally == Faction.Orange && OrangeAllyMayShipAsGuild);
+            return !Prevented(FactionAdvantage.OrangeSpecialShipments) && (p.Is(Faction.Orange) || p.Ally == Faction.Orange && OrangeAllyMayShipAsGuild);
         }
 
         public bool MayShipWithDiscount(Player p)

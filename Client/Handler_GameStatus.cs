@@ -566,6 +566,7 @@ namespace Treachery.Client
                 else if (latestEvent is ReplacedCardWon) result.Add(EventInfo(latestEvent));
                 else if (latestEvent is CardTraded) result.Add(EventInfo(latestEvent));
                 else if (latestEvent is BrownEconomics) result.Add(EventInfoFaction(latestEvent));
+                else if (latestEvent is FaceDancerReplaced fdr && !fdr.Passed) result.Add(EventInfoFaction(latestEvent));
                 else if (latestEvent is SwitchedSkilledLeader) result.Add(EventInfo(latestEvent));
                 else if (latestEvent is EstablishPlayers && g.CurrentPhase != Phase.SelectingFactions && IsPlayer) result.Add(PlayInfo(Player.Faction));
                 else if (latestEvent is FactionTradeOffered fto && (fto.Initiator == Faction || fto.Target == Faction) && !g.CurrentTradeOffers.Any(t => t.Initiator == Faction)) result.Add(PlayInfo(Player.Faction));
@@ -709,7 +710,16 @@ namespace Treachery.Client
         {
             FlashInfo result;
             result.Url = Skin.Current.GetImageURL(s);
-            result.Message = e?.GetMessage();
+
+            if (s == LeaderSkill.Decipherer)
+            {
+                result.Message = Message.Express(e.Initiator, " use their ", s, " skill");
+            }
+            else
+            {
+                result.Message = e?.GetMessage();
+            }
+            
             return result;
         }
 

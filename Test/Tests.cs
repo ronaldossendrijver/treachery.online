@@ -26,6 +26,16 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            var orange = g.Players.FirstOrDefault(p => p.Is(Faction.Orange));
+            if (orange != null && orange.HasAlly)
+            {
+                var playerWithKarama = g.Players.FirstOrDefault(p => p != orange && p != orange.AlliedPlayer && p.HasKarma);
+                if (playerWithKarama != null && g.CurrentMainPhase == MainPhase.ShipmentAndMove)
+                {
+                    WriteSavegameIfApplicable(g, playerWithKarama, "Karama against guild");
+                }
+            }
+            
             /*
             if (g.CurrentPhase == Phase.Bidding && 
                 g.CurrentAuctionType == AuctionType.WhiteOnceAround && 

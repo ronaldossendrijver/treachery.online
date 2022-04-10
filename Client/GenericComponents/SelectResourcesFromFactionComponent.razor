@@ -4,11 +4,11 @@
 
 @using Treachery.Shared;
 
-<div class="d-inline-block justify-content-start">
+<div class="d-inline-block d-flex align-items-center">
 
     @if (Label != "")
     {
-        <label class="mt-1 align-content-center">@Label</label>
+        <label class="me-1">@Label</label>
     }
 
     <NumberPickerComponent Disabled="@Disabled" @bind-Value="Value" Min="Min" Max="Max"

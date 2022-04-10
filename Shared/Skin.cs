@@ -445,7 +445,7 @@ namespace Treachery.Shared
                 FactionAdvantage.RedGiveSpiceToAlly => Format("{0} giving {1} to their ally*", Faction.Red, Concept.Resource),
                 FactionAdvantage.RedLetAllyReviveExtraForces => Format("{0} allowing their ally to revive 3 extra forces", Faction.Red, Concept.Resource),
                 FactionAdvantage.OrangeDetermineMoveMoment => Format("{0} shipping out of turn order", Faction.Orange),
-                FactionAdvantage.OrangeSpecialShipments => Format("{0} shipping site-to-site or back to reserves", Faction.Orange),
+                FactionAdvantage.OrangeSpecialShipments => Format("{0} (and ally) shipping site-to-site or back to reserves", Faction.Orange),
                 FactionAdvantage.OrangeShipmentsDiscount => Format("{0} shipping at half price", Faction.Orange),
                 FactionAdvantage.OrangeShipmentsDiscountAlly => Format("{0} ally shipping at half price", Faction.Orange),
                 FactionAdvantage.OrangeReceiveShipment => Format("{0} receiving {1} for a shipment", Faction.Orange, Concept.Resource),

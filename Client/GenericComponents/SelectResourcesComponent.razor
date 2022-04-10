@@ -4,15 +4,17 @@
 
 @using Treachery.Shared;
 
-<div class="d-inline-block justify-content-start">
+<div class="d-inline-block">
+<div class="d-flex align-items-center">
 
     @if (Label != "")
     {
-        <label class="align-top me-2 mt-2 mb-0">@Label</label>
+        <label class="me-1">@Label</label>
     }
     
     <NumberPickerComponent Disabled="@Disabled" @bind-Value="Value" Min="Min" Max="Max" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" />
     
+</div>
 </div>
 
 @code {
