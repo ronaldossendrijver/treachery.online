@@ -225,13 +225,7 @@ namespace Treachery.Shared
             }
         }
 
-        public int EventCount
-        {
-            get
-            {
-                return History.Count;
-            }
-        }
+        public int EventCount => History.Count;
 
         public void HandleEvent(EndPhase e)
         {

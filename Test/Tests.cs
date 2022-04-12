@@ -716,7 +716,7 @@ namespace Treachery.Test
                         var strangeCase = TestIllegalCases(game, e);
                         if (strangeCase != "")
                         {
-                            File.WriteAllText("illegalcase_" + strangeCase + ".json", GameState.GetStateAsString(game));
+                            File.WriteAllText("illegalcase_" + game.EventCount + "_" + strangeCase + ".json", GameState.GetStateAsString(game));
                         }
                         Assert.AreEqual("", strangeCase, f + ", " + strangeCase);
 

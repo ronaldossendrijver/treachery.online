@@ -618,6 +618,7 @@ namespace Treachery.Shared
             }
             else
             {
+                RemovedTreacheryCards.Add(card);
                 FinishBid(null, card);
             }
         }

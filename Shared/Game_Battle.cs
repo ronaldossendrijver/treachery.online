@@ -517,11 +517,11 @@ namespace Treachery.Shared
             {
                 if (Applicable(Rule.BrownAuditor) && !Prevented(FactionAdvantage.BrownAudit))
                 {
-                    if (AggressorBattleAction.Hero != null && AggressorBattleAction.Hero.HeroType == HeroType.Auditor)
+                    if (AggressorBattleAction != null && AggressorBattleAction.Hero != null && AggressorBattleAction.Hero.HeroType == HeroType.Auditor)
                     {
                         return DefenderBattleAction.Player;
                     }
-                    else if (DefenderBattleAction.Hero != null && DefenderBattleAction.Hero.HeroType == HeroType.Auditor)
+                    else if (DefenderBattleAction != null && DefenderBattleAction.Hero != null && DefenderBattleAction.Hero.HeroType == HeroType.Auditor)
                     {
                         return AggressorBattleAction.Player;
                     }
