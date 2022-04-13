@@ -772,7 +772,8 @@ namespace Treachery.Shared
             Enter(TreacheryCardsBeforeTraitors, EnterStormPhase, DealStartingTreacheryCards);
         }
 
-        public Deck<TreacheryCard> StartingTreacheryCards;
+        public Deck<TreacheryCard> StartingTreacheryCards { get; private set; }
+
         private TreacheryCard ExtraStartingCardForBlack = null;
 
         private void DealStartingTreacheryCards()

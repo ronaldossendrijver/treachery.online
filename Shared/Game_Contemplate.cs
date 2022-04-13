@@ -9,7 +9,7 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public List<Player> Winners = new List<Player>();
+        public List<Player> Winners { get; private set; } = new List<Player>();
 
         private void EnterMentatPhase()
         {

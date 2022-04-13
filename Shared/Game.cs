@@ -52,7 +52,7 @@ namespace Treachery.Shared
         public Deck<LeaderSkill> SkillDeck { get; private set; }
         private Random Random { get; set; }
 
-        public Dictionary<Player, Dictionary<MainPhase, TimeSpan>> Timers = new Dictionary<Player, Dictionary<MainPhase, TimeSpan>>();
+        public Dictionary<Player, Dictionary<MainPhase, TimeSpan>> Timers { get; private set; } = new Dictionary<Player, Dictionary<MainPhase, TimeSpan>>();
 
         #endregion GameState
 
@@ -929,17 +929,6 @@ namespace Treachery.Shared
                 }
             }
         }
-
-        /*public TimeSpan Duration(GameEvent e)
-        {
-            int eventNr = History.IndexOf(e);
-            if (eventNr > 0)
-            {
-                return e.Time.Subtract(History[eventNr - 1].Time);
-            }
-
-            return TimeSpan.Zero;
-        }*/
 
         public override string ToString()
         {

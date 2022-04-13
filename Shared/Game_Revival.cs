@@ -10,7 +10,7 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public bool RevivalTechTokenIncome;
+        public bool RevivalTechTokenIncome { get; private set; }
 
         private void EnterRevivalPhase()
         {
@@ -37,7 +37,7 @@ namespace Treachery.Shared
             Enter(Phase.Resurrection);
         }
 
-        public List<Faction> FactionsThatRevivedSpecialForcesThisTurn = new List<Faction>();
+        public List<Faction> FactionsThatRevivedSpecialForcesThisTurn { get; private set; } = new List<Faction>();
         public void HandleEvent(Revival r)
         {
             var initiator = GetPlayer(r.Initiator);
@@ -185,7 +185,8 @@ namespace Treachery.Shared
             }
         }
 
-        public List<Faction> FactionsThatTookFreeRevival = new List<Faction>();
+        public List<Faction> FactionsThatTookFreeRevival { get; private set; } = new List<Faction>();
+
         public int FreeRevivals(Player player)
         {
             if (FactionsThatTookFreeRevival.Contains(player.Faction) || FreeRevivalPrevented(player.Faction))
@@ -318,7 +319,7 @@ namespace Treachery.Shared
             CurrentRevivalRequests.Add(e);
         }
 
-        public Dictionary<IHero, int> AllowedEarlyRevivals = new Dictionary<IHero, int>();
+        public Dictionary<IHero, int> AllowedEarlyRevivals { get; private set; } = new Dictionary<IHero, int>();
         public void HandleEvent(AcceptOrCancelPurpleRevival e)
         {
             CurrentReport.Express(e);

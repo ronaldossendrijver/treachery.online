@@ -198,9 +198,9 @@ namespace Treachery.Shared
         }
 
         private Phase phasePausedByClairvoyance;
-        public ClairVoyancePlayed LatestClairvoyance;
-        public ClairVoyanceQandA LatestClairvoyanceQandA;
-        public BattleInitiated LatestClairvoyanceBattle;
+        public ClairVoyancePlayed LatestClairvoyance { get; private set; }
+        public ClairVoyanceQandA LatestClairvoyanceQandA { get; private set; }
+        public BattleInitiated LatestClairvoyanceBattle { get; private set; }
 
         public void HandleEvent(ClairVoyancePlayed e)
         {
@@ -445,7 +445,8 @@ namespace Treachery.Shared
             }
         }
 
-        public IList<Faction> SecretsRemainHidden = new List<Faction>();
+        public IList<Faction> SecretsRemainHidden { get; private set; } = new List<Faction>();
+
         public void HandleEvent(HideSecrets e)
         {
             SecretsRemainHidden.Add(e.Initiator);

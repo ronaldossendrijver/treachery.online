@@ -10,9 +10,10 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public int HmsMovesLeft;
-        public List<Faction> HasBattleWheel = new List<Faction>();
-        private List<int> Dials = new List<int>();
+        public int HmsMovesLeft { get; private set; }
+        public List<Faction> HasBattleWheel { get; private set; } = new List<Faction>();
+
+        private readonly List<int> Dials = new List<int>();
 
         private void EnterStormPhase()
         {
@@ -414,7 +415,7 @@ namespace Treachery.Shared
             return (int)Math.Ceiling(0.5 * (AmountOfForces + AmountOfSpecialForces));
         }
 
-        public List<LossToTake> StormLossesToTake = new List<LossToTake>();
+        public List<LossToTake> StormLossesToTake { get; private set; } = new List<LossToTake>();
 
         public bool IsProtectedFromStorm(Location l)
         {

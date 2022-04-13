@@ -115,8 +115,8 @@ namespace Treachery.Shared
 
         private Deck<ResourceCard> CurrentDiscardPile => (CurrentPhase == Phase.BlowA) ? ResourceCardDiscardPileA : ResourceCardDiscardPileB;
 
-        public ResourceCard LatestSpiceCardA = null;
-        public ResourceCard LatestSpiceCardB = null;
+        public ResourceCard LatestSpiceCardA { get; private set; } = null;
+        public ResourceCard LatestSpiceCardB { get; private set; } = null;
 
         private ResourceCard PreviousBlowCard
         {

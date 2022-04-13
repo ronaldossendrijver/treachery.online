@@ -865,7 +865,7 @@ namespace Treachery.Shared
         }
 
         public TreacheryCard CardJustWon;
-        public IBid WinningBid;
+        public IBid WinningBid { get; private set; }
 
         private void FinishBid(Player winner, TreacheryCard card)
         {
@@ -990,9 +990,9 @@ namespace Treachery.Shared
 
         public IEnumerable<Player> PlayersThatCanBid => Players.Where(p => p.HasRoomForCards);
 
-        public int KarmaHandSwapNumberOfCards;
-        public Faction KarmaHandSwapTarget;
-        public Phase KarmaHandSwapPausedPhase;
+        public int KarmaHandSwapNumberOfCards { get; private set; }
+        public Faction KarmaHandSwapTarget { get; private set; }
+        public Phase KarmaHandSwapPausedPhase { get; private set; }
 
         public void HandleEvent(KarmaHandSwapInitiated e)
         {

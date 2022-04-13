@@ -26,6 +26,7 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            //g.
             var orange = g.Players.FirstOrDefault(p => p.Is(Faction.Orange));
             if (orange != null && orange.HasAlly)
             {

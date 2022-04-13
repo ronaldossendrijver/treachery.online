@@ -6,7 +6,7 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public bool ResourceTechTokenIncome;
+        public bool ResourceTechTokenIncome { get; private set; }
 
         private void EnterCharityPhase()
         {

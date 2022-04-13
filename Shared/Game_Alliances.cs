@@ -80,9 +80,10 @@ namespace Treachery.Shared
             dict.Add(key, value);
         }
 
-        private int LastTurnCardWasTraded = -1;
-        public CardTraded CurrentCardTradeOffer = null;
+        public CardTraded CurrentCardTradeOffer { get; private set; } = null;
+
         private Phase PhaseBeforeCardTrade = Phase.None;
+        private int LastTurnCardWasTraded = -1;
 
         public void HandleEvent(CardTraded e)
         {

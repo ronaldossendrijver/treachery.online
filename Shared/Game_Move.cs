@@ -762,7 +762,7 @@ namespace Treachery.Shared
             BrownHasExtraMove = false;
         }
 
-        public List<Territory> CurrentBlockedTerritories = new List<Territory>();
+        public List<Territory> CurrentBlockedTerritories { get; private set; } = new List<Territory>();
         public void HandleEvent(BrownMovePrevention e)
         {
             CurrentReport.Express(e);
