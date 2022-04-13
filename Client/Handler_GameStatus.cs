@@ -550,6 +550,15 @@ namespace Treachery.Client
                 else if (latestEvent is ResidualPlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Residual));
                 else if (latestEvent is FlightUsed) result.Add(CardInfo(latestEvent, TreacheryCardType.Flight));
                 else if (latestEvent is DistransUsed) result.Add(CardInfo(latestEvent, TreacheryCardType.Distrans));
+                else if (latestEvent is KarmaBrownDiscard) result.Add(CardInfo(latestEvent, TreacheryCardType.Karma));
+                else if (latestEvent is KarmaFreeRevival) result.Add(CardInfo(latestEvent, TreacheryCardType.Karma));
+                else if (latestEvent is KarmaHandSwapInitiated) result.Add(CardInfo(latestEvent, TreacheryCardType.Karma));
+                else if (latestEvent is KarmaHmsMovement) result.Add(CardInfo(latestEvent, TreacheryCardType.Karma));
+                else if (latestEvent is KarmaMonster) result.Add(CardInfo(latestEvent, TreacheryCardType.Karma));
+                else if (latestEvent is KarmaPrescience) result.Add(CardInfo(latestEvent, TreacheryCardType.Karma));
+                else if (latestEvent is KarmaRevivalPrevention) result.Add(CardInfo(latestEvent, TreacheryCardType.Karma));
+                else if (latestEvent is KarmaShipmentPrevention) result.Add(CardInfo(latestEvent, TreacheryCardType.Karma));
+                else if (latestEvent is KarmaWhiteBuy) result.Add(CardInfo(latestEvent, TreacheryCardType.Karma));
                 else if (latestEvent is PortableAntidoteUsed) result.Add(CardInfo(latestEvent, TreacheryCardType.PortableAntidote));
                 else if (latestEvent is RockWasMelted) result.Add(CardInfo(latestEvent, TreacheryCardType.Rockmelter));
                 else if (latestEvent is DiscardedTaken) result.Add(CardInfo(latestEvent, TreacheryCardType.TakeDiscarded));
@@ -563,7 +572,7 @@ namespace Treachery.Client
                 else if (latestEvent is GreyRemovedCardFromAuction) result.Add(EventInfo(latestEvent));
                 else if (latestEvent is GreySwappedCardOnBid gsc && !gsc.Passed) result.Add(EventInfo(latestEvent));
                 else if (latestEvent is BrownDiscarded) result.Add(EventInfo(latestEvent));
-                else if (latestEvent is ReplacedCardWon) result.Add(EventInfo(latestEvent));
+                else if (latestEvent is ReplacedCardWon rcw && !rcw.Passed) result.Add(EventInfo(latestEvent));
                 else if (latestEvent is CardTraded) result.Add(EventInfo(latestEvent));
                 else if (latestEvent is BrownEconomics) result.Add(EventInfoFaction(latestEvent));
                 else if (latestEvent is FaceDancerReplaced fdr && !fdr.Passed) result.Add(EventInfoFaction(latestEvent));

@@ -355,7 +355,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(KarmaWhiteBuy e)
         {
-            RecentMilestones.Add(Milestone.AuctionWon);
             Discard(e.Player, TreacheryCardType.Karma);
             CurrentReport.Express(e);
             e.Player.TreacheryCards.Add(e.Card);

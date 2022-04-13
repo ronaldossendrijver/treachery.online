@@ -100,6 +100,9 @@
 
         function EnablePopovers() {
 
+            $('.popover').popover({ sanitize: false });
+
+            /*
             try {
                 $('[data-bs-toggle="popover"]')
                     .filter(function (index, item) { return item.getAttribute("data-bs-content") != null && item.getAttribute("data-bs-content").length > 0 })
@@ -109,6 +112,7 @@
 
                 //
             }
+            */
         }
 
         function SendChatMessage() {

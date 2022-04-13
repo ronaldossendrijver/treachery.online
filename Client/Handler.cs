@@ -607,6 +607,7 @@ namespace Treachery.Client
 
                 await TurnAlert();
                 await PlaySoundsForMilestones();
+                //await Browser.RefreshPopovers();
 
                 if (e == null || !(Game.CurrentPhase == Phase.Bidding || Game.CurrentPhase == Phase.BlackMarketBidding))
                 {

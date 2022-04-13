@@ -5,7 +5,6 @@
 @using Treachery.Shared;
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<BlackMarketBid>
-@implements IDisposable
 
 @if (h.Game.CurrentPhase == Phase.BlackMarketBidding)
 {
@@ -137,6 +136,16 @@
         }
     }
 
+    private TreacheryCard shownCard = null;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (shownCard != Game.CardsOnAuction.Top)
+        {
+            shownCard = Game.CardsOnAuction.Top;
+            await Browser.RefreshPopovers();
+        }
+    }
+
     private async Task AutoPass()
     {
         if (CanBid)
@@ -150,10 +159,4 @@
     protected override BlackMarketBid PassedResult => new BlackMarketBid(Game) { Initiator = Faction, Passed = true };
 
     private bool CardIsVisible => (Game.HasBiddingPrescience(Player) || Game.WhiteCache.Contains(Game.CardsOnAuction.Top)) && Game.CardsOnAuction.Top != null;
-
-    public override void Dispose()
-    {
-        base.Dispose();
-        _ = Browser.RefreshPopovers();
-    }
 }
