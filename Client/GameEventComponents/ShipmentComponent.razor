@@ -1,5 +1,5 @@
 ﻿<!--
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+* Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
 --->
 
 @using Treachery.Shared
@@ -168,6 +168,12 @@
                 <SelectCardComponent @bind-Value="karmaCard" Values="Shipment.ValidKarmaCards(Game, Player)" Required="false">
                     <Label>Use @Skin.Current.Describe(TreacheryCardType.Karma) to ship at @Skin.Current.Describe(Faction.Orange) rate?</Label>
                 </SelectCardComponent>
+            
+                @if (karmaCard != null && !Player.TreacheryCards.Contains(karmaCard))
+                {
+                    <div class="text-info">This card is offered to you by your ally</div>
+                }
+
             </div>
         }
         else

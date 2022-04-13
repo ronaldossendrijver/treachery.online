@@ -363,15 +363,20 @@ namespace Treachery.Shared
 
         public static IEnumerable<TreacheryCard> ValidKarmaCards(Game g, Player p)
         {
-            var result = Karma.ValidKarmaCards(g, p).ToList();
+            var result = ValidOwnKarmaCards(g, p).ToList();
 
-            if (g.GetPermittedUseOfAllyKarma(p.Faction) != null)
+            var allyCard = ValidAllyKarmaCard(g, p);
+            if (allyCard != null)
             {
-                result.Add(g.GetPermittedUseOfAllyKarma(p.Faction));
+                result.Add(allyCard);
             }
 
             return result;
         }
+
+        public static IEnumerable<TreacheryCard> ValidOwnKarmaCards(Game g, Player p) => Karma.ValidKarmaCards(g, p);
+
+        public static TreacheryCard ValidAllyKarmaCard(Game g, Player p) => g.GetPermittedUseOfAllyKarma(p.Faction);
 
         public static bool CanKarma(Game g, Player p)
         {

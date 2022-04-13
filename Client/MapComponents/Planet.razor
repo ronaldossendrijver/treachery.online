@@ -84,6 +84,11 @@
 
 @code {
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await Browser.RefreshPopovers();
+    }
+
     private Location hovered = null;
 
     private string LocationColor(Location l) {

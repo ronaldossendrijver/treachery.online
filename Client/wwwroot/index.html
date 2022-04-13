@@ -94,25 +94,13 @@
 
         function RefreshPopovers() {
 
-            $('.popover').popover('dispose');
+            $('[data-bs-toggle="popover"]').popover('dispose');
             EnablePopovers();
         }
 
         function EnablePopovers() {
 
-            $('.popover').popover({ sanitize: false });
-
-            /*
-            try {
-                $('[data-bs-toggle="popover"]')
-                    .filter(function (index, item) { return item.getAttribute("data-bs-content") != null && item.getAttribute("data-bs-content").length > 0 })
-                    .popover({ sanitize: false });
-            }
-            catch (error) {
-
-                //
-            }
-            */
+            $('[data-bs-toggle="popover"]').popover({ sanitize: false });
         }
 
         function SendChatMessage() {
