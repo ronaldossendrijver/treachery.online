@@ -15,7 +15,7 @@
 
     @if (h.Game.CurrentPhase == Phase.Bidding)
     {
-        <BiddingPanel h="h" CanBid="h.Actions.Contains(typeof(Bid))" />
+        <NormalBiddingPanel h="h" CanBid="h.Actions.Contains(typeof(Bid))" />
     }
 
     @if (h.Game.CurrentPhase == Phase.BlackMarketBidding)

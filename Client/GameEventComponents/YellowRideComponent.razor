@@ -8,7 +8,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Select where to travel with @Skin.Current.Describe(Concept.Monster)</Header>
+    <Header>@Title</Header>
     <Body>
 
         <SelectComponent ButtonHint="ClickHintButton.LMB" ModifierHint="ClickHintModifier.CTRL" @bind-Value="fromTerritory" Values="ValidSources">
@@ -36,7 +36,11 @@
 
     override protected YellowRidesMonster PassedResult => new YellowRidesMonster(Game) { Initiator = Faction, Passed = true };
 
-    protected override IEnumerable<Territory> ValidSources => YellowRidesMonster.ValidSources(Game);
+    override protected IEnumerable<Territory> ValidSources => YellowRidesMonster.ValidSources(Game);
 
-    protected override IEnumerable<Location> ValidTargets => YellowRidesMonster.ValidTargets(Game, Player).OrderByDescending(l => l.IsStronghold).ThenBy(l => l.ToString());
+    override protected IEnumerable<Location> ValidTargets => YellowRidesMonster.ValidTargets(Game, Player).OrderByDescending(l => l.IsStronghold).ThenBy(l => l.ToString());
+
+    override protected bool InformAboutCaravan => false;
+
+    override protected string Title => Skin.Current.Format("Select where to travel with {0}?", Concept.Monster);
 }

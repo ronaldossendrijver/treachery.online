@@ -1,0 +1,43 @@
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared;
+@using Treachery.Client.GenericComponents;
+@inherits BiddingPanel<Bid>
+
+@{
+    base.BuildRenderTree(__builder);
+}
+
+@code {
+
+    protected override Bid ConfirmedResult => new Bid(Game) { Initiator = Faction, Passed = false, Amount = amount, KarmaBid = false, KarmaCard = karmaCard, AllyContributionAmount = allyContributionAmount, RedContributionAmount = redContributionAmount };
+
+    protected override Bid OtherResult => new Bid(Game) { Initiator = Faction, Passed = false, KarmaBid = true, KarmaCard = karmaCard };
+
+    protected override Bid PassedResult => new Bid(Game) { Initiator = Faction, Passed = true, KarmaBid = false };
+
+    protected override bool ShowRepeatAutoPass => true;
+
+    protected override bool CanUseKarma => Bid.CanKarma(Game, Player);
+
+    protected override int MaxAllyBidAmount => Bid.ValidMaxAllyAmount(Game, Player);
+
+    protected override int MaxBidAmount => Bid.ValidMaxAmount(Player, karmaCard != null);
+
+    protected override string AuctionDescription {
+
+        get {
+
+            if (Game.CurrentAuctionType == AuctionType.Normal)
+            {
+                return string.Format("Card {0} of {1}", Game.CardNumber, Game.NumberOfCardsOnRegularAuction);
+            }
+            else
+            {
+                return Skin.Current.Format("{0} Card", Faction.White);
+            }
+        }
+    }
+}

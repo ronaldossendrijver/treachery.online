@@ -6,52 +6,17 @@
 @using Treachery.Client.GenericComponents;
 @inherits PlacementComponent<Caravan>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
-
-    <Header>Perform a @Skin.Current.Describe(TreacheryCardType.Caravan)?</Header>
-    <Body>
-
-        @if (ValidSources.Any())
-        {
-            @if (Game.CurrentPlanetology != null && Game.CurrentPlanetology.MoveFromTwoTerritories && Game.CurrentPlanetology.Initiator == Faction)
-            {
-                <ForceSelectionComponent Game=Game Player=Player OnChanged="StateHasChanged" Forces="forces" Locations="Game.LocationsWithAnyForcesNotInStorm(Player)" AlwaysShowLocation="true" AllowMultipleTerritories="true" InitializeToMaximum=true/>
-            }
-            else
-            {
-                <SelectComponent OnChanged="StateHasChanged" ButtonHint="ClickHintButton.LMB" ModifierHint="ClickHintModifier.CTRL" @bind-Value="fromTerritory" Values="ValidSources">
-                    <Label>From</Label>
-                </SelectComponent>
-
-                <ForceSelectionComponent Game=Game Player=Player OnChanged="StateHasChanged" Forces="forces" Locations="Player.LocationsWithAnyForcesInTerritory(fromTerritory)" InitializeToMaximum=true/>
-            }
-
-            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="toLocation" Values="ValidTargets">
-                <Label>To</Label>
-            </SelectComponent>
-
-            @if (Game.ContainsConflictingAlly(Player, toLocation))
-            {
-                <div class="text-danger bg-dark">Note: any of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
-            }
-
-            @if (Faction == Faction.Blue)
-            {
-                <RadioComponent @bind-Value="asAdvisors" Values="new bool[] { false, true }" ValueLabels="@(new string[] {"Fighters", "Advisors"})">
-                    <Label>Move as fighters or advisors?</Label>
-                </RadioComponent>
-            }
-
-            <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Play {0}", TreacheryCardType.Caravan)" ConfirmError="@Validation" />
-        }
-
-    </Body>
-
-</GameEventComponentLayout>
+@{
+    base.BuildRenderTree(__builder);
+}
 
 @code {
 
     protected override bool IsUrgent => true;
 
     override protected Caravan ConfirmedResult => new Caravan(Game) { Initiator = Faction, ForceLocations = forces, To = toLocation, AsAdvisors = asAdvisors, Passed = false };
+
+    override protected bool InformAboutCaravan => false;
+
+    override protected string Title => Skin.Current.Format("Perform a {0}?", TreacheryCardType.Caravan);
 }

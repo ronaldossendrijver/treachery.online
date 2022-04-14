@@ -4,159 +4,25 @@
 
 @using Treachery.Shared;
 @using Treachery.Client.GenericComponents;
-@inherits GameEventComponent<BlackMarketBid>
+@inherits BiddingPanel<BlackMarketBid>
 
-@if (h.Game.CurrentPhase == Phase.BlackMarketBidding)
-{
-    <div class="card p-1 mb-2 border-white">
-
-        <div class="card-body">
-
-            <div class="row">
-
-                <div class="col align-top" style="flex:0 0 150px">
-
-                    @if (CardIsVisible)
-                    {
-                        <img src="@Skin.Current.GetImageURL(Game.CardsOnAuction.Top)" width="150" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(h.Game.CardsOnAuction.Top)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover" />
-                    }
-                    else
-                    {
-                        <img src="@Skin.Current.CardBack_TreacheryCard_URL" width="150" />
-                    }
-
-                    <div style="position: absolute; top: 100px; width: 150px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
-
-                        <div style="font-size: 24px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">
-                            Black Market
-                        </div>
-
-                        @if (Game.CurrentAuctionType != AuctionType.BlackMarketSilent && Game.CurrentBid != null)
-                        {
-                            <img src="@Skin.Current.GetImageURL(Game.CurrentBid.Initiator)" width="36" style="vertical-align: top;" />
-                            <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="36" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
-                        }
-                    </div>
-
-                </div>
-
-                <div class="col align-top">
-
-                    @if (!h.IsObserver && h.Player.Faction != Faction.None)
-                    {
-                        <CheckboxComponent @bind-Value="@h.Autopass">Auto-pass</CheckboxComponent>
-                        @if (h.Autopass)
-                        {
-                            <SelectResourcesComponent @bind-Value="@h.BidAutoPassThreshold" Min="0" Max="50" Label="When above:" />
-                        }
-
-                        @if (CanBid)
-                        {
-                            <hr style="border-color:white" />
-                        }
-                    }
-
-                    @if (CanBid)
-                    {
-                        <div class="mt-1">
-
-                            @if (Player.Ally != Faction.None && BlackMarketBid.ValidMaxAllyAmount(Game, Player) > 0)
-                            {
-                                <SelectResourcesFromFactionComponent @bind-Value="amount" Min="0" Max="BlackMarketBid.ValidMaxAmount(Player)" Faction="Faction" />
-                                <SelectResourcesFromFactionComponent @bind-Value="allyContributionAmount" Min="0" Max="BlackMarketBid.ValidMaxAllyAmount(Game, Player)" Faction="Player.Ally" /> 
-                            }
-                            else
-                            {
-                                <SelectResourcesComponent @bind-Value="amount" Min="0" Max="BlackMarketBid.ValidMaxAmount(Player)" />
-                                allyContributionAmount = 0;
-                            }
-
-                            @if (Game.SpiceForBidsRedCanPay(Faction) > 0)
-                            {
-                                <SelectResourcesFromFactionComponent @bind-Value="redContributionAmount" Min="0" Max="Game.SpiceForBidsRedCanPay(Faction)" Faction="Faction.Red" />
-                            }
-
-                        </div>
-
-                        <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Pass="Pass" PassText="Pass" Alignment="justify-content-start" />
-                    }
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
+@{
+    base.BuildRenderTree(__builder);
 }
 
 @code {
-
-    protected override bool IsUrgent => true;
-
-    private bool _canBid = false;
-
-    [Parameter]
-    public bool CanBid
-    {
-        get
-        {
-            return _canBid;
-        }
-        set
-        {
-            if (!_canBid && value)
-            {
-                if (Game.CurrentBid != null && h.Autopass && Game.CurrentBid.TotalAmount + 1 > h.BidAutoPassThreshold ||
-                    Game.CurrentBid == null && h.Autopass && h.BidAutoPassThreshold == 0)
-                {
-                    _ = Task.Delay(800 + Random.Shared.Next(1600)).ContinueWith(e => AutoPass());
-                }
-            }
-
-            _canBid = value;
-        }
-    }
-
-    private int amount;
-    private int allyContributionAmount;
-    private int redContributionAmount;
-
-    private string BidLabel => "Bid " + (amount + allyContributionAmount + redContributionAmount);
-
-    protected override void OnParametersSet()
-    {
-        if (Game.CurrentAuctionType != AuctionType.BlackMarketSilent)
-        {
-            int allyResources = Player.Ally == Faction.None ? 0 : Game.GetPermittedUseOfAllySpice(Faction);
-            int playerResources = Player.Resources;
-            int bidToDo = Game.CurrentBid != null ? Game.CurrentBid.TotalAmount + 1 : 1;
-            allyContributionAmount = Math.Min(bidToDo, allyResources);
-            amount = Math.Min(bidToDo - allyContributionAmount, playerResources);
-        }
-    }
-
-    private TreacheryCard shownCard = null;
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (shownCard != Game.CardsOnAuction.Top)
-        {
-            shownCard = Game.CardsOnAuction.Top;
-            await Browser.RefreshPopovers();
-        }
-    }
-
-    private async Task AutoPass()
-    {
-        if (CanBid)
-        {
-            await Pass();
-        }
-    }
 
     protected override BlackMarketBid ConfirmedResult => new BlackMarketBid(Game) { Initiator = Faction, Passed = false, Amount = amount, AllyContributionAmount = allyContributionAmount, RedContributionAmount = redContributionAmount };
 
     protected override BlackMarketBid PassedResult => new BlackMarketBid(Game) { Initiator = Faction, Passed = true };
 
-    private bool CardIsVisible => (Game.HasBiddingPrescience(Player) || Game.WhiteCache.Contains(Game.CardsOnAuction.Top)) && Game.CardsOnAuction.Top != null;
+    protected override bool ShowRepeatAutoPass => false;
+
+    protected override bool CanUseKarma => false;
+
+    protected override int MaxAllyBidAmount => BlackMarketBid.ValidMaxAllyAmount(Game, Player);
+
+    protected override int MaxBidAmount => BlackMarketBid.ValidMaxAmount(Player);
+
+    protected override string AuctionDescription => "Black Market";
 }

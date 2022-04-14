@@ -8,6 +8,58 @@
 @typeparam PlacementEventType
 @implements IDisposable
 
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>@Title</Header>
+    <Body>
+
+        @if (InformAboutCaravan)
+        {
+            <div class="text-info small">Note: if you wish to perform a @Skin.Current.Describe(TreacheryCardType.Caravan) this turn, you need to do that before performing your regular move.</div>
+        }
+
+        @if (ValidSources.Any())
+        {
+            @if (Game.CurrentPlanetology != null && Game.CurrentPlanetology.MoveFromTwoTerritories && Game.CurrentPlanetology.Initiator == Faction)
+            {
+                <ForceSelectionComponent Game=Game Player=Player OnChanged="StateHasChanged" Forces="forces" Locations="Game.LocationsWithAnyForcesNotInStorm(Player)" AlwaysShowLocation="true" AllowMultipleTerritories="true" InitializeToMaximum=true/>
+            }
+            else
+            {
+                <SelectComponent OnChanged="StateHasChanged" ButtonHint="ClickHintButton.LMB" ModifierHint="ClickHintModifier.CTRL" @bind-Value="fromTerritory" Values="ValidSources">
+                    <Label>From</Label>
+                </SelectComponent>
+
+                <ForceSelectionComponent Game=Game Player=Player OnChanged="StateHasChanged" Forces="forces" Locations="Player.LocationsWithAnyForcesInTerritory(fromTerritory)" InitializeToMaximum=true/>
+            }
+
+            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="toLocation" Values="ValidTargets">
+                <Label>To</Label>
+            </SelectComponent>
+
+            @if (Game.ContainsConflictingAlly(Player, toLocation))
+            {
+                <div class="text-danger bg-dark">Note: any of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
+            }
+
+            @if (Faction == Faction.Blue)
+            {
+                <RadioComponent @bind-Value="asAdvisors" Values="new bool[] { false, true }" ValueLabels="@(new string[] {"Fighters", "Advisors"})">
+                    <Label>Move as fighters or advisors?</Label>
+                </RadioComponent>
+            }
+
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="Move" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
+        }
+        else
+        {
+            <ButtonRowComponent Pass="Pass" PassText="Pass" />
+        }
+
+    </Body>
+
+</GameEventComponentLayout>
+
 @code {
 
     protected Territory fromTerritory;

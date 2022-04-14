@@ -4,136 +4,138 @@
 
 @using Treachery.Shared;
 @using Treachery.Client.GenericComponents;
-@inherits GameEventComponent<Bid>
+@inherits GameEventComponent<BidType>
+@typeparam BidType
 
-@if (h.Game.CurrentPhase == Phase.Bidding)
-{
-    <div class="card p-1 mb-2 border-white">
+<div class="card p-1 mb-2 border-white">
 
-        <div class="card-body">
+    <div class="card-body">
 
-            <div class="row">
+        <div class="row">
 
-                <div class="col align-top" style="flex:0 0 150px">
+            <div class="col align-top" style="flex:0 0 150px">
 
-                    @if (CardIsVisible) {
-                            
-                        <img src="@Skin.Current.GetImageURL(Game.CardsOnAuction.Top)" width="150" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(h.Game.CardsOnAuction.Top)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover" />
-                    }
-                    else {
+                @if (CardIsVisible) 
+                {
+                    <img src="@Skin.Current.GetImageURL(Game.CardsOnAuction.Top)" width="150" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(h.Game.CardsOnAuction.Top)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover" />
+                }
+                else 
+                {
+                    <img src="@Skin.Current.CardBack_TreacheryCard_URL" width="150" />
+                }
 
-                        <img src="@Skin.Current.CardBack_TreacheryCard_URL" width="150" />
-                    }
+                <div style="position: absolute; top: 100px; width: 150px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
 
-                    <div style="position: absolute; top: 100px; width: 150px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
-                        <div style="font-size: 24px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">
-                            @if (Game.CurrentAuctionType == AuctionType.Normal)
-                            {
-                                <span>Card @Game.CardNumber of @(Game.NumberOfCardsOnRegularAuction)</span>
-                            }
-                            else
-                            {
-                                <span>@Skin.Current.Describe(Faction.White) Card</span>
-                            }
-                        </div>
-                            
-                        @if (Game.CurrentAuctionType != AuctionType.WhiteSilent && Game.CurrentBid != null)
-                        {
-                            <img src="@Skin.Current.GetImageURL(Game.CurrentBid.Initiator)" width="36" style="vertical-align: top;" />
-                            <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="36" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
-                        }
+                    <div style="font-size: 24px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">
+                        @AuctionDescription
                     </div>
-
+                            
+                    @if (ShowCurrentBid)
+                    {
+                        <img src="@Skin.Current.GetImageURL(Game.CurrentBid.Initiator)" width="36" style="vertical-align: top;" />
+                        <NumberComponent Value="Game.CurrentBid.TotalAmount" Size="36" SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" NumberAlignment="NumberAlignment.Center" />
+                    }
                 </div>
 
-                <div class="col align-top">
+            </div>
 
-                    @if (!h.IsObserver && h.Player.Faction != Faction.None)
+            <div class="col align-top">
+
+                @if (!h.IsObserver && h.Player.Faction != Faction.None)
+                {
+                    <CheckboxComponent @bind-Value="@h.Autopass">Auto-pass</CheckboxComponent>
+                    @if (h.Autopass)
                     {
-                        <CheckboxComponent @bind-Value="@h.Autopass">Auto-pass</CheckboxComponent>
-                        @if (h.Autopass)
-                        {
-                            <SelectResourcesComponent @bind-Value="@h.BidAutoPassThreshold" Min="0" Max="50" Label="When above:" />
-                            <CheckboxComponent @bind-Value="@h.KeepAutopassSetting">Repeat auto-pass every round</CheckboxComponent>
-                        }
+                        <SelectResourcesComponent @bind-Value="@h.BidAutoPassThreshold" Min="0" Max="50" Label="When above:" />
 
-                        @if (CanBid)
+                        @if (ShowRepeatAutoPass)
                         {
-                            <hr style="border-color:white" />
+                            <CheckboxComponent @bind-Value="@h.KeepAutopassSetting">Repeat auto-pass every round</CheckboxComponent>
                         }
                     }
 
                     @if (CanBid)
                     {
-                        if (Bid.CanKarma(Game, Player))
-                        {
-                            <div class="mt-1">
-                                <SelectCardComponent @bind-Value="karmaCard" Values="Bid.ValidKarmaCards(Game, Player)" Required="false">
-                                    <Label>Use @Skin.Current.Describe(TreacheryCardType.Karma) to bid without limit or win immediately? <InfoComponent Contents="@InfoMessage" /></Label>
-                                </SelectCardComponent>
-                            </div>
-                        }
-                        else
-                        {
-                            karmaCard = null;
-                        }
+                        <hr style="border-color:white" />
+                    }
+                }
 
+                @if (CanBid)
+                {
+                    if (CanUseKarma)
+                    {
                         <div class="mt-1">
-
-                            @if (Player.Ally != Faction.None && Bid.ValidMaxAllyAmount(Game, Player) > 0)
-                            {
-                                <SelectResourcesFromFactionComponent @bind-Value="amount" Min="0" Max="Bid.ValidMaxAmount(Player, karmaCard != null)" Faction="Faction" />
-                                <SelectResourcesFromFactionComponent @bind-Value="allyContributionAmount" Min="0" Max="Bid.ValidMaxAllyAmount(Game, Player)" Faction="Player.Ally" />
-                            }
-                            else
-                            {
-                                <SelectResourcesComponent @bind-Value="amount" Min="0" Max="Bid.ValidMaxAmount(Player, karmaCard != null)" />
-                                allyContributionAmount = 0;
-                            }
-
-                            @if (Game.SpiceForBidsRedCanPay(Faction) > 0)
-                            {
-                                <SelectResourcesFromFactionComponent @bind-Value="redContributionAmount" Min="0" Max="Game.SpiceForBidsRedCanPay(Faction)" Faction="Faction.Red" />
-                            }
-
+                            <SelectCardComponent @bind-Value="karmaCard" Values="Bid.ValidKarmaCards(Game, Player)" Required="false">
+                                <Label>Use @Skin.Current.Describe(TreacheryCardType.Karma) to bid without limit or win immediately? <InfoComponent Contents="@KarmaInfoMessage" /></Label>
+                            </SelectCardComponent>
                         </div>
-
-                        @if (Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent)
-                        {
-                            @if (karmaCard != null)
-                            {
-                                <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Other="Other" OtherText="Win immediately" Alignment="justify-content-start" />
-                            }
-                            else
-                            {
-                                <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Alignment="justify-content-start" />
-                            }
-                        }
-                        else
-                        {
-                            @if (karmaCard != null)
-                            {
-                                <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Pass="Pass" PassText="Pass" Other="Other" OtherText="Win immediately" Alignment="justify-content-start" />
-                            }
-                            else
-                            {
-                                <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Pass="Pass" PassText="Pass" Alignment="justify-content-start" />
-                            }
-                        }
+                    }
+                    else
+                    {
+                        karmaCard = null;
                     }
 
-                </div>
+                    <div class="mt-1">
+
+                        @if (Player.Ally != Faction.None && MaxAllyBidAmount > 0)
+                        {
+                            <SelectResourcesFromFactionComponent @bind-Value="amount" Min="0" Max="MaxBidAmount" Faction="Faction" />
+                            <SelectResourcesFromFactionComponent @bind-Value="allyContributionAmount" Min="0" Max="MaxAllyBidAmount" Faction="Player.Ally" />
+                        }
+                        else
+                        {
+                            <SelectResourcesComponent @bind-Value="amount" Min="0" Max="MaxBidAmount" />
+                            allyContributionAmount = 0;
+                        }
+
+                        @if (Game.SpiceForBidsRedCanPay(Faction) > 0)
+                        {
+                            <SelectResourcesFromFactionComponent @bind-Value="redContributionAmount" Min="0" Max="Game.SpiceForBidsRedCanPay(Faction)" Faction="Faction.Red" />
+                        }
+
+                    </div>
+
+                    @if (IsSilentAuction)
+                    {
+                        @if (karmaCard != null)
+                        {
+                            <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Other="Other" OtherText="Win immediately" Alignment="justify-content-start" />
+                        }
+                        else
+                        {
+                            <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Alignment="justify-content-start" />
+                        }
+                    }
+                    else
+                    {
+                        @if (karmaCard != null)
+                        {
+                            <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Pass="Pass" PassText="Pass" Other="Other" OtherText="Win immediately" Alignment="justify-content-start" />
+                        }
+                        else
+                        {
+                            <ButtonRowComponent Confirm="Confirm" ConfirmText="@BidLabel" ConfirmError="@Validation" Pass="Pass" PassText="Pass" Alignment="justify-content-start" />
+                        }
+                    }
+                }
 
             </div>
 
         </div>
 
     </div>
-}
+
+</div>
+
 
 @code {
 
     protected override bool IsUrgent => true;
+
+    protected int amount;
+    protected int allyContributionAmount;
+    protected int redContributionAmount;
+    protected TreacheryCard karmaCard;
 
     private bool _canBid = false;
 
@@ -159,16 +161,11 @@
         }
     }
 
-    private int amount;
-    private int allyContributionAmount;
-    private int redContributionAmount;
-    private TreacheryCard karmaCard;
-
     private string BidLabel => "Bid " + (amount + allyContributionAmount + redContributionAmount);
 
     protected override void OnParametersSet()
     {
-        if (Game.CurrentAuctionType != AuctionType.WhiteSilent)
+        if (!IsSilentAuction)
         {
             int allyResources = Player.Ally == Faction.None ? 0 : Game.GetPermittedUseOfAllySpice(Faction);
             int playerResources = Player.Resources;
@@ -190,20 +187,19 @@
 
     private async Task AutoPass()
     {
-        if (_canBid && h.Autopass)
+        if (CanBid && h.Autopass)
         {
             await Pass();
         }
     }
 
-    protected override Bid ConfirmedResult => new Bid(Game) { Initiator = Faction, Passed = false, Amount = amount, KarmaBid = false, KarmaCard = karmaCard, AllyContributionAmount = allyContributionAmount, RedContributionAmount = redContributionAmount };
+    private bool IsWhiteBidding => Game.CurrentAuctionType == AuctionType.WhiteOnceAround || Game.CurrentAuctionType == AuctionType.WhiteSilent; 
 
-    protected override Bid OtherResult => new Bid(Game) { Initiator = Faction, Passed = false, KarmaBid = true, KarmaCard = karmaCard };
+    private bool CardIsVisible => (Game.HasBiddingPrescience(Player) || IsWhiteBidding) && Game.CardsOnAuction.Top != null;
 
-    protected override Bid PassedResult => new Bid(Game) { Initiator = Faction, Passed = true, KarmaBid = false };
+    private string KarmaInfoMessage => Skin.Current.Format("If you use a {0} card to bid any amount of {1} you wish, that card will be set aside until someone outbids you and will be discarded only if you win the auction. If you instead use your {0} card to win immediately, it is immediately discarded.", TreacheryCardType.Karma, Concept.Resource);
 
-    private string InfoMessage => Skin.Current.Format("If you use a {0} card to bid any amount of {1} you wish, that card will be set aside until someone outbids you and will be discarded only if you win the auction. If you instead use your {0} card to win immediately, it is immediately discarded.", TreacheryCardType.Karma, Concept.Resource);
-        
-    private bool CardIsVisible => (Game.HasBiddingPrescience(Player) || Game.WhiteCache.Contains(Game.CardsOnAuction.Top)) && Game.CardsOnAuction.Top != null;
+    private bool ShowCurrentBid => !IsSilentAuction && Game.CurrentBid != null;
 
+    private bool IsSilentAuction => Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent;
 }
