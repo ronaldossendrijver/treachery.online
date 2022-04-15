@@ -43,4 +43,6 @@
     override protected bool InformAboutCaravan => false;
 
     override protected string Title => Skin.Current.Format("Select where to travel with {0}?", Concept.Monster);
+
+    override protected bool MayPass => false;
 }

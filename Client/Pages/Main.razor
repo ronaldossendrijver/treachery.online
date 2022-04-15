@@ -97,9 +97,14 @@
                 <WinnerPanel h="h" />
             }
 
-            @if (h.Game.CurrentMainPhase == MainPhase.Bidding)
+            @if (h.Game.CurrentPhase == Phase.Bidding)
             {
-                <BiddingPanel h="h" />
+                <NormalBiddingPanel h="h" CanBid="h.Actions.Contains(typeof(Bid))" />
+            }
+
+            @if (h.Game.CurrentPhase == Phase.BlackMarketBidding)
+            {
+                <BlackMarketBiddingPanel h="h" CanBid="h.Actions.Contains(typeof(BlackMarketBid))" />
             }
         }
 

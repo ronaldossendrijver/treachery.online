@@ -57,9 +57,6 @@
     [Parameter]
     public string DismissLabel { get; set; } = "Dismiss";
 
-    [Parameter]
-    public bool Collapsible { get; set; } = false;
-
     protected override GameEventType ConfirmedResult => new GameEventType() { Game = Game, Initiator = Faction, Passed = false };
 
     protected override GameEventType PassedResult => new GameEventType() { Game = Game, Initiator = Faction, Passed = true };

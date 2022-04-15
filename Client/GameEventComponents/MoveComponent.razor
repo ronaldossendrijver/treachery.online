@@ -12,7 +12,7 @@
 
 @code {
 
-    protected override bool IsUrgent => true;
+    override protected bool IsUrgent => true;
 
     override protected Move ConfirmedResult => new Move(Game) { Initiator = Faction, ForceLocations = forces, To = toLocation, AsAdvisors = asAdvisors, Passed = false };
 
@@ -21,4 +21,6 @@
     override protected bool InformAboutCaravan => Player.Has(TreacheryCardType.Caravan);
 
     override protected string Title => "Perform a Move?";
+
+    override protected bool MayPass => true;
 }

@@ -26,58 +26,10 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            //g.
-            var orange = g.Players.FirstOrDefault(p => p.Is(Faction.Orange));
-            if (orange != null && orange.HasAlly)
+            if (g.CurrentPhase == Phase.YellowRidingMonsterA || g.CurrentPhase == Phase.YellowRidingMonsterB)
             {
-                var playerWithKarama = g.Players.FirstOrDefault(p => p != orange && p != orange.AlliedPlayer && p.HasKarma);
-                if (playerWithKarama != null && g.CurrentMainPhase == MainPhase.ShipmentAndMove)
-                {
-                    WriteSavegameIfApplicable(g, playerWithKarama, "Karama against guild");
-                }
+                WriteSavegameIfApplicable(g, g.GetPlayer(Faction.Yellow), "Fremen riding worm");
             }
-            
-            /*
-            if (g.CurrentPhase == Phase.Bidding && 
-                g.CurrentAuctionType == AuctionType.WhiteOnceAround && 
-                !g.GetPlayer(Faction.White).HasRoomForCards)
-            {
-
-                var full = g.Players.FirstOrDefault(p => !p.Is(Faction.White) && !p.HasRoomForCards && p.Has(TreacheryCardType.Clairvoyance));
-                if (full != null)
-                {
-                    WriteSavegameIfApplicable(g, full, "interesting bidding");
-                }
-            }
-            */
-
-            /*
-            if (g.CurrentMainPhase == MainPhase.ShipmentAndMove &&
-                g.GetPlayer(Faction.Grey) != null && g.GetPlayer(Faction.Grey).HasKarma)
-            {
-                WriteSavegameIfApplicable(g, g.GetPlayer(Faction.Grey), "Ixian can use special karama");
-            }
-
-            if (g.CardJustWon != null && g.WinningBid != null && 
-               (g.CurrentAuctionType == AuctionType.WhiteOnceAround || g.CurrentAuctionType == AuctionType.WhiteSilent) && 
-                g.WinningBid.Player.Ally == Faction.White && 
-                g.WinningBid.AllyContributionAmount > 0 && 
-                g.WinningBid.Amount > 0)
-            {
-                WriteSavegameIfApplicable(g, g.WinningBid.Player, "Richese supported a bid on a Richese card");
-            }
-
-            if (g.CurrentPhase == Phase.NonOrangeShip && g.ShipmentAndMoveSequence.CurrentFaction == Faction.Red && g.PlayerSkilledAs(LeaderSkill.Smuggler) == g.GetPlayer(Faction.Red))
-            {
-                WriteSavegameIfApplicable(g, g.GetPlayer(Faction.Red), "Shipment by emp smuggler");
-            }
-            */
-            /*
-            if (e is BattleConcluded bc && g.CurrentBattle.Territory.Locations.Any(l => g.ResourcesOnPlanet.ContainsKey(l)) && g.SkilledAs(g.CurrentBattle.PlanOf(bc.Initiator).Hero, LeaderSkill.Smuggler))
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Smuggler win in spice territory");
-            }
-            */
         }
 
         private readonly List<Type> Written = new();

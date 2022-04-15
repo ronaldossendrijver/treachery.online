@@ -59,30 +59,6 @@
         }
     }
 
-    protected virtual GameEventType ConfirmedResult
-    {
-        get
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    protected virtual GameEventType PassedResult
-    {
-        get
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    protected virtual GameEventType OtherResult
-    {
-        get
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     protected List<string> ValidValues<T>(IEnumerable<T> values)
     {
         return values.Select(o => o.ToString()).ToList();

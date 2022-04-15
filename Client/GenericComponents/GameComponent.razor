@@ -10,20 +10,14 @@
     [Parameter]
     public Handler h { get; set; }
 
-    protected async Task Request(GameEvent e)
-    {
-        await h.HostProxy.Request(e);
-    }
-
-    protected Game Game => h.Game;
-
-    protected Player Player => h.Player;
-
-    protected Faction Faction => h.Faction;
+    [Parameter]
+    public bool Collapsible { get; set; } = true;
 
     private static Dictionary<Type, bool> SavedCollapsedStateValues = new Dictionary<Type, bool>();
     private bool? _collapsed = null;
-    protected bool Collapsed
+
+    [Parameter]
+    public bool Collapsed
     {
         get
         {
@@ -56,6 +50,17 @@
             }
         }
     }
+
+    protected async Task Request(GameEvent e)
+    {
+        await h.HostProxy.Request(e);
+    }
+
+    protected Game Game => h.Game;
+
+    protected Player Player => h.Player;
+
+    protected Faction Faction => h.Faction;
 
     private string _id = null;
     protected string Id
@@ -125,5 +130,4 @@
     {
         StateHasChanged();
     }
-
 }
