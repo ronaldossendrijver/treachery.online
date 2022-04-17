@@ -1,4 +1,8 @@
-﻿@using Treachery.Shared;
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared;
 @using System.Collections;
 @using System.Linq;
 
@@ -57,7 +61,7 @@
     }
     else if (part is IHero hero)
     {
-        <span class="fw-bold" style="@Support.TextBorder(1, Skin.Current.FactionColor[hero.Faction])" data-bs-content="@Support.GetHeroHoverHTML(hero)" data-bs-html="true" data-bs-trigger="hover" data-bs-toggle="popover">@Skin.Current.Describe(hero)</span>
+        <span class="fw-bold" style="@Support.TextBorder(1, Skin.Current.FactionColor[hero.Faction])" data-bs-content="@Support.GetHeroHoverHTML(hero, Game)" data-bs-html="true" data-bs-trigger="hover" data-bs-toggle="popover">@Skin.Current.Describe(hero)</span>
     }
     else if (part is Concept monster && monster == Concept.Monster)
     {
@@ -86,6 +90,9 @@
 }
 
 @code {
+
+    [Parameter]
+    public Game Game { get; set; }
 
     [Parameter]
     public Expression Expression { get; set; }

@@ -30,6 +30,11 @@ namespace Treachery.Test
             {
                 WriteSavegameIfApplicable(g, g.GetPlayer(Faction.Yellow), "Fremen riding worm");
             }
+
+            if (e is Caravan)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Hajr");
+            }
         }
 
         private readonly List<Type> Written = new();

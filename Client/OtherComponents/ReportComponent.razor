@@ -20,7 +20,7 @@
                 foreach (var message in Report.Messages.Where(m => m.Target == Faction.None || m.Target == h.Faction).OrderByDescending(m => m.Nr))
                 {
                     <div style="@FontStyle(message)">
-                        <ExpressionComponent Expression=message.Expression Size=20/>
+                        <ExpressionComponent Expression=message.Expression Game=Game Size=20/>
                     </div>
                 }
             }

@@ -53,16 +53,7 @@ namespace Treachery.Client
 
         public async Task<IEnumerable<string>> GetKeys()
         {
-            /*int nrOfItems = await _jsRuntime.InvokeAsync<string[]>("localStorage.length");
-            _jsRuntime.
-            string[] result = new string[nrOfItems];
-
-            for (int i = 0; i < nrOfItems; i++)
-            {
-                result[i] = await _jsRuntime.InvokeAsync<string>("localStorage.key", i);
-            }*/
             return await _jsRuntime.InvokeAsync<string[]>("GetLocalStorageKeys");
-            //return result;
         }
 
         public async Task<string> GetStringAsync(string key)
@@ -76,11 +67,5 @@ namespace Treachery.Client
         {
             await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", key);
         }
-
-        public async Task ClearAsync()
-        {
-            await _jsRuntime.InvokeVoidAsync("localStorage.clear");
-        }
-
     }
 }

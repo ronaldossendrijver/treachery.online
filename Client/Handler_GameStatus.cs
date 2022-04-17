@@ -540,45 +540,45 @@ namespace Treachery.Client
 
             if (latestEvent != null)
             {
-                if (latestEvent is RaiseDeadPlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.RaiseDead));
-                else if (latestEvent is MetheorPlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Metheor));
-                else if (latestEvent is StormSpellPlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.StormSpell));
-                else if (latestEvent is ClairVoyancePlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Clairvoyance));
-                else if (latestEvent is AmalPlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Amal));
-                else if (latestEvent is HarvesterPlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Harvester));
-                else if (latestEvent is ThumperPlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Thumper));
-                else if (latestEvent is ResidualPlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Residual));
-                else if (latestEvent is FlightUsed) result.Add(CardInfo(latestEvent, TreacheryCardType.Flight));
-                else if (latestEvent is DistransUsed) result.Add(CardInfo(latestEvent, TreacheryCardType.Distrans));
-                else if (latestEvent is KarmaBrownDiscard) result.Add(CardInfo(latestEvent, TreacheryCardType.Karma));
-                else if (latestEvent is KarmaFreeRevival) result.Add(CardInfo(latestEvent, TreacheryCardType.Karma));
-                else if (latestEvent is KarmaHandSwapInitiated) result.Add(CardInfo(latestEvent, TreacheryCardType.Karma));
-                else if (latestEvent is KarmaHmsMovement) result.Add(CardInfo(latestEvent, TreacheryCardType.Karma));
-                else if (latestEvent is KarmaMonster) result.Add(CardInfo(latestEvent, TreacheryCardType.Karma));
-                else if (latestEvent is KarmaPrescience) result.Add(CardInfo(latestEvent, TreacheryCardType.Karma));
-                else if (latestEvent is KarmaRevivalPrevention) result.Add(CardInfo(latestEvent, TreacheryCardType.Karma));
-                else if (latestEvent is KarmaShipmentPrevention) result.Add(CardInfo(latestEvent, TreacheryCardType.Karma));
-                else if (latestEvent is KarmaWhiteBuy) result.Add(CardInfo(latestEvent, TreacheryCardType.Karma));
-                else if (latestEvent is PortableAntidoteUsed) result.Add(CardInfo(latestEvent, TreacheryCardType.PortableAntidote));
-                else if (latestEvent is RockWasMelted) result.Add(CardInfo(latestEvent, TreacheryCardType.Rockmelter));
-                else if (latestEvent is DiscardedTaken) result.Add(CardInfo(latestEvent, TreacheryCardType.TakeDiscarded));
-                else if (latestEvent is DiscardedSearched) result.Add(CardInfo(latestEvent, TreacheryCardType.SearchDiscarded));
-                else if (latestEvent is JuicePlayed) result.Add(CardInfo(latestEvent, TreacheryCardType.Juice));
-                else if (latestEvent is Retreat r || latestEvent is Diplomacy) result.Add(CardInfo(latestEvent, LeaderSkill.Diplomat));
-                else if (latestEvent is Bureaucracy bc && !bc.Passed) result.Add(CardInfo(latestEvent, LeaderSkill.Bureaucrat));
-                else if (latestEvent is Planetology) result.Add(CardInfo(latestEvent, LeaderSkill.Planetologist));
-                else if (latestEvent is BattleConcluded battleconcluded && g.TraitorsDeciphererCanLookAt.Count > 0) result.Add(CardInfo(latestEvent, LeaderSkill.Decipherer));
-                else if (latestEvent is Thought) result.Add(CardInfo(latestEvent, LeaderSkill.Thinker));
-                else if (latestEvent is GreyRemovedCardFromAuction) result.Add(EventInfo(latestEvent));
-                else if (latestEvent is GreySwappedCardOnBid gsc && !gsc.Passed) result.Add(EventInfo(latestEvent));
-                else if (latestEvent is BrownDiscarded) result.Add(EventInfo(latestEvent));
-                else if (latestEvent is ReplacedCardWon rcw && !rcw.Passed) result.Add(EventInfo(latestEvent));
-                else if (latestEvent is CardTraded) result.Add(EventInfo(latestEvent));
-                else if (latestEvent is BrownEconomics) result.Add(EventInfoFaction(latestEvent));
-                else if (latestEvent is FaceDancerReplaced fdr && !fdr.Passed) result.Add(EventInfoFaction(latestEvent));
-                else if (latestEvent is SwitchedSkilledLeader) result.Add(EventInfo(latestEvent));
-                else if (latestEvent is EstablishPlayers && g.CurrentPhase != Phase.SelectingFactions && IsPlayer) result.Add(PlayInfo(Player.Faction));
-                else if (latestEvent is FactionTradeOffered fto && (fto.Initiator == Faction || fto.Target == Faction) && !g.CurrentTradeOffers.Any(t => t.Initiator == Faction)) result.Add(PlayInfo(Player.Faction));
+                if (latestEvent is RaiseDeadPlayed) result.Add(FlashInfo(latestEvent, TreacheryCardType.RaiseDead));
+                else if (latestEvent is MetheorPlayed) result.Add(FlashInfo(latestEvent, TreacheryCardType.Metheor));
+                else if (latestEvent is StormSpellPlayed) result.Add(FlashInfo(latestEvent, TreacheryCardType.StormSpell));
+                else if (latestEvent is ClairVoyancePlayed) result.Add(FlashInfo(latestEvent, TreacheryCardType.Clairvoyance));
+                else if (latestEvent is AmalPlayed) result.Add(FlashInfo(latestEvent, TreacheryCardType.Amal));
+                else if (latestEvent is HarvesterPlayed) result.Add(FlashInfo(latestEvent, TreacheryCardType.Harvester));
+                else if (latestEvent is ThumperPlayed) result.Add(FlashInfo(latestEvent, TreacheryCardType.Thumper));
+                else if (latestEvent is ResidualPlayed) result.Add(FlashInfo(latestEvent, TreacheryCardType.Residual));
+                else if (latestEvent is FlightUsed) result.Add(FlashInfo(latestEvent, TreacheryCardType.Flight));
+                else if (latestEvent is DistransUsed) result.Add(FlashInfo(latestEvent, TreacheryCardType.Distrans));
+                else if (latestEvent is KarmaBrownDiscard) result.Add(FlashInfo(latestEvent, TreacheryCardType.Karma));
+                else if (latestEvent is KarmaFreeRevival) result.Add(FlashInfo(latestEvent, TreacheryCardType.Karma));
+                else if (latestEvent is KarmaHandSwapInitiated) result.Add(FlashInfo(latestEvent, TreacheryCardType.Karma));
+                else if (latestEvent is KarmaHmsMovement) result.Add(FlashInfo(latestEvent, TreacheryCardType.Karma));
+                else if (latestEvent is KarmaMonster) result.Add(FlashInfo(latestEvent, TreacheryCardType.Karma));
+                else if (latestEvent is KarmaPrescience) result.Add(FlashInfo(latestEvent, TreacheryCardType.Karma));
+                else if (latestEvent is KarmaRevivalPrevention) result.Add(FlashInfo(latestEvent, TreacheryCardType.Karma));
+                else if (latestEvent is KarmaShipmentPrevention) result.Add(FlashInfo(latestEvent, TreacheryCardType.Karma));
+                else if (latestEvent is KarmaWhiteBuy) result.Add(FlashInfo(latestEvent, TreacheryCardType.Karma));
+                else if (latestEvent is PortableAntidoteUsed) result.Add(FlashInfo(latestEvent, TreacheryCardType.PortableAntidote));
+                else if (latestEvent is RockWasMelted) result.Add(FlashInfo(latestEvent, TreacheryCardType.Rockmelter));
+                else if (latestEvent is DiscardedTaken) result.Add(FlashInfo(latestEvent, TreacheryCardType.TakeDiscarded));
+                else if (latestEvent is DiscardedSearched) result.Add(FlashInfo(latestEvent, TreacheryCardType.SearchDiscarded));
+                else if (latestEvent is JuicePlayed) result.Add(FlashInfo(latestEvent, TreacheryCardType.Juice));
+                else if (latestEvent is Retreat r || latestEvent is Diplomacy) result.Add(FlashInfo(latestEvent, LeaderSkill.Diplomat));
+                else if (latestEvent is Bureaucracy bc && !bc.Passed) result.Add(FlashInfo(latestEvent, LeaderSkill.Bureaucrat));
+                else if (latestEvent is Planetology) result.Add(FlashInfo(latestEvent, LeaderSkill.Planetologist));
+                else if (latestEvent is BattleConcluded battleconcluded && g.TraitorsDeciphererCanLookAt.Count > 0) result.Add(FlashInfo(latestEvent, LeaderSkill.Decipherer));
+                else if (latestEvent is Thought) result.Add(FlashInfo(latestEvent, LeaderSkill.Thinker));
+                else if (latestEvent is GreyRemovedCardFromAuction) result.Add(FlashInfo(latestEvent));
+                else if (latestEvent is GreySwappedCardOnBid gsc && !gsc.Passed) result.Add(FlashInfo(latestEvent));
+                else if (latestEvent is BrownDiscarded) result.Add(FlashInfo(latestEvent));
+                else if (latestEvent is ReplacedCardWon rcw && !rcw.Passed) result.Add(FlashInfo(latestEvent));
+                else if (latestEvent is CardTraded) result.Add(FlashInfo(latestEvent));
+                else if (latestEvent is BrownEconomics) result.Add(FlashInfo(latestEvent));
+                else if (latestEvent is FaceDancerReplaced fdr && !fdr.Passed) result.Add(FlashInfo(latestEvent));
+                else if (latestEvent is SwitchedSkilledLeader) result.Add(FlashInfo(latestEvent));
+                else if (latestEvent is EstablishPlayers && g.CurrentPhase != Phase.SelectingFactions && IsPlayer) result.Add(FlashInfo(Player.Faction));
+                else if (latestEvent is FactionTradeOffered fto && (fto.Initiator == Faction || fto.Target == Faction) && !g.CurrentTradeOffers.Any(t => t.Initiator == Faction)) result.Add(FlashInfo(Player.Faction));
 
             }
 
@@ -592,29 +592,29 @@ namespace Treachery.Client
                     case Milestone.TreacheryCalled:
                     case Milestone.FaceDanced:
                         {
-                            result.Add(EventInfo(latestEvent));
+                            result.Add(FlashInfo(latestEvent));
                             break;
                         }
                     case Milestone.Karma:
                         {
                             if (g.TreacheryDiscardPile.Top != null)
                             {
-                                result.Add(CardInfo(latestEvent, g.TreacheryDiscardPile.Top));
+                                result.Add(FlashInfo(latestEvent, g.TreacheryDiscardPile.Top));
                             }
                             else
                             {
-                                result.Add(EventInfo(latestEvent));
+                                result.Add(FlashInfo(latestEvent));
                             }
                             break;
                         }
                     case Milestone.BabyMonster:
                         {
-                            result.Add(CardInfo(Map.GetResourceCardsInAndOutsidePlay(g.Map).FirstOrDefault(c => c.IsSandTrout), Message.Express(Concept.BabyMonster, " detected!")));
+                            result.Add(FlashInfo(Map.GetResourceCardsInAndOutsidePlay(g.Map).FirstOrDefault(c => c.IsSandTrout), Message.Express(Concept.BabyMonster, " detected!")));
                             break;
                         }
                     case Milestone.Monster:
                         {
-                            result.Add(CardInfo(Map.GetResourceCardsInAndOutsidePlay(g.Map).FirstOrDefault(c => c.IsShaiHulud), Message.Express(Concept.Monster, " detected!")));
+                            result.Add(FlashInfo(Map.GetResourceCardsInAndOutsidePlay(g.Map).FirstOrDefault(c => c.IsShaiHulud), Message.Express(Concept.Monster, " detected!")));
                             break;
                         }
                     case Milestone.Resource:
@@ -647,7 +647,7 @@ namespace Treachery.Client
 
                             if (cardToShow != null)
                             {
-                                result.Add(CardInfo(cardToShow, Message.Express(Concept.Resource, " in ", cardToShow.ToString())));
+                                result.Add(FlashInfo(cardToShow, Message.Express(Concept.Resource, " in ", cardToShow.ToString())));
                             }
 
                             break;
@@ -676,26 +676,26 @@ namespace Treachery.Client
             new(descriptionWhenAwaited, descriptionWhenWaiting, Game.GetPlayer(waitingForFaction), timedEvent);
 
 
-        private FlashInfo EventInfo(GameEvent e)
+        private static FlashInfo FlashInfo(GameEvent e)
         {
             FlashInfo result;
             if (e is TreacheryCalled t)
             {
-                var victim = Game.CurrentBattle.OpponentOf(t.Initiator);
-                var victimPlan = Game.CurrentBattle.PlanOf(victim);
+                var victim = e.Game.CurrentBattle.OpponentOf(t.Initiator);
+                var victimPlan = e.Game.CurrentBattle.PlanOf(victim);
                 result.Message = Message.Express(victimPlan.Hero, " is a ", t.Initiator, " traitor!");
                 result.Url = Skin.Current.GetImageURL(victimPlan.Hero);
             }
             else if (e is FaceDanced)
             {
-                var dancer = Game.WinnerHero;
+                var dancer = e.Game.WinnerHero;
                 result.Message = Message.Express(dancer, " is a ", e.Initiator, " facedancer!");
                 result.Url = Skin.Current.GetImageURL(dancer);
             }
             else if (e is SwitchedSkilledLeader)
             {
-                var skilledHero = Game.GetSkilledLeader(e.Player);
-                result.Message = Message.Express(e.Initiator, " place ", Game.Skill(skilledHero), " ", skilledHero, Game.IsInFrontOfShield(skilledHero) ? " in front of" : " behind", " their shield");
+                var skilledHero = e.Game.GetSkilledLeader(e.Player);
+                result.Message = Message.Express(e.Initiator, " place ", e.Game.Skill(skilledHero), " ", skilledHero, e.Game.IsInFrontOfShield(skilledHero) ? " in front of" : " behind", " their shield");
                 result.Url = Skin.Current.GetImageURL(skilledHero);
             }
             else
@@ -707,7 +707,7 @@ namespace Treachery.Client
             return result;
         }
 
-        private static FlashInfo CardInfo(GameEvent e, TreacheryCardType t)
+        private static FlashInfo FlashInfo(GameEvent e, TreacheryCardType t)
         {
             FlashInfo result;
             result.Url = Skin.Current.GetImageURL(TreacheryCardManager.GetCardsInAndOutsidePlay().First(card => card.Type == t));
@@ -715,7 +715,7 @@ namespace Treachery.Client
             return result;
         }
 
-        private static FlashInfo CardInfo(GameEvent e, LeaderSkill s)
+        private static FlashInfo FlashInfo(GameEvent e, LeaderSkill s)
         {
             FlashInfo result;
             result.Url = Skin.Current.GetImageURL(s);
@@ -732,7 +732,7 @@ namespace Treachery.Client
             return result;
         }
 
-        private static FlashInfo CardInfo(GameEvent e, TreacheryCard c)
+        private static FlashInfo FlashInfo(GameEvent e, TreacheryCard c)
         {
             FlashInfo result;
             result.Url = Skin.Current.GetImageURL(c);
@@ -749,7 +749,7 @@ namespace Treachery.Client
             return result;
         }
 
-        private static FlashInfo PlayInfo(Faction f)
+        private static FlashInfo FlashInfo(Faction f)
         {
             FlashInfo result;
             result.Url = Skin.Current.GetImageURL(f);
@@ -757,7 +757,7 @@ namespace Treachery.Client
             return result;
         }
 
-        private static FlashInfo CardInfo(ResourceCard c, Message m)
+        private static FlashInfo FlashInfo(ResourceCard c, Message m)
         {
             FlashInfo result;
             result.Url = Skin.Current.GetImageURL(c);
@@ -765,13 +765,7 @@ namespace Treachery.Client
             return result;
         }
 
-        private static FlashInfo EventInfoFaction(GameEvent e)
-        {
-            FlashInfo result;
-            result.Url = Skin.Current.GetFactionTableImageURL(e.Initiator);
-            result.Message = e.GetMessage();
-            return result;
-        }
+
     }
 
     public struct FlashInfo

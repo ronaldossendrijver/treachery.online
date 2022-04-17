@@ -6,9 +6,9 @@ using Treachery.Shared;
 
 namespace Treachery.Client
 {
-    public class LocationEventArgs
+    public class TerritoryEventArgs
     {
-        public Location Location { get; set; }
+        public Territory Territory { get; set; }
         public bool CtrlKey { get; set; }
         public bool ShiftKey { get; set; }
         public bool AltKey { get; set; }

@@ -58,14 +58,6 @@ namespace Treachery.Client
             }
         }
 
-        public IEnumerable<TreacheryCard> AvailableCards(Faction f, int cardNumber)
-        {
-            var cardsSelectedElsewhere = AllTrackedCardsExcept(f, cardNumber);
-            return CardsInPlay.Where(c => !removedCards.Contains(c.Id) && !discardedCards.Contains(c.Id) && !cardsSelectedElsewhere.Contains(c.Id));
-
-            //return CardsInPlay;
-        }
-
         public IEnumerable<TreacheryCard> AvailableDistinctCards(Faction f, int cardNumber)
         {
             var result = new List<TreacheryCard>();
@@ -110,20 +102,6 @@ namespace Treachery.Client
                 }
             }
             return result;
-        }
-
-        public IEnumerable<CartTypeProbability> GetProbabilities()
-        {
-            var unknownCards = CardsInPlay.Where(c => !removedCards.Contains(c.Id) && !discardedCards.Contains(c.Id) && !AllTrackedCards().Contains(c.Id));
-
-            return unknownCards
-                .GroupBy(card => card.Type)
-                .Select(group => new CartTypeProbability()
-                {
-                    Type = group.Key,
-                    Probability = (float)group.Count() / unknownCards.Count()
-                })
-                .OrderByDescending(x => x.Probability);
         }
 
         public int GetSelectedTraitor(Faction f, int nr)
@@ -323,25 +301,5 @@ namespace Treachery.Client
 
             return new GreenIntelligence(g);
         }
-    }
-
-    public enum CardLocation
-    {
-        None = 0,
-        WithGreen = 10,
-        WithBlack = 20,
-        WithYellow = 30,
-        WithRed = 40,
-        WithOrange = 50,
-        WithBlue = 60,
-        Discarded = 1000,
-        RemovedFromGame = 2000,
-        Unknown = 3000
-    }
-
-    public class CartTypeProbability
-    {
-        public TreacheryCardType Type;
-        public float Probability;
     }
 }

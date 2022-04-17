@@ -169,11 +169,6 @@ namespace Treachery.Client
             await JsInvoke("StopSounds");
         }
 
-        public static async Task PlayVideo(string source)
-        {
-            await JsInvoke("PlayVideo", source);
-        }
-
         public static async Task<IEnumerable<CaptureDevice>> GetCaptureDevices(bool getPermissionsFirst)
         {
             var devices = await JsInvoke<JsonElement[]>("GetCaptureDevices", getPermissionsFirst);
@@ -184,11 +179,11 @@ namespace Treachery.Client
                 DeviceId = d.GetProperty("deviceId").GetString(),
                 GroupId = d.GetProperty("groupId").GetString(),
                 Kind = d.GetProperty("kind").GetString(),
-                Label = DetermineLabel(d.GetProperty("label").GetString(), d.GetProperty("deviceId").GetString(), d.GetProperty("kind").GetString(), d.GetProperty("groupId").GetString())
+                Label = DetermineDeviceLabel(d.GetProperty("label").GetString(), d.GetProperty("deviceId").GetString(), d.GetProperty("kind").GetString(), d.GetProperty("groupId").GetString())
             });
         }
 
-        private static string DetermineLabel(string label, string deviceId, string kind, string groupId)
+        private static string DetermineDeviceLabel(string label, string deviceId, string kind, string groupId)
         {
             if (label != null && label.Length > 0)
             {
@@ -217,7 +212,7 @@ namespace Treachery.Client
             await JsInvoke("InitializeVideo", videoId);
         }
 
-        static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+        static readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
         public static async Task PushVideoData(string videoId, byte[] data, float volume)
         {
             await semaphoreSlim.WaitAsync();
@@ -235,11 +230,6 @@ namespace Treachery.Client
         public static async Task CaptureMedia(string videoId, string audioDeviceId, string videoDeviceId)
         {
             await JsInvoke("CaptureMedia", videoId, audioDeviceId, videoDeviceId);
-        }
-
-        public static async Task StopCapture()
-        {
-            await JsInvoke("StopCapture");
         }
 
         public static async Task StopCapture(string videoId)
@@ -265,7 +255,7 @@ namespace Treachery.Client
             var keys = await Storage.GetKeys();
             foreach (var key in keys.Where(k => k.StartsWith(startOfName)))
             {
-                await Storage.RemoveAsync(key);
+                await ClearSetting(key);
             }
         }
 

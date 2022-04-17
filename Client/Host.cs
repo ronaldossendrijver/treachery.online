@@ -25,7 +25,6 @@ namespace Treachery.Client
         private Game GameAtHost;
         public readonly string LoadedGameData;
         public readonly Game LoadedGame;
-        private bool _stopped = false;
 
         public GameInfo GameBeingEstablished = new()
         {
@@ -64,12 +63,6 @@ namespace Treachery.Client
             connection.On<ChatMessage>("RequestChatMessage", (e) => ReceiveRequest_ChatMessage(e));
         }
 
-        public void Stop()
-        {
-            _stopped = true;
-        }
-
-
         private void RegisterGameEventHandlers()
         {
             foreach (var t in Game.GetGameEventTypes())
@@ -86,7 +79,7 @@ namespace Treachery.Client
         private int nrOfHeartbeats = 0;
         public async Task Heartbeat()
         {
-            if (nrOfHeartbeats++ < MAX_HEARTBEATS && !_stopped)
+            if (nrOfHeartbeats++ < MAX_HEARTBEATS)
             {
                 try
                 {

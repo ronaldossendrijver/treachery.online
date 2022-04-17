@@ -66,23 +66,7 @@ namespace Treachery.Client
             }
         }
 
-        public static string GetResourceCardHoverHTMLSmall(ResourceCard c)
-        {
-            if (c == null)
-            {
-                return "";
-            }
-            else
-            {
-                return string.Format("<img src='{0}' width=200 class='img-fluid' style='filter:drop-shadow(-3px 3px 2px black);'/>", Skin.Current.GetImageURL(c));
-            }
-        }
-
-        public static string GetHeroHoverHTML(IHero h) => GetHeroHoverHTML(h, LeaderSkill.None);
-
-        public static string GetHeroHoverHTML(IHero h, Game g) => GetHeroHoverHTML(h, g.Skill(h));
-
-        public static string GetHeroHoverHTML(IHero h, LeaderSkill skill)
+        public static string GetHeroHoverHTML(IHero h, Game g)
         {
             if (h == null)
             {
@@ -90,6 +74,8 @@ namespace Treachery.Client
             }
             else
             {
+                var skill = g.Skill(h);
+
                 if (skill == LeaderSkill.None)
                 {
                     return string.Format("<img src='{0}' width=200 class='img-fluid' style='filter:drop-shadow(-3px 3px 2px black);'/>", Skin.Current.GetImageURL(h));
@@ -161,11 +147,6 @@ namespace Treachery.Client
             }
         }
 
-        public static string Color(Faction f)
-        {
-            return string.Format("background-color:{0}", Skin.Current.GetFactionColor(f));
-        }
-
         public static void Log(object o)
         {
             Console.WriteLine(o);
@@ -214,9 +195,7 @@ namespace Treachery.Client
             return serializer.Deserialize<Skin>(jsonReader);
         }
 
-        public static string TextBorder(int borderwidth, string bordercolor) => TextBorder(borderwidth, borderwidth, bordercolor);
-
-        public static string TextBorder(int borderwidth, int blur, string bordercolor) => string.Format("text-shadow: {0}px {0}px {1}px {2}, 0px {0}px {1}px {2}, -{0}px {0}px {1}px {2}, -{0}px 0px {1}px {2}, -{0}px -{0}px {1}px {2}, 0px -{0}px {1}px {2}, {0}px -{0}px {1}px {2}, {0}px 0px {1}px {2}, 0px 0px {1}px {2};", Round(0.5f * borderwidth), Round(0.5f * blur), bordercolor);
+        public static string TextBorder(int borderwidth, string bordercolor) => string.Format("text-shadow: {0}px {0}px {1}px {2}, 0px {0}px {1}px {2}, -{0}px {0}px {1}px {2}, -{0}px 0px {1}px {2}, -{0}px -{0}px {1}px {2}, 0px -{0}px {1}px {2}, {0}px -{0}px {1}px {2}, {0}px 0px {1}px {2}, 0px 0px {1}px {2};", Round(0.5f * borderwidth), Round(0.5f * borderwidth), bordercolor);
 
         public static string Round(double x) => Math.Round(x, 3).ToString(CultureInfo.InvariantCulture);
 
