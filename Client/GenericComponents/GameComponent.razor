@@ -3,6 +3,7 @@
 --->
 
 @using Treachery.Shared;
+@inherits Component;
 @implements IDisposable;
 
 @code {
@@ -62,25 +63,6 @@
 
     protected Faction Faction => h.Faction;
 
-    private string _id = null;
-    protected string Id
-    {
-        get
-        {
-            if (_id == null)
-            {
-                _id = GenerateId();
-            }
-
-            return _id;
-        }
-    }
-
-    protected string GenerateId()
-    {
-        return Guid.NewGuid().ToString();
-    }
-
     protected string Color(Faction f)
     {
         return string.Format("background-color:{0}", Skin.Current.GetFactionColor(f));
@@ -101,6 +83,15 @@
         }
     }
 
+    protected async Task StartRedrawCycleAsync(int interval)
+    {
+        if (!_redrawCycleStarted && interval > 0)
+        {
+            _redrawCycleStarted = true;
+            await Task.Delay(interval).ContinueWith(e => ContinueRedrawCycleAsync(interval, false));
+        }
+    }
+
     private void ContinueRedrawCycle(int interval, bool firstCall = true)
     {
         if (_redrawCycleStarted)
@@ -110,9 +101,23 @@
         }
     }
 
+    private async Task ContinueRedrawCycleAsync(int interval, bool firstCall = true)
+    {
+        if (_redrawCycleStarted)
+        {
+            await RedrawAsync();
+            await Task.Delay(interval).ContinueWith(e => ContinueRedrawCycleAsync(interval, false));
+        }
+    }
+
     protected virtual void Redraw()
     {
         StateHasChanged();
+    }
+
+    protected virtual async Task RedrawAsync()
+    {
+        await Task.Delay(0).ContinueWith(e => StateHasChanged());
     }
 
     protected IEnumerable<string> GetLabels<T>(IEnumerable<T> items, string labelIfNull = "")
@@ -122,7 +127,7 @@
 
     public virtual void Dispose()
     {
-        _ = Browser.RefreshPopovers();
+        _ = Browser.RefreshPopovers(this.ToString());
         _redrawCycleStarted = false;
     }
 

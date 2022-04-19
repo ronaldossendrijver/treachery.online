@@ -115,8 +115,14 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Browser.EnablePopovers();
+        if (firstRender)
+        {
+            await Browser.EnablePopovers(this.ToString());
+        }
     }
+
+    private Situation situation = new();
+    protected override bool ShouldRender() => situation.RequiresUpdate(Game);
 
     private bool EnableCameras => h.VideoDevice != null && Game.Players.Count(p => !p.IsBot) > 1 && h.Player != null;
 

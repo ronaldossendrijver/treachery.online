@@ -84,22 +84,26 @@
 
         function GetWindowDimensions() {
 
-            return { Width: $(window).width(), Height: $(window).height() };
+            return {
+                Width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+                Height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+            };
         }
 
         function RemoveFocusFromButtons() {
 
-            $(':button').blur();
+            document.querySelectorAll("button").forEach(item => item.blur());
         }
 
         function RefreshPopovers() {
-
+            
             $('[data-bs-toggle="popover"]').popover('dispose');
             EnablePopovers();
         }
 
         function EnablePopovers() {
-
+            
+            //document.querySelectorAll("[data-bs-toggle='popover']").forEach(item => new bootstrap.Popover(item, { sanitize: false }));
             $('[data-bs-toggle="popover"]').popover({ sanitize: false });
         }
 
@@ -366,7 +370,7 @@
 
         function HideModal(modalId) {
 
-            $(modalId).modal('hide');
+            document.getElementById(modalId).modal('hide');
         }
 
         function ToggleFullScreen() {
@@ -389,17 +393,17 @@
 
             let elem = document.getElementById(elementId);
             let domClone = elem.cloneNode(true);
-            let $printSection = document.getElementById("printSection");
+            let printSection = document.getElementById("printSection");
 
-            if (!$printSection) {
+            if (!printSection) {
 
-                $printSection = document.createElement("div");
-                $printSection.id = "printSection";
-                document.body.appendChild($printSection);
+                printSection = document.createElement("div");
+                printSection.id = "printSection";
+                document.body.appendChild(printSection);
             }
 
-            $printSection.innerHTML = "";
-            $printSection.appendChild(domClone);
+            printSection.innerHTML = "";
+            printSection.appendChild(domClone);
             window.print();
         }
 

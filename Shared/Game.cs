@@ -97,7 +97,11 @@ namespace Treachery.Shared
         public void PerformPreEventTasks(GameEvent e)
         {
             UpdateTimers(e);
-            RecentlyDiscarded.Clear();
+
+            if (!(e is AllyPermission || e is PlayerReplaced || e is DealOffered || e is DealAccepted))
+            {
+                RecentlyDiscarded.Clear();
+            }
         }
 
         public void PerformPostEventTasks(GameEvent e, bool justEnteredStartOfPhase)

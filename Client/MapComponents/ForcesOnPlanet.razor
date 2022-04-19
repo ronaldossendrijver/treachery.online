@@ -53,3 +53,9 @@
         }
     }
 }
+
+@code {
+
+    private Situation situation = new();
+    protected override bool ShouldRender() => situation.RequiresUpdate(Game);
+}

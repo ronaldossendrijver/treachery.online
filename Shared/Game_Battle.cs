@@ -282,6 +282,7 @@ namespace Treachery.Shared
                 }
 
                 KillHero(toKill);
+                RecentMilestones.Add(Milestone.LeaderKilled);
                 CurrentReport.Express(TreacheryCardType.Residual, " kills ", toKill);
             }
             else

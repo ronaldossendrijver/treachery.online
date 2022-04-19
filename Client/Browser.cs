@@ -29,12 +29,12 @@ namespace Treachery.Client
             await JsInvoke("Reload");
         }
 
-        public static async Task EnablePopovers()
+        public static async Task EnablePopovers(string source)
         {
             await JsInvoke("EnablePopovers");
         }
 
-        public static async Task RefreshPopovers()
+        public static async Task RefreshPopovers(string source)
         {
             await JsInvoke("RefreshPopovers");
         }

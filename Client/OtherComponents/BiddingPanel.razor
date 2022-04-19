@@ -181,7 +181,7 @@
         if (shownCard != Game.CardsOnAuction.Top)
         {
             shownCard = Game.CardsOnAuction.Top;
-            await Browser.RefreshPopovers();
+            await Browser.RefreshPopovers(this.ToString());
         }
     }
 

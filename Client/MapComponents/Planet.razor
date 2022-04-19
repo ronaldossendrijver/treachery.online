@@ -52,7 +52,7 @@
         <g clip-path="url(#@SectorClipName(location.Sector))">
             <g
                 fill="@LocationColor(location)"
-                cursor="pointer" pointer-events="all" @onclick="@(e => OnClick(e, location))" 
+                cursor="pointer" pointer-events="all" @onclick="@(e => OnClick(e, location))"
                 data-bs-trigger="hover" data-bs-toggle="popover" data-bs-html="true" data-bs-animation="false" data-bs-delay="50" data-bs-content="@Intel(location)" data-bs-template="@PopoverTemplate">
 
                     <path d="@Skin.Current.GetTerritoryBorder(location.Territory)"/>
@@ -84,9 +84,12 @@
 
 @code {
 
+    private Situation situation = new();
+    protected override bool ShouldRender() => situation.RequiresUpdate(Game);
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Browser.RefreshPopovers();
+        await Browser.RefreshPopovers(this.ToString());
     }
 
     private Location hovered = null;

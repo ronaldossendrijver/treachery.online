@@ -71,6 +71,7 @@ namespace Treachery.Shared
 
         public List<Deal> Deals = new List<Deal>();
 
+        
 
         private void StartDeal(Deal deal)
         {

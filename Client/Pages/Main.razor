@@ -170,7 +170,11 @@
         else
         {
             await Browser.SetPlanetMapScale();
-            await Browser.EnablePopovers();
+
+            if (firstRender)
+            {
+                await Browser.EnablePopovers(this.ToString());
+            }
         }
     }
 

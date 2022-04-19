@@ -1062,6 +1062,8 @@ namespace Treachery.Shared
             Enter(Phase.BiddingReport);
         }
 
+        public bool BiddingIsInProgress => CurrentPhase == Phase.BlackMarketBidding || CurrentPhase == Phase.Bidding;
+
         public int NumberOfCardsOnRegularAuction => CardNumber + CardsOnAuction.Items.Count - 1;
     }
 }

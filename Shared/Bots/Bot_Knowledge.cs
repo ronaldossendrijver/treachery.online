@@ -99,6 +99,7 @@ namespace Treachery.Shared
             if (cardToRate.Type == TreacheryCardType.ProjectileAndPoison) return 5;
             if (cardToRate.Type == TreacheryCardType.ShieldAndAntidote) return 5;
             if (cardToRate.Type == TreacheryCardType.Laser) return 5;
+            if (cardToRate.Type == TreacheryCardType.Rockmelter) return 5;
             if (cardToRate.Type == TreacheryCardType.Karma && Faction == Faction.Black && !SpecialKarmaPowerUsed) return 5;
 
             int qualityWhenObtainingBothKinds = (Faction == Faction.Green || Faction == Faction.Blue) ? 5 : 4;
@@ -116,7 +117,6 @@ namespace Treachery.Shared
             if (cardToRate.Type == TreacheryCardType.Chemistry) return 4;
             if (cardToRate.Type == TreacheryCardType.WeirdingWay) return 4;
 
-            if (cardToRate.IsRockmelter) return 3;
             if (cardToRate.IsMirrorWeapon) return 3;
             if (cardToRate.Type == TreacheryCardType.SearchDiscarded) return 3;
             if (cardToRate.Type == TreacheryCardType.TakeDiscarded) return 3;

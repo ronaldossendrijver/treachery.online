@@ -104,13 +104,13 @@
     private bool autoConfirm = false;
     private int ticksPassed = 0;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        StartRedrawCycle(1000);
+        await StartRedrawCycleAsync(1000);
     }
 
     private Phase _previousPhase;
-    protected override void Redraw()
+    protected override async Task RedrawAsync()
     {
         if (CancelAutoConfirm)
         {
@@ -125,10 +125,10 @@
             if (autoConfirm && CanEndPhase && ticksPassed >= 3 + h.Status.FlashInfo.Count)
             {
                 ticksPassed = 0;
-                _ = Confirm();
+                await Confirm();
             }
 
-            base.Redraw();
+            await base.RedrawAsync();
         }
 
         _previousPhase = Game.CurrentPhase;

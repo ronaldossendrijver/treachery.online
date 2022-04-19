@@ -150,7 +150,7 @@
         if (popoversNeedUpdate)
         {
             popoversNeedUpdate = false;
-            await Browser.EnablePopovers();
+            await Browser.EnablePopovers(this.ToString());
         }
     }
 
