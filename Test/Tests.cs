@@ -26,14 +26,9 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (g.CurrentPhase == Phase.YellowRidingMonsterA || g.CurrentPhase == Phase.YellowRidingMonsterB)
+            if (g.CurrentPhase == Phase.BiddingReport && g.IsPlaying(Faction.Green) && g.CurrentTurn > 5)
             {
-                WriteSavegameIfApplicable(g, g.GetPlayer(Faction.Yellow), "Fremen riding worm");
-            }
-
-            if (e is Caravan)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Hajr");
+                WriteSavegameIfApplicable(g, g.GetPlayer(Faction.Green), "See some cards");
             }
         }
 

@@ -55,9 +55,7 @@
                     <div>
                         <img class="img-fluid" width="24" src="@Skin.Current.GetImageURL(replay.WinningBid.Initiator)" /> 
                         buy 
-                        <span data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(replay.CardJustWon)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover">
-                            <strong>@replay.CardJustWon.ToString()</strong>
-                        </span>
+                        <RichText Shown=@replay.CardJustWon/>
                         for @replay.WinningBid.TotalAmount
                         @if (replay.WinningBid is Bid b && b.KarmaCard != null)
                         {

@@ -1,0 +1,77 @@
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared;
+@implements IDisposable;
+
+@{
+    var popover = TextPop;
+
+    if (popover != null && popover.Length > 0)
+    {
+        <span @ref=@element class=@Class style=@Style data-bs-animation="true" data-bs-content="@TextPop" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-toggle="popover">
+            @Skin.Current.Describe(Shown)
+        </span>
+    }
+    else
+    {
+        <span @ref=@element class=@Class style=@Style>
+            @Skin.Current.Describe(Shown)
+        </span>
+    }
+}
+
+@code {
+
+    [Parameter]
+    public object Shown { get; set; }
+
+    [Parameter]
+    public string Src { get; set; }
+
+    [Parameter]
+    public float Width { get; set; }
+
+    [Parameter]
+    public string Class { get; set; } = "fw-bold";
+
+    [Parameter]
+    public string Style { get; set; }
+
+    [Parameter]
+    public string Popover { get; set; }
+
+    [Parameter]
+    public bool ShowPopover { get; set; } = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var popover = TextPop;
+
+        if (firstRender && popover != null)
+        {
+            await Browser.EnablePopovers(element);
+        }
+    }
+
+    private string TextPop
+    {
+        get
+        {
+            if (!ShowPopover) return null;
+
+            return Popover != null ? Popover : Support.GetHoverHTML(Shown);
+        }
+    }
+
+    private ElementReference element;
+
+    public void Dispose()
+    {
+        if (TextPop != null)
+        {
+            _ = Browser.RemovePopovers(element);
+        }
+    }
+}

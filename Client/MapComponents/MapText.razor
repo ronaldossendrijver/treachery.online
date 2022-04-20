@@ -4,11 +4,13 @@
 
 @using Treachery.Shared;
 @inherits MapComponent
+@implements IDisposable;
 
 @if (Popover != null) {
 
     <span 
-        style="position: absolute; white-space: nowrap; left: @Px(AlignedX); top: @Px(Y-TextHeight); user-select: none; font: @Font; color: @FontColor; max-width: @Px(MaxWidth); @Border" 
+        @ref=@element
+        style=@Style
         data-bs-trigger="hover" data-bs-toggle="popover" data-bs-html="true" data-bs-animation="false" data-bs-delay="50" data-container="body" data-bs-content="@Popover" data-bs-template="@PopoverTemplate">
         @ToShow
         @ChildContent
@@ -17,7 +19,8 @@
 else
 {
     <span 
-        style="position: absolute; white-space: nowrap; left: @Px(AlignedX); top: @Px(Y-TextHeight); pointer-events: none; user-select: none; font: @Font; color: @FontColor; max-width: @Px(MaxWidth); @Border">
+        @ref=@element
+        style="@Style;user-select:none;">
         @ToShow
         @ChildContent
     </span>
@@ -27,7 +30,7 @@ else
 
     [Parameter]
     public string ToShow { get; set; }
-    
+
     [Parameter]
     public RenderFragment ChildContent { get; set; }
 
@@ -71,5 +74,21 @@ else
         };
     }
 
-    private string Border => Support.TextBorder(BorderWidth, BorderColor);
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && Popover != null)
+        {
+            await Browser.EnablePopovers(element);
+        }
+    }
+
+    private string Style => string.Format("position:absolute;white-space:nowrap;left:{0};top:{1};user-select:none;font:{2};color:{3};max-width:{4};{5};", Px(AlignedX), Px(Y - TextHeight), Font, FontColor, Px(MaxWidth), Support.TextBorder(BorderWidth, BorderColor));
+
+    public void Dispose()
+    {
+        if (Popover != null)
+        {
+            _ = Browser.RemovePopovers(element);
+        }
+    }
 }

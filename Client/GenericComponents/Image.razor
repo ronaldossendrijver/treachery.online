@@ -1,0 +1,83 @@
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared;
+@implements IDisposable;
+@typeparam T;
+
+@{
+    var popover = ImagePop;
+
+    if (popover != null && popover.Length > 0)
+    {
+        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@ImageSrc data-bs-animation="true" data-bs-content="@ImagePop" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-toggle="popover">
+    }
+    else if (Shown != null)
+    {
+        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@ImageSrc title=@Skin.Current.Describe(Shown)>
+    }
+    else
+    {
+        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@ImageSrc>
+    }
+}
+
+@code {
+
+    [Parameter]
+    public T Shown { get; set; }
+
+    [Parameter]
+    public string Src { get; set; }
+
+    [Parameter]
+    public float Width { get; set; }
+
+    [Parameter]
+    public string Class { get; set; }
+
+    [Parameter]
+    public string Style { get; set; }
+
+    [Parameter]
+    public string Popover { get; set; }
+
+    [Parameter]
+    public bool ShowPopover { get; set; } = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var popover = ImagePop;
+        Console.WriteLine("Image.OnAfterRenderAsync: {0}, {1}", popover, element.Id);
+        if (firstRender && popover != null)
+        {
+            await Browser.EnablePopovers(element);
+        }
+    }
+
+    private ElementReference element;
+
+    private string ImageSrc => Src != null ? Src : Skin.Current.GetImageURL(Shown);
+
+    private string ImagePop
+    {
+        get
+        {
+            Console.WriteLine("Image.ImagePop: {0}, {1}", Popover, Support.GetHoverHTML(Shown));
+            if (!ShowPopover) return null;
+
+            return Popover != null ? Popover : Support.GetHoverHTML(Shown);
+        }
+    }
+
+    private string ImgWidth => Width > 0 ? Support.Round(Width) : "";
+
+    public void Dispose()
+    {
+        if (ImagePop != null)
+        {
+            _ = Browser.RemovePopovers(element);
+        }
+    }
+}

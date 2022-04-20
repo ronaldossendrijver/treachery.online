@@ -95,16 +95,26 @@
             document.querySelectorAll("button").forEach(item => item.blur());
         }
 
-        function RefreshPopovers() {
-            
-            $('[data-bs-toggle="popover"]').popover('dispose');
-            EnablePopovers();
+        function RemovePopovers(element) {
+
+            //console.log(element);
+            if (element != null) {
+
+                $('[data-bs-toggle="popover"]', element).popover('dispose');
+            }
         }
 
-        function EnablePopovers() {
-            
-            //document.querySelectorAll("[data-bs-toggle='popover']").forEach(item => new bootstrap.Popover(item, { sanitize: false }));
-            $('[data-bs-toggle="popover"]').popover({ sanitize: false });
+        function EnablePopovers(element) {
+
+            //console.log(element);
+            if (element != null) {
+
+                $('[data-bs-toggle="popover"]', element).popover({ sanitize: false });
+            }
+            else {
+
+                $('[data-bs-toggle="popover"]').popover({ sanitize: false });
+            }
         }
 
         function SendChatMessage() {
@@ -370,7 +380,7 @@
 
         function HideModal(modalId) {
 
-            document.getElementById(modalId).modal('hide');
+            $(modalId).modal('hide');
         }
 
         function ToggleFullScreen() {

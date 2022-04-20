@@ -47,7 +47,7 @@
             <Image X="@(forceX + 6f * Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY - 0.2f * Skin.Current.BattleWheelCardHeight)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" 
             Src="@Skin.Current.GetImageURL(Game.Map.Arrakeen)" 
             ShadowColor="@Skin.Current.SHADOW" ShadowX="3" ShadowY="3" ShadowBlur="1" 
-            Popover="@Support.GetOwnedStrongholdHTML(Game.Map.Arrakeen, Plan.Initiator)"/>
+            Popover="@Support.GetHoverHTML(Game.Map.Arrakeen, Plan.Initiator)"/>
         }
     }
 
@@ -78,7 +78,7 @@
 
                 <Image X="@(skillX)" Y="@(skillY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageURL(skill)" 
                        ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" 
-                       Popover="@Support.GetSkillCardHoverHTML(skill)"/>
+                       Popover="@Support.GetHoverHTML(skill)"/>
 
                 int bonus = Battle.DetermineSkillBonus(Game, Plan, out _);
                 if (bonus != 0)
@@ -109,7 +109,7 @@
         {
             <Image X="@(X + Skin.Current.BattleScreenHeroX)" Y="@(Y + Skin.Current.BattleScreenHeroY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
                    Src="@Skin.Current.GetImageURL(Plan.Hero as TreacheryCard)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                   Popover="@Support.GetTreacheryCardHoverHTML(Plan.Hero as TreacheryCard)" PopoverStyle=""/>
+                   Popover="@Support.GetHoverHTML(Plan.Hero as TreacheryCard)" PopoverStyle=""/>
         }
 
         if (TraitorCalled)
@@ -140,7 +140,7 @@
         {
             <Image X="@(X + Skin.Current.BattleWheelCardX + 1.1f * Skin.Current.BattleWheelCardWidth)" Y="@(Y + Skin.Current.BattleWheelCardY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
                    Src="@Skin.Current.GetImageURL(Plan.Defense)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                   Popover="@Support.GetTreacheryCardHoverHTML(Plan.Defense)" PopoverStyle=""/>
+                   Popover="@Support.GetHoverHTML(Plan.Defense)" PopoverStyle=""/>
         }
         else if (Aspect == PrescienceAspect.Defense)
         {
@@ -158,7 +158,7 @@
         {
             <Image X="@(X + Skin.Current.BattleWheelCardX)" Y="@(Y + Skin.Current.BattleWheelCardY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
                    Src="@Skin.Current.GetImageURL(Plan.Weapon)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                   Popover="@Support.GetTreacheryCardHoverHTML(Plan.Weapon)" PopoverStyle=""/>
+                   Popover="@Support.GetHoverHTML(Plan.Weapon)" PopoverStyle=""/>
         }
         else if (Aspect == PrescienceAspect.Weapon)
         {

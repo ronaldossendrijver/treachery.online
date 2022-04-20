@@ -11,7 +11,7 @@
     <Header>Assign a skill to a one of your leaders</Header>
     <Body>
 
-        <SelectFromImageComponent @bind-Value="skill" Values="SkillAssigned.ValidSkills(Player)" ImageWidth="80" ImageURLs="SkillAssigned.ValidSkills(Player).Select(t => Skin.Current.GetImageURL(t))" PopupHTMLs="SkillAssigned.ValidSkills(Player).Select(t => Support.GetSkillCardHoverHTML(t))" />
+        <SelectFromImageComponent @bind-Value="skill" Values="SkillAssigned.ValidSkills(Player)" ImageWidth="80" ImageURLs="SkillAssigned.ValidSkills(Player).Select(t => Skin.Current.GetImageURL(t))" PopupHTMLs="SkillAssigned.ValidSkills(Player).Select(t => Support.GetHoverHTML(t))" />
 
         <SelectHeroComponent Game="Game" @bind-Value="leader" Values="SkillAssigned.ValidLeaders(Game, Player)" />
 

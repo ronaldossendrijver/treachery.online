@@ -5,8 +5,9 @@
 @using Treachery.Shared
 @inherits MapComponent
 
-@{
-    if (Game.CurrentPhase > Phase.SelectingFactions)
+<div @ref=@element>
+
+    @if (Game.CurrentPhase > Phase.SelectingFactions)
     {
         var techtokenOrbitRadius = 1.01f * Skin.Current.MapRadius;
 
@@ -58,7 +59,7 @@
                        Y="@(Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad) * techtokenOrbitRadius) - Skin.Current.PlayerTokenRadius)"
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(tt)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                       Popover="@Support.GetTechTokenHTML(tt)" PopoverStyle=""/>
+                       Popover="@Support.GetHoverHTML(tt)" PopoverStyle=""/>
             }
 
             var skilledLeader = Game.GetSkilledLeader(p);
@@ -109,17 +110,10 @@
                      Align="TextAlignment.Center" MaxWidth="6 * Skin.Current.PlayerTokenRadius"/>
         }
     }
-}
+
+</div>
 
 @code {
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await Browser.EnablePopovers(this.ToString());
-        }
-    }
 
     private Situation situation = new();
     protected override bool ShouldRender() => situation.RequiresUpdate(Game);
@@ -169,7 +163,7 @@
 
         foreach (var v in p.TechTokens)
         {
-            result += Support.GetTechTokenHTML(v);
+            result += Support.GetHoverHTML(v);
         }
 
         var skilledLeader = h.Game.GetSkilledLeader(p);

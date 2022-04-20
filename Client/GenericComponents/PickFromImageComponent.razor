@@ -4,6 +4,7 @@
 
 @using Treachery.Shared;
 @using System.Collections.Generic;
+@implements IDisposable
 
 @typeparam T
 
@@ -13,9 +14,7 @@
     {
         var selected = Values.Zip(ImageURLs, (v, i) => new { Value = v, Image = i }).Zip(PopupHTMLs, (v, h) => new { Value = v.Value, Image = v.Image, Popup = h }).FirstOrDefault(v => v.Value.Equals(Value));
 
-        <img src=@selected?.Image
-             width=@ImageWidth 
-             data-bs-animation="true" data-bs-content="@selected?.Popup" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover">
+        <UntypedImage Src=@selected?.Image Popover=@selected?.Popup Width=@ImageWidth/>
     }
     else
     {
@@ -36,7 +35,7 @@
 
 <ModalComponent Id="@Id" Title=@Title Size="">
 
-    <div class="row row-cols-3 row-cols-md-6 m-0">
+    <div @ref=@element class="row row-cols-3 row-cols-md-6 m-0">
 
     <div class="card p-1 m-0 border-0">
         <div class="card-img-top" @onclick="e => Click(default(T))" style="@DetermineFilter(default(T))">
@@ -58,13 +57,15 @@
     {
         <div class="card p-1 m-0 border-0">
             <div class="card-img-top">
-                <img src="@item.Image"
-                     @onclick="e => Click(item.Value)"
-                     @onmouseover="e => MouseOver(item.Value)"
-                     @onmouseout="e => MouseOut(item.Value)"
-                     style="@DetermineFilter(item.Value)"
-                     class="img-fluid pe-1"
-                     data-bs-animation="true" data-bs-content="@item.Popup" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover"/>
+                <img 
+                    src=@item.Image
+                    @onclick="e => Click(item.Value)"
+                    @onmouseover="e => MouseOver(item.Value)"
+                    @onmouseout="e => MouseOut(item.Value)"
+                    style="@DetermineFilter(item.Value)"
+                    class="img-fluid pe-1"
+                    data-bs-animation="true" data-bs-content=@item.Popup data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-toggle="popover"
+                    />
             </div>
         </div>
     }
@@ -150,11 +151,16 @@
         if (PopupHTMLs == null || PopupHTMLs.Count() != nrOfValues) PopupHTMLs = new string[nrOfValues];
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!Values.Contains(Value))
         {
             Value = Required ? Values.FirstOrDefault() : default;
+        }
+
+        if (firstRender)
+        {
+            await Browser.EnablePopovers(element);
         }
     }
 
@@ -204,5 +210,12 @@
     private bool Equal(T a, T b)
     {
         return a == null && b == null || a != null && a.Equals(b);
+    }
+
+    private ElementReference element;
+
+    public void Dispose()
+    {
+        _ = Browser.RemovePopovers(element);
     }
 }

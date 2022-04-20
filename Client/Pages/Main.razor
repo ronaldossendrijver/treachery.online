@@ -19,7 +19,7 @@
     </div>
 }
 
-<div class="row">
+<div @ref=@element class="row">
 
     <!--Empty Column-->
     @if (h.IsObserver)
@@ -148,6 +148,7 @@
 @code {
 
     private Handler h;
+    protected ElementReference element;
 
     protected override async Task OnInitializedAsync()
     {
@@ -170,11 +171,6 @@
         else
         {
             await Browser.SetPlanetMapScale();
-
-            if (firstRender)
-            {
-                await Browser.EnablePopovers(this.ToString());
-            }
         }
     }
 

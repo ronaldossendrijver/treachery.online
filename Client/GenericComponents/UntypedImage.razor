@@ -1,0 +1,56 @@
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared;
+@implements IDisposable;
+
+@{
+    if (Popover != null && Popover.Length > 0)
+    {
+        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src data-bs-animation="true" data-bs-content=@Popover data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-toggle="popover">
+    }
+        else
+    {
+        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src>
+    }
+}
+
+@code {
+
+    [Parameter]
+    public string Src { get; set; }
+
+    [Parameter]
+    public float Width { get; set; }
+
+    [Parameter]
+    public string Class { get; set; }
+
+    [Parameter]
+    public string Style { get; set; }
+
+    [Parameter]
+    public string Popover { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        Console.WriteLine("Image.OnAfterRenderAsync: {0}, {1}", Popover, element.Id);
+        if (firstRender && Popover != null)
+        {
+            await Browser.EnablePopovers(element);
+        }
+    }
+
+    private ElementReference element;
+
+    private string ImgWidth => Width > 0 ? Support.Round(Width) : "";
+
+    public void Dispose()
+    {
+        if (Popover != null)
+        {
+            _ = Browser.RemovePopovers(element);
+        }
+    }
+}

@@ -762,6 +762,11 @@ namespace Treachery.Shared
             return LocationSpice_Point[locationSkinId];
         }
 
+        public string GetImageURL(object o)
+        {
+            return "";
+        }
+
         public string GetImageURL(TreacheryCard c)
         {
             return GetURL(TreacheryCardImage_URL, c.SkinId);
@@ -1385,6 +1390,7 @@ namespace Treachery.Shared
             var tStrongholdCardName_STR = FixDictionaryIfMissing("StrongholdCardImage_STR", false, StrongholdCardName_STR, Dune1979.StrongholdCardName_STR, errors, UrlExists);
             var tLeaderSkillCardImage_URL = FixDictionaryIfMissing("LeaderSkillCardImage_URL", true, LeaderSkillCardImage_URL, Dune1979.LeaderSkillCardImage_URL, errors, UrlExists);
             var tLeaderSkillCardName_STR = FixDictionaryIfMissing("LeaderSkillCardName_STR", false, LeaderSkillCardName_STR, Dune1979.LeaderSkillCardName_STR, errors, UrlExists);
+
             /*
             ReportBackground_ShipmentAndMove_URL = await tReportBackground_ShipmentAndMove_URL;
             ReportBackground_StormAndResourceBlow_URL = await tReportBackground_StormAndResourceBlow_URL;

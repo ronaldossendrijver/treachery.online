@@ -52,12 +52,12 @@
                         @foreach (var v in ShownPlayer.Leaders.Where(l => h.Game.IsAlive(l)))
                         {
                             var style = Game.Skilled(v) ? "filter:brightness(150%) contrast(100%)" : "";
-                            <img src="@Skin.Current.GetImageURL(v)" style="@style" class="img-fluid p-1" width=60 data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(v, h.Game)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover">
+                            <UntypedImage Src=@Skin.Current.GetImageURL(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Support.GetHoverHTML(v, h.Game)/>
                         }
 
                         @foreach (var v in ShownPlayer.Leaders.Where(l => !h.Game.IsAlive(l)))
                         {
-                            <img src="@Skin.Current.GetImageURL(v)" style="filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8)" class="img-fluid p-1" width=60 data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(v, h.Game)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover">
+                            <UntypedImage Src=@Skin.Current.GetImageURL(v) Style="filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8)" Class="img-fluid p-1" Width=60 Popover=@Support.GetHoverHTML(v, h.Game)/>
                         }
 
                         <!-- Traitors and Face Dancers -->
@@ -67,12 +67,12 @@
                             @foreach (var v in ShownPlayer.FaceDancers)
                             {
                                 var style = ShownPlayer.RevealedDancers.Contains(v) ? "filter:brightness(150%) contrast(100%) blur(1px)" : "";
-                                <img src="@Skin.Current.GetImageURL(v)" style="@style" class="img-fluid p-1" width=60 data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(v, h.Game)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover">
+                                <UntypedImage Src=@Skin.Current.GetImageURL(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Support.GetHoverHTML(v, h.Game)/>
                             }
                         }
                         else if (!h.Game.Applicable(Rule.AssistedNotekeeping) && ShownPlayer.Traitors.Count == 1)
                         {
-                            <div><img src="@Skin.Current.GetImageURL(ShownPlayer.Traitors[0])" class="img-fluid p-1" width=60 data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(ShownPlayer.Traitors[0], h.Game)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover"> is your traitor.</div>
+                            <div><UntypedImage Src=@Skin.Current.GetImageURL(ShownPlayer.Traitors[0]) Class="img-fluid p-1" Width=60 Popover=@Support.GetHoverHTML(ShownPlayer.Traitors[0], h.Game)/> is your traitor.</div>
                         }
                         else if (ShownPlayer.Traitors.Count > 0)
                         {
@@ -88,12 +88,12 @@
                             @foreach (var v in ShownPlayer.Traitors)
                             {
                                 var style = ShownPlayer.RevealedTraitors.Contains(v) ? "filter:brightness(150%) contrast(110%) blur(1px)" : "";
-                                <img src="@Skin.Current.GetImageURL(v)" style="@style" class="img-fluid p-1" width=60 data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(v, h.Game)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover">
+                                <UntypedImage Src=@Skin.Current.GetImageURL(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Support.GetHoverHTML(v, h.Game)/>
                             }
 
                             @foreach (var v in ShownPlayer.DiscardedTraitors)
                             {
-                                <img src="@Skin.Current.GetImageURL(v)" style="filter:grayscale(100%) opacity(60%)" class="img-fluid p-1" width=60 data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(v, h.Game)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover">
+                                <UntypedImage Src=@Skin.Current.GetImageURL(v) Style="filter:grayscale(100%) opacity(60%)" Class="img-fluid p-1" Width=60 Popover=@Support.GetHoverHTML(v, h.Game)/>
                             }
                         }
 
@@ -131,7 +131,7 @@
 
                         @if (h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove && h.Game.HasResourceDeckPrescience(Player))
                         {
-                            <div data-bs-animation="true" data-bs-content="@Support.GetResourceCardHoverHTML(h.Game.ResourceCardDeck.Top)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover">Top card of @Skin.Current.Describe(Concept.Resource) Deck: <span class="badge bg-primary rounded-pill">@h.Game.ResourceCardDeck.Top</span></div>
+                            <Hoverable Popover=@Support.GetHoverHTML(h.Game.ResourceCardDeck.Top)>Top card of @Skin.Current.Describe(Concept.Resource) Deck: <span class="badge bg-primary rounded-pill">@h.Game.ResourceCardDeck.Top</span></Hoverable>
                         }
 
                         <!-- Cards -->
@@ -146,7 +146,7 @@
                                 @foreach (var v in ShownPlayer.TreacheryCards)
                                 {
                                     <div>
-                                        <img src="@Skin.Current.GetImageURL(v)" class="img-fluid" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(v)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover">
+                                        <Image Shown=@v Class="img-fluid"/>
                                     </div>
                                 }
 
@@ -154,7 +154,7 @@
                                 {
                                     var v = h.Game.GetCardSetAsideForBid(Player);
                                     <div>
-                                        <img src="@Skin.Current.GetImageURL(v)" class="img-fluid" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(v)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover">
+                                        <Image Shown=@v Class="img-fluid"/>
                                     </div>
                                 }
 

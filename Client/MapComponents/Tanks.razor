@@ -96,5 +96,5 @@
         }
     }
 
-    private string Popover(Leader l) => Player.Is(l.Faction) || Player.Is(Faction.Purple) ? Support.GetHeroHoverHTML(l, Game) : "?";
+    private string Popover(Leader l) => Player.Is(l.Faction) || Player.Is(Faction.Purple) ? Support.GetHoverHTML(l, Game) : "?";
 }

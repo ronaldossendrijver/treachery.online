@@ -40,28 +40,25 @@
 
                 <td>
                     @if (AggressorBattle.Hero != null) {
-                        <img class="img-fluid p-1" width=60 src="@Skin.Current.GetImageURL(AggressorBattle.Hero)"
-                         data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(AggressorBattle.Hero, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
+                        <Image Shown=@AggressorBattle.Hero Popover=@Support.GetHoverHTML(AggressorBattle.Hero, Game) Class="img-fluid p-1" Width=60/>
                     }
 
                     @if (AggressorBattle.Messiah)
                     {
-                        <img class="img-fluid p-1" width=60 src="@Skin.Current.Messiah_URL" />
+                        <img class="img-fluid p-1" width=60 src="@Skin.Current.Messiah_URL" title=@Skin.Current.Describe(Concept.Messiah) />
                     }
 
                 </td>
 
                 <td>
                     @if (AggressorBattle.Weapon != null) {
-                        <img class="img-fluid p-1" width=80 src="@Skin.Current.GetImageURL(AggressorBattle.Weapon)"
-                         data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(AggressorBattle.Weapon)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
+                        <Image Shown=@AggressorBattle.Weapon Class="img-fluid p-1" Width=80/>
                     }
                 </td>
 
                 <td>
                     @if (AggressorBattle.Defense != null) {
-                        <img class="img-fluid p-1" width=80 src="@Skin.Current.GetImageURL(AggressorBattle.Defense)"
-                         data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(AggressorBattle.Defense)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
+                        <Image Shown=@AggressorBattle.Defense Class="img-fluid p-1" Width=80/>
                     }
                 </td>
 
@@ -88,27 +85,24 @@
 
                 <td>
                     @if (DefenderBattle.Hero != null) {
-                        <img class="img-fluid p-1" width=60 src="@Skin.Current.GetImageURL(DefenderBattle.Hero)"
-                         data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(DefenderBattle.Hero, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
+                        <Image Shown=@DefenderBattle.Hero Popover=@Support.GetHoverHTML(DefenderBattle.Hero, Game) Class="img-fluid p-1" Width=60/>
                     }
 
                     @if (DefenderBattle.Messiah)
                     {
-                        <img class="img-fluid p-1" width=60 src="@Skin.Current.Messiah_URL" />
+                        <img class="img-fluid p-1" width=60 src="@Skin.Current.Messiah_URL" title=@Skin.Current.Describe(Concept.Messiah) />
                     }
                 </td>
 
                 <td>
                     @if (DefenderBattle.Weapon != null) {
-                        <img class="img-fluid p-1" width=80 src="@Skin.Current.GetImageURL(DefenderBattle.Weapon)"
-                         data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(DefenderBattle.Weapon)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
+                        <Image Shown=@DefenderBattle.Weapon Class="img-fluid p-1" Width=80/>
                     }
                 </td>
 
                 <td>
                     @if (DefenderBattle.Defense != null) {
-                        <img class="img-fluid p-1" width=80 src="@Skin.Current.GetImageURL(DefenderBattle.Defense)"
-                         data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(DefenderBattle.Defense)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
+                        <Image Shown=@DefenderBattle.Defense Class="img-fluid p-1" Width=80/>
                     }
                 </td>
 

@@ -7,7 +7,7 @@
 @inherits GameEventComponent<BidType>
 @typeparam BidType
 
-<div class="card p-1 mb-2 border-white">
+<div @ref=@element class="card p-1 mb-2 border-white">
 
     <div class="card-body">
 
@@ -17,7 +17,7 @@
 
                 @if (CardIsVisible) 
                 {
-                    <img src="@Skin.Current.GetImageURL(Game.CardsOnAuction.Top)" width="150" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(h.Game.CardsOnAuction.Top)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover" />
+                    <Image Shown=@Game.CardsOnAuction.Top Width=150 />
                 }
                 else 
                 {
@@ -172,16 +172,6 @@
             int bidToDo = Game.CurrentBid != null ? Game.CurrentBid.TotalAmount + 1 : 1;
             allyContributionAmount = Math.Min(bidToDo, allyResources);
             amount = Math.Min(bidToDo - allyContributionAmount, playerResources);
-        }
-    }
-
-    private TreacheryCard shownCard = null;
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (shownCard != Game.CardsOnAuction.Top)
-        {
-            shownCard = Game.CardsOnAuction.Top;
-            await Browser.RefreshPopovers(this.ToString());
         }
     }
 

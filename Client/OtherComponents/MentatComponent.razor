@@ -14,9 +14,9 @@
         @foreach (var v in TreacheryCardManager.GetCardsInPlay(h.Game))
         {
             <div class="card">
-                <div class="card-img-top" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(v)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover">
+                <Hoverable Class="card-img-top" Popover=@Support.GetHoverHTML(v)>
                     <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@(v.Name)">
-                </div>
+                </Hoverable>
             </div>
         }
 
@@ -30,9 +30,9 @@
             @foreach (var v in TreacheryCardManager.GetWhiteCards())
             {
                 <div class="card">
-                    <div class="card-img-top" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(v)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover">
+                    <Hoverable Class="card-img-top" Popover=@Support.GetHoverHTML(v)>
                         <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@(v.Name)">
-                    </div>
+                    </Hoverable>
                 </div>
             }
 
@@ -45,9 +45,9 @@
         @foreach (var v in Map.GetResourceCardsInPlay(h.Game))
         {
             <div class="card">
-                <div class="card-img-top" data-bs-animation="true" data-bs-content="@Support.GetResourceCardHoverHTML(v)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover">
+                <Hoverable Class="card-img-top" Popover=@Support.GetHoverHTML(v)>
                     <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@(v.ToString())">
-                </div>
+                </Hoverable>
             </div>
         }
 
@@ -61,9 +61,9 @@
             @foreach (var v in Enumerations.GetValuesExceptDefault(typeof(LeaderSkill), LeaderSkill.None))
             {
                 <div class="card">
-                    <div class="card-img-top" data-bs-animation="true" data-bs-content="@Support.GetSkillCardHoverHTML(v)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover">
+                    <Hoverable Class="card-img-top" Popover=@Support.GetHoverHTML(v)>
                         <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@(v.ToString())">
-                    </div>
+                    </Hoverable>
                 </div>
             }
 
@@ -78,9 +78,9 @@
             @foreach (var v in h.Game.Map.Strongholds)
             {
                 <div class="card">
-                    <div class="card-img-top" data-bs-animation="true" data-bs-content="@Support.GetStrongholdHTML(v)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover">
+                    <Hoverable Class="card-img-top" Popover=@Support.GetHoverHTML(v)>
                         <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@(v.ToString())">
-                    </div>
+                    </Hoverable>
                 </div>
             }
 

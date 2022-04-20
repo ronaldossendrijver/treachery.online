@@ -61,7 +61,7 @@
 
             if (Loser.TechTokens.Count > 0)
             {
-                <SelectFromImageComponent @bind-Value="stolenToken" Values="Loser.TechTokens" ImageURLs="Loser.TechTokens.Select(t => Skin.Current.GetImageURL(t))" PopupHTMLs="Loser.TechTokens.Select(t => Support.GetTechTokenHTML(t))">
+                <SelectFromImageComponent @bind-Value="stolenToken" Values="Loser.TechTokens" ImageURLs="Loser.TechTokens.Select(t => Skin.Current.GetImageURL(t))" PopupHTMLs="Loser.TechTokens.Select(t => Support.GetHoverHTML(t))">
                     <Label>Choose a tech token to steal</Label>
                 </SelectFromImageComponent>
             }

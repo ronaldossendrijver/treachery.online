@@ -51,33 +51,21 @@
     {
         <FactionComponent Faction=faction Diameter=@Size/>
     }
-    else if (part is TreacheryCard tc)
+    else if (part is TreacheryCard || part is LeaderSkill || part is TechToken)
     {
-        <span class="fw-bold" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(tc)" data-bs-html="true" data-bs-trigger="hover" data-bs-toggle="popover">@Skin.Current.Describe(tc)</span>
-    }
-    else if (part is LeaderSkill skill)
-    {
-        <span class="fw-bold" data-bs-animation="true" data-bs-content="@Support.GetSkillCardHoverHTML(skill)" data-bs-html="true" data-bs-trigger="hover" data-bs-toggle="popover">@Skin.Current.Describe(skill)</span>
+        <RichText Shown=@part/>
     }
     else if (part is IHero hero)
     {
-        <span class="fw-bold" style="@Support.TextBorder(1, Skin.Current.FactionColor[hero.Faction])" data-bs-content="@Support.GetHeroHoverHTML(hero, Game)" data-bs-html="true" data-bs-trigger="hover" data-bs-toggle="popover">@Skin.Current.Describe(hero)</span>
+        <RichText Style=@Support.TextBorder(1, Skin.Current.FactionColor[hero.Faction]) Shown=hero Popover=@Support.GetHoverHTML(hero, Game)/>
     }
     else if (part is Concept monster && monster == Concept.Monster)
     {
         <img src=@Skin.Current.Monster_URL width=@Size height=@Size title=@Skin.Current.Describe(Concept.Monster)/>
     }
-    else if (part is TechToken tt)
+    else if (part is FactionForce || part is FactionSpecialForce)
     {
-        <img src=@Skin.Current.GetImageURL(tt) width=@Size height=@Size data-bs-animation="true" data-bs-content="@Support.GetTechTokenHTML(tt)" data-bs-html="true" data-bs-trigger="hover" data-bs-toggle="popover"/>
-    }
-    else if (part is FactionForce ff)
-    {
-        <img src=@Skin.Current.GetImageURL(ff) title=@Skin.Current.Describe(ff) width=@Size height=@Size />
-    }
-    else if (part is FactionSpecialForce fsf)
-    {
-        <img src=@Skin.Current.GetImageURL(fsf) title=@Skin.Current.Describe(fsf) width=@Size height=@Size/>
+        <Image Shown=part Width=@Size />
     }
     else if (part is Location || part is Territory || part is AuctionType || part is BrownEconomicsStatus || part is TreacheryCardType || part is StrongholdAdvantage || part is FactionAdvantage || part is Ruleset || part is Rule)
     {

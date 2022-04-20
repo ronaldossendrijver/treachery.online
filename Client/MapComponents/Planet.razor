@@ -4,8 +4,9 @@
 
 @using Treachery.Shared
 @inherits MapComponent
+@implements IDisposable;
  
-<svg width="@Skin.Current.MapDimensions.X" height="@Skin.Current.MapDimensions.Y" viewBox="0 0 @Skin.Current.MapDimensions.X @Skin.Current.MapDimensions.Y" 
+<svg @ref=@element width="@Skin.Current.MapDimensions.X" height="@Skin.Current.MapDimensions.Y" viewBox="0 0 @Skin.Current.MapDimensions.X @Skin.Current.MapDimensions.Y" 
      version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" 
      style="position: absolute; left: 0px; top: 0px; height: 100%; width: 100%;" pointer-events="none">
 
@@ -83,16 +84,16 @@
 }
 
 @code {
+    
+    private Location hovered = null;
 
     private Situation situation = new();
     protected override bool ShouldRender() => situation.RequiresUpdate(Game);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Browser.RefreshPopovers(this.ToString());
+        await Browser.RefreshPopovers(element);
     }
-
-    private Location hovered = null;
 
     private string LocationColor(Location l) {
 
@@ -179,7 +180,7 @@
         var owner = Game.StrongholdOwnership.ContainsKey(intelligenceLocation) ? Game.StrongholdOwnership[intelligenceLocation] : Faction.None;
         if (owner != Faction.None)
         {
-            result += Support.GetOwnedStrongholdHTML(intelligenceLocation, owner);
+            result += Support.GetHoverHTML(intelligenceLocation, owner);
         }
         else
         {
@@ -294,5 +295,10 @@
     private string ProtectedFromStormText(Treachery.Shared.Location l)
     {
         return h.Game.IsProtectedFromStorm(l) ? "Protected" : "NOT protected";
+    }
+
+    public void Dispose()
+    {
+        _ = Browser.RemovePopovers(element);
     }
 }

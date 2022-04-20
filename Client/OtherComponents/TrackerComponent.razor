@@ -9,7 +9,7 @@
 
 <CardPickerComponent Tracker="this" Id="picker" />
 
-<div class="card mb-2">
+<div @ref=@element class="card mb-2">
 
     <div class="card-header">
         Card Tracker
@@ -52,8 +52,7 @@
                         int selIndex = i;
                         int cardId = Info.TrackedTreacheryCards[p.Faction][selIndex];
 
-                        <div class="card border-0"
-                                data-bs-toggle="popover" data-bs-animation="true" data-bs-content="@DeterminePopup(Info.TrackedTreacheryCards[p.Faction][selIndex])" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover">
+                        <Hoverable Class="card border-0" Popover=@DeterminePopup(Info.TrackedTreacheryCards[p.Faction][selIndex])>
 
                             @if (cardId == TreacheryCard.NONE)
                             {
@@ -76,7 +75,7 @@
                                 </a>
                             }
 
-                        </div>
+                        </Hoverable>
                     }
 
                 </div>
@@ -117,7 +116,7 @@
                         <li class="list-inline-item">
 
                             <p class="mb-0">
-                                <span class="badge bg-primary rounded-pill" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(c)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover" data-container="body">@c</span>
+                                <RichText Shown=@c Class="badge bg-primary rounded-pill"/>
                                 <button class="close" @onclick="@(e => SetNotDiscarded(c))"><span aria-hidden="true">&times;</span></button>
                             </p>
 
@@ -204,7 +203,7 @@
         if (popoversNeedUpdate)
         {
             popoversNeedUpdate = false;
-            await Browser.EnablePopovers(this.ToString());
+            await Browser.RefreshPopovers(element);
         }
     }
 
@@ -285,7 +284,7 @@
         else
         {
             var card = TreacheryCardManager.Lookup.Find(cardID);
-            return Support.GetTreacheryCardHoverHTML(card);
+            return Support.GetHoverHTML(card);
         }
     }
 
@@ -321,13 +320,13 @@
 
     private IEnumerable<string> AllTraitors_ImageURLs => AllTraitors.Select(c => Skin.Current.GetImageURL(c));
 
-    private IEnumerable<string> AllTraitors_Popups => AllTraitors.Select(c => Support.GetHeroHoverHTML(c, Game));
+    private IEnumerable<string> AllTraitors_Popups => AllTraitors.Select(c => Support.GetHoverHTML(c, Game));
 
     private IList<ResourceCard> AllSpiceCards { get; set; }
 
     private IEnumerable<string> AllSpiceCards_ImageURLs => AllSpiceCards.Select(c => Skin.Current.GetImageURL(c));
 
-    private IEnumerable<string> AllSpiceCards_Popups => AllSpiceCards.Select(c => Support.GetResourceCardHoverHTML(c));
+    private IEnumerable<string> AllSpiceCards_Popups => AllSpiceCards.Select(c => Support.GetHoverHTML(c));
 
     private ResourceCard SpiceCard(string name) => AllSpiceCards.FirstOrDefault(c => c.ToString() == name);
 

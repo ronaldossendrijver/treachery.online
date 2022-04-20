@@ -3,6 +3,7 @@
  */
 
 using Microsoft.JSInterop;
+using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,14 +30,20 @@ namespace Treachery.Client
             await JsInvoke("Reload");
         }
 
-        public static async Task EnablePopovers(string source)
+        public static async Task EnablePopovers(ElementReference element)
         {
-            await JsInvoke("EnablePopovers");
+            await JsInvoke("EnablePopovers", element);
         }
 
-        public static async Task RefreshPopovers(string source)
+        public static async Task RemovePopovers(ElementReference element)
         {
-            await JsInvoke("RefreshPopovers");
+            await JsInvoke("RemovePopovers", element);
+        }
+
+        public static async Task RefreshPopovers(ElementReference element)
+        {
+            await RemovePopovers(element);
+            await EnablePopovers(element);
         }
 
         public static async Task RemoveFocusFromButtons()
@@ -212,7 +219,7 @@ namespace Treachery.Client
             await JsInvoke("InitializeVideo", videoId);
         }
 
-        static readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+        static readonly SemaphoreSlim semaphoreSlim = new(1, 1);
         public static async Task PushVideoData(string videoId, byte[] data, float volume)
         {
             await semaphoreSlim.WaitAsync();

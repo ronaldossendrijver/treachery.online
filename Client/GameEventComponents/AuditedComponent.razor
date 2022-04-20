@@ -14,7 +14,7 @@
         <div>
             @foreach (var c in Game.AuditedCards)
             {
-                <img class="p-1" width="100" src="@Skin.Current.GetImageURL(c)" data-bs-animation="true" data-bs-content="@Support.GetTreacheryCardHoverHTML(c)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover">
+                <Image Shown=c Class="p-1" Width=100/>
             }
         </div>
 

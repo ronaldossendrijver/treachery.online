@@ -7,7 +7,7 @@
 @using System.Linq;
 @inherits GameComponent
 
-<div class="card mb-2">
+<div @ref=@element class="card mb-2">
 
     <div class="card-header">
         Mentat: Notekeeping Assistant
@@ -65,9 +65,9 @@
                         @foreach (var c in cards)
                         {
                             bool isKnown = IsKnownCard(c);
-                            var popover = isKnown ? Support.GetTreacheryCardHoverHTML(c) : "<div class='p-1 small' style='color:black;background-color:white;border: 1px solid black;'>Unknown</div>";
+                            var popover = isKnown ? Support.GetHoverHTML(c) : "<div class='p-1 small' style='color:black;background-color:white;border: 1px solid black;'>Unknown</div>";
 
-                            <div class="card border-0 pe-1" data-bs-toggle="popover" data-bs-animation="true" data-bs-content="@popover" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover">
+                            <Hoverable Class="card border-0 pe-1" Popover=@popover>
 
                                 @if (IsKnownCard(c))
                                 {
@@ -78,7 +78,7 @@
                                     <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="img-fluid" />
                                 }
 
-                            </div>
+                            </Hoverable>
                         }
 
                     </div>
@@ -94,8 +94,7 @@
                     <div class="row row-cols-4 m-0">
                         @foreach (var c in p.RevealedTraitors)
                         {
-                            <img class="img-fluid pe-1" width=60 src="@Skin.Current.GetImageURL(c)"
-                                    data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
+                            <Image Class="img-fluid pe-1" Shown=@c Width=60/>
                         }
                     </div>
                 }
@@ -106,8 +105,7 @@
                     <div class="row row-cols-4 m-0">
                         @foreach (var c in p.RevealedDancers)
                         {
-                            <img class="img-fluid pe-1" width=60 src="@Skin.Current.GetImageURL(c)"
-                                    data-bs-animation="true" data-bs-content="@Support.GetHeroHoverHTML(c, Game)" data-bs-html="true" data-bs-placement="bottom" data-bs-trigger="hover" data-bs-toggle="popover" />
+                            <Image Class="img-fluid pe-1" Shown=@c Width=60/>
                         }
                     </div>
                 }
@@ -150,7 +148,7 @@
         if (popoversNeedUpdate)
         {
             popoversNeedUpdate = false;
-            await Browser.EnablePopovers(this.ToString());
+            await Browser.RefreshPopovers(element);
         }
     }
 

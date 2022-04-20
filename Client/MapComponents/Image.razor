@@ -3,15 +3,16 @@
 --->
 
 @inherits MapComponent
+@implements IDisposable;
 
 @if (Popover != null)
 {
-    <img @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" style="@Style" src=@Src 
+    <img @ref=@element @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" style="@Style" src=@Src 
         data-bs-trigger="hover" data-bs-toggle="popover" data-bs-html="true" data-bs-animation="false" data-bs-delay="50" data-container="body" data-bs-content="@Popover" data-bs-template="@PopoverTemplate" />
 }
 else
 {
-    <img @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" style="@Style" src=@Src />
+    <img @ref=@element @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" style="@Style" src=@Src />
 }
 
 @code {
@@ -46,6 +47,14 @@ else
     [Parameter]
     public string Popover { get; set; } = null;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && Popover != null)
+        {
+            await Browser.EnablePopovers(element);
+        }
+    }
+
     private string Style
     {
         get
@@ -67,6 +76,14 @@ else
             }
 
             return result;
+        }
+    }
+
+    public void Dispose()
+    {
+        if (Popover != null)
+        {
+            _ = Browser.RemovePopovers(element);
         }
     }
 }

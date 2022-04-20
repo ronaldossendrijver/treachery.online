@@ -3,6 +3,7 @@
 --->
 
 @using System.Collections.Generic;
+@implements IDisposable
 @typeparam T
 
 @if (Label != null)
@@ -10,7 +11,7 @@
     <label class="d-block mt-1 mb-0">@Label</label>
 }
 
-<div>
+<div @ref=@element>
 
     @foreach (var item in Values.Zip(ImageURLs, (v, i) => new { Value = v, Image = i }).Zip(PopupHTMLs, (v, h) => new { Value = v.Value, Image = v.Image, Popup = h }))
     {
@@ -19,8 +20,9 @@
              @onmouseover="e => MouseOver(item.Value)"
              @onmouseout="e => MouseOut(item.Value)"
              style="@DetermineFilter(item.Value)"
-             class="img-fluid pe-1" width=@ImageWidth 
-             data-bs-animation="true" data-bs-content="@item.Popup" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover"/>
+             class="img-fluid pe-1" 
+             width=@ImageWidth 
+             data-bs-animation="true" data-bs-content=@item.Popup data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-toggle="popover"/>
     }
 
 </div>
@@ -90,11 +92,16 @@
         if (PopupHTMLs == null || PopupHTMLs.Count() != nrOfValues) PopupHTMLs = new string[nrOfValues];
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (Selected == null && !Values.Contains(Value))
         {
             Value = Required ? Values.FirstOrDefault() : default;
+        }
+
+        if (firstRender)
+        {
+            await Browser.EnablePopovers(element);
         }
     }
 
@@ -170,5 +177,12 @@
     private bool Equal(T a, T b)
     {
         return a == null && b == null || a != null && a.Equals(b);
+    }
+
+    private ElementReference element;
+
+    public void Dispose()
+    {
+        _ = Browser.RemovePopovers(element);
     }
 }

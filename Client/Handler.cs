@@ -97,6 +97,7 @@ namespace Treachery.Client
         {
             RefreshHandler?.Invoke();
         }
+
         private void LogSerializationError(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs e)
         {
             Support.Log(e.ErrorContext.Error.ToString());

@@ -62,9 +62,9 @@
                 if (opponentBattlePlan != null)
                 {
                     <div class="text-success mt-1">Enemy @PrescienceAspect.Dial: @GetTextForAspect(PrescienceAspect.Dial, opponentBattlePlan).</div>
-                    <div class="text-success mt-0" data-bs-animation="true" data-bs-content="@GetPopupForAspect(PrescienceAspect.Weapon, opponentBattlePlan)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover">Enemy @PrescienceAspect.Weapon: @GetTextForAspect(PrescienceAspect.Weapon, opponentBattlePlan).</div>
-                    <div class="text-success mt-0" data-bs-animation="true" data-bs-content="@GetPopupForAspect(PrescienceAspect.Defense, opponentBattlePlan)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover">Enemy @PrescienceAspect.Defense: @GetTextForAspect(PrescienceAspect.Defense, opponentBattlePlan).</div>
-                    <div class="text-success mt-0" data-bs-animation="true" data-bs-content="@GetPopupForAspect(PrescienceAspect.Leader, opponentBattlePlan)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover">Enemy @PrescienceAspect.Leader: @GetTextForAspect(PrescienceAspect.Leader, opponentBattlePlan).</div>
+                    <Hoverable Class="text-success mt-0" Popover=@GetPopupForAspect(PrescienceAspect.Weapon, opponentBattlePlan)>Enemy @PrescienceAspect.Weapon: @GetTextForAspect(PrescienceAspect.Weapon, opponentBattlePlan).</Hoverable>
+                    <Hoverable Class="text-success mt-0" Popover=@GetPopupForAspect(PrescienceAspect.Defense, opponentBattlePlan)>Enemy @PrescienceAspect.Defense: @GetTextForAspect(PrescienceAspect.Defense, opponentBattlePlan).</Hoverable>
+                    <Hoverable Class="text-success mt-0" Popover=@GetPopupForAspect(PrescienceAspect.Leader, opponentBattlePlan) >Enemy @PrescienceAspect.Leader: @GetTextForAspect(PrescienceAspect.Leader, opponentBattlePlan).</Hoverable>
                 }
                 else
                 {
@@ -75,7 +75,7 @@
             {
                 if (opponentBattlePlan != null)
                 {
-                    <div class="text-success mt-1" data-bs-animation="true" data-bs-content="@GetPopupForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan)" data-bs-html="true" data-bs-placement="top" data-bs-trigger="hover" data-bs-toggle="popover">Enemy @Game.CurrentPrescience.Aspect: @GetTextForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan).</div>
+                    <Hoverable Class="text-success mt-1" Popover=@GetPopupForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan)>Enemy @Game.CurrentPrescience.Aspect: @GetTextForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan).</Hoverable>
                 }
                 else
                 {
@@ -320,10 +320,10 @@
     {
         switch (aspect)
         {
-            case PrescienceAspect.Defense: return plan.Defense == null ? "" : Support.GetTreacheryCardHoverHTML(plan.Defense);
-            case PrescienceAspect.Weapon: return plan.Weapon == null ? "" : Support.GetTreacheryCardHoverHTML(plan.Weapon);
+            case PrescienceAspect.Defense: return plan.Defense == null ? "" : Support.GetHoverHTML(plan.Defense);
+            case PrescienceAspect.Weapon: return plan.Weapon == null ? "" : Support.GetHoverHTML(plan.Weapon);
             case PrescienceAspect.Dial: return "";
-            case PrescienceAspect.Leader: return plan.Hero == null ? "" : Support.GetHeroHoverHTML(plan.Hero, Game);
+            case PrescienceAspect.Leader: return plan.Hero == null ? "" : Support.GetHoverHTML(plan.Hero, Game);
         }
 
         return "?";

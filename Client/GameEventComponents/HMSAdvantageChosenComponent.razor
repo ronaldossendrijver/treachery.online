@@ -27,5 +27,5 @@
 
     private IEnumerable<string> ImageURLs => HMSAdvantageChosen.ValidAdvantages(Game, Player).Select(adv => Skin.Current.GetImageURL(Game.StrongholdGranting(adv)));
 
-    private IEnumerable<string> PopoverHTMLs => HMSAdvantageChosen.ValidAdvantages(Game, Player).Select(adv => Support.GetStrongholdHTML(Game.StrongholdGranting(adv)));
+    private IEnumerable<string> PopoverHTMLs => HMSAdvantageChosen.ValidAdvantages(Game, Player).Select(adv => Support.GetHoverHTML(Game.StrongholdGranting(adv)));
 }

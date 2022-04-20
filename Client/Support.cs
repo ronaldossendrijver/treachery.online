@@ -30,7 +30,19 @@ namespace Treachery.Client
             return string.Format("Use {0}?", Skin.Current.Describe(t));
         }
 
-        public static string GetTreacheryCardHoverHTML(TreacheryCard c)
+        public static string GetHoverHTML(object o)
+        {
+            if (o == null)
+            {
+                return "";
+            }
+            else
+            {
+                return o.ToString();
+            }
+        }
+
+        public static string GetHoverHTML(TreacheryCard c)
         {
             if (c == null)
             {
@@ -42,7 +54,7 @@ namespace Treachery.Client
             }
         }
 
-        public static string GetResourceCardHoverHTML(ResourceCard c)
+        public static string GetHoverHTML(ResourceCard c)
         {
             if (c == null)
             {
@@ -54,7 +66,7 @@ namespace Treachery.Client
             }
         }
 
-        public static string GetSkillCardHoverHTML(LeaderSkill c)
+        public static string GetHoverHTML(LeaderSkill c)
         {
             if (c == LeaderSkill.None)
             {
@@ -66,7 +78,7 @@ namespace Treachery.Client
             }
         }
 
-        public static string GetHeroHoverHTML(IHero h, Game g)
+        public static string GetHoverHTML(IHero h, Game g)
         {
             if (h == null)
             {
@@ -107,11 +119,11 @@ namespace Treachery.Client
             }
             else
             {
-                return string.Format("<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{0}' width=300/><img src='{1}' width=160 style='position:absolute;left:240px;top:100px;filter:drop-shadow(-3px 3px 2px black);'/></div>", Skin.Current.GetImageURL(s), Skin.Current.GetImageURL(l));
+                return string.Format("<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{0}' width=300/><img src='{1}' width=140 style='position:absolute;left:180px;top:120px;filter:drop-shadow(-2px 2px 2px black);'/></div>", Skin.Current.GetImageURL(s), Skin.Current.GetImageURL(l));
             }
         }
 
-        public static string GetStrongholdHTML(Location l)
+        public static string GetHoverHTML(Location l)
         {
             if (l == null)
             {
@@ -123,7 +135,7 @@ namespace Treachery.Client
             }
         }
 
-        public static string GetOwnedStrongholdHTML(Location l, Faction f)
+        public static string GetHoverHTML(Location l, Faction f)
         {
             if (l == null)
             {
@@ -135,7 +147,7 @@ namespace Treachery.Client
             }
         }
 
-        public static string GetTechTokenHTML(TechToken tt)
+        public static string GetHoverHTML(TechToken tt)
         {
             if (tt == TechToken.None)
             {
