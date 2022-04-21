@@ -6,21 +6,17 @@
 @implements IDisposable;
 @typeparam T;
 
-@{
-    var popover = ImagePop;
-
-    if (popover != null && popover.Length > 0)
-    {
-        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@ImageSrc data-bs-animation="true" data-bs-content="@ImagePop" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-toggle="popover">
-    }
-    else if (Shown != null)
-    {
-        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@ImageSrc title=@Skin.Current.Describe(Shown)>
-    }
-    else
-    {
-        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@ImageSrc>
-    }
+@if (Popover != null && Popover.Length > 0)
+{
+    <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@Popover>
+}
+else if (Shown != null)
+{
+    <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src title=@Skin.Current.Describe(Shown)>
+}
+else
+{
+    <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src>
 }
 
 @code {
@@ -29,55 +25,54 @@
     public T Shown { get; set; }
 
     [Parameter]
-    public string Src { get; set; }
+    public string Src { get; set; } = "";
 
     [Parameter]
-    public float Width { get; set; }
+    public float Width { get; set; } = 0;
 
     [Parameter]
-    public string Class { get; set; }
+    public string Class { get; set; } = "";
 
     [Parameter]
-    public string Style { get; set; }
+    public string Style { get; set; } = "";
 
     [Parameter]
-    public string Popover { get; set; }
+    public string Popover { get; set; } = null;
 
     [Parameter]
     public bool ShowPopover { get; set; } = true;
 
+    private ElementReference element;
+    private string ImgWidth;
+
+    protected override void OnParametersSet()
+    {
+        if (Shown != null) {
+
+            Src = Skin.Current.GetImageURL(Shown);
+
+            if (ShowPopover) {
+            
+                Popover = Support.GetHoverHTML(Shown);
+            }
+        }
+
+        ImgWidth = Width > 0 ? Support.Round(Width) : "";
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var popover = ImagePop;
-        Console.WriteLine("Image.OnAfterRenderAsync: {0}, {1}", popover, element.Id);
-        if (firstRender && popover != null)
+        if (firstRender && Popover != null)
         {
-            await Browser.EnablePopovers(element);
+            await Browser.EnablePopover(element);
         }
     }
-
-    private ElementReference element;
-
-    private string ImageSrc => Src != null ? Src : Skin.Current.GetImageURL(Shown);
-
-    private string ImagePop
-    {
-        get
-        {
-            Console.WriteLine("Image.ImagePop: {0}, {1}", Popover, Support.GetHoverHTML(Shown));
-            if (!ShowPopover) return null;
-
-            return Popover != null ? Popover : Support.GetHoverHTML(Shown);
-        }
-    }
-
-    private string ImgWidth => Width > 0 ? Support.Round(Width) : "";
 
     public void Dispose()
     {
-        if (ImagePop != null)
+        if (Popover != null)
         {
-            _ = Browser.RemovePopovers(element);
+            _ = Browser.RemovePopover(element);
         }
     }
 }

@@ -84,7 +84,7 @@
 }
 
 @code {
-    
+
     private Location hovered = null;
 
     private Situation situation = new();
@@ -92,7 +92,14 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Browser.RefreshPopovers(element);
+        if (firstRender) {
+
+            await Browser.EnablePopovers(element);
+        }
+        else
+        {
+            await Browser.RefreshPopovers(element);
+        }
     }
 
     private string LocationColor(Location l) {

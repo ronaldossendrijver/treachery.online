@@ -78,7 +78,7 @@ else
     {
         if (firstRender && Popover != null)
         {
-            await Browser.EnablePopovers(element);
+            await Browser.EnablePopover(element);
         }
     }
 
@@ -88,7 +88,7 @@ else
     {
         if (Popover != null)
         {
-            _ = Browser.RemovePopovers(element);
+            _ = Browser.RemovePopover(element);
         }
     }
 }

@@ -5,52 +5,55 @@
 @using Treachery.Shared;
 @implements IDisposable;
 
-@{
-    if (Popover != null && Popover.Length > 0)
-    {
-        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src data-bs-animation="true" data-bs-content=@Popover data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-toggle="popover">
-    }
-        else
-    {
-        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src>
-    }
+
+@if (Popover != null && Popover.Length > 0)
+{
+    <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@Popover>
 }
+    else
+{
+    <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src>
+}
+
 
 @code {
 
     [Parameter]
-    public string Src { get; set; }
+    public string Src { get; set; } = "";
 
     [Parameter]
-    public float Width { get; set; }
+    public float Width { get; set; } = 0;
 
     [Parameter]
-    public string Class { get; set; }
+    public string Class { get; set; } = "";
 
     [Parameter]
-    public string Style { get; set; }
+    public string Style { get; set; } = "";
 
     [Parameter]
-    public string Popover { get; set; }
+    public string Popover { get; set; } = null;
+
+    private ElementReference element;
+    private string ImgWidth;
+
+    protected override void OnParametersSet()
+    {
+        ImgWidth = Width > 0 ? Support.Round(Width) : "";
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Console.WriteLine("Image.OnAfterRenderAsync: {0}, {1}", Popover, element.Id);
         if (firstRender && Popover != null)
         {
-            await Browser.EnablePopovers(element);
+            await Browser.EnablePopover(element);
         }
     }
-
-    private ElementReference element;
-
-    private string ImgWidth => Width > 0 ? Support.Round(Width) : "";
 
     public void Dispose()
     {
         if (Popover != null)
         {
-            _ = Browser.RemovePopovers(element);
+            _ = Browser.RemovePopover(element);
         }
     }
 }

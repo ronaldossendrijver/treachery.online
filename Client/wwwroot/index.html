@@ -95,26 +95,56 @@
             document.querySelectorAll("button").forEach(item => item.blur());
         }
 
-        function RemovePopovers(element) {
+        function EnablePopover(element) {
 
-            //console.log(element);
-            if (element != null) {
+            new bootstrap.Popover(element, { sanitize: false });
+        }
+                
+        function EnablePopovers(element) {
 
-                $('[data-bs-toggle="popover"]', element).popover('dispose');
+            element.querySelectorAll('[data-bs-toggle="popover"]').forEach(
+                function (trigger) {
+
+                    EnablePopover(trigger);
+                });
+        }
+
+        function RemovePopover(element) {
+
+            var popover = bootstrap.Popover.getInstance(element);
+            if (popover != null) {
+
+                popover.dispose();
             }
         }
 
-        function EnablePopovers(element) {
+        function RemovePopovers(element) {
+            console.log("RemovePopovers called on " + element)
+            element.querySelectorAll('[data-bs-toggle="popover"]').forEach(
+                function (trigger) {
 
-            //console.log(element);
-            if (element != null) {
+                    RemovePopover(trigger);
+                });
+        }
 
-                $('[data-bs-toggle="popover"]', element).popover({ sanitize: false });
+        function RefreshPopover(element) {
+            
+            var popover = bootstrap.Popover.getInstance(element);
+            if (popover != null) {
+
+                popover.dispose();
             }
-            else {
 
-                $('[data-bs-toggle="popover"]').popover({ sanitize: false });
-            }
+            new bootstrap.Popover(element, { sanitize: false });
+        }
+
+        function RefreshPopovers(element) {
+            console.log("RefreshPopovers called on " + element)
+            element.querySelectorAll('[data-bs-toggle="popover"]').forEach(
+                function (trigger) {
+
+                    RefreshPopover(trigger);
+                });
         }
 
         function SendChatMessage() {

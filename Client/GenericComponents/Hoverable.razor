@@ -7,7 +7,7 @@
 
 @if (Popover != null && Popover.Length > 0)
 {
-    <div @ref=@element class=@Class style=@Style data-bs-animation="true" data-bs-content="@Popover" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-toggle="popover">
+    <div @ref=@element class=@Class style=@Style data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content="@Popover">
         @ChildContent
     </div>
 }
@@ -17,7 +17,6 @@ else
         @ChildContent
     </div>
 }
-
 
 @code {
 
@@ -30,14 +29,31 @@ else
     [Parameter]
     public string Style { get; set; }
 
+    private string _popover;
+
     [Parameter]
-    public string Popover { get; set; }
+    public string Popover { 
+
+        get
+        {
+            return _popover;
+        } 
+
+        set
+        {
+            if (value != _popover)
+            {
+                _popover = value;
+                _ = Browser.RefreshPopover(element);
+            }
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (Popover != null)
         {
-            await Browser.EnablePopovers(element);
+            await Browser.EnablePopover(element);
         }
     }
 
@@ -47,7 +63,7 @@ else
     {
         if (Popover != null)
         {
-            _ = Browser.RemovePopovers(element);
+            _ = Browser.RemovePopover(element);
         }
     }
 }

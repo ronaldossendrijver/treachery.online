@@ -145,17 +145,13 @@
 
                                 @foreach (var v in ShownPlayer.TreacheryCards)
                                 {
-                                    <div>
-                                        <Image Shown=@v Class="img-fluid"/>
-                                    </div>
+                                    <Image Shown=@v Class="img-fluid p-1"/>
                                 }
 
                                 @if (h.Game.GetCardSetAsideForBid(Player) != null)
                                 {
                                     var v = h.Game.GetCardSetAsideForBid(Player);
-                                    <div>
-                                        <Image Shown=@v Class="img-fluid"/>
-                                    </div>
+                                    <Image Shown=@v Class="img-fluid p-1"/>
                                 }
 
                             </div>

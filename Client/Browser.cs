@@ -30,21 +30,56 @@ namespace Treachery.Client
             await JsInvoke("Reload");
         }
 
+        private static readonly ElementReference defaultElementReferenceValue = default(ElementReference);
+
+        public static async Task EnablePopover(ElementReference element)
+        {
+            await JsInvoke("EnablePopover", element);
+        }
+
         public static async Task EnablePopovers(ElementReference element)
         {
-            await JsInvoke("EnablePopovers", element);
+            if (!defaultElementReferenceValue.Equals(element))
+            {
+                await JsInvoke("EnablePopovers", element);
+            }
+        }
+
+        public static async Task RemovePopover(ElementReference element)
+        {
+            if (!defaultElementReferenceValue.Equals(element))
+            {
+                await JsInvoke("RemovePopover", element);
+            }
         }
 
         public static async Task RemovePopovers(ElementReference element)
         {
-            await JsInvoke("RemovePopovers", element);
+            Console.WriteLine("Calling RemovePopovers on " + element);
+
+            if (!defaultElementReferenceValue.Equals(element))
+            {
+                await JsInvoke("RemovePopovers", element);
+            }
         }
+
+        public static async Task RefreshPopover(ElementReference element)
+        {
+            await JsInvoke("RefreshPopover", element);
+        }
+
 
         public static async Task RefreshPopovers(ElementReference element)
         {
-            await RemovePopovers(element);
-            await EnablePopovers(element);
+            Console.WriteLine("Calling RefreshPopovers on " + element);
+
+            if (!defaultElementReferenceValue.Equals(element))
+            {
+                await JsInvoke("RefreshPopovers", element);
+                //Console.WriteLine(new System.Diagnostics.StackTrace());
+            }
         }
+        
 
         public static async Task RemoveFocusFromButtons()
         {

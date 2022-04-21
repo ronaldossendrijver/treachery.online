@@ -2,13 +2,52 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
 --->
 
-@using Treachery.Shared;
 @using System.Collections.Generic;
 @implements IDisposable
-
 @typeparam T
 
-<a class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#@Id">
+<ModalComponent Id="@Id" Title=@Title>
+
+    <div @ref=@modalElement class="row row-cols-3 row-cols-md-6 m-0">
+
+        <div class="card p-1 m-0 border-0">
+            <div class="card-img-top" @onclick="e => Click(default(T))" style="@DetermineFilter(default(T))">
+                @if (Placeholder != null)
+                {
+                    @Placeholder
+                }
+                else
+                {
+                    <svg width=@ImageWidth height=@ImageWidth>
+                        <circle cx=@Support.Round(ImageWidth/2) cy=@Support.Round(ImageWidth/2) r=@Support.Round(ImageWidth/2) fill="white"/>
+                        <text text-anchor="middle" alignment-baseline="middle" font-size=@Support.Px(ImageWidth/2) font-weight="bold" x="@Support.Round(ImageWidth/2)" y="@Support.Round(ImageWidth/2)" font-style="italic">?</text>
+                    </svg>
+                }
+            </div>
+        </div>
+
+        @foreach (var item in Values.Zip(ImageURLs, (v, i) => new { Value = v, Image = i }).Zip(PopupHTMLs, (v, h) => new { Value = v.Value, Image = v.Image, Popup = h }))
+        {
+            <div class="card p-1 m-0 border-0">
+                <div class="card-img-top">
+                    <img 
+                        src=@item.Image
+                        @onclick="e => Click(item.Value)"
+                        @onmouseover="e => MouseOver(item.Value)"
+                        @onmouseout="e => MouseOut(item.Value)"
+                        style="@DetermineFilter(item.Value)"
+                        class="img-fluid pe-1"
+                        data-bs-animation="true" data-bs-content=@item.Popup data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-toggle="popover"
+                        />
+                </div>
+            </div>
+        }
+
+    </div>
+
+</ModalComponent>
+
+<a @ref=@valueElement class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#@Id">
     
     @if (Value != null && !Value.Equals(default))
     {
@@ -33,47 +72,6 @@
 
 </a>
 
-<ModalComponent Id="@Id" Title=@Title Size="">
-
-    <div @ref=@element class="row row-cols-3 row-cols-md-6 m-0">
-
-    <div class="card p-1 m-0 border-0">
-        <div class="card-img-top" @onclick="e => Click(default(T))" style="@DetermineFilter(default(T))">
-            @if (Placeholder != null)
-            {
-                @Placeholder
-            }
-            else
-            {
-                <svg width=@ImageWidth height=@ImageWidth>
-                    <circle cx=@Support.Round(ImageWidth/2) cy=@Support.Round(ImageWidth/2) r=@Support.Round(ImageWidth/2) fill="white"/>
-                    <text text-anchor="middle" alignment-baseline="middle" font-size=@Support.Px(ImageWidth/2) font-weight="bold" x="@Support.Round(ImageWidth/2)" y="@Support.Round(ImageWidth/2)" font-style="italic">?</text>
-                </svg>
-            }
-        </div>
-    </div>
-
-    @foreach (var item in Values.Zip(ImageURLs, (v, i) => new { Value = v, Image = i }).Zip(PopupHTMLs, (v, h) => new { Value = v.Value, Image = v.Image, Popup = h }))
-    {
-        <div class="card p-1 m-0 border-0">
-            <div class="card-img-top">
-                <img 
-                    src=@item.Image
-                    @onclick="e => Click(item.Value)"
-                    @onmouseover="e => MouseOver(item.Value)"
-                    @onmouseout="e => MouseOut(item.Value)"
-                    style="@DetermineFilter(item.Value)"
-                    class="img-fluid pe-1"
-                    data-bs-animation="true" data-bs-content=@item.Popup data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-toggle="popover"
-                    />
-            </div>
-        </div>
-    }
-
-    </div>
-
-</ModalComponent>
-
 @code {
 
     private T _value;
@@ -92,6 +90,8 @@
                 _value = value;
                 ValueChanged.InvokeAsync(value);
                 OnChanged?.Invoke(value);
+                _ = Browser.RemovePopovers(modalElement);
+                _ = Browser.RemovePopovers(valueElement);
                 _ = Browser.HideModal(Id);
             }
         }
@@ -158,10 +158,8 @@
             Value = Required ? Values.FirstOrDefault() : default;
         }
 
-        if (firstRender)
-        {
-            await Browser.EnablePopovers(element);
-        }
+        await Browser.EnablePopovers(valueElement);
+        await Browser.EnablePopovers(modalElement);
     }
 
     private void Click(T item)
@@ -212,10 +210,12 @@
         return a == null && b == null || a != null && a.Equals(b);
     }
 
-    private ElementReference element;
+    private ElementReference modalElement;
+    private ElementReference valueElement;
 
     public void Dispose()
     {
-        _ = Browser.RemovePopovers(element);
+        _ = Browser.RemovePopovers(valueElement);
+        _ = Browser.RemovePopovers(modalElement);
     }
 }

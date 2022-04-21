@@ -67,7 +67,7 @@
                             bool isKnown = IsKnownCard(c);
                             var popover = isKnown ? Support.GetHoverHTML(c) : "<div class='p-1 small' style='color:black;background-color:white;border: 1px solid black;'>Unknown</div>";
 
-                            <Hoverable Class="card border-0 pe-1" Popover=@popover>
+                            <Hoverable Class="card border-0 p-1" Popover=@popover>
 
                                 @if (IsKnownCard(c))
                                 {
@@ -140,7 +140,7 @@
 @code {
 
     private object Shown = null;
-
+    protected ElementReference element;
     private bool popoversNeedUpdate = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

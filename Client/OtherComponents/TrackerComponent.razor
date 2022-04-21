@@ -1,5 +1,5 @@
 ﻿<!--
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+* Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
 --->
 
 @using Treachery.Shared;
@@ -9,7 +9,7 @@
 
 <CardPickerComponent Tracker="this" Id="picker" />
 
-<div @ref=@element class="card mb-2">
+<div class="card mb-2">
 
     <div class="card-header">
         Card Tracker
@@ -19,7 +19,7 @@
 
     @if (!Collapsed)
     {
-        <div class="card-body">
+        <div @ref=@element class="card-body">
 
             <div class="mb-1">
 
@@ -52,28 +52,25 @@
                         int selIndex = i;
                         int cardId = Info.TrackedTreacheryCards[p.Faction][selIndex];
 
-                        <Hoverable Class="card border-0" Popover=@DeterminePopup(Info.TrackedTreacheryCards[p.Faction][selIndex])>
+                        <Hoverable Class="card border-0 p-1" Popover=@DeterminePopup(Info.TrackedTreacheryCards[p.Faction][selIndex])>
 
-                            @if (cardId == TreacheryCard.NONE)
-                            {
-                                <a class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
+                            <a class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#picker" @onmousedown="e => InitiatePick(p.Faction, selIndex)">
+                                @if (cardId == TreacheryCard.NONE)
+                                {
                                     <svg class="img-fluid w-100" viewBox="0 0 268 372" xmlns="http://www.w3.org/2000/svg">
                                         <rect width="268" height="372" rx="20" style="fill:rgb(64,64,64);stroke-width:3;stroke:rgb(200,200,200)" />
                                     </svg>
-                                </a>
-                            }
-                            else if (cardId == TreacheryCard.UNKNOWN)
-                            {
-                                <a class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
+                                }
+                                else if (cardId == TreacheryCard.UNKNOWN)
+                                {
                                     <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="img-fluid" />
-                                </a>
-                            }
-                            else
-                            {
-                                <a class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#picker" @onmousedown="e => SetCurrent(p.Faction, selIndex)">
+                                }
+                                else
+                                {
                                     <img src="@DetermineImageSrc(cardId)" class="img-fluid" />
-                                </a>
-                            }
+                                
+                                }
+                            </a>
 
                         </Hoverable>
                     }
@@ -164,12 +161,10 @@
 @code {
 
     private object Shown = null;
-
     private int trackedGameId = -1;
-
     private GreenIntelligence Info = null;
-
     private bool popoversNeedUpdate = true;
+    protected ElementReference element;
 
     protected override async Task OnInitializedAsync()
     {
@@ -203,12 +198,26 @@
         if (popoversNeedUpdate)
         {
             popoversNeedUpdate = false;
-            await Browser.RefreshPopovers(element);
+            //await Browser.RefreshPopovers(element);
         }
+
+        //await Browser.RefreshPopovers(element);
     }
 
     Faction currentlyPickedFaction = Faction.None;
     int currentlyPickedCardId;
+
+    private void SetCurrent(Faction f, int i)
+    {
+        currentlyPickedFaction = f;
+        currentlyPickedCardId = i;
+    }
+
+    private void InitiatePick(Faction f, int i)
+    {
+        SetCurrent(f, i);
+        await Browser.RefreshPopovers(element);
+    }
 
     public int CurrentCard
     {
@@ -223,12 +232,6 @@
                 return TreacheryCard.NONE;
             }
         }
-    }
-
-    private void SetCurrent(Faction f, int i)
-    {
-        currentlyPickedFaction = f;
-        currentlyPickedCardId = i;
     }
 
     public void Pick(int cardID)

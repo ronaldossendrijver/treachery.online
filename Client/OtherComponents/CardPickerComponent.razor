@@ -5,37 +5,31 @@
 @using Treachery.Shared;
 @using Treachery.Client.GenericComponents;
 
-<ModalComponent Id="@Id" Title="Pick a card" Size="">
+<ModalComponent Id="@Id" Title="Pick a card">
 
     <div class="row row-cols-3 row-cols-md-6 m-0">
 
         <div class="card p-1 m-0 border-0">
-            <Hoverable Class="card-img-top" Popover="Set as unknown card">
-                <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="card-img" alt="Unknown" @onclick="e => Pick(TreacheryCard.UNKNOWN)">
-            </Hoverable>
+            <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="card-img" alt="Unknown" @onclick="e => Pick(TreacheryCard.UNKNOWN)" title="Set as unknown card">
         </div>
 
         @if (Tracker.CurrentCard != TreacheryCard.NONE)
         {
-            <div class="card p-1 m-0 border-0">
-                <Hoverable Class="card-img-top" Popover="Set to 'none'">
-                    <svg viewBox="0 0 16 22.5" xmlns="http://www.w3.org/2000/svg" @onclick="e => Pick(TreacheryCard.NONE)">
-                        <rect width="16" height="22.5" rx="2" style="fill:rgb(64,64,64);stroke-width:1;stroke:rgb(200,200,200)" />
-                    </svg>
-                </Hoverable>
+            <div class="card p-1 m-0 border-0" title="Set to 'none'">
+                <svg viewBox="0 0 16 22.5" xmlns="http://www.w3.org/2000/svg" @onclick="e => Pick(TreacheryCard.NONE)">
+                    <rect width="16" height="22.5" rx="2" style="fill:rgb(64,64,64);stroke-width:1;stroke:rgb(200,200,200)" />
+                </svg>
             </div>
         }
 
         @if (Tracker.CurrentCard != TreacheryCard.NONE && Tracker.CurrentCard != TreacheryCard.UNKNOWN)
         {
-            <div class="card p-1 m-0 border-0">
-                <Hoverable Class="card-img-top" Popover="Discard this card">
-                    <svg viewBox="0 0 16 22.5" xmlns="http://www.w3.org/2000/svg" @onclick="e => Discard()">
-                        <rect width="16" height="22.5" rx="2" style="fill:rgb(64,64,64);stroke-width:1;stroke:rgb(200,200,200)" />
-                        <path transform="translate(0,4)" fill="white" d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
-                        <path transform="translate(0,4)" fill="white" fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
-                    </svg>
-                </Hoverable>
+            <div class="card p-1 m-0 border-0" title="Discard this card">
+                <svg viewBox="0 0 16 22.5" xmlns="http://www.w3.org/2000/svg" @onclick="e => Discard()">
+                    <rect width="16" height="22.5" rx="2" style="fill:rgb(64,64,64);stroke-width:1;stroke:rgb(200,200,200)" />
+                    <path transform="translate(0,4)" fill="white" d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                    <path transform="translate(0,4)" fill="white" fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                </svg>
             </div>
         }
 
@@ -69,13 +63,13 @@
 
     private async Task Pick(int cardId)
     {
-        await Browser.HideModal(Id);
         Tracker.Pick(cardId);
+        await Browser.HideModal(Id);
     }
 
     private async Task Discard()
     {
-        await Browser.HideModal(Id);
         Tracker.Discard();
+        await Browser.HideModal(Id);
     }
 }
