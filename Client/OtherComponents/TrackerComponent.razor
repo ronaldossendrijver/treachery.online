@@ -216,7 +216,7 @@
     private void InitiatePick(Faction f, int i)
     {
         SetCurrent(f, i);
-        await Browser.RefreshPopovers(element);
+        _ = Browser.RefreshPopovers(element);
     }
 
     public int CurrentCard
