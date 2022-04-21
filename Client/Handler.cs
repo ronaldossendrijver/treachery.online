@@ -92,10 +92,16 @@ namespace Treachery.Client
         }
 
         public event Action RefreshHandler;
+        public event Action RefreshPopoverHandler;
 
         public void Refresh()
         {
             RefreshHandler?.Invoke();
+        }
+
+        public void RefreshPopovers()
+        {
+            RefreshPopoverHandler?.Invoke();
         }
 
         private void LogSerializationError(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs e)
@@ -425,6 +431,7 @@ namespace Treachery.Client
             await Skin.Current.ValidateAndFix(Browser.UrlExists);
 
             Refresh();
+            RefreshPopovers();
         }
 
         public bool IsPlayer
@@ -608,7 +615,6 @@ namespace Treachery.Client
 
                 await TurnAlert();
                 await PlaySoundsForMilestones();
-                //await Browser.RefreshPopovers();
 
                 if (e == null || !(Game.CurrentPhase == Phase.Bidding || Game.CurrentPhase == Phase.BlackMarketBidding))
                 {

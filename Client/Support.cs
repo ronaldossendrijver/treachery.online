@@ -41,9 +41,14 @@ namespace Treachery.Client
             else if (value is Location loc) result = GetHoverHTML(loc);
             else if (value is LeaderSkill ls) result = GetHoverHTML(ls);
             else if (value is TechToken tt) result = GetHoverHTML(tt);
-            else result = value.ToString();
+            else result = Skin.Current.Describe(value);
 
             return result;
+        }
+
+        public static string GetHoverHTML(string c)
+        {
+            return string.Format("<div style='background-color:white;border-color:black;border-width;1px;color:black;'>{0}</div>", c);
         }
 
         public static string GetHoverHTML(TreacheryCard c)

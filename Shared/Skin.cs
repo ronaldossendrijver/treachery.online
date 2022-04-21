@@ -19,8 +19,8 @@ namespace Treachery.Shared
         public const int CurrentVersion = 138;
         public const int MINIMUM_SUPPORTED_VERSION = 23;
 
-        //public const string DEFAULT_ART_LOCATION = "https://treachery.online"; //Used for debugging
-        public const string DEFAULT_ART_LOCATION = ".";
+        public const string DEFAULT_ART_LOCATION = "https://treachery.online"; //Used for debugging
+        //public const string DEFAULT_ART_LOCATION = ".";
 
         public string Description = null;
         public int Version;
@@ -769,10 +769,13 @@ namespace Treachery.Shared
             if (value == null) result = "";
             else if (value is TreacheryCard tc) result = GetImageURL(tc);
             else if (value is ResourceCard rc) result = GetImageURL(rc);
-            else if (value is Leader l) result = GetImageURL(l);
+            else if (value is IHero h) result = GetImageURL(h);
             else if (value is Location loc) result = GetImageURL(loc);
             else if (value is LeaderSkill ls) result = GetImageURL(ls);
             else if (value is TechToken tt) result = GetImageURL(tt);
+            else if (value is Faction f) result = GetImageURL(f);
+            else if (value is FactionForce ff) result = GetImageURL(ff);
+            else if (value is FactionSpecialForce fsf) result = GetImageURL(fsf);
             else result = "";
 
             return result;

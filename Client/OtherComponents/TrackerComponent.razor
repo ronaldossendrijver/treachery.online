@@ -114,7 +114,7 @@
 
                             <p class="mb-0">
                                 <RichText Shown=@c Class="badge bg-primary rounded-pill"/>
-                                <button class="close" @onclick="@(e => SetNotDiscarded(c))"><span aria-hidden="true">&times;</span></button>
+                                <button class="btn-close" @onclick="@(e => SetNotDiscarded(c))"/>
                             </p>
 
                         </li>
@@ -198,7 +198,7 @@
         if (popoversNeedUpdate)
         {
             popoversNeedUpdate = false;
-            //await Browser.RefreshPopovers(element);
+            await Browser.RefreshPopovers(element);
         }
 
         //await Browser.RefreshPopovers(element);
@@ -216,7 +216,7 @@
     private void InitiatePick(Faction f, int i)
     {
         SetCurrent(f, i);
-        _ = Browser.RefreshPopovers(element);
+        _ = Browser.RemovePopovers(element);
     }
 
     public int CurrentCard

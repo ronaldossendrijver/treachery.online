@@ -55,7 +55,7 @@ namespace Treachery.Client
 
         public static async Task RemovePopovers(ElementReference element)
         {
-            Console.WriteLine("Calling RemovePopovers on " + element);
+            //Console.WriteLine("Calling RemovePopovers on " + element);
 
             if (!defaultElementReferenceValue.Equals(element))
             {
@@ -71,7 +71,7 @@ namespace Treachery.Client
 
         public static async Task RefreshPopovers(ElementReference element)
         {
-            Console.WriteLine("Calling RefreshPopovers on " + element);
+            //Console.WriteLine("Calling RefreshPopovers on " + element);
 
             if (!defaultElementReferenceValue.Equals(element))
             {
@@ -114,7 +114,7 @@ namespace Treachery.Client
 
         public static async Task HideModal(string modalId)
         {
-            await JsInvoke("HideModal", "#" + modalId);
+            await JsInvoke("HideModal", modalId);
         }
 
         public static async Task Save(string filename, string data)
