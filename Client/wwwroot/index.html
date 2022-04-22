@@ -95,10 +95,7 @@
 
         function EnablePopover(element) {
 
-            if (element != null && !('__internalId' in element)) {
-                
-                new bootstrap.Popover(element, { sanitize: false });
-            }
+            new bootstrap.Popover(element, { sanitize: false });
         }
                 
         function EnablePopovers(element) {
@@ -108,14 +105,11 @@
 
         function RemovePopover(element) {
 
-            if (element != null && !('__internalId' in element)) {
+            var popover = bootstrap.Popover.getInstance(element);
 
-                var popover = bootstrap.Popover.getInstance(element);
+            if (popover != null) {
 
-                if (popover != null) {
-
-                    popover.dispose();
-                }
+                popover.dispose();
             }
         }
 
@@ -126,16 +120,13 @@
 
         function RefreshPopover(element) {
 
-            if (element != null && !('__internalId' in element)) {
+            var popover = bootstrap.Popover.getInstance(element);
+            if (popover != null) {
 
-                var popover = bootstrap.Popover.getInstance(element);
-                if (popover != null) {
-
-                    popover.dispose();
-                }
-
-                new bootstrap.Popover(element, { sanitize: false });
+                popover.dispose();
             }
+
+            new bootstrap.Popover(element, { sanitize: false });
         }
 
         function RefreshPopovers(element) {

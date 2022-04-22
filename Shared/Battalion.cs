@@ -37,11 +37,6 @@ namespace Treachery.Shared
             }
         }
 
-        public override string ToString()
-        {
-            return Skin.Current.Format("{0}: {1} normal, {2} special", Faction, AmountOfForces, AmountOfSpecialForces);
-        }
-
         public Battalion TakeHalf()
         {
             return new Battalion() { Faction = Faction, AmountOfForces = (int)Math.Ceiling(0.5 * AmountOfForces), AmountOfSpecialForces = (int)Math.Ceiling(0.5 * AmountOfSpecialForces) };
