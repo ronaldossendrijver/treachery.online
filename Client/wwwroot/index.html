@@ -95,56 +95,52 @@
 
         function EnablePopover(element) {
 
-            new bootstrap.Popover(element, { sanitize: false });
+            if (element != null && !('__internalId' in element)) {
+                
+                new bootstrap.Popover(element, { sanitize: false });
+            }
         }
                 
         function EnablePopovers(element) {
 
-            element.querySelectorAll('[data-bs-toggle="popover"]').forEach(
-                function (trigger) {
-
-                    EnablePopover(trigger);
-                });
+            element.querySelectorAll('[data-bs-toggle="popover"]').forEach( function (trigger) { EnablePopover(trigger); } );
         }
 
         function RemovePopover(element) {
 
-            var popover = bootstrap.Popover.getInstance(element);
-            if (popover != null) {
+            if (element != null && !('__internalId' in element)) {
 
-                popover.dispose();
+                var popover = bootstrap.Popover.getInstance(element);
+
+                if (popover != null) {
+
+                    popover.dispose();
+                }
             }
         }
 
         function RemovePopovers(element) {
-            //console.log("RemovePopovers called on " + element)
-            element.querySelectorAll('[data-bs-toggle="popover"]').forEach(
-                function (trigger) {
-
-                    RemovePopover(trigger);
-                });
+            
+            element.querySelectorAll('[data-bs-toggle="popover"]').forEach( function (trigger) { RemovePopover(trigger); } );
         }
 
         function RefreshPopover(element) {
-            
-            var popover = bootstrap.Popover.getInstance(element);
-            if (popover != null) {
 
-                popover.update();
-                //popover.dispose();
-                //popover.show();
+            if (element != null && !('__internalId' in element)) {
+
+                var popover = bootstrap.Popover.getInstance(element);
+                if (popover != null) {
+
+                    popover.dispose();
+                }
+
+                new bootstrap.Popover(element, { sanitize: false });
             }
-
-            //new bootstrap.Popover(element, { sanitize: false });
         }
 
         function RefreshPopovers(element) {
-            //console.log("RefreshPopovers called on " + element)
-            element.querySelectorAll('[data-bs-toggle="popover"]').forEach(
-                function (trigger) {
-
-                    RefreshPopover(trigger);
-                });
+            
+            element.querySelectorAll('[data-bs-toggle="popover"]').forEach( function (trigger) { RefreshPopover(trigger); } );
         }
 
         function SendChatMessage() {

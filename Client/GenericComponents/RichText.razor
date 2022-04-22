@@ -39,17 +39,32 @@
     [Parameter]
     public string Style { get; set; }
 
+    private string _popover;
+
     [Parameter]
-    public string Popover { get; set; }
+    public string Popover { 
+
+        get
+        {
+            return _popover;
+        } 
+
+        set
+        {
+            if (value != _popover)
+            {
+                _popover = value;
+                _ = Browser.RefreshPopover(element);
+            }
+        }
+    }
 
     [Parameter]
     public bool ShowPopover { get; set; } = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var popover = TextPop;
-
-        if (firstRender && popover != null)
+        if (firstRender && TextPop != null)
         {
             await Browser.EnablePopover(element);
         }
@@ -61,7 +76,7 @@
         {
             if (!ShowPopover) return null;
 
-            return Popover != null ? Popover : Support.GetHoverHTML(Shown);
+            return Popover != null ? Popover : GetHoverHTML(Shown);
         }
     }
 
@@ -73,5 +88,21 @@
         {
             _ = Browser.RemovePopover(element);
         }
+    }
+
+    private static string GetHoverHTML(object value)
+    {
+        string result;
+
+        if (value == null) result = "";
+        else if (value is TreacheryCard tc) result = Support.GetHoverHTML(tc);
+        else if (value is ResourceCard rc) result = Support.GetHoverHTML(rc);
+        else if (value is Location loc) result = Support.GetHoverHTML(loc);
+        else if (value is IHero h) result = Support.GetHoverHTML(h);
+        else if (value is LeaderSkill ls) result = Support.GetHoverHTML(ls);
+        else if (value is TechToken tt) result = Support.GetHoverHTML(tt);
+        else result = Support.GetHoverHTML(Skin.Current.Describe(value));
+
+        return result;
     }
 }

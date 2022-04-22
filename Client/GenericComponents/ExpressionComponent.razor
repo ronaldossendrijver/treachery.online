@@ -28,12 +28,12 @@
 
         for (int i = 0; i < elts.Count; i++)
         {
-            <ExpressionComponent Expression=elts[i] Size=@Size/>
+            <ExpressionComponent Expression=elts[i] Size=@Size Game=Game/>
         }
     }
     else if (part is MessagePart mp)
     {
-        <ExpressionComponent Expression=mp.Expression Size=@Size/>
+        <ExpressionComponent Expression=mp.Expression Size=@Size Game=Game/>
     }
     else if (part is int || part is float || part is double)
     {

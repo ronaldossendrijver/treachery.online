@@ -6,26 +6,56 @@
 @implements IDisposable;
 @typeparam T;
 
-@if (Popover != null && Popover.Length > 0)
-{
-    <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@Popover>
-}
-else if (Shown != null)
-{
-    <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src title=@Skin.Current.Describe(Shown)>
-}
-else
-{
-    <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src>
+@{
+
+    var popover = Popover;
+
+    @if (popover != null && popover.Length > 0)
+    {
+        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@popover>
+    }
+    else if (Shown != null)
+    {
+        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src title=@Skin.Current.Describe(Shown)>
+    }
+    else
+    {
+        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src>
+    }
 }
 
-@code {
+@code 
+    {
 
     [Parameter]
     public T Shown { get; set; }
 
+    private string _src;
+
     [Parameter]
-    public string Src { get; set; } = "";
+    public string Src { 
+
+        get
+        {
+            if (_src != null) {
+
+                return _src;
+            }
+            else if (Shown != null) {
+
+                return GetImageURL(Shown);
+            }
+            else {
+
+                return "";
+            }
+        } 
+
+        set
+        {
+            _src = value;
+        }
+    }
 
     [Parameter]
     public float Width { get; set; } = 0;
@@ -36,8 +66,32 @@ else
     [Parameter]
     public string Style { get; set; } = "";
 
+    private string _popover;
+
     [Parameter]
-    public string Popover { get; set; } = null;
+    public string Popover { 
+
+        get
+        {
+            if (_popover != null) {
+
+                return _popover;
+            }
+            else if (ShowPopover && Shown != null) {
+
+                return GetHoverHTML(Shown);
+            }
+            else {
+
+                return null;
+            }
+        } 
+
+        set
+        {
+            _popover = value;
+        }
+    }
 
     [Parameter]
     public bool ShowPopover { get; set; } = true;
@@ -47,16 +101,6 @@ else
 
     protected override void OnParametersSet()
     {
-        if (Shown != null) {
-
-            Src = Skin.Current.GetImageURL(Shown);
-
-            if (ShowPopover) {
-            
-                Popover = Support.GetHoverHTML(Shown);
-            }
-        }
-
         ImgWidth = Width > 0 ? Support.Round(Width) : "";
     }
 
@@ -74,5 +118,41 @@ else
         {
             _ = Browser.RemovePopover(element);
         }
+    }
+
+    private string GetImageURL(object value)
+    {
+        string result;
+
+        if (value == null) result = "";
+        else if (value is TreacheryCard tc) result = Skin.Current.GetImageURL(tc);
+        else if (value is ResourceCard rc) result = Skin.Current.GetImageURL(rc);
+        else if (value is IHero h) result = Skin.Current.GetImageURL(h);
+        else if (value is Leader l) result = Skin.Current.GetImageURL(l);
+        else if (value is Location loc) result = Skin.Current.GetImageURL(loc);
+        else if (value is LeaderSkill ls) result = Skin.Current.GetImageURL(ls);
+        else if (value is TechToken tt) result = Skin.Current.GetImageURL(tt);
+        else if (value is Faction f) result = Skin.Current.GetImageURL(f);
+        else if (value is FactionForce ff) result = Skin.Current.GetImageURL(ff);
+        else if (value is FactionSpecialForce fsf) result = Skin.Current.GetImageURL(fsf);
+        else result = "";
+
+        return result;
+    }
+
+    private static string GetHoverHTML(object value)
+    {
+        string result;
+
+        if (value == null) result = "";
+        else if (value is TreacheryCard tc) result = Support.GetHoverHTML(tc);
+        else if (value is ResourceCard rc) result = Support.GetHoverHTML(rc);
+        else if (value is Location loc) result = Support.GetHoverHTML(loc);
+        else if (value is IHero h) result = Support.GetHoverHTML(h);
+        else if (value is LeaderSkill ls) result = Support.GetHoverHTML(ls);
+        else if (value is TechToken tt) result = Support.GetHoverHTML(tt);
+        else result = Support.GetHoverHTML(Skin.Current.Describe(value));
+
+        return result;
     }
 }

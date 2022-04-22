@@ -55,8 +55,6 @@ namespace Treachery.Client
 
         public static async Task RemovePopovers(ElementReference element)
         {
-            //Console.WriteLine("Calling RemovePopovers on " + element);
-
             if (!defaultElementReferenceValue.Equals(element))
             {
                 await JsInvoke("RemovePopovers", element);
@@ -71,16 +69,12 @@ namespace Treachery.Client
 
         public static async Task RefreshPopovers(ElementReference element)
         {
-            //Console.WriteLine("Calling RefreshPopovers on " + element);
-
             if (!defaultElementReferenceValue.Equals(element))
             {
                 await JsInvoke("RefreshPopovers", element);
-                //Console.WriteLine(new System.Diagnostics.StackTrace());
             }
         }
         
-
         public static async Task RemoveFocusFromButtons()
         {
             await JsInvoke("RemoveFocusFromButtons");
@@ -355,6 +349,7 @@ namespace Treachery.Client
 
         private static async Task<T> JsInvoke<T>(string method, params object[] args)
         {
+            //Console.WriteLine(method + "(" + string.Join(',', args) + ")");
             try
             {
                 return await _runtime.InvokeAsync<T>(method, args);
@@ -368,6 +363,7 @@ namespace Treachery.Client
 
         private static async Task JsInvoke(string method, params object[] args)
         {
+            //Console.WriteLine(method + "(" + string.Join(',', args) + ")");
             try
             {
                 await _runtime.InvokeVoidAsync(method, args);

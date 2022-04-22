@@ -762,25 +762,6 @@ namespace Treachery.Shared
             return LocationSpice_Point[locationSkinId];
         }
 
-        public string GetImageURL(object value)
-        {
-            string result;
-
-            if (value == null) result = "";
-            else if (value is TreacheryCard tc) result = GetImageURL(tc);
-            else if (value is ResourceCard rc) result = GetImageURL(rc);
-            else if (value is IHero h) result = GetImageURL(h);
-            else if (value is Location loc) result = GetImageURL(loc);
-            else if (value is LeaderSkill ls) result = GetImageURL(ls);
-            else if (value is TechToken tt) result = GetImageURL(tt);
-            else if (value is Faction f) result = GetImageURL(f);
-            else if (value is FactionForce ff) result = GetImageURL(ff);
-            else if (value is FactionSpecialForce fsf) result = GetImageURL(fsf);
-            else result = "";
-
-            return result;
-        }
-
         public string GetImageURL(TreacheryCard c)
         {
             return GetURL(TreacheryCardImage_URL, c.SkinId);

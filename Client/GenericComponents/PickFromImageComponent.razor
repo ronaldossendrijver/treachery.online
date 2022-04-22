@@ -90,8 +90,6 @@
                 _value = value;
                 ValueChanged.InvokeAsync(value);
                 OnChanged?.Invoke(value);
-                _ = Browser.RemovePopovers(modalElement);
-                _ = Browser.RemovePopovers(valueElement);
                 _ = Browser.HideModal(Id);
             }
         }
@@ -158,8 +156,15 @@
             Value = Required ? Values.FirstOrDefault() : default;
         }
 
-        await Browser.EnablePopovers(valueElement);
-        await Browser.EnablePopovers(modalElement);
+        if (firstRender)
+        {
+            await Browser.EnablePopovers(valueElement);
+            await Browser.EnablePopovers(modalElement);
+        }
+        else
+        {
+            await Browser.RefreshPopovers(valueElement);
+        }
     }
 
     private void Click(T item)

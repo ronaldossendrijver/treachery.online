@@ -30,8 +30,25 @@
     [Parameter]
     public string Style { get; set; } = "";
 
+    private string _popover;
+
     [Parameter]
-    public string Popover { get; set; } = null;
+    public string Popover { 
+
+        get
+        {
+            return _popover;
+        } 
+
+        set
+        {
+            if (value != _popover)
+            {
+                _popover = value;
+                _ = Browser.RefreshPopover(element);
+            }
+        }
+    }
 
     private ElementReference element;
     private string ImgWidth;

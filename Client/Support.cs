@@ -30,22 +30,6 @@ namespace Treachery.Client
             return string.Format("Use {0}?", Skin.Current.Describe(t));
         }
 
-        public static string GetHoverHTML(object value)
-        {
-            string result;
-
-            if (value == null) result = "";
-            else if (value is TreacheryCard tc) result = GetHoverHTML(tc);
-            else if (value is ResourceCard rc) result = GetHoverHTML(rc);
-            else if (value is Leader l) result = GetHoverHTML(l);
-            else if (value is Location loc) result = GetHoverHTML(loc);
-            else if (value is LeaderSkill ls) result = GetHoverHTML(ls);
-            else if (value is TechToken tt) result = GetHoverHTML(tt);
-            else result = Skin.Current.Describe(value);
-
-            return result;
-        }
-
         public static string GetHoverHTML(string c)
         {
             return string.Format("<div style='background-color:white;border-color:black;border-width;1px;color:black;'>{0}</div>", c);
@@ -105,6 +89,18 @@ namespace Treachery.Client
                 {
                     return GetHoverHTML(h as Leader, skill);
                 }
+            }
+        }
+
+        public static string GetHoverHTML(IHero h)
+        {
+            if (h == null)
+            {
+                return "";
+            }
+            else
+            {
+                return string.Format("<img src='{0}' width=200 class='img-fluid' style='filter:drop-shadow(-3px 3px 2px black);'/>", Skin.Current.GetImageURL(h));
             }
         }
 
