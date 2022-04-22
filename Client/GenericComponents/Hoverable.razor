@@ -30,6 +30,7 @@ else
     public string Style { get; set; }
 
     private string _popover;
+    private bool _popoverNeedsRefresh = false;
 
     [Parameter]
     public string Popover { 
@@ -44,16 +45,21 @@ else
             if (value != _popover)
             {
                 _popover = value;
-                _ = Browser.RefreshPopover(element);
+                _popoverNeedsRefresh = true;
             }
         }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (Popover != null)
+        if (firstRender && Popover != null)
         {
             await Browser.EnablePopover(element);
+        }
+        else if (_popoverNeedsRefresh)
+        {
+            _popoverNeedsRefresh = false;
+            await Browser.RefreshPopover(element);
         }
     }
 

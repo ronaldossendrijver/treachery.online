@@ -114,7 +114,7 @@
 
                             <p class="mb-0">
                                 <RichText Shown=@c Class="badge bg-primary rounded-pill"/>
-                                <button class="btn-close" @onclick="@(e => SetNotDiscarded(c))"/>
+                                <button class="btn-close btn-sm" @onclick="@(e => SetNotDiscarded(c))"/>
                             </p>
 
                         </li>
@@ -200,8 +200,6 @@
             popoversNeedUpdate = false;
             await Browser.RefreshPopovers(element);
         }
-
-        //await Browser.RefreshPopovers(element);
     }
 
     Faction currentlyPickedFaction = Faction.None;

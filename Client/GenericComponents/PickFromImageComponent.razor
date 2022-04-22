@@ -74,6 +74,8 @@
 
 @code {
 
+    private bool _popoverNeedsRefresh = false;
+
     private T _value;
 
     [Parameter]
@@ -88,6 +90,7 @@
             if (!Equals(_value, value))
             {
                 _value = value;
+                _popoverNeedsRefresh = true;
                 ValueChanged.InvokeAsync(value);
                 OnChanged?.Invoke(value);
                 _ = Browser.HideModal(Id);
@@ -161,8 +164,9 @@
             await Browser.EnablePopovers(valueElement);
             await Browser.EnablePopovers(modalElement);
         }
-        else
+        else if (_popoverNeedsRefresh)
         {
+            _popoverNeedsRefresh = false;
             await Browser.RefreshPopovers(valueElement);
         }
     }

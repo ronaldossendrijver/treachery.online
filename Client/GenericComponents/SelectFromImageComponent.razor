@@ -43,6 +43,7 @@
             if (!Equals(_value, value))
             {
                 _value = value;
+
                 ValueChanged.InvokeAsync(value);
                 OnChanged?.Invoke(value);
             }

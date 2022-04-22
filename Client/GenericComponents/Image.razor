@@ -67,6 +67,7 @@
     public string Style { get; set; } = "";
 
     private string _popover;
+    private bool _popoverNeedsRefresh = false;
 
     [Parameter]
     public string Popover { 
@@ -89,7 +90,11 @@
 
         set
         {
-            _popover = value;
+            if (value != _popover)
+            {
+                _popover = value;
+                _popoverNeedsRefresh = true;
+            }
         }
     }
 
@@ -109,6 +114,11 @@
         if (firstRender && Popover != null)
         {
             await Browser.EnablePopover(element);
+        }
+        else if (_popoverNeedsRefresh)
+        {
+            _popoverNeedsRefresh = false;
+            await Browser.RefreshPopover(element);
         }
     }
 
