@@ -1,7 +1,7 @@
 ﻿@inherits MapComponent
 
 <div style='position:absolute;left:@Px(EffectiveX);top:@Px(EffectiveY);width:@Px(EffectiveHeight);height:@Px(EffectiveHeight);border-radius:@Px(0.5f*EffectiveHeight);overflow:hidden;filter:drop-shadow(0px 0px 1px gold);'>
-    <video id="@StreamId" height=@Px(EffectiveHeight) style="position:absolute;left:@Px(-0.3f*EffectiveHeight)" @onmouseover=VideoMouseOver @onmouseout=VideoMouseOut/>
+    <video hidden="true" id="@StreamId" height=@Px(EffectiveHeight) style="position:absolute;left:@Px(-0.3f*EffectiveHeight)" @onmouseover=VideoMouseOver @onmouseout=VideoMouseOut/>
 </div>
 
 @code {

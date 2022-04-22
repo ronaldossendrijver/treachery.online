@@ -508,6 +508,7 @@ namespace Treachery.Client
                 }
 
                 await PerformPostEventTasks(null);
+                RefreshPopovers();
             }
         }
 

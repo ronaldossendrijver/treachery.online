@@ -176,20 +176,27 @@
         let sounds = new Map();
         function PlaySound(file, volume, loop) {
 
-            let sound = sounds.get(file);
-            if (sound == null) {
+            try {
 
-                sound = new Howl({ src: file, html5: true, volume: volume, loop: loop });
-                sounds.set(file, sound);
+                let sound = sounds.get(file);
+                if (sound == null) {
+
+                    sound = new Howl({ src: file, html5: true, volume: volume, loop: loop });
+                    sounds.set(file, sound);
+                }
+                else {
+
+                    sound.stop();
+                    sound.volume(volume);
+                    sound.loop(loop);
+                }
+
+                sound.play();
             }
-            else {
+            catch (error) {
 
-                sound.stop();
-                sound.volume(volume);
-                sound.loop(loop);
+                //
             }
-
-            sound.play();
         }
 
         function StopSound(file) {
@@ -488,36 +495,43 @@
         var recordedStream = null;
         function CaptureMedia(videoId, audioDeviceId, videoDeviceId) {
 
-            navigator.mediaDevices.getUserMedia(
-                {
-                    audio: {
-                        echoCancellation: true,
-                        autoGainControl: true,
-                        noiseSuppression: true,
-                        deviceId: { exact: audioDeviceId }
-                    },
-                    video: {
-                        width: { ideal: 320 },
-                        height: { ideal: 200 },
-                        deviceId: { exact: videoDeviceId }
-                    }
-                })
-                .then(function (stream) {
+            try {
 
-                    recordedStream = stream;
+                navigator.mediaDevices.getUserMedia(
+                    {
+                        audio: {
+                            echoCancellation: true,
+                            autoGainControl: true,
+                            noiseSuppression: true,
+                            deviceId: { exact: audioDeviceId }
+                        },
+                        video: {
+                            width: { ideal: 320 },
+                            height: { ideal: 200 },
+                            deviceId: { exact: videoDeviceId }
+                        }
+                    })
+                    .then(function (stream) {
 
-                    video = document.getElementById(videoId);
-                    if (video != null) {
+                        recordedStream = stream;
 
-                        video.srcObject = stream;
-                        video.muted = true;
-                        video.play();
-                    }
+                        video = document.getElementById(videoId);
+                        if (video != null) {
 
-                    mediaRecorder = new MediaRecorder(stream, { mimeType: webcamCodec });
-                    mediaRecorder.ondataavailable = HandleVideoData
-                    mediaRecorder.start(webcamInterval);
-                });
+                            video.srcObject = stream;
+                            video.muted = true;
+                            video.play();
+                        }
+
+                        mediaRecorder = new MediaRecorder(stream, { mimeType: webcamCodec });
+                        mediaRecorder.ondataavailable = HandleVideoData
+                        mediaRecorder.start(webcamInterval);
+                    });
+            }
+            catch (error) {
+
+                //
+            }
         }
 
         async function HandleVideoData(event) {
@@ -563,7 +577,7 @@
 
                 let video = document.getElementById(videoId);
                 video.src = URL.createObjectURL(mediaSource);
-                video.play();
+                //video.play();
             }
             catch (error) {
 
@@ -583,6 +597,7 @@
         async function PushVideoData(videoId, buffer, volume) {
 
             try {
+
                 let mediaSource = mediaSources.get(videoId)
                 let video = document.getElementById(videoId);
 
@@ -615,10 +630,8 @@
                                 await Sleep(100);
                             }
 
-                            if (video.ended) {
-
-                                video.play();
-                            }
+                            video.hidden = false;
+                            video.play();
                         }
                         else {
 
