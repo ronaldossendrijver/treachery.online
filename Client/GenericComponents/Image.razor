@@ -4,7 +4,6 @@
 
 @using Treachery.Shared;
 @implements IDisposable;
-@typeparam T;
 
 @{
 
@@ -24,11 +23,27 @@
     }
 }
 
-@code 
-    {
+@code {
+
+    private object _shown;
 
     [Parameter]
-    public T Shown { get; set; }
+    public object Shown { 
+
+        get
+        {
+            return _shown;
+        }
+
+        set
+        {
+            if (value != _shown)
+            {
+                _shown = value;
+                _popoverNeedsRefresh = true;
+            }
+        }
+    }
 
     private string _src;
 

@@ -24,14 +24,25 @@
 
 @code {
 
-    [Parameter]
-    public object Shown { get; set; }
+    private object _shown;
 
     [Parameter]
-    public string Src { get; set; }
+    public object Shown { 
 
-    [Parameter]
-    public float Width { get; set; }
+        get
+        {
+            return _shown;
+        }
+
+        set
+        {
+            if (value != _shown)
+            {
+                _shown = value;
+                _popoverNeedsRefresh = true;
+            }
+        }
+    }
 
     [Parameter]
     public string Class { get; set; } = "fw-bold";
