@@ -36,7 +36,8 @@ namespace Treachery.Shared
 
         public override string Validate()
         {
-            if (!MayAcceptDeals(Game, Player, Price)) return "You currently have an outstanding bid";
+            if (!MayDeal(Game, Player, Price)) return "You currently have an outstanding bid";
+            if (Game.Version >= 142 && !MayDeal(Game, Game.GetPlayer(BoundFaction), Benefit)) return Skin.Current.Format("{0} currently have an outstanding bid", BoundFaction);
             if (Price > Player.Resources) return "You can't pay that much";
 
             var boundPlayer = Game.GetPlayer(BoundFaction);
@@ -48,7 +49,7 @@ namespace Treachery.Shared
             return "";
         }
 
-        public static bool MayAcceptDeals(Game g, Player p, int price)
+        public static bool MayDeal(Game g, Player p, int price)
         {
             return
                 g.CurrentPhase != Phase.Bidding ||

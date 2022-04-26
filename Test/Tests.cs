@@ -26,9 +26,13 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (g.CurrentPhase == Phase.BiddingReport && g.IsPlaying(Faction.Green) && g.CurrentTurn > 5)
+            if (e is Battle && g.HasStrongholdAdvantage(e.Initiator, StrongholdAdvantage.FreeResourcesForBattles, g.CurrentBattle.Territory))
             {
-                WriteSavegameIfApplicable(g, g.GetPlayer(Faction.Green), "See some cards");
+                var forces = Battle.MaxForces(g, e.Player, false) + Battle.MaxForces(g, e.Player, true);
+                if (forces > 3 && forces > e.Player.Resources)
+                {
+                    WriteSavegameIfApplicable(g, e.Player, "Arrakeen Advantage");
+                }
             }
         }
 
@@ -75,8 +79,11 @@ namespace Treachery.Test
             p = g.Players.FirstOrDefault(p => p.Faction == Faction.White && (p.SpecialForcesInReserve != 0 || p.SpecialForcesKilled != 0));
             if (p != null) return "Invalid forces: " + p + " after " + e.GetType().Name + " -> " + g.History.Count;
 
-            p = g.Players.FirstOrDefault(p => p.Resources < 0);
-            if (p != null) return "Negative spice: " + p + " after " + e.GetType().Name + " -> " + g.History.Count;
+            if (g.Version >= 142)
+            {
+                p = g.Players.FirstOrDefault(p => p.Resources < 0);
+                if (p != null) return "Negative spice: " + p + " after " + e.GetType().Name + " -> " + g.History.Count;
+            }
 
             if (g.CurrentTurn >= 1)
             {

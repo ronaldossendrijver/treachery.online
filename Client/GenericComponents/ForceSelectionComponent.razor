@@ -13,18 +13,18 @@
 
                 @if (AlwaysShowLocation || Locations.Count() > 1)
                 {
-                    <td>@l.ToString()</td>
+                    <td class="ps-0">@l.ToString()</td>
                 }
 
                 @if (Max(l) > 0)
                 {
                     @if (MaySelectFromStorm || l.Sector != Game.SectorInStorm)
                     {
-                        <td><SelectForcesComponent Value="@ForceAmount(l, false)" OnDown="(e => ChangeForceAmount(l, -1, false))" OnUp="(e => ChangeForceAmount(l, 1, false))" Min="Min" Max="Max(l)" Faction="Player.Faction" Special="false"/></td>
+                        <td class="ps-0"><SelectForcesComponent Value="@ForceAmount(l, false)" OnDown="(e => ChangeForceAmount(l, -1, false))" OnUp="(e => ChangeForceAmount(l, 1, false))" Min="Min" Max="Max(l)" Faction="Player.Faction" Special="false"/></td>
                     }
                     else
                     {
-                        <td class="font-italic text-danger">cannot move from storm</td>
+                        <td class="font-italic text-danger ps-0">cannot move from storm</td>
                     }
                 }
                 else
@@ -36,11 +36,11 @@
                 {
                     if (MaySelectFromStorm || l.Sector != Game.SectorInStorm)
                     {
-                        <td><SelectForcesComponent Value="@ForceAmount(l, true)" OnDown="(e => ChangeForceAmount(l, -1, true))" OnUp="(e => ChangeForceAmount(l, 1, true))" Min="Min" Max="MaxSpecial(l)" Faction="Player.Faction" Special="true" /></td>
+                        <td class="ps-0"><SelectForcesComponent Value="@ForceAmount(l, true)" OnDown="(e => ChangeForceAmount(l, -1, true))" OnUp="(e => ChangeForceAmount(l, 1, true))" Min="Min" Max="MaxSpecial(l)" Faction="Player.Faction" Special="true" /></td>
                     }
                     else
                     {
-                        <td class="font-italic text-danger">cannot move from storm</td>
+                        <td class="font-italic text-danger ps-0">cannot move from storm</td>
                     }
                 }
                 else

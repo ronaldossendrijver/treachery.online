@@ -11,7 +11,7 @@ namespace Treachery.Shared
     {
         protected virtual DealAccepted DetermineDealAccepted()
         {
-            if (!DealAccepted.MayAcceptDeals(Game, this, 1) || Game.Applicable(Rule.DisableResourceTransfers)) return null;
+            if (!DealAccepted.MayDeal(Game, this, 1) || Game.Applicable(Rule.DisableResourceTransfers)) return null;
 
             DealAccepted result = null;
 

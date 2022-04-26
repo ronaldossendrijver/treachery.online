@@ -4,7 +4,7 @@
 
 @using Treachery.Shared;
 
-<div class="d-inline-block d-flex align-items-center">
+<div class="@Class">
 
     @if (Label != "")
     {
@@ -117,6 +117,9 @@
             }
         }
     }
+
+    [Parameter]
+    public string Class { get; set; } = "d-inline-flex align-items-center";
 
     private string ForceSymbolSRC => Special ? Skin.Current.GetFactionSpecialForceImageURL(Faction) : Skin.Current.GetFactionForceImageURL(Faction);
 }
