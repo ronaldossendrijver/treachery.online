@@ -535,9 +535,31 @@ namespace Treachery.Client
 
         private List<FlashInfo> DetermineFlash(Game g)
         {
-            var latestEvent = g.History.LastOrDefault();
             var result = new List<FlashInfo>();
 
+            if (g.CurrentPhase == Phase.GameEnded)
+            {
+                foreach (var p in g.Winners)
+                {
+                    FlashInfo toAdd;
+                    toAdd.Url = Skin.Current.GetImageURL(p.Faction);
+                    toAdd.Message = Message.Express(p.Faction, " win!");
+                    result.Add(toAdd);
+                }
+
+                return result;
+            }
+            else if (g.CurrentPhase == Phase.BattleConclusion && g.BattleWinner != Faction.None)
+            {
+                FlashInfo toAdd;
+                toAdd.Url = Skin.Current.GetImageURL(g.BattleWinner);
+                toAdd.Message = Message.Express(g.BattleWinner, " win!");
+                result.Add(toAdd);
+                return result;
+            }
+
+            var latestEvent = g.History.LastOrDefault();
+            
             if (latestEvent != null)
             {
                 if (latestEvent is RaiseDeadPlayed) result.Add(FlashInfo(latestEvent, TreacheryCardType.RaiseDead));
@@ -579,7 +601,6 @@ namespace Treachery.Client
                 else if (latestEvent is SwitchedSkilledLeader) result.Add(FlashInfo(latestEvent));
                 else if (latestEvent is EstablishPlayers && g.CurrentPhase != Phase.SelectingFactions && IsPlayer) result.Add(FlashInfo(Player.Faction));
                 else if (latestEvent is FactionTradeOffered fto && (fto.Initiator == Faction || fto.Target == Faction) && !g.CurrentTradeOffers.Any(t => t.Initiator == Faction)) result.Add(FlashInfo(Player.Faction));
-
             }
 
             int nrOfSpiceBlows = g.RecentMilestones.Count(m => m == Milestone.Resource);

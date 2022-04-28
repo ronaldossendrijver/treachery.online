@@ -9,43 +9,24 @@
 <div class="card mb-2">
     <div class="card-header">Please enter your player name</div>
     <div class="card-body">
-        <input class="form-control" @bind-value="playername" @bind-value:event="oninput" maxlength="24" placeholder="Your name" id="userName" />
+        <input class="form-control" @bind-value="playername" @bind-value:event="oninput" maxlength="24" placeholder="Your name" @onkeyup=@KeyUp/>
         <button class="btn btn-primary mt-1" disabled="@(!IsValid)" @onclick="Confirm">Confirm</button>
     </div>
 </div>
 
 @code {        
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await Browser.EnableEnterEvents();
-    }
-
-    private static Func<Task> action;
-
     private string playername;
 
-    protected override void OnInitialized()
+    private async Task KeyUp(KeyboardEventArgs e)
     {
-        action = Confirm;
-    }
-
-    private bool IsValid
-    {
-        get
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
         {
-            return PlayerJoined.ValidName(playername) == "";
+            await Confirm();
         }
     }
 
-    private async Task Confirm()
-    {
-        await h.ConfirmPlayername(playername);
-    }
+    private bool IsValid => PlayerJoined.ValidName(playername) == "";
 
-    [JSInvokable("ConfirmUsername")]
-    public async static Task ConfirmPlayername()
-    {
-        await action.Invoke();
-    }
+    private async Task Confirm() => await h.ConfirmPlayername(playername);
 }

@@ -53,7 +53,7 @@
             var height = Support.Round(0.9f * _dims.Height);
             var topMargin = Support.Round(0.05f * _dims.Height);
 
-            return string.Format("position: absolute; left: {0}px; transition: 0.5s; padding: 0px; width: {1}px; border-radius: 0 5px 5px 0; background-color: {2}; overflow: auto; border-color: {3}; border-width: {4}px; height: {5}px; top: {6}px", 
+            return string.Format("position: absolute; left: {0}px; transition: 0.5s; padding: 0px; width: {1}px; border-radius: 0 5px 5px 0; background-color: {2}; overflow: auto; border-style: solid; border-color: {3}; border-width: {4}px; height: {5}px; top: {6}px", 
                 _shown ? "0" : Support.Round(-Width + HandleWidth), 
                 Support.Round(Width),
                 BackgroundColor,

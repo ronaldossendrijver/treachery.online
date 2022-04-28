@@ -131,11 +131,6 @@ namespace Treachery.Client
             return await JsInvoke<bool>("UrlExists", url);
         }
 
-        public static async Task EnableEnterEvents()
-        {
-            await JsInvoke("AddEnterListeners");
-        }
-
         public static async Task SetPlanetMapScale()
         {
             await JsInvoke("SetPlanetMapScale");

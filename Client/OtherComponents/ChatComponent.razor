@@ -62,7 +62,7 @@
         currentHandler = h;
     }
 
-    public async Task KeyUp(KeyboardEventArgs e)
+    private async Task KeyUp(KeyboardEventArgs e)
     {
         if (e.Code == "Enter" || e.Code == "NumpadEnter")
         {
