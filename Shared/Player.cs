@@ -597,11 +597,6 @@ namespace Treachery.Shared
 
         }
 
-        public override string ToString()
-        {
-            return Name + " (" + Skin.Current.Describe(Faction) + ")";
-        }
-
         public TreacheryCard Card(TreacheryCardType type)
         {
             return TreacheryCards.FirstOrDefault(c => c.Type == type);

@@ -163,16 +163,35 @@ namespace Treachery.Shared
             }
         }
 
-        public string GetQuestion()
+        public Message GetQuestion()
         {
             if (Question == ClairvoyanceQuestion.None)
             {
-                return "";
+                return Message.Express("");
             }
             else
             {
-                return Skin.Current.Format(Skin.Current.Describe(Question), Parameter1, Parameter2);
+                return Express(Question, Parameter1, Parameter2);
             }
+        }
+
+        private Message Express(ClairvoyanceQuestion q, object parameter1, object parameter2)
+        {
+            return q switch
+            {
+                ClairvoyanceQuestion.None => Message.Express("Any question"),
+                ClairvoyanceQuestion.CardTypeInBattle => Message.Express("In this battle, is one of your cards a ", parameter1),
+                ClairvoyanceQuestion.CardTypeAsDefenseInBattle => Message.Express("In this battle, will you use ", parameter1, " as defense?"),
+                ClairvoyanceQuestion.CardTypeAsWeaponInBattle => Message.Express("In this battle, will you use ", parameter1, " as weapon?"),
+                ClairvoyanceQuestion.HasCardTypeInHand => Message.Express("Do you own a ", parameter1, "?"),
+                ClairvoyanceQuestion.LeaderInBattle => Message.Express("In this battle, is your leader ", parameter1, "?"),
+                ClairvoyanceQuestion.DialOfMoreThanXInBattle => Message.Express("In this battle, is your dial higher than ", parameter1, "?"),
+                ClairvoyanceQuestion.LeaderAsFacedancer => Message.Express("Is ", parameter1, " one of your face dancers?"),
+                ClairvoyanceQuestion.LeaderAsTraitor => Message.Express("Is ", parameter1, " one of your traitors?"),
+                ClairvoyanceQuestion.Prediction => Message.Express("Did you predict a ", parameter1, " win in turn ", parameter2, "?"),
+                ClairvoyanceQuestion.WillAttackX => Message.Express("Will you ship or move to ", parameter1, " this turn?"),
+                _ => Message.Express("unknown question"),
+            };
         }
 
         public static bool IsInScopeOf(bool asWeapon, TreacheryCardType cardType, TreacheryCardType inScopeOfQuestion)

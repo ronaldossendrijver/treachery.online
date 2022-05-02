@@ -712,9 +712,9 @@ namespace Treachery.Shared
             internal bool HasOpponent => Opponent != null;
             internal bool HasForces => ForcesToShip > 0 || SpecialForcesToShip > 0;
 
-            override public string ToString()
+            internal Message GetMessage()
             {
-                return Skin.Current.Format("{0} -> {1} (ToShip: {2}/{3}*, Shortage: {4}, DialNeeded: {5})", Location, Opponent, ForcesToShip, SpecialForcesToShip, ShortageForShipment, DialNeeded);
+                return Message.Express(Location, " -> ", Opponent, " (ToShip: ", ForcesToShip, "/", SpecialForcesToShip, "*, Shortage: ", ShortageForShipment, ", DialNeeded: ", DialNeeded, ")");
             }
         }
 

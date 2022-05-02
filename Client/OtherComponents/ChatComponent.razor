@@ -33,7 +33,7 @@
 
         @foreach (var m in h.Messages)
         {
-            <div class='float-right text-break p-1 mt-1 small' style="background-color:@Skin.Current.GetFactionColor(m.GetSourceFaction(h.Game))">@m.GetBodyIncludingPlayerInfo(h.MyName, h.Game)</div>
+            <div class='float-right text-break p-1 mt-1 small' style="background-color:@Skin.Current.GetFactionColor(m.GetSourceFaction(h.Game))">@m.GetBodyIncludingPlayerInfo(h.MyName, h.Game).ToString(Skin.Current)</div>
         }
 
         <div class="d-flex flex-row-reverse">

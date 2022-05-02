@@ -41,37 +41,50 @@ namespace Treachery.Shared
             return default;
         }
 
-        public static string DealContentsDescription(Game g, DealType Type, string Text, int benefit, Phase End, string Parameter1)
+        public static Message DealContentsDescription(Game g, DealType Type, string Text, int benefit, Phase End, string Parameter1)
         {
-            string description;
+            Message description;
             if (Text != null && Text.Length > 0)
             {
-                description = Text;
+                description = Message.Express(
+                    MessagePart.ExpressIf(benefit > 0, "Receive ", new Payment(benefit), " and "), 
+                    Text);
             }
             else
             {
-                description = Skin.Current.Format("{0} until {1}",
-                    string.Format(Skin.Current.Describe(Type), GetParameter1<object>(g, Type, Parameter1), GetParameter2<object>()),
+                description = Message.Express(
+                    MessagePart.ExpressIf(benefit > 0, "Receive ", new Payment(benefit), " and "),
+                    Express(Type, GetParameter1<object>(g, Type, Parameter1), GetParameter2<object>()), 
+                    " until ",
                     End);
-            }
-
-            if (benefit > 0)
-            {
-                description = "Receive " + benefit + " and " + description;
             }
 
             return description;
         }
 
-        public string DealContentsDescription(Game g)
+        public Message DealContentsDescription(Game g)
         {
             return DealContentsDescription(g, Type, Text, Benefit, End, DealParameter1);
         }
 
-        public string ToString(Game g)
+        public Message GetMessage(Game g)
         {
             var description = DealContentsDescription(g, Type, Text, Benefit, End, DealParameter1);
-            return Skin.Current.Format("{0} ⇔ {1}: {2}", BoundFaction, ConsumingFaction, description);
+            return Message.Express(BoundFaction, " ⇔ ", ConsumingFaction, ": ", description);
+        }
+
+        private static MessagePart Express(DealType d, object parameter1, object parameter2)
+        {
+            return d switch
+            {
+                DealType.None => MessagePart.Express("Custom deal"),
+                DealType.DontShipOrMoveTo => MessagePart.Express("Don't ship or move to ", parameter1),
+                DealType.ShareBiddingPrescience => MessagePart.Express("Share treachery card prescience"),
+                DealType.ShareResourceDeckPrescience => MessagePart.Express("Share prescience of the top ", Concept.Resource, "card"),
+                DealType.ShareStormPrescience => MessagePart.Express("Share storm prescience"),
+                DealType.ForfeitBattle => MessagePart.Express("Forfeit this battle (no weapons and defenses, lowest leader, zero dial)"),
+                _ => MessagePart.Express("unknown deal type"),
+            };
         }
     }
 

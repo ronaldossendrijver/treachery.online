@@ -28,11 +28,6 @@ namespace Treachery.Shared
 
         public int SkinId { get; set; }
 
-        public override string ToString()
-        {
-            return Skin.Current.Describe(Concept.Messiah);
-        }
-
         public bool IsTraitor(IHero hero) => false;
 
         public bool IsFaceDancer(IHero hero) => false;

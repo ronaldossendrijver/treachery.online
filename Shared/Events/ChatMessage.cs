@@ -16,36 +16,42 @@ namespace Treachery.Shared
 
         public DateTime DateTimeReceived { get; set; }
 
-        public string GetBodyIncludingPlayerInfo(string receivingPlayerName, Game g)
+        public Message GetBodyIncludingPlayerInfo(string receivingPlayerName, Game g)
         {
             if (SourcePlayerName == receivingPlayerName)
             {
                 if (TargetPlayerName == "")
                 {
-                    return Skin.Current.Format("{0} (to everyone)", Body);
+                    return Message.Express(Body, " (to everyone)");
                 }
                 else
                 {
-                    return Skin.Current.Format("{0} (to {1})", Body, g.GetPlayer(TargetPlayerName).Faction);
+                    return Message.Express(Body, " (to ", GetTargetFaction(g), ")");
                 }
             }
             else
             {
                 if (TargetPlayerName == "")
                 {
-                    return Skin.Current.Format("{0} (from {1} to everyone)", Body, GetSourceFaction(g));
+                    return Message.Express("{0} (from {1} to everyone)", Body, GetSourceFaction(g));
                 }
                 else
                 {
-                    return Skin.Current.Format("{0} (from {1} to you)", Body, GetSourceFaction(g));
+                    return Message.Express("{0} (from {1} to you)", Body, GetSourceFaction(g));
                 }
             }
         }
 
         public Faction GetSourceFaction(Game g)
         {
-            var sourcePlayer = g.GetPlayer(SourcePlayerName);
-            return sourcePlayer != null ? sourcePlayer.Faction : Faction.None;
+            var p = g.GetPlayer(SourcePlayerName);
+            return p != null ? p.Faction : Faction.None;
+        }
+
+        public Faction GetTargetFaction(Game g)
+        {
+            var p = g.GetPlayer(TargetPlayerName);
+            return p != null ? p.Faction : Faction.None;
         }
     }
 

@@ -9,8 +9,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Treachery.Shared;
 
-namespace Treachery.Shared
+namespace Treachery.Client
 {
     public class Skin : IDescriber
     {
@@ -310,8 +311,8 @@ namespace Treachery.Shared
             else if (value is Rule rule) result = Describe(rule);
             else if (value is MainPhase m) result = Describe(m);
             else if (value is TechToken tt) result = Describe(tt);
-            else if (value is ClairvoyanceQuestion q) result = Describe(q);
-            else if (value is DealType d) result = Describe(d);
+            //else if (value is ClairvoyanceQuestion q) result = Describe(q);
+            //else if (value is DealType d) result = Describe(d);
             else if (value is WinMethod w) result = Describe(w);
             else if (value is Phase p) result = Describe(p);
             else if (value is BrownEconomicsStatus bes) result = Describe(bes);
@@ -705,38 +706,9 @@ namespace Treachery.Shared
             };
         }
 
-        public string Describe(ClairvoyanceQuestion q)
-        {
-            return q switch
-            {
-                ClairvoyanceQuestion.None => "Any question",
-                ClairvoyanceQuestion.CardTypeInBattle => "In this battle, is one of your cards a {0}?",
-                ClairvoyanceQuestion.CardTypeAsDefenseInBattle => "In this battle, will you use {0} as defense?",
-                ClairvoyanceQuestion.CardTypeAsWeaponInBattle => "In this battle, will you use {0} as weapon?",
-                ClairvoyanceQuestion.HasCardTypeInHand => "Do you own a {0}?",
-                ClairvoyanceQuestion.LeaderInBattle => "In this battle, is your leader {0}?",
-                ClairvoyanceQuestion.DialOfMoreThanXInBattle => "In this battle, is your dial higher than {0}?",
-                ClairvoyanceQuestion.LeaderAsFacedancer => "Is {0} one of your face dancers?",
-                ClairvoyanceQuestion.LeaderAsTraitor => "Is {0} one of your traitors?",
-                ClairvoyanceQuestion.Prediction => "Did you predict a {0} win in turn {1}?",
-                ClairvoyanceQuestion.WillAttackX => "Will you ship or move to {0} this turn?",
-                _ => "unknown rule",
-            };
-        }
+        
 
-        public string Describe(DealType d)
-        {
-            return d switch
-            {
-                DealType.None => "Custom deal",
-                DealType.DontShipOrMoveTo => "Don't ship or move to {0}",
-                DealType.ShareBiddingPrescience => "Share treachery card prescience",
-                DealType.ShareResourceDeckPrescience => Format("Share prescience of the top {0} card", Concept.Resource),
-                DealType.ShareStormPrescience => "Share storm prescience",
-                DealType.ForfeitBattle => "Forfeit this battle (no weapons and defenses, lowest leader, zero dial)",
-                _ => "unknown deal type",
-            };
-        }
+
 
         #endregion Descriptions
 

@@ -545,7 +545,7 @@ namespace Treachery.Client
         {
             var sourcePlayer = Game.GetPlayer(m.SourcePlayerName);
             var sourceFaction = sourcePlayer != null ? sourcePlayer.Faction : Faction.None;
-            return new PopupChatMessage() { body = Support.HTMLEncode(m.GetBodyIncludingPlayerInfo(MyName, Game)), style = Skin.Current.GetFactionColor(sourceFaction) };
+            return new PopupChatMessage() { body = Support.HTMLEncode(m.GetBodyIncludingPlayerInfo(MyName, Game).ToString(Skin.Current)), style = Skin.Current.GetFactionColor(sourceFaction) };
         }
 
         public static async Task PopoutChatWindow()

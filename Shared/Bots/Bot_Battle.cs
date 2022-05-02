@@ -1029,7 +1029,7 @@ namespace Treachery.Shared
         protected RockWasMelted DetermineRockWasMelted()
         {
             var outcome = Game.DetermineBattleOutcome(Game.AggressorBattleAction, Game.DefenderBattleAction, Game.CurrentBattle.Territory);
-            LogInfo(outcome.ToString());
+            LogInfo(outcome.GetMessage());
             return new RockWasMelted(Game) { Initiator = Faction, Kill = outcome.Winner == this };
         }
 

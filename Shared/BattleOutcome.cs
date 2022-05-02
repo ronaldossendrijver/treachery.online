@@ -35,22 +35,30 @@
 
         
 
-        public override string ToString()
+        public Message GetMessage()
         {
-            return Skin.Current.Format("Aggressor ({0}) {1}. Total strength: {2}, leader {3} by {4}. Defender ({5}) {6}. Total strength: {7}, leader {8} by {9}.",
-
+            return Message.Express(
+                "Aggressor (", 
                 Aggressor.Faction,
-                Winner == Aggressor ? "win" : "lose",
-                AggTotal,
-                AggHeroKilled ? "killed" : "survives",
-                AggHeroCauseOfDeath,
-
-                Defender.Faction,
-                Winner == Defender ? "win" : "lose",
-                DefTotal,
-                DefHeroKilled ? "killed" : "survives",
-                DefHeroCauseOfDeath
-                );
+                ") ", 
+                Winner == Aggressor ? "win" : "lose", 
+                ". Total strength: ", 
+                AggTotal, 
+                ", leader ", 
+                AggHeroKilled ? "killed" : "survives", 
+                " by ", 
+                AggHeroCauseOfDeath, 
+                ". Defender (", 
+                Defender.Faction, 
+                ") ", 
+                Winner == Defender ? "win" : "lose", 
+                ". Total strength: ", 
+                DefTotal, 
+                ", leader ", 
+                DefHeroKilled ? "killed" : "survives", 
+                " by ", 
+                DefHeroCauseOfDeath, 
+                ".");
         }
     }
 }
