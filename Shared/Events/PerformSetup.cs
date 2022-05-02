@@ -18,7 +18,7 @@ namespace Treachery.Shared
 
         public int Resources { get; set; }
 
-        public override string Validate()
+        public override Message Validate()
         {
             var faction = Game.NextFactionToPerformCustomSetup;
             var p = Game.GetPlayer(faction);

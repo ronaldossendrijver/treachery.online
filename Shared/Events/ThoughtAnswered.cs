@@ -34,7 +34,7 @@ namespace Treachery.Shared
         }
 
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (!ValidCards(Game, Player).Any()) return "";
             if (!ValidCards(Game, Player).Contains(Card)) return "Select a valid card to show";

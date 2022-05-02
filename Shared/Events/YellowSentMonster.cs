@@ -23,7 +23,7 @@ namespace Treachery.Shared
         [JsonIgnore]
         public Territory Territory { get { return Game.Map.TerritoryLookup.Find(_territoryId); } set { _territoryId = Game.Map.TerritoryLookup.GetId(value); } }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (Territory == null) return "No territory selected.";
             if (Territory.IsProtectedFromWorm) return "Selected territory is protected.";

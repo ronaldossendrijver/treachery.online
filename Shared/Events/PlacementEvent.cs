@@ -26,7 +26,7 @@ namespace Treachery.Shared
         {
         }
 
-        protected string ValidateMove(bool AsAdvisors)
+        protected Message ValidateMove(bool AsAdvisors)
         {
             if (Passed) return "";
 
@@ -34,30 +34,30 @@ namespace Treachery.Shared
 
             var forceAmount = ForceLocations.Values.Sum(b => b.AmountOfForces);
             bool tooManyForces = ForceLocations.Any(bl => bl.Value.AmountOfForces > p.ForcesIn(bl.Key));
-            if (tooManyForces) return Skin.Current.Format("Invalid amount of {0}.", p.Force);
+            if (tooManyForces) return Message.Express("Invalid number of ", p.Force);
 
             var specialForceAmount = ForceLocations.Values.Sum(b => b.AmountOfSpecialForces);
             bool tooManySpecialForces = ForceLocations.Any(bl => bl.Value.AmountOfSpecialForces > p.SpecialForcesIn(bl.Key));
-            if (tooManySpecialForces) return Skin.Current.Format("Invalid amount of {0}.", p.SpecialForce);
+            if (tooManySpecialForces) return Message.Express("Invalid number of ", p.SpecialForce);
 
-            if (forceAmount == 0 && specialForceAmount == 0) return "No forces selected.";
+            if (forceAmount == 0 && specialForceAmount == 0) return Message.Express("No forces selected");
 
-            if (To == null) return "To not selected.";
-            if (!ValidTargets(Game, p, ForceLocations).Contains(To)) return "Invalid To location.";
-            if (AsAdvisors && !(p.Is(Faction.Blue) && Game.Applicable(Rule.BlueAdvisors))) return "You can't move as advisors.";
+            if (To == null) return Message.Express("To not selected");
+            if (!ValidTargets(Game, p, ForceLocations).Contains(To)) return Message.Express("Invalid To location");
+            if (AsAdvisors && !(p.Is(Faction.Blue) && Game.Applicable(Rule.BlueAdvisors))) return Message.Express("You can't move as advisors");
 
             if (Initiator == Faction.Blue)
             {
-                if (AsAdvisors && p.ForcesIn(To.Territory) > 0) return "You have fighters there, so you can't move as advisors.";
-                if (!AsAdvisors && p.SpecialForcesIn(To.Territory) > 0) return "You have advisors there, so you can't move as fighters.";
+                if (AsAdvisors && p.ForcesIn(To.Territory) > 0) return Message.Express("You have fighters there, so you can't move as advisors");
+                if (!AsAdvisors && p.SpecialForcesIn(To.Territory) > 0) return Message.Express("You have advisors there, so you can't move as fighters");
             }
 
             bool canMoveFromTwoTerritories = Game.CurrentPlanetology != null && Game.CurrentPlanetology.MoveFromTwoTerritories && Game.CurrentPlanetology.Initiator == Initiator;
             int numberOfSelectedTerritories = ForceLocations.Where(kvp => kvp.Value.TotalAmountOfForces > 0).Select(fl => fl.Key.Territory).Distinct().Count();
-            if (numberOfSelectedTerritories > 1 && !canMoveFromTwoTerritories) return "You can't move from two territories at the same time";
-            if (numberOfSelectedTerritories > 2) return "You can't move from more than two territories at the same time";
+            if (numberOfSelectedTerritories > 1 && !canMoveFromTwoTerritories) return Message.Express("You can't move from two territories at the same time");
+            if (numberOfSelectedTerritories > 2) return Message.Express("You can't move from more than two territories at the same time");
 
-            return "";
+            return null;
         }
 
         [JsonIgnore]

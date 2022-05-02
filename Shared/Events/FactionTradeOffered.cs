@@ -19,19 +19,19 @@ namespace Treachery.Shared
 
         public Faction Target { get; set; }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (Game.Version >= 132)
             {
-                if (!ValidTargets(Game, Player).Contains(Target)) return "Invalid target";
+                if (!ValidTargets(Game, Player).Contains(Target)) return Message.Express("Invalid target");
             }
             else
             {
-                if (!Game.IsPlaying(Target)) return "Invalid target";
+                if (!Game.IsPlaying(Target)) return Message.Express("Invalid target");
             }
             
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

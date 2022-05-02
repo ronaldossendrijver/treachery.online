@@ -27,7 +27,7 @@ namespace Treachery.Shared
             set { _territoryId = Game.Map.TerritoryLookup.GetId(value); }
         }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (!ValidTerritories(Game, Player).Contains(Territory)) return "Invalid territory.";
             return "";

@@ -25,7 +25,7 @@ namespace Treachery.Shared
         [JsonIgnore]
         public Location Target { get { return Game.Map.LocationLookup.Find(_targetId); } set { _targetId = Game.Map.LocationLookup.GetId(value); } }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (!ValidLocations(Game).Contains(Target)) return "Invalid location";
 

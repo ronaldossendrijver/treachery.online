@@ -16,7 +16,7 @@ namespace Treachery.Shared
 
         public int Amount { get; set; }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (Amount < ValidMinAmount(Game) || Amount > ValidMaxAmount(Game)) return "Invalid amount";
 

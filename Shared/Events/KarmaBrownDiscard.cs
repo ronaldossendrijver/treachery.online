@@ -33,12 +33,13 @@ namespace Treachery.Shared
             }
         }
 
-        public override string Validate()
+        public override Message Validate()
         {
             var karmaCardToUse = Player.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
-            if (karmaCardToUse == null) return string.Format("You don't have a {0} card", TreacheryCardType.Karma);
-            if (Cards.Contains(karmaCardToUse)) return string.Format("You can't select the {0} you need to play to use this power", TreacheryCardType.Karma);
-            return "";
+            if (karmaCardToUse == null) return Message.Express("You don't have a ", TreacheryCardType.Karma, " card");
+            if (Cards.Contains(karmaCardToUse)) return Message.Express("You can't select the ", TreacheryCardType.Karma, " you need to play to use this power");
+            
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

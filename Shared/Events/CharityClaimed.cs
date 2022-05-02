@@ -14,12 +14,12 @@ namespace Treachery.Shared
         {
         }
 
-        public override string Validate()
+        public override Message Validate()
         {
             var p = Player;
-            if (p.Resources > 1) return "You are not eligable for charity";
+            if (p.Resources > 1) return Message.Express("You are not eligable for charity");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

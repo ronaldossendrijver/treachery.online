@@ -16,7 +16,7 @@ namespace Treachery.Shared
 
         public bool AsAdvisors { get; set; }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (Initiator != Faction.Blue) return "Your faction can't flip";
             return "";

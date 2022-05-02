@@ -20,7 +20,7 @@ namespace Treachery.Shared
 
         public bool Cancelled { get; set; }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (Cancelled && Player.Resources < Cost(Game)) return "You can't pay enough to cancel the audit";
 

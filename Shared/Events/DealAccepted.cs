@@ -34,7 +34,7 @@ namespace Treachery.Shared
         {
         }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (!MayDeal(Game, Player, Price)) return "You currently have an outstanding bid";
             if (Game.Version >= 142 && !MayDeal(Game, Game.GetPlayer(BoundFaction), Benefit)) return Skin.Current.Format("{0} currently have an outstanding bid", BoundFaction);

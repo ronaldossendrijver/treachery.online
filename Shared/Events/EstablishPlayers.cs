@@ -94,7 +94,7 @@ namespace Treachery.Shared
             }
         }
 
-        public override string Validate()
+        public override Message Validate()
         {
             int extraSpotsForBots =
                 (ApplicableRules.Contains(Rule.PurpleBot) && FactionsInPlay.Contains(Faction.Purple) ? 1 : 0) +

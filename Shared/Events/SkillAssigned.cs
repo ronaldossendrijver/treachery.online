@@ -35,7 +35,7 @@ namespace Treachery.Shared
             }
         }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (Passed && Game.CurrentPhase == Phase.AssigningInitialSkills) return "You must assign a leader skill";
 

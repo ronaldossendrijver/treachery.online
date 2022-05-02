@@ -33,7 +33,7 @@ namespace Treachery.Shared
             }
         }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (!ValidCards(Game, Player).Contains(Card)) return "Invalid card";
 

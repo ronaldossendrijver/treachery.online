@@ -281,7 +281,7 @@ namespace Treachery.Shared
             }
         }
 
-        public override string Validate()
+        public override Message Validate()
         {
             var p = Player;
             if (Forces < 0 || ForcesAtHalfStrength < 0 || SpecialForces < 0 || SpecialForcesAtHalfStrength < 0) return string.Format("Invalid number of forces {0} {1} {2} {3}.", Forces, ForcesAtHalfStrength, SpecialForces, SpecialForcesAtHalfStrength);

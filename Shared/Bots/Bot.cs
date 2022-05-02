@@ -34,7 +34,7 @@ namespace Treachery.Shared
             if (action != null)
             {
                 var result = action.Validate();
-                if (result != "")
+                if (result != null)
                 {
                     LogInfo("--invalid decision ({0})--> {1}: {2}", Resources, action.GetMessage(), result);
                     action = null;
@@ -78,7 +78,7 @@ namespace Treachery.Shared
             if (action != null)
             {
                 var result = action.Validate();
-                if (result != "")
+                if (result != null)
                 {
                     LogInfo("--invalid decision ({0},{1})--> {2}: {3}", Resources, string.Join(",", TreacheryCards), action.GetMessage(), result);
                     action = null;
@@ -186,7 +186,7 @@ namespace Treachery.Shared
             if (action != null)
             {
                 var result = action.Validate();
-                if (result != "")
+                if (result != null)
                 {
                     LogInfo("--invalid decision ({0},{1})--> {2}: {3}", Resources, string.Join(",", TreacheryCards), action.GetMessage(), result);
                     action = null;
@@ -216,7 +216,7 @@ namespace Treachery.Shared
             if (action != null)
             {
                 var result = action.Validate();
-                if (result != "")
+                if (result != null)
                 {
                     LogInfo("--invalid decision--> " + action.GetMessage() + ":" + result);
                     action = null;

@@ -108,7 +108,7 @@ namespace Treachery.Shared
 
         public TechToken StolenToken { get; set; }
 
-        public override string Validate()
+        public override Message Validate()
         {
             var p = Player;
             if (SpecialForceLossesReplaced > 0 && Game.Prevented(FactionAdvantage.GreyReplacingSpecialForces)) return Skin.Current.Format("{0} prevents replacing {1} losses", TreacheryCardType.Karma, FactionSpecialForce.Grey);

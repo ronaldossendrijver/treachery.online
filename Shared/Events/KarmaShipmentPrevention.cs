@@ -19,7 +19,7 @@ namespace Treachery.Shared
 
         public Faction Target { get; set; }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (Game.Version >= 138 && !GetValidTargets(Game, Player).Contains(Target)) return "Invalid target";
 

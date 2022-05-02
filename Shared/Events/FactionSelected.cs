@@ -22,7 +22,7 @@ namespace Treachery.Shared
 
         public Faction Faction { get; set; }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (Faction != Faction.None && !Game.FactionsInPlay.Contains(Faction)) return "Faction not available";
 

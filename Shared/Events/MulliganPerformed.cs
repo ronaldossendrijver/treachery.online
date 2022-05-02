@@ -18,7 +18,7 @@ namespace Treachery.Shared
 
         public bool Passed { get; set; }
 
-        public override string Validate()
+        public override Message Validate()
         {
             return "";
         }

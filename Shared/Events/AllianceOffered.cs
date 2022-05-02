@@ -16,7 +16,7 @@ namespace Treachery.Shared
 
         public Faction Target { get; set; }
 
-        public override string Validate()
+        public override Message Validate()
         {
             return "";
         }

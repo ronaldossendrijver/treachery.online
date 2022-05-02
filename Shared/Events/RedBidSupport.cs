@@ -19,7 +19,7 @@ namespace Treachery.Shared
 
         public Dictionary<Faction, int> Amounts { get; set; }
 
-        public override string Validate()
+        public override Message Validate()
         {
             return "";
         }

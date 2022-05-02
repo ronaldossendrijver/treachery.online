@@ -18,7 +18,7 @@ namespace Treachery.Shared
 
         public bool TraitorCalled { get; set; }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (!TraitorCalled) return "";
 

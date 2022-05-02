@@ -21,7 +21,7 @@ namespace Treachery.Shared
         [JsonIgnore]
         public IHero SelectedTraitor { get { return LeaderManager.HeroLookup.Find(_traitorId); } set { _traitorId = LeaderManager.HeroLookup.GetId(value); } }
 
-        public override string Validate()
+        public override Message Validate()
         {
             var p = Player;
 

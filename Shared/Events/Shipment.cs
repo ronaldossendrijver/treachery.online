@@ -102,45 +102,45 @@ namespace Treachery.Shared
         [JsonIgnore]
         public bool IsBackToReserves => ForceAmount + SpecialForceAmount < 0;
 
-        public override string Validate()
+        public override Message Validate()
         {
-            if (Passed) return "";
+            if (Passed) return null;
 
             var p = Player;
 
             if (!IsSiteToSite && Game.PreventedFromShipping(Initiator))
             {
-                return Skin.Current.Format("{0} prevents you from shipping", TreacheryCardType.Karma);
+                return Message.Express(TreacheryCardType.Karma, " prevents you from shipping");
             }
 
-            if (IsBackToReserves && Initiator != Faction.Orange) return "You can't ship back to reserves";
-            if (IsSiteToSite && !Game.MayShipAsGuild(p)) return "You can't site-to-site ship";
-            if (IsBackToReserves && !Game.MayShipAsGuild(p) && Initiator == Faction.Orange) return "You can't ship back to reserves";
+            if (IsBackToReserves && Initiator != Faction.Orange) return Message.Express("You can't ship back to reserves");
+            if (IsSiteToSite && !Game.MayShipAsGuild(p)) return Message.Express("You can't site-to-site ship");
+            if (IsBackToReserves && !Game.MayShipAsGuild(p) && Initiator == Faction.Orange) return Message.Express("You can't ship back to reserves");
 
-            if (!IsBackToReserves && (ForceAmount < 0 || SpecialForceAmount < 0)) return "Can't ship less than zero forces.";
-            if (ForceAmount == 0 && SpecialForceAmount == 0) return "Select forces to ship.";
-            if (To == null) return "Target location not selected";
+            if (!IsBackToReserves && (ForceAmount < 0 || SpecialForceAmount < 0)) return Message.Express("Can't ship less than zero forces");
+            if (ForceAmount == 0 && SpecialForceAmount == 0) return Message.Express("Select forces to ship");
+            if (To == null) return Message.Express("Target location not selected");
 
             var cost = DetermineCost(Game, p, this);
-            if (cost > p.Resources + AllyContributionAmount) return "You can't pay that much.";
-            if (cost < AllyContributionAmount) return "Your ally is paying too much.";
-            if (!ValidShipmentLocations(Game, p).Contains(To)) return "Cannot ship there.";
+            if (cost > p.Resources + AllyContributionAmount) return Message.Express("You can't pay that much");
+            if (cost < AllyContributionAmount) return Message.Express("Your ally is paying more than needed");
+            if (!ValidShipmentLocations(Game, p).Contains(To)) return Message.Express("Cannot ship there");
 
             bool isWhiteNoFieldShipment = p.Faction == Faction.White && NoFieldValue >= 0;
-            if (NoFieldValue >= 0 && !(p.Faction == Faction.White && !Game.Prevented(FactionAdvantage.WhiteNofield)) && !(p.Ally == Faction.White && Game.WhiteAllyMayUseNoField)) return "You can't use a No-Field";
-            if (isWhiteNoFieldShipment && ForceAmount > 0) return "You can't do both normal and No-Field shipment.";
-            if (isWhiteNoFieldShipment && SpecialForceAmount != 1) return "Invalid special force value for No-Field shipment.";
-            if (p.Faction == Faction.White && SpecialForceAmount > 0 && !ValidNoFieldValues(Game, Player).Contains(NoFieldValue)) return "Invalid No-Field value.";
+            if (NoFieldValue >= 0 && !(p.Faction == Faction.White && !Game.Prevented(FactionAdvantage.WhiteNofield)) && !(p.Ally == Faction.White && Game.WhiteAllyMayUseNoField)) return Message.Express("You can't use a No-Field");
+            if (isWhiteNoFieldShipment && ForceAmount > 0) return Message.Express("You can't do both normal and No-Field shipment");
+            if (isWhiteNoFieldShipment && SpecialForceAmount != 1) return Message.Express("Invalid special force value for No-Field shipment");
+            if (p.Faction == Faction.White && SpecialForceAmount > 0 && !ValidNoFieldValues(Game, Player).Contains(NoFieldValue)) return Message.Express("Invalid No-Field value");
 
-            if (From == null && ForceAmount + SmuggledAmount > p.ForcesInReserve) return Skin.Current.Format("Not enough {0} in reserve.", p.Force);
-            if (From == null && !isWhiteNoFieldShipment && SpecialForceAmount + SmuggledSpecialAmount > p.SpecialForcesInReserve) return Skin.Current.Format("Not enough {0} in reserve.", p.SpecialForce);
+            if (From == null && ForceAmount + SmuggledAmount > p.ForcesInReserve) return Message.Express("Not enough ", p.Force, " in reserve");
+            if (From == null && !isWhiteNoFieldShipment && SpecialForceAmount + SmuggledSpecialAmount > p.SpecialForcesInReserve) return Message.Express("Not enough ", p.SpecialForce, " in reserve");
             
             bool isSmuggling = SmuggledAmount > 0 || SmuggledSpecialAmount > 0;
             bool isShippingFromOffPlanet = !(IsBackToReserves || IsSiteToSite) && Initiator != Faction.Yellow && (ForceAmount > 0 || SpecialForceAmount > 0);
-            if (isSmuggling && (!isShippingFromOffPlanet || !MaySmuggle(Game, Player, To))) return "You can't smuggle forces here";
-            if (SmuggledAmount + SmuggledSpecialAmount > 1) return "You can't smuggle more than 1 force";
+            if (isSmuggling && (!isShippingFromOffPlanet || !MaySmuggle(Game, Player, To))) return Message.Express("You can't smuggle forces here");
+            if (SmuggledAmount + SmuggledSpecialAmount > 1) return Message.Express("You can't smuggle more than 1 force");
 
-            if (From != null && ForceAmount > p.ForcesIn(From)) return Skin.Current.Format("Not enough {0} for site-to-site shipment.", p.Force);
+            if (From != null && ForceAmount > p.ForcesIn(From)) return Message.Express("Not enough ", p.Force, " for site-to-site shipment");
             if (From != null && SpecialForceAmount > p.SpecialForcesIn(From)) return Skin.Current.Format("Not enough {0} for site-to-site shipment.", p.SpecialForce);
 
             if (IsNoField && p.Faction != Faction.White)
@@ -307,9 +307,14 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    var shipmentformHow = Initiator == Faction.Yellow ? " rally " : " ship ";
-                    var shipmentformTo = Initiator == Faction.Yellow ? " in " : " to ";
-                    return Message.Express(Initiator, shipmentformHow, ForceMessage, shipmentformTo, To, NoFieldMessage, CostMessage(cost), KaramaMessage(ownerOfKarma), orangeIncome);
+                    if (cost > 0)
+                    {
+                        return Message.Express(Initiator, " ship ", ForceMessage, " to ", To, NoFieldMessage, CostMessage(cost), KaramaMessage(ownerOfKarma), orangeIncome);
+                    }
+                    else
+                    {
+                        return Message.Express(Initiator, " rally ", ForceMessage, " in ", To);
+                    }
                 }
             }
         }

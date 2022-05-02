@@ -37,21 +37,21 @@ namespace Treachery.Shared
             }
         }
 
-        public override string Validate()
+        public override Message Validate()
         {
-            if (!FaceDancerCalled) return "";
+            if (!FaceDancerCalled) return null;
 
             var p = Player;
-            if (!MayCallFaceDancer(Game, p)) return "You can't reveal a Face Dancer";
+            if (!MayCallFaceDancer(Game, p)) return Message.Express("You can't reveal a Face Dancer");
 
             int amountOfForces = ForcesFromReserve + ForceLocations.Values.Sum(b => b.TotalAmountOfForces);
             int maximumForces = MaximumNumberOfForces(Game, p);
-            if (amountOfForces > maximumForces) return string.Format("Place {0} or less forces.", maximumForces);
+            if (amountOfForces > maximumForces) return Message.Express("Place ", maximumForces, " or less forces");
 
             int amountOfTargetForces = TargetForceLocations.Values.Sum(b => b.TotalAmountOfForces);
-            if (amountOfForces != amountOfTargetForces) return string.Format("The amount of forces you selected from the planet and from reserves ({0}) should equal the amount you wish to put in {1} ({2}).", amountOfForces, Game.CurrentBattle.Territory, amountOfTargetForces);
+            if (amountOfForces != amountOfTargetForces) return Message.Express("The amount of forces you selected from the planet and from reserves (", amountOfForces, ") should equal the amount you wish to put in ", Game.CurrentBattle.Territory, " (", amountOfTargetForces, ")");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

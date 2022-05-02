@@ -16,7 +16,7 @@ namespace Treachery.Shared
         {
         }
 
-        public override string Validate()
+        public override Message Validate()
         {
             var p = Player;
             int numberOfSpecialForces = ForceLocations.Sum(fl => fl.Value.AmountOfSpecialForces);

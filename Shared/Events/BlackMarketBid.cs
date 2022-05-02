@@ -37,7 +37,7 @@ namespace Treachery.Shared
         {
         }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (Passed) return "";
 

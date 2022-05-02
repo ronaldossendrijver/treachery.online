@@ -31,7 +31,7 @@ namespace Treachery.Shared
             set { _locationId = Game.Map.LocationLookup.GetId(value); }
         }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (!ValidLocations(Game).Contains(Location)) return "Invalid location";
             if (!ValidFactions(Game, Player, Location).Contains(Target)) return "Invalid faction";

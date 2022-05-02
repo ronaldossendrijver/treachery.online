@@ -16,7 +16,7 @@ namespace Treachery.Shared
 
         public int MoveAmount { get; set; }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (MoveAmount < 0 || MoveAmount > 10) return "Invalid number of sectors";
 

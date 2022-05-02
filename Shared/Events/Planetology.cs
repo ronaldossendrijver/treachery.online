@@ -21,7 +21,7 @@ namespace Treachery.Shared
         [JsonIgnore]
         public bool MoveFromTwoTerritories => !AddOneToMovement;
 
-        public override string Validate()
+        public override Message Validate()
         {
             return "";
         }

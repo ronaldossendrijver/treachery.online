@@ -20,7 +20,7 @@ namespace Treachery.Shared
         public Faction ToWin { get; set; }
         public int Turn { get; set; }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (!Game.IsPlaying(ToWin)) return "Invalid target";
             if (Turn < 1 || Turn > Game.MaximumNumberOfTurns) return "Invalid turn";

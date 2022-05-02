@@ -40,7 +40,7 @@ namespace Treachery.Shared
             }
         }
 
-        public override string Validate()
+        public override Message Validate()
         {
             var p = Player;
             if (AmountOfForces < 0 || AmountOfSpecialForces < 0) return "You can't revive a negative amount of forces.";

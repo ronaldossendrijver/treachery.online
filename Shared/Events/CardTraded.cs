@@ -48,18 +48,18 @@ namespace Treachery.Shared
             }
         }
 
-        public override string Validate()
+        public override Message Validate()
         {
-            if (!ValidCards(Player).Contains(Card)) return "Invalid card";
-            if (!Player.AlliedPlayer.TreacheryCards.Any()) return "Your ally does not have cards to trade";
+            if (!ValidCards(Player).Contains(Card)) return Message.Express("Invalid card");
+            if (!Player.AlliedPlayer.TreacheryCards.Any()) Message.Express("Your ally does not have cards to trade");
 
             var targetPlayer = Game.GetPlayer(Target);
-            if (targetPlayer == null) return "Invalid target player";
+            if (targetPlayer == null) return Message.Express("Invalid target player");
 
-            if (RequestedCard != null && !Player.AlliedPlayer.IsBot) return "You can only select a card from a Bot ally";
-            if (RequestedCard != null && !ValidCards(Game.GetPlayer(Target)).Contains(RequestedCard)) return "Invalid requested card";
+            if (RequestedCard != null && !Player.AlliedPlayer.IsBot) return Message.Express("You can only select a card from a Bot ally");
+            if (RequestedCard != null && !ValidCards(Game.GetPlayer(Target)).Contains(RequestedCard)) return Message.Express("Invalid requested card");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

@@ -22,7 +22,7 @@ namespace Treachery.Shared
 
         public bool UseUselessCard { get; set; }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (UseUselessCard && ValidUselessCardToPreventLosses(Game, Player) == null) return "You can't use a card to prevent force losses";
             if (UseUselessCard) return "";

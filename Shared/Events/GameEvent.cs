@@ -48,11 +48,11 @@ namespace Treachery.Shared
         {
             get
             {
-                return Validate() == "";
+                return Validate() == null;
             }
         }
 
-        public abstract string Validate();
+        public abstract Message Validate();
 
         public virtual string ExecuteWithoutValidation()
         {

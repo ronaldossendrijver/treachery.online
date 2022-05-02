@@ -24,16 +24,16 @@ namespace Treachery.Shared
         [JsonIgnore]
         public IHero SelectedDancer { get { return LeaderManager.HeroLookup.Find(dancerId); } set { dancerId = LeaderManager.HeroLookup.GetId(value); } }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (!Passed)
             {
                 var p = Player;
-                if (p.RevealedDancers.Contains(SelectedDancer)) return "You can't replace a revealed Face Dancer";
-                if (!p.FaceDancers.Contains(SelectedDancer)) return "Invalid Face Dancer";
+                if (p.RevealedDancers.Contains(SelectedDancer)) return Message.Express("You can't replace a revealed Face Dancer");
+                if (!p.FaceDancers.Contains(SelectedDancer)) return Message.Express("Invalid Face Dancer");
             }
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

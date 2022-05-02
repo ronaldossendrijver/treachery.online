@@ -40,22 +40,22 @@ namespace Treachery.Shared
             }
         }
 
-        public override string Validate()
+        public override Message Validate()
         {
-            if (FromBank) return "";
+            if (FromBank) return null;
 
             var p = Player;
-            if (!MayDonate(Game, Player)) return "You currently have an outstanding bid";
-            if (Card == null && Resources <= 0) return "Invalid amount";
-            if (p.Resources < Resources) return "You can't give that much";
-            if (Initiator != Faction.Red && Target == p.Ally) return "You can't bribe your ally";
-            if (Initiator != Faction.Red && Game.Applicable(Rule.DisableResourceTransfers)) return Skin.Current.Format("{0} transfers are disabled by house rule", Concept.Resource);
-            if (!FromBank && (Game.EconomicsStatus == BrownEconomicsStatus.Double || Game.EconomicsStatus == BrownEconomicsStatus.DoubleFlipped)) return "No bribes can be made during Double Inflation.";
+            if (!MayDonate(Game, Player)) return Message.Express("You currently have an outstanding bid");
+            if (Card == null && Resources <= 0) return Message.Express("Invalid amount");
+            if (p.Resources < Resources) return Message.Express("You can't give that much");
+            if (Initiator != Faction.Red && Target == p.Ally) return Message.Express("You can't bribe your ally");
+            if (Initiator != Faction.Red && Game.Applicable(Rule.DisableResourceTransfers)) return Message.Express(Concept.Resource, " transfers are disabled by house rule");
+            if (!FromBank && (Game.EconomicsStatus == BrownEconomicsStatus.Double || Game.EconomicsStatus == BrownEconomicsStatus.DoubleFlipped)) Message.Express("No bribes can be made during Double Inflation");
 
             var targetPlayer = Game.GetPlayer(Target);
-            if (Card != null && !targetPlayer.HasRoomForCards) return "Target faction's hand is full";
+            if (Card != null && !targetPlayer.HasRoomForCards) return Message.Express("Target faction's hand is full");
 
-            return "";
+            return null;
         }
 
         public static IEnumerable<Faction> ValidTargets(Game g, Player p)

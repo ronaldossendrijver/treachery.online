@@ -83,7 +83,7 @@ namespace Treachery.Shared
         /// </summary>
         public bool KarmaBid { get; set; } = false;
 
-        public override string Validate()
+        public override Message Validate()
         {
             if ((Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent) && Passed) return "You cannot pass a silent bid";
 

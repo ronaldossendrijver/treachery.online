@@ -20,7 +20,7 @@ namespace Treachery.Shared
         public Faction ToReplace { get; set; }
 
 
-        public override string Validate()
+        public override Message Validate()
         {
             return "";
         }

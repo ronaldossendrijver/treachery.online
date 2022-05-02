@@ -33,7 +33,7 @@ namespace Treachery.Shared
             }
         }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (ReturnedCards.Count() != Game.KarmaHandSwapNumberOfCards) return string.Format("Select {0} cards to return", Game.KarmaHandSwapNumberOfCards);
 

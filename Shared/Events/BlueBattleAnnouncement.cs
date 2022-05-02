@@ -27,7 +27,7 @@ namespace Treachery.Shared
             set { _territoryId = Game.Map.TerritoryLookup.GetId(value); }
         }
 
-        public override string Validate()
+        public override Message Validate()
         {
             if (Initiator != Faction.Blue) return "Your faction can't announce battle";
             var p = Player;

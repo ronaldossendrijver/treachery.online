@@ -16,9 +16,9 @@ namespace Treachery.Shared
 
         public ClairVoyanceAnswer Answer { get; set; }
 
-        public override string Validate()
+        public override Message Validate()
         {
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()
