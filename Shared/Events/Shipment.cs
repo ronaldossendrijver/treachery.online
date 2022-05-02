@@ -141,15 +141,15 @@ namespace Treachery.Shared
             if (SmuggledAmount + SmuggledSpecialAmount > 1) return Message.Express("You can't smuggle more than 1 force");
 
             if (From != null && ForceAmount > p.ForcesIn(From)) return Message.Express("Not enough ", p.Force, " for site-to-site shipment");
-            if (From != null && SpecialForceAmount > p.SpecialForcesIn(From)) return Skin.Current.Format("Not enough {0} for site-to-site shipment.", p.SpecialForce);
+            if (From != null && SpecialForceAmount > p.SpecialForcesIn(From)) return Message.Express("Not enough ", p.SpecialForce, " for site-to-site shipment");
 
             if (IsNoField && p.Faction != Faction.White)
             {
                 int forcesToShip = Math.Min(NoFieldValue, p.ForcesInReserve + p.SpecialForcesInReserve);
-                if (ForceAmount + SpecialForceAmount != forcesToShip) return string.Format("Using a No-Field of {0}, you must select {1} forces to ship", NoFieldValue, forcesToShip);
+                if (ForceAmount + SpecialForceAmount != forcesToShip) return Message.Express("Using a No-Field of ", NoFieldValue, ", you must select ", forcesToShip, " forces to ship");
             }
 
-            return "";
+            return null;
         }
 
         public static int DetermineCost(Game g, Player p, Shipment s)

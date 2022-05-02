@@ -21,9 +21,9 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (Game.Version >= 138 && !GetValidTargets(Game, Player).Contains(Target)) return "Invalid target";
+            if (Game.Version >= 138 && !GetValidTargets(Game, Player).Contains(Target)) return Message.Express("Invalid target");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

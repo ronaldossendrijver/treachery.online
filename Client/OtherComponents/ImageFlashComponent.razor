@@ -22,7 +22,7 @@
 
                     @if (img.Message != null)
                     {
-                        <div style="@MsgStyle">@img.Message</div>
+                        <div style="@MsgStyle">@img.Message?.ToString(Skin.Current)</div>
                     }
 
                 </div>

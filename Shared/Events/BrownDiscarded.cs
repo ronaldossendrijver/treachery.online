@@ -35,9 +35,9 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (!ValidCards(Game, Player).Contains(Card)) return "Invalid card";
+            if (!ValidCards(Game, Player).Contains(Card)) return Message.Express("Invalid card");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

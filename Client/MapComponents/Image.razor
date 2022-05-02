@@ -44,14 +44,34 @@ else
     [Parameter]
     public EventCallback<MouseEventArgs> OnMouseExited { get; set; }
 
+    private bool _popoverNeedsUpdate = false;
+    private string _popover = null;
     [Parameter]
-    public string Popover { get; set; } = null;
+    public string Popover { 
+        get
+        {
+            return _popover;
+        } 
+        set
+        {
+            if (_popover != value)
+            {
+                _popover = value;
+                _popoverNeedsUpdate = true;
+            }
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && Popover != null)
         {
             await Browser.EnablePopover(element);
+        }
+        else if (_popoverNeedsUpdate)
+        {
+            _popoverNeedsUpdate = false;
+            await Browser.RefreshPopover(element);
         }
     }
 

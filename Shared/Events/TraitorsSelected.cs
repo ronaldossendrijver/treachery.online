@@ -23,11 +23,8 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            var p = Player;
-
-            if (!p.Traitors.Contains(SelectedTraitor)) return "Invalid traitor";
-
-            return "";
+            if (!Player.Traitors.Contains(SelectedTraitor)) return Message.Express("Invalid traitor");
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

@@ -25,9 +25,9 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (!ValidLocations(Game).Contains(Target)) return "Invalid location";
+            if (!ValidLocations(Game).Contains(Target)) return Message.Express("Invalid location");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

@@ -20,12 +20,12 @@ namespace Treachery.Shared
         {
             var p = Player;
             int numberOfSpecialForces = ForceLocations.Sum(fl => fl.Value.AmountOfSpecialForces);
-            if (numberOfSpecialForces > p.SpecialForcesInReserve) return Skin.Current.Format("You only have {0} {1}", p.SpecialForcesInReserve, FactionSpecialForce.Yellow);
+            if (numberOfSpecialForces > p.SpecialForcesInReserve) return Message.Express("You only have ", p.SpecialForcesInReserve, " ", FactionSpecialForce.Yellow);
 
             int numberOfForces = ForceLocations.Sum(fl => fl.Value.AmountOfForces);
-            if (numberOfForces + numberOfSpecialForces != 10) return "Distribute 10 forces";
+            if (numberOfForces + numberOfSpecialForces != 10) return Message.Express("Distribute 10 forces");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

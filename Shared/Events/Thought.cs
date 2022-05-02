@@ -36,7 +36,7 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

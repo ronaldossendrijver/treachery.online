@@ -25,10 +25,10 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (Territory == null) return "No territory selected.";
-            if (Territory.IsProtectedFromWorm) return "Selected territory is protected.";
+            if (Territory == null) return Message.Express("No territory selected");
+            if (Territory.IsProtectedFromWorm) return Message.Express("Selected territory is protected");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

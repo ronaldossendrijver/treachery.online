@@ -54,12 +54,12 @@ namespace Treachery.Shared
 
         public abstract Message Validate();
 
-        public virtual string ExecuteWithoutValidation()
+        public virtual void ExecuteWithoutValidation()
         {
-            return Execute(false, false);
+            Execute(false, false);
         }
 
-        public virtual string Execute(bool performValidation, bool isHost)
+        public virtual Message Execute(bool performValidation, bool isHost)
         {
             if (Game == null)
             {
@@ -74,11 +74,11 @@ namespace Treachery.Shared
                 {
                     if (!IsApplicable(isHost))
                     {
-                        return string.Format("Event '{0}' is not applicable.", GetMessage());
+                        return Message.Express("Event '", GetMessage(), "' is not applicable");
                     }
 
                     var result = Validate();
-                    if (result == "")
+                    if (result == null)
                     {
                         Game.RecentMilestones.Clear();
                         Game.PerformPreEventTasks(this);
@@ -94,12 +94,12 @@ namespace Treachery.Shared
                     Game.PerformPreEventTasks(this);
                     ExecuteConcreteEvent();
                     Game.PerformPostEventTasks(this, momentJustBeforeEvent != MainPhaseMoment.Start && Game.CurrentMoment == MainPhaseMoment.Start);
-                    return "";
+                    return null;
                 }
             }
             catch (Exception e)
             {
-                return string.Format("Game Error: {0}. Technical description: {1}.", e.Message, e);
+                return Message.Express("Game Error: ", e.Message,". Technical description: ", e, ".");
             }
         }
 

@@ -33,11 +33,11 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (!ValidLocations(Game).Contains(Location)) return "Invalid location";
-            if (!ValidFactions(Game, Player, Location).Contains(Target)) return "Invalid faction";
-            if (!ValidSpecialForceChoices(Game, Player, Location, Target).Contains(SpecialForce)) return "Invalid type of forces";
+            if (!ValidLocations(Game).Contains(Location)) return Message.Express("Invalid location");
+            if (!ValidFactions(Game, Player, Location).Contains(Target)) return Message.Express("Invalid faction");
+            if (!ValidSpecialForceChoices(Game, Player, Location, Target).Contains(SpecialForce)) return Message.Express("Invalid type of forces");
 
-            return "";
+            return null;
         }
 
         public static IEnumerable<Location> ValidLocations(Game g)

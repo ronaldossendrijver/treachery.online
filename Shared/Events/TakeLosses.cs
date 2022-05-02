@@ -24,19 +24,19 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (UseUselessCard && ValidUselessCardToPreventLosses(Game, Player) == null) return "You can't use a card to prevent force losses";
-            if (UseUselessCard) return "";
+            if (UseUselessCard && ValidUselessCardToPreventLosses(Game, Player) == null) return Message.Express("You can't use a card to prevent force losses");
+            if (UseUselessCard) return null;
 
             int valueToBeKilled = LossesToTake(Game).Amount;
-            if (ForceAmount + 2 * SpecialForceAmount < valueToBeKilled) return string.Format("Select a total value of at least {0} to be killed.", valueToBeKilled);
+            if (ForceAmount + 2 * SpecialForceAmount < valueToBeKilled) return Message.Express("Select a total value of at least ", valueToBeKilled, " to be killed");
 
             if (Game.Version >= 120)
             {
-                if (ForceAmount > ValidMaxForceAmount(Game, Player)) return "Invalid amount of forces";
-                if (SpecialForceAmount > ValidMaxSpecialForceAmount(Game, Player)) return "Invalid amount of forces";
+                if (ForceAmount > ValidMaxForceAmount(Game, Player)) return Message.Express("Invalid amount of forces");
+                if (SpecialForceAmount > ValidMaxSpecialForceAmount(Game, Player)) return Message.Express("Invalid amount of forces");
             }
 
-            return "";
+            return null;
         }
 
         public static LossToTake LossesToTake(Game g)

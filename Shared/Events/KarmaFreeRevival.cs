@@ -42,14 +42,14 @@ namespace Treachery.Shared
         {
             var p = Player;
 
-            if (AmountOfForces > p.ForcesKilled) return "You can't revive that much.";
-            if (AmountOfSpecialForces > p.SpecialForcesKilled) return "You can't revive that much.";
-            if (AmountOfForces + AmountOfSpecialForces > 3) return "You can't revive that much.";
-            if (AmountOfSpecialForces > 1) return Skin.Current.Format("You can only revive one {0} per turn.", p.SpecialForce);
-            if (AmountOfSpecialForces > 0 && Game.FactionsThatRevivedSpecialForcesThisTurn.Contains(Initiator)) return Skin.Current.Format("You already revived one {0} this turn.", p.SpecialForce);
-            if (AmountOfForces + AmountOfSpecialForces > 0 && Hero != null) return "You can't revive both forces and a leader";
+            if (AmountOfForces > p.ForcesKilled) return Message.Express("You can't revive that many");
+            if (AmountOfSpecialForces > p.SpecialForcesKilled) return Message.Express("You can't revive that many");
+            if (AmountOfForces + AmountOfSpecialForces > 3) return Message.Express("You can't revive that many");
+            if (AmountOfSpecialForces > 1) return Message.Express("You can only revive one ", p.SpecialForce, " per turn");
+            if (AmountOfSpecialForces > 0 && Game.FactionsThatRevivedSpecialForcesThisTurn.Contains(Initiator)) return Message.Express("You already revived one ", p.SpecialForce, " this turn.");
+            if (AmountOfForces + AmountOfSpecialForces > 0 && Hero != null) return Message.Express("You can't revive both forces and a leader");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

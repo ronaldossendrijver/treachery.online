@@ -37,9 +37,9 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (Passed && Game.CurrentPhase == Phase.AssigningInitialSkills) return "You must assign a leader skill";
+            if (Passed && Game.CurrentPhase == Phase.AssigningInitialSkills) return Message.Express("You must assign a leader skill");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

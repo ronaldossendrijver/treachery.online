@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Treachery.Shared
 {
-    public class Skin
+    public class Skin : IDescriber
     {
         #region Attributes
 
@@ -1546,6 +1546,12 @@ namespace Treachery.Shared
             writer.Close();
             return writer.ToString();
         }
+
+        public string Describe(object obj)
+        {
+            return Describe(obj, false);
+        }
+
         #endregion LoadingAndSaving
 
         public static Skin Dune1979 = new Skin()

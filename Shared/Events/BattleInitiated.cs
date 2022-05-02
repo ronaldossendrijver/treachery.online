@@ -86,15 +86,15 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (Territory == null) return "Territory not selected.";
+            if (Territory == null) return Message.Express("Territory not selected");
 
             var p = Player;
             var target = Game.GetPlayer(Defender);
-            if (!p.Occupies(Territory)) return "You have no forces in this territory.";
-            if (!target.Occupies(Territory)) return "Opponent has no forces in this territory.";
-            if (target == null) return "Opponent not selected.";
+            if (!p.Occupies(Territory)) return Message.Express("You have no forces in this territory");
+            if (!target.Occupies(Territory)) return Message.Express("Opponent has no forces in this territory");
+            if (target == null) return Message.Express("Opponent not selected");
 
-            return "";
+            return null;
         }
 
         public bool IsInvolved(Player p)

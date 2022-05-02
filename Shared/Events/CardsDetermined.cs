@@ -49,9 +49,9 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (TreacheryCards.Count() + WhiteCards.Count() < Game.Players.Sum(p => p.MaximumNumberOfCards) + 1) return "Not enough cards selected";
+            if (TreacheryCards.Count() + WhiteCards.Count() < Game.Players.Sum(p => p.MaximumNumberOfCards) + 1) return Message.Express("Not enough cards selected");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

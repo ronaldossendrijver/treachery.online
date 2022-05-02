@@ -2,7 +2,7 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
 --->
 
-<div style="display:inline-block;position:relative;height:@SymbolSize;width:@TotalWidth;-webkit-touch-callout:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;">
+<div style="display:inline-block;position:relative;height:@SymbolSize;width:@TotalWidth;-webkit-touch-callout:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;" title=@Title>
 
     @if (DrawSymbolBackground)
     {
@@ -119,6 +119,9 @@
 
     [Parameter]
     public int Size { get; set; } = 36;
+
+    [Parameter]
+    public string Title { get; set; } = "";
 
     protected override void OnAfterRender(bool firstRender)
     {

@@ -20,12 +20,11 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (!TraitorCalled) return "";
+            if (!TraitorCalled) return null;
 
-            var p = Player;
-            if (!MayCallTreachery(Game, p)) return "You cannot call TREACHERY";
+            if (!MayCallTreachery(Game, Player)) return Message.Express("You cannot call TREACHERY");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

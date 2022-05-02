@@ -36,17 +36,17 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (!MayDeal(Game, Player, Price)) return "You currently have an outstanding bid";
-            if (Game.Version >= 142 && !MayDeal(Game, Game.GetPlayer(BoundFaction), Benefit)) return Skin.Current.Format("{0} currently have an outstanding bid", BoundFaction);
-            if (Price > Player.Resources) return "You can't pay that much";
+            if (!MayDeal(Game, Player, Price)) return Message.Express("You currently have an outstanding bid");
+            if (Game.Version >= 142 && !MayDeal(Game, Game.GetPlayer(BoundFaction), Benefit)) return Message.Express(BoundFaction, " currently have an outstanding bid");
+            if (Price > Player.Resources) return Message.Express("You can't pay that much");
 
             var boundPlayer = Game.GetPlayer(BoundFaction);
-            if (Benefit > boundPlayer.Resources) return "Offer is not valid (anymore)";
+            if (Benefit > boundPlayer.Resources) return Message.Express("Offer is not valid (anymore)");
 
-            if (Price > 0 && Game.Applicable(Rule.DisableResourceTransfers)) return Skin.Current.Format("{0} transfers are disabled by house rule", Concept.Resource);
-            if (!Game.DealOffers.Any(offer => offer.IsAcceptedBy(this))) return "Offer is not valid (anymore)";
+            if ((Price > 0 || (Game.Version >= 142 && Benefit > 0)) && Game.Applicable(Rule.DisableResourceTransfers)) return Message.Express(Concept.Resource, " transfers are disabled by house rule");
+            if (!Game.DealOffers.Any(offer => offer.IsAcceptedBy(this))) return Message.Express("Offer is not valid (anymore)");
 
-            return "";
+            return null;
         }
 
         public static bool MayDeal(Game g, Player p, int price)

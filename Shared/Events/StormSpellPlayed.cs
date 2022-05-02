@@ -18,9 +18,9 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (MoveAmount < 0 || MoveAmount > 10) return "Invalid number of sectors";
+            if (MoveAmount < 0 || MoveAmount > 10) return Message.Express("Invalid number of sectors");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

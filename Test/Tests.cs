@@ -566,11 +566,11 @@ namespace Treachery.Test
                 if (evt != null)
                 {
                     var executeResult = evt.Execute(performTests, true);
-                    if (performTests && executeResult != "")
+                    if (performTests && executeResult != null)
                     {
                         File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
                     }
-                    if (performTests) Assert.AreEqual("", executeResult);
+                    if (performTests) Assert.IsNull(executeResult);
                     return evt;
                 }
             }
@@ -582,11 +582,11 @@ namespace Treachery.Test
                 if (evt != null)
                 {
                     var executeResult = evt.Execute(performTests, true);
-                    if (performTests && executeResult != "")
+                    if (performTests && executeResult != null)
                     {
                         File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
                     }
-                    if (performTests) Assert.AreEqual("", executeResult);
+                    if (performTests) Assert.IsNull(executeResult);
                     return evt;
                 }
             }
@@ -598,11 +598,11 @@ namespace Treachery.Test
                 if (evt != null)
                 {
                     var executeResult = evt.Execute(performTests, true);
-                    if (performTests && executeResult != "")
+                    if (performTests && executeResult != null)
                     {
                         File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
                     }
-                    if (performTests) Assert.AreEqual("", executeResult);
+                    if (performTests) Assert.IsNull(executeResult);
                     return evt;
                 }
             }
@@ -616,8 +616,8 @@ namespace Treachery.Test
                     var result = evt.Execute(performTests, true);
                     if (performTests)
                     {
-                        if (result != "") File.WriteAllText("error" + game.Seed + ".json", GameState.GetStateAsString(game));
-                        Assert.AreEqual("", result);
+                        if (result != null) File.WriteAllText("error" + game.Seed + ".json", GameState.GetStateAsString(game));
+                        Assert.IsNull(result);
                     }
                     return evt;
                 }
@@ -659,11 +659,11 @@ namespace Treachery.Test
                         var previousPhase = game.CurrentPhase;
 
                         var result = e.Execute(true, true);
-                        if (result != "")
+                        if (result != null)
                         {
                             File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
                         }
-                        Assert.AreEqual("", result, f + ", " + e.GetType().Name + " (" + valueId + ", " + e.GetMessage() + ")");
+                        Assert.IsNull(result, f + ", " + e.GetType().Name + " (" + valueId + ", " + e.GetMessage() + ")");
 
                         var actualValues = DetermineTestvalues(game);
                         tc.Testvalues[valueId].Equals(actualValues);

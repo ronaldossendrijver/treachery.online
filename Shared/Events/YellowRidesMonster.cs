@@ -20,23 +20,23 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (Passed) return "";
+            if (Passed) return null;
 
-            if (To == null) return "Target location not selected.";
-            if (!ValidTargets(Game, Player).Contains(To)) return "Invalid target location.";
+            if (To == null) return Message.Express("Target location not selected");
+            if (!ValidTargets(Game, Player).Contains(To)) return Message.Express("Invalid target location");
 
             var forceAmount = ForceLocations.Values.Sum(b => b.AmountOfForces);
             var specialForceAmount = ForceLocations.Values.Sum(b => b.AmountOfSpecialForces);
 
-            if (forceAmount == 0 && specialForceAmount == 0) return "No forces selected.";
+            if (forceAmount == 0 && specialForceAmount == 0) return Message.Express("No forces selected");
 
             bool tooManyForces = ForceLocations.Any(bl => bl.Value.AmountOfForces > Player.ForcesIn(bl.Key));
-            if (tooManyForces) return "Invalid amount of forces.";
+            if (tooManyForces) return Message.Express("Invalid amount of forces");
 
             bool tooManySpecialForces = ForceLocations.Any(bl => bl.Value.AmountOfSpecialForces > Player.SpecialForcesIn(bl.Key));
-            if (tooManySpecialForces) return "Invalid amount of special forces.";
+            if (tooManySpecialForces) return Message.Express("Invalid amount of special forces");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

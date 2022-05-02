@@ -35,9 +35,9 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (ReturnedCards.Count() != Game.KarmaHandSwapNumberOfCards) return string.Format("Select {0} cards to return", Game.KarmaHandSwapNumberOfCards);
+            if (ReturnedCards.Count() != Game.KarmaHandSwapNumberOfCards) return Message.Express("Select ", Game.KarmaHandSwapNumberOfCards, " cards to return");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

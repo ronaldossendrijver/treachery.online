@@ -285,7 +285,7 @@ namespace Treachery.Server
         {
             var gameState = GameState.Load(state);
             Game game = null;
-            if (Game.TryLoad(gameState, false, true, ref game, false) == "")
+            if (Game.TryLoad(gameState, false, true, ref game, false) == null)
             {
                 await SendGameStatistics(game);
             }

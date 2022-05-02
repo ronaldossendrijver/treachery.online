@@ -29,13 +29,13 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (Initiator != Faction.Blue) return "Your faction can't announce battle";
+            if (Initiator != Faction.Blue) return Message.Express("Your faction can't announce battle");
             var p = Player;
-            if (p.SpecialForcesIn(Territory) == 0) return "You don't have advisors there";
+            if (p.SpecialForcesIn(Territory) == 0) return Message.Express("You don't have advisors there");
             var ally = Game.GetPlayer(p.Ally);
-            if (ally != null && ally.AnyForcesIn(Territory) > 0) return "Can't announce battle due to ally presence";
+            if (ally != null && ally.AnyForcesIn(Territory) > 0) return Message.Express("Can't announce battle due to ally presence");
 
-            return "";
+            return null;
         }
 
         public static IEnumerable<Territory> ValidTerritories(Game g, Player p)

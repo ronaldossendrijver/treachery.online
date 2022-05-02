@@ -37,9 +37,9 @@ namespace Treachery.Shared
         public override Message Validate()
         {
             var p = Player;
-            if (!Game.KilledHeroes(p).Contains(Hero)) return Skin.Current.Format("{0} can't be revived this way.", Hero);
+            if (!Game.KilledHeroes(p).Contains(Hero)) return Message.Express(Hero, " can't be revived this way");
 
-            return "";
+            return null;
         }
 
         public override Message GetMessage()

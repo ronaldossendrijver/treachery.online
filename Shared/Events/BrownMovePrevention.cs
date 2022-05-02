@@ -29,8 +29,8 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (!ValidTerritories(Game, Player).Contains(Territory)) return "Invalid territory.";
-            return "";
+            if (!ValidTerritories(Game, Player).Contains(Territory)) return Message.Express("Invalid territory");
+            return null;
         }
 
         public static IEnumerable<Territory> ValidTerritories(Game g, Player p)

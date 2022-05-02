@@ -52,8 +52,23 @@ else
     [Parameter]
     public float MaxWidth { get; set; } = 4096;
 
+    private bool _popoverNeedsUpdate = false;
+    private string _popover = null;
     [Parameter]
-    public string Popover { get; set; } = null;
+    public string Popover { 
+        get
+        {
+            return _popover;
+        } 
+        set
+        {
+            if (_popover != value)
+            {
+                _popover = value;
+                _popoverNeedsUpdate = true;
+            }
+        }
+    }
 
     private float TextWidth;
     private float TextHeight;
@@ -80,9 +95,22 @@ else
         {
             await Browser.EnablePopover(element);
         }
+        else if (_popoverNeedsUpdate)
+        {
+            _popoverNeedsUpdate = false;
+            await Browser.RefreshPopover(element);
+        }
     }
 
-    private string Style => string.Format("position:absolute;white-space:nowrap;left:{0};top:{1};user-select:none;font:{2};color:{3};max-width:{4};{5};", Px(AlignedX), Px(Y - TextHeight), Font, FontColor, Px(MaxWidth), Support.TextBorder(BorderWidth, BorderColor));
+    private string Style => 
+        string.Format("position:absolute;white-space:nowrap;left:{0};top:{1};user-select:none;font:{2};color:{3};max-width:{4};{5};{6};", 
+        Px(AlignedX), 
+        Px(Y - TextHeight), 
+        Font, FontColor, 
+        Px(MaxWidth), 
+        Support.TextBorder(BorderWidth, BorderColor),
+        Popover != null ? "cursor:pointer;pointer-events:all" : "pointer-events:none");
+    
 
     public void Dispose()
     {

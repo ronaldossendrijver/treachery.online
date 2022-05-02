@@ -49,21 +49,21 @@ namespace Treachery.Shared
         {
             var p = Player;
 
-            if (AmountOfForces + ExtraForcesPaidByRed <= 0 && AmountOfSpecialForces + ExtraSpecialForcesPaidByRed <= 0 && Hero == null) return "Select forces or a leader to revive.";
+            if (AmountOfForces + ExtraForcesPaidByRed <= 0 && AmountOfSpecialForces + ExtraSpecialForcesPaidByRed <= 0 && Hero == null) Message.Express("Select forces or a leader to revive");
 
-            if (AmountOfForces + ExtraForcesPaidByRed > p.ForcesKilled) return Skin.Current.Format("You can't revive that much {0}.", p.Force);
-            if (AmountOfSpecialForces + ExtraSpecialForcesPaidByRed > p.SpecialForcesKilled) return Skin.Current.Format("You can't revive that much {0}.", p.SpecialForce);
+            if (AmountOfForces + ExtraForcesPaidByRed > p.ForcesKilled) return Message.Express("You can't revive that many ", p.Force);
+            if (AmountOfSpecialForces + ExtraSpecialForcesPaidByRed > p.SpecialForcesKilled) return Message.Express("You can't revive that many ", p.SpecialForce);
 
-            if (Initiator != Faction.Grey && AmountOfSpecialForces + ExtraSpecialForcesPaidByRed > 1) return Skin.Current.Format("You can't revive more than one {0} per turn.", p.SpecialForce);
-            if (AmountOfSpecialForces + ExtraSpecialForcesPaidByRed > 0 && Initiator != Faction.Grey && Game.FactionsThatRevivedSpecialForcesThisTurn.Contains(Initiator)) return Skin.Current.Format("You already revived one {0} this turn.", p.SpecialForce);
+            if (Initiator != Faction.Grey && AmountOfSpecialForces + ExtraSpecialForcesPaidByRed > 1) return Message.Express("You can't revive more than one ", p.SpecialForce, " per turn");
+            if (AmountOfSpecialForces + ExtraSpecialForcesPaidByRed > 0 && Initiator != Faction.Grey && Game.FactionsThatRevivedSpecialForcesThisTurn.Contains(Initiator)) return Message.Express("You already revived a ", p.SpecialForce, " this turn");
 
             if (Game.Version >= 124)
             {
                 var limit = Game.GetRevivalLimit(Game, p);
-                if (AmountOfForces + AmountOfSpecialForces > limit) return Skin.Current.Format("You can't revive more than your limit ({0}).", limit);
+                if (AmountOfForces + AmountOfSpecialForces > limit) return Message.Express("You can't revive more than your limit of ", limit);
 
                 var allyLimit = ValidMaxRevivalsByRed(Game, p);
-                if (ExtraForcesPaidByRed + ExtraSpecialForcesPaidByRed > ValidMaxRevivalsByRed(Game, p)) return Skin.Current.Format("Your ally won't revive more than {0}.", allyLimit);
+                if (ExtraForcesPaidByRed + ExtraSpecialForcesPaidByRed > ValidMaxRevivalsByRed(Game, p)) return Message.Express("Your ally won't revive more than ", allyLimit);
             }
             else
             {
@@ -71,13 +71,13 @@ namespace Treachery.Shared
 
                 int limit = Game.GetRevivalLimit(Game, p);
 
-                if (AmountOfForces + AmountOfSpecialForces > limit + emperorRevivals) return "You can't revive that much.";
+                if (AmountOfForces + AmountOfSpecialForces > limit + emperorRevivals) Message.Express("You can't revive that many");
             }
 
             var costOfRevival = DetermineCost(Game, p, Hero, AmountOfForces, AmountOfSpecialForces, ExtraForcesPaidByRed, ExtraSpecialForcesPaidByRed);
-            if (costOfRevival.TotalCostForPlayer > p.Resources) return "You can't pay that much.";
+            if (costOfRevival.TotalCostForPlayer > p.Resources) return Message.Express("You can't pay that many");
 
-            return "";
+            return null;
         }
 
         public static int DetermineCostOfForcesForRed(Game g, Player red, Faction ally, int forces, int specialForces)

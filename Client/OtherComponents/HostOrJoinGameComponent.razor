@@ -227,9 +227,9 @@
                     loadedGame = null;
                     var result = Game.TryLoad(state, true, true, ref loadedGame, true);
 
-                    if (result != "")
+                    if (result != null)
                     {
-                        _loadValidationError = string.Format("Error loading game ({0})", result);
+                        _loadValidationError = string.Format("Error loading game ({0})", result.ToString(Skin.Current));
                     }
                 }
                 else

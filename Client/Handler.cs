@@ -417,9 +417,9 @@ namespace Treachery.Client
         {
             var result = e.Execute(false, false);
 
-            if (result != "")
+            if (result != null)
             {
-                Support.Log(result);
+                Support.Log(result.ToString(Skin.Current));
             }
         }
 
@@ -489,12 +489,11 @@ namespace Treachery.Client
                 _pending.Clear();
 
                 var state = GameState.Load(stateData);
+                var errorMessage = Game.TryLoad(state, false, false, ref Game, true);
 
-                var result = Game.TryLoad(state, false, false, ref Game, true);
-
-                if (result != "")
+                if (errorMessage != null)
                 {
-                    Support.Log(result);
+                    Support.Log(errorMessage.ToString(Skin.Current));
                 }
 
                 if (Player == null)

@@ -22,9 +22,9 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (Cancelled && Player.Resources < Cost(Game)) return "You can't pay enough to cancel the audit";
+            if (Cancelled && Player.Resources < Cost(Game)) return Message.Express("You can't pay enough to prevent the audit");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

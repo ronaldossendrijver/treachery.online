@@ -487,7 +487,7 @@ namespace Treachery.Shared
                     }
 
                     initiator.Resources += mostSpice;
-                    CurrentReport.Express(initiator.Faction, LeaderSkill.Sandmaster, " collects ", Payment(mostSpice), " along the way");
+                    CurrentReport.Express(initiator.Faction, " ", LeaderSkill.Sandmaster, " collects ", Payment(mostSpice), " along the way");
                 }
             }
         }

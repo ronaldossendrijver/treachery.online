@@ -113,6 +113,8 @@ namespace Treachery.Shared
         [JsonIgnore]
         public TreacheryCard OriginalDefense { get; set; } = null;
 
+        public static bool IsUsingPortableAntidote(Game g, Faction faction) => g.CurrentPortableAntidoteUsed?.Initiator == faction;
+
         public void ActivateDynamicWeapons(TreacheryCard mirroredWeapon, TreacheryCard mirroredDefense)
         {
             if (Weapon != null && Weapon.Type == TreacheryCardType.MirrorWeapon)
@@ -127,7 +129,7 @@ namespace Treachery.Shared
                 Defense = mirroredDefense;
             }
 
-            if (Game.CurrentPortableAntidoteUsed?.Initiator == Initiator)
+            if (IsUsingPortableAntidote(Game, Initiator))
             {
                 OriginalDefense = Defense;
                 Defense = Game.TreacheryDiscardPile.Items.FirstOrDefault(c => c.IsPortableAntidote);
@@ -284,28 +286,27 @@ namespace Treachery.Shared
         public override Message Validate()
         {
             var p = Player;
-            if (Forces < 0 || ForcesAtHalfStrength < 0 || SpecialForces < 0 || SpecialForcesAtHalfStrength < 0) return string.Format("Invalid number of forces {0} {1} {2} {3}.", Forces, ForcesAtHalfStrength, SpecialForces, SpecialForcesAtHalfStrength);
-            if (Forces + ForcesAtHalfStrength > MaxForces(Game, p, false)) return Skin.Current.Format("Too many {0} selected.", p.Force);
-            if (SpecialForces + SpecialForcesAtHalfStrength > MaxForces(Game, p, true)) return Skin.Current.Format("Too many {0} selected.", p.SpecialForce);
+            if (Forces + ForcesAtHalfStrength > MaxForces(Game, p, false)) return Message.Express("Too many ", p.Force, " selected");
+            if (SpecialForces + SpecialForcesAtHalfStrength > MaxForces(Game, p, true)) return Message.Express("Too many ", p.SpecialForce, " selected");
             int cost = Cost(Game, p, Forces, SpecialForces);
-            if (AllyContributionAmount > cost) return "Your ally is paying more than needed";
-            if (AllyContributionAmount > MaxAllyResources(Game, p, Forces, SpecialForces)) return "Your ally won't pay that much";
-            if (cost > p.Resources + AllyContributionAmount) return Skin.Current.Format("You can't pay {0} {1} to fight with {2} forces at full strength.", cost, Concept.Resource, Forces + SpecialForces);
-            if (Hero == null && ValidBattleHeroes(Game, p).Any() && !Game.Applicable(Rule.BattleWithoutLeader)) return "You must select a hero.";
-            if (Hero != null && !ValidBattleHeroes(Game, p).Contains(Hero)) return "Invalid hero.";
-            if (Weapon != null && Weapon == Defense) return "Can't use the same card as weapon and defense.";
-            if (Hero == null && (Weapon != null || Defense != null)) return "Can't use treachery cards without a hero.";
-            if (Hero != null && Hero is Leader && Game.LeaderState[Hero as Leader].CurrentTerritory != null && Game.LeaderState[Hero as Leader].CurrentTerritory != Game.CurrentBattle.Territory) return "Selected hero already fought in another territory.";
-            if (Hero == null && Messiah) return Skin.Current.Format("Can't use {0} without a hero.", Concept.Messiah);
-            if (Messiah && !MessiahMayBeUsedInBattle(Game, p)) return Skin.Current.Format("{0} is not available.", Concept.Messiah);
-            if (Weapon == null && Defense != null && Defense.Type == TreacheryCardType.WeirdingWay) return Skin.Current.Format("You can't use {0} as defense without using a weapon.", TreacheryCardType.WeirdingWay);
-            if (Defense == null && Weapon != null && Weapon.Type == TreacheryCardType.Chemistry) return Skin.Current.Format("You can't use {0} as weapon without using a defense.", TreacheryCardType.Chemistry);
-            if (!ValidWeapons(Game, p, Defense, Hero, true).Contains(Weapon)) return "Invalid weapon";
-            if (!ValidDefenses(Game, p, Weapon, true).Contains(Defense)) return "Invalid defense";
-            if (Game.IsInFrontOfShield(Hero)) return Skin.Current.Format("{0} is currently in front of your player shield", Hero);
-            if (BankerBonus > 0 && !Game.SkilledAs(Hero, LeaderSkill.Banker)) return Skin.Current.Format("Only a leader skilled as {0} can be boosted by {1}", LeaderSkill.Banker, Concept.Resource);
-            if (BankerBonus > MaxBankerBoost(Game, Player, Hero)) return Skin.Current.Format("You cannot boost your leader this much");
-            if (cost + BankerBonus > p.Resources + AllyContributionAmount) return Skin.Current.Format("You can't pay this {0} bonus", LeaderSkill.Banker);
+            if (AllyContributionAmount > cost) return Message.Express("Your ally is paying more than needed");
+            if (AllyContributionAmount > MaxAllyResources(Game, p, Forces, SpecialForces)) return Message.Express("Your ally won't pay that much");
+            if (cost > p.Resources + AllyContributionAmount) return Message.Express("You can't pay ", new Payment(cost), " to fight with ", Forces + SpecialForces, " forces at full strength");
+            if (Hero == null && ValidBattleHeroes(Game, p).Any() && !Game.Applicable(Rule.BattleWithoutLeader)) return Message.Express("You must select a leader");
+            if (Hero != null && !ValidBattleHeroes(Game, p).Contains(Hero)) return Message.Express("Invalid leader");
+            if (Weapon != null && Weapon == Defense) return Message.Express("Can't use the same card as weapon and defense");
+            if (Hero == null && (Weapon != null || Defense != null)) return Message.Express("Can't use treachery cards without a leader");
+            if (Hero != null && Hero is Leader && Game.LeaderState[Hero as Leader].CurrentTerritory != null && Game.LeaderState[Hero as Leader].CurrentTerritory != Game.CurrentBattle.Territory) return Message.Express("Selected leader already fought in another territory");
+            if (Hero == null && Messiah) return Message.Express("Can't use ",Concept.Messiah , " without a leader");
+            if (Messiah && !MessiahMayBeUsedInBattle(Game, p)) return Message.Express(Concept.Messiah, " is not available");
+            if (Weapon == null && Defense != null && Defense.Type == TreacheryCardType.WeirdingWay) return Message.Express("You can't use ", TreacheryCardType.WeirdingWay, " as defense without using a weapon");
+            if (Defense == null && Weapon != null && Weapon.Type == TreacheryCardType.Chemistry) return Message.Express("You can't use ", TreacheryCardType.Chemistry, " as weapon without using a defense");
+            if (!ValidWeapons(Game, p, Defense, Hero, true).Contains(Weapon)) return Message.Express("Invalid weapon");
+            if (!ValidDefenses(Game, p, Weapon, true).Contains(Defense)) return Message.Express("Invalid defense");
+            if (Game.IsInFrontOfShield(Hero)) return Message.Express(Hero, " is currently in front of your player shield");
+            if (BankerBonus > 0 && !Game.SkilledAs(Hero, LeaderSkill.Banker)) return Message.Express("Only a leader skilled as ", LeaderSkill.Banker, " can be boosted by ", Concept.Resource);
+            if (BankerBonus > MaxBankerBoost(Game, Player, Hero)) return Message.Express("You cannot boost your leader this much");
+            if (cost + BankerBonus > p.Resources + AllyContributionAmount) return Message.Express("You can't pay this ", LeaderSkill.Banker, " bonus");
 
             if (Hero != null &&
                 AffectedByVoice(Game, Player, Game.CurrentVoice) &&
@@ -314,10 +315,10 @@ namespace Treachery.Shared
                 p.TreacheryCards.Any(c => Voice.IsVoicedBy(Game, true, true, c.Type, Game.CurrentVoice.Type) || Voice.IsVoicedBy(Game, false, true, c.Type, Game.CurrentVoice.Type)) &&
                 (Weapon == null || !Voice.IsVoicedBy(Game, true, true, Weapon.Type, Game.CurrentVoice.Type)) && (Defense == null || !Voice.IsVoicedBy(Game, false, true, Defense.Type, Game.CurrentVoice.Type)))
             {
-                return Skin.Current.Format("You must use a {0} card.", Game.CurrentVoice.Type);
+                return Message.Express("You must use a ", Game.CurrentVoice.Type);
             }
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

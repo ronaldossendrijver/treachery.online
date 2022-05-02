@@ -14,7 +14,7 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            return "";
+            return null;
         }
 
         public override Message GetMessage()

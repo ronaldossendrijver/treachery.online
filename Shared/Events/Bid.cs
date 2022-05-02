@@ -85,31 +85,31 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if ((Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent) && Passed) return "You cannot pass a silent bid";
+            if ((Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent) && Passed) return Message.Express("You cannot pass a silent bid");
 
-            if (Passed) return "";
+            if (Passed) return null;
 
             bool isSpecialAuction = Game.CurrentAuctionType == AuctionType.WhiteOnceAround || Game.CurrentAuctionType == AuctionType.WhiteSilent;
-            if (KarmaBid && isSpecialAuction) return Skin.Current.Format("You can't use {0} in Once Around or Silent bidding", TreacheryCardType.Karma);
+            if (KarmaBid && isSpecialAuction) return Message.Express("You can't use ", TreacheryCardType.Karma, " in Once Around or Silent bidding");
 
-            if (KarmaBid && !CanKarma(Game, Player)) return Skin.Current.Format("You can't use {0} for this bid", TreacheryCardType.Karma);
+            if (KarmaBid && !CanKarma(Game, Player)) return Message.Express("You can't use ", TreacheryCardType.Karma, " for this bid");
 
-            if (KarmaBid) return "";
+            if (KarmaBid) return null;
 
             var p = Game.GetPlayer(Initiator);
-            if (TotalAmount < 1 && Game.CurrentAuctionType != AuctionType.WhiteSilent) return "Bid must be higher than 0.";
-            if (Game.CurrentBid != null && TotalAmount <= Game.CurrentBid.TotalAmount && Game.CurrentAuctionType != AuctionType.WhiteSilent) return "Bid not high enough.";
+            if (TotalAmount < 1 && Game.CurrentAuctionType != AuctionType.WhiteSilent) return Message.Express("Bid must be higher than 0");
+            if (Game.CurrentBid != null && TotalAmount <= Game.CurrentBid.TotalAmount && Game.CurrentAuctionType != AuctionType.WhiteSilent) return Message.Express("Bid not high enough");
 
             var ally = Game.GetPlayer(p.Ally);
-            if (AllyContributionAmount > 0 && AllyContributionAmount > ally.Resources) return "Your ally can't pay that much.";
+            if (AllyContributionAmount > 0 && AllyContributionAmount > ally.Resources) return Message.Express("Your ally can't pay that much");
 
             var red = Game.GetPlayer(Faction.Red);
-            if (RedContributionAmount > 0 && RedContributionAmount > red.Resources) return Skin.Current.Format("{0} can't pay that much.", Faction.Red);
+            if (RedContributionAmount > 0 && RedContributionAmount > red.Resources) return Message.Express(Faction.Red, " won't pay that much");
 
-            if (!UsingKarmaToRemoveBidLimit && Amount > Player.Resources) return string.Format("You can't pay {0}.", Amount);
-            if (KarmaCard != null && !Karma.ValidKarmaCards(Game, p).Contains(KarmaCard)) return Skin.Current.Format("Invalid {0} card.", TreacheryCardType.Karma);
+            if (!UsingKarmaToRemoveBidLimit && Amount > Player.Resources) return Message.Express("You can't pay ", new Payment(Amount));
+            if (KarmaCard != null && !Karma.ValidKarmaCards(Game, p).Contains(KarmaCard)) return Message.Express("Invalid ", TreacheryCardType.Karma, " card");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

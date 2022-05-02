@@ -24,9 +24,9 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (Faction != Faction.None && !Game.FactionsInPlay.Contains(Faction)) return "Faction not available";
+            if (Faction != Faction.None && !Game.FactionsInPlay.Contains(Faction)) return Message.Express("Faction not available");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

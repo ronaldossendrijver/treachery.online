@@ -311,13 +311,13 @@ namespace Treachery.Client
             {
                 e.Game = GameAtHost;
                 var result = e.Execute(true, true);
-                if (result == "")
+                if (result == null)
                 {
                     await connection.SendAsync("NotifyUpdate", GameID, GameAtHost.EventCount, e);
                 }
                 else
                 {
-                    Support.Log(result);
+                    Support.Log(result.ToString(Skin.Current));
                 }
             }
             catch (Exception ex)

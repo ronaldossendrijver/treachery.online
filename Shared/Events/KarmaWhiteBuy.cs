@@ -33,10 +33,10 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (Player.Resources < 3) return Skin.Current.Format("You can't pay 3 {0}", Concept.Resource);
-            if (!Game.WhiteCache.Contains(Card)) return "Invalid card";
+            if (Player.Resources < 3) return Message.Express("You can't pay ", new Payment(3));
+            if (!Game.WhiteCache.Contains(Card)) return Message.Express("Invalid card");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

@@ -38,12 +38,12 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (Passed) return "";
+            if (Passed) return null;
 
-            if (AuctionType != AuctionType.BlackMarketNormal && AuctionType != AuctionType.BlackMarketOnceAround && AuctionType != AuctionType.BlackMarketSilent) return "Invalid auction type";
-            if (!ValidCards(Player).Contains(Card)) return "Invalid card";
+            if (AuctionType != AuctionType.BlackMarketNormal && AuctionType != AuctionType.BlackMarketOnceAround && AuctionType != AuctionType.BlackMarketSilent) return Message.Express("Invalid auction type");
+            if (!ValidCards(Player).Contains(Card)) return Message.Express("Invalid card");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

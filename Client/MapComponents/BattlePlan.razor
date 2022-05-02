@@ -136,11 +136,14 @@
 
     if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Defense)
     {
-        if (Plan.Defense != null)
+        bool isUsingPortableAntidote = Battle.IsUsingPortableAntidote(Game, Plan.Initiator) && Plan.Player.Card(TreacheryCardType.PortableAntidote) != null;
+        if (Plan.Defense != null || isUsingPortableAntidote)
         {
+            var defenseToShow = isUsingPortableAntidote ? Plan.Player.Card(TreacheryCardType.PortableAntidote) : Plan.Defense;
+
             <Image X="@(X + Skin.Current.BattleWheelCardX + 1.1f * Skin.Current.BattleWheelCardWidth)" Y="@(Y + Skin.Current.BattleWheelCardY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
-                   Src="@Skin.Current.GetImageURL(Plan.Defense)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                   Popover="@Support.GetHoverHTML(Plan.Defense)" PopoverStyle=""/>
+                   Src="@Skin.Current.GetImageURL(defenseToShow)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
+                   Popover="@Support.GetHoverHTML(defenseToShow)" PopoverStyle=""/>
         }
         else if (Aspect == PrescienceAspect.Defense)
         {

@@ -29,7 +29,7 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            return "";
+            return null;
         }
 
         public static IEnumerable<Location> ValidTargets(Game g, Player p)

@@ -11,7 +11,7 @@
         <label class="me-1">@Label</label>
     }
     
-    <NumberPickerComponent Disabled="@Disabled" @bind-Value="Value" Min="Min" Max="Max" 
+    <NumberPickerComponent Disabled="@Disabled" @bind-Value="Value" Min="Min" Max="Max" Title=@Title
                             SymbolSRC="@Skin.Current.Harvester_URL" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" />
     
 </div>
@@ -58,4 +58,7 @@
 
     [Parameter]
     public string Class { get; set; } = "d-inline-flex align-items-center";
+
+    [Parameter]
+    public string Title { get; set; } = "";
 }

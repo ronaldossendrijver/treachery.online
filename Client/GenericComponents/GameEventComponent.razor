@@ -44,7 +44,7 @@
         await Request(OtherResult);
     }
 
-    protected string Validation
+    protected Message Validation
     {
         get
         {
@@ -54,7 +54,7 @@
             }
             catch (Exception)
             {
-                return "Validation failed.";
+                return Message.Express("Validation failed");
             }
         }
     }

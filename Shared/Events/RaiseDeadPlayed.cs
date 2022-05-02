@@ -43,14 +43,14 @@ namespace Treachery.Shared
         public override Message Validate()
         {
             var p = Player;
-            if (AmountOfForces < 0 || AmountOfSpecialForces < 0) return "You can't revive a negative amount of forces.";
-            if (AmountOfForces > p.ForcesKilled) return "You can't revive that much.";
-            if (AmountOfSpecialForces > p.SpecialForcesKilled) return "You can't revive that much.";
-            if (AmountOfForces + AmountOfSpecialForces > 5) return "You can't revive that much.";
-            if (Initiator != Faction.Grey && AmountOfSpecialForces > 1) return Skin.Current.Format("You can only revive one {0} per turn.", p.SpecialForce);
-            if (AmountOfSpecialForces > 0 && Initiator != Faction.Grey && Game.FactionsThatRevivedSpecialForcesThisTurn.Contains(Initiator)) return Skin.Current.Format("You already revived one {0} this turn.", p.SpecialForce);
-            if (AmountOfForces + AmountOfSpecialForces > 0 && Hero != null) return "You can't revive both forces and a leader";
-            return "";
+            if (AmountOfForces < 0 || AmountOfSpecialForces < 0) return Message.Express("You can't revive a negative amount of forces");
+            if (AmountOfForces > p.ForcesKilled) return Message.Express("You can't revive that many");
+            if (AmountOfSpecialForces > p.SpecialForcesKilled) return Message.Express("You can't revive that many");
+            if (AmountOfForces + AmountOfSpecialForces > 5) return Message.Express("You can't revive that many");
+            if (Initiator != Faction.Grey && AmountOfSpecialForces > 1) return Message.Express("You can only revive one ", p.SpecialForce, " per turn");
+            if (AmountOfSpecialForces > 0 && Initiator != Faction.Grey && Game.FactionsThatRevivedSpecialForcesThisTurn.Contains(Initiator)) return Message.Express("You already revived one ", p.SpecialForce, " this turn");
+            if (AmountOfForces + AmountOfSpecialForces > 0 && Hero != null) return Message.Express("You can't revive both forces and a leader");
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

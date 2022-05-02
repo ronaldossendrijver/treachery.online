@@ -2,6 +2,8 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
 --->
 
+@using Treachery.Shared;
+
 <div class="mt-2 @Alignment">
 
     @if (Other.HasDelegate)
@@ -16,12 +18,15 @@
 
     @if (Confirm.HasDelegate)
     {
-        <button class="btn btn-primary" @onclick="Confirm" disabled=@(Disabled || ConfirmError != "")>@ConfirmText</button>
+        <button class="btn btn-primary" @onclick="Confirm" disabled=@(Disabled || ConfirmError != null)>@ConfirmText</button>
     }
 
 </div>
 
-<div class="ms-0 mt-0 mb-1 me-0 text-danger @Alignment"><span class="bg-dark">@ConfirmError</span></div>
+@if (ConfirmError != null)
+{
+    <div class="ms-0 mt-0 mb-1 me-0 text-danger @Alignment"><span class="bg-dark">@ConfirmError.ToString(Skin.Current)</span></div>
+}
 
 @code {
 
@@ -32,7 +37,7 @@
     public string ConfirmText { get; set; } = "Confirm";
 
     [Parameter]
-    public string ConfirmError { get; set; } = "";
+    public Message ConfirmError { get; set; } = null;
 
     [Parameter]
     public EventCallback Pass { get; set; }

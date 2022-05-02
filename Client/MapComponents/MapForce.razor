@@ -18,7 +18,7 @@
 
 @if (!(Faction == Faction.White && Special))
 {
-    <MapText ToShow="@Amount.ToString()" X=@(X) Y=@Y Font=@Skin.Current.FORCETOKEN_FONT BorderWidth=@BorderWidth BorderColor=@BorderColor/>
+    <MapText ToShow="@Amount.ToString()" X=@(X) Y=@Y Font=@Skin.Current.FORCETOKEN_FONT BorderWidth=@BorderWidth BorderColor=@BorderColor Popover="@Popover"/>
 }
 
 @code {

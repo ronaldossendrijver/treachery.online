@@ -39,20 +39,20 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (Passed) return "";
+            if (Passed) return null;
 
             var p = Game.GetPlayer(Initiator);
 
-            if (Game.CurrentAuctionType != AuctionType.BlackMarketSilent && TotalAmount < 1) return "Bid must be higher than 0.";
-            if (Game.CurrentAuctionType != AuctionType.BlackMarketSilent && Game.CurrentBid != null && TotalAmount <= Game.CurrentBid.TotalAmount) return "Bid not high enough.";
+            if (Game.CurrentAuctionType != AuctionType.BlackMarketSilent && TotalAmount < 1) return Message.Express("Bid must be higher than 0");
+            if (Game.CurrentAuctionType != AuctionType.BlackMarketSilent && Game.CurrentBid != null && TotalAmount <= Game.CurrentBid.TotalAmount) return Message.Express("Bid not high enough");
 
             var ally = Game.GetPlayer(p.Ally);
-            if (AllyContributionAmount > 0 && AllyContributionAmount > ally.Resources) return "Your ally can't pay that much.";
+            if (AllyContributionAmount > 0 && AllyContributionAmount > ally.Resources) return Message.Express("Your ally won't pay that much");
 
             var red = Game.GetPlayer(Faction.Red);
-            if (RedContributionAmount > 0 && RedContributionAmount > red.Resources) return Skin.Current.Format("{0} can't pay that much.", Faction.Red);
+            if (RedContributionAmount > 0 && RedContributionAmount > red.Resources) return Message.Express(Faction.Red, " won't pay that much");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

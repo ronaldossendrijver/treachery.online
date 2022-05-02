@@ -106,8 +106,8 @@ namespace Treachery.Shared
                 (ApplicableRules.Contains(Rule.YellowBot) && FactionsInPlay.Contains(Faction.Yellow) ? 1 : 0) +
                 (ApplicableRules.Contains(Rule.GreyBot) && FactionsInPlay.Contains(Faction.Grey) ? 1 : 0);
 
-            if (Players.Count() + extraSpotsForBots > FactionsInPlay.Count) return "More factions required";
-            if (ApplicableRules.Contains(Rule.FillWithBots) && FactionsInPlay.Count < MaximumNumberOfPlayers) return "More factions required";
+            if (Players.Count() + extraSpotsForBots > FactionsInPlay.Count) return Message.Express("More factions required");
+            if (ApplicableRules.Contains(Rule.FillWithBots) && FactionsInPlay.Count < MaximumNumberOfPlayers) return Message.Express("More factions required");
 
             int nrOfBots =
                 (ApplicableRules.Contains(Rule.PurpleBot) ? 1 : 0) +
@@ -119,11 +119,11 @@ namespace Treachery.Shared
                 (ApplicableRules.Contains(Rule.GreyBot) ? 1 : 0) +
                 (ApplicableRules.Contains(Rule.BlueBot) ? 1 : 0);
 
-            if (Players.Count() + nrOfBots == 0 && !ApplicableRules.Contains(Rule.FillWithBots)) return "At least one player required";
-            if (Players.Count() + nrOfBots > MaximumNumberOfPlayers) return "Too many players";
-            if (FactionsInPlay.Any(f => !AvailableFactions().Contains(f))) return "Invalid faction";
+            if (Players.Count() + nrOfBots == 0 && !ApplicableRules.Contains(Rule.FillWithBots)) return Message.Express("At least one player required");
+            if (Players.Count() + nrOfBots > MaximumNumberOfPlayers) return Message.Express("Too many players");
+            if (FactionsInPlay.Any(f => !AvailableFactions().Contains(f))) return Message.Express("Invalid faction");
 
-            return "";
+            return null;
         }
 
         public static int GetMaximumNumberOfPlayers()
@@ -141,12 +141,12 @@ namespace Treachery.Shared
             Game.HandleEvent(this);
         }
 
-        public override string Execute(bool performValidation, bool isHost)
+        public override Message Execute(bool performValidation, bool isHost)
         {
             if (performValidation)
             {
                 var result = Validate();
-                if (result == "")
+                if (result == null)
                 {
                     Game.PerformPreEventTasks(this);
                     ExecuteConcreteEvent();
@@ -159,7 +159,7 @@ namespace Treachery.Shared
                 Game.PerformPreEventTasks(this);
                 ExecuteConcreteEvent();
                 Game.PerformPostEventTasks(this, true);
-                return "";
+                return null;
             }
         }
 

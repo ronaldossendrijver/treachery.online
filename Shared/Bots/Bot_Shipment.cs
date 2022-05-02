@@ -585,7 +585,8 @@ namespace Treachery.Shared
         {
             var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, noFieldValue, destination, useKarma, useAllyResources);
 
-            if (shipment.IsValid)
+            var error = shipment.Validate();
+            if (error == null)
             {
                 decidedShipmentAction = decision;
                 finalDestination = destinationforMove;
@@ -593,8 +594,7 @@ namespace Treachery.Shared
             }
             else
             {
-                var error = shipment.Validate();
-                LogInfo(error);
+                LogInfo(error.ToString());
             }
         }
 
@@ -804,14 +804,15 @@ namespace Treachery.Shared
                 To = location
             };
 
-            if (shipment.IsValid)
+            var error = shipment.Validate();
+            if (error == null)
             {
                 decidedShipmentAction = action;
                 decidedShipment = shipment;
             }
             else
             {
-                LogInfo(shipment.Validate());
+                LogInfo(error.ToString());
             }
         }
 

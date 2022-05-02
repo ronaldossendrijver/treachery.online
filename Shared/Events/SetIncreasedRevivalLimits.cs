@@ -21,7 +21,7 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            return "";
+            return null;
         }
 
         public static IEnumerable<Faction> ValidTargets(Game g, Player p)

@@ -242,7 +242,15 @@ namespace Treachery.Shared
         {
             if (Game.BotInfologging)
             {
-                Console.WriteLine(Name + ": " + Skin.Current.Format(msg, pars));
+                Console.WriteLine(Name + ": " + string.Format(msg, pars));
+            }
+        }
+
+        protected void LogInfo(Message message)
+        {
+            if (Game.BotInfologging)
+            {
+                Console.WriteLine(Name + ": " + message);
             }
         }
 

@@ -202,30 +202,29 @@ namespace Treachery.Shared
 
         public GameEvent LatestEvent() => History.Count > 0 ? History[^1] : null;
 
-        public static string TryLoad(GameState state, bool performValidation, bool isHost, ref Game result, bool trackStatesForReplay)
+        public static Message TryLoad(GameState state, bool performValidation, bool isHost, ref Game result, bool trackStatesForReplay)
         {
             try
             {
                 result = new Game(state.Version, trackStatesForReplay);
-                string message;
 
                 int nr = 0;
                 foreach (var e in state.Events)
                 {
                     e.Game = result;
-                    message = e.Execute(performValidation, isHost);
-                    if (message != "")
+                    var message = e.Execute(performValidation, isHost);
+                    if (message != null)
                     {
-                        return string.Format("{0} ({1}): {2}", e.GetType().Name, nr, message);
+                        return Message.Express(e.GetType().Name, "(", nr, "):", message); ;
                     }
                     nr++;
                 }
 
-                return "";
+                return null;
             }
             catch (Exception e)
             {
-                return e.Message;
+                return Message.Express(e.Message);
             }
         }
 

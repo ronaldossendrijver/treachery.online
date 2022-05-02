@@ -23,12 +23,12 @@ namespace Treachery.Shared
             var faction = Game.NextFactionToPerformCustomSetup;
             var p = Game.GetPlayer(faction);
             int numberOfSpecialForces = ForceLocations.Values.Sum(b => b.AmountOfSpecialForces);
-            if (numberOfSpecialForces > p.SpecialForcesInReserve) return Skin.Current.Format("Too many {0}", p.SpecialForce);
+            if (numberOfSpecialForces > p.SpecialForcesInReserve) return Message.Express("Too many ", p.SpecialForce);
 
             int numberOfForces = ForceLocations.Values.Sum(b => b.AmountOfForces);
-            if (numberOfForces > p.ForcesInReserve) return Skin.Current.Format("Too many {0}", p.Force);
+            if (numberOfForces > p.ForcesInReserve) return Message.Express("Too many ", p.Force);
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

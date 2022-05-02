@@ -111,12 +111,12 @@ namespace Treachery.Shared
         public override Message Validate()
         {
             var p = Player;
-            if (SpecialForceLossesReplaced > 0 && Game.Prevented(FactionAdvantage.GreyReplacingSpecialForces)) return Skin.Current.Format("{0} prevents replacing {1} losses", TreacheryCardType.Karma, FactionSpecialForce.Grey);
-            if (SpecialForceLossesReplaced > 0 && !ValidReplacementForceAmounts(Game, p).Contains(SpecialForceLossesReplaced)) return "Invalid amount of replacement forces";
-            if (NewTraitor != null && ReplacedTraitor == null) return string.Format("Select a traitor to be replaced by {0}", NewTraitor);
-            if (NewTraitor == null && ReplacedTraitor != null) return string.Format("Select a traitor to replace {0}", ReplacedTraitor);
+            if (SpecialForceLossesReplaced > 0 && Game.Prevented(FactionAdvantage.GreyReplacingSpecialForces)) return Message.Express(TreacheryCardType.Karma, " prevents replacing ", FactionSpecialForce.Grey, " losses");
+            if (SpecialForceLossesReplaced > 0 && !ValidReplacementForceAmounts(Game, p).Contains(SpecialForceLossesReplaced)) return Message.Express("Invalid amount of replacement forces");
+            if (NewTraitor != null && ReplacedTraitor == null) return Message.Express("Select a traitor to be replaced by ", NewTraitor);
+            if (NewTraitor == null && ReplacedTraitor != null) return Message.Express("Select a traitor to replace ", ReplacedTraitor);
 
-            return "";
+            return null;
         }
 
 

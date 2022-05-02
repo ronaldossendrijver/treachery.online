@@ -22,10 +22,10 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (!Game.IsPlaying(ToWin)) return "Invalid target";
-            if (Turn < 1 || Turn > Game.MaximumNumberOfTurns) return "Invalid turn";
+            if (!Game.IsPlaying(ToWin)) return Message.Express("Invalid target");
+            if (Turn < 1 || Turn > Game.MaximumNumberOfTurns) return Message.Express("Invalid turn");
 
-            return "";
+            return null;
         }
 
         protected override void ExecuteConcreteEvent()

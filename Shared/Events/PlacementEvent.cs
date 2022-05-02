@@ -28,7 +28,7 @@ namespace Treachery.Shared
 
         protected Message ValidateMove(bool AsAdvisors)
         {
-            if (Passed) return "";
+            if (Passed) return null;
 
             var p = Player;
 

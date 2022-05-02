@@ -35,7 +35,7 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            return "";
+            return null;
         }
 
         public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)
