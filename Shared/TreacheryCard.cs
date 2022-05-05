@@ -5,7 +5,7 @@ using System;
 
 namespace Treachery.Shared
 {
-    public class TreacheryCard : IHero, IIdentifiable, IComparable<TreacheryCard>
+    public class TreacheryCard : IHero, IIdentifiable/*, IComparable<TreacheryCard>*/
     {
         public const int NONE = -2;
         public const int UNKNOWN = -1;
@@ -46,27 +46,6 @@ namespace Treachery.Shared
         public TreacheryCardType Type { get; private set; }
 
         public HeroType HeroType => HeroType.Mercenary;
-
-        public virtual string Name
-        {
-            get
-            {
-                if (Id == -1)
-                {
-                    return "Unknown";
-                }
-                else if (Id == -2)
-                {
-                    return "None";
-                }
-                else
-                {
-                    return Skin.Current.GetTreacheryCardName(this);
-                }
-            }
-        }
-
-        public override string ToString() => Name;
 
         public override bool Equals(object obj) => obj is TreacheryCard c && c.Id == Id;
 
@@ -124,7 +103,7 @@ namespace Treachery.Shared
                     Type == TreacheryCardType.ProjectileAndPoison && defense.Type == TreacheryCardType.ShieldAndAntidote;
             }
         }
-
+        /*
         public int CompareTo(TreacheryCard other)
         {
             if (other == null)
@@ -135,7 +114,7 @@ namespace Treachery.Shared
             {
                 return Name.CompareTo(other.Name);
             }
-        }
+        }*/
     }
 
 }

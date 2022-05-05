@@ -35,17 +35,17 @@
 
                 if (discardableMercenary != null)
                 {
-                    <CheckboxComponent @bind-Value="discardMercenary">@discardableMercenary.Name</CheckboxComponent>
+                    <CheckboxComponent @bind-Value="discardMercenary">@Skin.Current.Describe(discardableMercenary)</CheckboxComponent>
                 }
 
                 if (discardableWeapon != null)
                 {
-                    <CheckboxComponent @bind-Value="discardWeapon">@discardableWeapon.Name</CheckboxComponent>
+                    <CheckboxComponent @bind-Value="discardWeapon">@Skin.Current.Describe(discardableWeapon)</CheckboxComponent>
                 }
 
                 if (discardableDefense != null)
                 {
-                    <CheckboxComponent @bind-Value="discardDefense">@discardableDefense.Name</CheckboxComponent>
+                    <CheckboxComponent @bind-Value="discardDefense">@Skin.Current.Describe(discardableDefense)</CheckboxComponent>
                 }
             }
 

@@ -174,8 +174,8 @@ namespace Treachery.Client
                 case Phase.BlueIntrudedByYellowRidingMonsterA:
                 case Phase.BlueIntrudedByYellowRidingMonsterB:
                     return S(
-                    Skin.Current.Format("Please decide what to do in response to an intrusion of {0}; be fighters or advisors?", Game.LastShippedOrMovedTo.Territory.Name),
-                    Skin.Current.Format("{0} are deciding what to do in response to an intrusion of {1}...", Faction.Blue, Game.LastShippedOrMovedTo.Territory.Name),
+                    Skin.Current.Format("Please decide what to do in response to an intrusion of {0}; be fighters or advisors?", Skin.Current.Describe(Game.LastShippedOrMovedTo.Territory)),
+                    Skin.Current.Format("{0} are deciding what to do in response to an intrusion of {1}...", Faction.Blue, Skin.Current.Describe(Game.LastShippedOrMovedTo.Territory)),
                     Faction.Blue);
 
                 case Phase.HarvesterA:
@@ -320,7 +320,7 @@ namespace Treachery.Client
                 case Phase.BlueIntrudedByOrangeMove:
                 case Phase.BlueIntrudedByCaravan:
                     return S(
-                    Skin.Current.Format("Please decide what to do in response to an intrusion of {0}; be fighters or advisors?", Game.LastShippedOrMovedTo.Territory.Name),
+                    Skin.Current.Format("Please decide what to do in response to an intrusion of {0}; be fighters or advisors?", Skin.Current.Describe(Game.LastShippedOrMovedTo.Territory)),
                     Skin.Current.Format("{0} are deciding what to do in response to an intrusion...", Faction.Blue),
                     Faction.Blue);
 
@@ -668,7 +668,7 @@ namespace Treachery.Client
 
                             if (cardToShow != null)
                             {
-                                result.Add(FlashInfo(cardToShow, Message.Express(Concept.Resource, " in ", cardToShow.ToString())));
+                                result.Add(FlashInfo(cardToShow, Message.Express(Concept.Resource, " in ", Skin.Current.Describe(cardToShow))));
                             }
 
                             break;

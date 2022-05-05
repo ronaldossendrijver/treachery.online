@@ -8,11 +8,11 @@
 @{
     var forceLocations = Game.ForcesOnPlanetExcludingEmptyLocations;
 
-    foreach (var location in Game.Map.Locations.OrderBy(l => l.Center.Y))
+    foreach (var location in Game.Map.Locations.OrderBy(l => Skin.Current.GetCenter(l).Y))
     {
         int xOffset = 0;
         int yOffset = 0;
-        var pos = location.Center;
+        var pos = Skin.Current.GetCenter(location);
 
         if (forceLocations.ContainsKey(location))
         {

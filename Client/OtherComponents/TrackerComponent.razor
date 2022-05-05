@@ -133,7 +133,7 @@
             else if (Shown == h.Game.ResourceCardDeck)
             {
                 <div>Top @Skin.Current.Describe(Concept.Resource) Card</div>
-                <PickFromImageComponent Value=SpiceCard(Info.TrackedSpiceCard) OnChanged=@(card => Info.TrackedSpiceCard = card?.ToString()) Title="Select Card" Required=false ImageWidth=60 Values="AllSpiceCards" ImageURLs="AllSpiceCards_ImageURLs" PopupHTMLs="AllSpiceCards_Popups"/>
+                <PickFromImageComponent Value=SpiceCard(Info.TrackedSpiceCard) OnChanged=@(card => Info.TrackedSpiceCard = Skin.Current.Describe(card)) Title="Select Card" Required=false ImageWidth=60 Values="AllSpiceCards" ImageURLs="AllSpiceCards_ImageURLs" PopupHTMLs="AllSpiceCards_Popups"/>
 
                 if (h.Game.Applicable(Rule.IncreasedResourceFlow))
                 {
@@ -179,8 +179,8 @@
             Support.Log(e);
         }
 
-        AllTraitors = h.Game.TraitorsInPlay.OrderBy(l => l.Name).ToList();
-        AllSpiceCards = Game.ResourceCardDeck.Items.OrderBy(rc => rc.ToString()).ToList();
+        AllTraitors = h.Game.TraitorsInPlay.OrderBy(l => Skin.Current.Describe(l)).ToList();
+        AllSpiceCards = Game.ResourceCardDeck.Items.OrderBy(rc => Skin.Current.Describe(rc)).ToList();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -329,7 +329,7 @@
 
     private IEnumerable<string> AllSpiceCards_Popups => AllSpiceCards.Select(c => Support.GetHoverHTML(c));
 
-    private ResourceCard SpiceCard(string name) => AllSpiceCards.FirstOrDefault(c => c.ToString() == name);
+    private ResourceCard SpiceCard(string name) => AllSpiceCards.FirstOrDefault(c => Skin.Current.Describe(c) == name);
 
     private IEnumerable<Player> Players => h.Game.Players.OrderBy(p => Skin.Current.Describe(p.Faction));
 

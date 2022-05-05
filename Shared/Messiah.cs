@@ -14,8 +14,6 @@ namespace Treachery.Shared
 
         public int ValueInCombatAgainst(IHero opposingHero) => Value;
 
-        public string Name => Skin.Current.Describe(Concept.Messiah);
-
         public Faction Faction => Faction.Green;
 
         public HeroType HeroType => HeroType.Messiah;

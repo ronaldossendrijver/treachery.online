@@ -135,14 +135,14 @@
 
         result += string.Format("<div class=\"col-2 col-lg-1 p-0\"><img class=\"img-fluid m-0 p-0\" width=\"24\" height=\"24\" src=\"{0}\" title=\"{1}\" /><strong>&nbsp;{2}</strong></div>",
             Skin.Current.GetFactionForceImageURL(p.Faction),
-            p.ForceName,
+            Skin.Current.Describe(p.Force),
             p.ForcesInReserve);
 
         if (p.HasSpecialForces)
         {
             result += string.Format("<div class=\"col-2 col-lg-1 p-0\"><img class=\"img-fluid m-0 p-0\" width=\"24\" height=\"24\" src=\"{0}\" title=\"{1}\" /><strong>&nbsp;{2}</strong></div>",
                 Skin.Current.GetFactionSpecialForceImageURL(p.Faction),
-                p.SpecialForceName,
+                Skin.Current.Describe(p.SpecialForce),
                 p.SpecialForcesInReserve);
         }
 

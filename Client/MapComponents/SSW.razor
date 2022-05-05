@@ -8,7 +8,7 @@
 @{
     if (Game.Applicable(Rule.SSW) && !Game.IsSpecialStronghold(Game.Map.ShieldWall))
     {
-        var position = Game.Map.ShieldWall.MiddleLocation.Center;
+        var position = Skin.Current.GetCenter(Game.Map.ShieldWall.MiddleLocation);
 
         for (int i = 0; i < Game.NumberOfMonsters; i++)
         {

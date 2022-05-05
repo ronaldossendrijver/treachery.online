@@ -32,7 +32,7 @@
                             <tr>
                                 <td><img width=24 src="@Skin.Current.GetImageURL(offer.Initiator)" /></td>
                                 <td>@offer.Price</td>
-                                <td class="text-break">@offer.GetDealDescription()</td>
+                                <td class="text-break">@offer.GetDealDescription().ToString(Skin.Current)</td>
                                 <td>
                                     <button class="btn btn-primary btn-sm" @onclick="e => Accept(offerToShow)" disabled=@(validity != null)>Accept</button>
                                 </td>
@@ -47,7 +47,7 @@
                             <tr>
                                 <td><img width=24 src="@Skin.Current.GetImageURL(offer.Initiator)" /></td>
                                 <td>@offer.Price</td>
-                                <td class="text-break">@offer.GetDealDescription()</td>
+                                <td class="text-break">@offer.GetDealDescription().ToString(Skin.Current)</td>
                                 <td>
                                     <button class="btn btn-primary btn-sm" @onclick="e => Cancel(offerToShow)">Withdraw</button>
                                 </td>

@@ -18,8 +18,6 @@ namespace Treachery.Shared
 
         public int SkinId => Id;
 
-        public string Name => Skin.Current.GetTerritoryName(this);
-
         public bool IsStronghold { get; set; }
 
         public bool IsProtectedFromStorm { get; set; }
@@ -48,11 +46,5 @@ namespace Treachery.Shared
                 return locations[(int)(0.5 * locations.Count)];
             }
         }
-
-        public override string ToString()
-        {
-            return Name;
-        }
     }
-
 }

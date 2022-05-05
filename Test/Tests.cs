@@ -16,7 +16,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 using Treachery.Shared;
-
+using Treachery.Client;
 
 namespace Treachery.Test
 {
@@ -814,7 +814,7 @@ namespace Treachery.Test
         public void SaveAndLoadSkin()
         {
             var leader = LeaderManager.LeaderLookup.Find(1008);
-            var oldName = Skin.Current.GetPersonName(leader);
+            var oldName = Skin.Current.Describe(leader);
             var serializer = JsonSerializer.CreateDefault();
             serializer.Formatting = Formatting.Indented;
             var writer = new StringWriter();
@@ -826,7 +826,7 @@ namespace Treachery.Test
             var textReader = new StringReader(File.ReadAllText("skin.json"));
             var jsonReader = new JsonTextReader(textReader);
             var skinToTest = serializer.Deserialize<Skin>(jsonReader);
-            Assert.AreEqual(oldName, skinToTest.GetPersonName(leader));
+            Assert.AreEqual(oldName, skinToTest.Describe(leader));
         }
 
 

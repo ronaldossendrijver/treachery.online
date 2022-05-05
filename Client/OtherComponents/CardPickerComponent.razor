@@ -34,16 +34,18 @@
         }
 
         @{
-            string lastWonCardName = Tracker.h.Game.CardJustWon != null && Tracker.h.Game.KnownCards(Faction.Green).Contains(Tracker.h.Game.CardJustWon) ? Tracker.h.Game.CardJustWon.Name : "";
+            string lastWonCardName = Tracker.h.Game.CardJustWon != null && Tracker.h.Game.KnownCards(Faction.Green).Contains(Tracker.h.Game.CardJustWon) ? Name(Tracker.h.Game.CardJustWon) : "";
 
             @foreach (var v in Tracker.CardsToPick)
             {
-                string border = lastWonCardName == v.Name ? "border-success" : "border-0";
-                string cardbg = lastWonCardName == v.Name ? "bg-light" : "";
+                var cardName = Name(v);
+                bool isCardJustWon = lastWonCardName == cardName;
+                string border = isCardJustWon? "border-success" : "border-0";
+                string cardbg = isCardJustWon? "bg-light" : "";
 
                 <div class="card p-1 m-0 @border @cardbg">
                     <Hoverable Class="card-img-top" Popover=@Tracker.DeterminePopup(v.Id)>
-                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@(v.Name)" @onclick="e => Pick(v.Id)">
+                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@cardName" @onclick="e => Pick(v.Id)">
                     </Hoverable>
                 </div>
             }
@@ -72,4 +74,6 @@
         Tracker.Discard();
         await Browser.HideModal(Id);
     }
+
+    private string Name(TreacheryCard card) => Skin.Current.Describe(card);
 }

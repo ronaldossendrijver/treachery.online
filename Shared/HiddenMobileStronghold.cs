@@ -8,9 +8,6 @@ namespace Treachery.Shared
 {
     public class HiddenMobileStronghold : Location
     {
-        public static int DX => -4 * Skin.Current.PlayerTokenRadius;
-        public static int Radius => 2 * Skin.Current.PlayerTokenRadius;
-
         public Location AttachedToLocation { get; private set; } = null;
 
         public HiddenMobileStronghold(int id) : base(id)
@@ -38,21 +35,6 @@ namespace Treachery.Shared
 
         public override int Sector => -1;
 
-
-        public override Point Center
-        {
-            get
-            {
-                if (AttachedToLocation != null)
-                {
-                    return new Point(AttachedToLocation.Center.X + DX, AttachedToLocation.Center.Y);
-                }
-                else
-                {
-                    return new Point(DX, DX);
-                }
-            }
-        }
 
         public override List<Location> Neighbours
         {

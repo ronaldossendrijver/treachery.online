@@ -28,33 +28,15 @@ namespace Treachery.Shared
             }
         }
 
-        public int SkinId => Id;
-
-        public virtual Point Center => Skin.Current.LocationCenter_Point[SkinId];
-
-        public virtual Point SpiceLocation => SpiceBlowAmount != 0 ? Skin.Current.LocationSpice_Point[SkinId] : null;
-
         public virtual List<Location> Neighbours { get; set; } = new List<Location>();
 
-        public virtual string Name { get; set; } = "";
+        public string Orientation { get; set; } = "";
 
         public virtual int SpiceBlowAmount { get; set; } = 0;
 
         public Location(int id)
         {
             Id = id;
-        }
-
-        public override string ToString()
-        {
-            if (Name != "")
-            {
-                return string.Format("{0} ({1} Sector)", Territory.Name, Name);
-            }
-            else
-            {
-                return Territory.Name;
-            }
         }
 
         public int Id { get; set; }

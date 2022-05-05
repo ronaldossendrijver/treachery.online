@@ -9,7 +9,7 @@
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed" TimedEvent=Game.LatestEvent(typeof(BattleInitiated))>
 
     <Header>
-        Fighting <img class="img-fluid" src="@Skin.Current.GetImageURL(Opponent.Faction)" width=30 height=30/> in @Game.CurrentBattle.Territory.Name.
+        Fighting <img class="img-fluid" src="@Skin.Current.GetImageURL(Opponent.Faction)" width=30 height=30/> in @Name(Game.CurrentBattle.Territory).
     </Header>
 
     <Body>
@@ -307,10 +307,10 @@
     {
         switch (aspect)
         {
-            case PrescienceAspect.Defense: return plan.Defense == null ? "None" : Skin.Current.Describe(plan.Defense);
-            case PrescienceAspect.Weapon: return plan.Weapon == null ? "None" : Skin.Current.Describe(plan.Weapon);
+            case PrescienceAspect.Defense: return plan.Defense == null ? "None" : Name(plan.Defense);
+            case PrescienceAspect.Weapon: return plan.Weapon == null ? "None" : Name(plan.Weapon);
             case PrescienceAspect.Dial: return plan.Dial(Game, Faction).ToString();
-            case PrescienceAspect.Leader: return plan.Hero == null ? "None" : Skin.Current.Describe(plan.Hero);
+            case PrescienceAspect.Leader: return plan.Hero == null ? "None" : Name(plan.Hero);
         }
 
         return "?";

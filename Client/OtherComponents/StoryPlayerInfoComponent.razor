@@ -149,7 +149,7 @@
                     @if (ShowForces)
                     {
                         <td>
-                            @foreach (var l in p.LocationsWithAnyForces.OrderByDescending(l => l.IsStronghold).ThenBy(l => l.Name))
+                            @foreach (var l in p.LocationsWithAnyForces.OrderByDescending(l => l.IsStronghold).ThenBy(l => l.Orientation))
                             {
                                 var isContested = l != Game.Map.PolarSink && p.Occupies(l.Territory) && Game.NrOfOccupantsExcludingPlayer(l.Territory, p) > 0;
 
@@ -162,25 +162,25 @@
 
                                     @if (l.Territory.IsStronghold || Game.IsSpecialStronghold(l.Territory))
                                     {
-                                        <strong>@l.Territory.Name</strong>
+                                        <strong>@Skin.Current.Describe(l.Territory)</strong>
                                     }
                                     else
                                     {
-                                        @l.Territory.Name
+                                        @Skin.Current.Describe(l.Territory)
                                     }
 
                                     <span>:&nbsp;</span>
 
                                     @if (p.ForcesIn(l) > 0)
                                     {
-                                        <img class='img-fluid m-0 p-0' width='24' height='24' src='@Skin.Current.GetFactionForceImageURL(p.Faction)' title='@p.ForceName' /><strong>&nbsp;@p.ForcesIn(l)</strong>
+                                        <img class='img-fluid m-0 p-0' width='24' height='24' src='@Skin.Current.GetFactionForceImageURL(p.Faction)' title=@Skin.Current.Describe(p.Force) /><strong>&nbsp;@p.ForcesIn(l)</strong>
                                     }
 
                                     <span>&nbsp;</span>
 
                                     @if (p.SpecialForcesIn(l) > 0)
                                     {
-                                        <img class='img-fluid m-0 p-0' width='24' height='24' src='@Skin.Current.GetFactionSpecialForceImageURL(p.Faction)' title='@p.SpecialForceName' /><strong>&nbsp;@p.SpecialForcesIn(l)</strong>
+                                        <img class='img-fluid m-0 p-0' width='24' height='24' src='@Skin.Current.GetFactionSpecialForceImageURL(p.Faction)' title=@Skin.Current.Describe(p.SpecialForce) /><strong>&nbsp;@p.SpecialForcesIn(l)</strong>
                                     }
 
                                 </div>
@@ -210,12 +210,12 @@
                         <td>
                             @if (p.ForcesKilled > 0)
                             {
-                                <img class='img-fluid m-0 p-0' width='24' height='24' src='@Skin.Current.GetFactionForceImageURL(p.Faction)' title='@p.ForceName' /><strong>&nbsp;@p.ForcesKilled</strong>
+                                <img class='img-fluid m-0 p-0' width='24' height='24' src='@Skin.Current.GetFactionForceImageURL(p.Faction)' title=@Skin.Current.Describe(p.Force) /><strong>&nbsp;@p.ForcesKilled</strong>
                             }
 
                             @if (p.SpecialForcesKilled > 0)
                             {
-                                <img class='img-fluid m-0 p-0' width='24' height='24' src='@Skin.Current.GetFactionSpecialForceImageURL(p.Faction)' title='@p.SpecialForceName' /><strong>&nbsp;@p.SpecialForcesKilled</strong>
+                                <img class='img-fluid m-0 p-0' width='24' height='24' src='@Skin.Current.GetFactionSpecialForceImageURL(p.Faction)' title=@Skin.Current.Describe(p.SpecialForce) /><strong>&nbsp;@p.SpecialForcesKilled</strong>
                             }
 
                             @foreach (var c in p.Leaders.Where(l => !Game.IsAlive(l)))

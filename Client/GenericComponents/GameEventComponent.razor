@@ -61,9 +61,9 @@
 
     protected List<string> ValidValues<T>(IEnumerable<T> values)
     {
-        return values.Select(o => o.ToString()).ToList();
+        return values.Select(o => Name(o)).ToList();
     }
-
+    
     protected void SetIfValid<DisplayType, OriginalType>(ref DisplayType field, IEnumerable<OriginalType> validValues, OriginalType newValue)
     {
         if ((object)field != (object)newValue && validValues.Contains(newValue))
@@ -81,7 +81,7 @@
             }
             else
             {
-                field = (DisplayType)(object)(newValue.ToString());
+                field = (DisplayType)(object)Name(newValue);
             }
 
             StateHasChanged();

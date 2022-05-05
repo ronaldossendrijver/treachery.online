@@ -933,11 +933,6 @@ namespace Treachery.Shared
             }
         }
 
-        public override string ToString()
-        {
-            return Skin.Current.Format("Players: {0}, Phase: {1}", Players.Count, CurrentPhase);
-        }
-
         #endregion SupportMethods
     }
 }

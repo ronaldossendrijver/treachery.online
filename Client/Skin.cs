@@ -199,16 +199,6 @@ namespace Treachery.Client
 
         #region Descriptions
 
-        private string[] Describe(object[] objects)
-        {
-            var result = new string[objects.Length];
-            for (int i = 0; i < objects.Length; i++)
-            {
-                result[i] = Describe(objects[i]);
-            }
-            return result;
-        }
-
         public string Format(string m, params object[] list)
         {
             try
@@ -290,38 +280,72 @@ namespace Treachery.Client
             }
         }
 
+        public Point GetCenter(Location location)
+        {
+            if (location is HiddenMobileStronghold hms)
+            {
+                if (hms.AttachedToLocation != null)
+                {
+                    var attachedToCenter = GetCenter(hms.AttachedToLocation);
+                    return new Point(attachedToCenter.X + HmsDX, attachedToCenter.Y);
+                }
+                else
+                {
+                    return new Point(HmsDX, HmsDX);
+                }
+            }
+            else
+            {
+                return LocationCenter_Point[location.Id];
+            }
+        }
+
+        public int HmsDX => -4 * PlayerTokenRadius;
+
+        public int HmsRadius => 2 * PlayerTokenRadius;
+
+        public Point GetSpiceLocation(Location location) => location.SpiceBlowAmount != 0 ? LocationSpice_Point[location.Id] : new Point(0,0);
+
+
         public string Describe(object value, bool capitalize = false)
         {
             string result;
 
-            if (value == null) result = "";
-            else if (value is string str) result = str;
-            else if (value is bool b) result = b ? "Yes" : "No";
-            else if (value is MessagePart part) result = Describe(part);
-            else if (value is Payment payment) result = Format("{0} {1}", payment.Amount, Concept.Resource);
-            else if (value is Concept c) result = Describe(c);
-            else if (value is Faction faction) result = Describe(faction);
-            else if (value is FactionForce ff) result = Describe(ff);
-            else if (value is FactionSpecialForce fsf) result = Describe(fsf);
-            else if (value is FactionAdvantage factionadvantage) result = Describe(factionadvantage);
-            else if (value is TreacheryCardType tct) result = Describe(tct);
-            else if (value is LeaderSkill ls) result = Describe(ls);
-            else if (value is Ruleset r) result = Describe(r);
-            else if (value is RuleGroup rg) result = Describe(rg);
-            else if (value is Rule rule) result = Describe(rule);
-            else if (value is MainPhase m) result = Describe(m);
-            else if (value is TechToken tt) result = Describe(tt);
-            //else if (value is ClairvoyanceQuestion q) result = Describe(q);
-            //else if (value is DealType d) result = Describe(d);
-            else if (value is WinMethod w) result = Describe(w);
-            else if (value is Phase p) result = Describe(p);
-            else if (value is BrownEconomicsStatus bes) result = Describe(bes);
-            else if (value is AuctionType at) result = Describe(at);
-            else if (value is JuiceType jt) result = Describe(jt);
-            else if (value is CaptureDecision cd) result = Describe(cd);
-            else if (value is StrongholdAdvantage sa) result = Describe(sa);
-            else if (value is IEnumerable ienum) result = Join(Enumerable.Cast<object>(ienum));
-            else result = value.ToString();
+            if (value == null) return "";
+
+            result = (value) switch
+            {
+                string str => str,
+                bool b => b ? "Yes" : "No",
+                MessagePart part => Describe(part),
+                Payment payment => Format("{0} {1}", payment.Amount, Concept.Resource),
+                Concept c => Describe(c),
+                Faction faction => Describe(faction),
+                FactionForce ff => Describe(ff),
+                FactionSpecialForce fsf => Describe(fsf),
+                FactionAdvantage factionadvantage => Describe(factionadvantage),
+                ResourceCard rc => Describe(rc),
+                TreacheryCard tc => Describe(tc),
+                TreacheryCardType tct => Describe(tct),
+                LeaderSkill ls => Describe(ls),
+                Ruleset r => Describe(r),
+                RuleGroup rg => Describe(rg),
+                Rule rule => Describe(rule),
+                MainPhase m => Describe(m),
+                TechToken tt => Describe(tt),
+                Territory t => Describe(t),
+                Location l => Describe(l),
+                IHero hero => Describe(hero),
+                WinMethod w => Describe(w),
+                Phase p => Describe(p),
+                BrownEconomicsStatus bes => Describe(bes),
+                AuctionType at => Describe(at),
+                JuiceType jt => Describe(jt),
+                CaptureDecision cd => Describe(cd),
+                StrongholdAdvantage sa => Describe(sa),
+                IEnumerable ienum => Join(Enumerable.Cast<object>(ienum)),
+                _ => value.ToString()
+            };
 
             if (capitalize)
             {
@@ -333,7 +357,17 @@ namespace Treachery.Client
             }
         }
 
-        public static string FirstCharToUpper(string input)
+        private string[] Describe(object[] objects)
+        {
+            var result = new string[objects.Length];
+            for (int i = 0; i < objects.Length; i++)
+            {
+                result[i] = Describe(objects[i]);
+            }
+            return result;
+        }
+
+        private static string FirstCharToUpper(string input)
         {
             if (input == null || input == "")
             {
@@ -342,6 +376,47 @@ namespace Treachery.Client
             else
             {
                 return input[0].ToString().ToUpper() + input[1..];
+            }
+        }
+
+        public string Describe(Territory t)
+        {
+            return GetLabel(TerritoryName_STR, t.SkinId);
+        }
+
+        public string Describe(IHero hero)
+        {
+            if (hero == null)
+            {
+                return "?";
+            }
+            else if (hero is Leader l)
+            {
+                return GetLabel(PersonName_STR, l.SkinId);
+            }
+            else if (hero is Messiah)
+            {
+                return Describe(Concept.Messiah);
+            }
+            else if (hero is TreacheryCard tc)
+            {
+                return Describe(tc);
+            }
+            else
+            {
+                return "?";
+            }
+        }
+
+        public string Describe(Location l)
+        {
+            if (l.Orientation != "")
+            {
+                return Format("{0} ({1} Sector)", l.Territory, l.Orientation);
+            }
+            else
+            {
+                return Describe(l.Territory);
             }
         }
 
@@ -358,6 +433,31 @@ namespace Treachery.Client
         public string Describe(TreacheryCardType t)
         {
             return TreacheryCardType_STR[t];
+        }
+
+        public string Describe(ResourceCard c)
+        {
+            if (c == null)
+            {
+                return "?";
+            }
+            else if (c.IsShaiHulud)
+            {
+                return Describe(Concept.Monster);
+            }
+            else if (c.IsSandTrout)
+            {
+                return Describe(Concept.BabyMonster);
+            }
+            else
+            {
+                return Describe(c.Location.Territory);
+            }
+        }
+
+        public string Describe(TreacheryCard c)
+        {
+            return GetLabel(TreacheryCardName_STR, c.SkinId);
         }
 
         public string Describe(LeaderSkill l)
@@ -412,7 +512,7 @@ namespace Treachery.Client
 
         public string Describe(MessagePart part)
         {
-            return part.ToString();
+            return part.ToString(this);
         }
 
         public string Describe(FactionAdvantage advantage)
@@ -714,24 +814,9 @@ namespace Treachery.Client
 
         #region NamesAndImages
 
-        public string GetTerritoryName(Territory t)
-        {
-            return GetLabel(TerritoryName_STR, t.SkinId);
-        }
-
         public string GetTerritoryBorder(Territory t)
         {
             return GetLabel(TerritoryBorder_SVG, t.SkinId);
-        }
-
-        public Point GetLocationCenter(int locationSkinId)
-        {
-            return LocationCenter_Point[locationSkinId];
-        }
-
-        public Point GetLocationSpice(int locationSkinId)
-        {
-            return LocationSpice_Point[locationSkinId];
         }
 
         public string GetImageURL(TreacheryCard c)
@@ -763,11 +848,6 @@ namespace Treachery.Client
         public string GetImageURL(LeaderSkill s)
         {
             return GetURL(LeaderSkillCardImage_URL, s);
-        }
-
-        public string GetTreacheryCardName(TreacheryCard c)
-        {
-            return GetLabel(TreacheryCardName_STR, c.SkinId);
         }
 
         public string GetTreacheryCardDescription(TreacheryCard c)
@@ -823,12 +903,6 @@ namespace Treachery.Client
         public string GetImageURL(TechToken tech)
         {
             return GetURL(TechTokenImage_URL, tech);
-        }
-
-
-        public string GetPersonName(Leader l)
-        {
-            return GetLabel(PersonName_STR, l.SkinId);
         }
 
         private string GetLabel<T>(Dictionary<T, string> labels, T key)

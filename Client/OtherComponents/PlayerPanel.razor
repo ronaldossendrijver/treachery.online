@@ -35,14 +35,14 @@
 
                             <!-- Forces -->
                             <div class="col p-0">
-                                <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.GetFactionForceImageURL(ShownPlayer.Faction)" title="@(ShownPlayer.ForceName)" /><strong>&nbsp;@ShownPlayer.ForcesInReserve</strong>
+                                <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.GetFactionForceImageURL(ShownPlayer.Faction)" title=@Skin.Current.Describe(ShownPlayer.Force) /><strong>&nbsp;@ShownPlayer.ForcesInReserve</strong>
                             </div>
 
                             <!-- Special Forces -->
                             @if (ShownPlayer.HasSpecialForces)
                             {
                                 <div class="col p-0">
-                                    <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.GetFactionSpecialForceImageURL(ShownPlayer.Faction)" title="@(ShownPlayer.SpecialForceName)" /><strong>&nbsp;@ShownPlayer.SpecialForcesInReserve</strong>
+                                    <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.GetFactionSpecialForceImageURL(ShownPlayer.Faction)" title=@Skin.Current.Describe(ShownPlayer.SpecialForce) /><strong>&nbsp;@ShownPlayer.SpecialForcesInReserve</strong>
                                 </div>
                             }
 

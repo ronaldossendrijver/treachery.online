@@ -29,5 +29,5 @@
 
     protected override FaceDancerReplaced PassedResult => new FaceDancerReplaced(Game) { Initiator = Faction, Passed = true };
 
-    private string ConfirmLabel => dancer != null ? "Replace " + dancer.Name : "Replace";
+    private string ConfirmLabel => dancer != null ? "Replace " + Name(dancer) : "Replace";
 }

@@ -122,7 +122,7 @@
 
     protected IEnumerable<string> GetLabels<T>(IEnumerable<T> items, string labelIfNull = "")
     {
-        return items.Select(i => i != null ? i.ToString() : labelIfNull);
+        return items.Select(i => i != null ? Name(i) : labelIfNull);
     }
 
     public virtual void Dispose()
@@ -134,4 +134,7 @@
     {
         StateHasChanged();
     }
+
+    
+    protected string Name(object o) => Skin.Current.Describe(o);
 }

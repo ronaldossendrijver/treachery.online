@@ -59,7 +59,7 @@
                         for @replay.WinningBid.TotalAmount
                         @if (replay.WinningBid is Bid b && b.KarmaCard != null)
                         {
-                            <span> using <strong>@b.KarmaCard.ToString() </strong></span>
+                            <span> using <strong>@Skin.Current.Describe(b.KarmaCard)</strong></span>
                         }
                         @if (replay.CurrentAuctionType != AuctionType.Normal)
                         {
@@ -93,13 +93,13 @@
 
             if (evt is BattleInitiated)
             {
-                <h5 class="mt-2">Battle for @replay.CurrentBattle.Territory</h5>
+                <h5 class="mt-2">Battle for @Skin.Current.Describe(replay.CurrentBattle.Territory)</h5>
             }
 
             if (IsMilestone(evt))
             {
                 <div class="mb-1">
-                    <img class="img-fluid" width="24" src="@Skin.Current.GetImageURL(evt.Initiator)" /> @evt.GetMessage()
+                    <img class="img-fluid" width="24" src="@Skin.Current.GetImageURL(evt.Initiator)" /> @evt.GetMessage().ToString(Skin.Current)
                 </div>
             }
 

@@ -13,7 +13,7 @@
 
                 @if (AlwaysShowLocation || Locations.Count() > 1)
                 {
-                    <td class="ps-0">@l.ToString()</td>
+                    <td class="ps-0">@Skin.Current.Describe(l)</td>
                 }
 
                 @if (Max(l) > 0)

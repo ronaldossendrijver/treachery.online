@@ -20,8 +20,6 @@ namespace Treachery.Shared
             Id = id;
         }
 
-        public string Name => Skin.Current.GetPersonName(this);
-
         public HeroType HeroType { get; set; }
 
         public bool Is(Faction f) => Faction == f;
@@ -65,8 +63,6 @@ namespace Treachery.Shared
         public override bool Equals(object obj) => (obj is Leader l && l.Id == Id);
 
         public override int GetHashCode() => Id.GetHashCode();
-
-        public override string ToString() => Name;
 
         public bool IsTraitor(IHero hero) => hero == this;
 

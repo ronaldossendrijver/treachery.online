@@ -67,7 +67,7 @@ namespace Treachery.Client
 
             foreach (var c in CardsInPlay)
             {
-                if (!result.Any(added => added.Name == c.Name) && !removedCards.Contains(c.Id) && !discardedCards.Contains(c.Id) && !cardsSelectedElsewhere.Contains(c.Id))
+                if (!result.Any(added => Skin.Current.Describe(added) == Skin.Current.Describe(c)) && !removedCards.Contains(c.Id) && !discardedCards.Contains(c.Id) && !cardsSelectedElsewhere.Contains(c.Id))
                 {
                     result.Add(c);
                 }

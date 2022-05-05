@@ -319,7 +319,7 @@ namespace Treachery.Server
         private void SendMail(string content, GameInfo info)
         {
             var ruleset = Game.DetermineApproximateRuleset(info.FactionsInPlay, info.Rules);
-            var subject = string.Format("{0} ({1} Players, {2} Bots, Turn {3} - {4})", info.GameName, info.Players.Length, info.NumberOfBots, info.CurrentTurn, Skin.Current.Describe(ruleset));
+            var subject = string.Format("{0} ({1} Players, {2} Bots, Turn {3} - {4})", info.GameName, info.Players.Length, info.NumberOfBots, info.CurrentTurn, ruleset);
 
             try
             {

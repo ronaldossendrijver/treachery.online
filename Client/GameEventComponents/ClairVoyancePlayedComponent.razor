@@ -28,8 +28,8 @@
         else if (question == ClairvoyanceQuestion.LeaderAsFacedancer || question == ClairvoyanceQuestion.LeaderAsTraitor || question == ClairvoyanceQuestion.LeaderInBattle)
         {
             <SelectComponent @bind-Value="questionParameterA" 
-                             Values="Game.TraitorsInPlay.OrderBy(l => l.Name).Select(l => l.Id).Cast<object>()" 
-                             ValueLabels="Game.TraitorsInPlay.OrderBy(l => l.Name).Select(l => l.ToString())">
+                             Values="Game.TraitorsInPlay.OrderBy(l => Name(l)).Select(l => l.Id).Cast<object>()" 
+                             ValueLabels="Game.TraitorsInPlay.Select(l => Name(l)).OrderBy(l => l)">
                 <Label>Leader</Label>
             </SelectComponent>
         }
@@ -52,8 +52,8 @@
         else if (question == ClairvoyanceQuestion.WillAttackX)
         {
             <SelectComponent @bind-Value="questionParameterA" 
-                             Values="Game.Map.Territories.OrderByDescending(l => l.IsStronghold).ThenBy(l => l.ToString()).Select(l => l.Id).Cast<object>()" 
-                             ValueLabels="Game.Map.Territories.OrderByDescending(l => l.IsStronghold).ThenBy(l => l.ToString()).Select(l => l.ToString())">
+                             Values="Game.Map.Territories.OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l)).Select(l => l.Id).Cast<object>()" 
+                             ValueLabels="Game.Map.Territories.OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l)).Select(l => Skin.Current.Describe(l))">
                 <Label>Territory</Label>
             </SelectComponent>
         }

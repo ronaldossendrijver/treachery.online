@@ -64,7 +64,7 @@ namespace Treachery.Shared
             return result.ToArray();
         }
 
-        public string GetDealDescription()
+        public Message GetDealDescription()
         {
             return Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1);
         }

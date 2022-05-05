@@ -257,9 +257,17 @@ namespace Treachery.Shared
 
         protected void LogInfo(Message message)
         {
-            if (Game.BotInfologging)
+            if (Game.BotInfologging && message != null)
             {
-                Console.WriteLine(Name + ": " + message);
+                if (DescriberForBotLogging != null)
+                {
+                    Console.WriteLine(Name + ": " + message.ToString(DescriberForBotLogging));
+                }
+                else
+                {
+                    Console.WriteLine(Name + ": " + message.ToString());
+                }
+                
             }
         }
 

@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Client\Treachery.Client.csproj" />
     <ProjectReference Include="..\Shared\Treachery.Shared.csproj" />
   </ItemGroup>
 

@@ -13,7 +13,7 @@
 
         @if (Faction == Faction.Yellow)
         {
-            <div>Bring any number of forces onto @(Game.Map.TheGreatFlat.Territory.Name) or onto any one territory within two territories of @(Game.Map.TheGreatFlat.Territory.Name).</div>
+            <div>Bring any number of forces onto @Skin.Current.Describe(Game.Map.TheGreatFlat.Territory) or onto any one territory within two territories of @Skin.Current.Describe(Game.Map.TheGreatFlat.Territory).</div>
 
             @if (MayShipAsGuild)
             {
@@ -59,7 +59,7 @@
         }
 
         <div class="mt-1 mb-1">
-            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="shipmentTo" Values="ValidShipmentLocations.OrderByDescending(l => l.IsStronghold).ThenBy(l => l.Territory.Name).ThenBy(l => l.Name)">
+            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="shipmentTo" Values="ValidShipmentLocations.OrderByDescending(l => l.IsStronghold).ThenBy(l => Name(l))">
                 <Label>To</Label>
             </SelectComponent>
         </div>

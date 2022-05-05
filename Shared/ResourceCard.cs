@@ -32,21 +32,5 @@ namespace Treachery.Shared
                 return Location != null;
             }
         }
-
-        public override string ToString()
-        {
-            if (IsShaiHulud)
-            {
-                return Skin.Current.Describe(Concept.Monster);
-            }
-            else if (IsSandTrout)
-            {
-                return Skin.Current.Describe(Concept.BabyMonster);
-            }
-            else
-            {
-                return Location.Territory.Name;
-            }
-        }
     }
 }

@@ -38,7 +38,7 @@
 
     override protected IEnumerable<Territory> ValidSources => YellowRidesMonster.ValidSources(Game);
 
-    override protected IEnumerable<Location> ValidTargets => YellowRidesMonster.ValidTargets(Game, Player).OrderByDescending(l => l.IsStronghold).ThenBy(l => l.ToString());
+    override protected IEnumerable<Location> ValidTargets => YellowRidesMonster.ValidTargets(Game, Player).OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l));
 
     override protected bool InformAboutCaravan => false;
 

@@ -10,8 +10,6 @@ namespace Treachery.Shared
 
         public int ValueInCombatAgainst(IHero opposingHero);
 
-        public string Name { get; }
-
         public int SkinId { get; }
 
         public Faction Faction { get; }
@@ -25,5 +23,12 @@ namespace Treachery.Shared
         public bool Is(Faction f);
 
         public HeroType HeroType { get; }
+
+        /*
+        public override string ToString()
+        {
+            return base.ToString();
+        }
+        */
     }
 }

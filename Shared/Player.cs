@@ -660,10 +660,6 @@ namespace Treachery.Shared
 
         public bool HasKarma => Karma.ValidKarmaCards(Game, this).Any();
 
-        public string ForceName => Skin.Current.Describe(Force, true);
-
-        public string SpecialForceName => Skin.Current.Describe(SpecialForce, true);
-
         public object Clone()
         {
             var result = (Player)MemberwiseClone();

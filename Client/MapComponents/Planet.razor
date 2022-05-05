@@ -65,11 +65,12 @@
 
 @if (h.Game.Map.HiddenMobileStronghold.Visible)
 {
-    bool isInFrontOfPlayerToken = h.Game.Players.Any(p => Near(h.Game.Map.HiddenMobileStronghold.Center, PlayerTokenPosition(h.Game, p.PositionAtTable), Skin.Current.PlayerTokenRadius));
-
-    <Image X="@(h.Game.Map.HiddenMobileStronghold.Center.X - 0.9f * HiddenMobileStronghold.Radius)" 
-           Y="@(h.Game.Map.HiddenMobileStronghold.Center.Y - HiddenMobileStronghold.Radius)" 
-           Width=@(HiddenMobileStronghold.Radius + Math.Abs(HiddenMobileStronghold.DX)) Height="@(2 * HiddenMobileStronghold.Radius)" 
+    var hmsCenter = Skin.Current.GetCenter(h.Game.Map.HiddenMobileStronghold);
+    bool isInFrontOfPlayerToken = h.Game.Players.Any(p => Near(hmsCenter, PlayerTokenPosition(h.Game, p.PositionAtTable), Skin.Current.PlayerTokenRadius));
+   
+    <Image X="@(hmsCenter.X - 0.9f * Skin.Current.HmsRadius)" 
+           Y="@(hmsCenter.Y - Skin.Current.HmsRadius)" 
+           Width=@(Skin.Current.HmsRadius + Math.Abs(Skin.Current.HmsDX)) Height="@(2 * Skin.Current.HmsRadius)" 
            Src="@Skin.Current.HMS_URL" 
            ShadowColor="@Skin.Current.SHADOW" ShadowX="5" ShadowY="5" ShadowBlur="1"
            Opacity="@(!isInFrontOfPlayerToken && h.ShowWheelsAndHMS ? 0.95f : 0.4f)"
@@ -78,7 +79,7 @@
 
     @if (h.ShowWheelsAndHMS && (hovered == h.Game.Map.HiddenMobileStronghold || h.HighlightedTerritories.Contains(h.Game.Map.HiddenMobileStronghold.Territory)))
     {
-        <Circle X="(h.Game.Map.HiddenMobileStronghold.Center.X + 0.1f * HiddenMobileStronghold.Radius)" Y="h.Game.Map.HiddenMobileStronghold.Center.Y" Radius="(0.9f * HiddenMobileStronghold.Radius)"
+        <Circle X="(hmsCenter.X + 0.1f * Skin.Current.HmsRadius)" Y="hmsCenter.Y" Radius="(0.9f * Skin.Current.HmsRadius)"
                 FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1"/>
     }
 }
@@ -191,10 +192,10 @@
         }
         else
         {
-            result += Skin.Current.Format("<h5>{0}</h5>", intelligenceLocation.Territory.Name);
-            if (intelligenceLocation.Name != "")
+            result += Skin.Current.Format("<h5>{0}</h5>", Skin.Current.Describe(intelligenceLocation.Territory));
+            if (intelligenceLocation.Orientation != "")
             {
-                result += "<div class='mt-0 mb-2'><strong>Sector: " + intelligenceLocation.Name + "</strong></div>";
+                result += "<div class='mt-0 mb-2'><strong>Sector: " + intelligenceLocation.Orientation + "</strong></div>";
             }
         }
 

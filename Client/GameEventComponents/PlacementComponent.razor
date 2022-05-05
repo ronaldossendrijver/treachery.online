@@ -104,7 +104,7 @@
         {
             if (forces.Sum(kvp => kvp.Value.TotalAmountOfForces) > 0)
             {
-                return PlacementEvent.ValidTargets(Game, Player, forces).OrderByDescending(l => l.IsStronghold).ThenBy(l => l.Territory.Name).ThenBy(l => l.Name);
+                return PlacementEvent.ValidTargets(Game, Player, forces).OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l));
             }
             else
             {

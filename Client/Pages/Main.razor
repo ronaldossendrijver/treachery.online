@@ -110,7 +110,7 @@
 
         @if (h.Game.CurrentReport != null)
         {
-            <ReportComponent h="@h" Report="h.Game.CurrentReport" Title="@h.Game.CurrentReport.Title" />
+            <ReportComponent h="@h" Report="h.Game.CurrentReport" />
         }
 
         @if (!h.IsObserver && h.Player.Faction == Faction.None && h.CurrentPhase > Phase.TradingFactions)

@@ -73,6 +73,6 @@ namespace Treachery.Shared
             }
         }
 
-        public override string ToString() => string.Join("", Expression.Elements.Select(e => Skin.Current.Describe(e)));
+        public string ToString(IDescriber describer) => string.Join("", Expression.Elements.Select(e => describer.Describe(e)));
     }
 }

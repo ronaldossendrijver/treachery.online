@@ -15,7 +15,7 @@
         {
             <div class="card">
                 <Hoverable Class="card-img-top" Popover=@Support.GetHoverHTML(v)>
-                    <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@(v.Name)">
+                    <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt=@Name(v)>
                 </Hoverable>
             </div>
         }
@@ -31,7 +31,7 @@
             {
                 <div class="card">
                     <Hoverable Class="card-img-top" Popover=@Support.GetHoverHTML(v)>
-                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@(v.Name)">
+                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt=@Name(v)>
                     </Hoverable>
                 </div>
             }
@@ -46,7 +46,7 @@
         {
             <div class="card">
                 <Hoverable Class="card-img-top" Popover=@Support.GetHoverHTML(v)>
-                    <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@(v.ToString())">
+                    <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt=@Name(v)>
                 </Hoverable>
             </div>
         }
@@ -62,7 +62,7 @@
             {
                 <div class="card">
                     <Hoverable Class="card-img-top" Popover=@Support.GetHoverHTML(v)>
-                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@(v.ToString())">
+                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt=@Name(v)>
                     </Hoverable>
                 </div>
             }
@@ -79,7 +79,7 @@
             {
                 <div class="card">
                     <Hoverable Class="card-img-top" Popover=@Support.GetHoverHTML(v)>
-                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@(v.ToString())">
+                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt=@Name(v)>
                     </Hoverable>
                 </div>
             }

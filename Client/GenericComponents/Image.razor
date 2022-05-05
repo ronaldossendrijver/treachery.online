@@ -6,20 +6,19 @@
 @implements IDisposable;
 
 @{
-
     var popover = Popover;
 
-    @if (popover != null && popover.Length > 0)
+    if (popover != null && popover.Length > 0)
     {
         <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@popover>
     }
     else if (Shown != null)
     {
-        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src title=@Skin.Current.Describe(Shown)>
+        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src title=@Skin.Current.Describe(Shown)/>
     }
     else
     {
-        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src>
+        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src/>
     }
 }
 

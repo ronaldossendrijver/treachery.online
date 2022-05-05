@@ -11,7 +11,7 @@
 
     <div class="card border-light pb-1">
 
-        <div class="card-header text-center">@Title</div>
+        <div class="card-header text-center">@Skin.Current.Describe(h.Game.CurrentReport.About) Report</div>
 
         <div class="card-body p-1 overflow-auto">
 
@@ -38,9 +38,6 @@
 
     [Parameter]
     public Report Report { get; set; }
-
-    [Parameter]
-    public string Title { get; set; }
 
     private string FontStyle(Message m) => m.Target == Faction.None ? "" : "font-style: italic;";
 }
