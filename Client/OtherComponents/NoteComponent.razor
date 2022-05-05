@@ -156,7 +156,7 @@
     {
         get
         {
-            return h.Game.Players.OrderBy(p => Skin.Current.Describe(p.Faction));
+            return h.Game.Players.OrderBy(p => Name(p.Faction));
         }
     }
     

@@ -164,6 +164,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        Message.DefaultDescriber = Skin.Current;
         Browser.Initialize(JSRuntime);
         h = new Handler(NavigationManager.ToAbsoluteUri("/gameHub"));
         await h.Start();
@@ -202,6 +203,7 @@
             {
                 var issues = await existingSkin.ValidateAndFix(Browser.UrlExists);
                 Skin.Current = existingSkin;
+                Message.DefaultDescriber = Skin.Current;
             }
         }
     }

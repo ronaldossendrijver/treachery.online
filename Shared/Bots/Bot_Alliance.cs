@@ -102,7 +102,7 @@ namespace Treachery.Shared
                 {
                     LogInfo("Allowing use of resources: {0} and Karama card: {1}", allowedResources, karmaCard);
                     var permission = new AllyPermission(Game) { Initiator = Faction, PermittedKarmaCard = karmaCard, PermittedResources = allowedResources };
-                    LogInfo(permission.GetMessage().ToString());
+                    LogInfo(permission.GetMessage());
                     return permission;
                 }
             }
@@ -130,7 +130,7 @@ namespace Treachery.Shared
                 {
                     LogInfo("Allowing use of resources: {0} and Karama card: {1}", allowedResources, karmaCard);
                     var permission = new AllyPermission(Game) { Initiator = Faction, PermittedKarmaCard = karmaCard, PermittedResources = allowedResources, BlueAllowsUseOfVoice = true };
-                    LogInfo(permission.GetMessage().ToString());
+                    LogInfo(permission.GetMessage());
                     return permission;
                 }
             }
@@ -157,7 +157,7 @@ namespace Treachery.Shared
                 {
                     LogInfo("Allowing use of resources: {0} and Karama card: {1}", allowedResources, karmaCard);
                     var permission = new AllyPermission(Game) { Initiator = Faction, PermittedKarmaCard = karmaCard, PermittedResources = allowedResources, GreenSharesPrescience = true };
-                    LogInfo(permission.GetMessage().ToString());
+                    LogInfo(permission.GetMessage());
                     return permission;
                 }
             }
@@ -185,7 +185,7 @@ namespace Treachery.Shared
                 {
                     LogInfo("Allowing use of resources: {0} and Karama card: {1}", allowedResources, karmaCard);
                     var permission = new AllyPermission(Game) { Initiator = Faction, PermittedKarmaCard = karmaCard, PermittedResources = allowedResources, AllyMayReplaceCards = true };
-                    LogInfo(permission.GetMessage().ToString());
+                    LogInfo(permission.GetMessage());
                     return permission;
                 }
             }
@@ -213,7 +213,7 @@ namespace Treachery.Shared
                 {
                     LogInfo("Allowing use of resources: {0} and Karama card: {1}", allowedResources, karmaCard);
                     var permission = new AllyPermission(Game) { Initiator = Faction, PermittedKarmaCard = karmaCard, PermittedResources = allowedResources };
-                    LogInfo(permission.GetMessage().ToString());
+                    LogInfo(permission.GetMessage());
                     return permission;
                 }
             }
@@ -241,7 +241,7 @@ namespace Treachery.Shared
                 {
                     LogInfo("Allowing use of resources: {0} and Karama card: {1}", allowedResources, karmaCard);
                     var permission = new AllyPermission(Game) { Initiator = Faction, PermittedKarmaCard = karmaCard, PermittedResources = allowedResources, WhiteAllowsUseOfNoField = true };
-                    LogInfo(permission.GetMessage().ToString());
+                    LogInfo(permission.GetMessage());
                     return permission;
                 }
             }
@@ -269,7 +269,7 @@ namespace Treachery.Shared
                 {
                     LogInfo("Allowing use of resources: {0} and Karama card: {1}", allowedResources, karmaCard);
                     var permission = new AllyPermission(Game) { Initiator = Faction, AllyMayShipAsOrange = true, PermittedKarmaCard = karmaCard, PermittedResources = allowedResources };
-                    LogInfo(permission.GetMessage().ToString());
+                    LogInfo(permission.GetMessage());
                     return permission;
                 }
             }
@@ -297,7 +297,7 @@ namespace Treachery.Shared
                 {
                     LogInfo("Allowing use of resources: {0} and Karama card: {1}", allowedResources, karmaCard);
                     var permission = new AllyPermission(Game) { Initiator = Faction, AllyMayReviveAsPurple = true, PermittedKarmaCard = karmaCard, PermittedResources = allowedResources };
-                    LogInfo(permission.GetMessage().ToString());
+                    LogInfo(permission.GetMessage());
                     return permission;
                 }
             }
@@ -329,7 +329,7 @@ namespace Treachery.Shared
                 {
                     LogInfo("Allowing use of resources: {0} and Karama card: {1}", allowedResources, karmaCard);
                     var permission = new AllyPermission(Game) { Initiator = Faction, RedWillPayForExtraRevival = 3, PermittedKarmaCard = karmaCard, PermittedResources = allowedResources };
-                    LogInfo(permission.GetMessage().ToString());
+                    LogInfo(permission.GetMessage());
                     return permission;
                 }
             }
@@ -357,7 +357,7 @@ namespace Treachery.Shared
                 {
                     LogInfo("Allowing use of resources: {0} and Karama card: {1}", allowedResources, karmaCard);
                     var permission = new AllyPermission(Game) { Initiator = Faction, PermittedKarmaCard = karmaCard, PermittedResources = allowedResources, YellowAllowsThreeFreeRevivals = true, YellowSharesPrescience = true, YellowWillProtectFromMonster = true };
-                    LogInfo(permission.GetMessage().ToString());
+                    LogInfo(permission.GetMessage());
                     return permission;
                 }
             }

@@ -12,7 +12,7 @@
     <Header>Select where to make @Skin.Current.Describe(Concept.Monster) appear</Header>
     <Body>
 
-        <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="YellowSentMonster.ValidTargets(Game).OrderBy(t => Skin.Current.Describe(t))"/>
+        <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="YellowSentMonster.ValidTargets(Game).OrderBy(t => Name(t))"/>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Appear in {0}", target)" ConfirmError="@Validation" />
 

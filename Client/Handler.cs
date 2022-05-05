@@ -429,6 +429,7 @@ namespace Treachery.Client
 
             Skin.Current = Support.LoadSkin(skinData);
             await Skin.Current.ValidateAndFix(Browser.UrlExists);
+            Message.DefaultDescriber = Skin.Current;
 
             Refresh();
             RefreshPopovers();

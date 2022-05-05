@@ -394,7 +394,7 @@ namespace Treachery.Shared
             if (Game.CurrentBattle.IsAggressorOrDefender(this))
             {
                 voicePlan = BestVoice(Game.CurrentBattle, this, Game.CurrentBattle.OpponentOf(Faction));
-                LogInfo(voicePlan.voice.GetMessage().ToString());
+                LogInfo(voicePlan.voice.GetMessage());
                 return voicePlan.voice;
             }
 
@@ -807,7 +807,7 @@ namespace Treachery.Shared
                     };
 
                     var result = new FaceDanced(Game) { Initiator = Faction, FaceDancerCalled = true, ForceLocations = forcesFromPlanet, ForcesFromReserve = fromReserves, TargetForceLocations = targetLocations };
-                    LogInfo(result.GetMessage().ToString());
+                    LogInfo(result.GetMessage());
                     return result;
                 }
             }

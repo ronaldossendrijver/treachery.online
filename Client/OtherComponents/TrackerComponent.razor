@@ -179,8 +179,8 @@
             Support.Log(e);
         }
 
-        AllTraitors = h.Game.TraitorsInPlay.OrderBy(l => Skin.Current.Describe(l)).ToList();
-        AllSpiceCards = Game.ResourceCardDeck.Items.OrderBy(rc => Skin.Current.Describe(rc)).ToList();
+        AllTraitors = h.Game.TraitorsInPlay.OrderBy(l => Name(l)).ToList();
+        AllSpiceCards = Game.ResourceCardDeck.Items.OrderBy(rc => Name(rc)).ToList();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -331,7 +331,7 @@
 
     private ResourceCard SpiceCard(string name) => AllSpiceCards.FirstOrDefault(c => Skin.Current.Describe(c) == name);
 
-    private IEnumerable<Player> Players => h.Game.Players.OrderBy(p => Skin.Current.Describe(p.Faction));
+    private IEnumerable<Player> Players => h.Game.Players.OrderBy(p => Name(p.Faction));
 
     private string InfoMessage => Skin.Current.Format("Welcome to the {0} Tracker! Use it to take note of (discarded) traitors, the top spice card and treachery cards.<br>When a (possibly unknown) card is won, click on an empty card placeholder and select it.<br>To indicate that a card was discarded, click it and then select the 'trash can' which will move the card to the Discarded section. When an unknown card becomes known and discarded, select it first, then discard it.<br>When the discard pile is shuffled into a new draw pile, click 'reshuffle' to clear the Discarded section.<br>If you sent a card to the Discarded section by mistake, click on the X next to it.", Faction.Green);
 

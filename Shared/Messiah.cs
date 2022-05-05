@@ -29,5 +29,17 @@ namespace Treachery.Shared
         public bool IsTraitor(IHero hero) => false;
 
         public bool IsFaceDancer(IHero hero) => false;
+
+        public override string ToString()
+        {
+            if (Message.DefaultDescriber != null)
+            {
+                return Message.DefaultDescriber.Describe(this) + "*";
+            }
+            else
+            {
+                return base.ToString();
+            }
+        }
     }
 }

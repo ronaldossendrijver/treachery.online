@@ -36,5 +36,5 @@
 
     protected override Voice ConfirmedResult => new Voice(Game) { Initiator = Faction, Must = mustUse, Type = type };
 
-    private IEnumerable<TreacheryCardType> ValidTypes => Voice.ValidTypes(Game).OrderBy(t => Skin.Current.Describe(t));
+    private IEnumerable<TreacheryCardType> ValidTypes => Voice.ValidTypes(Game).OrderBy(t => Name(t));
 }

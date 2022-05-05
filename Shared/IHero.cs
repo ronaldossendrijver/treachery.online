@@ -23,12 +23,5 @@ namespace Treachery.Shared
         public bool Is(Faction f);
 
         public HeroType HeroType { get; }
-
-        /*
-        public override string ToString()
-        {
-            return base.ToString();
-        }
-        */
     }
 }

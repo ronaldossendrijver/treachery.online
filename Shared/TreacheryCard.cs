@@ -5,7 +5,7 @@ using System;
 
 namespace Treachery.Shared
 {
-    public class TreacheryCard : IHero, IIdentifiable/*, IComparable<TreacheryCard>*/
+    public class TreacheryCard : IHero, IIdentifiable//, IComparable<TreacheryCard>
     {
         public const int NONE = -2;
         public const int UNKNOWN = -1;
@@ -112,9 +112,21 @@ namespace Treachery.Shared
             }
             else
             {
-                return Name.CompareTo(other.Name);
+                return SkinId.CompareTo(other.SkinId);
             }
-        }*/
+        }
+        */
+        public override string ToString()
+        {
+            if (Message.DefaultDescriber != null)
+            {
+                return Message.DefaultDescriber.Describe(this) + "*";
+            }
+            else
+            {
+                return base.ToString();
+            }
+        }
     }
 
 }

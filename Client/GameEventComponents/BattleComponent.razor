@@ -329,7 +329,7 @@
         return "?";
     }
 
-    private IEnumerable<TreacheryCard> Weapons => Battle.ValidWeapons(Game, Player, defense, hero).OrderBy(c => c);
+    private IEnumerable<TreacheryCard> Weapons => Battle.ValidWeapons(Game, Player, defense, hero).OrderBy(c => Name(c));
 
-    private IEnumerable<TreacheryCard> Defenses => Battle.ValidDefenses(Game, Player, weapon).OrderBy(c => c);
+    private IEnumerable<TreacheryCard> Defenses => Battle.ValidDefenses(Game, Player, weapon).OrderBy(c => Name(c));
 }

@@ -8,6 +8,8 @@ namespace Treachery.Shared
 {
     public class Message
     {
+        public static IDescriber DefaultDescriber = null;
+
         private static int Counter = 0;
 
         public int Nr { get; } = Counter++;

@@ -594,7 +594,7 @@ namespace Treachery.Shared
             }
             else
             {
-                LogInfo(error.ToString());
+                LogInfo(error);
             }
         }
 
@@ -812,7 +812,7 @@ namespace Treachery.Shared
             }
             else
             {
-                LogInfo(error.ToString());
+                LogInfo(error);
             }
         }
 

@@ -46,5 +46,17 @@ namespace Treachery.Shared
                 return locations[(int)(0.5 * locations.Count)];
             }
         }
+
+        public override string ToString()
+        {
+            if (Message.DefaultDescriber != null)
+            {
+                return Message.DefaultDescriber.Describe(this) + "*";
+            }
+            else
+            {
+                return base.ToString();
+            }
+        }
     }
 }

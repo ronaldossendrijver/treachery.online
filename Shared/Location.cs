@@ -54,5 +54,17 @@ namespace Treachery.Shared
         {
             return Id;
         }
+
+        public override string ToString()
+        {
+            if (Message.DefaultDescriber != null)
+            {
+                return Message.DefaultDescriber.Describe(this) + "*";
+            }
+            else
+            {
+                return base.ToString();
+            }
+        }
     }
 }
