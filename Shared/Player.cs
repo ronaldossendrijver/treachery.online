@@ -492,21 +492,9 @@ namespace Treachery.Shared
             }
         }
 
-        public IEnumerable<Territory> TerritoriesWithForces
-        {
-            get
-            {
-                return Game.Map.Territories.Where(t => AnyForcesIn(t) > 0);
-            }
-        }
+        public IEnumerable<Territory> TerritoriesWithForces => Game.Map.Territories.Where(t => AnyForcesIn(t) > 0);
 
-        public IEnumerable<Location> LocationsWithAnyForces
-        {
-            get
-            {
-                return ForcesOnPlanet.Keys;
-            }
-        }
+        public IEnumerable<Location> LocationsWithAnyForces => ForcesOnPlanet.Keys;
 
         public IEnumerable<Location> LocationsWithAnyForcesInTerritory(Territory t)
         {
@@ -597,55 +585,13 @@ namespace Treachery.Shared
 
         }
 
-        public TreacheryCard Card(TreacheryCardType type)
-        {
-            return TreacheryCards.FirstOrDefault(c => c.Type == type);
-        }
+        public TreacheryCard Card(TreacheryCardType type) => TreacheryCards.FirstOrDefault(c => c.Type == type);
 
-        public IEnumerable<int> ValidSpiceAmounts
-        {
-            get
-            {
-                return Enumerable.Range(0, Resources + 1);
-            }
-        }
+        public bool HasUnrevealedFaceDancers => UnrevealedFaceDancers.Any();
 
-        public bool HasUnrevealedFaceDancers
-        {
-            get
-            {
-                return UnrevealedFaceDancers.Any();
-            }
-        }
+        public IEnumerable<IHero> UnrevealedFaceDancers => FaceDancers.Where(f => !RevealedDancers.Contains(f));
 
-        public IEnumerable<IHero> UnrevealedFaceDancers
-        {
-            get
-            {
-                return FaceDancers.Where(f => !RevealedDancers.Contains(f));
-            }
-        }
-
-        public bool MessiahAvailable
-        {
-            get
-            {
-                return Game.Applicable(Rule.GreenMessiah) && Is(Faction.Green) && TotalForcesKilledInBattle >= 7 && Game.IsAlive(LeaderManager.Messiah);
-            }
-        }
-
-
-        public bool HasSpecialForcesToMove
-        {
-            get
-            {
-                return (
-                    Game.Applicable(Rule.YellowSpecialForces) && Is(Faction.Yellow) ||
-                    Game.Applicable(Rule.RedSpecialForces) && Is(Faction.Red) ||
-                    Game.Applicable(Rule.BlueAdvisors) && Is(Faction.Blue)) ||
-                    Is(Faction.Grey);
-            }
-        }
+        public bool MessiahAvailable => Game.Applicable(Rule.GreenMessiah) && Is(Faction.Green) && TotalForcesKilledInBattle >= 7 && Game.IsAlive(LeaderManager.Messiah);
 
         public bool HasSpecialForces
         {

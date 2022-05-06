@@ -54,7 +54,7 @@ namespace Treachery.Shared
             {
                 description = Message.Express(
                     MessagePart.ExpressIf(benefit > 0, "Receive ", new Payment(benefit), " and "),
-                    Express(Type, GetParameter1<object>(g, Type, Parameter1), GetParameter2<object>()), 
+                    Express(Type, GetParameter1<object>(g, Type, Parameter1)), 
                     " until ",
                     End);
             }
@@ -73,7 +73,7 @@ namespace Treachery.Shared
             return Message.Express(BoundFaction, " ⇔ ", ConsumingFaction, ": ", description);
         }
 
-        private static MessagePart Express(DealType d, object parameter1, object parameter2)
+        private static MessagePart Express(DealType d, object parameter1)
         {
             return d switch
             {

@@ -5,7 +5,7 @@ using System;
 
 namespace Treachery.Shared
 {
-    public class TreacheryCard : IHero, IIdentifiable//, IComparable<TreacheryCard>
+    public class TreacheryCard : IHero, IIdentifiable
     {
         public const int NONE = -2;
         public const int UNKNOWN = -1;
@@ -85,7 +85,6 @@ namespace Treachery.Shared
 
         public bool IsGreen => !(IsWeapon || IsDefense || IsUseless || IsMercenary);
 
-
         public bool CounteredBy(TreacheryCard defense, TreacheryCard combinedWithWeapon)
         {
             if (Type == TreacheryCardType.MirrorWeapon)
@@ -103,19 +102,7 @@ namespace Treachery.Shared
                     Type == TreacheryCardType.ProjectileAndPoison && defense.Type == TreacheryCardType.ShieldAndAntidote;
             }
         }
-        /*
-        public int CompareTo(TreacheryCard other)
-        {
-            if (other == null)
-            {
-                return 1;
-            }
-            else
-            {
-                return SkinId.CompareTo(other.SkinId);
-            }
-        }
-        */
+
         public override string ToString()
         {
             if (Message.DefaultDescriber != null)

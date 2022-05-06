@@ -370,6 +370,8 @@ namespace Treachery.Client
         }
     }
 
+    #pragma warning disable IDE1006 // Naming Styles
+
     public abstract class PopupChatCommand
     {
         public abstract string type { get; set; }
@@ -395,6 +397,8 @@ namespace Treachery.Client
     {
         public override string type { get; set; } = "PopupChatClear";
     }
+
+    #pragma warning restore IDE1006 // Naming Styles
 
     public class CaptureDevice
     {
