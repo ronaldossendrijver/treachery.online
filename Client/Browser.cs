@@ -30,7 +30,7 @@ namespace Treachery.Client
             await JsInvoke("Reload");
         }
 
-        private static readonly ElementReference defaultElementReferenceValue = default(ElementReference);
+        private static readonly ElementReference defaultElementReferenceValue = default;
 
         public static async Task EnablePopover(ElementReference element)
         {

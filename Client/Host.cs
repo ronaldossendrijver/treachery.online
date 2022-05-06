@@ -218,7 +218,7 @@ namespace Treachery.Client
                 if (denyMessage == "")
                 {
                     var data = GameState.GetStateAsString(h.Game);
-                    var skin = Skin.Current.GetSkinAsString();
+                    var skin = Skin.Current.SkinToString();
                     await connection.SendAsync("LoadGame", GameID, data, e.Name, skin);
                 }
             }
@@ -253,7 +253,7 @@ namespace Treachery.Client
                 await connection.SendAsync("RespondObserverRejoined", GameID, playerConnectionId, HostID, denyMessage);
                 if (!JoinedObservers.Contains(e.Name)) JoinedObservers.Add(e.Name);
                 var data = GameState.GetStateAsString(h.Game);
-                var skin = Skin.Current.GetSkinAsString();
+                var skin = Skin.Current.SkinToString();
                 await connection.SendAsync("LoadGame", GameID, data, e.Name, skin);
             }
             catch (Exception ex)

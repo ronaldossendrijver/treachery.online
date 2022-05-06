@@ -428,7 +428,7 @@ namespace Treachery.Client
             await Browser.SaveStringSetting("treachery.online;setting.skin", skinData);
 
             Skin.Current = Support.LoadSkin(skinData);
-            await Skin.Current.ValidateAndFix(Browser.UrlExists);
+            //await Skin.Current.ValidateAndFix(Browser.UrlExists);
             Message.DefaultDescriber = Skin.Current;
 
             Refresh();

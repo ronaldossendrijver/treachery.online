@@ -138,23 +138,6 @@
         <div class="col-sm-1 col-lg-1 col-xl-1" />
     }
 
-    @if (h.HostProxy == null)
-    {
-        <HoverPanel Width=300 HandleWidth=50 BackgroundColor="red">
-            <div class="p-1">
-                <h3>What's New in version @Game.LatestVersion?</h3>
-                <ol class="list-group list-group-numbered">
-                    <li class="list-group-item">The Chat Panel has been moved to the left side of the screen and will appear when hovered over or tapped.</li>
-                    <li class="list-group-item">The Tleilaxu Special Karama has been added so that it can be used against Bots as well.</li>
-                    <li class="list-group-item">Fixed some issues with the Planetologist skill.</li>
-                    <li class="list-group-item">Fixed issues with the Harkonnen Leader Capture ability.</li>
-                    <li class="list-group-item">Preventing site-to-side shipments with Karama should now also work against the Guild's ally.</li>
-                    <li class="list-group-item">All technical frameworks (Blazor, Bootstrap) have been updated, dependencies on jQuery were removed.</li>
-                </ol>
-            </div>
-        </HoverPanel>
-    }
-
 </div>
 
 @code {
@@ -201,7 +184,7 @@
 
             if (existingSkin.Version >= Skin.CurrentVersion)
             {
-                var issues = await existingSkin.ValidateAndFix(Browser.UrlExists);
+                //var issues = await existingSkin.ValidateAndFix(Browser.UrlExists);
                 Skin.Current = existingSkin;
                 Message.DefaultDescriber = Skin.Current;
             }

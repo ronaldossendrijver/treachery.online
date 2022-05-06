@@ -10,15 +10,15 @@
 
     if (popover != null && popover.Length > 0)
     {
-        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@popover>
+        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@popover/>
     }
     else if (Shown != null)
     {
-        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src title=@Skin.Current.Describe(Shown)/>
+        <img class=@Class style=@Style width=@ImgWidth src=@Src title=@Skin.Current.Describe(Shown)/>
     }
     else
     {
-        <img @ref=@element class=@Class style=@Style width=@ImgWidth src=@Src/>
+        <img class=@Class style=@Style width=@ImgWidth src=@Src/>
     }
 }
 
@@ -38,8 +38,8 @@
         {
             if (value != _shown)
             {
+                _popoverNeedsRefresh = (Popover != null);
                 _shown = value;
-                _popoverNeedsRefresh = true;
             }
         }
     }
@@ -106,8 +106,9 @@
         {
             if (value != _popover)
             {
+                _popoverNeedsRefresh = (Popover != null);
+
                 _popover = value;
-                _popoverNeedsRefresh = true;
             }
         }
     }

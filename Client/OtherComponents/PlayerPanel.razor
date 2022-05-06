@@ -13,7 +13,7 @@
         @if (ShowHeader)
         {
             <div class="card-header">
-                @Skin.Current.Describe(ShownPlayer.Faction)
+                @Name(ShownPlayer.Faction)
                 <CollapseButton @bind-Collapsed="Collapsed" />
             </div>
         }
@@ -30,19 +30,19 @@
 
                             <!-- Resources -->
                             <div class="col p-0">
-                                <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.Harvester_URL" title="@Skin.Current.Describe(Concept.Resource)" /><strong>&nbsp;@ResourcesText</strong>
+                                <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.Harvester_URL" title="Name(Concept.Resource)" /><strong>&nbsp;@ResourcesText</strong>
                             </div>
 
                             <!-- Forces -->
                             <div class="col p-0">
-                                <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.GetFactionForceImageURL(ShownPlayer.Faction)" title=@Skin.Current.Describe(ShownPlayer.Force) /><strong>&nbsp;@ShownPlayer.ForcesInReserve</strong>
+                                <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.GetFactionForceImageURL(ShownPlayer.Faction)" title=@Name(ShownPlayer.Force) /><strong>&nbsp;@ShownPlayer.ForcesInReserve</strong>
                             </div>
 
                             <!-- Special Forces -->
                             @if (ShownPlayer.HasSpecialForces)
                             {
                                 <div class="col p-0">
-                                    <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.GetFactionSpecialForceImageURL(ShownPlayer.Faction)" title=@Skin.Current.Describe(ShownPlayer.SpecialForce) /><strong>&nbsp;@ShownPlayer.SpecialForcesInReserve</strong>
+                                    <img class="img-fluid m-0 p-0" width="24" height="24" src="@Skin.Current.GetFactionSpecialForceImageURL(ShownPlayer.Faction)" title=@Name(ShownPlayer.SpecialForce) /><strong>&nbsp;@ShownPlayer.SpecialForcesInReserve</strong>
                                 </div>
                             }
 
@@ -131,7 +131,7 @@
 
                         @if (h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove && h.Game.HasResourceDeckPrescience(Player))
                         {
-                            <Hoverable Popover=@Support.GetHoverHTML(h.Game.ResourceCardDeck.Top)>Top card of @Skin.Current.Describe(Concept.Resource) Deck: <span class="badge bg-primary rounded-pill">@h.Game.ResourceCardDeck.Top</span></Hoverable>
+                            <Hoverable Popover=@Support.GetHoverHTML(h.Game.ResourceCardDeck.Top)>Top card of @Name(Concept.Resource) Deck: <span class="badge bg-primary rounded-pill">@Name(h.Game.ResourceCardDeck.Top)</span></Hoverable>
                         }
 
                         <!-- Cards -->
