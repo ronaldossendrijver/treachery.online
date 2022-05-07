@@ -15,8 +15,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
-using Treachery.Shared;
 using Treachery.Client;
+using Treachery.Shared;
 
 namespace Treachery.Test
 {
@@ -211,7 +211,7 @@ namespace Treachery.Test
 
 
 
-        private void ProfileGames()
+        private static void ProfileGames()
         {
             Console.WriteLine("Profiling all savegame files in {0}...", Directory.GetCurrentDirectory());
 
@@ -329,6 +329,8 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
+            Message.DefaultDescriber = Skin.Current;
+
             _cardcount = new();
             _leadercount = new();
 
@@ -1152,13 +1154,13 @@ namespace Treachery.Test
             var skinData = writer.ToString();
             File.WriteAllText(filename, skinData);
         }
-        
+
 
         private static int GetRandomId()
         {
             return (new Random()).Next();
         }
-        
+
 
         [TestMethod]
         public void TestShuffleMethod()

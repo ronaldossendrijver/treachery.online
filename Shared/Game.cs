@@ -127,7 +127,7 @@ namespace Treachery.Shared
                 else previousEvent = FindMostRecentEvent();
 
                 var elapsedTime = e.Time.Subtract(previousEvent.Time);
-                
+
                 if (elapsedTime.TotalHours < 1)
                 {
                     Timers[e.Player][CurrentMainPhase] += e.Time.Subtract(previousEvent.Time);
@@ -164,12 +164,12 @@ namespace Treachery.Shared
             }
         }
 
-        private bool InTimedPhase => 
-            CurrentPhase == Phase.Bidding || 
-            CurrentPhase == Phase.OrangeShip || 
-            CurrentPhase == Phase.OrangeMove || 
-            CurrentPhase == Phase.NonOrangeShip || 
-            CurrentPhase == Phase.NonOrangeMove || 
+        private bool InTimedPhase =>
+            CurrentPhase == Phase.Bidding ||
+            CurrentPhase == Phase.OrangeShip ||
+            CurrentPhase == Phase.OrangeMove ||
+            CurrentPhase == Phase.NonOrangeShip ||
+            CurrentPhase == Phase.NonOrangeMove ||
             CurrentPhase == Phase.BattlePhase;
 
         public Game Undo(int untilEventNr)
@@ -183,7 +183,7 @@ namespace Treachery.Shared
             }
             return result;
         }
-        
+
         public GameEvent LatestEvent(Type eventType) => History.LastOrDefault(e => e.GetType() == eventType);
 
         public GameEvent LatestEvent(params Type[] eventType)

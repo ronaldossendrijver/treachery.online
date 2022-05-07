@@ -12,8 +12,6 @@ namespace Treachery.Shared
     {
         #region PublicInterface
 
-        public static IDescriber DescriberForBotLogging = null;
-
         public BotParameters Param { get; set; }
 
         public GameEvent DetermineHighPrioInPhaseAction(IEnumerable<Type> possibleEvents)
@@ -244,9 +242,9 @@ namespace Treachery.Shared
         {
             if (Game.BotInfologging)
             {
-                if (DescriberForBotLogging != null)
+                if (Message.DefaultDescriber != null)
                 {
-                    Console.WriteLine(Name + ": " + DescriberForBotLogging.Format(msg, pars));
+                    Console.WriteLine(Name + ": " + Message.DefaultDescriber.Format(msg, pars));
                 }
                 else
                 {
@@ -259,15 +257,15 @@ namespace Treachery.Shared
         {
             if (Game.BotInfologging && message != null)
             {
-                if (DescriberForBotLogging != null)
+                if (Message.DefaultDescriber != null)
                 {
-                    Console.WriteLine(Name + ": " + message.ToString(DescriberForBotLogging));
+                    Console.WriteLine(Name + ": " + message.ToString(Message.DefaultDescriber));
                 }
                 else
                 {
                     Console.WriteLine(Name + ": " + message.ToString());
                 }
-                
+
             }
         }
 

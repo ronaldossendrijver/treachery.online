@@ -32,7 +32,7 @@ namespace Treachery.Client
 
         public static string GetHoverHTML(string c)
         {
-            return string.Format("<div style='background-color:white;border-color:black;border-width;1px;color:black;'>{0}</div>", c);
+            return string.Format("<div style='background-color:white;border-color:black;border-width:1px;border-style:solid;color:black;'>{0}</div>", c);
         }
 
         public static string GetHoverHTML(TreacheryCard c)

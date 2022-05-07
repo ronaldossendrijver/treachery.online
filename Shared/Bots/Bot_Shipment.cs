@@ -616,18 +616,19 @@ namespace Treachery.Shared
                 }
             }
 
-            result = new Shipment(Game) { 
-                Initiator = Faction, 
-                ForceAmount = nrOfForces - nrOfSmuggledForces, 
+            result = new Shipment(Game)
+            {
+                Initiator = Faction,
+                ForceAmount = nrOfForces - nrOfSmuggledForces,
                 SpecialForceAmount = nrOfSpecialForces - nrOfSmuggledSpecialForces,
                 SmuggledAmount = nrOfSmuggledForces,
                 SmuggledSpecialAmount = nrOfSmuggledSpecialForces,
-                NoFieldValue = noFieldValue, 
-                Passed = false, 
-                From = null, 
-                KarmaCard = null, 
-                KarmaShipment = false, 
-                To = location 
+                NoFieldValue = noFieldValue,
+                Passed = false,
+                From = null,
+                KarmaCard = null,
+                KarmaShipment = false,
+                To = location
             };
 
             if (useKarma && noFieldValue < 0) UseKarmaIfApplicable(result);

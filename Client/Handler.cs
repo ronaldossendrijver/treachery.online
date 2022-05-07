@@ -32,11 +32,11 @@ namespace Treachery.Client
         public DateTime Disconnected { get; private set; } = default;
 
         public Battle BattleUnderConstruction { get; set; } = null;
-        
+
         public int BidAutoPassThreshold { get; set; } = 0;
         public bool Autopass { get; set; } = false;
         public bool KeepAutopassSetting { get; set; } = false;
-        
+
         //Sound and camera
         public float CurrentEffectVolume { get; set; } = -1;
         public float CurrentChatVolume { get; set; } = -1;
@@ -749,7 +749,7 @@ namespace Treachery.Client
         #region SupportMethods
 
         public bool InScheduledMaintenance =>
-            ServerSettings != null && 
+            ServerSettings != null &&
             ServerSettings.ScheduledMaintenance.AddMinutes(15) > DateTime.UtcNow &&
            (ServerSettings.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 6 && CurrentPhase <= Phase.AwaitingPlayers ||
             ServerSettings.ScheduledMaintenance.Subtract(DateTime.UtcNow).TotalHours < 1);
@@ -761,7 +761,6 @@ namespace Treachery.Client
         public bool IsHost => Host != null;
 
         public Phase CurrentPhase => Game.CurrentPhase;
-
 
         public async Task CheckIfPlayerCanReconnect()
         {

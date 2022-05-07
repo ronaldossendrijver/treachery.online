@@ -680,7 +680,8 @@ namespace Treachery.Shared
             //Prescience available?
             if (prescience != null && opponentPlan != null)
             {
-                if (prescience.Aspect == PrescienceAspect.Defense) {
+                if (prescience.Aspect == PrescienceAspect.Defense)
+                {
                     enemyCanDefendPoisonTooth = opponentPlan.Defense != null && opponentPlan.Defense.IsNonAntidotePoisonDefense;
                     mostEffectiveWeapon = availableWeapons.FirstOrDefault(w => opponentPlan.Defense == null || !w.CounteredBy(opponentPlan.Defense, null));
 
@@ -795,7 +796,7 @@ namespace Treachery.Shared
             var revealedOrToldTraitorsByNonOpponents = Game.Players.Where(p => p != opponent && (p.Ally != Faction.Black || p.Faction != opponent.Ally)).SelectMany(p => p.RevealedTraitors.Union(p.ToldTraitors));
             var toldNonTraitorsByOpponent = opponent.Ally != Faction.Black ? opponent.ToldNonTraitors : Array.Empty<IHero>();
             var knownNonTraitors = Traitors.Union(KnownNonTraitors).Union(knownNonTraitorsByAlly).Union(revealedOrToldTraitorsByNonOpponents).Union(toldNonTraitorsByOpponent);
-            
+
             var knownTraitorsForOpponentsInBattle = Game.Players.
                 Where(p => p == opponent || (p.Faction == Faction.Black && p.Faction == opponent.Ally)).SelectMany(p => p.RevealedTraitors.Union(p.ToldTraitors))
                 .Union(Leaders.Where(l => Game.Applicable(Rule.CapturedLeadersAreTraitorsToOwnFaction) && l.Faction == opponent.Faction));

@@ -99,7 +99,7 @@ namespace Treachery.Shared
             }
             catch (Exception e)
             {
-                return Message.Express("Game Error: ", e.Message,". Technical description: ", e, ".");
+                return Message.Express("Game Error: ", e.Message, ". Technical description: ", e, ".");
             }
         }
 

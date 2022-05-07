@@ -23,7 +23,7 @@ namespace Treachery.Shared
                     return greenPrescienceDeal.Acceptance(Faction);
                 }
             }
-            
+
             if (Game.CurrentPhase == Phase.Bidding)
             {
                 if (!Game.HasBiddingPrescience(this) && !(Ally != Faction.None && Game.HasBiddingPrescience(AlliedPlayer)))

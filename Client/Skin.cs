@@ -8,7 +8,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Treachery.Shared;
 
 namespace Treachery.Client
@@ -263,7 +262,7 @@ namespace Treachery.Client
 
         public int HmsRadius => 2 * PlayerTokenRadius;
 
-        public Point GetSpiceLocation(Location location) => location.SpiceBlowAmount != 0 ? LocationSpice_Point[location.Id] : new Point(0,0);
+        public Point GetSpiceLocation(Location location) => location.SpiceBlowAmount != 0 ? LocationSpice_Point[location.Id] : new Point(0, 0);
 
 
         public string Describe(object value, bool capitalize = false)
@@ -765,7 +764,7 @@ namespace Treachery.Client
             };
         }
 
-        
+
 
 
 
@@ -1294,7 +1293,7 @@ namespace Treachery.Client
         #endregion FactionManual
 
         //#region SkinValidationAndFixing
-                
+
         //public async Task<IEnumerable<string>> ValidateAndFix(Func<string, Task<bool>> UrlExists)
         //{
         //    var errors = new List<string>();

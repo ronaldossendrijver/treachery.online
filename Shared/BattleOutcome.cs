@@ -33,31 +33,31 @@
         public Player Aggressor;
         public Player Defender;
 
-        
+
 
         public Message GetMessage()
         {
             return Message.Express(
-                "Aggressor (", 
+                "Aggressor (",
                 Aggressor.Faction,
-                ") ", 
-                Winner == Aggressor ? "win" : "lose", 
-                ". Total strength: ", 
-                AggTotal, 
-                ", leader ", 
-                AggHeroKilled ? "killed" : "survives", 
-                " by ", 
-                AggHeroCauseOfDeath, 
-                ". Defender (", 
-                Defender.Faction, 
-                ") ", 
-                Winner == Defender ? "win" : "lose", 
-                ". Total strength: ", 
-                DefTotal, 
-                ", leader ", 
-                DefHeroKilled ? "killed" : "survives", 
-                " by ", 
-                DefHeroCauseOfDeath, 
+                ") ",
+                Winner == Aggressor ? "win" : "lose",
+                ". Total strength: ",
+                AggTotal,
+                ", leader ",
+                AggHeroKilled ? "killed" : "survives",
+                " by ",
+                AggHeroCauseOfDeath,
+                ". Defender (",
+                Defender.Faction,
+                ") ",
+                Winner == Defender ? "win" : "lose",
+                ". Total strength: ",
+                DefTotal,
+                ", leader ",
+                DefHeroKilled ? "killed" : "survives",
+                " by ",
+                DefHeroCauseOfDeath,
                 ".");
         }
     }

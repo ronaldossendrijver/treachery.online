@@ -38,7 +38,7 @@ namespace Treachery.Shared
             var karmaCardToUse = Player.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
             if (karmaCardToUse == null) return Message.Express("You don't have a ", TreacheryCardType.Karma, " card");
             if (Cards.Contains(karmaCardToUse)) return Message.Express("You can't select the ", TreacheryCardType.Karma, " you need to play to use this power");
-            
+
             return null;
         }
 

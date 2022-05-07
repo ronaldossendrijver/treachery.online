@@ -34,7 +34,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express(Initiator, " use an ", TreacheryCardType.Flight , " to ", ExtraMove ? " move an additional group of forces " : " gain movement speed");
+            return Message.Express(Initiator, " use an ", TreacheryCardType.Flight, " to ", ExtraMove ? " move an additional group of forces " : " gain movement speed");
         }
 
         public static bool IsAvailable(Player p)

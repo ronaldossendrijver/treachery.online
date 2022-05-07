@@ -1135,10 +1135,10 @@ namespace Treachery.Shared
 
             CurrentReport.Express(BattleOutcome.Winner.Faction, " WIN THE BATTLE");
 
-            bool loserMayRetreat = 
+            bool loserMayRetreat =
                 !BattleOutcome.LoserHeroKilled &&
-                SkilledAs(BattleOutcome.LoserBattlePlan.Hero, LeaderSkill.Diplomat) && 
-                (Retreat.MaxForces(this, BattleOutcome.Loser) > 0 || Retreat.MaxSpecialForces(this, BattleOutcome.Loser) > 0) && 
+                SkilledAs(BattleOutcome.LoserBattlePlan.Hero, LeaderSkill.Diplomat) &&
+                (Retreat.MaxForces(this, BattleOutcome.Loser) > 0 || Retreat.MaxSpecialForces(this, BattleOutcome.Loser) > 0) &&
                 Retreat.ValidTargets(this, BattleOutcome.Loser).Any();
 
             Enter(loserMayRetreat, Phase.Retreating, HandleForceLosses);

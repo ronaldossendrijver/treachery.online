@@ -63,7 +63,6 @@ namespace Treachery.Client
             var result = new List<TreacheryCard>();
 
             var cardsSelectedElsewhere = AllTrackedCardsExcept(f, cardNumber);
-            //return CardsInPlay.Where(c => !removedCards.Contains(c.Id) && !discardedCards.Contains(c.Id) && !cardsSelectedElsewhere.Contains(c.Id));
 
             foreach (var c in CardsInPlay)
             {

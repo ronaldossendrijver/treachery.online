@@ -8,7 +8,8 @@ namespace Treachery.Client
         private Game _game;
         public int _eventCount;
 
-        public bool RequiresUpdate(Game game) {
+        public bool RequiresUpdate(Game game)
+        {
 
             var latestEvent = game.LatestEvent();
 

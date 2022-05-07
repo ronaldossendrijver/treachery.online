@@ -297,7 +297,7 @@ namespace Treachery.Shared
             if (Weapon != null && Weapon == Defense) return Message.Express("Can't use the same card as weapon and defense");
             if (Hero == null && (Weapon != null || Defense != null)) return Message.Express("Can't use treachery cards without a leader");
             if (Hero != null && Hero is Leader && Game.LeaderState[Hero as Leader].CurrentTerritory != null && Game.LeaderState[Hero as Leader].CurrentTerritory != Game.CurrentBattle.Territory) return Message.Express("Selected leader already fought in another territory");
-            if (Hero == null && Messiah) return Message.Express("Can't use ",Concept.Messiah , " without a leader");
+            if (Hero == null && Messiah) return Message.Express("Can't use ", Concept.Messiah, " without a leader");
             if (Messiah && !MessiahMayBeUsedInBattle(Game, p)) return Message.Express(Concept.Messiah, " is not available");
             if (Weapon == null && Defense != null && Defense.Type == TreacheryCardType.WeirdingWay) return Message.Express("You can't use ", TreacheryCardType.WeirdingWay, " as defense without using a weapon");
             if (Defense == null && Weapon != null && Weapon.Type == TreacheryCardType.Chemistry) return Message.Express("You can't use ", TreacheryCardType.Chemistry, " as weapon without using a defense");

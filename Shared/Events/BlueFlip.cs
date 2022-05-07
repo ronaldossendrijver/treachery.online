@@ -19,7 +19,7 @@ namespace Treachery.Shared
         public override Message Validate()
         {
             if (Initiator != Faction.Blue) return Message.Express("Your faction can't flip");
-            
+
             return null;
         }
 

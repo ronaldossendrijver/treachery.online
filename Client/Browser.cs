@@ -2,14 +2,14 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
  */
 
-using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Text.Json;
 
 namespace Treachery.Client
 {
@@ -74,7 +74,7 @@ namespace Treachery.Client
                 await JsInvoke("RefreshPopovers", element);
             }
         }
-        
+
         public static async Task RemoveFocusFromButtons()
         {
             await JsInvoke("RemoveFocusFromButtons");
@@ -203,10 +203,11 @@ namespace Treachery.Client
         public static async Task<IEnumerable<CaptureDevice>> GetCaptureDevices(bool getPermissionsFirst)
         {
             var devices = await JsInvoke<JsonElement[]>("GetCaptureDevices", getPermissionsFirst);
-            
+
             if (devices == null) return new List<CaptureDevice>();
 
-            return devices.Select(d => new CaptureDevice() { 
+            return devices.Select(d => new CaptureDevice()
+            {
                 DeviceId = d.GetProperty("deviceId").GetString(),
                 GroupId = d.GetProperty("groupId").GetString(),
                 Kind = d.GetProperty("kind").GetString(),
@@ -232,7 +233,7 @@ namespace Treachery.Client
             {
                 return groupId;
             }
-            else 
+            else
             {
                 return "unknown device";
             }
@@ -243,12 +244,13 @@ namespace Treachery.Client
             await JsInvoke("InitializeVideo", videoId);
         }
 
-        static readonly SemaphoreSlim semaphoreSlim = new(1, 1);
+        private static readonly SemaphoreSlim semaphoreSlim = new(1, 1);
         public static async Task PushVideoData(string videoId, byte[] data, float volume)
         {
             await semaphoreSlim.WaitAsync();
 
-            try {
+            try
+            {
 
                 await JsInvoke("PushVideoData", videoId, data, volume);
             }
@@ -344,7 +346,6 @@ namespace Treachery.Client
 
         private static async Task<T> JsInvoke<T>(string method, params object[] args)
         {
-            //Console.WriteLine(method + "(" + string.Join(',', args) + ")");
             try
             {
                 return await _runtime.InvokeAsync<T>(method, args);
@@ -358,7 +359,6 @@ namespace Treachery.Client
 
         private static async Task JsInvoke(string method, params object[] args)
         {
-            //Console.WriteLine(method + "(" + string.Join(',', args) + ")");
             try
             {
                 await _runtime.InvokeVoidAsync(method, args);
@@ -367,50 +367,6 @@ namespace Treachery.Client
             {
                 Support.Log("Error invoking method: {0}", e.Message);
             }
-        }
-    }
-
-    #pragma warning disable IDE1006 // Naming Styles
-
-    public abstract class PopupChatCommand
-    {
-        public abstract string type { get; set; }
-    }
-
-    public class PopupChatInitialization : PopupChatCommand
-    {
-        public override string type { get; set; } = "PopupChatInitialize";
-        public string[] playerNames { get; set; }
-        public string[] playerStyles { get; set; }
-
-        public PopupChatMessage[] messages { get; set; }
-    }
-
-    public class PopupChatMessage : PopupChatCommand
-    {
-        public override string type { get; set; } = "PopupChatMessage";
-        public string style { get; set; }
-        public string body { get; set; }
-    }
-
-    public class PopupChatClear : PopupChatCommand
-    {
-        public override string type { get; set; } = "PopupChatClear";
-    }
-
-    #pragma warning restore IDE1006 // Naming Styles
-
-    public class CaptureDevice
-    {
-        public string Label;
-        public string DeviceId;
-
-        public string Kind { get; internal set; }
-        public string GroupId { get; internal set; }
-
-        public override string ToString() {
-
-            return DeviceId;
         }
     }
 }

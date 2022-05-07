@@ -47,14 +47,14 @@ namespace Treachery.Shared
             if (Text != null && Text.Length > 0)
             {
                 description = Message.Express(
-                    MessagePart.ExpressIf(benefit > 0, "Receive ", new Payment(benefit), " and "), 
+                    MessagePart.ExpressIf(benefit > 0, "Receive ", new Payment(benefit), " and "),
                     Text);
             }
             else
             {
                 description = Message.Express(
                     MessagePart.ExpressIf(benefit > 0, "Receive ", new Payment(benefit), " and "),
-                    Express(Type, GetParameter1<object>(g, Type, Parameter1)), 
+                    Express(Type, GetParameter1<object>(g, Type, Parameter1)),
                     " until ",
                     End);
             }

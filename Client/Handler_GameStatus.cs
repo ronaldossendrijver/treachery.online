@@ -559,7 +559,7 @@ namespace Treachery.Client
             }
 
             var latestEvent = g.History.LastOrDefault();
-            
+
             if (latestEvent != null)
             {
                 if (latestEvent is RaiseDeadPlayed) result.Add(FlashInfo(latestEvent, TreacheryCardType.RaiseDead));
@@ -749,7 +749,7 @@ namespace Treachery.Client
             {
                 result.Message = e?.GetMessage();
             }
-            
+
             return result;
         }
 

@@ -305,7 +305,7 @@ namespace Treachery.Shared
         #endregion TradingFactions
 
         #region SettingUp
-        
+
         private void EstablishDecks()
         {
             if (IsPlaying(Faction.White))
@@ -387,8 +387,8 @@ namespace Treachery.Shared
                 //Leaders = LeaderManager.GetLeaders(Faction).Where(l => g.Applicable(Rule.BrownAuditor) || l.HeroType != HeroType.Auditor).ToList();
 
                 var factionsInPlay = Players.Select(p => p.Faction);
-                result.AddRange(LeaderManager.Leaders.Where(l => 
-                    factionsInPlay.Contains(l.Faction) && 
+                result.AddRange(LeaderManager.Leaders.Where(l =>
+                    factionsInPlay.Contains(l.Faction) &&
                     (Version <= 140 || l.HeroType != HeroType.Auditor || Applicable(Rule.BrownAuditor))
                     ));
 

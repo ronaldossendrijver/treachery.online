@@ -134,7 +134,7 @@ namespace Treachery.Shared
 
             if (From == null && ForceAmount + SmuggledAmount > p.ForcesInReserve) return Message.Express("Not enough ", p.Force, " in reserve");
             if (From == null && !isWhiteNoFieldShipment && SpecialForceAmount + SmuggledSpecialAmount > p.SpecialForcesInReserve) return Message.Express("Not enough ", p.SpecialForce, " in reserve");
-            
+
             bool isSmuggling = SmuggledAmount > 0 || SmuggledSpecialAmount > 0;
             bool isShippingFromOffPlanet = !(IsBackToReserves || IsSiteToSite) && Initiator != Faction.Yellow && (ForceAmount > 0 || SpecialForceAmount > 0);
             if (isSmuggling && (!isShippingFromOffPlanet || !MaySmuggle(Game, Player, To))) return Message.Express("You can't smuggle forces here");

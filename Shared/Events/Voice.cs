@@ -125,28 +125,28 @@ namespace Treachery.Shared
                 {
                     switch (voicedType)
                     {
-                        case TreacheryCardType.PoisonDefense: 
-                            return 
+                        case TreacheryCardType.PoisonDefense:
+                            return
                                 cardType == TreacheryCardType.Antidote ||
                                 (g.Version >= 140 && cardType == TreacheryCardType.PortableAntidote) ||
-                                (!asWeapon && cardType == TreacheryCardType.Chemistry) || 
+                                (!asWeapon && cardType == TreacheryCardType.Chemistry) ||
                                 cardType == TreacheryCardType.ShieldAndAntidote;
 
-                        case TreacheryCardType.Poison: 
-                            return cardType == TreacheryCardType.PoisonTooth || 
+                        case TreacheryCardType.Poison:
+                            return cardType == TreacheryCardType.PoisonTooth ||
                                 cardType == TreacheryCardType.ProjectileAndPoison ||
                                 !must && asWeapon && cardType == TreacheryCardType.Chemistry;
 
-                        case TreacheryCardType.Shield: 
+                        case TreacheryCardType.Shield:
                             return cardType == TreacheryCardType.ShieldAndAntidote;
 
-                        case TreacheryCardType.ProjectileDefense: 
-                            return cardType == TreacheryCardType.Shield || 
+                        case TreacheryCardType.ProjectileDefense:
+                            return cardType == TreacheryCardType.Shield ||
                                 cardType == TreacheryCardType.ShieldAndAntidote ||
                                 !must && !asWeapon && cardType == TreacheryCardType.WeirdingWay;
 
-                        case TreacheryCardType.Projectile: 
-                            return (asWeapon && cardType == TreacheryCardType.WeirdingWay) || 
+                        case TreacheryCardType.Projectile:
+                            return (asWeapon && cardType == TreacheryCardType.WeirdingWay) ||
                                 cardType == TreacheryCardType.ProjectileAndPoison;
                     }
                 }

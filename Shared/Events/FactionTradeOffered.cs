@@ -29,7 +29,7 @@ namespace Treachery.Shared
             {
                 if (!Game.IsPlaying(Target)) return Message.Express("Invalid target");
             }
-            
+
 
             return null;
         }
