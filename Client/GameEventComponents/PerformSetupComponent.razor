@@ -27,7 +27,7 @@
 
         <ForceSelectionComponent Game=h.Game Player=currentPlayer OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="false" FixedMaxForces="20" FixedMaxSpecialForces=MaxSpecialForces AllowMultipleTerritories="true"/>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError=@Validation />
 
     </Body>
 

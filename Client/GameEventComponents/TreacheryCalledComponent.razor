@@ -13,7 +13,7 @@
 
         @if (TreacheryCalled.MayCallTreachery(Game, Player))
         {
-            <ButtonRowComponent Confirm="Confirm" ConfirmText="TREACHERY!" ConfirmError="@Validation" Pass="Pass" PassText="Pass" />
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="TREACHERY!" ConfirmError=@Validation Pass="Pass" PassText="Pass" />
         }
         else
         {

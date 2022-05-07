@@ -275,6 +275,7 @@ namespace Treachery.Client
             {
                 string str => str,
                 bool b => b ? "Yes" : "No",
+                Message msg => Describe(msg),
                 MessagePart part => Describe(part),
                 Payment payment => Format("{0} {1}", payment.Amount, Concept.Resource),
                 Concept c => Describe(c),
@@ -313,6 +314,11 @@ namespace Treachery.Client
             {
                 return result;
             }
+        }
+
+        public string Describe(object obj)
+        {
+            return Describe(obj, false);
         }
 
         private string[] Describe(object[] objects)
@@ -467,6 +473,11 @@ namespace Treachery.Client
         }
 
         public string Describe(FactionSpecialForce f) => SpecialForceName_STR[GetFaction(f)];
+
+        public string Describe(Message msg)
+        {
+            return msg.ToString(this);
+        }
 
         public string Describe(MessagePart part)
         {
@@ -1545,11 +1556,6 @@ namespace Treachery.Client
             serializer.Serialize(writer, this);
             writer.Close();
             return writer.ToString();
-        }
-
-        public string Describe(object obj)
-        {
-            return Describe(obj, false);
         }
 
         #endregion LoadingAndSaving

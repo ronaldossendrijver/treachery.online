@@ -14,16 +14,15 @@
         foreach (var p in Game.Players)
         {
             float radiusModifier = 1;
-            var position = PlayerTokenPosition(Game, p.PositionAtTable);
             if (h.HighlightPlayer(p))
             {
                 radiusModifier = 1.5f;
             }
 
+            var position = PlayerTokenPosition(Game, p.PositionAtTable);
             var x = position.X - radiusModifier * Skin.Current.PlayerTokenRadius;
             var y = position.Y - radiusModifier * Skin.Current.PlayerTokenRadius;
             var factionTokenDiameter = (radiusModifier * Skin.Current.PlayerTokenRadius * 2);
-
 
             <Circle X="@position.X" Y="@position.Y" Radius="@(1.35f * Skin.Current.PlayerTokenRadius)" FillColor="@Skin.Current.TABLEPOSITION_BACKGROUNDCOLOR" />
 

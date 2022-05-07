@@ -334,7 +334,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 300;
+            int nrOfGames = 3000;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
@@ -347,92 +347,6 @@ namespace Treachery.Test
             int nrOfTurns = 7;
             int nrOfPlayers = 6;
 
-
-            //Expansion, advanced game, all expansions, free for all without guild and fremen:
-            /*
-            var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
-            rules.Add(Rule.FillWithBots);
-            rules.Add(Rule.BotsCannotAlly);
-            var factions = EstablishPlayers.AvailableFactions().Except(new Faction[] { Faction.Orange, Faction.Yellow, Faction.Red, Faction.Purple }).ToList();
-            int nrOfTurns = 7; 
-            int nrOfPlayers = factions.Count;
-            */
-
-            /*
-            var rules = Game.RulesetDefinition[Ruleset.AllExpansionsBasicGame].ToList();
-            rules.Add(Rule.FillWithBots);
-            rules.Add(Rule.BotsCannotAlly);
-            var factions = EstablishPlayers.AvailableFactions().Except(new Faction[] { Faction.Orange, Faction.Yellow }).ToList();
-            int nrOfTurns = 7;
-            int nrOfPlayers = factions.Count;
-            */
-
-            //Expansion, advanced game, all expansions, free for all without guild and fremen:
-            //var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
-            //rules.Add(Rule.FillWithBots);
-            //rules.Add(Rule.BotsCannotAlly);
-            //var factions = EstablishPlayers.AvailableFactions().Except(new Faction[] { Faction.Orange, Faction.Yellow }).ToList();
-            //int nrOfTurns = 7; 
-            //int nrOfPlayers = factions.Count;
-
-            //Expansion, advanced game, 8 players:
-            //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
-            //rules.Add(Rule.FillWithBots);
-            //rules.Add(Rule.ExtraKaramaCards);
-            //rules.Add(Rule.AssistedNotekeeping);
-            //var factions = EstablishPlayers.AvailableFactions().ToList();
-            //int nrOfPlayers = factions.Count;
-
-            //Game to find a specific situation to test
-            //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
-            //rules.Add(Rule.FillWithBots);
-            //rules.Add(Rule.ExtraKaramaCards);
-            //rules.Add(Rule.AssistedNotekeeping);
-            //var factions = new List<Faction>() { Faction.Black, Faction.Green, Faction.Red, Faction.Brown };
-            //int nrOfPlayers = factions.Count;
-
-            //Expansion, advanced game, 6 players:
-            //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
-            //rules.Add(Rule.FillWithBots);
-            //rules.Add(Rule.BotsCannotAlly);
-            //var factions = new List<Faction>() { Faction.Black, Faction.Green, Faction.Yellow, Faction.Red, Faction.Grey, Faction.Blue };
-            //int nrOfPlayers = factions.Count;
-
-            //Expansion, advanced game, 8 players:
-            //var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
-            //rules.Add(Rule.FillWithBots);
-            //var factions = new List<Faction>() { Faction.Black, Faction.Green, Faction.Grey, Faction.Red, Faction.Purple, Faction.Blue };
-            //int nrOfPlayers = factions.Count;
-
-            //Classic, basic game:
-            //var rules = Game.RulesetDefinition[Ruleset.ServerClassic].ToList();
-            //rules.Add(Rule.FillWithBots);
-            //var factions = new List<Faction>() { Faction.Black, Faction.Green, Faction.Yellow, Faction.Red, Faction.Orange, Faction.Blue };
-            //int nrOfPlayers = factions.Count;
-
-            //Server Classic, advanced game:
-            //var rules = Game.RulesetDefinition[Ruleset.ServerClassic].ToList();
-            //rules.Add(Rule.FillWithBots);
-            //var factions = new List<Faction>() { Faction.Black, Faction.Green, Faction.Yellow, Faction.Red, Faction.Orange, Faction.Blue };
-            //int nrOfPlayers = factions.Count;
-
-            //All rules enables:
-            //var rules = Enumerations.GetValuesExceptDefault(typeof(Rule), Rule.None).ToList();
-            //var factions = Enumerations.GetValuesExceptDefault(typeof(Faction), Faction.None).ToList();
-            //rules.Remove(Rule.CustomInitialForcesAndResources);
-            //rules.Remove(rules.Add(Rule.BotsCannotAlly));
-            //int nrOfPlayers = factions.Count;
-
-            /*rules.Add(Rule.RedBot);
-            rules.Add(Rule.OrangeBot);
-            rules.Add(Rule.BlackBot);
-            rules.Add(Rule.PurpleBot);
-            rules.Add(Rule.BlueBot);
-            rules.Add(Rule.GreenBot);
-            rules.Add(Rule.YellowBot);
-            rules.Add(Rule.GreyBot);*/
-
-            //Can bots ally?
             //rules.Add(Rule.BotsCannotAlly);
 
             var rulesAsArray = rules.ToArray();

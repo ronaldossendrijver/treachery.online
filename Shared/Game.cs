@@ -118,7 +118,7 @@ namespace Treachery.Shared
 
         private void UpdateTimers(GameEvent e)
         {
-            if (e.Time != default && History.Count > 0 && InTimedPhase)
+            if (e.Time != default && History.Count > 0 && InTimedPhase && e.Player != null)
             {
                 GameEvent previousEvent;
                 if (e is Battle) previousEvent = FindMostRecentEvent(typeof(BattleInitiated));

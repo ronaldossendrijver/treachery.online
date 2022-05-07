@@ -13,7 +13,7 @@
 
         <SelectCardComponent @bind-Value="card" Values="Thought.ValidCards(Game, Player)" Required="true"/>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Ask about {0}", card)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Ask about {0}", card)" ConfirmError=@Validation />
 
     </Body>
 

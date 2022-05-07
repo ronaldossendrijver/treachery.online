@@ -14,7 +14,7 @@
 
         <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="true" FixedMaxForces="10" FixedMaxSpecialForces="@(Player.HasSpecialForces ? 10 : 0)" AllowMultipleTerritories="true" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError=@Validation />
 
         <div>You can use the planet map:</div>
         <div>Add @Skin.Current.Describe(Player.Force): <ClickHintComponent Button="ClickHintButton.LMB" /></div>

@@ -29,7 +29,17 @@ namespace Treachery.Shared
 
         public Expression Expression { get; private set; }
 
-        public override string ToString() => string.Join("", Expression.Elements);
+        public override string ToString()
+        {
+            if (DefaultDescriber != null)
+            {
+                return ToString(DefaultDescriber) + "*";
+            }
+            else
+            {
+                return string.Join("", Expression.Elements);
+            }
+        }
 
         public string ToString(IDescriber describer) => string.Join("", Expression.Elements.Select(e => describer.Describe(e)));
 
@@ -76,5 +86,17 @@ namespace Treachery.Shared
         }
 
         public string ToString(IDescriber describer) => string.Join("", Expression.Elements.Select(e => describer.Describe(e)));
+
+        public override string ToString()
+        {
+            if (Message.DefaultDescriber != null)
+            {
+                return ToString(Message.DefaultDescriber) + "*";
+            }
+            else
+            {
+                return string.Join("", Expression.Elements);
+            }
+        }
     }
 }

@@ -13,7 +13,7 @@
 
         @if (MulliganPerformed.MayMulligan(Player))
         {
-            <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError="@Validation" Pass="Pass" PassText="No (proceed with current traitors)" />
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError=@Validation Pass="Pass" PassText="No (proceed with current traitors)" />
         }
         else
         {

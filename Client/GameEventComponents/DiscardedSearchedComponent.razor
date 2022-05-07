@@ -13,7 +13,7 @@
 
         <SelectCardComponent @bind-Value="card" Values="DiscardedSearched.ValidCards(Game)" Required="true" />
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.SearchDiscarded)" ConfirmError="@Validation" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.SearchDiscarded)" ConfirmError=@Validation />
 
     </Body>
 

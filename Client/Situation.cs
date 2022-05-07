@@ -10,7 +10,6 @@ namespace Treachery.Client
 
         public bool RequiresUpdate(Game game)
         {
-
             var latestEvent = game.LatestEvent();
 
             bool result = (_skin == null || Skin.Current == null || _skin != Skin.Current || _game == null || game == null || _game != game);
@@ -21,8 +20,7 @@ namespace Treachery.Client
 
                 if (result)
                 {
-                    result = !(latestEvent is AllyPermission || (latestEvent is IBid && _game.BiddingIsInProgress));
-                    //Support.Log("Event requires update: " + result + ", milestones: " + Skin.Current.Join(game.RecentMilestones));
+                    result = !(latestEvent is AllyPermission);
                 }
             }
 
