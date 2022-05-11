@@ -42,7 +42,7 @@
     }
 
     <!-- Highlighted Territories -->
-    @foreach (var territory in h.HighlightedTerritories.Where(t => t != Game.Map.HiddenMobileStronghold.Territory)) {
+    @foreach (var territory in h.Status.HighlightedTerritories.Where(t => t != Game.Map.HiddenMobileStronghold.Territory)) {
 
         <path d="@Skin.Current.GetTerritoryBorder(territory)" fill="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" fill-opacity="1" stroke="red" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
     }
@@ -77,7 +77,7 @@
            Popover="@Intel(h.Game.Map.HiddenMobileStronghold)"
            OnClick="@(e => OnClick(e, h.Game.Map.HiddenMobileStronghold))"/>
 
-    @if (h.ShowWheelsAndHMS && (hovered == h.Game.Map.HiddenMobileStronghold || h.HighlightedTerritories.Contains(h.Game.Map.HiddenMobileStronghold.Territory)))
+    @if (h.ShowWheelsAndHMS && (hovered == h.Game.Map.HiddenMobileStronghold || h.Status.HighlightedTerritories.Contains(h.Game.Map.HiddenMobileStronghold.Territory)))
     {
         <Circle X="(hmsCenter.X + 0.1f * Skin.Current.HmsRadius)" Y="hmsCenter.Y" Radius="(0.9f * Skin.Current.HmsRadius)"
                 FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1"/>

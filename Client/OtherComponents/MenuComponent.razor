@@ -263,8 +263,7 @@ else if (IsVisible(RESTART))
 
                 if (state.Version > 0)
                 {
-                    Game game = null;
-                    var result = Game.TryLoad(state, true, true, ref game, true);
+                    var result = Game.TryLoad(state, true, true, out Game game, true);
 
                     if (result != null)
                     {

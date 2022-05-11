@@ -284,8 +284,7 @@ namespace Treachery.Server
         public async Task UploadStatistics(string state)
         {
             var gameState = GameState.Load(state);
-            Game game = null;
-            if (Game.TryLoad(gameState, false, true, ref game, false) == null)
+            if (Game.TryLoad(gameState, false, true, out Game game, false) == null)
             {
                 await SendGameStatistics(game);
             }

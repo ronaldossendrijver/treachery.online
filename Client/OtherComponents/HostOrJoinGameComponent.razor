@@ -224,9 +224,7 @@
                     restoredGame = null;
                     restoredGameData = null;
 
-                    loadedGame = null;
-                    var result = Game.TryLoad(state, true, true, ref loadedGame, true);
-
+                    var result = Game.TryLoad(state, true, true, out loadedGame, true);
                     if (result != null)
                     {
                         _loadValidationError = string.Format("Error loading game ({0})", result.ToString(Skin.Current));
@@ -263,8 +261,11 @@
 
     private void RestoreGame_Continued()
     {
-        var message = Game.TryLoad(recentGameState, false, true, ref restoredGame, true);
-        restoredGameData = recentGameData;
+        if (Game.TryLoad(recentGameState, false, true, out restoredGame, true) == null)
+        {
+            restoredGameData = recentGameData;
+        }
+
         _restoring = false;
         StateHasChanged();
     }

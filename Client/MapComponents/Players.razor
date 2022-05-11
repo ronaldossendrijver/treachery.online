@@ -14,7 +14,7 @@
         foreach (var p in Game.Players)
         {
             float radiusModifier = 1;
-            if (h.HighlightPlayer(p))
+            if (h.Status.PlayerShouldBeHighlighted(p))
             {
                 radiusModifier = 1.5f;
             }

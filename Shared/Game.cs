@@ -202,7 +202,7 @@ namespace Treachery.Shared
 
         public GameEvent LatestEvent() => History.Count > 0 ? History[^1] : null;
 
-        public static Message TryLoad(GameState state, bool performValidation, bool isHost, ref Game result, bool trackStatesForReplay)
+        public static Message TryLoad(GameState state, bool performValidation, bool isHost, out Game result, bool trackStatesForReplay)
         {
             try
             {
@@ -224,6 +224,7 @@ namespace Treachery.Shared
             }
             catch (Exception e)
             {
+                result = null;
                 return Message.Express(e.Message);
             }
         }
@@ -838,6 +839,17 @@ namespace Treachery.Shared
         public Player GetPlayer(Faction f)
         {
             return Players.FirstOrDefault(p => p.Faction == f);
+        }
+
+        public Faction GetAlly(Faction f)
+        {
+            var player = GetPlayer(f);
+            return player != null ? player.Ally : Faction.None;
+        }
+
+        public Player GetAlliedPlayer(Faction f)
+        {
+            return GetPlayer(f)?.AlliedPlayer;
         }
 
         public IEnumerable<Faction> ValidTargets(Player p)

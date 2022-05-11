@@ -42,9 +42,9 @@
                         
                         var player = currentPlayersToAct.First();
 
-                        <div style="position: relative; width: 64px;">
-                            <img title="@player.Name" src="@Skin.Current.GetImageURL(player.Faction)" width="64" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
-                            <img src="./art/worm.gif" width="94" style="position: absolute; top: -14px; left: -8px; filter: drop-shadow(1px 1px 1px black)" />
+                        <div style="position: relative; width: 64px; height: 64px;">
+                            <img title="@player.Name" src="@Skin.Current.GetImageURL(player.Faction)" width="64" style="position: absolute; left: 0px; filter: drop-shadow(2px 2px 2px black)" />
+                            <img src="./art/worm.gif" width="94" style="position: absolute; top: -14px; left: -20px; filter: drop-shadow(1px 1px 1px black)" />
                         </div>
                     }
                     else {
@@ -78,7 +78,9 @@
 
         </div>
 
-        <div class="@StatusDescriptionClass mt-2">@h.Status.GetDescription(Player, h.IsHost)</div>
+        <div class="text-dark fw-bold mt-2" style=@StatusStyle>
+            <ExpressionComponent Game=Game Expression=@h.Status.GetMessage(h.Player, h.IsHost).Expression Size=20/>
+        </div>
 
         @if (!autoConfirm && CanEndPhase)
         {
@@ -157,20 +159,7 @@
         }
     }
 
-    private string StatusDescriptionClass
-    {
-        get
-        {
-            if (h.Status.WaitingForMe(Player, h.IsHost))
-            {
-                return "text-danger fw-bold";
-            }
-            else
-            {
-                return "text-dark";
-            }
-        }
-    }
+    private string StatusStyle => h.Status.WaitingForMe(Player, h.IsHost) ? Support.TextBorder(2, "#FFAAAAAA") : "";
 
     private string PlayerWithCardsTitle(Player player) => player.Name;
 

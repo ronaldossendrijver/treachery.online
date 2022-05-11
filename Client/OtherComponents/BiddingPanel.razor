@@ -43,14 +43,14 @@
 
                 @if (!h.IsObserver && h.Player.Faction != Faction.None)
                 {
-                    <CheckboxComponent @bind-Value="@h.Autopass">Auto-pass</CheckboxComponent>
-                    @if (h.Autopass)
+                    <CheckboxComponent @bind-Value="@Autopass">Auto-pass</CheckboxComponent>
+                    @if (Autopass)
                     {
-                        <SelectResourcesComponent @bind-Value="@h.BidAutoPassThreshold" Min="0" Max="50" Label="When above:" />
+                        <SelectResourcesComponent @bind-Value="@BidAutoPassThreshold" Min="0" Max="50" Label="When above:" />
 
                         @if (ShowRepeatAutoPass)
                         {
-                            <CheckboxComponent @bind-Value="@h.KeepAutopassSetting">Repeat auto-pass every round</CheckboxComponent>
+                            <CheckboxComponent @bind-Value="@KeepAutopassSetting">Repeat auto-pass every round</CheckboxComponent>
                         }
                     }
 
@@ -137,8 +137,11 @@
     protected int redContributionAmount;
     protected TreacheryCard karmaCard;
 
-    private bool _canBid = false;
+    private int BidAutoPassThreshold { get; set; } = 0;
+    private bool Autopass { get; set; } = false;
+    private bool KeepAutopassSetting { get; set; } = false;
 
+    private bool _canBid = false;
     [Parameter]
     public bool CanBid
     {
@@ -150,8 +153,8 @@
         {
             if (!_canBid && value)
             {
-                if (Game.CurrentBid != null && h.Autopass && Game.CurrentBid.TotalAmount + 1 > h.BidAutoPassThreshold ||
-                    Game.CurrentBid == null && h.Autopass && h.BidAutoPassThreshold == 0)
+                if (Game.CurrentBid != null && Autopass && Game.CurrentBid.TotalAmount + 1 > BidAutoPassThreshold ||
+                    Game.CurrentBid == null && Autopass && BidAutoPassThreshold == 0)
                 {
                     _ = Task.Delay(800 + Random.Shared.Next(1600)).ContinueWith(e => AutoPass());
                 }
@@ -175,11 +178,24 @@
         }
     }
 
+    protected override void OnAfterRender(bool firstRender)
+    {
+        ResetAutopassThreshold();
+    }
+
     private async Task AutoPass()
     {
-        if (CanBid && h.Autopass)
+        if (CanBid && Autopass)
         {
             await Pass();
+        }
+    }
+
+    private void ResetAutopassThreshold()
+    {
+        if (Game.CurrentMainPhase == MainPhase.Bidding && Game.RecentMilestones.Contains(Milestone.AuctionWon) && (!KeepAutopassSetting || Game.CurrentPhase == Phase.BiddingReport))
+        {
+            Autopass = false;
         }
     }
 

@@ -10,7 +10,7 @@
     foreach (var p in h.Game.Players)
     {
         var position = PlayerTokenPosition(h.Game, p.PositionAtTable);
-        if (!h.HighlightPlayer(p))
+        if (!h.Status.PlayerShouldBeHighlighted(p))
         {
             var y = position.Y + Skin.Current.PlayerTokenRadius;
             string bidText = "";

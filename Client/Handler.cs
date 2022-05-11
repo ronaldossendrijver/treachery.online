@@ -21,7 +21,8 @@ namespace Treachery.Client
         public const int DISCONNECT_TIMEOUT = 25000;
         public const int CHATMESSAGE_LIFETIME = 120;
 
-        public Game Game;
+        public Game Game { get; private set; }
+        public GameStatus Status { get; private set; }
         public string PlayerName { get; private set; } = "";
         public HostProxy HostProxy { get; private set; } = null;
         public Host Host { get; private set; } = null;
@@ -30,12 +31,8 @@ namespace Treachery.Client
         public Dictionary<int, string> JoinErrors { get; private set; } = new();
         public int GameInProgressHostId { get; private set; }
         public DateTime Disconnected { get; private set; } = default;
-
         public Battle BattleUnderConstruction { get; set; } = null;
 
-        public int BidAutoPassThreshold { get; set; } = 0;
-        public bool Autopass { get; set; } = false;
-        public bool KeepAutopassSetting { get; set; } = false;
 
         //Sound and camera
         public float CurrentEffectVolume { get; set; } = -1;
@@ -65,7 +62,7 @@ namespace Treachery.Client
             .Build();
 
             Game = new Game();
-            UpdateStatus();
+            UpdateStatus(Game, Player, IsPlayer);
             RegisterHandlers();
             Browser.OnVideoData += ProcessVideoData;
         }
@@ -490,9 +487,13 @@ namespace Treachery.Client
                 _pending.Clear();
 
                 var state = GameState.Load(stateData);
-                var errorMessage = Game.TryLoad(state, false, false, ref Game, true);
+                var errorMessage = Game.TryLoad(state, false, false, out Game loadedGame, true);
 
-                if (errorMessage != null)
+                if (errorMessage == null)
+                {
+                    Game = loadedGame;
+                }
+                else
                 {
                     Support.Log(errorMessage.ToString(Skin.Current));
                 }
@@ -556,7 +557,46 @@ namespace Treachery.Client
 
         #endregion HostMessageHandlers
 
-        #region Sounds
+        #region ClientUpdates
+        private async Task PerformPostEventTasks(GameEvent e)
+        {
+            if (!(e is AllyPermission || e is DealOffered))
+            {
+                UpdateStatus(Game, Player, IsPlayer);
+
+                await TurnAlert();
+                await PlaySoundsForMilestones();
+
+                if (e == null || !(Game.CurrentPhase == Phase.Bidding || Game.CurrentPhase == Phase.BlackMarketBidding))
+                {
+                    if (IsHost)
+                    {
+                        await SaveGame();
+                    }
+                }
+            }
+
+            await Browser.RemoveFocusFromButtons();
+
+            await PerformEndOfTurnTasks();
+
+            if (Game.CurrentMainPhase == MainPhase.Ended)
+            {
+                await PerformEndOfGameTasks();
+            }
+
+            if (IsHost)
+            {
+                PerformBotAction(e);
+            }
+
+            Refresh();
+        }
+
+        private void UpdateStatus(Game game, Player player, bool isPlayer)
+        {
+            Status = GameStatus.DetermineStatus(game, player, isPlayer);
+        }
 
         bool itAlreadyWasMyTurn = false;
         private async Task TurnAlert()
@@ -605,49 +645,6 @@ namespace Treachery.Client
             previousPhase = Game.CurrentPhase;
         }
 
-        #endregion Sounds
-
-        #region ClientUpdates
-        private async Task PerformPostEventTasks(GameEvent e)
-        {
-            if (!(e is AllyPermission || e is DealOffered))
-            {
-                UpdateStatus();
-
-                await TurnAlert();
-                await PlaySoundsForMilestones();
-
-                if (e == null || !(Game.CurrentPhase == Phase.Bidding || Game.CurrentPhase == Phase.BlackMarketBidding))
-                {
-                    if (IsHost)
-                    {
-                        await SaveGame();
-                    }
-                }
-            }
-
-            await Browser.RemoveFocusFromButtons();
-
-            if (Game.CurrentMainPhase == MainPhase.Bidding)
-            {
-                ResetAutopassThreshold();
-            }
-
-            await PerformEndOfTurnTasks();
-
-            if (Game.CurrentMainPhase == MainPhase.Ended)
-            {
-                await PerformEndOfGameTasks();
-            }
-
-            if (IsHost)
-            {
-                PerformBotAction(e);
-            }
-
-            Refresh();
-        }
-
         private bool awaitingBotAction = false;
         private void PerformBotAction(GameEvent e)
         {
@@ -680,14 +677,6 @@ namespace Treachery.Client
             else
             {
                 return 2000;
-            }
-        }
-
-        private void ResetAutopassThreshold()
-        {
-            if (Game.RecentMilestones.Contains(Milestone.AuctionWon) && (!KeepAutopassSetting || Game.CurrentPhase == Phase.BiddingReport))
-            {
-                Autopass = false;
             }
         }
 
