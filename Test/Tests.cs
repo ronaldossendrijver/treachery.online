@@ -538,6 +538,8 @@ namespace Treachery.Test
             if (performTests) Assert.IsNull(executeResult);
         }
 
+        private Statistics statistics = new();
+
         [TestMethod]
         public void Regression()
         {
@@ -556,44 +558,7 @@ namespace Treachery.Test
                 Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), po, f =>
                 {
                     gamesTested++;
-                    var fs = File.OpenText(f);
-                    var state = GameState.Load(fs.ReadToEnd());
-                    Console.WriteLine("Checking {0} (version {1})...", f, state.Version);
-                    var game = new Game(state.Version, false);
-
-                    fs = File.OpenText(f + ".testcase");
-                    var tc = LoadObject<Testcase>(fs.ReadToEnd());
-
-                    int valueId = 0;
-                    foreach (var e in state.Events)
-                    {
-                        e.Game = game;
-                        var previousPhase = game.CurrentPhase;
-
-                        var result = e.Execute(true, true);
-                        if (result != null)
-                        {
-                            File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
-                        }
-                        Assert.IsNull(result, f + ", " + e.GetType().Name + " (" + valueId + ", " + e.GetMessage() + ")");
-
-                        var actualValues = DetermineTestvalues(game);
-                        tc.Testvalues[valueId].Equals(actualValues);
-                        if (!tc.Testvalues[valueId].Equals(actualValues))
-                        {
-                            File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
-                        }
-                        Assert.AreEqual(tc.Testvalues[valueId], actualValues, f + ", " + previousPhase + " -> " + game.CurrentPhase + ", " + e.GetType().Name + " (" + valueId + ", " + e.GetMessage() + "): " + Testvalues.Difference);
-
-                        var strangeCase = TestIllegalCases(game, e);
-                        if (strangeCase != "")
-                        {
-                            File.WriteAllText("illegalcase_" + game.EventCount + "_" + strangeCase + ".json", GameState.GetStateAsString(game));
-                        }
-                        Assert.AreEqual("", strangeCase, f + ", " + strangeCase);
-
-                        valueId++;
-                    }
+                    ReplayGame(f);
                 });
 
                 Assert.AreNotEqual(0, gamesTested);
@@ -603,14 +568,138 @@ namespace Treachery.Test
                 Console.WriteLine(e.Message);
                 throw;
             }
+
+            if (statistics != null)
+            {
+                statistics.Output(Skin.Current);
+            }
+        }
+
+        private void ReplayGame(string fileData)
+        {
+            var fs = File.OpenText(fileData);
+            var state = GameState.Load(fs.ReadToEnd());
+            Console.WriteLine("Checking {0} (version {1})...", fileData, state.Version);
+            var game = new Game(state.Version, false);
+
+            fs = File.OpenText(fileData + ".testcase");
+            var tc = LoadObject<Testcase>(fs.ReadToEnd());
+
+            int valueId = 0;
+
+            foreach (var e in state.Events)
+            {
+                e.Game = game;
+                var previousPhase = game.CurrentPhase;
+
+                var result = e.Execute(true, true);
+                if (result != null)
+                {
+                    File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
+                }
+                Assert.IsNull(result, fileData + ", " + e.GetType().Name + " (" + valueId + ", " + e.GetMessage() + ")");
+
+                var actualValues = DetermineTestvalues(game);
+                tc.Testvalues[valueId].Equals(actualValues);
+                if (!tc.Testvalues[valueId].Equals(actualValues))
+                {
+                    File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
+                }
+                Assert.AreEqual(tc.Testvalues[valueId], actualValues, fileData + ", " + previousPhase + " -> " + game.CurrentPhase + ", " + e.GetType().Name + " (" + valueId + ", " + e.GetMessage() + "): " + Testvalues.Difference);
+
+                var strangeCase = TestIllegalCases(game, e);
+                if (strangeCase != "")
+                {
+                    File.WriteAllText("illegalcase_" + game.EventCount + "_" + strangeCase + ".json", GameState.GetStateAsString(game));
+                }
+                Assert.AreEqual("", strangeCase, fileData + ", " + strangeCase);
+
+                valueId++;
+
+                if (statistics != null)
+                {
+                    lock (statistics)
+                    {
+                        var latest = game.LatestEvent();
+
+                        if (game.CurrentPhase == Phase.SelectingTraitors)
+                        {
+                            statistics.PlayedGames++;
+                            statistics.GameTypes.Count(Game.DetermineApproximateRuleset(game.FactionsInPlay, game.Rules));
+
+                            foreach (var p in game.Players)
+                            {
+                                statistics.GamePlayingPlayers.Count(p.Name);
+                                statistics.GamePlayingFactions.Count(p.Faction);
+                            }
+                        }
+                        else if (game.CurrentPhase == Phase.GameEnded)
+                        {
+                            statistics.GameWinningMethods.Count(game.WinMethod);
+                            statistics.GameNumberOfTurns.Count(game.CurrentTurn);
+                            statistics.GameTimes.Add(latest.Time.Subtract(game.History[0].Time));
+
+                            foreach (var p in game.Winners)
+                            {
+                                statistics.GameWinningPlayers.Count(p.Name);
+                                statistics.GameWinningFactions.Count(p.Faction);
+                            }
+                        }
+                        else if (latest is BattleInitiated)
+                        {
+                            statistics.Battles++;
+                            statistics.BattlingFactions.Count(game.CurrentBattle.Aggressor);
+                            statistics.BattlingFactions.Count(game.CurrentBattle.Defender);
+                        }
+                        else if (latest is TreacheryCalled traitorcalled && traitorcalled.TraitorCalled)
+                        {
+                            statistics.TraitoredLeaders.Count(Skin.Current.Describe(game.CurrentBattle.PlanOfOpponent(traitorcalled.Player).Hero));
+                        }
+                        else if (latest is FaceDanced fd && !fd.Passed)
+                        {
+                            statistics.FacedancedLeaders.Count(Skin.Current.Describe(game.WinnerHero));
+                        }
+                        else if (game.CurrentPhase == Phase.BattleConclusion && game.BattleOutcome != null)
+                        {
+                            var outcome = game.BattleOutcome;
+                            statistics.BattleWinningFactions.Count(outcome.Winner != null ? outcome.Winner.Faction : Faction.None);
+                            statistics.BattleLosingFactions.Count(outcome.Loser != null ? outcome.Loser.Faction : Faction.None);
+                            statistics.BattleWinningLeaders.Count(Skin.Current.Describe(outcome.WinnerBattlePlan.Hero));
+                            statistics.BattleLosingLeaders.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Hero));
+
+                            if (outcome.LoserHeroKilled) statistics.BattleKilledLeaders.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Hero));
+                            if (outcome.LoserHeroKilled) statistics.BattleKilledLeaders.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Hero));
+
+                            if (outcome.WinnerBattlePlan.Weapon != null) statistics.UsedWeapons.Count(Skin.Current.Describe(outcome.WinnerBattlePlan.Weapon));
+                            if (outcome.WinnerBattlePlan.Defense != null) statistics.UsedDefenses.Count(Skin.Current.Describe(outcome.WinnerBattlePlan.Defense));
+                            if (outcome.LoserBattlePlan.Weapon != null) statistics.UsedWeapons.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Weapon));
+                            if (outcome.LoserBattlePlan.Defense != null) statistics.UsedDefenses.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Defense));
+                        }
+                        else if (game.CurrentPhase == Phase.BeginningOfCollection)
+                        {
+                            foreach (var p in game.Players)
+                            {
+                                if (p.Occupies(game.Map.Arrakeen)) statistics.FactionsOccupyingArrakeen.Count(p.Faction);
+                                if (p.Occupies(game.Map.Carthag)) statistics.FactionsOccupyingCarthag.Count(p.Faction);
+                                if (p.Occupies(game.Map.SietchTabr)) statistics.FactionsOccupyingSietchTabr.Count(p.Faction);
+                                if (p.Occupies(game.Map.HabbanyaSietch)) statistics.FactionsOccupyingHabbanyaSietch.Count(p.Faction);
+                                if (p.Occupies(game.Map.TueksSietch)) statistics.FactionsOccupyingTueksSietch.Count(p.Faction);
+                                if (p.Occupies(game.Map.HiddenMobileStronghold)) statistics.FactionsOccupyingHMS.Count(p.Faction);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         /*
+
         [TestMethod]
         public void Statistics()
         {
             try
             {
+
                 var wonbattles = new ObjectCounter<string>();
                 var lostbattles = new ObjectCounter<string>();
                 var leaderInBattle = new ObjectCounter<string>();
