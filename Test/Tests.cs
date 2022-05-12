@@ -571,7 +571,7 @@ namespace Treachery.Test
 
             if (statistics != null)
             {
-                statistics.Output(Skin.Current);
+                statistics.Output(Skin.Current, 10);
             }
         }
 
@@ -586,6 +586,7 @@ namespace Treachery.Test
             var tc = LoadObject<Testcase>(fs.ReadToEnd());
 
             int valueId = 0;
+            BattleOutcome previousBattleOutcome = null;
 
             foreach (var e in state.Events)
             {
@@ -622,26 +623,35 @@ namespace Treachery.Test
                     {
                         var latest = game.LatestEvent();
 
-                        if (game.CurrentPhase == Phase.SelectingTraitors)
+                        if (game.CurrentPhase == Phase.GameEnded && latest is EndPhase)
                         {
                             statistics.PlayedGames++;
                             statistics.GameTypes.Count(Game.DetermineApproximateRuleset(game.FactionsInPlay, game.Rules));
 
                             foreach (var p in game.Players)
                             {
-                                statistics.GamePlayingPlayers.Count(p.Name);
+                                statistics.GamePlayingPlayers.Count(DetermineName(p));
                                 statistics.GamePlayingFactions.Count(p.Faction);
                             }
-                        }
-                        else if (game.CurrentPhase == Phase.GameEnded)
-                        {
+
+                            var nrOfBots = game.Players.Where(p => p.IsBot).Count();
+                            if (nrOfBots > 0)
+                            {
+                                statistics.GamePlayerSetup.Count(string.Format("{0} players ({1} bots)", game.Players.Count, nrOfBots));
+                            }
+                            else
+                            {
+                                statistics.GamePlayerSetup.Count(string.Format("{0} players", game.Players.Count));
+                            }
+
+
                             statistics.GameWinningMethods.Count(game.WinMethod);
                             statistics.GameNumberOfTurns.Count(game.CurrentTurn);
                             statistics.GameTimes.Add(latest.Time.Subtract(game.History[0].Time));
 
                             foreach (var p in game.Winners)
                             {
-                                statistics.GameWinningPlayers.Count(p.Name);
+                                statistics.GameWinningPlayers.Count(DetermineName(p));
                                 statistics.GameWinningFactions.Count(p.Faction);
                             }
                         }
@@ -659,9 +669,23 @@ namespace Treachery.Test
                         {
                             statistics.FacedancedLeaders.Count(Skin.Current.Describe(game.WinnerHero));
                         }
-                        else if (game.CurrentPhase == Phase.BattleConclusion && game.BattleOutcome != null)
+                        else if (latest is ClairVoyancePlayed cp)
+                        {
+                            statistics.Truthtrances.Count(cp.GetQuestion().ToString(Skin.Current).Replace(';', ':'));
+                        }
+                        else if (latest is DealAccepted da)
+                        {
+                            statistics.AcceptedDeals.Count(da.GetMessage().ToString(Skin.Current).Replace(';', ':'));
+                        }
+                        else if (latest is Karma karma)
+                        {
+                            statistics.Karamas.Count(karma.Prevented);
+                        }
+                        else if (game.BattleOutcome != null && previousBattleOutcome != game.BattleOutcome)
                         {
                             var outcome = game.BattleOutcome;
+                            previousBattleOutcome = outcome;
+                            
                             statistics.BattleWinningFactions.Count(outcome.Winner != null ? outcome.Winner.Faction : Faction.None);
                             statistics.BattleLosingFactions.Count(outcome.Loser != null ? outcome.Loser.Faction : Faction.None);
                             statistics.BattleWinningLeaders.Count(Skin.Current.Describe(outcome.WinnerBattlePlan.Hero));
@@ -675,7 +699,7 @@ namespace Treachery.Test
                             if (outcome.LoserBattlePlan.Weapon != null) statistics.UsedWeapons.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Weapon));
                             if (outcome.LoserBattlePlan.Defense != null) statistics.UsedDefenses.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Defense));
                         }
-                        else if (game.CurrentPhase == Phase.BeginningOfCollection)
+                        else if (game.CurrentPhase == Phase.BeginningOfCollection && latest is EndPhase)
                         {
                             foreach (var p in game.Players)
                             {
@@ -690,6 +714,11 @@ namespace Treachery.Test
                     }
                 }
             }
+        }
+
+        private static string DetermineName(Player p)
+        {
+            return p.IsBot ? Skin.Current.Format("{0}Bot", p.Faction) : p.Name.Replace(';', ':');
         }
 
         /*

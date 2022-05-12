@@ -63,19 +63,16 @@ namespace Treachery.Shared
             return 0;
         }
 
-        public IEnumerable<T> Counted
-        {
-            get
-            {
-                return counters.Keys;
-            }
-        }
+        public IEnumerable<T> Counted => counters.Keys;
+
+        public IEnumerable<T> GetHighest(int amountOfItems) => counters.OrderByDescending(c => c.Value).Take(amountOfItems).Select(c => c.Key);
 
         public T Highest
         {
             get
             {
-                var best = counters.OrderByDescending(c => c.Value).FirstOrDefault();
+                var bestValue = counters.Max(c => c.Value);
+                var best = counters.FirstOrDefault(c => c.Value == bestValue);
                 return best.Key;
             }
         }
