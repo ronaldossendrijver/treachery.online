@@ -2,6 +2,9 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
  */
 
+using Treachery.Shared;
+using System.Web;
+
 namespace Treachery.Client
 {
 #pragma warning disable IDE1006 // Naming Styles
@@ -25,6 +28,18 @@ namespace Treachery.Client
         public override string type { get; set; } = "PopupChatMessage";
         public string style { get; set; }
         public string body { get; set; }
+
+        public static PopupChatMessage Construct(Game game, string myName, ChatMessage m)
+        {
+            var sourcePlayer = game.GetPlayer(m.SourcePlayerName);
+            var sourceFaction = sourcePlayer != null ? sourcePlayer.Faction : Faction.None;
+
+            return new PopupChatMessage() 
+            { 
+                body = HttpUtility.HtmlEncode(m.GetBodyIncludingPlayerInfo(myName, game).ToString(Skin.Current)), 
+                style = Skin.Current.GetFactionColor(sourceFaction) 
+            };
+        }
     }
 
     public class PopupChatClear : PopupChatCommand

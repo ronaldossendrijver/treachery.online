@@ -320,10 +320,10 @@
     {
         switch (aspect)
         {
-            case PrescienceAspect.Defense: return plan.Defense == null ? "" : Support.GetHoverHTML(plan.Defense);
-            case PrescienceAspect.Weapon: return plan.Weapon == null ? "" : Support.GetHoverHTML(plan.Weapon);
+            case PrescienceAspect.Defense: return plan.Defense == null ? "" : Popup.Get(plan.Defense);
+            case PrescienceAspect.Weapon: return plan.Weapon == null ? "" : Popup.Get(plan.Weapon);
             case PrescienceAspect.Dial: return "";
-            case PrescienceAspect.Leader: return plan.Hero == null ? "" : Support.GetHoverHTML(plan.Hero, Game);
+            case PrescienceAspect.Leader: return plan.Hero == null ? "" : Popup.Get(plan.Hero, Game);
         }
 
         return "?";

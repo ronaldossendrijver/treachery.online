@@ -19,7 +19,7 @@
 
     protected override void OnInitialized()
     {
-        BackgroundImage = Support.GetCardImage(TreacheryCardType.Flight);
+        BackgroundImage = GetImage(TreacheryCardType.Flight);
     }
 
     protected override FlightUsed ConfirmedResult => new FlightUsed(Game) { Initiator = Faction, MoveThreeTerritories = true };

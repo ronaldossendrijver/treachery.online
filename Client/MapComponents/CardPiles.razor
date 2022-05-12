@@ -129,7 +129,7 @@
         else if (h.Game.TreacheryDiscardPile.Top != null)
         {
             result += "Most recently discarded:";
-            result += Support.GetHoverHTML(h.Game.TreacheryDiscardPile.Top);
+            result += Popup.Get(h.Game.TreacheryDiscardPile.Top);
         }
 
         return result;
@@ -165,7 +165,7 @@
         if (h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove && h.Game.HasResourceDeckPrescience(h.Player) && h.Game.ResourceCardDeck.Top != null)
         {
             result += "<p>Top Card:</p>";
-            result += Support.GetHoverHTML(h.Game.ResourceCardDeck.Top);
+            result += Popup.Get(h.Game.ResourceCardDeck.Top);
         }
 
         return result;
@@ -181,7 +181,7 @@
             if (h.Game.LatestSpiceCardA != null)
             {
                 result += "<p>Latest card:</p>";
-                result += Support.GetHoverHTML(h.Game.LatestSpiceCardA);
+                result += Popup.Get(h.Game.LatestSpiceCardA);
                 if (h.Game.Applicable(Rule.AssistedNotekeeping))
                 {
                     result += "<p>" + Skin.Current.Join(h.Game.ResourceCardDiscardPileA.Items.Where(c => c != h.Game.LatestSpiceCardA)) + "</p>";
@@ -194,7 +194,7 @@
             if (h.Game.LatestSpiceCardA != null)
             {
                 result += "<p>Latest card:</p>";
-                result += Support.GetHoverHTML(h.Game.LatestSpiceCardA);
+                result += Popup.Get(h.Game.LatestSpiceCardA);
                 if (h.Game.Applicable(Rule.AssistedNotekeeping))
                 {
                     result += "<p>" + Skin.Current.Join(h.Game.ResourceCardDiscardPileB.Items.Where(c => c != h.Game.LatestSpiceCardA)) + "</p>";
@@ -215,7 +215,7 @@
             if (h.Game.LatestSpiceCardB != null)
             {
                 result += "<p>Latest card:</p>";
-                result += Support.GetHoverHTML(h.Game.LatestSpiceCardB);
+                result += Popup.Get(h.Game.LatestSpiceCardB);
                 if (h.Game.Applicable(Rule.AssistedNotekeeping))
                 {
                     result += "<p>" + Skin.Current.Join(h.Game.ResourceCardDiscardPileB.Items.Where(c => c != h.Game.LatestSpiceCardA)) + "</p>";

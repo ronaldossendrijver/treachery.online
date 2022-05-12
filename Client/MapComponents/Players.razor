@@ -58,7 +58,7 @@
                        Y="@(Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad) * techtokenOrbitRadius) - Skin.Current.PlayerTokenRadius)"
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(tt)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                       Popover="@Support.GetHoverHTML(tt)" PopoverStyle=""/>
+                       Popover="@Popup.Get(tt)" PopoverStyle=""/>
             }
 
             var skilledLeader = Game.GetSkilledLeader(p);
@@ -74,7 +74,7 @@
                            Y="@(tty)"
                            Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                            Src="@Skin.Current.GetImageURL(skilledLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
-                           Popover="@Support.GetHoverHTML(skilledLeader, h.Game.Skill(skilledLeader))" PopoverStyle=""/>
+                           Popover="@Popup.Get(skilledLeader, h.Game.Skill(skilledLeader))" PopoverStyle=""/>
                 }
 
                 <MapText ToShow="@Skin.Current.Describe(Game.Skill(skilledLeader))"
@@ -82,7 +82,7 @@
                          Font="@Skin.Current.SKILL_FONT" FontColor="@Skin.Current.SKILL_FONTCOLOR"
                          BorderWidth="@Skin.Current.SKILL_FONT_BORDERWIDTH" BorderColor="@Skin.Current.SKILL_FONT_BORDERCOLOR"
                          Align="@TextAlignment.Center" MaxWidth="2.2f * Skin.Current.PlayerTokenRadius"
-                         Popover="@Support.GetHoverHTML(skilledLeader, h.Game.Skill(skilledLeader))" PopoverStyle=""/>
+                         Popover="@Popup.Get(skilledLeader, h.Game.Skill(skilledLeader))" PopoverStyle=""/>
             }
 
             if (p.Faction == Faction.White && Game.LatestRevealedNoFieldValue >= 0)
@@ -174,13 +174,13 @@
 
         foreach (var v in p.TechTokens)
         {
-            result += Support.GetHoverHTML(v);
+            result += Popup.Get(v);
         }
 
         var skilledLeader = h.Game.GetSkilledLeader(p);
         if (skilledLeader != null && h.Game.IsInFrontOfShield(skilledLeader))
         {
-            result += Support.GetHoverHTML(skilledLeader, h.Game.Skill(skilledLeader));
+            result += Popup.Get(skilledLeader, h.Game.Skill(skilledLeader));
         }
 
         return result;

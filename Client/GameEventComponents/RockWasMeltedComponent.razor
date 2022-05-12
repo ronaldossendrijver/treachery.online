@@ -19,7 +19,7 @@
 
     protected override void OnInitialized()
     {
-        BackgroundImage = Support.GetCardImage(TreacheryCardType.Rockmelter);
+        BackgroundImage = GetImage(TreacheryCardType.Rockmelter);
     }
 
     protected override bool IsUrgent => true;

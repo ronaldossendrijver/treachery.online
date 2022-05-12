@@ -147,9 +147,6 @@
     [Parameter]
     public EventCallback<LocationEventArgs> OnLocationClick { get; set; }
 
-    [Parameter]
-    public EventCallback<TerritoryEventArgs> OnTerritoryClick { get; set; }
-
     private async Task OnClick(MouseEventArgs e, Location l)
     {
         await OnLocationClick.InvokeAsync(new LocationEventArgs() { Location = l, AltKey = e.AltKey, CtrlKey = e.CtrlKey, ShiftKey = e.ShiftKey });
@@ -176,10 +173,9 @@
 
     private float ScaleY = 626f / Skin.Current.MapDimensions.Y;
 
-    private string PointerEvents => OnLocationClick.HasDelegate || OnTerritoryClick.HasDelegate ? "all" : "none";
+    private string PointerEvents => OnLocationClick.HasDelegate ? "all" : "none";
 
     private string SectorClipName(int i) => "clipOfSector" + i;
-
 
     protected string Intel(Location intelligenceLocation)
     {
@@ -188,7 +184,7 @@
         var owner = Game.StrongholdOwnership.ContainsKey(intelligenceLocation) ? Game.StrongholdOwnership[intelligenceLocation] : Faction.None;
         if (owner != Faction.None)
         {
-            result += Support.GetHoverHTML(intelligenceLocation, owner);
+            result += Popup.Get(intelligenceLocation, owner);
         }
         else
         {

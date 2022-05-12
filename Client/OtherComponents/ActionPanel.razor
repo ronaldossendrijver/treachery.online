@@ -1,5 +1,11 @@
-﻿@using Treachery.Shared
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
 @using Treachery.Client.GameEventComponents;
+@using Treachery.Client.GenericComponents;
+@inherits GameComponent;
 
 <div>
 
@@ -84,12 +90,12 @@
                 break;
             case "StormSpellPlayed":
                 {
-                    <StormSpellPlayedComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.StormSpell)" />
+                    <StormSpellPlayedComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.StormSpell)" />
                 }
                 break;
             case "MetheorPlayed":
                 {
-                    <SimpleActionComponent GameEventType="MetheorPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Metheor)" Title="@Support.GetCardTitle(TreacheryCardType.Metheor)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Metheor)" />
+                    <SimpleActionComponent GameEventType="MetheorPlayed" h="@h" BackgroundImage="@GetImage(TreacheryCardType.Metheor)" Title="@DescribeCard(TreacheryCardType.Metheor)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Metheor)" />
                 }
                 break;
             case "TakeLosses":
@@ -159,7 +165,7 @@
                 break;
             case "Caravan":
                 {
-                    <CaravanComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Caravan)" />
+                    <CaravanComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Caravan)" />
                 }
                 break;
             case "BattleInitiated":
@@ -199,7 +205,7 @@
                 break;
             case "RaiseDeadPlayed":
                 {
-                    <RaiseDeadComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.RaiseDead)" />
+                    <RaiseDeadComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.RaiseDead)" />
                 }
                 break;
             case "Donated":
@@ -219,62 +225,62 @@
                 break;
             case "ClairVoyancePlayed":
                 {
-                    <ClairVoyancePlayedComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Clairvoyance)" />
+                    <ClairVoyancePlayedComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Clairvoyance)" />
                 }
                 break;
             case "ClairVoyanceAnswered":
                 {
-                    <ClairVoyanceAnsweredComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Clairvoyance)" />
+                    <ClairVoyanceAnsweredComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Clairvoyance)" />
                 }
                 break;
             case "KarmaHandSwapInitiated":
                 {
-                    <KarmaHandSwapInitiatedComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
+                    <KarmaHandSwapInitiatedComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
                 }
                 break;
             case "KarmaShipmentPrevention":
                 {
-                    <KarmaShipmentPreventionComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
+                    <KarmaShipmentPreventionComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
                 }
                 break;
             case "KarmaRevivalPrevention":
                 {
-                    <KarmaRevivalPreventionComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
+                    <KarmaRevivalPreventionComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
                 }
                 break;
             case "KarmaHandSwap":
                 {
-                    <KarmaHandSwapComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
+                    <KarmaHandSwapComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
                 }
                 break;
             case "KarmaFreeRevival":
                 {
-                    <KarmaFreeRevivalComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
+                    <KarmaFreeRevivalComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
                 }
                 break;
             case "KarmaHmsMovement":
                 {
-                    <KarmaHmsMovementComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
+                    <KarmaHmsMovementComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
                 }
                 break;
             case "KarmaMonster":
                 {
-                    <KarmaMonsterComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
+                    <KarmaMonsterComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
                 }
                 break;
             case "KarmaPrescience":
                 {
-                    <SimpleActionComponent GameEventType="KarmaPrescience" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" Title="@Skin.Current.Format("Use {0} to see the entire enemy battle plan", TreacheryCardType.Karma)" Alert="false" Collapsible="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Karma)" />
+                    <SimpleActionComponent GameEventType="KarmaPrescience" h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" Title="@Skin.Current.Format("Use {0} to see the entire enemy battle plan", TreacheryCardType.Karma)" Alert="false" Collapsible="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Karma)" />
                 }
                 break;
             case "KarmaWhiteBuy":
                 {
-                    <KarmaWhiteBuyComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
+                    <KarmaWhiteBuyComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
                 }
                 break;
             case "Karma":
                 {
-                    <KarmaComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
+                    <KarmaComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
                 }
                 break;
             case "FaceDanced":
@@ -309,7 +315,7 @@
                 break;
             case "AmalPlayed":
                 {
-                    <SimpleActionComponent GameEventType="AmalPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Amal)" Title="@Support.GetCardTitle(TreacheryCardType.Amal)" Alert="false" Collapsible="true" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Amal)" />
+                    <SimpleActionComponent GameEventType="AmalPlayed" h="@h" BackgroundImage="@GetImage(TreacheryCardType.Amal)" Title="@DescribeCard(TreacheryCardType.Amal)" Alert="false" Collapsible="true" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Amal)" />
                 }
                 break;
             case "WhiteAnnouncesBlackMarket":
@@ -344,12 +350,12 @@
                 break;
             case "HarvesterPlayed":
                 {
-                    <SimpleActionComponent GameEventType="HarvesterPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Harvester)" Title="@Support.GetCardTitle(TreacheryCardType.Harvester)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Harvester)" />
+                    <SimpleActionComponent GameEventType="HarvesterPlayed" h="@h" BackgroundImage="@GetImage(TreacheryCardType.Harvester)" Title="@DescribeCard(TreacheryCardType.Harvester)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Harvester)" />
                 }
                 break;
             case "PoisonToothCancelled":
                 {
-                    <SimpleActionComponent GameEventType="PoisonToothCancelled" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.PoisonTooth)" Title="Cancel Poison Tooth?" Alert="false" ConfirmLabel="Cancel" />
+                    <SimpleActionComponent GameEventType="PoisonToothCancelled" h="@h" BackgroundImage="@GetImage(TreacheryCardType.PoisonTooth)" Title="Cancel Poison Tooth?" Alert="false" ConfirmLabel="Cancel" />
                 }
                 break;
             case "ReplacedCardWon":
@@ -359,7 +365,7 @@
                 break;
             case "ThumperPlayed":
                 {
-                    <SimpleActionComponent GameEventType="ThumperPlayed" h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Thumper)" Title="@Support.GetCardTitle(TreacheryCardType.Thumper)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Thumper)" />
+                    <SimpleActionComponent GameEventType="ThumperPlayed" h="@h" BackgroundImage="@GetImage(TreacheryCardType.Thumper)" Title="@DescribeCard(TreacheryCardType.Thumper)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Thumper)" />
                 }
                 break;
             case "HideSecrets":
@@ -394,7 +400,7 @@
                 break;
             case "KarmaBrownDiscard":
                 {
-                    <KarmaBrownDiscardComponent h="@h" BackgroundImage="@Support.GetCardImage(TreacheryCardType.Karma)" />
+                    <KarmaBrownDiscardComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />
                 }
                 break;
             case "AuditCancelled":
@@ -458,7 +464,7 @@
             case "ResidualPlayed":
                 {
                     <SimpleActionComponent GameEventType="ResidualPlayed" h="@h"
-                                            BackgroundImage="@Support.GetCardImage(TreacheryCardType.Residual)"
+                                            BackgroundImage="@GetImage(TreacheryCardType.Residual)"
                                             Title="@Skin.Current.Format("Use {0} to kill a random available opponent leader?", TreacheryCardType.Residual)"
                                             ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Residual)" />
                 }
@@ -486,7 +492,7 @@
             case "DiscardedSearchedAnnounced":
                 {
                     <SimpleActionComponent GameEventType="DiscardedSearchedAnnounced" h="@h"
-                                            BackgroundImage="@Support.GetCardImage(TreacheryCardType.SearchDiscarded)"
+                                            BackgroundImage="@GetImage(TreacheryCardType.SearchDiscarded)"
                                             Title="@Skin.Current.Format("Use {0} to pay 2 and search and take a card from the treachery discard pile?", TreacheryCardType.SearchDiscarded)"
                                             ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.SearchDiscarded)" />
                 }
@@ -504,7 +510,7 @@
             case "PortableAntidoteUsed":
                 {
                     <SimpleActionComponent GameEventType="PortableAntidoteUsed" h="@h"
-                                            BackgroundImage="@Support.GetCardImage(TreacheryCardType.PortableAntidote)"
+                                            BackgroundImage="@GetImage(TreacheryCardType.PortableAntidote)"
                                             Title="@Skin.Current.Format("Use your {0}?", TreacheryCardType.PortableAntidote)"
                                             ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.PortableAntidote)" />
                 }
@@ -583,8 +589,3 @@
 
 </div>
 
-@code {
-
-    [Parameter]
-    public Handler h { get; set; }
-}

@@ -15,7 +15,7 @@
             <div style="position:absolute;left:5px;top:0px;color:@TimerColor(h.Status.WaitingForMe(Player, h.IsHost));font-weight:bolder;">@TimerText(h.Status.TimedEvent)</div>
         }
 
-        <div class="row d-flex justify-content-center mt-2">
+        <div class="row d-flex justify-content-center mt-2 mb-2">
 
             @{
                 var currentPlayersToAct = h.Status.WaitingForPlayers;
@@ -78,7 +78,7 @@
 
         </div>
 
-        <div class="text-dark fw-bold mt-2" style=@StatusStyle>
+        <div class="text-dark fw-bold" style=@StatusStyle>
             <ExpressionComponent Game=Game Expression=@h.Status.GetMessage(h.Player, h.IsHost).Expression Size=30/>
         </div>
 

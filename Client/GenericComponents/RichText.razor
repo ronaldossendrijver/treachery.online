@@ -112,13 +112,13 @@
         string result;
 
         if (value == null) result = "";
-        else if (value is TreacheryCard tc) result = Support.GetHoverHTML(tc);
-        else if (value is ResourceCard rc) result = Support.GetHoverHTML(rc);
-        else if (value is Location loc) result = Support.GetHoverHTML(loc);
-        else if (value is IHero h) result = Support.GetHoverHTML(h);
-        else if (value is LeaderSkill ls) result = Support.GetHoverHTML(ls);
-        else if (value is TechToken tt) result = Support.GetHoverHTML(tt);
-        else result = Support.GetHoverHTML(Skin.Current.Describe(value));
+        else if (value is TreacheryCard tc) result = Popup.Get(tc);
+        else if (value is ResourceCard rc) result = Popup.Get(rc);
+        else if (value is Location loc) result = Popup.Get(loc);
+        else if (value is IHero h) result = Popup.Get(h);
+        else if (value is LeaderSkill ls) result = Popup.Get(ls);
+        else if (value is TechToken tt) result = Popup.Get(tt);
+        else result = Popup.Get(Skin.Current.Describe(value));
 
         return result;
     }

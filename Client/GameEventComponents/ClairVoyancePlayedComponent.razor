@@ -8,7 +8,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>@Support.GetCardTitle(TreacheryCardType.Clairvoyance)</Header>
+    <Header>@DescribeCard(TreacheryCardType.Clairvoyance)</Header>
     <Body>
 
         <SelectFactionComponent @bind-Value="target" Values="ClairVoyancePlayed.ValidTargets(Game, Player)">

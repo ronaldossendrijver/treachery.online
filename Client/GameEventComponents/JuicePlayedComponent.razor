@@ -25,7 +25,7 @@
 
     protected override void OnInitialized()
     {
-        BackgroundImage = Support.GetCardImage(TreacheryCardType.Juice);
+        BackgroundImage = GetImage(TreacheryCardType.Juice);
     }
 
     protected override JuicePlayed ConfirmedResult => new JuicePlayed(Game) { Initiator = Faction, Type = type };

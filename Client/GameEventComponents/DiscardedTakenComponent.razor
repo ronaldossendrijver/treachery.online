@@ -25,7 +25,7 @@
 
     protected override void OnInitialized()
     {
-        BackgroundImage = Support.GetCardImage(TreacheryCardType.TakeDiscarded);
+        BackgroundImage = GetImage(TreacheryCardType.TakeDiscarded);
     }
 
     protected override DiscardedTaken ConfirmedResult => new DiscardedTaken(Game) { Initiator = Faction, Card = card };

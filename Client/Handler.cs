@@ -134,7 +134,7 @@ namespace Treachery.Client
             if (IsHost && !Host.JoinedPlayers.Any())
             {
                 JoinErrors[Host.HostID] = "";
-                await Request(Host.HostID, new PlayerJoined() { HashedPassword = Support.GetHash(Host.gamePassword), Name = PlayerName });
+                await Host.JoinGame(PlayerName);
                 await Task.Delay(5000).ContinueWith(e => LetHostJoin());
             }
         }
@@ -521,15 +521,8 @@ namespace Treachery.Client
                 await Browser.PlaySound(Skin.Current.Sound_Chatmessage_URL, CurrentChatVolume);
                 Refresh();
 
-                await Browser.SendToChatPopup(ConstructPopupChatMessage(m));
+                await Browser.SendToChatPopup(PopupChatMessage.Construct(Game, MyName, m));
             }
-        }
-
-        public PopupChatMessage ConstructPopupChatMessage(ChatMessage m)
-        {
-            var sourcePlayer = Game.GetPlayer(m.SourcePlayerName);
-            var sourceFaction = sourcePlayer != null ? sourcePlayer.Faction : Faction.None;
-            return new PopupChatMessage() { body = Support.HTMLEncode(m.GetBodyIncludingPlayerInfo(MyName, Game).ToString(Skin.Current)), style = Skin.Current.GetFactionColor(sourceFaction) };
         }
 
         public static async Task PopoutChatWindow()

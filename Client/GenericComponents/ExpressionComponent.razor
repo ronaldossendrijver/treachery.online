@@ -78,7 +78,7 @@
     }
     else if (part is IHero hero)
     {
-        <RichText Style=@Support.TextBorder(1, Skin.Current.FactionColor[hero.Faction]) Shown=@Skin.Current.Describe(hero) Popover=@Support.GetHoverHTML(hero, Game)/>
+        <RichText Style=@Support.TextBorder(1, Skin.Current.FactionColor[hero.Faction]) Shown=@Skin.Current.Describe(hero) Popover=@Popup.Get(hero, Game)/>
     }
     else if (part is Concept monster && monster == Concept.Monster)
     {

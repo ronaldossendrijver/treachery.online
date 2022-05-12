@@ -28,7 +28,7 @@
 
     protected override void OnInitialized()
     {
-        BackgroundImage = Support.GetCardImage(TreacheryCardType.Distrans);
+        BackgroundImage = GetImage(TreacheryCardType.Distrans);
     }
 
     protected override DistransUsed ConfirmedResult => new DistransUsed(Game) { Initiator = Faction, Target = target, Card = card };

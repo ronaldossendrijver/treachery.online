@@ -14,7 +14,7 @@
         @foreach (var v in TreacheryCardManager.GetCardsInPlay(h.Game))
         {
             <div class="card">
-                <Hoverable Class="card-img-top" Popover=@Support.GetHoverHTML(v)>
+                <Hoverable Class="card-img-top" Popover=@Popup.Get(v)>
                     <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt=@Name(v)>
                 </Hoverable>
             </div>
@@ -30,7 +30,7 @@
             @foreach (var v in TreacheryCardManager.GetWhiteCards())
             {
                 <div class="card">
-                    <Hoverable Class="card-img-top" Popover=@Support.GetHoverHTML(v)>
+                    <Hoverable Class="card-img-top" Popover=@Popup.Get(v)>
                         <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt=@Name(v)>
                     </Hoverable>
                 </div>
@@ -45,7 +45,7 @@
         @foreach (var v in Map.GetResourceCardsInPlay(h.Game))
         {
             <div class="card">
-                <Hoverable Class="card-img-top" Popover=@Support.GetHoverHTML(v)>
+                <Hoverable Class="card-img-top" Popover=@Popup.Get(v)>
                     <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt=@Name(v)>
                 </Hoverable>
             </div>
@@ -61,7 +61,7 @@
             @foreach (var v in Enumerations.GetValuesExceptDefault(typeof(LeaderSkill), LeaderSkill.None))
             {
                 <div class="card">
-                    <Hoverable Class="card-img-top" Popover=@Support.GetHoverHTML(v)>
+                    <Hoverable Class="card-img-top" Popover=@Popup.Get(v)>
                         <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt=@Name(v)>
                     </Hoverable>
                 </div>
@@ -78,7 +78,7 @@
             @foreach (var v in h.Game.Map.Strongholds)
             {
                 <div class="card">
-                    <Hoverable Class="card-img-top" Popover=@Support.GetHoverHTML(v)>
+                    <Hoverable Class="card-img-top" Popover=@Popup.Get(v)>
                         <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt=@Name(v)>
                     </Hoverable>
                 </div>

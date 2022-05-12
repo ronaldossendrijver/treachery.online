@@ -16,15 +16,16 @@ namespace Treachery.Client
         public const int MAX_HEARTBEATS = 28800;  //28800 heartbeats of 6 seconds each = 48 hours
         public const int HEARTBEAT_DELAY = 6000;
 
-        public int HostID;
-        public int GameID;
+        public int HostID { get; }
+        public string LoadedGameData { get; }
+        public Game LoadedGame { get; }
+
         private readonly HubConnection connection;
         private readonly string Name;
-        public readonly string gamePassword;
         private readonly Handler h;
-        private Game GameAtHost;
-        public readonly string LoadedGameData;
-        public readonly Game LoadedGame;
+        private string gamePassword;
+        private int gameID; 
+        private Game gameAtHost;
 
         public GameInfo GameBeingEstablished = new()
         {
@@ -40,12 +41,12 @@ namespace Treachery.Client
             HostID = (new Random()).Next();
             Name = hostName;
             this.gamePassword = gamePassword;
-            GameID = (new Random()).Next();
+            gameID = (new Random()).Next();
             this.h = h;
             LoadedGameData = loadedGameData;
             LoadedGame = loadedGame;
             connection = hubConnection;
-            GameAtHost = new Game();
+            gameAtHost = new Game();
             RegisterHandlers();
             _ = Heartbeat();
         }
@@ -104,7 +105,7 @@ namespace Treachery.Client
             {
                 GameInfo result = null;
 
-                if (GameAtHost.CurrentPhase == Phase.AwaitingPlayers)
+                if (gameAtHost.CurrentPhase == Phase.AwaitingPlayers)
                 {
                     result = GameBeingEstablished;
                     result.Players = JoinedPlayers.Where(p => GameBeingEstablished.HostParticipates || p != h.PlayerName).ToArray();
@@ -114,22 +115,27 @@ namespace Treachery.Client
                 {
                     result = new GameInfo()
                     {
-                        Players = GameAtHost.Players.Select(p => p.Name).ToArray(),
-                        FactionsInPlay = GameAtHost.Players.Select(p => p.Faction).ToList(),
-                        NumberOfBots = GameAtHost.Players.Count(p => p.IsBot),
-                        Rules = GameAtHost.Rules.ToList()
+                        Players = gameAtHost.Players.Select(p => p.Name).ToArray(),
+                        FactionsInPlay = gameAtHost.Players.Select(p => p.Faction).ToList(),
+                        NumberOfBots = gameAtHost.Players.Count(p => p.IsBot),
+                        Rules = gameAtHost.Rules.ToList()
                     };
                 }
 
                 result.HostID = HostID;
                 result.GameName = Name + "'s Game";
                 result.HasPassword = gamePassword != "";
-                result.CurrentPhase = GameAtHost.CurrentPhase;
-                result.CurrentMainPhase = GameAtHost.CurrentMainPhase;
-                result.CurrentTurn = GameAtHost.CurrentTurn;
+                result.CurrentPhase = gameAtHost.CurrentPhase;
+                result.CurrentMainPhase = gameAtHost.CurrentMainPhase;
+                result.CurrentTurn = gameAtHost.CurrentTurn;
 
                 return result;
             }
+        }
+
+        public async Task JoinGame(string playerName)
+        {
+            await h.Request(HostID, new PlayerJoined() { HashedPassword = Support.GetHash(gamePassword), Name = playerName });
         }
 
         //Broadcasts the game hosted by this client to everyone connected to treachery.online
@@ -148,7 +154,7 @@ namespace Treachery.Client
 
         private void CheckDisconnectedPlayers()
         {
-            if (GameAtHost.CurrentPhase == Phase.AwaitingPlayers)
+            if (gameAtHost.CurrentPhase == Phase.AwaitingPlayers)
             {
                 foreach (var disconnectedPlayerName in DisconnectedPlayers.ToList())
                 {
@@ -193,7 +199,7 @@ namespace Treachery.Client
             try
             {
                 string denyMessage = VerifyPlayerJoin(e.Name, e.HashedPassword);
-                await connection.SendAsync("RespondPlayerJoined", GameID, playerConnectionId, HostID, denyMessage);
+                await connection.SendAsync("RespondPlayerJoined", gameID, playerConnectionId, HostID, denyMessage);
 
                 if (denyMessage == "")
                 {
@@ -213,13 +219,13 @@ namespace Treachery.Client
             try
             {
                 string denyMessage = VerifyPlayerRejoin(e.Name, e.HashedPassword);
-                await connection.SendAsync("RespondPlayerRejoined", GameID, playerConnectionId, HostID, denyMessage);
+                await connection.SendAsync("RespondPlayerRejoined", gameID, playerConnectionId, HostID, denyMessage);
 
                 if (denyMessage == "")
                 {
                     var data = GameState.GetStateAsString(h.Game);
                     var skin = Skin.Current.SkinToString();
-                    await connection.SendAsync("LoadGame", GameID, data, e.Name, skin);
+                    await connection.SendAsync("LoadGame", gameID, data, e.Name, skin);
                 }
             }
             catch (Exception ex)
@@ -235,7 +241,7 @@ namespace Treachery.Client
             try
             {
                 string denyMessage = "";
-                await connection.SendAsync("RespondObserverJoined", GameID, playerConnectionId, HostID, denyMessage);
+                await connection.SendAsync("RespondObserverJoined", gameID, playerConnectionId, HostID, denyMessage);
                 if (!JoinedObservers.Contains(e.Name)) JoinedObservers.Add(e.Name);
             }
             catch (Exception ex)
@@ -250,11 +256,11 @@ namespace Treachery.Client
             try
             {
                 string denyMessage = "";
-                await connection.SendAsync("RespondObserverRejoined", GameID, playerConnectionId, HostID, denyMessage);
+                await connection.SendAsync("RespondObserverRejoined", gameID, playerConnectionId, HostID, denyMessage);
                 if (!JoinedObservers.Contains(e.Name)) JoinedObservers.Add(e.Name);
                 var data = GameState.GetStateAsString(h.Game);
                 var skin = Skin.Current.SkinToString();
-                await connection.SendAsync("LoadGame", GameID, data, e.Name, skin);
+                await connection.SendAsync("LoadGame", gameID, data, e.Name, skin);
             }
             catch (Exception ex)
             {
@@ -269,7 +275,7 @@ namespace Treachery.Client
             {
                 return "Incorrect password.";
             }
-            else if (GameAtHost.CurrentPhase != Phase.AwaitingPlayers)
+            else if (gameAtHost.CurrentPhase != Phase.AwaitingPlayers)
             {
                 return "Game is not available.";
             }
@@ -287,7 +293,7 @@ namespace Treachery.Client
             {
                 return "Incorrect password.";
             }
-            else if (!GameAtHost.Players.Any(p => p.Name.ToLower().Trim() == name.ToLower().Trim()))
+            else if (!gameAtHost.Players.Any(p => p.Name.ToLower().Trim() == name.ToLower().Trim()))
             {
                 return "There is no player with that name.";
             }
@@ -309,11 +315,11 @@ namespace Treachery.Client
         {
             try
             {
-                e.Game = GameAtHost;
+                e.Game = gameAtHost;
                 var result = e.Execute(true, true);
                 if (result == null)
                 {
-                    await connection.SendAsync("NotifyUpdate", GameID, GameAtHost.EventCount, e);
+                    await connection.SendAsync("NotifyUpdate", gameID, gameAtHost.EventCount, e);
                 }
                 else
                 {
@@ -332,7 +338,7 @@ namespace Treachery.Client
         {
             try
             {
-                await connection.SendAsync("ApproveChatMessage", GameID, e);
+                await connection.SendAsync("ApproveChatMessage", gameID, e);
             }
             catch (Exception ex)
             {
@@ -344,9 +350,9 @@ namespace Treachery.Client
         {
             try
             {
-                int undoNr = eventNr > 0 ? eventNr : GameAtHost.History.Count - 1;
-                await connection.SendAsync("Undo", GameID, undoNr);
-                GameAtHost = GameAtHost.Undo(undoNr);
+                int undoNr = eventNr > 0 ? eventNr : gameAtHost.History.Count - 1;
+                await connection.SendAsync("Undo", gameID, undoNr);
+                gameAtHost = gameAtHost.Undo(undoNr);
             }
             catch (Exception ex)
             {
@@ -358,8 +364,8 @@ namespace Treachery.Client
         {
             try
             {
-                GameAtHost = game;
-                await connection.SendAsync("LoadGame", GameID, gameData, "", "");
+                gameAtHost = game;
+                await connection.SendAsync("LoadGame", gameID, gameData, "", "");
             }
             catch (Exception ex)
             {
@@ -371,8 +377,8 @@ namespace Treachery.Client
         {
             try
             {
-                GameAtHost = game;
-                await connection.SendAsync("LoadGame", GameID, gameData, "", skinData);
+                gameAtHost = game;
+                await connection.SendAsync("LoadGame", gameID, gameData, "", skinData);
             }
             catch (Exception ex)
             {
@@ -384,7 +390,7 @@ namespace Treachery.Client
         {
             try
             {
-                await connection.SendAsync("LoadSkin", GameID, skinData);
+                await connection.SendAsync("LoadSkin", gameID, skinData);
             }
             catch (Exception ex)
             {

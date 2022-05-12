@@ -137,4 +137,15 @@
 
     
     protected string Name(object o) => Skin.Current.Describe(o);
+
+    protected static string GetImage(TreacheryCardType type)
+    {
+        return Skin.Current.GetImageURL(
+            TreacheryCardManager.GetCardsInAndOutsidePlay().FirstOrDefault(c => c.Type == type));
+    }
+
+    public static string DescribeCard(TreacheryCardType t)
+    {
+        return string.Format("Use {0}?", Skin.Current.Describe(t));
+    }
 }

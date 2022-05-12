@@ -285,7 +285,7 @@
         else
         {
             var card = TreacheryCardManager.Lookup.Find(cardID);
-            return Support.GetHoverHTML(card);
+            return Popup.Get(card);
         }
     }
 
@@ -321,13 +321,13 @@
 
     private IEnumerable<string> AllTraitors_ImageURLs => AllTraitors.Select(c => Skin.Current.GetImageURL(c));
 
-    private IEnumerable<string> AllTraitors_Popups => AllTraitors.Select(c => Support.GetHoverHTML(c, Game));
+    private IEnumerable<string> AllTraitors_Popups => AllTraitors.Select(c => Popup.Get(c, Game));
 
     private IList<ResourceCard> AllSpiceCards { get; set; }
 
     private IEnumerable<string> AllSpiceCards_ImageURLs => AllSpiceCards.Select(c => Skin.Current.GetImageURL(c));
 
-    private IEnumerable<string> AllSpiceCards_Popups => AllSpiceCards.Select(c => Support.GetHoverHTML(c));
+    private IEnumerable<string> AllSpiceCards_Popups => AllSpiceCards.Select(c => Popup.Get(c));
 
     private ResourceCard SpiceCard(string name) => AllSpiceCards.FirstOrDefault(c => Skin.Current.Describe(c) == name);
 

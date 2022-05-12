@@ -40,7 +40,7 @@
 
                 <td>
                     @if (AggressorBattle.Hero != null) {
-                        <Image Shown=@AggressorBattle.Hero Popover=@Support.GetHoverHTML(AggressorBattle.Hero, Game) Class="img-fluid p-1" Width=60/>
+                        <Image Shown=@AggressorBattle.Hero Popover=@Popup.Get(AggressorBattle.Hero, Game) Class="img-fluid p-1" Width=60/>
                     }
 
                     @if (AggressorBattle.Messiah)
@@ -85,7 +85,7 @@
 
                 <td>
                     @if (DefenderBattle.Hero != null) {
-                        <Image Shown=@DefenderBattle.Hero Popover=@Support.GetHoverHTML(DefenderBattle.Hero, Game) Class="img-fluid p-1" Width=60/>
+                        <Image Shown=@DefenderBattle.Hero Popover=@Popup.Get(DefenderBattle.Hero, Game) Class="img-fluid p-1" Width=60/>
                     }
 
                     @if (DefenderBattle.Messiah)

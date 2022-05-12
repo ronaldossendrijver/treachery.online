@@ -52,12 +52,12 @@
                         @foreach (var v in ShownPlayer.Leaders.Where(l => h.Game.IsAlive(l)))
                         {
                             var style = Game.Skilled(v) ? "filter:brightness(150%) contrast(100%)" : "";
-                            <UntypedImage Src=@Skin.Current.GetImageURL(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Support.GetHoverHTML(v, h.Game)/>
+                            <UntypedImage Src=@Skin.Current.GetImageURL(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, h.Game)/>
                         }
 
                         @foreach (var v in ShownPlayer.Leaders.Where(l => !h.Game.IsAlive(l)))
                         {
-                            <UntypedImage Src=@Skin.Current.GetImageURL(v) Style="filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8)" Class="img-fluid p-1" Width=60 Popover=@Support.GetHoverHTML(v, h.Game)/>
+                            <UntypedImage Src=@Skin.Current.GetImageURL(v) Style="filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8)" Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, h.Game)/>
                         }
 
                         <!-- Traitors and Face Dancers -->
@@ -67,12 +67,12 @@
                             @foreach (var v in ShownPlayer.FaceDancers)
                             {
                                 var style = ShownPlayer.RevealedDancers.Contains(v) ? "filter:brightness(150%) contrast(100%) blur(1px)" : "";
-                                <UntypedImage Src=@Skin.Current.GetImageURL(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Support.GetHoverHTML(v, h.Game)/>
+                                <UntypedImage Src=@Skin.Current.GetImageURL(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, h.Game)/>
                             }
                         }
                         else if (!h.Game.Applicable(Rule.AssistedNotekeeping) && ShownPlayer.Traitors.Count == 1)
                         {
-                            <div><UntypedImage Src=@Skin.Current.GetImageURL(ShownPlayer.Traitors[0]) Class="img-fluid p-1" Width=60 Popover=@Support.GetHoverHTML(ShownPlayer.Traitors[0], h.Game)/> is your traitor.</div>
+                            <div><UntypedImage Src=@Skin.Current.GetImageURL(ShownPlayer.Traitors[0]) Class="img-fluid p-1" Width=60 Popover=@Popup.Get(ShownPlayer.Traitors[0], h.Game)/> is your traitor.</div>
                         }
                         else if (ShownPlayer.Traitors.Count > 0)
                         {
@@ -88,12 +88,12 @@
                             @foreach (var v in ShownPlayer.Traitors)
                             {
                                 var style = ShownPlayer.RevealedTraitors.Contains(v) ? "filter:brightness(150%) contrast(110%) blur(1px)" : "";
-                                <UntypedImage Src=@Skin.Current.GetImageURL(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Support.GetHoverHTML(v, h.Game)/>
+                                <UntypedImage Src=@Skin.Current.GetImageURL(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, h.Game)/>
                             }
 
                             @foreach (var v in ShownPlayer.DiscardedTraitors)
                             {
-                                <UntypedImage Src=@Skin.Current.GetImageURL(v) Style="filter:grayscale(100%) opacity(60%)" Class="img-fluid p-1" Width=60 Popover=@Support.GetHoverHTML(v, h.Game)/>
+                                <UntypedImage Src=@Skin.Current.GetImageURL(v) Style="filter:grayscale(100%) opacity(60%)" Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, h.Game)/>
                             }
                         }
 
@@ -131,7 +131,7 @@
 
                         @if (h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove && h.Game.HasResourceDeckPrescience(Player))
                         {
-                            <Hoverable Popover=@Support.GetHoverHTML(h.Game.ResourceCardDeck.Top)>Top card of @Name(Concept.Resource) Deck: <span class="badge bg-primary rounded-pill">@Name(h.Game.ResourceCardDeck.Top)</span></Hoverable>
+                            <Hoverable Popover=@Popup.Get(h.Game.ResourceCardDeck.Top)>Top card of @Name(Concept.Resource) Deck: <span class="badge bg-primary rounded-pill">@Name(h.Game.ResourceCardDeck.Top)</span></Hoverable>
                         }
 
                         <!-- Cards -->
