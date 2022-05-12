@@ -334,7 +334,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 3000;
+            int nrOfGames = 100;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
@@ -371,7 +371,7 @@ namespace Treachery.Test
             var game = LetBotsPlay(rulesAsArray, factions, nrOfPlayers, nrOfTurns, null, false, true);
 
             Console.WriteLine("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
-                string.Join(",", game.Winners),
+                string.Join(",", game.Winners.Select(p => p.Name)),
                 Skin.Current.Describe(game.WinMethod),
                 game.CurrentTurn,
                 game.History.Count,
@@ -475,71 +475,67 @@ namespace Treachery.Test
         {
             var bots = Deck<Player>.Randomize(game.Players.Where(p => p.IsBot));
 
+            var botEvents = new Dictionary<Player, IEnumerable<Type>>();
             foreach (var bot in bots)
             {
-                var evt = bot.DetermineHighPrioInPhaseAction(game.GetApplicableEvents(bot, true));
+                botEvents.Add(bot, game.GetApplicableEvents(bot, true));
+            }
+
+            foreach (var bot in bots)
+            {
+                var evt = bot.DetermineHighPrioInPhaseAction(botEvents[bot]);
 
                 if (evt != null)
                 {
-                    var executeResult = evt.Execute(performTests, true);
-                    if (performTests && executeResult != null)
-                    {
-                        File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
-                    }
-                    if (performTests) Assert.IsNull(executeResult);
+                    ExecuteBotEvent(game, performTests, evt);
                     return evt;
                 }
             }
 
             foreach (var bot in bots)
             {
-                var evt = bot.DetermineMiddlePrioInPhaseAction(game.GetApplicableEvents(bot, true));
+                var evt = bot.DetermineMiddlePrioInPhaseAction(botEvents[bot]);
 
                 if (evt != null)
                 {
-                    var executeResult = evt.Execute(performTests, true);
-                    if (performTests && executeResult != null)
-                    {
-                        File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
-                    }
-                    if (performTests) Assert.IsNull(executeResult);
+                    ExecuteBotEvent(game, performTests, evt);
                     return evt;
                 }
             }
 
             foreach (var bot in bots)
             {
-                var evt = bot.DetermineLowPrioInPhaseAction(game.GetApplicableEvents(bot, true));
+                var evt = bot.DetermineLowPrioInPhaseAction(botEvents[bot]);
 
                 if (evt != null)
                 {
-                    var executeResult = evt.Execute(performTests, true);
-                    if (performTests && executeResult != null)
-                    {
-                        File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
-                    }
-                    if (performTests) Assert.IsNull(executeResult);
+                    ExecuteBotEvent(game, performTests, evt);
                     return evt;
                 }
             }
 
-            foreach (var p in game.Players.Where(p => p.IsBot))
+            foreach (var bot in bots)
             {
-                var evt = p.DetermineEndPhaseAction(game.GetApplicableEvents(p, true));
+                var evt = bot.DetermineEndPhaseAction(botEvents[bot]);
 
                 if (evt != null)
                 {
-                    var result = evt.Execute(performTests, true);
-                    if (performTests)
-                    {
-                        if (result != null) File.WriteAllText("error" + game.Seed + ".json", GameState.GetStateAsString(game));
-                        Assert.IsNull(result);
-                    }
+                    ExecuteBotEvent(game, performTests, evt);
                     return evt;
                 }
             }
 
             return null;
+        }
+
+        private static void ExecuteBotEvent(Game game, bool performTests, GameEvent evt)
+        {
+            var executeResult = evt.Execute(performTests, true);
+            if (performTests && executeResult != null)
+            {
+                File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
+            }
+            if (performTests) Assert.IsNull(executeResult);
         }
 
         [TestMethod]

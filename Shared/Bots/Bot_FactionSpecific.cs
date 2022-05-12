@@ -243,7 +243,7 @@ namespace Treachery.Shared
 
         #region Blue
 
-        private GameEvent DetermineBluePlacement()
+        private PerformBluePlacement DetermineBluePlacement()
         {
             Location target;
             if (AnyForcesIn(Game.Map.Arrakeen) == 0) target = Game.Map.Carthag;

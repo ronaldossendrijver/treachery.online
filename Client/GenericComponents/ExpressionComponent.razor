@@ -21,9 +21,26 @@
     else if (part is IEnumerable e)
     {
         var elts = new List<Expression>();
+        bool useSeparators = false;
+        bool firstItem = true;
+
         foreach (var elt in e)
         {
-            elts.Add(new Expression(elt));
+            if (firstItem) {
+
+                useSeparators = ShownAsText(elt);
+            }
+
+            if (useSeparators && !firstItem)
+            {
+                elts.Add(new Expression(", ", elt));
+            }
+            else
+            {
+                elts.Add(new Expression(elt));
+            }
+
+            firstItem = false;
         }
 
         for (int i = 0; i < elts.Count; i++)
@@ -71,7 +88,7 @@
     {
         <Image Shown=@part Width=@Size ShowPopover=false/>
     }
-    else if (part is Location || part is Territory || part is AuctionType || part is BrownEconomicsStatus || part is TreacheryCardType || part is StrongholdAdvantage || part is FactionAdvantage || part is Ruleset || part is Rule)
+    else if (ShownAsText(part))
     {
         <span class="fw-bold">@Skin.Current.Describe(part)</span>
     }
@@ -91,4 +108,6 @@
 
     [Parameter]
     public int Size { get; set; } = 14;
+
+    private bool ShownAsText(object part) => part is Location || part is Territory || part is AuctionType || part is BrownEconomicsStatus || part is TreacheryCardType || part is StrongholdAdvantage || part is FactionAdvantage || part is Ruleset || part is Rule;
 }

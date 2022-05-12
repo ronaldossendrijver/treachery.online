@@ -58,18 +58,7 @@ namespace Treachery.Client
 
         public bool WaitingForOthers(Player player, bool isHost) => !WaitingForMe(player, isHost);
 
-        public bool PlayerShouldBeHighlighted(Player p)
-        {
-            return WaitingForPlayers.Contains(p);
-            /*
-            return Game.CurrentPhase == Phase.Bidding && Game.CurrentAuctionType != AuctionType.WhiteSilent && p == Game.BidSequence.CurrentPlayer ||
-                   Game.CurrentPhase == Phase.BlackMarketBidding && Game.CurrentAuctionType != AuctionType.BlackMarketSilent && p == Game.BidSequence.CurrentPlayer ||
-                   (Game.CurrentPhase == Phase.OrangeMove || Game.CurrentPhase == Phase.OrangeShip) && p.Faction == Faction.Orange ||
-                   (Game.CurrentPhase == Phase.NonOrangeMove || Game.CurrentPhase == Phase.NonOrangeShip) && p == Game.ShipmentAndMoveSequence.CurrentPlayer ||
-                   (Game.CurrentPhase == Phase.BlueAccompaniesOrange || Game.CurrentPhase == Phase.BlueAccompaniesNonOrange || Game.CurrentPhase == Phase.BlueIntrudedByOrangeMove || Game.CurrentPhase == Phase.BlueIntrudedByNonOrangeMove || Game.CurrentPhase == Phase.BlueIntrudedByOrangeShip || Game.CurrentPhase == Phase.BlueIntrudedByNonOrangeShip) && p.Faction == Faction.Blue ||
-                   (Game.CurrentMainPhase == MainPhase.Battle) && p == Game.CurrentBattle?.AggressivePlayer;
-            */
-        }
+        public bool PlayerShouldBeHighlighted(Player p) => WaitingForPlayers.Contains(p);
 
         public Message GetMessage(Player player, bool isHost)
         {

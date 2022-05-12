@@ -16,7 +16,7 @@ namespace Treachery.Shared
 
             if (skilledLeader != null)
             {
-                if (skilledLeader != null && Game.IsInFrontOfShield(skilledLeader) && skilledLeader == DetermineBattle(true, true)?.Hero)
+                if (skilledLeader != null && Game.IsInFrontOfShield(skilledLeader) && skilledLeader == DetermineBattlePlan(true, true)?.Hero)
                 {
                     return new SwitchedSkilledLeader(Game) { Initiator = Faction };
                 }
@@ -138,8 +138,12 @@ namespace Treachery.Shared
                 ReplacedTraitor = toReplace
             };
         }
+        protected virtual Battle DetermineBattle()
+        {
+            return DetermineBattlePlan(true, false);
+        }
 
-        protected virtual Battle DetermineBattle(bool waitForPrescience, bool includeLeaderInFrontOfShield)
+        protected virtual Battle DetermineBattlePlan(bool waitForPrescience, bool includeLeaderInFrontOfShield)
         {
             LogInfo("DetermineBattle()");
 
@@ -1078,7 +1082,7 @@ namespace Treachery.Shared
         {
             var adv = StrongholdAdvantage.None;
 
-            var plan = DetermineBattle(false, false);
+            var plan = DetermineBattlePlan(false, false);
             if (adv == StrongholdAdvantage.None && !plan.HasPoison && !plan.HasAntidote) adv = HMSAdvantageChosen.ValidAdvantages(Game, this).FirstOrDefault(a => a == StrongholdAdvantage.CountDefensesAsAntidote);
             if (adv == StrongholdAdvantage.None && Resources < 5) adv = HMSAdvantageChosen.ValidAdvantages(Game, this).FirstOrDefault(a => a == StrongholdAdvantage.FreeResourcesForBattles);
             if (adv == StrongholdAdvantage.None) adv = HMSAdvantageChosen.ValidAdvantages(Game, this).FirstOrDefault(a => a == StrongholdAdvantage.CollectResourcesForDial);

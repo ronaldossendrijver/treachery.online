@@ -16,23 +16,24 @@ namespace Treachery.Client
     {
         #region FieldsAndConstructor
 
-        public const int MAX_HEARTBEATS = 17280;  //17280 heartbeats of 10 seconds each = 48 hours
         public const int HEARTBEAT_DELAY = 10000;
-        public const int DISCONNECT_TIMEOUT = 25000;
-        public const int CHATMESSAGE_LIFETIME = 120;
+        private const int MAX_HEARTBEATS = 17280;  //17280 heartbeats of 10 seconds each = 48 hours
+        private const int DISCONNECT_TIMEOUT = 25000;
 
+        //Game in progress
         public Game Game { get; private set; }
         public GameStatus Status { get; private set; }
+        public int GameInProgressHostId { get; private set; }
+        
+        //Player and Host
         public string PlayerName { get; private set; } = "";
         public HostProxy HostProxy { get; private set; } = null;
         public Host Host { get; private set; } = null;
         public bool IsObserver { get; private set; } = false;
         public ServerSettings ServerSettings { get; private set; }
         public Dictionary<int, string> JoinErrors { get; private set; } = new();
-        public int GameInProgressHostId { get; private set; }
         public DateTime Disconnected { get; private set; } = default;
-        public Battle BattleUnderConstruction { get; set; } = null;
-
+        
 
         //Sound and camera
         public float CurrentEffectVolume { get; set; } = -1;
@@ -41,25 +42,30 @@ namespace Treachery.Client
         public CaptureDevice AudioDevice { get; set; }
         public CaptureDevice VideoDevice { get; set; }
 
+        //Info displayed on the map
         public bool ShowWheelsAndHMS { get; set; } = true;
+        public Battle BattleUnderConstruction { get; set; } = null;
+
+        //Other settings
         public bool StatisticsSent { get; set; } = false;
         public bool BotsArePaused { get; set; } = false;
 
-        private Battle _revisablePlan = null;
-        private BattleInitiated _revisablePlanBattle = null;
+        public event Action RefreshHandler;
+        public event Action RefreshPopoverHandler;
+
         private readonly HubConnection _connection;
 
         public Handler(Uri uri)
         {
             _connection = new HubConnectionBuilder()
-            .WithUrl(uri)
-            .WithAutomaticReconnect(new RetryPolicy())
-            .AddNewtonsoftJsonProtocol(configuration =>
-            {
-                configuration.PayloadSerializerSettings.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All;
-                configuration.PayloadSerializerSettings.Error += LogSerializationError;
-            })
-            .Build();
+                .WithUrl(uri)
+                .WithAutomaticReconnect(new RetryPolicy())
+                .AddNewtonsoftJsonProtocol(configuration =>
+                {
+                    configuration.PayloadSerializerSettings.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All;
+                    configuration.PayloadSerializerSettings.Error += LogSerializationError;
+                })
+                .Build();
 
             Game = new Game();
             UpdateStatus(Game, Player, IsPlayer);
@@ -88,9 +94,6 @@ namespace Treachery.Client
             }
         }
 
-        public event Action RefreshHandler;
-        public event Action RefreshPopoverHandler;
-
         public void Refresh()
         {
             RefreshHandler?.Invoke();
@@ -118,24 +121,6 @@ namespace Treachery.Client
         {
             await _connection.StartAsync();
             await GetServerSettings();
-        }
-
-        public void SetRevisablePlan(Battle plan)
-        {
-            _revisablePlan = plan;
-            _revisablePlanBattle = Game.CurrentBattle;
-        }
-
-        public Battle GetRevisablePlan()
-        {
-            if (_revisablePlan != null && _revisablePlanBattle == Game.CurrentBattle)
-            {
-                return _revisablePlan;
-            }
-            else
-            {
-                return null;
-            }
         }
 
         public async Task StartHost(string hostPWD, string loadedGameData, Game loadedGame)
@@ -245,7 +230,6 @@ namespace Treachery.Client
             Refresh();
         }
 
-
         private void HandleJoinAsObserver(int hostID, string denyMessage)
         {
             if (denyMessage == "")
@@ -306,8 +290,6 @@ namespace Treachery.Client
                     {
                         await HostProxy.SendHeartbeat(PlayerName);
                     }
-
-                    //if ((nrOfHeartbeats % 10) == 0) await Browser.RefreshPopovers();
                 }
                 catch (Exception e)
                 {
@@ -364,7 +346,7 @@ namespace Treachery.Client
             }
         }
 
-        public async Task PerformBotEvent()
+        private async Task PerformBotEvent()
         {
             awaitingBotAction = false;
 

@@ -14,225 +14,182 @@ namespace Treachery.Shared
 
         public BotParameters Param { get; set; }
 
-        public GameEvent DetermineHighPrioInPhaseAction(IEnumerable<Type> possibleEvents)
-        {
-            GameEvent action = null;
-
-            try
-            {
-                if (action == null && possibleEvents.Contains(typeof(Voice))) action = DetermineVoice();
-                if (action == null && possibleEvents.Contains(typeof(DealOffered))) action = DetermineDealCancelled();
-                if (action == null && possibleEvents.Contains(typeof(AcceptOrCancelPurpleRevival))) action = DetermineAcceptOrCancelPurpleRevival();
-                if (action == null && possibleEvents.Contains(typeof(ThoughtAnswered))) action = DetermineThoughtAnswered();
-                if (action == null && possibleEvents.Contains(typeof(Thought))) action = DetermineThought();
-            }
-            catch (Exception e)
-            {
-                LogInfo("--error occured -->" + e.ToString());
-            }
-
-            if (action != null)
-            {
-                var result = action.Validate();
-                if (result != null)
-                {
-                    LogInfo("--invalid decision ({0})--> {1}: {2}", Resources, action.GetMessage(), result);
-                    action = null;
-                }
-                else
-                {
-                    LogInfo("--valid decision ({0})--> {1}", Resources, action.GetMessage());
-                }
-            }
-
-            return action;
-        }
-
-        public GameEvent DetermineMiddlePrioInPhaseAction(IEnumerable<Type> possibleEvents)
-        {
-            GameEvent action = null;
-
-            try
-            {
-                if (action == null && possibleEvents.Contains(typeof(MetheorPlayed))) action = DetermineMetheorPlayed();
-                if (action == null && possibleEvents.Contains(typeof(AmalPlayed))) action = DetermineAmalPlayed();
-                if (action == null && possibleEvents.Contains(typeof(SetIncreasedRevivalLimits))) action = DetermineSetIncreasedRevivalLimits();
-                if (action == null && possibleEvents.Contains(typeof(DealAccepted))) action = DetermineDealAccepted();
-                if (action == null && possibleEvents.Contains(typeof(RequestPurpleRevival))) action = DetermineRequestPurpleRevival();
-                if (action == null && possibleEvents.Contains(typeof(DistransUsed))) action = DetermineDistransUsed();
-                if (action == null && possibleEvents.Contains(typeof(JuicePlayed))) action = DetermineJuicePlayed();
-                if (action == null && possibleEvents.Contains(typeof(PortableAntidoteUsed))) action = DeterminePortableAntidoteUsed();
-                if (action == null && possibleEvents.Contains(typeof(Diplomacy))) action = DetermineDiplomacy();
-                if (action == null && possibleEvents.Contains(typeof(SwitchedSkilledLeader))) action = DetermineSwitchedSkilledLeader();
-                if (action == null && possibleEvents.Contains(typeof(Retreat))) action = DetermineRetreat();
-                if (action == null && possibleEvents.Contains(typeof(HMSAdvantageChosen))) action = DetermineHMSAdvantageChosen();
-                if (action == null && possibleEvents.Contains(typeof(Planetology))) action = DeterminePlanetology();
-                if (action == null && possibleEvents.Contains(typeof(Prescience))) action = DeterminePrescience();
-                if (action == null && possibleEvents.Contains(typeof(KarmaShipmentPrevention))) action = DetermineKarmaShipmentPrevention();
-            }
-            catch (Exception e)
-            {
-                LogInfo("--error occured -->" + e.ToString());
-            }
-
-            if (action != null)
-            {
-                var result = action.Validate();
-                if (result != null)
-                {
-                    LogInfo("--invalid decision ({0},{1})--> {2}: {3}", Resources, string.Join(",", TreacheryCards), action.GetMessage(), result);
-                    action = null;
-                }
-                else
-                {
-                    LogInfo("--valid decision ({0},{1})--> {2}", Resources, string.Join(",", TreacheryCards), action.GetMessage());
-                }
-            }
-
-            return action;
-        }
-
-        public GameEvent DetermineLowPrioInPhaseAction(IEnumerable<Type> possibleEvents)
-        {
-            GameEvent action = null;
-
-            try
-            {
-                //Other
-                if (action == null && possibleEvents.Contains(typeof(DealOffered))) action = DetermineDealOffered();
-                if (action == null && possibleEvents.Contains(typeof(FactionTradeOffered))) action = DetermineFactionTradeOffered();
-                if (action == null && possibleEvents.Contains(typeof(SkillAssigned))) action = DetermineSkillAssigned();
-                if (action == null && possibleEvents.Contains(typeof(StormDialled))) action = DetermineStormDialled();
-                if (action == null && possibleEvents.Contains(typeof(ClairVoyanceAnswered))) action = DetermineClairVoyanceAnswered();
-                if (action == null && possibleEvents.Contains(typeof(TraitorsSelected))) action = DetermineTraitorsSelected();
-                if (action == null && possibleEvents.Contains(typeof(StormSpellPlayed))) action = DetermineStormSpellPlayed();
-                if (action == null && possibleEvents.Contains(typeof(ThumperPlayed))) action = new ThumperPlayed(Game) { Initiator = Faction };
-                if (action == null && possibleEvents.Contains(typeof(HarvesterPlayed))) action = DetermineHarvesterPlayed();
-                if (action == null && possibleEvents.Contains(typeof(AllianceBroken))) action = DetermineAllianceBroken();
-                if (action == null && possibleEvents.Contains(typeof(AllianceOffered))) action = DetermineAllianceOffered();
-                if (action == null && possibleEvents.Contains(typeof(AllyPermission))) action = DetermineAlliancePermissions();
-                if (action == null && possibleEvents.Contains(typeof(CharityClaimed))) action = DetermineCharityClaimed();
-                if (action == null && possibleEvents.Contains(typeof(BlackMarketBid))) action = DetermineBlackMarketBid();
-                if (action == null && possibleEvents.Contains(typeof(Bid))) action = DetermineBid();
-                if (action == null && possibleEvents.Contains(typeof(Revival))) action = DetermineRevival();
-                if (action == null && possibleEvents.Contains(typeof(OrangeDelay))) action = DetermineDelay();
-                if (action == null && possibleEvents.Contains(typeof(RaiseDeadPlayed))) action = DetermineRaiseDeadPlayed();
-                if (action == null && possibleEvents.Contains(typeof(Shipment))) action = DetermineShipment();
-                if (action == null && possibleEvents.Contains(typeof(BlueAccompanies))) action = DetermineBlueAccompanies();
-                if (action == null && possibleEvents.Contains(typeof(Caravan))) action = DetermineCaravan();
-                if (action == null && possibleEvents.Contains(typeof(Move))) action = DetermineMove();
-                if (action == null && possibleEvents.Contains(typeof(BattleInitiated))) action = DetermineBattleInitiated();
-                if (action == null && possibleEvents.Contains(typeof(ClairVoyancePlayed))) action = DetermineClairvoyance();
-                if (action == null && possibleEvents.Contains(typeof(Battle))) action = DetermineBattle(true, false);
-                if (action == null && possibleEvents.Contains(typeof(TreacheryCalled))) action = DetermineTreacheryCalled();
-                if (action == null && possibleEvents.Contains(typeof(BattleConcluded))) action = DetermineBattleConcluded();
-                if (action == null && possibleEvents.Contains(typeof(FaceDanced))) action = DetermineFaceDanced();
-                if (action == null && possibleEvents.Contains(typeof(FaceDancerReplaced))) action = DetermineFaceDancerReplaced();
-                if (action == null && possibleEvents.Contains(typeof(MulliganPerformed))) action = DetermineMulliganPerformed();
-                if (action == null && possibleEvents.Contains(typeof(ReplacedCardWon))) action = DetermineReplacedCardWon();
-                if (action == null && possibleEvents.Contains(typeof(Audited))) action = DetermineAudited();
-                if (action == null && possibleEvents.Contains(typeof(AuditCancelled))) action = DetermineAuditCancelled();
-                if (action == null && possibleEvents.Contains(typeof(CardTraded))) action = DetermineCardTraded();
-                if (action == null && possibleEvents.Contains(typeof(RockWasMelted))) action = DetermineRockWasMelted();
-                if (action == null && possibleEvents.Contains(typeof(ResidualPlayed))) action = DetermineResidualPlayed();
-                if (action == null && possibleEvents.Contains(typeof(FlightUsed))) action = DetermineFlightUsed();
-                if (action == null && possibleEvents.Contains(typeof(DiscardedSearchedAnnounced))) action = DetermineDiscardedSearchedAnnounced();
-                if (action == null && possibleEvents.Contains(typeof(DiscardedSearched))) action = DetermineDiscardedSearched();
-                if (action == null && possibleEvents.Contains(typeof(DiscardedTaken))) action = DetermineDiscardedTaken();
-                if (action == null && possibleEvents.Contains(typeof(Bureaucracy))) action = DetermineBureaucracy();
-                if (action == null && possibleEvents.Contains(typeof(BrownEconomics))) action = DetermineBrownEconomics();
-
-                //Black
-                if (action == null && possibleEvents.Contains(typeof(Captured))) action = DetermineCaptured();
-
-                //Blue
-                if (action == null && possibleEvents.Contains(typeof(BluePrediction))) action = DetermineBluePrediction();
-                if (action == null && possibleEvents.Contains(typeof(BlueFlip))) action = DetermineBlueFlip();
-                if (action == null && possibleEvents.Contains(typeof(BlueBattleAnnouncement))) action = DetermineBlueBattleAnnouncement();
-                if (action == null && possibleEvents.Contains(typeof(PerformBluePlacement))) action = DetermineBluePlacement();
-
-                //Yellow
-                if (action == null && possibleEvents.Contains(typeof(YellowRidesMonster))) action = DetermineYellowRidesMonster();
-                if (action == null && possibleEvents.Contains(typeof(YellowSentMonster))) action = DetermineYellowSentMonster();
-                if (action == null && possibleEvents.Contains(typeof(PerformYellowSetup))) action = DeterminePerformYellowSetup();
-                if (action == null && possibleEvents.Contains(typeof(TakeLosses))) action = DetermineTakeLosses();
-
-                //Grey
-                if (action == null && possibleEvents.Contains(typeof(GreyRemovedCardFromAuction))) action = DetermineGreyRemovedCardFromAuction();
-                if (action == null && possibleEvents.Contains(typeof(GreySelectedStartingCard))) action = DetermineGreySelectedStartingCard();
-                if (action == null && possibleEvents.Contains(typeof(GreySwappedCardOnBid))) action = DetermineGreySwappedCardOnBid();
-                if (action == null && possibleEvents.Contains(typeof(PerformHmsPlacement))) action = DeterminePerformHmsPlacement();
-                if (action == null && possibleEvents.Contains(typeof(PerformHmsMovement))) action = DeterminePerformHmsMovement();
-
-                //Black
-                if (action == null && possibleEvents.Contains(typeof(KarmaHandSwapInitiated))) action = DetermineKarmaHandSwapInitiated();
-                if (action == null && possibleEvents.Contains(typeof(KarmaHandSwap))) action = DetermineKarmaHandSwap();
-
-                //Red
-                if (action == null && possibleEvents.Contains(typeof(KarmaFreeRevival))) action = DetermineKarmaFreeRevival();
-
-                //White
-                if (action == null && possibleEvents.Contains(typeof(WhiteAnnouncesBlackMarket))) action = DetermineWhiteAnnouncesBlackMarket();
-                if (action == null && possibleEvents.Contains(typeof(WhiteAnnouncesAuction))) action = DetermineWhiteAnnouncesAuction();
-                if (action == null && possibleEvents.Contains(typeof(WhiteSpecifiesAuction))) action = DetermineWhiteSpecifiesAuction();
-                if (action == null && possibleEvents.Contains(typeof(WhiteKeepsUnsoldCard))) action = DetermineWhiteKeepsUnsoldCard();
-                if (action == null && possibleEvents.Contains(typeof(WhiteRevealedNoField))) action = DetermineWhiteRevealedNoField();
-            }
-            catch (Exception e)
-            {
-                LogInfo("--error occured -->" + e.ToString());
-            }
-
-            if (action != null)
-            {
-                var result = action.Validate();
-                if (result != null)
-                {
-                    LogInfo("--invalid decision ({0},{1})--> {2}: {3}", Resources, string.Join(",", TreacheryCards), action.GetMessage(), result);
-                    action = null;
-                }
-                else
-                {
-                    LogInfo("--valid decision ({0},{1})--> {2}", Resources, string.Join(",", TreacheryCards), action.GetMessage());
-                }
-            }
-
-            return action;
-        }
-
-        public GameEvent DetermineEndPhaseAction(IEnumerable<Type> possibleEvents)
-        {
-            GameEvent action = null;
-
-            try
-            {
-                if (possibleEvents.Contains(typeof(EndPhase))) action = new EndPhase(Game) { Initiator = Faction };
-            }
-            catch (Exception e)
-            {
-                LogInfo("--error occured -->" + e.ToString());
-            }
-
-            if (action != null)
-            {
-                var result = action.Validate();
-                if (result != null)
-                {
-                    LogInfo("--invalid decision--> " + action.GetMessage() + ":" + result);
-                    action = null;
-                }
-                else
-                {
-                    LogInfo("--valid decision----> " + action.GetMessage());
-                }
-            }
-
-            return action;
-        }
-
         public bool IsBot { get; set; }
 
         public bool AllyIsBot => Ally != Faction.None && AlliedPlayer.IsBot;
+
+        public GameEvent DetermineHighPrioInPhaseAction(IEnumerable<Type> evts)
+        {
+            GameEvent action = null;
+
+            if (Do(DetermineVoice, ref action, evts) ||
+                Do(DetermineDealCancelled, ref action, evts) ||
+                Do(DetermineAcceptOrCancelPurpleRevival, ref action, evts) ||
+                Do(DetermineThoughtAnswered, ref action, evts) ||
+                Do(DetermineThought, ref action, evts)) return action;
+
+            return null;
+        }
+
+        public GameEvent DetermineMiddlePrioInPhaseAction(IEnumerable<Type> evts)
+        {
+            GameEvent action = null;
+
+            if (Do(DetermineMetheorPlayed, ref action, evts) || 
+                Do(DetermineAmalPlayed, ref action, evts) || 
+                Do(DetermineSetIncreasedRevivalLimits, ref action, evts) || 
+                Do(DetermineDealAccepted, ref action, evts) || 
+                Do(DetermineRequestPurpleRevival, ref action, evts) ||
+                Do(DetermineDistransUsed, ref action, evts) ||
+                Do(DetermineJuicePlayed, ref action, evts) ||
+                Do(DeterminePortableAntidoteUsed, ref action, evts) ||
+                Do(DetermineDiplomacy, ref action, evts) ||
+                Do(DetermineSwitchedSkilledLeader, ref action, evts) ||
+                Do(DetermineRetreat, ref action, evts) ||
+                Do(DetermineHMSAdvantageChosen, ref action, evts) ||
+                Do(DeterminePlanetology, ref action, evts) ||
+                Do(DeterminePrescience, ref action, evts) ||
+                Do(DetermineKarmaShipmentPrevention, ref action, evts)) return action;
+
+            return null;
+        }
+
+        public GameEvent DetermineLowPrioInPhaseAction(IEnumerable<Type> evts)
+        {
+            GameEvent action = null;
+
+            if (Do(DetermineDealOffered, ref action, evts) ||
+                Do(DetermineFactionTradeOffered, ref action, evts) ||
+                Do(DetermineSkillAssigned, ref action, evts) ||
+                Do(DetermineStormDialled, ref action, evts) ||
+                Do(DetermineClairVoyanceAnswered, ref action, evts) ||
+                Do(DetermineTraitorsSelected, ref action, evts) ||
+                Do(DetermineStormSpellPlayed, ref action, evts) ||
+                Do(DetermineThumperPlayed, ref action, evts) ||
+                Do(DetermineHarvesterPlayed, ref action, evts) ||
+                Do(DetermineAllianceBroken, ref action, evts) ||
+                Do(DetermineAllianceOffered, ref action, evts) ||
+                Do(DetermineAlliancePermissions, ref action, evts) ||
+                Do(DetermineCharityClaimed, ref action, evts) ||
+                Do(DetermineBlackMarketBid, ref action, evts) ||
+                Do(DetermineBid, ref action, evts) ||
+                Do(DetermineRevival, ref action, evts) ||
+                Do(DetermineDelay, ref action, evts) ||
+                Do(DetermineRaiseDeadPlayed, ref action, evts) ||
+                Do(DetermineShipment, ref action, evts) ||
+                Do(DetermineCaravan, ref action, evts) ||
+                Do(DetermineMove, ref action, evts) ||
+                Do(DetermineBattleInitiated, ref action, evts) ||
+                Do(DetermineClairvoyance, ref action, evts) ||
+                Do(DetermineBattle, ref action, evts) ||
+                Do(DetermineTreacheryCalled, ref action, evts) ||
+                Do(DetermineBattleConcluded, ref action, evts) ||
+                Do(DetermineMulliganPerformed, ref action, evts) ||
+                Do(DetermineReplacedCardWon, ref action, evts) ||
+                Do(DetermineAudited, ref action, evts) ||
+                Do(DetermineAuditCancelled, ref action, evts) ||
+                Do(DetermineCardTraded, ref action, evts) ||
+                Do(DetermineRockWasMelted, ref action, evts) ||
+                Do(DetermineResidualPlayed, ref action, evts) ||
+                Do(DetermineFlightUsed, ref action, evts) ||
+                Do(DetermineDiscardedSearchedAnnounced, ref action, evts) ||
+                Do(DetermineDiscardedSearched, ref action, evts) ||
+                Do(DetermineDiscardedTaken, ref action, evts) ||
+                Do(DetermineBureaucracy, ref action, evts) ||
+
+                //Brown
+                Do(DetermineBrownEconomics, ref action, evts) ||
+
+                //Black
+                Do(DetermineCaptured, ref action, evts) ||
+                Do(DetermineKarmaHandSwapInitiated, ref action, evts) ||
+                Do(DetermineKarmaHandSwap, ref action, evts) ||
+
+                //Blue
+                Do(DetermineBlueAccompanies, ref action, evts) ||
+                Do(DetermineBluePrediction, ref action, evts) ||
+                Do(DetermineBlueFlip, ref action, evts) ||
+                Do(DetermineBlueBattleAnnouncement, ref action, evts) ||
+                Do(DetermineBluePlacement, ref action, evts) ||
+
+                //Yellow
+                Do(DetermineYellowRidesMonster, ref action, evts) ||
+                Do(DetermineYellowSentMonster, ref action, evts) ||
+                Do(DeterminePerformYellowSetup, ref action, evts) ||
+                Do(DetermineTakeLosses, ref action, evts) ||
+
+                //Grey
+                Do(DetermineGreyRemovedCardFromAuction, ref action, evts) ||
+                Do(DetermineGreySelectedStartingCard, ref action, evts) ||
+                Do(DetermineGreySwappedCardOnBid, ref action, evts) ||
+                Do(DeterminePerformHmsPlacement, ref action, evts) ||
+                Do(DeterminePerformHmsMovement, ref action, evts) ||
+
+                //Red
+                Do(DetermineKarmaFreeRevival, ref action, evts) ||
+
+                //Purple
+                Do(DetermineFaceDanced, ref action, evts) ||
+                Do(DetermineFaceDancerReplaced, ref action, evts) ||
+
+                //White
+                Do(DetermineWhiteAnnouncesBlackMarket, ref action, evts) ||
+                Do(DetermineWhiteAnnouncesAuction, ref action, evts) ||
+                Do(DetermineWhiteSpecifiesAuction, ref action, evts) ||
+                Do(DetermineWhiteKeepsUnsoldCard, ref action, evts) ||
+                Do(DetermineWhiteRevealedNoField, ref action, evts)) return action;
+          
+            return null;
+        }
+
+
+        public GameEvent DetermineEndPhaseAction(IEnumerable<Type> evts)
+        {
+            GameEvent action = null;
+
+            if (Do(DetermineEndPhase, ref action, evts)) return action;
+
+
+            return null;
+        }
+
+        private EndPhase DetermineEndPhase() => new EndPhase(Game) { Initiator = Faction };
+
+        private bool Do<T>(Func<T> method, ref GameEvent action, IEnumerable<Type> allowedActions) where T: GameEvent
+        {
+            if (typeof(T).Equals(typeof(GameEvent)))
+            {
+                throw new ArgumentException("Illegally typed method: " + method.ToString());
+            }
+
+            if (action == null && allowedActions.Contains(typeof(T)))
+            {
+                try
+                {
+                    action = method();
+                }
+                catch (Exception e)
+                {
+                    LogInfo("--error occured -->" + e.ToString());
+                }
+
+                if (action != null)
+                {
+                    var error = action.Validate();
+                    if (error != null)
+                    {
+                        LogInfo("--invalid decision ({0})--> {1}: {2}", Resources, action.GetMessage(), error);
+                    }
+                    else
+                    {
+                        LogInfo("--valid decision ({0})--> {1}", Resources, action.GetMessage());
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
 
         #endregion PublicInterface
 

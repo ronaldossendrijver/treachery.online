@@ -216,7 +216,7 @@
     {
         h.ShowWheelsAndHMS = true;
 
-        var plan = h.GetRevisablePlan();
+        var plan = GetRevisablePlan();
         if (plan != null)
         {
             forces = plan.Forces + plan.ForcesAtHalfStrength;
@@ -295,7 +295,7 @@
                 BankerBonus = bankerBoost
             };
 
-            h.SetRevisablePlan(result);
+            SetRevisablePlan(result);
 
             return result;
         }
@@ -327,6 +327,27 @@
         }
 
         return "?";
+    }
+
+    private Battle _revisablePlan = null;
+    private BattleInitiated _revisablePlanBattle = null;
+    
+    private void SetRevisablePlan(Battle plan)
+    {
+        _revisablePlan = plan;
+        _revisablePlanBattle = Game.CurrentBattle;
+    }
+
+    private Battle GetRevisablePlan()
+    {
+        if (_revisablePlan != null && _revisablePlanBattle == Game.CurrentBattle)
+        {
+            return _revisablePlan;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     private IEnumerable<TreacheryCard> Weapons => Battle.ValidWeapons(Game, Player, defense, hero).OrderBy(c => Name(c));

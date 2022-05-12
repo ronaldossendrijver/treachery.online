@@ -11,12 +11,14 @@ namespace Treachery.Client
 {
     public class GreenIntelligence
     {
-        public string TrackedSpiceCard;
-        public Dictionary<Faction, Dictionary<int, int>> TrackedTreacheryCards;
+        public string TrackedSpiceCard { get; set; }
+
+        public Dictionary<Faction, Dictionary<int, int>> TrackedTreacheryCards { get; private set; }
+
+        private Dictionary<Tuple<Faction, int>, int> trackedTraitors = new();
+        private Dictionary<int, int> trackedDiscardedTraitors = new();
         private readonly List<int> discardedCards = new();
         private readonly List<int> removedCards = new();
-        public Dictionary<Tuple<Faction, int>, int> trackedTraitors = new();
-        public Dictionary<int, int> trackedDiscardedTraitors = new();
         private readonly TreacheryCard[] CardsInPlay;
 
         public GreenIntelligence(Game g)
@@ -42,21 +44,9 @@ namespace Treachery.Client
             return TreacheryCard.NONE;
         }
 
-        public IEnumerable<TreacheryCard> DiscardedCards
-        {
-            get
-            {
-                return discardedCards.Select(id => TreacheryCardManager.Lookup.Find(id));
-            }
-        }
+        public IEnumerable<TreacheryCard> DiscardedCards => discardedCards.Select(id => TreacheryCardManager.Lookup.Find(id));
 
-        public IEnumerable<TreacheryCard> RemovedCards
-        {
-            get
-            {
-                return removedCards.Select(id => TreacheryCardManager.Lookup.Find(id));
-            }
-        }
+        public IEnumerable<TreacheryCard> RemovedCards => removedCards.Select(id => TreacheryCardManager.Lookup.Find(id));
 
         public IEnumerable<TreacheryCard> AvailableDistinctCards(Faction f, int cardNumber)
         {
@@ -72,16 +62,6 @@ namespace Treachery.Client
                 }
             }
 
-            return result;
-        }
-
-        public IEnumerable<int> AllTrackedCards()
-        {
-            var result = new List<int>();
-            foreach (var cardsOfPlayer in TrackedTreacheryCards.Values)
-            {
-                result.AddRange(cardsOfPlayer.Values);
-            }
             return result;
         }
 

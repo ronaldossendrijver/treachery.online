@@ -213,7 +213,7 @@ namespace Treachery.Shared
                         if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(this))
                         {
                             var plan = Game.CurrentBattle.PlanOf(this);
-                            if (plan == null) plan = DetermineBattle(false, true);
+                            if (plan == null) plan = DetermineBattlePlan(false, true);
                             LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
                             if (plan != null)
                             {
@@ -226,7 +226,7 @@ namespace Treachery.Shared
                         if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(this))
                         {
                             var plan = Game.CurrentBattle.PlanOf(this);
-                            if (plan == null) plan = DetermineBattle(false, true);
+                            if (plan == null) plan = DetermineBattlePlan(false, true);
                             LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
                             if (plan != null)
                             {
@@ -239,7 +239,7 @@ namespace Treachery.Shared
                         if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(this))
                         {
                             var plan = Game.CurrentBattle.PlanOf(this);
-                            if (plan == null) plan = DetermineBattle(false, true);
+                            if (plan == null) plan = DetermineBattlePlan(false, true);
                             LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
                             if (plan != null)
                             {
@@ -255,7 +255,7 @@ namespace Treachery.Shared
                         if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(this))
                         {
                             var plan = Game.CurrentBattle.PlanOf(this);
-                            if (plan == null) plan = DetermineBattle(false, true);
+                            if (plan == null) plan = DetermineBattlePlan(false, true);
                             LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
                             if (plan != null)
                             {
@@ -268,7 +268,7 @@ namespace Treachery.Shared
                         if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(this))
                         {
                             var plan = Game.CurrentBattle.PlanOf(this);
-                            if (plan == null) plan = DetermineBattle(false, true);
+                            if (plan == null) plan = DetermineBattlePlan(false, true);
                             LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
                             if (plan != null)
                             {
@@ -431,6 +431,8 @@ namespace Treachery.Shared
 
             return null;
         }
+
+        protected virtual ThumperPlayed DetermineThumperPlayed() => new ThumperPlayed(Game) { Initiator = Faction };
 
         protected virtual StormSpellPlayed DetermineStormSpellPlayed()
         {
