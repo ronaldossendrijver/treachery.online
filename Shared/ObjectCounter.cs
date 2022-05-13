@@ -71,6 +71,8 @@ namespace Treachery.Shared
         {
             get
             {
+                if (counters.Count == 0) return default;
+
                 var bestValue = counters.Max(c => c.Value);
                 var best = counters.FirstOrDefault(c => c.Value == bestValue);
                 return best.Key;

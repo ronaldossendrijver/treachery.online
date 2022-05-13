@@ -538,7 +538,7 @@ namespace Treachery.Test
             if (performTests) Assert.IsNull(executeResult);
         }
 
-        private Statistics statistics = new();
+        private Statistics statistics = null;// new();
 
         [TestMethod]
         public void Regression()
@@ -675,7 +675,7 @@ namespace Treachery.Test
                         }
                         else if (latest is DealAccepted da)
                         {
-                            statistics.AcceptedDeals.Count(da.GetMessage().ToString(Skin.Current).Replace(';', ':'));
+                            statistics.AcceptedDeals.Count(da.GetDealContents().ToString(Skin.Current).Replace(';', ':'));
                         }
                         else if (latest is Karma karma)
                         {

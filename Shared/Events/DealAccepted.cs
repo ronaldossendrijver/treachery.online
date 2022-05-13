@@ -67,8 +67,12 @@ namespace Treachery.Shared
                 " offer for ",
                 new Payment(Price),
                 ": ",
-                Deal.DealContentsDescription(Game, Type, Text, Benefit, End, DealParameter1));
+                GetDealDescription());
         }
+
+        public Message GetDealDescription() => Deal.DealContentsDescription(Game, Type, Text, Benefit, End, DealParameter1);
+
+        public Message GetDealContents() => (Text != null && Text.Length > 0) ? Message.Express(Text) : Message.Express(Type);
 
         protected override void ExecuteConcreteEvent()
         {

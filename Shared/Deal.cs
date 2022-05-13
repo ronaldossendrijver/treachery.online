@@ -43,23 +43,22 @@ namespace Treachery.Shared
 
         public static Message DealContentsDescription(Game g, DealType Type, string Text, int benefit, Phase End, string Parameter1)
         {
-            Message description;
             if (Text != null && Text.Length > 0)
             {
-                description = Message.Express(
+                return Message.Express(
                     MessagePart.ExpressIf(benefit > 0, "Receive ", new Payment(benefit), " and "),
-                    Text);
+                    Text,
+                    " until ",
+                    End);
             }
             else
             {
-                description = Message.Express(
+                return Message.Express(
                     MessagePart.ExpressIf(benefit > 0, "Receive ", new Payment(benefit), " and "),
                     Express(Type, GetParameter1<object>(g, Type, Parameter1)),
                     " until ",
                     End);
             }
-
-            return description;
         }
 
         public Message DealContentsDescription(Game g)
