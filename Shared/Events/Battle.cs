@@ -608,12 +608,12 @@ namespace Treachery.Shared
             }
         }
 
-        public static int DetermineSkillBonus(Game g, Battle plan, out LeaderSkill activatedSkill)
+        public static int DetermineSkillBonus(Game g, Battle plan, ref LeaderSkill activatedSkill)
         {
-            return DetermineSkillBonus(g, plan.Player, plan.Hero, plan.Weapon, plan.Defense, plan.BankerBonus, out activatedSkill);
+            return DetermineSkillBonus(g, plan.Player, plan.Hero, plan.Weapon, plan.Defense, plan.BankerBonus, ref activatedSkill);
         }
 
-        public static int DetermineSkillBonus(Game g, Player player, IHero hero, TreacheryCard weapon, TreacheryCard defense, int bankerBonus, out LeaderSkill activatedSkill)
+        public static int DetermineSkillBonus(Game g, Player player, IHero hero, TreacheryCard weapon, TreacheryCard defense, int bankerBonus, ref LeaderSkill activatedSkill)
         {
             if (g.SkilledAs(hero, LeaderSkill.Thinker))
             {
@@ -714,12 +714,12 @@ namespace Treachery.Shared
             return 0;
         }
 
-        public static int DetermineSkillPenalty(Game g, Battle plan, Player opponent, out LeaderSkill activatedSkill)
+        public static int DetermineSkillPenalty(Game g, Battle plan, Player opponent, ref LeaderSkill activatedSkill)
         {
-            return DetermineSkillPenalty(g, plan.Hero, opponent, out activatedSkill);
+            return DetermineSkillPenalty(g, plan.Hero, opponent, ref activatedSkill);
         }
 
-        public static int DetermineSkillPenalty(Game g, IHero hero, Player opponent, out LeaderSkill activatedSkill)
+        public static int DetermineSkillPenalty(Game g, IHero hero, Player opponent, ref LeaderSkill activatedSkill)
         {
             if (g.SkilledAs(hero, LeaderSkill.Bureaucrat))
             {

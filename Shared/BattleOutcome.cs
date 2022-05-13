@@ -1,4 +1,8 @@
-﻿namespace Treachery.Shared
+﻿/*
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ */
+
+namespace Treachery.Shared
 {
     public class BattleOutcome
     {

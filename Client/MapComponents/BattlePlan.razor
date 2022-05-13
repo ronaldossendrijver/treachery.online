@@ -80,7 +80,8 @@
                        ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" 
                        Popover="@Popup.Get(skill)"/>
 
-                int bonus = Battle.DetermineSkillBonus(Game, Plan, out _);
+                LeaderSkill usedSkill = LeaderSkill.None;
+                int bonus = Battle.DetermineSkillBonus(Game, Plan, ref usedSkill);
                 if (bonus != 0)
                 {
                     <MapText ToShow="@("+" + bonus)"
@@ -91,7 +92,7 @@
                 }
                 else if (Game.CurrentPhase < Phase.BattleConclusion)
                 {
-                    int penalty = Battle.DetermineSkillPenalty(Game, Plan, Opponent, out _);
+                    int penalty = Battle.DetermineSkillPenalty(Game, Plan, Opponent, ref usedSkill);
                     if (penalty != 0)
                     {
                         <MapText ToShow="@("-" + penalty)"

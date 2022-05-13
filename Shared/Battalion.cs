@@ -9,13 +9,12 @@ namespace Treachery.Shared
     public class Battalion : ICloneable
     {
         public Faction Faction { get; set; }
+
         public int AmountOfForces { get; set; }
+
         public int AmountOfSpecialForces { get; set; }
 
-        public bool Is(Faction f)
-        {
-            return Faction == f;
-        }
+        public bool Is(Faction f) => Faction == f;
 
         public bool CanOccupy => AmountOfForces > 0 || (Faction != Faction.Blue && AmountOfSpecialForces > 0);
 

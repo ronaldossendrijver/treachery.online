@@ -844,7 +844,8 @@ namespace Treachery.Shared
 
             isTraitor = !messiahUsed && knownTraitorsForOpponentsInBattle.Contains(hero);
 
-            return hero != null ? hero.ValueInCombatAgainst(highestOpponentLeader) + Battle.DetermineSkillBonus(Game, this, hero, weapon, defense, Resources > 3 ? 3 : 0, out _) : 0;
+            var usedSkill = LeaderSkill.None;
+            return hero != null ? hero.ValueInCombatAgainst(highestOpponentLeader) + Battle.DetermineSkillBonus(Game, this, hero, weapon, defense, Resources > 3 ? 3 : 0, ref usedSkill) : 0;
         }
 
         protected float GetDialNeeded(Territory territory, Player opponent, bool takeReinforcementsIntoAccount)
@@ -898,7 +899,8 @@ namespace Treachery.Shared
             isTraitor = false;
             int myHeroValue = SelectHeroForBattle(opponent, !lasgunShieldDetected && !iAssumeMyLeaderWillDie, false, messiah, bestWeapon, bestDefense, out hero, out isTraitor, includeInFrontOfShield);
 
-            var opponentPenalty = Battle.DetermineSkillPenalty(Game, hero, opponent, out _);
+            var usedSkill = LeaderSkill.None;
+            var opponentPenalty = Battle.DetermineSkillPenalty(Game, hero, opponent, ref usedSkill);
 
             bankerBoost = 0;
             if (hero == null)
