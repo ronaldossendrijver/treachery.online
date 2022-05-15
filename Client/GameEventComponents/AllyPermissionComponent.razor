@@ -8,13 +8,9 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Alliance Management</Header>
+    <Header>Manage your Alliance with <img width="32" src="@Skin.Current.GetImageURL(Player.Ally)" /></Header>
 
     <Body>
-
-        <div class="text-center mt-0 mb-1">
-            <img width="48" src="@Skin.Current.GetImageURL(Player.Ally)" />
-        </div>
 
         @if (Player.AlliedPlayer.IsBot)
         {

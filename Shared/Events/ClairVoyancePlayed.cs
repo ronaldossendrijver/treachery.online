@@ -175,21 +175,24 @@ namespace Treachery.Shared
             }
         }
 
-        private Message Express(ClairvoyanceQuestion q, object parameter1, object parameter2)
+        public static Message Express(ClairvoyanceQuestion q, object parameter1 = null, object parameter2 = null)
         {
+            var p1 = parameter1 == null ? "..." : parameter1;
+            var p2 = parameter1 == null ? "..." : parameter1;
+
             return q switch
             {
                 ClairvoyanceQuestion.None => Message.Express("Any question"),
-                ClairvoyanceQuestion.CardTypeInBattle => Message.Express("In this battle, is one of your cards a ", parameter1),
-                ClairvoyanceQuestion.CardTypeAsDefenseInBattle => Message.Express("In this battle, will you use ", parameter1, " as defense?"),
-                ClairvoyanceQuestion.CardTypeAsWeaponInBattle => Message.Express("In this battle, will you use ", parameter1, " as weapon?"),
-                ClairvoyanceQuestion.HasCardTypeInHand => Message.Express("Do you own a ", parameter1, "?"),
-                ClairvoyanceQuestion.LeaderInBattle => Message.Express("In this battle, is your leader ", parameter1, "?"),
-                ClairvoyanceQuestion.DialOfMoreThanXInBattle => Message.Express("In this battle, is your dial higher than ", parameter1, "?"),
-                ClairvoyanceQuestion.LeaderAsFacedancer => Message.Express("Is ", parameter1, " one of your face dancers?"),
-                ClairvoyanceQuestion.LeaderAsTraitor => Message.Express("Is ", parameter1, " one of your traitors?"),
-                ClairvoyanceQuestion.Prediction => Message.Express("Did you predict a ", parameter1, " win in turn ", parameter2, "?"),
-                ClairvoyanceQuestion.WillAttackX => Message.Express("Will you ship or move to ", parameter1, " this turn?"),
+                ClairvoyanceQuestion.CardTypeInBattle => Message.Express("In this battle, is one of your cards a ", p1),
+                ClairvoyanceQuestion.CardTypeAsDefenseInBattle => Message.Express("In this battle, will you use ", p1, " as defense?"),
+                ClairvoyanceQuestion.CardTypeAsWeaponInBattle => Message.Express("In this battle, will you use ", p1, " as weapon?"),
+                ClairvoyanceQuestion.HasCardTypeInHand => Message.Express("Do you own a ", p1, "?"),
+                ClairvoyanceQuestion.LeaderInBattle => Message.Express("In this battle, is your leader ", p1, "?"),
+                ClairvoyanceQuestion.DialOfMoreThanXInBattle => Message.Express("In this battle, is your dial higher than ", p1, "?"),
+                ClairvoyanceQuestion.LeaderAsFacedancer => Message.Express("Is ", p1, " one of your face dancers?"),
+                ClairvoyanceQuestion.LeaderAsTraitor => Message.Express("Is ", p1, " one of your traitors?"),
+                ClairvoyanceQuestion.Prediction => Message.Express("Did you predict a ", p1, " win in turn ", p2, "?"),
+                ClairvoyanceQuestion.WillAttackX => Message.Express("Will you ship or move to ", p1, " this turn?"),
                 _ => Message.Express("unknown question"),
             };
         }

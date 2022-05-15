@@ -89,6 +89,6 @@
 
     private string ToLabel(ClairvoyanceQuestion q)
     {
-        return Skin.Current.Format(Skin.Current.Describe(q), "...", "...");
+        return ClairVoyancePlayed.Express(q).ToString(Skin.Current);
     }
 }

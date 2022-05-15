@@ -15,68 +15,69 @@
             <div style="position:absolute;left:5px;top:0px;color:@TimerColor(h.Status.WaitingForMe(Player, h.IsHost));font-weight:bolder;">@TimerText(h.Status.TimedEvent)</div>
         }
 
-        <div class="row d-flex justify-content-center mt-2 mb-1">
+        @if (IsBiddingPhase || OneOrMorePlayersNeedToAct || PlayersAreInSequence) {
 
-            @{
-                var currentPlayersToAct = h.Status.WaitingForPlayers;
+            <div class="row d-flex justify-content-center mt-2 mb-1">
 
-                if (h.Game.CurrentMainPhase == MainPhase.Bidding)
-                {
-                    bool showTurnInSequence = h.Game.CurrentPhase == Phase.BlackMarketBidding || h.Game.CurrentPhase == Phase.Bidding || h.Game.CurrentPhase == Phase.BiddingReport;
-                    var hasTurn = currentPlayersToAct.Count() == 1 && !showTurnInSequence ? currentPlayersToAct.First() : null;
-
-                    foreach (var se in ToBid)
+                @{
+                    if (IsBiddingPhase)
                     {
-                        <div class="col" style="filter:drop-shadow(1px 1px 1px black)">
-                            <NumberComponent Value="Game.CardsOwnedBy(se.Player).Count()" Size="@(se.Player == hasTurn || showTurnInSequence && se.HasTurn ? 48 : 32)"
+                        bool showTurnInSequence = h.Game.CurrentPhase == Phase.BlackMarketBidding || h.Game.CurrentPhase == Phase.Bidding || h.Game.CurrentPhase == Phase.BiddingReport;
+                        var hasTurn = h.Status.WaitingForPlayers.Count() == 1 && !showTurnInSequence ? h.Status.WaitingForPlayers.First() : null;
+
+                        foreach (var se in ToBid)
+                        {
+                            <div class="col" style="filter:drop-shadow(1px 1px 1px black)">
+                                <NumberComponent Value="Game.CardsOwnedBy(se.Player).Count()" Size="@(se.Player == hasTurn || showTurnInSequence && se.HasTurn ? 48 : 32)"
                                              SymbolSRC="@Skin.Current.GetImageURL(se.Player.Faction)"
                                              BehindNumberSRC="@Skin.Current.CardBack_TreacheryCard_URL"
                                              Title="@PlayerWithCardsTitle(se.Player)"
                                              NumberColor="@(se.Player.HasRoomForCards ? "black" : "red")" NumberBorderColor="white" NumberBorderWidth=1 NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
-                        </div>
+                            </div>
+                        }
                     }
-                }
-                else if (currentPlayersToAct.Any())
-                {
-                    if (currentPlayersToAct.Count() == 1) {
-                        
-                        var player = currentPlayersToAct.First();
+                    else if (OneOrMorePlayersNeedToAct)
+                    {
+                        if (h.Status.WaitingForPlayers.Count() == 1) {
 
-                        <div style="position: relative; width: 64px; height: 64px;">
-                            <img title="@player.Name" src="@Skin.Current.GetImageURL(player.Faction)" width="64" style="position: absolute; left: 0px; filter: drop-shadow(2px 2px 2px black)" />
-                            <img src="./art/worm.gif" width="94" style="position: absolute; top: -14px; left: -20px; filter: drop-shadow(1px 1px 1px black)" />
-                        </div>
+                            var player = h.Status.WaitingForPlayers.First();
+
+                            <div style="position: relative; width: 64px; height: 64px;">
+                                <img title="@player.Name" src="@Skin.Current.GetImageURL(player.Faction)" width="64" style="position: absolute; left: 0px; filter: drop-shadow(2px 2px 2px black)" />
+                                <img src="./art/worm.gif" width="94" style="position: absolute; top: -14px; left: -20px; filter: drop-shadow(1px 1px 1px black)" />
+                            </div>
+                        }
+                        else {
+
+                            foreach (var p in h.Status.WaitingForPlayers)
+                            {
+                                <div style="position: relative; width: 48px;">
+                                    <img class="p-2" title="@p.Name" src="@Skin.Current.GetImageURL(p.Faction)" width="48" style="filter:drop-shadow(2px 2px 2px black)" />
+                                </div>
+                            }
+                        }
                     }
-                    else {
-
-                        foreach (var p in currentPlayersToAct)
+                    else if (PlayersAreInSequence)
+                    {
+                        foreach (var f in h.Status.WaitingInSequence)
                         {
-                            <div style="position: relative; width: 48px;">
-                                <img class="p-2" title="@p.Name" src="@Skin.Current.GetImageURL(p.Faction)" width="48" style="filter:drop-shadow(2px 2px 2px black)" />
+                            <div class="align-self-center p-0 m-0" style="position: relative; width: 64px;">
+                                @if (f.HasTurn)
+                                {
+                                    <img title="@f.Player.Name" src="@Skin.Current.GetImageURL(f.Player.Faction)" width="64" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
+                                    <img src="./art/worm.gif" width="90" style="position: absolute; top: -12px; left: -18px; filter: drop-shadow(1px 1px 1px black)" />
+                                }
+                                else
+                                {
+                                    <img class="align-self-center p-2" title="@f.Player.Name" src="@Skin.Current.GetImageURL(f.Player.Faction)" width="48" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
+                                }
                             </div>
                         }
                     }
                 }
-                else if (h.Status.WaitingInSequence.Any())
-                {
-                    foreach (var f in h.Status.WaitingInSequence)
-                    {
-                        <div class="align-self-center p-0 m-0" style="position: relative; width: 64px;">
-                            @if (f.HasTurn)
-                            {
-                                <img title="@f.Player.Name" src="@Skin.Current.GetImageURL(f.Player.Faction)" width="64" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
-                                <img src="./art/worm.gif" width="90" style="position: absolute; top: -12px; left: -18px; filter: drop-shadow(1px 1px 1px black)" />
-                            }
-                            else
-                            {
-                                <img class="align-self-center p-2" title="@f.Player.Name" src="@Skin.Current.GetImageURL(f.Player.Faction)" width="48" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
-                            }
-                        </div>
-                    }
-                }
-            }
 
-        </div>
+            </div>
+        }
 
         <div class="text-dark fw-bold" style=@StatusStyle>
             <ExpressionComponent Game=Game Expression=@h.Status.GetMessage(h.Player, h.IsHost).Expression Size=30/>
@@ -158,6 +159,12 @@
             }
         }
     }
+
+    private bool IsBiddingPhase => h.Game.CurrentMainPhase == MainPhase.Bidding;
+
+    private bool OneOrMorePlayersNeedToAct => h.Status.WaitingForPlayers.Any();
+
+    private bool PlayersAreInSequence => h.Status.WaitingInSequence.Any();
 
     private string StatusStyle => h.Status.WaitingForMe(Player, h.IsHost) ? Support.TextBorder(2, "#FFAAAAAA") : "";
 
