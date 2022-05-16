@@ -7,10 +7,9 @@
 @inherits GameComponent
 
 <div class="card p-1 mb-2">
-    <div class="card-header">Undo</div>
+    <div class="card-header">Select up to (including) which action should be undone</div>
 
     <div class="card-body">
-        <label class="mb-0" for="undoEventNr">Select up to (including) which action should be undone</label>
         <select class="form-select" @bind="undoEventId" id="undoEventNr">
 
             @foreach (var group in UndoableEvents) {
@@ -43,21 +42,6 @@
         await h.Host.Undo(undoEventId);
     }
 
-    private IEnumerable<int> ValidEventIds
-    {
-        get
-        {
-            if (h.Game.History.Count > 1)
-            {
-                return Enumerable.Range(1, h.Game.History.Count - 1).OrderByDescending(v => v);
-            }
-            else
-            {
-                return new int[] { };
-            }
-        }
-    }
-
     private string DetermineEventDescription(int eventnumber, GameEvent e) => "" + eventnumber + ". " + e.GetMessage()?.ToString(Skin.Current);
 
     private string DetermineGroup(Game g) => "Turn " + g.CurrentTurn + " - " + Skin.Current.Describe(g.CurrentMainPhase);
@@ -84,6 +68,7 @@
                     groupedEvents.Add(i, e);
                 }
             }
+
             return result;
         }
     }

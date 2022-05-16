@@ -10,6 +10,8 @@
 {
     var part = Expression.Elements[elementnr];
 
+    //@Support.RoundWithHalves(Size)
+
     if (part == null)
     {
         <span class="fw-bold">none</span>
@@ -56,9 +58,17 @@
     {
         <ExpressionComponent Expression=mp.Expression Size=@Size Game=Game/>
     }
-    else if (part is int || part is float || part is double)
+    else if (part is int i)
     {
-        <SimpleNumberComponent Size=@Size>@part</SimpleNumberComponent>
+        <SimpleNumberComponent Size=@Size>@i</SimpleNumberComponent>
+    }
+    else if (part is float f)
+    {
+        <SimpleNumberComponent Size=@Size>@Support.RoundWithHalves(f)</SimpleNumberComponent>
+    }
+    else if (part is double d)
+    {
+        <SimpleNumberComponent Size=@Size>@Support.RoundWithHalves(d)</SimpleNumberComponent>
     }
     else if (part is Payment payment)
     {
@@ -82,7 +92,7 @@
     }
     else if (part is Concept monster && monster == Concept.Monster)
     {
-        <img src=@Skin.Current.Monster_URL width=@Size height=@Size title=@Skin.Current.Describe(Concept.Monster)/>
+        <img src=@Skin.Current.Monster_URL width=@Size height=@Size title=@Skin.Current.Describe(Concept.Monster) style="filter: drop-shadow(2px 2px 2px black);"/>
     }
     else if (part is FactionForce || part is FactionSpecialForce)
     {

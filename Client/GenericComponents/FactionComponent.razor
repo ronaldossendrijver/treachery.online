@@ -4,7 +4,7 @@
 
 @using Treachery.Shared
 
-<img class="img-fluid" src="@Skin.Current.GetImageURL(Faction)" width="@Diameter" height="@Diameter" title=@Skin.Current.Describe(Faction)/>
+<img class="img-fluid" src="@Skin.Current.GetImageURL(Faction)" width="@Diameter" height="@Diameter" title=@Skin.Current.Describe(Faction) style="@Shadow"/>
 
 @code {
 
@@ -13,4 +13,6 @@
 
     [Parameter]
     public int Diameter { get; set; } = 30;
+
+    private string Shadow => "filter: drop-shadow(1px 1px 1px black);";
 }

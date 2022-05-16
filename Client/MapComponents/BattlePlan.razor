@@ -18,7 +18,7 @@
 
     if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Dial)
     {
-        var dial = Plan.Dial(Game, IsAggressor ? Game.CurrentBattle.Defender : Game.CurrentBattle.Aggressor).ToString();
+        var dial = Support.RoundWithHalves(Plan.Dial(Game, IsAggressor ? Game.CurrentBattle.Defender : Game.CurrentBattle.Aggressor));
 
         <MapText ToShow="@dial"
                  X="@(forceX)" Y="@(forceY)"

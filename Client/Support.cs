@@ -63,6 +63,22 @@ namespace Treachery.Client
 
         public static string Round(double x) => Math.Round(x, 3).ToString(CultureInfo.InvariantCulture);
 
+        public static string RoundWithHalves(double x)
+        {
+            if (x == 0.5f)
+            {
+                return "½";
+            }
+            else if (x - 0.5f == (int)x)
+            {
+                return "" + (int)x + "½";
+            }
+            else
+            {
+                return Round(x);
+            }
+        }
+
         public static string Px(double x) => "" + Round(x) + "px";
     }
 }

@@ -94,7 +94,6 @@ namespace Treachery.Client
                 Phase.BiddingReport or
                 Phase.ResurrectionReport or
                 Phase.ShipmentAndMoveConcluded or
-                Phase.BattleReport or
                 Phase.CollectionReport or
                 Phase.TurnConcluded => Status(Express(game.CurrentMainPhase, " phase ended.")),
 
@@ -390,6 +389,9 @@ namespace Treachery.Client
                     Express("Waiting for ", Faction.Purple, " to reveal a face dancer..."),
                     Faction.Purple),
 
+                Phase.BattleReport when game.NextPlayerToBattle != null => Status(Express("Factions may now review the battle report before the next battle begins...")),
+                Phase.BattleReport when game.NextPlayerToBattle == null => Status(Express(game.CurrentMainPhase, " phase ended.")),
+                
                 /* Mentat */
 
                 Phase.ReplacingFaceDancer => Status(game,
