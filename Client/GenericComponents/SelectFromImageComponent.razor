@@ -15,14 +15,28 @@
 
     @foreach (var item in Values.Zip(ImageURLs, (v, i) => new { Value = v, Image = i }).Zip(PopupHTMLs, (v, h) => new { Value = v.Value, Image = v.Image, Popup = h }))
     {
-        <img src="@item.Image"
-             @onclick="e => Click(item.Value)"
-             @onmouseover="e => MouseOver(item.Value)"
-             @onmouseout="e => MouseOut(item.Value)"
-             style="@DetermineFilter(item.Value)"
-             class="img-fluid pe-1" 
-             width=@ImageWidth 
-             data-bs-animation="true" data-bs-content=@item.Popup data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-toggle="popover"/>
+        if (PopupsAsTooltip)
+        {
+            <img src="@item.Image"
+                 @onclick="e => Click(item.Value)"
+                 @onmouseover="e => MouseOver(item.Value)"
+                 @onmouseout="e => MouseOut(item.Value)"
+                 style="@DetermineFilter(item.Value)"
+                 class="img-fluid pe-1" 
+                 width=@ImageWidth 
+                 title=@item.Popup/>
+        }
+        else
+        {
+            <img src="@item.Image"
+                 @onclick="e => Click(item.Value)"
+                 @onmouseover="e => MouseOver(item.Value)"
+                 @onmouseout="e => MouseOut(item.Value)"
+                 style="@DetermineFilter(item.Value)"
+                 class="img-fluid pe-1" 
+                 width=@ImageWidth 
+                 data-bs-animation="true" data-bs-content=@item.Popup data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-toggle="popover"/>
+        }
     }
 
 </div>
@@ -86,6 +100,9 @@
     [Parameter]
     public Action<T> OnChanged { get; set; }
 
+    [Parameter]
+    public bool PopupsAsTooltip { get; set; } = false;
+
     protected override void OnParametersSet()
     {
         var nrOfValues = Values.Count();
@@ -100,7 +117,7 @@
             Value = Required ? Values.FirstOrDefault() : default;
         }
 
-        if (firstRender)
+        if (firstRender && !PopupsAsTooltip)
         {
             await Browser.EnablePopovers(element);
         }
@@ -184,6 +201,9 @@
 
     public void Dispose()
     {
-        _ = Browser.RemovePopovers(element);
+        if (!PopupsAsTooltip)
+        {
+            _ = Browser.RemovePopovers(element);
+        }
     }
 }
