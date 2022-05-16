@@ -20,5 +20,4 @@ namespace Treachery.Shared
             Elements = elements.ToArray();
         }
     }
-
 }

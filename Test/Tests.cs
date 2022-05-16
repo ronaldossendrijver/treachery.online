@@ -538,7 +538,7 @@ namespace Treachery.Test
             if (performTests) Assert.IsNull(executeResult);
         }
 
-        private Statistics statistics = null;// new();
+        private Statistics statistics =  new();
 
         [TestMethod]
         public void Regression()
@@ -586,7 +586,9 @@ namespace Treachery.Test
             var tc = LoadObject<Testcase>(fs.ReadToEnd());
 
             int valueId = 0;
+            
             BattleOutcome previousBattleOutcome = null;
+            bool gatherStatistics = false;
 
             foreach (var e in state.Events)
             {
@@ -617,100 +619,110 @@ namespace Treachery.Test
 
                 valueId++;
 
-                if (statistics != null)
+                if (!gatherStatistics && e is EstablishPlayers && game.Players.Count > 1 && game.Players.Count > 2 * game.Players.Count(p => p.IsBot))
                 {
-                    lock (statistics)
+                    gatherStatistics = true;
+                }
+
+                if (statistics != null && gatherStatistics)
+                {
+                    GatherStatistics(game, ref previousBattleOutcome);
+                }
+            }
+        }
+
+        private void GatherStatistics(Game game, ref BattleOutcome previousBattleOutcome)
+        {
+            lock (statistics)
+            {
+                var latest = game.LatestEvent();
+
+                if (game.CurrentPhase == Phase.GameEnded && latest is EndPhase)
+                {
+                    statistics.PlayedGames++;
+                    statistics.GameTypes.Count(Game.DetermineApproximateRuleset(game.FactionsInPlay, game.Rules));
+
+                    foreach (var p in game.Players)
                     {
-                        var latest = game.LatestEvent();
+                        statistics.GamePlayingPlayers.Count(DetermineName(p));
+                        statistics.GamePlayingFactions.Count(p.Faction);
+                    }
 
-                        if (game.CurrentPhase == Phase.GameEnded && latest is EndPhase)
-                        {
-                            statistics.PlayedGames++;
-                            statistics.GameTypes.Count(Game.DetermineApproximateRuleset(game.FactionsInPlay, game.Rules));
-
-                            foreach (var p in game.Players)
-                            {
-                                statistics.GamePlayingPlayers.Count(DetermineName(p));
-                                statistics.GamePlayingFactions.Count(p.Faction);
-                            }
-
-                            var nrOfBots = game.Players.Where(p => p.IsBot).Count();
-                            if (nrOfBots > 0)
-                            {
-                                statistics.GamePlayerSetup.Count(string.Format("{0} players ({1} bots)", game.Players.Count, nrOfBots));
-                            }
-                            else
-                            {
-                                statistics.GamePlayerSetup.Count(string.Format("{0} players", game.Players.Count));
-                            }
+                    var nrOfBots = game.Players.Where(p => p.IsBot).Count();
+                    if (nrOfBots > 0)
+                    {
+                        statistics.GamePlayerSetup.Count(string.Format("{0} players ({1} bots)", game.Players.Count, nrOfBots));
+                    }
+                    else
+                    {
+                        statistics.GamePlayerSetup.Count(string.Format("{0} players", game.Players.Count));
+                    }
 
 
-                            statistics.GameWinningMethods.Count(game.WinMethod);
-                            statistics.GameNumberOfTurns.Count(game.CurrentTurn);
-                            statistics.GameTimes.Add(latest.Time.Subtract(game.History[0].Time));
+                    statistics.GameWinningMethods.Count(game.WinMethod);
+                    statistics.GameNumberOfTurns.Count(game.CurrentTurn);
+                    statistics.GameTimes.Add(latest.Time.Subtract(game.History[0].Time));
 
-                            foreach (var p in game.Winners)
-                            {
-                                statistics.GameWinningPlayers.Count(DetermineName(p));
-                                statistics.GameWinningFactions.Count(p.Faction);
-                            }
-                        }
-                        else if (latest is BattleInitiated)
-                        {
-                            statistics.Battles++;
-                            statistics.BattlingFactions.Count(game.CurrentBattle.Aggressor);
-                            statistics.BattlingFactions.Count(game.CurrentBattle.Defender);
-                        }
-                        else if (latest is TreacheryCalled traitorcalled && traitorcalled.TraitorCalled)
-                        {
-                            statistics.TraitoredLeaders.Count(Skin.Current.Describe(game.CurrentBattle.PlanOfOpponent(traitorcalled.Player).Hero));
-                        }
-                        else if (latest is FaceDanced fd && !fd.Passed)
-                        {
-                            statistics.FacedancedLeaders.Count(Skin.Current.Describe(game.WinnerHero));
-                        }
-                        else if (latest is ClairVoyancePlayed cp)
-                        {
-                            statistics.Truthtrances.Count(cp.GetQuestion().ToString(Skin.Current).Replace(';', ':'));
-                        }
-                        else if (latest is DealAccepted da)
-                        {
-                            statistics.AcceptedDeals.Count(da.GetDealContents().ToString(Skin.Current).Replace(';', ':'));
-                        }
-                        else if (latest is Karma karma)
-                        {
-                            statistics.Karamas.Count(karma.Prevented);
-                        }
-                        else if (game.BattleOutcome != null && previousBattleOutcome != game.BattleOutcome)
-                        {
-                            var outcome = game.BattleOutcome;
-                            previousBattleOutcome = outcome;
-                            
-                            statistics.BattleWinningFactions.Count(outcome.Winner != null ? outcome.Winner.Faction : Faction.None);
-                            statistics.BattleLosingFactions.Count(outcome.Loser != null ? outcome.Loser.Faction : Faction.None);
-                            statistics.BattleWinningLeaders.Count(Skin.Current.Describe(outcome.WinnerBattlePlan.Hero));
-                            statistics.BattleLosingLeaders.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Hero));
+                    foreach (var p in game.Winners)
+                    {
+                        statistics.GameWinningPlayers.Count(DetermineName(p));
+                        statistics.GameWinningFactions.Count(p.Faction);
+                    }
+                }
+                else if (latest is BattleInitiated)
+                {
+                    statistics.Battles++;
+                    statistics.BattlingFactions.Count(game.CurrentBattle.Aggressor);
+                    statistics.BattlingFactions.Count(game.CurrentBattle.Defender);
+                }
+                else if (latest is TreacheryCalled traitorcalled && traitorcalled.TraitorCalled)
+                {
+                    statistics.TraitoredLeaders.Count(Skin.Current.Describe(game.CurrentBattle.PlanOfOpponent(traitorcalled.Player).Hero));
+                }
+                else if (latest is FaceDanced fd && !fd.Passed)
+                {
+                    statistics.FacedancedLeaders.Count(Skin.Current.Describe(game.WinnerHero));
+                }
+                else if (latest is ClairVoyancePlayed cp)
+                {
+                    statistics.Truthtrances.Count(cp.GetQuestion().ToString(Skin.Current).Replace(';', ':'));
+                }
+                else if (latest is DealAccepted da)
+                {
+                    statistics.AcceptedDeals.Count(da.GetDealContents().ToString(Skin.Current).Replace(';', ':'));
+                }
+                else if (latest is Karma karma)
+                {
+                    statistics.Karamas.Count(karma.Prevented);
+                }
+                else if (game.BattleOutcome != null && previousBattleOutcome != game.BattleOutcome)
+                {
+                    var outcome = game.BattleOutcome;
+                    previousBattleOutcome = outcome;
 
-                            if (outcome.LoserHeroKilled) statistics.BattleKilledLeaders.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Hero));
-                            if (outcome.WinnerHeroKilled) statistics.BattleKilledLeaders.Count(Skin.Current.Describe(outcome.WinnerBattlePlan.Hero));
+                    statistics.BattleWinningFactions.Count(outcome.Winner != null ? outcome.Winner.Faction : Faction.None);
+                    statistics.BattleLosingFactions.Count(outcome.Loser != null ? outcome.Loser.Faction : Faction.None);
+                    statistics.BattleWinningLeaders.Count(Skin.Current.Describe(outcome.WinnerBattlePlan.Hero));
+                    statistics.BattleLosingLeaders.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Hero));
 
-                            if (outcome.WinnerBattlePlan.Weapon != null) statistics.UsedWeapons.Count(Skin.Current.Describe(outcome.WinnerBattlePlan.Weapon));
-                            if (outcome.WinnerBattlePlan.Defense != null) statistics.UsedDefenses.Count(Skin.Current.Describe(outcome.WinnerBattlePlan.Defense));
-                            if (outcome.LoserBattlePlan.Weapon != null) statistics.UsedWeapons.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Weapon));
-                            if (outcome.LoserBattlePlan.Defense != null) statistics.UsedDefenses.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Defense));
-                        }
-                        else if (game.CurrentPhase == Phase.BeginningOfCollection && latest is EndPhase)
-                        {
-                            foreach (var p in game.Players)
-                            {
-                                if (p.Occupies(game.Map.Arrakeen)) statistics.FactionsOccupyingArrakeen.Count(p.Faction);
-                                if (p.Occupies(game.Map.Carthag)) statistics.FactionsOccupyingCarthag.Count(p.Faction);
-                                if (p.Occupies(game.Map.SietchTabr)) statistics.FactionsOccupyingSietchTabr.Count(p.Faction);
-                                if (p.Occupies(game.Map.HabbanyaSietch)) statistics.FactionsOccupyingHabbanyaSietch.Count(p.Faction);
-                                if (p.Occupies(game.Map.TueksSietch)) statistics.FactionsOccupyingTueksSietch.Count(p.Faction);
-                                if (p.Occupies(game.Map.HiddenMobileStronghold)) statistics.FactionsOccupyingHMS.Count(p.Faction);
-                            }
-                        }
+                    if (outcome.LoserHeroKilled) statistics.BattleKilledLeaders.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Hero));
+                    if (outcome.WinnerHeroKilled) statistics.BattleKilledLeaders.Count(Skin.Current.Describe(outcome.WinnerBattlePlan.Hero));
+
+                    if (outcome.WinnerBattlePlan.Weapon != null) statistics.UsedWeapons.Count(Skin.Current.Describe(outcome.WinnerBattlePlan.Weapon));
+                    if (outcome.WinnerBattlePlan.Defense != null) statistics.UsedDefenses.Count(Skin.Current.Describe(outcome.WinnerBattlePlan.Defense));
+                    if (outcome.LoserBattlePlan.Weapon != null) statistics.UsedWeapons.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Weapon));
+                    if (outcome.LoserBattlePlan.Defense != null) statistics.UsedDefenses.Count(Skin.Current.Describe(outcome.LoserBattlePlan.Defense));
+                }
+                else if (game.CurrentPhase == Phase.BeginningOfCollection && latest is EndPhase)
+                {
+                    foreach (var p in game.Players)
+                    {
+                        if (p.Occupies(game.Map.Arrakeen)) statistics.FactionsOccupyingArrakeen.Count(p.Faction);
+                        if (p.Occupies(game.Map.Carthag)) statistics.FactionsOccupyingCarthag.Count(p.Faction);
+                        if (p.Occupies(game.Map.SietchTabr)) statistics.FactionsOccupyingSietchTabr.Count(p.Faction);
+                        if (p.Occupies(game.Map.HabbanyaSietch)) statistics.FactionsOccupyingHabbanyaSietch.Count(p.Faction);
+                        if (p.Occupies(game.Map.TueksSietch)) statistics.FactionsOccupyingTueksSietch.Count(p.Faction);
+                        if (p.Occupies(game.Map.HiddenMobileStronghold)) statistics.FactionsOccupyingHMS.Count(p.Faction);
                     }
                 }
             }

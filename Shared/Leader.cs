@@ -6,10 +6,9 @@ namespace Treachery.Shared
 {
     public class Leader : IHero
     {
-        public int Id { get; private set; }
-
-
         public const int VARIABLEVALUE = 99;
+
+        public int Id { get; private set; }
 
         public Faction Faction { get; set; }
 

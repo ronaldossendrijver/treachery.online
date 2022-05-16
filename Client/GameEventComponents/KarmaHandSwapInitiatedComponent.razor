@@ -11,7 +11,7 @@
     <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to perform a Hand Swap</Header>
     <Body>
 
-        <SelectFactionComponent @bind-Value="target" Values="Game.ValidTargets(Player)">
+        <SelectFactionComponent @bind-Value="target" Values="Game.PlayersOtherThan(Player)">
             <Label>Target</Label>
         </SelectFactionComponent>
 

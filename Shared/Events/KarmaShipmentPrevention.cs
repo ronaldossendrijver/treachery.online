@@ -33,7 +33,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<Faction> GetValidTargets(Game g, Player p)
         {
-            return g.ValidTargets(p).Where(f => f != Faction.Yellow);
+            return g.PlayersOtherThan(p).Where(f => f != Faction.Yellow);
         }
 
         public override Message GetMessage()

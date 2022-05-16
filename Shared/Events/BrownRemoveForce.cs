@@ -53,7 +53,7 @@ namespace Treachery.Shared
             }
             else
             {
-                return g.ValidTargets(p);
+                return g.PlayersOtherThan(p);
             }
         }
 

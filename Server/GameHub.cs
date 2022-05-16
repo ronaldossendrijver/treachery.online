@@ -19,14 +19,6 @@ namespace Treachery.Server
 
         private readonly IConfiguration Configuration;
 
-        private void Log(string method, params object[] prs)
-        {
-            if (logging)
-            {
-                Console.WriteLine("ConnectionId: " + Context.ConnectionId + ", " + method + "(" + string.Join(",", prs) + ")");
-            }
-        }
-
         public GameHub(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -304,6 +296,14 @@ namespace Treachery.Server
         #endregion MessagesFromHost
 
         #region Support
+
+        private void Log(string method, params object[] prs)
+        {
+            if (logging)
+            {
+                Console.WriteLine("ConnectionId: " + Context.ConnectionId + ", " + method + "(" + string.Join(",", prs) + ")");
+            }
+        }
 
         private IClientProxy Channel(string type, int id)
         {

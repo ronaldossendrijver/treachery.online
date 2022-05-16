@@ -17,21 +17,9 @@ namespace Treachery.Shared
             SkinId = skinId;
         }
 
-        public bool IsShaiHulud
-        {
-            get
-            {
-                return Location == null && !IsSandTrout;
-            }
-        }
+        public bool IsShaiHulud => Location == null && !IsSandTrout;
 
-        public bool IsSpiceBlow
-        {
-            get
-            {
-                return Location != null;
-            }
-        }
+        public bool IsSpiceBlow => Location != null;
 
         public override string ToString()
         {

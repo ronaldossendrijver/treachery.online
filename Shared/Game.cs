@@ -12,7 +12,6 @@ namespace Treachery.Shared
     {
         public const int LowestSupportedVersion = 100;
         public const int LatestVersion = 142;
-
         public bool BotInfologging = false;
 
         #region GameState
@@ -51,7 +50,6 @@ namespace Treachery.Shared
         public IDictionary<IHero, LeaderState> LeaderState { get; private set; } = new Dictionary<IHero, LeaderState>();
         public Deck<LeaderSkill> SkillDeck { get; private set; }
         private Random Random { get; set; }
-
         public Dictionary<Player, Dictionary<MainPhase, TimeSpan>> Timers { get; private set; } = new Dictionary<Player, Dictionary<MainPhase, TimeSpan>>();
 
         #endregion GameState
@@ -116,62 +114,6 @@ namespace Treachery.Shared
             }
         }
 
-        private void UpdateTimers(GameEvent e)
-        {
-            if (e.Time != default && History.Count > 0 && InTimedPhase && e.Player != null)
-            {
-                GameEvent previousEvent;
-                if (e is Battle) previousEvent = FindMostRecentEvent(typeof(BattleInitiated));
-                else if (e is Move) previousEvent = FindMostRecentEvent(typeof(Shipment), typeof(EndPhase));
-                else if (e is Shipment) previousEvent = FindMostRecentEvent(typeof(Move), typeof(EndPhase));
-                else previousEvent = FindMostRecentEvent();
-
-                var elapsedTime = e.Time.Subtract(previousEvent.Time);
-
-                if (elapsedTime.TotalHours < 1)
-                {
-                    Timers[e.Player][CurrentMainPhase] += e.Time.Subtract(previousEvent.Time);
-                }
-            }
-        }
-
-        private GameEvent FindMostRecentEvent(params Type[] types)
-        {
-            if (types.Length == 0) return History[History.Count - 1];
-
-            for (int i = History.Count - 1; i >= 0; i--)
-            {
-                if (types.Contains(History[i].GetType()))
-                {
-                    return History[i];
-                }
-            }
-
-            return null;
-        }
-
-        public TimeSpan Duration => History.Count > 0 ? History[History.Count - 1].Time.Subtract(History[0].Time) : TimeSpan.Zero;
-
-        public TimeSpan TimeSpent(Player player, MainPhase phase)
-        {
-            if (Timers.ContainsKey(player) && Timers[player].ContainsKey(phase))
-            {
-                return Timers[player][phase];
-            }
-            else
-            {
-                return TimeSpan.Zero;
-            }
-        }
-
-        private bool InTimedPhase =>
-            CurrentPhase == Phase.Bidding ||
-            CurrentPhase == Phase.OrangeShip ||
-            CurrentPhase == Phase.OrangeMove ||
-            CurrentPhase == Phase.NonOrangeShip ||
-            CurrentPhase == Phase.NonOrangeMove ||
-            CurrentPhase == Phase.BattlePhase;
-
         public Game Undo(int untilEventNr)
         {
             var result = new Game(Version, TrackStatesForReplay);
@@ -201,33 +143,6 @@ namespace Treachery.Shared
         }
 
         public GameEvent LatestEvent() => History.Count > 0 ? History[^1] : null;
-
-        public static Message TryLoad(GameState state, bool performValidation, bool isHost, out Game result, bool trackStatesForReplay)
-        {
-            try
-            {
-                result = new Game(state.Version, trackStatesForReplay);
-
-                int nr = 0;
-                foreach (var e in state.Events)
-                {
-                    e.Game = result;
-                    var message = e.Execute(performValidation, isHost);
-                    if (message != null)
-                    {
-                        return Message.Express(e.GetType().Name, "(", nr, "):", message); ;
-                    }
-                    nr++;
-                }
-
-                return null;
-            }
-            catch (Exception e)
-            {
-                result = null;
-                return Message.Express(e.Message);
-            }
-        }
 
         public int EventCount => History.Count;
 
@@ -345,6 +260,81 @@ namespace Treachery.Shared
         }
 
         #endregion EventHandling
+
+        #region Timers
+
+        private void UpdateTimers(GameEvent e)
+        {
+            if (e.Time != default && History.Count > 0 && InTimedPhase && e.Player != null)
+            {
+                GameEvent previousEvent;
+                if (e is Battle) previousEvent = FindMostRecentEvent(typeof(BattleInitiated));
+                else if (e is Move) previousEvent = FindMostRecentEvent(typeof(Shipment), typeof(EndPhase));
+                else if (e is Shipment) previousEvent = FindMostRecentEvent(typeof(Move), typeof(EndPhase));
+                else previousEvent = FindMostRecentEvent();
+
+                var elapsedTime = e.Time.Subtract(previousEvent.Time);
+
+                if (elapsedTime.TotalHours < 1)
+                {
+                    Timers[e.Player][CurrentMainPhase] += e.Time.Subtract(previousEvent.Time);
+                }
+            }
+        }
+
+        private GameEvent FindMostRecentEvent(params Type[] types)
+        {
+            if (types.Length == 0) return History[History.Count - 1];
+
+            for (int i = History.Count - 1; i >= 0; i--)
+            {
+                if (types.Contains(History[i].GetType()))
+                {
+                    return History[i];
+                }
+            }
+
+            return null;
+        }
+
+        public TimeSpan Duration => History.Count > 0 ? History[History.Count - 1].Time.Subtract(History[0].Time) : TimeSpan.Zero;
+
+        public TimeSpan TimeSpent(Player player, MainPhase phase)
+        {
+            if (Timers.ContainsKey(player) && Timers[player].ContainsKey(phase))
+            {
+                return Timers[player][phase];
+            }
+            else
+            {
+                return TimeSpan.Zero;
+            }
+        }
+
+        public DateTime Started
+        {
+            get
+            {
+                if (History.Count > 0)
+                {
+                    return History[0].Time;
+                }
+                else
+                {
+                    return default;
+                }
+            }
+        }
+
+        private bool InTimedPhase =>
+            CurrentPhase == Phase.Bidding ||
+            CurrentPhase == Phase.OrangeShip ||
+            CurrentPhase == Phase.OrangeMove ||
+            CurrentPhase == Phase.NonOrangeShip ||
+            CurrentPhase == Phase.NonOrangeMove ||
+            CurrentPhase == Phase.BattlePhase;
+
+        #endregion
 
         #region PhaseTransitions
 
@@ -714,6 +704,20 @@ namespace Treachery.Shared
             return Map.Locations.Where(l => l.Sector != SectorInStorm && p.AnyForcesIn(l) > 0);
         }
 
+        private void FlipBeneGesseritWhenAlone()
+        {
+            var bg = GetPlayer(Faction.Blue);
+            if (bg != null)
+            {
+                var territoriesWhereAdvisorsAreAlone = Map.Territories.Where(t => bg.SpecialForcesIn(t) > 0 && !Players.Any(p => p.Faction != Faction.Blue && p.AnyForcesIn(t) > 0));
+                foreach (var t in territoriesWhereAdvisorsAreAlone)
+                {
+                    bg.FlipForces(t, false);
+                    CurrentReport.Express(Faction.Blue, " are alone and flip to ", FactionForce.Blue, " in ", t);
+                }
+            }
+        }
+
         #endregion
 
         #region Resources
@@ -762,6 +766,38 @@ namespace Treachery.Shared
 
         #endregion
 
+        #region PlayersAndFactions
+
+        public bool IsPlaying(Faction faction) => Players.Any(p => p.Faction == faction);
+
+        public Player GetPlayer(string name)
+        {
+            return Players.FirstOrDefault(p => p.Name == name);
+        }
+
+        public Player GetPlayer(Faction f)
+        {
+            return Players.FirstOrDefault(p => p.Faction == f);
+        }
+
+        public Faction GetAlly(Faction f)
+        {
+            var player = GetPlayer(f);
+            return player != null ? player.Ally : Faction.None;
+        }
+
+        public Player GetAlliedPlayer(Faction f)
+        {
+            return GetPlayer(f)?.AlliedPlayer;
+        }
+
+        public IEnumerable<Faction> PlayersOtherThan(Player p)
+        {
+            return Players.Where(x => x.Faction != p.Faction).Select(x => x.Faction);
+        }
+
+        #endregion
+
         #region SupportMethods
 
         private Payment Payment(int amount)
@@ -795,13 +831,7 @@ namespace Treachery.Shared
             return result;
         }
 
-        public bool IsPlaying(Faction faction)
-        {
-            return Players.Any(p => p.Faction == faction);
-        }
-
         private bool EveryoneActedOrPassed => HasActedOrPassed.Count == Players.Count;
-
 
         public bool HasStormPrescience(Player p)
         {
@@ -830,33 +860,7 @@ namespace Treachery.Shared
                 !Prevented(FactionAdvantage.GreenBiddingPrescience) &&
                 (p.Faction == Faction.Green || (p.Ally == Faction.Green && GreenSharesPrescience) || HasDeal(p.Faction, DealType.ShareBiddingPrescience)));
         }
-
-        public Player GetPlayer(string name)
-        {
-            return Players.FirstOrDefault(p => p.Name == name);
-        }
-
-        public Player GetPlayer(Faction f)
-        {
-            return Players.FirstOrDefault(p => p.Faction == f);
-        }
-
-        public Faction GetAlly(Faction f)
-        {
-            var player = GetPlayer(f);
-            return player != null ? player.Ally : Faction.None;
-        }
-
-        public Player GetAlliedPlayer(Faction f)
-        {
-            return GetPlayer(f)?.AlliedPlayer;
-        }
-
-        public IEnumerable<Faction> ValidTargets(Player p)
-        {
-            return Players.Where(x => x.Faction != p.Faction).Select(x => x.Faction);
-        }
-
+        
         private TreacheryCard Discard(Player player, TreacheryCardType cardType)
         {
             TreacheryCard card = null;
@@ -916,35 +920,35 @@ namespace Treachery.Shared
             return StrongholdOwnership.ContainsKey(stronghold) ? GetPlayer(StrongholdOwnership[stronghold]) : null;
         }
 
-        private void FlipBeneGesseritWhenAlone()
+        public static Message TryLoad(GameState state, bool performValidation, bool isHost, out Game result, bool trackStatesForReplay)
         {
-            var bg = GetPlayer(Faction.Blue);
-            if (bg != null)
+            try
             {
-                var territoriesWhereAdvisorsAreAlone = Map.Territories.Where(t => bg.SpecialForcesIn(t) > 0 && !Players.Any(p => p.Faction != Faction.Blue && p.AnyForcesIn(t) > 0));
-                foreach (var t in territoriesWhereAdvisorsAreAlone)
+                result = new Game(state.Version, trackStatesForReplay);
+
+                int nr = 0;
+                foreach (var e in state.Events)
                 {
-                    bg.FlipForces(t, false);
-                    CurrentReport.Express(Faction.Blue, " are alone and flip to ", FactionForce.Blue, " in ", t);
+                    e.Game = result;
+                    var message = e.Execute(performValidation, isHost);
+                    if (message != null)
+                    {
+                        return Message.Express(e.GetType().Name, "(", nr, "):", message); ;
+                    }
+                    nr++;
                 }
+
+                return null;
+            }
+            catch (Exception e)
+            {
+                result = null;
+                return Message.Express(e.Message);
             }
         }
 
-        public DateTime Started
-        {
-            get
-            {
-                if (History.Count > 0)
-                {
-                    return History[0].Time;
-                }
-                else
-                {
-                    return default;
-                }
-            }
-        }
 
         #endregion SupportMethods
+
     }
 }

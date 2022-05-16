@@ -24,18 +24,11 @@ namespace Treachery.Shared
 
         public bool IsProtectedFromWorm { get; set; }
 
-        private readonly List<Location> _locations = new List<Location>();
-        public IEnumerable<Location> Locations
-        {
-            get
-            {
-                return _locations;
-            }
-        }
+        public List<Location> Locations { get; private set; } = new List<Location>();
 
         public void AddLocation(Location l)
         {
-            _locations.Add(l);
+            Locations.Add(l);
         }
 
         public Location MiddleLocation

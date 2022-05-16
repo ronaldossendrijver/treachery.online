@@ -57,7 +57,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<Faction> ValidTargets(Game g, Player p)
         {
-            return g.ValidTargets(p);
+            return g.PlayersOtherThan(p);
         }
 
         public static IEnumerable<ClairvoyanceQuestion> ValidQuestions(Game g, Faction target)

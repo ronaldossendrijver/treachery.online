@@ -10,8 +10,6 @@ namespace Treachery.Shared
 {
     public static class TreacheryCardManager
     {
-        //public static readonly TreacheryCard NONE = new TreacheryCard(TreacheryCard.NONE, -1, TreacheryCardType.None, Rule.None);
-
         private static readonly List<TreacheryCard> Items = new List<TreacheryCard>();
         public static IFetcher<TreacheryCard> Lookup = new TreacheryCardFetcher();
 
@@ -21,7 +19,6 @@ namespace Treachery.Shared
         public const int CARD_LALALA = 31;
         public const int CARD_TRIPTOGAMONT = 32;
         public const int CARD_KULLWAHAD = 46;
-
 
         static TreacheryCardManager()
         {

@@ -11,7 +11,7 @@
     <Header>Offer a faction to form an Alliance</Header>
 
     <Body>
-        <SelectFactionComponent @bind-Value="target" Values="Game.ValidTargets(Player)" />
+        <SelectFactionComponent @bind-Value="target" Values="Game.PlayersOtherThan(Player)" />
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Offer Alliance" ConfirmError=@Validation />
     </Body>
 

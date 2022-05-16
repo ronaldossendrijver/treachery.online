@@ -17,7 +17,6 @@ namespace Treachery.Shared
             SkinId = skinId;
         }
 
-
         public TreacheryCard(int id, int skinId, TreacheryCardType type, Rule rule) : this(id, skinId, type, new Rule[] { rule })
         {
         }

@@ -22,10 +22,7 @@ namespace Treachery.Shared
 
         public Phase End { get; set; }
 
-        public T GetParameter1<T>(Game g)
-        {
-            return GetParameter1<T>(g, Type, DealParameter1);
-        }
+        public T GetParameter1<T>(Game g) => GetParameter1<T>(g, Type, DealParameter1);
 
         public static T GetParameter1<T>(Game g, DealType Type, string Parameter)
         {
@@ -36,10 +33,7 @@ namespace Treachery.Shared
             };
         }
 
-        public static T GetParameter2<T>()
-        {
-            return default;
-        }
+        public Message DealContentsDescription(Game g) => DealContentsDescription(g, Type, Text, Benefit, End, DealParameter1);
 
         public static Message DealContentsDescription(Game g, DealType Type, string Text, int benefit, Phase End, string Parameter1)
         {
@@ -61,17 +55,6 @@ namespace Treachery.Shared
             }
         }
 
-        public Message DealContentsDescription(Game g)
-        {
-            return DealContentsDescription(g, Type, Text, Benefit, End, DealParameter1);
-        }
-
-        public Message GetMessage(Game g)
-        {
-            var description = DealContentsDescription(g, Type, Text, Benefit, End, DealParameter1);
-            return Message.Express(BoundFaction, " ⇔ ", ConsumingFaction, ": ", description);
-        }
-
         private static MessagePart Express(DealType d, object parameter1)
         {
             return d switch
@@ -85,16 +68,5 @@ namespace Treachery.Shared
                 _ => MessagePart.Express("unknown deal type"),
             };
         }
-    }
-
-    public enum DealType
-    {
-        None = 0,
-        DontShipOrMoveTo = 10,
-        ShareBiddingPrescience = 30,
-        ShareResourceDeckPrescience = 50,
-        ShareStormPrescience = 60,
-        ForfeitBattle = 70,
-        TellDiscardedTraitors = 80
     }
 }

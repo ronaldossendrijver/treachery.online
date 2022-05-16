@@ -98,10 +98,5 @@ namespace Treachery.Shared
         {
             Items.Clear();
         }
-
-        public override string ToString()
-        {
-            return string.Join(", ", Items);
-        }
     }
 }

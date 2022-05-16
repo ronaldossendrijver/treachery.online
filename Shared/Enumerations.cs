@@ -645,4 +645,15 @@ namespace Treachery.Shared
         Capture = 20,
         Kill = 30
     }
+
+    public enum DealType
+    {
+        None = 0,
+        DontShipOrMoveTo = 10,
+        ShareBiddingPrescience = 30,
+        ShareResourceDeckPrescience = 50,
+        ShareStormPrescience = 60,
+        ForfeitBattle = 70,
+        TellDiscardedTraitors = 80
+    }
 }

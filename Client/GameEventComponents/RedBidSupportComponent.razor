@@ -40,5 +40,5 @@
 
     protected override RedBidSupport ConfirmedResult => new RedBidSupport(Game) { Initiator = Faction, Amounts = amounts };
 
-    private IEnumerable<Faction> ValidTargets => Game.ValidTargets(Player).Where(f => f != Player.Ally);
+    private IEnumerable<Faction> ValidTargets => Game.PlayersOtherThan(Player).Where(f => f != Player.Ally);
 }
