@@ -7,6 +7,7 @@
 @inherits GameComponent
 
 <div class="card p-1 mb-2">
+
     <div class="card-header">Select up to (including) which action should be undone</div>
 
     <div class="card-body">
@@ -23,6 +24,7 @@
 
                 </optgroup>
             }
+
         </select>
         <button class="btn btn-primary mt-1" @onclick="ConfirmUndo">Confirm</button>
     </div>
@@ -54,17 +56,17 @@
 
             for (int i = h.Game.History.Count - 1; i > 0; i--)
             {
-                var group = DetermineGroup(h.Game.States[i-1]);
-                if (!result.ContainsKey(group))
-                {
-                    result.Add(group, new());
-                }
-
-                var groupedEvents = result[group];
-
                 var e = h.Game.History[i];
                 if (!(e is AllyPermission) && !(e is BattleRevision))
                 {
+                    var group = DetermineGroup(h.Game.States[i-1]);
+                    if (!result.ContainsKey(group))
+                    {
+                        result.Add(group, new());
+                    }
+
+                    var groupedEvents = result[group];
+
                     groupedEvents.Add(i, e);
                 }
             }
