@@ -1,5 +1,5 @@
 ﻿<!--
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+* Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
 --->
 
 @using Treachery.Shared
@@ -18,10 +18,13 @@
         <SelectResourcesComponent @bind-Value="price" Min="0" Max="50" Label="How much will it cost them to accept this deal?"/>
 
         <SelectResourcesComponent @bind-Value="benefit" Min="0" Max="50" Label="How much will they get from you when they accept?"/>
-            
-        <SelectComponent @bind-Value="type" Values="DealOffered.GetHumanDealTypes(Game, Player)">
-            <Label>Type of Deal</Label>
-        </SelectComponent>
+        
+        @{
+            var dealTypes = DealOffered.GetStandardDealTypes(Game, Player).ToList();
+            <SelectComponent @bind-Value="type" Values=@dealTypes ValueLabels=@dealTypes.Select(dt => Deal.Express(dt).ToString(Skin.Current))>
+                <Label>Type of deal</Label>
+            </SelectComponent>
+        }
 
         <SelectComponent @bind-Value="until" Values="ApplicableEndPhases">
             <Label>Until</Label>

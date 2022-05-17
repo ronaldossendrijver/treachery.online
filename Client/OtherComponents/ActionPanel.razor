@@ -373,14 +373,14 @@
                     <SimpleActionComponent GameEventType="HideSecrets" h="@h" Title="Hide your secret info (like cards and traitors) from other players at the end of the game?" ConfirmLabel="Yes" Alert="true" Dismissable="true" DismissLabel="No" />
                 }
                 break;
-            case "DealOffered":
-                {
-                    <DealOfferedComponent h="@h" />
-                }
-                break;
             case "PlayerReplaced":
                 {
                     <PlayerReplacedComponent h="@h" />
+                }
+                break;
+            case "DealOffered":
+                {
+                    <DealOfferedComponent h="@h" />
                 }
                 break;
             case "BrownDiscarded":

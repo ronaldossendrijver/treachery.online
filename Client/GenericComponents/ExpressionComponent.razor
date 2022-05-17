@@ -34,7 +34,6 @@
                 break;
 
             case Message m:
-    
                 <ExpressionComponent Expression=m.Expression Size=@Size Game=Game/>
                 break;
 
@@ -55,13 +54,11 @@
                 break;
 
             case Payment payment:
-    
                 <TextBeforeImage ImageURL="@Skin.Current.Harvester_URL" Size=@Size Title="@Skin.Current.Describe(Concept.Resource)">@payment.Amount</TextBeforeImage>
                 @if (payment.By != Faction.None)
                 {
                     <span> by <FactionComponent Faction=payment.By Diameter=@Size/></span>
                 }
-
                 break;
 
             case Faction faction:
@@ -73,7 +70,7 @@
                 break;
     
             case IHero hero:
-                <RichText Style=@Support.TextBorder(1, Skin.Current.FactionColor[hero.Faction]) Shown=@Skin.Current.Describe(hero) Popover=@Popup.Get(hero, Game)/>
+                <RichText Style=@Support.TextBorder(1, Skin.Current.FactionColor[hero.Faction]) Class="" Shown=@Skin.Current.Describe(hero) Popover=@Popup.Get(hero, Game)/>
                 break;
 
             case Concept monster when monster == Concept.Monster:
@@ -84,16 +81,13 @@
                 <Image Shown=@part Width=@Size ShowPopover=false/>
                 break;
 
-            default:
-                if (ShownAsText(part))
-                {
-                    <span class="fw-bold">@Skin.Current.Describe(part)</span>
-                }
-                else {
-                    <span>@Skin.Current.Describe(part)</span>
-                }
+            case Location or Territory or AuctionType or BrownEconomicsStatus or TreacheryCardType or StrongholdAdvantage or FactionAdvantage or Ruleset or Rule:
+                <span class="fw-bold">@Skin.Current.Describe(part)</span>
                 break;
 
+            default:
+                <span>@Skin.Current.Describe(part)</span>
+                break;
         }
     }
 }
@@ -109,8 +103,6 @@
     [Parameter]
     public int Size { get; set; } = 14;
 
-    private bool ShownAsText(object part) => part is Location || part is Territory || part is AuctionType || part is BrownEconomicsStatus || part is TreacheryCardType || part is StrongholdAdvantage || part is FactionAdvantage || part is Ruleset || part is Rule;
-
     private List<Expression> DetermineElements(IEnumerable e)
     {
         var result = new List<Expression>();
@@ -121,7 +113,7 @@
         {
             if (firstItem) {
 
-                useSeparators = ShownAsText(elt);
+                useSeparators = !ShownAsImage(elt);
             }
 
             if (useSeparators && !firstItem)
@@ -138,4 +130,6 @@
 
         return result;
     }
+
+    private bool ShownAsImage(object e) => e is Faction || e is Payment || e is FactionForce || e is FactionSpecialForce || e is Concept c && c == Concept.Monster || e is int || e is double || e is float;
 }

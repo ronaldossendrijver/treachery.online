@@ -124,12 +124,7 @@ namespace Treachery.Shared
                 (To.Length == 0 || To.Contains(acceptedDeal.Initiator));
         }
 
-        public static IEnumerable<DealType> GetAllDealTypes()
-        {
-            return Enumerations.GetValues<DealType>(typeof(DealType));
-        }
-
-        public static IEnumerable<DealType> GetHumanDealTypes(Game g, Player p)
+        public static IEnumerable<DealType> GetStandardDealTypes(Game g, Player p)
         {
             var result = new List<DealType>() {
 

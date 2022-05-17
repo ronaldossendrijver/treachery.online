@@ -55,17 +55,19 @@ namespace Treachery.Shared
             }
         }
 
-        private static MessagePart Express(DealType d, object parameter1)
+        public static Message Express(DealType d, object parameter = null)
         {
+            var p = parameter == null ? "..." : parameter;
+
             return d switch
             {
-                DealType.None => MessagePart.Express("Custom deal"),
-                DealType.DontShipOrMoveTo => MessagePart.Express("Don't ship or move to ", parameter1),
-                DealType.ShareBiddingPrescience => MessagePart.Express("Share treachery card prescience"),
-                DealType.ShareResourceDeckPrescience => MessagePart.Express("Share prescience of the top ", Concept.Resource, "card"),
-                DealType.ShareStormPrescience => MessagePart.Express("Share storm prescience"),
-                DealType.ForfeitBattle => MessagePart.Express("Forfeit this battle (no weapons and defenses, lowest leader, zero dial)"),
-                _ => MessagePart.Express("unknown deal type"),
+                DealType.None => Message.Express("Custom deal"),
+                DealType.DontShipOrMoveTo => Message.Express("Don't ship or move to ", p),
+                DealType.ShareBiddingPrescience => Message.Express("Share treachery card prescience"),
+                DealType.ShareResourceDeckPrescience => Message.Express("Share prescience of the top ", Concept.Resource, "card"),
+                DealType.ShareStormPrescience => Message.Express("Share storm prescience"),
+                DealType.ForfeitBattle => Message.Express("Forfeit this battle (no weapons and defenses, lowest leader, zero dial)"),
+                _ => Message.Express("unknown deal type"),
             };
         }
     }
