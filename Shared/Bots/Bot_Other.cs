@@ -179,6 +179,7 @@ namespace Treachery.Shared
             {
                 var bestLeaderToAskAbout = Leaders.Where(l => Game.IsAlive(l) && !SafeOrKnownTraitorLeaders.Contains(l)).HighestOrDefault(l => l.Value);
                 var bestPlayerToAsk = Opponents.Where(o => !o.ToldNonTraitors.Contains(bestLeaderToAskAbout)).HighestOrDefault(p => p.Traitors.Count - p.RevealedTraitors.Count);
+
                 if (bestLeaderToAskAbout != null && bestPlayerToAsk != null)
                 {
                     return new ClairVoyancePlayed(Game) { Initiator = Faction, Target = bestPlayerToAsk.Faction, Question = ClairvoyanceQuestion.LeaderAsTraitor, Parameter1 = bestLeaderToAskAbout.Id };
