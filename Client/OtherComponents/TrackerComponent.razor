@@ -139,15 +139,15 @@
                 {
                     @if (h.Game.ResourceCardDiscardPileA.Items.Any() || h.Game.ResourceCardDiscardPileA.Items.Any())
                     {
-                        <div class="small"><strong>Discard pile A:</strong> @string.Join(", ", h.Game.ResourceCardDiscardPileA.Items)</div>
-                        <div class="small"><strong>Discard pile B:</strong> @string.Join(", ", h.Game.ResourceCardDiscardPileB.Items)</div>
+                        <div class="small"><strong>Discard pile A:</strong> @Skin.Current.Join(h.Game.ResourceCardDiscardPileA.Items)</div>
+                        <div class="small"><strong>Discard pile B:</strong> @Skin.Current.Join(h.Game.ResourceCardDiscardPileB.Items)</div>
                     }
                 }
                 else
                 {
                     @if (h.Game.ResourceCardDiscardPileA.Items.Any())
                     {
-                        <div class="small"><strong>Discarded:</strong> @string.Join(", ", h.Game.ResourceCardDiscardPileA.Items)</div>
+                        <div class="small"><strong>Discarded:</strong> @Skin.Current.Join(h.Game.ResourceCardDiscardPileA.Items)</div>
                     }
                 }
             }

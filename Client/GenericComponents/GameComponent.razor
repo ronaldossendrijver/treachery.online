@@ -146,6 +146,6 @@
 
     public static string DescribeCard(TreacheryCardType t)
     {
-        return string.Format("Use {0}?", Skin.Current.Describe(t));
+        return Skin.Current.Format("Use {0}?", t);
     }
 }

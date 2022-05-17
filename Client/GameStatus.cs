@@ -188,7 +188,7 @@ namespace Treachery.Client
                     "Storm movement is being determined...",
                     game.FactionsInPlay.Where(f => game.HasBattleWheel.Contains(f) && !game.HasActedOrPassed.Contains(f))),
 
-                Phase.MetheorAndStormSpell => Status(Express("Factions may now use ", TreacheryCardType.Metheor, " or ", TreacheryCardType.StormSpell, "...", TreacheryCardType.Metheor)),
+                Phase.MetheorAndStormSpell => Status(Express("Factions may now use ", TreacheryCardType.Metheor, " or ", TreacheryCardType.StormSpell, "...")),
 
                 Phase.StormLosses => Status(game,
                     Express("Please decide which forces were killed by the storm in ", TakeLosses.LossesToTake(game).Location, "."),
