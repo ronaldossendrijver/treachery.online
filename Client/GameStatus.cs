@@ -81,7 +81,6 @@ namespace Treachery.Client
                 Phase.Thumper or
                 Phase.BeginningOfCharity or
                 Phase.BeginningOfResurrection or
-                Phase.BeginningOfShipAndMove or
                 Phase.BeginningOfCollection => Status(
                     Express("You may now continue with the ", game.CurrentMainPhase, " phase..."),
                     Express("Waiting for the host to continue the ", game.CurrentMainPhase, " phase...")),
@@ -291,6 +290,11 @@ namespace Treachery.Client
 
                 /* Ship & Move */
 
+                Phase.BeginningOfShipAndMove => Status(
+                        Express("You may now start the Ship & Move sequence..."),
+                        Express("Waiting for the host to start the Ship & Move sequence..."),
+                        game.ShipmentAndMoveSequence.GetPlayersInSequence().Select(ps => ps.Player)),
+
                 Phase.NonOrangeShip when game.ShipmentAndMoveSequence.CurrentFaction == Faction.Yellow => Status(game,
                     Express("Please decide to rally forces or pass."),
                     Express(Faction.Yellow, " are thinking about rallying forces..."),
@@ -332,7 +336,7 @@ namespace Treachery.Client
 
                 Phase.OrangeMove => Status(game,
                     Express("Please decide to move forces or pass."),
-                    Express(Faction.Orange, "{0} are thinking about about moving forces."),
+                    Express(Faction.Orange, " are thinking about about moving forces."),
                     Faction.Orange, game.LatestEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
 
                 /* Battle */

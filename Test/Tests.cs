@@ -371,15 +371,15 @@ namespace Treachery.Test
             var game = LetBotsPlay(rulesAsArray, factions, nrOfPlayers, nrOfTurns, null, false, true);
 
             Console.WriteLine("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
-                string.Join(",", game.Winners.Select(p => p.Name)),
+                string.Join(",", game.Winners.Select(p => DetermineName(p))),
                 Skin.Current.Describe(game.WinMethod),
                 game.CurrentTurn,
                 game.History.Count,
-                string.Join(",", game.LeaderState.Where(l => !l.Value.Alive).Select(l => l.Key)),
-                string.Join(",", game.Players.Sum(p => p.ForcesKilled + p.SpecialForcesKilled)),
-                string.Join(",", game.Players.SelectMany(p => p.TreacheryCards)),
-                string.Join(",", game.Players.Sum(p => p.Resources)),
-                string.Join(",", game.TreacheryDiscardPile.Items));
+                Skin.Current.Join(game.LeaderState.Where(l => !l.Value.Alive).Select(l => l.Key)),
+                game.Players.Sum(p => p.ForcesKilled + p.SpecialForcesKilled),
+                Skin.Current.Join(game.Players.SelectMany(p => p.TreacheryCards)),
+                game.Players.Sum(p => p.Resources),
+                Skin.Current.Join(game.TreacheryDiscardPile.Items));
 
             foreach (var winner in game.Winners)
             {
