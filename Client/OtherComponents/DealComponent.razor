@@ -8,9 +8,9 @@
 
 <div class="card mb-2">
 
-    <div class="card-header">
+    <div class="card-header" @onclick=@(e => Collapsed = !Collapsed)>
         Deals
-        <CollapseButton @bind-Collapsed="Collapsed" />
+        <CollapseButton Collapsed=@Collapsed />
     </div>
 
     @if (!Collapsed)

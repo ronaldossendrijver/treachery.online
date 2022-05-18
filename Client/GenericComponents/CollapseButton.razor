@@ -2,7 +2,7 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
 --->
 
-<a class="btn btn-link p-0 float-end" @onclick="e => { Collapsed = !Collapsed; }" style="display: inline-block;">
+<div class="btn btn-link p-0 float-end" @onclick="e => { Collapsed = !Collapsed; }" style="display: inline-block;">
 
     @if (Collapsed)
     {
@@ -17,29 +17,10 @@
         </svg>
     }
 
-</a>
+</div>
 
 @code {
 
-    private bool _collapsed;
-
     [Parameter]
-    public bool Collapsed
-    {
-        get
-        {
-            return _collapsed;
-        }
-        set
-        {
-            if (value != _collapsed)
-            {
-                _collapsed = value;
-                CollapsedChanged.InvokeAsync(value);
-            }
-        }
-    }
-
-    [Parameter]
-    public EventCallback<bool> CollapsedChanged { get; set; }
+    public bool Collapsed { get; set; }
 }

@@ -11,10 +11,10 @@
 
 <div class="card mb-2">
 
-    <div class="card-header">
+    <div class="card-header" @onclick=@(e => Collapsed = !Collapsed)>
         Card Tracker
         <InfoComponent Contents="@InfoMessage" />
-        <CollapseButton @bind-Collapsed="Collapsed" />
+        <CollapseButton Collapsed=@Collapsed />
     </div>
 
     @if (!Collapsed)

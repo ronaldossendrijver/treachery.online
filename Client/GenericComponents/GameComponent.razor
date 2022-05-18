@@ -11,9 +11,6 @@
     [Parameter]
     public Handler h { get; set; }
 
-    [Parameter]
-    public bool Collapsible { get; set; } = true;
-
     private static Dictionary<Type, bool> SavedCollapsedStateValues = new Dictionary<Type, bool>();
     private bool? _collapsed = null;
 
