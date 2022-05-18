@@ -11,23 +11,19 @@
 {
     <div class="card p-1 mb-2 small">
         <div class="card-body">
-            <div class="form-group mt-1 mb-0 p-0">
-                <label class="mt-0" for="musicVolume">&nbsp;Music volume</label>
-                <input class="mt-2" id="musicVolume" type="range" min="0" max="100" step="1" @bind="@DesiredMusicVolume" @bind:event="oninput" />
-            </div>
-            <div class="form-group mt-1 mb-0 p-0">
-                <label class="mt-0" for="effectVolume">&nbsp;Sound effects volume</label>
-                <input class="mt-2" id="effectVolume" type="range" min="0" max="100" step="1" @bind="@DesiredEffectVolume" @bind:event="oninput" />
-            </div>
-            <div class="form-group mt-1 mb-0 p-0">
-                <label class="mt-0" for="chatVolume">&nbsp;Chat notification volume</label>
-                <input class="mt-2" id="chatVolume" type="range" min="0" max="100" step="1" @bind="@DesiredChatVolume" @bind:event="oninput" />
-            </div>
-            <div class="form-group mt-1 mb-0 p-0">
-                <label class="mt-0" for="videoVolume">&nbsp;Player camera volume</label>
-                <input class="mt-2" id="videoVolume" type="range" min="0" max="100" step="1" @bind="@DesiredVideoVolume" @bind:event="oninput" />
-            </div>
+            
+            <label for="musicVolume" class="form-label">&nbsp;Music volume</label>
+            <input id="musicVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredMusicVolume" @bind:event="oninput" />
 
+            <label for="effectVolume" class="form-label">&nbsp;Sound effects volume</label>
+            <input id="effectVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredEffectVolume" @bind:event="oninput" />
+                        
+            <label for="chatVolume" class="form-label">&nbsp;Chat notification volume</label>
+            <input id="chatVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredChatVolume" @bind:event="oninput" />
+                        
+            <label for="videoVolume" class="form-label">&nbsp;Player cam audio volume</label>
+            <input id="videoVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredVideoVolume" @bind:event="oninput" />
+            
             <SelectComponent @bind-Value=h.AudioDevice Values=@audioDevices ValueLabels=@audioDevices.Select(d => d.Label)>
                 <Label>Microphone</Label>
             </SelectComponent>
@@ -98,7 +94,7 @@
             _devicesScanned = true;
             _ = Task.Delay(1000).ContinueWith(StateHasChanged);
         }
-        
+
         audioDevices = devices.Where(d => d.Kind == "audioinput").ToList();
         videoDevices = devices.Where(d => d.Kind == "videoinput").ToList();
     }
@@ -142,37 +138,23 @@
         {
             return Skin.Current.MusicGeneral_URL;
         }
-        else if (h.Game.CurrentMainPhase == MainPhase.Setup)
-        {
-            return Skin.Current.MusicSetup_URL;
-        }
-        else if (h.Game.CurrentMainPhase == MainPhase.Blow || h.Game.CurrentMainPhase == MainPhase.Charity)
-        {
-            return Skin.Current.MusicResourceBlow_URL;
-        }
-        else if (h.Game.CurrentMainPhase == MainPhase.Bidding)
-        {
-            return Skin.Current.MusicBidding_URL;
-        }
-        else if (h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove)
-        {
-            return Skin.Current.MusicShipmentAndMove_URL;
-        }
-        else if (h.Game.CurrentPhase == Phase.BattlePhase || h.Game.CurrentPhase == Phase.BeginningOfBattle)
-        {
+        else if (h.Game.CurrentPhase == Phase.BattlePhase || h.Game.CurrentPhase == Phase.BeginningOfBattle ) {
+
             return Skin.Current.MusicBattle_URL;
-        }
-        else if (h.Game.CurrentMainPhase == MainPhase.Battle)
-        {
-            return Skin.Current.MusicBattleClimax_URL;
-        }
-        else if (h.Game.CurrentMainPhase == MainPhase.Collection || h.Game.CurrentMainPhase == MainPhase.Contemplate || h.Game.CurrentMainPhase == MainPhase.Ended)
-        {
-            return Skin.Current.MusicMentat_URL;
         }
         else
         {
-            return Skin.Current.MusicGeneral_URL;
+            return (h.Game.CurrentMainPhase) switch
+            {
+                MainPhase.Setup => Skin.Current.MusicSetup_URL,
+                MainPhase.Blow or MainPhase.Charity => Skin.Current.MusicResourceBlow_URL,
+                MainPhase.Bidding => Skin.Current.MusicBidding_URL,
+                MainPhase.ShipmentAndMove => Skin.Current.MusicShipmentAndMove_URL,
+                
+                MainPhase.Battle => Skin.Current.MusicBattleClimax_URL,
+                MainPhase.Collection or MainPhase.Contemplate or MainPhase.Ended => Skin.Current.MusicMentat_URL,
+                _ => Skin.Current.MusicGeneral_URL
+            };
         }
     }
 

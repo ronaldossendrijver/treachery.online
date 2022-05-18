@@ -264,15 +264,11 @@ namespace Treachery.Client
 
         public Point GetSpiceLocation(Location location) => location.SpiceBlowAmount != 0 ? LocationSpice_Point[location.Id] : new Point(0, 0);
 
-
-        public string Describe(object value, bool capitalize = false)
+        public string Describe(object value)
         {
-            string result;
-
-            if (value == null) return "";
-
-            result = (value) switch
+            return (value) switch
             {
+                null => "",
                 string str => str,
                 bool b => b ? "Yes" : "No",
                 Message msg => Describe(msg),
@@ -305,20 +301,6 @@ namespace Treachery.Client
                 IEnumerable ienum => Join(Enumerable.Cast<object>(ienum)),
                 _ => value.ToString()
             };
-
-            if (capitalize)
-            {
-                return FirstCharToUpper(result);
-            }
-            else
-            {
-                return result;
-            }
-        }
-
-        public string Describe(object obj)
-        {
-            return Describe(obj, false);
         }
 
         private string[] Describe(object[] objects)
@@ -350,26 +332,14 @@ namespace Treachery.Client
 
         public string Describe(IHero hero)
         {
-            if (hero == null)
+            return (hero) switch
             {
-                return "?";
-            }
-            else if (hero is Leader l)
-            {
-                return GetLabel(PersonName_STR, l.SkinId);
-            }
-            else if (hero is Messiah)
-            {
-                return Describe(Concept.Messiah);
-            }
-            else if (hero is TreacheryCard tc)
-            {
-                return Describe(tc);
-            }
-            else
-            {
-                return "?";
-            }
+                null => "?",
+                Leader l => GetLabel(PersonName_STR, l.SkinId),
+                Messiah => Describe(Concept.Messiah),
+                TreacheryCard tc => Describe(tc),
+                _ => "?"
+            };
         }
 
         public string Describe(Location l)
@@ -774,10 +744,6 @@ namespace Treachery.Client
                 _ => "unknown rule",
             };
         }
-
-
-
-
 
         #endregion Descriptions
 

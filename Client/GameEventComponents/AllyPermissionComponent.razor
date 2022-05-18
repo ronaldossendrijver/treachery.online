@@ -68,65 +68,67 @@
             karmaCard = null;
         }
 
-        @if (Faction == Faction.Red)
+        @switch (Faction)
         {
-            <div class="mt-1">
-                <label class="mt-1 mb-0">How many revivals will you pay for them (currently: <strong>@(Game.RedWillPayForExtraRevival)</strong>)?</label>
-                <SelectForcesComponent @bind-Value="emperorWillPayForExtraRevival" Min="0" Max="3" Faction="Player.Ally" Special="false" OnChanged=SetEdited/>
-            </div>
-        }
-        else if (Faction == Faction.Orange)
-        {
-            <CheckboxComponent @bind-Value="guildAllyMayShipAsGuild" OnChanged=SetEdited>
-                Allow shipment at @Skin.Current.Describe(Faction.Orange) rates and site-to-site (currently: <strong>@(Game.OrangeAllyMayShipAsGuild ? "yes" : "no")</strong>)
-            </CheckboxComponent>
-        }
-        else if (Faction == Faction.Purple)
-        {
-            <CheckboxComponent @bind-Value="purpleAllyMyReviveAsPurple" OnChanged=SetEdited>
-                Allow revival at @Skin.Current.Describe(Faction.Purple) rates (currently: <strong>@(Game.PurpleAllyMayReviveAsPurple ? "yes" : "no")</strong>)
-            </CheckboxComponent>
-        }
-        else if (Faction == Faction.Grey)
-        {
-            <CheckboxComponent @bind-Value="greyAllyMayReplace" OnChanged=SetEdited>
-                Allow replacing treachery cards they win (currently: <strong>@(Game.GreyAllyMayReplaceCards ? "yes" : "no")</strong>)
-            </CheckboxComponent>
-        }
-        else if (Faction == Faction.Yellow)
-        {
-            <CheckboxComponent @bind-Value="fremenAllowsThreeFreeRevivals" OnChanged=SetEdited>
-                Allow 3 free revivals (currently: <strong>@(Game.YellowAllowsThreeFreeRevivals ? "yes" : "no")</strong>)
-            </CheckboxComponent>
+            case Faction.Red:
+                <div class="mt-1">
+                    <label class="mt-1 mb-0">How many revivals will you pay for them (currently: <strong>@(Game.RedWillPayForExtraRevival)</strong>)?</label>
+                    <SelectForcesComponent @bind-Value="emperorWillPayForExtraRevival" Min="0" Max="3" Faction="Player.Ally" Special="false" OnChanged=SetEdited/>
+                </div>
+                break;
 
-            <CheckboxComponent @bind-Value="fremenWillProtectFromShaiHulud" OnChanged=SetEdited>
-                Protect them from @Skin.Current.Describe(Concept.Monster) (currently: <strong>@(Game.YellowWillProtectFromShaiHulud ? "yes" : "no")</strong>)
-            </CheckboxComponent>
-
-            @if (Game.Applicable(Rule.YellowSeesStorm))
-            {
-                <CheckboxComponent @bind-Value="fremenShareStormPrescience" OnChanged=SetEdited>
-                    Share storm knowledge (currently: <strong>@(Game.YellowSharesPrescience ? "yes" : "no")</strong>)
+            case Faction.Orange:
+                <CheckboxComponent @bind-Value="guildAllyMayShipAsGuild" OnChanged=SetEdited>
+                    Allow shipment at @Skin.Current.Describe(Faction.Orange) rates and site-to-site (currently: <strong>@(Game.OrangeAllyMayShipAsGuild ? "yes" : "no")</strong>)
                 </CheckboxComponent>
-            }
-        }
-        else if (Faction == Faction.Green)
-        {
-            <CheckboxComponent @bind-Value="greenSharePrescience" OnChanged=SetEdited>
-                Share your Prescience (currently: <strong>@(Game.GreenSharesPrescience ? "yes" : "no")</strong>)
-            </CheckboxComponent>
-        }
-        else if (Faction == Faction.Blue)
-        {
-            <CheckboxComponent @bind-Value="blueAllyMayUseVoice" OnChanged=SetEdited>
-                Allow use of Voice (currently: <strong>@(Game.BlueAllyMayUseVoice ? "yes" : "no")</strong>)
-            </CheckboxComponent>
-        }
-        else if (Faction == Faction.White)
-        {
-            <CheckboxComponent @bind-Value="whiteAllyMayUseNoField" OnChanged=SetEdited>
-                Allow shipment by No-Field (currently: <strong>@(Game.WhiteAllyMayUseNoField ? "yes" : "no")</strong>)
-            </CheckboxComponent>
+                break;
+
+            case Faction.Purple:
+                <CheckboxComponent @bind-Value="purpleAllyMyReviveAsPurple" OnChanged=SetEdited>
+                    Allow revival at @Skin.Current.Describe(Faction.Purple) rates (currently: <strong>@(Game.PurpleAllyMayReviveAsPurple ? "yes" : "no")</strong>)
+                </CheckboxComponent>
+                break;
+
+            case Faction.Grey:
+                <CheckboxComponent @bind-Value="greyAllyMayReplace" OnChanged=SetEdited>
+                    Allow replacing treachery cards they win (currently: <strong>@(Game.GreyAllyMayReplaceCards ? "yes" : "no")</strong>)
+                </CheckboxComponent>
+                break;
+
+            case Faction.Yellow:
+                <CheckboxComponent @bind-Value="fremenAllowsThreeFreeRevivals" OnChanged=SetEdited>
+                    Allow 3 free revivals (currently: <strong>@(Game.YellowAllowsThreeFreeRevivals ? "yes" : "no")</strong>)
+                </CheckboxComponent>
+
+                <CheckboxComponent @bind-Value="fremenWillProtectFromShaiHulud" OnChanged=SetEdited>
+                    Protect them from @Skin.Current.Describe(Concept.Monster) (currently: <strong>@(Game.YellowWillProtectFromShaiHulud ? "yes" : "no")</strong>)
+                </CheckboxComponent>
+
+                @if (Game.Applicable(Rule.YellowSeesStorm))
+                {
+                    <CheckboxComponent @bind-Value="fremenShareStormPrescience" OnChanged=SetEdited>
+                        Share storm knowledge (currently: <strong>@(Game.YellowSharesPrescience ? "yes" : "no")</strong>)
+                    </CheckboxComponent>
+                }
+                break;
+
+            case Faction.Green:
+                <CheckboxComponent @bind-Value="greenSharePrescience" OnChanged=SetEdited>
+                    Share your Prescience (currently: <strong>@(Game.GreenSharesPrescience ? "yes" : "no")</strong>)
+                </CheckboxComponent>
+                break;
+
+            case Faction.Blue:
+                <CheckboxComponent @bind-Value="blueAllyMayUseVoice" OnChanged=SetEdited>
+                    Allow use of Voice (currently: <strong>@(Game.BlueAllyMayUseVoice ? "yes" : "no")</strong>)
+                </CheckboxComponent>
+                break;
+
+            case Faction.White:
+                <CheckboxComponent @bind-Value="whiteAllyMayUseNoField" OnChanged=SetEdited>
+                    Allow shipment by No-Field (currently: <strong>@(Game.WhiteAllyMayUseNoField ? "yes" : "no")</strong>)
+                </CheckboxComponent>
+                break;
         }
 
         <ButtonRowComponent Confirm="ConfirmAndSetUnedited" ConfirmText="Confirm Changes" ConfirmError=@Validation Disabled="@(!Dirty)"/>
@@ -164,26 +166,33 @@
                 case Faction.Purple:
                     purpleAllyMyReviveAsPurple = Game.PurpleAllyMayReviveAsPurple;
                     break;
+
                 case Faction.Grey:
                     greyAllyMayReplace = Game.GreyAllyMayReplaceCards;
                     break;
+
                 case Faction.Orange:
                     guildAllyMayShipAsGuild = Game.OrangeAllyMayShipAsGuild;
                     break;
+
                 case Faction.Red:
                     emperorWillPayForExtraRevival = Game.RedWillPayForExtraRevival;
                     break;
+
                 case Faction.Yellow:
                     fremenWillProtectFromShaiHulud = Game.YellowWillProtectFromShaiHulud;
                     fremenAllowsThreeFreeRevivals = Game.YellowAllowsThreeFreeRevivals;
                     fremenShareStormPrescience = Game.YellowSharesPrescience;
                     break;
+
                 case Faction.Green:
                     greenSharePrescience = Game.GreenSharesPrescience;
                     break;
+
                 case Faction.Blue:
                     blueAllyMayUseVoice = Game.BlueAllyMayUseVoice;
                     break;
+
                 case Faction.White:
                     whiteAllyMayUseNoField = Game.WhiteAllyMayUseNoField;
                     break;
@@ -218,26 +227,33 @@
                 case Faction.Purple:
                     if (purpleAllyMyReviveAsPurple != Game.PurpleAllyMayReviveAsPurple) return true;
                     break;
+
                 case Faction.Grey:
                     if (greyAllyMayReplace != Game.GreyAllyMayReplaceCards) return true;
                     break;
+
                 case Faction.Orange:
                     if (guildAllyMayShipAsGuild != Game.OrangeAllyMayShipAsGuild) return true;
                     break;
+
                 case Faction.Red:
                     if (emperorWillPayForExtraRevival != Game.RedWillPayForExtraRevival) return true;
                     break;
+
                 case Faction.Yellow:
                     if (fremenWillProtectFromShaiHulud != Game.YellowWillProtectFromShaiHulud) return true;
                     if (fremenAllowsThreeFreeRevivals != Game.YellowAllowsThreeFreeRevivals) return true;
                     if (fremenShareStormPrescience != Game.YellowSharesPrescience) return true;
                     break;
+
                 case Faction.Green:
                     if (greenSharePrescience != Game.GreenSharesPrescience) return true;
                     break;
+
                 case Faction.Blue:
                     if (blueAllyMayUseVoice != Game.BlueAllyMayUseVoice) return true;
                     break;
+
                 case Faction.White:
                     if (whiteAllyMayUseNoField != Game.WhiteAllyMayUseNoField) return true;
                     break;
@@ -249,22 +265,22 @@
 
     protected override AllyPermission ConfirmedResult =>
 
-            new AllyPermission(Game)
-            {
-                Initiator = Faction,
-                RedWillPayForExtraRevival = emperorWillPayForExtraRevival,
-                YellowAllowsThreeFreeRevivals = fremenAllowsThreeFreeRevivals,
-                YellowWillProtectFromMonster = fremenWillProtectFromShaiHulud,
-                YellowSharesPrescience = fremenShareStormPrescience,
-                GreenSharesPrescience = greenSharePrescience,
-                BlueAllowsUseOfVoice = blueAllyMayUseVoice,
-                WhiteAllowsUseOfNoField = whiteAllyMayUseNoField,
-                AllyMayShipAsOrange = guildAllyMayShipAsGuild,
-                AllyMayReviveAsPurple = purpleAllyMyReviveAsPurple,
-                AllyMayReplaceCards = greyAllyMayReplace,
-                PermittedResources = spice,
-                PermittedKarmaCard = karmaCard
-            };
+        new AllyPermission(Game)
+        {
+            Initiator = Faction,
+            RedWillPayForExtraRevival = emperorWillPayForExtraRevival,
+            YellowAllowsThreeFreeRevivals = fremenAllowsThreeFreeRevivals,
+            YellowWillProtectFromMonster = fremenWillProtectFromShaiHulud,
+            YellowSharesPrescience = fremenShareStormPrescience,
+            GreenSharesPrescience = greenSharePrescience,
+            BlueAllowsUseOfVoice = blueAllyMayUseVoice,
+            WhiteAllowsUseOfNoField = whiteAllyMayUseNoField,
+            AllyMayShipAsOrange = guildAllyMayShipAsGuild,
+            AllyMayReviveAsPurple = purpleAllyMyReviveAsPurple,
+            AllyMayReplaceCards = greyAllyMayReplace,
+            PermittedResources = spice,
+            PermittedKarmaCard = karmaCard
+        };
 
     private async Task ConfirmAndSetUnedited()
     {

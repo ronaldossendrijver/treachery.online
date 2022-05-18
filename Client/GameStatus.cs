@@ -556,45 +556,43 @@ namespace Treachery.Client
 
             if (latestEvent != null)
             {
-                if (latestEvent is RaiseDeadPlayed) Flash(result, latestEvent, TreacheryCardType.RaiseDead);
-                else if (latestEvent is MetheorPlayed) Flash(result, latestEvent, TreacheryCardType.Metheor);
-                else if (latestEvent is StormSpellPlayed) Flash(result, latestEvent, TreacheryCardType.StormSpell);
-                else if (latestEvent is ClairVoyancePlayed) Flash(result, latestEvent, TreacheryCardType.Clairvoyance);
-                else if (latestEvent is AmalPlayed) Flash(result, latestEvent, TreacheryCardType.Amal);
-                else if (latestEvent is HarvesterPlayed) Flash(result, latestEvent, TreacheryCardType.Harvester);
-                else if (latestEvent is ThumperPlayed) Flash(result, latestEvent, TreacheryCardType.Thumper);
-                else if (latestEvent is ResidualPlayed) Flash(result, latestEvent, TreacheryCardType.Residual);
-                else if (latestEvent is FlightUsed) Flash(result, latestEvent, TreacheryCardType.Flight);
-                else if (latestEvent is DistransUsed) Flash(result, latestEvent, TreacheryCardType.Distrans);
-                else if (latestEvent is KarmaBrownDiscard) Flash(result, latestEvent, TreacheryCardType.Karma);
-                else if (latestEvent is KarmaFreeRevival) Flash(result, latestEvent, TreacheryCardType.Karma);
-                else if (latestEvent is KarmaHandSwapInitiated) Flash(result, latestEvent, TreacheryCardType.Karma);
-                else if (latestEvent is KarmaHmsMovement) Flash(result, latestEvent, TreacheryCardType.Karma);
-                else if (latestEvent is KarmaMonster) Flash(result, latestEvent, TreacheryCardType.Karma);
-                else if (latestEvent is KarmaPrescience) Flash(result, latestEvent, TreacheryCardType.Karma);
-                else if (latestEvent is KarmaRevivalPrevention) Flash(result, latestEvent, TreacheryCardType.Karma);
-                else if (latestEvent is KarmaShipmentPrevention) Flash(result, latestEvent, TreacheryCardType.Karma);
-                else if (latestEvent is KarmaWhiteBuy) Flash(result, latestEvent, TreacheryCardType.Karma);
-                else if (latestEvent is PortableAntidoteUsed) Flash(result, latestEvent, TreacheryCardType.PortableAntidote);
-                else if (latestEvent is RockWasMelted) Flash(result, latestEvent, TreacheryCardType.Rockmelter);
-                else if (latestEvent is DiscardedTaken) Flash(result, latestEvent, TreacheryCardType.TakeDiscarded);
-                else if (latestEvent is DiscardedSearched) Flash(result, latestEvent, TreacheryCardType.SearchDiscarded);
-                else if (latestEvent is JuicePlayed) Flash(result, latestEvent, TreacheryCardType.Juice);
-                else if (latestEvent is Retreat r || latestEvent is Diplomacy) Flash(result, latestEvent, LeaderSkill.Diplomat);
-                else if (latestEvent is Bureaucracy bc && !bc.Passed) Flash(result, latestEvent, LeaderSkill.Bureaucrat);
-                else if (latestEvent is Planetology) Flash(result, latestEvent, LeaderSkill.Planetologist);
-                else if (latestEvent is BattleConcluded battleconcluded && g.TraitorsDeciphererCanLookAt.Count > 0) Flash(result, latestEvent, LeaderSkill.Decipherer);
-                else if (latestEvent is Thought) Flash(result, latestEvent, LeaderSkill.Thinker);
-                else if (latestEvent is GreyRemovedCardFromAuction) Flash(result, latestEvent);
-                else if (latestEvent is GreySwappedCardOnBid gsc && !gsc.Passed) Flash(result, latestEvent);
-                else if (latestEvent is BrownDiscarded) Flash(result, latestEvent);
-                else if (latestEvent is ReplacedCardWon rcw && !rcw.Passed) Flash(result, latestEvent);
-                else if (latestEvent is CardTraded) Flash(result, latestEvent);
-                else if (latestEvent is BrownEconomics) Flash(result, latestEvent);
-                else if (latestEvent is FaceDancerReplaced fdr && !fdr.Passed) Flash(result, latestEvent);
-                else if (latestEvent is SwitchedSkilledLeader) Flash(result, latestEvent);
-                else if (latestEvent is EstablishPlayers && g.CurrentPhase != Phase.SelectingFactions && isPlayer) Flash(result, myFaction);
-                else if (latestEvent is FactionTradeOffered fto && (fto.Initiator == myFaction || fto.Target == myFaction) && !g.CurrentTradeOffers.Any(t => t.Initiator == myFaction)) Flash(result, myFaction);
+                switch (latestEvent)
+                {
+                    //Show treachery card played
+                    case RaiseDeadPlayed: Flash(result, latestEvent, TreacheryCardType.RaiseDead); break;
+                    case MetheorPlayed: Flash(result, latestEvent, TreacheryCardType.Metheor); break;
+                    case StormSpellPlayed: Flash(result, latestEvent, TreacheryCardType.StormSpell); break;
+                    case ClairVoyancePlayed: Flash(result, latestEvent, TreacheryCardType.Clairvoyance); break;
+                    case AmalPlayed: Flash(result, latestEvent, TreacheryCardType.Amal); break;
+                    case HarvesterPlayed: Flash(result, latestEvent, TreacheryCardType.Harvester); break;
+                    case ThumperPlayed: Flash(result, latestEvent, TreacheryCardType.Thumper); break;
+                    case ResidualPlayed: Flash(result, latestEvent, TreacheryCardType.Residual); break;
+                    case FlightUsed: Flash(result, latestEvent, TreacheryCardType.Flight); break;
+                    case DistransUsed: Flash(result, latestEvent, TreacheryCardType.Distrans); break;
+                    case KarmaFreeRevival or KarmaHandSwapInitiated or KarmaHmsMovement or KarmaMonster or KarmaPrescience or KarmaRevivalPrevention or KarmaShipmentPrevention or KarmaWhiteBuy or KarmaBrownDiscard: Flash(result, latestEvent, TreacheryCardType.Karma); break;
+                    case PortableAntidoteUsed: Flash(result, latestEvent, TreacheryCardType.PortableAntidote); break;
+                    case RockWasMelted: Flash(result, latestEvent, TreacheryCardType.Rockmelter); break;
+                    case DiscardedTaken: Flash(result, latestEvent, TreacheryCardType.TakeDiscarded); break;
+                    case DiscardedSearched: Flash(result, latestEvent, TreacheryCardType.SearchDiscarded); break;
+                    case JuicePlayed: Flash(result, latestEvent, TreacheryCardType.Juice); break;
+
+                    //Show Leader skill used
+                    case Retreat or Diplomacy: Flash(result, latestEvent, LeaderSkill.Diplomat); break;
+                    case Bureaucracy bc when !bc.Passed: Flash(result, latestEvent, LeaderSkill.Bureaucrat); break;
+                    case Planetology: Flash(result, latestEvent, LeaderSkill.Planetologist); break;
+                    case BattleConcluded when g.TraitorsDeciphererCanLookAt.Count > 0: Flash(result, latestEvent, LeaderSkill.Decipherer); break;
+                    case Thought: Flash(result, latestEvent, LeaderSkill.Thinker); break;
+
+                    //Show Event description
+                    case GreyRemovedCardFromAuction or BrownDiscarded or CardTraded or BrownEconomics or SwitchedSkilledLeader: Flash(result, latestEvent); break;
+                    case GreySwappedCardOnBid gsc when !gsc.Passed: Flash(result, latestEvent); break;
+                    case ReplacedCardWon rcw when !rcw.Passed: Flash(result, latestEvent); break;
+                    case FaceDancerReplaced fdr when !fdr.Passed: Flash(result, latestEvent); break;
+
+                    //Show Faction
+                    case EstablishPlayers when g.CurrentPhase != Phase.SelectingFactions && isPlayer: Flash(result, myFaction); break;
+                    case FactionTradeOffered fto when (fto.Initiator == myFaction || fto.Target == myFaction) && !g.CurrentTradeOffers.Any(t => t.Initiator == myFaction): Flash(result, myFaction); break;
+                }
             }
 
             int nrOfSpiceBlows = g.RecentMilestones.Count(m => m == Milestone.Resource);
@@ -684,28 +682,28 @@ namespace Treachery.Client
 
         private static void Flash(IList<FlashInfo> flashes, GameEvent e)
         {
-            if (e is TreacheryCalled t)
+            switch (e)
             {
-                var victim = e.Game.CurrentBattle.OpponentOf(t.Initiator);
-                var victimPlan = e.Game.CurrentBattle.PlanOf(victim);
-                Flash(flashes, Message.Express(victimPlan.Hero, " is a ", t.Initiator, " traitor!"), Skin.Current.GetImageURL(victimPlan.Hero));
-            }
-            else if (e is FaceDanced)
-            {
-                var dancer = e.Game.WinnerHero;
-                Flash(flashes, Message.Express(dancer, " is a ", e.Initiator, " facedancer!"), Skin.Current.GetImageURL(dancer));
-            }
-            else if (e is SwitchedSkilledLeader)
-            {
-                var skilledHero = e.Game.GetSkilledLeader(e.Player);
-                Flash(
-                    flashes,
-                    Message.Express(e.Initiator, " place ", e.Game.Skill(skilledHero), " ", skilledHero, e.Game.IsInFrontOfShield(skilledHero) ? " in front of" : " behind", " their shield"),
-                    Skin.Current.GetImageURL(skilledHero));
-            }
-            else
-            {
-                Flash(flashes, e?.GetMessage(), Skin.Current.GetImageURL(e.Initiator));
+                case TreacheryCalled t:
+                    var victim = e.Game.CurrentBattle.OpponentOf(t.Initiator);
+                    var victimPlan = e.Game.CurrentBattle.PlanOf(victim);
+                    Flash(flashes, Message.Express(victimPlan.Hero, " is a ", t.Initiator, " traitor!"), Skin.Current.GetImageURL(victimPlan.Hero));
+                    break;
+
+                case FaceDanced:
+                    var dancer = e.Game.WinnerHero;
+                    Flash(flashes, Message.Express(dancer, " is a ", e.Initiator, " facedancer!"), Skin.Current.GetImageURL(dancer));
+                    break;
+
+                case SwitchedSkilledLeader:
+                    var skilledHero = e.Game.GetSkilledLeader(e.Player);
+                    Flash(
+                        flashes,
+                        Message.Express(e.Initiator, " place ", e.Game.Skill(skilledHero), " ", skilledHero, e.Game.IsInFrontOfShield(skilledHero) ? " in front of" : " behind", " their shield"),
+                        Skin.Current.GetImageURL(skilledHero));
+                    break;
+
+                default: Flash(flashes, e?.GetMessage(), Skin.Current.GetImageURL(e.Initiator)); break;
             }
         }
 

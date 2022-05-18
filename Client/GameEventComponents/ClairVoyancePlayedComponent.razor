@@ -1,5 +1,5 @@
 ﻿<!--
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+* Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
 --->
 
 @using Treachery.Shared
@@ -19,43 +19,45 @@
             <Label>Question</Label>
         </SelectComponent>
 
-        @if (question == ClairvoyanceQuestion.CardTypeInBattle || question == ClairvoyanceQuestion.CardTypeAsWeaponInBattle || question == ClairvoyanceQuestion.CardTypeAsDefenseInBattle || question == ClairvoyanceQuestion.HasCardTypeInHand)
+        @switch (question)
         {
-            <SelectComponent @bind-Value="questionParameterA" Values="Voice.ValidTypes(Game).Cast<object>()">
-                <Label>Card Type</Label>
-            </SelectComponent>
-        }
-        else if (question == ClairvoyanceQuestion.LeaderAsFacedancer || question == ClairvoyanceQuestion.LeaderAsTraitor || question == ClairvoyanceQuestion.LeaderInBattle)
-        {
-            <SelectComponent @bind-Value="questionParameterA" 
-                             Values="Game.TraitorsInPlay.OrderBy(l => Name(l)).Select(l => l.Id).Cast<object>()" 
-                             ValueLabels="Game.TraitorsInPlay.Select(l => Name(l)).OrderBy(l => l)">
-                <Label>Leader</Label>
-            </SelectComponent>
-        }
-        else if (question == ClairvoyanceQuestion.Prediction)
-        {
-            <SelectComponent @bind-Value="questionParameterA" Values="Game.Players.Select(p => p.Faction).Cast<object>()">
-                <Label>Faction</Label>
-            </SelectComponent>
+            case ClairvoyanceQuestion.CardTypeInBattle or ClairvoyanceQuestion.CardTypeAsWeaponInBattle or ClairvoyanceQuestion.CardTypeAsDefenseInBattle or ClairvoyanceQuestion.HasCardTypeInHand:
+                <SelectComponent @bind-Value="questionParameterA" Values="Voice.ValidTypes(Game).Cast<object>()">
+                    <Label>Card Type</Label>
+                </SelectComponent>
+                break;
 
-            <SelectComponent @bind-Value="questionParameterB" Values="BluePrediction.ValidTurns(Game).Cast<object>()">
-                <Label>Turn</Label>
-            </SelectComponent>
-        }
-        else if (question == ClairvoyanceQuestion.DialOfMoreThanXInBattle)
-        {
-            <SelectComponent @bind-Value="questionParameterA" Values="ValidDials.Cast<object>()">
-                <Label>Dial</Label>
-            </SelectComponent>
-        }
-        else if (question == ClairvoyanceQuestion.WillAttackX)
-        {
-            <SelectComponent @bind-Value="questionParameterA" 
-                             Values="Game.Map.Territories.OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l)).Select(l => l.Id).Cast<object>()" 
-                             ValueLabels="Game.Map.Territories.OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l)).Select(l => Skin.Current.Describe(l))">
-                <Label>Territory</Label>
-            </SelectComponent>
+            case ClairvoyanceQuestion.LeaderAsFacedancer or ClairvoyanceQuestion.LeaderAsTraitor or ClairvoyanceQuestion.LeaderInBattle: 
+                <SelectComponent @bind-Value="questionParameterA" 
+                        Values="Game.TraitorsInPlay.OrderBy(l => Name(l)).Select(l => l.Id).Cast<object>()" 
+                        ValueLabels="Game.TraitorsInPlay.Select(l => Name(l)).OrderBy(l => l)">
+                    <Label>Leader</Label>
+                </SelectComponent>
+                break;
+
+            case ClairvoyanceQuestion.Prediction:
+                <SelectComponent @bind-Value="questionParameterA" Values="Game.Players.Select(p => p.Faction).Cast<object>()">
+                    <Label>Faction</Label>
+                </SelectComponent>
+
+                <SelectComponent @bind-Value="questionParameterB" Values="BluePrediction.ValidTurns(Game).Cast<object>()">
+                    <Label>Turn</Label>
+                </SelectComponent>
+                break;
+
+            case ClairvoyanceQuestion.DialOfMoreThanXInBattle:
+                <SelectComponent @bind-Value="questionParameterA" Values="ValidDials.Cast<object>()">
+                    <Label>Dial</Label>
+                </SelectComponent>
+                break;
+
+            case ClairvoyanceQuestion.WillAttackX:
+                <SelectComponent @bind-Value="questionParameterA" 
+                        Values="Game.Map.Territories.OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l)).Select(l => l.Id).Cast<object>()" 
+                        ValueLabels="Game.Map.Territories.OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l)).Select(l => Skin.Current.Describe(l))">
+                    <Label>Territory</Label>
+                </SelectComponent>
+                break;
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.Clairvoyance)" ConfirmError=@Validation />

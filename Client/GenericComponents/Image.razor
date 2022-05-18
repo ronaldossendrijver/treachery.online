@@ -149,37 +149,34 @@
 
     private string GetImageURL(object value)
     {
-        string result;
-
-        if (value == null) result = "";
-        else if (value is TreacheryCard tc) result = Skin.Current.GetImageURL(tc);
-        else if (value is ResourceCard rc) result = Skin.Current.GetImageURL(rc);
-        else if (value is IHero h) result = Skin.Current.GetImageURL(h);
-        else if (value is Leader l) result = Skin.Current.GetImageURL(l);
-        else if (value is Location loc) result = Skin.Current.GetImageURL(loc);
-        else if (value is LeaderSkill ls) result = Skin.Current.GetImageURL(ls);
-        else if (value is TechToken tt) result = Skin.Current.GetImageURL(tt);
-        else if (value is Faction f) result = Skin.Current.GetImageURL(f);
-        else if (value is FactionForce ff) result = Skin.Current.GetImageURL(ff);
-        else if (value is FactionSpecialForce fsf) result = Skin.Current.GetImageURL(fsf);
-        else result = "";
-
-        return result;
+        return (value) switch
+        {
+            null => "",
+            TreacheryCard tc => Skin.Current.GetImageURL(tc),
+            ResourceCard rc => Skin.Current.GetImageURL(rc),
+            IHero h => Skin.Current.GetImageURL(h),
+            Location loc => Skin.Current.GetImageURL(loc),
+            LeaderSkill ls => Skin.Current.GetImageURL(ls),
+            TechToken tt => Skin.Current.GetImageURL(tt),
+            Faction f => Skin.Current.GetImageURL(f),
+            FactionForce ff => Skin.Current.GetImageURL(ff),
+            FactionSpecialForce fsf => Skin.Current.GetImageURL(fsf),
+            _ => ""
+        };
     }
 
     private static string GetHoverHTML(object value)
     {
-        string result;
+        return (value) switch {
 
-        if (value == null) result = "";
-        else if (value is TreacheryCard tc) result = Popup.Get(tc);
-        else if (value is ResourceCard rc) result = Popup.Get(rc);
-        else if (value is Location loc) result = Popup.Get(loc);
-        else if (value is IHero h) result = Popup.Get(h);
-        else if (value is LeaderSkill ls) result = Popup.Get(ls);
-        else if (value is TechToken tt) result = Popup.Get(tt);
-        else result = Popup.Get(Skin.Current.Describe(value));
-
-        return result;
+            null => "",
+            TreacheryCard tc => Popup.Get(tc),
+            ResourceCard rc => Popup.Get(rc),
+            Location loc => Popup.Get(loc),
+            IHero h => Popup.Get(h),
+            LeaderSkill ls => Popup.Get(ls),
+            TechToken tt => Popup.Get(tt),
+            _ => Popup.Get(Skin.Current.Describe(value))
+        };
     }
 }

@@ -25,17 +25,9 @@
     <path id="@ArrowTemplateId" d="M-50,-50L0,0L-50,50L0,100L100,0L0,-100L-50,-50Z" stroke="@StrokeColor" stroke-width="@Round(StrokeWidth)" stroke-linejoin="round" transform="scale(@Round(ArrowScale))" />
 </defs>
 
-@for (float i = 1; i <= n; i++)
+@foreach (var arr in arrows)
 {
-    var t = -tMax * (i / n);
-    var t2 = -tMax * ((i + 1) / n);
-    var x = Radius * (u[0] * Math.Cos(t) + v[0] * Math.Sin(t));
-    var y = Radius * (u[1] * Math.Cos(t) + v[1] * Math.Sin(t));
-    var x2 = Radius * (u[0] * Math.Cos(t2) + v[0] * Math.Sin(t2));
-    var y2 = Radius * (u[1] * Math.Cos(t2) + v[1] * Math.Sin(t2));
-    var alpha = -Math.Atan2((x2 - x), (y2 - y)) / Math.PI * 180 + 90;
-
-    <g transform="translate(@Round(x + Radius),@Round(y + Radius)) rotate(@Round(alpha))" fill="url(#@ArrowGradientId)" filter="url(#@ArrowShadowId)">
+    <g transform="translate(@arr.TranslateX,@arr.TranslateY) rotate(@arr.Rotate)" fill="url(#@ArrowGradientId)" filter="url(#@ArrowShadowId)">
         <use href="#@ArrowTemplateId" />
     </g>
 }
@@ -78,57 +70,78 @@
     [Parameter]
     public float StrokeWidth { get; set; } = 0;
 
-    private float[] u;
-    private float[] v;
-    private float tMax;
-    private int n;
+    private string ArrowTemplateId;
+    private string ArrowShadowId;
+    private string ArrowGradientId;
+    private ArrowDef[] arrows;
 
     protected override void OnParametersSet()
     {
-        float fromX;
-        float fromY;
-        float fromZ;
-        float[] fromAsArray;
+        var fromX = From.X - MarginX - Radius;
+        var fromY = From.Y - MarginY - Radius;
+        var fromZ = (int)Math.Pow(Radius * Radius - fromX * fromX - fromY * fromY, 0.5);
+        var fromAsArray = new float[] { fromX, fromY, fromZ };
 
-        float toX;
-        float toY;
-        float toZ;
-        float[] toAsArray;
+        var toX = To.X - MarginX - Radius;
+        var toY = To.Y - MarginY - Radius;
+        var toZ = (int)Math.Pow(Radius * Radius - toX * toX - toY * toY, 0.5);
+        var toAsArray = new float[] { toX, toY, toZ };
 
-        float[] w;
+        var u = fromAsArray.Select(a => a / Radius).ToArray();
+        var w = Cross(fromAsArray, toAsArray);
+        var v = Cross(u, w).Select(a => a / Length(w)).ToArray();
+        var tMax = (float)Math.Acos(Inner(fromAsArray, toAsArray) / Length(fromAsArray) / Length(toAsArray));
+        var n = (int)Math.Round((50f * tMax) / Math.PI);
 
-        fromX = From.X - MarginX - Radius;
-        fromY = From.Y - MarginY - Radius;
-        fromZ = (int)Math.Pow(Radius * Radius - fromX * fromX - fromY * fromY, 0.5);
-        fromAsArray = new float[] { fromX, fromY, fromZ };
+        ArrowTemplateId = "arrowtemplate" + Id;
+        ArrowShadowId = "arrowshadow" + Id;
+        ArrowGradientId = "arrowgradient" + Id;
 
-        toX = To.X - MarginX - Radius;
-        toY = To.Y - MarginY - Radius;
-        toZ = (int)Math.Pow(Radius * Radius - toX * toX - toY * toY, 0.5);
-        toAsArray = new float[] { toX, toY, toZ };
+        arrows = new ArrowDef[n];
 
-        u = fromAsArray.Select(a => a / Radius).ToArray();
-        w = cross(fromAsArray, toAsArray);
-        v = cross(u, w).Select(a => a / length(w)).ToArray();
-        tMax = (float)Math.Acos(inner(fromAsArray, toAsArray) / length(fromAsArray) / length(toAsArray));
-        n = (int)Math.Round((50f * tMax) / Math.PI);
+        for (int i = 1; i <= n; i++)
+        {
+            var iAsFloat = (float)i;
+            var t = -tMax * (iAsFloat / n);
+            var x = Radius * (u[0] * Math.Cos(t) + v[0] * Math.Sin(t));
+            var y = Radius * (u[1] * Math.Cos(t) + v[1] * Math.Sin(t));
+
+            var t2 = -tMax * ((iAsFloat + 1) / n);
+            var x2 = Radius * (u[0] * Math.Cos(t2) + v[0] * Math.Sin(t2));
+            var y2 = Radius * (u[1] * Math.Cos(t2) + v[1] * Math.Sin(t2));
+
+            var alpha = -Math.Atan2((x2 - x), (y2 - y)) / Math.PI * 180 + 90;
+
+            ArrowDef arrowDef;
+            arrowDef.TranslateX = Round(x + Radius);
+            arrowDef.TranslateY = Round(y + Radius);
+            arrowDef.Rotate = Round(alpha);
+
+            arrows[i - 1] = arrowDef;
+        }
     }
 
-    private float[] cross(float[] a, float[] b) => new float[] {
+    private float[] Cross(float[] a, float[] b) => new float[] {
         a[1] * b[2] - a[2] * b[1],
         a[2] * b[0] - a[0] * b[2],
         a[0] * b[1] - a[1] * b[0]
     };
 
-    private float inner(float[] v1, float[] v2)
+    private float Inner(float[] v1, float[] v2)
     {
         if (v1.Length != v2.Length) return float.NaN;
         return v1.Zip(v2, (x, y) => x * y).Sum();
     }
 
-    private float length(float[] vector) => (float)Math.Sqrt(vector.Select(v => v * v).Sum());
+    private float Length(float[] vector) => (float)Math.Sqrt(vector.Select(v => v * v).Sum());
 
-    private string ArrowTemplateId => "arrowtemplate" + Id;
-    private string ArrowShadowId => "arrowshadow" + Id;
-    private string ArrowGradientId => "arrowgradient" + Id;
+    private struct ArrowDef
+    {
+        public string TranslateX;
+        public string TranslateY;
+        public string Rotate;
+
+    }
 }
+
+
