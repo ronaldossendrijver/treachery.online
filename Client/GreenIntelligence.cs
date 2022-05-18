@@ -15,8 +15,8 @@ namespace Treachery.Client
 
         public Dictionary<Faction, Dictionary<int, int>> TrackedTreacheryCards { get; private set; }
 
-        private Dictionary<Tuple<Faction, int>, int> trackedTraitors = new();
-        private Dictionary<int, int> trackedDiscardedTraitors = new();
+        private readonly Dictionary<Tuple<Faction, int>, int> trackedTraitors = new();
+        private readonly Dictionary<int, int> trackedDiscardedTraitors = new();
         private readonly List<int> discardedCards = new();
         private readonly List<int> removedCards = new();
         private readonly TreacheryCard[] CardsInPlay;

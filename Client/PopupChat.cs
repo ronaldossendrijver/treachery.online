@@ -2,8 +2,8 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
  */
 
-using Treachery.Shared;
 using System.Web;
+using Treachery.Shared;
 
 namespace Treachery.Client
 {
@@ -34,10 +34,10 @@ namespace Treachery.Client
             var sourcePlayer = game.GetPlayer(m.SourcePlayerName);
             var sourceFaction = sourcePlayer != null ? sourcePlayer.Faction : Faction.None;
 
-            return new PopupChatMessage() 
-            { 
-                body = HttpUtility.HtmlEncode(m.GetBodyIncludingPlayerInfo(myName, game).ToString(Skin.Current)), 
-                style = Skin.Current.GetFactionColor(sourceFaction) 
+            return new PopupChatMessage()
+            {
+                body = HttpUtility.HtmlEncode(m.GetBodyIncludingPlayerInfo(myName, game).ToString(Skin.Current)),
+                style = Skin.Current.GetFactionColor(sourceFaction)
             };
         }
     }

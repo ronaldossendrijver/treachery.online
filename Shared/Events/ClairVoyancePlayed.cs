@@ -177,8 +177,8 @@ namespace Treachery.Shared
 
         public static Message Express(ClairvoyanceQuestion q, object parameter1 = null, object parameter2 = null)
         {
-            var p1 = parameter1 == null ? "..." : parameter1;
-            var p2 = parameter2 == null ? "..." : parameter2;
+            var p1 = parameter1 ?? "...";
+            var p2 = parameter2 ?? "...";
 
             return q switch
             {

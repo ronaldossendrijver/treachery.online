@@ -82,10 +82,7 @@
 
 @code {
 
-    private string StyleDef(Faction f)
-    {
-        return string.Format("color:{0}", Skin.Current.GetFactionColor(f));
-    }
+    private string StyleDef(Faction f) => string.Format("color:{0}", Skin.Current.GetFactionColor(f));
 
     private string DetermineRuleClass(bool applicable)
     {
@@ -99,11 +96,5 @@
         }
     }
 
-    private GameInfo CurrentGame
-    {
-        get
-        {
-            return h.AvailableGames.Keys.FirstOrDefault(info => info.HostID == h.HostProxy.HostID);
-        }
-    }
+    private GameInfo CurrentGame => h.AvailableGames.Keys.FirstOrDefault(info => info.HostID == h.HostProxy.HostID);
 }

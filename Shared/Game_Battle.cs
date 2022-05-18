@@ -1106,7 +1106,7 @@ namespace Treachery.Shared
 
             if (BattleOutcome.AggHeroKilled)
             {
-                KillLeaderInBattle(agg.Hero, def.Hero, BattleOutcome.AggHeroCauseOfDeath, BattleOutcome.Winner, BattleOutcome.AggHeroEffectiveStrength);
+                KillLeaderInBattle(agg.Hero, BattleOutcome.AggHeroCauseOfDeath, BattleOutcome.Winner, BattleOutcome.AggHeroEffectiveStrength);
             }
             else
             {
@@ -1115,7 +1115,7 @@ namespace Treachery.Shared
 
             if (BattleOutcome.DefHeroKilled)
             {
-                KillLeaderInBattle(def.Hero, agg.Hero, BattleOutcome.DefHeroCauseOfDeath, BattleOutcome.Winner, BattleOutcome.DefHeroEffectiveStrength);
+                KillLeaderInBattle(def.Hero, BattleOutcome.DefHeroCauseOfDeath, BattleOutcome.Winner, BattleOutcome.DefHeroEffectiveStrength);
             }
             else
             {
@@ -1335,7 +1335,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void KillLeaderInBattle(IHero killedHero, IHero opposingHero, TreacheryCardType causeOfDeath, Player winner, int heroValue)
+        private void KillLeaderInBattle(IHero killedHero, TreacheryCardType causeOfDeath, Player winner, int heroValue)
         {
             CurrentReport.Express(causeOfDeath, " kills ", killedHero, " → ", winner.Faction, " collect ", Payment(heroValue));
             RecentMilestones.Add(Milestone.LeaderKilled);

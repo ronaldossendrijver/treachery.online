@@ -12,7 +12,7 @@ namespace Treachery.Client
     public class HostProxy
     {
         public int HostID;
-        private HubConnection _connection;
+        private readonly HubConnection _connection;
 
         public HostProxy(int hostID, HubConnection connection)
         {

@@ -53,7 +53,7 @@ namespace Treachery.Shared
             else
             {
                 var from = ForceLocations.Keys.First().Territory;
-                return Message.Express(Initiator, " ride ", Concept.Monster, " to ", To);
+                return Message.Express(Initiator, " ride ", Concept.Monster, " from ", from, " to ", To);
             }
         }
 

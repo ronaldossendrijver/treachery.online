@@ -57,7 +57,7 @@ namespace Treachery.Shared
 
         public static Message Express(DealType d, object parameter = null)
         {
-            var p = parameter == null ? "..." : parameter;
+            var p = parameter ?? "...";
 
             return d switch
             {

@@ -486,24 +486,24 @@ namespace Treachery.Shared
                 {
                     if (selectedDefense != null && selectedDefense.Type == g.CurrentVoice.Type)
                     {
-                        result = CardsPlayableAsWeapon(g, p, selectedDefense, isPlanetologist).ToList();
+                        result = CardsPlayableAsWeapon(p, selectedDefense, isPlanetologist).ToList();
                         if (includingNone) result.Add(null);
                     }
-                    else if (CardsPlayableAsWeapon(g, p, selectedDefense, isPlanetologist).Any(w => Voice.IsVoicedBy(g, true, true, w.Type, g.CurrentVoice.Type)))
+                    else if (CardsPlayableAsWeapon(p, selectedDefense, isPlanetologist).Any(w => Voice.IsVoicedBy(g, true, true, w.Type, g.CurrentVoice.Type)))
                     {
-                        result = CardsPlayableAsWeapon(g, p, selectedDefense, isPlanetologist).Where(w => Voice.IsVoicedBy(g, true, true, w.Type, g.CurrentVoice.Type)).ToList();
+                        result = CardsPlayableAsWeapon(p, selectedDefense, isPlanetologist).Where(w => Voice.IsVoicedBy(g, true, true, w.Type, g.CurrentVoice.Type)).ToList();
                     }
                 }
                 else if (g.CurrentVoice.MayNot)
                 {
-                    result = CardsPlayableAsWeapon(g, p, selectedDefense, isPlanetologist).Where(w => !Voice.IsVoicedBy(g, true, false, w.Type, g.CurrentVoice.Type)).ToList();
+                    result = CardsPlayableAsWeapon(p, selectedDefense, isPlanetologist).Where(w => !Voice.IsVoicedBy(g, true, false, w.Type, g.CurrentVoice.Type)).ToList();
                     if (includingNone) result.Add(null);
                 }
             }
 
             if (result == null)
             {
-                result = CardsPlayableAsWeapon(g, p, selectedDefense, isPlanetologist).ToList();
+                result = CardsPlayableAsWeapon(p, selectedDefense, isPlanetologist).ToList();
                 if (includingNone) result.Add(null);
             }
 
@@ -557,7 +557,7 @@ namespace Treachery.Shared
             return p.TreacheryCards.Where(c => c.Type == TreacheryCardType.Mercenary);
         }
 
-        private static IEnumerable<TreacheryCard> CardsPlayableAsWeapon(Game g, Player p, TreacheryCard withDefense, bool withPlanetologist)
+        private static IEnumerable<TreacheryCard> CardsPlayableAsWeapon(Player p, TreacheryCard withDefense, bool withPlanetologist)
         {
             return p.TreacheryCards.Where(c =>
             c.Type != TreacheryCardType.Chemistry && (c.IsWeapon || c.Type == TreacheryCardType.Useless) ||

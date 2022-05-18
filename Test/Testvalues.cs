@@ -21,11 +21,11 @@ namespace Treachery.Test
         public Faction[] winners;
         public TestvaluesPerPlayer[] playervalues;
 
-        public static string Difference = "";
+        public static string Difference { get; private set; } = "";
 
         public override bool Equals(object obj)
         {
-            if (!(obj is Testvalues)) return false;
+            if (obj is not Testvalues) return false;
 
             var other = obj as Testvalues;
 
@@ -38,7 +38,7 @@ namespace Treachery.Test
                 Check(other.forcesinTuek, forcesinTuek, "forcesinTuek") &&
                 Check(other.nrofplayers, nrofplayers, "nrofplayers") &&
                 CheckEnum(other.winners, winners, "winners") &&
-                Check(other.playervalues.Count(), playervalues.Count(), "playervalues.Count"))
+                Check(other.playervalues.Length, playervalues.Length, "playervalues.Count"))
             {
                 return false;
             }
@@ -139,7 +139,7 @@ namespace Treachery.Test
 
         public override bool Equals(object obj)
         {
-            if (!(obj is TestvaluesPerPlayer)) return false;
+            if (obj is not TestvaluesPerPlayer) return false;
 
             var other = obj as TestvaluesPerPlayer;
 

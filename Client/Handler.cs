@@ -24,7 +24,7 @@ namespace Treachery.Client
         public Game Game { get; private set; }
         public GameStatus Status { get; private set; }
         public int GameInProgressHostId { get; private set; }
-        
+
         //Player and Host
         public string PlayerName { get; private set; } = "";
         public HostProxy HostProxy { get; private set; } = null;
@@ -33,7 +33,7 @@ namespace Treachery.Client
         public ServerSettings ServerSettings { get; private set; }
         public Dictionary<int, string> JoinErrors { get; private set; } = new();
         public DateTime Disconnected { get; private set; } = default;
-        
+
 
         //Sound and camera
         public float CurrentEffectVolume { get; set; } = -1;

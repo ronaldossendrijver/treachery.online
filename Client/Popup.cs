@@ -80,7 +80,7 @@ namespace Treachery.Client
             }
         }
 
-        
+
 
         private static string GetImageHoverHTML(string imageURL) => string.Format("<img src='{0}' width=300 class='img-fluid' style='filter:drop-shadow(-3px 3px 2px black);'/>", imageURL);
 

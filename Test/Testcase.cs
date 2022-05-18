@@ -8,6 +8,6 @@ namespace Treachery.Test
 {
     public class Testcase
     {
-        public List<Testvalues> Testvalues = new List<Testvalues>();
+        public List<Testvalues> Testvalues = new();
     }
 }

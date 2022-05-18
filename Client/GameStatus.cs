@@ -80,8 +80,8 @@ namespace Treachery.Client
 
                 Phase.Thumper or
                 Phase.BeginningOfCharity or
-                Phase.BeginningOfResurrection or 
-                Phase.BeginningOfShipAndMove or 
+                Phase.BeginningOfResurrection or
+                Phase.BeginningOfShipAndMove or
                 Phase.BeginningOfCollection => Status(
                     Express("You may now continue with the ", game.CurrentMainPhase, " phase..."),
                     Express("Waiting for the host to continue the ", game.CurrentMainPhase, " phase...")),
@@ -113,12 +113,12 @@ namespace Treachery.Client
                     "Please select which card to give to your ally.",
                     "Waiting for a card to be returned...",
                     game.CurrentCardTradeOffer.Player.Ally),
-                    
+
                 Phase.Bureaucracy => Status(
                     "Please decide whether to apply Bureaucracy to the latest payment.",
                     "Waiting for Bureaucracy to be applied to the latest payment...",
                     game.PlayerSkilledAs(LeaderSkill.Bureaucrat)),
-                    
+
                 /* Setup */
 
                 Phase.AwaitingPlayers => Status(
@@ -149,7 +149,7 @@ namespace Treachery.Client
                     PlayersThatHaventActedOrPassed(game)),
 
                 Phase.CustomizingDecks => Status(
-                    "Please select which cards will be in play.", 
+                    "Please select which cards will be in play.",
                     "The host is selecting which cards will be in play..."),
 
                 Phase.PerformCustomSetup => Status(
@@ -391,7 +391,7 @@ namespace Treachery.Client
 
                 Phase.BattleReport when game.NextPlayerToBattle != null => Status(Express("Factions may now review the battle report before the next battle begins...")),
                 Phase.BattleReport when game.NextPlayerToBattle == null => Status(Express(game.CurrentMainPhase, " phase ended.")),
-                
+
                 /* Mentat */
 
                 Phase.ReplacingFaceDancer => Status(game,
@@ -475,7 +475,7 @@ namespace Treachery.Client
                 else
                 {
                     return Status(
-                        Express(game.CurrentBattle.Defender, " are defending against ", game.CurrentBattle.Aggressor, " aggression in ", game.CurrentBattle.Territory , "..."),
+                        Express(game.CurrentBattle.Defender, " are defending against ", game.CurrentBattle.Aggressor, " aggression in ", game.CurrentBattle.Territory, "..."),
                         PlayersThatNeedToMakeABattlePlan(game), latestBattleEvent);
                 }
             }
@@ -517,9 +517,6 @@ namespace Treachery.Client
 
         private static GameStatus Status(Game game, string messageWhenAwaited, string messageWhenWaiting, IEnumerable<Faction> waitingForFactions, GameEvent timedEvent = null) =>
             new(Message.Express(messageWhenAwaited), Message.Express(messageWhenWaiting), waitingForFactions.Select(f => game.GetPlayer(f)), timedEvent);
-
-        private static GameStatus Status(Game game, Message messageWhenAwaited, Message messageWhenWaiting, IEnumerable<Faction> waitingForFactions, GameEvent timedEvent = null) =>
-            new(messageWhenAwaited, messageWhenWaiting, waitingForFactions.Select(f => game.GetPlayer(f)), timedEvent);
 
         private static GameStatus Status(string messageWhenAwaited, string messageWhenWaiting, Player waitingForPlayer, GameEvent timedEvent = null) =>
             new(Message.Express(messageWhenAwaited), Message.Express(messageWhenWaiting), waitingForPlayer, timedEvent);

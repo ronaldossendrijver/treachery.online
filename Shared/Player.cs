@@ -568,21 +568,12 @@ namespace Treachery.Shared
 
         public void AssignLeaders(Game g)
         {
-            switch (Faction)
+            Leaders = Faction switch
             {
-                case Faction.Brown:
-                    Leaders = LeaderManager.GetLeaders(Faction).Where(l => g.Applicable(Rule.BrownAuditor) || l.HeroType != HeroType.Auditor).ToList();
-                    break;
-
-                case Faction.Pink:
-                    Leaders = LeaderManager.GetLeaders(Faction).Where(l => l.HeroType != HeroType.InitiallyUnclaimed).ToList();
-                    break;
-
-                default:
-                    Leaders = LeaderManager.GetLeaders(Faction).ToList();
-                    break;
-            }
-
+                Faction.Brown => LeaderManager.GetLeaders(Faction).Where(l => g.Applicable(Rule.BrownAuditor) || l.HeroType != HeroType.Auditor).ToList(),
+                Faction.Pink => LeaderManager.GetLeaders(Faction).Where(l => l.HeroType != HeroType.InitiallyUnclaimed).ToList(),
+                _ => LeaderManager.GetLeaders(Faction).ToList(),
+            };
         }
 
         public TreacheryCard Card(TreacheryCardType type) => TreacheryCards.FirstOrDefault(c => c.Type == type);

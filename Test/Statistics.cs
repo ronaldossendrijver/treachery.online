@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Treachery.Shared;
 
@@ -11,39 +9,39 @@ namespace Treachery.Test
     public class Statistics
     {
         public int PlayedGames { get; set; }
-        public ObjectCounter<Ruleset> GameTypes {get; } = new();
+        public ObjectCounter<Ruleset> GameTypes { get; } = new();
         public ObjectCounter<string> GamePlayerSetup { get; } = new();
-        public ObjectCounter<string> GamePlayingPlayers {get; } = new();
-        public ObjectCounter<string> GameWinningPlayers {get; } = new();
-        public ObjectCounter<Faction> GamePlayingFactions {get; } = new();
-        public ObjectCounter<Faction> GameWinningFactions {get; } = new();
-        public ObjectCounter<WinMethod> GameWinningMethods {get; } = new();
-        public List<TimeSpan> GameTimes {get; } = new();
-        public ObjectCounter<int> GameNumberOfTurns {get; } = new();
+        public ObjectCounter<string> GamePlayingPlayers { get; } = new();
+        public ObjectCounter<string> GameWinningPlayers { get; } = new();
+        public ObjectCounter<Faction> GamePlayingFactions { get; } = new();
+        public ObjectCounter<Faction> GameWinningFactions { get; } = new();
+        public ObjectCounter<WinMethod> GameWinningMethods { get; } = new();
+        public List<TimeSpan> GameTimes { get; } = new();
+        public ObjectCounter<int> GameNumberOfTurns { get; } = new();
 
         public int Battles { get; set; }
-        public ObjectCounter<Faction> BattlingFactions {get; } = new();
-        public ObjectCounter<Faction> BattleWinningFactions {get; } = new();
-        public ObjectCounter<Faction> BattleLosingFactions {get; } = new();
-        public ObjectCounter<string> BattleWinningLeaders {get; } = new();
-        public ObjectCounter<string> BattleLosingLeaders {get; } = new();
-        public ObjectCounter<string> BattleKilledLeaders {get; } = new();
-        public ObjectCounter<string> TraitoredLeaders {get; } = new();
-        public ObjectCounter<string> FacedancedLeaders {get; } = new();
-        public ObjectCounter<string> UsedWeapons {get; } = new();
-        public ObjectCounter<string> UsedDefenses {get; } = new();
+        public ObjectCounter<Faction> BattlingFactions { get; } = new();
+        public ObjectCounter<Faction> BattleWinningFactions { get; } = new();
+        public ObjectCounter<Faction> BattleLosingFactions { get; } = new();
+        public ObjectCounter<string> BattleWinningLeaders { get; } = new();
+        public ObjectCounter<string> BattleLosingLeaders { get; } = new();
+        public ObjectCounter<string> BattleKilledLeaders { get; } = new();
+        public ObjectCounter<string> TraitoredLeaders { get; } = new();
+        public ObjectCounter<string> FacedancedLeaders { get; } = new();
+        public ObjectCounter<string> UsedWeapons { get; } = new();
+        public ObjectCounter<string> UsedDefenses { get; } = new();
 
-        public ObjectCounter<Faction> FactionsOccupyingArrakeen {get; } = new();
-        public ObjectCounter<Faction> FactionsOccupyingCarthag {get; } = new();
-        public ObjectCounter<Faction> FactionsOccupyingSietchTabr {get; } = new();
-        public ObjectCounter<Faction> FactionsOccupyingHabbanyaSietch {get; } = new();
-        public ObjectCounter<Faction> FactionsOccupyingTueksSietch {get; } = new();
-        public ObjectCounter<Faction> FactionsOccupyingHMS {get; } = new();
+        public ObjectCounter<Faction> FactionsOccupyingArrakeen { get; } = new();
+        public ObjectCounter<Faction> FactionsOccupyingCarthag { get; } = new();
+        public ObjectCounter<Faction> FactionsOccupyingSietchTabr { get; } = new();
+        public ObjectCounter<Faction> FactionsOccupyingHabbanyaSietch { get; } = new();
+        public ObjectCounter<Faction> FactionsOccupyingTueksSietch { get; } = new();
+        public ObjectCounter<Faction> FactionsOccupyingHMS { get; } = new();
         public ObjectCounter<string> Truthtrances { get; } = new();
         public ObjectCounter<FactionAdvantage> Karamas { get; } = new();
         public ObjectCounter<string> AcceptedDeals { get; } = new();
 
-        public void Output(IDescriber describer, int topX)
+        public void Output(IDescriber describer)
         {
             Console.WriteLine("PlayedGames:" + PlayedGames);
             Console.WriteLine("Battles:" + Battles);
@@ -81,7 +79,7 @@ namespace Treachery.Test
             OutputCounter("AcceptedDeals", AcceptedDeals, describer, 50);
         }
 
-        private void OutputCounter<T>(string title, ObjectCounter<T> c, IDescriber describer, int topX = -1)
+        private static void OutputCounter<T>(string title, ObjectCounter<T> c, IDescriber describer, int topX = -1)
         {
             Console.WriteLine("***" + title + "***");
             var coll = topX > 0 ? c.GetHighest(topX) : c.Counted;

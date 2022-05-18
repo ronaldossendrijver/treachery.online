@@ -860,7 +860,7 @@ namespace Treachery.Shared
                 !Prevented(FactionAdvantage.GreenBiddingPrescience) &&
                 (p.Faction == Faction.Green || (p.Ally == Faction.Green && GreenSharesPrescience) || HasDeal(p.Faction, DealType.ShareBiddingPrescience)));
         }
-        
+
         private TreacheryCard Discard(Player player, TreacheryCardType cardType)
         {
             TreacheryCard card = null;

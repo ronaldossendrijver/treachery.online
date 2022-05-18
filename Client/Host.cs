@@ -23,8 +23,8 @@ namespace Treachery.Client
         private readonly HubConnection connection;
         private readonly string Name;
         private readonly Handler h;
-        private string gamePassword;
-        private int gameID; 
+        private readonly string gamePassword;
+        private readonly int gameID;
         private Game gameAtHost;
 
         public GameInfo GameBeingEstablished = new()

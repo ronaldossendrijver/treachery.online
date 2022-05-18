@@ -538,7 +538,7 @@ namespace Treachery.Test
             if (performTests) Assert.IsNull(executeResult);
         }
 
-        private Statistics statistics =  new();
+        private readonly Statistics statistics = new();
 
         [TestMethod]
         public void Regression()
@@ -571,7 +571,7 @@ namespace Treachery.Test
 
             if (statistics != null)
             {
-                statistics.Output(Skin.Current, 10);
+                statistics.Output(Skin.Current);
             }
         }
 
@@ -586,7 +586,7 @@ namespace Treachery.Test
             var tc = LoadObject<Testcase>(fs.ReadToEnd());
 
             int valueId = 0;
-            
+
             BattleOutcome previousBattleOutcome = null;
             bool gatherStatistics = false;
 

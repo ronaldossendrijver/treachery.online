@@ -20,7 +20,7 @@ namespace Treachery.Client
 
                 if (result)
                 {
-                    result = !(latestEvent is AllyPermission);
+                    result = latestEvent is not AllyPermission;
                 }
             }
 

@@ -35,10 +35,10 @@ namespace Treachery.Shared
         {
             GameEvent action = null;
 
-            if (Do(DetermineMetheorPlayed, ref action, evts) || 
-                Do(DetermineAmalPlayed, ref action, evts) || 
-                Do(DetermineSetIncreasedRevivalLimits, ref action, evts) || 
-                Do(DetermineDealAccepted, ref action, evts) || 
+            if (Do(DetermineMetheorPlayed, ref action, evts) ||
+                Do(DetermineAmalPlayed, ref action, evts) ||
+                Do(DetermineSetIncreasedRevivalLimits, ref action, evts) ||
+                Do(DetermineDealAccepted, ref action, evts) ||
                 Do(DetermineRequestPurpleRevival, ref action, evts) ||
                 Do(DetermineDistransUsed, ref action, evts) ||
                 Do(DetermineJuicePlayed, ref action, evts) ||
@@ -138,7 +138,7 @@ namespace Treachery.Shared
                 Do(DetermineWhiteSpecifiesAuction, ref action, evts) ||
                 Do(DetermineWhiteKeepsUnsoldCard, ref action, evts) ||
                 Do(DetermineWhiteRevealedNoField, ref action, evts)) return action;
-          
+
             return null;
         }
 
@@ -155,7 +155,7 @@ namespace Treachery.Shared
 
         private EndPhase DetermineEndPhase() => new EndPhase(Game) { Initiator = Faction };
 
-        private bool Do<T>(Func<T> method, ref GameEvent action, IEnumerable<Type> allowedActions) where T: GameEvent
+        private bool Do<T>(Func<T> method, ref GameEvent action, IEnumerable<Type> allowedActions) where T : GameEvent
         {
             if (typeof(T).Equals(typeof(GameEvent)))
             {
