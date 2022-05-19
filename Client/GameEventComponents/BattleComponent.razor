@@ -31,6 +31,11 @@
             }
         </div>
 
+        @if (!Battle.ValidBattleHeroes(Game, Opponent).Any())
+        {
+            <div class="text-warning mt-1">Your opponent has no leaders available for this battle!</div>
+        }
+
         <div class="text-warning mt-1">
             @if(h.IAm(Game.CurrentBattle.Aggressor)) {
 

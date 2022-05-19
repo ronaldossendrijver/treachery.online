@@ -582,7 +582,8 @@ namespace Treachery.Client
                     case Thought: Flash(result, latestEvent, LeaderSkill.Thinker); break;
 
                     //Show Event description
-                    case BlueBattleAnnouncement or Voice or Prescience or GreyRemovedCardFromAuction or BrownDiscarded or CardTraded or BrownEconomics or SwitchedSkilledLeader: Flash(result, latestEvent); break;
+                    case WhiteSpecifiesAuction or BlueBattleAnnouncement or Voice or Prescience or GreyRemovedCardFromAuction or BrownDiscarded or CardTraded or BrownEconomics or SwitchedSkilledLeader: Flash(result, latestEvent); break;
+                    case WhiteAnnouncesBlackMarket wbm when !wbm.Passed: Flash(result, latestEvent); break;
                     case GreySwappedCardOnBid gsc when !gsc.Passed: Flash(result, latestEvent); break;
                     case ReplacedCardWon rcw when !rcw.Passed: Flash(result, latestEvent); break;
                     case FaceDancerReplaced fdr when !fdr.Passed: Flash(result, latestEvent); break;
