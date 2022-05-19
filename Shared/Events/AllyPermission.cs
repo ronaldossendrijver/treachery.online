@@ -27,6 +27,7 @@ namespace Treachery.Shared
         public bool BlueAllowsUseOfVoice { get; set; }
         public bool WhiteAllowsUseOfNoField { get; set; }
         public int PermittedResources { get; set; }
+
         public int _permittedKarmaCardId { get; set; }
 
         [JsonIgnore]

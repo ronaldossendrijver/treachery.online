@@ -21,17 +21,14 @@ namespace Treachery.Client
 
         public async Task SetAsync<T>(string key, T value)
         {
-            string jsVal = null;
-            if (value != null)
-                jsVal = JsonSerializer.Serialize(value);
-            await _jsRuntime.InvokeVoidAsync("localStorage.setItem",
-                new object[] { key, jsVal });
+            string jsVal = value != null ? JsonSerializer.Serialize(value) : null;
+
+            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", new object[] { key, jsVal });
         }
 
         public async Task SetStringAsync(string key, string value)
         {
-            await _jsRuntime.InvokeVoidAsync("localStorage.setItem",
-                new object[] { key, value });
+            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", new object[] { key, value });
         }
 
         public async Task<T> GetAsync<T>(string key)

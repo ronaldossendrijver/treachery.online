@@ -19,7 +19,7 @@
         switch (part)
         {
             case string str:
-                <span>@part</span>
+                <span style=@TextBorder>@part</span>
                 break;
 
             case IEnumerable e:
@@ -66,7 +66,7 @@
                 break;
 
             case TreacheryCard or LeaderSkill or TechToken:
-                <RichText Shown=@part/>
+                <RichText Shown=@part Style=@TextBorder/>
                 break;
     
             case IHero hero:
@@ -82,11 +82,11 @@
                 break;
 
             case Location or Territory or AuctionType or BrownEconomicsStatus or TreacheryCardType or StrongholdAdvantage or FactionAdvantage or Ruleset or Rule:
-                <span class="fw-bold">@Skin.Current.Describe(part)</span>
+                <span class="fw-bold" style=@TextBorder>@Skin.Current.Describe(part)</span>
                 break;
 
             default:
-                <span>@Skin.Current.Describe(part)</span>
+                <span style=@TextBorder>@Skin.Current.Describe(part)</span>
                 break;
         }
     }
@@ -102,6 +102,9 @@
 
     [Parameter]
     public int Size { get; set; } = 14;
+
+    [Parameter]
+    public string TextBorder { get; set; } = "";
 
     private List<Expression> DetermineElements(IEnumerable e)
     {

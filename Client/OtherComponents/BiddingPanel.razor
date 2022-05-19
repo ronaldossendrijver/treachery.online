@@ -26,7 +26,7 @@
 
                 <div style="position: absolute; top: 100px; width: 150px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
 
-                    <div style="font-size: 24px; font-weight: bold; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;">
+                    <div style=@AuctionDescriptionStyle>
                         @AuctionDescription
                     </div>
                             
@@ -208,4 +208,6 @@
     private bool ShowCurrentBid => !IsSilentAuction && Game.CurrentBid != null;
 
     private bool IsSilentAuction => Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent;
+
+    private string AuctionDescriptionStyle => string.Format("font-size: 24px; font-weight: bold; {0}", Support.TextBorder(2, "black"));
 }

@@ -466,21 +466,18 @@ namespace Treachery.Client
                 {
                     return Status(
                         Express("You are aggressor against ", game.CurrentBattle.Defender, " in ", game.CurrentBattle.Territory, "! Please confirm your Battle Plan."),
-                        Express("You are waiting for ", game.CurrentBattle.Defender, " to defend ", game.CurrentBattle.Territory, "..."),
-                        PlayersThatNeedToMakeABattlePlan(game), latestBattleEvent);
+                        Express("You are waiting for ", game.CurrentBattle.Defender, " to defend ", game.CurrentBattle.Territory, "..."), latestBattleEvent);
                 }
                 else if (game.CurrentBattle.Defender == me.Faction)
                 {
                     return Status(
                         Express("You must defend against ", game.CurrentBattle.Aggressor, " in ", game.CurrentBattle.Territory, "! Please confirm your Battle Plan."),
-                        Express("You are waiting for ", game.CurrentBattle.Aggressor, " to attack ", game.CurrentBattle.Territory, "..."),
-                        PlayersThatNeedToMakeABattlePlan(game), latestBattleEvent);
+                        Express("You are waiting for ", game.CurrentBattle.Aggressor, " to attack ", game.CurrentBattle.Territory, "..."), latestBattleEvent);
                 }
                 else
                 {
                     return Status(
-                        Express(game.CurrentBattle.Defender, " are defending against ", game.CurrentBattle.Aggressor, " aggression in ", game.CurrentBattle.Territory, "..."),
-                        PlayersThatNeedToMakeABattlePlan(game), latestBattleEvent);
+                        Express(game.CurrentBattle.Defender, " are defending against ", game.CurrentBattle.Aggressor, " aggression in ", game.CurrentBattle.Territory, "..."), latestBattleEvent);
                 }
             }
         }
@@ -585,7 +582,7 @@ namespace Treachery.Client
                     case Thought: Flash(result, latestEvent, LeaderSkill.Thinker); break;
 
                     //Show Event description
-                    case GreyRemovedCardFromAuction or BrownDiscarded or CardTraded or BrownEconomics or SwitchedSkilledLeader: Flash(result, latestEvent); break;
+                    case BlueBattleAnnouncement or Voice or Prescience or GreyRemovedCardFromAuction or BrownDiscarded or CardTraded or BrownEconomics or SwitchedSkilledLeader: Flash(result, latestEvent); break;
                     case GreySwappedCardOnBid gsc when !gsc.Passed: Flash(result, latestEvent); break;
                     case ReplacedCardWon rcw when !rcw.Passed: Flash(result, latestEvent); break;
                     case FaceDancerReplaced fdr when !fdr.Passed: Flash(result, latestEvent); break;
@@ -594,6 +591,11 @@ namespace Treachery.Client
                     case EstablishPlayers when g.CurrentPhase != Phase.SelectingFactions && isPlayer: Flash(result, myFaction); break;
                     case FactionTradeOffered fto when (fto.Initiator == myFaction || fto.Target == myFaction) && !g.CurrentTradeOffers.Any(t => t.Initiator == myFaction): Flash(result, myFaction); break;
                 }
+            }
+
+            if (g.RecentMilestones.Contains(Milestone.AuctionWon) && g.RecentMilestones.Contains(Milestone.Karma))
+            {
+                Flash(result, Message.Express("Card was won using ", TreacheryCardType.Karma), Skin.Current.GetImageURL(g.TreacheryDiscardPile.Top));
             }
 
             int nrOfSpiceBlows = g.RecentMilestones.Count(m => m == Milestone.Resource);
@@ -649,7 +651,7 @@ namespace Treachery.Client
 
                             if (cardToShow != null)
                             {
-                                Flash(result, cardToShow);
+                                Flash(result, Message.Express(Concept.Resource, " in ", Skin.Current.Describe(cardToShow)), Skin.Current.GetImageURL(cardToShow));
                             }
 
                             break;
@@ -720,26 +722,9 @@ namespace Treachery.Client
             }
         }
 
-        private static void Flash(IList<FlashInfo> flashes, GameEvent e, TreacheryCard c)
-        {
-            if ((c.Type == TreacheryCardType.Karma || c.Type == TreacheryCardType.Useless) && e is Bid && (e as Bid).Passed)
-            {
-                Flash(flashes, Message.Express("Card was won using ", TreacheryCardType.Karma), Skin.Current.GetImageURL(c));
-            }
-            else
-            {
-                Flash(flashes, e?.GetMessage(), Skin.Current.GetImageURL(c));
-            }
-        }
-
         private static void Flash(IList<FlashInfo> flashes, Faction f)
         {
             Flash(flashes, Message.Express("You play ", f), Skin.Current.GetImageURL(f));
-        }
-
-        private static void Flash(IList<FlashInfo> flashes, ResourceCard c)
-        {
-            Flash(flashes, Message.Express(Concept.Resource, " in ", Skin.Current.Describe(c)), Skin.Current.GetImageURL(c));
         }
 
         private static Message Express(params object[] elements)

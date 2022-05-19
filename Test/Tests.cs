@@ -26,9 +26,9 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (e is BattleInitiated bi && bi.Territory.IsStronghold && (g.Skill(bi.Player) == LeaderSkill.Bureaucrat && g.Skill(bi.OpponentOf(bi.Initiator)) == LeaderSkill.Swordmaster) && bi.OpponentOf(bi.Initiator).Has(TreacheryCardType.ProjectileAndPoison))
+            if (g.RecentMilestones.Contains(Milestone.AuctionWon) && g.RecentMilestones.Contains(Milestone.Karma))
             {
-                WriteSavegameIfApplicable(g, e.Player, "Bureaucrat Battle");
+                WriteSavegameIfApplicable(g, e.Player, "Card won using Karama");
             }
         }
 
