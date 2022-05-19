@@ -71,6 +71,10 @@ namespace Treachery.Client
             {
                 return "½";
             }
+            else if (x == -0.5f)
+            {
+                return "-½";
+            }
             else if (x - 0.5f == (int)x)
             {
                 return "" + (int)x + "½";

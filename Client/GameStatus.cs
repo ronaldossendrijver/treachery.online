@@ -609,18 +609,6 @@ namespace Treachery.Client
                             Flash(result, latestEvent);
                             break;
                         }
-                    case Milestone.Karma:
-                        {
-                            if (g.TreacheryDiscardPile.Top != null)
-                            {
-                                Flash(result, latestEvent, g.TreacheryDiscardPile.Top);
-                            }
-                            else
-                            {
-                                Flash(result, latestEvent);
-                            }
-                            break;
-                        }
                     case Milestone.BabyMonster:
                         {
                             Flash(result, Message.Express(Concept.BabyMonster, " detected!"), Skin.Current.GetImageURL(Map.GetResourceCardsInAndOutsidePlay(g.Map).FirstOrDefault(c => c.IsSandTrout)));
@@ -710,7 +698,14 @@ namespace Treachery.Client
 
         private static void Flash(IList<FlashInfo> flashes, GameEvent e, TreacheryCardType t)
         {
-            Flash(flashes, e?.GetMessage(), Skin.Current.GetImageURL(TreacheryCardManager.GetCardsInAndOutsidePlay().First(card => card.Type == t)));
+            if (e.Game.TreacheryDiscardPile.Top?.Type == t)
+            {
+                Flash(flashes, e?.GetMessage(), Skin.Current.GetImageURL(e.Game.TreacheryDiscardPile.Top));
+            }
+            else
+            {
+                Flash(flashes, e?.GetMessage(), Skin.Current.GetImageURL(TreacheryCardManager.GetCardsInAndOutsidePlay().First(card => card.Type == t)));
+            }
         }
 
         private static void Flash(IList<FlashInfo> flashes, GameEvent e, LeaderSkill s)

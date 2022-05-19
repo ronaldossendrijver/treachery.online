@@ -79,32 +79,34 @@
                 <Image X="@(skillX)" Y="@(skillY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageURL(skill)" 
                        ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" 
                        Popover="@Popup.Get(skill)"/>
-
-                LeaderSkill usedSkill = LeaderSkill.None;
-                int bonus = Battle.DetermineSkillBonus(Game, Plan, ref usedSkill);
-                if (bonus != 0)
-                {
-                    <MapText ToShow="@("+" + bonus)"
-                             X="@(skillX + 0.3f * Skin.Current.BattleWheelCardWidth)" Y="@(skillY + 0.1f * Skin.Current.BattleWheelCardHeight)"
-                             Font="@Skin.Current.CARDPILE_FONT" FontColor="green"
-                             BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
-                             Align="@TextAlignment.Right" />
-                }
-                else if (Game.CurrentPhase < Phase.BattleConclusion)
-                {
-                    int penalty = Battle.DetermineSkillPenalty(Game, Plan, Opponent, ref usedSkill);
-                    if (penalty != 0)
-                    {
-                        <MapText ToShow="@("-" + penalty)"
-                                 X="@(skillX + 0.3f * Skin.Current.BattleWheelCardWidth)" Y="@(skillY + 0.1f * Skin.Current.BattleWheelCardHeight)"
-                                 Font="@Skin.Current.CARDPILE_FONT" FontColor="red"
-                                 BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
-                                 Align="@TextAlignment.Right" />
-                    }
-                }
             }
 
             <MapLeader h="h" ToShow="Plan.Hero" X=@(X + Skin.Current.BattleScreenHeroX) Y=@(Y + Skin.Current.BattleScreenHeroY) Diameter="Skin.Current.BattleWheelHeroWidth"/>
+
+            LeaderSkill usedSkill = LeaderSkill.None;
+                
+            int bonus = Battle.DetermineSkillBonus(Game, Plan, ref usedSkill);
+            if (bonus != 0)
+            {
+                <MapText ToShow="@("+" + bonus)"
+                            X="@(X + Skin.Current.BattleScreenHeroX + 0.9f * Skin.Current.BattleWheelHeroWidth)" Y="@(Y + Skin.Current.BattleScreenHeroY + 0.2f * Skin.Current.BattleWheelHeroWidth)"
+                            Font="@Skin.Current.CARDPILE_FONT" FontColor="green"
+                            BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
+                            Align="@TextAlignment.Right" />
+            }
+                
+            if (Game.CurrentPhase > Phase.BattlePhase && Game.CurrentPhase < Phase.BattleConclusion && OpponentPlan != null)
+            {
+                int penalty = Battle.DetermineSkillPenalty(Game, OpponentPlan, Plan.Player, ref usedSkill);
+                if (penalty != 0)
+                {
+                    <MapText ToShow="@("-" + penalty)"
+                                X="@(X + Skin.Current.BattleScreenHeroX + 0.9f * Skin.Current.BattleWheelHeroWidth)" Y="@(Y + Skin.Current.BattleScreenHeroY + 0.75f * Skin.Current.BattleWheelHeroWidth)"
+                                Font="@Skin.Current.CARDPILE_FONT" FontColor="red"
+                                BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
+                                Align="@TextAlignment.Right" />
+                }
+            }
         }
         else if (Plan.Hero is TreacheryCard)
         {
@@ -181,7 +183,7 @@
     public Battle Plan { get; set; }
 
     [Parameter]
-    public Player Opponent { get; set; }
+    public Battle OpponentPlan { get; set; }
 
     [Parameter]
     public bool TraitorCalled { get; set; }

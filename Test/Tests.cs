@@ -26,13 +26,9 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (e is Battle && g.HasStrongholdAdvantage(e.Initiator, StrongholdAdvantage.FreeResourcesForBattles, g.CurrentBattle.Territory))
+            if (e is BattleInitiated bi && bi.Territory.IsStronghold && (g.Skill(bi.Player) == LeaderSkill.Bureaucrat && g.Skill(bi.OpponentOf(bi.Initiator)) == LeaderSkill.Swordmaster) && bi.OpponentOf(bi.Initiator).Has(TreacheryCardType.ProjectileAndPoison))
             {
-                var forces = Battle.MaxForces(g, e.Player, false) + Battle.MaxForces(g, e.Player, true);
-                if (forces > 3 && forces > e.Player.Resources)
-                {
-                    WriteSavegameIfApplicable(g, e.Player, "Arrakeen Advantage");
-                }
+                WriteSavegameIfApplicable(g, e.Player, "Bureaucrat Battle");
             }
         }
 
