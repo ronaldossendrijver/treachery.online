@@ -12,12 +12,12 @@
     <Body>
 
         <h4>Treachery Cards</h4>
-        <SelectCardComponent Selected="selectedTreacheryCards" Values="Game.TreacheryDeck.Items" OnChanged="StateHasChanged"/>
+        <SelectCardComponent Selected="selectedTreacheryCards" Values="Game.TreacheryDeck.Items" OnChanged="e => StateHasChanged()"/>
 
         @if(Game.WhiteCache.Any())
         {
             <h4>@Skin.Current.Describe(Faction.White) Cards</h4>
-            <SelectCardComponent Selected="selectedWhiteCards" Values="Game.WhiteCache" OnChanged="StateHasChanged"/>
+            <SelectCardComponent Selected="selectedWhiteCards" Values="Game.WhiteCache" OnChanged="e => StateHasChanged()"/>
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm Cards" ConfirmError=@Validation />

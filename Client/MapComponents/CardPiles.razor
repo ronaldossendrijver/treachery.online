@@ -13,6 +13,8 @@
     var x = Skin.Current.SpiceDeckLocation.X;
     var y = Skin.Current.SpiceDeckLocation.Y;
 
+    var cardspacing = 2;
+
     //Resource cards
     string cardImageToShow = Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(h.Player) ? Skin.Current.GetImageURL(Game.ResourceCardDeck.Top) : Skin.Current.CardBack_ResourceCard_URL;
     <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@cardImageToShow" 
@@ -25,7 +27,7 @@
              BorderWidth="@Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.CARDPILE_FONT_BORDERCOLOR"
              Align="@TextAlignment.Center" />
 
-    x += cardWidth + (int)(0.1f * cardWidth);
+    x += cardWidth + cardspacing;
     if (Game.LatestSpiceCardA != null)
     {
         <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.LatestSpiceCardA)" 
@@ -41,7 +43,7 @@
                  BorderWidth="@Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.CARDPILE_FONT_BORDERCOLOR"
                  Align="@TextAlignment.Center" />
 
-        x += cardWidth + (int)(0.1f * cardWidth);
+        x += cardWidth + cardspacing;
         if (Game.LatestSpiceCardB != null)
         {
             <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.LatestSpiceCardB)" 
@@ -74,7 +76,7 @@
 
     if (!Game.TreacheryDiscardPile.IsEmpty)
     {
-        x += cardWidth + (int)(0.1f * cardWidth);
+        x += cardWidth + cardspacing;
         <Image X="@(x)" Y="@(Skin.Current.TreacheryDeckLocation.Y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.TreacheryDiscardPile.Top)" 
                ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
                Popover="@IntelOfTreacheryDiscardPile()"/>
@@ -88,7 +90,7 @@
 
     if (Game.WhiteCache.Count > 0)
     {
-        x = Skin.Current.TreacheryDeckLocation.X - (int)(1.1f * cardWidth);
+        x = Skin.Current.TreacheryDeckLocation.X - cardWidth - cardspacing;
 
         <Image X="@(x)" Y="@(Skin.Current.TreacheryDeckLocation.Y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.CardBack_TreacheryCard_URL" 
                ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 

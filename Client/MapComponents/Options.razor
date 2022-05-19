@@ -7,7 +7,7 @@
 
 @if (Game.CurrentMainPhase > MainPhase.Setup)
 {
-    <Image X="@(Skin.Current.MapDimensions.X - Skin.Current.PlayerTokenRadius)" Y="@(Skin.Current.MapDimensions.Y / 4)" Diameter="@(Skin.Current.PlayerTokenRadius)" Src="@(h.ShowWheelsAndHMS ? Skin.Current.Eye_URL : Skin.Current.EyeSlash_URL)" OnClick="OnClick" Title="Show/Hide Battle Wheels and HMS"/>
+    <Image X="@(Skin.Current.MapDimensions.X - Skin.Current.PlayerTokenRadius - 5)" Y="@(Skin.Current.MapDimensions.Y / 4)" Diameter="@(Skin.Current.PlayerTokenRadius)" Src="@(h.ShowWheelsAndHMS ? Skin.Current.Eye_URL : Skin.Current.EyeSlash_URL)" OnClick="OnClick" Title="Show/Hide Battle Wheels and HMS"/>
 }
 
 @code {

@@ -5,7 +5,6 @@
 @using Treachery.Shared;
 @inherits MapComponent;
 
-
 @for (int i = 0; i < Amount; i++)
 {
     float movedX = 0.15f * (5 + i);
@@ -56,5 +55,4 @@
     private string BorderColor => Threatened ? "red" : Skin.Current.FORCETOKEN_FONT_BORDERCOLOR;
 
     private int BorderWidth => Threatened ? 2 * Skin.Current.FORCETOKEN_FONT_BORDERWIDTH : Skin.Current.FORCETOKEN_FONT_BORDERWIDTH;
-
 }

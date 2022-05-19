@@ -13,7 +13,7 @@
 
         @foreach (var faction in amounts.Keys)
         {
-            <SelectResourcesFromFactionComponent @bind-Value="amounts[faction]" Min="0" Max="Player.Resources" Faction="faction" OnChanged="StateHasChanged" />
+            <SelectResourcesFromFactionComponent @bind-Value="amounts[faction]" Min="0" Max="Player.Resources" Faction="faction" OnChanged="e => StateHasChanged()" />
         }
 
         <div class="text-info small">Your contributions to opponent bids will flow back to you <i>at the end</i> of the bidding phase.</div>

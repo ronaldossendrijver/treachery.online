@@ -92,7 +92,7 @@
         if (requestPermissions)
         {
             _devicesScanned = true;
-            _ = Task.Delay(1000).ContinueWith(StateHasChanged);
+            _ = Task.Delay(1000).ContinueWith(e => StateHasChanged());
         }
 
         audioDevices = devices.Where(d => d.Kind == "audioinput").ToList();

@@ -11,7 +11,7 @@
     <Header>Offer a Deal</Header>
     <Body>
 
-        <SelectFactionComponent Selected="to" Values="Game.PlayersOtherThan(Player)" OnChanged="StateHasChanged">
+        <SelectFactionComponent Selected="to" Values="Game.PlayersOtherThan(Player)" OnChanged="e => StateHasChanged()">
             <Label>Offer to whom (select none to offer to all)</Label>
         </SelectFactionComponent>
 

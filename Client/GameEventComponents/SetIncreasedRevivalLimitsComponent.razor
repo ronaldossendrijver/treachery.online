@@ -11,7 +11,7 @@
     <Header>Which factions may have their revival limit increased to 5?</Header>
     <Body>
 
-        <SelectFactionComponent Selected="factions" Values="SetIncreasedRevivalLimits.ValidTargets(Game, Player)" OnChanged="StateHasChanged" />
+        <SelectFactionComponent Selected="factions" Values="SetIncreasedRevivalLimits.ValidTargets(Game, Player)" OnChanged="e => StateHasChanged()" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Set Limits" ConfirmError=@Validation />
 

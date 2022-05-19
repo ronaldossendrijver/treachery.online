@@ -6,10 +6,12 @@
 @inherits MapComponent
 
 @{
+    var x = Skin.Current.MapDimensions.X - 5;
+
     if (Game.CurrentTurn >= 1)
     {
         <MapText ToShow="@string.Format("Turn {0} of {1}", h.Game.CurrentTurn, h.Game.MaximumNumberOfTurns)"
-                 X="Skin.Current.MapDimensions.X"
+                 X="x"
                  Y="(0.75f * turnFontHeight)"
                  Font="@Skin.Current.TURN_FONT"
                  FontColor="@Skin.Current.TURN_FONT_COLOR"
@@ -34,7 +36,7 @@
 
     if (Game.CurrentMainPhase > MainPhase.Setup)
     {
-        float posX = Skin.Current.MapDimensions.X;
+        float posX = x;
         float posY = 1.2f * turnFontHeight;
 
         foreach (var phase in Enumerations.GetValues<MainPhase>(typeof(MainPhase)).Where(p => p >= MainPhase.Storm && p <= MainPhase.Contemplate))

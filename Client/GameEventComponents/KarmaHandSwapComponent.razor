@@ -10,7 +10,7 @@
 
     <Header>Return @Game.KarmaHandSwapNumberOfCards cards to @Skin.Current.Describe(Game.KarmaHandSwapTarget)</Header>
     <Body>
-        <SelectCardComponent Selected="selectedCards" Values="Player.TreacheryCards" OnChanged="StateHasChanged"/>
+        <SelectCardComponent Selected="selectedCards" Values="Player.TreacheryCards" OnChanged="e => StateHasChanged()"/>
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Return Cards" ConfirmError=@Validation />
     </Body>
 

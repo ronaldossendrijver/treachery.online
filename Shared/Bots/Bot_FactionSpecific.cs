@@ -298,7 +298,7 @@ namespace Treachery.Shared
 
         private BlueBattleAnnouncement DetermineBlueBattleAnnouncement()
         {
-            if (Game.CurrentMainPhase == MainPhase.Resurrection && NrOfBattlesToFight < 2)
+            if (Game.CurrentMainPhase == MainPhase.Resurrection && NrOfBattlesToFight <= Battle.ValidBattleHeroes(Game, this).Count())
             {
                 var territory = BlueBattleAnnouncement.ValidTerritories(Game, this).Where(t => IWantToAnnounceBattleIn(t)).LowestOrDefault(t => GetDialNeeded(t, GetOpponentThatOccupies(t), false));
 
@@ -323,7 +323,10 @@ namespace Treachery.Shared
             {
                 var dialNeeded = GetDialNeeded(territory, opponent, false);
 
-                if (territory.IsStronghold && WinWasPredictedByMeThisTurn(opponent.Faction) || dialNeeded <= MaxDial(this, territory, opponent) + MaxReinforcedDialTo(this, territory))
+                int lastTurnConfidenceBonus = LastTurn ? 3 : 0;
+
+                if (territory.IsStronghold && WinWasPredictedByMeThisTurn(opponent.Faction) || 
+                    dialNeeded + lastTurnConfidenceBonus <= MaxDial(this, territory, opponent) + MaxReinforcedDialTo(this, territory))
                 {
                     return true;
                 }
@@ -334,31 +337,34 @@ namespace Treachery.Shared
 
         private BlueAccompanies DetermineBlueAccompanies()
         {
-            var target = BlueAccompanies.ValidTargets(Game, this).FirstOrDefault(l => l.IsStronghold);
+            if (ForcesInReserve > 0) {
 
-            bool shippingOpponentCanWin = false;
-            if (target != null)
-            {
-                var opponent = GetOpponentThatOccupies(target);
-                var potentialWinningOpponents = Game.Players.Where(p => p != this && p != AlliedPlayer && Game.MeetsNormalVictoryCondition(p, true) && Game.CountChallengedVictoryPoints(p) < 2);
-                shippingOpponentCanWin = potentialWinningOpponents.Contains(opponent);
-            }
+                var target = BlueAccompanies.ValidTargets(Game, this).FirstOrDefault(l => l.IsStronghold);
 
-            if (target != null &&
-                !shippingOpponentCanWin &&
-                ForcesInReserve > 3 &&
-                AnyForcesIn(target) < 8 &&
-                (!LastTurn && AnyForcesIn(target) > 0 || !HasAlly && ForcesOnPlanet.Count(kvp => IsStronghold(kvp.Key)) < 3))
-            {
-                return new BlueAccompanies(Game) { Initiator = Faction, Location = target, Accompanies = true };
-            }
+                bool shippingOpponentCanWin = false;
+                if (target != null)
+                {
+                    var opponent = GetOpponentThatOccupies(target);
+                    var potentialWinningOpponents = Game.Players.Where(p => p != this && p != AlliedPlayer && Game.MeetsNormalVictoryCondition(p, true) && Game.CountChallengedVictoryPoints(p) < 2);
+                    shippingOpponentCanWin = potentialWinningOpponents.Contains(opponent);
+                }
 
-            if (BlueAccompanies.ValidTargets(Game, this).Contains(Game.Map.PolarSink) &&
-                ForcesInReserve > 3 &&
-                !(LastTurn && Game.HasActedOrPassed.Contains(Faction)) &&
-                AnyForcesIn(Game.Map.PolarSink) < 8)
-            {
-                return new BlueAccompanies(Game) { Initiator = Faction, Location = Game.Map.PolarSink, Accompanies = true };
+                if (target != null &&
+                    !shippingOpponentCanWin &&
+                    (ResourcesIncludingAllyContribution < 5 || ForcesInReserve > 3) &&
+                    AnyForcesIn(target) < 8 &&
+                    (!LastTurn && AnyForcesIn(target) > 0 || !HasAlly && ForcesOnPlanet.Count(kvp => IsStronghold(kvp.Key)) <= 3))
+                {
+                    return new BlueAccompanies(Game) { Initiator = Faction, Location = target, Accompanies = true };
+                }
+
+                if (BlueAccompanies.ValidTargets(Game, this).Contains(Game.Map.PolarSink) &&
+                    (ResourcesIncludingAllyContribution < 5 || ForcesInReserve > 3) &&
+                    !(LastTurn && Game.HasActedOrPassed.Contains(Faction)) &&
+                    AnyForcesIn(Game.Map.PolarSink) < 8)
+                {
+                    return new BlueAccompanies(Game) { Initiator = Faction, Location = Game.Map.PolarSink, Accompanies = true };
+                }
             }
 
             return new BlueAccompanies(Game) { Initiator = Faction, Location = null, Accompanies = false };
