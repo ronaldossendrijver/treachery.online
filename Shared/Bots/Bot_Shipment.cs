@@ -286,7 +286,7 @@ namespace Treachery.Shared
             else if (VacantAndValid(Game.Map.TueksSietch)) target = Game.Map.TueksSietch;
             else if (VacantAndValid(Game.Map.Carthag)) target = Game.Map.Carthag;
             else if (VacantAndValid(Game.Map.Arrakeen)) target = Game.Map.Arrakeen;
-            else if (VacantAndValid(Game.Map.SietchTabr)) target = Game.Map.SietchTabr;
+            else if (VacantAndValid(Game.Map.SietchTabr) && (LastTurn || !Game.IsInStorm(Game.Map.SietchTabr))) target = Game.Map.SietchTabr;
             else if (Game.IsSpecialStronghold(Game.Map.ShieldWall))
             {
                 if (VacantAndValid(Game.Map.ShieldWall.Locations.First())) target = Game.Map.ShieldWall.Locations.First();

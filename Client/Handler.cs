@@ -34,7 +34,6 @@ namespace Treachery.Client
         public Dictionary<int, string> JoinErrors { get; private set; } = new();
         public DateTime Disconnected { get; private set; } = default;
 
-
         //Sound and camera
         public float CurrentEffectVolume { get; set; } = -1;
         public float CurrentChatVolume { get; set; } = -1;
@@ -42,9 +41,13 @@ namespace Treachery.Client
         public CaptureDevice AudioDevice { get; set; }
         public CaptureDevice VideoDevice { get; set; }
 
-        //Info displayed on the map
+        //Display settings
         public bool ShowWheelsAndHMS { get; set; } = true;
         public Battle BattleUnderConstruction { get; set; } = null;
+        public int BidAutoPassThreshold { get; set; } = 0;
+        public bool Autopass { get; set; } = false;
+        public bool KeepAutopassSetting { get; set; } = false;
+
 
         //Other settings
         public bool StatisticsSent { get; set; } = false;

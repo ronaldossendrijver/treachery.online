@@ -462,22 +462,24 @@ namespace Treachery.Client
             else
             {
                 var latestBattleEvent = game.LatestEvent(typeof(BattleInitiated));
+                var toMakePlan = PlayersThatNeedToMakeABattlePlan(game);
+
                 if (game.CurrentBattle.Aggressor == me.Faction)
                 {
                     return Status(
                         Express("You are aggressor against ", game.CurrentBattle.Defender, " in ", game.CurrentBattle.Territory, "! Please confirm your Battle Plan."),
-                        Express("You are waiting for ", game.CurrentBattle.Defender, " to defend ", game.CurrentBattle.Territory, "..."), latestBattleEvent);
+                        Express("You are waiting for ", game.CurrentBattle.Defender, " to defend ", game.CurrentBattle.Territory, "..."), toMakePlan, latestBattleEvent);
                 }
                 else if (game.CurrentBattle.Defender == me.Faction)
                 {
                     return Status(
                         Express("You must defend against ", game.CurrentBattle.Aggressor, " in ", game.CurrentBattle.Territory, "! Please confirm your Battle Plan."),
-                        Express("You are waiting for ", game.CurrentBattle.Aggressor, " to attack ", game.CurrentBattle.Territory, "..."), latestBattleEvent);
+                        Express("You are waiting for ", game.CurrentBattle.Aggressor, " to attack ", game.CurrentBattle.Territory, "..."), toMakePlan, latestBattleEvent);
                 }
                 else
                 {
                     return Status(
-                        Express(game.CurrentBattle.Defender, " are defending against ", game.CurrentBattle.Aggressor, " aggression in ", game.CurrentBattle.Territory, "..."), latestBattleEvent);
+                        Express(game.CurrentBattle.Defender, " are defending against ", game.CurrentBattle.Aggressor, " aggression in ", game.CurrentBattle.Territory, "..."), toMakePlan, latestBattleEvent);
                 }
             }
         }

@@ -166,7 +166,7 @@
 
     private bool PlayersAreInSequence => h.Status.WaitingInSequence.Any();
 
-    private string StatusStyle => h.Status.WaitingForMe(Player, h.IsHost) ? Support.TextBorder(1, 8, "#FF000024") : "";
+    private string StatusStyle => h.Status.WaitingForMe(Player, h.IsHost) ? Support.TextBorder(1, 8, "#FF000016") : "";
 
     private string PlayerWithCardsTitle(Player player) => player.Name;
 
