@@ -17,7 +17,7 @@
 
         @if (IsBiddingPhase || OneOrMorePlayersNeedToAct || PlayersAreInSequence) {
 
-            <div class="row d-flex justify-content-center mt-2 mb-2">
+            <div class="row row-cols-6 d-flex justify-content-center mt-2 mb-3">
 
                 @{
                     if (IsBiddingPhase)
@@ -28,7 +28,7 @@
                         foreach (var se in ToBid)
                         {
                             <div class="col" style="filter:drop-shadow(1px 1px 1px black)">
-                                <NumberComponent Value="Game.CardsOwnedBy(se.Player).Count()" Size="@(se.Player == hasTurn || showTurnInSequence && se.HasTurn ? 48 : 32)"
+                                <NumberComponent Value="Game.CardsOwnedBy(se.Player).Count()" Size="@(se.Player == hasTurn || showTurnInSequence && se.HasTurn ? 32 : 28)"
                                              SymbolSRC="@Skin.Current.GetImageURL(se.Player.Faction)"
                                              BehindNumberSRC="@Skin.Current.CardBack_TreacheryCard_URL"
                                              Title="@PlayerWithCardsTitle(se.Player)"
