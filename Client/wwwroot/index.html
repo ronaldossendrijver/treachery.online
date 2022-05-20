@@ -78,10 +78,20 @@
 
         function GetWindowDimensions() {
 
-            return {
-                Width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
-                Height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
-            };
+            try {
+
+                return {
+                    Width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+                    Height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+                };
+            }
+            catch (error) {
+
+                return {
+                    Width: 800,
+                    Height: 600
+                };
+            }
         }
 
         function RemoveFocusFromButtons() {
