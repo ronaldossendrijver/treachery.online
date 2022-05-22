@@ -7,10 +7,11 @@
     <title>treachery.online chat</title>
 
     <base href="/" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.4.1/darkly/bootstrap.min.css">
+
+    <link href="https://bootswatch.com/5/darkly/bootstrap.min.css" rel="stylesheet" />
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
     <link href="css/app.css" rel="stylesheet" />
 
     <script type="text/javascript">
@@ -42,7 +43,7 @@
 
         // Listen to message from parent window
         eventer(messageEvent, function (e) {
-            
+
             if (e.data.type == 'PopupChatInitialize') {
 
                 parentWindow = e.source;
@@ -79,7 +80,7 @@
 
         function AddMessage(style, body) {
 
-            document.getElementById("messages").innerHTML = "<div class='text-break p-1 mt-1' style='background-color:" + style + "'>" + body + "</div>" + document.getElementById("messages").innerHTML;
+            document.getElementById("messages").innerHTML = "<div class='text-break p-1 mt-1 small' style='background-color:" + style + "'>" + body + "</div>" + document.getElementById("messages").innerHTML;
         }
 
         function ClearChatMessages() {
@@ -95,16 +96,19 @@
 
     <div class="p-1">
 
-        <input class='form-control form-control-sm' type='text' maxlength='512' placeholder='Your message...' id='message'>
+        <input class='form-control' type='text' maxlength='512' placeholder='Your message...' id='message'>
 
-        <div class='form-inline'>
-            <select class='form-control-sm mt-1' id='targets'>
+        <div class='d-flex flex-row-reverse mt-1'>
+
+            <button class='btn btn-primary' onclick='SendChatMessage()'>Send</button>
+
+            <select class='form-select' id='targets'>
                 <option style='color:red;background-color:white'>EVERYONE</option>
             </select>
-            <button class='btn btn-primary form-control-sm btn-sm mt-1 ms-1' onclick='SendChatMessage()'>Send</button>
+
         </div>
 
-        <div class="text-break mt-1 small" id="messages" />
+        <div id="messages" />
 
     </div>
 

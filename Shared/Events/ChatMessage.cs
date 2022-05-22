@@ -22,7 +22,7 @@ namespace Treachery.Shared
             {
                 if (TargetPlayerName == "")
                 {
-                    return Message.Express(Body, " (to everyone)");
+                    return Message.Express(Body, " (to ALL)");
                 }
                 else
                 {
@@ -33,11 +33,11 @@ namespace Treachery.Shared
             {
                 if (TargetPlayerName == "")
                 {
-                    return Message.Express("{0} (from {1} to everyone)", Body, GetSourceFaction(g));
+                    return Message.Express(Body, " (from ", GetSourceFaction(g), " to ALL)");
                 }
                 else
                 {
-                    return Message.Express("{0} (from {1} to you)", Body, GetSourceFaction(g));
+                    return Message.Express(Body, " (from ", GetSourceFaction(g), " to you)");
                 }
             }
         }
@@ -45,13 +45,13 @@ namespace Treachery.Shared
         public Faction GetSourceFaction(Game g)
         {
             var p = g.GetPlayer(SourcePlayerName);
-            return p != null ? p.Faction : Faction.None;
+            return p == null ? Faction.None : p.Faction;
         }
 
         public Faction GetTargetFaction(Game g)
         {
             var p = g.GetPlayer(TargetPlayerName);
-            return p != null ? p.Faction : Faction.None;
+            return p == null ? Faction.None : p.Faction;
         }
     }
 

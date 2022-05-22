@@ -19,9 +19,9 @@
 
         <div class="d-flex flex-row-reverse mt-1">
 
-            <button class="btn btn-primary" @onclick="(e => SendChatMessage())">Send</button>
+            <button class="btn btn-primary" @onclick="(e => Send())">Send</button>
 
-            <select style="color:white;background-color:@SelectedFactionColor" class="form-select" @bind="@playername" id="messageSentTarget">
+            <select class="form-select" style="color:white;background-color:@SelectedFactionColor" @bind="@playername" id="messageSentTarget">
                 <option style="color:red;background-color:white" value="">EVERYONE</option>
                 @foreach (var p in h.Game.Players.Where(p => p.Name != h.MyName))
                 {
@@ -33,7 +33,9 @@
 
         @foreach (var m in h.Messages)
         {
-            <div class='float-right text-break p-1 mt-1 small' style="background-color:@Skin.Current.GetFactionColor(m.GetSourceFaction(h.Game))">@m.GetBodyIncludingPlayerInfo(h.MyName, h.Game).ToString(Skin.Current)</div>
+            <div class='float-right text-break p-1 mt-1 small' style="background-color:@Skin.Current.GetFactionColor(m.GetSourceFaction(h.Game))">
+                <ExpressionComponent Game=Game Expression=@m.GetBodyIncludingPlayerInfo(h.MyName, h.Game).Expression/>
+            </div>
         }
 
         <div class="d-flex flex-row-reverse">
@@ -66,24 +68,42 @@
     {
         if (e.Code == "Enter" || e.Code == "NumpadEnter")
         {
-            await SendChatMessage();
+            await Send();
         }
     }
 
-    private async Task SendChatMessage()
+    private async Task Send()
+    {
+        await SendMessage(message, playername);
+        message = "";
+    }
+
+    [JSInvokable("SendMessage")]
+    public static async Task SendMessage(string msg, string target)
     {
         var sourcePlayer = currentHandler.Player;
-        var targetPlayer = currentHandler.Game.GetPlayer(playername);
+        var targetPlayer = currentHandler.Game.GetPlayer(target);
 
         await currentHandler.HostProxy.Request(
             new ChatMessage()
             {
                 SourcePlayerName = sourcePlayer != null ? currentHandler.Player.Name : "",
                 TargetPlayerName = targetPlayer != null ? targetPlayer.Name : "",
-                Body = message
+                Body = msg
             });
+    }
 
-        message = "";
+    [JSInvokable("InitializeChatPopup")]
+    public static void InitializeChatPopup()
+    {
+        var init = new PopupChatInitialization()
+        {
+            playerNames = currentHandler.Game.Players.Where(p => p.Name != currentHandler.Player.Name).Select(p => p.Name).ToArray(),
+            playerStyles = currentHandler.Game.Players.Where(p => p.Name != currentHandler.Player.Name).Select(p => Skin.Current.GetFactionColor(p.Faction)).ToArray(),
+            messages = currentHandler.Messages.Select(m => PopupChatMessage.Construct(currentHandler.Game, currentHandler.MyName, m)).ToArray()
+        };
+
+        _ = Task.Delay(1000).ContinueWith(e => Browser.SendToChatPopup(init));
     }
 
     private string SelectedFactionColor
@@ -100,19 +120,6 @@
                 return "red";
             }
         }
-    }
-
-    [JSInvokable("InitializeChatPopup")]
-    public static void InitializeChatPopup()
-    {
-        var init = new PopupChatInitialization()
-        {
-            playerNames = currentHandler.Game.Players.Where(p => p.Name != currentHandler.Player.Name).Select(p => p.Name).ToArray(),
-            playerStyles = currentHandler.Game.Players.Where(p => p.Name != currentHandler.Player.Name).Select(p => Skin.Current.GetFactionColor(p.Faction)).ToArray(),
-            messages = currentHandler.Messages.Select(m => PopupChatMessage.Construct(currentHandler.Game, currentHandler.MyName, m)).ToArray()
-        };
-
-        _ = Task.Delay(1000).ContinueWith(e => Browser.SendToChatPopup(init));
     }
 }
 
