@@ -116,7 +116,7 @@
         {
             if (firstItem) {
 
-                useSeparators = !ShownAsImage(elt);
+                useSeparators = !ShowWithoutSeparators(elt);
             }
 
             if (useSeparators && !firstItem)
@@ -134,5 +134,5 @@
         return result;
     }
 
-    private bool ShownAsImage(object e) => e is Faction || e is Payment || e is FactionForce || e is FactionSpecialForce || e is Concept c && c == Concept.Monster || e is int || e is double || e is float;
+    private bool ShowWithoutSeparators(object e) => e is Faction || e is MessagePart || e is FactionForce || e is FactionSpecialForce || e is IHero;
 }

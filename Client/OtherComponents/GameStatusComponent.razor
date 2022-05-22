@@ -28,7 +28,7 @@
                         foreach (var se in ToBid)
                         {
                             <div class="col" style="filter:drop-shadow(1px 1px 1px black)">
-                                <NumberComponent Value="Game.CardsOwnedBy(se.Player).Count()" Size="@(se.Player == hasTurn || showTurnInSequence && se.HasTurn ? 34 : 28)"
+                                <NumberComponent Value="Game.CardsOwnedBy(se.Player).Count()" Size="@(se.Player == hasTurn || showTurnInSequence && se.HasTurn ? 36 : 28)"
                                              SymbolSRC="@Skin.Current.GetImageURL(se.Player.Faction)"
                                              BehindNumberSRC="@Skin.Current.CardBack_TreacheryCard_URL"
                                              Title="@PlayerWithCardsTitle(se.Player)"
