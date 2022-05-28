@@ -238,6 +238,17 @@ namespace Treachery.Client
             }
         }
 
+        public string Join(IEnumerable items)
+        {
+            var itemsAsObjects = new List<object>();
+            foreach (var item in items)
+            {
+                itemsAsObjects.Add(item);
+            }
+
+            return Join(itemsAsObjects);
+        }
+
         public Point GetCenter(Location location)
         {
             if (location is HiddenMobileStronghold hms)
@@ -460,31 +471,31 @@ namespace Treachery.Client
             {
                 FactionAdvantage.None => "- Any stoppable advantage not listed below -",
                 FactionAdvantage.GreenBiddingPrescience => Format("{0} seeing the next treachery card", Faction.Green),
-                FactionAdvantage.GreenSpiceBlowPrescience => Format("{0} seeing the top {1} card", Faction.Green, Concept_STR[Concept.Resource]),
-                FactionAdvantage.GreenBattlePlanPrescience => Format("{0} seeing part of a battle plan", Faction.Green),
-                FactionAdvantage.GreenUseMessiah => Format("{0} using the {1}", Faction.Green, Concept_STR[Concept.Messiah]),
+                FactionAdvantage.GreenSpiceBlowPrescience => Format("{0} seeing the top {1} card this turn", Faction.Green, Concept_STR[Concept.Resource]),
+                FactionAdvantage.GreenBattlePlanPrescience => Format("{0} seeing part of the next opponent battle plan", Faction.Green),
+                FactionAdvantage.GreenUseMessiah => Format("{0} using the {1} in the next battle", Faction.Green, Concept_STR[Concept.Messiah]),
                 FactionAdvantage.BlackFreeCard => Format("{0} taking a second free treachery card", Faction.Black),
-                FactionAdvantage.BlackCaptureLeader => Format("{0} capturing a leader once", Faction.Black),
-                FactionAdvantage.BlackCallTraitorForAlly => Format("{0} calling TREACHERY for their ally", Faction.Black),
-                FactionAdvantage.BlueAccompanies => Format("{0} accompanying shipment", Faction.Blue),
+                FactionAdvantage.BlackCaptureLeader => Format("{0} capturing a leader after the next battle", Faction.Black),
+                FactionAdvantage.BlackCallTraitorForAlly => Format("{0} calling TREACHERY for their ally in the next battle", Faction.Black),
+                FactionAdvantage.BlueAccompanies => Format("{0} accompanying the next shipment", Faction.Blue),
                 FactionAdvantage.BlueAnnouncesBattle => Format("{0} flipping advisors to fighters*", Faction.Blue),
-                FactionAdvantage.BlueIntrusion => Format("{0} becoming advisors on intrusion", Faction.Blue),
-                FactionAdvantage.BlueUsingVoice => Format("{0} using Voice", Faction.Blue),
+                FactionAdvantage.BlueIntrusion => Format("{0} becoming advisors on the next intrusion", Faction.Blue),
+                FactionAdvantage.BlueUsingVoice => Format("{0} using Voice during the next battle", Faction.Blue),
                 FactionAdvantage.BlueWorthlessAsKarma => Format("{0} using a {1} as a {2} card*", Faction.Blue, TreacheryCardType.Useless, TreacheryCardType.Karma),
                 FactionAdvantage.BlueCharity => Format("{0} receiving 2 {1} at {2}", Faction.Blue, Concept.Resource, MainPhase.Charity),
-                FactionAdvantage.YellowControlsMonster => Format("{0} sending {1}", Faction.Yellow, Concept.Monster),
-                FactionAdvantage.YellowNotPayingForBattles => Format("{0} not paying for battle", Faction.Yellow),
-                FactionAdvantage.YellowSpecialForceBonus => Format("{0} counting {1} bonus in one battle", Faction.Yellow, FactionSpecialForce.Yellow),
-                FactionAdvantage.YellowExtraMove => Format("{0} moving two territories as part of their move action", Faction.Yellow),
-                FactionAdvantage.YellowProtectedFromStorm => Format("{0} not taking storm losses", Faction.Yellow),
-                FactionAdvantage.YellowProtectedFromMonster => Format("{0} not being devoured by {1}", Faction.Yellow, Concept.Monster),
-                FactionAdvantage.YellowProtectedFromMonsterAlly => Format("{0} ally not being devoured by {1}", Faction.Yellow, Concept.Monster),
-                FactionAdvantage.YellowStormPrescience => Format("{0} seeing the next storm movement", Faction.Yellow),
+                FactionAdvantage.YellowControlsMonster => Format("{0} sending {1} the next time an additional {1} card is drawn ", Faction.Yellow, Concept.Monster),
+                FactionAdvantage.YellowNotPayingForBattles => Format("{0} not paying for forces in the next battle", Faction.Yellow),
+                FactionAdvantage.YellowSpecialForceBonus => Format("{0} counting {1} bonus in the next battle", Faction.Yellow, FactionSpecialForce.Yellow),
+                FactionAdvantage.YellowExtraMove => Format("{0} moving two territories as part of their next move action", Faction.Yellow),
+                FactionAdvantage.YellowProtectedFromStorm => Format("{0} not taking storm losses the next time they are hit", Faction.Yellow),
+                FactionAdvantage.YellowProtectedFromMonster => Format("{0} not being devoured by the next {1}", Faction.Yellow, Concept.Monster),
+                FactionAdvantage.YellowProtectedFromMonsterAlly => Format("{0} ally not being devoured by the next {1}", Faction.Yellow, Concept.Monster),
+                FactionAdvantage.YellowStormPrescience => Format("{0} seeing the storm movement this turn", Faction.Yellow),
                 FactionAdvantage.RedSpecialForceBonus => Format("{0} counting {1} bonus in one battle", Faction.Red, FactionSpecialForce.Red),
                 FactionAdvantage.RedReceiveBid => Format("{0} receiving {1} for a treachery card", Faction.Red, Concept.Resource),
                 FactionAdvantage.RedGiveSpiceToAlly => Format("{0} giving {1} to their ally*", Faction.Red, Concept.Resource),
                 FactionAdvantage.RedLetAllyReviveExtraForces => Format("{0} allowing their ally to revive 3 extra forces", Faction.Red, Concept.Resource),
-                FactionAdvantage.OrangeDetermineMoveMoment => Format("{0} shipping out of turn order", Faction.Orange),
+                FactionAdvantage.OrangeDetermineMoveMoment => Format("{0} shipping out of turn order (play before their normal turn)", Faction.Orange),
                 FactionAdvantage.OrangeSpecialShipments => Format("{0} (and ally) shipping site-to-site or back to reserves", Faction.Orange),
                 FactionAdvantage.OrangeShipmentsDiscount => Format("{0} shipping at half price", Faction.Orange),
                 FactionAdvantage.OrangeShipmentsDiscountAlly => Format("{0} ally shipping at half price", Faction.Orange),
@@ -493,22 +504,22 @@ namespace Treachery.Client
                 FactionAdvantage.PurpleRevivalDiscountAlly => Format("{0} ally reviving at half price", Faction.Purple),
                 FactionAdvantage.PurpleReplacingFaceDancer => Format("{0} replacing a face dancer at end of turn", Faction.Purple),
                 FactionAdvantage.PurpleIncreasingRevivalLimits => Format("{0} increasing revival limits", Faction.Purple),
-                FactionAdvantage.PurpleReceiveRevive => Format("{0} receiving {1} for a revival", Faction.Purple, Concept.Resource),
+                FactionAdvantage.PurpleReceiveRevive => Format("{0} receiving {1} for the next revival", Faction.Purple, Concept.Resource),
                 FactionAdvantage.PurpleEarlyLeaderRevive => Format("{0} allowing early revival of a leader*", Faction.Purple),
                 FactionAdvantage.PurpleReviveGhola => Format("{0} reviving a leader as a Ghola*", Faction.Purple),
                 FactionAdvantage.GreyMovingHMS => Format("{0} moving the Hidden Mobile Stronghold", Faction.Grey),
-                FactionAdvantage.GreySpecialForceBonus => Format("{0} counting {1} bonus in one battle", Faction.Grey, FactionSpecialForce.Grey),
-                FactionAdvantage.GreySelectingCardsOnAuction => Format("{0} selecting the cards on auction", Faction.Grey),
+                FactionAdvantage.GreySpecialForceBonus => Format("{0} counting {1} bonus in the next battle", Faction.Grey, FactionSpecialForce.Grey),
+                FactionAdvantage.GreySelectingCardsOnAuction => Format("{0} selecting a card to go on top or bottom (play before they draw cards on auction)", Faction.Grey),
                 FactionAdvantage.GreyCyborgExtraMove => Format("{0} moving {1} two territories", Faction.Grey, FactionSpecialForce.Grey),
                 FactionAdvantage.GreyReplacingSpecialForces => Format("{0} replacing {1} lost in battle with {2}", Faction.Grey, FactionSpecialForce.Grey, FactionForce.Grey),
-                FactionAdvantage.GreyAllyDiscardingCard => Format("{0} allowing their ally to replace a won card", Faction.Grey),
+                FactionAdvantage.GreyAllyDiscardingCard => Format("{0} allowing their ally to replace the next won card", Faction.Grey),
                 FactionAdvantage.GreySwappingCard => Format("{0} replacing a treachery card during bidding", Faction.Grey),
                 FactionAdvantage.BrownControllingCharity => Format("{0} receiving and giving {1} during {2}", Faction.Brown, Concept.Resource, MainPhase.Charity),
                 FactionAdvantage.BrownDiscarding => Format("{0} discarding cards for {1} or a {2} card for its special effect*", Faction.Brown, Concept.Resource, TreacheryCardType.Useless),
                 FactionAdvantage.BrownRevival => Format("{0} having unlimited force revival and reduced revival cost", Faction.Brown),
                 FactionAdvantage.BrownEconomics => Format("{0} playing their Inflation token during {1}", Faction.Brown, MainPhase.Contemplate),
-                FactionAdvantage.BrownReceiveForcePayment => Format("{0} collecting {1} payment for forces for one battle", Faction.Brown, Concept.Resource),
-                FactionAdvantage.BrownAudit => Format("{0} auditing their opponent after a battle", Faction.Brown),
+                FactionAdvantage.BrownReceiveForcePayment => Format("{0} collecting {1} payment for forces next battle", Faction.Brown, Concept.Resource),
+                FactionAdvantage.BrownAudit => Format("{0} auditing their opponent after the next battle", Faction.Brown),
                 FactionAdvantage.WhiteAuction => Format("{0} auctioning a card from their card cache", Faction.White),
                 FactionAdvantage.WhiteNofield => Format("{0} using a No-Field to ship", Faction.White),
                 FactionAdvantage.WhiteBlackMarket => Format("{0} selling a card from their hand", Faction.White),

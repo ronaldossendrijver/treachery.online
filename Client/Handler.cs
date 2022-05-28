@@ -556,6 +556,11 @@ namespace Treachery.Client
 
             await Browser.RemoveFocusFromButtons();
 
+            if (Game.CurrentMainPhase == MainPhase.Bidding)
+            {
+                ResetAutopassThreshold();
+            }
+
             await PerformEndOfTurnTasks();
 
             if (Game.CurrentMainPhase == MainPhase.Ended)
@@ -569,6 +574,14 @@ namespace Treachery.Client
             }
 
             Refresh();
+        }
+
+        private void ResetAutopassThreshold()
+        {
+            if (Game.RecentMilestones.Contains(Milestone.AuctionWon) && (!KeepAutopassSetting || Game.CurrentPhase == Phase.BiddingReport))
+            {
+                Autopass = false;
+            }
         }
 
         private void UpdateStatus(Game game, Player player, bool isPlayer)

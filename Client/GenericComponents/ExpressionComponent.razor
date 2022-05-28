@@ -4,91 +4,87 @@
 
 @using Treachery.Shared;
 @using System.Collections;
-@using System.Linq;
 
 @for (int elementnr = 0; elementnr < Expression.Elements.Length; elementnr++)
 {
     var part = Expression.Elements[elementnr];
 
-    if (part == null)
+    switch (part)
     {
-        <span class="fw-bold">none</span>
-    }
-    else
-    {
-        switch (part)
-        {
-            case string str:
-                <span style=@TextBorder>@part</span>
-                break;
+        case null:
+            <span class="fw-bold">none</span>
+            break;
 
-            case IEnumerable e:
+        case string str:
+            <span style=@TextBorder>@part</span>
+            break;
+
+        case IEnumerable e:
+            {
+                var elts = DetermineElements(e);
+
+                for (int i = 0; i < elts.Count; i++)
                 {
-                    var elts = DetermineElements(e);
-
-                    for (int i = 0; i < elts.Count; i++)
-                    {
-                        <ExpressionComponent Expression=elts[i] Size=@Size Game=Game/>
-                    }
+                    <ExpressionComponent Expression=elts[i] Size=@Size Game=Game/>
                 }
-                break;
+            }
+            break;
 
-            case Message m:
-                <ExpressionComponent Expression=m.Expression Size=@Size Game=Game/>
-                break;
+        case Message m:
+            <ExpressionComponent Expression=m.Expression Size=@Size Game=Game/>
+            break;
 
-            case MessagePart mp:
-                <ExpressionComponent Expression=mp.Expression Size=@Size Game=Game/>
-                break;
+        case MessagePart mp:
+            <ExpressionComponent Expression=mp.Expression Size=@Size Game=Game/>
+            break;
 
-            case int i:
-                <SimpleNumberComponent Size=@Size>@i</SimpleNumberComponent>
-                break;
+        case int i:
+            <SimpleNumberComponent Size=@Size>@i</SimpleNumberComponent>
+            break;
 
-            case float f:
-                <SimpleNumberComponent Size=@Size>@Support.RoundWithHalves(f)</SimpleNumberComponent>
-                break;
+        case float f:
+            <SimpleNumberComponent Size=@Size>@Support.RoundWithHalves(f)</SimpleNumberComponent>
+            break;
 
-            case double d:
-                <SimpleNumberComponent Size=@Size>@Support.RoundWithHalves(d)</SimpleNumberComponent>
-                break;
+        case double d:
+            <SimpleNumberComponent Size=@Size>@Support.RoundWithHalves(d)</SimpleNumberComponent>
+            break;
 
-            case Payment payment:
-                <TextBeforeImage ImageURL="@Skin.Current.Harvester_URL" Size=@Size Title="@Skin.Current.Describe(Concept.Resource)" TextBorder=@TextBorder>@payment.Amount</TextBeforeImage>
-                @if (payment.By != Faction.None)
-                {
-                    <span> by <FactionComponent Faction=payment.By Diameter=@Size/></span>
-                }
-                break;
+        case Payment payment:
+            <TextBeforeImage ImageURL="@Skin.Current.Harvester_URL" Size=@Size Title="@Skin.Current.Describe(Concept.Resource)" TextBorder=@TextBorder>@payment.Amount</TextBeforeImage>
+            @if (payment.By != Faction.None)
+            {
+                <span> by <FactionComponent Faction=payment.By Diameter=@Size/></span>
+            }
+            break;
 
-            case Faction faction:
-                <FactionComponent Faction=faction Diameter=@Size/>
-                break;
+        case Faction faction:
+            <FactionComponent Faction=faction Diameter=@Size/>
+            break;
 
-            case TreacheryCard or LeaderSkill or TechToken:
-                <RichText Shown=@part Style=@TextBorder/>
-                break;
+        case TreacheryCard or LeaderSkill or TechToken:
+            <RichText Shown=@part Style=@TextBorder/>
+            break;
     
-            case IHero hero:
-                <RichText Style=@Support.TextBorder(1, Skin.Current.FactionColor[hero.Faction]) Class="" Shown=@Skin.Current.Describe(hero) Popover=@Popup.Get(hero, Game)/>
-                break;
+        case IHero hero:
+            <RichText Shown=@Skin.Current.Describe(hero) Popover=@Popup.Get(hero, Game) Class="fw-bold" Style=@TextBorder />
+            break;
 
-            case Concept monster when monster == Concept.Monster:
-                <img src=@Skin.Current.Monster_URL width=@Size height=@Size title=@Skin.Current.Describe(Concept.Monster) style="filter: drop-shadow(2px 2px 2px black);"/>
-                break;
+        case Concept monster when monster == Concept.Monster:
+            <img src=@Skin.Current.Monster_URL width=@Size height=@Size title=@Skin.Current.Describe(Concept.Monster) style="filter: drop-shadow(2px 2px 2px black);"/>
+            break;
     
-            case FactionForce or FactionSpecialForce:
-                <Image Shown=@part Width=@Size ShowPopover=false/>
-                break;
+        case FactionForce or FactionSpecialForce:
+            <Image Shown=@part Width=@Size ShowPopover=false/>
+            break;
 
-            case Location or Territory or AuctionType or BrownEconomicsStatus or TreacheryCardType or StrongholdAdvantage or FactionAdvantage or Ruleset or Rule:
-                <span class="fw-bold" style=@TextBorder>@Skin.Current.Describe(part)</span>
-                break;
+        case Location or Territory or AuctionType or BrownEconomicsStatus or TreacheryCardType or StrongholdAdvantage or FactionAdvantage or Ruleset or Rule:
+            <span class="fw-bold" style=@TextBorder>@Skin.Current.Describe(part)</span>
+            break;
 
-            default:
-                <span style=@TextBorder>@Skin.Current.Describe(part)</span>
-                break;
-        }
+        default:
+            <span style=@TextBorder>@Skin.Current.Describe(part)</span>
+            break;
     }
 }
 
@@ -116,7 +112,7 @@
         {
             if (firstItem) {
 
-                useSeparators = !ShowWithoutSeparators(elt);
+                useSeparators = ShowWithSeparator(elt);
             }
 
             if (useSeparators && !firstItem)
@@ -134,5 +130,5 @@
         return result;
     }
 
-    private bool ShowWithoutSeparators(object e) => e is Faction || e is MessagePart || e is FactionForce || e is FactionSpecialForce || e is IHero;
+    private bool ShowWithSeparator(object e) => !(e is Faction || e is MessagePart || e is FactionForce || e is FactionSpecialForce || e is Leader);
 }

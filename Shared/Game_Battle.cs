@@ -761,8 +761,12 @@ namespace Treachery.Shared
             {
                 if (ls.Key is Leader l && Skilled(l) && !CapturedLeaders.ContainsKey(l) && !ls.Value.InFrontOfShield)
                 {
-                    CurrentReport.Express(Skill(l), " ", l, " is placed back in front of shield");
                     ls.Value.InFrontOfShield = true;
+
+                    if (IsAlive(l))
+                    {
+                        CurrentReport.Express(Skill(l), " ", l, " is placed back in front of shield");
+                    }
                 }
             }
         }
@@ -1577,7 +1581,7 @@ namespace Treachery.Shared
             CurrentReport.Express(e);
             if (e.Card == null)
             {
-                CurrentReport.Express(e.Initiator, " don't own any cards", e.Initiator);
+                CurrentReport.Express(e.Initiator, " don't own any cards");
             }
             else
             {
