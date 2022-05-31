@@ -127,7 +127,7 @@
                     }
                     else
                     {
-                        <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> available after <span class="badge bg-primary rounded-pill">@(7 - p.TotalForcesKilledInBattle)</span> more forces are killed.</div>
+                        <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> available after <SimpleNumberComponent>@(7 - p.TotalForcesKilledInBattle)</SimpleNumberComponent> more forces are killed.</div>
                     }
                 }
             }

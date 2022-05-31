@@ -125,6 +125,53 @@
         await Task.Delay(0).ContinueWith(e => StateHasChanged());
     }
 
+    private bool _timerCycleStarted = false;
+    protected void StartTimerCycle(int interval)
+    {
+        if (!_timerCycleStarted && interval > 0)
+        {
+            _timerCycleStarted = true;
+            _ = Task.Delay(interval).ContinueWith(e => ContinueTimerCycle(interval, false));
+        }
+    }
+
+    protected async Task StartTimerCycleAsync(int interval)
+    {
+        if (!_timerCycleStarted && interval > 0)
+        {
+            _timerCycleStarted = true;
+            await Task.Delay(interval).ContinueWith(e => ContinueTimerCycleAsync(interval, false));
+        }
+    }
+
+    private void ContinueTimerCycle(int interval, bool firstCall = true)
+    {
+        if (_timerCycleStarted)
+        {
+            Cycle();
+            _ = Task.Delay(interval).ContinueWith(e => ContinueTimerCycle(interval, false));
+        }
+    }
+
+    private async Task ContinueTimerCycleAsync(int interval, bool firstCall = true)
+    {
+        if (_timerCycleStarted)
+        {
+            await CycleAsync();
+            await Task.Delay(interval).ContinueWith(e => ContinueTimerCycleAsync(interval, false));
+        }
+    }
+
+    protected virtual void Cycle()
+    {
+        
+    }
+
+    protected virtual async Task CycleAsync()
+    {
+        await Task.CompletedTask;
+    }
+
     protected static IEnumerable<string> GetLabels<T>(IEnumerable<T> items, string labelIfNull = "")
     {
         return items.Select(i => i != null ? Name(i) : labelIfNull);

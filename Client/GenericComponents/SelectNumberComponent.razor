@@ -9,7 +9,7 @@
         <label class="me-1">@Label</label>
     }
     
-    <NumberPickerComponent Disabled="@Disabled" @bind-Value="Value" Min="Min" Max="Max" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="black" />
+    <NumberPickerComponent Disabled="@Disabled" @bind-Value="Value" Min="Min" Max="Max" StepUp=StepUp StepDown=StepDown SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="black" Size=Size/>
 
 </div>
 
@@ -48,8 +48,17 @@
     public int Max { get; set; }
 
     [Parameter]
+    public int StepUp { get; set; } = 1;
+
+    [Parameter]
+    public int StepDown { get; set; } = 1;
+
+    [Parameter]
     public string Label { get; set; } = "";
 
     [Parameter]
     public bool Disabled { get; set; } = false;
+
+    [Parameter]
+    public int Size { get; set; } = 36;
 }

@@ -169,13 +169,7 @@ namespace Treachery.Client
             }
         }
 
-        private IEnumerable<string> DisconnectedPlayers
-        {
-            get
-            {
-                return Heartbeats.Where(kvp => kvp.Value.AddMilliseconds(1.5 * Handler.HEARTBEAT_DELAY) < DateTime.Now).Select(kvp => kvp.Key);
-            }
-        }
+        private IEnumerable<string> DisconnectedPlayers => Heartbeats.Where(kvp => kvp.Value.AddMilliseconds(1.5 * Handler.HEARTBEAT_DELAY) < DateTime.Now).Select(kvp => kvp.Key);
 
         //Processes that the given player is still connected
         public void Receive_Heartbeat(string playerName)
@@ -415,6 +409,18 @@ namespace Treachery.Client
             try
             {
                 await connection.SendAsync("UploadStatistics", GameState.GetStateAsString(game));
+            }
+            catch (Exception ex)
+            {
+                Support.Log(ex.ToString());
+            }
+        }
+
+        public async Task SetTimer(int value)
+        {
+            try
+            {
+                await connection.SendAsync("SetTimer", gameID, value);
             }
             catch (Exception ex)
             {

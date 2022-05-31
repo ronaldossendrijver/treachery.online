@@ -8,7 +8,7 @@
 
 <div class="card p-0 mb-2" style="background-color:#e8dba6ee;">
 
-    <div class="card-body text-center bg-transparent border-bottom-0">
+    <div class="card-body bg-transparent border-bottom-0">
 
         @if (h.Status.TimedEvent != null)
         {
@@ -19,67 +19,65 @@
 
             <div class="row row-cols-6 d-flex justify-content-center mt-2 mb-3">
 
-                @{
-                    if (IsBiddingPhase)
-                    {
-                        bool showTurnInSequence = h.Game.CurrentPhase == Phase.BlackMarketBidding || h.Game.CurrentPhase == Phase.Bidding || h.Game.CurrentPhase == Phase.BiddingReport;
-                        var hasTurn = h.Status.WaitingForPlayers.Count() == 1 && !showTurnInSequence ? h.Status.WaitingForPlayers.First() : null;
+                @if (IsBiddingPhase)
+                {
+                    bool showTurnInSequence = h.Game.CurrentPhase == Phase.BlackMarketBidding || h.Game.CurrentPhase == Phase.Bidding || h.Game.CurrentPhase == Phase.BiddingReport;
+                    var hasTurn = h.Status.WaitingForPlayers.Count() == 1 && !showTurnInSequence ? h.Status.WaitingForPlayers.First() : null;
 
-                        foreach (var se in ToBid)
+                    foreach (var se in ToBid)
+                    {
+                        <div class="col" style="filter:drop-shadow(1px 1px 1px black)">
+                            <NumberComponent Value="Game.CardsOwnedBy(se.Player).Count()" Size="@(se.Player == hasTurn || showTurnInSequence && se.HasTurn ? 36 : 28)"
+                                            SymbolSRC="@Skin.Current.GetImageURL(se.Player.Faction)"
+                                            BehindNumberSRC="@Skin.Current.CardBack_TreacheryCard_URL"
+                                            Title="@PlayerWithCardsTitle(se.Player)"
+                                            NumberColor="@(se.Player.HasRoomForCards ? "black" : "red")" NumberBorderColor="white" NumberBorderWidth=1 NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
+                        </div>
+                    }
+                }
+                else if (OneOrMorePlayersNeedToAct)
+                {
+                    if (h.Status.WaitingForPlayers.Count() == 1) {
+
+                        var player = h.Status.WaitingForPlayers.First();
+
+                        <div style="position: relative; width: 64px; height: 64px;">
+                            <img title="@player.Name" src="@Skin.Current.GetImageURL(player.Faction)" width="64" style="position: absolute; left: 0px; filter: drop-shadow(2px 2px 2px black)" />
+                            <img src="./art/worm.gif" width="94" style="position: absolute; top: -14px; left: -20px; filter: drop-shadow(1px 1px 1px black)" />
+                        </div>
+                    }
+                    else {
+
+                        foreach (var p in h.Status.WaitingForPlayers)
                         {
-                            <div class="col" style="filter:drop-shadow(1px 1px 1px black)">
-                                <NumberComponent Value="Game.CardsOwnedBy(se.Player).Count()" Size="@(se.Player == hasTurn || showTurnInSequence && se.HasTurn ? 36 : 28)"
-                                             SymbolSRC="@Skin.Current.GetImageURL(se.Player.Faction)"
-                                             BehindNumberSRC="@Skin.Current.CardBack_TreacheryCard_URL"
-                                             Title="@PlayerWithCardsTitle(se.Player)"
-                                             NumberColor="@(se.Player.HasRoomForCards ? "black" : "red")" NumberBorderColor="white" NumberBorderWidth=1 NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
+                            <div style="position: relative; width: 48px;">
+                                <img class="p-2" title="@p.Name" src="@Skin.Current.GetImageURL(p.Faction)" width="48" style="filter:drop-shadow(2px 2px 2px black)" />
                             </div>
                         }
                     }
-                    else if (OneOrMorePlayersNeedToAct)
+                }
+                else if (PlayersAreInSequence)
+                {
+                    foreach (var f in h.Status.WaitingInSequence)
                     {
-                        if (h.Status.WaitingForPlayers.Count() == 1) {
-
-                            var player = h.Status.WaitingForPlayers.First();
-
-                            <div style="position: relative; width: 64px; height: 64px;">
-                                <img title="@player.Name" src="@Skin.Current.GetImageURL(player.Faction)" width="64" style="position: absolute; left: 0px; filter: drop-shadow(2px 2px 2px black)" />
-                                <img src="./art/worm.gif" width="94" style="position: absolute; top: -14px; left: -20px; filter: drop-shadow(1px 1px 1px black)" />
-                            </div>
-                        }
-                        else {
-
-                            foreach (var p in h.Status.WaitingForPlayers)
+                        <div class="align-self-center p-0 m-0" style="position: relative; width: 64px;">
+                            @if (f.HasTurn)
                             {
-                                <div style="position: relative; width: 48px;">
-                                    <img class="p-2" title="@p.Name" src="@Skin.Current.GetImageURL(p.Faction)" width="48" style="filter:drop-shadow(2px 2px 2px black)" />
-                                </div>
+                                <img title="@f.Player.Name" src="@Skin.Current.GetImageURL(f.Player.Faction)" width="64" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
+                                <img src="./art/worm.gif" width="90" style="position: absolute; top: -12px; left: -18px; filter: drop-shadow(1px 1px 1px black)" />
                             }
-                        }
-                    }
-                    else if (PlayersAreInSequence)
-                    {
-                        foreach (var f in h.Status.WaitingInSequence)
-                        {
-                            <div class="align-self-center p-0 m-0" style="position: relative; width: 64px;">
-                                @if (f.HasTurn)
-                                {
-                                    <img title="@f.Player.Name" src="@Skin.Current.GetImageURL(f.Player.Faction)" width="64" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
-                                    <img src="./art/worm.gif" width="90" style="position: absolute; top: -12px; left: -18px; filter: drop-shadow(1px 1px 1px black)" />
-                                }
-                                else
-                                {
-                                    <img class="align-self-center p-2" title="@f.Player.Name" src="@Skin.Current.GetImageURL(f.Player.Faction)" width="48" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
-                                }
-                            </div>
-                        }
+                            else
+                            {
+                                <img class="align-self-center p-2" title="@f.Player.Name" src="@Skin.Current.GetImageURL(f.Player.Faction)" width="48" style="position: relative; filter: drop-shadow(2px 2px 2px black)" />
+                            }
+                        </div>
                     }
                 }
 
             </div>
         }
 
-        <div class="text-dark fw-bold" style="@StatusStyle">
+        <div class="text-dark fw-bold text-center" style="@StatusStyle">
             <ExpressionComponent Game=Game Expression=@h.Status.GetMessage(h.Player, h.IsHost).Expression Size=30/>
         </div>
 
@@ -95,6 +93,17 @@
             </div>
         }
 
+        @if (h.IsHost && Game.CurrentMainPhase == MainPhase.Bidding && Game.Players.Count(p => !p.IsBot) > 1)
+        {
+            <div style="color:black;">
+                <CheckboxComponent @bind-Value="@timeLimitSet" OnChanged=EnableOrDisableTimer>Time limit (seconds)</CheckboxComponent>
+                @if (timeLimitSet)
+                {
+                    <SelectNumberComponent Disabled=@(!timeLimitSet) @bind-Value=@timeLimit OnChanged=@UpdateTimer Min="10" Max="600" StepUp="TimerStepUp" StepDown="TimerStepDown" Size="30"/>
+                }
+            </div>
+        }
+
     </div>
 
 </div>
@@ -106,6 +115,8 @@
 
     private bool autoConfirm = false;
     private int ticksPassed = 0;
+    private bool timeLimitSet = false;
+    private int timeLimit = 20;
 
     protected override async Task OnInitializedAsync()
     {
@@ -135,6 +146,23 @@
         }
 
         _previousPhase = Game.CurrentPhase;
+    }
+
+    private void EnableOrDisableTimer(bool value)
+    {
+        if (!value)
+        {
+            UpdateTimer(-1);
+        }
+        else
+        {
+            UpdateTimer(timeLimit);
+        }
+    }
+
+    private void UpdateTimer(int value)
+    {
+        _ = h.Host.SetTimer(value);
     }
 
     private bool CancelAutoConfirm =>
@@ -175,22 +203,32 @@
         if (timedEvent == null) return "";
 
         var elapsed = DateTime.Now.Subtract(timedEvent.Time);
+
+        string result = "";
+
         if (elapsed.TotalSeconds >= 1)
         {
             if (elapsed.TotalHours >= 1)
             {
-                return elapsed.ToString(@"hh\:mm\:ss");
+                result = elapsed.ToString(@"hh\:mm\:ss");
             }
             else
             {
-                return elapsed.ToString(@"m\:ss");
+                result = elapsed.ToString(@"m\:ss");
+            }
+
+            if (Game.CurrentPhase == Phase.Bidding && h.Timer > 0)
+            {
+                result += string.Format(" (limit: {0}s)", h.Timer);
             }
         }
-        else
-        {
-            return "";
-        }
+
+        return result;
     }
 
     protected string TimerColor(bool hasTurn) => hasTurn ? "red" : "black";
+
+    private int TimerStepUp => timeLimit < 60 ? 10 : 30;
+
+    private int TimerStepDown => timeLimit > 60 ? 30 : 10;
 }

@@ -99,12 +99,12 @@
 
                         @if (h.CurrentPhase > Phase.DiallingStorm && h.Game.HasStormPrescience(Player))
                         {
-                            <div>The next storm will move <span class="badge bg-primary rounded-pill">@(h.Game.NextStormMoves)</span> sectors.</div>
+                            <div>The next storm will move <SimpleNumberComponent>@(h.Game.NextStormMoves)</SimpleNumberComponent> sectors.</div>
                         }
 
                         @if (ShownPlayer.Faction == Faction.Blue && h.CurrentPhase > Phase.BluePredicting)
                         {
-                            <div>Prediction: <FactionComponent Faction=@ShownPlayer.PredictedFaction/> win turn <span class="badge bg-primary rounded-pill">@ShownPlayer.PredictedTurn</span></div>
+                            <div>Prediction: <FactionComponent Faction=@ShownPlayer.PredictedFaction/> win turn <SimpleNumberComponent>@ShownPlayer.PredictedTurn</SimpleNumberComponent></div>
                         }
 
                         @if (ShownPlayer.Faction == Faction.Green)
@@ -124,14 +124,14 @@
                                 }
                                 else
                                 {
-                                    <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> will be available after <span class="badge bg-primary rounded-pill">@(7 - ShownPlayer.TotalForcesKilledInBattle)</span> more forces are killed in battle.</div>
+                                    <div><img class="img-fluid m-0 p-0" width="32" height="32" src="@Skin.Current.Messiah_URL" title="@Skin.Current.Describe(Concept.Messiah)" /> will be available after <SimpleNumberComponent>@(7 - ShownPlayer.TotalForcesKilledInBattle)</SimpleNumberComponent> more forces are killed in battle.</div>
                                 }
                             }
                         }
 
                         @if (h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove && h.Game.HasResourceDeckPrescience(Player))
                         {
-                            <Hoverable Popover=@Popup.Get(h.Game.ResourceCardDeck.Top)>Top card of @Name(Concept.Resource) Deck: <span class="badge bg-primary rounded-pill">@Name(h.Game.ResourceCardDeck.Top)</span></Hoverable>
+                            <Hoverable Popover=@Popup.Get(h.Game.ResourceCardDeck.Top)>Top card of @Name(Concept.Resource) Deck: <SimpleNumberComponent>@Name(h.Game.ResourceCardDeck.Top)</SimpleNumberComponent></Hoverable>
                         }
 
                         <!-- Cards -->

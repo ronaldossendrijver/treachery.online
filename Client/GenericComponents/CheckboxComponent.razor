@@ -4,7 +4,7 @@
 
 @inherits GameComponent
 
-<div class="form-check">
+<div class="form-check @Class">
     <input class="form-check-input" type="checkbox" id="@Id" @bind="Value">
     <label class="form-check-label" for="@Id">@ChildContent</label>
 </div>
@@ -39,4 +39,7 @@
 
     [Parameter]
     public Action<bool> OnChanged { get; set; }
+
+    [Parameter]
+    public string Class { get; set; } = "";
 }

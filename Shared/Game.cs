@@ -49,8 +49,8 @@ namespace Treachery.Shared
         public IDictionary<Location, int> ResourcesOnPlanet { get; private set; } = new Dictionary<Location, int>();
         public IDictionary<IHero, LeaderState> LeaderState { get; private set; } = new Dictionary<IHero, LeaderState>();
         public Deck<LeaderSkill> SkillDeck { get; private set; }
-        private Random Random { get; set; }
         public Dictionary<Player, Dictionary<MainPhase, TimeSpan>> Timers { get; private set; } = new Dictionary<Player, Dictionary<MainPhase, TimeSpan>>();
+        private Random Random { get; set; }
 
         #endregion GameState
 

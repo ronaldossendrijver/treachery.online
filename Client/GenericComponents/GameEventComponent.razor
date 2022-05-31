@@ -63,7 +63,7 @@
     {
         return values.Select(o => Name(o)).ToList();
     }
-    
+
     protected void SetIfValid<DisplayType, OriginalType>(ref DisplayType field, IEnumerable<OriginalType> validValues, OriginalType newValue)
     {
         if ((object)field != (object)newValue && validValues.Contains(newValue))

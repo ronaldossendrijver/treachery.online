@@ -268,6 +268,12 @@ namespace Treachery.Server
             await Channel("observers", gameID).SendAsync("HandleChatMessage", e);
         }
 
+        public async Task SetTimer(int gameID, int value)
+        {
+            await Channel("players", gameID).SendAsync("UpdateTimer", value);
+            await Channel("observers", gameID).SendAsync("UpdateTimer", value);
+        }
+
         public void GameFinished(string state, GameInfo info)
         {
             SendMail(state, info);

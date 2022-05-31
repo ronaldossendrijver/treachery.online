@@ -36,7 +36,7 @@
 
         @if (Revival.ValidMaxRevivalsByRed(Game, Player) > 0)
         {
-            <div class="mt-2">You may select up to <span class="badge bg-primary rounded-pill">@Revival.ValidMaxRevivalsByRed(Game, Player)</span> forces to be revived by your ally:</div>
+            <div class="mt-2">You may select up to <SimpleNumberComponent>@Revival.ValidMaxRevivalsByRed(Game, Player)</SimpleNumberComponent> forces to be revived by your ally:</div>
 
             @if (Revival.ValidMaxRevivals(Game, Player, false) > 0)
             {
@@ -75,11 +75,11 @@
             assignSkill = false;
         }
 
-        <div class="mt-1 text-end">Revival cost for you: <span class="badge bg-primary rounded-pill">@(CostOfRevival.TotalCostForPlayer)</span></div>
+        <div class="mt-1 text-end">Revival cost for you: <SimpleNumberComponent>@(CostOfRevival.TotalCostForPlayer)</SimpleNumberComponent></div>
 
         @if (Player.Ally == Faction.Red)
         {
-            <div class="mt-1 text-end">Revival cost for @Skin.Current.Describe(Faction.Red): <span class="badge bg-primary rounded-pill">@(CostOfRevival.CostForEmperor)</span></div>
+            <div class="mt-1 text-end">Revival cost for @Skin.Current.Describe(Faction.Red): <SimpleNumberComponent>@(CostOfRevival.CostForEmperor)</SimpleNumberComponent></div>
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Revive" ConfirmError=@Validation />

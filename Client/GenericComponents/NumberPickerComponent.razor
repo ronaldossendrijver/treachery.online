@@ -85,6 +85,12 @@
     public int Max { get; set; } = 10;
 
     [Parameter]
+    public int StepUp { get; set; } = 1;
+
+    [Parameter]
+    public int StepDown { get; set; } = 1;
+
+    [Parameter]
     public string SymbolSRC { get; set; } = null;
 
     [Parameter]
@@ -133,7 +139,7 @@
     {
         if (!Disabled && Value < Max)
         {
-            Value++;
+            Value += StepUp;
             OnUp.InvokeAsync();
         }
     }
@@ -142,7 +148,7 @@
     {
         if (!Disabled && Value > Min)
         {
-            Value--;
+            Value -= StepDown;
             OnDown.InvokeAsync();
         }
     }
@@ -159,9 +165,9 @@
         }
     }
 
-    private bool MayIncrease => !Disabled && Value < Max;
+    private bool MayIncrease => !Disabled && Value + StepUp <= Max;
 
-    private bool MayDecrease => !Disabled && Value > Min;
+    private bool MayDecrease => !Disabled && Value - StepDown >= Min;
 
     private bool _upHovered = false;
     private bool _downHovered = false;

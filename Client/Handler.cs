@@ -41,17 +41,15 @@ namespace Treachery.Client
         public CaptureDevice AudioDevice { get; set; }
         public CaptureDevice VideoDevice { get; set; }
 
-        //Display settings
+        //Settings
         public bool ShowWheelsAndHMS { get; set; } = true;
         public Battle BattleUnderConstruction { get; set; } = null;
         public int BidAutoPassThreshold { get; set; } = 0;
         public bool Autopass { get; set; } = false;
         public bool KeepAutopassSetting { get; set; } = false;
-
-
-        //Other settings
         public bool StatisticsSent { get; set; } = false;
         public bool BotsArePaused { get; set; } = false;
+        public int Timer { get; set; } = -1;
 
         public event Action RefreshHandler;
         public event Action RefreshPopoverHandler;
@@ -156,6 +154,12 @@ namespace Treachery.Client
             _connection.On<string>("HandleLoadSkin", (skin) => HandleLoadSkin(skin));
             _connection.On<int, byte[]>("ReceiveVideo", (playerposition, data) => ReceiveVideo(playerposition, data));
             _connection.On<string, string, string>("HandleLoadGame", (state, playerName, skin) => HandleLoadGame(state, playerName, skin));
+            _connection.On<int>("UpdateTimer", (value) => UpdateTimer(value));
+        }
+
+        private void UpdateTimer(int value)
+        {
+            Timer = value;
         }
 
         private async Task ReceiveVideo(int playerPosition, byte[] data)

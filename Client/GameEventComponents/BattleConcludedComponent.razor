@@ -125,6 +125,7 @@
     private IHero traitorToReplace;
 
     protected override BattleConcluded ConfirmedResult => new BattleConcluded(Game) {
+
         Initiator = Faction,
         DiscardedCards = DetermineSelectedCards(),
         StolenToken = stolenToken,

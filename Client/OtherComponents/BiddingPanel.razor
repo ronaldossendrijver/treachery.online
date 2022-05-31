@@ -162,7 +162,7 @@
 
     private string BidLabel => "Bid " + (amount + allyContributionAmount + redContributionAmount);
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         if (!IsSilentAuction)
         {
@@ -172,11 +172,21 @@
             allyContributionAmount = Math.Min(bidToDo, allyResources);
             amount = Math.Min(bidToDo - allyContributionAmount, playerResources);
         }
+
+        await StartTimerCycleAsync(1000);
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
         ResetAutopassThreshold();
+    }
+
+    protected override async Task CycleAsync()
+    {
+        if (h.Status.TimedEvent != null && h.Timer > 0 && DateTime.Now.Subtract(h.Status.TimedEvent.Time).TotalSeconds > h.Timer)
+        {
+            await Pass();
+        }
     }
 
     private async Task AutoPass()
