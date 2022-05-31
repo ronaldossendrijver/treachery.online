@@ -539,6 +539,8 @@ namespace Treachery.Test
         [TestMethod]
         public void Regression()
         {
+            Message.DefaultDescriber = Skin.Current;
+
             ProfileGames();
 
             _cardcount = new();
@@ -662,7 +664,8 @@ namespace Treachery.Test
                     foreach (var p in game.Winners)
                     {
                         statistics.GameWinningPlayers.Count(DetermineName(p));
-                        statistics.GameWinningFactions.Count(p.Faction);
+                        var fnt = new FactionAndTurn() { Faction = p.Faction, Turn = game.CurrentTurn };
+                        statistics.GameWinningFactions.Count(fnt);
                     }
                 }
                 else if (latest is BattleInitiated)
@@ -1293,5 +1296,7 @@ namespace Treachery.Test
                 Console.WriteLine("{0}: {1} {2} {3} {4} {5} {6}", faction.ToString().PadLeft(20), p0.PadLeft(5), p1.PadLeft(5), p2.PadLeft(5), p3.PadLeft(5), p4.PadLeft(5), p5.PadLeft(5));
             }
         }
+
+        
     }
 }

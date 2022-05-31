@@ -14,7 +14,7 @@ namespace Treachery.Test
         public ObjectCounter<string> GamePlayingPlayers { get; } = new();
         public ObjectCounter<string> GameWinningPlayers { get; } = new();
         public ObjectCounter<Faction> GamePlayingFactions { get; } = new();
-        public ObjectCounter<Faction> GameWinningFactions { get; } = new();
+        public ObjectCounter<FactionAndTurn> GameWinningFactions { get; } = new();
         public ObjectCounter<WinMethod> GameWinningMethods { get; } = new();
         public List<TimeSpan> GameTimes { get; } = new();
         public ObjectCounter<int> GameNumberOfTurns { get; } = new();
@@ -49,8 +49,8 @@ namespace Treachery.Test
 
             OutputCounter("GameTypes", GameTypes, describer);
             OutputCounter("GamePlayerSetup", GamePlayerSetup, describer);
-            OutputCounter("GamePlayingPlayers", GamePlayingPlayers, describer);
-            OutputCounter("GameWinningPlayers", GameWinningPlayers, describer);
+            OutputCounter("GamePlayingPlayers", GamePlayingPlayers, describer, 100);
+            OutputCounter("GameWinningPlayers", GameWinningPlayers, describer, 100);
             OutputCounter("GamePlayingFactions", GamePlayingFactions, describer);
             OutputCounter("GameWinningFactions", GameWinningFactions, describer);
             OutputCounter("GameWinningMethods", GameWinningMethods, describer);
@@ -88,5 +88,18 @@ namespace Treachery.Test
                 Console.WriteLine(describer.Format("{0};{1}", i, c.CountOf(i)));
             }
         }
+
     }
+
+    public class FactionAndTurn
+    {
+        public Faction Faction;
+        public int Turn;
+
+        public override string ToString()
+        {
+            return Message.DefaultDescriber.Format("{0};{1}", Faction, Turn);
+        }
+    }
+
 }
