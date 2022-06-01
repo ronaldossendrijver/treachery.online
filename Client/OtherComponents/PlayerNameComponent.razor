@@ -28,5 +28,11 @@
 
     private bool IsValid => PlayerJoined.ValidName(playername) == "";
 
-    private async Task Confirm() => await h.ConfirmPlayername(playername);
+    private async Task Confirm() {
+
+        if (PlayerJoined.ValidName(playername) == "")
+        {
+            await h.SetPlayerName(playername)
+        }
+    }
 }

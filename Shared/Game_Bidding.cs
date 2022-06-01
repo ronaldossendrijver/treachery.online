@@ -16,14 +16,14 @@ namespace Treachery.Shared
         public int CardNumber { get; private set; }
         public IBid CurrentBid { get; private set; }
         public Dictionary<Faction, IBid> Bids { get; private set; } = new Dictionary<Faction, IBid>();
-        public TreacheryCard CardSoldOnBlackMarket { get; private set; }
-
+        
         private bool GreySwappedCardOnBid { get; set; }
         private bool RegularBiddingIsDone { get; set; }
         private bool BiddingRoundWasStarted { get; set; }
         private bool WhiteAuctionShouldStillHappen { get; set; }
         private int NumberOfCardsOnAuction { get; set; }
         private TriggeredBureaucracy BiddingTriggeredBureaucracy { get; set; }
+        private TreacheryCard CardSoldOnBlackMarket { get; set; }
 
         private void EnterBiddingPhase()
         {

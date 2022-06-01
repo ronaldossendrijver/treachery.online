@@ -2,12 +2,12 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
  */
 
-using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
 using Treachery.Shared;
 
 namespace Treachery.Client
@@ -640,41 +640,6 @@ namespace Treachery.Client
             previousPhase = Game.CurrentPhase;
         }
 
-        private bool awaitingBotAction = false;
-        private void PerformBotAction(GameEvent e)
-        {
-            if (!awaitingBotAction && Game.Players.Any(p => p.IsBot))
-            {
-                awaitingBotAction = true;
-                int botDelay = DetermineBotDelay(Game.CurrentMainPhase, e, Status.FlashInfo.Count);
-                _ = Task.Delay(botDelay).ContinueWith(e => PerformBotEvent());
-            }
-        }
-
-        private static int DetermineBotDelay(MainPhase phase, GameEvent e, int nrOfFlashMessages)
-        {
-            if (nrOfFlashMessages > 0)
-            {
-                return 2500 + nrOfFlashMessages * 3000;
-            }
-            else if (phase == MainPhase.Resurrection || phase == MainPhase.Charity || e is AllyPermission || e is DealOffered)
-            {
-                return 400;
-            }
-            else if (e is Bid)
-            {
-                return 1500;
-            }
-            else if (phase == MainPhase.Battle || phase == MainPhase.ShipmentAndMove)
-            {
-                return 5000;
-            }
-            else
-            {
-                return 2000;
-            }
-        }
-
         private async Task SaveGameInfo()
         {
             if (!IsObserver)
@@ -718,17 +683,46 @@ namespace Treachery.Client
             }
         }
 
-        public async Task ConfirmPlayername(string name)
+        #endregion ClientUpdates
+
+        #region Bots
+
+        private bool awaitingBotAction = false;
+        private void PerformBotAction(GameEvent e)
         {
-            if (PlayerJoined.ValidName(name) == "")
+            if (!awaitingBotAction && Game.Players.Any(p => p.IsBot))
             {
-                PlayerName = name;
-                await CheckIfPlayerCanReconnect();
-                Refresh();
+                awaitingBotAction = true;
+                int botDelay = DetermineBotDelay(Game.CurrentMainPhase, e, Status.FlashInfo.Count);
+                _ = Task.Delay(botDelay).ContinueWith(e => PerformBotEvent());
             }
         }
 
-        #endregion ClientUpdates
+        private static int DetermineBotDelay(MainPhase phase, GameEvent e, int nrOfFlashMessages)
+        {
+            if (nrOfFlashMessages > 0)
+            {
+                return 2500 + nrOfFlashMessages * 3000;
+            }
+            else if (phase == MainPhase.Resurrection || phase == MainPhase.Charity || e is AllyPermission || e is DealOffered)
+            {
+                return 400;
+            }
+            else if (e is Bid)
+            {
+                return 1500;
+            }
+            else if (phase == MainPhase.Battle || phase == MainPhase.ShipmentAndMove)
+            {
+                return 5000;
+            }
+            else
+            {
+                return 2000;
+            }
+        }
+
+        #endregion
 
         #region SupportMethods
 
@@ -746,7 +740,14 @@ namespace Treachery.Client
 
         public Phase CurrentPhase => Game.CurrentPhase;
 
-        public async Task CheckIfPlayerCanReconnect()
+        public async Task SetPlayerName(string name)
+        {
+            PlayerName = name;
+            await CheckIfPlayerCanReconnect();
+            Refresh();
+        }
+
+        private async Task CheckIfPlayerCanReconnect()
         {
             GameInProgressHostId = 0;
 
