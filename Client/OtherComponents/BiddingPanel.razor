@@ -24,7 +24,7 @@
                     <img src="@Skin.Current.CardBack_TreacheryCard_URL" width="150" />
                 }
 
-                <div style="position: absolute; top: 100px; width: 150px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
+                <div style="position: absolute; top: 80px; left: 5px; width: 180px; text-align: center; filter:drop-shadow(2px 2px 2px black)">
 
                     <div style=@AuctionDescriptionStyle>
                         @AuctionDescription
@@ -215,5 +215,5 @@
 
     private bool IsSilentAuction => Game.CurrentAuctionType == AuctionType.BlackMarketSilent || Game.CurrentAuctionType == AuctionType.WhiteSilent;
 
-    private string AuctionDescriptionStyle => string.Format("font-size: 24px; font-weight: bold; {0}", Support.TextBorder(2, "black"));
+    private string AuctionDescriptionStyle => string.Format("font-size: 22px; font-weight: bold; {0}", Support.TextBorder(2, "black"));
 }

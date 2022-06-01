@@ -48,9 +48,10 @@ namespace Treachery.Shared
                 g.Applicable(Rule.BlueAccompaniesToShipmentLocation) && 
                 !AllyPreventsAccompanyingToShipmentLocation(g, p))
             {
-                result.AddRange(g.LastShippedOrMovedTo.Territory.Locations.Where(l =>
+                result.AddRange(g.LastShippedOrMovedTo.Territory.Locations.Where(l => g.Version <= 142 || (
                     l.Sector != g.SectorInStorm &&
-                    (g.Applicable(Rule.BlueAdvisors) || g.IsNotFull(p, l))));
+                    (g.Applicable(Rule.BlueAdvisors) || g.IsNotFull(p, l))
+                    )));
             }
 
             result.Add(g.Map.PolarSink);

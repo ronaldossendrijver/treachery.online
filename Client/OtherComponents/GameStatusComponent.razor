@@ -19,7 +19,7 @@
 
             <div class="row row-cols-6 d-flex justify-content-center mt-2 mb-3">
 
-                @if (IsBiddingPhase)
+                @if (IsBiddingPhase && ToBid.Count() > 0)
                 {
                     bool showTurnInSequence = h.Game.CurrentPhase == Phase.BlackMarketBidding || h.Game.CurrentPhase == Phase.Bidding || h.Game.CurrentPhase == Phase.BiddingReport;
                     var hasTurn = h.Status.WaitingForPlayers.Count() == 1 && !showTurnInSequence ? h.Status.WaitingForPlayers.First() : null;
@@ -78,7 +78,7 @@
         }
 
         <div class="text-dark fw-bold text-center" style="@StatusStyle">
-            <ExpressionComponent Game=Game Expression=@h.Status.GetMessage(h.Player, h.IsHost).Expression Size=24/>
+            <ExpressionComponent Game=Game Expression=@h.Status.GetMessage(h.Player, h.IsHost).Expression Size=20/>
         </div>
 
         @if (!autoConfirm && CanEndPhase)
@@ -95,7 +95,7 @@
 
         @if (h.IsHost && Game.CurrentMainPhase == MainPhase.Bidding && Game.Players.Count(p => !p.IsBot) > 1)
         {
-            <div style="color:black;">
+            <div class="mt-1" style="color:black;">
                 <CheckboxComponent @bind-Value="@timeLimitSet" OnChanged=EnableOrDisableTimer>Time limit (seconds)</CheckboxComponent>
                 @if (timeLimitSet)
                 {
@@ -228,7 +228,23 @@
 
     protected string TimerColor(bool hasTurn) => hasTurn ? "red" : "black";
 
-    private int TimerStepUp => timeLimit < 60 ? 10 : 30;
+    private int TimerStepUp
+    {
+        get
+        {
+            if (timeLimit < 20) return 5;
+            else if (timeLimit < 60) return 10;
+            else return 30;
+        }
+    }
 
-    private int TimerStepDown => timeLimit > 60 ? 30 : 10;
+    private int TimerStepDown
+    {
+        get
+        {
+            if (timeLimit > 60) return 30;
+            else if (timeLimit > 20) return 10;
+            else return 5;
+        }
+    }
 }

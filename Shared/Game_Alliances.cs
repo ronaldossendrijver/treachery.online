@@ -108,7 +108,7 @@ namespace Treachery.Shared
                 Enter(PhaseBeforeCardTrade);
             }
         }
-        private CardTraded CurrentCardTradeOffer { get; set; } = null;
+        public CardTraded CurrentCardTradeOffer { get; private set; } = null;
         private Phase PhaseBeforeCardTrade { get; set; } = Phase.None;
         private int LastTurnCardWasTraded { get; set; } = -1;
 

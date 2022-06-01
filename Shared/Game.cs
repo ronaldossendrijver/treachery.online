@@ -952,6 +952,11 @@ namespace Treachery.Shared
             }
         }
 
+        private void Log(GameEvent e)
+        {
+            CurrentReport.Express(e);
+        }
+
         private void Log(params object[] expression)
         {
             CurrentReport.Express(expression); 
