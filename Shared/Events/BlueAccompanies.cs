@@ -43,9 +43,14 @@ namespace Treachery.Shared
         public static IEnumerable<Location> ValidTargets(Game g, Player p)
         {
             var result = new List<Location>();
-            if (g.LastShippedOrMovedTo != g.Map.PolarSink && !p.Occupies(g.LastShippedOrMovedTo.Territory) && g.Applicable(Rule.BlueAccompaniesToShipmentLocation) && !AllyPreventsAccompanyingToShipmentLocation(g, p))
+            if (g.LastShippedOrMovedTo != g.Map.PolarSink && 
+                !p.Occupies(g.LastShippedOrMovedTo.Territory) && 
+                g.Applicable(Rule.BlueAccompaniesToShipmentLocation) && 
+                !AllyPreventsAccompanyingToShipmentLocation(g, p))
             {
-                result.AddRange(g.LastShippedOrMovedTo.Territory.Locations);
+                result.AddRange(g.LastShippedOrMovedTo.Territory.Locations.Where(l =>
+                    l.Sector != g.SectorInStorm &&
+                    (g.Applicable(Rule.BlueAdvisors) || g.IsNotFull(p, l))));
             }
 
             result.Add(g.Map.PolarSink);

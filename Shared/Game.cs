@@ -800,6 +800,11 @@ namespace Treachery.Shared
 
         #region SupportMethods
 
+        public bool IsNotFull(Player p, Location l)
+        {
+            return (!l.Territory.IsStronghold || (p.Is(Faction.Blue) && p.SpecialForcesIn(l) > 0) || NrOfOccupantsExcludingPlayer(l, p) < 2);
+        }
+
         private Payment Payment(int amount)
         {
             return new Payment() { Amount = amount };

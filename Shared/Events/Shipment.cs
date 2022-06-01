@@ -16,7 +16,7 @@ namespace Treachery.Shared
 
         private static List<Location> YellowSpawnLocations(Game g, Player p)
         {
-            return g.Map.Locations.Where(l => IsNotFull(g, p, l) && (l == g.Map.TheGreatFlat || l == g.Map.TheGreaterFlat || l == g.Map.FuneralPlain || l.Territory == g.Map.BightOfTheCliff || l == g.Map.SietchTabr ||
+            return g.Map.Locations.Where(l => g.IsNotFull(p, l) && (l == g.Map.TheGreatFlat || l == g.Map.TheGreaterFlat || l == g.Map.FuneralPlain || l.Territory == g.Map.BightOfTheCliff || l == g.Map.SietchTabr ||
                 l.Territory == g.Map.PlasticBasin || l.Territory == g.Map.RockOutcroppings || l.Territory == g.Map.BrokenLand || l.Territory == g.Map.Tsimpo || l.Territory == g.Map.HaggaBasin ||
                 l == g.Map.PolarSink || l.Territory == g.Map.WindPass || l.Territory == g.Map.WindPassNorth || l.Territory == g.Map.CielagoWest || l.Territory == g.Map.FalseWallWest || l.Territory == g.Map.HabbanyaErg))
                 .ToList();
@@ -247,7 +247,7 @@ namespace Treachery.Shared
             return g.Map.Locations.Where(l =>
                 l.Sector != g.SectorInStorm &&
                 (l != g.Map.HiddenMobileStronghold || p.Is(Faction.Grey)) &&
-                IsNotFull(g, p, l));
+                g.IsNotFull(p, l));
         }
 
         public static IEnumerable<int> ValidNoFieldValues(Game g, Player p)
@@ -261,11 +261,6 @@ namespace Treachery.Shared
                 if (g.LatestRevealedNoFieldValue != 5 && g.CurrentNoFieldValue != 5) result.Add(5);
             }
             return result;
-        }
-
-        private static bool IsNotFull(Game g, Player p, Location l)
-        {
-            return (!l.Territory.IsStronghold || (p.Is(Faction.Blue) && p.SpecialForcesIn(l) > 0) || g.NrOfOccupantsExcludingPlayer(l, p) < 2);
         }
 
         protected override void ExecuteConcreteEvent()
