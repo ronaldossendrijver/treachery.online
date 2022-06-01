@@ -2,6 +2,8 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
  */
 
+using System.Linq;
+
 namespace Treachery.Shared
 {
     public partial class Game
@@ -36,7 +38,7 @@ namespace Treachery.Shared
                 {
                     int toCollect = Players.Count * 2 * CurrentCharityMultiplier;
                     brown.Resources += toCollect;
-                    CurrentReport.Express(Faction.Brown, " collect ", Payment(toCollect));
+                    Log(Faction.Brown, " collect ", Payment(toCollect));
                 }
             }
             else
@@ -79,6 +81,20 @@ namespace Treachery.Shared
             }
         }
 
+        private void ReceiveResourceTechIncome()
+        {
+            if (ResourceTechTokenIncome)
+            {
+                var techTokenOwner = Players.FirstOrDefault(p => p.TechTokens.Contains(TechToken.Resources));
+                if (techTokenOwner != null)
+                {
+                    var amount = techTokenOwner.TechTokens.Count;
+                    techTokenOwner.Resources += amount;
+                    Log(techTokenOwner.Faction, " receive ", Payment(amount), " from ", TechToken.Resources);
+                }
+            }
+        }
+
         private int CurrentCharityMultiplier
         {
             get
@@ -108,16 +124,16 @@ namespace Treachery.Shared
                 if (brown.Resources >= amount)
                 {
                     brown.Resources -= amount;
-                    CurrentReport.Express(to.Faction, " claim ", Payment(amount), " from ", Faction.Brown);
+                    Log(to.Faction, " claim ", Payment(amount), " from ", Faction.Brown);
                 }
                 else
                 {
-                    CurrentReport.Express(to.Faction, " are unable to claim ", Payment(amount), " from ", Faction.Brown);
+                    Log(to.Faction, " are unable to claim ", Payment(amount), " from ", Faction.Brown);
                 }
             }
             else
             {
-                CurrentReport.Express(to.Faction, " claim ", Payment(amount));
+                Log(to.Faction, " claim ", Payment(amount));
             }
         }
 

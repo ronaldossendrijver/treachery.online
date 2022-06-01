@@ -26,14 +26,14 @@ namespace Treachery.Shared
             }
             else
             {
-                CurrentReport.Express(e);
+                Log(e);
                 DealOffers.Add(e);
             }
         }
 
         public void HandleEvent(DealAccepted e)
         {
-            CurrentReport.Express(e);
+            Log(e);
             var offer = DealOffers.FirstOrDefault(offer => offer.IsAcceptedBy(e));
 
             if (offer != null)
@@ -64,8 +64,8 @@ namespace Treachery.Shared
         {
             if (offer.Type == DealType.TellDiscardedTraitors)
             {
-                CurrentReport.ExpressTo(accepted.Initiator, offer.Initiator, " discarded: ", offer.Player.DiscardedTraitors);
-                CurrentReport.Express(offer.Initiator, " gave ", accepted.Initiator, " the agreed information");
+                LogTo(accepted.Initiator, offer.Initiator, " discarded: ", offer.Player.DiscardedTraitors);
+                Log(offer.Initiator, " gave ", accepted.Initiator, " the agreed information");
             }
         }
 

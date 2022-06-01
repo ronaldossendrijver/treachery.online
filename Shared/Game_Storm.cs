@@ -49,7 +49,7 @@ namespace Treachery.Shared
 
             if (HasBattleWheel.All(f => HasActedOrPassed.Contains(f)))
             {
-                CurrentReport.Express("Storm dial: ", Dials[0], HasActedOrPassed[0], " + ", Dials[1], HasActedOrPassed[1], " = ", Dials[0] + Dials[1]);
+                Log("Storm dial: ", Dials[0], HasActedOrPassed[0], " + ", Dials[1], HasActedOrPassed[1], " = ", Dials[0] + Dials[1]);
                 NextStormMoves = Dials.Sum();
 
                 if (CurrentTurn == 1)
@@ -66,7 +66,7 @@ namespace Treachery.Shared
         private void PositionFirstStorm()
         {
             SectorInStorm = NextStormMoves % Map.NUMBER_OF_SECTORS;
-            CurrentReport.Express("The first storm moves ", SectorInStorm, " sectors");
+            Log("The first storm moves ", SectorInStorm, " sectors");
             PerformStorm();
 
             if (Applicable(Rule.TechTokens))
@@ -97,7 +97,7 @@ namespace Treachery.Shared
                 {
                     if (Map.HiddenMobileStronghold.AttachedToLocation.Sector == SectorInStorm)
                     {
-                        CurrentReport.Express("The storm prevents ", Map.HiddenMobileStronghold, " from moving");
+                        Log("The storm prevents ", Map.HiddenMobileStronghold, " from moving");
                         DetermineStorm();
                     }
                     else
@@ -160,14 +160,14 @@ namespace Treachery.Shared
         private void RevealStorm()
         {
             HasActedOrPassed.Clear();
-            CurrentReport.Express("The storm will move ", NextStormMoves, " sectors...");
+            Log("The storm will move ", NextStormMoves, " sectors...");
             Enter(Phase.MetheorAndStormSpell);
         }
 
         public void HandleEvent(PerformHmsPlacement e)
         {
             Map.HiddenMobileStronghold.PointAt(e.Target);
-            CurrentReport.Express(e);
+            Log(e);
             EndStormPhase();
             RecentMilestones.Add(Milestone.HmsMovement);
         }
@@ -176,7 +176,7 @@ namespace Treachery.Shared
         {
             var initiator = GetPlayer(e.Initiator);
             int collectionRate = initiator.AnyForcesIn(Map.HiddenMobileStronghold) * 2;
-            CurrentReport.Express(e);
+            Log(e);
 
             var currentLocation = Map.HiddenMobileStronghold.AttachedToLocation;
             CollectSpiceFrom(e.Initiator, currentLocation, collectionRate);
@@ -203,7 +203,7 @@ namespace Treachery.Shared
                 ChangeResourcesOnPlanet(l, -collected);
                 var collector = GetPlayer(faction);
                 collector.Resources += collected;
-                CurrentReport.Express(faction, " collect ", Payment(collected), " from ", l);
+                Log(faction, " collect ", Payment(collected), " from ", l);
             }
         }
 
@@ -215,7 +215,7 @@ namespace Treachery.Shared
             if (yellow != null)
             {
                 yellow.TechTokens.Add(TechToken.Resources);
-                CurrentReport.Express(Faction.Yellow, " receive ", TechToken.Resources);
+                Log(Faction.Yellow, " receive ", TechToken.Resources);
             }
             else
             {
@@ -226,7 +226,7 @@ namespace Treachery.Shared
             if (purple != null)
             {
                 purple.TechTokens.Add(TechToken.Graveyard);
-                CurrentReport.Express(Faction.Purple, " receive ", TechToken.Graveyard);
+                Log(Faction.Purple, " receive ", TechToken.Graveyard);
             }
             else
             {
@@ -237,7 +237,7 @@ namespace Treachery.Shared
             if (grey != null)
             {
                 grey.TechTokens.Add(TechToken.Ships);
-                CurrentReport.Express(Faction.Grey, " receive ", TechToken.Ships);
+                Log(Faction.Grey, " receive ", TechToken.Ships);
             }
             else
             {
@@ -256,7 +256,7 @@ namespace Treachery.Shared
                 {
                     var token = remainingTechTokens.Draw();
                     techTokenSequence.CurrentPlayer.TechTokens.Add(token);
-                    CurrentReport.Express(techTokenSequence.CurrentPlayer.Faction, " receive ", token);
+                    Log(techTokenSequence.CurrentPlayer.Faction, " receive ", token);
                 }
 
                 techTokenSequence.NextPlayer();
@@ -272,7 +272,7 @@ namespace Treachery.Shared
             ShieldWallDestroyed = true;
             player.TreacheryCards.Remove(card);
             RemovedTreacheryCards.Add(card);
-            CurrentReport.Express(e);
+            Log(e);
 
             foreach (var p in Players)
             {
@@ -287,7 +287,7 @@ namespace Treachery.Shared
         public void HandleEvent(StormSpellPlayed e)
         {
             Discard(GetPlayer(e.Initiator), TreacheryCardType.StormSpell);
-            CurrentReport.Express(e);
+            Log(e);
             MoveStormAndDetermineNext(e.MoveAmount);
             EndStormPhase();
         }
@@ -295,7 +295,7 @@ namespace Treachery.Shared
 
         private void EnterNormalStormPhase()
         {
-            CurrentReport.Express("The storm moves ", NextStormMoves, " sectors");
+            Log("The storm moves ", NextStormMoves, " sectors");
             MoveStormAndDetermineNext(NextStormMoves);
             EndStormPhase();
         }
@@ -356,7 +356,7 @@ namespace Treachery.Shared
 
                     if (killCount > 0)
                     {
-                        CurrentReport.Express("The storm kills ", killCount, battalion.Faction, " forces in ", l.Key);
+                        Log("The storm kills ", killCount, battalion.Faction, " forces in ", l.Key);
                     }
                 }
             }
@@ -366,7 +366,7 @@ namespace Treachery.Shared
                 int removed = RemoveResources(l);
                 if (removed > 0)
                 {
-                    CurrentReport.Express("The storm destroys ", Payment(removed), " in ", l);
+                    Log("The storm destroys ", Payment(removed), " in ", l);
                 }
             }
         }
@@ -382,7 +382,7 @@ namespace Treachery.Shared
             if (e.UseUselessCard)
             {
                 var card = TakeLosses.ValidUselessCardToPreventLosses(this, e.Player);
-                CurrentReport.Express(e.Initiator, " use ", card, " to prevent losing forces in ", StormLossesToTake[0].Location);
+                Log(e.Initiator, " use ", card, " to prevent losing forces in ", StormLossesToTake[0].Location);
                 StormLossesToTake.RemoveAt(0);
                 Discard(e.Player, card);
                 RecentMilestones.Add(Milestone.SpecialUselessPlayed);
@@ -391,7 +391,7 @@ namespace Treachery.Shared
             {
                 player.KillForces(TakeLosses.LossesToTake(this).Location, e.ForceAmount, e.SpecialForceAmount, false);
                 StormLossesToTake.RemoveAt(0);
-                CurrentReport.Express(e);
+                Log(e);
             }
 
             if (PhaseBeforeStormLoss == Phase.BlowA)

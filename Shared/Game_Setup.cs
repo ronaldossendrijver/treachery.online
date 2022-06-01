@@ -28,7 +28,7 @@ namespace Treachery.Shared
             CurrentMainPhase = MainPhase.Setup;
             CurrentReport = new Report(MainPhase.Setup);
 
-            CurrentReport.Express("Game started!");
+            Log("Game started!");
 
             Seed = e.Seed;
             Name = e.GameName;
@@ -40,9 +40,9 @@ namespace Treachery.Shared
             Rules.AddRange(GetRulesInGroup(RuleGroup.CoreBasic));
 
             Ruleset = DetermineApproximateRuleset(e.FactionsInPlay, Rules);
-            CurrentReport.Express("Ruleset: ", Ruleset);
+            Log("Ruleset: ", Ruleset);
             var customRules = GetCustomRules().ToList();
-            CurrentReport.ExpressIf(customRules.Any(), "House rules: ", customRules);
+            LogIf(customRules.Any(), "House rules: ", customRules);
 
             if (Applicable(Rule.ExpansionTreacheryCards))
             {
@@ -78,7 +78,7 @@ namespace Treachery.Shared
             MaximumNumberOfTurns = e.MaximumTurns;
             MaximumNumberOfPlayers = e.MaximumNumberOfPlayers;
 
-            CurrentReport.Express("The maximum number of turns is: ", MaximumNumberOfTurns);
+            Log("The maximum number of turns is: ", MaximumNumberOfTurns);
 
             FactionsInPlay = e.FactionsInPlay;
 
@@ -137,7 +137,7 @@ namespace Treachery.Shared
             {
                 var p = new Player(this, newPlayer);
                 Players.Add(p);
-                CurrentReport.Express(p.Name, " joined the game");
+                Log(p.Name, " joined the game");
             }
         }
 
@@ -215,7 +215,7 @@ namespace Treachery.Shared
             {
                 initiator.Faction = e.Faction;
                 FactionsInPlay.Remove(e.Faction);
-                CurrentReport.Express(e);
+                Log(e);
             }
         }
 
@@ -271,7 +271,7 @@ namespace Treachery.Shared
         {
             if (!IsPlaying(thisOffer.Target))
             {
-                CurrentReport.Express(thisOffer.Initiator, " switch to ", thisOffer.Target);
+                Log(thisOffer.Initiator, " switch to ", thisOffer.Target);
                 FactionsInPlay.Add(thisOffer.Initiator);
                 thisOffer.Player.Faction = thisOffer.Target;
 
@@ -281,7 +281,7 @@ namespace Treachery.Shared
                 var match = CurrentTradeOffers.SingleOrDefault(matchingOffer => matchingOffer.Initiator == thisOffer.Target && matchingOffer.Target == thisOffer.Initiator);
                 if (match != null)
                 {
-                    CurrentReport.Express(thisOffer.Initiator, " and ", match.Initiator, " traded factions");
+                    Log(thisOffer.Initiator, " and ", match.Initiator, " traded factions");
                     var initiator = GetPlayer(thisOffer.Initiator);
                     var target = GetPlayer(thisOffer.Target);
                     (target.Faction, initiator.Faction) = (initiator.Faction, target.Faction);
@@ -293,7 +293,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    CurrentReport.Express(thisOffer.GetMessage());
+                    Log(thisOffer.GetMessage());
                     if (!CurrentTradeOffers.Any(o => o.Initiator == thisOffer.Initiator && o.Target == thisOffer.Target))
                     {
                         CurrentTradeOffers.Add(thisOffer);
@@ -321,7 +321,7 @@ namespace Treachery.Shared
             TreacheryDeck.Shuffle();
             RecentMilestones.Add(Milestone.Shuffled);
             WhiteCache = new List<TreacheryCard>(e.WhiteCards);
-            CurrentReport.Express(e.GetVerboseMessage());
+            Log(e.GetVerboseMessage());
 
             Enter(Version < 134, EnterPhaseTradingFactions, EnterSetupPhase);
         }
@@ -349,7 +349,7 @@ namespace Treachery.Shared
         {
             GetPlayer(e.Initiator).PredictedFaction = e.ToWin;
             GetPlayer(e.Initiator).PredictedTurn = e.Turn;
-            CurrentReport.Express(e);
+            Log(e);
             Enter(TreacheryCardsBeforeTraitors, DealStartingTreacheryCards, DealTraitors);
         }
 
@@ -446,7 +446,7 @@ namespace Treachery.Shared
                 EnterSelectTraitors();
             }
 
-            CurrentReport.Express(e);
+            Log(e);
         }
 
         private void EnterSelectTraitors()
@@ -480,7 +480,7 @@ namespace Treachery.Shared
             }
 
             HasActedOrPassed.Add(e.Initiator);
-            CurrentReport.Express(e);
+            Log(e);
 
             if (EveryoneActedOrPassed)
             {
@@ -534,7 +534,7 @@ namespace Treachery.Shared
         public void HandleEvent(SkillAssigned e)
         {
 
-            CurrentReport.Express(e);
+            Log(e);
             SetSkill(e.Leader, e.Skill);
             e.Player.SkillsToChooseFrom.Remove(e.Skill);
             SetInFrontOfShield(e.Leader, true);
@@ -732,7 +732,7 @@ namespace Treachery.Shared
 
             player.Resources = e.Resources;
 
-            CurrentReport.Express(faction, " initial positions set, starting with ", Payment(e.Resources));
+            Log(faction, " initial positions set, starting with ", Payment(e.Resources));
             HasActedOrPassed.Add(faction);
 
             if (Players.Count == HasActedOrPassed.Count)
@@ -752,7 +752,7 @@ namespace Treachery.Shared
                 initiator.ShipSpecialForces(location, fl.Value.AmountOfSpecialForces);
             }
 
-            CurrentReport.Express(e);
+            Log(e);
             Enter(IsPlaying(Faction.Blue) && Applicable(Rule.BlueFirstForceInAnyTerritory), Phase.BlueSettingUp, TreacheryCardsBeforeTraitors, EnterStormPhase, DealStartingTreacheryCards);
         }
 
@@ -768,7 +768,7 @@ namespace Treachery.Shared
                 player.ShipForces(e.Target, 1);
             }
 
-            CurrentReport.Express(e);
+            Log(e);
             Enter(TreacheryCardsBeforeTraitors, EnterStormPhase, DealStartingTreacheryCards);
         }
 
@@ -796,7 +796,7 @@ namespace Treachery.Shared
         {
             GetPlayer(e.Initiator).TreacheryCards.Add(e.Card);
             StartingTreacheryCards.Items.Remove(e.Card);
-            CurrentReport.Express(e);
+            Log(e);
             StartingTreacheryCards.Shuffle();
             RecentMilestones.Add(Milestone.Shuffled);
             DealRemainingStartingTreacheryCardsToNonGrey();
@@ -808,12 +808,12 @@ namespace Treachery.Shared
             {
                 var card = StartingTreacheryCards.Draw();
                 p.TreacheryCards.Add(card);
-                CurrentReport.ExpressTo(p.Faction, "Your starting treachery card is: ", card);
+                LogTo(p.Faction, "Your starting treachery card is: ", card);
 
                 if (p.Is(Faction.Black))
                 {
                     p.TreacheryCards.Add(ExtraStartingCardForBlack);
-                    CurrentReport.ExpressTo(Faction.Black, "Your extra card is: ", ExtraStartingCardForBlack);
+                    LogTo(Faction.Black, "Your extra card is: ", ExtraStartingCardForBlack);
                 }
             }
 

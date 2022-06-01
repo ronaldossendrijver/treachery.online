@@ -10,20 +10,7 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public bool OrangeAllyMayShipAsGuild { get; private set; } = false;
-        public bool PurpleAllyMayReviveAsPurple { get; private set; } = false;
-        public bool GreyAllyMayReplaceCards { get; private set; } = false;
-        public bool BlueAllyMayUseVoice { get; private set; } = false;
-        public int RedWillPayForExtraRevival { get; private set; } = 0;
-        public bool WhiteAllyMayUseNoField { get; private set; } = false;
-        public bool YellowWillProtectFromShaiHulud { get; private set; } = false;
-        public bool YellowAllowsThreeFreeRevivals { get; private set; } = false;
-        public bool YellowSharesPrescience { get; private set; } = false;
-        public bool GreenSharesPrescience { get; private set; } = false;
-
-        private Dictionary<Faction, int> PermittedUseOfAllySpice { get; } = new Dictionary<Faction, int>();
-        private Dictionary<Faction, int> PermittedUseOfRedSpice { get; set; } = new Dictionary<Faction, int>();
-        private Dictionary<Faction, TreacheryCard> PermittedUseOfAllyKarma { get; } = new Dictionary<Faction, TreacheryCard>();
+        #region Permissions
 
         public void HandleEvent(AllyPermission e)
         {
@@ -70,33 +57,37 @@ namespace Treachery.Shared
             Set(PermittedUseOfAllyKarma, ally, e.PermittedKarmaCard);
         }
 
-        private void Set<KeyType, ValueType>(IDictionary<KeyType, ValueType> dict, KeyType key, ValueType value)
-        {
-            if (dict.ContainsKey(key))
-            {
-                dict.Remove(key);
-            }
+        public bool OrangeAllyMayShipAsGuild { get; private set; } = false;
+        public bool PurpleAllyMayReviveAsPurple { get; private set; } = false;
+        public bool GreyAllyMayReplaceCards { get; private set; } = false;
+        public bool BlueAllyMayUseVoice { get; private set; } = false;
+        public int RedWillPayForExtraRevival { get; private set; } = 0;
+        public bool WhiteAllyMayUseNoField { get; private set; } = false;
+        public bool YellowWillProtectFromShaiHulud { get; private set; } = false;
+        public bool YellowAllowsThreeFreeRevivals { get; private set; } = false;
+        public bool YellowSharesPrescience { get; private set; } = false;
+        public bool GreenSharesPrescience { get; private set; } = false;
 
-            dict.Add(key, value);
-        }
+        private Dictionary<Faction, int> PermittedUseOfAllySpice { get; } = new Dictionary<Faction, int>();
+        private Dictionary<Faction, int> PermittedUseOfRedSpice { get; set; } = new Dictionary<Faction, int>();
+        private Dictionary<Faction, TreacheryCard> PermittedUseOfAllyKarma { get; } = new Dictionary<Faction, TreacheryCard>();
 
-        public CardTraded CurrentCardTradeOffer { get; private set; } = null;
+        #endregion
 
-        private Phase PhaseBeforeCardTrade = Phase.None;
-        private int LastTurnCardWasTraded = -1;
+        #region BrownCardTrading
 
         public void HandleEvent(CardTraded e)
         {
             if (CurrentCardTradeOffer == null)
             {
-                CurrentReport.Express(e);
+                Log(e);
                 CurrentCardTradeOffer = e;
                 PhaseBeforeCardTrade = CurrentPhase;
                 Enter(Phase.TradingCards);
             }
             else
             {
-                CurrentReport.Express(e.Initiator, " and ", CurrentCardTradeOffer.Initiator, " exchange a card");
+                Log(e.Initiator, " and ", CurrentCardTradeOffer.Initiator, " exchange a card");
 
                 if (CurrentCardTradeOffer.Player.TreacheryCards.Count > 1 || e.Player.TreacheryCards.Count > 1)
                 {
@@ -115,6 +106,83 @@ namespace Treachery.Shared
                 RecentMilestones.Add(Milestone.CardTraded);
                 LastTurnCardWasTraded = CurrentTurn;
                 Enter(PhaseBeforeCardTrade);
+            }
+        }
+        private CardTraded CurrentCardTradeOffer { get; set; } = null;
+        private Phase PhaseBeforeCardTrade { get; set; } = Phase.None;
+        private int LastTurnCardWasTraded { get; set; } = -1;
+
+        #endregion
+
+        #region WhiteCardTrading
+        public void HandleEvent(WhiteGaveCard e)
+        {
+            var initiator = GetPlayer(e.Initiator);
+            var target = initiator.AlliedPlayer;
+
+            initiator.TreacheryCards.Remove(e.Card);
+            RegisterKnown(initiator, e.Card);
+            target.TreacheryCards.Add(e.Card);
+
+            foreach (var p in Players.Where(p => p != initiator && p != target))
+            {
+                UnregisterKnown(p, initiator.TreacheryCards);
+                UnregisterKnown(p, target.TreacheryCards);
+            }
+
+            Log(e);
+        }
+
+        #endregion
+
+        #region Support
+
+        private void Set<KeyType, ValueType>(IDictionary<KeyType, ValueType> dict, KeyType key, ValueType value)
+        {
+            if (dict.ContainsKey(key))
+            {
+                dict.Remove(key);
+            }
+
+            dict.Add(key, value);
+        }
+
+        private bool AreAllies(Faction a, Faction b)
+        {
+            var player = GetPlayer(a);
+            if (player != null)
+            {
+                return player.Ally == b;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public int SpiceYourAllyCanPay(Player p)
+        {
+            if (PermittedUseOfAllySpice.ContainsKey(p.Faction))
+            {
+                var ally = GetPlayer(p.Ally);
+                return Math.Min(PermittedUseOfAllySpice[p.Faction], ally.Resources);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public int SpiceForBidsRedCanPay(Faction f)
+        {
+            if (PermittedUseOfRedSpice.ContainsKey(f))
+            {
+                var red = GetPlayer(Faction.Red);
+                return Math.Min(PermittedUseOfRedSpice[f], red.Resources);
+            }
+            else
+            {
+                return 0;
             }
         }
 
@@ -155,61 +223,6 @@ namespace Treachery.Shared
             }
         }
 
-        public int SpiceYourAllyCanPay(Player p)
-        {
-            if (PermittedUseOfAllySpice.ContainsKey(p.Faction))
-            {
-                var ally = GetPlayer(p.Ally);
-                return Math.Min(PermittedUseOfAllySpice[p.Faction], ally.Resources);
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        public int SpiceForBidsRedCanPay(Faction f)
-        {
-            if (PermittedUseOfRedSpice.ContainsKey(f))
-            {
-                var red = GetPlayer(Faction.Red);
-                return Math.Min(PermittedUseOfRedSpice[f], red.Resources);
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        public void HandleEvent(WhiteGaveCard e)
-        {
-            var initiator = GetPlayer(e.Initiator);
-            var target = initiator.AlliedPlayer;
-
-            initiator.TreacheryCards.Remove(e.Card);
-            RegisterKnown(initiator, e.Card);
-            target.TreacheryCards.Add(e.Card);
-
-            foreach (var p in Players.Where(p => p != initiator && p != target))
-            {
-                UnregisterKnown(p, initiator.TreacheryCards);
-                UnregisterKnown(p, target.TreacheryCards);
-            }
-
-            CurrentReport.Express(e);
-        }
-
-        private bool AreAllies(Faction a, Faction b)
-        {
-            var player = GetPlayer(a);
-            if (player != null)
-            {
-                return player.Ally == b;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        #endregion
     }
 }

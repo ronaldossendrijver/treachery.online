@@ -10,6 +10,8 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
+        #region State
+
         public PlayerSequence BattleSequence { get; private set; }
         public BattleInitiated CurrentBattle { get; private set; }
         public Battle AggressorBattleAction { get; private set; }
@@ -20,9 +22,13 @@ namespace Treachery.Shared
         public Faction BattleWinner { get; private set; }
         public Faction BattleLoser { get; private set; }
         public int GreySpecialForceLossesToTake { get; private set; }
-        public int NrOfBattlesFought { get; private set; } = 0;
 
+        private int NrOfBattlesFought { get; set; } = 0;
         private TriggeredBureaucracy BattleTriggeredBureaucracy { get; set; }
+
+        #endregion State
+
+        #region BeginningOfBattlePhase
 
         private void EnterBattlePhase()
         {
@@ -34,24 +40,9 @@ namespace Treachery.Shared
             Enter(NextPlayerToBattle == null, EnterSpiceCollectionPhase, Version >= 107, Phase.BeginningOfBattle, Phase.BattlePhase);
         }
 
-        public Player NextPlayerToBattle
-        {
-            get
-            {
-                for (int i = 0; i < Players.Count; i++)
-                {
-                    var playerToCheck = BattleSequence.CurrentPlayer;
-                    if (Battle.MustFight(this, playerToCheck))
-                    {
-                        return playerToCheck;
-                    }
+        #endregion
 
-                    BattleSequence.NextPlayer();
-                }
-
-                return null;
-            }
-        }
+        #region BattleInitiation
 
         public void HandleEvent(BattleInitiated b)
         {
@@ -60,9 +51,9 @@ namespace Treachery.Shared
             ChosenHMSAdvantage = StrongholdAdvantage.None;
             BattleOutcome = null;
             NrOfBattlesFought++;
-            CurrentReport.Express(b);
-            CheckHeroAvailability(b.AggressivePlayer);
-            CheckHeroAvailability(b.DefendingPlayer);
+            Log(b);
+            AnnounceHeroAvailability(b.AggressivePlayer);
+            AnnounceHeroAvailability(b.DefendingPlayer);
             AssignBattleWheels(b.AggressivePlayer, b.DefendingPlayer);
         }
 
@@ -75,13 +66,17 @@ namespace Treachery.Shared
             }
         }
 
-        private void CheckHeroAvailability(Player p)
+        private void AnnounceHeroAvailability(Player p)
         {
             if (!Battle.ValidBattleHeroes(this, p).Any())
             {
-                CurrentReport.Express(p.Faction, " have no leaders available for this battle");
+                Log(p.Faction, " have no leaders available for this battle");
             }
         }
+
+        #endregion
+
+        #region VoiceAndPrescience
 
         public Voice CurrentVoice { get; private set; } = null;
         public void HandleEvent(Voice e)
@@ -98,7 +93,7 @@ namespace Treachery.Shared
                 }
             }
 
-            CurrentReport.Express(e);
+            Log(e);
             RecentMilestones.Add(Milestone.Voice);
         }
 
@@ -106,8 +101,93 @@ namespace Treachery.Shared
         public void HandleEvent(Prescience e)
         {
             CurrentPrescience = e;
-            CurrentReport.Express(e);
+            Log(e);
             RecentMilestones.Add(Milestone.Prescience);
+        }
+
+        public Thought CurrentThought { get; private set; }
+        public void HandleEvent(Thought e)
+        {
+            CurrentThought = e;
+            var opponent = CurrentBattle.OpponentOf(e.Initiator).Faction;
+            Log("By ", LeaderSkill.Thinker, ", ", e.Initiator, " ask ", opponent, " if they have a ", e.Card);
+
+            Enter(Phase.Thought);
+        }
+
+        public void HandleEvent(ThoughtAnswered e)
+        {
+            Log(e);
+            if (e.Card == null)
+            {
+                Log(e.Initiator, " don't own any cards");
+            }
+            else
+            {
+                LogTo(CurrentThought.Initiator, "In response, ", e.Initiator, " show you a ", e.Card);
+                RegisterKnown(CurrentThought.Initiator, e.Card);
+            }
+
+            Enter(Phase.BattlePhase);
+        }
+
+        #endregion
+
+        #region BattlePlan
+
+        public void HandleEvent(HMSAdvantageChosen e)
+        {
+            Log(e);
+            ChosenHMSAdvantage = e.Advantage;
+        }
+
+        public void HandleEvent(SwitchedSkilledLeader e)
+        {
+            var leader = e.Player.Leaders.FirstOrDefault(l => Skilled(l) && !CapturedLeaders.ContainsKey(l));
+            SwitchInFrontOfShield(leader);
+            Log(e.Initiator, " place ", Skill(leader), " ", leader, IsInFrontOfShield(leader) ? " in front of" : " behind", " their shield");
+        }
+
+        public void HandleEvent(ResidualPlayed e)
+        {
+            Discard(e.Player, TreacheryCardType.Residual);
+
+            var opponent = CurrentBattle.OpponentOf(e.Initiator);
+            var leadersToKill = new Deck<IHero>(opponent.Leaders.Where(l => LeaderState[l].Alive && CanJoinCurrentBattle(l)), Random);
+            leadersToKill.Shuffle();
+
+            if (!leadersToKill.IsEmpty)
+            {
+                var toKill = leadersToKill.Draw();
+                var opponentPlan = CurrentBattle.PlanOf(opponent);
+                if (opponentPlan != null && opponentPlan.Hero == toKill)
+                {
+                    RevokePlan(opponentPlan);
+                }
+
+                KillHero(toKill);
+                RecentMilestones.Add(Milestone.LeaderKilled);
+                Log(TreacheryCardType.Residual, " kills ", toKill);
+            }
+            else
+            {
+                Log(opponent.Faction, " have no available leaders to kill");
+            }
+        }
+
+        public void HandleEvent(BattleRevision e)
+        {
+            if (CurrentBattle != null)
+            {
+                if (e.By(CurrentBattle.Aggressor))
+                {
+                    AggressorBattleAction = null;
+                }
+                else if (e.By(CurrentBattle.Defender))
+                {
+                    DefenderBattleAction = null;
+                }
+            }
         }
 
         public void HandleEvent(Battle b)
@@ -126,8 +206,8 @@ namespace Treachery.Shared
                 RevealCurrentNoField(AggressorBattleAction.Player, CurrentBattle.Territory);
                 RevealCurrentNoField(DefenderBattleAction.Player, CurrentBattle.Territory);
 
-                CurrentReport.Express(AggressorBattleAction.GetBattlePlanMessage());
-                CurrentReport.Express(DefenderBattleAction.GetBattlePlanMessage());
+                Log(AggressorBattleAction.GetBattlePlanMessage());
+                Log(DefenderBattleAction.GetBattlePlanMessage());
 
                 RegisterKnownCards(AggressorBattleAction);
                 RegisterKnownCards(DefenderBattleAction);
@@ -136,6 +216,35 @@ namespace Treachery.Shared
 
                 Enter(AggressorBattleAction.HasRockMelter || DefenderBattleAction.HasRockMelter, Phase.MeltingRock, Phase.CallTraitorOrPass);
             }
+        }
+
+        public PortableAntidoteUsed CurrentPortableAntidoteUsed { get; private set; }
+        public void HandleEvent(PortableAntidoteUsed e)
+        {
+            Log(e);
+            CurrentPortableAntidoteUsed = e;
+        }
+
+        private bool PoisonToothCancelled { get; set; } = false;
+        public void HandleEvent(PoisonToothCancelled e)
+        {
+            PoisonToothCancelled = true;
+            Log(e);
+        }
+
+        private RockWasMelted CurrentRockWasMelted { get; set; }
+        public void HandleEvent(RockWasMelted e)
+        {
+            Log(e);
+            Discard(e.Player, TreacheryCardType.Rockmelter);
+            CurrentRockWasMelted = e;
+            Enter(Phase.CallTraitorOrPass);
+        }
+
+        private void RegisterKnownCards(Battle battle)
+        {
+            RegisterKnown(battle.Weapon);
+            RegisterKnown(battle.Defense);
         }
 
         private void PassPurpleTraitorAction()
@@ -150,28 +259,75 @@ namespace Treachery.Shared
             }
         }
 
-        private void ActivateSmuggler(Player player, IHero hero, IHero opponentHero, Territory territory)
+        #endregion
+
+        #region Treachery
+
+        public void HandleEvent(TreacheryCalled e)
         {
-            if (SkilledAs(hero, LeaderSkill.Smuggler))
+            if (AggressorBattleAction.By(e.Initiator) || e.By(Faction.Black) && AreAllies(AggressorBattleAction.Initiator, Faction.Black))
             {
-                var locationWithResources = territory.Locations.FirstOrDefault(l => ResourcesOnPlanet.ContainsKey(l));
-                if (locationWithResources != null)
+                AggressorTraitorAction = e;
+                if (e.TraitorCalled)
                 {
-                    int collected = Math.Min(ResourcesOnPlanet[locationWithResources], hero.ValueInCombatAgainst(opponentHero));
-                    if (collected > 0)
-                    {
-                        CurrentReport.Express(player.Faction, LeaderSkill.Smuggler, " collects ", Payment(collected), " from ", territory);
-                        ChangeResourcesOnPlanet(locationWithResources, -collected);
-                        player.Resources += collected;
-                    }
+                    Log(e);
+                    RecentMilestones.Add(Milestone.TreacheryCalled);
+                    e.Player.RevealedTraitors.Add(DefenderBattleAction.Hero);
                 }
+            }
+
+            if (DefenderBattleAction.By(e.Initiator) || e.By(Faction.Black) && AreAllies(DefenderBattleAction.Initiator, Faction.Black))
+            {
+                DefenderTraitorAction = e;
+                if (e.TraitorCalled)
+                {
+                    Log(e);
+                    RecentMilestones.Add(Milestone.TreacheryCalled);
+                    e.Player.RevealedTraitors.Add(AggressorBattleAction.Hero);
+                }
+            }
+
+            if (AggressorTraitorAction != null && DefenderTraitorAction != null)
+            {
+                HandleRevealedBattlePlans();
             }
         }
 
-        private void RegisterKnownCards(Battle battle)
+        #endregion
+
+        #region BattleResolution
+
+        private void HandleRevealedBattlePlans()
         {
-            RegisterKnown(battle.Weapon);
-            RegisterKnown(battle.Defense);
+            ResolveEffectOfOwnedTueksSietch(AggressorBattleAction);
+            ResolveEffectOfOwnedTueksSietch(DefenderBattleAction);
+
+            DiscardOneTimeCardsUsedInBattle(AggressorTraitorAction, DefenderTraitorAction);
+            ResolveBattle(CurrentBattle, AggressorBattleAction, DefenderBattleAction, AggressorTraitorAction, DefenderTraitorAction);
+
+            if (AggressorBattleAction.Initiator == BattleWinner) ActivateDeciphererIfApplicable(AggressorBattleAction);
+            if (DefenderBattleAction.Initiator == BattleWinner) ActivateDeciphererIfApplicable(DefenderBattleAction);
+
+            if (AggressorBattleAction.Initiator == BattleWinner) ActivateSandmasterIfApplicable(AggressorBattleAction);
+            if (DefenderBattleAction.Initiator == BattleWinner) ActivateSandmasterIfApplicable(DefenderBattleAction);
+
+            if (AggressorBattleAction.Initiator == BattleWinner) ResolveEffectOfOwnedSietchTabr(AggressorBattleAction, DefenderBattleAction);
+            if (DefenderBattleAction.Initiator == BattleWinner) ResolveEffectOfOwnedSietchTabr(DefenderBattleAction, AggressorBattleAction);
+
+            if (Version < 116) CaptureLeaderIfApplicable();
+
+            FlipBeneGesseritWhenAlone();
+
+            if (BattleTriggeredBureaucracy != null)
+            {
+                ApplyBureaucracy(BattleTriggeredBureaucracy.PaymentFrom, BattleTriggeredBureaucracy.PaymentTo);
+                BattleTriggeredBureaucracy = null;
+            }
+
+            if (CurrentPhase != Phase.Retreating)
+            {
+                DetermineHowToProceedAfterRevealingBattlePlans();
+            }
         }
 
         private void DiscardOneTimeCardsUsedInBattle(TreacheryCalled aggressorCall, TreacheryCalled defenderCall)
@@ -186,6 +342,53 @@ namespace Treachery.Shared
             if (!defenderKeepsCards)
             {
                 DiscardOneTimeCards(DefenderBattleAction);
+            }
+        }
+
+        private void ResolveBattle(BattleInitiated b, Battle agg, Battle def, TreacheryCalled aggtrt, TreacheryCalled deftrt)
+        {
+            var aggressor = GetPlayer(agg.Initiator);
+            var defender = GetPlayer(def.Initiator);
+
+            var outcome = DetermineBattleOutcome(agg, def, b.Territory);
+
+            bool lasgunShield = !aggtrt.TraitorCalled && !deftrt.TraitorCalled && (agg.HasLaser || def.HasLaser) && (agg.HasShield || def.HasShield);
+            bool aggHeroSurvives = !deftrt.TraitorCalled && (aggtrt.TraitorCalled || !lasgunShield && !outcome.AggHeroKilled);
+            bool defHeroSurvives = !aggtrt.TraitorCalled && (deftrt.TraitorCalled || !lasgunShield && !outcome.DefHeroKilled);
+
+            if (aggHeroSurvives)
+            {
+                ActivateSmugglerIfApplicable(AggressorBattleAction.Player, AggressorBattleAction.Hero, DefenderBattleAction.Hero, CurrentBattle.Territory);
+            }
+
+            if (defHeroSurvives)
+            {
+                ActivateSmugglerIfApplicable(DefenderBattleAction.Player, DefenderBattleAction.Hero, AggressorBattleAction.Hero, CurrentBattle.Territory);
+            }
+
+            if (aggtrt.TraitorCalled || deftrt.TraitorCalled)
+            {
+                TraitorCalled(b, agg, def, deftrt, aggressor, defender, agg.Hero, def.Hero);
+            }
+            else if (lasgunShield)
+            {
+                LasgunShieldExplosion(agg, def, aggressor, defender, b.Territory, agg.Hero, def.Hero);
+            }
+            else
+            {
+                SetHeroLocations(agg, b.Territory);
+                SetHeroLocations(def, b.Territory);
+
+                DetermineAndHandleBattleOutcome(agg, def, b.Territory);
+            }
+
+            if (aggressor.Is(Faction.Black))
+            {
+                ReturnCapturedLeaders(aggressor, agg.Hero);
+            }
+            else if (defender.Is(Faction.Black))
+            {
+                ReturnCapturedLeaders(defender, def.Hero);
             }
         }
 
@@ -228,150 +431,32 @@ namespace Treachery.Shared
             }
         }
 
-        public void HandleEvent(BattleRevision e)
-        {
-            if (CurrentBattle != null)
-            {
-                if (e.By(CurrentBattle.Aggressor))
-                {
-                    AggressorBattleAction = null;
-                }
-                else if (e.By(CurrentBattle.Defender))
-                {
-                    DefenderBattleAction = null;
-                }
-            }
-        }
-
-        private bool PoisonToothCancelled { get; set; } = false;
-        public void HandleEvent(PoisonToothCancelled e)
-        {
-            PoisonToothCancelled = true;
-            CurrentReport.Express(e);
-        }
-
-        public PortableAntidoteUsed CurrentPortableAntidoteUsed { get; private set; }
-        public void HandleEvent(PortableAntidoteUsed e)
-        {
-            CurrentReport.Express(e);
-            CurrentPortableAntidoteUsed = e;
-        }
-
-        public Diplomacy CurrentDiplomacy { get; private set; }
-        public void HandleEvent(Diplomacy e)
-        {
-            CurrentReport.Express(e.GetDynamicMessage());
-            CurrentDiplomacy = e;
-        }
-
-        public void HandleEvent(ResidualPlayed e)
-        {
-            Discard(e.Player, TreacheryCardType.Residual);
-
-            var opponent = CurrentBattle.OpponentOf(e.Initiator);
-            var leadersToKill = new Deck<IHero>(opponent.Leaders.Where(l => LeaderState[l].Alive && CanJoinCurrentBattle(l)), Random);
-            leadersToKill.Shuffle();
-
-            if (!leadersToKill.IsEmpty)
-            {
-                var toKill = leadersToKill.Draw();
-                var opponentPlan = CurrentBattle.PlanOf(opponent);
-                if (opponentPlan != null && opponentPlan.Hero == toKill)
-                {
-                    RevokePlan(opponentPlan);
-                }
-
-                KillHero(toKill);
-                RecentMilestones.Add(Milestone.LeaderKilled);
-                CurrentReport.Express(TreacheryCardType.Residual, " kills ", toKill);
-            }
-            else
-            {
-                CurrentReport.Express(opponent.Faction, " have no available leaders to kill");
-            }
-        }
-
-        public IList<TreacheryCard> AuditedCards;
-        public void HandleEvent(TreacheryCalled e)
-        {
-            if (AggressorBattleAction.By(e.Initiator) || e.By(Faction.Black) && AreAllies(AggressorBattleAction.Initiator, Faction.Black))
-            {
-                AggressorTraitorAction = e;
-                if (e.TraitorCalled)
-                {
-                    CurrentReport.Express(e);
-                    RecentMilestones.Add(Milestone.TreacheryCalled);
-                    e.Player.RevealedTraitors.Add(DefenderBattleAction.Hero);
-                }
-            }
-
-            if (DefenderBattleAction.By(e.Initiator) || e.By(Faction.Black) && AreAllies(DefenderBattleAction.Initiator, Faction.Black))
-            {
-                DefenderTraitorAction = e;
-                if (e.TraitorCalled)
-                {
-                    CurrentReport.Express(e);
-                    RecentMilestones.Add(Milestone.TreacheryCalled);
-                    e.Player.RevealedTraitors.Add(AggressorBattleAction.Hero);
-                }
-            }
-
-            if (AggressorTraitorAction != null && DefenderTraitorAction != null)
-            {
-                HandleRevealedBattlePlans();
-            }
-        }
-
-        private RockWasMelted CurrentRockWasMelted { get; set; }
-        public void HandleEvent(RockWasMelted e)
-        {
-            CurrentReport.Express(e);
-            Discard(e.Player, TreacheryCardType.Rockmelter);
-            CurrentRockWasMelted = e;
-            Enter(Phase.CallTraitorOrPass);
-        }
-
-        private void HandleRevealedBattlePlans()
-        {
-            ResolveEffectOfOwnedTueksSietch(AggressorBattleAction);
-            ResolveEffectOfOwnedTueksSietch(DefenderBattleAction);
-
-            DiscardOneTimeCardsUsedInBattle(AggressorTraitorAction, DefenderTraitorAction);
-            ResolveBattle(CurrentBattle, AggressorBattleAction, DefenderBattleAction, AggressorTraitorAction, DefenderTraitorAction);
-
-            if (AggressorBattleAction.Initiator == BattleWinner) ActivateDeciphererIfApplicable(AggressorBattleAction);
-            if (DefenderBattleAction.Initiator == BattleWinner) ActivateDeciphererIfApplicable(DefenderBattleAction);
-
-            if (AggressorBattleAction.Initiator == BattleWinner) ActivateSandmasterIfApplicable(AggressorBattleAction);
-            if (DefenderBattleAction.Initiator == BattleWinner) ActivateSandmasterIfApplicable(DefenderBattleAction);
-
-            if (AggressorBattleAction.Initiator == BattleWinner) ResolveEffectOfOwnedSietchTabr(AggressorBattleAction, DefenderBattleAction);
-            if (DefenderBattleAction.Initiator == BattleWinner) ResolveEffectOfOwnedSietchTabr(DefenderBattleAction, AggressorBattleAction);
-
-            if (Version < 116) CaptureLeaderIfApplicable();
-
-            FlipBeneGesseritWhenAlone();
-
-            if (BattleTriggeredBureaucracy != null)
-            {
-                ApplyBureaucracy(BattleTriggeredBureaucracy.PaymentFrom, BattleTriggeredBureaucracy.PaymentTo);
-                BattleTriggeredBureaucracy = null;
-            }
-
-            if (CurrentPhase != Phase.Retreating)
-            {
-                DetermineHowToProceedAfterRevealingBattlePlans();
-            }
-        }
-
         private void ActivateSandmasterIfApplicable(Battle plan)
         {
             var locationWithResources = CurrentBattle.Territory.Locations.FirstOrDefault(l => ResourcesOnPlanet.ContainsKey(l));
 
             if (locationWithResources != null && SkilledAs(plan.Hero, LeaderSkill.Sandmaster) && plan.Player.AnyForcesIn(CurrentBattle.Territory) > 0)
             {
-                CurrentReport.Express(LeaderSkill.Sandmaster, " adds ", Payment(3), " to ", CurrentBattle.Territory);
+                Log(LeaderSkill.Sandmaster, " adds ", Payment(3), " to ", CurrentBattle.Territory);
                 ChangeResourcesOnPlanet(locationWithResources, 3);
+            }
+        }
+
+        private void ActivateSmugglerIfApplicable(Player player, IHero hero, IHero opponentHero, Territory territory)
+        {
+            if (SkilledAs(hero, LeaderSkill.Smuggler))
+            {
+                var locationWithResources = territory.Locations.FirstOrDefault(l => ResourcesOnPlanet.ContainsKey(l));
+                if (locationWithResources != null)
+                {
+                    int collected = Math.Min(ResourcesOnPlanet[locationWithResources], hero.ValueInCombatAgainst(opponentHero));
+                    if (collected > 0)
+                    {
+                        Log(player.Faction, LeaderSkill.Smuggler, " collects ", Payment(collected), " from ", territory);
+                        ChangeResourcesOnPlanet(locationWithResources, -collected);
+                        player.Resources += collected;
+                    }
+                }
             }
         }
 
@@ -425,7 +510,7 @@ namespace Treachery.Shared
         {
             if (card != null && card.Type == TreacheryCardType.Useless)
             {
-                CurrentReport.Express(Map.TueksSietch, " stronghold advantage: ", player.Faction, " collect ", Payment(2), " for playing ", card);
+                Log(Map.TueksSietch, " stronghold advantage: ", player.Faction, " collect ", Payment(2), " for playing ", card);
                 player.Resources += 2;
             }
         }
@@ -437,7 +522,7 @@ namespace Treachery.Shared
                 int collected = (int)Math.Floor(opponentPlan.Dial(this, playerPlan.Initiator));
                 if (collected > 0)
                 {
-                    CurrentReport.Express(Map.SietchTabr, " stronghold advantage: ", playerPlan.Initiator, " collect ", Payment(collected), " from enemy force dial");
+                    Log(Map.SietchTabr, " stronghold advantage: ", playerPlan.Initiator, " collect ", Payment(collected), " from enemy force dial");
                     playerPlan.Player.Resources += collected;
                 }
             }
@@ -473,491 +558,8 @@ namespace Treachery.Shared
             }
             else
             {
-                CurrentReport.Express(Auditee.Faction, " don't have cards to audit");
+                Log(Auditee.Faction, " don't have cards to audit");
                 Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
-            }
-        }
-
-        private bool BrownLeaderWasRevealedAsTraitor
-        {
-            get
-            {
-                var brown = GetPlayer(Faction.Brown);
-                if (brown != null && CurrentBattle.IsAggressorOrDefender(brown))
-                {
-                    return CurrentBattle.TreacheryOfOpponent(brown).TraitorCalled;
-                }
-                return false;
-            }
-        }
-
-
-        private bool BlackMustDecideToCapture => Version >= 116 && BattleWinner == Faction.Black && Applicable(Rule.BlackCapturesOrKillsLeaders) && !Prevented(FactionAdvantage.BlackCaptureLeader);
-
-        public void HandleEvent(Captured e)
-        {
-            CurrentReport.Express(e);
-            if (!e.Passed)
-            {
-                if (Version > 125 && Prevented(FactionAdvantage.BlackCaptureLeader))
-                {
-                    LogPrevention(FactionAdvantage.BlackCaptureLeader);
-                }
-                else
-                {
-                    CaptureLeader();
-                }
-            }
-
-            Enter(Phase.BattleConclusion);
-        }
-
-        public Player Auditee
-        {
-            get
-            {
-                if (Applicable(Rule.BrownAuditor) && !Prevented(FactionAdvantage.BrownAudit))
-                {
-                    if (AggressorBattleAction != null && AggressorBattleAction.Hero != null && AggressorBattleAction.Hero.HeroType == HeroType.Auditor)
-                    {
-                        return DefenderBattleAction.Player;
-                    }
-                    else if (DefenderBattleAction != null && DefenderBattleAction.Hero != null && DefenderBattleAction.Hero.HeroType == HeroType.Auditor)
-                    {
-                        return AggressorBattleAction.Player;
-                    }
-                }
-
-                return null;
-            }
-        }
-
-        public void HandleEvent(AuditCancelled e)
-        {
-            CurrentReport.Express(e.GetDynamicMessage());
-
-            if (e.Cancelled)
-            {
-                e.Player.Resources -= e.Cost();
-                GetPlayer(Faction.Brown).Resources += e.Cost();
-            }
-
-            if (!e.Cancelled)
-            {
-                Enter(Phase.Auditing);
-                CurrentReport.ExpressTo(e.Initiator, Faction.Brown, " see: ", AuditedCards);
-            }
-            else
-            {
-                Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
-            }
-        }
-
-        public void HandleEvent(Audited e)
-        {
-            CurrentReport.Express(e);
-
-            foreach (var card in AuditedCards)
-            {
-                RegisterKnown(e.Player, card);
-            }
-
-            Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
-        }
-
-        private void CaptureLeaderIfApplicable()
-        {
-            if (Version < 116 && BattleWinner == Faction.Black && Applicable(Rule.BlackCapturesOrKillsLeaders))
-            {
-                if (!Prevented(FactionAdvantage.BlackCaptureLeader))
-                {
-                    CaptureLeader();
-                }
-                else
-                {
-                    LogPrevention(FactionAdvantage.BlackCaptureLeader);
-                }
-            }
-        }
-
-        private void CaptureLeader()
-        {
-            if (AggressorBattleAction.By(BattleWinner))
-            {
-                SelectVictimOfBlackWinner(AggressorBattleAction, DefenderBattleAction);
-            }
-            else
-            {
-                SelectVictimOfBlackWinner(DefenderBattleAction, AggressorBattleAction);
-            }
-        }
-
-        public void HandleEvent(BattleConcluded e)
-        {
-            var winner = GetPlayer(e.Initiator);
-
-            foreach (var c in e.DiscardedCards)
-            {
-                CurrentReport.Express(e.Initiator, " discard ", c);
-                winner.TreacheryCards.Remove(c);
-                TreacheryDiscardPile.PutOnTop(c);
-            }
-
-            if (TraitorsDeciphererCanLookAt.Count > 0)
-            {
-                CurrentReport.Express(e.Initiator, " look at ", TraitorsDeciphererCanLookAt.Count, " leaders in the traitor deck");
-            }
-
-            if (e.ReplacedTraitor != null && e.NewTraitor != null)
-            {
-                DeciphererReplacesTraitors(e);
-            }
-
-            DecideFateOfCapturedLeader(e);
-            TakeTechToken(e, winner);
-            ProcessGreyForceLossesAndSubstitutions(e, winner);
-            Enter(IsPlaying(Faction.Purple) && BattleWinner != Faction.Purple, Phase.Facedancing, FinishBattle);
-        }
-
-        private void DeciphererReplacesTraitors(BattleConcluded e)
-        {
-            CurrentReport.Express(e.Initiator, " replaced ", e.ReplacedTraitor, " by another traitor from the deck");
-
-            e.Player.Traitors.Add(e.NewTraitor);
-            TraitorsDeciphererCanLookAt.Remove(e.NewTraitor);
-
-            e.Player.Traitors.Remove(e.ReplacedTraitor);
-            TraitorDeck.PutOnTop(e.ReplacedTraitor);
-
-            RecentMilestones.Add(Milestone.Shuffled);
-            TraitorDeck.Shuffle();
-        }
-
-        public void HandleEvent(FaceDanced f)
-        {
-            if (f.FaceDancerCalled)
-            {
-                var initiator = GetPlayer(f.Initiator);
-                var facedancer = initiator.FaceDancers.FirstOrDefault(f => WinnerHero.IsFaceDancer(f));
-                CurrentReport.Express(f.Initiator, " reveal ", facedancer, " as one of their Face Dancers!");
-
-                RecentMilestones.Add(Milestone.FaceDanced);
-
-                if (facedancer is Leader && IsAlive(facedancer))
-                {
-                    KillHero(facedancer);
-                }
-
-                if (BattleWinner == Faction.Black)
-                {
-                    ReturnCapturedLeaders(GetPlayer(BattleWinner), facedancer);
-                }
-
-                foreach (var p in Players)
-                {
-                    if (!p.KnownNonTraitors.Contains(facedancer)) p.KnownNonTraitors.Add(facedancer);
-                }
-
-                if (!initiator.RevealedDancers.Contains(facedancer))
-                {
-                    initiator.RevealedDancers.Add(facedancer);
-                }
-
-                if (!initiator.HasUnrevealedFaceDancers)
-                {
-                    ReplaceFacedancers(f, initiator);
-                }
-
-                ReplaceForces(f, initiator);
-
-                FlipBeneGesseritWhenAlone();
-            }
-            else
-            {
-                CurrentReport.Express(f.Initiator, " don't reveal a Face Dancer");
-            }
-
-            FinishBattle();
-        }
-
-        private void ReplaceForces(FaceDanced f, Player initiator)
-        {
-            var winner = GetPlayer(BattleWinner);
-            int nrOfRemovedForces = winner.AnyForcesIn(CurrentBattle.Territory);
-
-            if (nrOfRemovedForces > 0)
-            {
-                winner.ForcesToReserves(CurrentBattle.Territory);
-
-                initiator.ForcesInReserve -= f.ForcesFromReserve;
-                foreach (var fl in f.ForceLocations)
-                {
-                    var location = fl.Key;
-                    initiator.ChangeForces(location, -fl.Value.AmountOfForces);
-                    initiator.ChangeSpecialForces(location, -fl.Value.AmountOfSpecialForces);
-                }
-
-                foreach (var fl in f.TargetForceLocations)
-                {
-                    var location = fl.Key;
-                    initiator.ChangeForces(location, fl.Value.AmountOfForces);
-                    initiator.ChangeSpecialForces(location, fl.Value.AmountOfSpecialForces);
-                }
-
-                CurrentReport.Express(nrOfRemovedForces, " ", winner.Faction, " forces go back to reserves and are replaced by ", f.TargetForceLocations.Sum(b => b.Value.TotalAmountOfForces), f.Player.Force, " (", f.ForcesFromReserve, " from reserves", DetermineSourceLocations(f), ")");
-            }
-        }
-
-        private void ReplaceFacedancers(FaceDanced f, Player purple)
-        {
-            TraitorDeck.Items.AddRange(purple.FaceDancers);
-            purple.FaceDancers.Clear();
-            purple.RevealedDancers.Clear();
-            TraitorDeck.Shuffle();
-            RecentMilestones.Add(Milestone.Shuffled);
-            for (int i = 0; i < 3; i++)
-            {
-                purple.FaceDancers.Add(TraitorDeck.Draw());
-            }
-            CurrentReport.Express(f.Initiator, " draw 3 new Face Dancers.");
-        }
-
-        private MessagePart DetermineSourceLocations(FaceDanced f)
-        {
-            return MessagePart.ExpressIf(f.ForceLocations.Count > 0, f.ForceLocations.Select(fl => MessagePart.Express(", ", fl.Value.AmountOfForces, " from ", fl.Key)));
-        }
-
-        public IHero WinnerHero
-        {
-            get
-            {
-                if (BattleWinner != Faction.None)
-                {
-                    var winnerGambit = BattleWinner == AggressorBattleAction.Initiator ? AggressorBattleAction : DefenderBattleAction;
-                    return winnerGambit.Hero;
-                }
-
-                return null;
-            }
-        }
-
-        private void FinishBattle()
-        {
-            GreenKarma = false;
-            PutSkilledLeadersInFrontOfShield();
-            if (!Applicable(Rule.FullPhaseKarma)) AllowPreventedBattleFactionAdvantages();
-            if (CurrentJuice != null && CurrentJuice.Type == JuiceType.Aggressor) CurrentJuice = null;
-            CurrentDiplomacy = null;
-            CurrentRockWasMelted = null;
-            CurrentPortableAntidoteUsed = null;
-            FinishDeciphererIfApplicable();
-            if (NextPlayerToBattle == null) MainPhaseEnd();
-            Enter(Phase.BattleReport);
-        }
-
-        private void PutSkilledLeadersInFrontOfShield()
-        {
-            foreach (var ls in LeaderState)
-            {
-                if (ls.Key is Leader l && Skilled(l) && !CapturedLeaders.ContainsKey(l) && !ls.Value.InFrontOfShield)
-                {
-                    ls.Value.InFrontOfShield = true;
-
-                    if (IsAlive(l))
-                    {
-                        CurrentReport.Express(Skill(l), " ", l, " is placed back in front of shield");
-                    }
-                }
-            }
-        }
-
-        private void AllowPreventedBattleFactionAdvantages()
-        {
-            Allow(FactionAdvantage.GreenUseMessiah);
-            Allow(FactionAdvantage.GreenBattlePlanPrescience);
-            Allow(FactionAdvantage.BlueUsingVoice);
-            Allow(FactionAdvantage.YellowSpecialForceBonus);
-            Allow(FactionAdvantage.YellowNotPayingForBattles);
-            Allow(FactionAdvantage.RedSpecialForceBonus);
-            Allow(FactionAdvantage.GreySpecialForceBonus);
-            Allow(FactionAdvantage.GreyReplacingSpecialForces);
-            Allow(FactionAdvantage.BlackCallTraitorForAlly);
-            Allow(FactionAdvantage.BlackCaptureLeader);
-            Allow(FactionAdvantage.BrownReceiveForcePayment);
-        }
-
-        private void ProcessGreyForceLossesAndSubstitutions(BattleConcluded e, Player winner)
-        {
-            if (GreySpecialForceLossesToTake > 0)
-            {
-                var plan = CurrentBattle.PlanOf(winner);
-                var territory = CurrentBattle.Territory;
-
-                var winnerGambit = WinnerBattleAction;
-                int forcesToLose = winnerGambit.Forces + winnerGambit.ForcesAtHalfStrength + e.SpecialForceLossesReplaced;
-                int specialForcesToLose = winnerGambit.SpecialForces + winnerGambit.SpecialForcesAtHalfStrength - e.SpecialForceLossesReplaced;
-
-                CurrentReport.Express(winner.Faction, " substitute ", e.SpecialForceLossesReplaced, winner.SpecialForce, " losses by ", winner.Force, " losses");
-
-                int specialForcesToSaveToReserves = 0;
-                int forcesToSaveToReserves = 0;
-                int specialForcesToSaveInTerritory = 0;
-                int forcesToSaveInTerritory = 0;
-
-                if (SkilledAs(plan.Hero, LeaderSkill.Graduate))
-                {
-                    specialForcesToSaveInTerritory = Math.Min(specialForcesToLose, 1);
-                    forcesToSaveInTerritory = Math.Max(0, Math.Min(forcesToLose, 1 - specialForcesToSaveInTerritory));
-
-                    specialForcesToSaveToReserves = Math.Max(0, Math.Min(specialForcesToLose - specialForcesToSaveInTerritory - forcesToSaveInTerritory, 2));
-                    forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose - forcesToSaveInTerritory, 2 - specialForcesToSaveToReserves));
-                }
-                else if (SkilledAs(winner, LeaderSkill.Graduate))
-                {
-                    specialForcesToSaveToReserves = Math.Min(specialForcesToLose, 1);
-                    forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose, 1 - specialForcesToSaveToReserves));
-                }
-
-                if (specialForcesToSaveInTerritory + forcesToSaveInTerritory + specialForcesToSaveToReserves + forcesToSaveToReserves > 0)
-                {
-                    if (specialForcesToSaveToReserves > 0) winner.ForcesToReserves(territory, specialForcesToSaveToReserves, true);
-
-                    if (forcesToSaveToReserves > 0) winner.ForcesToReserves(territory, forcesToSaveToReserves, false);
-
-                    CurrentReport.Express(
-                        LeaderSkill.Graduate,
-                        " saves ",
-                        MessagePart.ExpressIf(forcesToSaveInTerritory > 0, forcesToSaveInTerritory, winner.Force),
-                        MessagePart.ExpressIf(specialForcesToSaveInTerritory > 0, specialForcesToSaveInTerritory, winner.SpecialForce),
-                        MessagePart.ExpressIf(forcesToSaveInTerritory > 0 || specialForcesToSaveInTerritory > 0, " in ", territory),
-
-                        MessagePart.ExpressIf(forcesToSaveInTerritory > 0 || specialForcesToSaveInTerritory > 0 && forcesToSaveToReserves > 0 || specialForcesToSaveToReserves > 0, " and "),
-                        MessagePart.ExpressIf(forcesToSaveToReserves > 0, forcesToSaveToReserves, winner.Force),
-                        MessagePart.ExpressIf(specialForcesToSaveToReserves > 0, specialForcesToSaveToReserves, winner.SpecialForce),
-                        MessagePart.ExpressIf(forcesToSaveToReserves > 0 || specialForcesToSaveToReserves > 0, " to reserves"));
-                }
-
-                HandleLoserLosses(territory, winner,
-                    forcesToLose - forcesToSaveToReserves - forcesToSaveInTerritory,
-                    specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory);
-            }
-        }
-
-        private void TakeTechToken(BattleConcluded e, Player winner)
-        {
-            if (e.StolenToken != TechToken.None)
-            {
-                var loser = GetPlayer(BattleLoser);
-                if (loser.TechTokens.Contains(e.StolenToken))
-                {
-                    loser.TechTokens.Remove(e.StolenToken);
-                    winner.TechTokens.Add(e.StolenToken);
-                    CurrentReport.Express(e.Initiator, " steal ", e.StolenToken, " from ", BattleLoser);
-                }
-            }
-        }
-
-        private void DecideFateOfCapturedLeader(BattleConcluded e)
-        {
-            if (e.By(Faction.Black) && Applicable(Rule.BlackCapturesOrKillsLeaders) && BlackVictim != null)
-            {
-                if (Version > 125 && Prevented(FactionAdvantage.BlackCaptureLeader))
-                {
-                    LogPrevention(FactionAdvantage.BlackCaptureLeader);
-                }
-                else
-                {
-                    if (e.Initiator == CurrentBattle.Aggressor)
-                    {
-                        CaptureOrAssassinateLeader(AggressorBattleAction, DefenderBattleAction, e.DecisionToCapture);
-                    }
-                    else
-                    {
-                        CaptureOrAssassinateLeader(DefenderBattleAction, AggressorBattleAction, e.DecisionToCapture);
-                    }
-                }
-            }
-        }
-
-        private void ResetBattle()
-        {
-            CurrentBattle = null;
-            CurrentPrescience = null;
-            CurrentThought = null;
-            CurrentVoice = null;
-            BlackVictim = null;
-            AggressorBattleAction = null;
-            DefenderBattleAction = null;
-            AggressorTraitorAction = null;
-            DefenderTraitorAction = null;
-            PoisonToothCancelled = false;
-            GreySpecialForceLossesToTake = 0;
-            BattleWinner = Faction.None;
-            BattleLoser = Faction.None;
-            HasActedOrPassed.Clear();
-            BattleTriggeredBureaucracy = null;
-        }
-
-        private void ResolveBattle(BattleInitiated b, Battle agg, Battle def, TreacheryCalled aggtrt, TreacheryCalled deftrt)
-        {
-            var aggressor = GetPlayer(agg.Initiator);
-            var defender = GetPlayer(def.Initiator);
-
-            var outcome = DetermineBattleOutcome(agg, def, b.Territory);
-
-            bool lasgunShield = !aggtrt.TraitorCalled && !deftrt.TraitorCalled && (agg.HasLaser || def.HasLaser) && (agg.HasShield || def.HasShield);
-            bool aggHeroSurvives = !deftrt.TraitorCalled && (aggtrt.TraitorCalled || !lasgunShield && !outcome.AggHeroKilled);
-            bool defHeroSurvives = !aggtrt.TraitorCalled && (deftrt.TraitorCalled || !lasgunShield && !outcome.DefHeroKilled);
-
-            if (aggHeroSurvives)
-            {
-                ActivateSmuggler(AggressorBattleAction.Player, AggressorBattleAction.Hero, DefenderBattleAction.Hero, CurrentBattle.Territory);
-            }
-
-            if (defHeroSurvives)
-            {
-                ActivateSmuggler(DefenderBattleAction.Player, DefenderBattleAction.Hero, AggressorBattleAction.Hero, CurrentBattle.Territory);
-            }
-
-            if (aggtrt.TraitorCalled || deftrt.TraitorCalled)
-            {
-                TraitorCalled(b, agg, def, deftrt, aggressor, defender, agg.Hero, def.Hero);
-            }
-            else if (lasgunShield)
-            {
-                LasgunShieldExplosion(agg, def, aggressor, defender, b.Territory, agg.Hero, def.Hero);
-            }
-            else
-            {
-                SetHeroLocations(agg, b.Territory);
-                SetHeroLocations(def, b.Territory);
-
-                DetermineAndHandleBattleOutcome(agg, def, b.Territory);
-            }
-
-            if (aggressor.Is(Faction.Black))
-            {
-                ReturnCapturedLeaders(aggressor, agg.Hero);
-            }
-            else if (defender.Is(Faction.Black))
-            {
-                ReturnCapturedLeaders(defender, def.Hero);
-            }
-        }
-
-        private void TraitorCalled(BattleInitiated b, Battle agg, Battle def, TreacheryCalled deftrt, Player aggressor, Player defender, IHero aggLeader, IHero defLeader)
-        {
-            if (AggressorTraitorAction.TraitorCalled && deftrt.TraitorCalled)
-            {
-                TwoTraitorsCalled(agg, def, aggressor, defender, b.Territory, aggLeader, defLeader);
-            }
-            else
-            {
-                var winner = AggressorTraitorAction.TraitorCalled ? aggressor : defender;
-                var loser = AggressorTraitorAction.TraitorCalled ? defender : aggressor;
-                var loserGambit = AggressorTraitorAction.TraitorCalled ? def : agg;
-                var winnerGambit = AggressorTraitorAction.TraitorCalled ? agg : def;
-                OneTraitorCalled(b.Territory, winner, loser, loserGambit, winnerGambit);
             }
         }
 
@@ -994,8 +596,83 @@ namespace Treachery.Shared
                 {
                     SetInFrontOfShield(toReturn, true);
                 }
-                CurrentReport.Express(toReturn, " returns to ", originalPlayer.Faction, " after working for ", currentOwner.Faction);
+                Log(toReturn, " returns to ", originalPlayer.Faction, " after working for ", currentOwner.Faction);
             }
+        }
+
+        private bool BrownLeaderWasRevealedAsTraitor
+        {
+            get
+            {
+                var brown = GetPlayer(Faction.Brown);
+                if (brown != null && CurrentBattle.IsAggressorOrDefender(brown))
+                {
+                    return CurrentBattle.TreacheryOfOpponent(brown).TraitorCalled;
+                }
+                return false;
+            }
+        }
+
+        private bool BlackMustDecideToCapture => Version >= 116 && BattleWinner == Faction.Black && Applicable(Rule.BlackCapturesOrKillsLeaders) && !Prevented(FactionAdvantage.BlackCaptureLeader);
+
+        #endregion
+
+        #region BattleOutcome
+
+        public void DetermineAndHandleBattleOutcome(Battle agg, Battle def, Territory territory)
+        {
+            BattleOutcome = DetermineBattleOutcome(agg, def, territory);
+
+            LogIf(BattleOutcome.AggHeroSkillBonus != 0, agg.Hero, " ", BattleOutcome.AggActivatedBonusSkill, " bonus: ", BattleOutcome.AggHeroSkillBonus);
+            LogIf(BattleOutcome.DefHeroSkillBonus != 0, def.Hero, " ", BattleOutcome.DefActivatedBonusSkill, " bonus: ", BattleOutcome.DefHeroSkillBonus);
+
+            LogIf(BattleOutcome.AggBattlePenalty != 0, agg.Hero, " ", BattleOutcome.DefActivatedPenaltySkill, " penalty: ", BattleOutcome.AggBattlePenalty);
+            LogIf(BattleOutcome.DefBattlePenalty != 0, def.Hero, " ", BattleOutcome.AggActivatedPenaltySkill, " penalty: ", BattleOutcome.DefBattlePenalty);
+
+            LogIf(BattleOutcome.AggMessiahContribution > 0, agg.Hero, " ", Concept.Messiah, " bonus: ", BattleOutcome.AggMessiahContribution);
+            LogIf(BattleOutcome.DefMessiahContribution > 0, agg.Hero, " ", Concept.Messiah, " bonus: ", BattleOutcome.DefMessiahContribution);
+
+            BattleWinner = BattleOutcome.Winner.Faction;
+            BattleLoser = BattleOutcome.Loser.Faction;
+
+            if (BattleOutcome.AggHeroKilled)
+            {
+                KillLeaderInBattle(agg.Hero, BattleOutcome.AggHeroCauseOfDeath, BattleOutcome.Winner, BattleOutcome.AggHeroEffectiveStrength);
+            }
+            else
+            {
+                LogIf(BattleOutcome.AggSavedByCarthag, Map.Carthag, " stronghold advantage saves ", agg.Hero, " from death by ", TreacheryCardType.Poison);
+            }
+
+            if (BattleOutcome.DefHeroKilled)
+            {
+                KillLeaderInBattle(def.Hero, BattleOutcome.DefHeroCauseOfDeath, BattleOutcome.Winner, BattleOutcome.DefHeroEffectiveStrength);
+            }
+            else
+            {
+                LogIf(BattleOutcome.DefSavedByCarthag, Map.Carthag, " stronghold advantage saves ", def.Hero, " from death by ", TreacheryCardType.Poison);
+            }
+
+            if (BattleInitiated.IsAggressorByJuice(this, def.Player.Faction))
+            {
+                Log(agg.Initiator, " (defending) strength: ", BattleOutcome.AggTotal);
+                Log(def.Initiator, " (aggressor by ", TreacheryCardType.Juice, ") strength: ", BattleOutcome.DefTotal);
+            }
+            else
+            {
+                Log(agg.Initiator, " (aggressor) strength: ", BattleOutcome.AggTotal);
+                Log(def.Initiator, " (defending) strength: ", BattleOutcome.DefTotal);
+            }
+
+            Log(BattleOutcome.Winner.Faction, " WIN THE BATTLE");
+
+            bool loserMayRetreat =
+                !BattleOutcome.LoserHeroKilled &&
+                SkilledAs(BattleOutcome.LoserBattlePlan.Hero, LeaderSkill.Diplomat) &&
+                (Retreat.MaxForces(this, BattleOutcome.Loser) > 0 || Retreat.MaxSpecialForces(this, BattleOutcome.Loser) > 0) &&
+                Retreat.ValidTargets(this, BattleOutcome.Loser).Any();
+
+            Enter(loserMayRetreat, Phase.Retreating, HandleForceLosses);
         }
 
         public BattleOutcome DetermineBattleOutcome(Battle agg, Battle def, Territory territory)
@@ -1092,62 +769,6 @@ namespace Treachery.Shared
             return result;
         }
 
-        public void DetermineAndHandleBattleOutcome(Battle agg, Battle def, Territory territory)
-        {
-            BattleOutcome = DetermineBattleOutcome(agg, def, territory);
-
-            CurrentReport.ExpressIf(BattleOutcome.AggHeroSkillBonus != 0, agg.Hero, " ", BattleOutcome.AggActivatedBonusSkill, " bonus: ", BattleOutcome.AggHeroSkillBonus);
-            CurrentReport.ExpressIf(BattleOutcome.DefHeroSkillBonus != 0, def.Hero, " ", BattleOutcome.DefActivatedBonusSkill, " bonus: ", BattleOutcome.DefHeroSkillBonus);
-
-            CurrentReport.ExpressIf(BattleOutcome.AggBattlePenalty != 0, agg.Hero, " ", BattleOutcome.DefActivatedPenaltySkill, " penalty: ", BattleOutcome.AggBattlePenalty);
-            CurrentReport.ExpressIf(BattleOutcome.DefBattlePenalty != 0, def.Hero, " ", BattleOutcome.AggActivatedPenaltySkill, " penalty: ", BattleOutcome.DefBattlePenalty);
-
-            CurrentReport.ExpressIf(BattleOutcome.AggMessiahContribution > 0, agg.Hero, " ", Concept.Messiah, " bonus: ", BattleOutcome.AggMessiahContribution);
-            CurrentReport.ExpressIf(BattleOutcome.DefMessiahContribution > 0, agg.Hero, " ", Concept.Messiah, " bonus: ", BattleOutcome.DefMessiahContribution);
-
-            BattleWinner = BattleOutcome.Winner.Faction;
-            BattleLoser = BattleOutcome.Loser.Faction;
-
-            if (BattleOutcome.AggHeroKilled)
-            {
-                KillLeaderInBattle(agg.Hero, BattleOutcome.AggHeroCauseOfDeath, BattleOutcome.Winner, BattleOutcome.AggHeroEffectiveStrength);
-            }
-            else
-            {
-                CurrentReport.ExpressIf(BattleOutcome.AggSavedByCarthag, Map.Carthag, " stronghold advantage saves ", agg.Hero, " from death by ", TreacheryCardType.Poison);
-            }
-
-            if (BattleOutcome.DefHeroKilled)
-            {
-                KillLeaderInBattle(def.Hero, BattleOutcome.DefHeroCauseOfDeath, BattleOutcome.Winner, BattleOutcome.DefHeroEffectiveStrength);
-            }
-            else
-            {
-                CurrentReport.ExpressIf(BattleOutcome.DefSavedByCarthag, Map.Carthag, " stronghold advantage saves ", def.Hero, " from death by ", TreacheryCardType.Poison);
-            }
-
-            if (BattleInitiated.IsAggressorByJuice(this, def.Player.Faction))
-            {
-                CurrentReport.Express(agg.Initiator, " (defending) strength: ", BattleOutcome.AggTotal);
-                CurrentReport.Express(def.Initiator, " (aggressor by ", TreacheryCardType.Juice, ") strength: ", BattleOutcome.DefTotal);
-            }
-            else
-            {
-                CurrentReport.Express(agg.Initiator, " (aggressor) strength: ", BattleOutcome.AggTotal);
-                CurrentReport.Express(def.Initiator, " (defending) strength: ", BattleOutcome.DefTotal);
-            }
-
-            CurrentReport.Express(BattleOutcome.Winner.Faction, " WIN THE BATTLE");
-
-            bool loserMayRetreat =
-                !BattleOutcome.LoserHeroKilled &&
-                SkilledAs(BattleOutcome.LoserBattlePlan.Hero, LeaderSkill.Diplomat) &&
-                (Retreat.MaxForces(this, BattleOutcome.Loser) > 0 || Retreat.MaxSpecialForces(this, BattleOutcome.Loser) > 0) &&
-                Retreat.ValidTargets(this, BattleOutcome.Loser).Any();
-
-            Enter(loserMayRetreat, Phase.Retreating, HandleForceLosses);
-        }
-
         private void HandleForceLosses()
         {
             ProcessWinnerLosses(CurrentBattle.Territory, BattleOutcome.Winner, BattleOutcome.WinnerBattlePlan, false);
@@ -1182,7 +803,7 @@ namespace Treachery.Shared
         {
             bool hadMessiahBeforeLosses = loser.MessiahAvailable;
 
-            CurrentReport.Express(loser.Faction, " lose all ", loser.AnyForcesIn(territory), " forces in ", territory);
+            Log(loser.Faction, " lose all ", loser.AnyForcesIn(territory), " forces in ", territory);
             loser.KillAllForces(territory, true);
             LoseCards(loserGambit);
             PayDialedSpice(loser, loserGambit, traitorWasRevealed);
@@ -1205,7 +826,7 @@ namespace Treachery.Shared
                 if (costForPlayer > 0)
                 {
                     p.Resources -= costForPlayer;
-                    CurrentReport.ExpressIf(HasStrongholdAdvantage(p.Faction, StrongholdAdvantage.FreeResourcesForBattles, CurrentBattle.Territory),
+                    LogIf(HasStrongholdAdvantage(p.Faction, StrongholdAdvantage.FreeResourcesForBattles, CurrentBattle.Territory),
                         Map.Arrakeen, " stronghold advantage: supporting forces costs ", Payment(2), " less");
                 }
 
@@ -1226,7 +847,7 @@ namespace Treachery.Shared
             if (plan.BankerBonus > 0)
             {
                 p.Resources -= plan.BankerBonus;
-                CurrentReport.Express(p.Faction, " paid ", Payment(plan.BankerBonus), " for as ", LeaderSkill.Banker);
+                Log(p.Faction, " paid ", Payment(plan.BankerBonus), " for as ", LeaderSkill.Banker);
             }
         }
 
@@ -1244,7 +865,7 @@ namespace Treachery.Shared
                     if (!Prevented(FactionAdvantage.BrownReceiveForcePayment))
                     {
                         brown.Resources += result;
-                        CurrentReport.Express(Faction.Brown, " get ", Payment(result), " from supported forces");
+                        Log(Faction.Brown, " get ", Payment(result), " from supported forces");
 
                         if (result >= 5)
                         {
@@ -1300,7 +921,7 @@ namespace Treachery.Shared
 
                 if (forcesToSaveToReserves > 0) player.ForcesToReserves(territory, forcesToSaveToReserves, false);
 
-                CurrentReport.Express(
+                Log(
                     LeaderSkill.Graduate,
                     " rescues ",
                     MessagePart.ExpressIf(forcesToSaveInTerritory > 0, forcesToSaveInTerritory, player.Force),
@@ -1341,7 +962,7 @@ namespace Treachery.Shared
 
         private void KillLeaderInBattle(IHero killedHero, TreacheryCardType causeOfDeath, Player winner, int heroValue)
         {
-            CurrentReport.Express(causeOfDeath, " kills ", killedHero, " → ", winner.Faction, " collect ", Payment(heroValue));
+            Log(causeOfDeath, " kills ", killedHero, " → ", winner.Faction, " collect ", Payment(heroValue));
             RecentMilestones.Add(Milestone.LeaderKilled);
             if (killedHero is Leader) KillHero(killedHero as Leader);
             winner.Resources += heroValue;
@@ -1351,7 +972,7 @@ namespace Treachery.Shared
         {
             if (forcesLost > 0 || specialForcesLost > 0)
             {
-                CurrentReport.Express(
+                Log(
                     player.Faction,
                     " lose ",
                     MessagePart.ExpressIf(forcesLost > 0, forcesLost, player.Force),
@@ -1373,6 +994,26 @@ namespace Treachery.Shared
             }
         }
 
+        #endregion
+
+        #region NonBattleOutcomes
+
+        private void TraitorCalled(BattleInitiated b, Battle agg, Battle def, TreacheryCalled deftrt, Player aggressor, Player defender, IHero aggLeader, IHero defLeader)
+        {
+            if (AggressorTraitorAction.TraitorCalled && deftrt.TraitorCalled)
+            {
+                TwoTraitorsCalled(agg, def, aggressor, defender, b.Territory, aggLeader, defLeader);
+            }
+            else
+            {
+                var winner = AggressorTraitorAction.TraitorCalled ? aggressor : defender;
+                var loser = AggressorTraitorAction.TraitorCalled ? defender : aggressor;
+                var loserGambit = AggressorTraitorAction.TraitorCalled ? def : agg;
+                var winnerGambit = AggressorTraitorAction.TraitorCalled ? agg : def;
+                OneTraitorCalled(b.Territory, winner, loser, loserGambit, winnerGambit);
+            }
+        }
+
         private void OneTraitorCalled(Territory territory, Player winner, Player loser, Battle loserGambit, Battle winnerGambit)
         {
             bool hadMessiahBeforeLosses = loser.MessiahAvailable;
@@ -1381,13 +1022,13 @@ namespace Treachery.Shared
             var traitorValue = traitor.ValueInCombatAgainst(winnerGambit.Hero);
             var traitorOwner = winner.Traitors.Any(t => t.IsTraitor(traitor)) ? winner.Faction : Faction.Black;
 
-            CurrentReport.Express(traitor, " is a ", traitorOwner, " traitor! ", loser.Faction, " lose everything");
+            Log(traitor, " is a ", traitorOwner, " traitor! ", loser.Faction, " lose everything");
 
             RecentMilestones.Add(Milestone.LeaderKilled);
 
             if (traitor is Leader)
             {
-                CurrentReport.Express("Treachery kills ", traitor, ". ", winner.Faction, " collect ", Payment(traitorValue));
+                Log("Treachery kills ", traitor, ". ", winner.Faction, " collect ", Payment(traitorValue));
                 KillHero(traitor);
                 winner.Resources += traitorValue;
             }
@@ -1395,7 +1036,7 @@ namespace Treachery.Shared
             BattleWinner = winner.Faction;
             BattleLoser = loser.Faction;
 
-            CurrentReport.Express(loser.Faction, " lose all ", loser.SpecialForcesIn(territory) + loser.ForcesIn(territory), " forces in ", territory);
+            Log(loser.Faction, " lose all ", loser.SpecialForcesIn(territory) + loser.ForcesIn(territory), " forces in ", territory);
             loser.KillAllForces(territory, true);
             LoseCards(loserGambit);
             PayDialedSpice(loser, loserGambit, true);
@@ -1412,12 +1053,12 @@ namespace Treachery.Shared
 
             bool hadMessiahBeforeLosses = aggressor.MessiahAvailable || defender.MessiahAvailable;
 
-            CurrentReport.Express("Treachery kills both ", defLeader, " and ", aggLeader);
+            Log("Treachery kills both ", defLeader, " and ", aggLeader);
             KillHero(defLeader);
             KillHero(aggLeader);
-            CurrentReport.Express(defender.Faction, " lose all ", defender.SpecialForcesIn(territory) + defender.ForcesIn(territory), " forces in ", territory);
+            Log(defender.Faction, " lose all ", defender.SpecialForcesIn(territory) + defender.ForcesIn(territory), " forces in ", territory);
             defender.KillAllForces(territory, true);
-            CurrentReport.Express(aggressor.Faction, " lose all ", aggressor.SpecialForcesIn(territory) + aggressor.ForcesIn(territory), " forces in ", territory);
+            Log(aggressor.Faction, " lose all ", aggressor.SpecialForcesIn(territory) + aggressor.ForcesIn(territory), " forces in ", territory);
             aggressor.KillAllForces(territory, true);
 
             LoseCards(def);
@@ -1436,24 +1077,24 @@ namespace Treachery.Shared
         {
             bool hadMessiahBeforeLosses = aggressor.MessiahAvailable || defender.MessiahAvailable;
 
-            CurrentReport.Express("A ", TreacheryCardType.Laser, "/", TreacheryCardType.Shield, " explosion occurs!");
+            Log("A ", TreacheryCardType.Laser, "/", TreacheryCardType.Shield, " explosion occurs!");
             RecentMilestones.Add(Milestone.Explosion);
 
             if (aggLeader != null)
             {
-                CurrentReport.Express("The explosion kills ", aggLeader);
+                Log("The explosion kills ", aggLeader);
                 KillHero(aggLeader);
             }
 
             if (defLeader != null)
             {
-                CurrentReport.Express("The explosion kills ", defLeader);
+                Log("The explosion kills ", defLeader);
                 KillHero(def.Hero);
             }
 
             if (agg.Messiah || def.Messiah)
             {
-                CurrentReport.Express("The explosion kills the ", Concept.Messiah);
+                Log("The explosion kills the ", Concept.Messiah);
                 KillHero(LeaderManager.Messiah);
             }
 
@@ -1466,7 +1107,7 @@ namespace Treachery.Shared
             int removed = RemoveResources(territory);
             if (removed > 0)
             {
-                CurrentReport.Express("The explosion destroys ", Payment(removed), " in ", territory);
+                Log("The explosion destroys ", Payment(removed), " in ", territory);
             }
 
             foreach (var p in Players)
@@ -1476,7 +1117,7 @@ namespace Treachery.Shared
                 int numberOfForces = p.AnyForcesIn(territory);
                 if (numberOfForces > 0)
                 {
-                    CurrentReport.Express("The explosion kills all ", numberOfForces, p.Faction, " forces in ", territory);
+                    Log("The explosion kills all ", numberOfForces, p.Faction, " forces in ", territory);
                     p.KillAllForces(territory, true);
                 }
             }
@@ -1486,6 +1127,309 @@ namespace Treachery.Shared
                 RecentMilestones.Add(Milestone.Messiah);
             }
         }
+
+        #endregion
+
+        #region BattleConclusion
+
+        public void HandleEvent(BattleConcluded e)
+        {
+            var winner = GetPlayer(e.Initiator);
+
+            foreach (var c in e.DiscardedCards)
+            {
+                Log(e.Initiator, " discard ", c);
+                winner.TreacheryCards.Remove(c);
+                TreacheryDiscardPile.PutOnTop(c);
+            }
+
+            if (TraitorsDeciphererCanLookAt.Count > 0)
+            {
+                Log(e.Initiator, " look at ", TraitorsDeciphererCanLookAt.Count, " leaders in the traitor deck");
+            }
+
+            if (e.ReplacedTraitor != null && e.NewTraitor != null)
+            {
+                DeciphererReplacesTraitors(e);
+            }
+
+            DecideFateOfCapturedLeader(e);
+            TakeTechToken(e, winner);
+            ProcessGreyForceLossesAndSubstitutions(e, winner);
+            Enter(IsPlaying(Faction.Purple) && BattleWinner != Faction.Purple, Phase.Facedancing, FinishBattle);
+        }
+
+        private void DecideFateOfCapturedLeader(BattleConcluded e)
+        {
+            if (e.By(Faction.Black) && Applicable(Rule.BlackCapturesOrKillsLeaders) && BlackVictim != null)
+            {
+                if (Version > 125 && Prevented(FactionAdvantage.BlackCaptureLeader))
+                {
+                    LogPrevention(FactionAdvantage.BlackCaptureLeader);
+                }
+                else
+                {
+                    if (e.Initiator == CurrentBattle.Aggressor)
+                    {
+                        CaptureOrAssassinateLeader(AggressorBattleAction, DefenderBattleAction, e.DecisionToCapture);
+                    }
+                    else
+                    {
+                        CaptureOrAssassinateLeader(DefenderBattleAction, AggressorBattleAction, e.DecisionToCapture);
+                    }
+                }
+            }
+        }
+
+        private void DeciphererReplacesTraitors(BattleConcluded e)
+        {
+            Log(e.Initiator, " replaced ", e.ReplacedTraitor, " by another traitor from the deck");
+
+            e.Player.Traitors.Add(e.NewTraitor);
+            TraitorsDeciphererCanLookAt.Remove(e.NewTraitor);
+
+            e.Player.Traitors.Remove(e.ReplacedTraitor);
+            TraitorDeck.PutOnTop(e.ReplacedTraitor);
+
+            RecentMilestones.Add(Milestone.Shuffled);
+            TraitorDeck.Shuffle();
+        }
+
+
+        private void FinishBattle()
+        {
+            GreenKarma = false;
+            ReturnSkilledLeadersInFrontOfShield();
+            if (!Applicable(Rule.FullPhaseKarma)) AllowPreventedBattleFactionAdvantages();
+            if (CurrentJuice != null && CurrentJuice.Type == JuiceType.Aggressor) CurrentJuice = null;
+            CurrentDiplomacy = null;
+            CurrentRockWasMelted = null;
+            CurrentPortableAntidoteUsed = null;
+            FinishDeciphererIfApplicable();
+            if (NextPlayerToBattle == null) MainPhaseEnd();
+            Enter(Phase.BattleReport);
+        }
+
+        private void ReturnSkilledLeadersInFrontOfShield()
+        {
+            foreach (var ls in LeaderState)
+            {
+                if (ls.Key is Leader l && Skilled(l) && !CapturedLeaders.ContainsKey(l) && !ls.Value.InFrontOfShield)
+                {
+                    ls.Value.InFrontOfShield = true;
+
+                    if (IsAlive(l))
+                    {
+                        Log(Skill(l), " ", l, " is placed back in front of shield");
+                    }
+                }
+            }
+        }
+
+
+        private void AllowPreventedBattleFactionAdvantages()
+        {
+            Allow(FactionAdvantage.GreenUseMessiah);
+            Allow(FactionAdvantage.GreenBattlePlanPrescience);
+            Allow(FactionAdvantage.BlueUsingVoice);
+            Allow(FactionAdvantage.YellowSpecialForceBonus);
+            Allow(FactionAdvantage.YellowNotPayingForBattles);
+            Allow(FactionAdvantage.RedSpecialForceBonus);
+            Allow(FactionAdvantage.GreySpecialForceBonus);
+            Allow(FactionAdvantage.GreyReplacingSpecialForces);
+            Allow(FactionAdvantage.BlackCallTraitorForAlly);
+            Allow(FactionAdvantage.BlackCaptureLeader);
+            Allow(FactionAdvantage.BrownReceiveForcePayment);
+        }
+
+        private void ProcessGreyForceLossesAndSubstitutions(BattleConcluded e, Player winner)
+        {
+            if (GreySpecialForceLossesToTake > 0)
+            {
+                var plan = CurrentBattle.PlanOf(winner);
+                var territory = CurrentBattle.Territory;
+
+                var winnerGambit = WinnerBattleAction;
+                int forcesToLose = winnerGambit.Forces + winnerGambit.ForcesAtHalfStrength + e.SpecialForceLossesReplaced;
+                int specialForcesToLose = winnerGambit.SpecialForces + winnerGambit.SpecialForcesAtHalfStrength - e.SpecialForceLossesReplaced;
+
+                Log(winner.Faction, " substitute ", e.SpecialForceLossesReplaced, winner.SpecialForce, " losses by ", winner.Force, " losses");
+
+                int specialForcesToSaveToReserves = 0;
+                int forcesToSaveToReserves = 0;
+                int specialForcesToSaveInTerritory = 0;
+                int forcesToSaveInTerritory = 0;
+
+                if (SkilledAs(plan.Hero, LeaderSkill.Graduate))
+                {
+                    specialForcesToSaveInTerritory = Math.Min(specialForcesToLose, 1);
+                    forcesToSaveInTerritory = Math.Max(0, Math.Min(forcesToLose, 1 - specialForcesToSaveInTerritory));
+
+                    specialForcesToSaveToReserves = Math.Max(0, Math.Min(specialForcesToLose - specialForcesToSaveInTerritory - forcesToSaveInTerritory, 2));
+                    forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose - forcesToSaveInTerritory, 2 - specialForcesToSaveToReserves));
+                }
+                else if (SkilledAs(winner, LeaderSkill.Graduate))
+                {
+                    specialForcesToSaveToReserves = Math.Min(specialForcesToLose, 1);
+                    forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose, 1 - specialForcesToSaveToReserves));
+                }
+
+                if (specialForcesToSaveInTerritory + forcesToSaveInTerritory + specialForcesToSaveToReserves + forcesToSaveToReserves > 0)
+                {
+                    if (specialForcesToSaveToReserves > 0) winner.ForcesToReserves(territory, specialForcesToSaveToReserves, true);
+
+                    if (forcesToSaveToReserves > 0) winner.ForcesToReserves(territory, forcesToSaveToReserves, false);
+
+                    Log(
+                        LeaderSkill.Graduate,
+                        " saves ",
+                        MessagePart.ExpressIf(forcesToSaveInTerritory > 0, forcesToSaveInTerritory, winner.Force),
+                        MessagePart.ExpressIf(specialForcesToSaveInTerritory > 0, specialForcesToSaveInTerritory, winner.SpecialForce),
+                        MessagePart.ExpressIf(forcesToSaveInTerritory > 0 || specialForcesToSaveInTerritory > 0, " in ", territory),
+
+                        MessagePart.ExpressIf(forcesToSaveInTerritory > 0 || specialForcesToSaveInTerritory > 0 && forcesToSaveToReserves > 0 || specialForcesToSaveToReserves > 0, " and "),
+                        MessagePart.ExpressIf(forcesToSaveToReserves > 0, forcesToSaveToReserves, winner.Force),
+                        MessagePart.ExpressIf(specialForcesToSaveToReserves > 0, specialForcesToSaveToReserves, winner.SpecialForce),
+                        MessagePart.ExpressIf(forcesToSaveToReserves > 0 || specialForcesToSaveToReserves > 0, " to reserves"));
+                }
+
+                HandleLoserLosses(territory, winner,
+                    forcesToLose - forcesToSaveToReserves - forcesToSaveInTerritory,
+                    specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory);
+            }
+        }
+
+        private void TakeTechToken(BattleConcluded e, Player winner)
+        {
+            if (e.StolenToken != TechToken.None)
+            {
+                var loser = GetPlayer(BattleLoser);
+                if (loser.TechTokens.Contains(e.StolenToken))
+                {
+                    loser.TechTokens.Remove(e.StolenToken);
+                    winner.TechTokens.Add(e.StolenToken);
+                    Log(e.Initiator, " steal ", e.StolenToken, " from ", BattleLoser);
+                }
+            }
+        }
+
+        #endregion
+
+        #region FaceDancing
+
+        public void HandleEvent(FaceDanced f)
+        {
+            if (f.FaceDancerCalled)
+            {
+                var initiator = GetPlayer(f.Initiator);
+                var facedancer = initiator.FaceDancers.FirstOrDefault(f => WinnerHero.IsFaceDancer(f));
+                Log(f.Initiator, " reveal ", facedancer, " as one of their Face Dancers!");
+
+                RecentMilestones.Add(Milestone.FaceDanced);
+
+                if (facedancer is Leader && IsAlive(facedancer))
+                {
+                    KillHero(facedancer);
+                }
+
+                if (BattleWinner == Faction.Black)
+                {
+                    ReturnCapturedLeaders(GetPlayer(BattleWinner), facedancer);
+                }
+
+                foreach (var p in Players)
+                {
+                    if (!p.KnownNonTraitors.Contains(facedancer)) p.KnownNonTraitors.Add(facedancer);
+                }
+
+                if (!initiator.RevealedDancers.Contains(facedancer))
+                {
+                    initiator.RevealedDancers.Add(facedancer);
+                }
+
+                if (!initiator.HasUnrevealedFaceDancers)
+                {
+                    ReplaceFacedancers(f, initiator);
+                }
+
+                ReplaceForces(f, initiator);
+
+                FlipBeneGesseritWhenAlone();
+            }
+            else
+            {
+                Log(f.Initiator, " don't reveal a Face Dancer");
+            }
+
+            FinishBattle();
+        }
+
+        private void ReplaceForces(FaceDanced f, Player initiator)
+        {
+            var winner = GetPlayer(BattleWinner);
+            int nrOfRemovedForces = winner.AnyForcesIn(CurrentBattle.Territory);
+
+            if (nrOfRemovedForces > 0)
+            {
+                winner.ForcesToReserves(CurrentBattle.Territory);
+
+                initiator.ForcesInReserve -= f.ForcesFromReserve;
+                foreach (var fl in f.ForceLocations)
+                {
+                    var location = fl.Key;
+                    initiator.ChangeForces(location, -fl.Value.AmountOfForces);
+                    initiator.ChangeSpecialForces(location, -fl.Value.AmountOfSpecialForces);
+                }
+
+                foreach (var fl in f.TargetForceLocations)
+                {
+                    var location = fl.Key;
+                    initiator.ChangeForces(location, fl.Value.AmountOfForces);
+                    initiator.ChangeSpecialForces(location, fl.Value.AmountOfSpecialForces);
+                }
+
+                Log(nrOfRemovedForces, " ", winner.Faction, " forces go back to reserves and are replaced by ", f.TargetForceLocations.Sum(b => b.Value.TotalAmountOfForces), f.Player.Force, " (", f.ForcesFromReserve, " from reserves", DetermineSourceLocations(f), ")");
+            }
+        }
+
+        private void ReplaceFacedancers(FaceDanced f, Player purple)
+        {
+            TraitorDeck.Items.AddRange(purple.FaceDancers);
+            purple.FaceDancers.Clear();
+            purple.RevealedDancers.Clear();
+            TraitorDeck.Shuffle();
+            RecentMilestones.Add(Milestone.Shuffled);
+            for (int i = 0; i < 3; i++)
+            {
+                purple.FaceDancers.Add(TraitorDeck.Draw());
+            }
+            Log(f.Initiator, " draw 3 new Face Dancers.");
+        }
+
+        private MessagePart DetermineSourceLocations(FaceDanced f)
+        {
+            return MessagePart.ExpressIf(f.ForceLocations.Count > 0, f.ForceLocations.Select(fl => MessagePart.Express(", ", fl.Value.AmountOfForces, " from ", fl.Key)));
+        }
+
+        public IHero WinnerHero
+        {
+            get
+            {
+                if (BattleWinner != Faction.None)
+                {
+                    var winnerGambit = BattleWinner == AggressorBattleAction.Initiator ? AggressorBattleAction : DefenderBattleAction;
+                    return winnerGambit.Hero;
+                }
+
+                return null;
+            }
+        }
+
+        #endregion
+
+
+
+        #region Support
 
         private void LoseCards(Battle plan)
         {
@@ -1498,6 +1442,8 @@ namespace Treachery.Shared
             var currentTerritory = CurrentTerritory(hero);
             return currentTerritory == null || currentTerritory == CurrentBattle?.Territory;
         }
+
+        #endregion
 
         public Leader BlackVictim { get; set; }
         private void SelectVictimOfBlackWinner(Battle harkonnenAction, Battle victimAction)
@@ -1517,7 +1463,7 @@ namespace Treachery.Shared
             else
             {
                 BlackVictim = null;
-                CurrentReport.Express(victim.Faction, " don't have any leaders for ", Faction.Black, " to capture or kill");
+                Log(victim.Faction, " don't have any leaders for ", Faction.Black, " to capture or kill");
             }
         }
 
@@ -1529,7 +1475,7 @@ namespace Treachery.Shared
 
             if (decision == CaptureDecision.Capture)
             {
-                CurrentReport.Express(Faction.Black, " capture a leader!");
+                Log(Faction.Black, " capture a leader!");
                 harkonnen.Leaders.Add(BlackVictim);
                 target.Leaders.Remove(BlackVictim);
                 SetInFrontOfShield(BlackVictim, false);
@@ -1537,65 +1483,66 @@ namespace Treachery.Shared
             }
             else if (decision == CaptureDecision.Kill)
             {
-                CurrentReport.Express(Faction.Black, " kill a leader for ", Payment(2));
+                Log(Faction.Black, " kill a leader for ", Payment(2));
                 RecentMilestones.Add(Milestone.LeaderKilled);
                 AssassinateLeader(BlackVictim);
                 harkonnen.Resources += 2;
             }
             else if (decision == CaptureDecision.DontCapture)
             {
-                CurrentReport.Express(Faction.Black, " decide not to capture or kill a leader");
+                Log(Faction.Black, " decide not to capture or kill a leader");
             }
         }
 
-        public void HandleEvent(SwitchedSkilledLeader e)
+
+
+        #region PostBattle
+
+        public Diplomacy CurrentDiplomacy { get; private set; }
+        public void HandleEvent(Diplomacy e)
         {
-            var leader = e.Player.Leaders.FirstOrDefault(l => Skilled(l) && !CapturedLeaders.ContainsKey(l));
-            SwitchInFrontOfShield(leader);
-            CurrentReport.Express(e.Initiator, " place ", Skill(leader), " ", leader, IsInFrontOfShield(leader) ? " in front of" : " behind", " their shield");
+            Log(e.GetDynamicMessage());
+            CurrentDiplomacy = e;
         }
 
-        public Battle WinnerBattleAction
+        public IList<TreacheryCard> AuditedCards { get; private set; }
+
+        public void HandleEvent(Captured e)
+        {
+            Log(e);
+            if (!e.Passed)
+            {
+                if (Version > 125 && Prevented(FactionAdvantage.BlackCaptureLeader))
+                {
+                    LogPrevention(FactionAdvantage.BlackCaptureLeader);
+                }
+                else
+                {
+                    CaptureLeader();
+                }
+            }
+
+            Enter(Phase.BattleConclusion);
+        }
+
+        public Player Auditee
         {
             get
             {
-                if (AggressorBattleAction != null && AggressorBattleAction.Initiator == BattleWinner) return AggressorBattleAction;
-                if (DefenderBattleAction != null && DefenderBattleAction.Initiator == BattleWinner) return DefenderBattleAction;
+                if (Applicable(Rule.BrownAuditor) && !Prevented(FactionAdvantage.BrownAudit))
+                {
+                    if (AggressorBattleAction != null && AggressorBattleAction.Hero != null && AggressorBattleAction.Hero.HeroType == HeroType.Auditor)
+                    {
+                        return DefenderBattleAction.Player;
+                    }
+                    else if (DefenderBattleAction != null && DefenderBattleAction.Hero != null && DefenderBattleAction.Hero.HeroType == HeroType.Auditor)
+                    {
+                        return AggressorBattleAction.Player;
+                    }
+                }
 
                 return null;
             }
-        }
-
-        public Thought CurrentThought { get; private set; }
-        public void HandleEvent(Thought e)
-        {
-            CurrentThought = e;
-            var opponent = CurrentBattle.OpponentOf(e.Initiator).Faction;
-            CurrentReport.Express("By ", LeaderSkill.Thinker, ", ", e.Initiator, " ask ", opponent, " if they have a ", e.Card);
-
-            Enter(Phase.Thought);
-        }
-
-        public void HandleEvent(ThoughtAnswered e)
-        {
-            CurrentReport.Express(e);
-            if (e.Card == null)
-            {
-                CurrentReport.Express(e.Initiator, " don't own any cards");
-            }
-            else
-            {
-                CurrentReport.ExpressTo(CurrentThought.Initiator, "In response, ", e.Initiator, " show you a ", e.Card);
-                RegisterKnown(CurrentThought.Initiator, e.Card);
-            }
-
-            Enter(Phase.BattlePhase);
-        }
-
-        public void HandleEvent(HMSAdvantageChosen e)
-        {
-            CurrentReport.Express(e);
-            ChosenHMSAdvantage = e.Advantage;
         }
 
         public void HandleEvent(Retreat e)
@@ -1618,10 +1565,131 @@ namespace Treachery.Shared
                 specialForcesToMove -= toMoveFromHere;
             }
 
-            CurrentReport.Express(e);
+            Log(e);
             HandleForceLosses();
             FlipBeneGesseritWhenAlone();
             DetermineHowToProceedAfterRevealingBattlePlans();
         }
+
+        public void HandleEvent(AuditCancelled e)
+        {
+            Log(e.GetDynamicMessage());
+
+            if (e.Cancelled)
+            {
+                e.Player.Resources -= e.Cost();
+                GetPlayer(Faction.Brown).Resources += e.Cost();
+            }
+
+            if (!e.Cancelled)
+            {
+                Enter(Phase.Auditing);
+                LogTo(e.Initiator, Faction.Brown, " see: ", AuditedCards);
+            }
+            else
+            {
+                Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
+            }
+        }
+
+        public void HandleEvent(Audited e)
+        {
+            Log(e);
+
+            foreach (var card in AuditedCards)
+            {
+                RegisterKnown(e.Player, card);
+            }
+
+            Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
+        }
+
+        private void CaptureLeaderIfApplicable()
+        {
+            if (Version < 116 && BattleWinner == Faction.Black && Applicable(Rule.BlackCapturesOrKillsLeaders))
+            {
+                if (!Prevented(FactionAdvantage.BlackCaptureLeader))
+                {
+                    CaptureLeader();
+                }
+                else
+                {
+                    LogPrevention(FactionAdvantage.BlackCaptureLeader);
+                }
+            }
+        }
+
+        private void CaptureLeader()
+        {
+            if (AggressorBattleAction.By(BattleWinner))
+            {
+                SelectVictimOfBlackWinner(AggressorBattleAction, DefenderBattleAction);
+            }
+            else
+            {
+                SelectVictimOfBlackWinner(DefenderBattleAction, AggressorBattleAction);
+            }
+        }
+
+        #endregion
+
+        private void ResetBattle()
+        {
+            CurrentBattle = null;
+            CurrentPrescience = null;
+            CurrentThought = null;
+            CurrentVoice = null;
+            BlackVictim = null;
+            AggressorBattleAction = null;
+            DefenderBattleAction = null;
+            AggressorTraitorAction = null;
+            DefenderTraitorAction = null;
+            PoisonToothCancelled = false;
+            GreySpecialForceLossesToTake = 0;
+            BattleWinner = Faction.None;
+            BattleLoser = Faction.None;
+            HasActedOrPassed.Clear();
+            BattleTriggeredBureaucracy = null;
+        }
+
+        public Battle WinnerBattleAction
+        {
+            get
+            {
+                if (AggressorBattleAction != null && AggressorBattleAction.Initiator == BattleWinner) return AggressorBattleAction;
+                if (DefenderBattleAction != null && DefenderBattleAction.Initiator == BattleWinner) return DefenderBattleAction;
+
+                return null;
+            }
+        }
+
+        
+
+        
+
+        
+
+        #region Support
+
+        public Player NextPlayerToBattle
+        {
+            get
+            {
+                for (int i = 0; i < Players.Count; i++)
+                {
+                    var playerToCheck = BattleSequence.CurrentPlayer;
+                    if (Battle.MustFight(this, playerToCheck))
+                    {
+                        return playerToCheck;
+                    }
+
+                    BattleSequence.NextPlayer();
+                }
+
+                return null;
+            }
+        }
+
+        #endregion
     }
 }

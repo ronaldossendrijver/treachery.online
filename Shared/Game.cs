@@ -713,7 +713,7 @@ namespace Treachery.Shared
                 foreach (var t in territoriesWhereAdvisorsAreAlone)
                 {
                     bg.FlipForces(t, false);
-                    CurrentReport.Express(Faction.Blue, " are alone and flip to ", FactionForce.Blue, " in ", t);
+                    Log(Faction.Blue, " are alone and flip to ", FactionForce.Blue, " in ", t);
                 }
             }
         }
@@ -879,7 +879,7 @@ namespace Treachery.Shared
             }
             else
             {
-                CurrentReport.Express(cardType, " card not found");
+                Log(cardType, " card not found");
             }
 
             return card;
@@ -897,7 +897,7 @@ namespace Treachery.Shared
         {
             if (player != null && card != null)
             {
-                CurrentReport.Express(player.Faction, " discard ", card);
+                Log(player.Faction, " discard ", card);
                 player.TreacheryCards.Remove(card);
                 TreacheryDiscardPile.PutOnTop(card);
                 RegisterKnown(card);
@@ -947,6 +947,23 @@ namespace Treachery.Shared
             }
         }
 
+        private void Log(params object[] expression)
+        {
+            CurrentReport.Express(expression); 
+        }
+
+        private void LogIf(bool condition, params object[] expression)
+        {
+            if (condition)
+            {
+                CurrentReport.Express(condition, expression);
+            }
+        }
+
+        private void LogTo(Faction faction, params object[] expression)
+        {
+            CurrentReport.ExpressTo(faction, expression);
+        }
 
         #endregion SupportMethods
 

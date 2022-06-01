@@ -23,7 +23,7 @@ namespace Treachery.Shared
                 if (p.BankedResources > 0)
                 {
                     p.Resources += p.BankedResources;
-                    CurrentReport.Express(p.Faction, " add ", Payment(p.BankedResources), " received as ", LeaderSkill.Banker, " to their reserves");
+                    Log(p.Faction, " add ", Payment(p.BankedResources), " received as ", LeaderSkill.Banker, " to their reserves");
                     p.BankedResources = 0;
                 }
             }
@@ -99,7 +99,7 @@ namespace Treachery.Shared
 
                 if (newOwner.Faction != currentOwner)
                 {
-                    CurrentReport.Express(newOwner.Faction, " take control of ", location);
+                    Log(newOwner.Faction, " take control of ", location);
                 }
             }
         }
@@ -115,11 +115,11 @@ namespace Treachery.Shared
                 CurrentMainPhase = MainPhase.Ended;
                 Enter(Phase.GameEnded);
                 RecentMilestones.Add(Milestone.GameWon);
-                CurrentReport.Express("The game has ended.");
+                Log("The game has ended.");
 
                 foreach (var w in Winners)
                 {
-                    CurrentReport.Express(w.Faction, " win!");
+                    Log(w.Faction, " win!");
                 }
             }
             else
@@ -134,13 +134,13 @@ namespace Treachery.Shared
         public void HandleEvent(BrownEconomics e)
         {
             EconomicsStatus = e.Status;
-            CurrentReport.Express(e);
+            Log(e);
             RecentMilestones.Add(Milestone.Economics);
         }
 
         public void HandleEvent(BrownRemoveForce e)
         {
-            CurrentReport.Express(e);
+            Log(e);
             Discard(e.CardUsed());
             var target = GetPlayer(e.Target);
 
@@ -163,20 +163,20 @@ namespace Treachery.Shared
             {
                 case BrownEconomicsStatus.Double:
                     EconomicsStatus = BrownEconomicsStatus.CancelFlipped;
-                    CurrentReport.Express(Faction.Brown, " The Economics Token flips to Cancel.");
+                    Log(Faction.Brown, " The Economics Token flips to Cancel.");
                     RecentMilestones.Add(Milestone.Economics);
                     break;
 
                 case BrownEconomicsStatus.Cancel:
                     EconomicsStatus = BrownEconomicsStatus.DoubleFlipped;
-                    CurrentReport.Express(Faction.Brown, " The Economics Token flips to Double.");
+                    Log(Faction.Brown, " The Economics Token flips to Double.");
                     RecentMilestones.Add(Milestone.Economics);
                     break;
 
                 case BrownEconomicsStatus.DoubleFlipped:
                 case BrownEconomicsStatus.CancelFlipped:
                     EconomicsStatus = BrownEconomicsStatus.RemovedFromGame;
-                    CurrentReport.Express(Faction.Brown, " The Economics Token has been removed from the game.");
+                    Log(Faction.Brown, " The Economics Token has been removed from the game.");
                     RecentMilestones.Add(Milestone.Economics);
                     break;
             }
@@ -191,7 +191,7 @@ namespace Treachery.Shared
                 if (p.Bribes > 0)
                 {
                     p.Resources += p.Bribes;
-                    CurrentReport.Express(p.Faction, " add ", Payment(p.Bribes), " from bribes to their reserves");
+                    Log(p.Faction, " add ", Payment(p.Bribes), " from bribes to their reserves");
                     p.Bribes = 0;
                 }
             }
@@ -230,7 +230,7 @@ namespace Treachery.Shared
                 if (!player.KnownNonTraitors.Contains(leader)) player.KnownNonTraitors.Add(leader);
             }
 
-            CurrentReport.Express(e);
+            Log(e);
             Enter(Phase.TurnConcluded);
         }
 
@@ -239,7 +239,7 @@ namespace Treachery.Shared
             var benegesserit = GetPlayer(Faction.Blue);
             if (benegesserit != null && benegesserit.PredictedTurn == CurrentTurn && Winners.Any(w => w.Faction == benegesserit.PredictedFaction))
             {
-                CurrentReport.Express(Faction.Blue, " predicted ", benegesserit.PredictedFaction, " victory in turn ", benegesserit.PredictedTurn, "! They had everything planned...");
+                Log(Faction.Blue, " predicted ", benegesserit.PredictedFaction, " victory in turn ", benegesserit.PredictedTurn, "! They had everything planned...");
                 WinMethod = WinMethod.Prediction;
                 Winners.Clear();
                 Winners.Add(benegesserit);
@@ -286,22 +286,22 @@ namespace Treachery.Shared
             {
                 if (ally == null)
                 {
-                    CurrentReport.Express(p.Faction, " are the first in front of the storm with enough victory points to win the game");
+                    Log(p.Faction, " are the first in front of the storm with enough victory points to win the game");
                 }
                 else
                 {
-                    CurrentReport.Express(p.Faction, " and ", p.Ally, " are the first in front of the storm with enough victory points to win the game");
+                    Log(p.Faction, " and ", p.Ally, " are the first in front of the storm with enough victory points to win the game");
                 }
             }
             else
             {
                 if (ally == null)
                 {
-                    CurrentReport.Express(p.Faction, " have enough victory points to win the game");
+                    Log(p.Faction, " have enough victory points to win the game");
                 }
                 else
                 {
-                    CurrentReport.Express(p.Faction, " and ", p.Ally, " have enough victory points to win the game");
+                    Log(p.Faction, " and ", p.Ally, " have enough victory points to win the game");
                 }
             }
         }
@@ -351,21 +351,21 @@ namespace Treachery.Shared
 
             if (fremen != null && YellowVictoryConditionMet)
             {
-                CurrentReport.Express(Faction.Yellow, " special victory conditions are met!");
+                Log(Faction.Yellow, " special victory conditions are met!");
                 WinMethod = WinMethod.YellowSpecial;
                 Winners.Add(fremen);
                 if (fremen.Ally != Faction.None) Winners.Add(GetPlayer(fremen.Ally));
             }
             else if (guild != null && !Applicable(Rule.DisableOrangeSpecialVictory))
             {
-                CurrentReport.Express(Faction.Orange, " special victory conditions are met!");
+                Log(Faction.Orange, " special victory conditions are met!");
                 WinMethod = WinMethod.OrangeSpecial;
                 Winners.Add(guild);
                 if (guild.Ally != Faction.None) Winners.Add(GetPlayer(guild.Ally));
             }
             else if (fremen != null && !Applicable(Rule.DisableOrangeSpecialVictory))
             {
-                CurrentReport.Express(Faction.Yellow, " win because ", Faction.Orange, " are not playing and no one else won");
+                Log(Faction.Yellow, " win because ", Faction.Orange, " are not playing and no one else won");
                 WinMethod = WinMethod.OrangeSpecial;
                 Winners.Add(fremen);
                 if (fremen.Ally != Faction.None) Winners.Add(GetPlayer(fremen.Ally));
@@ -408,7 +408,7 @@ namespace Treachery.Shared
             {
                 Winners.Add(withMostPoints);
                 WinMethod = WinMethod.Strongholds;
-                CurrentReport.Express(withMostPoints.Faction, " are the first after the storm with most victory points");
+                Log(withMostPoints.Faction, " are the first after the storm with most victory points");
 
                 if (withMostPoints.Ally != Faction.None)
                 {

@@ -229,7 +229,7 @@ namespace Treachery.Shared
         public void HandleEvent(SetIncreasedRevivalLimits e)
         {
             FactionsWithIncreasedRevivalLimits = e.Factions;
-            CurrentReport.Express(e);
+            Log(e);
         }
 
         public int GetRevivalLimit(Game g, Player p)
@@ -250,7 +250,7 @@ namespace Treachery.Shared
 
         private void LogRevival(Revival r, Player initiator, RevivalCost cost, int purpleReceivedResources, bool asGhola)
         {
-            CurrentReport.Express(
+            Log(
                 r.Initiator,
                 " revive ",
                 MessagePart.ExpressIf(r.Hero != null, r.Hero),
@@ -267,7 +267,7 @@ namespace Treachery.Shared
         public void HandleEvent(RaiseDeadPlayed r)
         {
             RecentMilestones.Add(Milestone.RaiseDead);
-            CurrentReport.Express(r);
+            Log(r);
             var player = GetPlayer(r.Initiator);
             Discard(player, TreacheryCardType.RaiseDead);
 
@@ -275,7 +275,7 @@ namespace Treachery.Shared
             if (purple != null)
             {
                 purple.Resources += 1;
-                CurrentReport.Express(Faction.Purple, " get ", Payment(1), " for revival by ", TreacheryCardType.RaiseDead);
+                Log(Faction.Purple, " get ", Payment(1), " for revival by ", TreacheryCardType.RaiseDead);
             }
 
             if (r.Hero != null)
@@ -315,14 +315,14 @@ namespace Treachery.Shared
                 CurrentRevivalRequests.Remove(existingRequest);
             }
 
-            CurrentReport.Express(e);
+            Log(e);
             CurrentRevivalRequests.Add(e);
         }
 
         public Dictionary<IHero, int> AllowedEarlyRevivals { get; private set; } = new Dictionary<IHero, int>();
         public void HandleEvent(AcceptOrCancelPurpleRevival e)
         {
-            CurrentReport.Express(e);
+            Log(e);
 
             if (AllowedEarlyRevivals.ContainsKey(e.Hero))
             {
@@ -349,7 +349,7 @@ namespace Treachery.Shared
         public BrownFreeRevivalPrevention CurrentFreeRevivalPrevention { get; set; } = null;
         public void HandleEvent(BrownFreeRevivalPrevention e)
         {
-            CurrentReport.Express(e);
+            Log(e);
             Discard(e.CardUsed());
             CurrentFreeRevivalPrevention = e;
             RecentMilestones.Add(Milestone.SpecialUselessPlayed);
@@ -379,7 +379,7 @@ namespace Treachery.Shared
             CurrentKarmaRevivalPrevention = e;
             Discard(e.Player, TreacheryCardType.Karma);
             e.Player.SpecialKarmaPowerUsed = true;
-            CurrentReport.Express(e);
+            Log(e);
             RecentMilestones.Add(Milestone.Karma);
         }
     }

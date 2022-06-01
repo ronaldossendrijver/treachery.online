@@ -17,14 +17,6 @@ namespace Treachery.Shared
 
         public LinkedList<Message> Messages = new LinkedList<Message>();
 
-        public void ExpressIf(bool condition, params object[] list)
-        {
-            if (condition)
-            {
-                Add(Message.Express(list));
-            }
-        }
-
         public void Express(params object[] list)
         {
             Add(Message.Express(list));

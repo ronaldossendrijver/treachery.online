@@ -14,7 +14,7 @@
     </div>
 </div>
 
-@code {        
+@code {
 
     private string playername;
 
@@ -32,7 +32,7 @@
 
         if (PlayerJoined.ValidName(playername) == "")
         {
-            await h.SetPlayerName(playername)
+            await h.SetPlayerName(playername);
         }
     }
 }

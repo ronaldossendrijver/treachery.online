@@ -38,19 +38,19 @@ namespace Treachery.Shared
             {
                 foreach (var playerInArrakeen in Players.Where(p => p.Controls(this, Map.Arrakeen, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
                 {
-                    CurrentReport.Express(playerInArrakeen.Faction, " collect ", Payment(2), " from ", Map.Arrakeen);
+                    Log(playerInArrakeen.Faction, " collect ", Payment(2), " from ", Map.Arrakeen);
                     playerInArrakeen.Resources += 2;
                 }
 
                 foreach (var playerInCarthag in Players.Where(p => p.Controls(this, Map.Carthag, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
                 {
-                    CurrentReport.Express(playerInCarthag.Faction, " collect ", Payment(2), " from ", Map.Carthag);
+                    Log(playerInCarthag.Faction, " collect ", Payment(2), " from ", Map.Carthag);
                     playerInCarthag.Resources += 2;
                 }
 
                 foreach (var playerInTueksSietch in Players.Where(p => p.Controls(this, Map.TueksSietch, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
                 {
-                    CurrentReport.Express(playerInTueksSietch.Faction, " collect ", Payment(1), " from ", Map.TueksSietch);
+                    Log(playerInTueksSietch.Faction, " collect ", Payment(1), " from ", Map.TueksSietch);
                     playerInTueksSietch.Resources += 1;
                 }
             }
@@ -68,7 +68,7 @@ namespace Treachery.Shared
                     int maximumSpiceThatCanBeCollected = forcesCollectingDefaultAmountOfSpice * collectionRate + forcesCollecting3Spice * 3;
                     int collectedAmount = Math.Min(l.Value, maximumSpiceThatCanBeCollected);
                     ChangeResourcesOnPlanet(l.Key, -collectedAmount);
-                    CurrentReport.Express(p.Faction, " collect ", Payment(collectedAmount), " from ", l.Key);
+                    Log(p.Faction, " collect ", Payment(collectedAmount), " from ", l.Key);
                     p.Resources += collectedAmount;
                 }
             }

@@ -66,7 +66,7 @@ namespace Treachery.Shared
                 {
                     var amount = techTokenOwner.TechTokens.Count;
                     techTokenOwner.Resources += amount;
-                    CurrentReport.Express(techTokenOwner.Faction, " receive ", Payment(amount), " from ", TechToken.Graveyard);
+                    Log(techTokenOwner.Faction, " receive ", Payment(amount), " from ", TechToken.Graveyard);
                 }
             }
         }
@@ -74,7 +74,7 @@ namespace Treachery.Shared
         public void HandleEvent(OrangeDelay e)
         {
             BeginningOfShipmentAndMovePhase = false;
-            CurrentReport.Express(e);
+            Log(e);
             Enter(Phase.NonOrangeShip);
         }
 
@@ -147,7 +147,7 @@ namespace Treachery.Shared
                 DetermineNextShipmentAndMoveSubPhase(DetermineIntrusionCaused(s), BGMayAccompany);
 
                 int orangeProfit = HandleOrangeProfit(s, initiator, ref orangeIncome);
-                CurrentReport.Express(s.GetVerboseMessage(totalCost, orangeIncome, ownerOfKarma));
+                Log(s.GetVerboseMessage(totalCost, orangeIncome, ownerOfKarma));
 
                 if (totalCost - orangeProfit >= 4)
                 {
@@ -158,7 +158,7 @@ namespace Treachery.Shared
             }
             else
             {
-                CurrentReport.Express(s.GetVerboseMessage(totalCost, orangeIncome, null));
+                Log(s.GetVerboseMessage(totalCost, orangeIncome, null));
                 DetermineNextShipmentAndMoveSubPhase(false, BGMayAccompany);
             }
         }
@@ -269,7 +269,7 @@ namespace Treachery.Shared
 
                 if (killCount > 0)
                 {
-                    CurrentReport.Express(killCount, initiator.Faction, " forces are killed by the storm");
+                    Log(killCount, initiator.Faction, " forces are killed by the storm");
                 }
             }
 
@@ -312,12 +312,12 @@ namespace Treachery.Shared
                     benegesserit.ShipAdvisors(c.Location, 1);
                 }
 
-                CurrentReport.Express(c.Initiator, " accompany to ", c.Location);
+                Log(c.Initiator, " accompany to ", c.Location);
             }
             else
             {
 
-                CurrentReport.Express(c.Initiator, " don't accompany");
+                Log(c.Initiator, " don't accompany");
             }
 
             DetermineNextShipmentAndMoveSubPhase(false, BGMayAccompany);
@@ -361,7 +361,7 @@ namespace Treachery.Shared
             }
             else
             {
-                CurrentReport.Express(m.Initiator, " pass movement");
+                Log(m.Initiator, " pass movement");
             }
 
             DetermineNextShipmentAndMoveSubPhase(intrusionCaused, false);
@@ -486,7 +486,7 @@ namespace Treachery.Shared
                     }
 
                     initiator.Resources += mostSpice;
-                    CurrentReport.Express(initiator.Faction, " ", LeaderSkill.Sandmaster, " collects ", Payment(mostSpice), " along the way");
+                    Log(initiator.Faction, " ", LeaderSkill.Sandmaster, " collects ", Payment(mostSpice), " along the way");
                 }
             }
         }
@@ -512,7 +512,7 @@ namespace Treachery.Shared
 
                 if (killCount > 0)
                 {
-                    CurrentReport.Express(killCount, initiator.Faction, "forces are killed by the storm while travelling");
+                    Log(killCount, initiator.Faction, "forces are killed by the storm while travelling");
                 }
             }
             else
@@ -529,7 +529,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(FlightUsed e)
         {
-            CurrentReport.Express(e);
+            Log(e);
             Discard(e.Player, TreacheryCardType.Flight);
             CurrentFlightUsed = e;
         }
@@ -546,7 +546,7 @@ namespace Treachery.Shared
 
         private void LogMove(Player initiator, Territory from, Location to, int forceAmount, int specialForceAmount, bool asAdvisors, bool byCaravan)
         {
-            CurrentReport.Express(
+            Log(
                 CaravanMessage(byCaravan),
                 initiator.Faction,
                 " move ",
@@ -565,7 +565,7 @@ namespace Treachery.Shared
         {
             var initiator = GetPlayer(e.Initiator);
 
-            CurrentReport.Express(e.GetDynamicMessage(this));
+            Log(e.GetDynamicMessage(this));
 
             initiator.FlipForces(LastShippedOrMovedTo.Territory, e.AsAdvisors);
 
@@ -663,7 +663,7 @@ namespace Treachery.Shared
                 {
                     if (p.AnyForcesIn(t) > 0)
                     {
-                        CurrentReport.Express("All ", p.Faction, " forces in ", t, " were killed due to ally presence");
+                        Log("All ", p.Faction, " forces in ", t, " were killed due to ally presence");
                         RevealCurrentNoField(p, t);
                         p.KillAllForces(t, false);
                     }
@@ -680,7 +680,7 @@ namespace Treachery.Shared
                     {
                         if (t != Map.PolarSink.Territory)
                         {
-                            CurrentReport.Express("All ", p.Faction, " forces in ", t, " were killed due to ally presence");
+                            Log("All ", p.Faction, " forces in ", t, " were killed due to ally presence");
                             RevealCurrentNoField(p, t);
                             p.KillAllForces(t, false);
                         }
@@ -764,7 +764,7 @@ namespace Treachery.Shared
         public List<Territory> CurrentBlockedTerritories { get; private set; } = new List<Territory>();
         public void HandleEvent(BrownMovePrevention e)
         {
-            CurrentReport.Express(e);
+            Log(e);
             Discard(e.CardUsed());
             CurrentBlockedTerritories.Add(e.Territory);
             RecentMilestones.Add(Milestone.SpecialUselessPlayed);
@@ -773,7 +773,7 @@ namespace Treachery.Shared
         private bool BrownHasExtraMove { get; set; } = false;
         public void HandleEvent(BrownExtraMove e)
         {
-            CurrentReport.Express(e);
+            Log(e);
             Discard(e.CardUsed());
             BrownHasExtraMove = true;
             RecentMilestones.Add(Milestone.SpecialUselessPlayed);
@@ -788,7 +788,7 @@ namespace Treachery.Shared
                 {
                     var amount = techTokenOwner.TechTokens.Count;
                     techTokenOwner.Resources += amount;
-                    CurrentReport.Express(techTokenOwner.Faction, " receive ", Payment(amount), " from ", TechToken.Ships);
+                    Log(techTokenOwner.Faction, " receive ", Payment(amount), " from ", TechToken.Ships);
                 }
             }
         }
@@ -801,7 +801,7 @@ namespace Treachery.Shared
             CurrentKarmaShipmentPrevention = e;
             Discard(e.Player, TreacheryCardType.Karma);
             e.Player.SpecialKarmaPowerUsed = true;
-            CurrentReport.Express(e);
+            Log(e);
             RecentMilestones.Add(Milestone.Karma);
         }
     }
