@@ -449,7 +449,7 @@ namespace Treachery.Shared
                     result.Add(typeof(WhiteRevealedNoField));
                 }
 
-                if (faction == Faction.Brown && !Prevented(FactionAdvantage.BrownDiscarding) && ConsiderAsEndOfPhase && BrownDiscarded.ValidCards(this, player).Any())
+                if (faction == Faction.Brown && !Prevented(FactionAdvantage.BrownDiscarding) && ConsiderAsEndOfPhase && BrownDiscarded.ValidCards(player).Any())
                 {
                     result.Add(typeof(BrownDiscarded));
                 }
@@ -631,7 +631,7 @@ namespace Treachery.Shared
                     CurrentPhase != Phase.Bidding &&
                     !hasFinalizedBattlePlanWaitingToBeResolved &&
                     player.Ally != Faction.None &&
-                    WhiteGaveCard.ValidCards(this, player).Any() &&
+                    WhiteGaveCard.ValidCards(player).Any() &&
                     player.AlliedPlayer.HasRoomForCards)
                 {
                     result.Add(typeof(WhiteGaveCard));

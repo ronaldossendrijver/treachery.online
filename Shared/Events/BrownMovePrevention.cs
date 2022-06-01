@@ -29,18 +29,18 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (!ValidTerritories(Game, Player).Contains(Territory)) return Message.Express("Invalid territory");
+            if (!ValidTerritories(Player).Contains(Territory)) return Message.Express("Invalid territory");
             return null;
         }
 
-        public static IEnumerable<Territory> ValidTerritories(Game g, Player p)
+        public static IEnumerable<Territory> ValidTerritories(Player p)
         {
             return p.TerritoriesWithForces;
         }
 
         public static bool CanBePlayedBy(Game g, Player p)
         {
-            return p.Faction == Faction.Brown && ValidTerritories(g, p).Any() && CardToUse(p) != null;
+            return p.Faction == Faction.Brown && ValidTerritories(p).Any() && CardToUse(p) != null;
         }
 
         public static TreacheryCard CardToUse(Player p)

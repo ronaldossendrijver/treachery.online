@@ -26,10 +26,12 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            /*
             if (g.RecentMilestones.Contains(Milestone.AuctionWon) && g.RecentMilestones.Contains(Milestone.Karma))
             {
                 WriteSavegameIfApplicable(g, e.Player, "Card won using Karama");
             }
+            */
         }
 
         private readonly List<Type> Written = new();

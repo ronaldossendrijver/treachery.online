@@ -35,7 +35,7 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (!ValidCards(Game, Player).Contains(Card)) return Message.Express("Invalid card");
+            if (!ValidCards(Player).Contains(Card)) return Message.Express("Invalid card");
 
             return null;
         }
@@ -57,7 +57,7 @@ namespace Treachery.Shared
             }
         }
 
-        public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)
+        public static IEnumerable<TreacheryCard> ValidCards(Player p)
         {
             return p.TreacheryCards.Where(c => c.Type == TreacheryCardType.Useless ||
                 (c.Type != TreacheryCardType.Projectile && c.Type != TreacheryCardType.Poison) && p.TreacheryCards.Count(toCount => toCount.Type == c.Type) > 1);

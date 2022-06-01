@@ -52,7 +52,7 @@ namespace Treachery.Shared
             return Answer == ClairVoyanceAnswer.Yes;
         }
 
-        public static bool IsQuestionedBy(Game g, bool asWeapon, TreacheryCardType cardType, TreacheryCardType asked)
+        public static bool IsQuestionedBy(bool asWeapon, TreacheryCardType cardType, TreacheryCardType asked)
         {
             if (cardType == asked)
             {

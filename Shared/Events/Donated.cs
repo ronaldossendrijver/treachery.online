@@ -94,7 +94,7 @@ namespace Treachery.Shared
             }
         }
 
-        public static int MaxAmount(Game g, Player p)
+        public static int MaxAmount(Player p)
         {
             return p.Resources;
         }

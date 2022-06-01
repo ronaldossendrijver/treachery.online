@@ -35,7 +35,7 @@ namespace Treachery.Shared
         {
             if (!ValidLocations(Game).Contains(Location)) return Message.Express("Invalid location");
             if (!ValidFactions(Game, Player, Location).Contains(Target)) return Message.Express("Invalid faction");
-            if (!ValidSpecialForceChoices(Game, Player, Location, Target).Contains(SpecialForce)) return Message.Express("Invalid type of forces");
+            if (!ValidSpecialForceChoices(Game, Location, Target).Contains(SpecialForce)) return Message.Express("Invalid type of forces");
 
             return null;
         }
@@ -57,7 +57,7 @@ namespace Treachery.Shared
             }
         }
 
-        public static IEnumerable<bool> ValidSpecialForceChoices(Game g, Player p, Location l, Faction f)
+        public static IEnumerable<bool> ValidSpecialForceChoices(Game g, Location l, Faction f)
         {
             var result = new List<bool>();
             var playerToCheck = g.GetPlayer(f);

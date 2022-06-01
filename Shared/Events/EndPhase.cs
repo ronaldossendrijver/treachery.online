@@ -21,7 +21,7 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Game.HandleEndPhaseEvent();
         }
 
         public override Message GetMessage()

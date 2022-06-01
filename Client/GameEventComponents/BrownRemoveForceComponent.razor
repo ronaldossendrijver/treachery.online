@@ -55,9 +55,9 @@
         h.OnLocationSelected -= HandleLocationSelected;
     }
 
-    private IEnumerable<bool> ForceChoices => BrownRemoveForce.ValidSpecialForceChoices(Game, Player, location, target);
+    private IEnumerable<bool> ForceChoices => BrownRemoveForce.ValidSpecialForceChoices(Game, location, target);
 
-    private IEnumerable<string> ImageURLs => BrownRemoveForce.ValidSpecialForceChoices(Game, Player, location, target).Select(special => special ? Skin.Current.GetFactionSpecialForceImageURL(target) : Skin.Current.GetFactionForceImageURL(target));
+    private IEnumerable<string> ImageURLs => BrownRemoveForce.ValidSpecialForceChoices(Game, location, target).Select(special => special ? Skin.Current.GetFactionSpecialForceImageURL(target) : Skin.Current.GetFactionForceImageURL(target));
 
     private void HandleLocationSelected(object sender, Location l)
     {

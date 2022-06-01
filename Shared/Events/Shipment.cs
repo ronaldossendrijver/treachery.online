@@ -86,10 +86,7 @@ namespace Treachery.Shared
             }
         }
 
-        public bool UsingKarma(Game g)
-        {
-            return KarmaCard != null;
-        }
+        public bool IsUsingKarma => KarmaCard != null;
 
         //To be removed later on
         public bool KarmaShipment { get; set; } = false;
@@ -159,7 +156,7 @@ namespace Treachery.Shared
                 return 0;
             }
 
-            return DetermineCost(g, p, Math.Abs(s.ForceAmount) + Math.Abs(s.SpecialForceAmount), s.To, s.UsingKarma(g), s.IsBackToReserves, s.IsNoField);
+            return DetermineCost(g, p, Math.Abs(s.ForceAmount) + Math.Abs(s.SpecialForceAmount), s.To, s.IsUsingKarma, s.IsBackToReserves, s.IsNoField);
         }
 
         public static bool ShipsForFree(Game g, Player p, Location to)
@@ -353,7 +350,7 @@ namespace Treachery.Shared
             //return DetermineCost(Game, Player, ForceAmount + SpecialForceAmount, To, UsingKarma(Game), IsBackToReserves, IsNoField) - AllyContributionAmount;
             if (g.Version <= 106)
             {
-                return DetermineCost(Game, Player, ForceAmount + SpecialForceAmount, To, UsingKarma(Game), IsBackToReserves, IsNoField) - AllyContributionAmount;
+                return DetermineCost(Game, Player, ForceAmount + SpecialForceAmount, To, IsUsingKarma, IsBackToReserves, IsNoField) - AllyContributionAmount;
             }
             else
             {

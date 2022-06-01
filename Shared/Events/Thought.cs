@@ -49,7 +49,7 @@ namespace Treachery.Shared
             return Message.Express("By ", LeaderSkill.Thinker, ", ", Initiator, " ask a question");
         }
 
-        public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)
+        public static IEnumerable<TreacheryCard> ValidCards(Game g)
         {
             return TreacheryCardManager.GetCardsInPlay(g).Where(c => c.IsWeapon);
         }

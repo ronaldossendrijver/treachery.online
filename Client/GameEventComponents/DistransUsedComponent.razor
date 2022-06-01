@@ -13,7 +13,7 @@
 
         <SelectFactionComponent @bind-Value="target" Values="DistransUsed.ValidTargets(Game, Player)" />
 
-        <SelectCardComponent @bind-Value="card" Values="DistransUsed.ValidCards(Game, Player)" Required="true" />
+        <SelectCardComponent @bind-Value="card" Values="DistransUsed.ValidCards(Player)" Required="true" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.Distrans)" ConfirmError=@Validation />
 

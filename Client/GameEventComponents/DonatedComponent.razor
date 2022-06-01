@@ -77,7 +77,7 @@
         }
     }
 
-    private int MaxAmount => !fromBank ? Donated.MaxAmount(Game, Player) : 99;
+    private int MaxAmount => !fromBank ? Donated.MaxAmount(Player) : 99;
 
     private int MinAmount => !fromBank ? Donated.MinAmount(Game, Player) : -99;
 }

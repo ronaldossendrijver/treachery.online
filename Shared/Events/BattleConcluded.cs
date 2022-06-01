@@ -157,7 +157,7 @@ namespace Treachery.Shared
             return p.Faction == Faction.Black && g.BattleWinner == Faction.Black && !g.Prevented(FactionAdvantage.BlackCaptureLeader) && g.Applicable(Rule.BlackCapturesOrKillsLeaders) && g.BlackVictim != null;
         }
 
-        public static IEnumerable<CaptureDecision> ValidCaptureDecisions(Game g, Player p)
+        public static IEnumerable<CaptureDecision> ValidCaptureDecisions(Game g)
         {
             if (g.Version < 116)
             {
@@ -169,7 +169,7 @@ namespace Treachery.Shared
             }
         }
 
-        public static IEnumerable<IHero> ValidTraitorsToReplace(Game g, Player p)
+        public static IEnumerable<IHero> ValidTraitorsToReplace(Player p)
         {
             return p.Traitors.Where(h => !p.RevealedTraitors.Contains(h));
         }

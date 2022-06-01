@@ -146,7 +146,7 @@ namespace Treachery.Shared
 
         public int EventCount => History.Count;
 
-        public void HandleEvent(EndPhase e)
+        public void HandleEndPhaseEvent()
         {
             switch (CurrentPhase)
             {

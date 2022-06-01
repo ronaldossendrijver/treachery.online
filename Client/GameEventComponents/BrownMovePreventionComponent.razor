@@ -13,7 +13,7 @@
 
     <Body>
 
-        <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="territory" Values="BrownMovePrevention.ValidTerritories(Game, Player)">
+        <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="territory" Values="BrownMovePrevention.ValidTerritories(Player)">
             <Label>Territory</Label>
         </SelectComponent>
         
@@ -41,7 +41,7 @@
 
      private void HandleLocationSelected(object sender, Location l)
     {
-        SetIfValid<Territory, Territory>(ref territory, BrownMovePrevention.ValidTerritories(Game, Player), l.Territory);
+        SetIfValid<Territory, Territory>(ref territory, BrownMovePrevention.ValidTerritories(Player), l.Territory);
     }
 
     protected override BrownMovePrevention ConfirmedResult => new BrownMovePrevention(Game) { Initiator = Faction, Territory = territory };

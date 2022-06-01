@@ -185,7 +185,7 @@ namespace Treachery.Shared
             var costToInitiator = s.DetermineCostToInitiator(this);
             initiator.Resources -= costToInitiator;
 
-            if (s.UsingKarma(this))
+            if (s.IsUsingKarma)
             {
                 var karmaCard = s.KarmaCard;
                 Discard(karmaCard);
@@ -206,7 +206,7 @@ namespace Treachery.Shared
             int receiverProfit = 0;
             var orange = GetPlayer(Faction.Orange);
 
-            if (orange != null && initiator != orange && !s.UsingKarma(this))
+            if (orange != null && initiator != orange && !s.IsUsingKarma)
             {
                 receiverProfit = s.DetermineOrangeProfits(this);
 

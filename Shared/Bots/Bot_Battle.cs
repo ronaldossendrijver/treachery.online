@@ -118,7 +118,7 @@ namespace Treachery.Shared
 
                 if (newTraitor != null)
                 {
-                    var replacable = BattleConcluded.ValidTraitorsToReplace(Game, this);
+                    var replacable = BattleConcluded.ValidTraitorsToReplace(this);
                     toReplace = replacable.FirstOrDefault(t => t.Faction == Faction);
                     if (toReplace == null) toReplace = replacable.OrderBy(t => t.Value).FirstOrDefault(t => !(t is TreacheryCard) && !Game.IsAlive(t));
                     if (toReplace == null) toReplace = replacable.OrderBy(t => t.Value).FirstOrDefault(t => !(t is TreacheryCard) && t.Value < newTraitor.Value);

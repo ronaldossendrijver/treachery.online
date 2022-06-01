@@ -40,7 +40,7 @@ namespace Treachery.Shared
             return null;
         }
 
-        public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)
+        public static IEnumerable<TreacheryCard> ValidCards(Player p)
         {
             return p.TreacheryCards.Where(c => c.Type != TreacheryCardType.Distrans);
         }
@@ -62,7 +62,7 @@ namespace Treachery.Shared
 
         public static bool CanBePlayed(Game game, Player player)
         {
-            return player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Distrans) && ValidCards(game, player).Any() && ValidTargets(game, player).Any();
+            return player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Distrans) && ValidCards(player).Any() && ValidTargets(game, player).Any();
         }
     }
 }

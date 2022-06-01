@@ -53,8 +53,8 @@
             {
                 <div>Our troops captured <Image Shown=@Game.BlackVictim Popover=@Popup.Get(Game.BlackVictim, Game) Class="img-float" Width=50/></div>
                 <RadioComponent @bind-Value="captureDecision"
-                        Values="@BattleConcluded.ValidCaptureDecisions(Game, Player)"
-                        ValueLabels="@BattleConcluded.ValidCaptureDecisions(Game, Player).Select(c => Skin.Current.Describe(c))">
+                        Values="@BattleConcluded.ValidCaptureDecisions(Game)"
+                        ValueLabels="@BattleConcluded.ValidCaptureDecisions(Game).Select(c => Skin.Current.Describe(c))">
                         <Label>What are your orders, keep or kill?</Label>
                  </RadioComponent>
             }
@@ -89,7 +89,7 @@
 
                 @if (Game.DeciphererMayReplaceTraitor)
                 {
-                    <SelectHeroComponent Game="Game" @bind-Value="traitorToReplace" Values="BattleConcluded.ValidTraitorsToReplace(Game, Player)" Required="false">
+                    <SelectHeroComponent Game="Game" @bind-Value="traitorToReplace" Values="BattleConcluded.ValidTraitorsToReplace(Player)" Required="false">
                         <Label>If you wish, you may select one of the above traitors to reveal and replace one of your current traitors:</Label>
                     </SelectHeroComponent>
                 }

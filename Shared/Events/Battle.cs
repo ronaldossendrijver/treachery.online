@@ -527,17 +527,17 @@ namespace Treachery.Shared
                 {
                     if (selectedWeapon != null && selectedWeapon.Type == g.CurrentVoice.Type)
                     {
-                        result = CardsPlayableAsDefense(g, p, selectedWeapon).ToList();
+                        result = CardsPlayableAsDefense(p, selectedWeapon).ToList();
                         if (includingNone) result.Add(null);
                     }
-                    else if (CardsPlayableAsDefense(g, p, selectedWeapon).Any(w => Voice.IsVoicedBy(g, false, true, w.Type, g.CurrentVoice.Type)))
+                    else if (CardsPlayableAsDefense(p, selectedWeapon).Any(w => Voice.IsVoicedBy(g, false, true, w.Type, g.CurrentVoice.Type)))
                     {
-                        result = CardsPlayableAsDefense(g, p, selectedWeapon).Where(w => Voice.IsVoicedBy(g, false, true, w.Type, g.CurrentVoice.Type)).ToList();
+                        result = CardsPlayableAsDefense(p, selectedWeapon).Where(w => Voice.IsVoicedBy(g, false, true, w.Type, g.CurrentVoice.Type)).ToList();
                     }
                 }
                 else if (g.CurrentVoice.MayNot)
                 {
-                    result = CardsPlayableAsDefense(g, p, selectedWeapon).Where(w => !Voice.IsVoicedBy(g, false, false, w.Type, g.CurrentVoice.Type)).ToList();
+                    result = CardsPlayableAsDefense(p, selectedWeapon).Where(w => !Voice.IsVoicedBy(g, false, false, w.Type, g.CurrentVoice.Type)).ToList();
                     if (includingNone) result.Add(null);
                 }
             }
@@ -545,7 +545,7 @@ namespace Treachery.Shared
             if (result == null)
             {
 
-                result = CardsPlayableAsDefense(g, p, selectedWeapon).ToList();
+                result = CardsPlayableAsDefense(p, selectedWeapon).ToList();
                 if (includingNone) result.Add(null);
             }
 
@@ -575,7 +575,7 @@ namespace Treachery.Shared
             return 0;
         }
 
-        private static IEnumerable<TreacheryCard> CardsPlayableAsDefense(Game g, Player p, TreacheryCard withWeapon)
+        private static IEnumerable<TreacheryCard> CardsPlayableAsDefense(Player p, TreacheryCard withWeapon)
         {
             return p.TreacheryCards.Where(c =>
             c.Type != TreacheryCardType.WeirdingWay && (c.IsDefense || c.Type == TreacheryCardType.Useless) ||

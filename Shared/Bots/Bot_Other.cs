@@ -218,7 +218,7 @@ namespace Treachery.Shared
                             LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
                             if (plan != null)
                             {
-                                answer = Answer(plan.Defense != null && ClairVoyanceAnswered.IsQuestionedBy(Game, false, plan.Defense.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1));
+                                answer = Answer(plan.Defense != null && ClairVoyanceAnswered.IsQuestionedBy(false, plan.Defense.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1));
                             }
                         }
                         break;
@@ -231,7 +231,7 @@ namespace Treachery.Shared
                             LogInfo("My plan will be: " + plan.GetBattlePlanMessage());
                             if (plan != null)
                             {
-                                answer = Answer(plan.Weapon != null && ClairVoyanceAnswered.IsQuestionedBy(Game, true, plan.Weapon.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1));
+                                answer = Answer(plan.Weapon != null && ClairVoyanceAnswered.IsQuestionedBy(true, plan.Weapon.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1));
                             }
                         }
                         break;
@@ -245,8 +245,8 @@ namespace Treachery.Shared
                             if (plan != null)
                             {
                                 answer = Answer(
-                                    plan.Defense != null && ClairVoyanceAnswered.IsQuestionedBy(Game, false, plan.Defense.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1) ||
-                                    plan.Weapon != null && ClairVoyanceAnswered.IsQuestionedBy(Game, true, plan.Weapon.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1) ||
+                                    plan.Defense != null && ClairVoyanceAnswered.IsQuestionedBy(false, plan.Defense.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1) ||
+                                    plan.Weapon != null && ClairVoyanceAnswered.IsQuestionedBy(true, plan.Weapon.Type, (TreacheryCardType)Game.LatestClairvoyance.Parameter1) ||
                                     plan.Hero != null && plan.Hero is TreacheryCard && (TreacheryCardType)Game.LatestClairvoyance.Parameter1 == TreacheryCardType.Mercenary);
                             }
                         }
@@ -310,8 +310,8 @@ namespace Treachery.Shared
         private bool Covers(TreacheryCardType typeToCheck, object coveredByType)
         {
             return
-                ClairVoyanceAnswered.IsQuestionedBy(Game, true, typeToCheck, (TreacheryCardType)coveredByType) ||
-                ClairVoyanceAnswered.IsQuestionedBy(Game, false, typeToCheck, (TreacheryCardType)coveredByType);
+                ClairVoyanceAnswered.IsQuestionedBy(true, typeToCheck, (TreacheryCardType)coveredByType) ||
+                ClairVoyanceAnswered.IsQuestionedBy(false, typeToCheck, (TreacheryCardType)coveredByType);
         }
 
         private ClairVoyanceAnswer Answer(bool value)
@@ -473,7 +473,7 @@ namespace Treachery.Shared
 
         protected DistransUsed DetermineDistransUsed()
         {
-            var worstCard = DistransUsed.ValidCards(Game, this).LowestOrDefault(c => CardQuality(c));
+            var worstCard = DistransUsed.ValidCards(this).LowestOrDefault(c => CardQuality(c));
             if (worstCard != null && CardQuality(worstCard) <= 1)
             {
                 var target = DistransUsed.ValidTargets(Game, this)

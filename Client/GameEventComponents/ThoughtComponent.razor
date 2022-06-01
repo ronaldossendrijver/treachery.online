@@ -11,7 +11,7 @@
     <Header>Use your @Skin.Current.Describe(LeaderSkill.Thinker) to ask if your opponent has a specific weapon</Header>
     <Body>
 
-        <SelectCardComponent @bind-Value="card" Values="Thought.ValidCards(Game, Player)" Required="true"/>
+        <SelectCardComponent @bind-Value="card" Values="Thought.ValidCards(Game)" Required="true"/>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Ask about {0}", card)" ConfirmError=@Validation />
 

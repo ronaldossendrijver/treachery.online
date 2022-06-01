@@ -38,7 +38,7 @@ namespace Treachery.Shared
             return null;
         }
 
-        public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)
+        public static IEnumerable<TreacheryCard> ValidCards(Player p)
         {
             return p.TreacheryCards.Where(c => c.Rules.Contains(Rule.WhiteTreacheryCards));
         }
