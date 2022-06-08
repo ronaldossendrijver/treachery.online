@@ -11,7 +11,7 @@ namespace Treachery.Shared
     public partial class Game
     {
         public const int LowestSupportedVersion = 100;
-        public const int LatestVersion = 142;
+        public const int LatestVersion = 143;
         public bool BotInfologging = false;
 
         #region GameState
@@ -966,7 +966,7 @@ namespace Treachery.Shared
         {
             if (condition)
             {
-                CurrentReport.Express(condition, expression);
+                CurrentReport.Express(expression);
             }
         }
 

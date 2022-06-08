@@ -104,7 +104,7 @@
 
                         @if (ShownPlayer.Faction == Faction.Blue && h.CurrentPhase > Phase.BluePredicting)
                         {
-                            <div>Prediction: <FactionComponent Faction=@ShownPlayer.PredictedFaction/> win turn <SimpleNumberComponent>@ShownPlayer.PredictedTurn</SimpleNumberComponent></div>
+                            <div>Prediction: <FactionComponent Diameter=30 Faction=@ShownPlayer.PredictedFaction/><SimpleNumberComponent Size=30>@ShownPlayer.PredictedTurn</SimpleNumberComponent></div>
                         }
 
                         @if (ShownPlayer.Faction == Faction.Green)
