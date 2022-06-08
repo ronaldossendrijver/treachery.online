@@ -38,7 +38,7 @@ namespace Treachery.Shared
             return p.TerritoriesWithForces;
         }
 
-        public static bool CanBePlayedBy(Game g, Player p)
+        public static bool CanBePlayedBy(Player p)
         {
             return p.Faction == Faction.Brown && ValidTerritories(p).Any() && CardToUse(p) != null;
         }

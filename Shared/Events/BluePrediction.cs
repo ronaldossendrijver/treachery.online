@@ -38,17 +38,7 @@ namespace Treachery.Shared
             return Message.Express(Initiator, " predict who will win and when");
         }
 
-        public static IEnumerable<Faction> ValidTargets(Game g, Player p)
-        {
-            if (g.Players.Count() <= 1)
-            {
-                return g.Players.Select(p => p.Faction);
-            }
-            else
-            {
-                return g.PlayersOtherThan(p);
-            }
-        }
+        public static IEnumerable<Faction> ValidTargets(Game g, Player p) => g.PlayersOtherThan(p);
 
         public static IEnumerable<int> ValidTurns(Game g)
         {

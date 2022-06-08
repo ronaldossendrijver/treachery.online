@@ -350,7 +350,7 @@ namespace Treachery.Shared
             BattleOutcome = DetermineBattleOutcome(agg, def, b.Territory);
 
             bool lasgunShield = !aggtrt.TraitorCalled && !deftrt.TraitorCalled && (agg.HasLaser || def.HasLaser) && (agg.HasShield || def.HasShield);
-            
+
             ActivateSmuggler(aggtrt, deftrt, BattleOutcome, lasgunShield);
 
             var aggressor = GetPlayer(agg.Initiator);

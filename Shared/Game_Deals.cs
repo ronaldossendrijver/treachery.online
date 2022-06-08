@@ -94,6 +94,6 @@ namespace Treachery.Shared
             }
         }
 
-        
+
     }
 }

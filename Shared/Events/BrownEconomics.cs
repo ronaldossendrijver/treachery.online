@@ -32,10 +32,5 @@ namespace Treachery.Shared
         {
             return Message.Express(Initiator, " play Inflation: ", Status);
         }
-
-        public static IEnumerable<BrownEconomicsStatus> ValidStates(Game g, Player p)
-        {
-            return new BrownEconomicsStatus[] { BrownEconomicsStatus.Double, BrownEconomicsStatus.Cancel };
-        }
     }
 }

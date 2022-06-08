@@ -469,7 +469,7 @@ namespace Treachery.Shared
                     result.Add(typeof(DiscardedSearchedAnnounced));
                 }
 
-                if (CurrentMainPhase == MainPhase.ShipmentAndMove && BrownMovePrevention.CanBePlayedBy(this, player))
+                if (CurrentMainPhase == MainPhase.ShipmentAndMove && BrownMovePrevention.CanBePlayedBy(player))
                 {
                     result.Add(typeof(BrownMovePrevention));
                 }

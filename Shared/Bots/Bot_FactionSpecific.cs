@@ -325,7 +325,7 @@ namespace Treachery.Shared
 
                 int lastTurnConfidenceBonus = LastTurn ? 3 : 0;
 
-                if (territory.IsStronghold && WinWasPredictedByMeThisTurn(opponent.Faction) || 
+                if (territory.IsStronghold && WinWasPredictedByMeThisTurn(opponent.Faction) ||
                     dialNeeded + lastTurnConfidenceBonus <= MaxDial(this, territory, opponent) + MaxReinforcedDialTo(this, territory))
                 {
                     return true;
@@ -337,7 +337,8 @@ namespace Treachery.Shared
 
         private BlueAccompanies DetermineBlueAccompanies()
         {
-            if (ForcesInReserve > 0) {
+            if (ForcesInReserve > 0)
+            {
 
                 var target = BlueAccompanies.ValidTargets(Game, this).FirstOrDefault(l => l.IsStronghold);
 

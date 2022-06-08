@@ -10,7 +10,11 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public bool RevivalTechTokenIncome { get; private set; }
+        #region BeginningOfRevival
+
+        private bool RevivalTechTokenIncome { get; set; }
+
+        public List<Faction> FactionsThatTookFreeRevival { get; private set; } = new List<Faction>();
 
         private void EnterRevivalPhase()
         {
@@ -36,6 +40,10 @@ namespace Treachery.Shared
         {
             Enter(Phase.Resurrection);
         }
+
+        #endregion
+
+        #region Revival
 
         public List<Faction> FactionsThatRevivedSpecialForcesThisTurn { get; private set; } = new List<Faction>();
         public void HandleEvent(Revival r)
@@ -185,8 +193,6 @@ namespace Treachery.Shared
             }
         }
 
-        public List<Faction> FactionsThatTookFreeRevival { get; private set; } = new List<Faction>();
-
         public int FreeRevivals(Player player)
         {
             if (FactionsThatTookFreeRevival.Contains(player.Faction) || FreeRevivalPrevented(player.Faction))
@@ -223,8 +229,27 @@ namespace Treachery.Shared
             }
         }
 
+        private void LogRevival(Revival r, Player initiator, RevivalCost cost, int purpleReceivedResources, bool asGhola)
+        {
+            Log(
+                r.Initiator,
+                " revive ",
+                MessagePart.ExpressIf(r.Hero != null, r.Hero),
+                MessagePart.ExpressIf(asGhola, " as Ghola"),
+                MessagePart.ExpressIf(r.Hero != null && r.AmountOfForces + r.ExtraForcesPaidByRed + r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed > 0, " and "),
+                MessagePart.ExpressIf(r.AmountOfForces + r.ExtraForcesPaidByRed > 0, r.AmountOfForces + r.ExtraForcesPaidByRed, initiator.Force),
+                MessagePart.ExpressIf(r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed > 0, r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed, initiator.SpecialForce),
+                " for ",
+                Payment(cost.TotalCostForPlayer + cost.CostForEmperor),
+                MessagePart.ExpressIf(r.ExtraForcesPaidByRed > 0 || r.ExtraSpecialForcesPaidByRed > 0, " (", Payment(cost.CostForEmperor, Faction.Red), ")"),
+                MessagePart.ExpressIf(purpleReceivedResources > 0, " → ", Faction.Purple, " get ", Payment(purpleReceivedResources)));
+        }
 
-        public Faction[] FactionsWithIncreasedRevivalLimits { get; set; } = new Faction[] { };
+        #endregion
+
+        #region RevivalEvents
+
+        public Faction[] FactionsWithIncreasedRevivalLimits { get; private set; } = new Faction[] { };
 
         public void HandleEvent(SetIncreasedRevivalLimits e)
         {
@@ -246,22 +271,6 @@ namespace Treachery.Shared
             {
                 return 3;
             }
-        }
-
-        private void LogRevival(Revival r, Player initiator, RevivalCost cost, int purpleReceivedResources, bool asGhola)
-        {
-            Log(
-                r.Initiator,
-                " revive ",
-                MessagePart.ExpressIf(r.Hero != null, r.Hero),
-                MessagePart.ExpressIf(asGhola, " as Ghola"),
-                MessagePart.ExpressIf(r.Hero != null && r.AmountOfForces + r.ExtraForcesPaidByRed + r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed > 0, " and "),
-                MessagePart.ExpressIf(r.AmountOfForces + r.ExtraForcesPaidByRed > 0, r.AmountOfForces + r.ExtraForcesPaidByRed, initiator.Force),
-                MessagePart.ExpressIf(r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed > 0, r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed, initiator.SpecialForce),
-                " for ",
-                Payment(cost.TotalCostForPlayer + cost.CostForEmperor),
-                MessagePart.ExpressIf(r.ExtraForcesPaidByRed > 0 || r.ExtraSpecialForcesPaidByRed > 0, " (", Payment(cost.CostForEmperor, Faction.Red), ")"),
-                MessagePart.ExpressIf(purpleReceivedResources > 0, " → ", Faction.Purple, " get ", Payment(purpleReceivedResources)));
         }
 
         public void HandleEvent(RaiseDeadPlayed r)
@@ -355,6 +364,22 @@ namespace Treachery.Shared
             RecentMilestones.Add(Milestone.SpecialUselessPlayed);
         }
 
+        public bool PreventedFromReviving(Faction f) => CurrentKarmaRevivalPrevention != null && CurrentKarmaRevivalPrevention.Target == f;
+
+        private KarmaRevivalPrevention CurrentKarmaRevivalPrevention = null;
+        public void HandleEvent(KarmaRevivalPrevention e)
+        {
+            CurrentKarmaRevivalPrevention = e;
+            Discard(e.Player, TreacheryCardType.Karma);
+            e.Player.SpecialKarmaPowerUsed = true;
+            Log(e);
+            RecentMilestones.Add(Milestone.Karma);
+        }
+
+        #endregion
+
+        #region EndOfRevival
+
         private void EndResurrectionPhase()
         {
             ReceiveGraveyardTechIncome();
@@ -371,16 +396,6 @@ namespace Treachery.Shared
             }
         }
 
-        public bool PreventedFromReviving(Faction f) => CurrentKarmaRevivalPrevention != null && CurrentKarmaRevivalPrevention.Target == f;
-
-        private KarmaRevivalPrevention CurrentKarmaRevivalPrevention = null;
-        public void HandleEvent(KarmaRevivalPrevention e)
-        {
-            CurrentKarmaRevivalPrevention = e;
-            Discard(e.Player, TreacheryCardType.Karma);
-            e.Player.SpecialKarmaPowerUsed = true;
-            Log(e);
-            RecentMilestones.Add(Milestone.Karma);
-        }
+        #endregion
     }
 }

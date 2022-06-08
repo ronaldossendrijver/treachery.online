@@ -2,12 +2,12 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
  */
 
+using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.DependencyInjection;
 using Treachery.Shared;
 
 namespace Treachery.Client

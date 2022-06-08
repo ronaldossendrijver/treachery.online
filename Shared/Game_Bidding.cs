@@ -18,7 +18,7 @@ namespace Treachery.Shared
         public int CardNumber { get; private set; }
         public IBid CurrentBid { get; private set; }
         public Dictionary<Faction, IBid> Bids { get; private set; } = new Dictionary<Faction, IBid>();
-        
+
         private bool GreySwappedCardOnBid { get; set; }
         private bool RegularBiddingIsDone { get; set; }
         private bool BiddingRoundWasStarted { get; set; }
@@ -50,7 +50,7 @@ namespace Treachery.Shared
             WinningBid = null;
 
             var white = GetPlayer(Faction.White);
-            Enter(white != null && Applicable(Rule.WhiteBlackMarket) && !Prevented(FactionAdvantage.WhiteBlackMarket) && white.TreacheryCards.Count > 0 && Players.Count > 1,
+            Enter(white != null && Applicable(Rule.WhiteBlackMarket) && !Prevented(FactionAdvantage.WhiteBlackMarket) && white.TreacheryCards.Count > 0,
                 Phase.BlackMarketAnnouncement,
                 EnterWhiteBidding);
         }
@@ -436,21 +436,9 @@ namespace Treachery.Shared
             BiddingRoundWasStarted = true;
             SkipPlayersThatCantBid(BidSequence);
             Enter(Phase.Bidding);
-
-            if (Players.Count == 1 && CardsOnAuction.Items.Count == 1)
-            {
-                Log(Players[0].Faction, " play alone and therefore win the auction");
-                var drawnCard = CardsOnAuction.Draw();
-                Players[0].TreacheryCards.Add(drawnCard);
-                GiveBlackExtraCard(Players[0]);
-                EndBiddingPhase();
-            }
-            else
-            {
-                CurrentBid = null;
-                Bids.Clear();
-                CardNumber = 1;
-            }
+            CurrentBid = null;
+            Bids.Clear();
+            CardNumber = 1;
         }
 
         public IEnumerable<TreacheryCard> CardsOwnedBy(Player p)
@@ -803,6 +791,7 @@ namespace Treachery.Shared
         }
 
         public TreacheryCard CardJustWon { get; private set; }
+
         public IBid WinningBid { get; private set; }
 
         private void FinishBid(Player winner, TreacheryCard card)
@@ -863,6 +852,7 @@ namespace Treachery.Shared
         }
 
         private bool WhiteBiddingJustFinished { get; set; }
+
         private void DetermineNextStepAfterCardWasSold()
         {
             WhiteBiddingJustFinished = CurrentAuctionType == AuctionType.WhiteOnceAround || CurrentAuctionType == AuctionType.WhiteSilent;
@@ -929,6 +919,7 @@ namespace Treachery.Shared
         public int NumberOfCardsOnRegularAuction => CardNumber + CardsOnAuction.Items.Count - 1;
 
         private AuctionType BlackMarketAuctionType { get; set; }
+
         private void StartBidSequenceAndAuctionType(AuctionType auctionType, Player whitePlayer = null, int direction = 1)
         {
             switch (auctionType)

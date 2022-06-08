@@ -24,17 +24,9 @@ namespace Treachery.Shared
 
             if (CurrentTurn == 1)
             {
-                if (Players.Count() > 1)
-                {
-                    Dials.Clear();
-                    HasActedOrPassed.Clear();
-                    Enter(Phase.DiallingStorm);
-                }
-                else
-                {
-                    NextStormMoves = DetermineFirstStorm();
-                    PositionFirstStorm();
-                }
+                Dials.Clear();
+                HasActedOrPassed.Clear();
+                Enter(Phase.DiallingStorm);
             }
             else
             {
@@ -76,14 +68,7 @@ namespace Treachery.Shared
 
             if (IsPlaying(Faction.Yellow) && Applicable(Rule.YellowSeesStorm))
             {
-                if (IsPlaying(Faction.Yellow) && Applicable(Rule.YellowSeesStorm))
-                {
-                    NextStormMoves = DetermineLaterStormWithStormDeck();
-                }
-                else
-                {
-                    NextStormMoves = DetermineLaterStormWithDials();
-                }
+                NextStormMoves = DetermineLaterStormWithStormDeck();
             }
 
             Enter(IsPlaying(Faction.Grey) || Applicable(Rule.HMSwithoutGrey), Phase.HmsPlacement, EndStormPhase);
@@ -119,16 +104,6 @@ namespace Treachery.Shared
             }
         }
 
-        private int DetermineFirstStorm()
-        {
-            return Random.Next(21) + Random.Next(21);
-        }
-
-        private int DetermineLaterStormWithDials()
-        {
-            return Random.Next(3) + Random.Next(3) + 1;
-        }
-
         private int DetermineLaterStormWithStormDeck()
         {
             return Random.Next(6) + 1;
@@ -143,17 +118,9 @@ namespace Treachery.Shared
             }
             else
             {
-                if (Players.Count() > 1)
-                {
-                    Dials.Clear();
-                    HasActedOrPassed.Clear();
-                    Enter(Phase.DiallingStorm);
-                }
-                else
-                {
-                    NextStormMoves = DetermineLaterStormWithDials();
-                    RevealStorm();
-                }
+                Dials.Clear();
+                HasActedOrPassed.Clear();
+                Enter(Phase.DiallingStorm);
             }
         }
 

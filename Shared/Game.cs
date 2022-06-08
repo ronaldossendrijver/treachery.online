@@ -959,7 +959,7 @@ namespace Treachery.Shared
 
         private void Log(params object[] expression)
         {
-            CurrentReport.Express(expression); 
+            CurrentReport.Express(expression);
         }
 
         private void LogIf(bool condition, params object[] expression)
