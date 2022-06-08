@@ -347,24 +347,14 @@ namespace Treachery.Shared
 
         private void ResolveBattle(BattleInitiated b, Battle agg, Battle def, TreacheryCalled aggtrt, TreacheryCalled deftrt)
         {
-            var aggressor = GetPlayer(agg.Initiator);
-            var defender = GetPlayer(def.Initiator);
-
-            var outcome = DetermineBattleOutcome(agg, def, b.Territory);
+            BattleOutcome = DetermineBattleOutcome(agg, def, b.Territory);
 
             bool lasgunShield = !aggtrt.TraitorCalled && !deftrt.TraitorCalled && (agg.HasLaser || def.HasLaser) && (agg.HasShield || def.HasShield);
-            bool aggHeroSurvives = !deftrt.TraitorCalled && (aggtrt.TraitorCalled || !lasgunShield && !outcome.AggHeroKilled);
-            bool defHeroSurvives = !aggtrt.TraitorCalled && (deftrt.TraitorCalled || !lasgunShield && !outcome.DefHeroKilled);
+            
+            ActivateSmuggler(aggtrt, deftrt, BattleOutcome, lasgunShield);
 
-            if (aggHeroSurvives)
-            {
-                ActivateSmugglerIfApplicable(AggressorBattleAction.Player, AggressorBattleAction.Hero, DefenderBattleAction.Hero, CurrentBattle.Territory);
-            }
-
-            if (defHeroSurvives)
-            {
-                ActivateSmugglerIfApplicable(DefenderBattleAction.Player, DefenderBattleAction.Hero, AggressorBattleAction.Hero, CurrentBattle.Territory);
-            }
+            var aggressor = GetPlayer(agg.Initiator);
+            var defender = GetPlayer(def.Initiator);
 
             if (aggtrt.TraitorCalled || deftrt.TraitorCalled)
             {
@@ -378,8 +368,7 @@ namespace Treachery.Shared
             {
                 SetHeroLocations(agg, b.Territory);
                 SetHeroLocations(def, b.Territory);
-
-                DetermineAndHandleBattleOutcome(agg, def, b.Territory);
+                HandleBattleOutcome(agg, def);
             }
 
             if (aggressor.Is(Faction.Black))
@@ -389,6 +378,22 @@ namespace Treachery.Shared
             else if (defender.Is(Faction.Black))
             {
                 ReturnCapturedLeaders(defender, def.Hero);
+            }
+        }
+
+        private void ActivateSmuggler(TreacheryCalled aggtrt, TreacheryCalled deftrt, BattleOutcome outcome, bool lasgunShield)
+        {
+            bool aggHeroSurvives = !deftrt.TraitorCalled && (aggtrt.TraitorCalled || !lasgunShield && !outcome.AggHeroKilled);
+            bool defHeroSurvives = !aggtrt.TraitorCalled && (deftrt.TraitorCalled || !lasgunShield && !outcome.DefHeroKilled);
+
+            if (aggHeroSurvives)
+            {
+                ActivateSmugglerIfApplicable(AggressorBattleAction.Player, AggressorBattleAction.Hero, DefenderBattleAction.Hero, CurrentBattle.Territory);
+            }
+
+            if (defHeroSurvives)
+            {
+                ActivateSmugglerIfApplicable(DefenderBattleAction.Player, DefenderBattleAction.Hero, AggressorBattleAction.Hero, CurrentBattle.Territory);
             }
         }
 
@@ -619,52 +624,50 @@ namespace Treachery.Shared
 
         #region BattleOutcome
 
-        public void DetermineAndHandleBattleOutcome(Battle agg, Battle def, Territory territory)
+        public void HandleBattleOutcome(Battle agg, Battle def)
         {
-            BattleOutcome = DetermineBattleOutcome(agg, def, territory);
+            LogIf(this.BattleOutcome.AggHeroSkillBonus != 0, agg.Hero, " ", this.BattleOutcome.AggActivatedBonusSkill, " bonus: ", this.BattleOutcome.AggHeroSkillBonus);
+            LogIf(this.BattleOutcome.DefHeroSkillBonus != 0, def.Hero, " ", this.BattleOutcome.DefActivatedBonusSkill, " bonus: ", this.BattleOutcome.DefHeroSkillBonus);
 
-            LogIf(BattleOutcome.AggHeroSkillBonus != 0, agg.Hero, " ", BattleOutcome.AggActivatedBonusSkill, " bonus: ", BattleOutcome.AggHeroSkillBonus);
-            LogIf(BattleOutcome.DefHeroSkillBonus != 0, def.Hero, " ", BattleOutcome.DefActivatedBonusSkill, " bonus: ", BattleOutcome.DefHeroSkillBonus);
+            LogIf(this.BattleOutcome.AggBattlePenalty != 0, agg.Hero, " ", this.BattleOutcome.DefActivatedPenaltySkill, " penalty: ", this.BattleOutcome.AggBattlePenalty);
+            LogIf(this.BattleOutcome.DefBattlePenalty != 0, def.Hero, " ", this.BattleOutcome.AggActivatedPenaltySkill, " penalty: ", this.BattleOutcome.DefBattlePenalty);
 
-            LogIf(BattleOutcome.AggBattlePenalty != 0, agg.Hero, " ", BattleOutcome.DefActivatedPenaltySkill, " penalty: ", BattleOutcome.AggBattlePenalty);
-            LogIf(BattleOutcome.DefBattlePenalty != 0, def.Hero, " ", BattleOutcome.AggActivatedPenaltySkill, " penalty: ", BattleOutcome.DefBattlePenalty);
+            LogIf(this.BattleOutcome.AggMessiahContribution > 0, agg.Hero, " ", Concept.Messiah, " bonus: ", this.BattleOutcome.AggMessiahContribution);
+            LogIf(this.BattleOutcome.DefMessiahContribution > 0, agg.Hero, " ", Concept.Messiah, " bonus: ", this.BattleOutcome.DefMessiahContribution);
 
-            LogIf(BattleOutcome.AggMessiahContribution > 0, agg.Hero, " ", Concept.Messiah, " bonus: ", BattleOutcome.AggMessiahContribution);
-            LogIf(BattleOutcome.DefMessiahContribution > 0, agg.Hero, " ", Concept.Messiah, " bonus: ", BattleOutcome.DefMessiahContribution);
+            BattleWinner = this.BattleOutcome.Winner.Faction;
+            BattleLoser = this.BattleOutcome.Loser.Faction;
 
-            BattleWinner = BattleOutcome.Winner.Faction;
-            BattleLoser = BattleOutcome.Loser.Faction;
-
-            if (BattleOutcome.AggHeroKilled)
+            if (this.BattleOutcome.AggHeroKilled)
             {
-                KillLeaderInBattle(agg.Hero, BattleOutcome.AggHeroCauseOfDeath, BattleOutcome.Winner, BattleOutcome.AggHeroEffectiveStrength);
+                KillLeaderInBattle(agg.Hero, this.BattleOutcome.AggHeroCauseOfDeath, this.BattleOutcome.Winner, this.BattleOutcome.AggHeroEffectiveStrength);
             }
             else
             {
-                LogIf(BattleOutcome.AggSavedByCarthag, Map.Carthag, " stronghold advantage saves ", agg.Hero, " from death by ", TreacheryCardType.Poison);
+                LogIf(this.BattleOutcome.AggSavedByCarthag, Map.Carthag, " stronghold advantage saves ", agg.Hero, " from death by ", TreacheryCardType.Poison);
             }
 
-            if (BattleOutcome.DefHeroKilled)
+            if (this.BattleOutcome.DefHeroKilled)
             {
-                KillLeaderInBattle(def.Hero, BattleOutcome.DefHeroCauseOfDeath, BattleOutcome.Winner, BattleOutcome.DefHeroEffectiveStrength);
+                KillLeaderInBattle(def.Hero, this.BattleOutcome.DefHeroCauseOfDeath, this.BattleOutcome.Winner, this.BattleOutcome.DefHeroEffectiveStrength);
             }
             else
             {
-                LogIf(BattleOutcome.DefSavedByCarthag, Map.Carthag, " stronghold advantage saves ", def.Hero, " from death by ", TreacheryCardType.Poison);
+                LogIf(this.BattleOutcome.DefSavedByCarthag, Map.Carthag, " stronghold advantage saves ", def.Hero, " from death by ", TreacheryCardType.Poison);
             }
 
             if (BattleInitiated.IsAggressorByJuice(this, def.Player.Faction))
             {
-                Log(agg.Initiator, " (defending) strength: ", BattleOutcome.AggTotal);
-                Log(def.Initiator, " (aggressor by ", TreacheryCardType.Juice, ") strength: ", BattleOutcome.DefTotal);
+                Log(agg.Initiator, " (defending) strength: ", this.BattleOutcome.AggTotal);
+                Log(def.Initiator, " (aggressor by ", TreacheryCardType.Juice, ") strength: ", this.BattleOutcome.DefTotal);
             }
             else
             {
-                Log(agg.Initiator, " (aggressor) strength: ", BattleOutcome.AggTotal);
-                Log(def.Initiator, " (defending) strength: ", BattleOutcome.DefTotal);
+                Log(agg.Initiator, " (aggressor) strength: ", this.BattleOutcome.AggTotal);
+                Log(def.Initiator, " (defending) strength: ", this.BattleOutcome.DefTotal);
             }
 
-            Log(BattleOutcome.Winner.Faction, " WIN THE BATTLE");
+            Log(this.BattleOutcome.Winner.Faction, " WIN THE BATTLE");
 
             bool loserMayRetreat =
                 !BattleOutcome.LoserHeroKilled &&
@@ -1181,6 +1184,55 @@ namespace Treachery.Shared
             }
         }
 
+        public Leader BlackVictim { get; private set; }
+        private void SelectVictimOfBlackWinner(Battle harkonnenAction, Battle victimAction)
+        {
+            var harkonnen = GetPlayer(harkonnenAction.Initiator);
+            var victim = GetPlayer(victimAction.Initiator);
+
+            //Get all living leaders from the opponent that haven't fought in another territory this turn
+            Deck<Leader> availableLeaders = new Deck<Leader>(
+                victim.Leaders.Where(l => l.HeroType != HeroType.Auditor && LeaderState[l].Alive && CanJoinCurrentBattle(l)), Random);
+
+            if (!availableLeaders.IsEmpty)
+            {
+                availableLeaders.Shuffle();
+                BlackVictim = availableLeaders.Draw();
+            }
+            else
+            {
+                BlackVictim = null;
+                Log(victim.Faction, " don't have any leaders for ", Faction.Black, " to capture or kill");
+            }
+        }
+
+        public Dictionary<Leader, Faction> CapturedLeaders { get; private set; } = new Dictionary<Leader, Faction>();
+        private void CaptureOrAssassinateLeader(Battle harkonnenAction, Battle victimAction, CaptureDecision decision)
+        {
+            var harkonnen = GetPlayer(harkonnenAction.Initiator);
+            var target = GetPlayer(victimAction.Initiator);
+
+            if (decision == CaptureDecision.Capture)
+            {
+                Log(Faction.Black, " capture a leader!");
+                harkonnen.Leaders.Add(BlackVictim);
+                target.Leaders.Remove(BlackVictim);
+                SetInFrontOfShield(BlackVictim, false);
+                CapturedLeaders.Add(BlackVictim, target.Faction);
+            }
+            else if (decision == CaptureDecision.Kill)
+            {
+                Log(Faction.Black, " kill a leader for ", Payment(2));
+                RecentMilestones.Add(Milestone.LeaderKilled);
+                AssassinateLeader(BlackVictim);
+                harkonnen.Resources += 2;
+            }
+            else if (decision == CaptureDecision.DontCapture)
+            {
+                Log(Faction.Black, " decide not to capture or kill a leader");
+            }
+        }
+
         private void DeciphererReplacesTraitors(BattleConcluded e)
         {
             Log(e.Initiator, " replaced ", e.ReplacedTraitor, " by another traitor from the deck");
@@ -1427,75 +1479,6 @@ namespace Treachery.Shared
 
         #endregion
 
-
-
-        #region Support
-
-        private void LoseCards(Battle plan)
-        {
-            Discard(plan.Weapon);
-            Discard(plan.Defense);
-        }
-
-        public bool CanJoinCurrentBattle(IHero hero)
-        {
-            var currentTerritory = CurrentTerritory(hero);
-            return currentTerritory == null || currentTerritory == CurrentBattle?.Territory;
-        }
-
-        #endregion
-
-        public Leader BlackVictim { get; set; }
-        private void SelectVictimOfBlackWinner(Battle harkonnenAction, Battle victimAction)
-        {
-            var harkonnen = GetPlayer(harkonnenAction.Initiator);
-            var victim = GetPlayer(victimAction.Initiator);
-
-            //Get all living leaders from the opponent that haven't fought in another territory this turn
-            Deck<Leader> availableLeaders = new Deck<Leader>(
-                victim.Leaders.Where(l => l.HeroType != HeroType.Auditor && LeaderState[l].Alive && CanJoinCurrentBattle(l)), Random);
-
-            if (!availableLeaders.IsEmpty)
-            {
-                availableLeaders.Shuffle();
-                BlackVictim = availableLeaders.Draw();
-            }
-            else
-            {
-                BlackVictim = null;
-                Log(victim.Faction, " don't have any leaders for ", Faction.Black, " to capture or kill");
-            }
-        }
-
-        public Dictionary<Leader, Faction> CapturedLeaders { get; private set; } = new Dictionary<Leader, Faction>();
-        private void CaptureOrAssassinateLeader(Battle harkonnenAction, Battle victimAction, CaptureDecision decision)
-        {
-            var harkonnen = GetPlayer(harkonnenAction.Initiator);
-            var target = GetPlayer(victimAction.Initiator);
-
-            if (decision == CaptureDecision.Capture)
-            {
-                Log(Faction.Black, " capture a leader!");
-                harkonnen.Leaders.Add(BlackVictim);
-                target.Leaders.Remove(BlackVictim);
-                SetInFrontOfShield(BlackVictim, false);
-                CapturedLeaders.Add(BlackVictim, target.Faction);
-            }
-            else if (decision == CaptureDecision.Kill)
-            {
-                Log(Faction.Black, " kill a leader for ", Payment(2));
-                RecentMilestones.Add(Milestone.LeaderKilled);
-                AssassinateLeader(BlackVictim);
-                harkonnen.Resources += 2;
-            }
-            else if (decision == CaptureDecision.DontCapture)
-            {
-                Log(Faction.Black, " decide not to capture or kill a leader");
-            }
-        }
-
-
-
         #region PostBattle
 
         public Diplomacy CurrentDiplomacy { get; private set; }
@@ -1631,8 +1614,6 @@ namespace Treachery.Shared
             }
         }
 
-        #endregion
-
         private void ResetBattle()
         {
             CurrentBattle = null;
@@ -1652,22 +1633,7 @@ namespace Treachery.Shared
             BattleTriggeredBureaucracy = null;
         }
 
-        public Battle WinnerBattleAction
-        {
-            get
-            {
-                if (AggressorBattleAction != null && AggressorBattleAction.Initiator == BattleWinner) return AggressorBattleAction;
-                if (DefenderBattleAction != null && DefenderBattleAction.Initiator == BattleWinner) return DefenderBattleAction;
-
-                return null;
-            }
-        }
-
-        
-
-        
-
-        
+        #endregion
 
         #region Support
 
@@ -1685,6 +1651,29 @@ namespace Treachery.Shared
 
                     BattleSequence.NextPlayer();
                 }
+
+                return null;
+            }
+        }
+
+        private void LoseCards(Battle plan)
+        {
+            Discard(plan.Weapon);
+            Discard(plan.Defense);
+        }
+
+        public bool CanJoinCurrentBattle(IHero hero)
+        {
+            var currentTerritory = CurrentTerritory(hero);
+            return currentTerritory == null || currentTerritory == CurrentBattle?.Territory;
+        }
+
+        public Battle WinnerBattleAction
+        {
+            get
+            {
+                if (AggressorBattleAction != null && AggressorBattleAction.Initiator == BattleWinner) return AggressorBattleAction;
+                if (DefenderBattleAction != null && DefenderBattleAction.Initiator == BattleWinner) return DefenderBattleAction;
 
                 return null;
             }

@@ -25,7 +25,20 @@
 
     protected override HMSAdvantageChosen ConfirmedResult => new HMSAdvantageChosen(Game) { Initiator = Faction, Advantage = advantage };
 
-    private IEnumerable<string> ImageURLs => HMSAdvantageChosen.ValidAdvantages(Game, Player).Select(adv => Skin.Current.GetImageURL(Game.StrongholdGranting(adv)));
+    private IEnumerable<string> ImageURLs => HMSAdvantageChosen.ValidAdvantages(Game, Player).Select(adv => Skin.Current.GetImageURL(StrongholdGranting(adv)));
 
-    private IEnumerable<string> PopoverHTMLs => HMSAdvantageChosen.ValidAdvantages(Game, Player).Select(adv => Popup.Get(Game.StrongholdGranting(adv)));
+    private IEnumerable<string> PopoverHTMLs => HMSAdvantageChosen.ValidAdvantages(Game, Player).Select(adv => Popup.Get(StrongholdGranting(adv)));
+
+    private Location StrongholdGranting(StrongholdAdvantage advantage)
+    {
+        return advantage switch
+        {
+            StrongholdAdvantage.FreeResourcesForBattles => Game.Map.Arrakeen,
+            StrongholdAdvantage.CollectResourcesForDial => Game.Map.SietchTabr,
+            StrongholdAdvantage.CollectResourcesForUseless => Game.Map.TueksSietch,
+            StrongholdAdvantage.CountDefensesAsAntidote => Game.Map.Carthag,
+            StrongholdAdvantage.WinTies => Game.Map.HabbanyaSietch,
+            _ => null
+        };
+    }
 }

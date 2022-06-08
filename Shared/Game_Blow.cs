@@ -9,8 +9,14 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public List<Territory> Monsters { get; set; } = new List<Territory>();
+        #region State
+
+        public List<Territory> Monsters { get; private set; } = new List<Territory>();
         private readonly List<ResourceCard> ignoredMonsters = new List<ResourceCard>();
+
+        #endregion State
+
+        #region BeginningOfSpiceBlow
 
         private void EnterSpiceBlowPhase()
         {
@@ -29,7 +35,7 @@ namespace Treachery.Shared
 
         }
 
-        private bool ThumperUsed = false;
+        private bool ThumperUsed { get; set; } = false;
         public void HandleEvent(ThumperPlayed e)
         {
             Discard(GetPlayer(e.Initiator), TreacheryCardType.Thumper);
@@ -39,9 +45,13 @@ namespace Treachery.Shared
             EnterBlowA();
         }
 
-        public int NumberOfMonsters { get; set; } = 0;
-        public bool SandTroutOccured { get; set; } = false;
-        private bool SandTroutDoublesResources = false;
+        #endregion BeginningOfSpiceBlow
+
+        #region ExecuteResourceBlow
+
+        public int NumberOfMonsters { get; private set; } = 0;
+        public bool SandTroutOccured { get; private set; } = false;
+        private bool SandTroutDoublesResources { get; set; } = false;
 
         private void DrawSpiceCard()
         {
@@ -109,30 +119,6 @@ namespace Treachery.Shared
                 if (p.Ally != Faction.None)
                 {
                     BreakAlliance(p.Faction);
-                }
-            }
-        }
-
-        private Deck<ResourceCard> CurrentDiscardPile => (CurrentPhase == Phase.BlowA) ? ResourceCardDiscardPileA : ResourceCardDiscardPileB;
-
-        public ResourceCard LatestSpiceCardA { get; private set; } = null;
-        public ResourceCard LatestSpiceCardB { get; private set; } = null;
-
-        private ResourceCard PreviousBlowCard
-        {
-            get
-            {
-                return (CurrentPhase == Phase.BlowA) ? LatestSpiceCardA : LatestSpiceCardB;
-            }
-            set
-            {
-                if (CurrentPhase == Phase.BlowA)
-                {
-                    LatestSpiceCardA = value;
-                }
-                else
-                {
-                    LatestSpiceCardB = value;
                 }
             }
         }
@@ -274,33 +260,6 @@ namespace Treachery.Shared
             }
         }
 
-        private string Natural(int count)
-        {
-            return count switch
-            {
-                1 => "first",
-                2 => "second",
-                3 => "third",
-                4 => "fourth",
-                5 => "fifth",
-                6 => "sixth",
-                7 => "seventh",
-                8 => "eighth",
-                9 => "ninth",
-                10 => "tenth",
-                _ => count + "th",
-            };
-        }
-
-        public void HandleEvent(YellowSentMonster e)
-        {
-            Log(e);
-            Monsters.Add(e.Territory);
-            PerformMonster(e.Territory);
-            Enter(CurrentPhase == Phase.YellowSendingMonsterA, Phase.BlowA, Phase.BlowB);
-            DrawSpiceCard();
-        }
-
         private void PerformMonster(Territory territory)
         {
             foreach (var l in territory.Locations)
@@ -339,17 +298,25 @@ namespace Treachery.Shared
             FlipBeneGesseritWhenAlone();
         }
 
-        public bool ProtectedFromMonster(Player p)
+        private void EnterBlowA()
         {
-            if (p.Is(Faction.Yellow))
-            {
-                return !Prevented(FactionAdvantage.YellowProtectedFromMonster);
-            }
-            else
-            {
-                return p.Ally == Faction.Yellow && YellowWillProtectFromShaiHulud && !Prevented(FactionAdvantage.YellowProtectedFromMonsterAlly);
-            }
+            Monsters.Clear();
+            Enter(Phase.BlowA);
+            LogIf(Applicable(Rule.IncreasedResourceFlow), "*** Spice Blow A ***");
+            DrawSpiceCard();
         }
+
+        private void EnterBlowB()
+        {
+            Monsters.Clear();
+            Enter(Phase.BlowB);
+            Log("*** Spice Blow B ***");
+            DrawSpiceCard();
+        }
+
+        #endregion
+
+        #region Nexus
 
         public readonly IList<AllianceOffered> CurrentAllianceOffers = new List<AllianceOffered>();
 
@@ -450,6 +417,40 @@ namespace Treachery.Shared
             }
         }
 
+        #endregion
+
+        #region EndOfSpiceBlow
+
+        private void EnterStormReportPhase()
+        {
+            if (CurrentTurn == 1 && ignoredMonsters.Count > 0)
+            {
+                Log(ignoredMonsters.Count, " ignored ", Concept.Monster, "cards were shuffled back into the ", Concept.Resource, " deck");
+                foreach (var c in ignoredMonsters)
+                {
+                    ResourceCardDeck.Items.Add(c);
+                }
+                ResourceCardDeck.Shuffle();
+                RecentMilestones.Add(Milestone.Shuffled);
+            }
+
+            MainPhaseEnd();
+            Enter(Phase.BlowReport);
+        }
+
+        #endregion
+
+        #region WormSendingAndRiding
+
+        public void HandleEvent(YellowSentMonster e)
+        {
+            Log(e);
+            Monsters.Add(e.Territory);
+            PerformMonster(e.Territory);
+            Enter(CurrentPhase == Phase.YellowSendingMonsterA, Phase.BlowA, Phase.BlowB);
+            DrawSpiceCard();
+        }
+
         public void HandleEvent(YellowRidesMonster e)
         {
             Monsters.RemoveAt(0);
@@ -510,40 +511,64 @@ namespace Treachery.Shared
             }
         }
 
-        private void EnterBlowA()
+        #endregion
+
+        #region Support
+
+        private string Natural(int count)
         {
-            Monsters.Clear();
-            Enter(Phase.BlowA);
-            if (Applicable(Rule.IncreasedResourceFlow))
+            return count switch
             {
-                Log("*** Spice Blow A ***");
+                1 => "first",
+                2 => "second",
+                3 => "third",
+                4 => "fourth",
+                5 => "fifth",
+                6 => "sixth",
+                7 => "seventh",
+                8 => "eighth",
+                9 => "ninth",
+                10 => "tenth",
+                _ => count + "th",
+            };
+        }
+
+        private Deck<ResourceCard> CurrentDiscardPile => (CurrentPhase == Phase.BlowA) ? ResourceCardDiscardPileA : ResourceCardDiscardPileB;
+
+        public ResourceCard LatestSpiceCardA { get; private set; } = null;
+        public ResourceCard LatestSpiceCardB { get; private set; } = null;
+
+        private ResourceCard PreviousBlowCard
+        {
+            get
+            {
+                return (CurrentPhase == Phase.BlowA) ? LatestSpiceCardA : LatestSpiceCardB;
             }
-            DrawSpiceCard();
-        }
-
-        private void EnterBlowB()
-        {
-            Monsters.Clear();
-            Enter(Phase.BlowB);
-            Log("*** Spice Blow B ***");
-            DrawSpiceCard();
-        }
-
-        private void EnterStormReportPhase()
-        {
-            if (CurrentTurn == 1 && ignoredMonsters.Count > 0)
+            set
             {
-                Log(ignoredMonsters.Count, " ignored ", Concept.Monster, "cards were shuffled back into the ", Concept.Resource, " deck");
-                foreach (var c in ignoredMonsters)
+                if (CurrentPhase == Phase.BlowA)
                 {
-                    ResourceCardDeck.Items.Add(c);
+                    LatestSpiceCardA = value;
                 }
-                ResourceCardDeck.Shuffle();
-                RecentMilestones.Add(Milestone.Shuffled);
+                else
+                {
+                    LatestSpiceCardB = value;
+                }
             }
-
-            MainPhaseEnd();
-            Enter(Phase.BlowReport);
         }
+
+        public bool ProtectedFromMonster(Player p)
+        {
+            if (p.Is(Faction.Yellow))
+            {
+                return !Prevented(FactionAdvantage.YellowProtectedFromMonster);
+            }
+            else
+            {
+                return p.Ally == Faction.Yellow && YellowWillProtectFromShaiHulud && !Prevented(FactionAdvantage.YellowProtectedFromMonsterAlly);
+            }
+        }
+
+        #endregion
     }
 }

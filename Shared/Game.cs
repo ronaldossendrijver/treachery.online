@@ -384,7 +384,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void Enter(bool condition, Phase phaseIfTrue, EnterPhaseMethod methodOtherwise)
+        private void Enter(bool condition, Phase phaseIfTrue, Action methodOtherwise)
         {
             if (condition)
             {
@@ -396,7 +396,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void Enter(bool condition, EnterPhaseMethod methodIfTrue, EnterPhaseMethod methodOtherwise)
+        private void Enter(bool condition, Action methodIfTrue, Action methodOtherwise)
         {
             if (condition)
             {
@@ -408,7 +408,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, EnterPhaseMethod methodOtherwise)
+        private void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, Action methodOtherwise)
         {
             if (condition1)
             {
@@ -424,7 +424,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void Enter(bool condition1, Phase phaseIf1True, bool condition2, EnterPhaseMethod methodIf2True, EnterPhaseMethod methodOtherwise)
+        private void Enter(bool condition1, Phase phaseIf1True, bool condition2, Action methodIf2True, Action methodOtherwise)
         {
             if (condition1)
             {
@@ -456,7 +456,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void Enter(bool condition1, EnterPhaseMethod methodIf1True, bool condition2, Phase phaseIf2True, Phase phaseOtherwise)
+        private void Enter(bool condition1, Action methodIf1True, bool condition2, Phase phaseIf2True, Phase phaseOtherwise)
         {
             if (condition1)
             {

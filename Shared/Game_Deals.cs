@@ -9,7 +9,7 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public List<DealOffered> DealOffers = new List<DealOffered>();
+        public List<DealOffered> DealOffers { get; private set; } = new List<DealOffered>();
 
         public void HandleEvent(DealOffered e)
         {
@@ -94,6 +94,6 @@ namespace Treachery.Shared
             }
         }
 
-        private delegate void EnterPhaseMethod();
+        
     }
 }

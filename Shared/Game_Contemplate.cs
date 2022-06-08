@@ -9,6 +9,8 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
+        #region Mentat
+
         public List<Player> Winners { get; private set; } = new List<Player>();
 
         private void EnterMentatPhase()
@@ -29,79 +31,6 @@ namespace Treachery.Shared
             }
 
             Enter(Version >= 103, Phase.Contemplate, ContinueMentatPhase);
-        }
-
-        public Dictionary<Location, Faction> StrongholdOwnership { get; set; } = new Dictionary<Location, Faction>();
-
-        private void DetermineStrongholdOwnership()
-        {
-            if (Applicable(Rule.StrongholdBonus))
-            {
-                DetermineStrongholdOwnership(Map.Arrakeen);
-                DetermineStrongholdOwnership(Map.Carthag);
-                DetermineStrongholdOwnership(Map.SietchTabr);
-                DetermineStrongholdOwnership(Map.HabbanyaSietch);
-                DetermineStrongholdOwnership(Map.TueksSietch);
-                DetermineStrongholdOwnership(Map.HiddenMobileStronghold);
-            }
-        }
-
-        public StrongholdAdvantage ChosenHMSAdvantage { get; private set; } = StrongholdAdvantage.None;
-        public bool HasStrongholdAdvantage(Faction f, StrongholdAdvantage advantage, Territory battleTerritory)
-        {
-            if (battleTerritory == Map.HiddenMobileStronghold.Territory && OwnsStronghold(f, Map.HiddenMobileStronghold) && ChosenHMSAdvantage == advantage)
-            {
-                return true;
-            }
-
-            return advantage switch
-            {
-                StrongholdAdvantage.FreeResourcesForBattles => battleTerritory == Map.Arrakeen.Territory && OwnsStronghold(f, Map.Arrakeen),
-                StrongholdAdvantage.CollectResourcesForDial => battleTerritory == Map.SietchTabr.Territory && OwnsStronghold(f, Map.SietchTabr),
-                StrongholdAdvantage.CollectResourcesForUseless => battleTerritory == Map.TueksSietch.Territory && OwnsStronghold(f, Map.TueksSietch),
-                StrongholdAdvantage.CountDefensesAsAntidote => battleTerritory == Map.Carthag.Territory && OwnsStronghold(f, Map.Carthag),
-                StrongholdAdvantage.WinTies => battleTerritory == Map.HabbanyaSietch.Territory && OwnsStronghold(f, Map.HabbanyaSietch),
-                _ => false
-            };
-        }
-
-        public Location StrongholdGranting(StrongholdAdvantage advantage)
-        {
-            return advantage switch
-            {
-                StrongholdAdvantage.FreeResourcesForBattles => Map.Arrakeen,
-                StrongholdAdvantage.CollectResourcesForDial => Map.SietchTabr,
-                StrongholdAdvantage.CollectResourcesForUseless => Map.TueksSietch,
-                StrongholdAdvantage.CountDefensesAsAntidote => Map.Carthag,
-                StrongholdAdvantage.WinTies => Map.HabbanyaSietch,
-                _ => null
-            };
-        }
-
-        public bool OwnsStronghold(Faction f, Location stronghold)
-        {
-            return StrongholdOwnership.ContainsKey(stronghold) && StrongholdOwnership[stronghold] == f;
-        }
-
-        private void DetermineStrongholdOwnership(Location location)
-        {
-            var currentOwner = StrongholdOwnership.ContainsKey(location) ? StrongholdOwnership[location] : Faction.None;
-            if (currentOwner != Faction.None)
-            {
-                StrongholdOwnership.Remove(location);
-            }
-
-            var newOwner = Players.FirstOrDefault(p => p.Controls(this, location, Applicable(Rule.ContestedStongholdsCountAsOccupied)));
-
-            if (newOwner != null)
-            {
-                StrongholdOwnership.Add(location, newOwner.Faction);
-
-                if (newOwner.Faction != currentOwner)
-                {
-                    Log(newOwner.Faction, " take control of ", location);
-                }
-            }
         }
 
         private void ContinueMentatPhase()
@@ -131,59 +60,6 @@ namespace Treachery.Shared
             MainPhaseEnd();
         }
 
-        public void HandleEvent(BrownEconomics e)
-        {
-            EconomicsStatus = e.Status;
-            Log(e);
-            RecentMilestones.Add(Milestone.Economics);
-        }
-
-        public void HandleEvent(BrownRemoveForce e)
-        {
-            Log(e);
-            Discard(e.CardUsed());
-            var target = GetPlayer(e.Target);
-
-            if (e.SpecialForce)
-            {
-                target.SpecialForcesToReserves(e.Location, 1);
-            }
-            else
-            {
-                target.ForcesToReserves(e.Location, 1);
-            }
-
-            FlipBeneGesseritWhenAlone();
-            RecentMilestones.Add(Milestone.SpecialUselessPlayed);
-        }
-
-        private void HandleEconomics()
-        {
-            switch (EconomicsStatus)
-            {
-                case BrownEconomicsStatus.Double:
-                    EconomicsStatus = BrownEconomicsStatus.CancelFlipped;
-                    Log(Faction.Brown, " The Economics Token flips to Cancel.");
-                    RecentMilestones.Add(Milestone.Economics);
-                    break;
-
-                case BrownEconomicsStatus.Cancel:
-                    EconomicsStatus = BrownEconomicsStatus.DoubleFlipped;
-                    Log(Faction.Brown, " The Economics Token flips to Double.");
-                    RecentMilestones.Add(Milestone.Economics);
-                    break;
-
-                case BrownEconomicsStatus.DoubleFlipped:
-                case BrownEconomicsStatus.CancelFlipped:
-                    EconomicsStatus = BrownEconomicsStatus.RemovedFromGame;
-                    Log(Faction.Brown, " The Economics Token has been removed from the game.");
-                    RecentMilestones.Add(Milestone.Economics);
-                    break;
-            }
-
-
-        }
-
         private void AddBribesToPlayerResources()
         {
             foreach (var p in Players)
@@ -196,6 +72,75 @@ namespace Treachery.Shared
                 }
             }
         }
+
+        #endregion
+
+        #region StrongholdOwnership
+
+        public Dictionary<Location, Faction> StrongholdOwnership { get; private set; } = new Dictionary<Location, Faction>();
+
+        private void DetermineStrongholdOwnership()
+        {
+            if (Applicable(Rule.StrongholdBonus))
+            {
+                DetermineStrongholdOwnership(Map.Arrakeen);
+                DetermineStrongholdOwnership(Map.Carthag);
+                DetermineStrongholdOwnership(Map.SietchTabr);
+                DetermineStrongholdOwnership(Map.HabbanyaSietch);
+                DetermineStrongholdOwnership(Map.TueksSietch);
+                DetermineStrongholdOwnership(Map.HiddenMobileStronghold);
+            }
+        }
+
+        public StrongholdAdvantage ChosenHMSAdvantage { get; private set; } = StrongholdAdvantage.None;
+
+        public bool HasStrongholdAdvantage(Faction f, StrongholdAdvantage advantage, Territory battleTerritory)
+        {
+            if (battleTerritory == Map.HiddenMobileStronghold.Territory && OwnsStronghold(f, Map.HiddenMobileStronghold) && ChosenHMSAdvantage == advantage)
+            {
+                return true;
+            }
+
+            return advantage switch
+            {
+                StrongholdAdvantage.FreeResourcesForBattles => battleTerritory == Map.Arrakeen.Territory && OwnsStronghold(f, Map.Arrakeen),
+                StrongholdAdvantage.CollectResourcesForDial => battleTerritory == Map.SietchTabr.Territory && OwnsStronghold(f, Map.SietchTabr),
+                StrongholdAdvantage.CollectResourcesForUseless => battleTerritory == Map.TueksSietch.Territory && OwnsStronghold(f, Map.TueksSietch),
+                StrongholdAdvantage.CountDefensesAsAntidote => battleTerritory == Map.Carthag.Territory && OwnsStronghold(f, Map.Carthag),
+                StrongholdAdvantage.WinTies => battleTerritory == Map.HabbanyaSietch.Territory && OwnsStronghold(f, Map.HabbanyaSietch),
+                _ => false
+            };
+        }
+
+        public bool OwnsStronghold(Faction f, Location stronghold)
+        {
+            return StrongholdOwnership.ContainsKey(stronghold) && StrongholdOwnership[stronghold] == f;
+        }
+
+        private void DetermineStrongholdOwnership(Location location)
+        {
+            var currentOwner = StrongholdOwnership.ContainsKey(location) ? StrongholdOwnership[location] : Faction.None;
+            if (currentOwner != Faction.None)
+            {
+                StrongholdOwnership.Remove(location);
+            }
+
+            var newOwner = Players.FirstOrDefault(p => p.Controls(this, location, Applicable(Rule.ContestedStongholdsCountAsOccupied)));
+
+            if (newOwner != null)
+            {
+                StrongholdOwnership.Add(location, newOwner.Faction);
+
+                if (newOwner.Faction != currentOwner)
+                {
+                    Log(newOwner.Faction, " take control of ", location);
+                }
+            }
+        }
+
+        #endregion
+
+        #region ChecingForVictories
 
         public WinMethod WinMethod { get; set; }
 
@@ -214,24 +159,6 @@ namespace Treachery.Shared
                     CheckBeneGesseritPrediction();
                 }
             }
-        }
-
-        public void HandleEvent(FaceDancerReplaced e)
-        {
-            if (!e.Passed)
-            {
-                var player = GetPlayer(e.Initiator);
-                player.FaceDancers.Remove(e.SelectedDancer);
-                TraitorDeck.PutOnTop(e.SelectedDancer);
-                TraitorDeck.Shuffle();
-                RecentMilestones.Add(Milestone.Shuffled);
-                var leader = TraitorDeck.Draw();
-                player.FaceDancers.Add(leader);
-                if (!player.KnownNonTraitors.Contains(leader)) player.KnownNonTraitors.Add(leader);
-            }
-
-            Log(e);
-            Enter(Phase.TurnConcluded);
         }
 
         private void CheckBeneGesseritPrediction()
@@ -416,5 +343,82 @@ namespace Treachery.Shared
                 }
             }
         }
+
+        #endregion
+
+        #region MentatEvents
+
+        public void HandleEvent(BrownEconomics e)
+        {
+            EconomicsStatus = e.Status;
+            Log(e);
+            RecentMilestones.Add(Milestone.Economics);
+        }
+
+        public void HandleEvent(BrownRemoveForce e)
+        {
+            Log(e);
+            Discard(e.CardUsed());
+            var target = GetPlayer(e.Target);
+
+            if (e.SpecialForce)
+            {
+                target.SpecialForcesToReserves(e.Location, 1);
+            }
+            else
+            {
+                target.ForcesToReserves(e.Location, 1);
+            }
+
+            FlipBeneGesseritWhenAlone();
+            RecentMilestones.Add(Milestone.SpecialUselessPlayed);
+        }
+
+        private void HandleEconomics()
+        {
+            switch (EconomicsStatus)
+            {
+                case BrownEconomicsStatus.Double:
+                    EconomicsStatus = BrownEconomicsStatus.CancelFlipped;
+                    Log(Faction.Brown, " The Economics Token flips to Cancel.");
+                    RecentMilestones.Add(Milestone.Economics);
+                    break;
+
+                case BrownEconomicsStatus.Cancel:
+                    EconomicsStatus = BrownEconomicsStatus.DoubleFlipped;
+                    Log(Faction.Brown, " The Economics Token flips to Double.");
+                    RecentMilestones.Add(Milestone.Economics);
+                    break;
+
+                case BrownEconomicsStatus.DoubleFlipped:
+                case BrownEconomicsStatus.CancelFlipped:
+                    EconomicsStatus = BrownEconomicsStatus.RemovedFromGame;
+                    Log(Faction.Brown, " The Economics Token has been removed from the game.");
+                    RecentMilestones.Add(Milestone.Economics);
+                    break;
+            }
+
+
+        }
+
+        public void HandleEvent(FaceDancerReplaced e)
+        {
+            if (!e.Passed)
+            {
+                var player = GetPlayer(e.Initiator);
+                player.FaceDancers.Remove(e.SelectedDancer);
+                TraitorDeck.PutOnTop(e.SelectedDancer);
+                TraitorDeck.Shuffle();
+                RecentMilestones.Add(Milestone.Shuffled);
+                var leader = TraitorDeck.Draw();
+                player.FaceDancers.Add(leader);
+                if (!player.KnownNonTraitors.Contains(leader)) player.KnownNonTraitors.Add(leader);
+            }
+
+            Log(e);
+            Enter(Phase.TurnConcluded);
+        }
+
+        #endregion
     }
 }

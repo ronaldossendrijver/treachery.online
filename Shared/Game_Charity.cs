@@ -8,7 +8,13 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public bool ResourceTechTokenIncome { get; private set; }
+        #region State
+
+        private bool ResourceTechTokenIncome { get; set; }
+
+        #endregion
+
+        #region BeginningOfCharity
 
         private void EnterCharityPhase()
         {
@@ -28,6 +34,10 @@ namespace Treachery.Shared
                 Enter(Phase.BeginningOfCharity);
             }
         }
+
+        #endregion
+
+        #region Charity
 
         private void StartClaimingCharity()
         {
@@ -64,21 +74,6 @@ namespace Treachery.Shared
 
             MainPhaseMiddle();
             Enter(Phase.ClaimingCharity);
-        }
-
-        private void EndCharityPhase()
-        {
-            ReceiveResourceTechIncome();
-
-            if (Version < 122)
-            {
-                EnterBiddingPhase();
-            }
-            else
-            {
-                if (Version >= 132) MainPhaseEnd();
-                Enter(Phase.CharityReport);
-            }
         }
 
         private void ReceiveResourceTechIncome()
@@ -150,5 +145,26 @@ namespace Treachery.Shared
 
             RecentMilestones.Add(Milestone.CharityClaimed);
         }
+
+        #endregion
+
+        #region EndOfCharity
+
+        private void EndCharityPhase()
+        {
+            ReceiveResourceTechIncome();
+
+            if (Version < 122)
+            {
+                EnterBiddingPhase();
+            }
+            else
+            {
+                if (Version >= 132) MainPhaseEnd();
+                Enter(Phase.CharityReport);
+            }
+        }
+
+        #endregion
     }
 }
