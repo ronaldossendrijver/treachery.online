@@ -9,7 +9,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Choose a territory in which you have advisors and wish to battle, flipping them to fighters.</Header>
+    <Header>Flip advisors to fighters</Header>
     <Body>
 
         <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="target" Values="BlueBattleAnnouncement.ValidTerritories(Game, Player)">
