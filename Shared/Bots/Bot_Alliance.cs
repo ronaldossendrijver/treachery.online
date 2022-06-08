@@ -15,8 +15,8 @@ namespace Treachery.Shared
             int nrOfUnalliedBots = Game.Players.Count(p => p.IsBot && p.Ally == Faction.None);
             int nrOfUnalliedHumans = Game.Players.Count(p => !(p.IsBot) && p.Ally == Faction.None);
 
-            var offer = Game.CurrentAllianceOffers.FirstOrDefault(offer => offer.Target == Faction && !offer.Player.IsBot);
-            if (offer == null) offer = Game.CurrentAllianceOffers.FirstOrDefault(offer => offer.Target == Faction);
+            var offer = Game.CurrentAllianceOffers.Where(offer => offer.Target == Faction && !offer.Player.IsBot).HighestOrDefault(offer => PlayerStanding(offer.Player));
+            if (offer == null) offer = Game.CurrentAllianceOffers.Where(offer => offer.Target == Faction).HighestOrDefault(offer => PlayerStanding(offer.Player));
 
             if (offer != null)
             {
@@ -28,34 +28,37 @@ namespace Treachery.Shared
                 (nrOfUnalliedHumans == 0 || nrOfUnalliedHumans < nrOfUnalliedBots - 1) &&
                 !Game.CurrentAllianceOffers.Any(o => o.Initiator == Faction && Game.GetPlayer(o.Target).Ally == Faction.None))
             {
-                var opponentBotWithoutAlly = Game.Players.Where(p => p != this && p.IsBot && p.Ally == Faction.None).HighestOrDefault(p =>
-                    2 * p.TreacheryCards.Count() +
-                    p.Resources +
-                    6 * p.LocationsWithAnyForces.Count(l => l.Territory.IsStronghold) +
-                    p.ForcesOnPlanet.Sum(b => b.Value.TotalAmountOfForces) +
-                    p.ForcesInReserve +
-                    p.SpecialForcesInReserve
-                    );
+                var mostInterestingOpponentBotWithoutAlly = Game.Players.Where(p => p != this && p.IsBot && p.Ally == Faction.None).HighestOrDefault(p => PlayerStanding(p));
 
-                if (opponentBotWithoutAlly != null)
+                if (mostInterestingOpponentBotWithoutAlly != null)
                 {
-                    return new AllianceOffered(Game) { Initiator = Faction, Target = opponentBotWithoutAlly.Faction };
+                    return new AllianceOffered(Game) { Initiator = Faction, Target = mostInterestingOpponentBotWithoutAlly.Faction };
                 }
             }
 
             return null;
         }
 
+        private int PlayerStanding(Player p) =>
+                    2 * p.TreacheryCards.Count() +
+                    p.Resources +
+                    6 * p.LocationsWithAnyForces.Count(l => l.Territory.IsStronghold) +
+                    p.ForcesOnPlanet.Sum(b => b.Value.TotalAmountOfForces) +
+                    p.ForcesInReserve +
+                    2 * p.SpecialForcesInReserve;
+
         protected virtual AllianceBroken DetermineAllianceBroken()
         {
-            if (AlliedPlayer.IsBot)
-            {
-                var offer = Game.CurrentAllianceOffers.FirstOrDefault(offer => offer.Target == Faction && !offer.Player.IsBot);
+            var offer = Game.CurrentAllianceOffers.Where(offer => offer.Target == Faction && !offer.Player.IsBot).HighestOrDefault(offer => PlayerStanding(offer.Player));
 
-                if (offer != null)
-                {
-                    return new AllianceBroken(Game) { Initiator = Faction };
-                }
+            if (offer != null && PlayerStanding(offer.Player) > PlayerStanding(AlliedPlayer))
+            {
+                return new AllianceBroken(Game) { Initiator = Faction };
+            }
+
+            if (Ally != Faction.None && Game.Players.Any(p => p.Ally == Faction.None) && PlayerStanding(this) > 3 * PlayerStanding(AlliedPlayer))
+            {
+                return new AllianceBroken(Game) { Initiator = Faction };
             }
 
             return null;
