@@ -654,11 +654,11 @@ namespace Treachery.Shared
 
             if (karmaCard.Type == TreacheryCardType.Karma)
             {
-                Log("Card ", CardNumber, " won by ", bid.Initiator, " using ", TreacheryCardType.Karma);
+                Log(bid.Initiator, " get card ", CardNumber, " using ", TreacheryCardType.Karma);
             }
             else
             {
-                Log("Card ", CardNumber, " won by ", bid.Initiator, " using ", karmaCard, " for ", TreacheryCardType.Karma);
+                Log(bid.Initiator, " get card ", CardNumber, " using ", karmaCard, " for ", TreacheryCardType.Karma);
             }
 
             RecentMilestones.Add(Milestone.AuctionWon);

@@ -110,8 +110,7 @@ namespace Treachery.Shared
         {
             CurrentThought = e;
             var opponent = CurrentBattle.OpponentOf(e.Initiator).Faction;
-            Log("By ", LeaderSkill.Thinker, ", ", e.Initiator, " ask ", opponent, " if they have a ", e.Card);
-
+            Log(e.Initiator, " use their ", LeaderSkill.Thinker, " skill to ask ", opponent, " if they have a ", e.Card);
             Enter(Phase.Thought);
         }
 
@@ -965,7 +964,7 @@ namespace Treachery.Shared
 
         private void KillLeaderInBattle(IHero killedHero, TreacheryCardType causeOfDeath, Player winner, int heroValue)
         {
-            Log(causeOfDeath, " kills ", killedHero, " → ", winner.Faction, " collect ", Payment(heroValue));
+            Log(causeOfDeath, " kills ", killedHero, " → ", winner.Faction, " get ", Payment(heroValue));
             RecentMilestones.Add(Milestone.LeaderKilled);
             if (killedHero is Leader) KillHero(killedHero as Leader);
             winner.Resources += heroValue;
@@ -1031,7 +1030,7 @@ namespace Treachery.Shared
 
             if (traitor is Leader)
             {
-                Log("Treachery kills ", traitor, ". ", winner.Faction, " collect ", Payment(traitorValue));
+                Log("Treachery kills ", traitor, " → ", winner.Faction, " get ", Payment(traitorValue));
                 KillHero(traitor);
                 winner.Resources += traitorValue;
             }

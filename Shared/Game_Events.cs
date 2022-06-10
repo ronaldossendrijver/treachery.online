@@ -638,7 +638,7 @@ namespace Treachery.Shared
                 }
 
                 if (CurrentPhase != Phase.BlackMarketBidding &&
-                    CurrentPhase != Phase.Bidding &&
+                    (CurrentPhase != Phase.Bidding || CurrentBid == null) &&
                     !hasFinalizedBattlePlanWaitingToBeResolved &&
                     DistransUsed.CanBePlayed(this, player))
                 {
