@@ -131,7 +131,7 @@
 
                         @if (h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove && h.Game.HasResourceDeckPrescience(Player))
                         {
-                            <Hoverable Popover=@Popup.Get(h.Game.ResourceCardDeck.Top)>Top card of @Name(Concept.Resource) Deck: <SimpleNumberComponent>@Name(h.Game.ResourceCardDeck.Top)</SimpleNumberComponent></Hoverable>
+                            <Hoverable Popover=@Popup.Get(h.Game.ResourceCardDeck.Top)>Top card of @Name(Concept.Resource) Deck: <strong>@Name(h.Game.ResourceCardDeck.Top)</strong></Hoverable>
                         }
 
                         <!-- Cards -->

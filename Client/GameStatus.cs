@@ -292,8 +292,7 @@ namespace Treachery.Client
 
                 Phase.BeginningOfShipAndMove => Status(
                         Express("You may now start the Ship & Move sequence..."),
-                        Express("Waiting for the host to start the Ship & Move sequence..."),
-                        game.ShipmentAndMoveSequence.GetPlayersInSequence().Select(ps => ps.Player)),
+                        Express("Waiting for the host to start the Ship & Move sequence...")),
 
                 Phase.NonOrangeShip when game.ShipmentAndMoveSequence.CurrentFaction == Faction.Yellow => Status(game,
                     Express("Please decide to rally forces or pass."),
@@ -343,8 +342,7 @@ namespace Treachery.Client
 
                 Phase.BeginningOfBattle => Status(
                     "You may proceed to the first battle when ready.",
-                    "Waiting for the host to proceed to the first battle...",
-                    game.BattleSequence.GetPlayersInSequence().Select(ps => ps.Player)),
+                    "Waiting for the host to proceed to the first battle..."),
 
                 Phase.Thought => Status(
                     Express(game.CurrentThought.Initiator, " asked you a question and are waiting for your answer."),
@@ -569,7 +567,7 @@ namespace Treachery.Client
                     case ResidualPlayed: Flash(result, latestEvent, TreacheryCardType.Residual); break;
                     case FlightUsed: Flash(result, latestEvent, TreacheryCardType.Flight); break;
                     case DistransUsed: Flash(result, latestEvent, TreacheryCardType.Distrans); break;
-                    case KarmaFreeRevival or KarmaHandSwapInitiated or KarmaHmsMovement or KarmaMonster or KarmaPrescience or KarmaRevivalPrevention or KarmaShipmentPrevention or KarmaWhiteBuy or KarmaBrownDiscard: Flash(result, latestEvent, TreacheryCardType.Karma); break;
+                    case Karma or KarmaFreeRevival or KarmaHandSwapInitiated or KarmaHmsMovement or KarmaMonster or KarmaPrescience or KarmaRevivalPrevention or KarmaShipmentPrevention or KarmaWhiteBuy or KarmaBrownDiscard: Flash(result, latestEvent, TreacheryCardType.Karma); break;
                     case PortableAntidoteUsed: Flash(result, latestEvent, TreacheryCardType.PortableAntidote); break;
                     case RockWasMelted: Flash(result, latestEvent, TreacheryCardType.Rockmelter); break;
                     case DiscardedTaken: Flash(result, latestEvent, TreacheryCardType.TakeDiscarded); break;
@@ -703,7 +701,7 @@ namespace Treachery.Client
 
         private static void Flash(IList<FlashInfo> flashes, GameEvent e, TreacheryCardType t)
         {
-            if (e.Game.TreacheryDiscardPile.Top?.Type == t)
+            if (e.Game.TreacheryDiscardPile.Top?.Type == t || t == TreacheryCardType.Karma && e.Game.TreacheryDiscardPile.Top?.Type == TreacheryCardType.Useless)
             {
                 Flash(flashes, e?.GetMessage(), Skin.Current.GetImageURL(e.Game.TreacheryDiscardPile.Top));
             }

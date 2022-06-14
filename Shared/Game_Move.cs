@@ -39,16 +39,17 @@ namespace Treachery.Shared
             LastShippedOrMovedTo = null;
 
             ShipmentAndMoveSequence = new PlayerSequence(this);
-            if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && OrangeMayShipOutOfTurnOrder)
-            {
-                ShipmentAndMoveSequence.NextPlayer();
-            }
 
             Enter(Version >= 107, Phase.BeginningOfShipAndMove, StartShipAndMoveSequence);
         }
 
         private void StartShipAndMoveSequence()
         {
+            if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && OrangeMayShipOutOfTurnOrder)
+            {
+                ShipmentAndMoveSequence.NextPlayer();
+            }
+
             Enter(JuiceForcesFirstPlayer && CurrentJuice.Initiator != Faction.Orange, Phase.NonOrangeShip, IsPlaying(Faction.Orange) && OrangeMayShipOutOfTurnOrder, Phase.OrangeShip, Phase.NonOrangeShip);
         }
 

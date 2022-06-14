@@ -246,8 +246,8 @@ namespace Treachery.Shared
                 case Phase.OrangeMove:
                     if (faction == Faction.Orange)
                     {
-                        result.Add(typeof(Move));
                         if (player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Caravan)) result.Add(typeof(Caravan));
+                        result.Add(typeof(Move));
                         if (FlightUsed.IsAvailable(player)) result.Add(typeof(FlightUsed));
                         if (Planetology.CanBePlayed(this, player)) result.Add(typeof(Planetology));
                     }
@@ -255,8 +255,8 @@ namespace Treachery.Shared
                 case Phase.NonOrangeMove:
                     if (player == ShipmentAndMoveSequence.CurrentPlayer)
                     {
-                        result.Add(typeof(Move));
                         if (player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Caravan)) result.Add(typeof(Caravan));
+                        result.Add(typeof(Move));
                         if (FlightUsed.IsAvailable(player)) result.Add(typeof(FlightUsed));
                         if (Planetology.CanBePlayed(this, player)) result.Add(typeof(Planetology));
                     }
@@ -291,6 +291,21 @@ namespace Treachery.Shared
                             result.Add(typeof(HMSAdvantageChosen));
                         }
 
+                        if (Voice.MayUseVoice(this, player))
+                        {
+                            result.Add(typeof(Voice));
+                        }
+
+                        if (Thought.MayBeUsed(this, player))
+                        {
+                            result.Add(typeof(Thought));
+                        }
+
+                        if (Prescience.MayUsePrescience(this, player))
+                        {
+                            result.Add(typeof(Prescience));
+                        }
+
                         if (CurrentBattle != null && faction == CurrentBattle.Aggressor && AggressorBattleAction == null)
                         {
                             result.Add(typeof(Battle));
@@ -307,21 +322,6 @@ namespace Treachery.Shared
                         else if (CurrentBattle != null && faction == CurrentBattle.Defender && DefenderBattleAction != null)
                         {
                             result.Add(typeof(BattleRevision));
-                        }
-
-                        if (Voice.MayUseVoice(this, player))
-                        {
-                            result.Add(typeof(Voice));
-                        }
-
-                        if (Prescience.MayUsePrescience(this, player))
-                        {
-                            result.Add(typeof(Prescience));
-                        }
-
-                        if (Thought.MayBeUsed(this, player))
-                        {
-                            result.Add(typeof(Thought));
                         }
 
                         if (CurrentBattle != null && ResidualPlayed.MayPlay(this, player))
