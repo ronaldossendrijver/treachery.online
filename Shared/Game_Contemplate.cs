@@ -120,20 +120,26 @@ namespace Treachery.Shared
         private void DetermineStrongholdOwnership(Location location)
         {
             var currentOwner = StrongholdOwnership.ContainsKey(location) ? StrongholdOwnership[location] : Faction.None;
-            if (currentOwner != Faction.None)
+            var newOwningPlayer = Players.FirstOrDefault(p => p.Controls(this, location, Applicable(Rule.ContestedStongholdsCountAsOccupied)));
+            var newOwner = newOwningPlayer != null ? newOwningPlayer.Faction : Faction.None;
+
+            if (currentOwner != newOwner)
             {
-                StrongholdOwnership.Remove(location);
-            }
-
-            var newOwner = Players.FirstOrDefault(p => p.Controls(this, location, Applicable(Rule.ContestedStongholdsCountAsOccupied)));
-
-            if (newOwner != null)
-            {
-                StrongholdOwnership.Add(location, newOwner.Faction);
-
-                if (newOwner.Faction != currentOwner)
+                if (currentOwner != Faction.None && newOwner != Faction.None)
                 {
-                    Log(newOwner.Faction, " take control of ", location);
+                    StrongholdOwnership.Remove(location);
+                    StrongholdOwnership.Add(location, newOwner);
+                    Log(newOwner, " take control over ", location, " from ", currentOwner);
+                }
+                else if (currentOwner != Faction.None)
+                {
+                    StrongholdOwnership.Remove(location);
+                    Log(currentOwner, " lose control over ", location);
+                }
+                else if (newOwner != Faction.None)
+                {
+                    StrongholdOwnership.Add(location, newOwner);
+                    Log(newOwner, " take control over ", location);
                 }
             }
         }

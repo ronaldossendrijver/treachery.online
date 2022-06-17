@@ -282,6 +282,8 @@ namespace Treachery.Shared
 
             RemoveIllegalChoices(ref lowestAvailableHero, ref uselessAsWeapon, ref uselessAsDefense);
 
+            bool messiah = lowestAvailableHero != null && Battle.MessiahMayBeUsedInBattle(Game, this);
+
             if (Battle.MustPayForForcesInBattle(Game, this))
             {
                 int strongholdFreeForces = Game.HasStrongholdAdvantage(Faction, StrongholdAdvantage.FreeResourcesForBattles, Game.CurrentBattle.Territory) ? 2 : 0;
@@ -297,7 +299,8 @@ namespace Treachery.Shared
                     SpecialForcesAtHalfStrength = Battle.MaxForces(Game, this, true) - specialAtFull,
                     Defense = uselessAsDefense,
                     Weapon = uselessAsWeapon,
-                    BankerBonus = 0
+                    BankerBonus = 0,
+                    Messiah = messiah
                 };
             }
             else
@@ -312,7 +315,8 @@ namespace Treachery.Shared
                     SpecialForcesAtHalfStrength = 0,
                     Defense = uselessAsDefense,
                     Weapon = uselessAsWeapon,
-                    BankerBonus = 0
+                    BankerBonus = 0,
+                    Messiah = messiah
                 };
             }
         }
