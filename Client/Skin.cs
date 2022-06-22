@@ -1018,7 +1018,7 @@ namespace Treachery.Client
 
         private static string GetYellowTemplate(Game g)
         {
-            bool advancedApplies = g.Applicable(Rule.YellowSeesStorm) || g.Applicable(Rule.YellowSendingMonster) || g.Applicable(Rule.YellowStormLosses) || g.Applicable(Rule.YellowSpecialForces);
+            bool isAdvancedGame = g.Applicable(Rule.YellowSeesStorm) || g.Applicable(Rule.YellowSendingMonster) || g.Applicable(Rule.YellowStormLosses) || g.Applicable(Rule.YellowSpecialForces);
 
             return
               @"<div style='{25}'>
@@ -1031,7 +1031,7 @@ namespace Treachery.Client
                 <p>If {15} appears in a territory where you have tokens, they are not devoured but, immediately upon conclusion of the following nexus phase, may move from that territory to any one territory (subject to storm and occupancy rules).</p>
                 <p>Special Victory Condition: If no player has won by the end of the last turn and if you (or no one) occupies {9} and {22} and neither {1}, {0}, {2} nor {35} occupies {8}, you have prevented interference with your plans to alter the planet and win the game.</p>
                 <p>If no player has won by the end of the last turn and {4} is not playing, you win the game.</p>" +
-              (advancedApplies ? "<h5>Advanced Advantages</h5>" : "") +
+              (isAdvancedGame ? "<h5>Advanced Advantages</h5>" : "") +
               (g.Applicable(Rule.YellowSeesStorm) ? "<p>You can see the number of sectors the next storm will move.</p>" : "") +
               (g.Applicable(Rule.YellowSendingMonster) ? "<p>During {16} blow, each time {15} appears after the first time, you choose in which unprotected territory it appears.</p>" : "") +
               (g.Applicable(Rule.YellowStormLosses) ? "<p>If caught in a storm, only half your forces are killed. You may rally forces into a storm at half loss.</p>" : "") +
@@ -1102,7 +1102,7 @@ namespace Treachery.Client
 
         private static string GetBlueTemplate(Game g)
         {
-            bool advancedApplies = g.Applicable(Rule.BlueFirstForceInAnyTerritory) || g.Applicable(Rule.BlueAutoCharity) || g.Applicable(Rule.BlueAdvisors) || g.Applicable(Rule.BlueAccompaniesToShipmentLocation) || g.Applicable(Rule.BlueWorthlessAsKarma);
+            bool isAdvancedGame = g.Applicable(Rule.BlueFirstForceInAnyTerritory) || g.Applicable(Rule.BlueAutoCharity) || g.Applicable(Rule.BlueAdvisors) || g.Applicable(Rule.BlueAccompaniesToShipmentLocation) || g.Applicable(Rule.BlueWorthlessAsKarma);
 
             return
               @"<div style='{25}'>
@@ -1114,7 +1114,7 @@ namespace Treachery.Client
                 <p>Whenever any other player ships, you may ship for free one force to {26}.</p>
                 <p>You may 'voice' your opponent in battle to play or not to play a projectile/poison weapon or defense, a worthless card or a <i>specific</i> special card. If he can't comply with your command, he may do as he wishes.</p>" +
 
-              (advancedApplies ? @"<h5>Advanced Advantages</h5>" : "") +
+              (isAdvancedGame ? @"<h5>Advanced Advantages</h5>" : "") +
               (g.Applicable(Rule.BlueFirstForceInAnyTerritory) ? @"<p>You start with one advisor in any territory of your choice.</p>" : "") +
               (g.Applicable(Rule.BlueAutoCharity) ? @"<p>You automatically receive 2 charity during the Charity Phase.</p>" : "") +
               (g.Applicable(Rule.BlueAdvisors) ? @"<p>You can peacefully coexist as spiritual advisors with all other players' forces in the same territory. Advisors have no effect on the play of the other players whatsoever as if they are not even on the board. They cannot collect {16}, cannot be involved in combat, cannot prevent opponent control of a stronghold and don't get three territory movement bonus. They are still susceptible to storms, {15} and {18}/{17} explosions.</p>" : "") +
@@ -1167,7 +1167,7 @@ namespace Treachery.Client
 
         private static string GetGreyTemplate(Game g)
         {
-            bool advancedApplies = g.Applicable(Rule.GreySwappingCardOnBid) || g.Applicable(Rule.AdvancedCombat);
+            bool isAdvancedGame = g.Applicable(Rule.GreySwappingCardOnBid) || g.Applicable(Rule.AdvancedCombat);
 
             return
               @"<div style='{25}'>
@@ -1183,7 +1183,7 @@ namespace Treachery.Client
                 <p>Subsequently, before storms are revealed and as long as your forces occupy it, you may move your {34} up to 3 territories to any non-stronghold territory. You can't move it into or out of a storm. When you move into, from, or through a sector containing {16}, you may immediately collect 2 {16} per force in your stronghold.</p>
                 <p>No other faction may ship forces directly into your {34}, or move it if they take control. Other factions must move or ship forces into the territory it is pointing at (including {26}), and then use one movement to enter.</p>" +
 
-              (advancedApplies ? @"<h5>Advanced Advantages</h5>" : "") +
+              (isAdvancedGame ? @"<h5>Advanced Advantages</h5>" : "") +
 
               (g.Applicable(Rule.GreySwappingCardOnBid) ? @"<p>Once, during the bidding round, before bidding begins on a card and before {0} gets to look at the card, you may take the Treachery Card about to be bid on, replacing it with one from your hand.</p>" : "") +
 
@@ -1201,7 +1201,7 @@ namespace Treachery.Client
 
         private static string GetWhiteTemplate(Game g)
         {
-            bool advancedApplies = g.Applicable(Rule.WhiteBlackMarket) || g.Applicable(Rule.AdvancedCombat);
+            bool isAdvancedGame = g.Applicable(Rule.WhiteBlackMarket) || g.Applicable(Rule.AdvancedCombat);
 
             return
               @"<div style='{25}'>
@@ -1217,7 +1217,7 @@ namespace Treachery.Client
                 <p>When you are in a battle, you must reveal the value of a No-Field token in that territory and place the indicated number of forces from your reserves (or up to that amount if you have fewer forces left). When you are in a Battle with a No-Field token, {0} may not see your force dial.</p>
                 <p><strong>{3} Special Victory Condition:</strong> {35} counts as one of the factions that can not occupy {8} in order to fulfill the {3} Special Victory Condition.</p>" +
 
-              (advancedApplies ?
+              (isAdvancedGame ?
               @"<h5>Advanced Advantages</h5>" : "") +
 
               (g.Applicable(Rule.WhiteBlackMarket) ?
@@ -1236,7 +1236,7 @@ namespace Treachery.Client
 
         private static string GetBrownTemplate(Game g)
         {
-            bool advancedApplies = g.Applicable(Rule.BrownAuditor) || g.Applicable(Rule.AdvancedCombat);
+            bool isAdvancedGame = g.Applicable(Rule.BrownAuditor) || g.Applicable(Rule.AdvancedCombat);
 
             return
               @"<div style='{25}'>
@@ -1255,7 +1255,7 @@ namespace Treachery.Client
                 <p mt-0 mb-0><i>{42}</i> - Force a player to send 1 force back to reserves during Mentat.</p>
                 <p><p>Inflation:</strong> during Mentat, you may play your Inflation token with either the Double or Cancel side face-up. In the following game turn, Charity is either doubled or canceled for that turn (including {5} in the advanced game). While Charity is doubled, no bribes can be made. In the next Mentat the Inflation token is flipped to the other side. If the token has already been flipped it is removed from the game instead.</p>" +
 
-              (advancedApplies ?
+              (isAdvancedGame ?
               @"<h5>Advanced Advantages</h5>" : "") +
 
               (g.Applicable(Rule.AdvancedCombat) ?
