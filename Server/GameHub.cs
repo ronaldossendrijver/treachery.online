@@ -370,22 +370,7 @@ namespace Treachery.Server
         {
             try
             {
-                var statistics = new GameStatistics()
-                {
-                    date = game.History.Last().Time,
-                    method = ToString(game.WinMethod),
-                    players = game.Players.Select(p => new GameStatisticsPlayerInfo()
-                    {
-                        name = p.Name,
-                        faction = ToString(p.Faction),
-                        id = ""
-                    }).ToArray(),
-                    ruleset = ToString(game.Ruleset),
-                    time = RoundToHalves((game.History.Last().Time - game.History.First().Time).TotalHours),
-                    turn = game.CurrentTurn,
-                    winners = game.Winners.Select(p => ToString(p.Faction)).ToArray()
-                };
-
+                var statistics = GameStatistics.GetStatistics(game);
                 var httpClient = new HttpClient();
                 var data = GetStatisticsAsString(statistics);
                 var json = new StringContent(data, Encoding.UTF8, "application/json");
@@ -418,50 +403,6 @@ namespace Treachery.Server
             return stream;
         }
 
-        private static float RoundToHalves(double value)
-        {
-            return (float)Math.Round(value * 2, MidpointRounding.AwayFromZero) / 2;
-        }
-
-        private static string ToString(WinMethod m)
-        {
-            return m switch
-            {
-                WinMethod.Strongholds => "STRONGHOLDS",
-                WinMethod.Prediction => "PREDICTION",
-                WinMethod.Timeout => "TIMEOUT",
-                WinMethod.Forfeit => "FORFEIT",
-                WinMethod.YellowSpecial => "FREMEN_DEFAULT",
-                WinMethod.OrangeSpecial => "GUILD_DEFAULT",
-                _ => "None",
-            };
-        }
-
-        private static string ToString(Faction f)
-        {
-            return f switch
-            {
-                Faction.Yellow => "FREMEN",
-                Faction.Green => "ATREIDES",
-                Faction.Black => "HARKONNEN",
-                Faction.Red => "EMPEROR",
-                Faction.Orange => "GUILD",
-                Faction.Blue => "BG",
-                Faction.Grey => "IX",
-                Faction.Purple => "TLEILAXU",
-                _ => "None",
-            };
-        }
-
-        private static string ToString(Ruleset rules)
-        {
-            return rules switch
-            {
-                Ruleset.AdvancedGame or Ruleset.ExpansionAdvancedGame => "GF9 advanced",
-                Ruleset.BasicGame or Ruleset.ExpansionBasicGame => "GF9 basic",
-                _ => "None",
-            };
-        }
         #endregion Support
     }
 }
