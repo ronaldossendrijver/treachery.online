@@ -90,11 +90,11 @@ namespace Treachery.Shared
                 Rule.YellowSpecialForces,
                 Rule.GreenMessiah,
                 Rule.BlackCapturesOrKillsLeaders,
-                Rule.BlueFirstForceInAnyTerritory,
+                //Rule.BlueFirstForceInAnyTerritory,
                 Rule.BlueAutoCharity,
                 Rule.BlueWorthlessAsKarma,
                 Rule.BlueAdvisors,
-                Rule.BlueAccompaniesToShipmentLocation,
+                //Rule.BlueAccompaniesToShipmentLocation,
                 Rule.OrangeDetermineShipment,
                 Rule.RedSpecialForces,
                 Rule.GreySwappingCardOnBid,
@@ -134,11 +134,11 @@ namespace Treachery.Shared
                 Rule.YellowSpecialForces,
                 Rule.GreenMessiah,
                 Rule.BlackCapturesOrKillsLeaders,
-                Rule.BlueFirstForceInAnyTerritory,
+                //Rule.BlueFirstForceInAnyTerritory,
                 Rule.BlueAutoCharity,
                 Rule.BlueWorthlessAsKarma,
                 Rule.BlueAdvisors,
-                Rule.BlueAccompaniesToShipmentLocation,
+                //Rule.BlueAccompaniesToShipmentLocation,
                 Rule.OrangeDetermineShipment,
                 Rule.RedSpecialForces,
                 Rule.TechTokens,
@@ -164,11 +164,11 @@ namespace Treachery.Shared
                 Rule.YellowSpecialForces,
                 Rule.GreenMessiah,
                 Rule.BlackCapturesOrKillsLeaders,
-                Rule.BlueFirstForceInAnyTerritory,
+                //Rule.BlueFirstForceInAnyTerritory,
                 Rule.BlueAutoCharity,
                 Rule.BlueWorthlessAsKarma,
                 Rule.BlueAdvisors,
-                Rule.BlueAccompaniesToShipmentLocation,
+                //Rule.BlueAccompaniesToShipmentLocation,
                 Rule.OrangeDetermineShipment,
                 Rule.RedSpecialForces,
                 Rule.TechTokens,
@@ -191,11 +191,11 @@ namespace Treachery.Shared
                 Rule.YellowSpecialForces,
                 Rule.GreenMessiah,
                 Rule.BlackCapturesOrKillsLeaders,
-                Rule.BlueFirstForceInAnyTerritory,
+                //Rule.BlueFirstForceInAnyTerritory,
                 Rule.BlueAutoCharity,
                 Rule.BlueWorthlessAsKarma,
                 Rule.BlueAdvisors,
-                Rule.BlueAccompaniesToShipmentLocation,
+                //Rule.BlueAccompaniesToShipmentLocation,
                 Rule.OrangeDetermineShipment,
                 Rule.RedSpecialForces,
                 Rule.LeaderSkills,
@@ -218,11 +218,11 @@ namespace Treachery.Shared
                 Rule.YellowSpecialForces,
                 Rule.GreenMessiah,
                 Rule.BlackCapturesOrKillsLeaders,
-                Rule.BlueFirstForceInAnyTerritory,
+                //Rule.BlueFirstForceInAnyTerritory,
                 Rule.BlueAutoCharity,
                 Rule.BlueWorthlessAsKarma,
                 Rule.BlueAdvisors,
-                Rule.BlueAccompaniesToShipmentLocation,
+                //Rule.BlueAccompaniesToShipmentLocation,
                 Rule.OrangeDetermineShipment,
                 Rule.RedSpecialForces,
                 Rule.OrangeShipmentContributionsFlowBack,
@@ -263,11 +263,11 @@ namespace Treachery.Shared
                 case Rule.YellowSpecialForces:
                 case Rule.GreenMessiah:
                 case Rule.BlackCapturesOrKillsLeaders:
-                case Rule.BlueFirstForceInAnyTerritory:
+                //case Rule.BlueFirstForceInAnyTerritory:
                 case Rule.BlueAutoCharity:
                 case Rule.BlueWorthlessAsKarma:
                 case Rule.BlueAdvisors:
-                case Rule.BlueAccompaniesToShipmentLocation:
+                //case Rule.BlueAccompaniesToShipmentLocation:
                 case Rule.OrangeDetermineShipment:
                 case Rule.RedSpecialForces:
                     return RuleGroup.CoreAdvanced;

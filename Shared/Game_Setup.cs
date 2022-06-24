@@ -571,14 +571,14 @@ namespace Treachery.Shared
                 {
                     Enter(
                         IsPlaying(Faction.Yellow), Phase.YellowSettingUp,
-                        IsPlaying(Faction.Blue) && Applicable(Rule.BlueFirstForceInAnyTerritory), Phase.BlueSettingUp,
+                        IsPlaying(Faction.Blue) && PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(this), Phase.BlueSettingUp,
                         EnterStormPhase);
                 }
                 else
                 {
                     Enter(
                         IsPlaying(Faction.Yellow), Phase.YellowSettingUp,
-                        IsPlaying(Faction.Blue) && Applicable(Rule.BlueFirstForceInAnyTerritory), Phase.BlueSettingUp,
+                        IsPlaying(Faction.Blue) && PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(this), Phase.BlueSettingUp,
                         DealStartingTreacheryCards);
                 }
             }
@@ -664,7 +664,7 @@ namespace Treachery.Shared
                     break;
                 case Faction.Blue:
                     p.Resources = 5;
-                    if (Applicable(Rule.BlueFirstForceInAnyTerritory))
+                    if (PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(this))
                     {
                         p.ForcesInReserve = 20;
                     }
@@ -753,7 +753,7 @@ namespace Treachery.Shared
             }
 
             Log(e);
-            Enter(IsPlaying(Faction.Blue) && Applicable(Rule.BlueFirstForceInAnyTerritory), Phase.BlueSettingUp, TreacheryCardsBeforeTraitors, EnterStormPhase, DealStartingTreacheryCards);
+            Enter(IsPlaying(Faction.Blue) && PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(this), Phase.BlueSettingUp, TreacheryCardsBeforeTraitors, EnterStormPhase, DealStartingTreacheryCards);
         }
 
         public void HandleEvent(PerformBluePlacement e)

@@ -40,12 +40,14 @@ namespace Treachery.Shared
             return null;
         }
 
+        public static bool BlueMayAccompanyToShipmentLocation(Game g) => g.Applicable(Rule.BlueAccompaniesToShipmentLocation) || g.Version >= 144 && g.Applicable(Rule.BlueAdvisors);
+
         public static IEnumerable<Location> ValidTargets(Game g, Player p)
         {
             var result = new List<Location>();
             if (g.LastShippedOrMovedTo != g.Map.PolarSink &&
                 !p.Occupies(g.LastShippedOrMovedTo.Territory) &&
-                g.Applicable(Rule.BlueAccompaniesToShipmentLocation) &&
+                BlueMayAccompanyToShipmentLocation(g) &&
                 !AllyPreventsAccompanyingToShipmentLocation(g, p))
             {
                 result.AddRange(g.LastShippedOrMovedTo.Territory.Locations.Where(l => g.Version <= 142 || (

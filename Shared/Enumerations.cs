@@ -416,11 +416,11 @@ namespace Treachery.Shared
 
         BlackCapturesOrKillsLeaders = 50,
 
-        BlueFirstForceInAnyTerritory = 55,
+        BlueFirstForceInAnyTerritory = 55, //needed for versions < 144
         BlueAutoCharity = 60,
         BlueWorthlessAsKarma = 65,
         BlueAdvisors = 70,
-        BlueAccompaniesToShipmentLocation = 75,
+        BlueAccompaniesToShipmentLocation = 75,  //needed for versions < 144
 
         OrangeDetermineShipment = 80,
 

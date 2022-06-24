@@ -944,6 +944,11 @@ namespace Treachery.Client
                 TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CARD_KULON).SkinId], //40
                 TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CARD_LALALA).SkinId], //41
                 TreacheryCardName_STR[TreacheryCardManager.Lookup.Find(TreacheryCardManager.CARD_TRIPTOGAMONT).SkinId], //42
+                MainPhase_STR[MainPhase.Contemplate], //43
+                PersonName_STR[1036], //44
+                MainPhase_STR[MainPhase.Bidding], //45
+                MainPhase_STR[MainPhase.Battle], //46
+                MainPhase_STR[MainPhase.Charity], //47
             };
 
             return f switch
@@ -968,21 +973,25 @@ namespace Treachery.Client
               @"<div style='{25}'>
                 <p><strong>At start:</strong> 10 tokens in {6} and 10 in reserve (off-planet). Start with 10 {16}.</p>
                 <p><strong>Free revival:</strong> 2.</p>
-                <h5>Basic Advantages</h5>
-                <p>You have limited prescience.</p>
-                <p>During Bidding you see the treachery card on bid.</p>
-                <p>During Shipment & Move you see the top card of the {16} deck.</p>
-                <p>During Battle, you may force your opponent to tell you your choice of one of the four elements he will use in his battle plan against you; the leader, the weapon, the defense or the number dialed. If your opponent tells you that he is not playing a weapon or defense, you may not ask something else.</p>" +
 
-              (g.Applicable(Rule.GreenMessiah) ?
-              @"<h5>Advanced Advantages</h5>
-                <p>After losing a at least 7 forces in battle(s), you may use the {20}. It cannot be used alone in battle but may add its +2 strength to any one leader or {13} per turn. If the leader or {13} is killed, the {20} has no effect in the battle. {20} can only be killed if blown up by a {18}/{17} explosion. A leader accompanied by {20} cannot turn traitor. If killed, the {20} must be revived like any other leader. The {20} has no effect on {0} leader revival.</p>" : "") +
+                <h5>Advantages</h5>
+                You have limited prescience:
+                <ul>
+                <li><strong>{45}</strong> - you see the treachery card on bid.</li>
+                <li><strong>{21}</strong> - you see the top card of the {16} deck.</li>
+                <li><strong>{46}</strong> - you may force your opponent to tell you your choice of one of the four elements he will use in his battle plan against you; the leader, the weapon, the defense or the number dialed. If your opponent tells you that he is not playing a weapon or defense, you may not ask something else.</li>
+                </ul>" +
 
-              (g.Applicable(Rule.AdvancedKarama) ?
-              @"<p><strong>Special {19}:</strong> you may use a {19} card to ask one player's entire battle plan.</p>" : "") +
+              If(g, Rule.GreenMessiah,
+              @"<h5>Advanced Game Advantages</h5>
+                <p>After losing a total of at least 7 forces in battle, you may use the {20}. It cannot be used alone in battle but may add its +2 strength to any one leader or {13} per turn. If the leader or {13} is killed, the {20} has no effect in the battle. {20} can only be killed if blown up by a {18}/{17} explosion. A leader accompanied by {20} cannot turn traitor. If killed, the {20} must be revived like any other leader. The {20} has no effect on {0} leader revival.</p>") +
 
-              @"<h5>Alliance Power</h5>
+              If(g, Rule.AdvancedKarama,
+              @"<p><strong>Special {19}:</strong> you may use a {19} card to ask one player's entire battle plan.</p>") +
+
+              @"<h5>Alliance</h5>
                 <p>You may assist your allies by forcing their opponents to tell them one element of their battle plan.</p>
+
                 <h5>Strategy</h5>
                 <p>You are handicapped by the fact that you must both purchase cards and ship onto the planet, and you have no source of income other than {16}. This will keep you in constant battles. Since you start from {6} you have the movement advantage of 3 from the outset, and it is wise to protect this. Your prescience allows you to avoid being devoured by {15} and helps you to get some slight head start on the {16} blow. In addition, you can gain some slight advantage over those who would do battle with you by your foreknowledge of one element of their battle plan.</p>
                 </div>";
@@ -990,58 +999,70 @@ namespace Treachery.Client
 
         private static string GetBlackTemplate(Game g)
         {
-
             return
               @"<div style='{25}'>
                 <p><strong>At start:</strong> 10 tokens in {7} and 10 tokens in reserve (off-planet). Start with 10 {16}.</p>
                 <p><strong>Free revival:</strong> 2.</p>
-                <h5>Basic Advantages</h5>
-                <p>You excel in treachery.</p>
-                <p>You keep all traitors you draw at the start of the game.</p>
-                <p>You may hold up to 8 treachery cards. At start of game, you are dealt 2 cards instead of 1, and every time you buy a card you get an extra card free from the deck (if you have less than 8 total).</p>" +
 
-             (g.Applicable(Rule.BlackMulligan) ? "<p>At start, when you draw 2 or more of your own leaders as traitors, you may shuffle them back and redraw four traitors.</p>" : "") +
+                <h5>Advantages</h5>
+                You excel in treachery:
+                <ul>
+                <li>You keep all traitors you draw at the start of the game.</li>
+                <li>You may hold up to 8 treachery cards. At start of game, you are dealt 2 cards instead of 1, and every time you buy a card you get an extra card free from the deck (if you have less than 8 total).</li>" +
 
-             (g.Applicable(Rule.BlackCapturesOrKillsLeaders) ?
-              @"<h5>Advanced Advantages</h5>
-                <p>Every time you win a battle you can select randomly one leader from the loser (including the leader used in battle, if not killed, but excluding all leaders already used elsewhere that turn). You can kill that leader for 2 {16}; or use the leader once in a battle after which you must return him (her) to the original owner. If all your own leaders have been killed, all captured leaders are immediately returned to their original owners. Killed captured leaders are put in the 'tanks' from which the original owners can revive them (subject to the revival rules).</p>" : "") +
+             If(g, Rule.BlackMulligan, "<li>At start, when you draw 2 or more of your own leaders as traitors, you may shuffle them back and redraw four traitors.</li>") +
 
-             (g.Applicable(Rule.AdvancedKarama) ?
-              @"<p><strong>Special {19}:</strong> during the Bidding phase, you may use a {19} card to take at random up to all treachery cards of any one player of your choice, as long has your maximum hand size is not exceeded. Then, for each card you took you must give him one of your cards in return.</p>" : "") +
+                "</ul>" +
 
-              @"<h5>Alliance Power</h5>
-                <p>Leaders in your pay may betray your allies opponents, too.</p>
+             If(g, Rule.BlackCapturesOrKillsLeaders,
+              @"<h5>Advanced Game Advantages</h5>
+                <p>Every time you win a battle you can select randomly one leader from the loser (including the leader used in battle, if not killed, but excluding all leaders already used elsewhere that turn). You can kill that leader for 2 {16}; or use the leader once in a battle after which you must return it to the original owner. If all your own leaders have been killed, all captured leaders are immediately returned to their original owners. Killed captured leaders are put in the 'tanks' from which the original owners can revive them (subject to the revival rules).</p>") +
+
+             If(g, Rule.AdvancedKarama,
+              @"<p><strong>Special {19}:</strong> during the Bidding phase, you may use a {19} card to take at random up to all treachery cards of any one player of your choice, as long has your maximum hand size is not exceeded. Then, for each card you took you must give him one of your cards in return.</p>") +
+
+              @"<h5>Alliance</h5>
+                <p>Your traitors may be used against your allies opponents.</p>
+
                 <h5>Strategy</h5>
-                <p>Your major handicap is your difficulty in obtaining {16}. You are at your greatest relative strength at the beginning of the game and should capitalize on this fact by quickly buying as many treachery cards as you can, and then surging into battle. Since you get 2 cards for every one you bid for, you can afford to bid a little higher than most, but if you spend too lavishly at first you will not have enough {16} to ship in tokens or buy more cards at a later date. The large number of cards you may hold will increase your chances of holding worthless cards. To counteract this you should pick your battles, both to unload cards and to flush out the traitors in your pay.</p>
+                <p>Your major handicap is your difficulty in obtaining {16}. You are at your greatest relative strength at the beginning of the game and should capitalize on this fact by quickly buying as many treachery cards as you can, and then surging into battle. Since you get 2 cards for every one you bid for, you can afford to bid a little higher than most, but if you spend too lavishly at first you will not have enough {16} to ship in forces or buy more cards later. The large number of cards you may hold will increase your chances of holding worthless cards. To counteract this you should pick your battles, both to unload cards and to flush out the traitors in your pay.</p>
                 </div>";
         }
 
         private static string GetYellowTemplate(Game g)
         {
-            bool isAdvancedGame = g.Applicable(Rule.YellowSeesStorm) || g.Applicable(Rule.YellowSendingMonster) || g.Applicable(Rule.YellowStormLosses) || g.Applicable(Rule.YellowSpecialForces);
+            bool hasAdvancedAdvantages = g.Applicable(Rule.YellowSeesStorm) || g.Applicable(Rule.YellowSendingMonster) || g.Applicable(Rule.YellowStormLosses) || g.Applicable(Rule.YellowSpecialForces);
 
             return
               @"<div style='{25}'>
                 <p><strong>At start:</strong> 10 tokens distributed as you like on {9}, {10}, and {11}; and 10 tokens in on-planet reserves. Start with 3 {16}.</p>
-                <p><strong>Free revival:</strong> 3 (you cannot buy additional revivals).</p>
-                <h5>Basic Advantages</h5>
-                <p>You are native to this planet and know its ways.</p>
-                <p>You may move two territories instead of one.</p>
-                <p>Instead of shipping like other factions, you may bring any number of forces from your reserves onto any territory within two territories of and including {12} (subject to storm and occupancy rules).</p>
-                <p>If {15} appears in a territory where you have tokens, they are not devoured but, immediately upon conclusion of the following nexus phase, may move from that territory to any one territory (subject to storm and occupancy rules).</p>
-                <p>Special Victory Condition: If no player has won by the end of the last turn and if you (or no one) occupies {9} and {22} and neither {1}, {0}, {2} nor {35} occupies {8}, you have prevented interference with your plans to alter the planet and win the game.</p>
-                <p>If no player has won by the end of the last turn and {4} is not playing, you win the game.</p>" +
-              (isAdvancedGame ? "<h5>Advanced Advantages</h5>" : "") +
-              (g.Applicable(Rule.YellowSeesStorm) ? "<p>You can see the number of sectors the next storm will move.</p>" : "") +
-              (g.Applicable(Rule.YellowSendingMonster) ? "<p>During {16} blow, each time {15} appears after the first time, you choose in which unprotected territory it appears.</p>" : "") +
-              (g.Applicable(Rule.YellowStormLosses) ? "<p>If caught in a storm, only half your forces are killed. You may rally forces into a storm at half loss.</p>" : "") +
-              (g.Applicable(Rule.YellowSpecialForces) ? "<p>Your 3 {23} are worth two normal tokens in battle and in taking losses. They are treated as one token in revival. Only one {23} token can be revived per turn.</p>" : "") +
+                <p><strong>Free revival:</strong> 3.</p>
 
-              (g.Applicable(Rule.AdvancedKarama) ?
-              @"<p><strong>Special {19}:</strong> during {16} blow, you may use a {19} card to cause {15} to appear in any unprotected territory that you wish.</p>" : "") +
+                <h5>Advantages</h5>
+                You are native to this planet and know its ways:
+                <ul>
+                <li>You may move two territories instead of one.</li>
+                <li>Instead of shipping like other factions, you may bring any number of forces from your reserves onto any territory within two territories of and including {12} (subject to storm and occupancy rules).</li>
+                <li>If {15} appears in a territory where you have forces, they are not devoured but, immediately upon conclusion of the following nexus phase, may move from that territory to any one territory (subject to storm and occupancy rules).</li>
+                <li>Special victory condition: if no player has won by the end of the last turn and if you (or no one) occupies {9} and {22} and neither {1}, {0}, {2} nor {35} occupy {8}, you and your ally have prevented interference with your plans to alter the planet and win the game.</li>" +
 
-              @"<h5>Alliance Powers</h5>
-                <p>You may protect your allies from being devoured by {15} and may let them revive 3 forces for free. They win with you if you win with your special victory condition.</p>
+              If(!g.IsPlaying(Faction.Orange) && !g.Applicable(Rule.DisableOrangeSpecialVictory),
+               "<li>Special victory condition: if no player has been able to win the game by the end of play, you prevented control over the planet and you and your ally automatically win the game.</li>") +
+              
+               "</ul>" +
+
+              If(hasAdvancedAdvantages, "<h5>Advanced Game Advantages</h5>") +
+              If(g, Rule.YellowSeesStorm, "<p>You can see the number of sectors the next storm will move.</p>") +
+              If(g, Rule.YellowSendingMonster, "<p>During {16} blow, each time {15} appears after the first time, you choose in which unprotected territory it appears.</p>") +
+              If(g, Rule.YellowStormLosses, "<p>If caught in a storm, only half your forces are killed. You may rally forces into a storm at half loss.</p>") +
+              If(g, Rule.YellowSpecialForces, "<p>Your 3 {23} are worth two normal forces in battle and in taking losses. They are treated as one token in revival. Only one {23} can be revived per turn.</p>") +
+
+              If(g, Rule.AdvancedKarama,
+              @"<p><strong>Special {19}:</strong> during {16} blow, you may use a {19} card to cause {15} to appear in any unprotected territory that you wish.</p>") +
+
+              @"<h5>Alliance</h5>
+                <p>You may protect your allies from being devoured by {15} and may let them revive 3 forces for free.</p>
+
                 <h5>Strategy</h5>
                 <p>Your major handicap is poverty. You won't be available to buy cards early game. You must be patient and move your forces into any vacant strongholds, avoiding battles until you are prepared. In battles you can afford to dial high and sacrifice your troops since they have a high revival rate and you can bring them back into play at no cost. You have better mobility than those without a city, and good fighting leaders. Bide your time and wait for an accessible {16} blow that no one else wants in order to build up your resources.<p>
                 </div>";
@@ -1053,23 +1074,29 @@ namespace Treachery.Client
               @"<div style='{25}'>
                 <p><strong>At start:</strong> 20 tokens in reserve (off-planet). Start with 10 {16}.</p>
                 <p><strong>Free revival:</strong> 1.</p>
-                <h5>Basic Advantages</h5>
-                <p>You have access to great wealth.</p>
-                <p>Whenever any other player pays {16} for a treachery card, he pays it to you instead of to the {16} bank.</p>" +
 
-              (g.Applicable(Rule.RedSupportingNonAllyBids) ? "<p>You may support bids of non-allied players. Any {16} paid this way flows back to you at the end of the bidding phase.</p>" : "") +
+                <h5>Advantages</h5>
+                You have access to great wealth:
+                <ul>
+                <li>Payments for treachery cards go to you.</li>" +
 
-              (g.Applicable(Rule.RedSpecialForces) ?
-              @"<h5>Advanced Advantages</h5>
-                <p>Your 5 {24} have a special fighting capability. They are worth two normal tokens in battle and in taking losses against all opponents except {3}. Your starred tokens are worth just one against {3}. They are treated as one token in revival. Only one starred token can be revived per turn.</p>" : "") +
+              If(g, Rule.RedSupportingNonAllyBids, 
+               "<li>You may support bids of non-allied players. Any {16} paid this way flows back to you at the end of the bidding phase.</li>") +
 
-              (g.Applicable(Rule.AdvancedKarama) ?
-              @"<p><strong>Special {19}:</strong> you may use a {19} card to revive up to three tokens or one leader for free.</p>" : "") +
+               "</ul>" +
 
-              @"<h5>Alliance Powers</h5>
+              If(g, Rule.RedSpecialForces,
+              @"<h5>Advanced Game Advantages</h5>
+                <p>Your 5 {24} have a special fighting capability. They are worth two normal tokens in battle and in taking losses against all opponents except {3}. They are treated as one token in revival. Only one starred token can be revived per turn.</p>") +
+
+              If(g, Rule.AdvancedKarama, 
+              @"<p><strong>Special {19}:</strong> you may use a {19} card to revive up to three tokens or one leader for free.</p>") +
+
+              @"<h5>Alliance</h5>
                 <p>Unlike other factions, you may give {16} to your allies which they receive immediately. Their payment for any treachery card even with your own {16} comes right back to you. In addition, you may pay (directly to the bank) for the revival of up to 3 extra of their forces (for a possible total of 6).</p>
+
                 <h5>Strategy</h5>
-                <p>Your major handicap is that you must ship in all of your tokens at the start of the game, and often this move requires a battle before you are prepared. Even though you do not need to forage for {16} on the surface of the planet often, you still are quite subject to attack since you are likely to concentrate on the cities for the mobility they give you. On the plus side you will never need {16} badly, since the bidding will keep you supplied.</p>
+                <p>Your major handicap is that you must ship in all of your tokens at the start of the game and often this requires a battle before you are prepared. Even though you do not need to forage for {16} on the surface of the planet often, you still are quite subject to attack since you are likely to concentrate on the cities for the mobility they give you. On the plus side you will never need {16} badly, since the bidding will keep you supplied.</p>
                 </div>";
         }
 
@@ -1079,22 +1106,28 @@ namespace Treachery.Client
               @"<div style='{25}'>
                 <p><strong>At start:</strong> 5 tokens in {8} and 15 tokens in reserve (off-planet). Start with 5 {16}.</p>
                 <p><strong>Free revival:</strong> 1.</p>
-                <h5>Basic Advantages</h5>
-                <p>You control all shipments onto the planet.</p>
-                <p>You can make one of three possible types of shipments; you may ship normally from reserves onto the planet; or you may site-to-site ship any number of tokens from any one territory to any other territory on the board; or you may ship any number of tokens from any one territory back to your reserves.</p>
-                <p>You pay only half the fee when shipping. The cost for shipping to your reserves is one {16} for every two tokens shipped.</p>
-                <p>When any other player ships tokens onto the planet from reserves, he pays the {16} to you instead of to the {16} bank.</p>
-                <p>If no player has been able to win the game by the end of play, you prevented control over the planet and you automatically win the game.</p>" +
 
-              (g.Applicable(Rule.OrangeDetermineShipment) ?
-              @"<h5>Advanced Advantages</h5>
-                <p>During Shipment & Move, you decide when you take your turn. You do not have to reveal when you intend to take your turn until the moment you wish to take it.</p>" : "") +
+                <h5>Advantages</h5>
+                You control all shipments onto the planet:
+                <ul>
+                <li>You can make one of three possible types of shipments; you may ship normally from reserves onto the planet; or you may site-to-site ship any number of tokens from any one territory to any other territory on the board; or you may ship any number of tokens from any one territory back to your reserves.</li>
+                <li>You pay only half the fee when shipping. The cost for shipping to your reserves is one {16} for every two tokens shipped.</li>
+                <li>Payments by other players for shipments onto the planet from off-planet reserves go to you.</li>" +
 
-              (g.Applicable(Rule.AdvancedKarama) ?
-              @"<p><strong>Special {19}:</strong> you may use a {19} card to stop one off-planet shipment of any one player. You may do this directly before or after the shipment occurs.</p>" : "") +
+              IfNot(g, Rule.DisableOrangeSpecialVictory,
+               "<li>Special victory condition: if no player has been able to win the game by the end of play, you prevented control over the planet and you and your ally automatically win the game.</li>") +
 
-              @"<h5>Alliance Powers</h5>
-                <p>Allies may also perform site-to-site shipments and may ship at the same fee as you. They win with you if no one else wins. Ally payments for shipments, even with your own {16}, come right back to you.</p>
+               "</ul>" +
+
+              If(g, Rule.OrangeDetermineShipment,
+              @"<h5>Advanced Game Advantages</h5>
+                <p>During Shipment & Move, you decide when you take your turn. You do not have to reveal when you intend to take your turn until the moment you wish to take it.</p>") +
+
+              If(g, Rule.AdvancedKarama, @"<p><strong>Special {19}:</strong> you may use a {19} card to stop one off-planet shipment of any one player. You may do this directly before or after the shipment occurs.</p>") +
+
+              @"<h5>Alliance</h5>
+                <p>Allies may also perform site-to-site shipments and, like you, pay half the fee.</p>
+
                 <h5>Strategy</h5>
                 <p>Your major handicap is your weak array of leaders and your inability to revive quickly. In addition, you usually cannot buy treachery cards at the beginning of the game. You are vulnerable at this point and should make your stronger moves after building up your resources. If players do not ship on at a steady rate you will have to fight for {16} on the planet or collect only the isolated blows. Your major advantage is that you can ship onto the planet inexpensively and can ship from any one territory to any other. This mobility allows you to make surprise moves and is particularly useful when you are the last player in the movement round. If the game is out of reach and well along, try suicide battles against the strongest players to weaken them and prevent a win until the last turn: the victory is then yours.</p>
                 </div>";
@@ -1102,29 +1135,38 @@ namespace Treachery.Client
 
         private static string GetBlueTemplate(Game g)
         {
-            bool isAdvancedGame = g.Applicable(Rule.BlueFirstForceInAnyTerritory) || g.Applicable(Rule.BlueAutoCharity) || g.Applicable(Rule.BlueAdvisors) || g.Applicable(Rule.BlueAccompaniesToShipmentLocation) || g.Applicable(Rule.BlueWorthlessAsKarma);
+            bool hasAdvancedAdvantages = PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(g) || g.Applicable(Rule.BlueAutoCharity) || g.Applicable(Rule.BlueAdvisors) || BlueAccompanies.BlueMayAccompanyToShipmentLocation(g) || g.Applicable(Rule.BlueWorthlessAsKarma);
 
             return
               @"<div style='{25}'>
                 <p><strong>At start:</strong> 1 token in {26} and 19 tokens in reserve (off-planet). Start with 5 {16}.</p>
                 <p><strong>Free revival:</strong> 1.</p>
-                <h5>Basic Advantages</h5>
-                <p>You are adept in the ways of mind control.</p>
-                <p>At start of game you secretly predict which faction will win in which turn (you can't predict the special victory condition of {4} or {3} at the end of play). If that factions wins (alone or as an ally, even your own) when you have predicted, you alone win instead. You can also win normally.</p>
-                <p>Whenever any other player ships, you may ship for free one force to {26}.</p>
-                <p>You may 'voice' your opponent in battle to play or not to play a projectile/poison weapon or defense, a worthless card or a <i>specific</i> special card. If he can't comply with your command, he may do as he wishes.</p>" +
 
-              (isAdvancedGame ? @"<h5>Advanced Advantages</h5>" : "") +
-              (g.Applicable(Rule.BlueFirstForceInAnyTerritory) ? @"<p>You start with one advisor in any territory of your choice.</p>" : "") +
-              (g.Applicable(Rule.BlueAutoCharity) ? @"<p>You automatically receive 2 charity during the Charity Phase.</p>" : "") +
-              (g.Applicable(Rule.BlueAdvisors) ? @"<p>You can peacefully coexist as spiritual advisors with all other players' forces in the same territory. Advisors have no effect on the play of the other players whatsoever as if they are not even on the board. They cannot collect {16}, cannot be involved in combat, cannot prevent opponent control of a stronghold and don't get three territory movement bonus. They are still susceptible to storms, {15} and {18}/{17} explosions.</p>" : "") +
-              (g.Applicable(Rule.BlueAccompaniesToShipmentLocation) ? @"<p>Whenever any other player ships, instead of shipping a force to {26} you may ship an advisor to the same territory. You cannot ship advisors into a territory where you have fighters.</p>" : "") +
-              (g.Applicable(Rule.BlueAdvisors) ? @"<p>You may announce before the {21} phase all territories in which you no longer wish to peacefully coexist. Advisors there are flipped to fighters.</p>" : "") +
-              (g.Applicable(Rule.BlueAdvisors) ? @"<p>When you move forces into an occupied territory or when another player moves tokens into a territory where you have advisors, you must decide whether or not you will stay there as advisors or fighters.</p>" : "") +
-              (g.Applicable(Rule.BlueWorthlessAsKarma) ? @"<p>You may use a worthless card as a {19} card.</p>" : "") +
+                <h5>Advantages</h5>
+                You are adept in the ways of mind control:
+                <ul>
+                <li>At start of game you secretly predict which faction will win in which turn (you can't predict the special victory condition of {4} or {3} at the end of play). If that factions wins (alone or as an ally, even your own) when you have predicted, you alone win instead. You can also win normally.</li>
+                <li>Whenever any other player ships, you may ship for free one force to {26}.</li>
+                <li>You may Voice your opponent in battle to play or not to play a projectile/poison weapon or defense, a worthless card or a <i>specific</i> special card. If he can't comply with your command, he may do as he wishes.</li>
+                </ul>" + 
+
+              If(hasAdvancedAdvantages, "<h5>Advanced Game Advantages</h5>") +
+              If(g, Rule.BlueWorthlessAsKarma, "<p>You may use a worthless card as a {19} card.</p>") +
+              If(g, Rule.BlueAutoCharity, "<p>You automatically receive 2 charity during the {47} Phase.</p>") +
+              If(g, Rule.BlueAdvisors, "You can peacefully coexist as spiritual advisors with opponent forces in the same territory:" +
+              "<ul>" +
+              "<li>Advisors cannot collect {16}, cannot be involved in combat, don't prevent opponent control of a stronghold and don't yield three territory movement bonus. They are still susceptible to storms, {15} and {18}/{17} explosions.</li>") +
+              If(PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(g), "<li>Instead of starting with 1 force in {26} you may start with an advisor in a territory of choice.</li>") +
+              If(BlueAccompanies.BlueMayAccompanyToShipmentLocation(g), "<li>You can ship advisors to a territory where you have advisors and whenever any other player ships, instead of shipping a force to {26}, you may ship an advisor to the same territory.</li>") +
+              If(g, Rule.BlueAdvisors, "<li>You may announce before the {21} phase all territories in which you no longer wish to peacefully coexist. Advisors there are flipped to fighters.</li>") + 
+              If(g, Rule.BlueAdvisors, "<li>When you move forces into an occupied territory where you don't have forces or when another player moves tokens into a territory where you have advisors, you decide to stay there as either advisors or fighters.</li>") + 
+              If(g, Rule.BlueAdvisors, "<li>You cannot have both advisors and fighters in the same territory.</li>") +
+              IfNot(g, Rule.AdvisorsDontConflictWithAlly, "<li>Allied forces may not willingly end up in a territory where you have advisors (and vice versa).</li>") +
+              "</ul>" +
 
               @"<h5>Alliance Power</h5>
-                <p>You may 'voice' an ally's opponent.</p>
+                <p>You may Voice your ally's opponent.</p>
+
                 <h5>Strategy</h5>
                 <p>Your major handicap is your low revival rate. Don't allow large numbers of your tokens to be killed or you may find yourself without sufficient reserves to bring onto the planet. Your strengths are that you have the ability to win by correctly predicting another winner and the secretly working for that player. In addition, you can be quite effective in battles by voicing your opponent and leaving him weaponless or defenseless. You can afford to bide your time while casting subtle innuendoes about which player you have picked to win.<p>
                 </div>";
@@ -1136,30 +1178,35 @@ namespace Treachery.Client
               @"<div style='{25}'>
                 <p><strong>At start:</strong> 20 tokens in reserve (off-planet). Start with 5 {16}.</p>
                 <p><strong>Free revival:</strong> 2.</p>
-                <h5>Basic Advantages</h5>
-                <p>You have superior genetic engineering technology.</p>
-                <p>At the start of the game you are not dealt Traitor Cards. After traitors have been selected, unused traitor cards are shuffled and you get the top 3 cards. These are your Face Dancers. After another faction wins a battle you may reveal their leader to be a Face Dancer, and the following occurs:</p>
-                <ol>
-                <li>The battle still counts as a win for that player (they keep or discard treachery cards, killed forces and leaders are put in the {31}, {16} is collected for any leaders killed, and a Tech Token is claimed).</li>
-                <li>The Face Dancer leader is sent to the {31} if it was not already killed, but you don't collect {16} for it.</li>
-                <li>The remaining amount of forces in the territory go back to their reserves and are replaced by up to the same amount of your forces from your reserves and/or from anywhere on the planet.</li>
-                </ol>
-                <p>Once revealed you do not replace a Face Dancer (Traitor Card) until you have revealed all 3. When that happens, they are shuffled into the Traitor deck and you get 3 new Face Dancers.</p>
-                <p>At end of turn, you may replace an unrevealed Face Dancer with one from the traitor deck (after putting it back and shuffling).</p>
-                <p>You have no revival limits, and your revive at half price (rounded up). Other factions make revival payments to you.</p>
-                <p>You may increase the 3 force revival limit for any other faction to 5. Also, for each faction using free revival or a ghola card, you take 1 {16} from the bank.</p>
-                <p>Upon request by a faction for a specific killed leader, you can set a price for its early revival. This can only be done when this leader cannot be revived according to normal revival rules.</p>
-                <p>Zoal’s value in battle matches the value of the opponent’s leader (0 against a Cheap Hero), and for collecting {16} for his death. His discounted price to revive is 3.</p>" +
 
-              (g.Applicable(Rule.PurpleGholas) ?
-              @"<h5>Advanced Advantages</h5>
-                <p>When you have fewer than five leaders available, you may revive dead leaders of other factions at your discounted rate and add them to your leader pool.</p>" : "") +
+                <h5>Advantages</h5>
+                You have superior genetic engineering technology:
+                <ul>
+                <li>At the start of the game you are not dealt Traitor Cards. After traitors are selected, unused traitor cards are shuffled and you get the top 3 cards. These are your Face Dancers. After a faction has won a battle you may reveal the leader they used to be a Face Dancer, and the following occurs:
+                  <ol>
+                  <li>The battle is fully resolved a normal.</li>
+                  <li>The Face Dancer leader is sent to the {31} if it was not already killed. You don't collect {16} for it.</li>
+                  <li>The remaining amount of forces in the territory go back to their reserves and are replaced by up to the same amount of your forces from your reserves and/or from anywhere on the planet.</li>
+                  </ol>
+                </li>
+                <li>Once revealed you do not replace a Face Dancer (Traitor Card) until you have revealed all 3. When that happens, they are shuffled into the Traitor deck and you get 3 new Face Dancers.</li>
+                <li>During {43}, you may replace an unrevealed Face Dancer with one from the traitor deck (after shuffling it back).</li>
+                <li>You have no revival limits and your revive at half price (rounded up). Payments by other players for revivals go to you.</li>
+                <li>Each time a player uses free revival or a Tleilaxu Ghola card, you get 1 {16} from the bank.</li>
+                <li>You may increase the 3 force revival limit for any other faction to 5.</li>
+                <li>Upon request by a faction for a specific killed leader, you can set a price for its early revival. This can only be done when this leader cannot be revived according to normal revival rules.</li>
+                <li>{44}’s value in battle matches the value of the opponent’s leader (0 for a Cheap Hero), and for collecting {16} when killed. {44} costs 3 to revive.</li>
+                </ul>" +
 
-              (g.Applicable(Rule.AdvancedKarama) ?
-              @"<p><strong>Special {19}:</strong> you may prevent a player from performing a revival (forces and/or leader).</p>" : "") +
+              If(g, Rule.PurpleGholas, 
+              @"<h5>Advanced Game Advantages</h5>
+                <p>When you have fewer than five leaders available, you may revive dead leaders of other factions at your discounted rate and add them to your leader pool.</p>") +
+
+              If(g, Rule.AdvancedKarama, "<p><strong>Special {19}:</strong> you may prevent a player from performing a revival (forces and/or leader).</p>") +
 
               @"<h5>Alliance Power</h5>
                 <p>Your ally may revive at half price (rounded up).</p>
+
                 <h5>Strategy</h5>
                 <p>You are handicapped by having no forces on the planet to start and only a small amount of {16} until you begin receiving {16} for revivals. You will have to bide your time as other factions battle, waiting until you start gaining {16} and giving your Face Dancers a chance to suddenly strike, or get into minor battles early to drive forces to the tanks, and possibly get a Face Dancer reveal. Use your ability to cycle through Face Dancers during the Mentat Pause to position yourself with a potentially more useful Face Dancer.</p>
                 </div>";
@@ -1167,68 +1214,71 @@ namespace Treachery.Client
 
         private static string GetGreyTemplate(Game g)
         {
-            bool isAdvancedGame = g.Applicable(Rule.GreySwappingCardOnBid) || g.Applicable(Rule.AdvancedCombat);
+            bool hasAdvancedAdvantages = g.Applicable(Rule.GreySwappingCardOnBid) || g.Applicable(Rule.AdvancedCombat);
 
             return
               @"<div style='{25}'>
                 <p><strong>At start:</strong> 3 {32} and 3 {33} in the {34}. 10 {32} and 4 {33} in reserve (off-planet). Start with 10 {16}.</p>
                 <p><strong>Free revival:</strong> 1.</p>
-                <h5>Basic Advantages</h5>
-                <p>You are skilled in technology and production.</p>
-                <p>During Setup you see all initially dealt Treachery Cards and choose your starting card from them.</p>
-                <p>Before Bidding, one extra card is drawn and you see them all and put one of those cards on top or on the bottom of the Treachery Card deck. The remaining cards are shuffled for the bidding round.</p>
-                <p>Your 7 {33} forces are each worth 2 normal forces in battle, are able to move 2 territories instead of 1 and can collect 3 {16}. Your {33} forces ship normally, but each costs 3 to revive.</p>
-                <p>Your 13 {32} forces ship normally but are worth ½ in battle. {32} can be used to absorb losses after a battle. After battle losses are calculated, any of your surviving {32} in that territory can be exchanged for {33} you lost in that battle. {32} can control strongholds and collect {16}. {32} move 2 if accompanied by a {33}, or 1 if they are not.</p>
-                <p>After the first storm movement, place your {34} in any non-stronghold territory. This stronghold counts towards the game win and is protected from worms and storms.</p>
-                <p>Subsequently, before storms are revealed and as long as your forces occupy it, you may move your {34} up to 3 territories to any non-stronghold territory. You can't move it into or out of a storm. When you move into, from, or through a sector containing {16}, you may immediately collect 2 {16} per force in your stronghold.</p>
-                <p>No other faction may ship forces directly into your {34}, or move it if they take control. Other factions must move or ship forces into the territory it is pointing at (including {26}), and then use one movement to enter.</p>" +
 
-              (isAdvancedGame ? @"<h5>Advanced Advantages</h5>" : "") +
+                <h5>Advantages</h5>
+                You are skilled in technology and production:
+                <ul>
+                <li>During Setup you see all initially dealt Treachery Cards and choose your starting card from them.</li>
+                <li>Before Bidding, one extra card is drawn and you see them all and put one of those cards on top or on the bottom of the Treachery Card deck. The remaining cards are shuffled for the bidding round.</li>
+                <li>Your 7 {33} forces are each worth 2 normal forces in battle, are able to move 2 territories instead of 1 and can collect 3 {16}. Your {33} forces ship normally, but each costs 3 to revive.</li>
+                <li>Your 13 {32} forces ship normally but are worth ½ in battle. {32} can be used to absorb losses after a battle. After battle losses are calculated, any of your surviving {32} in that territory can be exchanged for {33} you lost in that battle. {32} can control strongholds and collect {16}. {32} move 2 if accompanied by a {33}, or 1 if they are not.</li>
+                <li>After the first storm movement, place your {34} in any non-stronghold territory. This stronghold counts towards the game win and is protected from worms and storms.</li>
+                <li>Subsequently, before storms are revealed and as long as your forces occupy it, you may move your {34} up to 3 territories to any non-stronghold territory. You can't move it into or out of a storm. When you move into, from, or through a sector containing {16}, you may immediately collect 2 {16} per force in your stronghold.</li>
+                <li>No other faction may ship forces directly into your {34}, or move it if they take control. Other factions must move or ship forces into the territory it is pointing at (including {26}), and then use one movement to enter.</li>
+                </ul>" +
 
-              (g.Applicable(Rule.GreySwappingCardOnBid) ? @"<p>Once, during the bidding round, before bidding begins on a card and before {0} gets to look at the card, you may take the Treachery Card about to be bid on, replacing it with one from your hand.</p>" : "") +
+              If(hasAdvancedAdvantages, "<h5>Advanced Game Advantages</h5>") +
 
-              (g.Applicable(Rule.AdvancedCombat) ? @"<p>{32} are always considered half strength for dialing. You can’t increase the effectiveness of {32} in battle by spending {16}.</p>" : "") +
-
-              (g.Applicable(Rule.AdvancedKarama) ?
-              @"<p><strong>Special {19}:</strong> during Shipment and Movement, you may move the {34} 2 territories on your turn as well as make your normal movement.</p>" : "") +
+              If(g, Rule.GreySwappingCardOnBid, "<p>Once, during the Bidding phase, before {0} gets to look and bidding begins, you may take the card about to be bid on and replace it with a card from your hand.</p>") +
+              If(g, Rule.AdvancedCombat, "<p>In Battle, {32} are always considered half strength. You can’t increase the effectiveness of {32} in battle by spending {16}.</p>") +
+              If(g, Rule.AdvancedKarama, "<p><strong>Special {19}:</strong> during Shipment and Movement, you may move the {34} 2 territories on your turn as well as make your normal movement.</p>") +
 
               @"<h5>Alliance Power</h5>
-                <p>After an ally purchases a Treachery Card during bidding, they may immediately discard it and draw the top card from the deck.</p>
+                <p>After your ally purchases a Treachery Card during bidding, they may immediately discard it and draw the top card from the deck.</p>
+
                 <h5>Strategy</h5>
-                <p>You are handicapped by having weaker forces in the halfstrength {32}, which make up the bulk of your forces. You have no regular source of {16} income. However, tactical placement of your {34} can position you to acquire {16} left behind on the planet. You also have an advantage over other factions because you know what Treachery cards are in play and you can mix in or suppress certain cards during the bidding phase.</p>
+                <p>You are handicapped by having weaker forces in the half strength {32}, which make up the bulk of your forces. You have no regular source of {16} income. However, tactical placement of your {34} can position you to acquire {16} left behind on the planet. You also have an advantage over other factions because you know what Treachery cards are in play and you can mix in or suppress certain cards during the bidding phase.</p>
                 </div>";
         }
 
         private static string GetWhiteTemplate(Game g)
         {
-            bool isAdvancedGame = g.Applicable(Rule.WhiteBlackMarket) || g.Applicable(Rule.AdvancedCombat);
+            bool hasAdvancedAdvantages = g.Applicable(Rule.WhiteBlackMarket) || g.Applicable(Rule.AdvancedCombat);
 
             return
               @"<div style='{25}'>
                 <p><strong>At start:</strong> 20 tokens in reserve (off-planet). Start with 5 {16}. You have a separate deck of 10 {35} cards that are not part of your hand.</p>
                 <p><strong>Free revival:</strong> 2.</p>
-                <h5>Basic Advantages</h5>
-                <p>You have alternative technology.</p>
-                <p><strong>Bidding:</strong> when drawing Treachery cards up for bid, one less card is drawn and instead you choose to auction a card from your {35} deck first or last. When it is time to auction that card, you choose and reveal the card and the type of auction (Once Around or Silent). You collect payment on your cards sold to other factions. If you buy any, the {16} goes to the {2} or the {16} Bank normally. Whenever discarded, these cards go to the normal discard pile. They can’t be bought with {19}.</p>
-                <p><i>Once Around Auction:</i> pick clockwise or counter-clockwise. Starting with the faction on one side of you, each player able to bid may pass or bid higher. You bid last and the highest bidder gets the card. If everyone else passes, you may either get the card for free or remove it from the game.</p>
-                <p><i>Silent Auction:</i> all factions able to bid secretly choose an amount to bid. Choices are revealed simultaneously. The faction that bid to most wins the card (ties break according to Storm order). If all factions bid zero {16}, you may either get the card for free or remove it from the game.</p>
-                <p><strong>Shipping:</strong> instead of normal shipping, you may ship one of your No-Field tokens (0, 3 or 5) face-down, paying for one force. Other factions do not know how many of your forces are located there and proceed as if at least one is there. You may reveal a No-Field token at any time before the Battle phase, placing the indicated number of forces from your reserves (or up to that amount if you have fewer forces left). You may move a No-Field token like a force.</p>
-                <p>You may not have two No-Field tokens on the planet at the same time. The last revealed token stays face-up in front of your shield until another one is revealed.</p>
-                <p>When you are in a battle, you must reveal the value of a No-Field token in that territory and place the indicated number of forces from your reserves (or up to that amount if you have fewer forces left). When you are in a Battle with a No-Field token, {0} may not see your force dial.</p>
-                <p><strong>{3} Special Victory Condition:</strong> {35} counts as one of the factions that can not occupy {8} in order to fulfill the {3} Special Victory Condition.</p>" +
 
-              (isAdvancedGame ?
-              @"<h5>Advanced Advantages</h5>" : "") +
+                <h5>Advantages</h5>
+                You have alternative technology:
+                <ul>
+                  <li>
+                  <strong>{45}</strong> - when drawing Treachery cards up for bid, one less card is drawn and instead you choose to auction a card from your {35} cards first or last. When it is time to auction that card, you choose and reveal the card and the type of auction (Once Around or Silent). Payments for your cards by other players go to you. If you buy any, the {16} goes to the {2} or the {16} Bank normally. Whenever discarded, these cards go to the normal discard pile. They can’t be bought with {19}.
+                  <ul>
+                  <li><i>Once Around:</i> pick clockwise or counter-clockwise. Starting with the faction on one side of you, each player able to bid may pass or bid higher. You bid last and the highest bidder gets the card. If everyone else passes, you may either get the card for free or remove it from the game.</li>
+                  <li><i>Silent:</i> all factions able to bid secretly choose an amount to bid. Choices are revealed simultaneously. The faction that bid to most wins the card (ties break according to Storm order). If all factions bid zero {16}, you may either get the card for free or remove it from the game.</li>
+                  </ul>
+                  </li>
+                <li><strong>{21}</strong> - instead of normal shipping, you may ship one of your No-Field tokens (0, 3 or 5) face-down, paying for one force. Other factions do not know how many of your forces are located there and proceed as if at least one is there. You may reveal a No-Field token at any time before the Battle phase, placing the indicated number of forces from your reserves (or up to that amount if you have fewer forces left). You may move a No-Field token like a force.</li>
+                <li>You may not have two No-Field tokens on the planet at the same time. The last revealed token stays face-up in front of your shield until another one is revealed.</li>
+                <li>When you are in a battle, you must reveal the value of a No-Field token in that territory and place the indicated number of forces from your reserves (or up to that amount if you have fewer forces left). When you are in a Battle with a No-Field token, {0} may not see your force dial.</li>
+                </ul>" +
 
-              (g.Applicable(Rule.WhiteBlackMarket) ?
-              @"<p><strong>Black Market:</strong> at the start of the Bidding Round, you may auction one card from your hand. You may tell what you are selling (you may lie) and keep the card face-down ({0} may still look). You may use any type of auction. If no player bids, you keep the card. If it is sold, one fewer card is put up for auction as part of the normal Bidding Round. You collect payments on cards sold to other factions. If you buy any, the {16} goes to the {2} or the {16} Bank normally. They can’t be bought with {19}. If the normal bidding type was used, the regular bidding round resumes wherever it left off.</p>" : "") +
+              If(hasAdvancedAdvantages, "<h5>Advanced Game Advantages</h5>") +
+              If(g, Rule.WhiteBlackMarket, "<p><strong>Black Market:</strong> at the start of the Bidding Round, you may auction one card from your hand. You may tell what you are selling (you may lie) and keep the card face-down ({0} may still look). You may use any type of auction. If no player bids, you keep the card. If it is sold, one fewer card is put up for auction as part of the normal Bidding Round. Payments by other players go to you. Black market cards cannot be bought with {19}. If the normal bidding type was used, the regular bidding round resumes wherever it left off.</p>") +
+              If(g, Rule.AdvancedKarama, "<p><strong>Special {19}:</strong> you may buy a card from your separate cache for 3 {16} at any time.</p>") +
 
-              (g.Applicable(Rule.AdvancedKarama) ?
-              @"<p><strong>Special {19}:</strong> you may buy a card from your separate cache for 3 {16} at any time.</p>" : "") +
-
-              @"<h5>Alliance Powers</h5>
+              @"<h5>Alliance</h5>
                 <p>Your ally may ship using one of your available No-Field tokens, revealing it immediately upon shipping. Place the used No-Field token face-up in front of your shield until you reveal another No-Field token.</p>
                 <p>You may give your ally a {35} Card from your hand at any time.</p>
+
                 <h5>Strategy</h5>
                 <p>You are at a disadvantage by having no forces on the planet, and not much spice to operate. Try to be aware if factions would be inclined to buy one of your special Cards either for their use or to keep it out of the hands of another faction. Selling your cards will be your one regular form of income until you have gained enough spice. Use your No-Field tokens to get forces on the planet cheaply and confuse your opponents.</p>
                 </div>";
@@ -1236,38 +1286,37 @@ namespace Treachery.Client
 
         private static string GetBrownTemplate(Game g)
         {
-            bool isAdvancedGame = g.Applicable(Rule.BrownAuditor) || g.Applicable(Rule.AdvancedCombat);
+            bool hasAdvancedAdvantages = g.Applicable(Rule.BrownAuditor) || g.Applicable(Rule.AdvancedCombat);
 
             return
               @"<div style='{25}'>
                 <p><strong>At start:</strong> 20 tokens in reserve (off-planet). Start with 2 {16}.</p>
                 <p><strong>Free revival:</strong> 0.</p>
-                <h5>Basic Advantages</h5>
-                <p>You control economic affairs across the Imperium.</p>
-                <p><strong>Charity:</strong> each turn, you collect 2 {16} for each faction in the game during Charity before any factions collect. If another faction collects Charity, it is paid to them from your {16}.</p>
-                <p><strong>Revival:</strong> you have no free revival, but you have no limit to the number of forces you may pay to revive and it only costs you 1 for each force.</p>
-                <p><strong>Treachery:</strong> You may hold up to 5 Treachery Cards. At the end of any phase, you may reveal duplicates of the same card from your hand for 3 {16} each. You may also discard {14} cards for 2 {16} each. Alternatively, you may use {14} cards as follows:</p>
-                <p mt-0 mb-0><i>{37}</i> - Prevent a player from moving forces into a territory you occupy during Ship & Move. They may ship in normally.</p>
-                <p mt-0 mb-0><i>{38}</i> - Prevent a loss of your forces in one territory to the Storm when it moves.</p>
-                <p mt-0 mb-0><i>{39}</i> - Prevent a player from playing a {19} card this phase as they attempt to do so.</p>
-                <p mt-0 mb-0><i>{40}</i> - Move your forces one extra territory on your turn during Ship & Move.</p>
-                <p mt-0 mb-0><i>{41}</i> - Prevent a player from taking Free Revival.</p>
-                <p mt-0 mb-0><i>{42}</i> - Force a player to send 1 force back to reserves during Mentat.</p>
-                <p><p>Inflation:</strong> during Mentat, you may play your Inflation token with either the Double or Cancel side face-up. In the following game turn, Charity is either doubled or canceled for that turn (including {5} in the advanced game). While Charity is doubled, no bribes can be made. In the next Mentat the Inflation token is flipped to the other side. If the token has already been flipped it is removed from the game instead.</p>" +
 
-              (isAdvancedGame ?
-              @"<h5>Advanced Advantages</h5>" : "") +
+                <h5>Advantages</h5>
+                You control economic affairs across the Imperium:
+                <ul>
+                <li><strong>Charity</strong> - each turn, you collect 2 {16} for each faction in the game during Charity before any factions collect. If another faction collects Charity, it is paid to them from your {16}.</li>
+                <li><strong>Revival</strong> - you have no free revival, but you have no limit to the number of forces you may pay to revive and it only costs you 1 for each force.</li>
+                <li><strong>Treachery</strong> - You may hold up to 5 Treachery Cards. At the end of any phase, you may reveal duplicates of the same card from your hand for 3 {16} each. You may also discard {14} cards for 2 {16} each. Alternatively, you may use {14} cards as follows:
+                  <ul>
+                  <li><i>{37}</i>: Prevent a player from moving forces into a territory you occupy during {21}. They may ship in normally.</li>
+                  <li><i>{38}</i>: Prevent a loss of your forces in one territory to the Storm when it moves.</li>
+                  <li><i>{39}</i>: Prevent a player from playing a {19} card this phase as they attempt to do so.</li>
+                  <li><i>{40}</i>: Move your forces one extra territory on your turn during {21}.</li>
+                  <li><i>{41}</i>: Prevent a player from taking Free Revival.</li>
+                  <li><i>{42}</i>: Force a player to send 1 force back to reserves during {43}.</li>
+                  </ul>
+                </li>
+                <li><strong>Inflation</strong> - during {43}, you may play your Inflation token with either the Double or Cancel side face-up. In the following game turn, Charity is either doubled or canceled for that turn (including {5} in the advanced game). While Charity is doubled, no bribes can be made. In the next Mentat the Inflation token is flipped to the other side. If the token has already been flipped it is removed from the game instead.</li>
+                </ul>" +
 
-              (g.Applicable(Rule.AdvancedCombat) ?
-              @"<p><strong>Forces:</strong> when other players pay for their forces in battle, half of the {16} (rounded down) goes to you.</p>" : "") +
+              If(hasAdvancedAdvantages, "<h5>Advanced Game Advantages</h5>") +
+              If(g, Rule.AdvancedCombat, "<p><strong>Forces:</strong> when other players pay for their forces in battle, half of the {16} (rounded down) goes to you.</p>") +
+              If(g, Rule.BrownAuditor, "<p><strong>Auditor:</strong> you gain the Auditor Leader and it is added to the Traitor deck at the start of the game. Whenever you use the Auditor as a leader in a battle, you may audit your opponent. You may look at two cards in your opponent's hand at random (not counting cards used in battle) if the Auditor survived, or one card if killed. That faction may pay you 1 {16} per card you would get to see to cancel the audit. The Auditor may be revived as if all of your leaders were in the Tanks. The Auditor can't be revived as a ghola, nor be captured by {1}. The Auditor can't have a Leader Skill.</p>") +
+              If(g, Rule.AdvancedKarama, "<p><strong>Special {19}:</strong> you may discard any Treachery cards from your hand and gain 3 {16} each.</p>") +
 
-              (g.Applicable(Rule.BrownAuditor) ?
-              @"<p><strong>Auditor:</strong> you gain the Auditor Leader and it is added to the Traitor deck at the start of the game. Whenever you use the Auditor as a leader in a battle, you may audit your opponent. You may look at two cards in your opponent's hand at random (not counting cards used in battle) if the Auditor survived, or one card if killed. That faction may pay you 1 {16} per card you would get to see to cancel the audit. The Auditor may be revived as if all of your leaders were in the Tanks. The Auditor can't be revived as a ghola, nor be captured by {1}. The Auditor can't have a Leader Skill.</p>" : "") +
-
-              (g.Applicable(Rule.AdvancedKarama) ?
-              @"<p><strong>Special {19}:</strong> you may discard any Treachery cards from your hand and gain 3 {16} each.</p>" : "") +
-
-              @"<h5>Alliance Powers</h5>
+              @"<h5>Alliance</h5>
                 <p>Once per turn at the end of a phase, you may trade a Treachery Card with your ally. This trade is simultaneous and two-way.</p>
                 <p>You may pay for your ally’s forces in battle.</p>
 
@@ -1275,6 +1324,13 @@ namespace Treachery.Client
                 <p>Your leaders are weak, but you have a steady income. Stockpile Treachery Cards. You start with no forces on the planet and must ship them all in. For this reason, you may want to wait until you can attack with a large force. Use your Inflation token at a key moment, especially at a time when others aren’t collecting Charity.</p>
                 </div>";
         }
+
+        private static string If(Game game, Rule rule, string text) => If(game.Applicable(rule), text);
+
+        private static string IfNot(Game game, Rule rule, string text) => If(!game.Applicable(rule), text);
+
+        private static string If(bool condition, string text) => condition ? text : "";
+                
 
         #endregion FactionManual
 
