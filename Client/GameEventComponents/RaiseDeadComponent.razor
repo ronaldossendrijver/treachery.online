@@ -29,7 +29,7 @@
             amountOfSpecialForces = 0;
         }
 
-        <SelectHeroComponent Game="Game" @bind-Value="hero" Values="Game.KilledHeroes(Player)" Required="false" />
+        <SelectHeroComponent Game="Game" @bind-Value="hero" Values="RaiseDeadPlayed.ValidHeroes(Game, Player)" Required="false" />
 
         @if (hero != null && Revival.MayAssignSkill(Game, Player, hero))
         {

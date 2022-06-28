@@ -50,6 +50,7 @@ namespace Treachery.Shared
             if (Initiator != Faction.Grey && AmountOfSpecialForces > 1) return Message.Express("You can only revive one ", p.SpecialForce, " per turn");
             if (AmountOfSpecialForces > 0 && Initiator != Faction.Grey && Game.FactionsThatRevivedSpecialForcesThisTurn.Contains(Initiator)) return Message.Express("You already revived one ", p.SpecialForce, " this turn");
             if (AmountOfForces + AmountOfSpecialForces > 0 && Hero != null) return Message.Express("You can't revive both forces and a leader");
+            if (Hero != null && !RaiseDeadPlayed.ValidHeroes(Game, p).Contains(Hero)) return Message.Express("Invalid leader");
             return null;
         }
 
@@ -122,5 +123,7 @@ namespace Treachery.Shared
                 return Math.Min(p.ForcesKilled, 5);
             }
         }
+
+        public static IEnumerable<IHero> ValidHeroes(Game game, Player player) => game.KilledHeroes(player);
     }
 }

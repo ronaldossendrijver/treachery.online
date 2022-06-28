@@ -126,7 +126,7 @@ namespace Treachery.Client
 
                 Phase.SelectingFactions => Status("Players may now choose a faction..."),
 
-                Phase.TradingFactions => Status("Players may now offer to trade factions with other players..."),
+                Phase.TradingFactions => Status("Players may now trade factions..."),
 
                 Phase.AssigningInitialSkills or Phase.AssigningSkill => Status(
                     "You may now assign a skill to a leader.",

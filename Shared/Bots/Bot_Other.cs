@@ -335,7 +335,7 @@ namespace Treachery.Shared
                     int nrOfLivingLeaders = Leaders.Count(l => Game.IsAlive(l));
                     int minimumValue = Faction == Faction.Purple && nrOfLivingLeaders > 2 ? 4 : 0;
 
-                    var leaderToRevive = Revival.ValidRevivalHeroes(Game, this).Where(l =>
+                    var leaderToRevive = RaiseDeadPlayed.ValidHeroes(Game, this).Where(l =>
                         SafeOrKnownTraitorLeaders.Contains(l) &&
                         l.Faction != Ally &&
                         l.Value >= minimumValue
@@ -343,7 +343,7 @@ namespace Treachery.Shared
 
                     if (leaderToRevive == null)
                     {
-                        leaderToRevive = Revival.ValidRevivalHeroes(Game, this).Where(l =>
+                        leaderToRevive = RaiseDeadPlayed.ValidHeroes(Game, this).Where(l =>
                             l.Faction != Ally &&
                             l.Value >= minimumValue
                             ).HighestOrDefault(l => l.Value + HeroRevivalPenalty(l));
