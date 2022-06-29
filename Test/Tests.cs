@@ -619,12 +619,12 @@ namespace Treachery.Test
 
                 valueId++;
 
-                if (!gatherStatistics && e is EstablishPlayers && game.Players.Count > 1 && game.Players.Count > 2 * game.Players.Count(p => p.IsBot))
+                if (!gatherStatistics && statistics != null && e is EstablishPlayers && game.Players.Count > 1 && game.Players.Count > 2 * game.Players.Count(p => p.IsBot))
                 {
                     gatherStatistics = true;
                 }
 
-                if (statistics != null && gatherStatistics)
+                if (gatherStatistics)
                 {
                     GatherStatistics(game, ref previousBattleOutcome);
                 }
