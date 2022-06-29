@@ -81,14 +81,11 @@ namespace Treachery.Shared
 
         public static IEnumerable<DealOffered> AcceptableDeals(Game g, Player p)
         {
-            if (g.EconomicsStatus != BrownEconomicsStatus.Double)
-            {
-                return g.DealOffers.Where(offer => offer.Initiator != p.Faction && offer.Initiator != p.Ally && (offer.To.Length == 0 || offer.To.Contains(p.Faction)));
-            }
-            else
-            {
-                return Array.Empty<DealOffered>();
-            }
+            return g.DealOffers.Where(offer => 
+                offer.Initiator != p.Faction && 
+                offer.Initiator != p.Ally && 
+                (offer.To.Length == 0 || offer.To.Contains(p.Faction)) &&
+                (g.EconomicsStatus != BrownEconomicsStatus.Double || offer.Benefit == 0 && offer.Price == 0));
         }
 
         public static IEnumerable<DealOffered> CancellableDeals(Game g, Player p)

@@ -707,22 +707,24 @@ namespace Treachery.Shared
                 def, agg, def.Hero, poisonToothUsed, artilleryUsed, rockMelterUsed && rockMelterUsedToKill, territory,
                 ref result.DefHeroKilled, ref result.DefHeroCauseOfDeath, ref result.DefSavedByCarthag);
 
-            result.AggHeroSkillBonus = Battle.DetermineSkillBonus(this, agg, ref result.AggActivatedBonusSkill);
-            result.AggHeroEffectiveStrength = (agg.Hero != null && !artilleryUsed) ? agg.Hero.ValueInCombatAgainst(def.Hero) : 0;
-            int aggHeroContribution = !result.AggHeroKilled && !rockMelterUsed ? result.AggHeroEffectiveStrength + result.AggHeroSkillBonus : 0;
+            bool heroStrengthCountsToTotal = !artilleryUsed && !(Version >= 145 && rockMelterUsed && !rockMelterUsedToKill);
 
-            result.DefHeroSkillBonus = Battle.DetermineSkillBonus(this, def, ref result.DefActivatedBonusSkill);
-            result.DefHeroEffectiveStrength = (def.Hero != null && !artilleryUsed) ? def.Hero.ValueInCombatAgainst(agg.Hero) : 0;
-            int defHeroContribution = !result.DefHeroKilled && !rockMelterUsed ? result.DefHeroEffectiveStrength + result.DefHeroSkillBonus : 0;
+            result.AggHeroEffectiveStrength = agg.Hero != null && heroStrengthCountsToTotal ? agg.Hero.ValueInCombatAgainst(def.Hero) : 0;
+            result.DefHeroEffectiveStrength = def.Hero != null && heroStrengthCountsToTotal ? def.Hero.ValueInCombatAgainst(agg.Hero) : 0;
 
-            int aggSkillPenalty = Battle.DetermineSkillPenalty(this, def, result.Aggressor, ref result.DefActivatedPenaltySkill);
-            result.AggBattlePenalty = !result.DefHeroKilled && !rockMelterUsed ? aggSkillPenalty : 0;
+            if (heroStrengthCountsToTotal)
+            {
+                result.AggHeroSkillBonus = Battle.DetermineSkillBonus(this, agg, ref result.AggActivatedBonusSkill);
+                result.AggBattlePenalty = !result.DefHeroKilled ? Battle.DetermineSkillPenalty(this, def, result.Aggressor, ref result.DefActivatedPenaltySkill) : 0;
+                result.AggMessiahContribution = result.Aggressor.Is(Faction.Green) && agg.Messiah && agg.Hero != null && !result.AggHeroKilled && !artilleryUsed ? 2 : 0;
 
-            int defSkillPenalty = Battle.DetermineSkillPenalty(this, agg, result.Defender, ref result.AggActivatedPenaltySkill);
-            result.DefBattlePenalty = !result.AggHeroKilled && !rockMelterUsed ? defSkillPenalty : 0;
+                result.DefHeroSkillBonus = Battle.DetermineSkillBonus(this, def, ref result.DefActivatedBonusSkill);
+                result.DefBattlePenalty = !result.AggHeroKilled ? Battle.DetermineSkillPenalty(this, agg, result.Defender, ref result.AggActivatedPenaltySkill) : 0;
+                result.DefMessiahContribution = result.Defender.Is(Faction.Green) && def.Messiah && def.Hero != null && !result.DefHeroKilled && !artilleryUsed ? 2 : 0;
+            }
 
-            result.AggMessiahContribution = result.Aggressor.Is(Faction.Green) && agg.Messiah && agg.Hero != null && !result.AggHeroKilled && !artilleryUsed ? 2 : 0;
-            result.DefMessiahContribution = result.Defender.Is(Faction.Green) && def.Messiah && def.Hero != null && !result.DefHeroKilled && !artilleryUsed ? 2 : 0;
+            int aggHeroContribution = result.AggHeroKilled || (Version < 145 && rockMelterUsed)? 0 : result.AggHeroEffectiveStrength + result.AggHeroSkillBonus + result.AggMessiahContribution - result.AggBattlePenalty;
+            int defHeroContribution = result.DefHeroKilled || (Version < 145 && rockMelterUsed)? 0 : result.DefHeroEffectiveStrength + result.DefHeroSkillBonus + result.DefMessiahContribution - result.DefBattlePenalty;
 
             float aggForceDial;
             float defForceDial;
@@ -738,8 +740,8 @@ namespace Treachery.Shared
                 defForceDial = result.Defender.AnyForcesIn(CurrentBattle.Territory) - def.TotalForces;
             }
 
-            result.AggTotal = aggForceDial + aggHeroContribution + result.AggMessiahContribution - result.AggBattlePenalty;
-            result.DefTotal = defForceDial + defHeroContribution + result.DefMessiahContribution - result.DefBattlePenalty;
+            result.AggTotal = aggForceDial + aggHeroContribution ;
+            result.DefTotal = defForceDial + defHeroContribution ;
 
             agg.DeactivateDynamicWeapons();
             def.DeactivateDynamicWeapons();
