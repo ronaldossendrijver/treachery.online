@@ -667,7 +667,7 @@ namespace Treachery.Test
                     {
                         statistics.GameWinningPlayers.Count(DetermineName(p));
                         var fnt = new FactionAndTurn() { Faction = p.Faction, Turn = game.CurrentTurn };
-                        statistics.GameWinningFactions.Count(fnt);
+                        statistics.GameWinningFactionsInTurns.Count(fnt);
                     }
                 }
                 else if (latest is BattleInitiated)

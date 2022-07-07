@@ -14,7 +14,7 @@ namespace Treachery.Test
         public ObjectCounter<string> GamePlayingPlayers { get; } = new();
         public ObjectCounter<string> GameWinningPlayers { get; } = new();
         public ObjectCounter<Faction> GamePlayingFactions { get; } = new();
-        public ObjectCounter<FactionAndTurn> GameWinningFactions { get; } = new();
+        public ObjectCounter<FactionAndTurn> GameWinningFactionsInTurns { get; } = new();
         public ObjectCounter<WinMethod> GameWinningMethods { get; } = new();
         public List<TimeSpan> GameTimes { get; } = new();
         public ObjectCounter<int> GameNumberOfTurns { get; } = new();
@@ -41,6 +41,36 @@ namespace Treachery.Test
         public ObjectCounter<FactionAdvantage> Karamas { get; } = new();
         public ObjectCounter<string> AcceptedDeals { get; } = new();
 
+        public ObjectCounter<Faction> GameWinningFactions
+        {
+            get
+            {
+                var result = new ObjectCounter<Faction>();
+
+                foreach (var fit in GameWinningFactionsInTurns.Counted)
+                {
+                    result.CountN(fit.Faction, GameWinningFactionsInTurns.CountOf(fit));
+                }
+
+                return result;
+            }
+        }
+
+        public ObjectCounter<int> GameWinningTurns
+        {
+            get
+            {
+                var result = new ObjectCounter<int>();
+
+                foreach (var fit in GameWinningFactionsInTurns.Counted)
+                {
+                    result.CountN(fit.Turn, GameWinningFactionsInTurns.CountOf(fit));
+                }
+
+                return result;
+            }
+        }
+
         public void Output(IDescriber describer)
         {
             Console.WriteLine("PlayedGames:" + PlayedGames);
@@ -52,26 +82,17 @@ namespace Treachery.Test
             OutputCounter("GameNumberOfTurns", GameNumberOfTurns, describer);
             OutputCounter("GameWinningMethods", GameWinningMethods, describer);
 
-            OutputCounter("GamePlayingPlayers", GamePlayingPlayers, describer, 100);
-            OutputCounter("GameWinningPlayers", GameWinningPlayers, describer, 100);
+            OutputCounterGrouped("Players",
+                GamePlayingPlayers.Counted,
+                new ObjectCounter<string>[] { GamePlayingPlayers, GameWinningPlayers },
+                new string[] { "Played", "Won" },
+                describer);
 
-            OutputCounter("GamePlayingFactions", GamePlayingFactions, describer);
-            OutputCounter("GameWinningFactions", GameWinningFactions, describer);
-            OutputCounter("BattlingFactions", BattlingFactions, describer);
-            OutputCounter("BattleWinningFactions", BattleWinningFactions, describer);
-            OutputCounter("BattleLosingFactions", BattleLosingFactions, describer);
-            OutputCounter("FactionsOccupyingArrakeen", FactionsOccupyingArrakeen, describer);
-            OutputCounter("FactionsOccupyingCarthag", FactionsOccupyingCarthag, describer);
-            OutputCounter("FactionsOccupyingSietchTabr", FactionsOccupyingSietchTabr, describer);
-            OutputCounter("FactionsOccupyingHabbanyaSietch", FactionsOccupyingHabbanyaSietch, describer);
-            OutputCounter("FactionsOccupyingTueksSietch", FactionsOccupyingTueksSietch, describer);
-            OutputCounter("FactionsOccupyingHMS", FactionsOccupyingHMS, describer);
-
-            OutputCounter("BattleWinningLeaders", BattleWinningLeaders, describer);
-            OutputCounter("BattleLosingLeaders", BattleLosingLeaders, describer);
-            OutputCounter("BattleKilledLeaders", BattleKilledLeaders, describer);
-            OutputCounter("TraitoredLeaders", TraitoredLeaders, describer);
-            OutputCounter("FacedancedLeaders", FacedancedLeaders, describer);
+            OutputCounterGrouped("Factions",
+                BattleWinningLeaders.Counted.Union(BattleLosingLeaders.Counted),
+                new ObjectCounter<string>[] { BattleWinningLeaders, BattleLosingLeaders, BattleKilledLeaders, TraitoredLeaders, FacedancedLeaders },
+                new string[] { "Won", "Lost", "Killed", "Traitor", "Facedancer" },
+                describer);
 
             OutputCounter("UsedWeapons", UsedWeapons, describer);
             OutputCounter("UsedDefenses", UsedDefenses, describer);
@@ -88,6 +109,34 @@ namespace Treachery.Test
             foreach (var i in coll)
             {
                 Console.WriteLine(describer.Format("{0};{1}", i, c.CountOf(i)));
+            }
+        }
+
+        private static void OutputCounterGrouped<T>(string title, IEnumerable<T> groupedBy, IEnumerable<ObjectCounter<T>> counters, IEnumerable<string> counterLabels, IDescriber describer)
+        {
+            if (counters.Count() != counterLabels.Count()) throw new ArgumentException("Number of counters does not equal number of counter labels");
+
+            //Header
+            Console.WriteLine("***" + title + "***");
+
+            Console.Write(typeof(T).Name);
+            foreach (var label in counterLabels)
+            {
+                Console.Write(";{0}", label);
+            }
+            Console.WriteLine();
+
+            //Body
+
+            foreach (var group in groupedBy)
+            {
+                Console.Write(describer.Describe(group));
+                foreach (var counter in counters)
+                {
+                    Console.Write(describer.Format(";{0}", counter.CountOf(group)));
+                }
+
+                Console.WriteLine();
             }
         }
 
