@@ -716,11 +716,11 @@ namespace Treachery.Shared
             {
                 result.AggHeroSkillBonus = Battle.DetermineSkillBonus(this, agg, ref result.AggActivatedBonusSkill);
                 result.AggBattlePenalty = !result.DefHeroKilled ? Battle.DetermineSkillPenalty(this, def, result.Aggressor, ref result.DefActivatedPenaltySkill) : 0;
-                result.AggMessiahContribution = result.Aggressor.Is(Faction.Green) && agg.Messiah && agg.Hero != null && !result.AggHeroKilled && !artilleryUsed ? 2 : 0;
+                result.AggMessiahContribution = agg.Messiah && agg.Hero != null ? 2 : 0;
 
                 result.DefHeroSkillBonus = Battle.DetermineSkillBonus(this, def, ref result.DefActivatedBonusSkill);
                 result.DefBattlePenalty = !result.AggHeroKilled ? Battle.DetermineSkillPenalty(this, agg, result.Defender, ref result.AggActivatedPenaltySkill) : 0;
-                result.DefMessiahContribution = result.Defender.Is(Faction.Green) && def.Messiah && def.Hero != null && !result.DefHeroKilled && !artilleryUsed ? 2 : 0;
+                result.DefMessiahContribution = def.Messiah && def.Hero != null ? 2 : 0;
             }
 
             int aggHeroContribution = result.AggHeroKilled || (Version < 145 && rockMelterUsed)? 0 : result.AggHeroEffectiveStrength + result.AggHeroSkillBonus + result.AggMessiahContribution - result.AggBattlePenalty;
@@ -851,7 +851,7 @@ namespace Treachery.Shared
             if (plan.BankerBonus > 0)
             {
                 p.Resources -= plan.BankerBonus;
-                Log(p.Faction, " paid ", Payment(plan.BankerBonus), " for as ", LeaderSkill.Banker);
+                Log(p.Faction, " paid ", Payment(plan.BankerBonus), " as ", LeaderSkill.Banker);
             }
         }
 

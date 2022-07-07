@@ -49,30 +49,32 @@ namespace Treachery.Test
 
             OutputCounter("GameTypes", GameTypes, describer);
             OutputCounter("GamePlayerSetup", GamePlayerSetup, describer);
+            OutputCounter("GameNumberOfTurns", GameNumberOfTurns, describer);
+            OutputCounter("GameWinningMethods", GameWinningMethods, describer);
+
             OutputCounter("GamePlayingPlayers", GamePlayingPlayers, describer, 100);
             OutputCounter("GameWinningPlayers", GameWinningPlayers, describer, 100);
+
             OutputCounter("GamePlayingFactions", GamePlayingFactions, describer);
             OutputCounter("GameWinningFactions", GameWinningFactions, describer);
-            OutputCounter("GameWinningMethods", GameWinningMethods, describer);
-            OutputCounter("GameNumberOfTurns", GameNumberOfTurns, describer);
-
             OutputCounter("BattlingFactions", BattlingFactions, describer);
             OutputCounter("BattleWinningFactions", BattleWinningFactions, describer);
             OutputCounter("BattleLosingFactions", BattleLosingFactions, describer);
-            OutputCounter("BattleWinningLeaders", BattleWinningLeaders, describer);
-            OutputCounter("BattleLosingLeaders", BattleLosingLeaders, describer);
-            OutputCounter("BattleKilledLeaders", BattleKilledLeaders, describer);
-            OutputCounter("TraitoredLeaders", TraitoredLeaders, describer);
-            OutputCounter("FacedancedLeaders", FacedancedLeaders, describer);
-            OutputCounter("UsedWeapons", UsedWeapons, describer);
-            OutputCounter("UsedDefenses", UsedDefenses, describer);
-
             OutputCounter("FactionsOccupyingArrakeen", FactionsOccupyingArrakeen, describer);
             OutputCounter("FactionsOccupyingCarthag", FactionsOccupyingCarthag, describer);
             OutputCounter("FactionsOccupyingSietchTabr", FactionsOccupyingSietchTabr, describer);
             OutputCounter("FactionsOccupyingHabbanyaSietch", FactionsOccupyingHabbanyaSietch, describer);
             OutputCounter("FactionsOccupyingTueksSietch", FactionsOccupyingTueksSietch, describer);
             OutputCounter("FactionsOccupyingHMS", FactionsOccupyingHMS, describer);
+
+            OutputCounter("BattleWinningLeaders", BattleWinningLeaders, describer);
+            OutputCounter("BattleLosingLeaders", BattleLosingLeaders, describer);
+            OutputCounter("BattleKilledLeaders", BattleKilledLeaders, describer);
+            OutputCounter("TraitoredLeaders", TraitoredLeaders, describer);
+            OutputCounter("FacedancedLeaders", FacedancedLeaders, describer);
+
+            OutputCounter("UsedWeapons", UsedWeapons, describer);
+            OutputCounter("UsedDefenses", UsedDefenses, describer);
 
             OutputCounter("Truthtrances", Truthtrances, describer, 50);
             OutputCounter("Karamas", Karamas, describer);

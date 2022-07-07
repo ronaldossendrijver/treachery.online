@@ -11,7 +11,7 @@
     <Header>Select forces and/or leaders to revive</Header>
     <Body>
 
-        @if (Player.Faction != Faction.Purple && Game.IsPlaying(Faction.Purple))
+        @if (Player.Faction != Faction.Purple && Game.IsPlaying(Faction.Purple) && Game.KilledHeroes(Player).Any())
         {
             <div class="text-info small mb-1">Note: you can only revive once during your turn. If you want to request early leader revival from @Skin.Current.Describe(Faction.Purple), you need to do that first. Then, after you agree on a price, select the leader to revive from the drop down below.</div>
         }
