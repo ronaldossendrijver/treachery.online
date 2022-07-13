@@ -89,6 +89,12 @@ namespace Treachery.Test
                 describer);
 
             OutputCounterGrouped("Factions",
+                GamePlayingFactions.Counted,
+                new ObjectCounter<Faction>[] { GameWinningFactions, BattlingFactions, BattleWinningFactions, BattleLosingFactions, FactionsOccupyingArrakeen, FactionsOccupyingCarthag, FactionsOccupyingSietchTabr, FactionsOccupyingHabbanyaSietch, FactionsOccupyingTueksSietch, FactionsOccupyingHMS },
+                new string[] { "Won", "Battles", "Won", "Lost", "Arrakeen", "Carthag", "Tabr", "Habbanya", "Tuek's", "HMS" },
+                describer);
+
+            OutputCounterGrouped("Leaders",
                 BattleWinningLeaders.Counted.Union(BattleLosingLeaders.Counted),
                 new ObjectCounter<string>[] { BattleWinningLeaders, BattleLosingLeaders, BattleKilledLeaders, TraitoredLeaders, FacedancedLeaders },
                 new string[] { "Won", "Lost", "Killed", "Traitor", "Facedancer" },
