@@ -11,7 +11,7 @@
     <Header>@Skin.Current.Describe(Game.LatestClairvoyance.Initiator) questions you with @Skin.Current.Describe(TreacheryCardType.Clairvoyance)!</Header>
     <Body>
 
-        <div class="font-italic bg-dark">@Game.LatestClairvoyance.GetQuestion()</div>
+        <div class="font-italic bg-dark">@Game.LatestClairvoyance.GetQuestion().ToString(Skin.Current)</div>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError=@Validation Pass="Pass" PassText="No" Other="Other" OtherText="I can't answer that..." />
 

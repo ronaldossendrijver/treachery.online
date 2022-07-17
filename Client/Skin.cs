@@ -1943,9 +1943,9 @@ namespace Treachery.Client
                 [11] = new Point(309, 393), //Cielago North (East Sector)
                 [17] = new Point(290, 539), //Cielago South (West Sector)
                 [33] = new Point(362, 272), //The Minor Erg (Far North Sector)
-                [38] = new Point(510, 292), //Red Chasm
+                [38] = new Point(509, 292), //Red Chasm
                 [40] = new Point(491, 401), //South Mesa (Middle Sector)
-                [45] = new Point(443, 144), //Sihaya Ridge
+                [45] = new Point(442, 144), //Sihaya Ridge
                 [50] = new Point(335, 86), //OH Gap (Middle Sector)
                 [53] = new Point(196, 99), //Broken Land (West Sector)
                 [60] = new Point(94, 176), //Rock Outcroppings (South Sector)

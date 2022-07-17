@@ -149,7 +149,6 @@ namespace Treachery.Shared
                 AnyForcesIn(kvp.Key) == 0 &&
                 TotalMaxDialOfOpponents(kvp.Key.Territory) <= Param.Shipment_MaxEnemyForceStrengthFightingForSpice &&
                 AllyNotIn(kvp.Key.Territory) &&
-                !StormWillProbablyHit(kvp.Key) &&
                 !NearbyBattalionsOutsideStrongholds(kvp.Key).Any()
                 ).HighestOrDefault(kvp => kvp.Value).Key;
 
