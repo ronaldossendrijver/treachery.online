@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
 
 namespace Treachery.Shared
 {
@@ -133,7 +134,36 @@ namespace Treachery.Shared
                 }
                 else
                 {
+                    switch (Question)
+                    {
+                        case ClairvoyanceQuestion.CardTypeInBattle:
+                        case ClairvoyanceQuestion.CardTypeAsDefenseInBattle:
+                        case ClairvoyanceQuestion.CardTypeAsWeaponInBattle:
+                        case ClairvoyanceQuestion.HasCardTypeInHand:
+                            QuestionParameter1 = value.ToString();
+                            break;
+
+                        case ClairvoyanceQuestion.LeaderAsFacedancer:
+                        case ClairvoyanceQuestion.LeaderAsTraitor:
+                        case ClairvoyanceQuestion.LeaderInBattle:
+                            QuestionParameter1 = (value as IHero).Id.ToString();
+                            break;
+
+                        case ClairvoyanceQuestion.Prediction:
+                            QuestionParameter1 = value.ToString();
+                            break;
+
+                        case ClairvoyanceQuestion.WillAttackX:
+                            QuestionParameter1 = (value as Territory).Id.ToString();
+                            break;
+
+                        case ClairvoyanceQuestion.DialOfMoreThanXInBattle:
+                            QuestionParameter1 = ((float)value).ToString(CultureInfo.InvariantCulture);
+                            break;
+                    }
+
                     QuestionParameter1 = value.ToString();
+
                 }
             }
         }

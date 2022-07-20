@@ -235,7 +235,7 @@ namespace Treachery.Shared
         public void HandleEvent(RockWasMelted e)
         {
             Log(e);
-            Discard(e.Player, TreacheryCardType.Rockmelter);
+            if (Version < 146) Discard(e.Player, TreacheryCardType.Rockmelter);
             CurrentRockWasMelted = e;
             Enter(Phase.CallTraitorOrPass);
         }
@@ -429,9 +429,14 @@ namespace Treachery.Shared
                 Discard(plan.Defense);
             }
 
-            if (CurrentPortableAntidoteUsed != null)
+            if (CurrentPortableAntidoteUsed != null && CurrentPortableAntidoteUsed.Player == plan.Player)
             {
                 Discard(CurrentPortableAntidoteUsed.Player.Card(TreacheryCardType.PortableAntidote));
+            }
+
+            if (Version >= 146 && CurrentRockWasMelted != null && CurrentRockWasMelted.Player == plan.Player)
+            {
+                Discard(CurrentRockWasMelted.Player.Card(TreacheryCardType.PortableAntidote));
             }
         }
 

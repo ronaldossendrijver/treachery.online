@@ -256,7 +256,9 @@ namespace Treachery.Shared
                 LogInfo("DetermineShipment_UnlockMoveBonus()");
 
                 var target = ValidShipmentLocations
-                    .Where(l => l == Game.Map.Arrakeen || l == Game.Map.Carthag)
+                    .Where(l => 
+                        l == Game.Map.Arrakeen && AllyNotIn(Game.Map.Arrakeen) || 
+                        l == Game.Map.Carthag && AllyNotIn(Game.Map.Carthag))
                     .LowestOrDefault(l => TotalMaxDialOfOpponents(l.Territory));
 
                 if (target != null)
