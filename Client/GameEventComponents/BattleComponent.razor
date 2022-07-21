@@ -109,34 +109,34 @@
                 specialForces = 0;
             }
 
-                @if (Battle.MustPayForForcesInBattle(Game, Player))
+            @if (forces + specialForces > 0 && Battle.MustPayForForcesInBattle(Game, Player))
+            {
+                int maxResources = Battle.MaxResources(Game, Player, forces, specialForces);
+                int maxAllyResources = Battle.MaxAllyResources(Game, Player, forces, specialForces);
+                int maxTotalResources = maxResources + maxAllyResources;
+
+                <SelectResourcesComponent @bind-Value="resources" Min="0" Max=@maxTotalResources Title=@Skin.Current.Format("{0} used to support your forces", Concept.Resource)/> <span>&nbsp;</span>
+
+                @if (Player.Ally == Faction.Brown && maxAllyResources > 0)
                 {
-                    int maxResources = Battle.MaxResources(Game, Player, forces, specialForces);
-                    int maxAllyResources = Battle.MaxAllyResources(Game, Player, forces, specialForces);
-                    int maxTotalResources = maxResources + maxAllyResources;
-
-                    <SelectResourcesComponent @bind-Value="resources" Min="0" Max=@maxTotalResources Title=@Skin.Current.Format("{0} used to support your forces", Concept.Resource)/> <span>&nbsp;</span>
-
-                    @if (Player.Ally == Faction.Brown && maxAllyResources > 0)
-                    {
-                        <SelectResourcesFromFactionComponent @bind-Value="resourcesFromAlly" Min="0" Max=@maxAllyResources Faction="Player.Ally" Title=@Skin.Current.Format("{0} paid by your ally", Concept.Resource)/>
-                    }
-                    else
-                    {
-                        resourcesFromAlly = 0;
-                    }
+                    <SelectResourcesFromFactionComponent @bind-Value="resourcesFromAlly" Min="0" Max=@maxAllyResources Faction="Player.Ally" Title=@Skin.Current.Format("{0} paid by your ally", Concept.Resource)/>
                 }
                 else
                 {
-                    resources = 0;
                     resourcesFromAlly = 0;
                 }
+            }
+            else
+            {
+                resources = 0;
+                resourcesFromAlly = 0;
+            }
 
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white" class="bi bi-arrow-right" viewBox="0 0 16 16" style="vertical-align: super">
-                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
-                </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white" class="bi bi-arrow-right" viewBox="0 0 16 16" style="vertical-align: super">
+                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+            </svg>
 
-                <NumberComponent Value="ConfirmedResult.Dial(Game, Game.CurrentBattle.OpponentOf(Faction).Faction)" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
+            <NumberComponent Value="ConfirmedResult.Dial(Game, Game.CurrentBattle.OpponentOf(Faction).Faction)" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
 
         </div>
 

@@ -473,18 +473,20 @@ namespace Treachery.Shared
 
         protected DistransUsed DetermineDistransUsed()
         {
-            var worstCard = DistransUsed.ValidCards(this).LowestOrDefault(c => CardQuality(c));
-            if (worstCard != null && CardQuality(worstCard) <= 1)
+            if (Game.CurrentPhase == Phase.WaitingForNextBiddingRound)
             {
-                var target = DistransUsed.ValidTargets(Game, this)
-                    .Where(f => f != Ally && (!Game.Applicable(Rule.BlueWorthlessAsKarma) || f != Faction.Blue))
-                    .Select(f => Game.GetPlayer(f))
-                    .HighestOrDefault(p => Game.NumberOfVictoryPoints(p, true));
-
-                if (target != null)
+                var worstCard = DistransUsed.ValidCards(this).LowestOrDefault(c => CardQuality(c));
+                if (worstCard != null && CardQuality(worstCard) <= 1)
                 {
+                    var target = DistransUsed.ValidTargets(Game, this)
+                        .Where(f => f != Ally && (!Game.Applicable(Rule.BlueWorthlessAsKarma) || f != Faction.Blue))
+                        .Select(f => Game.GetPlayer(f))
+                        .HighestOrDefault(p => Game.NumberOfVictoryPoints(p, true));
 
-                    return new DistransUsed(Game) { Initiator = Faction, Card = worstCard, Target = target.Faction };
+                    if (target != null)
+                    {
+                        return new DistransUsed(Game) { Initiator = Faction, Card = worstCard, Target = target.Faction };
+                    }
                 }
             }
 

@@ -109,7 +109,7 @@ namespace Treachery.Shared
 
             var opponent = GetOpponentThatOccupies(Game.Map.HiddenMobileStronghold.Territory);
 
-            if (opponent != null && ValidShipmentLocations.Contains(Game.Map.HiddenMobileStronghold))
+            if (opponent != null && ValidShipmentLocations.Contains(Game.Map.HiddenMobileStronghold) && IDontHaveAdvisorsIn(Game.Map.HiddenMobileStronghold))
             {
                 var attack = ConstructAttack(Game.Map.HiddenMobileStronghold, extraForces, minResourcesToKeep, maxUnsupportedForces);
                 if (attack.HasForces)
@@ -318,12 +318,12 @@ namespace Treachery.Shared
 
             if (Game.IsPlaying(Faction.Yellow) && Game.YellowVictoryConditionMet)
             {
-                if (ValidShipmentLocations.Where(l => AllyNotIn(l.Territory)).Contains(Game.Map.HabbanyaSietch))
+                if (ValidShipmentLocations.Where(l => AllyNotIn(l.Territory) && IDontHaveAdvisorsIn(l)).Contains(Game.Map.HabbanyaSietch))
                 {
                     DetermineShortageForShipment(99, true, Game.Map.HabbanyaSietch, Faction.Black, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, 0, 99, true);
                     DoShipment(ShipmentDecision.PreventFremenWin, nrOfForces, nrOfSpecialForces, noFieldValue, Game.Map.HabbanyaSietch, true, true);
                 }
-                else if (ValidShipmentLocations.Where(l => AllyNotIn(l.Territory)).Contains(Game.Map.SietchTabr))
+                else if (ValidShipmentLocations.Where(l => AllyNotIn(l.Territory) && IDontHaveAdvisorsIn(l)).Contains(Game.Map.SietchTabr))
                 {
                     DetermineShortageForShipment(99, true, Game.Map.SietchTabr, Faction.Black, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, 0, 99, true);
                     DoShipment(ShipmentDecision.PreventFremenWin, nrOfForces, nrOfSpecialForces, noFieldValue, Game.Map.SietchTabr, true, true);
@@ -370,7 +370,7 @@ namespace Treachery.Shared
             LogInfo("DetermineShipment_AttackWeakStronghold()");
 
             var possibleAttacks = ValidShipmentLocations
-                .Where(l => l.Territory.IsStronghold && AnyForcesIn(l) == 0 && AllyNotIn(l.Territory) && !StormWillProbablyHit(l) && !InStorm(l))
+                .Where(l => l.Territory.IsStronghold && AnyForcesIn(l) == 0 && AllyNotIn(l.Territory) && !StormWillProbablyHit(l) && !InStorm(l) && IDontHaveAdvisorsIn(l))
                 .Select(l => ConstructAttack(l, extraForces, minResourcesToKeep, maxUnsupportedForces))
                 .Where(s => s.HasOpponent && !WinWasPredictedByMeThisTurn(s.Opponent.Faction));
 

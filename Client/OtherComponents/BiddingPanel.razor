@@ -43,7 +43,7 @@
 
                 @if (!h.IsObserver && h.Player.Faction != Faction.None)
                 {
-                    <CheckboxComponent @bind-Value="@h.Autopass">Auto-pass</CheckboxComponent>
+                    <CheckboxComponent @bind-Value="@h.Autopass" OnChanged="AutoPassChanged">Auto-pass</CheckboxComponent>
                     @if (h.Autopass)
                     {
                         <SelectResourcesComponent @bind-Value="@h.BidAutoPassThreshold" Min="0" Max="50" Label="When above:" />
@@ -161,6 +161,15 @@
     }
 
     private string BidLabel => "Bid " + (amount + allyContributionAmount + redContributionAmount);
+
+    private void AutoPassChanged(bool value)
+    {
+        if (value && h.BidAutoPassThreshold > Player.Resources)
+        {
+            h.BidAutoPassThreshold = Math.Min(Player.Resources, 5);
+            StateHasChanged();
+        }
+    }
 
     protected override async Task OnParametersSetAsync()
     {
