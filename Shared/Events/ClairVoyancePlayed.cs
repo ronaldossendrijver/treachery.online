@@ -120,7 +120,7 @@ namespace Treachery.Shared
                         return Game.Map.TerritoryLookup.Find(int.Parse(QuestionParameter1));
 
                     case ClairvoyanceQuestion.DialOfMoreThanXInBattle:
-                        return float.Parse(QuestionParameter1);
+                        return float.Parse(QuestionParameter1, CultureInfo.InvariantCulture);
                 }
 
                 return null;
@@ -136,34 +136,14 @@ namespace Treachery.Shared
                 {
                     switch (Question)
                     {
-                        case ClairvoyanceQuestion.CardTypeInBattle:
-                        case ClairvoyanceQuestion.CardTypeAsDefenseInBattle:
-                        case ClairvoyanceQuestion.CardTypeAsWeaponInBattle:
-                        case ClairvoyanceQuestion.HasCardTypeInHand:
-                            QuestionParameter1 = value.ToString();
-                            break;
-
-                        case ClairvoyanceQuestion.LeaderAsFacedancer:
-                        case ClairvoyanceQuestion.LeaderAsTraitor:
-                        case ClairvoyanceQuestion.LeaderInBattle:
-                            QuestionParameter1 = (value as IHero).Id.ToString();
-                            break;
-
-                        case ClairvoyanceQuestion.Prediction:
-                            QuestionParameter1 = value.ToString();
-                            break;
-
-                        case ClairvoyanceQuestion.WillAttackX:
-                            QuestionParameter1 = (value as Territory).Id.ToString();
-                            break;
-
                         case ClairvoyanceQuestion.DialOfMoreThanXInBattle:
                             QuestionParameter1 = ((float)value).ToString(CultureInfo.InvariantCulture);
                             break;
+
+                        default:
+                            QuestionParameter1 = value.ToString();
+                            break;
                     }
-
-                    QuestionParameter1 = value.ToString();
-
                 }
             }
         }
