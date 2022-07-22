@@ -53,7 +53,7 @@
 
     protected override AcceptOrCancelPurpleRevival OtherResult => new AcceptOrCancelPurpleRevival(Game) { Initiator = Faction, Cancel = false, Hero = offerHero, Price = int.MaxValue };
 
-    private IEnumerable<IHero> CurrentRevivalOfferValues => Game.AllowedEarlyRevivals.Select(kvp => kvp.Key);
+    private IEnumerable<IHero> CurrentRevivalOfferValues => Game.EarlyRevivalsOffers.Select(kvp => kvp.Key);
 
     private string OfferLabel => Skin.Current.Format("Offer {0} for {1}", offerHero, price); 
 

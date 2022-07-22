@@ -26,7 +26,7 @@ namespace Treachery.Shared
             RecentMoves.Clear();
             BeginningOfShipmentAndMovePhase = true;
             FactionsWithIncreasedRevivalLimits = new Faction[] { };
-            AllowedEarlyRevivals.Clear();
+            EarlyRevivalsOffers.Clear();
 
             ShipsTechTokenIncome = false;
             CurrentFreeRevivalPrevention = null;

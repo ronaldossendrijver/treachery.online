@@ -143,9 +143,9 @@ namespace Treachery.Shared
                     PrepareSkillAssignmentToRevivedLeader(r.Player, r.Hero as Leader);
                 }
 
-                if (AllowedEarlyRevivals.ContainsKey(r.Hero))
+                if (EarlyRevivalsOffers.ContainsKey(r.Hero))
                 {
-                    AllowedEarlyRevivals.Remove(r.Hero);
+                    EarlyRevivalsOffers.Remove(r.Hero);
                 }
             }
 
@@ -328,19 +328,19 @@ namespace Treachery.Shared
             CurrentRevivalRequests.Add(e);
         }
 
-        public Dictionary<IHero, int> AllowedEarlyRevivals { get; private set; } = new Dictionary<IHero, int>();
+        public Dictionary<IHero, int> EarlyRevivalsOffers { get; private set; } = new Dictionary<IHero, int>();
         public void HandleEvent(AcceptOrCancelPurpleRevival e)
         {
             Log(e);
 
-            if (AllowedEarlyRevivals.ContainsKey(e.Hero))
+            if (EarlyRevivalsOffers.ContainsKey(e.Hero))
             {
-                AllowedEarlyRevivals.Remove(e.Hero);
+                EarlyRevivalsOffers.Remove(e.Hero);
             }
 
             if (!e.Cancel)
             {
-                AllowedEarlyRevivals.Add(e.Hero, e.Price);
+                EarlyRevivalsOffers.Add(e.Hero, e.Price);
             }
 
             var requestToRemove = CurrentRevivalRequests.FirstOrDefault(r => r.Hero == e.Hero);
@@ -349,6 +349,9 @@ namespace Treachery.Shared
                 CurrentRevivalRequests.Remove(requestToRemove);
             }
         }
+
+        public bool IsAllowedEarlyRevival(IHero h) => EarlyRevivalsOffers.ContainsKey(h) && EarlyRevivalsOffers[h] < int.MaxValue;
+
 
         private bool FreeRevivalPrevented(Faction f)
         {

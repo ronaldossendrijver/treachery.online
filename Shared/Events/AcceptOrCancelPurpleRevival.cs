@@ -27,6 +27,9 @@ namespace Treachery.Shared
             }
         }
 
+        [JsonIgnore]
+        private bool IsDenial => Price == int.MaxValue;
+
         public AcceptOrCancelPurpleRevival(Game g) : base(g) { }
 
         public AcceptOrCancelPurpleRevival()
@@ -47,7 +50,7 @@ namespace Treachery.Shared
         {
             if (!Cancel)
             {
-                if (Price == int.MaxValue)
+                if (IsDenial)
                 {
                     return Message.Express(Initiator, " deny ", Hero.Faction, " early revival of a leader");
                 }

@@ -310,7 +310,7 @@ namespace Treachery.Test
             Parallel.For(0, nrOfGames, po,
                 i =>
                 {
-                    var game = LetBotsPlay(rules, factions, nrOfPlayers, nrOfTurns, p, false, false);
+                    var game = LetBotsPlay(rules, factions, nrOfPlayers, nrOfTurns, p, false, false, null);
                     var playerToCheck = game.Players.Single(p => p.Faction == f);
                     if (game.Winners.Contains(playerToCheck)) countWins++;
                     countSpice += playerToCheck.Resources;
@@ -327,12 +327,14 @@ namespace Treachery.Test
         [TestMethod]
         public void TestBots()
         {
+            var statistics = new Statistics();
+
             Message.DefaultDescriber = Skin.Current;
 
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 500;
+            int nrOfGames = 100;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
@@ -355,18 +357,23 @@ namespace Treachery.Test
             Parallel.For(0, nrOfGames, po,
                    index =>
                    {
-                       PlayGameAndRecordResults(factions, nrOfPlayers, nrOfTurns, rulesAsArray, wincounter);
+                       PlayGameAndRecordResults(factions, nrOfPlayers, nrOfTurns, rulesAsArray, wincounter, statistics);
                    });
 
             foreach (var f in wincounter.Counted.OrderByDescending(f => wincounter.CountOf(f)))
             {
                 Console.WriteLine(Skin.Current.Format("{0}: {1} ({2}%)", f, wincounter.CountOf(f), (100f * wincounter.CountOf(f) / nrOfGames)));
             }
+
+            if (statistics != null)
+            {
+                statistics.Output(Skin.Current);
+            }
         }
 
-        private void PlayGameAndRecordResults(List<Faction> factions, int nrOfPlayers, int nrOfTurns, Rule[] rulesAsArray, ObjectCounter<Faction> wincounter)
+        private void PlayGameAndRecordResults(List<Faction> factions, int nrOfPlayers, int nrOfTurns, Rule[] rulesAsArray, ObjectCounter<Faction> wincounter, Statistics statistics)
         {
-            var game = LetBotsPlay(rulesAsArray, factions, nrOfPlayers, nrOfTurns, null, false, true);
+            var game = LetBotsPlay(rulesAsArray, factions, nrOfPlayers, nrOfTurns, null, false, true, statistics);
 
             Console.WriteLine("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
                 string.Join(",", game.Winners.Select(p => DetermineName(p))),
@@ -387,8 +394,10 @@ namespace Treachery.Test
 
         private readonly List<TimedTest> timedTests = new();
         private readonly List<Game> failedGames = new();
-        private Game LetBotsPlay(Rule[] rules, List<Faction> factions, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool infoLogging, bool performTests)
+        private Game LetBotsPlay(Rule[] rules, List<Faction> factions, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool infoLogging, bool performTests, Statistics statistics)
         {
+            BattleOutcome previousBattleOutcome = null;
+
             var game = new Game(false)
             {
                 BotInfologging = infoLogging,
@@ -448,6 +457,8 @@ namespace Treachery.Test
 
                         SaveSpecialCases(game, evt);
                     }
+
+                    GatherStatistics(statistics, game, ref previousBattleOutcome);
                 }
             }
             catch
@@ -536,11 +547,11 @@ namespace Treachery.Test
             if (performTests) Assert.IsNull(executeResult);
         }
 
-        private readonly Statistics statistics = new();
-
         [TestMethod]
         public void Regression()
         {
+            var statistics = new Statistics();
+
             Message.DefaultDescriber = Skin.Current;
 
             ProfileGames();
@@ -558,7 +569,7 @@ namespace Treachery.Test
                 Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), po, f =>
                 {
                     gamesTested++;
-                    ReplayGame(f);
+                    ReplayGame(f, statistics);
                 });
 
                 Assert.AreNotEqual(0, gamesTested);
@@ -575,7 +586,7 @@ namespace Treachery.Test
             }
         }
 
-        private void ReplayGame(string fileData)
+        private void ReplayGame(string fileData, Statistics statistics)
         {
             var fs = File.OpenText(fileData);
             var state = GameState.Load(fs.ReadToEnd());
@@ -626,12 +637,12 @@ namespace Treachery.Test
 
                 if (gatherStatistics)
                 {
-                    GatherStatistics(game, ref previousBattleOutcome);
+                    GatherStatistics(statistics, game, ref previousBattleOutcome);
                 }
             }
         }
 
-        private void GatherStatistics(Game game, ref BattleOutcome previousBattleOutcome)
+        private void GatherStatistics(Statistics statistics, Game game, ref BattleOutcome previousBattleOutcome)
         {
             lock (statistics)
             {
@@ -733,72 +744,6 @@ namespace Treachery.Test
         {
             return p.IsBot ? Skin.Current.Format("{0}Bot", p.Faction) : p.Name.Replace(';', ':');
         }
-
-        /*
-
-        [TestMethod]
-        public void Statistics()
-        {
-            try
-            {
-
-                var wonbattles = new ObjectCounter<string>();
-                var lostbattles = new ObjectCounter<string>();
-                var leaderInBattle = new ObjectCounter<string>();
-                var leaderCalledAsTraitor = new ObjectCounter<string>();
-
-                int gamesTested = 0;
-                ParallelOptions po = new ParallelOptions();
-                po.MaxDegreeOfParallelism = Environment.ProcessorCount;
-                Parallel.ForEach(Directory.EnumerateFiles(".", "savegame*.json"), po, f =>
-                {
-                    gamesTested++;
-                    var fs = File.OpenText(f);
-                    var state = GameState.Load(fs.ReadToEnd());
-                    var game = new Game(state.Version, false);
-
-                    fs = File.OpenText(f + ".testcase");
-                    var tc = LoadObject<Testcase>(fs.ReadToEnd());
-
-                    foreach (var e in state.Events)
-                    {
-                        e.Game = game;
-                        var result = e.Execute(true, true);
-
-                        if (e is BattleConcluded bc)
-                        {
-                            var winner = game.CurrentBattle.PlanOf(bc.Initiator).Hero;
-                            var loser = game.CurrentBattle.PlanOfOpponent(bc.Player).Hero;
-                            wonbattles.Count("" + winner);
-                            lostbattles.Count("" + loser);
-                        }
-
-                        if (e is TreacheryCalled trc && trc.TraitorCalled)
-                        {
-                            var traitor = game.CurrentBattle.PlanOfOpponent(trc.Player).Hero;
-                            leaderCalledAsTraitor.Count("" + traitor);
-                        }
-
-                    }
-                });
-
-                //Statistics
-
-                Console.WriteLine("Leader;Won Battles;Lost Battles;Called as traitor");
-                foreach (var c in lostbattles.Counted)
-                {
-                    Console.WriteLine("{0};{1};{2};{3}", c, wonbattles.CountOf(c), lostbattles.CountOf(c), leaderCalledAsTraitor.CountOf(c));
-                }
-
-                //End Statistics
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                throw;
-            }
-        }
-        */
 
         private static Testvalues DetermineTestvalues(Game game)
         {

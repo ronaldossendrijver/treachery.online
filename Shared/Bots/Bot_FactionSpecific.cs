@@ -843,7 +843,7 @@ namespace Treachery.Shared
 
         protected virtual RequestPurpleRevival DetermineRequestPurpleRevival()
         {
-            if (Game.CurrentRevivalRequests.Any(r => r.Initiator == Faction) || Game.AllowedEarlyRevivals.Keys.Any(h => h.Faction == Faction)) return null;
+            if (Game.CurrentRevivalRequests.Any(r => r.Initiator == Faction) || Game.EarlyRevivalsOffers.Keys.Any(h => h.Faction == Faction)) return null;
 
             if (turnWhenRevivalWasRequested == Game.CurrentTurn) return null;
 

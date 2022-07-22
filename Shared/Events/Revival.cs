@@ -115,7 +115,7 @@ namespace Treachery.Shared
 
             if (result.Count == 0)
             {
-                return g.KilledHeroes(p).Where(h => g.AllowedEarlyRevivals.ContainsKey(h));
+                return g.KilledHeroes(p).Where(h => g.IsAllowedEarlyRevival(h));
             }
 
             int livingLeaders = p.Leaders.Count(l => g.LeaderState[l].Alive);
@@ -240,9 +240,9 @@ namespace Treachery.Shared
                     price = (int)Math.Ceiling(0.5 * price);
                 }
 
-                if (!NormallyRevivableHeroes(g, initiator).Contains(hero) && g.AllowedEarlyRevivals.ContainsKey(hero))
+                if (!NormallyRevivableHeroes(g, initiator).Contains(hero) && g.EarlyRevivalsOffers.ContainsKey(hero))
                 {
-                    price = g.AllowedEarlyRevivals[hero];
+                    price = g.EarlyRevivalsOffers[hero];
                 }
             }
             else
@@ -251,9 +251,9 @@ namespace Treachery.Shared
                 {
                     price = (int)Math.Ceiling(0.5 * price);
                 }
-                else if (!NormallyRevivableHeroes(g, initiator).Contains(hero) && g.AllowedEarlyRevivals.ContainsKey(hero))
+                else if (!NormallyRevivableHeroes(g, initiator).Contains(hero) && g.EarlyRevivalsOffers.ContainsKey(hero))
                 {
-                    price = g.AllowedEarlyRevivals[hero];
+                    price = g.EarlyRevivalsOffers[hero];
                 }
             }
 
