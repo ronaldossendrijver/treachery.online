@@ -130,13 +130,6 @@ a, .btn-link {
     position: relative;
 }
 
-canvas {
-    position: relative;
-    z-index: 2;
-    background-color: transparent;
-    cursor: pointer;
-}
-
 #mapimg {
     position: absolute;
     z-index: 1;
@@ -167,7 +160,6 @@ canvas {
 }
 
 .card {
-    cursor: pointer;
     font-family: Candara, sans-serif;
 }
 

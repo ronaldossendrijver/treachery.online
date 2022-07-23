@@ -17,8 +17,8 @@
 @foreach (var valueAndLabel in Values.Zip(LabelsForValues, (v, l) => new { Value = v, Label = l }))
 {
     <div class="form-check mb-0">
-        <input class="form-check-input" type="radio" name="@Id" id="@Id" value="@GetValueAsString(valueAndLabel.Value)" @onchange="OnChange" checked="@(valueAndLabel.Value.Equals(Value))">
-        <label class="form-check-label" for="@Id">@valueAndLabel.Label</label>
+        <input class="form-check-input" style="cursor:pointer" type="radio" name="@Id" id="@Id" value="@GetValueAsString(valueAndLabel.Value)" @onchange="OnChange" checked="@(valueAndLabel.Value.Equals(Value))">
+        <label class="form-check-label" style="cursor:pointer" for="@Id">@valueAndLabel.Label</label>
     </div>
 }
 

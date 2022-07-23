@@ -24,13 +24,13 @@
         <img src="@BehindNumberSRC" style="position: absolute; left: @BehindNumberImageOffsetX; top:@BehindNumberImageOffsetY; width: @BehindNumberImageSize;" />
     }
 
-    <span @onclick="e => Click(e)" style="position: absolute; left: @NumberBoxOffsetX; top:@NumberBoxOffsetY; width: @NumberBoxSize; font-size: @NumberFontSize; font-weight: bold; color: @NumberColor; line-height: 1.0; text-align:center; white-space:nowrap;">@Value</span>
+    <span @onclick="e => Click(e)" style="cursor: pointer; position: absolute; left: @NumberBoxOffsetX; top:@NumberBoxOffsetY; width: @NumberBoxSize; font-size: @NumberFontSize; font-weight: bold; color: @NumberColor; line-height: 1.0; text-align:center; white-space:nowrap;">@Value</span>
 
     <svg 
          @onclick="e => Increase()" 
          @onmouseover="e => MouseOver(true)"
          @onmouseout="e => MouseOut(true)"
-         xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" height="@ArrowSize" fill="@IncreaseArrowColor" viewBox="0 0 16 16" style="position: absolute; left: @ArrowOffsetX; top: 3px; width: @ArrowSize; filter: @UpStyle; pointer-events: bounding-box;">
+         xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" height="@ArrowSize" fill="@IncreaseArrowColor" viewBox="0 0 16 16" style="position: absolute; left: @ArrowOffsetX; top: 3px; width: @ArrowSize; filter: @UpStyle; pointer-events: bounding-box; cursor:pointer;">
          <path fill-rule="evenodd" d="M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z" />
     </svg>
 
@@ -38,7 +38,7 @@
          @onclick="e => Decrease()" 
          @onmouseover="e => MouseOver(false)"
          @onmouseout="e => MouseOut(false)"
-         xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" height="@ArrowSize" fill="@DecreaseArrowColor" viewBox="0 0 16 16" style="position: absolute; left: @ArrowOffsetX; bottom: 3px; width: @ArrowSize; filter: @DownStyle; pointer-events: bounding-box;">
+         xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" height="@ArrowSize" fill="@DecreaseArrowColor" viewBox="0 0 16 16" style="position: absolute; left: @ArrowOffsetX; bottom: 3px; width: @ArrowSize; filter: @DownStyle; pointer-events: bounding-box; cursor:pointer;">
         <path transform="rotate(180,8,8)" fill-rule="evenodd" d="M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z" />
     </svg>
 

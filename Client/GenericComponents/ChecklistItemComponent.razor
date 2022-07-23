@@ -8,8 +8,8 @@
 @typeparam T
 
 <div class="form-check">
-    <input class="form-check-input" id="@Id" type="checkbox" disabled="@Disabled" checked="@Values.Contains(Value)" @onchange="eventArgs => { CheckboxClicked(Value, eventArgs.Value); }" />
-    <label class="form-check-label" for="@Id">@Skin.Current.Describe(Value) @ChildContent</label>
+    <input class="form-check-input" style="cursor:pointer" id="@Id" type="checkbox" disabled="@Disabled" checked="@Values.Contains(Value)" @onchange="eventArgs => { CheckboxClicked(Value, eventArgs.Value); }" />
+    <label class="form-check-label" style="cursor:pointer" for="@Id">@Skin.Current.Describe(Value) @ChildContent</label>
 </div>
 
 @code {

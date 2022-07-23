@@ -11,7 +11,7 @@
     <div @ref=@modalElement class="row row-cols-3 row-cols-md-6 m-0">
 
         <div class="card p-1 m-0 border-0">
-            <div class="card-img-top" @onclick="e => Click(default(T))" style="@DetermineFilter(default(T))">
+            <div class="card-img-top" @onclick="e => Click(default(T))" style="@DetermineFilter(default(T));cursor:pointer;">
                 @if (Placeholder != null)
                 {
                     @Placeholder
@@ -35,7 +35,7 @@
                         @onclick="e => Click(item.Value)"
                         @onmouseover="e => MouseOver(item.Value)"
                         @onmouseout="e => MouseOut(item.Value)"
-                        style="@DetermineFilter(item.Value)"
+                        style="@DetermineFilter(item.Value);cursor:pointer;"
                         class="img-fluid pe-1"
                         data-bs-animation="true" data-bs-content=@item.Popup data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-toggle="popover"
                         />
