@@ -80,18 +80,16 @@
 
             try {
 
-                return {
-                    Width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
-                    Height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
-                };
+                determinedWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+                determinedHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
             }
             catch (error) {
 
-                return {
-                    Width: 800,
-                    Height: 600
-                };
+                determinedWidth = 800;
+                determinedHeight = 600;
             }
+
+            return { Width: determinedWidth, Height: determinedHeight };
         }
 
         function RemoveFocusFromButtons() {
