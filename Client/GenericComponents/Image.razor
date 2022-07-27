@@ -10,15 +10,15 @@
 
     if (popover != null && popover.Length > 0)
     {
-        <img @ref=@element class=@Class style="@Shadow @Style" width=@ImgWidth src=@Src data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@popover/>
+        <img class=@Class style="@Shadow; @Style; @Filter" width=@ImgWidth src=@Src @onclick="e => Click()" @onmouseover="e => MouseOver()" @onmouseout="e => MouseOut()" @ref=@element data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@popover/>
     }
     else if (Shown != null)
     {
-        <img class=@Class style="@Shadow @Style" width=@ImgWidth src=@Src title=@Skin.Current.Describe(Shown)/>
+        <img class=@Class style="@Shadow; @Style; @Filter" width=@ImgWidth src=@Src @onclick="e => Click()" @onmouseover="e => MouseOver()" @onmouseout="e => MouseOut()" title=@Skin.Current.Describe(Shown)/>
     }
     else
     {
-        <img class=@Class style="@Shadow @Style" width=@ImgWidth src=@Src/>
+        <img class=@Class style="@Shadow; @Style; @Filter" width=@ImgWidth src=@Src @onclick="e => Click()" @onmouseover="e => MouseOver()" @onmouseout="e => MouseOut()"/>
     }
 }
 
@@ -80,6 +80,9 @@
     [Parameter]
     public string Style { get; set; } = "";
 
+    [Parameter]
+    public string Filter { get; set; } = "";
+
     private string _popover;
     private bool _popoverNeedsRefresh = false;
 
@@ -115,6 +118,21 @@
 
     [Parameter]
     public bool ShowPopover { get; set; } = true;
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    private async Task Click() => await OnClick.InvokeAsync();
+
+    [Parameter]
+    public EventCallback OnMouseOver { get; set; }
+
+    private async Task MouseOver() => await OnMouseOver.InvokeAsync();
+
+    [Parameter]
+    public EventCallback OnMouseOut { get; set; }
+
+    private async Task MouseOut() => await OnMouseOut.InvokeAsync();
 
     private ElementReference element;
     private string ImgWidth;

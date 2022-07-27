@@ -3,7 +3,6 @@
 --->
 
 @using System.Collections.Generic;
-@implements IDisposable
 @typeparam T
 
 @if (Label != null)
@@ -11,7 +10,7 @@
     <label class="d-block mt-1 mb-0">@Label</label>
 }
 
-<div @ref=@element>
+<div>
 
     @foreach (var item in Values.Zip(ImageURLs, (v, i) => new { Value = v, Image = i }).Zip(PopupHTMLs, (v, h) => new { Value = v.Value, Image = v.Image, Popup = h }))
     {
@@ -28,14 +27,15 @@
         }
         else
         {
-            <img src="@item.Image"
-                 @onclick="e => Click(item.Value)"
-                 @onmouseover="e => MouseOver(item.Value)"
-                 @onmouseout="e => MouseOut(item.Value)"
-                 style="@DetermineFilter(item.Value);cursor:pointer;"
-                 class="img-fluid pe-1" 
-                 width=@ImageWidth 
-                 data-bs-animation="true" data-bs-content=@item.Popup data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-toggle="popover"/>
+            <Image 
+                 Src="@item.Image"
+                 OnClick="e => Click(item.Value)"
+                 OnMouseOver="e => MouseOver(item.Value)"
+                 OnMouseOut="e => MouseOut(item.Value)"
+                 Filter=@DetermineFilter(item.Value)
+                 Style="cursor:pointer;padding-right:4px"
+                 Width=@ImageWidth 
+                 Popover=@item.Popup/>
         }
     }
 
@@ -110,47 +110,14 @@
         var nrOfValues = Values.Count();
         if (ImageURLs == null || ImageURLs.Count() != nrOfValues) ImageURLs = new string[nrOfValues];
         if (PopupHTMLs == null || PopupHTMLs.Count() != nrOfValues) PopupHTMLs = new string[nrOfValues];
-
-        DetermineValuesHash();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnAfterRender(bool firstRender)
     {
         if (Selected == null && !Values.Contains(Value))
         {
             Value = Required ? Values.FirstOrDefault() : default;
         }
-
-        if (!PopupsAsTooltip)
-        {
-            if (firstRender)
-            {
-                await Browser.EnablePopovers(element);
-            }
-            else if (CheckIfValuesWereChangedAndUpdateValuesHash())
-            {
-                await Browser.RefreshPopovers(element);
-            }
-        }
-    }
-
-    private void DetermineValuesHash()
-    {
-        _valuesHash = 19;
-        foreach (var value in Values)
-        {
-            if (value != null)
-            {
-                _valuesHash = (_valuesHash * 31 + value.GetHashCode()) % int.MaxValue;
-            }
-        }
-    }
-
-    private bool CheckIfValuesWereChangedAndUpdateValuesHash()
-    {
-        int oldValue = _valuesHash;
-        DetermineValuesHash();
-        return oldValue != _valuesHash;
     }
 
     private void SwapSelection(T value)
@@ -225,15 +192,5 @@
     private bool Equal(T a, T b)
     {
         return a == null && b == null || a != null && a.Equals(b);
-    }
-
-    private ElementReference element;
-
-    public void Dispose()
-    {
-        if (!PopupsAsTooltip)
-        {
-            _ = Browser.RemovePopovers(element);
-        }
     }
 }
