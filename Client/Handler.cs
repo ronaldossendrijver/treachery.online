@@ -230,6 +230,15 @@ namespace Treachery.Client
             await _connection.SendAsync("RequestObserverRejoined", hostID, e);
         }
 
+        public void Reset()
+        {
+            Game = new Game();
+            Host = null;
+            HostProxy = null;
+            IsObserver = false;
+            Refresh();
+        }
+
         private void HandleJoinAsPlayer(int hostID, string denyMessage)
         {
             if (denyMessage == "")
