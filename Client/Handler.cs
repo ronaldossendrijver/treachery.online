@@ -168,7 +168,11 @@ namespace Treachery.Client
         }
 
         //Process information about a currently running game on treachery.online
-        public Dictionary<GameInfo, DateTime> AvailableGames = new();
+        public IEnumerable<GameInfo> RunningGames => _availableGames.Where(gameAndDate => DateTime.Now.Subtract(gameAndDate.Value).TotalSeconds < 15).Select(gameAndDate => gameAndDate.Key);
+        private Dictionary<GameInfo, DateTime> _availableGames = new();
+
+        public IEnumerable<GameInfo> JoinableAdvertisedGames => _advertisedGames.Where(gameAndDate => gameAndDate.Key.CurrentPhase == Phase.AwaitingPlayers && DateTime.Now.Subtract(gameAndDate.Value).TotalSeconds < 15).Select(gameAndDate => gameAndDate.Key);
+        private Dictionary<GameInfo, DateTime> _advertisedGames = new();
         private void ReceiveGameAvailable(GameInfo info)
         {
             if (HostProxy != null && info.HostID == HostProxy.HostID)
@@ -176,14 +180,24 @@ namespace Treachery.Client
                 hostLastSeen = DateTime.Now;
             }
 
+            if (_availableGames.ContainsKey(info))
+            {
+                _availableGames.Remove(info);
+            }
+
+            if (_advertisedGames.ContainsKey(info))
+            {
+                _advertisedGames.Remove(info);
+            }
+
             if (HostProxy == null || Game.CurrentPhase == Phase.AwaitingPlayers)
             {
-                if (AvailableGames.ContainsKey(info))
-                {
-                    AvailableGames.Remove(info);
-                }
-
-                AvailableGames.Add(info, DateTime.Now);
+                _availableGames.Add(info, DateTime.Now);
+                Refresh();
+            }
+            else if (info.InviteOthers && (IsObserver || Game != null && Game.NumberOfHumanPlayers <= 1))
+            {
+                _advertisedGames.Add(info, DateTime.Now);
                 Refresh();
             }
         }

@@ -10,6 +10,7 @@ namespace Treachery.Shared
     public partial class Game
     {
         public List<DealOffered> DealOffers { get; private set; } = new List<DealOffered>();
+        
 
         public void HandleEvent(DealOffered e)
         {

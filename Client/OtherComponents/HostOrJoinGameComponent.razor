@@ -37,7 +37,8 @@
 <div class="card mb-2">
     <div class="card-header">Join or observe a game</div>
     <div class="card-body">
-        @if (!RunningGames.Any())
+
+        @if (!h.RunningGames.Any())
         {
             <div class="text-info">No games hosted...</div>
         }
@@ -46,11 +47,15 @@
             <table class="table table-sm table-striped" id="availableGames">
                 <tbody>
 
-                    @foreach (var av in RunningGames)
+                    @foreach (var av in h.RunningGames)
                     {
                         if (!joinPWD.ContainsKey(av.HostID))
                         {
                             joinPWD.Add(av.HostID, "");
+                        }
+
+                        if (!h.JoinErrors.ContainsKey(av.HostID))
+                        {
                             h.JoinErrors.Add(av.HostID, "");
                         }
 
@@ -60,7 +65,7 @@
                             @if (av.CurrentPhase == Phase.AwaitingPlayers)
                             {
                                 <td class="w-50">
-                                    @av.Players.Count() Players, @Skin.Current.Describe(Game.DetermineApproximateRuleset(av.FactionsInPlay, av.Rules))
+                                    @av.Players.Count() Players, @Skin.Current.Describe(Game.DetermineApproximateRuleset(av.FactionsInPlay, av.Rules)), maximum players: @av.MaximumNumberOfPlayers, maximum turns: @av.MaximumNumberOfTurns
                                 </td>
                                 <td class="w-25">
 
@@ -75,8 +80,15 @@
                             }
                             else
                             {
+                                var factions = av.FactionsInPlay != null ? av.FactionsInPlay : new List<Faction>();
                                 <td>
-                                    @GameInfoMessage(av)
+                                        @Name(Game.DetermineApproximateRuleset(factions, av.Rules)),
+                                        Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
+                                        <br>
+                                        <FactionsComponent Factions=@factions Diameter=20/>
+                                        @NumberOfBotsMessage(av)
+                                    
+
                                 </td>
                                 <td>
                                     @if (h.GameInProgressHostId == av.HostID)
@@ -122,10 +134,8 @@
 
     public GameInfo RejoinableGame(int hostID)
     {
-        return RunningGames.FirstOrDefault(g => g.HostID == hostID && g.CurrentPhase > Phase.AwaitingPlayers);
+        return h.RunningGames.FirstOrDefault(g => g.HostID == hostID && g.CurrentPhase > Phase.AwaitingPlayers);
     }
-
-    public IEnumerable<GameInfo> RunningGames => h.AvailableGames.Where(gameAndDate => DateTime.Now.Subtract(gameAndDate.Value).TotalSeconds < 15).Select(gameAndDate => gameAndDate.Key);
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -175,22 +185,14 @@
         await h.Request(hostID, new ObserverRejoined() { HashedPassword = Support.GetHash(pwd), Name = h.PlayerName });
     }
 
-    private string GameInfoMessage(GameInfo av)
-    {
-        var factions = av.FactionsInPlay != null ? av.FactionsInPlay : new List<Faction>();
-        return Skin.Current.Format("Started ({0} Players{1}, {2}, Turn {3}: {4})",
-            av.Players.Count(),
-            NumberOfBotsMessage(av),
-            Game.DetermineApproximateRuleset(factions, av.Rules),
-            av.CurrentTurn,
-            av.CurrentMainPhase);
-    }
-
     private string NumberOfBotsMessage(GameInfo av)
     {
-        if (av.NumberOfBots > 0)
+        if (av.NumberOfBots == 1)
         {
-
+            return ", 1 Bot";
+        }
+        else if (av.NumberOfBots > 1)
+        {
             return string.Format(", {0} Bots", av.NumberOfBots);
         }
         else

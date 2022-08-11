@@ -21,6 +21,7 @@ namespace Treachery.Shared
         public string[] Players;
         public int NumberOfBots;
         public List<Rule> Rules;
+        public bool InviteOthers;
 
         public override bool Equals(object obj)
         {

@@ -866,6 +866,8 @@ namespace Treachery.Shared
                 (p.Faction == Faction.Green || (p.Ally == Faction.Green && GreenSharesPrescience) || HasDeal(p.Faction, DealType.ShareBiddingPrescience)));
         }
 
+        public int NumberOfHumanPlayers => Players.Count(p => !p.IsBot);
+
         private TreacheryCard Discard(Player player, TreacheryCardType cardType)
         {
             TreacheryCard card = null;

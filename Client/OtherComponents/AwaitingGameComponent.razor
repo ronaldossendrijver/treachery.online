@@ -96,5 +96,5 @@
         }
     }
 
-    private GameInfo CurrentGame => h.AvailableGames.Keys.FirstOrDefault(info => info.HostID == h.HostProxy.HostID);
+    private GameInfo CurrentGame => h.RunningGames.FirstOrDefault(info => info.HostID == h.HostProxy.HostID);
 }

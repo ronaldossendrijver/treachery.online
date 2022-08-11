@@ -1,0 +1,20 @@
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+@using Treachery.Shared
+
+@foreach (var f in Factions)
+{
+    <img class="img-fluid" src="@Skin.Current.GetImageURL(f)" width="@Diameter" height="@Diameter" title=@Skin.Current.Describe(f) style="@Shadow" />
+}
+
+@code {
+
+    [Parameter]
+    public IEnumerable<Faction> Factions { get; set; } = Array.Empty<Faction>();
+
+    [Parameter]
+    public int Diameter { get; set; } = 30;
+
+    private string Shadow => "filter: drop-shadow(1px 1px 1px black);";
+}

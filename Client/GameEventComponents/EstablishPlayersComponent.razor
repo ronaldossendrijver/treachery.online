@@ -13,6 +13,8 @@
 
         <CheckboxComponent @bind-Value="info.HostParticipates">The host (you) will participate in this game</CheckboxComponent>
 
+        <CheckboxComponent @bind-Value="info.InviteOthers">Invite others (that are not already in a multiplayer game) to join this game</CheckboxComponent>
+
         <div class="mt-2"><strong>Players:</strong> @string.Join(", ", Players)</div>
 
         <SelectNumberComponent Disabled="@Readonly" @bind-Value="info.MaximumNumberOfTurns" Min="1" Max="EstablishPlayers.GetMaximumNumberOfTurns()" Label="Maximum number of turns"/>

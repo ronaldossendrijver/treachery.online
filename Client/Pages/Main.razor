@@ -135,6 +135,11 @@
         <ChatComponent h="@h" />
     }
 
+    @if (h.JoinableAdvertisedGames.Any() && (h.IsObserver || h.Game != null && h.Game.NumberOfHumanPlayers <= 1))
+    {
+        <AdvertisedGamesComponent h="@h" />
+    }
+
     <ImageFlashComponent h="@h" />
 
     <!--Empty Column-->
