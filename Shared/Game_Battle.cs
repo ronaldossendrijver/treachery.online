@@ -630,48 +630,48 @@ namespace Treachery.Shared
 
         public void HandleBattleOutcome(Battle agg, Battle def)
         {
-            LogIf(this.BattleOutcome.AggHeroSkillBonus != 0, agg.Hero, " ", this.BattleOutcome.AggActivatedBonusSkill, " bonus: ", this.BattleOutcome.AggHeroSkillBonus);
-            LogIf(this.BattleOutcome.DefHeroSkillBonus != 0, def.Hero, " ", this.BattleOutcome.DefActivatedBonusSkill, " bonus: ", this.BattleOutcome.DefHeroSkillBonus);
+            LogIf(BattleOutcome.AggHeroSkillBonus != 0, agg.Hero, " ", BattleOutcome.AggActivatedBonusSkill, " bonus: ", BattleOutcome.AggHeroSkillBonus);
+            LogIf(BattleOutcome.DefHeroSkillBonus != 0, def.Hero, " ", BattleOutcome.DefActivatedBonusSkill, " bonus: ", BattleOutcome.DefHeroSkillBonus);
 
-            LogIf(this.BattleOutcome.AggBattlePenalty != 0, agg.Hero, " ", this.BattleOutcome.DefActivatedPenaltySkill, " penalty: ", this.BattleOutcome.AggBattlePenalty);
-            LogIf(this.BattleOutcome.DefBattlePenalty != 0, def.Hero, " ", this.BattleOutcome.AggActivatedPenaltySkill, " penalty: ", this.BattleOutcome.DefBattlePenalty);
+            LogIf(BattleOutcome.AggBattlePenalty != 0, agg.Hero, " ", BattleOutcome.DefActivatedPenaltySkill, " penalty: ", BattleOutcome.AggBattlePenalty);
+            LogIf(BattleOutcome.DefBattlePenalty != 0, def.Hero, " ", BattleOutcome.AggActivatedPenaltySkill, " penalty: ", BattleOutcome.DefBattlePenalty);
 
-            LogIf(this.BattleOutcome.AggMessiahContribution > 0, agg.Hero, " ", Concept.Messiah, " bonus: ", this.BattleOutcome.AggMessiahContribution);
-            LogIf(this.BattleOutcome.DefMessiahContribution > 0, agg.Hero, " ", Concept.Messiah, " bonus: ", this.BattleOutcome.DefMessiahContribution);
+            LogIf(BattleOutcome.AggMessiahContribution > 0, agg.Hero, " ", Concept.Messiah, " bonus: ", BattleOutcome.AggMessiahContribution);
+            LogIf(BattleOutcome.DefMessiahContribution > 0, agg.Hero, " ", Concept.Messiah, " bonus: ", BattleOutcome.DefMessiahContribution);
 
-            BattleWinner = this.BattleOutcome.Winner.Faction;
-            BattleLoser = this.BattleOutcome.Loser.Faction;
+            BattleWinner = BattleOutcome.Winner.Faction;
+            BattleLoser = BattleOutcome.Loser.Faction;
 
-            if (this.BattleOutcome.AggHeroKilled)
+            if (BattleOutcome.AggHeroKilled)
             {
-                KillLeaderInBattle(agg.Hero, this.BattleOutcome.AggHeroCauseOfDeath, this.BattleOutcome.Winner, this.BattleOutcome.AggHeroEffectiveStrength);
+                KillLeaderInBattle(agg.Hero, BattleOutcome.AggHeroCauseOfDeath, BattleOutcome.Winner, BattleOutcome.AggHeroEffectiveStrength);
             }
             else
             {
-                LogIf(this.BattleOutcome.AggSavedByCarthag, Map.Carthag, " stronghold advantage saves ", agg.Hero, " from death by ", TreacheryCardType.Poison);
+                LogIf(BattleOutcome.AggSavedByCarthag, Map.Carthag, " stronghold advantage saves ", agg.Hero, " from death by ", TreacheryCardType.Poison);
             }
 
-            if (this.BattleOutcome.DefHeroKilled)
+            if (BattleOutcome.DefHeroKilled)
             {
-                KillLeaderInBattle(def.Hero, this.BattleOutcome.DefHeroCauseOfDeath, this.BattleOutcome.Winner, this.BattleOutcome.DefHeroEffectiveStrength);
+                KillLeaderInBattle(def.Hero, BattleOutcome.DefHeroCauseOfDeath, BattleOutcome.Winner, BattleOutcome.DefHeroEffectiveStrength);
             }
             else
             {
-                LogIf(this.BattleOutcome.DefSavedByCarthag, Map.Carthag, " stronghold advantage saves ", def.Hero, " from death by ", TreacheryCardType.Poison);
+                LogIf(BattleOutcome.DefSavedByCarthag, Map.Carthag, " stronghold advantage saves ", def.Hero, " from death by ", TreacheryCardType.Poison);
             }
 
             if (BattleInitiated.IsAggressorByJuice(this, def.Player.Faction))
             {
-                Log(agg.Initiator, " (defending) strength: ", this.BattleOutcome.AggTotal);
-                Log(def.Initiator, " (aggressor by ", TreacheryCardType.Juice, ") strength: ", this.BattleOutcome.DefTotal);
+                Log(agg.Initiator, " (defending) strength: ", BattleOutcome.AggTotal);
+                Log(def.Initiator, " (aggressor by ", TreacheryCardType.Juice, ") strength: ", BattleOutcome.DefTotal);
             }
             else
             {
-                Log(agg.Initiator, " (aggressor) strength: ", this.BattleOutcome.AggTotal);
-                Log(def.Initiator, " (defending) strength: ", this.BattleOutcome.DefTotal);
+                Log(agg.Initiator, " (aggressor) strength: ", BattleOutcome.AggTotal);
+                Log(def.Initiator, " (defending) strength: ", BattleOutcome.DefTotal);
             }
 
-            Log(this.BattleOutcome.Winner.Faction, " WIN THE BATTLE");
+            Log(BattleOutcome.Winner.Faction, " WIN THE BATTLE");
 
             bool loserMayRetreat =
                 !BattleOutcome.LoserHeroKilled &&

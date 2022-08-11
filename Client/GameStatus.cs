@@ -594,11 +594,6 @@ namespace Treachery.Client
                 }
             }
 
-            if (g.RecentMilestones.Contains(Milestone.AuctionWon) && g.RecentMilestones.Contains(Milestone.Karma))
-            {
-                Flash(result, Message.Express("Card was won using ", TreacheryCardType.Karma), Skin.Current.GetImageURL(g.TreacheryDiscardPile.Top));
-            }
-
             int nrOfSpiceBlows = g.RecentMilestones.Count(m => m == Milestone.Resource);
             bool resourceCardAlreadyAdded = false;
 
@@ -615,6 +610,14 @@ namespace Treachery.Client
                     case Milestone.BabyMonster:
                         {
                             Flash(result, Message.Express(Concept.BabyMonster, " detected!"), Skin.Current.GetImageURL(Map.GetResourceCardsInAndOutsidePlay(g.Map).FirstOrDefault(c => c.IsSandTrout)));
+                            break;
+                        }
+                    case Milestone.Karma when latestEvent is Bid:
+                        {
+                            if (g.TreacheryDiscardPile.Top != null)
+                            {
+                                Flash(result, Message.Express("Card was won using ", TreacheryCardType.Karma), Skin.Current.GetImageURL(g.TreacheryDiscardPile.Top));
+                            }
                             break;
                         }
                     case Milestone.Monster:

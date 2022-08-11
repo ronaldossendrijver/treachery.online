@@ -84,41 +84,35 @@ namespace Treachery.Shared
 
             //Purple income
             var purple = GetPlayer(Faction.Purple);
-            int purpleReceivedResourcesForFreeRevival = 0;
-            int purpleReceivedResourcesForPaidForceRevival = 0;
-            int purpleReceivedResourcesForPaidHeroRevival = 0;
-
+            int totalProfitsForPurple = 0;
             if (purple != null)
             {
                 if (usesFreeRevival)
                 {
-                    purpleReceivedResourcesForFreeRevival = 1;
+                    totalProfitsForPurple += 1;
                 }
 
                 if (r.Initiator != Faction.Purple)
                 {
-                    purpleReceivedResourcesForPaidForceRevival = cost.TotalCostForForceRevival;
-                    purpleReceivedResourcesForPaidHeroRevival = cost.CostToReviveHero;
+                    totalProfitsForPurple += cost.TotalCostForForceRevival;
+                    totalProfitsForPurple += cost.CostToReviveHero;
                 }
 
-                if (Prevented(FactionAdvantage.PurpleReceiveRevive))
+                if (totalProfitsForPurple > 0 && Prevented(FactionAdvantage.PurpleReceiveRevive))
                 {
-                    purpleReceivedResourcesForFreeRevival = 0;
-                    purpleReceivedResourcesForPaidForceRevival = 0;
+                    totalProfitsForPurple = 0;
                     LogPrevention(FactionAdvantage.PurpleReceiveRevive);
                     if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.PurpleReceiveRevive);
                 }
 
-                int totalProfits = purpleReceivedResourcesForFreeRevival + purpleReceivedResourcesForPaidForceRevival + purpleReceivedResourcesForPaidHeroRevival;
+                purple.Resources += totalProfitsForPurple;
 
-                purple.Resources += totalProfits;
-
-                if (totalProfits >= 5)
+                if (totalProfitsForPurple >= 5)
                 {
                     ApplyBureaucracy(initiator.Faction, Faction.Purple);
                 }
 
-                if (cost.Total - totalProfits >= 4)
+                if (cost.Total - totalProfitsForPurple >= 4)
                 {
                     ActivateBanker(initiator);
                 }
@@ -151,7 +145,7 @@ namespace Treachery.Shared
 
             //Logging
             RecentMilestones.Add(Milestone.Revival);
-            LogRevival(r, initiator, cost, purpleReceivedResourcesForFreeRevival + purpleReceivedResourcesForPaidForceRevival + purpleReceivedResourcesForPaidHeroRevival, asGhola);
+            LogRevival(r, initiator, cost, totalProfitsForPurple, asGhola);
 
             if (r.Initiator != Faction.Purple)
             {

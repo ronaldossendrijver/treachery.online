@@ -27,9 +27,17 @@ namespace Treachery.Test
         private void SaveSpecialCases(Game g, GameEvent e)
         {
             /*
-            if (g.RecentMilestones.Contains(Milestone.AuctionWon) && g.RecentMilestones.Contains(Milestone.Karma))
+            if (g.IsPlaying(Faction.Purple)) {
+                var p = g.Players.FirstOrDefault(pl => pl.Has(TreacheryCardType.Karma));
+                if (g.Version >= 140 && e is Karma k && k.Prevented == FactionAdvantage.PurpleReceiveRevive || g.CurrentTurn > 3 && p != null && g.CurrentPhase == Phase.Resurrection)
+                {
+                    WriteSavegameIfApplicable(g, p, "Karama used for purple revival income");
+                }
+            }
+
+            if (g.Version >= 146 && e is Bid && g.RecentMilestones.Contains(Milestone.Karma))
             {
-                WriteSavegameIfApplicable(g, e.Player, "Card won using Karama");
+                WriteSavegameIfApplicable(g, e.Player, "Karama used to buy card");
             }
             */
         }
@@ -334,7 +342,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 100;
+            int nrOfGames = 500;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
@@ -601,17 +609,17 @@ namespace Treachery.Test
             BattleOutcome previousBattleOutcome = null;
             bool gatherStatistics = false;
 
-            foreach (var e in state.Events)
+            foreach (var evt in state.Events)
             {
-                e.Game = game;
+                evt.Game = game;
                 var previousPhase = game.CurrentPhase;
 
-                var result = e.Execute(true, true);
+                var result = evt.Execute(true, true);
                 if (result != null)
                 {
                     File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
                 }
-                Assert.IsNull(result, fileData + ", " + e.GetType().Name + " (" + valueId + ", " + e.GetMessage() + ")");
+                Assert.IsNull(result, fileData + ", " + evt.GetType().Name + " (" + valueId + ", " + evt.GetMessage() + ")");
 
                 var actualValues = DetermineTestvalues(game);
                 tc.Testvalues[valueId].Equals(actualValues);
@@ -619,18 +627,20 @@ namespace Treachery.Test
                 {
                     File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
                 }
-                Assert.AreEqual(tc.Testvalues[valueId], actualValues, fileData + ", " + previousPhase + " -> " + game.CurrentPhase + ", " + e.GetType().Name + " (" + valueId + ", " + e.GetMessage() + "): " + Testvalues.Difference);
+                Assert.AreEqual(tc.Testvalues[valueId], actualValues, fileData + ", " + previousPhase + " -> " + game.CurrentPhase + ", " + evt.GetType().Name + " (" + valueId + ", " + evt.GetMessage() + "): " + Testvalues.Difference);
 
-                var strangeCase = TestIllegalCases(game, e);
+                var strangeCase = TestIllegalCases(game, evt);
                 if (strangeCase != "")
                 {
                     File.WriteAllText("illegalcase_" + game.EventCount + "_" + strangeCase + ".json", GameState.GetStateAsString(game));
                 }
                 Assert.AreEqual("", strangeCase, fileData + ", " + strangeCase);
 
+                SaveSpecialCases(game, evt);
+
                 valueId++;
 
-                if (!gatherStatistics && statistics != null && e is EstablishPlayers && game.Players.Count > 1 && game.Players.Count > 2 * game.Players.Count(p => p.IsBot))
+                if (!gatherStatistics && statistics != null && evt is EstablishPlayers && game.Players.Count > 1 && game.Players.Count > 2 * game.Players.Count(p => p.IsBot))
                 {
                     gatherStatistics = true;
                 }
