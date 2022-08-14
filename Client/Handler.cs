@@ -233,7 +233,13 @@ namespace Treachery.Client
         public void Reset()
         {
             Game = new Game();
-            Host = null;
+            
+            if (Host != null)
+            {
+                Host.Stop();
+                Host = null;
+            }
+
             HostProxy = null;
             IsObserver = false;
             Refresh();

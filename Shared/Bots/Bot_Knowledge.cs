@@ -316,7 +316,7 @@ namespace Treachery.Shared
 
         protected bool ProbablySafeFromShaiHulud(Territory t)
         {
-            return Game.CurrentTurn == Game.MaximumNumberOfTurns || Game.ProtectedFromMonster(this) || t != Game.LatestSpiceCardA.Location.Territory || Game.SandTroutOccured || !Game.HasResourceDeckPrescience(this) || !Game.ResourceCardDeck.Top.IsShaiHulud;
+            return Game.CurrentTurn == Game.MaximumNumberOfTurns || Game.ProtectedFromMonster(this) || t != Game.LatestSpiceCardA.Location.Territory || Game.SandTroutOccured || !Game.HasResourceDeckPrescience(this) || Game.ResourceCardDeck.Top != null && !Game.ResourceCardDeck.Top.IsShaiHulud;
         }
 
         #endregion

@@ -16,16 +16,19 @@
     var cardspacing = 2;
 
     //Resource cards
-    string cardImageToShow = Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(h.Player) ? Skin.Current.GetImageURL(Game.ResourceCardDeck.Top) : Skin.Current.CardBack_ResourceCard_URL;
-    <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@cardImageToShow" 
+    @if (!Game.ResourceCardDeck.IsEmpty)
+    {
+        string cardImageToShow = Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(h.Player) ? Skin.Current.GetImageURL(Game.ResourceCardDeck.Top) : Skin.Current.CardBack_ResourceCard_URL;
+        <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@cardImageToShow" 
            ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="2" 
            Popover="@IntelOfResourceCardPile()"/>
- 
-    <MapText ToShow="@Game.ResourceCardDeck.Items.Count.ToString()"
+
+        <MapText ToShow="@Game.ResourceCardDeck.Items.Count.ToString()"
              X="@(x + cardWidth / 2)" Y="@(y + cardHeight / 1.5f)"
              Font="@Skin.Current.CARDPILE_FONT" FontColor="@Skin.Current.CARDPILE_FONTCOLOR"
              BorderWidth="@Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.CARDPILE_FONT_BORDERCOLOR"
              Align="@TextAlignment.Center" />
+    }
 
     x += cardWidth + cardspacing;
     if (Game.LatestSpiceCardA != null)

@@ -760,22 +760,22 @@ namespace Treachery.Client
 
         public string GetTerritoryBorder(Territory t)
         {
-            return GetLabel(TerritoryBorder_SVG, t.SkinId);
+            return t != null ? GetLabel(TerritoryBorder_SVG, t.SkinId) : ""; ;
         }
 
         public string GetImageURL(TreacheryCard c)
         {
-            return GetURL(TreacheryCardImage_URL, c.SkinId);
+            return c != null ? GetURL(TreacheryCardImage_URL, c.SkinId) : ""; ;
         }
 
-        public string GetImageURL(Location stronghold)
+        public string GetImageURL(Location l)
         {
-            return GetURL(StrongholdCardImage_URL, stronghold.Territory.SkinId);
+            return l != null ? GetURL(StrongholdCardImage_URL, l.Territory.SkinId) : "";
         }
 
         public string GetImageURL(ResourceCard c)
         {
-            return GetURL(ResourceCardImage_URL, c.SkinId);
+            return c != null ? GetURL(ResourceCardImage_URL, c.SkinId) : ""; ;
         }
 
         public string GetImageURL(FactionForce ff)
@@ -796,7 +796,7 @@ namespace Treachery.Client
 
         public string GetTreacheryCardDescription(TreacheryCard c)
         {
-            return GetLabel(TreacheryCardDescription_STR, c.SkinId);
+            return c != null ? GetLabel(TreacheryCardDescription_STR, c.SkinId) : ""; ;
         }
 
         public object GetTechTokenDescription(TechToken t)
@@ -806,7 +806,11 @@ namespace Treachery.Client
 
         public string GetImageURL(IHero h)
         {
-            if (h is TreacheryCard)
+            if (h == null)
+            {
+                return "";
+            }
+            else if (h is TreacheryCard)
             {
                 return GetURL(TreacheryCardImage_URL, h.SkinId);
             }
@@ -1547,7 +1551,7 @@ namespace Treachery.Client
                 [47] = "Weapon - Special - Play as part of your Battle Plan. Becomes a copy of your opponent's weapon. Discard after use.",
                 [48] = "Defense - Poison - You may play this after revealing your battle plan if you did not play a defense and if Voice permits. Discard after use.",
                 [49] = "Ornithopter - As part of your movement you may move one group of forces up to 3 territories or two groups of forces up to your normal move distance. Discard after use.",
-                [50] = "Nullentropy Box - At any time, pay 2 spice to secretly search and take one card from the treachery discard pile. Then shuffle the discard pilem discarding this card on top.",
+                [50] = "Nullentropy Box - At any time, pay 2 spice to secretly search and take one card from the treachery discard pile. Then shuffle the discard pile, discarding this card on top.",
                 [51] = "Semuta Drug - Add a treachery card to your hand immediately after another player discards it. You choose if multiple cards are discarded at the same time. Discard after use.",
                 [52] = "Residual Poison - Play against your opponent in battle before making battle plans. Kills one of their available leaders at random. No spice is collected for it. Discard after use.",
                 [53] = "Weapon - Special - Play as part of your Battle Plan. You choose after pland are revealed to either kill both leaders or reduce the strength of both leaders to 0. The player with the highest number of undialed forces wins the battle. Dialed forces are lost normally. Discard after use.",

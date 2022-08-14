@@ -26,6 +26,7 @@ namespace Treachery.Client
         private readonly string gamePassword;
         private readonly int gameID;
         private Game gameAtHost;
+        private bool stopped;
 
         public GameInfo GameBeingEstablished = new()
         {
@@ -48,6 +49,7 @@ namespace Treachery.Client
             connection = hubConnection;
             gameAtHost = new Game();
             RegisterHandlers();
+            stopped = false;
             _ = Heartbeat();
         }
 
@@ -77,10 +79,15 @@ namespace Treachery.Client
             return connection.On("ReceiveRequest_" + t.Name, new Type[] { t }, ReceiveRequest_Event);
         }
 
+        public void Stop()
+        {
+            stopped = true;
+        }
+
         private int nrOfHeartbeats = 0;
         public async Task Heartbeat()
         {
-            if (nrOfHeartbeats++ < MAX_HEARTBEATS)
+            if (nrOfHeartbeats++ < MAX_HEARTBEATS && !stopped)
             {
                 try
                 {

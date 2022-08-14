@@ -342,7 +342,9 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 500;
+            int nrOfGames = 50;
+            int nrOfTurns = 20;
+            int nrOfPlayers = 10;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
@@ -352,8 +354,6 @@ namespace Treachery.Test
             rules.Add(Rule.AssistedNotekeeping);
             rules.Add(Rule.DisableOrangeSpecialVictory);
             var factions = EstablishPlayers.AvailableFactions().ToList();
-            int nrOfTurns = 7;
-            int nrOfPlayers = 6;
 
             //rules.Add(Rule.BotsCannotAlly);
 
@@ -441,11 +441,11 @@ namespace Treachery.Test
 
                     evt.Time = DateTime.Now;
 
-                    if (game.History.Count == 5000)
+                    if (game.History.Count == nrOfTurns * 500)
                     {
                         File.WriteAllText("stuck" + game.Seed + ".json", GameState.GetStateAsString(game));
                     }
-                    Assert.AreNotEqual(5000, game.History.Count, "bots got stuck at 5000 events");
+                    Assert.AreNotEqual(nrOfTurns * 500, game.History.Count, "bots got stuck");
 
                     if (failedGames.Contains(game))
                     {

@@ -129,7 +129,7 @@
                             }
                         }
 
-                        @if (h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove && h.Game.HasResourceDeckPrescience(Player))
+                        @if (h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove && h.Game.HasResourceDeckPrescience(Player) && !h.Game.ResourceCardDeck.IsEmpty)
                         {
                             <Hoverable Popover=@Popup.Get(h.Game.ResourceCardDeck.Top)>Top card of @Name(Concept.Resource) Deck: <strong>@Name(h.Game.ResourceCardDeck.Top)</strong></Hoverable>
                         }

@@ -28,7 +28,7 @@ namespace Treachery.Server
             services.AddSignalR(hubOptions =>
             {
                 hubOptions.EnableDetailedErrors = true;
-                hubOptions.MaximumReceiveMessageSize = 1000000;
+                hubOptions.MaximumReceiveMessageSize = 4194304;
             })
             .AddNewtonsoftJsonProtocol(signalRoptions =>
             {

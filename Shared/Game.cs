@@ -104,7 +104,7 @@ namespace Treachery.Shared
 
         public void PerformPostEventTasks(GameEvent e, bool justEnteredStartOfPhase)
         {
-            if (!justEnteredStartOfPhase && !(e is AllyPermission) && !(e is DealOffered) && !(e is DealAccepted)) MainPhaseMiddle();
+            if (!justEnteredStartOfPhase && e is not AllyPermission && e is not DealOffered && e is not DealAccepted) MainPhaseMiddle();
 
             History.Add(e);
 
