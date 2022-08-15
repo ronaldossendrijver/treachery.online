@@ -3,29 +3,13 @@
  */
 
 using System.Linq;
+using System.Numerics;
 using Newtonsoft.Json;
 
 namespace Treachery.Shared
 {
     public class SwitchedSkilledLeader : GameEvent
     {
-
-        public int _leaderId = -1;
-
-        [JsonIgnore]
-        public Leader Leader
-        {
-            get
-            {
-                return LeaderManager.LeaderLookup.Find(_leaderId);
-            }
-
-            set
-            {
-                _leaderId = LeaderManager.LeaderLookup.GetId(value);
-            }
-        }
-
         public SwitchedSkilledLeader(Game game) : base(game)
         {
         }
@@ -49,9 +33,11 @@ namespace Treachery.Shared
             return Message.Express(Initiator, " switch their skilled leader");
         }
 
+        public static Leader SwitchableLeader(Game game, Player player) => player.Leaders.FirstOrDefault(l => game.IsSkilled(l) && !game.CapturedLeaders.ContainsKey(l));
+
         public static bool CanBePlayed(Game game, Player player)
         {
-            return game.CurrentBattle.IsAggressorOrDefender(player) && player.Leaders.Any(l => game.IsSkilled(l)) && game.CurrentBattle.PlanOf(player) == null;
+            return game.CurrentBattle.IsAggressorOrDefender(player) && game.CurrentBattle.PlanOf(player) == null && SwitchableLeader(game, player) != null;
         }
     }
 }

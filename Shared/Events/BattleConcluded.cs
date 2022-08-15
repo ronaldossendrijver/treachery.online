@@ -171,7 +171,14 @@ namespace Treachery.Shared
 
         public static IEnumerable<IHero> ValidTraitorsToReplace(Player p)
         {
-            return p.Traitors.Where(h => !p.RevealedTraitors.Contains(h));
+            if (p.Faction == Faction.Purple)
+            {
+                return p.FaceDancers.Where(h => !p.RevealedDancers.Contains(h));
+            }
+            else
+            {
+                return p.Traitors.Where(h => !p.RevealedTraitors.Contains(h));
+            }
         }
 
     }

@@ -70,7 +70,6 @@
             var skillY = Y + Skin.Current.BattleScreenHeroY - 0.6f * Skin.Current.BattleWheelHeroHeight;
 
             var heroSkill = Game.Skill(Plan.Hero);
-
             if (heroSkill != LeaderSkill.None)
             {
                 <Image X="@(skillX)" Y="@(skillY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageURL(heroSkill)" 
@@ -80,7 +79,8 @@
                 skillX += 0.5f * Skin.Current.BattleWheelCardWidth;
             }
 
-            foreach (var passiveSkill in Game.GetPassiveSkills(Plan.Player).Where(s => PassiveSkillIsRelevantForBattlePlan(s)))
+            var passiveSkill = Game.GetSkill(Plan.Player);
+            if (PassiveSkillIsRelevantForBattlePlan(passiveSkill))
             {
                 <Image X="@(skillX)" Y="@(skillY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageURL(passiveSkill)"
                        ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0"

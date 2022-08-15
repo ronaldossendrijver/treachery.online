@@ -142,10 +142,8 @@ namespace Treachery.Shared
 
         public void HandleEvent(SwitchedSkilledLeader e)
         {
-            var leader = e.Leader;
-            if (leader == null) leader = e.Player.Leaders.FirstOrDefault(l => IsSkilled(l));
-
-            SwitchInFrontOfShield(leader);
+            var leader = SwitchedSkilledLeader.SwitchableLeader(this, e.Player);
+            SetInFrontOfShield(leader, !IsInFrontOfShield(leader));
             Log(e.Initiator, " place ", Skill(leader), " ", leader, IsInFrontOfShield(leader) ? " in front of" : " behind", " their shield");
         }
 
@@ -489,7 +487,7 @@ namespace Treachery.Shared
                 TraitorsDeciphererCanLookAt.Add(traitor);
                 plan.Player.KnownNonTraitors.Add(traitor);
 
-                DeciphererMayReplaceTraitor = plan.Initiator != Faction.Purple && leaderIsSkilled && BattleConcluded.ValidTraitorsToReplace(plan.Player).Any();
+                DeciphererMayReplaceTraitor = leaderIsSkilled && BattleConcluded.ValidTraitorsToReplace(plan.Player).Any();
             }
         }
 
@@ -1243,12 +1241,16 @@ namespace Treachery.Shared
 
         private void DeciphererReplacesTraitors(BattleConcluded e)
         {
-            Log(e.Initiator, " replaced ", e.ReplacedTraitor, " by another traitor from the deck");
+            var toReplace = e.Initiator == Faction.Purple ? "facedancer " : "traitor ";
 
-            e.Player.Traitors.Add(e.NewTraitor);
+            Log(e.Initiator, " replaced ", toReplace, e.ReplacedTraitor, " with another leader from the traitor deck");
+
+            var deck = e.Initiator == Faction.Purple ? e.Player.FaceDancers : e.Player.Traitors;
+
+            deck.Add(e.NewTraitor);
             TraitorsDeciphererCanLookAt.Remove(e.NewTraitor);
 
-            e.Player.Traitors.Remove(e.ReplacedTraitor);
+            deck.Remove(e.ReplacedTraitor);
             TraitorDeck.PutOnTop(e.ReplacedTraitor);
 
             RecentMilestones.Add(Milestone.Shuffled);
@@ -1272,19 +1274,13 @@ namespace Treachery.Shared
 
         private void ReturnSkilledLeadersInFrontOfShield()
         {
-            foreach (var ls in LeaderState)
+            foreach (var leader in LeaderState.Where(ls => ls.Key is Leader l && IsSkilled(l) && !ls.Value.InFrontOfShield && !CapturedLeaders.ContainsKey(l)).Select(ls => ls.Key as Leader))
             {
-                if (ls.Key is Leader l && IsSkilled(l) && !ls.Value.InFrontOfShield)
-                {
-                    if (Version >= 147 || !CapturedLeaders.ContainsKey(l))
-                    {
-                        ls.Value.InFrontOfShield = true;
+                SetInFrontOfShield(leader, true);
 
-                        if (IsAlive(l))
-                        {
-                            Log(Skill(l), " ", l, " is placed back in front of shield");
-                        }
-                    }
+                if (IsAlive(leader))
+                {
+                    Log(Skill(leader), " ", leader, " is placed back in front of shield");
                 }
             }
         }

@@ -691,11 +691,11 @@ namespace Treachery.Client
                     break;
 
                 case SwitchedSkilledLeader ssl:
-                    var skilledHero = ssl.Leader != null ? ssl.Leader : e.Game.GetSkilledLeaders(e.Player).First();
+                    var leader = SwitchedSkilledLeader.SwitchableLeader(e.Game, e.Player);
                     Flash(
                         flashes,
-                        Message.Express(e.Initiator, " place ", e.Game.Skill(skilledHero), " ", skilledHero, e.Game.IsInFrontOfShield(skilledHero) ? " in front of" : " behind", " their shield"),
-                        Skin.Current.GetImageURL(skilledHero));
+                        Message.Express(e.Initiator, " place ", e.Game.Skill(leader), " ", leader, e.Game.IsInFrontOfShield(leader) ? " in front of" : " behind", " their shield"),
+                        Skin.Current.GetImageURL(leader));
                     break;
 
                 default: Flash(flashes, e?.GetMessage(), Skin.Current.GetImageURL(e.Initiator)); break;

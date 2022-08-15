@@ -55,7 +55,7 @@ namespace Treachery.Shared
 
         public bool SkilledAs(Player p, LeaderSkill skill)
         {
-            return p.Leaders.Any(l => Skill(l) == skill && IsInFrontOfShield(l) && !CapturedLeaders.ContainsKey(l));
+            return p.Leaders.Any(l => Skill(l) == skill && IsInFrontOfShield(l));
         }
 
         public bool IsSkilled(IHero l)
@@ -73,9 +73,9 @@ namespace Treachery.Shared
             return player.Leaders.Where(l => IsSkilled(l));
         }
 
-        public IEnumerable<LeaderSkill> GetPassiveSkills(Player p)
+        public LeaderSkill GetSkill(Player p)
         {
-            return GetSkilledLeaders(p).Where(l => IsInFrontOfShield(l) && !CapturedLeaders.ContainsKey(l)).Select(l => Skill(l));
+            return Skill(GetSkilledLeaders(p).FirstOrDefault(l => IsInFrontOfShield(l)));
         }
 
         public LeaderSkill Skill(IHero l)
@@ -93,11 +93,6 @@ namespace Treachery.Shared
         private void SetSkill(Leader l, LeaderSkill skill)
         {
             LeaderState[l].Skill = skill;
-        }
-
-        private void SwitchInFrontOfShield(Leader l)
-        {
-            LeaderState[l].InFrontOfShield = !LeaderState[l].InFrontOfShield;
         }
 
         private void SetInFrontOfShield(Leader l, bool value)

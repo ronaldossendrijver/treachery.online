@@ -16,7 +16,7 @@ namespace Treachery.Shared
 
             if (leaderToSwitch != null)
             {
-                return new SwitchedSkilledLeader(Game) { Initiator = Faction, Leader = leaderToSwitch };
+                return new SwitchedSkilledLeader(Game) { Initiator = Faction };
             }
 
             return null;

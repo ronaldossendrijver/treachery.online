@@ -89,8 +89,10 @@
 
                 @if (Game.DeciphererMayReplaceTraitor)
                 {
+                    var toReplace = Faction == Faction.Purple ? "facedancers" : "traitors";
+
                     <SelectHeroComponent Game="Game" @bind-Value="traitorToReplace" Values="BattleConcluded.ValidTraitorsToReplace(Player)" Required="false">
-                        <Label>If you wish, you may select one of the above traitors to reveal and replace one of your current traitors:</Label>
+                        <Label>If you wish, you may select one of the above leaders to reveal and replace one of your current @toReplace:</Label>
                     </SelectHeroComponent>
                 }
                 else

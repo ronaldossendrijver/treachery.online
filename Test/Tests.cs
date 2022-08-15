@@ -26,20 +26,11 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            /*
-            if (g.IsPlaying(Faction.Purple)) {
-                var p = g.Players.FirstOrDefault(pl => pl.Has(TreacheryCardType.Karma));
-                if (g.Version >= 140 && e is Karma k && k.Prevented == FactionAdvantage.PurpleReceiveRevive || g.CurrentTurn > 3 && p != null && g.CurrentPhase == Phase.Resurrection)
-                {
-                    WriteSavegameIfApplicable(g, p, "Karama used for purple revival income");
-                }
+            
+            if (e is BattleConcluded bc && bc.Initiator == Faction.Purple && g.SkilledAs(g.WinnerHero, LeaderSkill.Decipherer)) {
+                
+                    WriteSavegameIfApplicable(g, e.Player, "Purple Decipherer");
             }
-
-            if (g.Version >= 146 && e is Bid && g.RecentMilestones.Contains(Milestone.Karma))
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Karama used to buy card");
-            }
-            */
         }
 
         private readonly List<Type> Written = new();
@@ -103,19 +94,24 @@ namespace Treachery.Test
                 }
             }
             
-            if (g.Players.Any(p => p.Faction != Faction.Black && p.Leaders.Count(l => g.IsInFrontOfShield(l)) > 1))
+            if (g.Players.Any(p => p.Leaders.Count(l => g.IsInFrontOfShield(l)) > 1))
             {
-                return "More than 1 leader in front of shield" + " after " + e.GetType().Name + " - " + g.History.Count;
+                return "More than 1 leader in front of shield after " + e.GetType().Name + " - " + g.History.Count;
             }
 
-            if (g.Players.Any(p => p.Leaders.Count(l => !g.CapturedLeaders.ContainsKey(l) && g.IsSkilled(l)) + g.CapturedLeaders.Count(cl => cl.Value == p.Faction && g.IsSkilled(cl.Key)) > 1))
+            if (g.Version >= 147 && g.Players.Any(p => p.Leaders.Any(l => g.IsInFrontOfShield(l) && l.Faction != p.Faction)))
             {
-                return "More than 1 skilled leader for 1 player (not counting leaders captured by hark)" + " after " + e.GetType().Name + " - " + g.History.Count;
+                return "Foreign leader in front of shield after " + e.GetType().Name + " - " + g.History.Count;
+            }
+
+            if (g.Players.Where(p => p.Faction != Faction.Black).Any(p => p.Leaders.Count(l => g.IsSkilled(l)) > 1))
+            {
+                return "More than 1 skilled leader for 1 player (not counting hark) after " + e.GetType().Name + " - " + g.History.Count;
             }
 
             if (e is SkillAssigned sa && sa.Leader == null)
             {
-                return "Assigning skill to null leader" + " after " + e.GetType().Name + " - " + g.History.Count;
+                return "Assigning skill to null leader after " + e.GetType().Name + " - " + g.History.Count;
             }
 
             if (g.SkillDeck != null)
@@ -348,7 +344,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 200;
+            int nrOfGames = 2000;
             int nrOfTurns = 10;
             int nrOfPlayers = 6;
 

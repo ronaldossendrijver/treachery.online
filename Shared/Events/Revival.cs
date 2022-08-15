@@ -220,6 +220,7 @@ namespace Treachery.Shared
 
             return
                 h is Leader &&
+                (g.Version < 147 || h.Faction == p.Faction) &&
                 h.HeroType != HeroType.Auditor &&
                 g.Applicable(Rule.LeaderSkills) &&
                 !g.CapturedLeaders.Any(cl => cl.Value == p.Faction && g.IsSkilled(cl.Key)) &&
