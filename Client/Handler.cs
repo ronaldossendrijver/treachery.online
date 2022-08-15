@@ -110,13 +110,7 @@ namespace Treachery.Client
             Support.Log(e.ErrorContext.Error.ToString());
         }
 
-        public string MyName
-        {
-            get
-            {
-                return Player != null ? Player.Name : "";
-            }
-        }
+        public string MyName => Player != null ? Player.Name : "";
 
         public async Task Start()
         {
@@ -232,8 +226,15 @@ namespace Treachery.Client
 
         public void Reset()
         {
+            GameInProgressHostId = 0;
             Game = new Game();
-            
+            UpdateStatus(Game, Player, IsPlayer);
+            JoinErrors.Clear();
+            howThisPlayerJoined = null;
+            howThisObserverJoined = null;
+            howThisPlayerRejoined = null;
+            howThisObserverRejoined = null;
+
             if (Host != null)
             {
                 Host.Stop();
@@ -443,20 +444,14 @@ namespace Treachery.Client
             await Browser.SaveStringSetting("treachery.online;setting.skin", skinData);
 
             Skin.Current = Support.LoadSkin(skinData);
-            //await Skin.Current.ValidateAndFix(Browser.UrlExists);
+
             Message.DefaultDescriber = Skin.Current;
 
             Refresh();
             RefreshPopovers();
         }
 
-        public bool IsPlayer
-        {
-            get
-            {
-                return Player != null && Player.Faction != Faction.None;
-            }
-        }
+        public bool IsPlayer => Player != null && Player.Faction != Faction.None;
 
         public Player Player
         {
@@ -486,16 +481,6 @@ namespace Treachery.Client
         {
             var p = Player;
             return p != null && p.Faction == f;
-        }
-
-        public bool IAm(LeaderSkill skill)
-        {
-            return Game.SkilledAs(Player, skill);
-        }
-
-        public bool IAm(Player p)
-        {
-            return Player == p;
         }
 
         private async Task HandleLoadGame(string stateData, string targetPlayerName, string skinData)

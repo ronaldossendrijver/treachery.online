@@ -11,7 +11,7 @@ using Treachery.Shared;
 
 namespace Treachery.Client
 {
-    public class Host
+    public class Host : IDisposable
     {
         public const int MAX_HEARTBEATS = 28800;  //28800 heartbeats of 6 seconds each = 48 hours
         public const int HEARTBEAT_DELAY = 6000;
@@ -53,35 +53,44 @@ namespace Treachery.Client
             _ = Heartbeat();
         }
 
+        private List<IDisposable> _registeredHandlers = new();
         private void RegisterHandlers()
-        {
-            RegisterGameEventHandlers();
-
-            connection.On<string, PlayerJoined>("ReceiveRequest_PlayerJoined", (playerConnectionID, e) => ReceiveRequest_PlayerJoined(playerConnectionID, e));
-            connection.On<string, PlayerRejoined>("ReceiveRequest_PlayerRejoined", (playerConnectionID, e) => ReceiveRequest_PlayerRejoined(playerConnectionID, e));
-            connection.On<string, ObserverJoined>("ReceiveRequest_ObserverJoined", (playerConnectionID, e) => ReceiveRequest_ObserverJoined(playerConnectionID, e));
-            connection.On<string, ObserverRejoined>("ReceiveRequest_ObserverRejoined", (playerConnectionID, e) => ReceiveRequest_ObserverRejoined(playerConnectionID, e));
-
-            connection.On<string>("ProcessHeartbeat", (playerName) => Receive_Heartbeat(playerName));
-            connection.On<ChatMessage>("RequestChatMessage", (e) => ReceiveRequest_ChatMessage(e));
-        }
-
-        private void RegisterGameEventHandlers()
         {
             foreach (var t in Game.GetGameEventTypes())
             {
-                RegisterGameEventHandler(t);
+                _registeredHandlers.Add(RegisterGameEventHandler(t));
             }
+
+            _registeredHandlers.Add(connection.On<string, PlayerJoined>("ReceiveRequest_PlayerJoined", (playerConnectionID, e) => ReceiveRequest_PlayerJoined(playerConnectionID, e)));
+            _registeredHandlers.Add(connection.On<string, PlayerRejoined>("ReceiveRequest_PlayerRejoined", (playerConnectionID, e) => ReceiveRequest_PlayerRejoined(playerConnectionID, e)));
+            _registeredHandlers.Add(connection.On<string, ObserverJoined>("ReceiveRequest_ObserverJoined", (playerConnectionID, e) => ReceiveRequest_ObserverJoined(playerConnectionID, e)));
+            _registeredHandlers.Add(connection.On<string, ObserverRejoined>("ReceiveRequest_ObserverRejoined", (playerConnectionID, e) => ReceiveRequest_ObserverRejoined(playerConnectionID, e)));
+
+            _registeredHandlers.Add(connection.On<string>("ProcessHeartbeat", (playerName) => Receive_Heartbeat(playerName)));
+            _registeredHandlers.Add(connection.On<ChatMessage>("RequestChatMessage", (e) => ReceiveRequest_ChatMessage(e)));
         }
+
+        private void UnregisterHandlers()
+        {
+            foreach (var registeredHandler in _registeredHandlers)
+            {
+                registeredHandler.Dispose();
+            }
+
+            _registeredHandlers.Clear();
+        }
+
 
         private IDisposable RegisterGameEventHandler(Type t)
         {
             return connection.On("ReceiveRequest_" + t.Name, new Type[] { t }, ReceiveRequest_Event);
         }
 
+
         public void Stop()
         {
             stopped = true;
+            UnregisterHandlers();
         }
 
         private int nrOfHeartbeats = 0;
@@ -433,6 +442,11 @@ namespace Treachery.Client
             {
                 Support.Log(ex.ToString());
             }
+        }
+
+        public void Dispose()
+        {
+            Stop();
         }
     }
 }

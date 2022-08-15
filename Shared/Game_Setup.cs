@@ -136,8 +136,15 @@ namespace Treachery.Shared
             foreach (var newPlayer in e.Players)
             {
                 var p = new Player(this, newPlayer);
-                Players.Add(p);
-                Log(p.Name, " joined the game");
+                if (!Players.Contains(p))
+                {
+                    Players.Add(p);
+                    Log(p.Name, " joined the game");
+                }
+                else
+                {
+                    Log(p.Name, " is already in the game");
+                }
             }
         }
 

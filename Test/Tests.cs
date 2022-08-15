@@ -342,9 +342,9 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 50;
-            int nrOfTurns = 20;
-            int nrOfPlayers = 10;
+            int nrOfGames = 200;
+            int nrOfTurns = 10;
+            int nrOfPlayers = 6;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 

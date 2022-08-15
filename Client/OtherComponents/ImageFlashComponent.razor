@@ -8,7 +8,7 @@
 @inherits GameComponent;
 @inject IJSRuntime JSRuntime;
 
-@if (h.Game != null)
+@if (h.Game != null && h.Status != null)
 {
     if (timeLeft > 0)
     {
@@ -70,7 +70,7 @@
         {
             afterEventId = h.Game.EventCount;
 
-            if (h.Status.FlashInfo.Any())
+            if (h.Status != null && h.Status.FlashInfo.Any())
             {
                 timeLeft += Time * 1000 + 2000;
                 StateHasChanged();
@@ -81,7 +81,7 @@
     protected override async Task OnParametersSetAsync()
     {
         var dimensions = await Browser.GetWindowDimensions();
-        var nrOfItems = h.Status.FlashInfo.Count();
+        var nrOfItems = h.Status != null ? h.Status.FlashInfo.Count() : 0;
 
         if (dimensions.Height > dimensions.Width)
         {
