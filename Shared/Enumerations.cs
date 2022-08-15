@@ -484,6 +484,8 @@ namespace Treachery.Shared
         ResourceBonusForStrongholds = 113,
         DisableOrangeSpecialVictory = 114,
         DisableResourceTransfers = 115,
+        StormDeckWithoutYellow = 116,
+        AssistedNotekeepingForGreen = 117,
 
         ExtraKaramaCards = 999,
 

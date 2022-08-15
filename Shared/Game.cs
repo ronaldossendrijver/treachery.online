@@ -11,7 +11,7 @@ namespace Treachery.Shared
     public partial class Game
     {
         public const int LowestSupportedVersion = 100;
-        public const int LatestVersion = 146;
+        public const int LatestVersion = 147;
         public bool BotInfologging = false;
 
         #region GameState
@@ -837,6 +837,8 @@ namespace Treachery.Shared
         }
 
         private bool EveryoneActedOrPassed => HasActedOrPassed.Count == Players.Count;
+
+        public bool AssistedNotekeepingEnabled(Player p) => Applicable(Rule.AssistedNotekeeping) || p.Is(Faction.Green) && Applicable(Rule.AssistedNotekeepingForGreen);
 
         public bool HasStormPrescience(Player p)
         {

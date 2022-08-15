@@ -70,7 +70,7 @@
                                 <UntypedImage Src=@Skin.Current.GetImageURL(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, h.Game)/>
                             }
                         }
-                        else if (!h.Game.Applicable(Rule.AssistedNotekeeping) && ShownPlayer.Traitors.Count == 1)
+                        else if (!h.Game.AssistedNotekeepingEnabled(Player) && ShownPlayer.Traitors.Count == 1)
                         {
                             <div><UntypedImage Src=@Skin.Current.GetImageURL(ShownPlayer.Traitors[0]) Class="img-fluid p-1" Width=60 Popover=@Popup.Get(ShownPlayer.Traitors[0], h.Game)/> is your traitor.</div>
                         }

@@ -47,7 +47,7 @@
             if (Game.GetRulesInGroup(rulegroup).Any())
             {
                 <label class="mt-1 mb-0">@Skin.Current.Describe(rulegroup)</label>
-                @foreach (var rule in Game.GetRulesInGroup(rulegroup))
+                @foreach (var rule in Game.GetRulesInGroup(rulegroup).OrderBy(r => Name(r)))
                 {
                     @if (IsNew(rule))
                     {

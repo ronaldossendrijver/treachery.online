@@ -122,7 +122,7 @@
 
         result += Skin.Current.Format("<h4>Discard pile: {0} cards</h4>", h.Game.TreacheryDiscardPile.Items.Count);
 
-        if (h.Game.Applicable(Rule.AssistedNotekeeping))
+        if (h.Game.AssistedNotekeepingEnabled(Player))
         {
             result += "<div class=\"row row-cols-6 ms-0 me-0 mt-1\">";
             foreach (var c in h.Game.TreacheryDiscardPile.Items)
@@ -147,7 +147,7 @@
         {
             result += Skin.Current.Format("<h4>{0} cards: {1} on deck</h4>", Faction.White, h.Game.WhiteCache.Count);
 
-            if (h.Faction == Faction.White || h.Game.Applicable(Rule.AssistedNotekeeping))
+            if (h.Faction == Faction.White || h.Game.AssistedNotekeepingEnabled(Player))
             {
                 result += "<div class=\"row row-cols-6 ms-0 me-0 mt-1\">";
                 foreach (var c in h.Game.WhiteCache)
@@ -187,7 +187,7 @@
             {
                 result += "<p>Latest card:</p>";
                 result += Popup.Get(h.Game.LatestSpiceCardA);
-                if (h.Game.Applicable(Rule.AssistedNotekeeping))
+                if (h.Game.AssistedNotekeepingEnabled(Player))
                 {
                     result += "<p>" + Skin.Current.Join(h.Game.ResourceCardDiscardPileA.Items.Where(c => c != h.Game.LatestSpiceCardA)) + "</p>";
                 }
@@ -200,7 +200,7 @@
             {
                 result += "<p>Latest card:</p>";
                 result += Popup.Get(h.Game.LatestSpiceCardA);
-                if (h.Game.Applicable(Rule.AssistedNotekeeping))
+                if (h.Game.AssistedNotekeepingEnabled(Player))
                 {
                     result += "<p>" + Skin.Current.Join(h.Game.ResourceCardDiscardPileB.Items.Where(c => c != h.Game.LatestSpiceCardA)) + "</p>";
                 }
@@ -221,7 +221,7 @@
             {
                 result += "<p>Latest card:</p>";
                 result += Popup.Get(h.Game.LatestSpiceCardB);
-                if (h.Game.Applicable(Rule.AssistedNotekeeping))
+                if (h.Game.AssistedNotekeepingEnabled(Player))
                 {
                     result += "<p>" + Skin.Current.Join(h.Game.ResourceCardDiscardPileB.Items.Where(c => c != h.Game.LatestSpiceCardA)) + "</p>";
                 }

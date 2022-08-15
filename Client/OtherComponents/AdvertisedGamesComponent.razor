@@ -7,7 +7,7 @@
 @inherits GameComponent;
 @inject IJSRuntime JSRuntime;
 
-<HoverPanel Height=300 HandleWidth=24 BackgroundColor="#e8dba6dd" Position="HoverPanel.HoverPanelPosition.Top">
+<HoverPanel Height=300 HandleWidth=20 BackgroundColor="#e8dba6dd" Position="HoverPanel.HoverPanelPosition.Top">
 
     <div class="p-2">
 
@@ -24,7 +24,7 @@
             }
 
             <div class="alert alert-primary" role="alert">
-                You are welcome to join @g.GameName (@g.Players.Count() human players, @Skin.Current.Describe(Game.DetermineApproximateRuleset(g.FactionsInPlay, g.Rules)), maximum players: @g.MaximumNumberOfPlayers, maximum turns: @g.MaximumNumberOfTurns!
+                You are invited to join @g.GameName (@g.Players.Count() human players, @Skin.Current.Describe(Game.DetermineApproximateRuleset(g.FactionsInPlay, g.Rules)), maximum players: @g.MaximumNumberOfPlayers, maximum turns: @g.MaximumNumberOfTurns!
                 &nbsp;
                 @if (g.HasPassword)
                 {

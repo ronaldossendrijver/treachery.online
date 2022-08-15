@@ -682,7 +682,7 @@ namespace Treachery.Client
                 Rule.AdvancedCombat => "Advanced Combat",
                 Rule.IncreasedResourceFlow => "Increased Spice Flow",
                 Rule.AdvancedKarama => "Advanced Karama Cards",
-                Rule.YellowSeesStorm => Format("{0} can look at the storm dial", Faction.Yellow),
+                Rule.YellowSeesStorm => Format("{0} determine storm movement with the Storm Deck", Faction.Yellow),
                 Rule.YellowStormLosses => Format("{0} storm losses are halved", Faction.Yellow),
                 Rule.YellowSendingMonster => Format("{0} place additional {1}s", Faction.Yellow, Concept.Monster),
                 Rule.YellowSpecialForces => Format("{0} can use {1}", Faction.Yellow, FactionSpecialForce.Yellow),
@@ -701,6 +701,8 @@ namespace Treachery.Client
                 Rule.OrangeShipmentContributionsFlowBack => Format("{0} contributions to shipments flow back to them", Faction.Orange),
                 Rule.CustomInitialForcesAndResources => Format("Custom initial {0} and force positions (for Spice Harvest)", Concept.Resource),
                 Rule.HMSwithoutGrey => Format("Use the {0} if {1} are not in play", "Hidden Mobile Stronghold", Faction.Grey),
+                Rule.StormDeckWithoutYellow => Format("Use the Storm Deck if {0} are not in play", Faction.Yellow),
+
                 Rule.SSW => Format("SSW: {0} counts for victory after fourth {1}", "Shield Wall", Concept.Monster),
                 Rule.BlackMulligan => Format("{0} mulligan traitors when they drew > 1 of their own", Faction.Black),
 
@@ -728,6 +730,7 @@ namespace Treachery.Client
                 Rule.BattlesUnderStorm => "Battles may happen under the storm",
                 Rule.MovementBonusRequiresOccupationBeforeMovement => "Arrakeen/Carthag must be occupied before Ship&Move to grant ornithopters",
                 Rule.AssistedNotekeeping => "Mentat: auto notekeeping of knowable info (spice owned, cards seen, ...)",
+                Rule.AssistedNotekeepingForGreen => Format("Mentat: auto notekeeping for {0}", Faction.Green),
                 Rule.ResourceBonusForStrongholds => "Stronghold spice bonus (even without increased spice flow)",
 
                 Rule.FillWithBots => "Fill empty seats with random Bots",
@@ -739,8 +742,7 @@ namespace Treachery.Client
                 Rule.BlueBot => Format("{0}Bot", Faction.Blue),
                 Rule.YellowBot => Format("{0}Bot", Faction.Yellow),
                 Rule.GreyBot => Format("{0}Bot", Faction.Grey),
-                //Rule.BrownBot => Format("{0}Bot", Faction.Brown),
-                //Rule.WhiteBot => Format("{0}Bot", Faction.White),
+
                 Rule.BotsCannotAlly => "Bots may not initiate alliances",
                 Rule.CardsCanBeTraded => Format("Allow players to give cards to each other"),
                 Rule.PlayersChooseFactions => Format("Let players choose their factions at start"),

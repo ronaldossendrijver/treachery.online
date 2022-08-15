@@ -66,7 +66,7 @@ namespace Treachery.Shared
                 AssignTechTokens();
             }
 
-            if (IsPlaying(Faction.Yellow) && Applicable(Rule.YellowSeesStorm))
+            if (UseStormDeck)
             {
                 NextStormMoves = DetermineLaterStormWithStormDeck();
             }
@@ -111,9 +111,8 @@ namespace Treachery.Shared
 
         private void DetermineStorm()
         {
-            if (IsPlaying(Faction.Yellow) && Applicable(Rule.YellowSeesStorm))
+            if (UseStormDeck)
             {
-                //Storm dial has already been determined
                 RevealStorm();
             }
             else
@@ -280,7 +279,7 @@ namespace Treachery.Shared
                 PerformStorm();
             }
 
-            if (IsPlaying(Faction.Yellow) && Applicable(Rule.YellowSeesStorm))
+            if (UseStormDeck)
             {
                 NextStormMoves = DetermineLaterStormWithStormDeck();
             }
@@ -383,6 +382,7 @@ namespace Treachery.Shared
         }
 
         public List<LossToTake> StormLossesToTake { get; private set; } = new List<LossToTake>();
+        public bool UseStormDeck => Applicable(Rule.StormDeckWithoutYellow) || IsPlaying(Faction.Yellow) && Applicable(Rule.YellowSeesStorm);
 
         public bool IsProtectedFromStorm(Location l)
         {

@@ -243,6 +243,7 @@ namespace Treachery.Client
 
             HostProxy = null;
             IsObserver = false;
+            _ = Browser.StopSounds();
             Refresh();
         }
 

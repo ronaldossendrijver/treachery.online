@@ -572,7 +572,7 @@
         <DealComponent h="@h" />
     }
 
-    @if (h.Game.Applicable(Rule.AssistedNotekeeping))
+    @if (h.Game.AssistedNotekeepingEnabled(Player))
     {
         <NoteComponent h="@h" />
     }
