@@ -85,7 +85,7 @@
                                         @Name(Game.DetermineApproximateRuleset(factions, av.Rules)),
                                         Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
                                         <br>
-                                        <FactionsComponent Factions=@factions Diameter=20/>
+                                        <FactionsComponent Factions=@factions Diameter=20 HasShadow=false/>
                                         @NumberOfBotsMessage(av)
                                     
 
@@ -189,11 +189,11 @@
     {
         if (av.NumberOfBots == 1)
         {
-            return ", 1 Bot";
+            return " (1 bot)";
         }
         else if (av.NumberOfBots > 1)
         {
-            return string.Format(", {0} Bots", av.NumberOfBots);
+            return string.Format(" ({0} bots)", av.NumberOfBots);
         }
         else
         {

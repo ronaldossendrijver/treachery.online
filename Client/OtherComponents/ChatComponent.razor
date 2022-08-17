@@ -7,53 +7,73 @@
 @inherits GameComponent;
 @inject IJSRuntime JSRuntime;
 
-<HoverPanel Width=400 HandleWidth=16 BackgroundColor="#e8dba6dd">
+<div class="p-2" style="background-color:@BackgroundColor">
 
-    <div class="p-2">
+    <div class="d-flex flex-row-reverse">
 
-        <div class="d-flex flex-row-reverse">
+        <input @bind-value=message class="form-control" type="text" maxlength="512" placeholder="Your message..." id="messageSentBody" @onkeyup=@(e => KeyUp(e))/>
 
-            <input @bind-value=message class="form-control" type="text" maxlength="512" placeholder="Your message..." id="messageSentBody" @onkeyup=@(e => KeyUp(e))/>
+    </div>
 
-        </div>
+    <div class="d-flex flex-row-reverse mt-1">
 
-        <div class="d-flex flex-row-reverse mt-1">
+        <button class="btn btn-primary" @onclick="(e => Send())">Send</button>
 
-            <button class="btn btn-primary" @onclick="(e => Send())">Send</button>
+        @if (h.HostProxy != null)
+        {
+            <select class="form-select" style="color:@SelectedFactionForegroundColor;background-color:@SelectedFactionColor" @bind="@playername" id="messageSentTarget">
 
-            <select class="form-select" style="color:white;background-color:@SelectedFactionColor" @bind="@playername" id="messageSentTarget">
-                <option style="color:red;background-color:white" value="">EVERYONE</option>
+                @if (!h.MuteGlobalChat)
+                {
+                    <option style="color:red;font-weight:bold;background-color:white" value="@LABEL_GLOBAL_CHAT">@LABEL_GLOBAL_CHAT</option>
+                }
+
+                <option style="color:red;font-weight:bold;background-color:white" value="@LABEL_ALL_PLAYERS_IN_GAME">@LABEL_ALL_PLAYERS_IN_GAME</option>
+
                 @foreach (var p in h.Game.Players.Where(p => p.Name != h.MyName))
                 {
                     <option style="color:@Skin.Current.GetFactionColor(p.Faction);background-color:white" value="@p.Name">@p.Name</option>
                 }
+
             </select>
-
-        </div>
-
-        @foreach (var m in h.Messages)
-        {
-            <div class='text-break p-1 mt-1 small' style="background-color:@Skin.Current.GetFactionColor(m.GetSourceFaction(h.Game))">
-                <ExpressionComponent Game=Game Expression=@m.GetBodyIncludingPlayerInfo(h.MyName, h.Game).Expression/>
-            </div>
         }
-
-        <div class="d-flex flex-row-reverse">
-
-            <button type="button" class="btn bg-transparent float-end" title="popout chat window" @onclick="@Handler.PopoutChatWindow">
-                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="black" width="12" heigh="12" viewBox="0 0 1000 1000" xml:space="preserve">
-                    <path d="M485,379.5l130.6,130.6l245.8-245.8l126.9,126.9l0.2-379L607.1,10l123.8,123.7L485,379.5L485,379.5z M986.4,546.3l-94.1-95.4l1.7,441.3l-784.7,0.4l0.8-782.7l438.9-2l-98-98H108C53.9,10,10,54,10,108v784c0,54.1,43.9,98,98,98h784c54.1,0,98-43.9,98-98L986.4,546.3z" />
-                </svg>
-            </button>
-
-        </div>
-
+        else
+        {
+            playername = LABEL_GLOBAL_CHAT;
+        }
 
     </div>
 
-</HoverPanel>
+    @foreach (var m in h.Messages.Where(message => !h.MuteGlobalChat || message is not GlobalChatMessage))
+    {
+        var bgcolor = (m) switch
+        {
+            GameChatMessage gcm => Skin.Current.GetFactionColor(gcm.GetSourceFaction(h.Game)),
+            GlobalChatMessage gcm => "grey",
+            _ => "grey"
+        };
+
+        <div class='text-break p-1 mt-1 small' style="background-color:@bgcolor">
+            <ExpressionComponent Game=Game Expression=@m.GetBodyIncludingPlayerInfo(h.MyName, h.Game).Expression />
+        </div>
+    }
+
+    @if (h.HostProxy != null)
+    {
+        <div class="mt-1" style="color:black">
+            <CheckboxComponent @bind-Value="h.MuteGlobalChat">Hide global chat messages</CheckboxComponent>
+        </div>
+    }
+
+</div>
 
 @code {
+
+    [Parameter]
+    public string BackgroundColor { get; set; } = "transparant";
+
+    private const string LABEL_GLOBAL_CHAT = "GLOBAL (everyone on treachery.online)";
+    private const string LABEL_ALL_PLAYERS_IN_GAME = "ALL PLAYERS (in this game)";
 
     private string message;
     private string playername;
@@ -62,6 +82,22 @@
     protected override void OnInitialized()
     {
         currentHandler = h;
+
+        if (h.HostProxy != null)
+        {
+            if (h.Game.Players.Where(p => p.Name != h.MyName).Any())
+            {
+                playername = h.Game.Players.Where(p => p.Name != h.MyName).Select(p => p.Name).First();
+            }
+            else
+            {
+                playername = LABEL_ALL_PLAYERS_IN_GAME;
+            }
+        }
+        else
+        {
+            playername = LABEL_GLOBAL_CHAT;
+        }
     }
 
     private async Task KeyUp(KeyboardEventArgs e)
@@ -82,15 +118,29 @@
     public static async Task SendMessage(string msg, string target)
     {
         var sourcePlayer = currentHandler.Player;
-        var targetPlayer = currentHandler.Game.GetPlayer(target);
 
-        await currentHandler.HostProxy.Request(
-            new ChatMessage()
-            {
-                SourcePlayerName = sourcePlayer != null ? currentHandler.Player.Name : "",
-                TargetPlayerName = targetPlayer != null ? targetPlayer.Name : "",
-                Body = msg
-            });
+        if (target == LABEL_GLOBAL_CHAT)
+        {
+            await currentHandler.Request(
+                new GlobalChatMessage()
+                    {
+                        SourcePlayerName = sourcePlayer != null ? currentHandler.Player.Name : "",
+                        Body = msg
+                    });
+
+        }
+        else {
+
+            var targetPlayer = target == LABEL_GLOBAL_CHAT || target == LABEL_ALL_PLAYERS_IN_GAME ? null : currentHandler.Game.GetPlayer(target);
+
+            await currentHandler.HostProxy.Request(
+                new GameChatMessage()
+                {
+                    SourcePlayerName = sourcePlayer != null ? currentHandler.Player.Name : "",
+                    TargetPlayerName = targetPlayer != null ? targetPlayer.Name : "",
+                    Body = msg
+                });
+        }
     }
 
     [JSInvokable("InitializeChatPopup")]
@@ -110,14 +160,36 @@
     {
         get
         {
-            var p = h.Game.GetPlayer(playername);
-            if (p != null)
+            if (h.Faction == Faction.None)
             {
-                return Skin.Current.GetFactionColor(p.Faction);
+                return "white";
             }
             else
             {
-                return "red";
+                var p = h.Game.GetPlayer(playername);
+                if (p != null)
+                {
+                    return Skin.Current.GetFactionColor(p.Faction);
+                }
+                else
+                {
+                    return "red";
+                }
+            }
+        }
+    }
+
+    private string SelectedFactionForegroundColor
+    {
+        get
+        {
+            if (h.Faction == Faction.None)
+            {
+                return "black";
+            }
+            else
+            {
+                return "white";
             }
         }
     }

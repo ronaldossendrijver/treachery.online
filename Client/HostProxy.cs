@@ -32,13 +32,13 @@ namespace Treachery.Client
             }
         }
 
-        public async Task Request(ChatMessage e)
+        public async Task Request(GameChatMessage message)
         {
-            if (e.Body != null && e.Body.Length > 0)
+            if (message.Body != null && message.Body.Length > 0)
             {
                 try
                 {
-                    await _connection.SendAsync("RequestChatMessage", HostID, e);
+                    await _connection.SendAsync("RequestChatMessage", HostID, message);
                 }
                 catch (Exception)
                 {

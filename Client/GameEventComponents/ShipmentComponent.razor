@@ -15,7 +15,7 @@
         {
             <div>Bring any number of forces onto @Skin.Current.Describe(Game.Map.TheGreatFlat.Territory) or onto any one territory within two territories of @Skin.Current.Describe(Game.Map.TheGreatFlat.Territory).</div>
 
-            @if (MayShipAsGuild)
+            @if (Game.MayShipAsGuild(Player))
             {
                 <div>In addition, your ally allows you to ship to other locations as well from your reserves.</div>
             }
@@ -25,7 +25,7 @@
             <div>Select forces to ship, or pass.</div>
         }
 
-        @if (MayShipAsGuild)
+        @if (Game.MayShipAsGuild(Player))
         {
             <div>You may ship site-to-site any number of forces from a source location to another location.</div>
         }
@@ -38,7 +38,7 @@
     </Header>
     <Body>
 
-        @if (MayShipAsGuild)
+        @if (Game.MayShipAsGuild(Player))
         {
             <RadioComponent @bind-Value="shipmentType" Values="@ValidShipmentTypes" ValueLabels="@ValidShipmentTypeLabels" />
         }
@@ -162,7 +162,7 @@
             shipmentAllyContributionAmount = 0;
         }
 
-        @if (Shipment.CanKarma(Game, Player) && (Faction != Faction.Yellow || shipmentType == SHIPMENT_SITETOSITE) && !MayShipAsGuild)
+        @if (Shipment.CanKarma(Game, Player) && (Faction != Faction.Yellow || shipmentType == SHIPMENT_SITETOSITE) && !Game.MayShipAsGuild(Player))
         {
             <div class="mt-1">
                 <SelectCardComponent @bind-Value="karmaCard" Values="Shipment.ValidKarmaCards(Game, Player)" Required="false">
@@ -327,15 +327,13 @@
 
     private IEnumerable<Location> ValidSourceLocations => Game.LocationsWithAnyForcesNotInStorm(Player);
 
-    private bool MayShipAsGuild => Game.MayShipAsGuild(Player);
-
     private int Cost => Shipment.DetermineCost(Game, Player, (Shipment) ConfirmedResult);
 
     private IEnumerable<int> ValidShipmentTypes
     {
         get
         {
-            @if (MayShipAsGuild)
+            @if (Game.MayShipAsGuild(Player))
             {
                 if (Faction == Faction.Orange)
                 {
@@ -355,7 +353,7 @@
     {
         get
         {
-            @if (MayShipAsGuild)
+            @if (Game.MayShipAsGuild(Player))
             {
                 if (Faction == Faction.Orange)
                 {

@@ -2,42 +2,34 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
  */
 
-using System;
-
 namespace Treachery.Shared
 {
-    public class ChatMessage
+    public class GameChatMessage : ChatMessage
     {
-        public string SourcePlayerName { get; set; }
-
         public string TargetPlayerName { get; set; }
 
-        public string Body { get; set; }
-
-        public DateTime DateTimeReceived { get; set; }
-
-        public Message GetBodyIncludingPlayerInfo(string receivingPlayerName, Game g)
+        public override Message GetBodyIncludingPlayerInfo(string receivingPlayerName, Game g)
         {
             if (SourcePlayerName == receivingPlayerName)
             {
                 if (TargetPlayerName == "")
                 {
-                    return Message.Express(Body, " (to ALL)");
+                    return Message.Express(Body, " ⇒ ALL");
                 }
                 else
                 {
-                    return Message.Express(Body, " (to ", GetTargetFaction(g), ")");
+                    return Message.Express(Body, " ⇒ ", GetTargetFaction(g));
                 }
             }
             else
             {
                 if (TargetPlayerName == "")
                 {
-                    return Message.Express(Body, " (from ", GetSourceFaction(g), " to ALL)");
+                    return Message.Express(GetSourceFaction(g), " (to ALL) ", Body);
                 }
                 else
                 {
-                    return Message.Express(Body, " (from ", GetSourceFaction(g), " to you)");
+                    return Message.Express(GetSourceFaction(g), Body);
                 }
             }
         }

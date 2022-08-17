@@ -67,7 +67,7 @@ namespace Treachery.Client
             _registeredHandlers.Add(connection.On<string, ObserverRejoined>("ReceiveRequest_ObserverRejoined", (playerConnectionID, e) => ReceiveRequest_ObserverRejoined(playerConnectionID, e)));
 
             _registeredHandlers.Add(connection.On<string>("ProcessHeartbeat", (playerName) => Receive_Heartbeat(playerName)));
-            _registeredHandlers.Add(connection.On<ChatMessage>("RequestChatMessage", (e) => ReceiveRequest_ChatMessage(e)));
+            _registeredHandlers.Add(connection.On<GameChatMessage>("RequestChatMessage", (e) => ReceiveRequest_ChatMessage(e)));
         }
 
         private void UnregisterHandlers()
@@ -344,7 +344,7 @@ namespace Treachery.Client
 
 
 
-        private async Task ReceiveRequest_ChatMessage(ChatMessage e)
+        private async Task ReceiveRequest_ChatMessage(GameChatMessage e)
         {
             try
             {

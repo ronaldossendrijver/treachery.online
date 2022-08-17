@@ -84,9 +84,16 @@
             <MenuComponent h="@h" />
         }
 
-        @if (!h.IsObserver && h.Player.Faction != Faction.None)
+        @if (!h.IsObserver)
         {
-            <PlayerPanel h="h" ShownPlayer="h.Player" />
+            if (h.Player.Faction != Faction.None)
+            {
+                <PlayerPanel h="h" ShownPlayer="h.Player" />
+            }
+            else if (h.PlayerName != "")
+            {
+                <ChatComponent h="@h" BackgroundColor="#e8dba6dd"/>
+            }
         }
         else if (h.IsObserver)
         {
@@ -130,9 +137,9 @@
 
     <!--Global Components-->
 
-    @if ((!h.IsObserver || h.PlayerName == h.ServerSettings.AdminName) && h.CurrentPhase > Phase.AwaitingPlayers)
+    @if (!h.IsObserver && h.CurrentPhase > Phase.AwaitingPlayers)
     {
-        <ChatComponent h="@h" />
+        <ChatPanel h="@h" />
     }
 
     @if (h.JoinableAdvertisedGames.Any() && (h.IsObserver || h.Game != null && h.Game.NumberOfHumanPlayers <= 1))
@@ -142,10 +149,14 @@
 
     <ImageFlashComponent h="@h" />
 
-    <!--Empty Column-->
+    <!--Chat window for observers-->
     @if (h.IsObserver)
     {
-        <div class="col-sm-1 col-lg-1 col-xl-1" />
+        <div class="col-sm-1 col-lg-1 col-xl-1">
+
+            <ChatComponent h="@h" BackgroundColor="#e8dba6dd"/>
+
+        </div>
     }
 
 </div>

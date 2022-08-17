@@ -170,7 +170,7 @@ namespace Treachery.Server
             await Channel("host", hostID).SendAsync("ProcessHeartbeat", playerName);
         }
 
-        public async Task RequestChatMessage(int hostID, ChatMessage e)
+        public async Task RequestChatMessage(int hostID, GameChatMessage e)
         {
             await Channel("host", hostID).SendAsync("RequestChatMessage", e);
         }
@@ -262,10 +262,15 @@ namespace Treachery.Server
             await Channel("observers", gameID).SendAsync("HandleUndo", untilEventNr);
         }
 
-        public async Task ApproveChatMessage(int gameID, ChatMessage e)
+        public async Task ApproveChatMessage(int gameID, GameChatMessage message)
         {
-            await Channel("players", gameID).SendAsync("HandleChatMessage", e);
-            await Channel("observers", gameID).SendAsync("HandleChatMessage", e);
+            await Channel("players", gameID).SendAsync("HandleChatMessage", message);
+            await Channel("observers", gameID).SendAsync("HandleChatMessage", message);
+        }
+
+        public async Task SendGlobalChatMessage(GlobalChatMessage message)
+        {
+            await Clients.All.SendAsync("ReceiveGlobalChatMessage", message);
         }
 
         public async Task SetTimer(int gameID, int value)

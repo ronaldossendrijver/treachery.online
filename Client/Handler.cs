@@ -50,6 +50,7 @@ namespace Treachery.Client
         public bool StatisticsSent { get; set; } = false;
         public bool BotsArePaused { get; set; } = false;
         public int Timer { get; set; } = -1;
+        public bool MuteGlobalChat { get; set; } = false;
 
         public event Action RefreshHandler;
         public event Action RefreshPopoverHandler;
@@ -143,12 +144,13 @@ namespace Treachery.Client
             _connection.On<int, string>("HandleJoinAsPlayer", (hostID, denyMessage) => HandleJoinAsPlayer(hostID, denyMessage));
             _connection.On<int, string>("HandleJoinAsObserver", (hostID, denyMessage) => HandleJoinAsObserver(hostID, denyMessage));
             _connection.On<int, GameEvent>("HandleEvent", (nr, e) => HandleEvent(nr, e));
-            _connection.On<ChatMessage>("HandleChatMessage", (e) => HandleChatMessage(e));
+            _connection.On<GameChatMessage>("HandleChatMessage", (message) => HandleChatMessage(message));
             _connection.On<int>("HandleUndo", (untilEventNr) => HandleUndo(untilEventNr));
             _connection.On<string>("HandleLoadSkin", (skin) => HandleLoadSkin(skin));
             _connection.On<int, byte[]>("ReceiveVideo", (playerposition, data) => ReceiveVideo(playerposition, data));
             _connection.On<string, string, string>("HandleLoadGame", (state, playerName, skin) => HandleLoadGame(state, playerName, skin));
             _connection.On<int>("UpdateTimer", (value) => UpdateTimer(value));
+            _connection.On<GlobalChatMessage>("ReceiveGlobalChatMessage", (message) => HandleGlobalChatMessage(message));
         }
 
         private void UpdateTimer(int value)
@@ -223,6 +225,22 @@ namespace Treachery.Client
             howThisObserverRejoined = e;
             await _connection.SendAsync("RequestObserverRejoined", hostID, e);
         }
+
+        public async Task Request(GlobalChatMessage message)
+        {
+            if (message.Body != null && message.Body.Length > 0)
+            {
+                try
+                {
+                    await _connection.SendAsync("SendGlobalChatMessage", message);
+                }
+                catch (Exception)
+                {
+                    Support.Log("Disconnected...");
+                }
+            }
+        }
+
 
         public void Reset()
         {
@@ -532,7 +550,8 @@ namespace Treachery.Client
         }
 
         public LinkedList<ChatMessage> Messages = new();
-        private async Task HandleChatMessage(ChatMessage m)
+
+        private async Task HandleChatMessage(GameChatMessage m)
         {
             m.DateTimeReceived = DateTime.Now;
 
@@ -541,9 +560,21 @@ namespace Treachery.Client
             {
                 Messages.AddFirst(m);
                 await Browser.PlaySound(Skin.Current.Sound_Chatmessage_URL, CurrentChatVolume);
-                Refresh();
-
                 await Browser.SendToChatPopup(PopupChatMessage.Construct(Game, MyName, m));
+                Refresh();
+            }
+        }
+
+        private async Task HandleGlobalChatMessage(GlobalChatMessage m)
+        {
+            m.DateTimeReceived = DateTime.Now;
+            Messages.AddFirst(m);
+
+            if (!MuteGlobalChat)
+            {
+                await Browser.PlaySound(Skin.Current.Sound_Chatmessage_URL, CurrentChatVolume);
+                await Browser.SendToChatPopup(PopupChatMessage.Construct(Game, MyName, m));
+                Refresh();
             }
         }
 

@@ -14,5 +14,8 @@
     [Parameter]
     public int Diameter { get; set; } = 30;
 
-    private string Shadow => "filter: drop-shadow(1px 1px 1px black);";
+    [Parameter]
+    public bool HasShadow { get; set; } = true;
+
+    private string Shadow => HasShadow ? "filter: drop-shadow(1px 1px 1px black);" : "";
 }
