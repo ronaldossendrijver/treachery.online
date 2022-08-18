@@ -36,7 +36,7 @@ namespace Treachery.Client
 
             return new PopupChatMessage()
             {
-                body = HttpUtility.HtmlEncode(m.GetBodyIncludingPlayerInfo(myName, game).ToString(Skin.Current)),
+                body = HttpUtility.HtmlEncode(m.GetBodyIncludingPlayerInfo(myName, game, true).ToString(Skin.Current)),
                 style = Skin.Current.GetFactionColor(sourceFaction)
             };
         }

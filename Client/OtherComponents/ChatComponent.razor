@@ -11,7 +11,7 @@
 
     <div class="d-flex flex-row-reverse">
 
-        <input @bind-value=message class="form-control" type="text" maxlength="512" placeholder="Your message..." id="messageSentBody" @onkeyup=@(e => KeyUp(e))/>
+        <input @bind-value=message class="form-control" type="text" maxlength="512" placeholder=@Placeholder id="messageSentBody" @onkeyup=@(e => KeyUp(e))/>
 
     </div>
 
@@ -54,7 +54,7 @@
         };
 
         <div class='text-break p-1 mt-1 small' style="background-color:@bgcolor">
-            <ExpressionComponent Game=Game Expression=@m.GetBodyIncludingPlayerInfo(h.MyName, h.Game).Expression />
+            <ExpressionComponent Game=Game Expression=@m.GetBodyIncludingPlayerInfo(h.MyName, h.Game, h.HostProxy == null).Expression />
         </div>
     }
 
@@ -72,7 +72,7 @@
     [Parameter]
     public string BackgroundColor { get; set; } = "transparant";
 
-    private const string LABEL_GLOBAL_CHAT = "GLOBAL (everyone on treachery.online)";
+    private const string LABEL_GLOBAL_CHAT = "ALL PLAYERS (on treachery.online)";
     private const string LABEL_ALL_PLAYERS_IN_GAME = "ALL PLAYERS (in this game)";
 
     private string message;
@@ -155,6 +155,8 @@
 
         _ = Task.Delay(1000).ContinueWith(e => Browser.SendToChatPopup(init));
     }
+
+    private string Placeholder => "Your message to " + playername + "...";
 
     private string SelectedFactionColor
     {

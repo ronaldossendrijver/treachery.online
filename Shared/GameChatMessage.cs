@@ -8,17 +8,17 @@ namespace Treachery.Shared
     {
         public string TargetPlayerName { get; set; }
 
-        public override Message GetBodyIncludingPlayerInfo(string receivingPlayerName, Game g)
+        public override Message GetBodyIncludingPlayerInfo(string receivingPlayerName, Game g, bool contextIsGlobal)
         {
             if (SourcePlayerName == receivingPlayerName)
             {
                 if (TargetPlayerName == "")
                 {
-                    return Message.Express(Body, " ⇒ ALL");
+                    return Message.Express("You: ", Body, " ⇒ ALL");
                 }
                 else
                 {
-                    return Message.Express(Body, " ⇒ ", GetTargetFaction(g));
+                    return Message.Express("You: ", Body, " ⇒ ", GetTargetFaction(g));
                 }
             }
             else

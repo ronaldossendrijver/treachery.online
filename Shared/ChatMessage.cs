@@ -14,6 +14,6 @@ namespace Treachery.Shared
 
         public DateTime DateTimeReceived { get; set; }
 
-        public abstract Message GetBodyIncludingPlayerInfo(string receivingPlayerName, Game g);
+        public abstract Message GetBodyIncludingPlayerInfo(string receivingPlayerName, Game g, bool contextIsGlobal);
     }
 }

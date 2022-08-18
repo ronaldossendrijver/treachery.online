@@ -8,15 +8,29 @@ namespace Treachery.Shared
 {
     public class GlobalChatMessage : ChatMessage
     {
-        public override Message GetBodyIncludingPlayerInfo(string receivingPlayerName, Game g)
+        public override Message GetBodyIncludingPlayerInfo(string receivingPlayerName, Game g, bool contextIsGlobal)
         {
-            if (SourcePlayerName == receivingPlayerName)
+            if (contextIsGlobal)
             {
-                return Message.Express(Body, " ⇒ GLOBAL");
+                if (SourcePlayerName == receivingPlayerName)
+                {
+                    return Message.Express("You: ", Body);
+                }
+                else
+                {
+                    return Message.Express(SourcePlayerName, ": ", Body);
+                }
             }
             else
             {
-                return Message.Express(SourcePlayerName, ": ", Body, " ⇒ GLOBAL");
+                if (SourcePlayerName == receivingPlayerName)
+                {
+                    return Message.Express("You: ", Body, " ⇒ GLOBAL");
+                }
+                else
+                {
+                    return Message.Express(SourcePlayerName, ": ", Body, " ⇒ GLOBAL");
+                }
             }
         }
     }
