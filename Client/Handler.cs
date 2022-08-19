@@ -117,6 +117,7 @@ namespace Treachery.Client
         {
             await _connection.StartAsync();
             await GetServerSettings();
+            await HandleGlobalChatMessage(new GlobalChatMessage() { SourcePlayerName = "Admin", Body = "Welcome to treachery.online! You can use this chat to connect to other players. Have fun!" });
         }
 
         public async Task StartHost(string hostPWD, string loadedGameData, Game loadedGame)

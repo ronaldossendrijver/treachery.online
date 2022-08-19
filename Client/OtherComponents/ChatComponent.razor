@@ -19,7 +19,7 @@
 
         <button class="btn btn-primary" @onclick="(e => Send())">Send</button>
 
-        @if (h.HostProxy != null)
+        @if (h.HostProxy != null && !h.IsObserver)
         {
             <select class="form-select" style="color:@SelectedFactionForegroundColor;background-color:@SelectedFactionColor" @bind="@playername" id="messageSentTarget">
 
