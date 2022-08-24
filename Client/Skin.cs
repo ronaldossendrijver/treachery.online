@@ -18,7 +18,7 @@ namespace Treachery.Client
 
         public const int CurrentVersion = 138;
         public const int MINIMUM_SUPPORTED_VERSION = 23;
-        public const string DEFAULT_ART_LOCATION = "https://treachery.online";
+        public const string DEFAULT_ART_LOCATION = ".";
 
         public string Description = null;
         public int Version;

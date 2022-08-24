@@ -9,7 +9,7 @@
 <div class="card mb-2">
     <div class="card-header">Please enter your player name</div>
     <div class="card-body">
-        <input class="form-control" @bind-value="playername" @bind-value:event="oninput" maxlength="24" placeholder="Your name" @onkeyup=@KeyUp/>
+        <input @ref=inputField class="form-control" @bind-value="playername" @bind-value:event="oninput" maxlength="24" placeholder="Your name" @onkeyup=@KeyUp/>
         <button class="btn btn-primary mt-1" disabled="@(!IsValid)" @onclick="Confirm">Confirm</button>
     </div>
 </div>
@@ -17,6 +17,15 @@
 @code {
 
     private string playername;
+    private ElementReference inputField;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await inputField.FocusAsync();
+        }
+    }
 
     private async Task KeyUp(KeyboardEventArgs e)
     {

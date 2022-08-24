@@ -19,7 +19,7 @@
 
         <button class="btn btn-primary" @onclick="(e => Send())">Send</button>
 
-        @if (h.HostProxy != null && !h.IsObserver)
+        @if (ShowGameChat)
         {
             <select class="form-select" style="color:@SelectedFactionForegroundColor;background-color:@SelectedFactionColor" @bind="@playername" id="messageSentTarget">
 
@@ -58,7 +58,7 @@
         </div>
     }
 
-    @if (h.HostProxy != null)
+    @if (ShowGameChat)
     {
         <div class="mt-1" style="color:black">
             <CheckboxComponent @bind-Value="h.MuteGlobalChat">Hide global chat messages</CheckboxComponent>
@@ -83,7 +83,7 @@
     {
         currentHandler = h;
 
-        if (h.HostProxy != null)
+        if (ShowGameChat)
         {
             if (h.Game.Players.Where(p => p.Name != h.MyName).Any())
             {
@@ -195,5 +195,7 @@
             }
         }
     }
+
+    private bool ShowGameChat => h.HostProxy != null && !h.IsObserver;
 }
 

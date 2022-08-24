@@ -202,7 +202,7 @@ namespace Treachery.Client
 
         public static async Task<IEnumerable<CaptureDevice>> GetCaptureDevices(bool getPermissionsFirst)
         {
-            var devices = await JsInvoke<JsonElement[]>("GetCaptureDevices", getPermissionsFirst);
+            var devices = await JsInvokeWithTimeout<JsonElement[]>(2000, "GetCaptureDevices", getPermissionsFirst);
 
             if (devices == null) return new List<CaptureDevice>();
 
@@ -355,6 +355,34 @@ namespace Treachery.Client
                 Support.Log("Error invoking method: {0}", e);
                 return default;
             }
+        }
+
+        private static async Task<T> JsInvokeWithTimeout<T>(int timeout, string method, params object[] args)
+        {
+            try
+            {
+                var task = JsInvoke<T>(method, args);
+
+                /*[]
+                {
+                    _runtime.InvokeAsync<T>(method, args),
+                    Task.Delay(1000) 
+                };*/
+
+
+                return await await Task.WhenAny<T>(task, ValueTimeout<T>(timeout));
+            }
+            catch (Exception e)
+            {
+                Support.Log("Error invoking method: {0}", e);
+                return default;
+            }
+        }
+
+        private static async Task<T> ValueTimeout<T>(int duration)
+        {
+            await Task.Delay(duration);
+            return default;
         }
 
         private static async Task JsInvoke(string method, params object[] args)
