@@ -55,10 +55,10 @@ namespace Treachery.Shared
 
         public bool SkilledAs(Player p, LeaderSkill skill)
         {
-            return p.Leaders.Any(l => LeaderState[l].Skill == skill && IsInFrontOfShield(l));
+            return p.Leaders.Any(l => Skill(l) == skill && IsInFrontOfShield(l) && !CapturedLeaders.ContainsKey(l));
         }
 
-        public bool Skilled(IHero l)
+        public bool IsSkilled(IHero l)
         {
             return Skill(l) != LeaderSkill.None;
         }
@@ -68,21 +68,14 @@ namespace Treachery.Shared
             return Players.FirstOrDefault(p => SkilledAs(p, skill));
         }
 
-        public Leader GetSkilledLeader(Player player)
+        public IEnumerable<Leader> GetSkilledLeaders(Player player)
         {
-            return player.Leaders.FirstOrDefault(l => Skilled(l) && !CapturedLeaders.ContainsKey(l));
+            return player.Leaders.Where(l => IsSkilled(l));
         }
 
-        public LeaderSkill Skill(Player p)
+        public IEnumerable<LeaderSkill> GetPassiveSkills(Player p)
         {
-            var skilledLeader = GetSkilledLeader(p);
-
-            if (IsInFrontOfShield(skilledLeader))
-            {
-                return Skill(skilledLeader);
-            }
-
-            return LeaderSkill.None;
+            return GetSkilledLeaders(p).Where(l => IsInFrontOfShield(l) && !CapturedLeaders.ContainsKey(l)).Select(l => Skill(l));
         }
 
         public LeaderSkill Skill(IHero l)

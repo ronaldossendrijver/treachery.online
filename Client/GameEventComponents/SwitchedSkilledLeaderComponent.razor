@@ -1,0 +1,52 @@
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<SwitchedSkilledLeader>
+
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>@Title</Header>
+    <Body>
+
+        <SelectHeroComponent Game="Game" @bind-Value="leader" Values="h.Game.GetSkilledLeaders(h.Player)" Required=true />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText=@ConfirmLabel ConfirmError=@Validation />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    private IHero leader;
+
+    protected override SwitchedSkilledLeader ConfirmedResult => new SwitchedSkilledLeader(Game) { Initiator = Faction, Leader = leader as Leader };
+
+    private string Title
+    {
+        get
+        {
+            bool hasMultiple = h.Game.GetSkilledLeaders(h.Player).Count() > 1;
+            bool hasLeadersInFrontOfShield = h.Game.GetSkilledLeaders(h.Player).Any(l => h.Game.IsInFrontOfShield(l));
+            bool hasLeadersBehindShield = h.Game.GetSkilledLeaders(h.Player).Any(l => !h.Game.IsInFrontOfShield(l));
+
+            string whereText = "behind";
+            if (hasLeadersInFrontOfShield && hasLeadersBehindShield)
+            {
+                whereText = "in front of or behind";
+            }
+            else if (!hasLeadersInFrontOfShield)
+            {
+                whereText = "behind";
+            }
+
+            return string.Format("Place {0} skilled leader {1} your shield?",
+                hasMultiple ? "a" : "your",
+                whereText);
+        }
+    }
+
+    private string ConfirmLabel => Skin.Current.Format("Put {0} {1} shield", Name(leader), h.Game.IsInFrontOfShield(leader) ? "behind" : "in front of");
+}

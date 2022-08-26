@@ -80,15 +80,15 @@ namespace Treachery.Test
             var p = g.GetPlayer(e.Initiator);
 
             p = g.Players.FirstOrDefault(p => p.ForcesInReserve < 0 || p.SpecialForcesInReserve < 0);
-            if (p != null) return "Negative forces: " + p + " after " + e.GetType().Name + " -> " + g.History.Count;
+            if (p != null) return "Negative forces: " + p + " after " + e.GetType().Name + " - " + g.History.Count;
 
             p = g.Players.FirstOrDefault(p => p.Faction == Faction.White && (p.SpecialForcesInReserve != 0 || p.SpecialForcesKilled != 0));
-            if (p != null) return "Invalid forces: " + p + " after " + e.GetType().Name + " -> " + g.History.Count;
+            if (p != null) return "Invalid forces: " + p + " after " + e.GetType().Name + " - " + g.History.Count;
 
             if (g.Version >= 142)
             {
                 p = g.Players.FirstOrDefault(p => p.Resources < 0);
-                if (p != null) return "Negative spice: " + p + " after " + e.GetType().Name + " -> " + g.History.Count;
+                if (p != null) return "Negative spice: " + p + " after " + e.GetType().Name + " - " + g.History.Count;
             }
 
             if (g.CurrentTurn >= 1)
@@ -102,20 +102,20 @@ namespace Treachery.Test
                     return "Illegal number of forces: " + p;
                 }
             }
-
-            if (g.Players.Any(p => p.Leaders.Count(l => g.IsInFrontOfShield(l)) > 1))
+            
+            if (g.Players.Any(p => p.Faction != Faction.Black && p.Leaders.Count(l => g.IsInFrontOfShield(l)) > 1))
             {
-                return "More than 1 leader in front of shield" + " after " + e.GetType().Name + " -> " + g.History.Count;
+                return "More than 1 leader in front of shield" + " after " + e.GetType().Name + " - " + g.History.Count;
             }
 
-            if (g.Players.Any(p => p.Leaders.Count(l => !g.CapturedLeaders.ContainsKey(l) && g.Skilled(l)) + g.CapturedLeaders.Count(cl => cl.Value == p.Faction && g.Skilled(cl.Key)) > 1))
+            if (g.Players.Any(p => p.Leaders.Count(l => !g.CapturedLeaders.ContainsKey(l) && g.IsSkilled(l)) + g.CapturedLeaders.Count(cl => cl.Value == p.Faction && g.IsSkilled(cl.Key)) > 1))
             {
-                return "More than 1 skilled leader for 1 player (not counting leaders captured by hark)" + " after " + e.GetType().Name + " -> " + g.History.Count;
+                return "More than 1 skilled leader for 1 player (not counting leaders captured by hark)" + " after " + e.GetType().Name + " - " + g.History.Count;
             }
 
             if (e is SkillAssigned sa && sa.Leader == null)
             {
-                return "Assigning skill to null leader" + " after " + e.GetType().Name + " -> " + g.History.Count;
+                return "Assigning skill to null leader" + " after " + e.GetType().Name + " - " + g.History.Count;
             }
 
             if (g.SkillDeck != null)
@@ -124,7 +124,7 @@ namespace Treachery.Test
 
                 if (allCards.Any(item => allCards.Count(c => c == item) > 1))
                 {
-                    return "Duplicate card in Skill Deck" + " after " + e.GetType().Name + " -> " + g.History.Count;
+                    return "Duplicate card in Skill Deck" + " after " + e.GetType().Name + " - " + g.History.Count;
                 }
             }
 
@@ -150,7 +150,7 @@ namespace Treachery.Test
                 }
                 else if (currentNumberOfCards != previousNumberOfCardsInPlay)
                 {
-                    return string.Format("Total number of cards has changed: {0} -> {1}.",
+                    return string.Format("Total number of cards has changed: {0} - {1}.",
                         previousNumberOfCardsInPlay,
                         currentNumberOfCards);
                 }
@@ -169,7 +169,7 @@ namespace Treachery.Test
                 }
                 else if (currentNumberOfLeaders != previousNumberOfLeadersInPlay)
                 {
-                    return string.Format("Total number of leaders has changed: {0} -> {1}.",
+                    return string.Format("Total number of leaders has changed: {0} - {1}.",
                         previousNumberOfLeadersInPlay,
                         currentNumberOfLeaders);
                 }
@@ -181,7 +181,7 @@ namespace Treachery.Test
                 var allCards = g.TreacheryDeck.Items.Concat(g.TreacheryDiscardPile.Items).Concat(g.Players.SelectMany(p => p.TreacheryCards)).ToArray();
                 if (allCards.Any(item => allCards.Count(c => c == item) > 1))
                 {
-                    return "Duplicate card in Treachery Card Deck" + " after " + e.GetType().Name + " -> " + g.History.Count;
+                    return "Duplicate card in Treachery Card Deck" + " after " + e.GetType().Name + " - " + g.History.Count;
                 }
             }
 
@@ -190,14 +190,14 @@ namespace Treachery.Test
                 var allCards = g.ResourceCardDeck.Items.Concat(g.ResourceCardDiscardPileA.Items).Concat(g.ResourceCardDiscardPileB.Items).ToArray();
                 if (allCards.Any(item => allCards.Count(c => c == item) > 1))
                 {
-                    return "Duplicate card in Spice Deck" + " after " + e.GetType().Name + " -> " + g.History.Count;
+                    return "Duplicate card in Spice Deck" + " after " + e.GetType().Name + " - " + g.History.Count;
                 }
             }
 
             p = g.Players.FirstOrDefault(p => p.TreacheryCards.Count > p.MaximumNumberOfCards);
             if (p != null && g.CurrentPhase != Phase.PerformingKarmaHandSwap)
             {
-                return "Too many cards: " + p + " after " + e.GetType().Name + " -> " + g.History.Count;
+                return "Too many cards: " + p + " after " + e.GetType().Name + " - " + g.History.Count;
             }
 
             var blue = g.GetPlayer(Faction.Blue);
@@ -206,6 +206,12 @@ namespace Treachery.Test
             {
                 return "Lonely advisor";
             }
+
+            if (g.Version >= 148 && blue != null && g.Map.Territories.Any(t => blue.ForcesIn(t) > 0 && blue.SpecialForcesIn(t) > 0))
+            {
+                return "Advisor and fighter together";
+            }
+
 
             if (g.Players.Any(p => p.Leaders.Any(l => l.Faction != p.Faction && p.Faction != Faction.Purple && !g.CapturedLeaders.ContainsKey(l))))
             {
@@ -627,7 +633,7 @@ namespace Treachery.Test
                 {
                     File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
                 }
-                Assert.AreEqual(tc.Testvalues[valueId], actualValues, fileData + ", " + previousPhase + " -> " + game.CurrentPhase + ", " + evt.GetType().Name + " (" + valueId + ", " + evt.GetMessage() + "): " + Testvalues.Difference);
+                Assert.AreEqual(tc.Testvalues[valueId], actualValues, fileData + ", " + previousPhase + " - " + game.CurrentPhase + ", " + evt.GetType().Name + " (" + valueId + ", " + evt.GetMessage() + "): " + Testvalues.Difference);
 
                 var strangeCase = TestIllegalCases(game, evt);
                 if (strangeCase != "")

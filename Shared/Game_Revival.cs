@@ -127,6 +127,12 @@ namespace Treachery.Shared
                     asGhola = true;
                     ReviveGhola(initiator, r.Hero as Leader);
                 }
+                else if (purple != null && purple.Leaders.Contains(r.Hero) && IsAlive(r.Hero))
+                {
+                    //Transfer of ghola
+                    purple.Leaders.Remove(r.Hero as Leader);
+                    initiator.Leaders.Add(r.Hero as Leader);
+                }
                 else
                 {
                     ReviveHero(r.Hero);

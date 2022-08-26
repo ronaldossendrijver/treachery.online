@@ -142,7 +142,9 @@ namespace Treachery.Shared
 
         public void HandleEvent(SwitchedSkilledLeader e)
         {
-            var leader = e.Player.Leaders.FirstOrDefault(l => Skilled(l) && !CapturedLeaders.ContainsKey(l));
+            var leader = e.Leader;
+            if (leader == null) leader = e.Player.Leaders.FirstOrDefault(l => IsSkilled(l));
+
             SwitchInFrontOfShield(leader);
             Log(e.Initiator, " place ", Skill(leader), " ", leader, IsInFrontOfShield(leader) ? " in front of" : " behind", " their shield");
         }
@@ -601,7 +603,7 @@ namespace Treachery.Shared
                 originalPlayer.Leaders.Add(toReturn);
                 currentOwner.Leaders.Remove(toReturn);
                 CapturedLeaders.Remove(toReturn);
-                if (Skilled(toReturn))
+                if (IsSkilled(toReturn))
                 {
                     SetInFrontOfShield(toReturn, true);
                 }
@@ -1272,13 +1274,16 @@ namespace Treachery.Shared
         {
             foreach (var ls in LeaderState)
             {
-                if (ls.Key is Leader l && Skilled(l) && !CapturedLeaders.ContainsKey(l) && !ls.Value.InFrontOfShield)
+                if (ls.Key is Leader l && IsSkilled(l) && !ls.Value.InFrontOfShield)
                 {
-                    ls.Value.InFrontOfShield = true;
-
-                    if (IsAlive(l))
+                    if (Version >= 147 || !CapturedLeaders.ContainsKey(l))
                     {
-                        Log(Skill(l), " ", l, " is placed back in front of shield");
+                        ls.Value.InFrontOfShield = true;
+
+                        if (IsAlive(l))
+                        {
+                            Log(Skill(l), " ", l, " is placed back in front of shield");
+                        }
                     }
                 }
             }

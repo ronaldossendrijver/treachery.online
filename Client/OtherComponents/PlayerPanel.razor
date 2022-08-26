@@ -51,7 +51,7 @@
                         <!-- Leaders -->
                         @foreach (var v in ShownPlayer.Leaders.Where(l => h.Game.IsAlive(l)))
                         {
-                            var style = Game.Skilled(v) ? "filter:brightness(150%) contrast(100%)" : "";
+                            var style = Game.IsSkilled(v) ? "filter:brightness(150%) contrast(100%)" : "";
                             <UntypedImage Src=@Skin.Current.GetImageURL(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, h.Game)/>
                         }
 

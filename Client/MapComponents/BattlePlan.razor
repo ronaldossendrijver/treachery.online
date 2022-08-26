@@ -1,5 +1,5 @@
 ﻿<!--
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+* Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
 --->
 
 @using Treachery.Shared
@@ -66,19 +66,27 @@
         }
         else if (Plan.Hero is Leader)
         {
+            var skillX = X + Skin.Current.BattleScreenHeroX + 0.6f * Skin.Current.BattleWheelHeroWidth;
+            var skillY = Y + Skin.Current.BattleScreenHeroY - 0.6f * Skin.Current.BattleWheelHeroHeight;
+
             var heroSkill = Game.Skill(Plan.Hero);
-            var playerSkill = Game.Skill(Plan.Player);
 
-            if (heroSkill != LeaderSkill.None || playerSkill != LeaderSkill.None && PassiveSkillIsRelevantForBattlePlan(playerSkill))
+            if (heroSkill != LeaderSkill.None)
             {
-                var skill = heroSkill != LeaderSkill.None ? heroSkill : playerSkill;
+                <Image X="@(skillX)" Y="@(skillY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageURL(heroSkill)" 
+                        ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0"
+                        Popover="@Popup.Get(heroSkill)" />
 
-                var skillX = X + Skin.Current.BattleScreenHeroX + 0.6f * Skin.Current.BattleWheelHeroWidth;
-                var skillY = Y + Skin.Current.BattleScreenHeroY - 0.6f * Skin.Current.BattleWheelHeroHeight;
+                skillX += 0.5f * Skin.Current.BattleWheelCardWidth;
+            }
 
-                <Image X="@(skillX)" Y="@(skillY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageURL(skill)" 
-                       ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" 
-                       Popover="@Popup.Get(skill)"/>
+            foreach (var passiveSkill in Game.GetPassiveSkills(Plan.Player).Where(s => PassiveSkillIsRelevantForBattlePlan(s)))
+            {
+                <Image X="@(skillX)" Y="@(skillY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageURL(passiveSkill)"
+                       ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0"
+                       Popover="@Popup.Get(passiveSkill)" />
+
+                skillX += 0.5f * Skin.Current.BattleWheelCardWidth;
             }
 
             <MapLeader h="h" ToShow="Plan.Hero" X=@(X + Skin.Current.BattleScreenHeroX) Y=@(Y + Skin.Current.BattleScreenHeroY) Diameter="Skin.Current.BattleWheelHeroWidth"/>

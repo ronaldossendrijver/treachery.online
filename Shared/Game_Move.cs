@@ -2,6 +2,7 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -119,8 +120,8 @@ namespace Treachery.Shared
                 }
 
                 LastShippedOrMovedTo = s.To;
-                bool mustBeAdvisors = (initiator.Is(Faction.Blue) && initiator.SpecialForcesIn(s.To) > 0);
-
+                bool mustBeAdvisors = (initiator.Is(Faction.Blue) && (initiator.SpecialForcesIn(s.To) > 0) || Version >= 148 && initiator.SpecialForcesIn(s.To.Territory) > 0);
+                
                 if (s.IsSiteToSite)
                 {
                     PerformSiteToSiteShipment(s, initiator);
@@ -252,6 +253,7 @@ namespace Treachery.Shared
         private void PerformNormalShipment(Player initiator, Location to, int forceAmount, int specialForceAmount, bool isSiteToSite)
         {
             BGMayAccompany = (forceAmount > 0 || specialForceAmount > 0) && initiator.Faction != Faction.Yellow && initiator.Faction != Faction.Blue;
+
             initiator.ShipForces(to, forceAmount);
             initiator.ShipSpecialForces(to, specialForceAmount);
 

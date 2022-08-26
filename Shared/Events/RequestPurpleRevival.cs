@@ -36,8 +36,7 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            var p = Player;
-            if (!Game.KilledHeroes(p).Contains(Hero)) return Message.Express(Hero, " can't be revived this way");
+            if (!ValidTargets(Game, Player).Contains(Hero)) return Message.Express(Hero, " can't be revived this way");
 
             return null;
         }
@@ -54,7 +53,9 @@ namespace Treachery.Shared
 
         public static IEnumerable<IHero> ValidTargets(Game g, Player p)
         {
-            return g.KilledHeroes(p);
+            var purple = g.GetPlayer(Faction.Purple);
+            var gholas = purple != null ? purple.Leaders.Where(l => l.Faction == p.Faction) : Array.Empty<Leader>();
+            return g.KilledHeroes(p).Union(gholas);
         }
     }
 

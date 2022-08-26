@@ -77,6 +77,9 @@ namespace Treachery.Shared
             var costOfRevival = DetermineCost(Game, p, Hero, AmountOfForces, AmountOfSpecialForces, ExtraForcesPaidByRed, ExtraSpecialForcesPaidByRed);
             if (costOfRevival.TotalCostForPlayer > p.Resources) return Message.Express("You can't pay that many");
 
+            if (AssignSkill && Hero == null) return Message.Express("You must revive a leader to assign a skill to");
+            if (AssignSkill && !MayAssignSkill(Game, p, Hero)) return Message.Express("You can't assign a skill to this leader");
+
             return null;
         }
 
@@ -115,7 +118,10 @@ namespace Treachery.Shared
 
             if (result.Count == 0)
             {
-                return g.KilledHeroes(p).Where(h => g.IsAllowedEarlyRevival(h));
+                var purple = g.GetPlayer(Faction.Purple);
+                var gholas = purple != null ? purple.Leaders.Where(l => l.Faction == p.Faction) : Array.Empty<Leader>();
+
+                return g.KilledHeroes(p).Union(gholas).Where(h => g.IsAllowedEarlyRevival(h));
             }
 
             int livingLeaders = p.Leaders.Count(l => g.LeaderState[l].Alive);
@@ -210,12 +216,15 @@ namespace Treachery.Shared
         }
         public static bool MayAssignSkill(Game g, Player p, IHero h)
         {
+            var capturedLeadersToConsider = g.IsPlaying(Faction.Black) ? g.GetPlayer(Faction.Black).Leaders.Where(l => l.Faction == p.Faction) : Array.Empty<Leader>();
+
             return
                 h is Leader &&
                 h.HeroType != HeroType.Auditor &&
                 g.Applicable(Rule.LeaderSkills) &&
-                !g.CapturedLeaders.Any(cl => cl.Value == p.Faction && g.Skilled(cl.Key)) &&
-                !p.Leaders.Any(l => g.Skilled(l));
+                !g.CapturedLeaders.Any(cl => cl.Value == p.Faction && g.IsSkilled(cl.Key)) &&
+                !p.Leaders.Any(l => g.IsSkilled(l)) &&
+                !capturedLeadersToConsider.Any(l => g.IsSkilled(l));
         }
 
         public static bool MayReviveWithDiscount(Game g, Player p)

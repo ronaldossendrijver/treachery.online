@@ -690,8 +690,8 @@ namespace Treachery.Client
                     Flash(flashes, Message.Express(dancer, " is a ", e.Initiator, " facedancer!"), Skin.Current.GetImageURL(dancer));
                     break;
 
-                case SwitchedSkilledLeader:
-                    var skilledHero = e.Game.GetSkilledLeader(e.Player);
+                case SwitchedSkilledLeader ssl:
+                    var skilledHero = ssl.Leader != null ? ssl.Leader : e.Game.GetSkilledLeaders(e.Player).First();
                     Flash(
                         flashes,
                         Message.Express(e.Initiator, " place ", e.Game.Skill(skilledHero), " ", skilledHero, e.Game.IsInFrontOfShield(skilledHero) ? " in front of" : " behind", " their shield"),

@@ -532,11 +532,7 @@
                 break;
             case "SwitchedSkilledLeader":
                 {
-                    var skilledLeader = h.Game.GetSkilledLeader(h.Player);
-                    <SimpleActionComponent GameEventType="SwitchedSkilledLeader" h="@h"
-                                            BackgroundImage="@Skin.Current.GetImageURL(h.Game.Skill(skilledLeader))"
-                                            Title="@Skin.Current.Format("Place {0} {1} your player shield?", skilledLeader, h.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of")"
-                                            ConfirmLabel="@Skin.Current.Format("Put {0} shield", h.Game.IsInFrontOfShield(skilledLeader) ? "behind" : "in front of")" />
+                    <SwitchedSkilledLeaderComponent h="@h" />
                 }
                 break;
             case "Thought":

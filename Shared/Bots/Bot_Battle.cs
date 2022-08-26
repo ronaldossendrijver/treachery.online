@@ -12,27 +12,24 @@ namespace Treachery.Shared
     {
         protected virtual SwitchedSkilledLeader DetermineSwitchedSkilledLeader()
         {
-            var skilledLeader = Leaders.First(l => Game.Skilled(l) && !Game.CapturedLeaders.ContainsKey(l));
+            var leaderToSwitch = Leaders.FirstOrDefault(l => INeedToSwitchThisLeader(l));
 
-            if (skilledLeader != null)
+            if (leaderToSwitch != null)
             {
-                if (skilledLeader != null && Game.IsInFrontOfShield(skilledLeader) && skilledLeader == DetermineBattlePlan(true, true)?.Hero)
-                {
-                    return new SwitchedSkilledLeader(Game) { Initiator = Faction };
-                }
-
-                if (Game.IsInFrontOfShield(skilledLeader) && Game.CurrentPhase == Phase.BattlePhase && Game.CurrentBattle != null && Game.CurrentBattle.IsInvolved(this) && Battle.ValidBattleHeroes(Game, this).Count() < 2)
-                {
-                    return new SwitchedSkilledLeader(Game) { Initiator = Faction };
-                }
-
-                if (!Game.IsInFrontOfShield(skilledLeader) && Game.CurrentPhase != Phase.BattlePhase)
-                {
-                    return new SwitchedSkilledLeader(Game) { Initiator = Faction };
-                }
+                return new SwitchedSkilledLeader(Game) { Initiator = Faction, Leader = leaderToSwitch };
             }
 
             return null;
+        }
+
+        private bool INeedToSwitchThisLeader(Leader leader)
+        {
+            if (leader == null) return false;
+            
+            return
+                Game.IsInFrontOfShield(leader) && leader == DetermineBattlePlan(true, true)?.Hero ||
+                Game.IsInFrontOfShield(leader) && Game.CurrentPhase == Phase.BattlePhase && Game.CurrentBattle != null && Game.CurrentBattle.IsInvolved(this) && Battle.ValidBattleHeroes(Game, this).Count() < 2 ||
+                !Game.IsInFrontOfShield(leader) && Game.CurrentPhase != Phase.BattlePhase;
         }
 
         public Dictionary<Location, Battalion> BattalionsIn(Territory territory)
@@ -106,7 +103,7 @@ namespace Treachery.Shared
                 discarded.Add(myBattleplan.Defense);
             }
 
-            bool kill = Game.BlackVictim != null && !Game.Skilled(Game.BlackVictim) && Game.BlackVictim.Value < 4;
+            bool kill = Game.BlackVictim != null && !Game.IsSkilled(Game.BlackVictim) && Game.BlackVictim.Value < 4;
 
             int replacedSpecialForces = BattleConcluded.ValidReplacementForceAmounts(Game, this).Max();
 

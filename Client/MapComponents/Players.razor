@@ -72,9 +72,8 @@
                        Popover="@Popup.Get(tt)" PopoverStyle=""/>
             }
 
-            var skilledLeader = Game.GetSkilledLeader(p);
-            if (skilledLeader != null)
-            {
+            foreach (var skilledLeader in Game.GetSkilledLeaders(p)) {
+
                 ttRad += (TWOPI / 90);
                 var ttx = Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad) * techtokenOrbitRadius) - Skin.Current.PlayerTokenRadius;
                 var tty = Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad) * techtokenOrbitRadius) - Skin.Current.PlayerTokenRadius;
@@ -172,29 +171,6 @@
         {
             return string.Format("<img class='img-fluid' src='{0}' width=80 style='filter:drop-shadow(-3px 3px 2px black);'/>", Skin.Current.GetImageURL(l));
         }
-    }
-
-    private string IntelOfTechtokensAndSkilledLeaders(Player p)
-    {
-        string result = "";
-
-        if (p.Faction == Faction.White && h.Game.LatestRevealedNoFieldValue >= 0)
-        {
-            result += string.Format("<div class=\"mt-1\">Latest revealed No-Field value: <strong>{0}</strong></div>", h.Game.LatestRevealedNoFieldValue);
-        }
-
-        foreach (var v in p.TechTokens)
-        {
-            result += Popup.Get(v);
-        }
-
-        var skilledLeader = h.Game.GetSkilledLeader(p);
-        if (skilledLeader != null && h.Game.IsInFrontOfShield(skilledLeader))
-        {
-            result += Popup.Get(skilledLeader, h.Game.Skill(skilledLeader));
-        }
-
-        return result;
     }
 
     private string DetermineVideoStreamId(Player p) => "video" + p.PositionAtTable;
