@@ -281,7 +281,7 @@ namespace Treachery.Shared
 
         protected bool IDontHaveAdvisorsIn(Location l)
         {
-            return Faction != Faction.Blue || SpecialForcesIn(l) == 0;
+            return Faction != Faction.Blue || SpecialForcesIn(l.Territory) == 0;
         }
 
         protected bool AllyNotIn(Territory t)

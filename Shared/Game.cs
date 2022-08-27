@@ -12,7 +12,7 @@ namespace Treachery.Shared
     {
         public const int LowestSupportedVersion = 100;
         public const int LatestVersion = 148;
-        public bool BotInfologging = true;
+        public bool BotInfologging = false;
 
         #region GameState
         public int Seed { get; private set; } = -1;
@@ -358,7 +358,7 @@ namespace Treachery.Shared
         {
             CurrentMoment = MainPhaseMoment.End;
 
-            List<FactionAdvantage> expectionsToAllowing = new List<FactionAdvantage>();
+            List<FactionAdvantage> expectionsToAllowing = new();
             if (CurrentMainPhase == MainPhase.Bidding && Prevented(FactionAdvantage.PurpleIncreasingRevivalLimits))
             {
                 expectionsToAllowing.Add(FactionAdvantage.PurpleIncreasingRevivalLimits);
@@ -504,7 +504,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void RegisterKnown(Player p, TreacheryCard c)
+        private static void RegisterKnown(Player p, TreacheryCard c)
         {
             if (c != null && !p.KnownCards.Contains(c))
             {
@@ -529,12 +529,12 @@ namespace Treachery.Shared
             }
         }
 
-        private void UnregisterKnown(Player p, TreacheryCard c)
+        private static void UnregisterKnown(Player p, TreacheryCard c)
         {
             p.KnownCards.Remove(c);
         }
 
-        private void UnregisterKnown(Player p, IEnumerable<TreacheryCard> cards)
+        private static void UnregisterKnown(Player p, IEnumerable<TreacheryCard> cards)
         {
             foreach (var c in cards)
             {
@@ -556,7 +556,7 @@ namespace Treachery.Shared
         {
             get
             {
-                Dictionary<Location, List<Battalion>> result = new Dictionary<Location, List<Battalion>>();
+                Dictionary<Location, List<Battalion>> result = new();
 
                 foreach (var l in Map.Locations)
                 {
@@ -579,7 +579,7 @@ namespace Treachery.Shared
         {
             get
             {
-                Dictionary<Location, List<Battalion>> result = new Dictionary<Location, List<Battalion>>();
+                Dictionary<Location, List<Battalion>> result = new();
 
                 foreach (var p in Players)
                 {
@@ -618,7 +618,7 @@ namespace Treachery.Shared
         {
             get
             {
-                Dictionary<Location, List<Battalion>> result = new Dictionary<Location, List<Battalion>>();
+                Dictionary<Location, List<Battalion>> result = new();
 
                 foreach (var p in Players)
                 {
@@ -805,12 +805,12 @@ namespace Treachery.Shared
             return (!l.Territory.IsStronghold || (p.Is(Faction.Blue) && p.SpecialForcesIn(l) > 0) || NrOfOccupantsExcludingPlayer(l, p) < 2);
         }
 
-        private Payment Payment(int amount)
+        private static Payment Payment(int amount)
         {
             return new Payment() { Amount = amount };
         }
 
-        private Payment Payment(int amount, Faction by)
+        private static Payment Payment(int amount, Faction by)
         {
             return new Payment() { Amount = amount, By = by };
         }

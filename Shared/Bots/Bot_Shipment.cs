@@ -73,6 +73,7 @@ namespace Treachery.Shared
 
             var bestLocationWithSpice = Game.ResourcesOnPlanet.Where(kvp =>
                 ValidShipmentLocations.Contains(kvp.Key) &&
+                IDontHaveAdvisorsIn(kvp.Key) &&
                 TotalMaxDialOfOpponents(kvp.Key.Territory) <= Param.Shipment_MaxEnemyForceStrengthFightingForSpice &&
                 AllyNotIn(kvp.Key.Territory) &&
                 !StormWillProbablyHit(kvp.Key) &&
@@ -198,7 +199,7 @@ namespace Treachery.Shared
             LogInfo("DetermineShipment_StrengthenWeakStronghold()");
 
             var myWeakStrongholds = ValidShipmentLocations
-                .Where(s => s.IsStronghold && OccupyingForces(s) > 0 && AllyNotIn(s.Territory) && (!onlyIfThreatened || OccupyingOpponentIn(s.Territory) != null) && !InStorm(s))
+                .Where(s => s.IsStronghold && IDontHaveAdvisorsIn(s) && OccupyingForces(s) > 0 && AllyNotIn(s.Territory) && (!onlyIfThreatened || OccupyingOpponentIn(s.Territory) != null) && !InStorm(s))
                 .Select(s => new { Location = s, Difference = MaxPotentialForceShortage(takeReinforcementsIntoAccount, s) });
 
             LogInfo("MyWeakStrongholds:" + string.Join(",", myWeakStrongholds));
@@ -225,14 +226,14 @@ namespace Treachery.Shared
             LogInfo("DetermineShipment_DummyAttack()");
 
             var targetOfDummyAttack = ValidShipmentLocations
-                .FirstOrDefault(l => AnyForcesIn(l) == 0 && AllyNotIn(l.Territory) && !InStorm(l) && l.Territory.IsStronghold && OpponentIsSuitableForTraitorLure(OccupyingOpponentIn(l.Territory)));
+                .FirstOrDefault(l => AnyForcesIn(l.Territory) == 0 && AllyNotIn(l.Territory) && !InStorm(l) && l.Territory.IsStronghold && OpponentIsSuitableForTraitorLure(OccupyingOpponentIn(l.Territory)));
 
             LogInfo("OpponentIsSuitableForTraitorLure: " + targetOfDummyAttack);
 
             if (targetOfDummyAttack == null && !MayUseUselessAsKarma && TreacheryCards.Any(c => c.Type == TreacheryCardType.Useless) && !TechTokens.Any())
             {
                 targetOfDummyAttack = ValidShipmentLocations
-                .FirstOrDefault(l => AnyForcesIn(l) == 0 && AllyNotIn(l.Territory) && !InStorm(l) && l.Territory.IsStronghold && OpponentIsSuitableForUselessCardDumpAttack(OccupyingOpponentIn(l.Territory)));
+                .FirstOrDefault(l => AnyForcesIn(l.Territory) == 0 && AllyNotIn(l.Territory) && !InStorm(l) && l.Territory.IsStronghold && OpponentIsSuitableForUselessCardDumpAttack(OccupyingOpponentIn(l.Territory)));
                 LogInfo("OpponentIsSuitableForDummyAttack: " + targetOfDummyAttack);
             }
 
@@ -255,7 +256,7 @@ namespace Treachery.Shared
             {
                 LogInfo("DetermineShipment_UnlockMoveBonus()");
 
-                var target = ValidShipmentLocations
+                var target = ValidShipmentLocations.Where(l => IDontHaveAdvisorsIn(l))
                     .Where(l => 
                         l == Game.Map.Arrakeen && AllyNotIn(Game.Map.Arrakeen) || 
                         l == Game.Map.Carthag && AllyNotIn(Game.Map.Carthag))
