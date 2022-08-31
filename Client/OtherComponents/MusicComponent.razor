@@ -74,7 +74,11 @@
             await ScanDevices();
         }
 
-        await UpdateMusicAndSound();
+        if (!firstRender)
+        {
+            await UpdateMusicAndSound();
+        }
+
         await SaveSettings();
     }
 

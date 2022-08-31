@@ -26,9 +26,9 @@ namespace Treachery.Shared
             {
                 bool winning = IAmWinning;
                 bool willDoEverythingToPreventNormalWin = !Game.Applicable(Rule.DisableOrangeSpecialVictory) && (
-                    Faction == Faction.Orange || 
-                    Ally == Faction.Orange || 
-                    Faction == Faction.Yellow && !Game.IsPlaying(Faction.Orange) || 
+                    Faction == Faction.Orange ||
+                    Ally == Faction.Orange ||
+                    Faction == Faction.Yellow && !Game.IsPlaying(Faction.Orange) ||
                     Ally == Faction.Yellow && !Game.IsPlaying(Faction.Orange));
 
                 int extraForces = LastTurn || (Faction == Faction.Blue && Game.Applicable(Rule.BlueAdvisors)) ? 1 : D(1, Param.Shipment_DialForExtraForcesToShip);
@@ -257,8 +257,8 @@ namespace Treachery.Shared
                 LogInfo("DetermineShipment_UnlockMoveBonus()");
 
                 var target = ValidShipmentLocations.Where(l => IDontHaveAdvisorsIn(l))
-                    .Where(l => 
-                        l == Game.Map.Arrakeen && AllyNotIn(Game.Map.Arrakeen) || 
+                    .Where(l =>
+                        l == Game.Map.Arrakeen && AllyNotIn(Game.Map.Arrakeen) ||
                         l == Game.Map.Carthag && AllyNotIn(Game.Map.Carthag))
                     .LowestOrDefault(l => TotalMaxDialOfOpponents(l.Territory));
 
@@ -368,9 +368,12 @@ namespace Treachery.Shared
 
         protected virtual void DetermineShipment_AttackWeakStronghold(int extraForces, int minResourcesToKeep, int maxUnsupportedForces)
         {
+            var dangerousOpponents = Opponents.Where(p => IsAlmostWinningOpponent(p));
+
             LogInfo("DetermineShipment_AttackWeakStronghold()");
 
             var possibleAttacks = ValidShipmentLocations
+                .Where(l => !dangerousOpponents.Any() || dangerousOpponents.Any(p => p.Occupies(l)))
                 .Where(l => l.Territory.IsStronghold && AnyForcesIn(l) == 0 && AllyNotIn(l.Territory) && !StormWillProbablyHit(l) && !InStorm(l) && IDontHaveAdvisorsIn(l))
                 .Select(l => ConstructAttack(l, extraForces, minResourcesToKeep, maxUnsupportedForces))
                 .Where(s => s.HasOpponent && !WinWasPredictedByMeThisTurn(s.Opponent.Faction));
@@ -796,7 +799,7 @@ namespace Treachery.Shared
 
         private int UnlockedForcesInPolarSink(Location location) => location == Game.Map.Arrakeen || location == Game.Map.Carthag ? AnyForcesIn(Game.Map.PolarSink) : 0;
 
-        private float DeterminePenalty(Player opponent) => opponent != null && opponent.IsBot ? BotParameters.PenaltyForAttackingBots : 0;
+        private float DeterminePenalty(Player opponent) => opponent != null && opponent.IsBot && (!opponent.HasAlly || opponent.AlliedPlayer.IsBot) ? BotParameters.PenaltyForAttackingBots : 0;
 
         private void DoZeroNoFieldShipment(ShipmentDecision action, Location location)
         {

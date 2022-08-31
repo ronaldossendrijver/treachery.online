@@ -25,7 +25,7 @@ namespace Treachery.Shared
         private bool INeedToSwitchThisLeader(Leader leader)
         {
             if (leader == null) return false;
-            
+
             return
                 Game.IsInFrontOfShield(leader) && leader == DetermineBattlePlan(true, true)?.Hero ||
                 Game.IsInFrontOfShield(leader) && Game.CurrentPhase == Phase.BattlePhase && Game.CurrentBattle != null && Game.CurrentBattle.IsInvolved(this) && Battle.ValidBattleHeroes(Game, this).Count() < 2 ||

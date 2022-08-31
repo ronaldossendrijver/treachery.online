@@ -113,8 +113,12 @@ namespace Treachery.Shared
             var p = Player;
             if (SpecialForceLossesReplaced > 0 && Game.Prevented(FactionAdvantage.GreyReplacingSpecialForces)) return Message.Express(TreacheryCardType.Karma, " prevents replacing ", FactionSpecialForce.Grey, " losses");
             if (SpecialForceLossesReplaced > 0 && !ValidReplacementForceAmounts(Game, p).Contains(SpecialForceLossesReplaced)) return Message.Express("Invalid amount of replacement forces");
-            if (NewTraitor != null && ReplacedTraitor == null) return Message.Express("Select a traitor to be replaced by ", NewTraitor);
-            if (NewTraitor == null && ReplacedTraitor != null) return Message.Express("Select a traitor to replace ", ReplacedTraitor);
+
+            if (Game.DeciphererMayReplaceTraitor)
+            {
+                if (NewTraitor != null && ReplacedTraitor == null) return Message.Express("Select a traitor to be replaced by ", NewTraitor);
+                if (NewTraitor == null && ReplacedTraitor != null) return Message.Express("Select a traitor to replace ", ReplacedTraitor);
+            }
 
             return null;
         }

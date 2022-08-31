@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Treachery.Shared;
 
 namespace Treachery.Shared
 {

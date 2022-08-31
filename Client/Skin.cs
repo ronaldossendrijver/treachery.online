@@ -1054,7 +1054,7 @@ namespace Treachery.Client
 
               If(!g.IsPlaying(Faction.Orange) && !g.Applicable(Rule.DisableOrangeSpecialVictory),
                "<li>Special victory condition: if no player has been able to win the game by the end of play, you prevented control over the planet and you and your ally automatically win the game.</li>") +
-              
+
                "</ul>" +
 
               If(hasAdvancedAdvantages, "<h5>Advanced Game Advantages</h5>") +
@@ -1086,7 +1086,7 @@ namespace Treachery.Client
                 <ul>
                 <li>Payments for treachery cards go to you.</li>" +
 
-              If(g, Rule.RedSupportingNonAllyBids, 
+              If(g, Rule.RedSupportingNonAllyBids,
                "<li>You may support bids of non-allied players. Any {16} paid this way flows back to you at the end of the bidding phase.</li>") +
 
                "</ul>" +
@@ -1095,7 +1095,7 @@ namespace Treachery.Client
               @"<h5>Advanced Game Advantages</h5>
                 <p>Your 5 {24} have a special fighting capability. They are worth two normal tokens in battle and in taking losses against all opponents except {3}. They are treated as one token in revival. Only one starred token can be revived per turn.</p>") +
 
-              If(g, Rule.AdvancedKarama, 
+              If(g, Rule.AdvancedKarama,
               @"<p><strong>Special {19}:</strong> you may use a {19} card to revive up to three tokens or one leader for free.</p>") +
 
               @"<h5>Alliance</h5>
@@ -1154,7 +1154,7 @@ namespace Treachery.Client
                 <li>At start of game you secretly predict which faction will win in which turn (you can't predict the special victory condition of {4} or {3} at the end of play). If that factions wins (alone or as an ally, even your own) when you have predicted, you alone win instead. You can also win normally.</li>
                 <li>Whenever any other player ships, you may ship for free one force to {26}.</li>
                 <li>You may Voice your opponent in battle to play or not to play a projectile/poison weapon or defense, a worthless card or a <i>specific</i> special card. If he can't comply with your command, he may do as he wishes.</li>
-                </ul>" + 
+                </ul>" +
 
               If(hasAdvancedAdvantages, "<h5>Advanced Game Advantages</h5>") +
               If(g, Rule.BlueWorthlessAsKarma, "<p>You may use a worthless card as a {19} card.</p>") +
@@ -1164,8 +1164,8 @@ namespace Treachery.Client
               "<li>Advisors cannot collect {16}, cannot be involved in combat, don't prevent opponent control of a stronghold and don't yield three territory movement bonus. They are still susceptible to storms, {15} and {18}/{17} explosions.</li>") +
               If(PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(g), "<li>Instead of starting with 1 force in {26} you may start with an advisor in a territory of choice.</li>") +
               If(BlueAccompanies.BlueMayAccompanyToShipmentLocation(g), "<li>You can ship advisors to a territory where you have advisors and whenever any other player ships, instead of shipping a force to {26}, you may ship an advisor to the same territory.</li>") +
-              If(g, Rule.BlueAdvisors, "<li>You may announce before the {21} phase all territories in which you no longer wish to peacefully coexist. Advisors there are flipped to fighters.</li>") + 
-              If(g, Rule.BlueAdvisors, "<li>When you move forces into an occupied territory where you don't have forces or when another player moves tokens into a territory where you have advisors, you decide to stay there as either advisors or fighters.</li>") + 
+              If(g, Rule.BlueAdvisors, "<li>You may announce before the {21} phase all territories in which you no longer wish to peacefully coexist. Advisors there are flipped to fighters.</li>") +
+              If(g, Rule.BlueAdvisors, "<li>When you move forces into an occupied territory where you don't have forces or when another player moves tokens into a territory where you have advisors, you decide to stay there as either advisors or fighters.</li>") +
               If(g, Rule.BlueAdvisors, "<li>You cannot have both advisors and fighters in the same territory.</li>") +
               IfNot(g, Rule.AdvisorsDontConflictWithAlly, "<li>Allied forces may not willingly end up in a territory where you have advisors (and vice versa).</li>") +
               "</ul>" +
@@ -1204,7 +1204,7 @@ namespace Treachery.Client
                 <li>{44}’s value in battle matches the value of the opponent’s leader (0 for a Cheap Hero), and for collecting {16} when killed. {44} costs 3 to revive.</li>
                 </ul>" +
 
-              If(g, Rule.PurpleGholas, 
+              If(g, Rule.PurpleGholas,
               @"<h5>Advanced Game Advantages</h5>
                 <p>When you have fewer than five leaders available, you may revive dead leaders of other factions at your discounted rate and add them to your leader pool.</p>") +
 
@@ -1336,7 +1336,7 @@ namespace Treachery.Client
         private static string IfNot(Game game, Rule rule, string text) => If(!game.Applicable(rule), text);
 
         private static string If(bool condition, string text) => condition ? text : "";
-                
+
 
         #endregion FactionManual
 

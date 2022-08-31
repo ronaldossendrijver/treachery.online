@@ -728,8 +728,8 @@ namespace Treachery.Shared
                 result.DefMessiahContribution = def.Messiah && def.Hero != null ? 2 : 0;
             }
 
-            int aggHeroContribution = result.AggHeroKilled || (Version < 145 && rockMelterUsed)? 0 : result.AggHeroEffectiveStrength + result.AggHeroSkillBonus + result.AggMessiahContribution - result.AggBattlePenalty;
-            int defHeroContribution = result.DefHeroKilled || (Version < 145 && rockMelterUsed)? 0 : result.DefHeroEffectiveStrength + result.DefHeroSkillBonus + result.DefMessiahContribution - result.DefBattlePenalty;
+            int aggHeroContribution = result.AggHeroKilled || (Version < 145 && rockMelterUsed) ? 0 : result.AggHeroEffectiveStrength + result.AggHeroSkillBonus + result.AggMessiahContribution - result.AggBattlePenalty;
+            int defHeroContribution = result.DefHeroKilled || (Version < 145 && rockMelterUsed) ? 0 : result.DefHeroEffectiveStrength + result.DefHeroSkillBonus + result.DefMessiahContribution - result.DefBattlePenalty;
 
             float aggForceDial;
             float defForceDial;
@@ -745,8 +745,8 @@ namespace Treachery.Shared
                 defForceDial = result.Defender.AnyForcesIn(CurrentBattle.Territory) - def.TotalForces;
             }
 
-            result.AggTotal = aggForceDial + aggHeroContribution ;
-            result.DefTotal = defForceDial + defHeroContribution ;
+            result.AggTotal = aggForceDial + aggHeroContribution;
+            result.DefTotal = defForceDial + defHeroContribution;
 
             agg.DeactivateDynamicWeapons();
             def.DeactivateDynamicWeapons();
@@ -1157,7 +1157,7 @@ namespace Treachery.Shared
                 Log(e.Initiator, " look at ", TraitorsDeciphererCanLookAt.Count, " leaders in the traitor deck");
             }
 
-            if (e.ReplacedTraitor != null && e.NewTraitor != null)
+            if (e.ReplacedTraitor != null && e.NewTraitor != null && DeciphererMayReplaceTraitor)
             {
                 DeciphererReplacesTraitors(e);
             }
@@ -1467,7 +1467,7 @@ namespace Treachery.Shared
 
         private MessagePart DetermineSourceLocations(FaceDanced f)
         {
-            return MessagePart.ExpressIf(f.ForceLocations.Count > 0, f.ForceLocations.Select(fl => MessagePart.Express(", ", fl.Value.AmountOfForces, " from ", fl.Key)));
+            return MessagePart.ExpressIf(f.ForceLocations.Count > 0, f.ForceLocations.Where(fl => fl.Value.TotalAmountOfForces > 0).Select(fl => MessagePart.Express(", ", fl.Value.AmountOfForces, " from ", fl.Key)));
         }
 
         public IHero WinnerHero

@@ -119,7 +119,7 @@
             <ReportComponent h="@h" Report="h.Game.CurrentReport" />
         }
 
-        @if (!h.IsObserver && h.Player.Faction == Faction.None && h.CurrentPhase > Phase.TradingFactions)
+        @if (!h.IsObserver && h.CurrentPhase > Phase.TradingFactions && h.Player.Faction == Faction.None)
         {
             foreach (Player p in h.Game.Players)
             {

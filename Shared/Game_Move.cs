@@ -2,7 +2,6 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
  */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -121,7 +120,7 @@ namespace Treachery.Shared
 
                 LastShippedOrMovedTo = s.To;
                 bool mustBeAdvisors = (initiator.Is(Faction.Blue) && (initiator.SpecialForcesIn(s.To) > 0) || Version >= 148 && initiator.SpecialForcesIn(s.To.Territory) > 0);
-                
+
                 if (s.IsSiteToSite)
                 {
                     PerformSiteToSiteShipment(s, initiator);

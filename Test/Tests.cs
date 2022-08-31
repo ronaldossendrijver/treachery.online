@@ -26,10 +26,11 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            
-            if (e is BattleConcluded bc && bc.Initiator == Faction.Purple && g.SkilledAs(g.WinnerHero, LeaderSkill.Decipherer)) {
-                
-                    WriteSavegameIfApplicable(g, e.Player, "Purple Decipherer");
+
+            if (e is BattleConcluded bc && bc.Initiator == Faction.Purple && g.SkilledAs(g.WinnerHero, LeaderSkill.Decipherer))
+            {
+
+                WriteSavegameIfApplicable(g, e.Player, "Purple Decipherer");
             }
         }
 
@@ -93,7 +94,7 @@ namespace Treachery.Test
                     return "Illegal number of forces: " + p;
                 }
             }
-            
+
             if (g.Players.Any(p => p.Leaders.Count(l => g.IsInFrontOfShield(l)) > 1))
             {
                 return "More than 1 leader in front of shield after " + e.GetType().Name + " - " + g.History.Count;

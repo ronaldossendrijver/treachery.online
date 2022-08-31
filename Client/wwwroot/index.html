@@ -22,6 +22,8 @@
 
     <script type="text/javascript">
 
+        const LoggingEnabled = false;
+
         function GetLocalStorageKeys() {
 
             let result = [];
@@ -59,21 +61,26 @@
 
         function SetPlanetMapScale() {
 
-            planetmap = document.getElementById('planetmap');
-            if (planetmap != null) {
+            try {
 
-                mapdiv = document.getElementById('mapdiv');
-                if (mapdiv != null) {
+                planetmap = document.getElementById('planetmap');
+                if (planetmap != null) {
 
-                    planetmap_inner = document.getElementById('planetmap_inner');
-                    scale = mapdiv.offsetWidth / planetmap_inner.offsetWidth;
-                    planetmap.style.transform = 'scale(' + scale + ')';
+                    mapdiv = document.getElementById('mapdiv');
+                    if (mapdiv != null) {
 
-                    planetmap_filler = document.getElementById('planetmap-filler');
-                    planetmap_filler.style.height = 1.110012062726176 * mapdiv.offsetWidth + "px";
+                        planetmap_inner = document.getElementById('planetmap_inner');
+                        scale = mapdiv.offsetWidth / planetmap_inner.offsetWidth;
+                        planetmap.style.transform = 'scale(' + scale + ')';
+
+                        planetmap_filler = document.getElementById('planetmap-filler');
+                        planetmap_filler.style.height = 1.110012062726176 * mapdiv.offsetWidth + "px";
+                    }
                 }
             }
+            catch {
 
+            }
         }
 
         function GetWindowDimensions() {
@@ -147,6 +154,8 @@
         let sounds = new Map();
         function PlaySound(file, volume, loop) {
 
+            Log("PlaySound(" + file + "," + volume + "," + loop + ")");
+
             try {
 
                 let sound = sounds.get(file);
@@ -175,6 +184,8 @@
             let sound = sounds.get(file);
             if (sound != null) {
 
+                Log("StopSound(" + file + ")");
+
                 sound.stop();
             }
         }
@@ -183,6 +194,8 @@
 
             let sound = sounds.get(file);
             if (sound != null) {
+
+                Log("FadeSound(" + file + "," + fromVolume + "," + toVolume + "," + seconds + ")");
 
                 sound.fade(fromVolume, toVolume, seconds);
             }
@@ -193,12 +206,14 @@
             let sound = sounds.get(file);
             if (sound != null) {
 
+                Log("ChangeSoundVolume(" + file + "," + volume + ")");
                 sound.volume(volume);
             }
         }
 
         function StopSounds() {
 
+            Log("StopSounds()");
             Howler.stop();
         }
 
@@ -360,6 +375,14 @@
 
             window.onbeforeunload = null;
             location.reload();
+        }
+
+        function Log(text) {
+
+            if (LoggingEnabled) {
+
+                console.log(text);
+            }
         }
 
         /*

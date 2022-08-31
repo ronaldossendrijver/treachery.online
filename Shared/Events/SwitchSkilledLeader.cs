@@ -3,8 +3,6 @@
  */
 
 using System.Linq;
-using System.Numerics;
-using Newtonsoft.Json;
 
 namespace Treachery.Shared
 {

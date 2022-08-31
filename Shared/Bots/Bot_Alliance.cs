@@ -57,11 +57,6 @@ namespace Treachery.Shared
                 return new AllianceBroken(Game) { Initiator = Faction };
             }
 
-            if (Ally != Faction.None && Game.Players.Any(p => p.Ally == Faction.None) && PlayerStanding(this) > 3 * PlayerStanding(AlliedPlayer))
-            {
-                return new AllianceBroken(Game) { Initiator = Faction };
-            }
-
             return null;
         }
 

@@ -14,7 +14,7 @@
 
         @if (FaceDanced.MayCallFaceDancer(Game, Player))
         {
-            <div class="mb-2">If you decide to reveal, you may place up to <strong>@FaceDanced.MaximumNumberOfForces(Game, Player)</strong> forces in <strong>@Game.CurrentBattle.Territory</strong> from your reserves and/or from anywhere on the planet.</div>
+            <div class="mb-2">If you decide to reveal, you may place up to <strong>@FaceDanced.MaximumNumberOfForces(Game, Player)</strong> forces in <strong>@Name(Game.CurrentBattle.Territory)</strong> from your reserves and/or from anywhere on the planet.</div>
 
             <SelectForcesComponent @bind-Value="forcesFromReserve" Min="0" Max="Player.ForcesInReserve" Faction="Faction" Special="false" Label="From reserves:"/>
 
