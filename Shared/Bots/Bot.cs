@@ -153,7 +153,7 @@ namespace Treachery.Shared
             return null;
         }
 
-        private EndPhase DetermineEndPhase() => new EndPhase(Game) { Initiator = Faction };
+        private EndPhase DetermineEndPhase() => new(Game) { Initiator = Faction };
 
         private bool Do<T>(Func<T> method, ref GameEvent action, IEnumerable<Type> allowedActions) where T : GameEvent
         {
@@ -226,7 +226,7 @@ namespace Treachery.Shared
             }
         }
 
-        private readonly Random random = new Random();
+        private readonly Random random = new();
         protected int D(int amount, int sides)
         {
             if (amount == 0 || sides == 0) return 0;

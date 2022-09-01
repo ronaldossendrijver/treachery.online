@@ -690,7 +690,7 @@ namespace Treachery.Client
                     Flash(flashes, Message.Express(dancer, " is a ", e.Initiator, " facedancer!"), Skin.Current.GetImageURL(dancer));
                     break;
 
-                case SwitchedSkilledLeader ssl:
+                case SwitchedSkilledLeader:
                     var leader = SwitchedSkilledLeader.SwitchableLeader(e.Game, e.Player);
                     Flash(
                         flashes,

@@ -35,7 +35,7 @@
             <Label>Rules</Label>
         </SelectComponent>
 
-        <ButtonRowComponent Confirm="StartNewOrLoadedGame" ConfirmText="@StartButtonLabel" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="StartNewOrLoadedGame" ConfirmText="@StartButtonLabel" ConfirmError=@Validate />
 
         @if (h.Host.LoadedGame == null)
         {
@@ -101,6 +101,8 @@
 
         StateHasChanged();
     }
+
+    private Message Validate => h.Host.LoadedGame == null ? Validation : null;
 
     private async Task StartNewOrLoadedGame()
     {
