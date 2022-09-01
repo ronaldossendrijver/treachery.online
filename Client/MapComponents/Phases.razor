@@ -127,7 +127,9 @@
             result += Skin.Current.Format("<h4>{0}</h4>{1}", Game.Ruleset, ruleInfo);
 
             result += Skin.Current.Format("<h4>Timers</h4>");
-            result += string.Format("<p><string>Game duration:</strong> {0}", Game.Duration.ToString(@"h\:mm\:ss"));
+            result += string.Format("<p><string>Game started:</strong> {0}", Game.Started.ToString("dddd, dd MMMM yyyy hh:mm:ss"));
+            result += string.Format("<p><string>Last activity:</strong> {0}", Game.History.Last().Time.ToString("dddd, dd MMMM yyyy hh:mm:ss"));
+            result += string.Format("<p><string>Game duration:</strong> {0} hours", Math.Round(Game.Duration.TotalHours, 1));
             result += "<table class='table table-sm table-striped'>";
             result += "<thead>";
             result += "<tr><th>Player</th><th>Bidding</th><th>Move</th><th>Battle</th><th>Total</th></tr>";
