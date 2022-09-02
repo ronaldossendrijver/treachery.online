@@ -26,11 +26,14 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-
-            if (e is BattleConcluded bc && bc.Initiator == Faction.Purple && g.SkilledAs(g.WinnerHero, LeaderSkill.Decipherer))
+            if (e is BattleConcluded && e.Initiator == Faction.Black && !g.CurrentBattle.OpponentOf(Faction.Black).Leaders.Any(l => g.IsAlive(l)) && g.CurrentBattle.PlanOfOpponent(e.Player).Hero is Leader battleLeader &&  g.IsAlive(battleLeader))
             {
+                WriteSavegameIfApplicable(g, e.Player, "Capturing last leader used in battle by harkonnen opponent...");
+            }
 
-                WriteSavegameIfApplicable(g, e.Player, "Purple Decipherer");
+            if (e is BattleConcluded && e.Initiator == Faction.Black && !g.CurrentBattle.OpponentOf(Faction.Black).Leaders.Any(l => g.IsAlive(l)) && g.CurrentBattle.PlanOf(e.Player).Hero is Leader stolenLeader && g.IsAlive(stolenLeader))
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Capturing last leader returned after used in battle by harkonnen...");
             }
         }
 
@@ -345,7 +348,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 2000;
+            int nrOfGames = 200;
             int nrOfTurns = 10;
             int nrOfPlayers = 6;
 
