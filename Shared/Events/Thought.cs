@@ -51,7 +51,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<TreacheryCard> ValidCards(Game g)
         {
-            return TreacheryCardManager.GetCardsInPlay(g).Where(c => c.IsWeapon);
+            return TreacheryCardManager.GetCardsInPlay(g).Where(c => c.IsWeapon && c.Type != TreacheryCardType.Chemistry);
         }
 
         public static bool MayBeUsed(Game game, Player player)

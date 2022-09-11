@@ -81,7 +81,7 @@ else
         {
             var result = string.Format("position:absolute;left:{0};top:{1};width:{2};height:{3};opacity:{4};", Px(X), Px(Y), Px(Width), Px(Height), Round(Opacity));
 
-            if (OnClick.HasDelegate || OnMouseOver.HasDelegate || Popover != null)
+            if (OnClick.HasDelegate || OnMouseOver.HasDelegate || Popover != null || Title != "")
             {
                 result += "cursor:pointer;pointer-events:all;";
             }

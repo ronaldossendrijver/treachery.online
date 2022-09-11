@@ -486,6 +486,7 @@ namespace Treachery.Shared
         DisableResourceTransfers = 115,
         StormDeckWithoutYellow = 116,
         AssistedNotekeepingForGreen = 117,
+        YellowAllyGetsDialedResourcesRefunded = 118,
 
         ExtraKaramaCards = 999,
 

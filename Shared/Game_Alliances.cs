@@ -38,6 +38,7 @@ namespace Treachery.Shared
                     YellowWillProtectFromShaiHulud = e.YellowWillProtectFromMonster;
                     YellowAllowsThreeFreeRevivals = e.YellowAllowsThreeFreeRevivals;
                     YellowSharesPrescience = e.YellowSharesPrescience;
+                    YellowRefundsBattleDial = e.YellowRefundsBattleDial;
                     break;
 
                 case Faction.Green:
@@ -66,6 +67,7 @@ namespace Treachery.Shared
         public bool YellowWillProtectFromShaiHulud { get; private set; } = false;
         public bool YellowAllowsThreeFreeRevivals { get; private set; } = false;
         public bool YellowSharesPrescience { get; private set; } = false;
+        public bool YellowRefundsBattleDial { get; private set; } = false;
         public bool GreenSharesPrescience { get; private set; } = false;
 
         private Dictionary<Faction, int> PermittedUseOfAllySpice { get; } = new Dictionary<Faction, int>();

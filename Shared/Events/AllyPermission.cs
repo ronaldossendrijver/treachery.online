@@ -21,6 +21,7 @@ namespace Treachery.Shared
         public bool YellowWillProtectFromMonster { get; set; }
         public bool YellowAllowsThreeFreeRevivals { get; set; }
         public bool YellowSharesPrescience { get; set; }
+        public bool YellowRefundsBattleDial { get; set; }
         public bool AllyMayReviveAsPurple { get; set; }
         public bool AllyMayReplaceCards { get; set; }
         public bool GreenSharesPrescience { get; set; }

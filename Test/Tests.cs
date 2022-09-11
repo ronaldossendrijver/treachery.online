@@ -26,6 +26,13 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            /*
+            if (g.Version >= 149 && e is Battle && e.Player.Resources > 0 && e.Player.Ally == Faction.Yellow)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Battle by Fremen ally (" + e.Player.AlliedPlayer.Name + ")...");
+            }
+            */
+            /*
             if (e is BattleConcluded && e.Initiator == Faction.Black && !g.CurrentBattle.OpponentOf(Faction.Black).Leaders.Any(l => g.IsAlive(l)) && g.CurrentBattle.PlanOfOpponent(e.Player).Hero is Leader battleLeader &&  g.IsAlive(battleLeader))
             {
                 WriteSavegameIfApplicable(g, e.Player, "Capturing last leader used in battle by harkonnen opponent...");
@@ -35,6 +42,7 @@ namespace Treachery.Test
             {
                 WriteSavegameIfApplicable(g, e.Player, "Capturing last leader returned after used in battle by harkonnen...");
             }
+            */
         }
 
         private readonly List<Type> Written = new();
@@ -348,7 +356,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 200;
+            int nrOfGames = 1000;
             int nrOfTurns = 10;
             int nrOfPlayers = 6;
 

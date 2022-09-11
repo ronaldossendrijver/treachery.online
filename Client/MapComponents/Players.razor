@@ -109,6 +109,50 @@
                          Align="@TextAlignment.Center"/>
             }
 
+            var totalSpiceToReceiveLater = p.Bribes + p.BankedResources;
+
+            if (totalSpiceToReceiveLater > 0)
+            {
+                ttRad += (TWOPI / 90);
+                var ttx = Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad)) * techtokenOrbitRadius - Skin.Current.FORCETOKEN_RADIUS;
+                var tty = Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad)) * techtokenOrbitRadius - Skin.Current.FORCETOKEN_RADIUS;
+
+                string tooltip = "Bribes";
+
+                <Image X=ttx Y=tty Width=@(2 * Skin.Current.FORCETOKEN_RADIUS) Height=@(2 * Skin.Current.FORCETOKEN_RADIUS) 
+                    Src="@Skin.Current.Harvester_URL"
+                    Title=@tooltip
+                    ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" />
+
+                <MapText ToShow=@totalSpiceToReceiveLater.ToString()
+                     X=@(ttx + Skin.Current.FORCETOKEN_RADIUS) Y=@(tty + Skin.Current.FORCETOKEN_RADIUS)
+                     Font="@Skin.Current.RESOURCETOKEN_FONT" FontColor="@Skin.Current.RESOURCETOKEN_FONTCOLOR"
+                     Title=@tooltip
+                     BorderWidth="@Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
+                     Align="@TextAlignment.Center"/>
+            }
+
+            if (p.ResourcesAfterBidding > 0)
+            {
+                ttRad += (TWOPI / 90);
+                var ttx = Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad)) * techtokenOrbitRadius - Skin.Current.FORCETOKEN_RADIUS;
+                var tty = Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad)) * techtokenOrbitRadius - Skin.Current.FORCETOKEN_RADIUS;
+
+                string tooltip = Skin.Current.Format("Subbed {0}", Concept.Resource);
+
+                <Image X=ttx Y=tty Width=@(2 * Skin.Current.FORCETOKEN_RADIUS) Height=@(2 * Skin.Current.FORCETOKEN_RADIUS) Popover=@tooltip
+                    Src="@Skin.Current.Harvester_URL"
+                    Title=@tooltip
+                    ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" />
+
+                <MapText ToShow=@tooltip
+                     X=@(ttx + Skin.Current.FORCETOKEN_RADIUS) Y=@(tty + Skin.Current.FORCETOKEN_RADIUS)
+                     Font="@Skin.Current.RESOURCETOKEN_FONT" FontColor="@Skin.Current.RESOURCETOKEN_FONTCOLOR"
+                     Title=@tooltip
+                     BorderWidth="@Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
+                     Align="@TextAlignment.Center"/>
+            }
+
             <MapText ToShow="@p.Name"
                      X="@position.X" Y="@y"
                      Font="@Skin.Current.PLAYERNAME_FONT" FontColor="@Skin.Current.PLAYERNAME_FONTCOLOR"

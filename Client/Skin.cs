@@ -752,6 +752,8 @@ namespace Treachery.Client
                 Rule.DisableEndOfGameReport => "Disable end-of-game report (don't reveal player shields)",
                 Rule.DisableOrangeSpecialVictory => Format("Disable {0} special victory condition", Faction.Orange),
                 Rule.DisableResourceTransfers => Format("Only allow transfer of {0} by alliance rules", Concept.Resource),
+                Rule.YellowAllyGetsDialedResourcesRefunded => Format("{0} ally may get {1} dialled in battles refunded in {2} phase", Faction.Yellow, Concept.Resource, MainPhase.Contemplate),
+
                 _ => "unknown rule",
             };
         }

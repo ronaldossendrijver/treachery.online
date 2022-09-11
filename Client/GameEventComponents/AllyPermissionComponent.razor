@@ -110,6 +110,14 @@
                         Share storm knowledge (currently: <strong>@(Game.YellowSharesPrescience ? "yes" : "no")</strong>)
                     </CheckboxComponent>
                 }
+
+                @if (Game.Applicable(Rule.YellowAllyGetsDialedResourcesRefunded))
+                {
+                    <CheckboxComponent @bind-Value="fremenRefundsDial" OnChanged=SetEdited>
+                        Refund @Name(Concept.Resource) dialled in battle (currently: <strong>@(Game.YellowRefundsBattleDial ? "yes" : "no")</strong>)
+                    </CheckboxComponent>
+                }
+
                 break;
 
             case Faction.Green:
@@ -146,6 +154,7 @@
     private bool fremenWillProtectFromShaiHulud;
     private bool fremenAllowsThreeFreeRevivals;
     private bool fremenShareStormPrescience;
+    private bool fremenRefundsDial;
     private bool greenSharePrescience;
     private bool blueAllyMayUseVoice;
     private bool whiteAllyMayUseNoField;
@@ -183,6 +192,7 @@
                     fremenWillProtectFromShaiHulud = Game.YellowWillProtectFromShaiHulud;
                     fremenAllowsThreeFreeRevivals = Game.YellowAllowsThreeFreeRevivals;
                     fremenShareStormPrescience = Game.YellowSharesPrescience;
+                    fremenRefundsDial = Game.YellowRefundsBattleDial;
                     break;
 
                 case Faction.Green:
@@ -244,6 +254,7 @@
                     if (fremenWillProtectFromShaiHulud != Game.YellowWillProtectFromShaiHulud) return true;
                     if (fremenAllowsThreeFreeRevivals != Game.YellowAllowsThreeFreeRevivals) return true;
                     if (fremenShareStormPrescience != Game.YellowSharesPrescience) return true;
+                    if (fremenRefundsDial != Game.YellowRefundsBattleDial) return true;
                     break;
 
                 case Faction.Green:
@@ -272,6 +283,7 @@
             YellowAllowsThreeFreeRevivals = fremenAllowsThreeFreeRevivals,
             YellowWillProtectFromMonster = fremenWillProtectFromShaiHulud,
             YellowSharesPrescience = fremenShareStormPrescience,
+            YellowRefundsBattleDial = fremenRefundsDial,
             GreenSharesPrescience = greenSharePrescience,
             BlueAllowsUseOfVoice = blueAllyMayUseVoice,
             WhiteAllowsUseOfNoField = whiteAllyMayUseNoField,

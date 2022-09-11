@@ -96,11 +96,11 @@ namespace Treachery.Shared
         {
             if (Must)
             {
-                return Message.Express(Faction.Blue, " use Voice to force the use of ", Type);
+                return Message.Express(Initiator, " use Voice to force the use of ", Type);
             }
             else
             {
-                return Message.Express(Faction.Blue, " use Voice to deny the use of ", Type);
+                return Message.Express(Initiator, " use Voice to deny the use of ", Type);
             }
         }
 

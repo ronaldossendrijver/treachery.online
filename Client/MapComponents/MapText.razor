@@ -12,14 +12,15 @@
         @ref=@element
         style=@Style
         data-bs-trigger="hover" data-bs-toggle="popover" data-bs-html="true" data-bs-animation="false" data-bs-delay="50" data-container="body" data-bs-content="@Popover" data-bs-template="@PopoverTemplate">
-        @ToShow
-        @ChildContent
+            @ToShow
+            @ChildContent
     </span>
 }
 else
 {
     <span 
         @ref=@element
+        title="@Title"
         style="@Style;user-select:none;">
         @ToShow
         @ChildContent
@@ -70,6 +71,9 @@ else
         }
     }
 
+    [Parameter]
+    public string Title { get; set; } = "";
+
     private float TextWidth;
     private float TextHeight;
     private float AlignedX;
@@ -109,7 +113,7 @@ else
         Font, FontColor, 
         Px(MaxWidth), 
         Support.TextBorder(BorderWidth, BorderColor),
-        Popover != null ? "cursor:pointer;pointer-events:all" : "pointer-events:none");
+        Popover != null || Title != "" ? "cursor:pointer;pointer-events:all" : "pointer-events:none");
     
 
     public void Dispose()

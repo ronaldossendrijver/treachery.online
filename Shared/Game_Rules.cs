@@ -291,6 +291,7 @@ namespace Treachery.Shared
                 case Rule.DisableEndOfGameReport:
                 case Rule.DisableOrangeSpecialVictory:
                 case Rule.DisableResourceTransfers:
+                case Rule.YellowAllyGetsDialedResourcesRefunded:
                     return RuleGroup.House;
 
                 case Rule.FillWithBots:

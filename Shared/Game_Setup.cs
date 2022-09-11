@@ -71,6 +71,7 @@ namespace Treachery.Shared
             YellowWillProtectFromShaiHulud = true;
             YellowAllowsThreeFreeRevivals = true;
             YellowSharesPrescience = true;
+            YellowRefundsBattleDial = true;
             GreenSharesPrescience = true;
             BlueAllyMayUseVoice = true;
             WhiteAllyMayUseNoField = true;

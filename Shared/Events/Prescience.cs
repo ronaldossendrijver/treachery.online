@@ -60,7 +60,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express(Faction.Green, " use Prescience to see the enemy ", Aspect);
+            return Message.Express(Initiator, " use Prescience to see the enemy ", Aspect);
         }
     }
 
