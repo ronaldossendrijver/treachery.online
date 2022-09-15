@@ -42,7 +42,6 @@ namespace Treachery.Client
         public CaptureDevice VideoDevice { get; set; }
 
         //Settings
-        public bool ShowWheelsAndHMS { get; set; } = true;
         public Battle BattleUnderConstruction { get; set; } = null;
         public int BidAutoPassThreshold { get; set; } = 0;
         public bool Autopass { get; set; } = false;

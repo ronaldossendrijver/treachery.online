@@ -6,49 +6,93 @@
 @inherits MapComponent
 
 @{
+    if (h.Game.Map.HiddenMobileStronghold.Visible)
+    {
+        var hmsCenter = Skin.Current.GetCenter(h.Game.Map.HiddenMobileStronghold);
+
+        <Image 
+           X="@(hmsCenter.X - 0.7f * Skin.Current.HmsRadius)"
+           Y="@(hmsCenter.Y - Skin.Current.HmsRadius)"
+           Width=@(Skin.Current.HmsRadius + Math.Abs(Skin.Current.HmsDX)) Height="@(2 * Skin.Current.HmsRadius)"
+           Src="@Skin.Current.HMS_URL"
+           ShadowColor="@Skin.Current.SHADOW" ShadowX="5" ShadowY="5" ShadowBlur="1"
+           Opacity="@(showHMS ? 1f : 0.2f)"
+           Popover="@Intel(h.Game.Map.HiddenMobileStronghold)"
+           OnClick="@(e => OnClick(e, h.Game.Map.HiddenMobileStronghold))" />
+
+        @if (showHMS && h.Status.HighlightedTerritories.Contains(h.Game.Map.HiddenMobileStronghold.Territory))
+            {
+                <Circle X="(hmsCenter.X + 0.3f * Skin.Current.HmsRadius)" Y="hmsCenter.Y" Radius="(0.85f * Skin.Current.HmsRadius)"
+                    FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1" />
+            }
+
+        <Image 
+            X="@(hmsCenter.X - 0.4f * Skin.Current.HmsRadius + Math.Abs(Skin.Current.HmsDX))"
+            Y="@(hmsCenter.Y - 0.18f * Skin.Current.HmsRadius)" 
+            Diameter="@(Skin.Current.FORCETOKEN_RADIUS)"
+            Src="@(showHMS ? Skin.Current.Eye_URL : Skin.Current.EyeSlash_URL)"
+            OnClick="OnShowHmsClick"
+            Title="@(showHMS ? "Hide HMS" : "Show HMS")" />
+    }
+
+    foreach (var stronghold in h.Game.Map.Strongholds)
+    {
+        if (h.Game.StrongholdOwnership.ContainsKey(stronghold))
+        {
+            var opacity = stronghold == Game.Map.HiddenMobileStronghold && !showHMS ? 0.2f : 0.9f;
+            var center = Skin.Current.GetCenter(stronghold);
+            <Image X="@(center.X - 2 * Skin.Current.PlayerTokenRadius)" Y="@(center.Y - 0.8f * Skin.Current.PlayerTokenRadius)" Diameter=@(Skin.Current.PlayerTokenRadius) Src="@Skin.Current.FactionTableImage_URL[h.Game.StrongholdOwnership[stronghold]]"
+       ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Opacity=opacity Popover=@Popup.Get(stronghold, Game.StrongholdOwnership[stronghold]) />
+        }
+    }
+
+
     var forceLocations = Game.ForcesOnPlanetExcludingEmptyLocations;
 
     foreach (var location in Game.Map.Locations.OrderBy(l => Skin.Current.GetCenter(l).Y))
     {
-        int xOffset = 0;
-        int yOffset = 0;
-        var pos = Skin.Current.GetCenter(location);
-
-        if (forceLocations.ContainsKey(location))
+        if (showHMS || location != Game.Map.HiddenMobileStronghold)
         {
-            var battalions = forceLocations[location];
-            int nrOfBattalions = battalions.Count;
-            yOffset = -(nrOfBattalions - 1) * Skin.Current.FORCETOKEN_RADIUS;
+            int xOffset = 0;
+            int yOffset = 0;
+            var pos = Skin.Current.GetCenter(location);
 
-            foreach (var battalion in battalions)
+            if (forceLocations.ContainsKey(location))
             {
-                var player = Game.GetPlayer(battalion.Faction);
-                var threatened = Game.ThreatenedByAllyPresence(player, location.Territory);
+                var battalions = forceLocations[location];
+                int nrOfBattalions = battalions.Count;
+                yOffset = -(nrOfBattalions - 1) * Skin.Current.FORCETOKEN_RADIUS;
 
-                xOffset = 0;
-                if (battalion.AmountOfForces > 0)
+                foreach (var battalion in battalions)
                 {
-                    <MapForce X=@pos.X Y=@(yOffset + pos.Y) Special=@false Amount=@battalion.AmountOfForces Faction=@battalion.Faction Threatened=@threatened ShowPopover="false"/>
-                    xOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
-                }
+                    var player = Game.GetPlayer(battalion.Faction);
+                    var threatened = Game.ThreatenedByAllyPresence(player, location.Territory);
 
-                if (battalion.AmountOfSpecialForces > 0)
-                {
-                    <MapForce X=@(pos.X + xOffset) Y=@(yOffset + pos.Y) Special=@true Amount=@battalion.AmountOfSpecialForces Faction=@battalion.Faction Threatened=@threatened ShowPopover="false"/>
-                    xOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
-                }
+                    xOffset = 0;
+                    if (battalion.AmountOfForces > 0)
+                    {
+                        <MapForce X=@pos.X Y=@(yOffset + pos.Y) Special=@false Amount=@battalion.AmountOfForces Faction=@battalion.Faction Threatened=@threatened ShowPopover="false"/>
+                        xOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
+                    }
 
-                yOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
+                    if (battalion.AmountOfSpecialForces > 0)
+                    {
+                        <MapForce X=@(pos.X + xOffset) Y=@(yOffset + pos.Y) Special=@true Amount=@battalion.AmountOfSpecialForces Faction=@battalion.Faction Threatened=@threatened ShowPopover="false"/>
+                        xOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
+                    }
+
+                    yOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
+                }
             }
-        }
 
-        if (Game.AnyForcesIn(location.Territory) ? forceLocations.ContainsKey(location) : location == location.Territory.MiddleLocation)
-        {
-            xOffset = 0;
-            foreach (var hero in Game.LeaderState.Where(state => state.Key is IHero && state.Value.Alive && state.Value.CurrentTerritory == location.Territory).Select(state => state.Key))
+            if (Game.AnyForcesIn(location.Territory) ? forceLocations.ContainsKey(location) : location == location.Territory.MiddleLocation)
             {
-                <MapLeader h="h" ToShow="hero" X=@(pos.X + xOffset - Skin.Current.FORCETOKEN_RADIUS) Y=@(yOffset + pos.Y - Skin.Current.FORCETOKEN_RADIUS) Diameter="@(3 * Skin.Current.FORCETOKEN_RADIUS)"/>
-                xOffset += 3 * Skin.Current.FORCETOKEN_RADIUS;
+                xOffset = 0;
+                foreach (var hero in Game.LeaderState.Where(state => state.Key is IHero && state.Value.Alive && state.Value.CurrentTerritory == location.Territory).Select(state => state.Key))
+                {
+                    <MapLeader h="h" ToShow="hero" X=@(pos.X + xOffset - Skin.Current.FORCETOKEN_RADIUS) Y=@(yOffset + pos.Y - Skin.Current.FORCETOKEN_RADIUS) Diameter="@(3 * Skin.Current.FORCETOKEN_RADIUS)"/>
+                    xOffset += 3 * Skin.Current.FORCETOKEN_RADIUS;
+                }
             }
         }
     }
@@ -57,5 +101,30 @@
 @code {
 
     private Situation situation = new();
-    protected override bool ShouldRender() => situation.RequiresUpdate(Game);
+    protected override bool ShouldRender() => CheckAndResetDirty() || situation.RequiresUpdate(Game);
+
+    private bool showHMS = true;
+    private bool dirty = false;
+
+    [Parameter]
+    public EventCallback<LocationEventArgs> OnLocationClick { get; set; }
+
+    private async Task OnClick(MouseEventArgs e, Location l)
+    {
+        await OnLocationClick.InvokeAsync(new LocationEventArgs() { Location = l, AltKey = e.AltKey, CtrlKey = e.CtrlKey, ShiftKey = e.ShiftKey });
+    }
+
+    private bool CheckAndResetDirty()
+    {
+        bool result = dirty;
+        dirty = false;
+        return result;
+    }
+
+    private void OnShowHmsClick(MouseEventArgs e)
+    {
+        showHMS = !showHMS;
+        dirty = true;
+        StateHasChanged();
+    }
 }

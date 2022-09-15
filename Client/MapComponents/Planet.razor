@@ -63,30 +63,9 @@
 
 </svg>
 
-@if (h.Game.Map.HiddenMobileStronghold.Visible)
-{
-    var hmsCenter = Skin.Current.GetCenter(h.Game.Map.HiddenMobileStronghold);
-    bool isInFrontOfPlayerToken = h.Game.Players.Any(p => Near(hmsCenter, PlayerTokenPosition(h.Game, p.PositionAtTable), Skin.Current.PlayerTokenRadius));
-   
-    <Image X="@(hmsCenter.X - 0.9f * Skin.Current.HmsRadius)" 
-           Y="@(hmsCenter.Y - Skin.Current.HmsRadius)" 
-           Width=@(Skin.Current.HmsRadius + Math.Abs(Skin.Current.HmsDX)) Height="@(2 * Skin.Current.HmsRadius)" 
-           Src="@Skin.Current.HMS_URL" 
-           ShadowColor="@Skin.Current.SHADOW" ShadowX="5" ShadowY="5" ShadowBlur="1"
-           Opacity="@(!isInFrontOfPlayerToken && h.ShowWheelsAndHMS ? 0.95f : 0.4f)"
-           Popover="@Intel(h.Game.Map.HiddenMobileStronghold)"
-           OnClick="@(e => OnClick(e, h.Game.Map.HiddenMobileStronghold))"/>
 
-    @if (h.ShowWheelsAndHMS && (hovered == h.Game.Map.HiddenMobileStronghold || h.Status.HighlightedTerritories.Contains(h.Game.Map.HiddenMobileStronghold.Territory)))
-    {
-        <Circle X="(hmsCenter.X + 0.1f * Skin.Current.HmsRadius)" Y="hmsCenter.Y" Radius="(0.9f * Skin.Current.HmsRadius)"
-                FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1"/>
-    }
-}
 
 @code {
-
-    private Location hovered = null;
 
     private Situation situation = new();
     protected override bool ShouldRender() => situation.RequiresUpdate(Game);
@@ -105,14 +84,11 @@
 
     private string LocationColor(Location l) {
 
-        if (l == hovered)
-        {
-            return Skin.Current.HIGHLIGHT_OVERLAY_COLOR;
-        }
         if (Game.SectorInStorm >= 0 && l.Sector == Game.SectorInStorm)
         {
             return Skin.Current.STORM_OVERLAY_COLOR;
         }
+
         if (Game.HasStormPrescience(Player) && NextStormWillPassOver(l))
         {
             return Skin.Current.STORM_PRESCIENCE_OVERLAY_COLOR;
@@ -152,16 +128,6 @@
         await OnLocationClick.InvokeAsync(new LocationEventArgs() { Location = l, AltKey = e.AltKey, CtrlKey = e.CtrlKey, ShiftKey = e.ShiftKey });
     }
 
-    private void OnHovered(MouseEventArgs e, Location l)
-    {
-        hovered = l;
-    }
-
-    private void OnExited(MouseEventArgs e, Location l)
-    {
-        hovered = null;
-    }
-
     private float Angle => 360f / Map.NUMBER_OF_SECTORS;
 
     private float StartX(int sector) => (float)Math.Cos(2f * Math.PI * (6 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.X;
@@ -177,129 +143,9 @@
 
     private string SectorClipName(int i) => "clipOfSector" + i;
 
-    protected string Intel(Location intelligenceLocation)
-    {
-        string result = "<div style='width:300px'>";
+    
 
-        var owner = Game.StrongholdOwnership.ContainsKey(intelligenceLocation) ? Game.StrongholdOwnership[intelligenceLocation] : Faction.None;
-        if (owner != Faction.None)
-        {
-            result += Popup.Get(intelligenceLocation, owner);
-        }
-        else
-        {
-            result += Skin.Current.Format("<h5>{0}</h5>", Skin.Current.Describe(intelligenceLocation.Territory));
-            if (intelligenceLocation.Orientation != "")
-            {
-                result += "<div class='mt-0 mb-2'><strong>Sector: " + intelligenceLocation.Orientation + "</strong></div>";
-            }
-        }
-
-        if (Skin.Current.ShowVerboseToolipsOnMap)
-        {
-            if (intelligenceLocation == Game.Map.PolarSink)
-            {
-                result += Skin.Current.Format("<p>Safe haven: no battles are fought here.</p>");
-            }
-
-            if (intelligenceLocation.Territory.IsStronghold || Game.IsSpecialStronghold(intelligenceLocation.Territory))
-            {
-                result += Skin.Current.Format("<p>Yields a victory point at end of turn.</p>");
-            }
-
-            if (intelligenceLocation == Game.Map.Arrakeen || intelligenceLocation == Game.Map.Carthag)
-            {
-                result += Skin.Current.Format("<p><strong>Harvesters: </strong>when occupied, grants a {0} collection rate of 3-per-force.</p>", Concept.Resource);
-                result += Skin.Current.Format("<p><strong>Ornithopters: </strong>when occupied, your forces can move up to 3 territories.</p>", Concept.Resource);
-            }
-
-            if (Game.Applicable(Rule.IncreasedResourceFlow))
-            {
-                if (intelligenceLocation == Game.Map.Arrakeen || intelligenceLocation == Game.Map.Carthag || intelligenceLocation == Game.Map.TueksSietch)
-                {
-                    int bonus = (intelligenceLocation == Game.Map.Arrakeen || intelligenceLocation == Game.Map.Carthag) ? 2 : 1;
-                    result += Skin.Current.Format("<p>Yields <strong>{0} {1}</strong> at end of turn when occupied.</p>", bonus, Concept.Resource);
-                }
-            }
-
-            result += Skin.Current.Format("<p>{0} from {1}.</p>", ProtectedFromMonsterText(intelligenceLocation), Concept.Monster);
-            result += Skin.Current.Format("<p>{0} from Storms.</p>", ProtectedFromStormText(intelligenceLocation));
-
-            if (intelligenceLocation.Sector == Game.SectorInStorm)
-            {
-                result += "<p>Currently in Storm.</p>";
-            }
-
-            if (intelligenceLocation.SpiceBlowAmount > 0)
-            {
-                result += Skin.Current.Format("<p>May contain <strong>{0} {1}</strong> after {2}.</p>", intelligenceLocation.SpiceBlowAmount, Concept.Resource, MainPhase.Blow);
-            }
-        }
-
-        result += SpiceAndForceInfo(intelligenceLocation);
-
-        result += "</div>";
-
-        return result;
-    }
-
-    private string SpiceAndForceInfo(Location intelligenceLocation)
-    {
-        var result = "";
-
-        result += "<div class=\"row m-0 bg-dark d-flex justify-content-center\">";
-
-        if (Game.ResourcesOnPlanet.ContainsKey(intelligenceLocation))
-        {
-            result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
-                Skin.Current.Harvester_URL,
-                Game.ResourcesOnPlanet[intelligenceLocation]);
-        }
-
-        if (Game.ForcesOnPlanetExcludingEmptyLocations.ContainsKey(intelligenceLocation))
-        {
-            foreach (var b in Game.ForcesOnPlanet[intelligenceLocation])
-            {
-                var p = Game.GetPlayer(b.Faction);
-                if (b.AmountOfSpecialForces > 0 || b.AmountOfForces > 0)
-                {
-                    if (b.AmountOfForces > 0)
-                    {
-                        result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
-                            Skin.Current.GetFactionForceImageURL(p.Faction),
-                            b.AmountOfForces);
-                    }
-
-                    if (b.AmountOfSpecialForces > 0)
-                    {
-                        result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
-                            Skin.Current.GetFactionSpecialForceImageURL(p.Faction),
-                            b.Faction == Faction.White && h.Faction != Faction.White ? "?" : "" + (b.Faction == Faction.White ? Game.CurrentNoFieldValue : b.AmountOfSpecialForces));
-                    }
-                }
-            }
-        }
-
-        foreach (var hero in Game.LeaderState.Where(state => state.Key is IHero && state.Value.Alive && state.Value.CurrentTerritory == intelligenceLocation.Territory).Select(state => state.Key))
-        {
-            result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"64\" height=\"64\" src=\"{0}\" /></div>",
-                        Skin.Current.GetImageURL(hero));
-        }
-
-        result += "</div>";
-
-        return result;
-    }
-
-    private string ProtectedFromMonsterText(Treachery.Shared.Location l)
-    {
-        return l.Territory.IsProtectedFromWorm ? "Protected" : "NOT protected";
-    }
-
-    private string ProtectedFromStormText(Treachery.Shared.Location l)
-    {
-        return h.Game.IsProtectedFromStorm(l) ? "Protected" : "NOT protected";
-    }
+    
 
     public void Dispose()
     {

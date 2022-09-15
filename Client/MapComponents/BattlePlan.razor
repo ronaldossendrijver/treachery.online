@@ -5,12 +5,13 @@
 @using Treachery.Shared
 @inherits MapComponent
 
-@{
-    <Image X="@(X)" Y="@(Y)" Diameter="@(Skin.Current.BattleScreenWidth)" Src="@Skin.Current.BattleScreen_URL" 
+@if (showPlan) {
+
+    <Image X=X Y=Y Diameter="@(Skin.Current.BattleScreenWidth)" Src="@Skin.Current.BattleScreen_URL" 
            ShadowColor="@Skin.Current.SHADOW" ShadowX="3" ShadowY="3" ShadowBlur="1" 
            Opacity="Opacity"/>
 
-    <Image X="@(X)" Y="@(Y)" Diameter="@(Skin.Current.BattleScreenWidth)" Src="@Skin.Current.FactionTableImage_URL[Plan.Initiator]" 
+    <Image X=X Y=Y Diameter="@(Skin.Current.BattleScreenWidth)" Src="@Skin.Current.FactionTableImage_URL[Plan.Initiator]" 
            Opacity="Opacity * 0.3f"/>
 
     var forceX = X + Skin.Current.BattleWheelForcesX;
@@ -184,8 +185,21 @@
         }
     }
 }
+else
+{
+    <Image X=@(X + 0.5f * Skin.Current.BattleScreenWidth - Skin.Current.FORCETOKEN_RADIUS) Y=@Y Diameter=@(2*Skin.Current.FORCETOKEN_RADIUS) Src="@Skin.Current.BattleScreen_URL"
+       ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"/>
+}
+
+<Image X=@(X + 0.5f * Skin.Current.BattleScreenWidth - 0.5f * Skin.Current.FORCETOKEN_RADIUS) Y=@(Y + 0.5f * Skin.Current.FORCETOKEN_RADIUS)
+    Diameter=@Skin.Current.FORCETOKEN_RADIUS
+    Src="@(showPlan ? Skin.Current.Eye_URL : Skin.Current.EyeSlash_URL)"
+    OnClick="OnShowPlanClick"
+    Title="@(showPlan ? "Hide Wheel" : "Show Wheel")" />
 
 @code {
+    
+    private bool showPlan = true;
 
     [Parameter]
     public Battle Plan { get; set; }
@@ -212,5 +226,11 @@
             skill == LeaderSkill.Swordmaster ||
             skill == LeaderSkill.KillerMedic ||
             skill == LeaderSkill.MasterOfAssassins;
+    }
+
+    private void OnShowPlanClick(MouseEventArgs e)
+    {
+        showPlan = !showPlan;
+        StateHasChanged();
     }
 }
