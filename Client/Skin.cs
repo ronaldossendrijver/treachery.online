@@ -748,7 +748,7 @@ namespace Treachery.Client
                 Rule.PlayersChooseFactions => Format("Let players choose their factions at start"),
                 Rule.RedSupportingNonAllyBids => Format("{0} may support bids of non-ally players", Faction.Red),
                 Rule.BattleWithoutLeader => "Allow leaderless battles even if leaders are available",
-                Rule.CapturedLeadersAreTraitorsToOwnFaction => "Captured leaders can be called as traitors by their original factions",
+                Rule.CapturedLeadersAreTraitorsToOwnFaction => "Captured leaders can be called as traitors by their original factions without a traitor card",
                 Rule.DisableEndOfGameReport => "Disable end-of-game report (don't reveal player shields)",
                 Rule.DisableOrangeSpecialVictory => Format("Disable {0} special victory condition", Faction.Orange),
                 Rule.DisableResourceTransfers => Format("Only allow transfer of {0} by alliance rules", Concept.Resource),
