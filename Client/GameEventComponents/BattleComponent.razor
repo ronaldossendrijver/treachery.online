@@ -113,13 +113,13 @@
             {
                 int maxResources = Battle.MaxResources(Game, Player, forces, specialForces);
                 int maxAllyResources = Battle.MaxAllyResources(Game, Player, forces, specialForces);
-                int maxTotalResources = maxResources + maxAllyResources;
+                int maxTotalResources = Math.Min(forces + specialForces, maxResources + maxAllyResources);
 
                 <SelectResourcesComponent @bind-Value="resources" Min="0" Max=@maxTotalResources Title=@Skin.Current.Format("{0} used to support your forces", Concept.Resource)/> <span>&nbsp;</span>
 
                 @if (Player.Ally == Faction.Brown && maxAllyResources > 0)
                 {
-                    <SelectResourcesFromFactionComponent @bind-Value="resourcesFromAlly" Min="0" Max=@maxAllyResources Faction="Player.Ally" Title=@Skin.Current.Format("{0} paid by your ally", Concept.Resource)/>
+                    <SelectResourcesFromFactionComponent @bind-Value="resourcesFromAlly" Min="0" Max=@Math.Min(maxAllyResources, maxTotalResources) Faction="Player.Ally" Title=@Skin.Current.Format("{0} paid by your ally", Concept.Resource)/>
                 }
                 else
                 {
@@ -194,8 +194,6 @@
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Battle!" ConfirmError=@Validation />
-
-        <div class="text-info small">Toggle <img src="@Skin.Current.Eye_URL" /> on the map to show/hide the battle wheel.</div>
 
     </Body>
 

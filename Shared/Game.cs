@@ -358,12 +358,19 @@ namespace Treachery.Shared
         {
             CurrentMoment = MainPhaseMoment.End;
 
-            List<FactionAdvantage> expectionsToAllowing = new();
+            List<FactionAdvantage> exceptionsToAllowing = new();
+            
             if (CurrentMainPhase == MainPhase.Bidding && Prevented(FactionAdvantage.PurpleIncreasingRevivalLimits))
             {
-                expectionsToAllowing.Add(FactionAdvantage.PurpleIncreasingRevivalLimits);
+                exceptionsToAllowing.Add(FactionAdvantage.PurpleIncreasingRevivalLimits);
             }
-            if (Version >= 103) AllowAllPreventedFactionAdvantages(expectionsToAllowing);
+
+            if (CurrentMainPhase == MainPhase.Resurrection && Prevented(FactionAdvantage.GreenSpiceBlowPrescience))
+            {
+                exceptionsToAllowing.Add(FactionAdvantage.GreenSpiceBlowPrescience);
+            }
+
+            if (Version >= 103) AllowAllPreventedFactionAdvantages(exceptionsToAllowing);
         }
 
         private void Enter(Phase phase)
