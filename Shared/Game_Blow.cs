@@ -13,6 +13,7 @@ namespace Treachery.Shared
 
         public List<Territory> Monsters { get; private set; } = new List<Territory>();
         private readonly List<ResourceCard> ignoredMonsters = new List<ResourceCard>();
+        private ResourceCard ignoredSandtrout = null;
 
         #endregion State
 
@@ -22,6 +23,8 @@ namespace Treachery.Shared
         {
             MainPhaseStart(MainPhase.Blow);
             ignoredMonsters.Clear();
+            ignoredSandtrout = null;
+
             var sequenceToDetermineFirstPlayer = new PlayerSequence(this);
 
             if (Version < 135)
@@ -50,7 +53,11 @@ namespace Treachery.Shared
         #region ExecuteResourceBlow
 
         public int NumberOfMonsters { get; private set; } = 0;
-        public bool SandTroutOccured { get; private set; } = false;
+
+        public ResourceCard SandTrout { get; private set; } = null;
+
+        public bool SandTroutOccured => SandTrout != null;
+
         private bool SandTroutDoublesResources { get; set; } = false;
 
         private void DrawSpiceCard()
@@ -90,18 +97,34 @@ namespace Treachery.Shared
                     }
                     else
                     {
-                        SandTroutOccured = false;
+                        //Sandtrout triggers
+                        if (Version >= 150)
+                        {
+                            CurrentDiscardPile.Items.Remove(drawn);
+                            CurrentDiscardPile.PutOnTop(SandTrout);
+                            CurrentDiscardPile.PutOnTop(drawn);
+                        }
+
+                        SandTrout = null;
                         SandTroutDoublesResources = true;
                         Log(Concept.Monster, " is ignored due to ", Concept.BabyMonster);
                     }
                 }
                 else if (drawn.IsSandTrout)
                 {
-                    RecentMilestones.Add(Milestone.BabyMonster);
-                    Log(Concept.BabyMonster, " detected! All alliances are cancelled.");
-                    CancelAllAlliances();
-                    CurrentDiscardPile.Items.Remove(drawn);
-                    SandTroutOccured = true;
+                    if (Version < 150 || CurrentTurn > 1)
+                    {
+                        RecentMilestones.Add(Milestone.BabyMonster);
+                        Log(Concept.BabyMonster, " detected! All alliances are cancelled.");
+                        CancelAllAlliances();
+                        CurrentDiscardPile.Items.Remove(drawn);
+                        SandTrout = drawn;
+                    }
+                    else
+                    {
+                        Log(Concept.BabyMonster, " on turn 1 was ignored");
+                        ignoredSandtrout = CurrentDiscardPile.Draw();
+                    }
                 }
             }
 
@@ -423,13 +446,23 @@ namespace Treachery.Shared
 
         private void EnterStormReportPhase()
         {
-            if (CurrentTurn == 1 && ignoredMonsters.Count > 0)
+            if (ignoredMonsters.Count > 0 || ignoredSandtrout != null)
             {
-                Log(ignoredMonsters.Count, " ignored ", Concept.Monster, "cards were shuffled back into the ", Concept.Resource, " deck");
-                foreach (var c in ignoredMonsters)
+                if (ignoredMonsters.Count > 0)
                 {
-                    ResourceCardDeck.Items.Add(c);
+                    Log(ignoredMonsters.Count, " ignored ", Concept.Monster, "cards were shuffled back into the ", Concept.Resource, " deck");
+                    foreach (var c in ignoredMonsters)
+                    {
+                        ResourceCardDeck.Items.Add(c);
+                    }
                 }
+
+                if (ignoredSandtrout != null)
+                {
+                    Log(Concept.BabyMonster, "card was shuffled back into the ", Concept.Resource, " deck");
+                    ResourceCardDeck.Items.Add(ignoredSandtrout);
+                }
+
                 ResourceCardDeck.Shuffle();
                 RecentMilestones.Add(Milestone.Shuffled);
             }
