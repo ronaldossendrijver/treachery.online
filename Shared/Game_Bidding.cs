@@ -328,7 +328,7 @@ namespace Treachery.Shared
             RegularBiddingIsDone = true;
             int numberOfCardsToDraw = NumberOfCardsOnAuction;
 
-            if (IsPlaying(Faction.White))
+            if (IsPlaying(Faction.White) && (Version < 150 || WhiteCache.Count > 0))
             {
                 numberOfCardsToDraw--;
             }

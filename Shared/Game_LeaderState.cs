@@ -40,6 +40,8 @@ namespace Treachery.Shared
         private void AssassinateLeader(Leader l)
         {
             LeaderState[l].Assassinate(this);
+
+            if (Version >= 150) ReturnGholaToOriginalFaction(l);
         }
 
 

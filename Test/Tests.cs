@@ -26,6 +26,11 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            if (g.CurrentTurn > 12 && !g.RecentMilestones.Contains(Milestone.BabyMonster) && g.RecentMilestones.Contains(Milestone.Monster) && (g.ResourceCardDiscardPileA.Items.Take(3).Any(c => c.IsSandTrout) || g.ResourceCardDiscardPileB.Items.Take(3).Any(c => c.IsSandTrout)))
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Sandtrout triggered...");
+            }
+
             /*
             if (g.Version >= 149 && e is Battle && e.Player.Resources > 0 && e.Player.Ally == Faction.Yellow)
             {
@@ -356,8 +361,8 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 100;
-            int nrOfTurns = 10;
+            int nrOfGames = 50;
+            int nrOfTurns = 30;
             int nrOfPlayers = 6;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");

@@ -7,13 +7,13 @@
 
 @{
 
-    int cardWidth = Skin.Current.CardSize.X;
-    int cardHeight = Skin.Current.CardSize.Y;
+    float cardWidth = Skin.Current.CardSize.X;
+    float cardHeight = Skin.Current.CardSize.Y;
 
-    var x = Skin.Current.SpiceDeckLocation.X;
-    var y = Skin.Current.SpiceDeckLocation.Y;
+    float x = Skin.Current.SpiceDeckLocation.X;
+    float y = 1.02f * Skin.Current.SpiceDeckLocation.Y;
 
-    var cardspacing = 2;
+    float cardspacing = 1f;
 
     //Resource cards
     @if (!Game.ResourceCardDeck.IsEmpty)
@@ -59,6 +59,13 @@
                  Font="@Skin.Current.CARDPILE_FONT" FontColor="@Skin.Current.CARDPILE_FONTCOLOR"
                  BorderWidth="@Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.CARDPILE_FONT_BORDERCOLOR"
                  Align="@TextAlignment.Center" />
+    }
+
+    if (Game.SandTroutOccured)
+    {
+        x += cardWidth + cardspacing;
+        <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.SandTrout)"
+            ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" Popover=@Popup.Get(Game.SandTrout)/>
     }
 
     //Treachery cards
