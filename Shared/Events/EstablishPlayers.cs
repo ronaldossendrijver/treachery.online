@@ -123,14 +123,14 @@ namespace Treachery.Shared
             if (Players.Count() + nrOfBots < 2 && !ApplicableRules.Contains(Rule.FillWithBots)) return Message.Express("At least two players required");
             if (MaximumNumberOfPlayers < 2) return Message.Express("At least two players required");
             if (Players.Count() + nrOfBots > MaximumNumberOfPlayers) return Message.Express("Too many players");
-            if (FactionsInPlay.Any(f => !AvailableFactions().Contains(f))) return Message.Express("Invalid faction");
+            if (FactionsInPlay.Any(f => !AvailableFactions(Game).Contains(f))) return Message.Express("Invalid faction");
 
             return null;
         }
 
-        public static int GetMaximumNumberOfPlayers()
+        public static int GetMaximumNumberOfPlayers(Game g)
         {
-            return AvailableFactions().Count();
+            return AvailableFactions(g).Count();
         }
 
         public static int GetMaximumNumberOfTurns()
@@ -165,9 +165,39 @@ namespace Treachery.Shared
             }
         }
 
-        public static IEnumerable<Faction> AvailableFactions()
+        public static IEnumerable<Faction> AvailableFactions(Game g)
         {
-            return new Faction[] { Faction.Green, Faction.Black, Faction.Yellow, Faction.Red, Faction.Orange, Faction.Blue, Faction.Grey, Faction.Purple, Faction.Brown, Faction.White };
+            var result = new List<Faction>();
+
+            if (g.ExpansionLevel >= 0)
+            {
+                result.Add(Faction.Green);
+                result.Add(Faction.Black);
+                result.Add(Faction.Yellow);
+                result.Add(Faction.Red);
+                result.Add(Faction.Orange);
+                result.Add(Faction.Blue);
+            }
+
+            if (g.ExpansionLevel >= 1)
+            {
+                result.Add(Faction.Grey);
+                result.Add(Faction.Purple);
+            }
+
+            if (g.ExpansionLevel >= 2)
+            {
+                result.Add(Faction.Brown);
+                result.Add(Faction.White);
+            }
+
+            if (g.ExpansionLevel >= 3)
+            {
+                result.Add(Faction.Pink);
+                result.Add(Faction.Cyan);
+            }
+
+            return result;
         }
 
         public static IEnumerable<Ruleset> AvailableRulesets()

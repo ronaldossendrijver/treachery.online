@@ -30,7 +30,7 @@
 
             <label class="mt-1 mb-0 small">Core Game, Advanced Rules</label>
             <ul class="mt-0 mb-1">
-                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreAdvanced))
+                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreAdvanced, Game.ExpansionLevel))
                 {
                     <li class="small" style="@DetermineRuleClass(info.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
                 }
@@ -38,7 +38,7 @@
 
             <label class="mt-1 mb-0 small">Core Game, Exceptions to Basic Rules</label>
             <ul class="mt-0 mb-1">
-                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreBasicExceptions))
+                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreBasicExceptions, Game.ExpansionLevel))
                 {
                     <li class="small" style="@DetermineRuleClass(info.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
                 }
@@ -46,7 +46,7 @@
 
             <label class="mt-1 mb-0 small">Core Game, Exceptions to Advanced Rules</label>
             <ul class="mt-0 mb-1">
-                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreAdvancedExceptions))
+                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.CoreAdvancedExceptions, Game.ExpansionLevel))
                 {
                     <li class="small" style="@DetermineRuleClass(info.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
                 }
@@ -54,7 +54,7 @@
 
             <label class="mt-1 mb-0 small">Ixians &amp; Tleilaxu Expansion</label>
             <ul class="mt-0 mb-1">
-                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.ExpansionIxAndBtBasic))
+                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.ExpansionIxAndBtBasic, Game.ExpansionLevel))
                 {
                     <li class="small" style="@DetermineRuleClass(info.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
                 }
@@ -62,7 +62,7 @@
 
             <label class="mt-1 mb-0 small">Ixians &amp; Tleilaxu Expansion, Advanced Rules</label>
             <ul class="mt-0 mb-1">
-                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.ExpansionIxAndBtAdvanced))
+                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.ExpansionIxAndBtAdvanced, Game.ExpansionLevel))
                 {
                     <li class="small" style="@DetermineRuleClass(info.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
                 }
@@ -70,7 +70,7 @@
 
             <label class="mt-1 mb-0 small">House Rules</label>
             <ul class="mt-0 mb-1">
-                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.House))
+                @foreach (var rule in Game.GetRulesInGroup(RuleGroup.House, Game.ExpansionLevel))
                 {
                     <li class="small" style="@DetermineRuleClass(info.Rules.Contains(rule))">@Skin.Current.Describe(rule)</li>
                 }

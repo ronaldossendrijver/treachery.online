@@ -28,14 +28,7 @@ namespace Treachery.Client
         private Game gameAtHost;
         private bool stopped;
 
-        public GameInfo GameBeingEstablished = new()
-        {
-            MaximumNumberOfTurns = 10,
-            MaximumNumberOfPlayers = 6,
-            HostParticipates = true,
-            Rules = new List<Rule>() { Rule.FillWithBots },
-            FactionsInPlay = EstablishPlayers.AvailableFactions().ToList()
-        };
+        public GameInfo GameBeingEstablished;
 
         public Host(string hostName, string gamePassword, Handler h, string loadedGameData, Game loadedGame, HubConnection hubConnection)
         {
@@ -48,6 +41,16 @@ namespace Treachery.Client
             LoadedGame = loadedGame;
             connection = hubConnection;
             gameAtHost = new Game();
+
+            GameBeingEstablished = new()
+            {
+                MaximumNumberOfTurns = 10,
+                MaximumNumberOfPlayers = 6,
+                HostParticipates = true,
+                Rules = new List<Rule>() { Rule.FillWithBots },
+                FactionsInPlay = EstablishPlayers.AvailableFactions(gameAtHost).ToList()
+            };
+
             RegisterHandlers();
             stopped = false;
             _ = Heartbeat();

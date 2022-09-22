@@ -13,6 +13,7 @@ namespace Treachery.Shared
         public const int LowestSupportedVersion = 100;
         public const int LatestVersion = 150;
         public bool BotInfologging = false;
+        public int ExpansionLevel = 3;
 
         #region GameState
         public int Seed { get; private set; } = -1;
@@ -987,6 +988,5 @@ namespace Treachery.Shared
         }
 
         #endregion SupportMethods
-
     }
 }

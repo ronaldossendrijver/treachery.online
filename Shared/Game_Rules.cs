@@ -226,9 +226,9 @@ namespace Treachery.Shared
             },
         };
 
-        public static IEnumerable<Rule> GetRulesInGroup(RuleGroup group)
+        public static IEnumerable<Rule> GetRulesInGroup(RuleGroup group, int expansionLevel)
         {
-            return Enumerations.GetValues<Rule>(typeof(Rule)).Where(r => GetRuleGroup(r) == group);
+            return Enumerations.GetValues<Rule>(typeof(Rule)).Where(r => GetRuleGroup(r) == group && GetRuleExpansion(r) <= expansionLevel);
         }
 
         public bool Applicable(Rule rule)
@@ -319,6 +319,91 @@ namespace Treachery.Shared
             }
 
             return RuleGroup.None;
+        }
+
+        public static int GetRuleExpansion(Rule rule)
+        {
+            switch (rule)
+            {
+                case Rule.HasCharityPhase:
+                case Rule.BasicTreacheryCards:
+                    return 0;
+
+                case Rule.AdvancedCombat:
+                case Rule.IncreasedResourceFlow:
+                case Rule.AdvancedKarama:
+                case Rule.YellowSeesStorm:
+                case Rule.YellowStormLosses:
+                case Rule.YellowSendingMonster:
+                case Rule.YellowSpecialForces:
+                case Rule.GreenMessiah:
+                case Rule.BlackCapturesOrKillsLeaders:
+                case Rule.BlueAutoCharity:
+                case Rule.BlueWorthlessAsKarma:
+                case Rule.BlueAdvisors:
+                case Rule.OrangeDetermineShipment:
+                case Rule.RedSpecialForces:
+                    return 0;
+
+                case Rule.BribesAreImmediate:
+                case Rule.ContestedStongholdsCountAsOccupied:
+                case Rule.OrangeShipmentContributionsFlowBack:
+                case Rule.FullPhaseKarma:
+                case Rule.BlueVoiceMustNameSpecialCards:
+                case Rule.BattlesUnderStorm:
+                case Rule.MovementBonusRequiresOccupationBeforeMovement:
+                    return 0;
+
+                case Rule.AdvisorsDontConflictWithAlly:
+                case Rule.YellowMayMoveIntoStorm:
+                    return 0;
+
+                case Rule.CustomInitialForcesAndResources:
+                case Rule.CustomDecks:
+                case Rule.HMSwithoutGrey:
+                case Rule.StormDeckWithoutYellow:
+                case Rule.SSW:
+                case Rule.BlackMulligan:
+                case Rule.ExtraKaramaCards:
+                case Rule.CardsCanBeTraded:
+                case Rule.PlayersChooseFactions:
+                case Rule.RedSupportingNonAllyBids:
+                case Rule.AssistedNotekeeping:
+                case Rule.AssistedNotekeepingForGreen:
+                case Rule.ResourceBonusForStrongholds:
+                case Rule.BattleWithoutLeader:
+                case Rule.CapturedLeadersAreTraitorsToOwnFaction:
+                case Rule.DisableEndOfGameReport:
+                case Rule.DisableOrangeSpecialVictory:
+                case Rule.DisableResourceTransfers:
+                case Rule.YellowAllyGetsDialedResourcesRefunded:
+                    return 0;
+
+                case Rule.FillWithBots:
+                case Rule.BotsCannotAlly:
+                    return 0;
+
+                case Rule.TechTokens:
+                case Rule.CheapHeroTraitor:
+                case Rule.ExpansionTreacheryCards:
+                case Rule.SandTrout:
+                    return 1;
+
+                case Rule.GreySwappingCardOnBid:
+                case Rule.PurpleGholas:
+                    return 1;
+
+                case Rule.LeaderSkills:
+                case Rule.Expansion2TreacheryCards:
+                    return 2;
+
+                case Rule.BrownAuditor:
+                case Rule.WhiteBlackMarket:
+                case Rule.StrongholdBonus:
+                    return 2;
+            }
+
+            return int.MaxValue;
         }
     }
 }

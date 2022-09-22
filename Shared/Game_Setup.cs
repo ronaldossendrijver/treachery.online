@@ -37,7 +37,7 @@ namespace Treachery.Shared
             AllRules = e.ApplicableRules.ToList();
             Rules = e.ApplicableRules.Where(r => GetRuleGroup(r) != RuleGroup.Bots).ToList();
             RulesForBots = e.ApplicableRules.Where(r => GetRuleGroup(r) == RuleGroup.Bots).ToList();
-            Rules.AddRange(GetRulesInGroup(RuleGroup.CoreBasic));
+            Rules.AddRange(GetRulesInGroup(RuleGroup.CoreBasic, ExpansionLevel));
 
             Ruleset = DetermineApproximateRuleset(e.FactionsInPlay, Rules);
             Log("Ruleset: ", Ruleset);

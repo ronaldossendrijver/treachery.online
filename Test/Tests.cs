@@ -26,11 +26,12 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            /*
             if (g.CurrentTurn > 12 && !g.RecentMilestones.Contains(Milestone.BabyMonster) && g.RecentMilestones.Contains(Milestone.Monster) && (g.ResourceCardDiscardPileA.Items.Take(3).Any(c => c.IsSandTrout) || g.ResourceCardDiscardPileB.Items.Take(3).Any(c => c.IsSandTrout)))
             {
                 WriteSavegameIfApplicable(g, e.Player, "Sandtrout triggered...");
             }
-
+            */
             /*
             if (g.Version >= 149 && e is Battle && e.Player.Resources > 0 && e.Player.Ally == Faction.Yellow)
             {
@@ -270,6 +271,7 @@ namespace Treachery.Test
             //Console.WriteLine("");
 
             //Expansion, advanced game:
+            int expansionLevel = 3;
             var rules = Game.RulesetDefinition[Ruleset.ExpansionAdvancedGame].ToList();
             rules.Add(Rule.FillWithBots);
             var allFactions = new List<Faction> { Faction.White, Faction.Brown, Faction.Grey, Faction.Green, Faction.Orange, Faction.Red, Faction.Blue, Faction.Yellow, Faction.Purple, Faction.Black };
@@ -307,10 +309,7 @@ namespace Treachery.Test
                                 p.Battle_DialShortageThresholdForThrowing = Battle_DialShortageThresholdForThrowing;
 
                                 var pDict = new Dictionary<Faction, BotParameters>() { { toTest, p } };
-
-                                var factions = allFactions.Where(f => f != toTest).TakeRandomN(nrOfPlayers - 1).ToList();
-                                factions.Add(toTest);
-                                DetermineWins(Environment.ProcessorCount * 3, rulesAsArray, factions, nrOfPlayers, nrOfTurns, pDict, toTest, out int wins, out int spice, out int points, out int forcesOnPlanet);
+                                DetermineWins(Environment.ProcessorCount * 3, expansionLevel, rulesAsArray, nrOfPlayers, nrOfTurns, pDict, toTest, out int wins, out int spice, out int points, out int forcesOnPlanet);
 
                                 File.AppendAllLines("results.csv", new string[] { string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
                                                         battle_MimimumChanceToAssumeEnemyHeroSurvives, battle_MimimumChanceToAssumeMyLeaderSurvives, Battle_MaxStrengthOfDialledForces, Battle_DialShortageThresholdForThrowing,
@@ -322,7 +321,7 @@ namespace Treachery.Test
             }
         }
 
-        private void DetermineWins(int nrOfGames, Rule[] rules, List<Faction> factions, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, Faction f,
+        private void DetermineWins(int nrOfGames, int expansionLevel, Rule[] rules, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, Faction f,
             out int wins, out int spice, out int points, out int forcesOnPlanet)
         {
             int countWins = 0;
@@ -337,7 +336,7 @@ namespace Treachery.Test
             Parallel.For(0, nrOfGames, po,
                 i =>
                 {
-                    var game = LetBotsPlay(rules, factions, nrOfPlayers, nrOfTurns, p, false, false, null);
+                    var game = LetBotsPlay(expansionLevel, rules, nrOfPlayers, nrOfTurns, p, false, false, null, f);
                     var playerToCheck = game.Players.Single(p => p.Faction == f);
                     if (game.Winners.Contains(playerToCheck)) countWins++;
                     countSpice += playerToCheck.Resources;
@@ -368,11 +367,11 @@ namespace Treachery.Test
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
             //Expansion, advanced game, all expansions, all factions:
+            int expansionLevel = 3;
             var rules = Game.RulesetDefinition[Ruleset.AllExpansionsAdvancedGame].ToList();
             rules.Add(Rule.FillWithBots);
             rules.Add(Rule.AssistedNotekeeping);
             rules.Add(Rule.DisableOrangeSpecialVictory);
-            var factions = EstablishPlayers.AvailableFactions().ToList();
 
             //rules.Add(Rule.BotsCannotAlly);
 
@@ -384,7 +383,7 @@ namespace Treachery.Test
             Parallel.For(0, nrOfGames, po,
                    index =>
                    {
-                       PlayGameAndRecordResults(factions, nrOfPlayers, nrOfTurns, rulesAsArray, wincounter, statistics);
+                       PlayGameAndRecordResults(expansionLevel, nrOfPlayers, nrOfTurns, rulesAsArray, wincounter, statistics);
                    });
 
             foreach (var f in wincounter.Counted.OrderByDescending(f => wincounter.CountOf(f)))
@@ -398,9 +397,9 @@ namespace Treachery.Test
             }
         }
 
-        private void PlayGameAndRecordResults(List<Faction> factions, int nrOfPlayers, int nrOfTurns, Rule[] rulesAsArray, ObjectCounter<Faction> wincounter, Statistics statistics)
+        private void PlayGameAndRecordResults(int expansionLevel, int nrOfPlayers, int nrOfTurns, Rule[] rulesAsArray, ObjectCounter<Faction> wincounter, Statistics statistics)
         {
-            var game = LetBotsPlay(rulesAsArray, factions, nrOfPlayers, nrOfTurns, null, false, true, statistics);
+            var game = LetBotsPlay(expansionLevel, rulesAsArray, nrOfPlayers, nrOfTurns, null, false, true, statistics);
 
             Console.WriteLine("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
                 string.Join(",", game.Winners.Select(p => DetermineName(p))),
@@ -421,7 +420,7 @@ namespace Treachery.Test
 
         private readonly List<TimedTest> timedTests = new();
         private readonly List<Game> failedGames = new();
-        private Game LetBotsPlay(Rule[] rules, List<Faction> factions, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool infoLogging, bool performTests, Statistics statistics)
+        private Game LetBotsPlay(int expansionLevel, Rule[] rules, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool infoLogging, bool performTests, Statistics statistics, Faction mustPlay = Faction.None)
         {
             BattleOutcome previousBattleOutcome = null;
 
@@ -433,6 +432,17 @@ namespace Treachery.Test
             var timer = new TimedTest(game, 60);
             timer.Elapsed += HandleElapsedTestTime;
             timedTests.Add(timer);
+
+            List<Faction> factions;
+            if (mustPlay != Faction.None)
+            {
+                factions = EstablishPlayers.AvailableFactions(game).ToList().Where(f => f != mustPlay).TakeRandomN(nrOfPlayers - 1).ToList();
+                factions.Add(mustPlay);
+            }
+            else
+            {
+                factions = EstablishPlayers.AvailableFactions(game).ToList();
+            }
 
             try
             {

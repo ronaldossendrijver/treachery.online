@@ -294,9 +294,11 @@ namespace Treachery.Server
 
         public ServerSettings GetServerSettings()
         {
+            var maintenanceDateTime = Configuration["GameMaintenanceDateTime"] ?? DateTime.MinValue.ToString();
+
             var result = new ServerSettings()
             {
-                ScheduledMaintenance = DateTime.Parse(Configuration["GameMaintenanceDateTime"]),
+                ScheduledMaintenance = DateTime.Parse(maintenanceDateTime),
                 AdminName = Configuration["GameAdminUsername"]
             };
 
