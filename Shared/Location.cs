@@ -34,6 +34,8 @@ namespace Treachery.Shared
 
         public virtual int SpiceBlowAmount { get; set; } = 0;
 
+        public virtual DiscoveryTokenType TokenType { get; set; } = DiscoveryTokenType.None;
+
         public Location(int id)
         {
             Id = id;

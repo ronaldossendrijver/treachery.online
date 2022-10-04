@@ -123,14 +123,14 @@ namespace Treachery.Shared
             if (Players.Count() + nrOfBots < 2 && !ApplicableRules.Contains(Rule.FillWithBots)) return Message.Express("At least two players required");
             if (MaximumNumberOfPlayers < 2) return Message.Express("At least two players required");
             if (Players.Count() + nrOfBots > MaximumNumberOfPlayers) return Message.Express("Too many players");
-            if (FactionsInPlay.Any(f => !AvailableFactions(Game).Contains(f))) return Message.Express("Invalid faction");
+            if (FactionsInPlay.Any(f => !AvailableFactions().Contains(f))) return Message.Express("Invalid faction");
 
             return null;
         }
 
         public static int GetMaximumNumberOfPlayers(Game g)
         {
-            return AvailableFactions(g).Count();
+            return AvailableFactions().Count();
         }
 
         public static int GetMaximumNumberOfTurns()
@@ -165,11 +165,11 @@ namespace Treachery.Shared
             }
         }
 
-        public static IEnumerable<Faction> AvailableFactions(Game g)
+        public static IEnumerable<Faction> AvailableFactions()
         {
             var result = new List<Faction>();
 
-            if (g.ExpansionLevel >= 0)
+            if (Game.ExpansionLevel >= 0)
             {
                 result.Add(Faction.Green);
                 result.Add(Faction.Black);
@@ -179,24 +179,24 @@ namespace Treachery.Shared
                 result.Add(Faction.Blue);
             }
 
-            if (g.ExpansionLevel >= 1)
+            if (Game.ExpansionLevel >= 1)
             {
                 result.Add(Faction.Grey);
                 result.Add(Faction.Purple);
             }
 
-            if (g.ExpansionLevel >= 2)
+            if (Game.ExpansionLevel >= 2)
             {
                 result.Add(Faction.Brown);
                 result.Add(Faction.White);
             }
-
-            if (g.ExpansionLevel >= 3)
+            
+            if (Game.ExpansionLevel >= 3)
             {
                 result.Add(Faction.Pink);
                 result.Add(Faction.Cyan);
             }
-
+            
             return result;
         }
 

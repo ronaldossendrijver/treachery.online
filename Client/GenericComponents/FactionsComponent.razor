@@ -3,7 +3,7 @@
 --->
 @using Treachery.Shared
 
-@foreach (var f in Factions)
+@foreach (var f in Factions.Where(f => f != Faction.None))
 {
     <img class="img-fluid" src="@Skin.Current.GetImageURL(f)" width="@Diameter" height="@Diameter" title=@Skin.Current.Describe(f) style="@Shadow" />
 }

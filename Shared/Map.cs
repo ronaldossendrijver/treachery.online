@@ -32,6 +32,8 @@ namespace Treachery.Shared
 
         public Territory FalseWallSouth { get; set; }
 
+        public Territory Meridan { get; set; }
+
         public Territory FalseWallWest { get; set; }
 
         public Territory ImperialBasin { get; set; }
@@ -47,6 +49,8 @@ namespace Treachery.Shared
         public Territory PastyMesa { get; set; }
 
         public Territory GaraKulon { get; set; }
+
+        public Territory OldGap { get; set; }
 
         public Territory SihayaRidge { get; set; }
 
@@ -67,6 +71,8 @@ namespace Treachery.Shared
         public Territory WindPass { get; set; }
 
         public Territory WindPassNorth { get; set; }
+
+        public Territory CielagoEast { get; set; }
 
         public Territory CielagoWest { get; set; }
 
@@ -107,6 +113,15 @@ namespace Treachery.Shared
             }
 
             result.Add(new ResourceCard(99) { IsSandTrout = true });
+
+            result.Add(new ResourceCard(100) { IsGreatMaker = true });
+
+            result.Add(new ResourceCard(40) { Location = m.SihayaRidge.ResourceBlowLocation, DiscoveryLocation = m.CielagoEast.DiscoveryTokenLocation });
+            result.Add(new ResourceCard(41) { Location = m.RockOutcroppings.ResourceBlowLocation, DiscoveryLocation = m.Meridan.DiscoveryTokenLocation });
+            result.Add(new ResourceCard(42) { Location = m.HaggaBasin.ResourceBlowLocation, DiscoveryLocation = m.GaraKulon.DiscoveryTokenLocation });
+            result.Add(new ResourceCard(43) { Location = m.FuneralPlain, DiscoveryLocation = m.PastyMesa.DiscoveryTokenLocation });
+            result.Add(new ResourceCard(44) { Location = m.WindPassNorth.ResourceBlowLocation, DiscoveryLocation = m.PlasticBasin.DiscoveryTokenLocation });
+            result.Add(new ResourceCard(45) { Location = m.OldGap.ResourceBlowLocation, DiscoveryLocation = m.FalseWallWest.DiscoveryTokenLocation });
 
             return result;
         }
@@ -332,7 +347,7 @@ namespace Treachery.Shared
             }
 
             {
-                var t = new Territory(9)
+                Meridan = new Territory(9)
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
@@ -340,14 +355,15 @@ namespace Treachery.Shared
                 };
                 Locations.Add(new Location(id++)
                 {
-                    Territory = t,
+                    Territory = Meridan,
                     Orientation = "West",
                     Sector = 0,
-                    SpiceBlowAmount = 0
+                    SpiceBlowAmount = 0,
+                    TokenType = DiscoveryTokenType.Hiereg
                 });
                 Locations.Add(new Location(id++)
                 {
-                    Territory = t,
+                    Territory = Meridan,
                     Orientation = "East",
                     Sector = 1,
                     SpiceBlowAmount = 0
@@ -378,7 +394,7 @@ namespace Treachery.Shared
             }
 
             {
-                var t = new Territory(11)
+                CielagoEast = new Territory(11)
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
@@ -386,14 +402,15 @@ namespace Treachery.Shared
                 };
                 Locations.Add(new Location(id++)
                 {
-                    Territory = t,
+                    Territory = CielagoEast,
                     Orientation = "West",
                     Sector = 2,
-                    SpiceBlowAmount = 0
+                    SpiceBlowAmount = 0,
+                    TokenType = DiscoveryTokenType.Hiereg
                 });
                 Locations.Add(new Location(id++)
                 {
-                    Territory = t,
+                    Territory = CielagoEast,
                     Orientation = "East",
                     Sector = 3,
                     SpiceBlowAmount = 0
@@ -553,7 +570,8 @@ namespace Treachery.Shared
                     Territory = PastyMesa,
                     Orientation = "North",
                     Sector = 6,
-                    SpiceBlowAmount = 0
+                    SpiceBlowAmount = 0,
+                    TokenType = DiscoveryTokenType.Smuggler
                 });
                 Locations.Add(new Location(id++)
                 {
@@ -709,12 +727,13 @@ namespace Treachery.Shared
                     Territory = GaraKulon,
                     Orientation = "",
                     Sector = 7,
-                    SpiceBlowAmount = 0
+                    SpiceBlowAmount = 0,
+                    TokenType = DiscoveryTokenType.Hiereg
                 });
             }
 
             {
-                var t = new Territory(25)
+                OldGap = new Territory(25)
                 {
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
@@ -722,21 +741,21 @@ namespace Treachery.Shared
                 };
                 Locations.Add(new Location(id++)
                 {
-                    Territory = t,
+                    Territory = OldGap,
                     Orientation = "East",
                     Sector = 8,
                     SpiceBlowAmount = 0
                 });
                 Locations.Add(new Location(id++)
                 {
-                    Territory = t,
+                    Territory = OldGap,
                     Orientation = "Middle",
                     Sector = 9,
                     SpiceBlowAmount = 6
                 });
                 Locations.Add(new Location(id++)
                 {
-                    Territory = t,
+                    Territory = OldGap,
                     Orientation = "West",
                     Sector = 10,
                     SpiceBlowAmount = 0
@@ -861,7 +880,8 @@ namespace Treachery.Shared
                     Territory = PlasticBasin,
                     Orientation = "Middle",
                     Sector = 12,
-                    SpiceBlowAmount = 0
+                    SpiceBlowAmount = 0,
+                    TokenType = DiscoveryTokenType.Smuggler
                 });
                 Locations.Add(new Location(id++)
                 {
@@ -1049,7 +1069,8 @@ namespace Treachery.Shared
                     Territory = FalseWallWest,
                     Orientation = "Middle",
                     Sector = 16,
-                    SpiceBlowAmount = 0
+                    SpiceBlowAmount = 0,
+                    TokenType = DiscoveryTokenType.Smuggler
                 });
                 Locations.Add(new Location(id++)
                 {

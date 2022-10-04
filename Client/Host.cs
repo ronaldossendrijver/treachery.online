@@ -47,8 +47,9 @@ namespace Treachery.Client
                 MaximumNumberOfTurns = 10,
                 MaximumNumberOfPlayers = 6,
                 HostParticipates = true,
+                ExpansionLevel = Game.ExpansionLevel,
                 Rules = new List<Rule>() { Rule.FillWithBots },
-                FactionsInPlay = EstablishPlayers.AvailableFactions(gameAtHost).ToList()
+                FactionsInPlay = EstablishPlayers.AvailableFactions().ToList()
             };
 
             RegisterHandlers();

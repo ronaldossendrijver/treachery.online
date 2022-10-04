@@ -21,7 +21,7 @@
 
         <SelectNumberComponent Disabled="@Readonly" @bind-Value="info.MaximumNumberOfPlayers" Min="2" Max="EstablishPlayers.GetMaximumNumberOfPlayers(Game)" Label="Maximum number of players"/>
 
-        <SelectFactionComponent Disabled="@Readonly" Selected="info.FactionsInPlay" Values="EstablishPlayers.AvailableFactions(Game)" OnChanged="e => StateHasChanged()">
+        <SelectFactionComponent Disabled="@Readonly" Selected="info.FactionsInPlay" Values="EstablishPlayers.AvailableFactions()" OnChanged="e => StateHasChanged()">
             <Label>Factions in play</Label>
         </SelectFactionComponent>
 

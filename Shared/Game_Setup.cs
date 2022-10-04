@@ -39,7 +39,7 @@ namespace Treachery.Shared
             RulesForBots = e.ApplicableRules.Where(r => GetRuleGroup(r) == RuleGroup.Bots).ToList();
             Rules.AddRange(GetRulesInGroup(RuleGroup.CoreBasic, ExpansionLevel));
 
-            Ruleset = DetermineApproximateRuleset(e.FactionsInPlay, Rules);
+            Ruleset = DetermineApproximateRuleset(e.FactionsInPlay, Rules, ExpansionLevel);
             Log("Ruleset: ", Ruleset);
             var customRules = GetCustomRules().ToList();
             LogIf(customRules.Any(), "House rules: ", customRules);
@@ -117,7 +117,7 @@ namespace Treachery.Shared
         private Deck<ResourceCard> CreateAndShuffleResourceCardDeck()
         {
             var result = new Deck<ResourceCard>(Random);
-            foreach (var c in Map.GetResourceCardsInAndOutsidePlay(Map).Where(c => !c.IsSandTrout || Applicable(Rule.SandTrout)))
+            foreach (var c in Map.GetResourceCardsInAndOutsidePlay(Map).Where(c => IsInPlay(c)))
             {
                 result.PutOnTop(c);
             }
@@ -125,6 +125,16 @@ namespace Treachery.Shared
             RecentMilestones.Add(Milestone.Shuffled);
             result.Shuffle();
             return result;
+        }
+
+        private bool IsInPlay(ResourceCard c)
+        {
+            return
+                c.IsShaiHulud ||
+                c.IsSpiceBlow ||
+                c.IsSandTrout && Applicable(Rule.SandTrout) ||
+                c.IsGreatMaker && Applicable(Rule.GreatMaker) ||
+                c.IsDiscovery && Applicable(Rule.DiscoveryTokens);
         }
 
         private void AddPlayersToGame(EstablishPlayers e)
@@ -705,16 +715,15 @@ namespace Treachery.Shared
                     break;
 
                 case Faction.Pink:
-                    p.Resources = 13;
-                    p.ForcesInReserve = 17;
-                    p.ChangeForces(Map.ImperialBasin.MiddleLocation, 3);
+                    p.Resources = 12;
+                    p.ForcesInReserve = 14;
+                    p.ChangeForces(Map.ImperialBasin.MiddleLocation, 6);
                     break;
 
                 case Faction.Cyan:
                     p.Resources = 12;
                     p.ForcesInReserve = 20;
                     break;
-
             }
         }
 

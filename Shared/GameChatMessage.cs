@@ -23,13 +23,29 @@ namespace Treachery.Shared
             }
             else
             {
+                var sourceFaction = GetSourceFaction(g);
+
                 if (TargetPlayerName == "")
                 {
-                    return Message.Express(GetSourceFaction(g), " (to ALL) ", Body);
+                    if (sourceFaction != Faction.None)
+                    {
+                        return Message.Express(GetSourceFaction(g), " (to ALL) ", Body);
+                    }
+                    else
+                    {
+                        return Message.Express(SourcePlayerName, " (to ALL) ", Body);
+                    }
                 }
                 else
                 {
-                    return Message.Express(GetSourceFaction(g), Body);
+                    if (sourceFaction != Faction.None)
+                    {
+                        return Message.Express(GetSourceFaction(g), Body);
+                    }
+                    else
+                    {
+                        return Message.Express(SourcePlayerName, Body);
+                    }
                 }
             }
         }

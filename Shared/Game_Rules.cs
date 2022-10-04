@@ -20,11 +20,13 @@ namespace Treachery.Shared
                 GetRuleGroup(rule) == RuleGroup.ExpansionIxAndBtBasicExceptions ||
                 GetRuleGroup(rule) == RuleGroup.ExpansionIxAndBtAdvancedExceptions ||
                 GetRuleGroup(rule) == RuleGroup.ExpansionBrownAndWhiteBasicExceptions ||
-                GetRuleGroup(rule) == RuleGroup.ExpansionBrownAndWhiteAdvancedExceptions ||
+                GetRuleGroup(rule) == RuleGroup.ExpansionPinkAndCyanAdvancedExceptions ||
+                GetRuleGroup(rule) == RuleGroup.ExpansionPinkAndCyanBasicExceptions ||
+                GetRuleGroup(rule) == RuleGroup.ExpansionPinkAndCyanAdvancedExceptions ||
                 GetRuleGroup(rule) == RuleGroup.CoreBasicExceptions);
         }
 
-        public static Ruleset DetermineApproximateRuleset(IEnumerable<Faction> factions, IEnumerable<Rule> rules)
+        public static Ruleset DetermineApproximateRuleset(IEnumerable<Faction> factions, IEnumerable<Rule> rules, int expansionLevel)
         {
             var hasExpansion1 = factions.Contains(Faction.Purple) || factions.Contains(Faction.Grey) ||
                 rules.Contains(Rule.ExpansionTreacheryCardsPBandSS) ||
@@ -37,18 +39,29 @@ namespace Treachery.Shared
                 rules.Contains(Rule.Expansion2TreacheryCards) ||
                 rules.Contains(Rule.StrongholdBonus);
 
+            var hasExpansion3 = factions.Contains(Faction.Pink) || factions.Contains(Faction.Cyan) ||
+                rules.Contains(Rule.DiscoveryTokens) ||
+                rules.Contains(Rule.Homeworlds) ||
+                rules.Contains(Rule.NexusCards);
+
             if (AdvancedRulesApply(rules))
             {
-                if (hasExpansion1 && hasExpansion2) return Ruleset.AllExpansionsAdvancedGame;
-                else if (hasExpansion1) return Ruleset.ExpansionAdvancedGame;
+                if (expansionLevel == 3 && hasExpansion1 && hasExpansion2 && hasExpansion3) return Ruleset.AllExpansionsAdvancedGame;
+                else if (expansionLevel == 2 && hasExpansion1 && hasExpansion2) return Ruleset.AllExpansionsAdvancedGame;
+                else if (expansionLevel == 1 && hasExpansion1) return Ruleset.AllExpansionsAdvancedGame;
+                else if (hasExpansion3) return Ruleset.Expansion3AdvancedGame;
                 else if (hasExpansion2) return Ruleset.Expansion2AdvancedGame;
+                else if (hasExpansion1) return Ruleset.ExpansionAdvancedGame;
                 else return Ruleset.AdvancedGame;
             }
             else
             {
-                if (hasExpansion1 && hasExpansion2) return Ruleset.AllExpansionsBasicGame;
-                else if (hasExpansion1) return Ruleset.ExpansionBasicGame;
+                if (expansionLevel == 3 && hasExpansion1 && hasExpansion2 && hasExpansion3) return Ruleset.AllExpansionsBasicGame;
+                else if (expansionLevel == 2 && hasExpansion1 && hasExpansion2) return Ruleset.AllExpansionsBasicGame;
+                else if (expansionLevel == 1 && hasExpansion1) return Ruleset.AllExpansionsBasicGame;
+                else if (hasExpansion3) return Ruleset.Expansion3BasicGame;
                 else if (hasExpansion2) return Ruleset.Expansion2BasicGame;
+                else if (hasExpansion1) return Ruleset.ExpansionBasicGame;
                 else return Ruleset.BasicGame;
             }
         }
@@ -69,6 +82,9 @@ namespace Treachery.Shared
                 rules.Contains(Rule.PurpleGholas) ||
                 rules.Contains(Rule.BrownAuditor) ||
                 rules.Contains(Rule.WhiteBlackMarket) ||
+                rules.Contains(Rule.CyanAssassinate) ||
+                rules.Contains(Rule.PinkLoyalty) ||
+                rules.Contains(Rule.PinkCollection) ||
                 rules.Contains(Rule.StrongholdBonus);
         }
 
@@ -99,6 +115,9 @@ namespace Treachery.Shared
                 Rule.PurpleGholas,
                 Rule.BrownAuditor,
                 Rule.WhiteBlackMarket,
+                Rule.CyanAssassinate,
+                Rule.PinkLoyalty,
+                Rule.PinkCollection
             },
 
             [Ruleset.AllExpansionsBasicGame] = new Rule[] {
@@ -107,7 +126,10 @@ namespace Treachery.Shared
                 Rule.ExpansionTreacheryCards,
                 Rule.SandTrout,
                 Rule.LeaderSkills,
-                Rule.Expansion2TreacheryCards
+                Rule.Expansion2TreacheryCards,
+                Rule.DiscoveryTokens,
+                Rule.Homeworlds,
+                Rule.NexusCards
             },
 
             [Ruleset.ExpansionBasicGame] = new Rule[] {
@@ -120,6 +142,12 @@ namespace Treachery.Shared
             [Ruleset.Expansion2BasicGame] = new Rule[] {
                 Rule.LeaderSkills,
                 Rule.Expansion2TreacheryCards
+            },
+
+            [Ruleset.Expansion3BasicGame] = new Rule[] {
+                Rule.DiscoveryTokens,
+                Rule.Homeworlds,
+                Rule.NexusCards
             },
 
             [Ruleset.AllExpansionsAdvancedGame] = new Rule[] {
@@ -148,6 +176,12 @@ namespace Treachery.Shared
                 Rule.StrongholdBonus,
                 Rule.BrownAuditor,
                 Rule.WhiteBlackMarket,
+                Rule.DiscoveryTokens,
+                Rule.Homeworlds,
+                Rule.NexusCards,
+                Rule.CyanAssassinate,
+                Rule.PinkLoyalty,
+                Rule.PinkCollection
             },
 
             [Ruleset.ExpansionAdvancedGame] = new Rule[] {
@@ -173,6 +207,9 @@ namespace Treachery.Shared
                 Rule.PurpleGholas,
                 Rule.BrownAuditor,
                 Rule.WhiteBlackMarket,
+                Rule.CyanAssassinate,
+                Rule.PinkLoyalty,
+                Rule.PinkCollection
             },
 
             [Ruleset.Expansion2AdvancedGame] = new Rule[] {
@@ -197,7 +234,10 @@ namespace Treachery.Shared
                 Rule.PurpleGholas,
                 Rule.BrownAuditor,
                 Rule.WhiteBlackMarket,
-                Rule.StrongholdBonus
+                Rule.StrongholdBonus,
+                Rule.CyanAssassinate,
+                Rule.PinkLoyalty,
+                Rule.PinkCollection
             },
 
             [Ruleset.ServerClassic] = new Rule[] {
@@ -316,6 +356,16 @@ namespace Treachery.Shared
                 case Rule.WhiteBlackMarket:
                 case Rule.StrongholdBonus:
                     return RuleGroup.ExpansionBrownAndWhiteAdvanced;
+
+                case Rule.DiscoveryTokens:
+                case Rule.Homeworlds:
+                case Rule.NexusCards:
+                    return RuleGroup.ExpansionPinkAndCyanBasic;
+
+                case Rule.CyanAssassinate:
+                case Rule.PinkLoyalty:
+                case Rule.PinkCollection:
+                    return RuleGroup.ExpansionPinkAndCyanAdvanced;
             }
 
             return RuleGroup.None;

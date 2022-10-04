@@ -436,12 +436,12 @@ namespace Treachery.Test
             List<Faction> factions;
             if (mustPlay != Faction.None)
             {
-                factions = EstablishPlayers.AvailableFactions(game).ToList().Where(f => f != mustPlay).TakeRandomN(nrOfPlayers - 1).ToList();
+                factions = EstablishPlayers.AvailableFactions().ToList().Where(f => f != mustPlay).TakeRandomN(nrOfPlayers - 1).ToList();
                 factions.Add(mustPlay);
             }
             else
             {
-                factions = EstablishPlayers.AvailableFactions(game).ToList();
+                factions = EstablishPlayers.AvailableFactions().ToList();
             }
 
             try
@@ -690,7 +690,7 @@ namespace Treachery.Test
                 if (game.CurrentPhase == Phase.GameEnded && latest is EndPhase)
                 {
                     statistics.PlayedGames++;
-                    statistics.GameTypes.Count(Game.DetermineApproximateRuleset(game.FactionsInPlay, game.Rules));
+                    statistics.GameTypes.Count(Game.DetermineApproximateRuleset(game.FactionsInPlay, game.Rules, Game.ExpansionLevel));
 
                     foreach (var p in game.Players)
                     {

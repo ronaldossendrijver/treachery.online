@@ -16,7 +16,7 @@ namespace Treachery.Client
     {
         #region Attributes
 
-        public const int CurrentVersion = 138;
+        public const int CurrentVersion = 150;
         public const int MINIMUM_SUPPORTED_VERSION = 23;
         public const string DEFAULT_ART_LOCATION = ".";
 
@@ -37,6 +37,11 @@ namespace Treachery.Client
         public Dictionary<LeaderSkill, string> LeaderSkillCardImage_URL;
         public Dictionary<int, string> StrongholdCardName_STR;
         public Dictionary<int, string> StrongholdCardImage_URL;
+        public Dictionary<HomeWorld, string> HomeWorld_STR;
+        public Dictionary<HomeWorld, string> HomeWorldImage_URL;
+        public Dictionary<HomeWorld, string> HomeWorldCardFrontImage_URL;
+        public Dictionary<HomeWorld, string> HomeWorldCardBackImage_URL;
+        public Dictionary<Faction, string> NexusCardImage_URL;
 
         public string Map_URL = null;
         public string Eye_URL = null;
@@ -432,6 +437,8 @@ namespace Treachery.Client
                 FactionForce.Purple => Faction.Purple,
                 FactionForce.Brown => Faction.Brown,
                 FactionForce.White => Faction.White,
+                FactionForce.Pink => Faction.Pink,
+                FactionForce.Cyan => Faction.Cyan,
                 _ => Faction.None,
             };
         }
@@ -537,6 +544,8 @@ namespace Treachery.Client
                 Ruleset.ExpansionAdvancedGame => "Ixians & Tleilaxu Expansion - Advanced",
                 Ruleset.Expansion2BasicGame => "CHOAM & Richese Expansion - Basic",
                 Ruleset.Expansion2AdvancedGame => "CHOAM & Richese Expansion - Advanced",
+                Ruleset.Expansion3BasicGame => "Ecaz & Moritani Expansion - Basic",
+                Ruleset.Expansion3AdvancedGame => "Ecaz & Moritani Expansion - Advanced",
                 Ruleset.AllExpansionsBasicGame => "Both Expansions - Basic",
                 Ruleset.AllExpansionsAdvancedGame => "Both Expansions - Advanced",
                 Ruleset.ServerClassic => "Server Classic",
@@ -559,6 +568,9 @@ namespace Treachery.Client
 
                 RuleGroup.ExpansionBrownAndWhiteBasic => "CHOAM & Richese Expansion",
                 RuleGroup.ExpansionBrownAndWhiteAdvanced => "CHOAM & Richese Expansion, Advanced Rules",
+
+                RuleGroup.ExpansionPinkAndCyanBasic => "Ecaz & Moritani Expansion",
+                RuleGroup.ExpansionPinkAndCyanAdvanced => "Ecaz & Moritani Expansion, Advanced Rules",
 
                 RuleGroup.House => "House Rules",
 
@@ -957,6 +969,10 @@ namespace Treachery.Client
                 MainPhase_STR[MainPhase.Bidding], //45
                 MainPhase_STR[MainPhase.Battle], //46
                 MainPhase_STR[MainPhase.Charity], //47
+                Faction.Pink, //48
+                Faction.Cyan, //49
+                g.Map.ImperialBasin // 50
+
             };
 
             return f switch
@@ -971,6 +987,8 @@ namespace Treachery.Client
                 Faction.Grey => Format(GetGreyTemplate(g), parameters),
                 Faction.Brown => Format(GetBrownTemplate(g), parameters),
                 Faction.White => Format(GetWhiteTemplate(g), parameters),
+                Faction.Pink => Format(GetPinkTemplate(g), parameters),
+                Faction.Cyan => Format(GetCyanTemplate(g), parameters),
                 _ => "",
             };
         }
@@ -1333,6 +1351,63 @@ namespace Treachery.Client
                 </div>";
         }
 
+        private static string GetPinkTemplate(Game g)
+        {
+            return
+              @"<div style='{48}'>
+                <p><strong>At start:</strong> 6 tokens in {50} and 14 in reserve (off-planet). Start with 12 {16}.</p>
+                <p><strong>Free revival:</strong> 2.</p>
+
+                <h5>Advantages</h5>
+                You forge strong alliances:
+                <ul>
+                <li><strong>AMBASSADORS</strong> - you see the treachery card on bid.</li>
+                </ul>" +
+
+              If(g.Applicable(Rule.PinkLoyalty) || g.Applicable(Rule.PinkCollection), "<h5>Advanced Game Advantages</h5>") +
+              If(g, Rule.PinkLoyalty, "<p>x.</p>") +
+              If(g, Rule.PinkLoyalty, "<p>y.</p>") +
+
+              If(g, Rule.AdvancedKarama,
+              @"<p><strong>Special {19}:</strong> xxx.</p>") +
+
+              @"<h5>Alliance</h5>
+                <p>You may have your ally benefit from a triggered Ambassador's effect.</p>
+
+                <h5>Strategy</h5>
+                <p>xxx.</p>
+                </div>";
+        }
+
+
+        private static string GetCyanTemplate(Game g)
+        {
+            return
+              @"<div style='{49}'>
+                <p><strong>At start:</strong> 6 tokens in any unoccupied territory when all other factions set up and 14 in reserve (off-planet). Start with 12 {16}.</p>
+                <p><strong>Free revival:</strong> 2.</p>
+
+                <h5>Advantages</h5>
+                You resort to terrorism:
+                <ul>
+                <li><strong>TERRORIZE</strong> - you see the treachery card on bid.</li>
+                </ul>" +
+
+              If(g, Rule.CyanAssassinate,
+              @"<h5>Advanced Game Advantages</h5>
+                <p>x.</p>") +
+
+              If(g, Rule.AdvancedKarama,
+              @"<p><strong>Special {19}:</strong> xxx.</p>") +
+
+              @"<h5>Alliance</h5>
+                <p>When your ally loses a battle that had a winner, they may keep one treachery card played in battle that they would have been able to keep if they had won.</p>
+
+                <h5>Strategy</h5>
+                <p>xxx.</p>
+                </div>";
+        }
+
         private static string If(Game game, Rule rule, string text) => If(game.Applicable(rule), text);
 
         private static string IfNot(Game game, Rule rule, string text) => If(!game.Applicable(rule), text);
@@ -1453,7 +1528,11 @@ namespace Treachery.Client
                 [TreacheryCardType.SearchDiscarded] = "Nullentropy",
                 [TreacheryCardType.TakeDiscarded] = "Semuta Drug",
                 [TreacheryCardType.Residual] = "Residual Poison",
-                [TreacheryCardType.Rockmelter] = "Stone Burner"
+                [TreacheryCardType.Rockmelter] = "Stone Burner",
+
+                [TreacheryCardType.Recruits] = "Recruits",
+                [TreacheryCardType.Reinforcements] = "Reinforcements",
+                [TreacheryCardType.HarassAndWithdraw] = "Harass and Withdraw"
             },
 
             TreacheryCardName_STR = new Dictionary<int, string>
@@ -1507,6 +1586,10 @@ namespace Treachery.Client
                 [52] = "Residual Poison",
                 [53] = "Stone Burner",
                 [54] = "Karama",
+
+                [55] = "Recruits",
+                [56] = "Reinforcements",
+                [57] = "Harass and Withdraw"
             },
 
             TreacheryCardDescription_STR = new Dictionary<int, string>
@@ -1560,6 +1643,10 @@ namespace Treachery.Client
                 [52] = "Residual Poison - Play against your opponent in battle before making battle plans. Kills one of their available leaders at random. No spice is collected for it. Discard after use.",
                 [53] = "Weapon - Special - Play as part of your Battle Plan. You choose after pland are revealed to either kill both leaders or reduce the strength of both leaders to 0. The player with the highest number of undialed forces wins the battle. Dialed forces are lost normally. Discard after use.",
                 [54] = "Allows you to prevent use of a Faction Advantage. Allows you to bid any amount of spice on a card or immediately win a card on bid. Allows you to ship at half price. In the advanced game, allows use of your Special Karama Power once during the game. Discard after use.",
+
+                [55] = "Play during Revival. All factions double their Free Revival rates. The revival limits is increased to 7. Discard after use.",
+                [56] = "Play as part of your battle plan in place of a weapon or defense if you have at least 3 forces in reserves. Add 2 to your dialed number, then send 3 forces from reserves to the Tanks. Discard after use.",
+                [57] = "Play as part of your battle plan in place of a weapon or defense when not on your own Home World. Your undialed forces return to your reserves. Your leader may be killed as normal. If your opponent calls traitor, this effect is cancelled. Discard after use."
             },
 
             TechTokenDescription_STR = new Dictionary<TechToken, string>
@@ -1628,6 +1715,11 @@ namespace Treachery.Client
                 [52] = DEFAULT_ART_LOCATION + "/art/ResidualPoison.gif",
                 [53] = DEFAULT_ART_LOCATION + "/art/StoneBurner.gif",
                 [54] = DEFAULT_ART_LOCATION + "/art/WhiteKarama.gif",
+
+                [55] = DEFAULT_ART_LOCATION + "/art/Recruits.gif",
+                [56] = DEFAULT_ART_LOCATION + "/art/Reinforcements.gif",
+                [57] = DEFAULT_ART_LOCATION + "/art/HarassAndWithdraw.gif",
+
             },
 
             ResourceCardImage_URL = new Dictionary<int, string>()
@@ -1646,9 +1738,17 @@ namespace Treachery.Client
                 [34] = DEFAULT_ART_LOCATION + "/art/TheGreatFlat.gif",
                 [37] = DEFAULT_ART_LOCATION + "/art/HabbanyaErg.gif",
                 [39] = DEFAULT_ART_LOCATION + "/art/WindPassNorth.gif",
-                [40] = DEFAULT_ART_LOCATION + "/art/HabbanyaRidgeFlat.gif",
+
+                [40] = DEFAULT_ART_LOCATION + "/art/SihayaRidge.gif",
+                [41] = DEFAULT_ART_LOCATION + "/art/RockOutcroppings.gif",
+                [42] = DEFAULT_ART_LOCATION + "/art/HaggaBasin.gif",
+                [43] = DEFAULT_ART_LOCATION + "/art/FuneralPlain.gif",
+                [44] = DEFAULT_ART_LOCATION + "/art/WindPassNorth.gif",
+                [45] = DEFAULT_ART_LOCATION + "/art/OldGapDiscovery.gif",
+
                 [98] = DEFAULT_ART_LOCATION + "/art/Shai-Hulud.gif",
-                [99] = DEFAULT_ART_LOCATION + "/art/Sandtrout.gif"
+                [99] = DEFAULT_ART_LOCATION + "/art/Sandtrout.gif",
+                [100] = DEFAULT_ART_LOCATION + "/art/GreatMaker.gif"
             },
 
             PersonName_STR = new Dictionary<int, string>()
@@ -1683,6 +1783,7 @@ namespace Treachery.Client
                 [1028] = "Piter de Vries",
                 [1029] = "Captain Iakin Nefud",
                 [1030] = "Umman Kudu",
+
                 [1031] = "Dominic Vernius",
                 [1032] = "C'Tair Pilru",
                 [1033] = "Tessia Vernius",
@@ -1704,7 +1805,19 @@ namespace Treachery.Client
                 [1048] = "Haloa Rund",
                 [1049] = "Flinto Kinnis",
                 [1050] = "Lady Helena",
-                [1051] = "Premier Ein Calimar"
+                [1051] = "Premier Ein Calimar",
+
+                [1052] = "Sanya Ecaz",
+                [1053] = "Rivvy Dinari",
+                [1054] = "Ilesa Ecaz",
+                [1055] = "Bindikk Narvi",
+                [1056] = "Whitmore Bludd",
+                [1057] = "Lupino Ord",
+                [1058] = "Hiir Resser",
+                [1059] = "Trin Kronos",
+                [1060] = "Grieu Kronos",
+                [1061] = "Vando Terboli",
+                [1062] = "Duke Prad Vidal"
             },
 
             PersonImage_URL = new Dictionary<int, string>()
@@ -1761,6 +1874,18 @@ namespace Treachery.Client
                 [1049] = DEFAULT_ART_LOCATION + "/art/person1049.gif",
                 [1050] = DEFAULT_ART_LOCATION + "/art/person1050.gif",
                 [1051] = DEFAULT_ART_LOCATION + "/art/person1051.gif",
+
+                [1052] = DEFAULT_ART_LOCATION + "/art/person1052.gif",
+                [1053] = DEFAULT_ART_LOCATION + "/art/person1053.gif",
+                [1054] = DEFAULT_ART_LOCATION + "/art/person1054.gif",
+                [1055] = DEFAULT_ART_LOCATION + "/art/person1055.gif",
+                [1056] = DEFAULT_ART_LOCATION + "/art/person1056.gif",
+                [1057] = DEFAULT_ART_LOCATION + "/art/person1057.gif",
+                [1058] = DEFAULT_ART_LOCATION + "/art/person1058.gif",
+                [1059] = DEFAULT_ART_LOCATION + "/art/person1059.gif",
+                [1060] = DEFAULT_ART_LOCATION + "/art/person1060.gif",
+                [1061] = DEFAULT_ART_LOCATION + "/art/person1061.gif",
+                [1062] = DEFAULT_ART_LOCATION + "/art/person1062.gif",
             },
 
             TerritoryName_STR = new Dictionary<int, string>()
@@ -1974,11 +2099,15 @@ namespace Treachery.Client
                 [Faction.Red] = "Emperor",
                 [Faction.Orange] = "Guild",
                 [Faction.Blue] = "Bene Gesserit",
+
                 [Faction.Grey] = "Ixian",
                 [Faction.Purple] = "Tleilaxu",
 
                 [Faction.Brown] = "CHOAM",
-                [Faction.White] = "Richese"
+                [Faction.White] = "Richese",
+
+                [Faction.Pink] = "Ecaz",
+                [Faction.Cyan] = "Moritani"
             },
 
             FactionImage_URL = new Dictionary<Faction, string>()
@@ -1989,11 +2118,15 @@ namespace Treachery.Client
                 [Faction.Red] = DEFAULT_ART_LOCATION + "/art/faction4.svg",
                 [Faction.Orange] = DEFAULT_ART_LOCATION + "/art/faction5.svg",
                 [Faction.Blue] = DEFAULT_ART_LOCATION + "/art/faction6.svg",
+
                 [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7.svg",
                 [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8.svg",
 
                 [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.svg",
                 [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.svg",
+
+                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11.png",
+                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12.png",
             },
 
             FactionTableImage_URL = new Dictionary<Faction, string>()
@@ -2004,11 +2137,15 @@ namespace Treachery.Client
                 [Faction.Red] = DEFAULT_ART_LOCATION + "/art/faction4.svg",
                 [Faction.Orange] = DEFAULT_ART_LOCATION + "/art/faction5.svg",
                 [Faction.Blue] = DEFAULT_ART_LOCATION + "/art/faction6.svg",
+
                 [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7.svg",
                 [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8.svg",
 
                 [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.svg",
                 [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.svg",
+
+                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11.png",
+                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12.png",
             },
 
             FactionFacedownImage_URL = new Dictionary<Faction, string>()
@@ -2024,21 +2161,27 @@ namespace Treachery.Client
 
                 [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.svg",
                 [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.svg",
+
+                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11.png",
+                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12.png",
             },
 
             FactionForceImage_URL = new Dictionary<Faction, string>()
             {
-                { Faction.Green, DEFAULT_ART_LOCATION + "/art/faction1force.svg" },
-                { Faction.Black, DEFAULT_ART_LOCATION + "/art/faction2force.svg" },
-                { Faction.Yellow, DEFAULT_ART_LOCATION + "/art/faction3force.svg" },
-                { Faction.Red, DEFAULT_ART_LOCATION + "/art/faction4force.svg" },
-                { Faction.Orange, DEFAULT_ART_LOCATION + "/art/faction5force.svg" },
-                { Faction.Blue, DEFAULT_ART_LOCATION + "/art/faction6force.svg" },
-                { Faction.Grey, DEFAULT_ART_LOCATION + "/art/faction7force.svg" },
-                { Faction.Purple, DEFAULT_ART_LOCATION + "/art/faction8force.svg" },
+                [Faction.Green] = DEFAULT_ART_LOCATION + "/art/faction1force.svg",
+                [Faction.Black] = DEFAULT_ART_LOCATION + "/art/faction2force.svg",
+                [Faction.Yellow] = DEFAULT_ART_LOCATION + "/art/faction3force.svg",
+                [Faction.Red] = DEFAULT_ART_LOCATION + "/art/faction4force.svg",
+                [Faction.Orange] = DEFAULT_ART_LOCATION + "/art/faction5force.svg",
+                [Faction.Blue] = DEFAULT_ART_LOCATION + "/art/faction6force.svg",
+                [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7force.svg",
+                [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8force.svg",
 
-                { Faction.Brown, DEFAULT_ART_LOCATION + "/art/faction9force.svg" },
-                { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10force.svg" },
+                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9force.svg",
+                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10force.svg",
+
+                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11force.png",
+                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12force.png",
             },
 
             FactionSpecialForceImage_URL = new Dictionary<Faction, string>()
@@ -2046,6 +2189,7 @@ namespace Treachery.Client
                 { Faction.Yellow, DEFAULT_ART_LOCATION + "/art/faction3specialforce.svg" },
                 { Faction.Red, DEFAULT_ART_LOCATION + "/art/faction4specialforce.svg" },
                 { Faction.Blue, DEFAULT_ART_LOCATION + "/art/faction6specialforce.svg" },
+
                 { Faction.Grey, DEFAULT_ART_LOCATION + "/art/faction7specialforce.svg" },
 
                 { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10specialforce.svg" }
@@ -2074,11 +2218,15 @@ namespace Treachery.Client
                 [Faction.Red] = "#b33715bb",
                 [Faction.Orange] = "#c85b20bb",
                 [Faction.Blue] = "#385884bb",
+
                 [Faction.Grey] = "#b0b079bb",
                 [Faction.Purple] = "#602d8bbb",
 
                 [Faction.Brown] = "#582d1bbb",
-                [Faction.White] = "#b3afa4bb"
+                [Faction.White] = "#b3afa4bb",
+
+                [Faction.Pink] = "#582d1bbb",
+                [Faction.Cyan] = "#894686bb"
             },
 
             FactionColor = new Dictionary<Faction, string>()
@@ -2090,11 +2238,15 @@ namespace Treachery.Client
                 [Faction.Red] = "#b33715",
                 [Faction.Orange] = "#c85b20",
                 [Faction.Blue] = "#385884",
+
                 [Faction.Grey] = "#b0b079",
                 [Faction.Purple] = "#602d8b",
 
                 [Faction.Brown] = "#582d1b",
-                [Faction.White] = "#b3afa4"
+                [Faction.White] = "#b3afa4",
+
+                [Faction.Pink] = "#582d1b",
+                [Faction.Cyan] = "#894686"
             },
 
             ForceName_STR = new Dictionary<Faction, string>()
@@ -2106,10 +2258,15 @@ namespace Treachery.Client
                 [Faction.Red] = "forces",
                 [Faction.Orange] = "forces",
                 [Faction.Blue] = "fighters",
+
                 [Faction.Grey] = "suboids",
                 [Faction.Purple] = "forces",
+
                 [Faction.Brown] = "forces",
-                [Faction.White] = "forces"
+                [Faction.White] = "forces",
+
+                [Faction.Pink] = "forces",
+                [Faction.Cyan] = "forces"
             },
 
             SpecialForceName_STR = new Dictionary<Faction, string>()
@@ -2121,11 +2278,15 @@ namespace Treachery.Client
                 [Faction.Red] = "Sardaukar",
                 [Faction.Orange] = "-",
                 [Faction.Blue] = "advisors",
+
                 [Faction.Grey] = "cyborgs",
                 [Faction.Purple] = "-",
 
                 [Faction.Brown] = "-",
-                [Faction.White] = "No-Field"
+                [Faction.White] = "No-Field",
+
+                [Faction.Pink] = "-",
+                [Faction.Cyan] = "-"
             },
 
             LeaderSkillCardName_STR = new Dictionary<LeaderSkill, string>()
@@ -2162,6 +2323,107 @@ namespace Treachery.Client
                 [LeaderSkill.Sandmaster] = DEFAULT_ART_LOCATION + "/art/Sandmaster.gif",
                 [LeaderSkill.Thinker] = DEFAULT_ART_LOCATION + "/art/Mentat.gif",
                 [LeaderSkill.Banker] = DEFAULT_ART_LOCATION + "/art/Banker.gif"
+            },
+
+            HomeWorld_STR = new Dictionary<HomeWorld, string>()
+            {
+                [HomeWorld.None] = "-",
+
+                [HomeWorld.Green] = "Caladan",
+                [HomeWorld.Black] = "Giedi Prime",
+                [HomeWorld.Yellow] = "Southern Hemisphere",
+                [HomeWorld.Red] = "Kaitain",
+                [HomeWorld.RedStar] = "Salusa Secundus",
+                [HomeWorld.Orange] = "Junction",
+                [HomeWorld.Blue] = "Wallach IX",
+
+                [HomeWorld.Grey] = "Ix",
+                [HomeWorld.Purple] = "Tleilax",
+
+                [HomeWorld.Brown] = "Tupile",
+                [HomeWorld.White] = "Richese",
+
+                [HomeWorld.Pink] = "Ecaz",
+                [HomeWorld.Cyan] = "Grumman"
+            },
+
+            HomeWorldImage_URL = new Dictionary<HomeWorld, string>()
+            {
+                [HomeWorld.Green] = DEFAULT_ART_LOCATION + "/art/Caladan.jpg",
+                [HomeWorld.Black] = DEFAULT_ART_LOCATION + "/art/GiediPrime.jpg",
+                [HomeWorld.Yellow] = DEFAULT_ART_LOCATION + "/art/Arrakis.jpg",
+                [HomeWorld.Red] = DEFAULT_ART_LOCATION + "/art/Kaitain.jpg",
+                [HomeWorld.RedStar] = DEFAULT_ART_LOCATION + "/art/SalusaSecundus.jpg",
+                [HomeWorld.Orange] = DEFAULT_ART_LOCATION + "/art/Junction.jpg",
+                [HomeWorld.Blue] = DEFAULT_ART_LOCATION + "/art/WallachIX.jpg",
+
+                [HomeWorld.Grey] = DEFAULT_ART_LOCATION + "/art/Ix.jpg",
+                [HomeWorld.Purple] = DEFAULT_ART_LOCATION + "/art/Tleilax.jpg",
+
+                [HomeWorld.Brown] = DEFAULT_ART_LOCATION + "/art/Tupile.jpg",
+                [HomeWorld.White] = DEFAULT_ART_LOCATION + "/art/Richese.jpg",
+
+                [HomeWorld.Pink] = DEFAULT_ART_LOCATION + "/art/Ecaz.jpg",
+                [HomeWorld.Cyan] = DEFAULT_ART_LOCATION + "/art/Grumman.jpg",
+            },
+
+            HomeWorldCardFrontImage_URL = new Dictionary<HomeWorld, string>()
+            {
+                [HomeWorld.Green] = DEFAULT_ART_LOCATION + "/art/CaladanCardFront.jpg",
+                [HomeWorld.Black] = DEFAULT_ART_LOCATION + "/art/GiediPrimeCardFront.jpg",
+                [HomeWorld.Yellow] = DEFAULT_ART_LOCATION + "/art/ArrakisCardFront.jpg",
+                [HomeWorld.Red] = DEFAULT_ART_LOCATION + "/art/KaitainCardFront.jpg",
+                [HomeWorld.RedStar] = DEFAULT_ART_LOCATION + "/art/SalusaSecundusCardFront.jpg",
+                [HomeWorld.Orange] = DEFAULT_ART_LOCATION + "/art/JunctionCardFront.jpg",
+                [HomeWorld.Blue] = DEFAULT_ART_LOCATION + "/art/WallachIXCardFront.jpg",
+
+                [HomeWorld.Grey] = DEFAULT_ART_LOCATION + "/art/IxCardFront.jpg",
+                [HomeWorld.Purple] = DEFAULT_ART_LOCATION + "/art/TleilaxCardFront.jpg",
+
+                [HomeWorld.Brown] = DEFAULT_ART_LOCATION + "/art/TupileCardFront.jpg",
+                [HomeWorld.White] = DEFAULT_ART_LOCATION + "/art/RicheseCardFront.jpg",
+
+                [HomeWorld.Pink] = DEFAULT_ART_LOCATION + "/art/EcazCardFront.jpg",
+                [HomeWorld.Cyan] = DEFAULT_ART_LOCATION + "/art/GrummanCardFront.jpg",
+            },
+
+            HomeWorldCardBackImage_URL = new Dictionary<HomeWorld, string>()
+            {
+                [HomeWorld.Green] = DEFAULT_ART_LOCATION + "/art/CaladanCardBack.jpg",
+                [HomeWorld.Black] = DEFAULT_ART_LOCATION + "/art/GiediPrimeCardBack.jpg",
+                [HomeWorld.Yellow] = DEFAULT_ART_LOCATION + "/art/ArrakisCardBack.jpg",
+                [HomeWorld.Red] = DEFAULT_ART_LOCATION + "/art/KaitainCardBack.jpg",
+                [HomeWorld.RedStar] = DEFAULT_ART_LOCATION + "/art/SalusaSecundusCardBack.jpg",
+                [HomeWorld.Orange] = DEFAULT_ART_LOCATION + "/art/JunctionCardBack.jpg",
+                [HomeWorld.Blue] = DEFAULT_ART_LOCATION + "/art/WallachIXCardBack.jpg",
+
+                [HomeWorld.Grey] = DEFAULT_ART_LOCATION + "/art/IxCardBack.jpg",
+                [HomeWorld.Purple] = DEFAULT_ART_LOCATION + "/art/TleilaxCardBack.jpg",
+
+                [HomeWorld.Brown] = DEFAULT_ART_LOCATION + "/art/TupileCardBack.jpg",
+                [HomeWorld.White] = DEFAULT_ART_LOCATION + "/art/RicheseCardBack.jpg",
+
+                [HomeWorld.Pink] = DEFAULT_ART_LOCATION + "/art/EcazCardBack.jpg",
+                [HomeWorld.Cyan] = DEFAULT_ART_LOCATION + "/art/GrummanCardBack.jpg",
+            },
+
+            NexusCardImage_URL = new Dictionary<Faction, string>()
+            {
+                [Faction.Green] = DEFAULT_ART_LOCATION + "/art/faction1nexus.jpg",
+                [Faction.Black] = DEFAULT_ART_LOCATION + "/art/faction2nexus.jpg",
+                [Faction.Yellow] = DEFAULT_ART_LOCATION + "/art/faction3nexus.jpg",
+                [Faction.Red] = DEFAULT_ART_LOCATION + "/art/faction4nexus.jpg",
+                [Faction.Orange] = DEFAULT_ART_LOCATION + "/art/faction5nexus.jpg",
+                [Faction.Blue] = DEFAULT_ART_LOCATION + "/art/faction6nexus.jpg",
+
+                [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7nexus.jpg",
+                [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8nexus.jpg",
+
+                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9nexus.jpg",
+                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10nexus.jpg",
+
+                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11nexus.jpg",
+                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12nexus.jpg",
             },
 
             StrongholdCardName_STR = new Dictionary<int, string>()

@@ -12,6 +12,7 @@ namespace Treachery.Shared
         public bool HostParticipates;
         public string GameName;
         public bool HasPassword;
+        public int ExpansionLevel;
         public Phase CurrentPhase;
         public MainPhase CurrentMainPhase;
         public int CurrentTurn;

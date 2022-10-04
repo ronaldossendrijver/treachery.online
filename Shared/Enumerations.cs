@@ -384,10 +384,20 @@ namespace Treachery.Shared
         Expansion2BasicGame = 150,
         Expansion2AdvancedGame = 170,
 
+        Expansion3BasicGame = 300,
+        Expansion3AdvancedGame = 310,
+
         AllExpansionsBasicGame = 180,
         AllExpansionsAdvancedGame = 200,
 
         Custom = 1000
+    }
+
+    public enum DiscoveryTokenType : int
+    {
+        None = 0,
+        Hiereg = 10,
+        Smuggler = 20
     }
 
     public enum Rule : int
@@ -455,6 +465,18 @@ namespace Treachery.Shared
         BrownAuditor = 500,
         WhiteBlackMarket = 501,
 
+        //Expansion 3
+        GreatMaker = 600,
+        DiscoveryTokens = 601,
+        Homeworlds = 602,
+        NexusCards = 603,
+        Expansion3TreacheryCards = 604,
+
+        //Expansion 3, Advanced Game
+        CyanAssassinate = 700,
+        PinkLoyalty = 701,
+        PinkCollection = 702,
+
         //Bots
         FillWithBots = 998,
         OrangeBot = 1000,
@@ -495,7 +517,8 @@ namespace Treachery.Shared
         RedSupportingNonAllyBids = 1012,
         BattleWithoutLeader = 1013,
         CapturedLeadersAreTraitorsToOwnFaction = 1014,
-        DisableEndOfGameReport = 1015
+        DisableEndOfGameReport = 1015,
+
     }
 
     public enum RuleGroup
@@ -513,6 +536,10 @@ namespace Treachery.Shared
         ExpansionBrownAndWhiteBasicExceptions = 301,
         ExpansionBrownAndWhiteAdvanced = 310,
         ExpansionBrownAndWhiteAdvancedExceptions = 311,
+        ExpansionPinkAndCyanBasic = 400,
+        ExpansionPinkAndCyanBasicExceptions = 401,
+        ExpansionPinkAndCyanAdvanced = 410,
+        ExpansionPinkAndCyanAdvancedExceptions = 411,
         House = 1000,
         Bots = 2000
     }
@@ -559,7 +586,10 @@ namespace Treachery.Shared
         SearchDiscarded = 230,
         TakeDiscarded = 240,
         Residual = 250,
-        Rockmelter = 260
+        Rockmelter = 260,
+        Recruits = 261,
+        Reinforcements = 262,
+        HarassAndWithdraw = 263
     }
 
     public enum Concept : int
@@ -639,6 +669,24 @@ namespace Treachery.Shared
         CountDefensesAsAntidote = 30,
         WinTies = 40,
         CollectResourcesForDial = 50
+    }
+
+    public enum HomeWorld : int
+    {
+        None = 0,
+        Yellow = 10,
+        Green = 20,
+        Black = 30,
+        Red = 40,
+        RedStar = 45,
+        Orange = 50,
+        Blue = 60,
+        Grey = 70,
+        Purple = 80,
+        Brown = 90,
+        White = 100,
+        Pink = 110,
+        Cyan = 120
     }
 
     public enum CaptureDecision

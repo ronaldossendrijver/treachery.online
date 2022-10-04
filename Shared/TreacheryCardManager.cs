@@ -90,6 +90,11 @@ namespace Treachery.Shared
             Items.Add(new TreacheryCard(55, 53, TreacheryCardType.Rockmelter, Rule.WhiteTreacheryCards));
             Items.Add(new TreacheryCard(56, 54, TreacheryCardType.Karma, Rule.WhiteTreacheryCards));
 
+            //Expansion 3 Treachery Cards
+            Items.Add(new TreacheryCard(57, 55, TreacheryCardType.Recruits, Rule.Expansion3TreacheryCards));
+            Items.Add(new TreacheryCard(58, 56, TreacheryCardType.Reinforcements, Rule.Expansion3TreacheryCards));
+            Items.Add(new TreacheryCard(59, 57, TreacheryCardType.HarassAndWithdraw, Rule.Expansion3TreacheryCards));
+
             //3 extra karma cards
             Items.Add(new TreacheryCard(100, 23, TreacheryCardType.Karma, Rule.ExtraKaramaCards));
             Items.Add(new TreacheryCard(101, 23, TreacheryCardType.Karma, Rule.ExtraKaramaCards));
