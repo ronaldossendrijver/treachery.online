@@ -207,20 +207,35 @@ namespace Treachery.Shared
 
         public static IEnumerable<RuleGroup> AvailableRuleGroups()
         {
-            return new RuleGroup[]
+            var result = new List<RuleGroup>();
+
+            if (Game.ExpansionLevel >= 0)
             {
-                RuleGroup.CoreAdvanced,
-                RuleGroup.CoreBasicExceptions,
-                RuleGroup.CoreAdvancedExceptions,
+                result.Add(RuleGroup.CoreAdvanced);
+                result.Add(RuleGroup.CoreBasicExceptions);
+                result.Add(RuleGroup.CoreAdvancedExceptions);
 
-                RuleGroup.ExpansionIxAndBtBasic,
-                RuleGroup.ExpansionIxAndBtAdvanced,
+            }
 
-                RuleGroup.ExpansionBrownAndWhiteBasic,
-                RuleGroup.ExpansionBrownAndWhiteAdvanced,
+            if (Game.ExpansionLevel >= 1)
+            {
+                result.Add(RuleGroup.ExpansionIxAndBtBasic);
+                result.Add(RuleGroup.ExpansionIxAndBtAdvanced);
+            }
 
-                RuleGroup.House,
-            };
+            if (Game.ExpansionLevel >= 2)
+            {
+                result.Add(RuleGroup.ExpansionBrownAndWhiteBasic);
+                result.Add(RuleGroup.ExpansionBrownAndWhiteAdvanced);
+            }
+
+            if (Game.ExpansionLevel >= 3)
+            {
+                result.Add(RuleGroup.ExpansionPinkAndCyanBasic);
+                result.Add(RuleGroup.ExpansionPinkAndCyanAdvanced);
+            }
+
+            return result;
         }
     }
 }

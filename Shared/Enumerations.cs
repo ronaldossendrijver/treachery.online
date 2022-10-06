@@ -475,7 +475,6 @@ namespace Treachery.Shared
         //Expansion 3, Advanced Game
         CyanAssassinate = 700,
         PinkLoyalty = 701,
-        PinkCollection = 702,
 
         //Bots
         FillWithBots = 998,

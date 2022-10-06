@@ -734,6 +734,14 @@ namespace Treachery.Client
                 Rule.BrownAuditor => Format("{0} gains the Auditor leader", Faction.Brown),
                 Rule.WhiteBlackMarket => Format("{0} Black Market bidding", Faction.White),
 
+                Rule.GreatMaker => "Great Maker",
+                Rule.DiscoveryTokens => "Discovery Tokens",
+                Rule.Homeworlds => "Homeworlds",
+                Rule.NexusCards => "Nexus Cards",
+                Rule.Expansion3TreacheryCards => "Expansion Treachery Cards",
+                Rule.CyanAssassinate => Format("{0} can assassinate leaders", Faction.Yellow),
+                Rule.PinkLoyalty => Format("{0} gain a loyal leader", Faction.Yellow),
+
                 Rule.CustomDecks => "Customized Treachery Card Deck",
                 Rule.ExtraKaramaCards => Format("Add three extra {0} cards to the game", TreacheryCardType.Karma),
                 Rule.FullPhaseKarma => Format("Full phase {0} (instead of single instance)", TreacheryCardType.Karma),
@@ -1364,9 +1372,9 @@ namespace Treachery.Client
                 <li><strong>AMBASSADORS</strong> - you see the treachery card on bid.</li>
                 </ul>" +
 
-              If(g.Applicable(Rule.PinkLoyalty) || g.Applicable(Rule.PinkCollection), "<h5>Advanced Game Advantages</h5>") +
-              If(g, Rule.PinkLoyalty, "<p>x.</p>") +
-              If(g, Rule.PinkLoyalty, "<p>y.</p>") +
+              If(g.Applicable(Rule.PinkLoyalty) || g.Applicable(Rule.IncreasedResourceFlow), "<h5>Advanced Game Advantages</h5>") +
+              If(g, Rule.PinkLoyalty, "<p><strong>Loyalty:</strong> at the start of the game, one of your leader (selected randomly) is not added to the Traitor deck.</p>") +
+              If(g, Rule.IncreasedResourceFlow, "<p><strong>Collection:</strong> you and your ally both gain income from strongholds that yield {16} during collection.</p>") +
 
               If(g, Rule.AdvancedKarama,
               @"<p><strong>Special {19}:</strong> xxx.</p>") +
