@@ -1875,17 +1875,17 @@ namespace Treachery.Client
                 [1050] = DEFAULT_ART_LOCATION + "/art/person1050.gif",
                 [1051] = DEFAULT_ART_LOCATION + "/art/person1051.gif",
 
-                [1052] = DEFAULT_ART_LOCATION + "/art/person1052.gif",
-                [1053] = DEFAULT_ART_LOCATION + "/art/person1053.gif",
-                [1054] = DEFAULT_ART_LOCATION + "/art/person1054.gif",
-                [1055] = DEFAULT_ART_LOCATION + "/art/person1055.gif",
-                [1056] = DEFAULT_ART_LOCATION + "/art/person1056.gif",
-                [1057] = DEFAULT_ART_LOCATION + "/art/person1057.gif",
-                [1058] = DEFAULT_ART_LOCATION + "/art/person1058.gif",
-                [1059] = DEFAULT_ART_LOCATION + "/art/person1059.gif",
-                [1060] = DEFAULT_ART_LOCATION + "/art/person1060.gif",
-                [1061] = DEFAULT_ART_LOCATION + "/art/person1061.gif",
-                [1062] = DEFAULT_ART_LOCATION + "/art/person1062.gif",
+                [1052] = DEFAULT_ART_LOCATION + "/art/person1052.png",
+                [1053] = DEFAULT_ART_LOCATION + "/art/person1053.png",
+                [1054] = DEFAULT_ART_LOCATION + "/art/person1054.png",
+                [1055] = DEFAULT_ART_LOCATION + "/art/person1055.png",
+                [1056] = DEFAULT_ART_LOCATION + "/art/person1056.png",
+                [1057] = DEFAULT_ART_LOCATION + "/art/person1057.png",
+                [1058] = DEFAULT_ART_LOCATION + "/art/person1058.png",
+                [1059] = DEFAULT_ART_LOCATION + "/art/person1059.png",
+                [1060] = DEFAULT_ART_LOCATION + "/art/person1060.png",
+                [1061] = DEFAULT_ART_LOCATION + "/art/person1061.png",
+                [1062] = DEFAULT_ART_LOCATION + "/art/person1062.png",
             },
 
             TerritoryName_STR = new Dictionary<int, string>()
@@ -2225,8 +2225,8 @@ namespace Treachery.Client
                 [Faction.Brown] = "#582d1bbb",
                 [Faction.White] = "#b3afa4bb",
 
-                [Faction.Pink] = "#582d1bbb",
-                [Faction.Cyan] = "#894686bb"
+                [Faction.Pink] = "#a85f9cbb",
+                [Faction.Cyan] = "#289caabb"
             },
 
             FactionColor = new Dictionary<Faction, string>()
@@ -2245,8 +2245,8 @@ namespace Treachery.Client
                 [Faction.Brown] = "#582d1b",
                 [Faction.White] = "#b3afa4",
 
-                [Faction.Pink] = "#582d1b",
-                [Faction.Cyan] = "#894686"
+                [Faction.Pink] = "#a85f9c",
+                [Faction.Cyan] = "#289caa"
             },
 
             ForceName_STR = new Dictionary<Faction, string>()

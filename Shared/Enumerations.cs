@@ -620,7 +620,7 @@ namespace Treachery.Shared
         Messiah = 20,
         Mercenary = 30,
         Auditor = 40,
-        InitiallyUnclaimed = 50
+        Vidal = 50
     }
 
     public enum AuctionType : int

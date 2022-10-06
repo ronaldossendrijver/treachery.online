@@ -87,18 +87,18 @@ namespace Treachery.Shared
                 new Leader(id++) { Value = 4, Faction = Faction.White, HeroType = HeroType.Normal },
                 new Leader(id++) { Value = 5, Faction = Faction.White, HeroType = HeroType.Normal },
 
-                new Leader(id++) { Value = 2, Faction = Faction.Pink, HeroType = HeroType.Normal },
-                new Leader(id++) { Value = 2, Faction = Faction.Pink, HeroType = HeroType.Normal },
+                new Leader(id++) { Value = 4, Faction = Faction.Pink, HeroType = HeroType.Normal },
                 new Leader(id++) { Value = 3, Faction = Faction.Pink, HeroType = HeroType.Normal },
+                new Leader(id++) { Value = 3, Faction = Faction.Pink, HeroType = HeroType.Normal },
+                new Leader(id++) { Value = 2, Faction = Faction.Pink, HeroType = HeroType.Normal },
                 new Leader(id++) { Value = 4, Faction = Faction.Pink, HeroType = HeroType.Normal },
-                new Leader(id++) { Value = 4, Faction = Faction.Pink, HeroType = HeroType.Normal },
-                new Leader(id++) { Value = 6, Faction = Faction.Pink, HeroType = HeroType.InitiallyUnclaimed },
+                new Leader(id++) { Value = 6, Faction = Faction.Pink, HeroType = HeroType.Vidal },
 
-                new Leader(id++) { Value = 1, Faction = Faction.Cyan, HeroType = HeroType.Normal },
+                new Leader(id++) { Value = 5, Faction = Faction.Cyan, HeroType = HeroType.Normal },
+                new Leader(id++) { Value = 4, Faction = Faction.Cyan, HeroType = HeroType.Normal },
                 new Leader(id++) { Value = 2, Faction = Faction.Cyan, HeroType = HeroType.Normal },
                 new Leader(id++) { Value = 4, Faction = Faction.Cyan, HeroType = HeroType.Normal },
-                new Leader(id++) { Value = 4, Faction = Faction.Cyan, HeroType = HeroType.Normal },
-                new Leader(id++) { Value = 5, Faction = Faction.Cyan, HeroType = HeroType.Normal },
+                new Leader(id++) { Value = 1, Faction = Faction.Cyan, HeroType = HeroType.Normal },
 
             };
         }
