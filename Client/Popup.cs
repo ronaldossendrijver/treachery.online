@@ -19,6 +19,18 @@ namespace Treachery.Client
 
         public static string Get(TechToken tt) => GetImageHoverHTML(Skin.Current.GetImageURL(tt));
 
+        public static string Get(Homeworld w, HomeworldStatus status)
+        {
+            if (status.IsHigh) return GetImageHoverHTML(Skin.Current.GetHomeworldCardFrontImageURL(w.World));
+            else
+            {
+                if (status.Occupant == w.Faction) return GetImageHoverHTML(Skin.Current.GetHomeworldCardBackImageURL(w.World));
+                else return string.Format("<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{0}' width=300/><img src='{1}' width=100 style='position:absolute;left:220px;top:300px;filter:drop-shadow(-3px 3px 2px black);'/></div>",
+                        Skin.Current.GetHomeworldCardBackImageURL(w.World), Skin.Current.GetImageURL(status.Occupant));
+            }
+
+        }
+
         public static string Get(TreacheryCard c)
         {
             if (c == null)
@@ -83,6 +95,7 @@ namespace Treachery.Client
 
 
         private static string GetImageHoverHTML(string imageURL) => string.Format("<img src='{0}' width=300 class='img-fluid' style='filter:drop-shadow(-3px 3px 2px black);'/>", imageURL);
+
 
     }
 }

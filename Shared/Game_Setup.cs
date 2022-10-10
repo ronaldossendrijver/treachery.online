@@ -609,43 +609,56 @@ namespace Treachery.Shared
                 case Faction.Yellow:
                     p.ForcesInReserve = Applicable(Rule.YellowSpecialForces) ? 17 : 20;
                     p.SpecialForcesInReserve = Applicable(Rule.YellowSpecialForces) ? 3 : 0;
+                    p.AddHomeworld(World.Yellow, new object[] { typeof(FactionForce), typeof(FactionSpecialForce) }, 3, 10000);
                     break;
                 case Faction.Green:
                     p.ForcesInReserve = 20;
+                    p.AddHomeworld(World.Green, new object[] { typeof(FactionForce) }, 6, 10001);
                     break;
                 case Faction.Black:
                     p.ForcesInReserve = 20;
+                    p.AddHomeworld(World.Black, new object[] { typeof(FactionForce) }, 7, 10002);
                     break;
                 case Faction.Red:
                     p.ForcesInReserve = Applicable(Rule.RedSpecialForces) ? 15 : 20; ;
                     p.SpecialForcesInReserve = Applicable(Rule.RedSpecialForces) ? 5 : 0;
+                    p.AddHomeworld(World.Red, new object[] { typeof(FactionForce) }, 5, 10003);
+                    if (Applicable(Rule.RedSpecialForces)) p.AddHomeworld(World.RedStar, new object[] { typeof(FactionSpecialForce) }, 2, 10004);
                     break;
                 case Faction.Orange:
                     p.ForcesInReserve = 20;
+                    p.AddHomeworld(World.Orange, new object[] { typeof(FactionForce) }, 5, 10005);
                     break;
                 case Faction.Blue:
                     p.ForcesInReserve = 20;
+                    p.AddHomeworld(World.Blue, new object[] { typeof(FactionForce) }, 11, 10006);
                     break;
                 case Faction.Grey:
                     p.ForcesInReserve = 13;
                     p.SpecialForcesInReserve = 7;
+                    p.AddHomeworld(World.Grey, new object[] { typeof(FactionForce), typeof(FactionSpecialForce) }, 5, 10007);
                     break;
                 case Faction.Purple:
                     p.ForcesInReserve = 20;
+                    p.AddHomeworld(World.Purple, new object[] { typeof(FactionForce) }, 9, 10008);
                     break;
 
                 case Faction.Brown:
                     p.ForcesInReserve = 20;
+                    p.AddHomeworld(World.Brown, new object[] { typeof(FactionForce) }, 11, 10009);
                     break;
                 case Faction.White:
                     p.ForcesInReserve = 20;
+                    p.AddHomeworld(World.White, new object[] { typeof(FactionForce) }, 10, 10010);
                     break;
 
                 case Faction.Pink:
                     p.ForcesInReserve = 20;
+                    p.AddHomeworld(World.Pink, new object[] { typeof(FactionForce) }, 7, 10011);
                     break;
                 case Faction.Cyan:
                     p.ForcesInReserve = 20;
+                    p.AddHomeworld(World.Cyan, new object[] { typeof(FactionForce) }, 8, 10012);
                     break;
 
             }

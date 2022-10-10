@@ -91,6 +91,8 @@ namespace Treachery.Shared
 
         public IList<LeaderSkill> SkillsToChooseFrom { get; set; } = new List<LeaderSkill>();
 
+        public IList<Homeworld> Homeworlds { get; set; } = new List<Homeworld>();
+
         protected Game Game { get; set; }
 
         public Player(Game game, string name)
@@ -565,7 +567,7 @@ namespace Treachery.Shared
                 };
             }
         }
-
+                
         public void AssignLeaders(Game g)
         {
             Leaders = Faction switch
@@ -597,6 +599,11 @@ namespace Treachery.Shared
 
         public bool HasKarma => Karma.ValidKarmaCards(Game, this).Any();
 
+        public void AddHomeworld(World world, bool isHomeOfNormalForces, bool isHomeOfSpecialForces, int threshold, int locationId)
+        {
+            Homeworlds.Add(new Homeworld(world, Faction, isHomeOfNormalForces, isHomeOfSpecialForces, threshold, locationId));
+        }
+
         public object Clone()
         {
             var result = (Player)MemberwiseClone();
@@ -611,5 +618,6 @@ namespace Treachery.Shared
 
             return result;
         }
+
     }
 }

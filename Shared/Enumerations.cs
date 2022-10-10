@@ -670,7 +670,7 @@ namespace Treachery.Shared
         CollectResourcesForDial = 50
     }
 
-    public enum HomeWorld : int
+    public enum World : int
     {
         None = 0,
         Yellow = 10,
@@ -687,6 +687,7 @@ namespace Treachery.Shared
         Pink = 110,
         Cyan = 120
     }
+
 
     public enum CaptureDecision
     {

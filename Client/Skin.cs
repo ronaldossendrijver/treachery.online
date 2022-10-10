@@ -37,10 +37,10 @@ namespace Treachery.Client
         public Dictionary<LeaderSkill, string> LeaderSkillCardImage_URL;
         public Dictionary<int, string> StrongholdCardName_STR;
         public Dictionary<int, string> StrongholdCardImage_URL;
-        public Dictionary<HomeWorld, string> HomeWorld_STR;
-        public Dictionary<HomeWorld, string> HomeWorldImage_URL;
-        public Dictionary<HomeWorld, string> HomeWorldCardFrontImage_URL;
-        public Dictionary<HomeWorld, string> HomeWorldCardBackImage_URL;
+        public Dictionary<World, string> HomeWorld_STR;
+        public Dictionary<World, string> HomeWorldImage_URL;
+        public Dictionary<World, string> HomeWorldCardFrontImage_URL;
+        public Dictionary<World, string> HomeWorldCardBackImage_URL;
         public Dictionary<Faction, string> NexusCardImage_URL;
 
         public string Map_URL = null;
@@ -297,6 +297,7 @@ namespace Treachery.Client
                 TreacheryCard tc => Describe(tc),
                 TreacheryCardType tct => Describe(tct),
                 LeaderSkill ls => Describe(ls),
+                World w => Describe(w),
                 Ruleset r => Describe(r),
                 RuleGroup rg => Describe(rg),
                 Rule rule => Describe(rule),
@@ -411,6 +412,11 @@ namespace Treachery.Client
         public string Describe(LeaderSkill l)
         {
             return LeaderSkillCardName_STR[l];
+        }
+
+        public string Describe(World w)
+        {
+            return HomeWorld_STR[w];
         }
 
         public string Describe(MainPhase p)
@@ -546,8 +552,8 @@ namespace Treachery.Client
                 Ruleset.Expansion2AdvancedGame => "CHOAM & Richese Expansion - Advanced",
                 Ruleset.Expansion3BasicGame => "Ecaz & Moritani Expansion - Basic",
                 Ruleset.Expansion3AdvancedGame => "Ecaz & Moritani Expansion - Advanced",
-                Ruleset.AllExpansionsBasicGame => "Both Expansions - Basic",
-                Ruleset.AllExpansionsAdvancedGame => "Both Expansions - Advanced",
+                Ruleset.AllExpansionsBasicGame => "All Expansions - Basic",
+                Ruleset.AllExpansionsAdvancedGame => "All Expansions - Advanced",
                 Ruleset.ServerClassic => "Server Classic",
                 Ruleset.Custom => "Custom",
 
@@ -792,6 +798,11 @@ namespace Treachery.Client
             return c != null ? GetURL(TreacheryCardImage_URL, c.SkinId) : ""; ;
         }
 
+        public string GetImageURL(World w)
+        {
+            return GetURL(HomeWorldImage_URL, w);
+        }
+
         public string GetImageURL(Location l)
         {
             return l != null ? GetURL(StrongholdCardImage_URL, l.Territory.SkinId) : "";
@@ -870,6 +881,16 @@ namespace Treachery.Client
         public string GetFactionSpecialForceImageURL(Faction faction)
         {
             return GetURL(FactionSpecialForceImage_URL, faction);
+        }
+
+        public string GetHomeworldCardFrontImageURL(World w)
+        {
+            return GetURL(HomeWorldCardFrontImage_URL, w);
+        }
+
+        public string GetHomeworldCardBackImageURL(World w)
+        {
+            return GetURL(HomeWorldCardBackImage_URL, w);
         }
 
         public string GetImageURL(TechToken tech)
@@ -2333,86 +2354,86 @@ namespace Treachery.Client
                 [LeaderSkill.Banker] = DEFAULT_ART_LOCATION + "/art/Banker.gif"
             },
 
-            HomeWorld_STR = new Dictionary<HomeWorld, string>()
+            HomeWorld_STR = new Dictionary<World, string>()
             {
-                [HomeWorld.None] = "-",
+                [World.None] = "-",
 
-                [HomeWorld.Green] = "Caladan",
-                [HomeWorld.Black] = "Giedi Prime",
-                [HomeWorld.Yellow] = "Southern Hemisphere",
-                [HomeWorld.Red] = "Kaitain",
-                [HomeWorld.RedStar] = "Salusa Secundus",
-                [HomeWorld.Orange] = "Junction",
-                [HomeWorld.Blue] = "Wallach IX",
+                [World.Green] = "Caladan",
+                [World.Black] = "Giedi Prime",
+                [World.Yellow] = "Southern Hemisphere",
+                [World.Red] = "Kaitain",
+                [World.RedStar] = "Salusa Secundus",
+                [World.Orange] = "Junction",
+                [World.Blue] = "Wallach IX",
 
-                [HomeWorld.Grey] = "Ix",
-                [HomeWorld.Purple] = "Tleilax",
+                [World.Grey] = "Ix",
+                [World.Purple] = "Tleilax",
 
-                [HomeWorld.Brown] = "Tupile",
-                [HomeWorld.White] = "Richese",
+                [World.Brown] = "Tupile",
+                [World.White] = "Richese",
 
-                [HomeWorld.Pink] = "Ecaz",
-                [HomeWorld.Cyan] = "Grumman"
+                [World.Pink] = "Ecaz",
+                [World.Cyan] = "Grumman"
             },
 
-            HomeWorldImage_URL = new Dictionary<HomeWorld, string>()
+            HomeWorldImage_URL = new Dictionary<World, string>()
             {
-                [HomeWorld.Green] = DEFAULT_ART_LOCATION + "/art/Caladan.jpg",
-                [HomeWorld.Black] = DEFAULT_ART_LOCATION + "/art/GiediPrime.jpg",
-                [HomeWorld.Yellow] = DEFAULT_ART_LOCATION + "/art/Arrakis.jpg",
-                [HomeWorld.Red] = DEFAULT_ART_LOCATION + "/art/Kaitain.jpg",
-                [HomeWorld.RedStar] = DEFAULT_ART_LOCATION + "/art/SalusaSecundus.jpg",
-                [HomeWorld.Orange] = DEFAULT_ART_LOCATION + "/art/Junction.jpg",
-                [HomeWorld.Blue] = DEFAULT_ART_LOCATION + "/art/WallachIX.jpg",
+                [World.Green] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
+                [World.Black] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
+                [World.Yellow] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
+                [World.Red] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
+                [World.RedStar] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
+                [World.Orange] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
+                [World.Blue] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
 
-                [HomeWorld.Grey] = DEFAULT_ART_LOCATION + "/art/Ix.jpg",
-                [HomeWorld.Purple] = DEFAULT_ART_LOCATION + "/art/Tleilax.jpg",
+                [World.Grey] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
+                [World.Purple] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
 
-                [HomeWorld.Brown] = DEFAULT_ART_LOCATION + "/art/Tupile.jpg",
-                [HomeWorld.White] = DEFAULT_ART_LOCATION + "/art/Richese.jpg",
+                [World.Brown] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
+                [World.White] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
 
-                [HomeWorld.Pink] = DEFAULT_ART_LOCATION + "/art/Ecaz.jpg",
-                [HomeWorld.Cyan] = DEFAULT_ART_LOCATION + "/art/Grumman.jpg",
+                [World.Pink] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
+                [World.Cyan] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
             },
 
-            HomeWorldCardFrontImage_URL = new Dictionary<HomeWorld, string>()
+            HomeWorldCardFrontImage_URL = new Dictionary<World, string>()
             {
-                [HomeWorld.Green] = DEFAULT_ART_LOCATION + "/art/CaladanCardFront.jpg",
-                [HomeWorld.Black] = DEFAULT_ART_LOCATION + "/art/GiediPrimeCardFront.jpg",
-                [HomeWorld.Yellow] = DEFAULT_ART_LOCATION + "/art/ArrakisCardFront.jpg",
-                [HomeWorld.Red] = DEFAULT_ART_LOCATION + "/art/KaitainCardFront.jpg",
-                [HomeWorld.RedStar] = DEFAULT_ART_LOCATION + "/art/SalusaSecundusCardFront.jpg",
-                [HomeWorld.Orange] = DEFAULT_ART_LOCATION + "/art/JunctionCardFront.jpg",
-                [HomeWorld.Blue] = DEFAULT_ART_LOCATION + "/art/WallachIXCardFront.jpg",
+                [World.Green] = DEFAULT_ART_LOCATION + "/art/CaladanCardFront.jpg",
+                [World.Black] = DEFAULT_ART_LOCATION + "/art/GiediPrimeCardFront.jpg",
+                [World.Yellow] = DEFAULT_ART_LOCATION + "/art/ArrakisCardFront.jpg",
+                [World.Red] = DEFAULT_ART_LOCATION + "/art/KaitainCardFront.jpg",
+                [World.RedStar] = DEFAULT_ART_LOCATION + "/art/SalusaSecundusCardFront.jpg",
+                [World.Orange] = DEFAULT_ART_LOCATION + "/art/JunctionCardFront.jpg",
+                [World.Blue] = DEFAULT_ART_LOCATION + "/art/WallachIXCardFront.jpg",
 
-                [HomeWorld.Grey] = DEFAULT_ART_LOCATION + "/art/IxCardFront.jpg",
-                [HomeWorld.Purple] = DEFAULT_ART_LOCATION + "/art/TleilaxCardFront.jpg",
+                [World.Grey] = DEFAULT_ART_LOCATION + "/art/IxCardFront.jpg",
+                [World.Purple] = DEFAULT_ART_LOCATION + "/art/TleilaxCardFront.jpg",
 
-                [HomeWorld.Brown] = DEFAULT_ART_LOCATION + "/art/TupileCardFront.jpg",
-                [HomeWorld.White] = DEFAULT_ART_LOCATION + "/art/RicheseCardFront.jpg",
+                [World.Brown] = DEFAULT_ART_LOCATION + "/art/TupileCardFront.jpg",
+                [World.White] = DEFAULT_ART_LOCATION + "/art/RicheseCardFront.jpg",
 
-                [HomeWorld.Pink] = DEFAULT_ART_LOCATION + "/art/EcazCardFront.jpg",
-                [HomeWorld.Cyan] = DEFAULT_ART_LOCATION + "/art/GrummanCardFront.jpg",
+                [World.Pink] = DEFAULT_ART_LOCATION + "/art/EcazCardFront.jpg",
+                [World.Cyan] = DEFAULT_ART_LOCATION + "/art/GrummanCardFront.jpg",
             },
 
-            HomeWorldCardBackImage_URL = new Dictionary<HomeWorld, string>()
+            HomeWorldCardBackImage_URL = new Dictionary<World, string>()
             {
-                [HomeWorld.Green] = DEFAULT_ART_LOCATION + "/art/CaladanCardBack.jpg",
-                [HomeWorld.Black] = DEFAULT_ART_LOCATION + "/art/GiediPrimeCardBack.jpg",
-                [HomeWorld.Yellow] = DEFAULT_ART_LOCATION + "/art/ArrakisCardBack.jpg",
-                [HomeWorld.Red] = DEFAULT_ART_LOCATION + "/art/KaitainCardBack.jpg",
-                [HomeWorld.RedStar] = DEFAULT_ART_LOCATION + "/art/SalusaSecundusCardBack.jpg",
-                [HomeWorld.Orange] = DEFAULT_ART_LOCATION + "/art/JunctionCardBack.jpg",
-                [HomeWorld.Blue] = DEFAULT_ART_LOCATION + "/art/WallachIXCardBack.jpg",
+                [World.Green] = DEFAULT_ART_LOCATION + "/art/CaladanCardBack.jpg",
+                [World.Black] = DEFAULT_ART_LOCATION + "/art/GiediPrimeCardBack.jpg",
+                [World.Yellow] = DEFAULT_ART_LOCATION + "/art/ArrakisCardBack.jpg",
+                [World.Red] = DEFAULT_ART_LOCATION + "/art/KaitainCardBack.jpg",
+                [World.RedStar] = DEFAULT_ART_LOCATION + "/art/SalusaSecundusCardBack.jpg",
+                [World.Orange] = DEFAULT_ART_LOCATION + "/art/JunctionCardBack.jpg",
+                [World.Blue] = DEFAULT_ART_LOCATION + "/art/WallachIXCardBack.jpg",
 
-                [HomeWorld.Grey] = DEFAULT_ART_LOCATION + "/art/IxCardBack.jpg",
-                [HomeWorld.Purple] = DEFAULT_ART_LOCATION + "/art/TleilaxCardBack.jpg",
+                [World.Grey] = DEFAULT_ART_LOCATION + "/art/IxCardBack.jpg",
+                [World.Purple] = DEFAULT_ART_LOCATION + "/art/TleilaxCardBack.jpg",
 
-                [HomeWorld.Brown] = DEFAULT_ART_LOCATION + "/art/TupileCardBack.jpg",
-                [HomeWorld.White] = DEFAULT_ART_LOCATION + "/art/RicheseCardBack.jpg",
+                [World.Brown] = DEFAULT_ART_LOCATION + "/art/TupileCardBack.jpg",
+                [World.White] = DEFAULT_ART_LOCATION + "/art/RicheseCardBack.jpg",
 
-                [HomeWorld.Pink] = DEFAULT_ART_LOCATION + "/art/EcazCardBack.jpg",
-                [HomeWorld.Cyan] = DEFAULT_ART_LOCATION + "/art/GrummanCardBack.jpg",
+                [World.Pink] = DEFAULT_ART_LOCATION + "/art/EcazCardBack.jpg",
+                [World.Cyan] = DEFAULT_ART_LOCATION + "/art/GrummanCardBack.jpg",
             },
 
             NexusCardImage_URL = new Dictionary<Faction, string>()

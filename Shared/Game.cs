@@ -623,6 +623,18 @@ namespace Treachery.Shared
             return false;
         }
 
+        public IEnumerable<Battalion> BattalionsIn(Location l)
+        {
+            if (ForcesOnPlanet.ContainsKey(l))
+            {
+                return ForcesOnPlanet[l];
+            }
+            else
+            {
+                return Array.Empty<Battalion>();
+            }
+        }
+
         public Dictionary<Location, List<Battalion>> OccupyingForcesOnPlanet
         {
             get
@@ -875,6 +887,37 @@ namespace Treachery.Shared
                 (p != null &&
                 !Prevented(FactionAdvantage.GreenBiddingPrescience) &&
                 (p.Faction == Faction.Green || (p.Ally == Faction.Green && GreenSharesPrescience) || HasDeal(p.Faction, DealType.ShareBiddingPrescience)));
+        }
+
+        public HomeworldStatus GetStatusOf(Homeworld w)
+        {
+            var player = Players.FirstOrDefault(p => p.Homeworlds.Contains(w));
+
+            if (player != null)
+            {
+                int nrOfForces = 0;
+                if (w.IsHomeOfNormalForces) nrOfForces += player.ForcesInReserve;
+                if (w.IsHomeOfSpecialForces) nrOfForces += player.SpecialForcesInReserve;
+
+                if (nrOfForces >= w.Threshold)
+                {
+                    return new HomeworldStatus(true, player.Faction);
+                }
+                else
+                {
+                    var enemyOccupant = BattalionsIn(w).FirstOrDefault(b => b.Faction != player.Faction);
+                    if (enemyOccupant != null)
+                    {
+                        return new HomeworldStatus(true, enemyOccupant.Faction);
+                    }
+                    else
+                    {
+                        return new HomeworldStatus(true, player.Faction);
+                    }
+                }
+            }
+
+            return null;
         }
 
         public int NumberOfHumanPlayers => Players.Count(p => !p.IsBot);

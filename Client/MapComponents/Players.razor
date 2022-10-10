@@ -59,8 +59,21 @@
                        Popover="@Intel(p.AlliedPlayer)"/>
             }
 
-            
+
             double ttRad = (TWOPI / 180) + 0.02 + (4.5 - positionSector) * TWOPI / Map.NUMBER_OF_SECTORS;
+
+            //Homeworlds
+            int deltaX = 0;
+            foreach (var homeworld in p.Homeworlds)
+            {
+                <Image X="@(Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad) * techtokenOrbitRadius) - Skin.Current.PlayerTokenRadius + deltaX)"
+                       Y="@(Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad) * techtokenOrbitRadius) - Skin.Current.PlayerTokenRadius)"
+                       Diameter=@(2 * Skin.Current.PlayerTokenRadius)
+                       Src="@Skin.Current.GetImageURL(homeworld)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
+                       Popover="@Popup.Get(homeworld, Game.GetStatusOf(homeworld))" PopoverStyle="" />
+
+                deltaX += factionLogoIsOnRightSideOfMap ? Skin.Current.PlayerTokenRadius : -Skin.Current.PlayerTokenRadius;
+            }
 
             foreach (var tt in p.TechTokens)
             {
