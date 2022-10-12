@@ -126,7 +126,7 @@ namespace Treachery.Shared
 
             //If there is nowhere to go, move toward Imperial Basin or Polar Sink
             Location alternativeLocation = null;
-            if (Game.ForcesOnPlanet[Game.Map.Arrakeen].Sum(b => b.TotalAmountOfForces) == 0 || Game.ForcesOnPlanet[Game.Map.Carthag].Sum(b => b.TotalAmountOfForces) == 0)
+            if (Game.BattalionsIn(Game.Map.Arrakeen).Sum(b => b.TotalAmountOfForces) == 0 || Game.BattalionsIn(Game.Map.Carthag).Sum(b => b.TotalAmountOfForces) == 0)
             {
                 alternativeLocation = Game.Map.ImperialBasin.MiddleLocation;
             }
@@ -163,7 +163,7 @@ namespace Treachery.Shared
         {
             if (Faction == Faction.Grey)
             {
-                if (Game.ForcesOnPlanet[Game.Map.Arrakeen].Sum(b => b.TotalAmountOfForces) == 0 || Game.ForcesOnPlanet[Game.Map.Carthag].Sum(b => b.TotalAmountOfForces) == 0)
+                if (Game.BattalionsIn(Game.Map.Arrakeen).Sum(b => b.TotalAmountOfForces) == 0 || Game.BattalionsIn(Game.Map.Carthag).Sum(b => b.TotalAmountOfForces) == 0)
                 {
                     return new PerformHmsPlacement(Game) { Initiator = Faction, Target = PerformHmsPlacement.ValidLocations(Game, this).First(l => l.Territory == Game.Map.ImperialBasin) };
                 }
@@ -218,7 +218,7 @@ namespace Treachery.Shared
         {
             Location target = null;
             var validLocations = YellowRidesMonster.ValidTargets(Game, this).ToList();
-            var battalionsToMove = ForcesOnPlanet.Where(forcesAtLocation => YellowRidesMonster.ValidSources(Game).Contains(forcesAtLocation.Key.Territory));
+            var battalionsToMove = ForcesInLocations.Where(forcesAtLocation => YellowRidesMonster.ValidSources(Game).Contains(forcesAtLocation.Key.Territory));
             var nrOfForces = battalionsToMove.Sum(forcesAtLocation => forcesAtLocation.Value.TotalAmountOfForces);
 
             if (validLocations.Contains(Game.Map.TueksSietch) && VacantAndSafeFromStorm(Game.Map.TueksSietch)) target = Game.Map.TueksSietch;
@@ -354,7 +354,7 @@ namespace Treachery.Shared
                     !shippingOpponentCanWin &&
                     (ResourcesIncludingAllyContribution < 5 || ForcesInReserve > 3) &&
                     AnyForcesIn(target) < 8 &&
-                    (!LastTurn && AnyForcesIn(target) > 0 || !HasAlly && ForcesOnPlanet.Count(kvp => IsStronghold(kvp.Key)) <= 3))
+                    (!LastTurn && AnyForcesIn(target) > 0 || !HasAlly && ForcesInLocations.Count(kvp => IsStronghold(kvp.Key)) <= 3))
                 {
                     return new BlueAccompanies(Game) { Initiator = Faction, Location = target, Accompanies = true };
                 }
@@ -946,7 +946,7 @@ namespace Treachery.Shared
         {
             if (Game.CurrentPhase == Phase.ShipmentAndMoveConcluded)
             {
-                var locationWithNoField = ForcesOnPlanet.FirstOrDefault(b => b.Value.AmountOfSpecialForces > 0).Key;
+                var locationWithNoField = ForcesInLocations.FirstOrDefault(b => b.Value.AmountOfSpecialForces > 0).Key;
                 if (locationWithNoField != null && Game.ResourcesOnPlanet.ContainsKey(locationWithNoField) && !OccupiedByOpponent(locationWithNoField.Territory))
                 {
                     return new WhiteRevealedNoField(Game) { Initiator = Faction };

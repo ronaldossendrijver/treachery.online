@@ -19,7 +19,7 @@ namespace Treachery.Shared
         {
             if (player != null && player.Faction == Faction.White)
             {
-                var noFieldLocation = player.ForcesOnPlanet.FirstOrDefault(kvp => kvp.Value.AmountOfSpecialForces > 0).Key;
+                var noFieldLocation = player.ForcesInLocations.FirstOrDefault(kvp => kvp.Value.AmountOfSpecialForces > 0).Key;
 
                 if (noFieldLocation != null)
                 {

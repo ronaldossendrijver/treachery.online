@@ -201,9 +201,9 @@
                 Game.ResourcesOnPlanet[intelligenceLocation]);
         }
 
-        if (Game.ForcesOnPlanetExcludingEmptyLocations.ContainsKey(intelligenceLocation))
+        if (Game.ForcesOnPlanetExcludingEmptyLocations(false).ContainsKey(intelligenceLocation))
         {
-            foreach (var b in Game.ForcesOnPlanet[intelligenceLocation])
+            foreach (var b in Game.BattalionsIn(intelligenceLocation))
             {
                 var p = Game.GetPlayer(b.Faction);
                 if (b.AmountOfSpecialForces > 0 || b.AmountOfForces > 0)

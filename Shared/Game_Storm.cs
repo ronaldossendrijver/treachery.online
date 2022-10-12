@@ -289,7 +289,7 @@ namespace Treachery.Shared
 
         private void PerformStorm()
         {
-            foreach (var l in ForcesOnPlanet.Where(f => f.Key.Sector == SectorInStorm && !IsProtectedFromStorm(f.Key)))
+            foreach (var l in Forces(false).Where(f => f.Key.Sector == SectorInStorm && !IsProtectedFromStorm(f.Key)))
             {
                 foreach (var battalion in l.Value)
                 {

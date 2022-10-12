@@ -35,11 +35,23 @@ namespace Treachery.Shared
         public Dictionary<Location, Battalion> BattalionsIn(Territory territory)
         {
             var result = new Dictionary<Location, Battalion>();
-            foreach (var kvp in ForcesOnPlanet.Where(kvp => kvp.Key.Territory == territory))
+            foreach (var kvp in ForcesInLocations.Where(kvp => kvp.Key.Territory == territory))
             {
                 result.Add(kvp.Key, kvp.Value);
             }
             return result;
+        }
+
+        public bool BattalionIn(Location location, out Battalion battalion)
+        {
+            if (ForcesInLocations.ContainsKey(location))
+            {
+                battalion = ForcesInLocations[location];
+                return true;
+            }
+
+            battalion = null;
+            return false;
         }
 
         protected virtual BattleInitiated DetermineBattleInitiated()

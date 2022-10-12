@@ -216,7 +216,7 @@ namespace Treachery.Test
 
             var blue = g.GetPlayer(Faction.Blue);
             if (blue != null &&
-                blue.ForcesOnPlanet.Any(bat => bat.Value.AmountOfSpecialForces > 0 && !g.Players.Any(p => p.Occupies(bat.Key.Territory))))
+                blue.ForcesInLocations.Any(bat => bat.Value.AmountOfSpecialForces > 0 && !g.Players.Any(p => p.Occupies(bat.Key.Territory))))
             {
                 return "Lonely advisor";
             }
@@ -341,7 +341,7 @@ namespace Treachery.Test
                     if (game.Winners.Contains(playerToCheck)) countWins++;
                     countSpice += playerToCheck.Resources;
                     countPoints += game.NumberOfVictoryPoints(playerToCheck, true);
-                    countForcesOnPlanet += playerToCheck.ForcesOnPlanet.Sum(kvp => kvp.Value.TotalAmountOfForces);
+                    countForcesOnPlanet += playerToCheck.ForcesInLocations.Sum(kvp => kvp.Value.TotalAmountOfForces);
                 });
 
             wins = countWins;
@@ -786,14 +786,16 @@ namespace Treachery.Test
 
         private static Testvalues DetermineTestvalues(Game game)
         {
+            var forces = game.Forces(false);
+
             var result = new Testvalues
             {
                 currentPhase = game.CurrentPhase,
-                forcesinArrakeen = game.ForcesOnPlanet[game.Map.Arrakeen].Sum(b => b.TotalAmountOfForces),
-                forcesinCarthag = game.ForcesOnPlanet[game.Map.Carthag].Sum(b => b.TotalAmountOfForces),
-                forcesinTabr = game.ForcesOnPlanet[game.Map.SietchTabr].Sum(b => b.TotalAmountOfForces),
-                forcesinHabbanya = game.ForcesOnPlanet[game.Map.HabbanyaSietch].Sum(b => b.TotalAmountOfForces),
-                forcesinTuek = game.ForcesOnPlanet[game.Map.TueksSietch].Sum(b => b.TotalAmountOfForces),
+                forcesinArrakeen = forces[game.Map.Arrakeen].Sum(b => b.TotalAmountOfForces),
+                forcesinCarthag = forces[game.Map.Carthag].Sum(b => b.TotalAmountOfForces),
+                forcesinTabr = forces[game.Map.SietchTabr].Sum(b => b.TotalAmountOfForces),
+                forcesinHabbanya = forces[game.Map.HabbanyaSietch].Sum(b => b.TotalAmountOfForces),
+                forcesinTuek = forces[game.Map.TueksSietch].Sum(b => b.TotalAmountOfForces),
                 nrofplayers = game.Players.Count,
                 playervalues = new TestvaluesPerPlayer[game.Players.Count]
             };
@@ -816,8 +818,8 @@ namespace Treachery.Test
                     cardtypes = p.TreacheryCards.Sum(c => (int)c.Type),
                     traitors = p.Traitors.Sum(t => t.Id),
                     facedancers = p.FaceDancers.Sum(t => t.Id),
-                    totalforcesonplanet = p.ForcesOnPlanet.Values.Sum(b => b.AmountOfForces),
-                    totalspecialforcesonplanet = p.ForcesOnPlanet.Values.Sum(b => b.AmountOfSpecialForces),
+                    totalforcesonplanet = p.ForcesInLocations.Where(kvp => kvp.Key is not Homeworld).Sum(kvp => kvp.Value.AmountOfForces),
+                    totalspecialforcesonplanet = p.ForcesInLocations.Where(kvp => kvp.Key is not Homeworld).Sum(kvp => kvp.Value.AmountOfSpecialForces),
                     forceskilled = p.ForcesKilled,
                     specialforceskilled = p.SpecialForcesKilled,
                     nroftechtokens = p.TechTokens.Count

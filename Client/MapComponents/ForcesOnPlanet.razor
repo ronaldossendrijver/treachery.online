@@ -6,7 +6,7 @@
 @inherits MapComponent
 
 @{
-    var forceLocations = Game.ForcesOnPlanetExcludingEmptyLocations;
+    var forceLocations = Game.ForcesOnPlanetExcludingEmptyLocations(false);
 
     foreach (var location in Game.Map.Locations.Where(l => l != Game.Map.HiddenMobileStronghold).OrderBy(l => Skin.Current.GetCenter(l).Y))
     {

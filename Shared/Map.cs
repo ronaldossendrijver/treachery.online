@@ -1609,7 +1609,7 @@ namespace Treachery.Shared
 
         private static List<Location> DetermineForceObstacles(Faction f, Game game)
         {
-            return game.ForcesOnPlanet.Where(kvp =>
+            return game.Forces(false).Where(kvp =>
                 kvp.Key.IsStronghold &&
                 !kvp.Value.Any(b => b.Faction == f) &&
                 kvp.Value.Count(b => b.CanOccupy) >= 2)

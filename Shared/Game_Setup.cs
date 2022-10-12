@@ -568,13 +568,13 @@ namespace Treachery.Shared
 
         private void SetupSpiceAndForces()
         {
+            foreach (var p in Players)
+            {
+                SetupPlayerForceReserves(p);
+            }
+
             if (Applicable(Rule.CustomInitialForcesAndResources))
             {
-                foreach (var p in Players)
-                {
-                    SetupPlayerForcesInReserveOnly(p);
-                }
-
                 HasActedOrPassed.Clear();
                 Enter(Phase.PerformCustomSetup);
             }
@@ -582,7 +582,7 @@ namespace Treachery.Shared
             {
                 foreach (var p in Players)
                 {
-                    SetupPlayerSpiceAndForces(p);
+                    SetupPlayerSpiceAndForcesOnPlanet(p);
                 }
 
                 if (TreacheryCardsBeforeTraitors)
@@ -602,140 +602,119 @@ namespace Treachery.Shared
             }
         }
 
-        private void SetupPlayerForcesInReserveOnly(Player p)
+        private void SetupPlayerForceReserves(Player p)
         {
             switch (p.Faction)
             {
                 case Faction.Yellow:
-                    p.ForcesInReserve = Applicable(Rule.YellowSpecialForces) ? 17 : 20;
-                    p.SpecialForcesInReserve = Applicable(Rule.YellowSpecialForces) ? 3 : 0;
-                    p.AddHomeworld(World.Yellow, new object[] { typeof(FactionForce), typeof(FactionSpecialForce) }, 3, 10000);
+                    p.InitializeReserves(World.Yellow, true, Applicable(Rule.YellowSpecialForces) ? 17 : 20, Applicable(Rule.YellowSpecialForces), Applicable(Rule.YellowSpecialForces) ? 3 : 0, 3, 10000);
                     break;
+
                 case Faction.Green:
-                    p.ForcesInReserve = 20;
-                    p.AddHomeworld(World.Green, new object[] { typeof(FactionForce) }, 6, 10001);
+                    p.InitializeReserves(World.Green, 20, 6, 10001);
                     break;
+
                 case Faction.Black:
-                    p.ForcesInReserve = 20;
-                    p.AddHomeworld(World.Black, new object[] { typeof(FactionForce) }, 7, 10002);
+                    p.InitializeReserves(World.Black, 20, 7, 10002);
                     break;
+
                 case Faction.Red:
-                    p.ForcesInReserve = Applicable(Rule.RedSpecialForces) ? 15 : 20; ;
-                    p.SpecialForcesInReserve = Applicable(Rule.RedSpecialForces) ? 5 : 0;
-                    p.AddHomeworld(World.Red, new object[] { typeof(FactionForce) }, 5, 10003);
-                    if (Applicable(Rule.RedSpecialForces)) p.AddHomeworld(World.RedStar, new object[] { typeof(FactionSpecialForce) }, 2, 10004);
+                    p.InitializeReserves(World.Red, Applicable(Rule.RedSpecialForces) ? 15 : 20, 5, 10003);
+                    if (Applicable(Rule.RedSpecialForces)) p.InitializeReserves(World.RedStar, false, 0, true, 5, 2, 10004);
                     break;
+
                 case Faction.Orange:
-                    p.ForcesInReserve = 20;
-                    p.AddHomeworld(World.Orange, new object[] { typeof(FactionForce) }, 5, 10005);
+                    p.InitializeReserves(World.Orange, 20, 5, 10005);
                     break;
+
                 case Faction.Blue:
-                    p.ForcesInReserve = 20;
-                    p.AddHomeworld(World.Blue, new object[] { typeof(FactionForce) }, 11, 10006);
+                    p.InitializeReserves(World.Blue, 20, 11, 10006);
                     break;
+
                 case Faction.Grey:
-                    p.ForcesInReserve = 13;
-                    p.SpecialForcesInReserve = 7;
-                    p.AddHomeworld(World.Grey, new object[] { typeof(FactionForce), typeof(FactionSpecialForce) }, 5, 10007);
+                    p.InitializeReserves(World.Grey, true, 13, true, 7, 5, 10007);
                     break;
+
                 case Faction.Purple:
-                    p.ForcesInReserve = 20;
-                    p.AddHomeworld(World.Purple, new object[] { typeof(FactionForce) }, 9, 10008);
+                    p.InitializeReserves(World.Purple, 20, 9, 10008);
                     break;
 
                 case Faction.Brown:
-                    p.ForcesInReserve = 20;
-                    p.AddHomeworld(World.Brown, new object[] { typeof(FactionForce) }, 11, 10009);
+                    p.InitializeReserves(World.Brown, 20, 11, 10009);
                     break;
                 case Faction.White:
-                    p.ForcesInReserve = 20;
-                    p.AddHomeworld(World.White, new object[] { typeof(FactionForce) }, 10, 10010);
+                    p.InitializeReserves(World.White, 20, 10, 10010);
                     break;
 
                 case Faction.Pink:
-                    p.ForcesInReserve = 20;
-                    p.AddHomeworld(World.Pink, new object[] { typeof(FactionForce) }, 7, 10011);
+                    p.InitializeReserves(World.Pink, 20, 7, 10011);
                     break;
                 case Faction.Cyan:
-                    p.ForcesInReserve = 20;
-                    p.AddHomeworld(World.Cyan, new object[] { typeof(FactionForce) }, 8, 10012);
+                    p.InitializeReserves(World.Cyan, 20, 8, 10012);
                     break;
 
             }
         }
 
-        private void SetupPlayerSpiceAndForces(Player p)
+        private void SetupPlayerSpiceAndForcesOnPlanet(Player p)
         {
             switch (p.Faction)
             {
                 case Faction.Yellow:
                     p.Resources = 3;
-                    p.ForcesInReserve = Applicable(Rule.YellowSpecialForces) ? 17 : 20;
-                    p.SpecialForcesInReserve = Applicable(Rule.YellowSpecialForces) ? 3 : 0;
                     break;
+
                 case Faction.Green:
                     p.Resources = 10;
-                    p.ChangeForces(Map.Arrakeen, 10);
-                    p.ForcesInReserve = 10;
+                    p.AddForces(Map.Arrakeen, 10, true);
                     break;
+
                 case Faction.Black:
                     p.Resources = 10;
-                    p.ChangeForces(Map.Carthag, 10);
-                    p.ForcesInReserve = 10;
+                    p.AddForces(Map.Carthag, 10, true);
                     break;
+
                 case Faction.Red:
                     p.Resources = 10;
-                    p.ForcesInReserve = Applicable(Rule.RedSpecialForces) ? 15 : 20;
-                    p.SpecialForcesInReserve = Applicable(Rule.RedSpecialForces) ? 5 : 0;
                     break;
+
                 case Faction.Orange:
                     p.Resources = 5;
-                    p.ChangeForces(Map.TueksSietch, 5);
-                    p.ForcesInReserve = 15;
+                    p.AddForces(Map.TueksSietch, 5, true);
                     break;
+
                 case Faction.Blue:
                     p.Resources = 5;
-                    if (PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(this))
+                    if (!PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(this))
                     {
-                        p.ForcesInReserve = 20;
-                    }
-                    else
-                    {
-                        p.ChangeForces(Map.PolarSink, 1);
-                        p.ForcesInReserve = 19;
+                        p.AddForces(Map.PolarSink, 1, true);
                     }
                     break;
+
                 case Faction.Grey:
                     p.Resources = 10;
-                    p.ForcesInReserve = 10;
-                    p.SpecialForcesInReserve = 4;
-                    p.ChangeForces(Map.HiddenMobileStronghold, 3);
-                    p.ChangeSpecialForces(Map.HiddenMobileStronghold, 3);
+                    p.AddForces(Map.HiddenMobileStronghold, 3, true);
+                    p.AddSpecialForces(Map.HiddenMobileStronghold, 3, true);
                     break;
+
                 case Faction.Purple:
                     p.Resources = 5;
-                    p.ForcesInReserve = 20;
                     break;
 
                 case Faction.Brown:
                     p.Resources = 2;
-                    p.ForcesInReserve = 20;
                     break;
 
                 case Faction.White:
                     p.Resources = 5;
-                    p.ForcesInReserve = 20;
                     break;
 
                 case Faction.Pink:
-                    p.Resources = 12;
-                    p.ForcesInReserve = 14;
-                    p.ChangeForces(Map.ImperialBasin.MiddleLocation, 6);
+                    p.AddForces(Map.ImperialBasin.MiddleLocation, 6, true);
                     break;
 
                 case Faction.Cyan:
                     p.Resources = 12;
-                    p.ForcesInReserve = 20;
                     break;
             }
         }

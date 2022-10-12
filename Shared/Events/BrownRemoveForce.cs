@@ -42,7 +42,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<Location> ValidLocations(Game g)
         {
-            return g.ForcesOnPlanetExcludingEmptyLocations.Keys.Where(l => !g.IsInStorm(l)).Distinct();
+            return g.ForcesOnPlanetExcludingEmptyLocations(false).Keys.Where(l => !g.IsInStorm(l)).Distinct();
         }
 
         public static IEnumerable<Faction> ValidFactions(Game g, Player p, Location l)

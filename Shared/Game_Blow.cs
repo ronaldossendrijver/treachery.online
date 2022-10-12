@@ -65,7 +65,7 @@ namespace Treachery.Shared
             ResourceCard drawn = null;
             while (ThumperUsed || !(drawn = DrawAndDiscardResourceCard(CurrentDiscardPile)).IsSpiceBlow)
             {
-                if (ThumperUsed)
+                if (ThumperUsed && Version <= 150)
                 {
                     ThumperUsed = false;
                     NumberOfMonsters++;
@@ -80,8 +80,9 @@ namespace Treachery.Shared
                     Log(Concept.Monster, " on turn 1 was ignored");
                     ignoredMonsters.Add(CurrentDiscardPile.Draw());
                 }
-                else if (drawn.IsShaiHulud)
+                else if (drawn.IsShaiHulud || ThumperUsed && Version > 150)
                 {
+                    ThumperUsed = false;
                     SandTroutDoublesResources = false;
                     RecentMilestones.Add(Milestone.Monster);
 

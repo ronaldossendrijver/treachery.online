@@ -392,11 +392,11 @@ namespace Treachery.Shared
 
         protected virtual MetheorPlayed DetermineMetheorPlayed()
         {
-            var otherForcesInArrakeen = Game.ForcesOnPlanet[Game.Map.Arrakeen].Where(b => b.Faction != Faction && b.Faction != Ally).Sum(b => b.TotalAmountOfForces);
-            var mineAndAlliedForcesInArrakeen = Game.ForcesOnPlanet[Game.Map.Arrakeen].Where(b => b.Faction == Faction || b.Faction == Ally).Sum(b => b.TotalAmountOfForces);
+            var otherForcesInArrakeen = Game.BattalionsIn(Game.Map.Arrakeen).Where(b => b.Faction != Faction && b.Faction != Ally).Sum(b => b.TotalAmountOfForces);
+            var mineAndAlliedForcesInArrakeen = Game.BattalionsIn(Game.Map.Arrakeen).Where(b => b.Faction == Faction || b.Faction == Ally).Sum(b => b.TotalAmountOfForces);
 
-            var otherForcesInCarthag = Game.ForcesOnPlanet[Game.Map.Carthag].Where(b => b.Faction != Faction && b.Faction != Ally).Sum(b => b.TotalAmountOfForces);
-            var mineAndAlliedForcesInCarthag = Game.ForcesOnPlanet[Game.Map.Carthag].Where(b => b.Faction == Faction || b.Faction == Ally).Sum(b => b.TotalAmountOfForces);
+            var otherForcesInCarthag = Game.BattalionsIn(Game.Map.Carthag).Where(b => b.Faction != Faction && b.Faction != Ally).Sum(b => b.TotalAmountOfForces);
+            var mineAndAlliedForcesInCarthag = Game.BattalionsIn(Game.Map.Carthag).Where(b => b.Faction == Faction || b.Faction == Ally).Sum(b => b.TotalAmountOfForces);
 
             if (otherForcesInArrakeen + otherForcesInCarthag > 2 * (mineAndAlliedForcesInArrakeen + mineAndAlliedForcesInCarthag))
             {
@@ -451,8 +451,8 @@ namespace Treachery.Shared
             for (moves = 1; moves <= 10; moves++)
             {
                 var affectedLocations = Game.Map.Locations.Where(l => l.Sector == (Game.SectorInStorm + moves) % Map.NUMBER_OF_SECTORS && !Game.IsProtectedFromStorm(l));
-                int myAndAllyForces = affectedLocations.Sum(l => Game.ForcesOnPlanet[l].Where(bat => bat.Faction == Faction || bat.Faction == Ally).Sum(bat => bat.TotalAmountOfForces));
-                int enemyForces = affectedLocations.Sum(l => Game.ForcesOnPlanet[l].Where(bat => bat.Faction != Faction && bat.Faction != Ally).Sum(bat => bat.TotalAmountOfForces));
+                int myAndAllyForces = affectedLocations.Sum(l => Game.BattalionsIn(l).Where(bat => bat.Faction == Faction || bat.Faction == Ally).Sum(bat => bat.TotalAmountOfForces));
+                int enemyForces = affectedLocations.Sum(l => Game.BattalionsIn(l).Where(bat => bat.Faction != Faction && bat.Faction != Ally).Sum(bat => bat.TotalAmountOfForces));
                 myKills.Add(moves, myKills[moves - 1] + myAndAllyForces);
                 enemyKills.Add(moves, enemyKills[moves - 1] + enemyForces);
             }

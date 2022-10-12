@@ -2398,10 +2398,10 @@ namespace Treachery.Client
 
             HomeWorldCardFrontImage_URL = new Dictionary<World, string>()
             {
-                [World.Green] = DEFAULT_ART_LOCATION + "/art/CaladanCardFront.jpg",
-                [World.Black] = DEFAULT_ART_LOCATION + "/art/GiediPrimeCardFront.jpg",
-                [World.Yellow] = DEFAULT_ART_LOCATION + "/art/ArrakisCardFront.jpg",
-                [World.Red] = DEFAULT_ART_LOCATION + "/art/KaitainCardFront.jpg",
+                [World.Green] = DEFAULT_ART_LOCATION + "/art/Recruits.gif",
+                [World.Black] = DEFAULT_ART_LOCATION + "/art/Recruits.gif",
+                [World.Yellow] = DEFAULT_ART_LOCATION + "/art/Recruits.gif",
+                [World.Red] = DEFAULT_ART_LOCATION + "/art/Recruits.gif",
                 [World.RedStar] = DEFAULT_ART_LOCATION + "/art/SalusaSecundusCardFront.jpg",
                 [World.Orange] = DEFAULT_ART_LOCATION + "/art/JunctionCardFront.jpg",
                 [World.Blue] = DEFAULT_ART_LOCATION + "/art/WallachIXCardFront.jpg",
@@ -2418,10 +2418,10 @@ namespace Treachery.Client
 
             HomeWorldCardBackImage_URL = new Dictionary<World, string>()
             {
-                [World.Green] = DEFAULT_ART_LOCATION + "/art/CaladanCardBack.jpg",
-                [World.Black] = DEFAULT_ART_LOCATION + "/art/GiediPrimeCardBack.jpg",
-                [World.Yellow] = DEFAULT_ART_LOCATION + "/art/ArrakisCardBack.jpg",
-                [World.Red] = DEFAULT_ART_LOCATION + "/art/KaitainCardBack.jpg",
+                [World.Green] = DEFAULT_ART_LOCATION + "/art/Reinforcements.gif",
+                [World.Black] = DEFAULT_ART_LOCATION + "/art/Reinforcements.gif",
+                [World.Yellow] = DEFAULT_ART_LOCATION + "/art/Reinforcements.gif",
+                [World.Red] = DEFAULT_ART_LOCATION + "/art/Reinforcements.gif",
                 [World.RedStar] = DEFAULT_ART_LOCATION + "/art/SalusaSecundusCardBack.jpg",
                 [World.Orange] = DEFAULT_ART_LOCATION + "/art/JunctionCardBack.jpg",
                 [World.Blue] = DEFAULT_ART_LOCATION + "/art/WallachIXCardBack.jpg",

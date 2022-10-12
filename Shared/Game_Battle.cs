@@ -1442,19 +1442,19 @@ namespace Treachery.Shared
             {
                 winner.ForcesToReserves(CurrentBattle.Territory);
 
-                initiator.ForcesInReserve -= f.ForcesFromReserve;
+                initiator.RemoveForcesFromReserves(f.ForcesFromReserve);
                 foreach (var fl in f.ForceLocations)
                 {
                     var location = fl.Key;
-                    initiator.ChangeForces(location, -fl.Value.AmountOfForces);
-                    initiator.ChangeSpecialForces(location, -fl.Value.AmountOfSpecialForces);
+                    initiator.RemoveForces(location, fl.Value.AmountOfForces);
+                    initiator.RemoveSpecialForces(location, fl.Value.AmountOfSpecialForces);
                 }
 
                 foreach (var fl in f.TargetForceLocations)
                 {
                     var location = fl.Key;
-                    initiator.ChangeForces(location, fl.Value.AmountOfForces);
-                    initiator.ChangeSpecialForces(location, fl.Value.AmountOfSpecialForces);
+                    initiator.AddForces(location, fl.Value.AmountOfForces, false);
+                    initiator.AddSpecialForces(location, fl.Value.AmountOfSpecialForces, false);
                 }
 
                 Log(nrOfRemovedForces, " ", winner.Faction, " forces go back to reserves and are replaced by ", f.TargetForceLocations.Sum(b => b.Value.TotalAmountOfForces), f.Player.Force, " (", f.ForcesFromReserve, " from reserves", DetermineSourceLocations(f), ")");

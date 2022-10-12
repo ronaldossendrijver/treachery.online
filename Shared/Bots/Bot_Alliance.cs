@@ -43,7 +43,7 @@ namespace Treachery.Shared
                     2 * p.TreacheryCards.Count() +
                     p.Resources +
                     6 * p.LocationsWithAnyForces.Count(l => l.Territory.IsStronghold) +
-                    p.ForcesOnPlanet.Sum(b => b.Value.TotalAmountOfForces) +
+                    p.ForcesInLocations.Sum(b => b.Value.TotalAmountOfForces) +
                     p.ForcesInReserve +
                     2 * p.SpecialForcesInReserve +
                     2 * p.Leaders.Count(l => Game.IsAlive(l));

@@ -15,9 +15,9 @@
             Popover="@Popover"/>
 }
 
-@if (!(Faction == Faction.White && Special))
+@if (!(Faction == Faction.White && Special || Amount == 0))
 {
-    <MapText ToShow="@Amount.ToString()" X=@(X) Y=@Y Font=@Skin.Current.FORCETOKEN_FONT BorderWidth=@BorderWidth BorderColor=@BorderColor Popover="@Popover"/>
+    <MapText ToShow="@Amount.ToString()" X=@X Y=@Y Font=@Font BorderWidth=@BorderWidth BorderColor=@BorderColor Popover="@Popover"/>
 }
 
 @code {
@@ -37,9 +37,13 @@
     [Parameter]
     public bool ShowPopover { get; set; } = true;
 
+    [Parameter]
+    public string Font { get; set; } = "";
+
     protected override void OnInitialized()
     {
-        Diameter = 2 * Skin.Current.FORCETOKEN_RADIUS;
+        if (Diameter == 0) Diameter = 2 * Skin.Current.FORCETOKEN_RADIUS;
+        if (Font == "") Font = Skin.Current.FORCETOKEN_FONT;
     }
 
     private string ForceURL => Special ? Skin.Current.GetFactionSpecialForceImageURL(Faction) : Skin.Current.GetFactionForceImageURL(Faction);

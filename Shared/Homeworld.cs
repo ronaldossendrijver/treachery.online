@@ -2,9 +2,6 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
  */
 
-
-using System.Collections.Generic;
-
 namespace Treachery.Shared
 {
     public class Homeworld : Location
@@ -21,11 +18,30 @@ namespace Treachery.Shared
 
         public Homeworld(World world, Faction faction, bool isHomeOfNormalForces, bool isHomeOfSpecialForces, int treshold, int id) : base(id)
         {
+            Territory = new Territory(43)
+            {
+                IsStronghold = false,
+                IsProtectedFromStorm = false,
+                IsProtectedFromWorm = false
+            };
+
             World = world;
             Faction = faction;
             IsHomeOfNormalForces = isHomeOfNormalForces;
-            IsHomeOfNormalForces = isHomeOfSpecialForces;
+            IsHomeOfSpecialForces = isHomeOfSpecialForces;
             Threshold = treshold;
+        }
+
+        public override string ToString()
+        {
+            if (Message.DefaultDescriber != null)
+            {
+                return Message.DefaultDescriber.Describe(World) + "*";
+            }
+            else
+            {
+                return "Homeworld";
+            }
         }
     }
 

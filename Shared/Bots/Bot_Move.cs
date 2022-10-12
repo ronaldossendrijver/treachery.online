@@ -45,7 +45,7 @@ namespace Treachery.Shared
         {
             LogInfo("DetermineCaravan()");
 
-            if (ForcesOnPlanet.Count(kvp => !kvp.Key.IsStronghold) <= 1)
+            if (ForcesInLocations.Count(kvp => !kvp.Key.IsStronghold) <= 1)
             {
                 return null;
             }
@@ -86,7 +86,7 @@ namespace Treachery.Shared
             if (decidedShipmentAction == ShipmentDecision.StrongholdNearResources)
             {
                 LogInfo("Move to spice");
-                var toMove = ForcesOnPlanet[decidedShipment.To].Take(decidedShipment.ForceAmount + decidedShipment.SpecialForceAmount, Faction == Faction.Grey);
+                var toMove = ForcesInLocations[decidedShipment.To].Take(decidedShipment.ForceAmount + decidedShipment.SpecialForceAmount, Faction == Faction.Grey);
 
                 if (WithinRange(decidedShipment.To, finalDestination, toMove))
                 {
@@ -274,7 +274,7 @@ namespace Treachery.Shared
         {
             LogInfo("DetermineFlightUsed()");
 
-            if (ForcesOnPlanet.Count(kvp => !kvp.Key.IsStronghold) > 1 && ForcesOnPlanet.Where(kvp => !kvp.Key.IsStronghold).Sum(lwf => lwf.Value.TotalAmountOfForces) > 3)
+            if (ForcesInLocations.Count(kvp => !kvp.Key.IsStronghold) > 1 && ForcesInLocations.Where(kvp => !kvp.Key.IsStronghold).Sum(lwf => lwf.Value.TotalAmountOfForces) > 3)
             {
                 return new FlightUsed(Game) { Initiator = Faction, MoveThreeTerritories = false };
             }

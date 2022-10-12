@@ -209,7 +209,7 @@ namespace Treachery.Shared
 
             if (weakestStronghold != null)
             {
-                var opponentBattaltion = Game.ForcesOnPlanet[weakestStronghold.Location].Where(b => b.Faction != Faction && b.Faction != Ally).FirstOrDefault();
+                var opponentBattaltion = Game.BattalionsIn(weakestStronghold.Location).Where(b => b.Faction != Faction && b.Faction != Ally).FirstOrDefault();
                 var opponentFaction = opponentBattaltion != null ? opponentBattaltion.Faction : Faction.None;
                 var dialNeeded = MakeEvenIfEfficientForShipping(weakestStronghold.Difference + extraForces);
 
@@ -546,7 +546,7 @@ namespace Treachery.Shared
             return dialNeeded;
         }
 
-        private IEnumerable<Battalion> NearbyBattalionsOutsideStrongholds(Location l) => ForcesOnPlanet.Where(kvp => !kvp.Key.IsStronghold && WithinRange(kvp.Key, l, kvp.Value)).Select(kvp => kvp.Value);
+        private IEnumerable<Battalion> NearbyBattalionsOutsideStrongholds(Location l) => ForcesInLocations.Where(kvp => !kvp.Key.IsStronghold && WithinRange(kvp.Key, l, kvp.Value)).Select(kvp => kvp.Value);
 
         protected virtual bool IsSafeAndNearby(Location source, Location destination, Battalion b, bool mayFight)
         {
@@ -566,9 +566,9 @@ namespace Treachery.Shared
 
         protected Battalion FindOneTroopThatCanSafelyMove(Location from, Location to)
         {
-            if (ForcesOnPlanet.ContainsKey(from) && from.Sector != Game.SectorInStorm && NotOccupiedByOthers(from.Territory))
+            if (ForcesInLocations.ContainsKey(from) && from.Sector != Game.SectorInStorm && NotOccupiedByOthers(from.Territory))
             {
-                var bat = ForcesOnPlanet[from];
+                var bat = ForcesInLocations[from];
                 if (NotOccupiedByOthers(from.Territory) && bat.TotalAmountOfForces > 1)
                 {
                     var oneOfThem = bat.Take(1, true);
@@ -670,7 +670,7 @@ namespace Treachery.Shared
             }
         }
 
-        protected IEnumerable<KeyValuePair<Location, Battalion>> ForceLocationsOutsideStrongholds => ForcesOnPlanet.Where(f => !f.Key.IsStronghold);
+        protected IEnumerable<KeyValuePair<Location, Battalion>> ForceLocationsOutsideStrongholds => ForcesInLocations.Where(f => !f.Key.IsStronghold);
 
         protected Location RichestLocationNearShippableStrongholdFarFromExistingForces => Game.ResourcesOnPlanet.Where(kvp =>
                  !ForceLocationsOutsideStrongholds.Any(looseForce => WithinRange(looseForce.Key, kvp.Key, looseForce.Value)) &&

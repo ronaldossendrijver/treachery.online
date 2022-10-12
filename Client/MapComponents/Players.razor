@@ -59,22 +59,38 @@
                        Popover="@Intel(p.AlliedPlayer)"/>
             }
 
-
-            double ttRad = (TWOPI / 180) + 0.02 + (4.5 - positionSector) * TWOPI / Map.NUMBER_OF_SECTORS;
-
+            double ttRad = (TWOPI / 180) + 0.1 + (4.5 - positionSector) * TWOPI / Map.NUMBER_OF_SECTORS;
+                        
             //Homeworlds
-            int deltaX = 0;
+            var deltaX = 0f;
             foreach (var homeworld in p.Homeworlds)
             {
-                <Image X="@(Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad) * techtokenOrbitRadius) - Skin.Current.PlayerTokenRadius + deltaX)"
-                       Y="@(Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad) * techtokenOrbitRadius) - Skin.Current.PlayerTokenRadius)"
-                       Diameter=@(2 * Skin.Current.PlayerTokenRadius)
-                       Src="@Skin.Current.GetImageURL(homeworld)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
-                       Popover="@Popup.Get(homeworld, Game.GetStatusOf(homeworld))" PopoverStyle="" />
+                var homeworldX = Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad) * Skin.Current.MapRadius) - Skin.Current.PlayerTokenRadius + deltaX;
+                var homeworldY = Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad) * Skin.Current.MapRadius) - Skin.Current.PlayerTokenRadius;
 
-                deltaX += factionLogoIsOnRightSideOfMap ? Skin.Current.PlayerTokenRadius : -Skin.Current.PlayerTokenRadius;
+                <Image X=homeworldX Y=@homeworldY
+                       Diameter=@(2 * Skin.Current.PlayerTokenRadius)
+                       Src="@Skin.Current.GetImageURL(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
+                       Popover="@Popup.Get(homeworld, Game.GetStatusOf(homeworld))" />
+
+                var reservesX = homeworldX + 0.75f * Skin.Current.PlayerTokenRadius;
+                var reservesY = homeworldY + 1.25f * Skin.Current.PlayerTokenRadius;
+                if (homeworld.IsHomeOfNormalForces)
+                {
+                    <MapForce X=@reservesX Y=@reservesY Special=@false Amount=@p.ForcesInReserve Faction=@p.Faction Threatened=@false ShowPopover="true" Font="@Skin.Current.SKILL_FONT" Diameter="@Skin.Current.FORCETOKEN_RADIUS" />
+                    reservesX += Skin.Current.FORCETOKEN_RADIUS;
+                }
+
+                if (homeworld.IsHomeOfSpecialForces)
+                {
+                    <MapForce X=@reservesX Y=@reservesY Special=@true Amount=@p.SpecialForcesInReserve Faction=@p.Faction Threatened=@false ShowPopover="true" Font="@Skin.Current.SKILL_FONT" Diameter="@Skin.Current.FORCETOKEN_RADIUS" />
+                }
+
+                deltaX += factionLogoIsOnRightSideOfMap ? 1.5f * Skin.Current.PlayerTokenRadius : -1.5f * Skin.Current.PlayerTokenRadius;
             }
 
+            ttRad += 0.02;
+ 
             foreach (var tt in p.TechTokens)
             {
                 ttRad += (TWOPI / 90);
@@ -193,21 +209,6 @@
         }
 
         result += "<div class=\"row m-0 mt-1 justify-content-center\">";
-
-        result += "<div class=\"col-2 col-lg-1 p-0\">Reserves:</div>";
-
-        result += string.Format("<div class=\"col-2 col-lg-1 p-0\"><img class=\"img-fluid m-0 p-0\" width=\"24\" height=\"24\" src=\"{0}\" title=\"{1}\" /><strong>&nbsp;{2}</strong></div>",
-            Skin.Current.GetFactionForceImageURL(p.Faction),
-            Skin.Current.Describe(p.Force),
-            p.ForcesInReserve);
-
-        if (p.HasSpecialForces)
-        {
-            result += string.Format("<div class=\"col-2 col-lg-1 p-0\"><img class=\"img-fluid m-0 p-0\" width=\"24\" height=\"24\" src=\"{0}\" title=\"{1}\" /><strong>&nbsp;{2}</strong></div>",
-                Skin.Current.GetFactionSpecialForceImageURL(p.Faction),
-                Skin.Current.Describe(p.SpecialForce),
-                p.SpecialForcesInReserve);
-        }
 
         result += "</div>";
 

@@ -63,11 +63,13 @@ namespace Treachery.Shared
 
         public IList<Leader> Leaders { get; set; } = new List<Leader>();
 
-        public int ForcesInReserve { get; set; } = 0;
+        public int ForcesInReserve => Homeworlds.Sum(w => ForcesIn(w));
 
-        public int SpecialForcesInReserve { get; set; } = 0;
+        public int SpecialForcesInReserve => Homeworlds.Sum(w => SpecialForcesIn(w));
 
-        public IDictionary<Location, Battalion> ForcesOnPlanet { get; set; } = new Dictionary<Location, Battalion>();
+        public IDictionary<Location, Battalion> ForcesInLocations { get; set; } = new Dictionary<Location, Battalion>();
+
+        public IDictionary<Location, Battalion> ForcesOnPlanet => ForcesInLocations.Where(kvp => kvp.Key is not Homeworld).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
         public Faction PredictedFaction { get; set; } = 0;
 
@@ -85,7 +87,7 @@ namespace Treachery.Shared
 
         public IList<TechToken> TechTokens { get; private set; } = new List<TechToken>();
 
-        public bool NoFieldIsActive => Faction == Faction.White && ForcesOnPlanet.Any(locationWithForces => locationWithForces.Value.AmountOfSpecialForces > 0);
+        public bool NoFieldIsActive => Faction == Faction.White && ForcesInLocations.Any(locationWithForces => locationWithForces.Value.AmountOfSpecialForces > 0);
 
         public Leader MostRecentlyRevivedLeader { get; set; }
 
@@ -119,33 +121,91 @@ namespace Treachery.Shared
 
         private Battalion GetAndCreateIfNeeded(Location location)
         {
-            if (!ForcesOnPlanet.ContainsKey(location))
+            if (!ForcesInLocations.ContainsKey(location))
             {
-                ForcesOnPlanet[location] = new Battalion() { Faction = Faction, AmountOfForces = 0, AmountOfSpecialForces = 0 };
+                ForcesInLocations[location] = new Battalion() { Faction = Faction, AmountOfForces = 0, AmountOfSpecialForces = 0 };
             }
 
-            return ForcesOnPlanet[location];
+            return ForcesInLocations[location];
         }
 
-        public void ChangeForces(Location location, int nrOfForces)
+        private void ChangeForces(Location location, int nrOfForces)
         {
             var result = GetAndCreateIfNeeded(location);
             result.ChangeForces(nrOfForces);
-            if (result.TotalAmountOfForces == 0) ForcesOnPlanet.Remove(location);
+            if (result.TotalAmountOfForces == 0) ForcesInLocations.Remove(location);
         }
 
-        public void ChangeSpecialForces(Location location, int nrOfForces)
+        private void ChangeSpecialForces(Location location, int nrOfForces)
         {
             var result = GetAndCreateIfNeeded(location);
             result.ChangeSpecialForces(nrOfForces);
-            if (result.TotalAmountOfForces == 0) ForcesOnPlanet.Remove(location);
+            if (result.TotalAmountOfForces == 0) ForcesInLocations.Remove(location);
+        }
+
+        public void AddForces(Location location, int nrOfForces, bool fromReserves)
+        {
+            if (fromReserves)
+            {
+                var sourceWorld = Homeworlds.FirstOrDefault(w => w.IsHomeOfNormalForces);
+                if (sourceWorld != null) MoveForces(sourceWorld, location, nrOfForces);
+            }
+            else
+            {
+                ChangeForces(location, nrOfForces);
+            }
+        }
+
+        public void AddSpecialForces(Location location, int nrOfForces, bool fromReserves)
+        {
+            if (fromReserves)
+            {
+                var sourceWorld = Homeworlds.FirstOrDefault(w => w.IsHomeOfSpecialForces);
+                if (sourceWorld != null) MoveSpecialForces(sourceWorld, location, nrOfForces);
+            }
+            else
+            {
+                ChangeSpecialForces(location, nrOfForces);
+            }
+        }
+
+        public void AddForcesToReserves(int nrOfForces)
+        {
+            var sourceWorld = Homeworlds.FirstOrDefault(w => w.IsHomeOfNormalForces);
+            if (sourceWorld != null) ChangeForces(sourceWorld, nrOfForces);
+        }
+
+        public void AddSpecialForcesToReserves(int nrOfForces)
+        {
+            var sourceWorld = Homeworlds.FirstOrDefault(w => w.IsHomeOfSpecialForces);
+            if (sourceWorld != null) ChangeSpecialForces(sourceWorld, nrOfForces);
+        }
+
+        public void RemoveForces(Location location, int nrOfForces)
+        {
+            ChangeForces(location, -nrOfForces);
+        }
+
+        public void RemoveSpecialForces(Location location, int nrOfForces)
+        {
+            ChangeSpecialForces(location, -nrOfForces);
+        }
+
+        public void RemoveForcesFromReserves(int nrOfForces)
+        {
+            AddForcesToReserves(-nrOfForces);
+        }
+
+        public void RemoveSpecialForcesFromReserves(int nrOfForces)
+        {
+            AddSpecialForcesToReserves(-nrOfForces);
         }
 
         public int ForcesIn(Location location)
         {
-            if (ForcesOnPlanet.ContainsKey(location))
+            if (ForcesInLocations.ContainsKey(location))
             {
-                return ForcesOnPlanet[location].AmountOfForces;
+                return ForcesInLocations[location].AmountOfForces;
             }
             else
             {
@@ -155,9 +215,9 @@ namespace Treachery.Shared
 
         public int SpecialForcesIn(Location location)
         {
-            if (ForcesOnPlanet.ContainsKey(location))
+            if (ForcesInLocations.ContainsKey(location))
             {
-                return ForcesOnPlanet[location].AmountOfSpecialForces;
+                return ForcesInLocations[location].AmountOfSpecialForces;
             }
             else
             {
@@ -167,9 +227,9 @@ namespace Treachery.Shared
 
         public int AnyForcesIn(Location location)
         {
-            if (ForcesOnPlanet.ContainsKey(location))
+            if (ForcesInLocations.ContainsKey(location))
             {
-                return ForcesOnPlanet[location].TotalAmountOfForces;
+                return ForcesInLocations[location].TotalAmountOfForces;
             }
             else
             {
@@ -194,25 +254,25 @@ namespace Treachery.Shared
 
         public void ForcesToReserves(Location location)
         {
-            var battaltion = ForcesOnPlanet[location];
+            var battaltion = ForcesInLocations[location];
 
-            ForcesInReserve += battaltion.AmountOfForces;
+            AddForcesToReserves(battaltion.AmountOfForces);
 
             if (Faction == Faction.Blue)
             {
-                ForcesInReserve += battaltion.AmountOfSpecialForces;
+                AddForcesToReserves(battaltion.AmountOfSpecialForces);
             }
             else if (Faction != Faction.White)
             {
-                SpecialForcesInReserve += battaltion.AmountOfSpecialForces;
+                AddSpecialForcesToReserves(battaltion.AmountOfSpecialForces);
             }
 
-            ForcesOnPlanet.Remove(location);
+            ForcesInLocations.Remove(location);
         }
 
         public void ForcesToReserves(Location location, int amount)
         {
-            ForcesInReserve += amount;
+            AddForcesToReserves(amount);
             ChangeForces(location, -amount);
         }
 
@@ -220,11 +280,11 @@ namespace Treachery.Shared
         {
             if (Faction == Faction.Blue)
             {
-                ForcesInReserve += amount;
+                AddForcesToReserves(amount);
             }
             else if (Faction != Faction.White)
             {
-                SpecialForcesInReserve += amount;
+                AddSpecialForcesToReserves(amount);
             }
 
             ChangeSpecialForces(location, -amount);
@@ -242,11 +302,11 @@ namespace Treachery.Shared
 
                     if (special && Faction != Faction.Blue)
                     {
-                        SpecialForcesInReserve += toRemoveInTotal;
+                        AddSpecialForcesToReserves(toRemoveInTotal);
                     }
                     else if (!special || Faction != Faction.White)
                     {
-                        ForcesInReserve += toRemoveInTotal;
+                        AddForcesToReserves(toRemoveInTotal);
                     }
 
                     if (special)
@@ -276,9 +336,9 @@ namespace Treachery.Shared
 
         public int KillAllForces(Location location, bool inBattle)
         {
-            if (ForcesOnPlanet.ContainsKey(location))
+            if (ForcesInLocations.ContainsKey(location))
             {
-                var battallion = ForcesOnPlanet[location];
+                var battallion = ForcesInLocations[location];
 
                 int killCount = battallion.AmountOfForces;
                 ForcesKilled += killCount;
@@ -293,7 +353,7 @@ namespace Treachery.Shared
                     SpecialForcesKilled += specialKillCount;
                 }
 
-                ForcesOnPlanet.Remove(location);
+                ForcesInLocations.Remove(location);
 
                 if (inBattle)
                 {
@@ -316,12 +376,12 @@ namespace Treachery.Shared
 
         public int KillForces(Location location, int amountOfForces, int amountOfSpecialForces, bool inBattle)
         {
-            var battallion = ForcesOnPlanet[location];
+            var battallion = ForcesInLocations[location];
 
             battallion.ChangeForces(-amountOfForces);
             battallion.ChangeSpecialForces(-amountOfSpecialForces);
 
-            if (battallion.TotalAmountOfForces == 0) ForcesOnPlanet.Remove(location);
+            if (battallion.TotalAmountOfForces == 0) ForcesInLocations.Remove(location);
 
             ForcesKilled += amountOfForces;
 
@@ -369,26 +429,25 @@ namespace Treachery.Shared
         public void ReviveForces(int amount)
         {
             ForcesKilled -= amount;
-            ForcesInReserve += amount;
+            AddForcesToReserves(amount);
         }
 
         public void ReviveSpecialForces(int amount)
         {
             SpecialForcesKilled -= amount;
-            SpecialForcesInReserve += amount;
+            AddSpecialForcesToReserves(amount);
         }
 
         public void ShipForces(Location l, int amount)
         {
-            ForcesInReserve -= amount;
-            ChangeForces(l, amount);
+            AddForces(l, amount, true);
         }
 
         public void ShipSpecialForces(Location l, int amount)
         {
             if (Faction != Faction.White)
             {
-                SpecialForcesInReserve -= amount;
+                RemoveSpecialForcesFromReserves(amount);
             }
 
             ChangeSpecialForces(l, amount);
@@ -396,7 +455,7 @@ namespace Treachery.Shared
 
         public void ShipAdvisors(Location l, int amount)
         {
-            ForcesInReserve -= amount;
+            RemoveForcesFromReserves(amount);
             ChangeSpecialForces(l, amount);
         }
 
@@ -496,7 +555,7 @@ namespace Treachery.Shared
 
         public IEnumerable<Territory> TerritoriesWithForces => Game.Map.Territories.Where(t => AnyForcesIn(t) > 0);
 
-        public IEnumerable<Location> LocationsWithAnyForces => ForcesOnPlanet.Keys;
+        public IEnumerable<Location> LocationsWithAnyForces => ForcesInLocations.Keys;
 
         public IEnumerable<Location> LocationsWithAnyForcesInTerritory(Territory t)
         {
@@ -599,9 +658,17 @@ namespace Treachery.Shared
 
         public bool HasKarma => Karma.ValidKarmaCards(Game, this).Any();
 
-        public void AddHomeworld(World world, bool isHomeOfNormalForces, bool isHomeOfSpecialForces, int threshold, int locationId)
+        public void InitializeReserves(World world, int initialNormalForces, int threshold, int locationId)
         {
-            Homeworlds.Add(new Homeworld(world, Faction, isHomeOfNormalForces, isHomeOfSpecialForces, threshold, locationId));
+            InitializeReserves(world, true, initialNormalForces, false, 0, threshold, locationId);
+        }
+
+        public void InitializeReserves(World world, bool isHomeOfNormalForces, int initialNormalForces, bool isHomeOfSpecialForces, int initialSpecialForces, int threshold, int locationId)
+        {
+            var homeworld = new Homeworld(world, Faction, isHomeOfNormalForces, isHomeOfSpecialForces, threshold, locationId);
+            if (isHomeOfNormalForces && initialNormalForces > 0) AddForces(homeworld, initialNormalForces, false);
+            if (isHomeOfSpecialForces && initialSpecialForces > 0) AddSpecialForces(homeworld, initialSpecialForces, false);
+            Homeworlds.Add(homeworld);
         }
 
         public object Clone()
@@ -613,11 +680,15 @@ namespace Treachery.Shared
             result.FaceDancers = new List<IHero>(FaceDancers);
             result.RevealedDancers = new List<IHero>(RevealedDancers);
             result.Leaders = new List<Leader>(Leaders);
-            result.ForcesOnPlanet = Utilities.CloneDictionary(ForcesOnPlanet);
+            result.ForcesInLocations = Utilities.CloneDictionary(ForcesInLocations);
             result.TechTokens = new List<TechToken>(TechTokens);
 
             return result;
         }
 
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

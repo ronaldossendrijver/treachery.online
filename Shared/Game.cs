@@ -561,50 +561,56 @@ namespace Treachery.Shared
 
         public bool IsOccupied(Territory t) => Players.Any(p => p.Occupies(t));
 
-        public Dictionary<Location, List<Battalion>> ForcesOnPlanet
+        public Dictionary<Location, List<Battalion>> Forces(bool includeHomeworlds = false)
         {
-            get
+            Dictionary<Location, List<Battalion>> result = new();
+
+            foreach (var l in Map.Locations)
             {
-                Dictionary<Location, List<Battalion>> result = new();
+                result.Add(l, new List<Battalion>());
+            }
 
-                foreach (var l in Map.Locations)
+            foreach (var p in Players)
+            {
+                if (includeHomeworlds)
                 {
-                    result.Add(l, new List<Battalion>());
-                }
-
-                foreach (var p in Players)
-                {
-                    foreach (var locationAndBattaltion in p.ForcesOnPlanet)
+                    foreach (var w in p.Homeworlds)
                     {
-                        result[locationAndBattaltion.Key].Add(locationAndBattaltion.Value);
+                        result.Add(w, new List<Battalion>());
                     }
                 }
 
-                return result;
+                var forces = includeHomeworlds ? p.ForcesInLocations : p.ForcesOnPlanet;
+
+                foreach (var locationAndBattaltion in forces)
+                {
+                    result[locationAndBattaltion.Key].Add(locationAndBattaltion.Value);
+                }
             }
+
+            return result;
         }
 
-        public Dictionary<Location, List<Battalion>> ForcesOnPlanetExcludingEmptyLocations
+        public Dictionary<Location, List<Battalion>> ForcesOnPlanetExcludingEmptyLocations(bool includeHomeworlds = false)
         {
-            get
+            Dictionary<Location, List<Battalion>> result = new();
+
+            foreach (var p in Players)
             {
-                Dictionary<Location, List<Battalion>> result = new();
+                var forces = includeHomeworlds ? p.ForcesInLocations : p.ForcesOnPlanet;
 
-                foreach (var p in Players)
+                foreach (var locationAndBattaltion in forces)
                 {
-                    foreach (var locationAndBattaltion in p.ForcesOnPlanet)
+                    if (!result.ContainsKey(locationAndBattaltion.Key))
                     {
-                        if (!result.ContainsKey(locationAndBattaltion.Key))
-                        {
-                            result.Add(locationAndBattaltion.Key, new List<Battalion>());
-                        }
-
-                        result[locationAndBattaltion.Key].Add(locationAndBattaltion.Value);
+                        result.Add(locationAndBattaltion.Key, new List<Battalion>());
                     }
-                }
 
-                return result;
+                    result[locationAndBattaltion.Key].Add(locationAndBattaltion.Value);
+                }
             }
+
+            return result;
         }
 
         public bool AnyForcesIn(Territory t)
@@ -613,7 +619,7 @@ namespace Treachery.Shared
             {
                 foreach (var l in t.Locations)
                 {
-                    if (p.ForcesOnPlanet.ContainsKey(l))
+                    if (p.ForcesInLocations.ContainsKey(l))
                     {
                         return true;
                     }
@@ -625,14 +631,16 @@ namespace Treachery.Shared
 
         public IEnumerable<Battalion> BattalionsIn(Location l)
         {
-            if (ForcesOnPlanet.ContainsKey(l))
+            var result = new List<Battalion>();
+            foreach (var p in Players)
             {
-                return ForcesOnPlanet[l];
+                if (p.BattalionIn(l, out Battalion batallion))
+                {
+                    result.Add(batallion);
+                }
             }
-            else
-            {
-                return Array.Empty<Battalion>();
-            }
+
+            return result;
         }
 
         public Dictionary<Location, List<Battalion>> OccupyingForcesOnPlanet
@@ -643,7 +651,7 @@ namespace Treachery.Shared
 
                 foreach (var p in Players)
                 {
-                    foreach (var locationAndBattaltion in p.ForcesOnPlanet.Where(kvp => p.Occupies(kvp.Key)))
+                    foreach (var locationAndBattaltion in p.ForcesInLocations.Where(kvp => p.Occupies(kvp.Key)))
                     {
                         if (!result.ContainsKey(locationAndBattaltion.Key))
                         {
@@ -908,11 +916,11 @@ namespace Treachery.Shared
                     var enemyOccupant = BattalionsIn(w).FirstOrDefault(b => b.Faction != player.Faction);
                     if (enemyOccupant != null)
                     {
-                        return new HomeworldStatus(true, enemyOccupant.Faction);
+                        return new HomeworldStatus(false, enemyOccupant.Faction);
                     }
                     else
                     {
-                        return new HomeworldStatus(true, player.Faction);
+                        return new HomeworldStatus(false, player.Faction);
                     }
                 }
             }
