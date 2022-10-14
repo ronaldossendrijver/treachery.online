@@ -69,7 +69,7 @@ namespace Treachery.Test
                 }
                 else
                 {
-                    Difference = compared + ": " + a + " != " + b;
+                    Difference = compared + ": " + a + " (expected) != " + b;
                     return false;
                 }
             }
@@ -80,7 +80,7 @@ namespace Treachery.Test
             }
             else
             {
-                Difference = compared + ": " + a + " != " + b;
+                Difference = compared + ": " + a + " (expected) != " + b;
                 return false;
             }
         }
@@ -95,7 +95,7 @@ namespace Treachery.Test
                 }
                 else
                 {
-                    Difference = compared + ": " + a + " != " + b;
+                    Difference = compared + ": " + a + " (expected) != " + b;
                     return false;
                 }
             }
@@ -144,23 +144,23 @@ namespace Treachery.Test
             var other = obj as TestvaluesPerPlayer;
 
             return
-                Testvalues.Check(other.ally, ally, "ally") &&
-                Testvalues.Check(other.bribes, bribes, "bribes") &&
-                Testvalues.Check(other.cardcount, cardcount, "cardcount") &&
-                Testvalues.Check(other.cardtypes, cardtypes, "cardtypes") &&
-                Testvalues.Check(other.facedancers, facedancers, "facedancers") &&
-                Testvalues.Check(other.faction, faction, "faction") &&
-                Testvalues.Check(other.forcesinreserve, forcesinreserve, "forcesinreserve") &&
-                Testvalues.Check(other.forceskilled, forceskilled, "forceskilled") &&
-                Testvalues.Check(other.nroftechtokens, nroftechtokens, "nroftechtokens") &&
-                Testvalues.Check(other.position, position, "position") &&
-                Testvalues.Check(other.resources, resources, "resources") &&
-                Testvalues.Check(other.specialforcesinreserve, specialforcesinreserve, "specialforcesinreserve") &&
-                Testvalues.Check(other.specialforceskilled, specialforceskilled, "specialforceskilled") &&
-                Testvalues.Check(other.totaldeathcount, totaldeathcount, "totaldeathcount") &&
-                Testvalues.Check(other.totalforcesonplanet, totalforcesonplanet, "totalforcesonplanet") &&
-                Testvalues.Check(other.totalspecialforcesonplanet, totalspecialforcesonplanet, "totalspecialforcesonplanet") &&
-                Testvalues.Check(other.traitors, traitors, "traitors");
+                Testvalues.Check(other.ally, ally, faction + "ally") &&
+                Testvalues.Check(other.bribes, bribes, faction + "bribes") &&
+                Testvalues.Check(other.cardcount, cardcount, faction + "cardcount") &&
+                Testvalues.Check(other.cardtypes, cardtypes, faction + "cardtypes") &&
+                Testvalues.Check(other.facedancers, facedancers, faction + "facedancers") &&
+                Testvalues.Check(other.faction, faction, faction + "faction") &&
+                Testvalues.Check(other.forcesinreserve, forcesinreserve, faction + "forcesinreserve") &&
+                Testvalues.Check(other.forceskilled, forceskilled, faction + "forceskilled") &&
+                Testvalues.Check(other.nroftechtokens, nroftechtokens, faction + "nroftechtokens") &&
+                Testvalues.Check(other.position, position, faction + "position") &&
+                Testvalues.Check(other.resources, resources, faction + "resources") &&
+                Testvalues.Check(other.specialforcesinreserve, specialforcesinreserve, faction + "specialforcesinreserve") &&
+                Testvalues.Check(other.specialforceskilled, specialforceskilled, faction + "specialforceskilled") &&
+                Testvalues.Check(other.totaldeathcount, totaldeathcount, faction + "totaldeathcount") &&
+                Testvalues.Check(other.totalforcesonplanet, totalforcesonplanet, faction + "totalforcesonplanet") &&
+                Testvalues.Check(other.totalspecialforcesonplanet, totalspecialforcesonplanet, faction + "totalspecialforcesonplanet") &&
+                Testvalues.Check(other.traitors, traitors, faction + "traitors");
         }
 
         public override int GetHashCode()

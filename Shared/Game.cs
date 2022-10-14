@@ -14,7 +14,7 @@ namespace Treachery.Shared
         public const int LatestVersion = 150;
         public const int ExpansionLevel = 3;
 
-        public bool BotInfologging = false;
+        public bool BotInfologging = true;
         
         #region GameState
         public int Seed { get; private set; } = -1;

@@ -16,17 +16,11 @@ namespace Treachery.Shared
 
         public bool IsHomeOfSpecialForces { get; private set; }
 
-        public Homeworld(World world, Faction faction, bool isHomeOfNormalForces, bool isHomeOfSpecialForces, int treshold, int id) : base(id)
+        public Homeworld(World world, Faction faction, Territory t, bool isHomeOfNormalForces, bool isHomeOfSpecialForces, int treshold, int id) : base(id)
         {
-            Territory = new Territory(43)
-            {
-                IsStronghold = false,
-                IsProtectedFromStorm = false,
-                IsProtectedFromWorm = false
-            };
-
             World = world;
             Faction = faction;
+            Territory = t;
             IsHomeOfNormalForces = isHomeOfNormalForces;
             IsHomeOfSpecialForces = isHomeOfSpecialForces;
             Threshold = treshold;

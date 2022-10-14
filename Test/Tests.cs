@@ -89,15 +89,15 @@ namespace Treachery.Test
             var p = g.GetPlayer(e.Initiator);
 
             p = g.Players.FirstOrDefault(p => p.ForcesInReserve < 0 || p.SpecialForcesInReserve < 0);
-            if (p != null) return "Negative forces: " + p + " after " + e.GetType().Name + " - " + g.History.Count;
+            if (p != null) return "Negative forces " + p.Faction + " after " + e.GetType().Name + " - " + g.History.Count;
 
             p = g.Players.FirstOrDefault(p => p.Faction == Faction.White && (p.SpecialForcesInReserve != 0 || p.SpecialForcesKilled != 0));
-            if (p != null) return "Invalid forces: " + p + " after " + e.GetType().Name + " - " + g.History.Count;
+            if (p != null) return "Invalid forces " + p.Faction + " after " + e.GetType().Name + " - " + g.History.Count;
 
             if (g.Version >= 142)
             {
                 p = g.Players.FirstOrDefault(p => p.Resources < 0);
-                if (p != null) return "Negative spice: " + p + " after " + e.GetType().Name + " - " + g.History.Count;
+                if (p != null) return "Negative spice " + p.Faction + " after " + e.GetType().Name + " - " + g.History.Count;
             }
 
             if (g.CurrentTurn >= 1)
@@ -108,7 +108,7 @@ namespace Treachery.Test
 
                 if (p != null)
                 {
-                    return "Illegal number of forces: " + p;
+                    return "Illegal number of forces " + p.Faction;
                 }
             }
 
@@ -488,7 +488,7 @@ namespace Treachery.Test
                         var illegalCase = TestIllegalCases(game, evt);
                         if (illegalCase != "")
                         {
-                            File.WriteAllText("illegalcase_" + illegalCase + "_" + game.Seed + ".json", GameState.GetStateAsString(game));
+                            File.WriteAllText("illegalcase" + illegalCase + "_" + game.Seed + ".json", GameState.GetStateAsString(game));
                         }
                         Assert.AreEqual("", illegalCase);
 

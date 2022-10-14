@@ -10,14 +10,9 @@ namespace Treachery.Shared
     {
         public Location AttachedToLocation { get; private set; } = null;
 
-        public HiddenMobileStronghold(int id) : base(id)
+        public HiddenMobileStronghold(Territory t, int id) : base(id)
         {
-            Territory = new Territory(42)
-            {
-                IsStronghold = true,
-                IsProtectedFromStorm = true,
-                IsProtectedFromWorm = true
-            };
+            Territory = t;
         }
 
         public bool Visible => AttachedToLocation != null;

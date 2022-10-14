@@ -48,7 +48,7 @@
     }
 
     <!-- Locations -->
-    @foreach (var location in Game.Map.Locations.Where(l => l != Game.Map.HiddenMobileStronghold)) {
+    @foreach (var location in Game.Map.Locations.Where(l => l != Game.Map.HiddenMobileStronghold && l is not Homeworld)) {
 
         <g clip-path="url(#@SectorClipName(location.Sector))">
             <g

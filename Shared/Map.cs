@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks.Dataflow;
 
 namespace Treachery.Shared
 {
@@ -13,6 +14,8 @@ namespace Treachery.Shared
         public const int NUMBER_OF_SECTORS = 18;
 
         public List<Location> Locations { get; set; }
+        public List<Homeworld> Homeworlds { get; set; }
+
         public readonly LocationFetcher LocationLookup;
         public readonly TerritoryFetcher TerritoryLookup;
 
@@ -149,8 +152,8 @@ namespace Treachery.Shared
 
         private void InitializeLocations()
         {
-            Locations = new List<Location>();
             int id = 0;
+            Locations = new();
 
             {
                 var t = new Territory(0)
@@ -1151,13 +1154,40 @@ namespace Treachery.Shared
             }
 
             {
-                HiddenMobileStronghold = new HiddenMobileStronghold(id++)
+                var t =  new Territory(42)
                 {
-                    SpiceBlowAmount = 0,
+                    IsStronghold = true,
+                    IsProtectedFromStorm = true,
+                    IsProtectedFromWorm = true
                 };
 
+                HiddenMobileStronghold = new HiddenMobileStronghold(t, id++) { SpiceBlowAmount = 0 };
                 Locations.Add(HiddenMobileStronghold);
             }
+
+            {
+                int homeworldTerritoryId = 43;
+
+                Homeworlds = new()
+                {
+                    new Homeworld(World.Yellow, Faction.Yellow, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, true, 3, id++),
+                    new Homeworld(World.Green, Faction.Green, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 6, id++),
+                    new Homeworld(World.Black, Faction.Black, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 7, id++),
+                    new Homeworld(World.Red, Faction.Red, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 5, id++),
+                    new Homeworld(World.RedStar, Faction.Red, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, false, true, 2, id++),
+                    new Homeworld(World.Orange, Faction.Orange, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 5, id++),
+                    new Homeworld(World.Blue, Faction.Blue, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 11, id++),
+                    new Homeworld(World.Grey, Faction.Grey, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, true, 5, id++),
+                    new Homeworld(World.Purple, Faction.Purple, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 9, id++),
+                    new Homeworld(World.Brown, Faction.Brown, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 11, id++),
+                    new Homeworld(World.White, Faction.White, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 10, id++),
+                    new Homeworld(World.Pink, Faction.Pink, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 7, id++),
+                    new Homeworld(World.Cyan, Faction.Cyan, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 8, id++)
+                };
+
+                Locations.AddRange(Homeworlds);
+            }
+
         }
 
         public void InitializeLocationNeighbours()

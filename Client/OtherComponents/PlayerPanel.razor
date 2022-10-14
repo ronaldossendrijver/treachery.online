@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameComponent
 
-@if (Player != null && h.CurrentPhase > Phase.TradingFactions)
+@if (Player != null && h.CurrentPhase >= Phase.TradingFactions)
 {
     <div class="card p-1 border-light mb-1">
 
@@ -157,7 +157,13 @@
                             </div>
                         }
                     }
+                    else
+                    {
+                        <FactionComponent Faction="h.Player.Faction"/>
+                    }
+                
                 </div>
+
             </div>
         }
 

@@ -63,7 +63,27 @@ namespace Treachery.Shared
 
         public IList<Leader> Leaders { get; set; } = new List<Leader>();
 
-        public int ForcesInReserve => Homeworlds.Sum(w => ForcesIn(w));
+        public int ForcesInReserve
+        {
+            get
+            {
+                return Homeworlds.Sum(w => ForcesIn(w)); 
+                /*
+                var total = Homeworlds.Sum(w => ForcesIn(w));
+                if (total == 15)
+                {
+                    Console.WriteLine(Faction + ":" + total);
+                    foreach (var w in Homeworlds)
+                    {
+                        Console.WriteLine("- " + w.World + ": " + ForcesIn(w));
+                    }
+
+                    
+                }
+                return total;
+                */
+            }
+        }
 
         public int SpecialForcesInReserve => Homeworlds.Sum(w => SpecialForcesIn(w));
 
@@ -658,17 +678,13 @@ namespace Treachery.Shared
 
         public bool HasKarma => Karma.ValidKarmaCards(Game, this).Any();
 
-        public void InitializeReserves(World world, int initialNormalForces, int threshold, int locationId)
-        {
-            InitializeReserves(world, true, initialNormalForces, false, 0, threshold, locationId);
-        }
 
-        public void InitializeReserves(World world, bool isHomeOfNormalForces, int initialNormalForces, bool isHomeOfSpecialForces, int initialSpecialForces, int threshold, int locationId)
+        public void InitializeHomeworld(Homeworld world, int initialNormalForces, int initialSpecialForces)
         {
-            var homeworld = new Homeworld(world, Faction, isHomeOfNormalForces, isHomeOfSpecialForces, threshold, locationId);
-            if (isHomeOfNormalForces && initialNormalForces > 0) AddForces(homeworld, initialNormalForces, false);
-            if (isHomeOfSpecialForces && initialSpecialForces > 0) AddSpecialForces(homeworld, initialSpecialForces, false);
-            Homeworlds.Add(homeworld);
+            if (initialNormalForces > 0) AddForces(world, initialNormalForces, false);
+            if (initialSpecialForces > 0) AddSpecialForces(world, initialSpecialForces, false);
+
+            Homeworlds.Add(world);
         }
 
         public object Clone()

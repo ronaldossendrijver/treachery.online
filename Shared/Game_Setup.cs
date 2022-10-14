@@ -570,7 +570,7 @@ namespace Treachery.Shared
         {
             foreach (var p in Players)
             {
-                SetupPlayerForceReserves(p);
+                SetupPlayerHomeworld(p);
             }
 
             if (Applicable(Rule.CustomInitialForcesAndResources))
@@ -602,57 +602,36 @@ namespace Treachery.Shared
             }
         }
 
-        private void SetupPlayerForceReserves(Player p)
+        private void SetupPlayerHomeworld(Player p)
         {
+            var normalForceWorld = Map.Homeworlds.First(w => w.Faction == p.Faction && w.IsHomeOfNormalForces);
+
             switch (p.Faction)
             {
                 case Faction.Yellow:
-                    p.InitializeReserves(World.Yellow, true, Applicable(Rule.YellowSpecialForces) ? 17 : 20, Applicable(Rule.YellowSpecialForces), Applicable(Rule.YellowSpecialForces) ? 3 : 0, 3, 10000);
-                    break;
-
-                case Faction.Green:
-                    p.InitializeReserves(World.Green, 20, 6, 10001);
-                    break;
-
-                case Faction.Black:
-                    p.InitializeReserves(World.Black, 20, 7, 10002);
+                    p.InitializeHomeworld(normalForceWorld, Applicable(Rule.YellowSpecialForces) ? 17 : 20, Applicable(Rule.YellowSpecialForces) ? 3 : 0);
                     break;
 
                 case Faction.Red:
-                    p.InitializeReserves(World.Red, Applicable(Rule.RedSpecialForces) ? 15 : 20, 5, 10003);
-                    if (Applicable(Rule.RedSpecialForces)) p.InitializeReserves(World.RedStar, false, 0, true, 5, 2, 10004);
-                    break;
-
-                case Faction.Orange:
-                    p.InitializeReserves(World.Orange, 20, 5, 10005);
-                    break;
-
-                case Faction.Blue:
-                    p.InitializeReserves(World.Blue, 20, 11, 10006);
+                    p.InitializeHomeworld(normalForceWorld, Applicable(Rule.RedSpecialForces) ? 15 : 20, 0);
+                    if (Applicable(Rule.RedSpecialForces)) p.InitializeHomeworld(Map.Homeworlds.First(w => w.Faction == p.Faction && w.IsHomeOfSpecialForces), 0, 5);
                     break;
 
                 case Faction.Grey:
-                    p.InitializeReserves(World.Grey, true, 13, true, 7, 5, 10007);
+                    p.InitializeHomeworld(normalForceWorld, 13, 7);
                     break;
 
+                case Faction.Green:
+                case Faction.Black:
+                case Faction.Orange:
+                case Faction.Blue:
                 case Faction.Purple:
-                    p.InitializeReserves(World.Purple, 20, 9, 10008);
-                    break;
-
                 case Faction.Brown:
-                    p.InitializeReserves(World.Brown, 20, 11, 10009);
-                    break;
                 case Faction.White:
-                    p.InitializeReserves(World.White, 20, 10, 10010);
-                    break;
-
                 case Faction.Pink:
-                    p.InitializeReserves(World.Pink, 20, 7, 10011);
-                    break;
                 case Faction.Cyan:
-                    p.InitializeReserves(World.Cyan, 20, 8, 10012);
+                    p.InitializeHomeworld(normalForceWorld, 20, 0);
                     break;
-
             }
         }
 

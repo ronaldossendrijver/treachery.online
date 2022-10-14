@@ -59,7 +59,7 @@
                        Popover="@Intel(p.AlliedPlayer)"/>
             }
 
-            double ttRad = (TWOPI / 180) + 0.1 + (4.5 - positionSector) * TWOPI / Map.NUMBER_OF_SECTORS;
+            double ttRad = (TWOPI / 180) + 0.06 + (4.5 - positionSector) * TWOPI / Map.NUMBER_OF_SECTORS;
                         
             //Homeworlds
             var deltaX = 0f;
@@ -75,21 +75,27 @@
 
                 var reservesX = homeworldX + 0.75f * Skin.Current.PlayerTokenRadius;
                 var reservesY = homeworldY + 1.25f * Skin.Current.PlayerTokenRadius;
-                if (homeworld.IsHomeOfNormalForces)
-                {
-                    <MapForce X=@reservesX Y=@reservesY Special=@false Amount=@p.ForcesInReserve Faction=@p.Faction Threatened=@false ShowPopover="true" Font="@Skin.Current.SKILL_FONT" Diameter="@Skin.Current.FORCETOKEN_RADIUS" />
-                    reservesX += Skin.Current.FORCETOKEN_RADIUS;
-                }
 
-                if (homeworld.IsHomeOfSpecialForces)
-                {
-                    <MapForce X=@reservesX Y=@reservesY Special=@true Amount=@p.SpecialForcesInReserve Faction=@p.Faction Threatened=@false ShowPopover="true" Font="@Skin.Current.SKILL_FONT" Diameter="@Skin.Current.FORCETOKEN_RADIUS" />
+                foreach (var b in Game.BattalionsIn(homeworld)) {
+
+                    if (b.AmountOfForces > 0)
+                    {
+                        <MapForce X=@reservesX Y=@reservesY Special=@false Amount=@b.AmountOfForces Faction=@p.Faction Threatened=@false ShowPopover="true" Font="@Skin.Current.SKILL_FONT" Diameter="@Skin.Current.FORCETOKEN_RADIUS" />
+                        reservesX += Skin.Current.FORCETOKEN_RADIUS;
+                    }
+
+                    if (b.AmountOfSpecialForces > 0)
+                    {
+                        <MapForce X=@reservesX Y=@reservesY Special=@true Amount=@b.AmountOfSpecialForces Faction=@p.Faction Threatened=@false ShowPopover="true" Font="@Skin.Current.SKILL_FONT" Diameter="@Skin.Current.FORCETOKEN_RADIUS" />
+                    }
+
+                    reservesY += Skin.Current.FORCETOKEN_RADIUS;
                 }
 
                 deltaX += factionLogoIsOnRightSideOfMap ? 1.5f * Skin.Current.PlayerTokenRadius : -1.5f * Skin.Current.PlayerTokenRadius;
             }
 
-            ttRad += 0.02;
+            ttRad += 0.04;
  
             foreach (var tt in p.TechTokens)
             {
