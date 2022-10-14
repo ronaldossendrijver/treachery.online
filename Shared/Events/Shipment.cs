@@ -16,7 +16,7 @@ namespace Treachery.Shared
 
         private static List<Location> YellowSpawnLocations(Game g, Player p)
         {
-            return g.Map.Locations.Where(l => g.IsNotFull(p, l) && (l == g.Map.TheGreatFlat || l == g.Map.TheGreaterFlat || l == g.Map.FuneralPlain || l.Territory == g.Map.BightOfTheCliff || l == g.Map.SietchTabr ||
+            return g.Map.Locations(g.Applicable(Rule.Homeworlds)).Where(l => g.IsNotFull(p, l) && (l == g.Map.TheGreatFlat || l == g.Map.TheGreaterFlat || l == g.Map.FuneralPlain || l.Territory == g.Map.BightOfTheCliff || l == g.Map.SietchTabr ||
                 l.Territory == g.Map.PlasticBasin || l.Territory == g.Map.RockOutcroppings || l.Territory == g.Map.BrokenLand || l.Territory == g.Map.Tsimpo || l.Territory == g.Map.HaggaBasin ||
                 l == g.Map.PolarSink || l.Territory == g.Map.WindPass || l.Territory == g.Map.WindPassNorth || l.Territory == g.Map.CielagoWest || l.Territory == g.Map.FalseWallWest || l.Territory == g.Map.HabbanyaErg))
                 .ToList();
@@ -241,7 +241,7 @@ namespace Treachery.Shared
 
         private static IEnumerable<Location> NormalShipmentLocations(Game g, Player p)
         {
-            return g.Map.Locations.Where(l =>
+            return g.Map.Locations(g.Applicable(Rule.Homeworlds)).Where(l =>
                 l.Sector != g.SectorInStorm &&
                 (l != g.Map.HiddenMobileStronghold || p.Is(Faction.Grey)) &&
                 g.IsNotFull(p, l));

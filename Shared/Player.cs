@@ -313,7 +313,7 @@ namespace Treachery.Shared
         public void ForcesToReserves(Territory t, int amount, bool special)
         {
             int toRemoveInTotal = amount;
-            foreach (var l in Game.Map.Locations.Where(l => l.Territory == t).OrderBy(l => l.SpiceBlowAmount))
+            foreach (var l in Game.Map.Locations().Where(l => l.Territory == t).OrderBy(l => l.SpiceBlowAmount))
             {
                 int forcesIn = special ? SpecialForcesIn(l) : ForcesIn(l);
                 if (forcesIn > 0)
@@ -425,7 +425,7 @@ namespace Treachery.Shared
         public void KillForces(Territory t, int amount, bool special, bool inBattle)
         {
             int toKill = amount;
-            foreach (var l in Game.Map.Locations.Where(l => l.Territory == t).OrderBy(l => l.SpiceBlowAmount))
+            foreach (var l in Game.Map.Locations().Where(l => l.Territory == t).OrderBy(l => l.SpiceBlowAmount))
             {
                 int forcesIn = special ? SpecialForcesIn(l) : ForcesIn(l);
                 if (forcesIn > 0)
@@ -537,7 +537,7 @@ namespace Treachery.Shared
         {
             get
             {
-                return Game.Map.Locations.Where(l => Occupies(l));
+                return Game.Map.Locations().Where(l => Occupies(l));
             }
         }
 
@@ -545,7 +545,7 @@ namespace Treachery.Shared
         {
             get
             {
-                return Game.Map.Territories.Where(t => Occupies(t));
+                return Game.Map.Territories(true).Where(t => Occupies(t));
             }
         }
 
@@ -573,7 +573,7 @@ namespace Treachery.Shared
             }
         }
 
-        public IEnumerable<Territory> TerritoriesWithForces => Game.Map.Territories.Where(t => AnyForcesIn(t) > 0);
+        public IEnumerable<Territory> TerritoriesWithForces => Game.Map.Territories().Where(t => AnyForcesIn(t) > 0);
 
         public IEnumerable<Location> LocationsWithAnyForces => ForcesInLocations.Keys;
 

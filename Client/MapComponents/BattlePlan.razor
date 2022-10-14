@@ -195,6 +195,7 @@ else
     Diameter=@Skin.Current.FORCETOKEN_RADIUS
     Src="@(showPlan ? Skin.Current.Eye_URL : Skin.Current.EyeSlash_URL)"
     OnClick="OnShowPlanClick"
+    ShadowColor="black" ShadowX="1" ShadowY="1" ShadowBlur="0"
     Title="@(showPlan ? "Hide Wheel" : "Show Wheel")" />
 
 @code {

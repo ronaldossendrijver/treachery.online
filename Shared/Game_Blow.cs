@@ -2,6 +2,7 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -75,16 +76,20 @@ namespace Treachery.Shared
                         break;
                     }
                 }
-                else if (drawn.IsShaiHulud && CurrentTurn == 1)
+                else if (drawn != null && drawn.IsShaiHulud && CurrentTurn == 1)
                 {
                     Log(Concept.Monster, " on turn 1 was ignored");
                     ignoredMonsters.Add(CurrentDiscardPile.Draw());
                 }
-                else if (drawn.IsShaiHulud || ThumperUsed && Version > 150)
+                else if (ThumperUsed && Version > 150 || drawn.IsShaiHulud)
                 {
                     ThumperUsed = false;
                     SandTroutDoublesResources = false;
-                    RecentMilestones.Add(Milestone.Monster);
+
+                    if (!ThumperUsed)
+                    {
+                        RecentMilestones.Add(Milestone.Monster);
+                    }
 
                     if (!SandTroutOccured)
                     {
@@ -101,9 +106,9 @@ namespace Treachery.Shared
                         //Sandtrout triggers
                         if (Version >= 150)
                         {
-                            CurrentDiscardPile.Items.Remove(drawn);
+                            if (drawn != null) CurrentDiscardPile.Items.Remove(drawn);
                             CurrentDiscardPile.PutOnTop(SandTrout);
-                            CurrentDiscardPile.PutOnTop(drawn);
+                            if (drawn != null) CurrentDiscardPile.PutOnTop(drawn);
                         }
 
                         SandTrout = null;

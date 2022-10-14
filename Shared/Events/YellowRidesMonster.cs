@@ -86,7 +86,7 @@ namespace Treachery.Shared
         {
             bool mayMoveIntoStorm = p.Faction == Faction.Yellow && g.Applicable(Rule.YellowMayMoveIntoStorm) && g.Applicable(Rule.YellowStormLosses);
 
-            IEnumerable<Location> locationsInRange = locationsInRange = g.Map.Locations.Where(l =>
+            IEnumerable<Location> locationsInRange = locationsInRange = g.Map.Locations().Where(l =>
                 (mayMoveIntoStorm || l.Sector != g.SectorInStorm) &&
                 (!l.Territory.IsStronghold || g.NrOfOccupantsExcludingPlayer(l, p) < 2));
 

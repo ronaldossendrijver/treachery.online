@@ -322,7 +322,7 @@ namespace Treachery.Shared
                 if (result == null && !LastTurn && WithinRange(location, Game.Map.PolarSink, battalion)) result = Game.Map.PolarSink;
                 LogInfo("Suitable - Polar Sink nearby? {0}", result);
 
-                if (result == null && location != Game.Map.PolarSink) result = Game.Map.Locations.Where(l => Game.IsProtectedFromStorm(l) && WithinRange(location, l, battalion) && NotOccupiedByOthers(l.Territory) && l.Territory != location.Territory).FirstOrDefault();
+                if (result == null && location != Game.Map.PolarSink) result = Game.Map.Locations().Where(l => Game.IsProtectedFromStorm(l) && WithinRange(location, l, battalion) && NotOccupiedByOthers(l.Territory) && l.Territory != location.Territory).FirstOrDefault();
                 LogInfo("Suitable nearby Rock: {0}", result);
             }
 

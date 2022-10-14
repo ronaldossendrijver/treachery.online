@@ -47,7 +47,7 @@ namespace Treachery.Shared
             {
                 if (BlueMayPlaceFirstForceInAnyTerritory(g))
                 {
-                    return g.Map.Locations.Where(l => l != g.Map.HiddenMobileStronghold);
+                    return g.Map.Locations().Where(l => l != g.Map.HiddenMobileStronghold);
                 }
                 else
                 {

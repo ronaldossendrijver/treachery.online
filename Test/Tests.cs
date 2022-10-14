@@ -221,7 +221,7 @@ namespace Treachery.Test
                 return "Lonely advisor";
             }
 
-            if (g.Version >= 148 && blue != null && g.Map.Territories.Any(t => blue.ForcesIn(t) > 0 && blue.SpecialForcesIn(t) > 0))
+            if (g.Version >= 148 && blue != null && g.Map.Territories(true).Any(t => blue.ForcesIn(t) > 0 && blue.SpecialForcesIn(t) > 0))
             {
                 return "Advisor and fighter together";
             }
@@ -360,7 +360,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 50;
+            int nrOfGames = 500;
             int nrOfTurns = 30;
             int nrOfPlayers = 6;
 

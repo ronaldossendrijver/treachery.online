@@ -48,6 +48,6 @@
 
     private void HandleLocationSelected(object sender, Location l)
     {
-        SetIfValid(ref target, Game.Map.Locations, l);
+        SetIfValid(ref target, Game.Map.Locations(), l);
     }
 }

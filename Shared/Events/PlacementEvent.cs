@@ -147,7 +147,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<Territory> TerritoriesWithAnyForcesNotInStorm(Game g, Player p)
         {
-            return g.Map.Territories.Where(t => t.Locations.Any(l => l.Sector != g.SectorInStorm && p.AnyForcesIn(l) > 0));
+            return g.Map.Territories().Where(t => t.Locations.Any(l => l.Sector != g.SectorInStorm && p.AnyForcesIn(l) > 0));
         }
     }
 }

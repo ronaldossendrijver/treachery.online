@@ -8,7 +8,7 @@
 @{
     var forceLocations = Game.ForcesOnPlanetExcludingEmptyLocations(false);
 
-    foreach (var location in Game.Map.Locations.Where(l => l != Game.Map.HiddenMobileStronghold && l is not Homeworld).OrderBy(l => Skin.Current.GetCenter(l).Y))
+    foreach (var location in Game.Map.Locations().Where(l => l != Game.Map.HiddenMobileStronghold && l is not Homeworld).OrderBy(l => Skin.Current.GetCenter(l).Y))
     {
         int xOffset = 0;
         int yOffset = 0;
@@ -62,7 +62,7 @@
                Width=@(Skin.Current.HmsRadius + Math.Abs(Skin.Current.HmsDX)) Height="@(2 * Skin.Current.HmsRadius)"
                Src="@Skin.Current.HMS_URL"
                ShadowColor="@Skin.Current.SHADOW" ShadowX="5" ShadowY="5" ShadowBlur="1"
-               Opacity="@(showHMS ? 1f : 0.2f)"
+               Opacity="@(showHMS ? 1f : 0.3f)"
                Popover="@Intel(h.Game.Map.HiddenMobileStronghold)"
                OnClick="@(e => OnClick(e, h.Game.Map.HiddenMobileStronghold))" />
 
@@ -76,6 +76,7 @@
                Y="@(hmsCenter.Y - 0.18f * Skin.Current.HmsRadius)"
                Diameter="@(Skin.Current.FORCETOKEN_RADIUS)"
                Src="@(showHMS ? Skin.Current.Eye_URL : Skin.Current.EyeSlash_URL)"
+               ShadowColor="black" ShadowX="1" ShadowY="1" ShadowBlur="0"
                OnClick="OnShowHmsClick"
                Title="@(showHMS ? "Hide HMS" : "Show HMS")" />
 

@@ -5,16 +5,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks.Dataflow;
 
 namespace Treachery.Shared
 {
     public class Map
     {
         public const int NUMBER_OF_SECTORS = 18;
-
-        public List<Location> Locations { get; set; }
-        public List<Homeworld> Homeworlds { get; set; }
+        private List<Location> _locations;
 
         public readonly LocationFetcher LocationLookup;
         public readonly TerritoryFetcher TerritoryLookup;
@@ -98,14 +95,18 @@ namespace Treachery.Shared
             InitializeLocationNeighbours();
         }
 
-        public IEnumerable<Territory> Territories => Locations.Select(l => l.Territory).Distinct();
+        public IEnumerable<Location> Locations(bool includeHomeworlds = false) => _locations.Where(l => includeHomeworlds || l is not Homeworld);
 
-        public IEnumerable<Location> Strongholds => Locations.Where(l => l.Territory.IsStronghold);
+        public IEnumerable<Homeworld> Homeworlds => _locations.Where(l => l is Homeworld).Select(l => l as Homeworld);
+
+        public IEnumerable<Territory> Territories(bool includeHomeworlds = false) => Locations(includeHomeworlds).Select(l => l.Territory).Distinct();
+
+        public IEnumerable<Location> Strongholds => _locations.Where(l => l.Territory.IsStronghold);
 
         public static IEnumerable<ResourceCard> GetResourceCardsInAndOutsidePlay(Map m)
         {
             var result = new List<ResourceCard>();
-            foreach (var location in m.Locations.Where(l => l.SpiceBlowAmount > 0))
+            foreach (var location in m._locations.Where(l => l.SpiceBlowAmount > 0))
             {
                 result.Add(new ResourceCard(location.Territory.Id) { Location = location });
             }
@@ -132,7 +133,7 @@ namespace Treachery.Shared
         public static IEnumerable<ResourceCard> GetResourceCardsInPlay(Game g)
         {
             var result = new List<ResourceCard>();
-            foreach (var location in g.Map.Locations.Where(l => l.SpiceBlowAmount > 0))
+            foreach (var location in g.Map._locations.Where(l => l.SpiceBlowAmount > 0))
             {
                 result.Add(new ResourceCard(location.Territory.Id) { Location = location });
             }
@@ -153,7 +154,7 @@ namespace Treachery.Shared
         private void InitializeLocations()
         {
             int id = 0;
-            Locations = new();
+            _locations = new();
 
             {
                 var t = new Territory(0)
@@ -169,7 +170,7 @@ namespace Treachery.Shared
                     Sector = -1,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(PolarSink);
+                _locations.Add(PolarSink);
             }
 
             {
@@ -179,14 +180,14 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {//1
                     Territory = ImperialBasin,
                     Orientation = "East",
                     Sector = 8,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {//2
                     Territory = ImperialBasin,
                     Orientation = "Center",
@@ -194,7 +195,7 @@ namespace Treachery.Shared
                     SpiceBlowAmount = 0
 
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {//3
                     Territory = ImperialBasin,
                     Orientation = "West",
@@ -217,7 +218,7 @@ namespace Treachery.Shared
                     Sector = 10,
                     SpiceBlowAmount = 0
                 };
-                Locations.Add(Carthag);
+                _locations.Add(Carthag);
             }
 
             {
@@ -235,7 +236,7 @@ namespace Treachery.Shared
                     SpiceBlowAmount = 0
 
                 };
-                Locations.Add(Arrakeen);
+                _locations.Add(Arrakeen);
             }
 
             {
@@ -252,7 +253,7 @@ namespace Treachery.Shared
                     Sector = 4,
                     SpiceBlowAmount = 0
                 };
-                Locations.Add(TueksSietch);
+                _locations.Add(TueksSietch);
             }
 
             {
@@ -269,7 +270,7 @@ namespace Treachery.Shared
                     Sector = 13,
                     SpiceBlowAmount = 0
                 };
-                Locations.Add(SietchTabr);
+                _locations.Add(SietchTabr);
             }
 
             {
@@ -286,7 +287,7 @@ namespace Treachery.Shared
                     Sector = 16,
                     SpiceBlowAmount = 0
                 };
-                Locations.Add(HabbanyaSietch);
+                _locations.Add(HabbanyaSietch);
             }
 
             {
@@ -296,21 +297,21 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Orientation = "West",
                     Sector = 0,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Orientation = "Center",
                     Sector = 1,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Orientation = "East",
@@ -326,21 +327,21 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Orientation = "West",
                     Sector = 0,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Orientation = "Center",
                     Sector = 1,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Orientation = "East",
@@ -356,7 +357,7 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = Meridan,
                     Orientation = "West",
@@ -364,7 +365,7 @@ namespace Treachery.Shared
                     SpiceBlowAmount = 0,
                     TokenType = DiscoveryTokenType.Hiereg
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = Meridan,
                     Orientation = "East",
@@ -380,14 +381,14 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Orientation = "West",
                     Sector = 1,
                     SpiceBlowAmount = 12
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Orientation = "East",
@@ -403,7 +404,7 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = CielagoEast,
                     Orientation = "West",
@@ -411,7 +412,7 @@ namespace Treachery.Shared
                     SpiceBlowAmount = 0,
                     TokenType = DiscoveryTokenType.Hiereg
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = CielagoEast,
                     Orientation = "East",
@@ -427,14 +428,14 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Orientation = "West",
                     Sector = 3,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Orientation = "East",
@@ -450,14 +451,14 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = FalseWallSouth,
                     Orientation = "West",
                     Sector = 3,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = FalseWallSouth,
                     Orientation = "East",
@@ -473,35 +474,35 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = FalseWallEast,
                     Orientation = "Far South",
                     Sector = 4,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = FalseWallEast,
                     Orientation = "South",
                     Sector = 5,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = FalseWallEast,
                     Orientation = "Middle",
                     Sector = 6,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = FalseWallEast,
                     Orientation = "North",
                     Sector = 7,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = FalseWallEast,
                     Orientation = "Far North",
@@ -517,28 +518,28 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = TheMinorErg,
                     Orientation = "Far South",
                     Sector = 4,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = TheMinorErg,
                     Orientation = "South",
                     Sector = 5,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = TheMinorErg,
                     Orientation = "North",
                     Sector = 6,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = TheMinorErg,
                     Orientation = "Far North",
@@ -554,21 +555,21 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = PastyMesa,
                     Orientation = "Far South",
                     Sector = 4,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = PastyMesa,
                     Orientation = "South",
                     Sector = 5,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = PastyMesa,
                     Orientation = "North",
@@ -576,7 +577,7 @@ namespace Treachery.Shared
                     SpiceBlowAmount = 0,
                     TokenType = DiscoveryTokenType.Smuggler
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = PastyMesa,
                     Orientation = "Far North",
@@ -592,7 +593,7 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Orientation = "",
@@ -608,21 +609,21 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Orientation = "South",
                     Sector = 3,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Orientation = "Middle",
                     Sector = 4,
                     SpiceBlowAmount = 10
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Orientation = "North",
@@ -638,7 +639,7 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Orientation = "",
@@ -654,7 +655,7 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Orientation = "",
@@ -670,7 +671,7 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = HoleInTheRock,
                     Orientation = "",
@@ -686,7 +687,7 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = SihayaRidge,
                     Orientation = "",
@@ -702,14 +703,14 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = ShieldWall,
                     Orientation = "South",
                     Sector = 7,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = ShieldWall,
                     Orientation = "North",
@@ -725,7 +726,7 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = GaraKulon,
                     Orientation = "",
@@ -742,21 +743,21 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = OldGap,
                     Orientation = "East",
                     Sector = 8,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = OldGap,
                     Orientation = "Middle",
                     Sector = 9,
                     SpiceBlowAmount = 6
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = OldGap,
                     Orientation = "West",
@@ -772,14 +773,14 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = BrokenLand,
                     Orientation = "East",
                     Sector = 10,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = BrokenLand,
                     Orientation = "West",
@@ -795,21 +796,21 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = Tsimpo,
                     Orientation = "East",
                     Sector = 10,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = Tsimpo,
                     Orientation = "Middle",
                     Sector = 11,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = Tsimpo,
                     Orientation = "West",
@@ -825,14 +826,14 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Orientation = "East",
                     Sector = 10,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Orientation = "West",
@@ -848,14 +849,14 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = RockOutcroppings,
                     Orientation = "North",
                     Sector = 12,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = RockOutcroppings,
                     Orientation = "South",
@@ -871,14 +872,14 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = PlasticBasin,
                     Orientation = "North",
                     Sector = 11,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = PlasticBasin,
                     Orientation = "Middle",
@@ -886,7 +887,7 @@ namespace Treachery.Shared
                     SpiceBlowAmount = 0,
                     TokenType = DiscoveryTokenType.Smuggler
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = PlasticBasin,
                     Orientation = "South",
@@ -902,14 +903,14 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = HaggaBasin,
                     Orientation = "East",
                     Sector = 11,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = HaggaBasin,
                     Orientation = "West",
@@ -925,14 +926,14 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = BightOfTheCliff,
                     Orientation = "North",
                     Sector = 13,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = BightOfTheCliff,
                     Orientation = "South",
@@ -955,7 +956,7 @@ namespace Treachery.Shared
                     Sector = 14,
                     SpiceBlowAmount = 6
                 };
-                Locations.Add(FuneralPlain);
+                _locations.Add(FuneralPlain);
             }
 
             {
@@ -972,7 +973,7 @@ namespace Treachery.Shared
                     Sector = 14,
                     SpiceBlowAmount = 10
                 };
-                Locations.Add(TheGreatFlat);
+                _locations.Add(TheGreatFlat);
             }
 
             {
@@ -982,28 +983,28 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = WindPass,
                     Orientation = "Far North",
                     Sector = 13,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = WindPass,
                     Orientation = "North",
                     Sector = 14,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = WindPass,
                     Orientation = "South",
                     Sector = 15,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = WindPass,
                     Orientation = "Far South",
@@ -1027,7 +1028,7 @@ namespace Treachery.Shared
                     SpiceBlowAmount = 0
                 };
 
-                Locations.Add(TheGreaterFlat);
+                _locations.Add(TheGreaterFlat);
             }
 
             {
@@ -1037,14 +1038,14 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = HabbanyaErg,
                     Orientation = "West",
                     Sector = 15,
                     SpiceBlowAmount = 8
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = HabbanyaErg,
                     Orientation = "East",
@@ -1060,14 +1061,14 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = FalseWallWest,
                     Orientation = "North",
                     Sector = 15,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = FalseWallWest,
                     Orientation = "Middle",
@@ -1075,7 +1076,7 @@ namespace Treachery.Shared
                     SpiceBlowAmount = 0,
                     TokenType = DiscoveryTokenType.Smuggler
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = FalseWallWest,
                     Orientation = "South",
@@ -1091,14 +1092,14 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = WindPassNorth,
                     Orientation = "North",
                     Sector = 16,
                     SpiceBlowAmount = 6
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = WindPassNorth,
                     Orientation = "South",
@@ -1114,14 +1115,14 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Orientation = "West",
                     Sector = 16,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = t,
                     Orientation = "East",
@@ -1137,14 +1138,14 @@ namespace Treachery.Shared
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
                 };
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = CielagoWest,
                     Orientation = "North",
                     Sector = 17,
                     SpiceBlowAmount = 0
                 });
-                Locations.Add(new Location(id++)
+                _locations.Add(new Location(id++)
                 {
                     Territory = CielagoWest,
                     Orientation = "South",
@@ -1162,417 +1163,409 @@ namespace Treachery.Shared
                 };
 
                 HiddenMobileStronghold = new HiddenMobileStronghold(t, id++) { SpiceBlowAmount = 0 };
-                Locations.Add(HiddenMobileStronghold);
+                _locations.Add(HiddenMobileStronghold);
             }
 
-            {
-                int homeworldTerritoryId = 43;
-
-                Homeworlds = new()
-                {
-                    new Homeworld(World.Yellow, Faction.Yellow, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, true, 3, id++),
-                    new Homeworld(World.Green, Faction.Green, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 6, id++),
-                    new Homeworld(World.Black, Faction.Black, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 7, id++),
-                    new Homeworld(World.Red, Faction.Red, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 5, id++),
-                    new Homeworld(World.RedStar, Faction.Red, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, false, true, 2, id++),
-                    new Homeworld(World.Orange, Faction.Orange, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 5, id++),
-                    new Homeworld(World.Blue, Faction.Blue, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 11, id++),
-                    new Homeworld(World.Grey, Faction.Grey, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, true, 5, id++),
-                    new Homeworld(World.Purple, Faction.Purple, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 9, id++),
-                    new Homeworld(World.Brown, Faction.Brown, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 11, id++),
-                    new Homeworld(World.White, Faction.White, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 10, id++),
-                    new Homeworld(World.Pink, Faction.Pink, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 7, id++),
-                    new Homeworld(World.Cyan, Faction.Cyan, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 8, id++)
-                };
-
-                Locations.AddRange(Homeworlds);
-            }
+            int homeworldTerritoryId = 43;
+            _locations.Add(new Homeworld(World.Yellow, Faction.Yellow, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, true, 3, id++));
+            _locations.Add(new Homeworld(World.Green, Faction.Green, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 6, id++));
+            _locations.Add(new Homeworld(World.Black, Faction.Black, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 7, id++));
+            _locations.Add(new Homeworld(World.Red, Faction.Red, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 5, id++));
+            _locations.Add(new Homeworld(World.RedStar, Faction.Red, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, false, true, 2, id++));
+            _locations.Add(new Homeworld(World.Orange, Faction.Orange, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 5, id++));
+            _locations.Add(new Homeworld(World.Blue, Faction.Blue, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 11, id++));
+            _locations.Add(new Homeworld(World.Grey, Faction.Grey, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, true, 5, id++));
+            _locations.Add(new Homeworld(World.Purple, Faction.Purple, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 9, id++));
+            _locations.Add(new Homeworld(World.Brown, Faction.Brown, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 11, id++));
+            _locations.Add(new Homeworld(World.White, Faction.White, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 10, id++));
+            _locations.Add(new Homeworld(World.Pink, Faction.Pink, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 7, id++));
+            _locations.Add(new Homeworld(World.Cyan, Faction.Cyan, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 8, id++));
 
         }
 
         public void InitializeLocationNeighbours()
         {
-            Locations[5].Neighbours.Add(Locations[2]);
-            Locations[5].Neighbours.Add(Locations[50]);
-            Locations[5].Neighbours.Add(Locations[43]);
-            Locations[57].Neighbours.Add(Locations[58]);
-            Locations[57].Neighbours.Add(Locations[64]);
-            Locations[57].Neighbours.Add(Locations[2]);
-            Locations[57].Neighbours.Add(Locations[3]);
-            Locations[57].Neighbours.Add(Locations[0]);
-            Locations[57].Neighbours.Add(Locations[4]);
-            Locations[14].Neighbours.Add(Locations[19]);
-            Locations[14].Neighbours.Add(Locations[11]);
-            Locations[14].Neighbours.Add(Locations[18]);
-            Locations[14].Neighbours.Add(Locations[13]);
-            Locations[12].Neighbours.Add(Locations[9]);
-            Locations[12].Neighbours.Add(Locations[85]);
-            Locations[12].Neighbours.Add(Locations[15]);
-            Locations[12].Neighbours.Add(Locations[13]);
-            Locations[20].Neighbours.Add(Locations[19]);
-            Locations[20].Neighbours.Add(Locations[23]);
-            Locations[20].Neighbours.Add(Locations[39]);
-            Locations[19].Neighbours.Add(Locations[14]);
-            Locations[19].Neighbours.Add(Locations[20]);
-            Locations[19].Neighbours.Add(Locations[11]);
-            Locations[19].Neighbours.Add(Locations[18]);
-            Locations[19].Neighbours.Add(Locations[23]);
-            Locations[10].Neighbours.Add(Locations[11]);
-            Locations[10].Neighbours.Add(Locations[9]);
-            Locations[10].Neighbours.Add(Locations[0]);
-            Locations[10].Neighbours.Add(Locations[13]);
-            Locations[11].Neighbours.Add(Locations[14]);
-            Locations[11].Neighbours.Add(Locations[19]);
-            Locations[11].Neighbours.Add(Locations[10]);
-            Locations[11].Neighbours.Add(Locations[23]);
-            Locations[11].Neighbours.Add(Locations[21]);
-            Locations[11].Neighbours.Add(Locations[0]);
-            Locations[9].Neighbours.Add(Locations[12]);
-            Locations[9].Neighbours.Add(Locations[10]);
-            Locations[9].Neighbours.Add(Locations[84]);
-            Locations[9].Neighbours.Add(Locations[85]);
-            Locations[9].Neighbours.Add(Locations[0]);
-            Locations[9].Neighbours.Add(Locations[81]);
-            Locations[18].Neighbours.Add(Locations[14]);
-            Locations[18].Neighbours.Add(Locations[19]);
-            Locations[18].Neighbours.Add(Locations[17]);
-            Locations[18].Neighbours.Add(Locations[13]);
-            Locations[17].Neighbours.Add(Locations[18]);
-            Locations[17].Neighbours.Add(Locations[16]);
-            Locations[17].Neighbours.Add(Locations[13]);
-            Locations[84].Neighbours.Add(Locations[9]);
-            Locations[84].Neighbours.Add(Locations[85]);
-            Locations[84].Neighbours.Add(Locations[79]);
-            Locations[84].Neighbours.Add(Locations[83]);
-            Locations[84].Neighbours.Add(Locations[73]);
-            Locations[84].Neighbours.Add(Locations[81]);
-            Locations[58].Neighbours.Add(Locations[57]);
-            Locations[58].Neighbours.Add(Locations[64]);
-            Locations[58].Neighbours.Add(Locations[65]);
-            Locations[58].Neighbours.Add(Locations[0]);
-            Locations[85].Neighbours.Add(Locations[12]);
-            Locations[85].Neighbours.Add(Locations[9]);
-            Locations[85].Neighbours.Add(Locations[84]);
-            Locations[85].Neighbours.Add(Locations[15]);
-            Locations[29].Neighbours.Add(Locations[28]);
-            Locations[29].Neighbours.Add(Locations[1]);
-            Locations[29].Neighbours.Add(Locations[0]);
-            Locations[29].Neighbours.Add(Locations[47]);
-            Locations[29].Neighbours.Add(Locations[46]);
-            Locations[25].Neighbours.Add(Locations[26]);
-            Locations[25].Neighbours.Add(Locations[22]);
-            Locations[25].Neighbours.Add(Locations[21]);
-            Locations[25].Neighbours.Add(Locations[0]);
-            Locations[25].Neighbours.Add(Locations[30]);
-            Locations[27].Neighbours.Add(Locations[28]);
-            Locations[27].Neighbours.Add(Locations[26]);
-            Locations[27].Neighbours.Add(Locations[0]);
-            Locations[27].Neighbours.Add(Locations[32]);
-            Locations[28].Neighbours.Add(Locations[29]);
-            Locations[28].Neighbours.Add(Locations[27]);
-            Locations[28].Neighbours.Add(Locations[0]);
-            Locations[28].Neighbours.Add(Locations[46]);
-            Locations[28].Neighbours.Add(Locations[33]);
-            Locations[26].Neighbours.Add(Locations[25]);
-            Locations[26].Neighbours.Add(Locations[27]);
-            Locations[26].Neighbours.Add(Locations[0]);
-            Locations[26].Neighbours.Add(Locations[31]);
-            Locations[24].Neighbours.Add(Locations[23]);
-            Locations[24].Neighbours.Add(Locations[22]);
-            Locations[24].Neighbours.Add(Locations[34]);
-            Locations[24].Neighbours.Add(Locations[40]);
-            Locations[24].Neighbours.Add(Locations[30]);
-            Locations[24].Neighbours.Add(Locations[6]);
-            Locations[23].Neighbours.Add(Locations[20]);
-            Locations[23].Neighbours.Add(Locations[19]);
-            Locations[23].Neighbours.Add(Locations[11]);
-            Locations[23].Neighbours.Add(Locations[24]);
-            Locations[23].Neighbours.Add(Locations[21]);
-            Locations[23].Neighbours.Add(Locations[39]);
-            Locations[78].Neighbours.Add(Locations[77]);
-            Locations[78].Neighbours.Add(Locations[79]);
-            Locations[78].Neighbours.Add(Locations[76]);
-            Locations[78].Neighbours.Add(Locations[82]);
-            Locations[78].Neighbours.Add(Locations[73]);
-            Locations[77].Neighbours.Add(Locations[78]);
-            Locations[77].Neighbours.Add(Locations[74]);
-            Locations[77].Neighbours.Add(Locations[72]);
-            Locations[42].Neighbours.Add(Locations[44]);
-            Locations[42].Neighbours.Add(Locations[49]);
-            Locations[42].Neighbours.Add(Locations[43]);
-            Locations[42].Neighbours.Add(Locations[45]);
-            Locations[79].Neighbours.Add(Locations[84]);
-            Locations[79].Neighbours.Add(Locations[78]);
-            Locations[79].Neighbours.Add(Locations[83]);
-            Locations[68].Neighbours.Add(Locations[67]);
-            Locations[68].Neighbours.Add(Locations[63]);
-            Locations[68].Neighbours.Add(Locations[69]);
-            Locations[48].Neighbours.Add(Locations[37]);
-            Locations[48].Neighbours.Add(Locations[46]);
-            Locations[48].Neighbours.Add(Locations[45]);
-            Locations[76].Neighbours.Add(Locations[78]);
-            Locations[76].Neighbours.Add(Locations[75]);
-            Locations[76].Neighbours.Add(Locations[82]);
-            Locations[75].Neighbours.Add(Locations[76]);
-            Locations[75].Neighbours.Add(Locations[82]);
-            Locations[75].Neighbours.Add(Locations[74]);
-            Locations[83].Neighbours.Add(Locations[84]);
-            Locations[83].Neighbours.Add(Locations[82]);
-            Locations[83].Neighbours.Add(Locations[8]);
-            Locations[83].Neighbours.Add(Locations[15]);
-            Locations[82].Neighbours.Add(Locations[78]);
-            Locations[82].Neighbours.Add(Locations[76]);
-            Locations[82].Neighbours.Add(Locations[75]);
-            Locations[82].Neighbours.Add(Locations[83]);
-            Locations[82].Neighbours.Add(Locations[8]);
-            Locations[8].Neighbours.Add(Locations[83]);
-            Locations[8].Neighbours.Add(Locations[82]);
-            Locations[64].Neighbours.Add(Locations[57]);
-            Locations[64].Neighbours.Add(Locations[58]);
-            Locations[64].Neighbours.Add(Locations[65]);
-            Locations[64].Neighbours.Add(Locations[55]);
-            Locations[64].Neighbours.Add(Locations[4]);
-            Locations[65].Neighbours.Add(Locations[58]);
-            Locations[65].Neighbours.Add(Locations[64]);
-            Locations[65].Neighbours.Add(Locations[62]);
-            Locations[65].Neighbours.Add(Locations[63]);
-            Locations[65].Neighbours.Add(Locations[0]);
-            Locations[65].Neighbours.Add(Locations[56]);
-            Locations[65].Neighbours.Add(Locations[70]);
-            Locations[66].Neighbours.Add(Locations[67]);
-            Locations[66].Neighbours.Add(Locations[63]);
-            Locations[66].Neighbours.Add(Locations[60]);
-            Locations[66].Neighbours.Add(Locations[7]);
-            Locations[22].Neighbours.Add(Locations[25]);
-            Locations[22].Neighbours.Add(Locations[24]);
-            Locations[22].Neighbours.Add(Locations[21]);
-            Locations[22].Neighbours.Add(Locations[30]);
-            Locations[21].Neighbours.Add(Locations[11]);
-            Locations[21].Neighbours.Add(Locations[25]);
-            Locations[21].Neighbours.Add(Locations[23]);
-            Locations[21].Neighbours.Add(Locations[22]);
-            Locations[21].Neighbours.Add(Locations[0]);
-            Locations[44].Neighbours.Add(Locations[42]);
-            Locations[44].Neighbours.Add(Locations[1]);
-            Locations[44].Neighbours.Add(Locations[43]);
-            Locations[44].Neighbours.Add(Locations[47]);
-            Locations[44].Neighbours.Add(Locations[45]);
-            Locations[2].Neighbours.Add(Locations[5]);
-            Locations[2].Neighbours.Add(Locations[57]);
-            Locations[2].Neighbours.Add(Locations[1]);
-            Locations[2].Neighbours.Add(Locations[3]);
-            Locations[2].Neighbours.Add(Locations[50]);
-            Locations[2].Neighbours.Add(Locations[0]);
-            Locations[2].Neighbours.Add(Locations[43]);
-            Locations[1].Neighbours.Add(Locations[29]);
-            Locations[1].Neighbours.Add(Locations[44]);
-            Locations[1].Neighbours.Add(Locations[2]);
-            Locations[1].Neighbours.Add(Locations[0]);
-            Locations[1].Neighbours.Add(Locations[43]);
-            Locations[1].Neighbours.Add(Locations[47]);
-            Locations[3].Neighbours.Add(Locations[57]);
-            Locations[3].Neighbours.Add(Locations[2]);
-            Locations[3].Neighbours.Add(Locations[54]);
-            Locations[3].Neighbours.Add(Locations[4]);
-            Locations[16].Neighbours.Add(Locations[17]);
-            Locations[16].Neighbours.Add(Locations[15]);
-            Locations[16].Neighbours.Add(Locations[13]);
-            Locations[15].Neighbours.Add(Locations[12]);
-            Locations[15].Neighbours.Add(Locations[85]);
-            Locations[15].Neighbours.Add(Locations[83]);
-            Locations[15].Neighbours.Add(Locations[16]);
-            Locations[49].Neighbours.Add(Locations[42]);
-            Locations[49].Neighbours.Add(Locations[50]);
-            Locations[49].Neighbours.Add(Locations[43]);
-            Locations[50].Neighbours.Add(Locations[5]);
-            Locations[50].Neighbours.Add(Locations[2]);
-            Locations[50].Neighbours.Add(Locations[49]);
-            Locations[50].Neighbours.Add(Locations[51]);
-            Locations[67].Neighbours.Add(Locations[68]);
-            Locations[67].Neighbours.Add(Locations[66]);
-            Locations[51].Neighbours.Add(Locations[50]);
-            Locations[51].Neighbours.Add(Locations[52]);
-            Locations[51].Neighbours.Add(Locations[54]);
-            Locations[37].Neighbours.Add(Locations[48]);
-            Locations[37].Neighbours.Add(Locations[36]);
-            Locations[37].Neighbours.Add(Locations[46]);
-            Locations[37].Neighbours.Add(Locations[33]);
-            Locations[34].Neighbours.Add(Locations[24]);
-            Locations[34].Neighbours.Add(Locations[35]);
-            Locations[34].Neighbours.Add(Locations[40]);
-            Locations[34].Neighbours.Add(Locations[30]);
-            Locations[34].Neighbours.Add(Locations[6]);
-            Locations[36].Neighbours.Add(Locations[37]);
-            Locations[36].Neighbours.Add(Locations[35]);
-            Locations[36].Neighbours.Add(Locations[38]);
-            Locations[36].Neighbours.Add(Locations[32]);
-            Locations[35].Neighbours.Add(Locations[34]);
-            Locations[35].Neighbours.Add(Locations[36]);
-            Locations[35].Neighbours.Add(Locations[41]);
-            Locations[35].Neighbours.Add(Locations[31]);
-            Locations[62].Neighbours.Add(Locations[65]);
-            Locations[62].Neighbours.Add(Locations[61]);
-            Locations[62].Neighbours.Add(Locations[63]);
-            Locations[62].Neighbours.Add(Locations[59]);
-            Locations[62].Neighbours.Add(Locations[56]);
-            Locations[61].Neighbours.Add(Locations[62]);
-            Locations[61].Neighbours.Add(Locations[53]);
-            Locations[61].Neighbours.Add(Locations[55]);
-            Locations[63].Neighbours.Add(Locations[68]);
-            Locations[63].Neighbours.Add(Locations[65]);
-            Locations[63].Neighbours.Add(Locations[66]);
-            Locations[63].Neighbours.Add(Locations[62]);
-            Locations[63].Neighbours.Add(Locations[60]);
-            Locations[63].Neighbours.Add(Locations[7]);
-            Locations[63].Neighbours.Add(Locations[69]);
-            Locations[63].Neighbours.Add(Locations[70]);
-            Locations[0].Neighbours.Add(Locations[57]);
-            Locations[0].Neighbours.Add(Locations[10]);
-            Locations[0].Neighbours.Add(Locations[11]);
-            Locations[0].Neighbours.Add(Locations[9]);
-            Locations[0].Neighbours.Add(Locations[58]);
-            Locations[0].Neighbours.Add(Locations[29]);
-            Locations[0].Neighbours.Add(Locations[25]);
-            Locations[0].Neighbours.Add(Locations[27]);
-            Locations[0].Neighbours.Add(Locations[28]);
-            Locations[0].Neighbours.Add(Locations[26]);
-            Locations[0].Neighbours.Add(Locations[65]);
-            Locations[0].Neighbours.Add(Locations[21]);
-            Locations[0].Neighbours.Add(Locations[2]);
-            Locations[0].Neighbours.Add(Locations[1]);
-            Locations[0].Neighbours.Add(Locations[70]);
-            Locations[0].Neighbours.Add(Locations[71]);
-            Locations[0].Neighbours.Add(Locations[72]);
-            Locations[0].Neighbours.Add(Locations[80]);
-            Locations[0].Neighbours.Add(Locations[81]);
-            Locations[38].Neighbours.Add(Locations[36]);
-            Locations[38].Neighbours.Add(Locations[41]);
-            Locations[52].Neighbours.Add(Locations[51]);
-            Locations[52].Neighbours.Add(Locations[53]);
-            Locations[52].Neighbours.Add(Locations[54]);
-            Locations[43].Neighbours.Add(Locations[5]);
-            Locations[43].Neighbours.Add(Locations[42]);
-            Locations[43].Neighbours.Add(Locations[44]);
-            Locations[43].Neighbours.Add(Locations[2]);
-            Locations[43].Neighbours.Add(Locations[1]);
-            Locations[43].Neighbours.Add(Locations[49]);
-            Locations[59].Neighbours.Add(Locations[62]);
-            Locations[59].Neighbours.Add(Locations[60]);
-            Locations[59].Neighbours.Add(Locations[53]);
-            Locations[60].Neighbours.Add(Locations[66]);
-            Locations[60].Neighbours.Add(Locations[63]);
-            Locations[60].Neighbours.Add(Locations[59]);
-            Locations[60].Neighbours.Add(Locations[7]);
-            Locations[47].Neighbours.Add(Locations[29]);
-            Locations[47].Neighbours.Add(Locations[44]);
-            Locations[47].Neighbours.Add(Locations[1]);
-            Locations[47].Neighbours.Add(Locations[46]);
-            Locations[47].Neighbours.Add(Locations[45]);
-            Locations[46].Neighbours.Add(Locations[28]);
-            Locations[46].Neighbours.Add(Locations[48]);
-            Locations[46].Neighbours.Add(Locations[37]);
-            Locations[46].Neighbours.Add(Locations[47]);
-            Locations[46].Neighbours.Add(Locations[33]);
-            Locations[7].Neighbours.Add(Locations[66]);
-            Locations[7].Neighbours.Add(Locations[63]);
-            Locations[7].Neighbours.Add(Locations[60]);
-            Locations[45].Neighbours.Add(Locations[42]);
-            Locations[45].Neighbours.Add(Locations[48]);
-            Locations[45].Neighbours.Add(Locations[44]);
-            Locations[45].Neighbours.Add(Locations[47]);
-            Locations[40].Neighbours.Add(Locations[24]);
-            Locations[40].Neighbours.Add(Locations[34]);
-            Locations[40].Neighbours.Add(Locations[41]);
-            Locations[40].Neighbours.Add(Locations[39]);
-            Locations[40].Neighbours.Add(Locations[6]);
-            Locations[41].Neighbours.Add(Locations[35]);
-            Locations[41].Neighbours.Add(Locations[38]);
-            Locations[41].Neighbours.Add(Locations[40]);
-            Locations[39].Neighbours.Add(Locations[20]);
-            Locations[39].Neighbours.Add(Locations[23]);
-            Locations[39].Neighbours.Add(Locations[40]);
-            Locations[53].Neighbours.Add(Locations[61]);
-            Locations[53].Neighbours.Add(Locations[52]);
-            Locations[53].Neighbours.Add(Locations[59]);
-            Locations[53].Neighbours.Add(Locations[55]);
-            Locations[69].Neighbours.Add(Locations[68]);
-            Locations[69].Neighbours.Add(Locations[63]);
-            Locations[69].Neighbours.Add(Locations[74]);
-            Locations[69].Neighbours.Add(Locations[71]);
-            Locations[74].Neighbours.Add(Locations[77]);
-            Locations[74].Neighbours.Add(Locations[75]);
-            Locations[74].Neighbours.Add(Locations[69]);
-            Locations[74].Neighbours.Add(Locations[72]);
-            Locations[33].Neighbours.Add(Locations[28]);
-            Locations[33].Neighbours.Add(Locations[37]);
-            Locations[33].Neighbours.Add(Locations[46]);
-            Locations[33].Neighbours.Add(Locations[32]);
-            Locations[30].Neighbours.Add(Locations[25]);
-            Locations[30].Neighbours.Add(Locations[24]);
-            Locations[30].Neighbours.Add(Locations[22]);
-            Locations[30].Neighbours.Add(Locations[34]);
-            Locations[30].Neighbours.Add(Locations[31]);
-            Locations[32].Neighbours.Add(Locations[27]);
-            Locations[32].Neighbours.Add(Locations[36]);
-            Locations[32].Neighbours.Add(Locations[33]);
-            Locations[32].Neighbours.Add(Locations[31]);
-            Locations[31].Neighbours.Add(Locations[26]);
-            Locations[31].Neighbours.Add(Locations[35]);
-            Locations[31].Neighbours.Add(Locations[30]);
-            Locations[31].Neighbours.Add(Locations[32]);
-            Locations[54].Neighbours.Add(Locations[3]);
-            Locations[54].Neighbours.Add(Locations[51]);
-            Locations[54].Neighbours.Add(Locations[52]);
-            Locations[54].Neighbours.Add(Locations[55]);
-            Locations[54].Neighbours.Add(Locations[4]);
-            Locations[55].Neighbours.Add(Locations[64]);
-            Locations[55].Neighbours.Add(Locations[61]);
-            Locations[55].Neighbours.Add(Locations[53]);
-            Locations[55].Neighbours.Add(Locations[54]);
-            Locations[55].Neighbours.Add(Locations[56]);
-            Locations[55].Neighbours.Add(Locations[4]);
-            Locations[56].Neighbours.Add(Locations[65]);
-            Locations[56].Neighbours.Add(Locations[62]);
-            Locations[56].Neighbours.Add(Locations[55]);
-            Locations[6].Neighbours.Add(Locations[24]);
-            Locations[6].Neighbours.Add(Locations[34]);
-            Locations[6].Neighbours.Add(Locations[40]);
-            Locations[4].Neighbours.Add(Locations[57]);
-            Locations[4].Neighbours.Add(Locations[64]);
-            Locations[4].Neighbours.Add(Locations[3]);
-            Locations[4].Neighbours.Add(Locations[54]);
-            Locations[4].Neighbours.Add(Locations[55]);
-            Locations[70].Neighbours.Add(Locations[65]);
-            Locations[70].Neighbours.Add(Locations[63]);
-            Locations[70].Neighbours.Add(Locations[0]);
-            Locations[70].Neighbours.Add(Locations[71]);
-            Locations[73].Neighbours.Add(Locations[84]);
-            Locations[73].Neighbours.Add(Locations[78]);
-            Locations[73].Neighbours.Add(Locations[72]);
-            Locations[73].Neighbours.Add(Locations[80]);
-            Locations[71].Neighbours.Add(Locations[0]);
-            Locations[71].Neighbours.Add(Locations[69]);
-            Locations[71].Neighbours.Add(Locations[70]);
-            Locations[71].Neighbours.Add(Locations[72]);
-            Locations[72].Neighbours.Add(Locations[77]);
-            Locations[72].Neighbours.Add(Locations[0]);
-            Locations[72].Neighbours.Add(Locations[74]);
-            Locations[72].Neighbours.Add(Locations[73]);
-            Locations[72].Neighbours.Add(Locations[71]);
-            Locations[72].Neighbours.Add(Locations[80]);
-            Locations[80].Neighbours.Add(Locations[0]);
-            Locations[80].Neighbours.Add(Locations[73]);
-            Locations[80].Neighbours.Add(Locations[72]);
-            Locations[80].Neighbours.Add(Locations[81]);
-            Locations[81].Neighbours.Add(Locations[9]);
-            Locations[81].Neighbours.Add(Locations[84]);
-            Locations[81].Neighbours.Add(Locations[0]);
-            Locations[81].Neighbours.Add(Locations[80]);
-            Locations[13].Neighbours.Add(Locations[14]);
-            Locations[13].Neighbours.Add(Locations[12]);
-            Locations[13].Neighbours.Add(Locations[10]);
-            Locations[13].Neighbours.Add(Locations[17]);
-            Locations[13].Neighbours.Add(Locations[16]);
+            _locations[5].Neighbours.Add(_locations[2]);
+            _locations[5].Neighbours.Add(_locations[50]);
+            _locations[5].Neighbours.Add(_locations[43]);
+            _locations[57].Neighbours.Add(_locations[58]);
+            _locations[57].Neighbours.Add(_locations[64]);
+            _locations[57].Neighbours.Add(_locations[2]);
+            _locations[57].Neighbours.Add(_locations[3]);
+            _locations[57].Neighbours.Add(_locations[0]);
+            _locations[57].Neighbours.Add(_locations[4]);
+            _locations[14].Neighbours.Add(_locations[19]);
+            _locations[14].Neighbours.Add(_locations[11]);
+            _locations[14].Neighbours.Add(_locations[18]);
+            _locations[14].Neighbours.Add(_locations[13]);
+            _locations[12].Neighbours.Add(_locations[9]);
+            _locations[12].Neighbours.Add(_locations[85]);
+            _locations[12].Neighbours.Add(_locations[15]);
+            _locations[12].Neighbours.Add(_locations[13]);
+            _locations[20].Neighbours.Add(_locations[19]);
+            _locations[20].Neighbours.Add(_locations[23]);
+            _locations[20].Neighbours.Add(_locations[39]);
+            _locations[19].Neighbours.Add(_locations[14]);
+            _locations[19].Neighbours.Add(_locations[20]);
+            _locations[19].Neighbours.Add(_locations[11]);
+            _locations[19].Neighbours.Add(_locations[18]);
+            _locations[19].Neighbours.Add(_locations[23]);
+            _locations[10].Neighbours.Add(_locations[11]);
+            _locations[10].Neighbours.Add(_locations[9]);
+            _locations[10].Neighbours.Add(_locations[0]);
+            _locations[10].Neighbours.Add(_locations[13]);
+            _locations[11].Neighbours.Add(_locations[14]);
+            _locations[11].Neighbours.Add(_locations[19]);
+            _locations[11].Neighbours.Add(_locations[10]);
+            _locations[11].Neighbours.Add(_locations[23]);
+            _locations[11].Neighbours.Add(_locations[21]);
+            _locations[11].Neighbours.Add(_locations[0]);
+            _locations[9].Neighbours.Add(_locations[12]);
+            _locations[9].Neighbours.Add(_locations[10]);
+            _locations[9].Neighbours.Add(_locations[84]);
+            _locations[9].Neighbours.Add(_locations[85]);
+            _locations[9].Neighbours.Add(_locations[0]);
+            _locations[9].Neighbours.Add(_locations[81]);
+            _locations[18].Neighbours.Add(_locations[14]);
+            _locations[18].Neighbours.Add(_locations[19]);
+            _locations[18].Neighbours.Add(_locations[17]);
+            _locations[18].Neighbours.Add(_locations[13]);
+            _locations[17].Neighbours.Add(_locations[18]);
+            _locations[17].Neighbours.Add(_locations[16]);
+            _locations[17].Neighbours.Add(_locations[13]);
+            _locations[84].Neighbours.Add(_locations[9]);
+            _locations[84].Neighbours.Add(_locations[85]);
+            _locations[84].Neighbours.Add(_locations[79]);
+            _locations[84].Neighbours.Add(_locations[83]);
+            _locations[84].Neighbours.Add(_locations[73]);
+            _locations[84].Neighbours.Add(_locations[81]);
+            _locations[58].Neighbours.Add(_locations[57]);
+            _locations[58].Neighbours.Add(_locations[64]);
+            _locations[58].Neighbours.Add(_locations[65]);
+            _locations[58].Neighbours.Add(_locations[0]);
+            _locations[85].Neighbours.Add(_locations[12]);
+            _locations[85].Neighbours.Add(_locations[9]);
+            _locations[85].Neighbours.Add(_locations[84]);
+            _locations[85].Neighbours.Add(_locations[15]);
+            _locations[29].Neighbours.Add(_locations[28]);
+            _locations[29].Neighbours.Add(_locations[1]);
+            _locations[29].Neighbours.Add(_locations[0]);
+            _locations[29].Neighbours.Add(_locations[47]);
+            _locations[29].Neighbours.Add(_locations[46]);
+            _locations[25].Neighbours.Add(_locations[26]);
+            _locations[25].Neighbours.Add(_locations[22]);
+            _locations[25].Neighbours.Add(_locations[21]);
+            _locations[25].Neighbours.Add(_locations[0]);
+            _locations[25].Neighbours.Add(_locations[30]);
+            _locations[27].Neighbours.Add(_locations[28]);
+            _locations[27].Neighbours.Add(_locations[26]);
+            _locations[27].Neighbours.Add(_locations[0]);
+            _locations[27].Neighbours.Add(_locations[32]);
+            _locations[28].Neighbours.Add(_locations[29]);
+            _locations[28].Neighbours.Add(_locations[27]);
+            _locations[28].Neighbours.Add(_locations[0]);
+            _locations[28].Neighbours.Add(_locations[46]);
+            _locations[28].Neighbours.Add(_locations[33]);
+            _locations[26].Neighbours.Add(_locations[25]);
+            _locations[26].Neighbours.Add(_locations[27]);
+            _locations[26].Neighbours.Add(_locations[0]);
+            _locations[26].Neighbours.Add(_locations[31]);
+            _locations[24].Neighbours.Add(_locations[23]);
+            _locations[24].Neighbours.Add(_locations[22]);
+            _locations[24].Neighbours.Add(_locations[34]);
+            _locations[24].Neighbours.Add(_locations[40]);
+            _locations[24].Neighbours.Add(_locations[30]);
+            _locations[24].Neighbours.Add(_locations[6]);
+            _locations[23].Neighbours.Add(_locations[20]);
+            _locations[23].Neighbours.Add(_locations[19]);
+            _locations[23].Neighbours.Add(_locations[11]);
+            _locations[23].Neighbours.Add(_locations[24]);
+            _locations[23].Neighbours.Add(_locations[21]);
+            _locations[23].Neighbours.Add(_locations[39]);
+            _locations[78].Neighbours.Add(_locations[77]);
+            _locations[78].Neighbours.Add(_locations[79]);
+            _locations[78].Neighbours.Add(_locations[76]);
+            _locations[78].Neighbours.Add(_locations[82]);
+            _locations[78].Neighbours.Add(_locations[73]);
+            _locations[77].Neighbours.Add(_locations[78]);
+            _locations[77].Neighbours.Add(_locations[74]);
+            _locations[77].Neighbours.Add(_locations[72]);
+            _locations[42].Neighbours.Add(_locations[44]);
+            _locations[42].Neighbours.Add(_locations[49]);
+            _locations[42].Neighbours.Add(_locations[43]);
+            _locations[42].Neighbours.Add(_locations[45]);
+            _locations[79].Neighbours.Add(_locations[84]);
+            _locations[79].Neighbours.Add(_locations[78]);
+            _locations[79].Neighbours.Add(_locations[83]);
+            _locations[68].Neighbours.Add(_locations[67]);
+            _locations[68].Neighbours.Add(_locations[63]);
+            _locations[68].Neighbours.Add(_locations[69]);
+            _locations[48].Neighbours.Add(_locations[37]);
+            _locations[48].Neighbours.Add(_locations[46]);
+            _locations[48].Neighbours.Add(_locations[45]);
+            _locations[76].Neighbours.Add(_locations[78]);
+            _locations[76].Neighbours.Add(_locations[75]);
+            _locations[76].Neighbours.Add(_locations[82]);
+            _locations[75].Neighbours.Add(_locations[76]);
+            _locations[75].Neighbours.Add(_locations[82]);
+            _locations[75].Neighbours.Add(_locations[74]);
+            _locations[83].Neighbours.Add(_locations[84]);
+            _locations[83].Neighbours.Add(_locations[82]);
+            _locations[83].Neighbours.Add(_locations[8]);
+            _locations[83].Neighbours.Add(_locations[15]);
+            _locations[82].Neighbours.Add(_locations[78]);
+            _locations[82].Neighbours.Add(_locations[76]);
+            _locations[82].Neighbours.Add(_locations[75]);
+            _locations[82].Neighbours.Add(_locations[83]);
+            _locations[82].Neighbours.Add(_locations[8]);
+            _locations[8].Neighbours.Add(_locations[83]);
+            _locations[8].Neighbours.Add(_locations[82]);
+            _locations[64].Neighbours.Add(_locations[57]);
+            _locations[64].Neighbours.Add(_locations[58]);
+            _locations[64].Neighbours.Add(_locations[65]);
+            _locations[64].Neighbours.Add(_locations[55]);
+            _locations[64].Neighbours.Add(_locations[4]);
+            _locations[65].Neighbours.Add(_locations[58]);
+            _locations[65].Neighbours.Add(_locations[64]);
+            _locations[65].Neighbours.Add(_locations[62]);
+            _locations[65].Neighbours.Add(_locations[63]);
+            _locations[65].Neighbours.Add(_locations[0]);
+            _locations[65].Neighbours.Add(_locations[56]);
+            _locations[65].Neighbours.Add(_locations[70]);
+            _locations[66].Neighbours.Add(_locations[67]);
+            _locations[66].Neighbours.Add(_locations[63]);
+            _locations[66].Neighbours.Add(_locations[60]);
+            _locations[66].Neighbours.Add(_locations[7]);
+            _locations[22].Neighbours.Add(_locations[25]);
+            _locations[22].Neighbours.Add(_locations[24]);
+            _locations[22].Neighbours.Add(_locations[21]);
+            _locations[22].Neighbours.Add(_locations[30]);
+            _locations[21].Neighbours.Add(_locations[11]);
+            _locations[21].Neighbours.Add(_locations[25]);
+            _locations[21].Neighbours.Add(_locations[23]);
+            _locations[21].Neighbours.Add(_locations[22]);
+            _locations[21].Neighbours.Add(_locations[0]);
+            _locations[44].Neighbours.Add(_locations[42]);
+            _locations[44].Neighbours.Add(_locations[1]);
+            _locations[44].Neighbours.Add(_locations[43]);
+            _locations[44].Neighbours.Add(_locations[47]);
+            _locations[44].Neighbours.Add(_locations[45]);
+            _locations[2].Neighbours.Add(_locations[5]);
+            _locations[2].Neighbours.Add(_locations[57]);
+            _locations[2].Neighbours.Add(_locations[1]);
+            _locations[2].Neighbours.Add(_locations[3]);
+            _locations[2].Neighbours.Add(_locations[50]);
+            _locations[2].Neighbours.Add(_locations[0]);
+            _locations[2].Neighbours.Add(_locations[43]);
+            _locations[1].Neighbours.Add(_locations[29]);
+            _locations[1].Neighbours.Add(_locations[44]);
+            _locations[1].Neighbours.Add(_locations[2]);
+            _locations[1].Neighbours.Add(_locations[0]);
+            _locations[1].Neighbours.Add(_locations[43]);
+            _locations[1].Neighbours.Add(_locations[47]);
+            _locations[3].Neighbours.Add(_locations[57]);
+            _locations[3].Neighbours.Add(_locations[2]);
+            _locations[3].Neighbours.Add(_locations[54]);
+            _locations[3].Neighbours.Add(_locations[4]);
+            _locations[16].Neighbours.Add(_locations[17]);
+            _locations[16].Neighbours.Add(_locations[15]);
+            _locations[16].Neighbours.Add(_locations[13]);
+            _locations[15].Neighbours.Add(_locations[12]);
+            _locations[15].Neighbours.Add(_locations[85]);
+            _locations[15].Neighbours.Add(_locations[83]);
+            _locations[15].Neighbours.Add(_locations[16]);
+            _locations[49].Neighbours.Add(_locations[42]);
+            _locations[49].Neighbours.Add(_locations[50]);
+            _locations[49].Neighbours.Add(_locations[43]);
+            _locations[50].Neighbours.Add(_locations[5]);
+            _locations[50].Neighbours.Add(_locations[2]);
+            _locations[50].Neighbours.Add(_locations[49]);
+            _locations[50].Neighbours.Add(_locations[51]);
+            _locations[67].Neighbours.Add(_locations[68]);
+            _locations[67].Neighbours.Add(_locations[66]);
+            _locations[51].Neighbours.Add(_locations[50]);
+            _locations[51].Neighbours.Add(_locations[52]);
+            _locations[51].Neighbours.Add(_locations[54]);
+            _locations[37].Neighbours.Add(_locations[48]);
+            _locations[37].Neighbours.Add(_locations[36]);
+            _locations[37].Neighbours.Add(_locations[46]);
+            _locations[37].Neighbours.Add(_locations[33]);
+            _locations[34].Neighbours.Add(_locations[24]);
+            _locations[34].Neighbours.Add(_locations[35]);
+            _locations[34].Neighbours.Add(_locations[40]);
+            _locations[34].Neighbours.Add(_locations[30]);
+            _locations[34].Neighbours.Add(_locations[6]);
+            _locations[36].Neighbours.Add(_locations[37]);
+            _locations[36].Neighbours.Add(_locations[35]);
+            _locations[36].Neighbours.Add(_locations[38]);
+            _locations[36].Neighbours.Add(_locations[32]);
+            _locations[35].Neighbours.Add(_locations[34]);
+            _locations[35].Neighbours.Add(_locations[36]);
+            _locations[35].Neighbours.Add(_locations[41]);
+            _locations[35].Neighbours.Add(_locations[31]);
+            _locations[62].Neighbours.Add(_locations[65]);
+            _locations[62].Neighbours.Add(_locations[61]);
+            _locations[62].Neighbours.Add(_locations[63]);
+            _locations[62].Neighbours.Add(_locations[59]);
+            _locations[62].Neighbours.Add(_locations[56]);
+            _locations[61].Neighbours.Add(_locations[62]);
+            _locations[61].Neighbours.Add(_locations[53]);
+            _locations[61].Neighbours.Add(_locations[55]);
+            _locations[63].Neighbours.Add(_locations[68]);
+            _locations[63].Neighbours.Add(_locations[65]);
+            _locations[63].Neighbours.Add(_locations[66]);
+            _locations[63].Neighbours.Add(_locations[62]);
+            _locations[63].Neighbours.Add(_locations[60]);
+            _locations[63].Neighbours.Add(_locations[7]);
+            _locations[63].Neighbours.Add(_locations[69]);
+            _locations[63].Neighbours.Add(_locations[70]);
+            _locations[0].Neighbours.Add(_locations[57]);
+            _locations[0].Neighbours.Add(_locations[10]);
+            _locations[0].Neighbours.Add(_locations[11]);
+            _locations[0].Neighbours.Add(_locations[9]);
+            _locations[0].Neighbours.Add(_locations[58]);
+            _locations[0].Neighbours.Add(_locations[29]);
+            _locations[0].Neighbours.Add(_locations[25]);
+            _locations[0].Neighbours.Add(_locations[27]);
+            _locations[0].Neighbours.Add(_locations[28]);
+            _locations[0].Neighbours.Add(_locations[26]);
+            _locations[0].Neighbours.Add(_locations[65]);
+            _locations[0].Neighbours.Add(_locations[21]);
+            _locations[0].Neighbours.Add(_locations[2]);
+            _locations[0].Neighbours.Add(_locations[1]);
+            _locations[0].Neighbours.Add(_locations[70]);
+            _locations[0].Neighbours.Add(_locations[71]);
+            _locations[0].Neighbours.Add(_locations[72]);
+            _locations[0].Neighbours.Add(_locations[80]);
+            _locations[0].Neighbours.Add(_locations[81]);
+            _locations[38].Neighbours.Add(_locations[36]);
+            _locations[38].Neighbours.Add(_locations[41]);
+            _locations[52].Neighbours.Add(_locations[51]);
+            _locations[52].Neighbours.Add(_locations[53]);
+            _locations[52].Neighbours.Add(_locations[54]);
+            _locations[43].Neighbours.Add(_locations[5]);
+            _locations[43].Neighbours.Add(_locations[42]);
+            _locations[43].Neighbours.Add(_locations[44]);
+            _locations[43].Neighbours.Add(_locations[2]);
+            _locations[43].Neighbours.Add(_locations[1]);
+            _locations[43].Neighbours.Add(_locations[49]);
+            _locations[59].Neighbours.Add(_locations[62]);
+            _locations[59].Neighbours.Add(_locations[60]);
+            _locations[59].Neighbours.Add(_locations[53]);
+            _locations[60].Neighbours.Add(_locations[66]);
+            _locations[60].Neighbours.Add(_locations[63]);
+            _locations[60].Neighbours.Add(_locations[59]);
+            _locations[60].Neighbours.Add(_locations[7]);
+            _locations[47].Neighbours.Add(_locations[29]);
+            _locations[47].Neighbours.Add(_locations[44]);
+            _locations[47].Neighbours.Add(_locations[1]);
+            _locations[47].Neighbours.Add(_locations[46]);
+            _locations[47].Neighbours.Add(_locations[45]);
+            _locations[46].Neighbours.Add(_locations[28]);
+            _locations[46].Neighbours.Add(_locations[48]);
+            _locations[46].Neighbours.Add(_locations[37]);
+            _locations[46].Neighbours.Add(_locations[47]);
+            _locations[46].Neighbours.Add(_locations[33]);
+            _locations[7].Neighbours.Add(_locations[66]);
+            _locations[7].Neighbours.Add(_locations[63]);
+            _locations[7].Neighbours.Add(_locations[60]);
+            _locations[45].Neighbours.Add(_locations[42]);
+            _locations[45].Neighbours.Add(_locations[48]);
+            _locations[45].Neighbours.Add(_locations[44]);
+            _locations[45].Neighbours.Add(_locations[47]);
+            _locations[40].Neighbours.Add(_locations[24]);
+            _locations[40].Neighbours.Add(_locations[34]);
+            _locations[40].Neighbours.Add(_locations[41]);
+            _locations[40].Neighbours.Add(_locations[39]);
+            _locations[40].Neighbours.Add(_locations[6]);
+            _locations[41].Neighbours.Add(_locations[35]);
+            _locations[41].Neighbours.Add(_locations[38]);
+            _locations[41].Neighbours.Add(_locations[40]);
+            _locations[39].Neighbours.Add(_locations[20]);
+            _locations[39].Neighbours.Add(_locations[23]);
+            _locations[39].Neighbours.Add(_locations[40]);
+            _locations[53].Neighbours.Add(_locations[61]);
+            _locations[53].Neighbours.Add(_locations[52]);
+            _locations[53].Neighbours.Add(_locations[59]);
+            _locations[53].Neighbours.Add(_locations[55]);
+            _locations[69].Neighbours.Add(_locations[68]);
+            _locations[69].Neighbours.Add(_locations[63]);
+            _locations[69].Neighbours.Add(_locations[74]);
+            _locations[69].Neighbours.Add(_locations[71]);
+            _locations[74].Neighbours.Add(_locations[77]);
+            _locations[74].Neighbours.Add(_locations[75]);
+            _locations[74].Neighbours.Add(_locations[69]);
+            _locations[74].Neighbours.Add(_locations[72]);
+            _locations[33].Neighbours.Add(_locations[28]);
+            _locations[33].Neighbours.Add(_locations[37]);
+            _locations[33].Neighbours.Add(_locations[46]);
+            _locations[33].Neighbours.Add(_locations[32]);
+            _locations[30].Neighbours.Add(_locations[25]);
+            _locations[30].Neighbours.Add(_locations[24]);
+            _locations[30].Neighbours.Add(_locations[22]);
+            _locations[30].Neighbours.Add(_locations[34]);
+            _locations[30].Neighbours.Add(_locations[31]);
+            _locations[32].Neighbours.Add(_locations[27]);
+            _locations[32].Neighbours.Add(_locations[36]);
+            _locations[32].Neighbours.Add(_locations[33]);
+            _locations[32].Neighbours.Add(_locations[31]);
+            _locations[31].Neighbours.Add(_locations[26]);
+            _locations[31].Neighbours.Add(_locations[35]);
+            _locations[31].Neighbours.Add(_locations[30]);
+            _locations[31].Neighbours.Add(_locations[32]);
+            _locations[54].Neighbours.Add(_locations[3]);
+            _locations[54].Neighbours.Add(_locations[51]);
+            _locations[54].Neighbours.Add(_locations[52]);
+            _locations[54].Neighbours.Add(_locations[55]);
+            _locations[54].Neighbours.Add(_locations[4]);
+            _locations[55].Neighbours.Add(_locations[64]);
+            _locations[55].Neighbours.Add(_locations[61]);
+            _locations[55].Neighbours.Add(_locations[53]);
+            _locations[55].Neighbours.Add(_locations[54]);
+            _locations[55].Neighbours.Add(_locations[56]);
+            _locations[55].Neighbours.Add(_locations[4]);
+            _locations[56].Neighbours.Add(_locations[65]);
+            _locations[56].Neighbours.Add(_locations[62]);
+            _locations[56].Neighbours.Add(_locations[55]);
+            _locations[6].Neighbours.Add(_locations[24]);
+            _locations[6].Neighbours.Add(_locations[34]);
+            _locations[6].Neighbours.Add(_locations[40]);
+            _locations[4].Neighbours.Add(_locations[57]);
+            _locations[4].Neighbours.Add(_locations[64]);
+            _locations[4].Neighbours.Add(_locations[3]);
+            _locations[4].Neighbours.Add(_locations[54]);
+            _locations[4].Neighbours.Add(_locations[55]);
+            _locations[70].Neighbours.Add(_locations[65]);
+            _locations[70].Neighbours.Add(_locations[63]);
+            _locations[70].Neighbours.Add(_locations[0]);
+            _locations[70].Neighbours.Add(_locations[71]);
+            _locations[73].Neighbours.Add(_locations[84]);
+            _locations[73].Neighbours.Add(_locations[78]);
+            _locations[73].Neighbours.Add(_locations[72]);
+            _locations[73].Neighbours.Add(_locations[80]);
+            _locations[71].Neighbours.Add(_locations[0]);
+            _locations[71].Neighbours.Add(_locations[69]);
+            _locations[71].Neighbours.Add(_locations[70]);
+            _locations[71].Neighbours.Add(_locations[72]);
+            _locations[72].Neighbours.Add(_locations[77]);
+            _locations[72].Neighbours.Add(_locations[0]);
+            _locations[72].Neighbours.Add(_locations[74]);
+            _locations[72].Neighbours.Add(_locations[73]);
+            _locations[72].Neighbours.Add(_locations[71]);
+            _locations[72].Neighbours.Add(_locations[80]);
+            _locations[80].Neighbours.Add(_locations[0]);
+            _locations[80].Neighbours.Add(_locations[73]);
+            _locations[80].Neighbours.Add(_locations[72]);
+            _locations[80].Neighbours.Add(_locations[81]);
+            _locations[81].Neighbours.Add(_locations[9]);
+            _locations[81].Neighbours.Add(_locations[84]);
+            _locations[81].Neighbours.Add(_locations[0]);
+            _locations[81].Neighbours.Add(_locations[80]);
+            _locations[13].Neighbours.Add(_locations[14]);
+            _locations[13].Neighbours.Add(_locations[12]);
+            _locations[13].Neighbours.Add(_locations[10]);
+            _locations[13].Neighbours.Add(_locations[17]);
+            _locations[13].Neighbours.Add(_locations[16]);
         }
 
         struct NeighbourCacheKey
@@ -1835,7 +1828,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    return _map.Territories.SingleOrDefault(t => t.Id == id);
+                    return _map.Territories().SingleOrDefault(t => t.Id == id);
                 }
             }
 
@@ -1869,7 +1862,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    return _map.Locations[id];
+                    return _map._locations[id];
                 }
             }
 

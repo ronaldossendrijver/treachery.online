@@ -37,7 +37,6 @@ namespace Treachery.Client
         public Dictionary<LeaderSkill, string> LeaderSkillCardImage_URL;
         public Dictionary<int, string> StrongholdCardName_STR;
         public Dictionary<int, string> StrongholdCardImage_URL;
-        public Dictionary<World, string> HomeWorld_STR;
         public Dictionary<World, string> HomeWorldImage_URL;
         public Dictionary<World, string> HomeWorldCardFrontImage_URL;
         public Dictionary<World, string> HomeWorldCardBackImage_URL;
@@ -297,7 +296,6 @@ namespace Treachery.Client
                 TreacheryCard tc => Describe(tc),
                 TreacheryCardType tct => Describe(tct),
                 LeaderSkill ls => Describe(ls),
-                World w => Describe(w),
                 Ruleset r => Describe(r),
                 RuleGroup rg => Describe(rg),
                 Rule rule => Describe(rule),
@@ -412,11 +410,6 @@ namespace Treachery.Client
         public string Describe(LeaderSkill l)
         {
             return LeaderSkillCardName_STR[l];
-        }
-
-        public string Describe(World w)
-        {
-            return HomeWorld_STR[w];
         }
 
         public string Describe(MainPhase p)
@@ -1961,7 +1954,20 @@ namespace Treachery.Client
                 [39] = "Wind Pass North",
                 [40] = "Habbanya Ridge Flat",
                 [41] = "Cielago West",
-                [42] = "Hidden Mobile Stronghold"
+                [42] = "Hidden Mobile Stronghold",
+                [43] = "Caladan",
+                [44] = "Giedi Prime",
+                [45] = "Southern Hemisphere",
+                [46] = "Kaitain",
+                [47] = "Salusa Secundus",
+                [48] = "Junction",
+                [49] = "Wallach IX",
+                [50] = "Ix",
+                [51] = "Tleilax",
+                [52] = "Tupile",
+                [53] = "Richese",
+                [54] = "Ecaz",
+                [55] = "Grumman"
             },
 
             TerritoryBorder_SVG = new Dictionary<int, string>()
@@ -2352,28 +2358,6 @@ namespace Treachery.Client
                 [LeaderSkill.Sandmaster] = DEFAULT_ART_LOCATION + "/art/Sandmaster.gif",
                 [LeaderSkill.Thinker] = DEFAULT_ART_LOCATION + "/art/Mentat.gif",
                 [LeaderSkill.Banker] = DEFAULT_ART_LOCATION + "/art/Banker.gif"
-            },
-
-            HomeWorld_STR = new Dictionary<World, string>()
-            {
-                [World.None] = "-",
-
-                [World.Green] = "Caladan",
-                [World.Black] = "Giedi Prime",
-                [World.Yellow] = "Southern Hemisphere",
-                [World.Red] = "Kaitain",
-                [World.RedStar] = "Salusa Secundus",
-                [World.Orange] = "Junction",
-                [World.Blue] = "Wallach IX",
-
-                [World.Grey] = "Ix",
-                [World.Purple] = "Tleilax",
-
-                [World.Brown] = "Tupile",
-                [World.White] = "Richese",
-
-                [World.Pink] = "Ecaz",
-                [World.Cyan] = "Grumman"
             },
 
             HomeWorldImage_URL = new Dictionary<World, string>()

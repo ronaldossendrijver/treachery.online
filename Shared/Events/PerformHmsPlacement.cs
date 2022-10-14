@@ -44,11 +44,11 @@ namespace Treachery.Shared
         {
             if (p.Faction != Faction.Grey)
             {
-                return g.Map.Locations.Where(l => !l.Territory.IsStronghold);
+                return g.Map.Locations().Where(l => !l.Territory.IsStronghold);
             }
             else
             {
-                return g.Map.Locations.Where(l => !l.Territory.IsStronghold && l.Sector != g.SectorInStorm);
+                return g.Map.Locations().Where(l => !l.Territory.IsStronghold && l.Sector != g.SectorInStorm);
             }
         }
     }

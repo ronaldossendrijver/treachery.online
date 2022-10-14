@@ -6,7 +6,7 @@
 @inherits MapComponent
 
 @{
-    foreach (var l in Game.Map.Locations.Where(l => l.SpiceBlowAmount > 0))
+    foreach (var l in Game.Map.Locations().Where(l => l.SpiceBlowAmount > 0))
     {
         var spiceLocation = Skin.Current.GetSpiceLocation(l);
 

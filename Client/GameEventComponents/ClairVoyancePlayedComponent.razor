@@ -53,8 +53,8 @@
 
             case ClairvoyanceQuestion.WillAttackX:
                 <SelectComponent @bind-Value="questionParameterA" 
-                        Values="Game.Map.Territories.OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l)).Select(l => l.Id).Cast<object>()" 
-                        ValueLabels="Game.Map.Territories.OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l)).Select(l => Skin.Current.Describe(l))">
+                        Values="Game.Map.Territories().OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l)).Select(l => l.Id).Cast<object>()" 
+                        ValueLabels="Game.Map.Territories().OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l)).Select(l => Skin.Current.Describe(l))">
                     <Label>Territory</Label>
                 </SelectComponent>
                 break;

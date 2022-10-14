@@ -11,7 +11,7 @@ namespace Treachery.Shared
     public partial class Game
     {
         public const int LowestSupportedVersion = 100;
-        public const int LatestVersion = 150;
+        public const int LatestVersion = 151;
         public const int ExpansionLevel = 3;
 
         public bool BotInfologging = true;
@@ -565,7 +565,7 @@ namespace Treachery.Shared
         {
             Dictionary<Location, List<Battalion>> result = new();
 
-            foreach (var l in Map.Locations)
+            foreach (var l in Map.Locations())
             {
                 result.Add(l, new List<Battalion>());
             }
@@ -730,7 +730,7 @@ namespace Treachery.Shared
 
         public IEnumerable<Location> LocationsWithAnyForcesNotInStorm(Player p)
         {
-            return Map.Locations.Where(l => l.Sector != SectorInStorm && p.AnyForcesIn(l) > 0);
+            return Map.Locations().Where(l => l.Sector != SectorInStorm && p.AnyForcesIn(l) > 0);
         }
 
         private void FlipBeneGesseritWhenAlone()
@@ -738,7 +738,7 @@ namespace Treachery.Shared
             var bg = GetPlayer(Faction.Blue);
             if (bg != null)
             {
-                var territoriesWhereAdvisorsAreAlone = Map.Territories.Where(t => bg.SpecialForcesIn(t) > 0 && !Players.Any(p => p.Faction != Faction.Blue && p.AnyForcesIn(t) > 0));
+                var territoriesWhereAdvisorsAreAlone = Map.Territories(true).Where(t => bg.SpecialForcesIn(t) > 0 && !Players.Any(p => p.Faction != Faction.Blue && p.AnyForcesIn(t) > 0));
                 foreach (var t in territoriesWhereAdvisorsAreAlone)
                 {
                     bg.FlipForces(t, false);

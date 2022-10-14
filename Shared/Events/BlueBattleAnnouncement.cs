@@ -44,14 +44,14 @@ namespace Treachery.Shared
 
             if (ally == null)
             {
-                return g.Map.Territories.Where(t =>
+                return g.Map.Territories(g.Applicable(Rule.Homeworlds)).Where(t =>
                 p.SpecialForcesIn(t) > 0 &&
                 (!t.IsStronghold || g.NrOfOccupantsExcludingPlayer(t, p) <= 1) &&
                 !t.Locations.Any(l => l.Sector == g.SectorInStorm && p.SpecialForcesIn(l) > 0));
             }
             else
             {
-                return g.Map.Territories.Where(t =>
+                return g.Map.Territories(g.Applicable(Rule.Homeworlds)).Where(t =>
                 ally.AnyForcesIn(t) == 0 &&
                 p.SpecialForcesIn(t) > 0 &&
                 (!t.IsStronghold || g.NrOfOccupantsExcludingPlayer(t, p) <= 1) &&
