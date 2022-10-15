@@ -36,60 +36,40 @@ namespace Treachery.Shared
 
         public int BankedResources { get; set; } = 0;
 
-        public IList<TreacheryCard> TreacheryCards { get; set; } = new List<TreacheryCard>();
+        public List<TreacheryCard> TreacheryCards { get; set; } = new();
 
-        public IList<TreacheryCard> KnownCards { get; set; } = new List<TreacheryCard>();
+        public List<TreacheryCard> KnownCards { get; set; } = new();
 
-        public IList<IHero> Traitors { get; set; } = new List<IHero>();
+        public List<IHero> Traitors { get; set; } = new();
 
-        public IList<IHero> RevealedTraitors { get; set; } = new List<IHero>();
+        public List<IHero> RevealedTraitors { get; set; } = new();
 
-        public IList<IHero> ToldTraitors { get; set; } = new List<IHero>();
+        public List<IHero> ToldTraitors { get; set; } = new();
 
-        public IList<IHero> ToldNonTraitors { get; set; } = new List<IHero>();
+        public List<IHero> ToldNonTraitors { get; set; } = new();
 
-        public IList<IHero> KnownNonTraitors { get; set; } = new List<IHero>();
+        public List<IHero> KnownNonTraitors { get; set; } = new();
 
-        public IList<IHero> DiscardedTraitors { get; set; } = new List<IHero>();
+        public List<IHero> DiscardedTraitors { get; set; } = new();
 
-        public IList<IHero> FaceDancers { get; set; } = new List<IHero>();
+        public List<IHero> FaceDancers { get; set; } = new();
 
-        public IList<IHero> RevealedDancers { get; set; } = new List<IHero>();
+        public List<IHero> RevealedDancers { get; set; } = new();
 
-        public IList<IHero> ToldFacedancers { get; set; } = new List<IHero>();
+        public List<IHero> ToldFacedancers { get; set; } = new();
 
-        public IList<IHero> ToldNonFacedancers { get; set; } = new List<IHero>();
+        public List<IHero> ToldNonFacedancers { get; set; } = new();
 
 
-        public IList<Leader> Leaders { get; set; } = new List<Leader>();
+        public List<Leader> Leaders { get; set; } = new();
 
-        public int ForcesInReserve
-        {
-            get
-            {
-                return Homeworlds.Sum(w => ForcesIn(w)); 
-                /*
-                var total = Homeworlds.Sum(w => ForcesIn(w));
-                if (total == 15)
-                {
-                    Console.WriteLine(Faction + ":" + total);
-                    foreach (var w in Homeworlds)
-                    {
-                        Console.WriteLine("- " + w.World + ": " + ForcesIn(w));
-                    }
-
-                    
-                }
-                return total;
-                */
-            }
-        }
+        public int ForcesInReserve => Homeworlds.Sum(w => ForcesIn(w));
 
         public int SpecialForcesInReserve => Homeworlds.Sum(w => SpecialForcesIn(w));
 
-        public IDictionary<Location, Battalion> ForcesInLocations { get; set; } = new Dictionary<Location, Battalion>();
+        public Dictionary<Location, Battalion> ForcesInLocations { get; set; } = new();
 
-        public IDictionary<Location, Battalion> ForcesOnPlanet => ForcesInLocations.Where(kvp => kvp.Key is not Homeworld).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        public Dictionary<Location, Battalion> ForcesOnPlanet => ForcesInLocations.Where(kvp => kvp.Key is not Homeworld).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
         public Faction PredictedFaction { get; set; } = 0;
 
@@ -105,15 +85,17 @@ namespace Treachery.Shared
 
         public bool SpecialKarmaPowerUsed { get; set; }
 
-        public IList<TechToken> TechTokens { get; private set; } = new List<TechToken>();
+        public List<TechToken> TechTokens { get; private set; } = new();
 
         public bool NoFieldIsActive => Faction == Faction.White && ForcesInLocations.Any(locationWithForces => locationWithForces.Value.AmountOfSpecialForces > 0);
 
         public Leader MostRecentlyRevivedLeader { get; set; }
 
-        public IList<LeaderSkill> SkillsToChooseFrom { get; set; } = new List<LeaderSkill>();
+        public List<LeaderSkill> SkillsToChooseFrom { get; set; } = new();
 
-        public IList<Homeworld> Homeworlds { get; set; } = new List<Homeworld>();
+        public List<Homeworld> Homeworlds { get; set; } = new();
+
+        public Faction Nexus { get; set; } = Faction.None;
 
         protected Game Game { get; set; }
 

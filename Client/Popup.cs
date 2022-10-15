@@ -19,6 +19,8 @@ namespace Treachery.Client
 
         public static string Get(TechToken tt) => GetImageHoverHTML(Skin.Current.GetImageURL(tt));
 
+        public static string GetNexusCard(Faction f) => GetImageHoverHTML(Skin.Current.GetNexusCardImageURL(f));
+
         public static string Get(Homeworld w, HomeworldStatus status)
         {
             if (status.IsHigh)

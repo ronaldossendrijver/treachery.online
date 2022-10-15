@@ -64,6 +64,11 @@ namespace Treachery.Shared
             ResourceCardDiscardPileA = new Deck<ResourceCard>(Random);
             ResourceCardDiscardPileB = new Deck<ResourceCard>(Random);
 
+            if (Applicable(Rule.NexusCards))
+            {
+                CreateNexusDeck();
+            }
+
             OrangeAllyMayShipAsGuild = true;
             PurpleAllyMayReviveAsPurple = true;
             GreyAllyMayReplaceCards = true;
@@ -90,6 +95,12 @@ namespace Treachery.Shared
             InitializeTimers();
 
             Enter(Applicable(Rule.PlayersChooseFactions), Phase.SelectingFactions, AssignFactionsAndEnterFactionTrade);
+        }
+
+        private void CreateNexusDeck()
+        {
+            NexusCardDeck = new Deck<Faction>(EstablishPlayers.AvailableFactions(), Random);
+            NexusCardDeck.Shuffle();
         }
 
         private void InitializeTimers()

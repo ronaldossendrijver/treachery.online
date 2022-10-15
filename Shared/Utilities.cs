@@ -5,7 +5,7 @@ namespace Treachery.Shared
 {
     public static class Utilities
     {
-        public static IList<T> CloneList<T>(IList<T> toClone) where T : ICloneable
+        public static List<T> CloneList<T>(List<T> toClone) where T : ICloneable
         {
             var result = new List<T>();
 
@@ -17,7 +17,7 @@ namespace Treachery.Shared
             return result;
         }
 
-        public static IDictionary<X, Y> CloneDictionary<X, Y>(IDictionary<X, Y> toClone) where Y : ICloneable
+        public static Dictionary<X, Y> CloneDictionary<X, Y>(Dictionary<X, Y> toClone) where Y : ICloneable
         {
             var result = new Dictionary<X, Y>();
 

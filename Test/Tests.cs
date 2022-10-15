@@ -211,7 +211,7 @@ namespace Treachery.Test
             p = g.Players.FirstOrDefault(p => p.TreacheryCards.Count > p.MaximumNumberOfCards);
             if (p != null && g.CurrentPhase != Phase.PerformingKarmaHandSwap)
             {
-                return "Too many cards: " + p + " after " + e.GetType().Name + " - " + g.History.Count;
+                return "Too many cards " + p + " after " + e.GetType().Name + " - " + g.History.Count;
             }
 
             var blue = g.GetPlayer(Faction.Blue);
@@ -360,7 +360,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 500;
+            int nrOfGames = 50;
             int nrOfTurns = 30;
             int nrOfPlayers = 6;
 

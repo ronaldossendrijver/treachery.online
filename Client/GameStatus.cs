@@ -216,6 +216,11 @@ namespace Treachery.Client
 
                 Phase.AllianceA or Phase.AllianceB => Status("Factions may now make and break alliances."),
 
+                Phase.NexusCards => Status(
+                    "Do you wish to draw a Nexus card in case you have none or have your own faction?",
+                    "Factions are thinking about drawing Nexus cards...",
+                    game.Players.Where(p => NexusCardDrawn.Applicable(game, p))),
+
                 /* Charity */
 
                 Phase.ClaimingCharity => Status(Skin.Current.Format("Factions may now claim charity if eligible.")),

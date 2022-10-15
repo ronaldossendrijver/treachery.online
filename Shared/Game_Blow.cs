@@ -235,7 +235,7 @@ namespace Treachery.Shared
         {
             if (Monsters.Count == 0)
             {
-                Enter((CurrentPhase == Phase.BlowA || CurrentPhase == Phase.HarvesterA) && Applicable(Rule.IncreasedResourceFlow), EnterBlowB, EnterStormReportPhase);
+                Enter((CurrentPhase == Phase.BlowA || CurrentPhase == Phase.HarvesterA) && Applicable(Rule.IncreasedResourceFlow), EnterBlowB, StartNexusCardPhase);
             }
             else
             {
@@ -358,6 +358,8 @@ namespace Treachery.Shared
                 var target = GetPlayer(e.Target);
                 initiator.Ally = e.Target;
                 target.Ally = e.Initiator;
+                DiscardNexusCard(initiator);
+                DiscardNexusCard(target);
                 Log(e.Initiator, " and ", matchingOffer.Initiator, " are now allies");
 
                 AllianceOffered invalidOffer;
@@ -372,6 +374,7 @@ namespace Treachery.Shared
                 CurrentAllianceOffers.Add(e);
             }
         }
+
 
         public void HandleEvent(AllianceBroken e)
         {
@@ -424,8 +427,11 @@ namespace Treachery.Shared
             currentAlly.Ally = Faction.None;
         }
 
+        private bool NexusHasOccured { get; set; } = false;
+
         private void EndNexus()
         {
+            NexusHasOccured = true;
             CurrentAllianceOffers.Clear();
 
             bool fremenCanRide = YellowRidesMonster.ValidSources(this).Any();
@@ -437,47 +443,17 @@ namespace Treachery.Shared
             {
                 if (CurrentPhase == Phase.AllianceA)
                 {
-                    Enter(Applicable(Rule.IncreasedResourceFlow), EnterBlowB, EnterStormReportPhase);
+                    Enter(Applicable(Rule.IncreasedResourceFlow), EnterBlowB, StartNexusCardPhase);
                 }
                 else if (CurrentPhase == Phase.AllianceB)
                 {
-                    EnterStormReportPhase();
+                    StartNexusCardPhase();
                 }
             }
         }
 
         #endregion
 
-        #region EndOfSpiceBlow
-
-        private void EnterStormReportPhase()
-        {
-            if (ignoredMonsters.Count > 0 || ignoredSandtrout != null)
-            {
-                if (ignoredMonsters.Count > 0)
-                {
-                    Log(ignoredMonsters.Count, " ignored ", Concept.Monster, "cards were shuffled back into the ", Concept.Resource, " deck");
-                    foreach (var c in ignoredMonsters)
-                    {
-                        ResourceCardDeck.Items.Add(c);
-                    }
-                }
-
-                if (ignoredSandtrout != null)
-                {
-                    Log(Concept.BabyMonster, "card was shuffled back into the ", Concept.Resource, " deck");
-                    ResourceCardDeck.Items.Add(ignoredSandtrout);
-                }
-
-                ResourceCardDeck.Shuffle();
-                RecentMilestones.Add(Milestone.Shuffled);
-            }
-
-            MainPhaseEnd();
-            Enter(Phase.BlowReport);
-        }
-
-        #endregion
 
         #region WormSendingAndRiding
 
@@ -545,8 +521,98 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    EnterStormReportPhase();
+                    StartNexusCardPhase();
                 }
+            }
+        }
+
+        #endregion
+
+
+        #region EndOfSpiceBlow
+
+        private void StartNexusCardPhase()
+        {
+            if (NexusHasOccured && Applicable(Rule.NexusCards) && Players.Any(p => p.HasAlly) && Players.Any(p => !p.HasAlly))
+            {
+                EnterNexusCardPhase();
+            }
+            else
+            {
+                EndBlowPhase();
+            }
+        }
+
+        public List<Faction> FactionsThatDrewNexusCards { get; private set; }
+
+        private void EnterNexusCardPhase()
+        {
+            NexusHasOccured = false;
+            FactionsThatDrewNexusCards = new();
+            Enter(Phase.NexusCards);
+        }
+
+        public void HandleEvent(NexusCardDrawn e)
+        {
+            DealNexusCard(e.Player);
+            FactionsThatDrewNexusCards.Add(e.Initiator);
+        }
+
+        private void DealNexusCard(Player p)
+        {
+            DiscardNexusCard(p);
+
+            if (NexusCardDeck.IsEmpty)
+            {
+                NexusCardDeck.Items.AddRange(NexusDiscardPile);
+                NexusDiscardPile.Clear();
+                NexusCardDeck.Shuffle();
+                RecentMilestones.Add(Milestone.Shuffled);
+                Log("The Nexus Card discard pile was shuffled into a new Nexus Card deck");
+            }
+
+            Log(p.Faction, " draw a Nexus Card");
+            p.Nexus = NexusCardDeck.Draw();
+        }
+
+        private void DiscardNexusCard(Player p)
+        {
+            if (p.Nexus != Faction.None)
+            {
+                Log(p.Faction, " discard the ", p.Nexus, " Nexus Card");
+                NexusDiscardPile.Add(p.Nexus);
+                p.Nexus = Faction.None;
+            }
+        }
+
+        private void EndBlowPhase()
+        {
+            ReshuffleIgnoredMonsters();
+            MainPhaseEnd();
+            Enter(Phase.BlowReport);
+        }
+
+        private void ReshuffleIgnoredMonsters()
+        {
+            if (ignoredMonsters.Count > 0 || ignoredSandtrout != null)
+            {
+                if (ignoredMonsters.Count > 0)
+                {
+                    Log(ignoredMonsters.Count, " ignored ", Concept.Monster, "cards were shuffled back into the ", Concept.Resource, " deck");
+                    foreach (var c in ignoredMonsters)
+                    {
+                        ResourceCardDeck.Items.Add(c);
+                    }
+                }
+
+                if (ignoredSandtrout != null)
+                {
+                    Log(Concept.BabyMonster, "card was shuffled back into the ", Concept.Resource, " deck");
+                    ResourceCardDeck.Items.Add(ignoredSandtrout);
+                }
+
+                ResourceCardDeck.Shuffle();
+                RecentMilestones.Add(Milestone.Shuffled);
             }
         }
 

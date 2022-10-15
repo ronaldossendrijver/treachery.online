@@ -58,6 +58,13 @@
                        ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                        Popover="@Intel(p.AlliedPlayer)"/>
             }
+            else if (p.Nexus != Faction.None && p == h.Player)
+            {
+                <Image X="@(position.X)" Y="@(position.Y + 0.25f * Skin.Current.PlayerTokenRadius)" Diameter=@(1.2f * Skin.Current.PlayerTokenRadius) Src="@Skin.Current.GetFactionTableImageURL(p.Nexus)"
+                       ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
+                       Filter="grayscale(50%) brightness(50%) contrast(80%)"
+                       Popover="@Popup.GetNexusCard(p.Nexus)" />
+            }
 
             double ttRad = (TWOPI / 180) + 0.06 + (4.5 - positionSector) * TWOPI / Map.NUMBER_OF_SECTORS;
                         
@@ -71,7 +78,7 @@
                 <Image X=homeworldX Y=@homeworldY
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
-                       Popover="@Popup.Get(homeworld, Game.GetStatusOf(homeworld))" />
+                       Popover="@HomeworldIntel(homeworld)" />
 
                 var reservesX = homeworldX + 0.75f * Skin.Current.PlayerTokenRadius;
                 var reservesY = homeworldY + 1.25f * Skin.Current.PlayerTokenRadius;
@@ -236,4 +243,15 @@
 
     private string DetermineVideoStreamId(Player p) => "video" + p.PositionAtTable;
 
-} 
+    private string HomeworldIntel(Homeworld w)
+    {
+        if (Game.Applicable(Rule.Homeworlds))
+        {
+            return Popup.Get(w, Game.GetStatusOf(w));
+        }
+        else
+        {
+            return Skin.Current.Format("{0} Reserves", w.Faction);
+        }
+    }
+}

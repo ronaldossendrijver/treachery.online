@@ -1,0 +1,34 @@
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<NexusCardDrawn>
+
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Draw a Nexus Card?</Header>
+    <Body>
+
+        @if (NexusCardDrawn.MayDraw(Player))
+        {
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError=@Validation Pass="Pass" PassText="No" />
+        }
+        else
+        {
+            <ButtonRowComponent Pass="Pass" PassText="No" />
+        }
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override bool IsUrgent => true;
+
+    protected override NexusCardDrawn ConfirmedResult => new NexusCardDrawn(Game) { Initiator = Faction, Passed = false };
+
+    protected override NexusCardDrawn PassedResult => new NexusCardDrawn(Game) { Initiator = Faction, Passed = true };
+}

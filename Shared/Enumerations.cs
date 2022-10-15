@@ -145,6 +145,7 @@ namespace Treachery.Shared
         AllianceB = 180,
 
         YellowRidingMonsterB = 190,
+        NexusCards = 191,
 
         BlowReport = 194,
 

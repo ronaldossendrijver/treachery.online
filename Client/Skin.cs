@@ -886,6 +886,11 @@ namespace Treachery.Client
             return GetURL(HomeWorldCardBackImage_URL, w);
         }
 
+        public string GetNexusCardImageURL(Faction f)
+        {
+            return GetURL(NexusCardImage_URL, f);
+        }
+
         public string GetImageURL(TechToken tech)
         {
             return GetURL(TechTokenImage_URL, tech);
@@ -1834,12 +1839,12 @@ namespace Treachery.Client
                 [1054] = "Ilesa Ecaz",
                 [1055] = "Bindikk Narvi",
                 [1056] = "Whitmore Bludd",
-                [1057] = "Lupino Ord",
-                [1058] = "Hiir Resser",
-                [1059] = "Trin Kronos",
-                [1060] = "Grieu Kronos",
-                [1061] = "Vando Terboli",
-                [1062] = "Duke Prad Vidal"
+                [1057] = "Duke Prad Vidal",
+                [1058] = "Lupino Ord",
+                [1059] = "Hiir Resser",
+                [1060] = "Trin Kronos",
+                [1061] = "Grieu Kronos",
+                [1062] = "Vando Terboli",
             },
 
             PersonImage_URL = new Dictionary<int, string>()

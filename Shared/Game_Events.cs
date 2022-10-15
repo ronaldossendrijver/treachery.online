@@ -155,6 +155,9 @@ namespace Treachery.Shared
                     if (player.Ally == Faction.None && Players.Count > 1) result.Add(typeof(AllianceOffered));
                     if (player.Ally != Faction.None) result.Add(typeof(AllianceBroken));
                     break;
+                case Phase.NexusCards:
+                    if (NexusCardDrawn.Applicable(this, player)) result.Add(typeof(NexusCardDrawn));
+                    break;
                 case Phase.BlowReport:
                     break;
                 case Phase.ClaimingCharity:

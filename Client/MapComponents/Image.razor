@@ -7,12 +7,12 @@
 
 @if (Popover != null)
 {
-    <img @ref=@element @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" style="@Style" src=@Src 
-        data-bs-trigger="hover" data-bs-toggle="popover" data-bs-html="true" data-bs-animation="false" data-bs-delay="50" data-container="body" data-bs-content="@Popover" data-bs-template="@PopoverTemplate" />
+    <img @ref=@element @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" style="@Style @Filter" src=@Src
+     data-bs-trigger="hover" data-bs-toggle="popover" data-bs-html="true" data-bs-animation="false" data-bs-delay="50" data-container="body" data-bs-content="@Popover" data-bs-template="@PopoverTemplate" />
 }
 else
 {
-    <img @ref=@element @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" style="@Style" src=@Src />
+    <img @ref=@element @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" style="@Style @Filter" src=@Src />
 }
 
 @code {
@@ -34,6 +34,9 @@ else
 
     [Parameter]
     public string Title { get; set; } = "";
+
+    [Parameter]
+    public string Filter { get; set; } = "";
 
     [Parameter]
     public EventCallback<MouseEventArgs> OnClick { get; set; }

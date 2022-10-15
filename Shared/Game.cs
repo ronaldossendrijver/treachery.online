@@ -21,26 +21,26 @@ namespace Treachery.Shared
         public int MaximumNumberOfTurns { get; private set; }
         public int MaximumNumberOfPlayers { get; private set; }
         public string Name { get; private set; }
-        public IList<Milestone> RecentMilestones { get; private set; } = new List<Milestone>();
+        public List<Milestone> RecentMilestones { get; private set; } = new();
         public int Version { get; private set; }
         public Map Map { get; private set; } = new Map();
-        public List<Rule> Rules { get; private set; } = new List<Rule>();
-        public List<Rule> RulesForBots { get; private set; } = new List<Rule>();
-        public List<Rule> AllRules { get; private set; } = new List<Rule>();
-        public IList<GameEvent> History { get; private set; } = new List<GameEvent>();
+        public List<Rule> Rules { get; private set; } = new();
+        public List<Rule> RulesForBots { get; private set; } = new();
+        public List<Rule> AllRules { get; private set; } = new();
+        public List<GameEvent> History { get; private set; } = new();
         public bool TrackStatesForReplay { get; private set; } = true;
-        public IList<Game> States { get; private set; } = new List<Game>();
+        public List<Game> States { get; private set; } = new();
         public int CurrentTurn { get; private set; } = 0;
         public MainPhase CurrentMainPhase { get; private set; } = MainPhase.Started;
         public MainPhaseMoment CurrentMoment { get; private set; } = MainPhaseMoment.None;
         public Phase CurrentPhase { get; private set; } = Phase.None;
-        public IList<Faction> HasActedOrPassed { get; private set; } = new List<Faction>();
-        public IList<Player> Players { get; private set; } = new List<Player>();
+        public List<Faction> HasActedOrPassed { get; private set; } = new();
+        public List<Player> Players { get; private set; } = new();
         public Report CurrentReport { get; private set; }
         public Deck<TreacheryCard> TreacheryDeck { get; private set; }
         public Deck<TreacheryCard> TreacheryDiscardPile { get; private set; }
-        public List<TreacheryCard> RemovedTreacheryCards { get; private set; } = new List<TreacheryCard>();
-        public List<TreacheryCard> WhiteCache { get; private set; } = new List<TreacheryCard>();
+        public List<TreacheryCard> RemovedTreacheryCards { get; private set; } = new ();
+        public List<TreacheryCard> WhiteCache { get; private set; } = new ();
         public Deck<ResourceCard> ResourceCardDeck { get; private set; }
         public Deck<ResourceCard> ResourceCardDiscardPileA { get; private set; }
         public Deck<ResourceCard> ResourceCardDiscardPileB { get; private set; }
@@ -48,10 +48,12 @@ namespace Treachery.Shared
         public int NextStormMoves { get; private set; } = -1;
         public bool ShieldWallDestroyed { get; private set; } = false;
         public BrownEconomicsStatus EconomicsStatus { get; private set; } = BrownEconomicsStatus.None;
-        public IDictionary<Location, int> ResourcesOnPlanet { get; private set; } = new Dictionary<Location, int>();
-        public IDictionary<IHero, LeaderState> LeaderState { get; private set; } = new Dictionary<IHero, LeaderState>();
+        public Dictionary<Location, int> ResourcesOnPlanet { get; private set; } = new();
+        public Dictionary<IHero, LeaderState> LeaderState { get; private set; } = new();
         public Deck<LeaderSkill> SkillDeck { get; private set; }
-        public Dictionary<Player, Dictionary<MainPhase, TimeSpan>> Timers { get; private set; } = new Dictionary<Player, Dictionary<MainPhase, TimeSpan>>();
+        public Deck<Faction> NexusCardDeck { get; private set; }
+        public List<Faction> NexusDiscardPile { get; private set; } = new();
+        public Dictionary<Player, Dictionary<MainPhase, TimeSpan>> Timers { get; private set; } = new();
         private Random Random { get; set; }
 
         #endregion GameState

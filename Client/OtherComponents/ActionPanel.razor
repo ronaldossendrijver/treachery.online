@@ -123,6 +123,11 @@
                     <SimpleActionComponent GameEventType="AllianceBroken" h="@h" Title="Break your current alliance?" Alert="false" ConfirmLabel="Break" />
                 }
                 break;
+            case "NexusCardDrawn":
+                {
+                    <NexusCardDrawnComponent h="@h" />
+                }
+                break;
             case "CharityClaimed":
                 {
                     <SimpleActionComponent GameEventType="CharityClaimed" h="@h" Title="Claim Charity?" Alert="false" ConfirmLabel="Claim" />
