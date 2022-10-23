@@ -38,8 +38,7 @@ namespace Treachery.Client
         public Dictionary<int, string> StrongholdCardName_STR;
         public Dictionary<int, string> StrongholdCardImage_URL;
         public Dictionary<World, string> HomeWorldImage_URL;
-        public Dictionary<World, string> HomeWorldCardFrontImage_URL;
-        public Dictionary<World, string> HomeWorldCardBackImage_URL;
+        public Dictionary<World, string> HomeWorldCardImage_URL;
         public Dictionary<Faction, string> NexusCardImage_URL;
 
         public string Map_URL = null;
@@ -876,14 +875,9 @@ namespace Treachery.Client
             return GetURL(FactionSpecialForceImage_URL, faction);
         }
 
-        public string GetHomeworldCardFrontImageURL(World w)
+        public string GetHomeworldCardImageURL(World w)
         {
-            return GetURL(HomeWorldCardFrontImage_URL, w);
-        }
-
-        public string GetHomeworldCardBackImageURL(World w)
-        {
-            return GetURL(HomeWorldCardBackImage_URL, w);
+            return GetURL(HomeWorldCardImage_URL, w);
         }
 
         public string GetNexusCardImageURL(Faction f)
@@ -2385,63 +2379,43 @@ namespace Treachery.Client
                 [World.Cyan] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
             },
 
-            HomeWorldCardFrontImage_URL = new Dictionary<World, string>()
+            HomeWorldCardImage_URL = new Dictionary<World, string>()
             {
-                [World.Green] = DEFAULT_ART_LOCATION + "/art/Recruits.gif",
-                [World.Black] = DEFAULT_ART_LOCATION + "/art/Recruits.gif",
-                [World.Yellow] = DEFAULT_ART_LOCATION + "/art/Recruits.gif",
-                [World.Red] = DEFAULT_ART_LOCATION + "/art/Recruits.gif",
-                [World.RedStar] = DEFAULT_ART_LOCATION + "/art/SalusaSecundusCardFront.jpg",
-                [World.Orange] = DEFAULT_ART_LOCATION + "/art/JunctionCardFront.jpg",
-                [World.Blue] = DEFAULT_ART_LOCATION + "/art/WallachIXCardFront.jpg",
+                [World.Green] = DEFAULT_ART_LOCATION + "/art/CaladanCard.gif",
+                [World.Black] = DEFAULT_ART_LOCATION + "/art/GiediPrimeCard.gif",
+                [World.Yellow] = DEFAULT_ART_LOCATION + "/art/ArrakisCard.gif",
+                [World.Red] = DEFAULT_ART_LOCATION + "/art/KaitainCard.gif",
+                [World.RedStar] = DEFAULT_ART_LOCATION + "/art/SalusaSecundusCardFront.gif",
+                [World.Orange] = DEFAULT_ART_LOCATION + "/art/JunctionCardFront.gif",
+                [World.Blue] = DEFAULT_ART_LOCATION + "/art/WallachIXCardFront.gif",
 
-                [World.Grey] = DEFAULT_ART_LOCATION + "/art/IxCardFront.jpg",
-                [World.Purple] = DEFAULT_ART_LOCATION + "/art/TleilaxCardFront.jpg",
+                [World.Grey] = DEFAULT_ART_LOCATION + "/art/IxCard.gif",
+                [World.Purple] = DEFAULT_ART_LOCATION + "/art/TleilaxCard.gif",
 
-                [World.Brown] = DEFAULT_ART_LOCATION + "/art/TupileCardFront.jpg",
-                [World.White] = DEFAULT_ART_LOCATION + "/art/RicheseCardFront.jpg",
+                [World.Brown] = DEFAULT_ART_LOCATION + "/art/TupileCard.gif",
+                [World.White] = DEFAULT_ART_LOCATION + "/art/RicheseCard.gif",
 
-                [World.Pink] = DEFAULT_ART_LOCATION + "/art/EcazCardFront.jpg",
-                [World.Cyan] = DEFAULT_ART_LOCATION + "/art/GrummanCardFront.jpg",
+                [World.Pink] = DEFAULT_ART_LOCATION + "/art/EcazCard.gif",
+                [World.Cyan] = DEFAULT_ART_LOCATION + "/art/GrummanCard.gif",
             },
-
-            HomeWorldCardBackImage_URL = new Dictionary<World, string>()
-            {
-                [World.Green] = DEFAULT_ART_LOCATION + "/art/Reinforcements.gif",
-                [World.Black] = DEFAULT_ART_LOCATION + "/art/Reinforcements.gif",
-                [World.Yellow] = DEFAULT_ART_LOCATION + "/art/Reinforcements.gif",
-                [World.Red] = DEFAULT_ART_LOCATION + "/art/Reinforcements.gif",
-                [World.RedStar] = DEFAULT_ART_LOCATION + "/art/SalusaSecundusCardBack.jpg",
-                [World.Orange] = DEFAULT_ART_LOCATION + "/art/JunctionCardBack.jpg",
-                [World.Blue] = DEFAULT_ART_LOCATION + "/art/WallachIXCardBack.jpg",
-
-                [World.Grey] = DEFAULT_ART_LOCATION + "/art/IxCardBack.jpg",
-                [World.Purple] = DEFAULT_ART_LOCATION + "/art/TleilaxCardBack.jpg",
-
-                [World.Brown] = DEFAULT_ART_LOCATION + "/art/TupileCardBack.jpg",
-                [World.White] = DEFAULT_ART_LOCATION + "/art/RicheseCardBack.jpg",
-
-                [World.Pink] = DEFAULT_ART_LOCATION + "/art/EcazCardBack.jpg",
-                [World.Cyan] = DEFAULT_ART_LOCATION + "/art/GrummanCardBack.jpg",
-            },
-
+                        
             NexusCardImage_URL = new Dictionary<Faction, string>()
             {
-                [Faction.Green] = DEFAULT_ART_LOCATION + "/art/faction1nexus.jpg",
-                [Faction.Black] = DEFAULT_ART_LOCATION + "/art/faction2nexus.jpg",
-                [Faction.Yellow] = DEFAULT_ART_LOCATION + "/art/faction3nexus.jpg",
-                [Faction.Red] = DEFAULT_ART_LOCATION + "/art/faction4nexus.jpg",
-                [Faction.Orange] = DEFAULT_ART_LOCATION + "/art/faction5nexus.jpg",
-                [Faction.Blue] = DEFAULT_ART_LOCATION + "/art/faction6nexus.jpg",
+                [Faction.Green] = DEFAULT_ART_LOCATION + "/art/faction1nexus.gif",
+                [Faction.Black] = DEFAULT_ART_LOCATION + "/art/faction2nexus.gif",
+                [Faction.Yellow] = DEFAULT_ART_LOCATION + "/art/faction3nexus.gif",
+                [Faction.Red] = DEFAULT_ART_LOCATION + "/art/faction4nexus.gif",
+                [Faction.Orange] = DEFAULT_ART_LOCATION + "/art/faction5nexus.gif",
+                [Faction.Blue] = DEFAULT_ART_LOCATION + "/art/faction6nexus.gif",
 
-                [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7nexus.jpg",
-                [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8nexus.jpg",
+                [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7nexus.gif",
+                [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8nexus.gif",
 
-                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9nexus.jpg",
-                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10nexus.jpg",
+                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9nexus.gif",
+                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10nexus.gif",
 
-                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11nexus.jpg",
-                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12nexus.jpg",
+                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11nexus.gif",
+                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12nexus.gif",
             },
 
             StrongholdCardName_STR = new Dictionary<int, string>()

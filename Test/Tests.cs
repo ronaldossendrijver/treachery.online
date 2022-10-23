@@ -26,6 +26,11 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            if (g.CurrentPhase == Phase.AllianceB)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Alliances");
+            }
+
             /*
             if (g.CurrentTurn > 12 && !g.RecentMilestones.Contains(Milestone.BabyMonster) && g.RecentMilestones.Contains(Milestone.Monster) && (g.ResourceCardDiscardPileA.Items.Take(3).Any(c => c.IsSandTrout) || g.ResourceCardDiscardPileB.Items.Take(3).Any(c => c.IsSandTrout)))
             {

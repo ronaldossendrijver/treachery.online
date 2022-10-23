@@ -556,6 +556,11 @@ namespace Treachery.Shared
         {
             DealNexusCard(e.Player);
             FactionsThatDrewNexusCards.Add(e.Initiator);
+
+            if (!Players.Any(p => NexusCardDrawn.Applicable(this, p)))
+            {
+                EndBlowPhase();
+            }
         }
 
         private void DealNexusCard(Player p)

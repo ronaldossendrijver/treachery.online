@@ -12,27 +12,32 @@ namespace Treachery.Shared
         protected virtual AllianceOffered DetermineAllianceOffered()
         {
             int nrOfPlayers = Game.Players.Count();
+            int nrOfBots = Game.Players.Count(p => p.IsBot);
             int nrOfUnalliedBots = Game.Players.Count(p => p.IsBot && p.Ally == Faction.None);
-            int nrOfUnalliedHumans = Game.Players.Count(p => !(p.IsBot) && p.Ally == Faction.None);
 
-            var offer = Game.CurrentAllianceOffers.Where(offer => offer.Target == Faction && !offer.Player.IsBot).HighestOrDefault(offer => PlayerStanding(offer.Player));
-            if (offer == null) offer = Game.CurrentAllianceOffers.Where(offer => offer.Target == Faction).HighestOrDefault(offer => PlayerStanding(offer.Player));
-
-            if (offer != null)
+            if (nrOfPlayers == nrOfBots && nrOfUnalliedBots > 2)
             {
-                return new AllianceOffered(Game) { Initiator = Faction, Target = offer.Initiator };
-            }
-            else if (
-                nrOfPlayers > 2 &&
-                !Game.Applicable(Rule.BotsCannotAlly) &&
-                (nrOfUnalliedHumans == 0 || nrOfUnalliedHumans < nrOfUnalliedBots - 1) &&
-                !Game.CurrentAllianceOffers.Any(o => o.Initiator == Faction && Game.GetPlayer(o.Target).Ally == Faction.None))
-            {
-                var mostInterestingOpponentBotWithoutAlly = Game.Players.Where(p => p != this && p.IsBot && p.Ally == Faction.None).HighestOrDefault(p => PlayerStanding(p));
+                int nrOfUnalliedHumans = Game.Players.Count(p => !(p.IsBot) && p.Ally == Faction.None);
 
-                if (mostInterestingOpponentBotWithoutAlly != null)
+                var offer = Game.CurrentAllianceOffers.Where(offer => offer.Target == Faction && !offer.Player.IsBot).HighestOrDefault(offer => PlayerStanding(offer.Player));
+                if (offer == null) offer = Game.CurrentAllianceOffers.Where(offer => offer.Target == Faction).HighestOrDefault(offer => PlayerStanding(offer.Player));
+
+                if (offer != null)
                 {
-                    return new AllianceOffered(Game) { Initiator = Faction, Target = mostInterestingOpponentBotWithoutAlly.Faction };
+                    return new AllianceOffered(Game) { Initiator = Faction, Target = offer.Initiator };
+                }
+                else if (
+                    nrOfPlayers > 2 &&
+                    !Game.Applicable(Rule.BotsCannotAlly) &&
+                    (nrOfUnalliedHumans == 0 || nrOfUnalliedHumans < nrOfUnalliedBots - 1) &&
+                    !Game.CurrentAllianceOffers.Any(o => o.Initiator == Faction && Game.GetPlayer(o.Target).Ally == Faction.None))
+                {
+                    var mostInterestingOpponentBotWithoutAlly = Game.Players.Where(p => p != this && p.IsBot && p.Ally == Faction.None).HighestOrDefault(p => PlayerStanding(p));
+
+                    if (mostInterestingOpponentBotWithoutAlly != null)
+                    {
+                        return new AllianceOffered(Game) { Initiator = Faction, Target = mostInterestingOpponentBotWithoutAlly.Faction };
+                    }
                 }
             }
 
@@ -58,6 +63,18 @@ namespace Treachery.Shared
             }
 
             return null;
+        }
+
+        protected virtual NexusCardDrawn DetermineNexusCardDrawn()
+        {
+            if (NexusCardDrawn.MayDraw(this))
+            {
+                return new NexusCardDrawn(Game) { Initiator = Faction, Passed = false };
+            }
+            else
+            {
+                return new NexusCardDrawn(Game) { Initiator = Faction, Passed = true };
+            }
         }
 
         protected virtual AllyPermission DetermineAlliancePermissions()

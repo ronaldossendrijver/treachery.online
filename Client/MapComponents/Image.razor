@@ -7,12 +7,12 @@
 
 @if (Popover != null)
 {
-    <img @ref=@element @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" style="@Style @Filter" src=@Src
+    <img @ref=@element @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" style="@Style" src=@Src
      data-bs-trigger="hover" data-bs-toggle="popover" data-bs-html="true" data-bs-animation="false" data-bs-delay="50" data-container="body" data-bs-content="@Popover" data-bs-template="@PopoverTemplate" />
 }
 else
 {
-    <img @ref=@element @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" style="@Style @Filter" src=@Src />
+    <img @ref=@element @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" style="@Style" src=@Src />
 }
 
 @code {
@@ -93,14 +93,17 @@ else
                 result += "pointer-events:none;";
             }
 
-            if (ShadowX > 0 || ShadowY > 0)
+            var shadowFilter = ShadowFilter;
+            if (shadowFilter.Length > 0 || Filter.Length > 0)
             {
-                result += string.Format("filter:drop-shadow({0} {1} {2} {3});", Px(ShadowX), Px(ShadowY), Px(ShadowBlur), ShadowColor);
+                result += string.Format("filter:{0} {1};", ShadowFilter, Filter);
             }
 
             return result;
         }
     }
+
+    private string ShadowFilter => ShadowX > 0 || ShadowY > 0 ? string.Format("drop-shadow({0} {1} {2} {3})", Px(ShadowX), Px(ShadowY), Px(ShadowBlur), ShadowColor) : "";
 
     public void Dispose()
     {

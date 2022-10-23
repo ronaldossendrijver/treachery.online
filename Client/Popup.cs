@@ -23,23 +23,11 @@ namespace Treachery.Client
 
         public static string Get(Homeworld w, HomeworldStatus status)
         {
-            if (status.IsHigh)
-            {
-                return GetImageHoverHTML(Skin.Current.GetHomeworldCardFrontImageURL(w.World));
-            }
-            else
-            {
-                if (status.Occupant == w.Faction)
-                {
-                    return GetImageHoverHTML(Skin.Current.GetHomeworldCardBackImageURL(w.World));
-                }
-                else
-                {
-                    return string.Format("<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{0}' width=300/><img src='{1}' width=100 style='position:absolute;left:220px;top:300px;filter:drop-shadow(-3px 3px 2px black);'/></div>",
-                        Skin.Current.GetHomeworldCardBackImageURL(w.World), Skin.Current.GetImageURL(status.Occupant));
-                }
-            }
-
+            return string.Format("<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{0}' width=300/><span style='color:{1};font-size:large;position:absolute;left:20px;top:20px;filter:drop-shadow(-1px 1px 1px black);'>{2}</span><img src='{3}' width=100 style='position:absolute;left:240px;top:120px;filter:drop-shadow(-3px 3px 2px black);'/></div>",
+                        Skin.Current.GetHomeworldCardImageURL(w.World),
+                        status.IsHigh ? "green" : "red", 
+                        status.IsHigh ? "High Threshold" : "Low Threshold",
+                        Skin.Current.GetImageURL(status.Occupant));
         }
 
         public static string Get(TreacheryCard c)
