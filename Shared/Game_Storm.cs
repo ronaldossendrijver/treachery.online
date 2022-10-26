@@ -338,8 +338,6 @@ namespace Treachery.Shared
         }
 
         private Phase PhaseBeforeStormLoss;
-        bool intrusionCausedBeforeStormLoss;
-        bool bgMayAccompanyBeforeStormLoss;
 
         public void HandleEvent(TakeLosses e)
         {
@@ -367,7 +365,7 @@ namespace Treachery.Shared
             else
             {
                 Enter(PhaseBeforeStormLoss);
-                DetermineNextShipmentAndMoveSubPhase(intrusionCausedBeforeStormLoss, bgMayAccompanyBeforeStormLoss);
+                DetermineNextShipmentAndMoveSubPhase();
             }
         }
 

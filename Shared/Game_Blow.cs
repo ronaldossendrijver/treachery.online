@@ -513,8 +513,8 @@ namespace Treachery.Shared
                 Log(e.Initiator, " pass a ride on ", Concept.Monster);
             }
 
-            bool bgIntruded = DetermineIntrusionCaused(e);
-            DetermineNextShipmentAndMoveSubPhase(bgIntruded, false);
+            CheckIntrusion(e);
+            DetermineNextShipmentAndMoveSubPhase();
         }
 
         private void EndWormRide()
