@@ -268,12 +268,12 @@ namespace Treachery.Shared
             if (ally != null)
             {
                 int techTokenPoint = p.TechTokens.Count == 3 || p.AlliedPlayer.TechTokens.Count == 3 ? 1 : 0;
-                return techTokenPoint + (Map.Locations().Where(l => l.Territory.IsStronghold || IsSpecialStronghold(l.Territory)).Count(l => p.Controls(this, l, contestedStongholdsCountAsOccupied) || ally.Controls(this, l, contestedStongholdsCountAsOccupied)));
+                return techTokenPoint + (Map.Territories().Where(t => t.IsStronghold || IsSpecialStronghold(t)).Count(l => p.Controls(this, l, contestedStongholdsCountAsOccupied) || ally.Controls(this, l, contestedStongholdsCountAsOccupied)));
             }
             else
             {
                 int techTokenPoint = p.TechTokens.Count == 3 ? 1 : 0;
-                return techTokenPoint + (Map.Locations().Where(l => l.Territory.IsStronghold || IsSpecialStronghold(l.Territory)).Count(l => p.Controls(this, l, contestedStongholdsCountAsOccupied)));
+                return techTokenPoint + (Map.Territories().Where(t => t.IsStronghold || IsSpecialStronghold(t)).Count(l => p.Controls(this, l, contestedStongholdsCountAsOccupied)));
             }
         }
 

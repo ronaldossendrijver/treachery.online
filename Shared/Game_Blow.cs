@@ -25,6 +25,7 @@ namespace Treachery.Shared
             MainPhaseStart(MainPhase.Blow);
             ignoredMonsters.Clear();
             ignoredSandtrout = null;
+            HasActedOrPassed.Clear();
 
             var sequenceToDetermineFirstPlayer = new PlayerSequence(this);
 
@@ -354,19 +355,7 @@ namespace Treachery.Shared
             var matchingOffer = CurrentAllianceOffers.FirstOrDefault(x => x.Initiator == e.Target && x.Target == e.Initiator);
             if (matchingOffer != null)
             {
-                var initiator = GetPlayer(e.Initiator);
-                var target = GetPlayer(e.Target);
-                initiator.Ally = e.Target;
-                target.Ally = e.Initiator;
-                DiscardNexusCard(initiator);
-                DiscardNexusCard(target);
-                Log(e.Initiator, " and ", matchingOffer.Initiator, " are now allies");
-
-                AllianceOffered invalidOffer;
-                while ((invalidOffer = CurrentAllianceOffers.FirstOrDefault(x => x.By(e.Initiator) || x.Initiator == e.Target)) != null)
-                {
-                    CurrentAllianceOffers.Remove(invalidOffer);
-                }
+                MakeAlliance(e);
             }
             else
             {
@@ -375,6 +364,28 @@ namespace Treachery.Shared
             }
         }
 
+        private void MakeAlliance(AllianceOffered e)
+        {
+            var initiator = GetPlayer(e.Initiator);
+            var target = GetPlayer(e.Target);
+            initiator.Ally = e.Target;
+            target.Ally = e.Initiator;
+            DiscardNexusCard(initiator);
+            DiscardNexusCard(target);
+            Log(e.Initiator, " and ", e.Target, " are now allies");
+
+            AllianceOffered invalidOffer;
+            while ((invalidOffer = CurrentAllianceOffers.FirstOrDefault(x => x.By(e.Initiator) || x.Initiator == e.Target)) != null)
+            {
+                CurrentAllianceOffers.Remove(invalidOffer);
+            }
+
+            if (Version > 150)
+            {
+                HasActedOrPassed.Add(e.Initiator);
+                HasActedOrPassed.Add(e.Target);
+            }
+        }
 
         public void HandleEvent(AllianceBroken e)
         {
@@ -592,6 +603,7 @@ namespace Treachery.Shared
 
         private void EndBlowPhase()
         {
+            HasActedOrPassed.Clear();
             ReshuffleIgnoredMonsters();
             MainPhaseEnd();
             Enter(Phase.BlowReport);
