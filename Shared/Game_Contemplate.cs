@@ -19,6 +19,7 @@ namespace Treachery.Shared
             AllowAllPreventedFactionAdvantages(null);
             HandleEconomics();
             if (Version >= 108) AddBribesToPlayerResources();
+            CyanHasPlantedTerror = false;
 
             foreach (var p in Players)
             {
@@ -423,6 +424,39 @@ namespace Treachery.Shared
 
             Log(e);
             Enter(Phase.TurnConcluded);
+        }
+
+        #endregion
+
+        #region Terror
+
+        public bool CyanHasPlantedTerror { get; private set; } = false;
+
+        public IEnumerable<TerrorType> TerrorIn(Territory t) => TerrorOnPlanet.Where(kvp => kvp.Value == t).Select(kvp => kvp.Key);
+
+        public void HandleEvent(TerrorPlanted e)
+        {
+            Log(e);
+            CyanHasPlantedTerror = true;
+
+            if (e.Stronghold == null)
+            {
+                TerrorOnPlanet.Remove(e.Type);
+                UnplacedTokens.Add(e.Type);
+            }
+            else
+            {
+                if (UnplacedTokens.Contains(e.Type))
+                {
+                    TerrorOnPlanet.Add(e.Type, e.Stronghold);
+                    UnplacedTokens.Remove(e.Type);
+                }
+                else
+                {
+                    TerrorOnPlanet.Remove(e.Type);
+                    TerrorOnPlanet.Add(e.Type, e.Stronghold);
+                }
+            }
         }
 
         #endregion

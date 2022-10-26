@@ -159,6 +159,8 @@ namespace Treachery.Server
         public async Task RequestCaptured(int hostID, Captured e) { await Request(hostID, e); }
         public async Task RequestNexusCardDrawn(int hostID, NexusCardDrawn e) { await Request(hostID, e); }
 
+        public async Task RequestTerrorPlanted(int hostID, TerrorPlanted e) { await Request(hostID, e); }
+
         private async Task Request<GameEventType>(int hostID, GameEventType e) where GameEventType : GameEvent
         {
             Log("Request<" + e.GetType().Name + ">", hostID, e);

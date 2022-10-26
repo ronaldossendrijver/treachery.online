@@ -69,6 +69,8 @@ namespace Treachery.Shared
                 CreateNexusDeck();
             }
 
+            CreateTerrorTokens();
+
             OrangeAllyMayShipAsGuild = true;
             PurpleAllyMayReviveAsPurple = true;
             GreyAllyMayReplaceCards = true;
@@ -95,6 +97,19 @@ namespace Treachery.Shared
             InitializeTimers();
 
             Enter(Applicable(Rule.PlayersChooseFactions), Phase.SelectingFactions, AssignFactionsAndEnterFactionTrade);
+        }
+
+        public List<TerrorType> UnplacedTokens { get; private set; } = new();
+        private void CreateTerrorTokens()
+        {
+            UnplacedTokens = new List<TerrorType> {
+                TerrorType.Assassination,
+                TerrorType.Atomics,
+                TerrorType.Extortion,
+                TerrorType.Robbery,
+                TerrorType.Sabotage,
+                TerrorType.SneakAttack
+            };
         }
 
         private void CreateNexusDeck()

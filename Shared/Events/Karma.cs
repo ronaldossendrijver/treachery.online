@@ -225,6 +225,20 @@ namespace Treachery.Shared
                 if (In(g, MainPhase.ShipmentAndMove)) result.Add(FactionAdvantage.WhiteNofield);
             }
 
+            if (p.Faction != Faction.Pink && g.IsPlaying(Faction.Pink))
+            {
+                if (In(g, MainPhase.Resurrection)) result.Add(FactionAdvantage.PinkAmbassadors);
+                if (In(g, MainPhase.Battle)) result.Add(FactionAdvantage.PinkOccupation);
+                if (In(g, MainPhase.Collection)) result.Add(FactionAdvantage.PinkCollection);
+            }
+
+            if (p.Faction != Faction.Cyan && g.IsPlaying(Faction.Cyan))
+            {
+                result.Add(FactionAdvantage.CyanEnemyOfEnemy);
+                if (In(g, MainPhase.ShipmentAndMove)) result.Add(FactionAdvantage.CyanGainingVidal);
+                if (In(g, MainPhase.Contemplate)) result.Add(FactionAdvantage.CyanPlantingTerror);
+            }
+
             return result;
         }
 

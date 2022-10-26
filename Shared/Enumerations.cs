@@ -340,7 +340,15 @@ namespace Treachery.Shared
 
         WhiteAuction = 150,
         WhiteNofield = 151,
-        WhiteBlackMarket = 152
+        WhiteBlackMarket = 152,
+
+        PinkAmbassadors = 160,
+        PinkOccupation = 161,
+        PinkCollection = 162,
+
+        CyanPlantingTerror = 170,
+        CyanGainingVidal = 171,
+        CyanEnemyOfEnemy = 172,
     }
 
     public enum FactionForce : int
@@ -707,5 +715,16 @@ namespace Treachery.Shared
         ShareStormPrescience = 60,
         ForfeitBattle = 70,
         TellDiscardedTraitors = 80
+    }
+
+    public enum TerrorType
+    {
+        None = 0,
+        Assassination = 10,
+        Atomics = 30,
+        Extortion = 50,
+        Robbery = 60,
+        Sabotage = 70,
+        SneakAttack = 80
     }
 }

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Treachery.Shared
 {
@@ -688,5 +689,13 @@ namespace Treachery.Shared
         {
             return Name;
         }
+
+        public bool HasHighThreshold(World w)
+        {
+            var homeworld = Homeworlds.FirstOrDefault(hw => hw.World == w);
+            return homeworld != null && AnyForcesIn(homeworld) >= homeworld.Threshold;
+        }
+
+        public bool HasLowThreshold(World w) => !HasHighThreshold(w);
     }
 }

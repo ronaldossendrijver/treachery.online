@@ -1,0 +1,70 @@
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<TerrorPlanted>
+@implements IDisposable
+
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Flip advisors to fighters</Header>
+    <Body>
+
+        @if (TerrorPlanted.MayRemoveTokens(Player))
+        {
+            <RadioComponent Value=_remove Values="new bool[] {false, true}" ValueLabels=@ValueLabels/>
+        }
+        else
+        {
+            _remove = false;
+        }
+
+        <SelectComponent @bind-Value="_type" Values=@TerrorPlanted.ValidTerrorTypes(Game, _remove)>
+            <Label>Token</Label>
+        </SelectComponent>
+
+        <SelectComponent ButtonHint=ClickHintButton.LMB @bind-Value=_stronghold Values=@TerrorPlanted.ValidStrongholds(Game, Player)>
+            <Label>Stronghold</Label>
+        </SelectComponent>
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Place Terror" ConfirmError=@Validation />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override Faction IsFactionSpecific => Faction.Cyan;
+
+    private bool _remove;
+    private TerrorType _type;
+    private Territory _stronghold;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            h.OnLocationSelected += HandleLocationSelected;
+        }
+    }
+
+    protected override TerrorPlanted ConfirmedResult => new TerrorPlanted(Game) { Initiator = Faction, Type = _type, Stronghold = _remove ? null : _stronghold };
+
+    private void HandleLocationSelected(object sender, Location l)
+    {
+        SetIfValid<Territory, Territory>(ref _stronghold, TerrorPlanted.ValidStrongholds(Game, Player), l.Territory);
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        h.OnLocationSelected -= HandleLocationSelected;
+    }
+
+    private string[] ValueLabels => new string[] { "Place or move a token", "Remove a token" };
+
+    private string ConfirmLabel => _remove ? "Remove token" : (Game.UnplacedTokens.Contains(_type) ? "Place token" : "Move token");
+}

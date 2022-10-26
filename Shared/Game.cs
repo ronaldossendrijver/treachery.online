@@ -49,6 +49,7 @@ namespace Treachery.Shared
         public bool ShieldWallDestroyed { get; private set; } = false;
         public BrownEconomicsStatus EconomicsStatus { get; private set; } = BrownEconomicsStatus.None;
         public Dictionary<Location, int> ResourcesOnPlanet { get; private set; } = new();
+        public Dictionary<TerrorType, Territory> TerrorOnPlanet { get; private set; } = new();
         public Dictionary<IHero, LeaderState> LeaderState { get; private set; } = new();
         public Deck<LeaderSkill> SkillDeck { get; private set; }
         public Deck<Faction> NexusCardDeck { get; private set; }
@@ -1042,5 +1043,8 @@ namespace Treachery.Shared
         }
 
         #endregion SupportMethods
+
+        
+
     }
 }

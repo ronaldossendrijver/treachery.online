@@ -40,6 +40,8 @@ namespace Treachery.Client
         public Dictionary<World, string> HomeWorldImage_URL;
         public Dictionary<World, string> HomeWorldCardImage_URL;
         public Dictionary<Faction, string> NexusCardImage_URL;
+        //public Dictionary<TerrorType, string> TerrorTokenImage_URL;
+        public Dictionary<TerrorType, string> TerrorTokenName_STR;
 
         public string Map_URL = null;
         public string Eye_URL = null;
@@ -295,6 +297,7 @@ namespace Treachery.Client
                 TreacheryCard tc => Describe(tc),
                 TreacheryCardType tct => Describe(tct),
                 LeaderSkill ls => Describe(ls),
+                TerrorType terr => Describe(terr),
                 Ruleset r => Describe(r),
                 RuleGroup rg => Describe(rg),
                 Rule rule => Describe(rule),
@@ -409,6 +412,11 @@ namespace Treachery.Client
         public string Describe(LeaderSkill l)
         {
             return LeaderSkillCardName_STR[l];
+        }
+
+        public string Describe(TerrorType terr)
+        {
+            return TerrorTokenName_STR[terr];
         }
 
         public string Describe(MainPhase p)
@@ -789,6 +797,11 @@ namespace Treachery.Client
         {
             return c != null ? GetURL(TreacheryCardImage_URL, c.SkinId) : ""; ;
         }
+
+        /*public string GetImageURL(TerrorType t)
+        {
+            return GetURL(TerrorTokenImage_URL, t);
+        }*/
 
         public string GetImageURL(World w)
         {
@@ -2416,6 +2429,28 @@ namespace Treachery.Client
 
                 [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11nexus.gif",
                 [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12nexus.gif",
+            },
+
+            /*
+            TerrorTokenImage_URL = new Dictionary<TerrorType, string>()
+            {
+                [TerrorType.Atomics] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
+                [TerrorType.Assassination] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
+                [TerrorType.Extortion] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
+                [TerrorType.Robbery] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
+                [TerrorType.Sabotage] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
+                [TerrorType.SneakAttack] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
+            },
+            */
+
+            TerrorTokenName_STR = new Dictionary<TerrorType, string>()
+            {
+                [TerrorType.Assassination] = "Assassination",
+                [TerrorType.Atomics] = "Atomics",
+                [TerrorType.Extortion] = "Extortion",
+                [TerrorType.Robbery] = "Robbery",
+                [TerrorType.Sabotage] = "Sabotage",
+                [TerrorType.SneakAttack] = "SneakAttack",
             },
 
             StrongholdCardName_STR = new Dictionary<int, string>()
