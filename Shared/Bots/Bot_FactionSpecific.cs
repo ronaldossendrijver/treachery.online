@@ -925,6 +925,27 @@ namespace Treachery.Shared
             return null;
         }
 
+        protected virtual TerrorPlanted DetermineTerrorPlanted()
+        {
+            //This is for now just random
+            var type = TerrorPlanted.ValidTerrorTypes(Game, false).First();
+            if (TerrorPlanted.ValidTerrorTypes(Game, false).Contains(TerrorType.Extortion)) type = TerrorType.Extortion;
+
+            return new TerrorPlanted(Game) { Initiator = Faction, Type = type, Stronghold = TerrorPlanted.ValidStrongholds(Game, this).First() };
+        }
+
+        protected virtual TerrorRevealed DetermineTerrorRevealed()
+        {
+            //This is for now just random
+            return new TerrorRevealed(Game) { Initiator = Faction, Type = TerrorRevealed.GetTypes(Game).First() };
+        }
+
+        protected virtual ExtortionPrevented DetermineExtortionPrevented()
+        {
+            //This is for now just random
+            return null;
+        }
+
         #endregion
 
         #region White

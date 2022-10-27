@@ -66,5 +66,5 @@
 
     private string[] ValueLabels => new string[] { "Place or move a token", "Remove a token" };
 
-    private string ConfirmLabel => _remove ? "Remove token" : (Game.UnplacedTokens.Contains(_type) ? "Place token" : "Move token");
+    private string ConfirmLabel => _remove ? "Remove token" : (Game.UnplacedTerrorTokens.Contains(_type) ? "Place token" : "Move token");
 }

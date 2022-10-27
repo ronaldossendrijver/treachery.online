@@ -69,7 +69,7 @@ namespace Treachery.Test
                 }
                 else
                 {
-                    Difference = compared + ": " + a + " (expected) != " + b;
+                    Difference = compared + ": " + a + " (actual) != " + b + " (expected)";
                     return false;
                 }
             }
@@ -80,7 +80,7 @@ namespace Treachery.Test
             }
             else
             {
-                Difference = compared + ": " + a + " (expected) != " + b;
+                Difference = compared + ": " + a + " (actual) != " + b + " (expected)";
                 return false;
             }
         }
@@ -95,7 +95,7 @@ namespace Treachery.Test
                 }
                 else
                 {
-                    Difference = compared + ": " + a + " (expected) != " + b;
+                    Difference = compared + ": " + a + " (actual) != " + b + " (expected)";
                     return false;
                 }
             }
@@ -106,7 +106,7 @@ namespace Treachery.Test
             }
             else
             {
-                Difference = compared + ": " + a + " != " + b;
+                Difference = compared + ": " + a + " (actual) != " + b + " (expected)";
                 return false;
             }
         }

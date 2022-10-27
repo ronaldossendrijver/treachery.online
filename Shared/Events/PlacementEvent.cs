@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Treachery.Shared
 {
-    public abstract class PlacementEvent : GameEvent
+    public abstract class PlacementEvent : GameEvent, ILocationEvent
     {
         public int _toId;
 

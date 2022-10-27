@@ -207,8 +207,8 @@ namespace Treachery.Client
                     Faction.Yellow),
 
                 Phase.BlueIntrudedByYellowRidingMonsterA or Phase.BlueIntrudedByYellowRidingMonsterB => Status(game,
-                    Express("Please decide what to do in response to an intrusion of ", game.LastShippedOrMovedTo.Territory, "; be fighters or advisors?"),
-                    Express(Faction.Blue, " are deciding what to do in response to an intrusion of ", game.LastShippedOrMovedTo.Territory, "..."),
+                    Express("Please decide what to do in response to an intrusion of ", game.LastShipmentOrMovement.To.Territory, "; be fighters or advisors?"),
+                    Express(Faction.Blue, " are deciding what to do in response to an intrusion of ", game.LastShipmentOrMovement.To.Territory, "..."),
                     Faction.Blue),
 
                 Phase.BlowA or Phase.HarvesterA => Status(Express("Factions may use a ", TreacheryCardType.Harvester, " to double the ", Concept.Resource, " blow in ", game.LatestSpiceCardA.Location.Territory, "...")),
@@ -329,8 +329,8 @@ namespace Treachery.Client
                 Phase.BlueIntrudedByNonOrangeMove or
                 Phase.BlueIntrudedByOrangeMove or
                 Phase.BlueIntrudedByCaravan => Status(game,
-                    Express("Please decide how to respond to the intrusion in ", game.LastShippedOrMovedTo.Territory, "; be fighters or advisors?"),
-                    Express(Faction.Blue, " are deciding how to respond to the intrusion in ", game.LastShippedOrMovedTo.Territory, "..."),
+                    Express("Please decide how to respond to the intrusion in ", game.LastShipmentOrMovement.To.Territory, "; be fighters or advisors?"),
+                    Express(Faction.Blue, " are deciding how to respond to the intrusion in ", game.LastShipmentOrMovement.To.Territory, "..."),
                     Faction.Blue),
 
                 Phase.NonOrangeMove => Status(
@@ -438,7 +438,7 @@ namespace Treachery.Client
                 Phase.BlueIntrudedByYellowRidingMonsterA or
                 Phase.BlueIntrudedByYellowRidingMonsterB or
                 Phase.BlueAccompaniesOrange or
-                Phase.BlueAccompaniesNonOrange when game.LastShippedOrMovedTo != null => new Territory[] { game.LastShippedOrMovedTo.Territory },
+                Phase.BlueAccompaniesNonOrange when game.LastShipmentOrMovement != null => new Territory[] { game.LastShipmentOrMovement.To.Territory },
 
                 Phase.BattlePhase or
                 Phase.MeltingRock or

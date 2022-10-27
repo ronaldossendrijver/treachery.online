@@ -26,9 +26,9 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (g.CurrentPhase == Phase.AllianceB)
+            if (e is TerrorRevealed)
             {
-                WriteSavegameIfApplicable(g, e.Player, "Alliances");
+                WriteSavegameIfApplicable(g, e.Player, "Terror revealed");
             }
 
             /*
@@ -365,8 +365,8 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 50;
-            int nrOfTurns = 30;
+            int nrOfGames = 100;
+            int nrOfTurns = 10;
             int nrOfPlayers = 6;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");

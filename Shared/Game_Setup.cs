@@ -99,10 +99,10 @@ namespace Treachery.Shared
             Enter(Applicable(Rule.PlayersChooseFactions), Phase.SelectingFactions, AssignFactionsAndEnterFactionTrade);
         }
 
-        public List<TerrorType> UnplacedTokens { get; private set; } = new();
+        public List<TerrorType> UnplacedTerrorTokens { get; private set; } = new();
         private void CreateTerrorTokens()
         {
-            UnplacedTokens = new List<TerrorType> {
+            UnplacedTerrorTokens = new List<TerrorType> {
                 TerrorType.Assassination,
                 TerrorType.Atomics,
                 TerrorType.Extortion,

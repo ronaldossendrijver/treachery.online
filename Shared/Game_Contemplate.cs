@@ -31,7 +31,44 @@ namespace Treachery.Shared
                 }
             }
 
-            Enter(Version >= 103, Phase.Contemplate, ContinueMentatPhase);
+            Enter(Version >= 103, EnterMentatPause, ContinueMentatPhase);
+        }
+
+        private bool ExtortionToBeReturned { get; set; } = false;
+        private void EnterMentatPause()
+        {
+            ExtortionToBeReturned = Players.Any(p => p.Extortion > 0);
+            GainExtortions();
+            Enter(ExtortionToBeReturned, Phase.Extortion, EndMentatPause);
+        }
+
+        
+        public void HandleEvent(ExtortionPrevented e)
+        {
+            ExtortionToBeReturned = false;
+            e.Player.Resources -= 3;
+            Log(e);
+        }
+
+        private void EndMentatPause()
+        {
+            if (ExtortionToBeReturned)
+            {
+                Log(Faction.Cyan, " regain their ", TerrorType.Extortion, " token");
+                UnplacedTerrorTokens.Add(TerrorType.Extortion);
+            }
+
+            Enter(Phase.Contemplate);
+        }
+
+        private void GainExtortions()
+        {
+            foreach (var p in Players.Where(p => p.Extortion > 0).ToList())
+            {
+                p.Resources += p.Extortion;
+                Log(p.Faction, " add ", Payment(p.Extortion), " gained from ", TerrorType.Extortion, " to their reserves");
+                p.Extortion = 0;
+            }
         }
 
         private void ContinueMentatPhase()
@@ -442,14 +479,14 @@ namespace Treachery.Shared
             if (e.Stronghold == null)
             {
                 TerrorOnPlanet.Remove(e.Type);
-                UnplacedTokens.Add(e.Type);
+                UnplacedTerrorTokens.Add(e.Type);
             }
             else
             {
-                if (UnplacedTokens.Contains(e.Type))
+                if (UnplacedTerrorTokens.Contains(e.Type))
                 {
                     TerrorOnPlanet.Add(e.Type, e.Stronghold);
-                    UnplacedTokens.Remove(e.Type);
+                    UnplacedTerrorTokens.Remove(e.Type);
                 }
                 else
                 {

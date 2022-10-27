@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Treachery.Shared
 {
-    public class Shipment : GameEvent
+    public class Shipment : GameEvent, ILocationEvent
     {
         public int _toId;
         public int _fromId;
@@ -236,7 +236,14 @@ namespace Treachery.Shared
                 potentialLocations = NormalShipmentLocations(g, p);
             }
 
-            return potentialLocations;
+            if (g.AtomicsAftermath == null)
+            {
+                return potentialLocations;
+            }
+            else
+            {
+                return potentialLocations.Where(l => l.Territory != g.AtomicsAftermath);
+            }
         }
 
         private static IEnumerable<Location> NormalShipmentLocations(Game g, Player p)

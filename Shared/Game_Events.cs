@@ -67,6 +67,7 @@ namespace Treachery.Shared
                 case Phase.BattleReport:
                 case Phase.BeginningOfCollection:
                 case Phase.CollectionReport:
+                case Phase.Extortion:
                 case Phase.Contemplate:
                 case Phase.TurnConcluded:
                     result.Add(typeof(EndPhase));
@@ -267,6 +268,7 @@ namespace Treachery.Shared
                         if (Planetology.CanBePlayed(this, player)) result.Add(typeof(Planetology));
                     }
                     break;
+
                 case Phase.BlueIntrudedByOrangeShip:
                 case Phase.BlueIntrudedByNonOrangeShip:
                 case Phase.BlueIntrudedByOrangeMove:
@@ -276,6 +278,17 @@ namespace Treachery.Shared
                 case Phase.BlueIntrudedByCaravan:
                     if (faction == Faction.Blue) result.Add(typeof(BlueFlip));
                     break;
+
+                case Phase.TerrorTriggeredByOrangeShip:
+                case Phase.TerrorTriggeredByNonOrangeShip:
+                case Phase.TerrorTriggeredByOrangeMove:
+                case Phase.TerrorTriggeredByNonOrangeMove:
+                case Phase.TerrorTriggeredByYellowRidingMonsterA:
+                case Phase.TerrorTriggeredByYellowRidingMonsterB:
+                case Phase.TerrorTriggeredByCaravan:
+                    if (faction == Faction.Cyan) result.Add(typeof(TerrorRevealed));
+                    break;
+
                 case Phase.ShipmentAndMoveConcluded:
                     if (Version < 103 && player.Has(TreacheryCardType.Amal)) result.Add(typeof(AmalPlayed));
                     break;
@@ -396,9 +409,14 @@ namespace Treachery.Shared
                     if (faction == Faction.Purple) result.Add(typeof(FaceDancerReplaced));
                     break;
 
+                case Phase.Extortion:
+                    if (ExtortionPrevented.CanBePlayed(this, player)) result.Add(typeof(ExtortionPrevented));
+                    break;
+
                 case Phase.Contemplate:
                     if (Version < 103 && player.Has(TreacheryCardType.Amal)) result.Add(typeof(AmalPlayed));
                     if (faction == Faction.Brown && !Prevented(FactionAdvantage.BrownEconomics) && EconomicsStatus == BrownEconomicsStatus.None) result.Add(typeof(BrownEconomics));
+                    if (faction == Faction.Cyan && TerrorPlanted.IsApplicable(this, player)) result.Add(typeof(TerrorPlanted));
                     break;
 
                 case Phase.PerformingKarmaHandSwap:

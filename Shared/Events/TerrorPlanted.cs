@@ -18,6 +18,8 @@ namespace Treachery.Shared
         {
         }
 
+        public bool Passed;
+
         public TerrorType Type;
 
         public int _territoryId;
@@ -66,7 +68,7 @@ namespace Treachery.Shared
             }
             else
             {
-                return g.UnplacedTokens.Union(g.TerrorOnPlanet.Keys);
+                return g.UnplacedTerrorTokens.Union(g.TerrorOnPlanet.Keys);
             }
         }
 
@@ -75,7 +77,7 @@ namespace Treachery.Shared
             Game.HandleEvent(this);
         }
 
-        public bool IsApplicable(Game g) => g.CurrentPhase == Phase.Contemplate && !g.CyanHasPlantedTerror && !g.Prevented(FactionAdvantage.CyanPlantingTerror);
+        public static bool IsApplicable(Game g, Player p) => g.CurrentPhase == Phase.Contemplate && !g.CyanHasPlantedTerror && !g.Prevented(FactionAdvantage.CyanPlantingTerror) && ValidTerrorTypes(g, false).Any() && ValidStrongholds(g, p).Any();
 
         public override Message GetMessage()
         {

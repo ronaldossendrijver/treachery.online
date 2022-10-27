@@ -31,6 +31,8 @@ namespace Treachery.Shared
 
         public int Resources { get; set; } = 0;
 
+        public int Extortion { get; set; } = 0;
+
         public int Bribes { get; set; } = 0;
 
         public int ResourcesAfterBidding { get; set; } = 0;
@@ -573,13 +575,13 @@ namespace Treachery.Shared
         }
 
         public int MaximumNumberOfCards
-        {
-            get
+        {get
             {
                 return Faction switch
                 {
                     Faction.Black => 8,
                     Faction.Brown => 5,
+                    Faction.Cyan when Game.AtomicsAftermath != null => 3,
                     _ => 4
                 };
             }

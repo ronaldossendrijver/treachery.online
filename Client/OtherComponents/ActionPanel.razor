@@ -158,6 +158,11 @@
                     <BlueFlipComponent h="@h" />
                 }
                 break;
+            case "TerrorRevealed":
+                {
+                    <TerrorRevealedComponent h="@h" />
+                }
+                break;
             case "BlueBattleAnnouncement":
                 {
                     <BlueBattleAnnouncementComponent h="@h" />
@@ -391,6 +396,16 @@
             case "BrownDiscarded":
                 {
                     <BrownDiscardedComponent h="@h" />
+                }
+                break;
+            case "TerrorPlanted":
+                {
+                    <TerrorPlantedComponent h="@h" />
+                }
+                break;
+            case "ExtortionPrevented":
+                {
+                    <SimpleActionComponent GameEventType="ExtortionPrevented" h="@h" Title=@Skin.Current.Format("Pay 3 to prevent ", Faction.Cyan, " from regaining their ", TerrorType.Extortion, " token?") ConfirmLabel="Yes" Alert="false" />
                 }
                 break;
             case "BrownEconomics":

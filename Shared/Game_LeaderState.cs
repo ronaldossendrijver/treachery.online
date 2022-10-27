@@ -15,13 +15,7 @@ namespace Treachery.Shared
             if (l is Leader || l is Messiah)
             {
                 LeaderState[l].Kill(this);
-
-                var black = GetPlayer(Faction.Black);
-                if (black != null)
-                {
-                    ReturnCapturedLeaders(black, l);
-                }
-
+                ReturnCapturedLeaders(l);
                 ReturnGholaToOriginalFaction(l);
             }
         }

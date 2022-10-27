@@ -371,11 +371,11 @@ namespace Treachery.Shared
 
             if (aggressor.Is(Faction.Black))
             {
-                ReturnCapturedLeaders(aggressor, agg.Hero);
+                ReturnCapturedLeaders(agg.Hero);
             }
             else if (defender.Is(Faction.Black))
             {
-                ReturnCapturedLeaders(defender, def.Hero);
+                ReturnCapturedLeaders(def.Hero);
             }
         }
 
@@ -571,22 +571,24 @@ namespace Treachery.Shared
             }
         }
 
-        private void ReturnCapturedLeaders(Player harkonnen, IHero hero)
+        private void ReturnCapturedLeaders(IHero hero)
         {
-            if (harkonnen != null)
+            var black = GetPlayer(Faction.Black);
+
+            if (black != null)
             {
                 //Captured leader used in battle
-                if (hero != null && hero is Leader capturedLeader && harkonnen.Leaders.Contains(capturedLeader) && CapturedLeaders.ContainsKey(capturedLeader))
+                if (hero != null && hero is Leader capturedLeader && black.Leaders.Contains(capturedLeader) && CapturedLeaders.ContainsKey(capturedLeader))
                 {
-                    ReturnLeader(harkonnen, capturedLeader);
+                    ReturnLeader(black, capturedLeader);
                 }
 
-                if (!harkonnen.Leaders.Any(l => CapturedLeaders.ContainsKey(l) && IsAlive(l)))
+                if (!black.Leaders.Any(l => CapturedLeaders.ContainsKey(l) && IsAlive(l)))
                 {
                     Leader toReturn;
-                    while ((toReturn = harkonnen.Leaders.FirstOrDefault(c => c.Faction != Faction.Black)) != null)
+                    while ((toReturn = black.Leaders.FirstOrDefault(c => c.Faction != Faction.Black)) != null)
                     {
-                        ReturnLeader(harkonnen, toReturn);
+                        ReturnLeader(black, toReturn);
                     }
                 }
             }
@@ -1129,6 +1131,16 @@ namespace Treachery.Shared
                 Log("The explosion destroys ", Payment(removed), " in ", territory);
             }
 
+            KillAllForcesIn(territory);
+
+            if ((aggressor.MessiahAvailable || defender.MessiahAvailable) && !hadMessiahBeforeLosses)
+            {
+                RecentMilestones.Add(Milestone.Messiah);
+            }
+        }
+
+        private void KillAllForcesIn(Territory territory)
+        {
             foreach (var p in Players)
             {
                 RevealCurrentNoField(p, territory);
@@ -1139,11 +1151,6 @@ namespace Treachery.Shared
                     Log("The explosion kills all ", numberOfForces, p.Faction, " forces in ", territory);
                     p.KillAllForces(territory, true);
                 }
-            }
-
-            if ((aggressor.MessiahAvailable || defender.MessiahAvailable) && !hadMessiahBeforeLosses)
-            {
-                RecentMilestones.Add(Milestone.Messiah);
             }
         }
 
@@ -1403,7 +1410,7 @@ namespace Treachery.Shared
 
                 if (BattleWinner == Faction.Black)
                 {
-                    ReturnCapturedLeaders(GetPlayer(BattleWinner), facedancer);
+                    ReturnCapturedLeaders(facedancer);
                 }
 
                 foreach (var p in Players)

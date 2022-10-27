@@ -47,6 +47,7 @@ namespace Treachery.Shared
         public int SectorInStorm { get; private set; } = -1;
         public int NextStormMoves { get; private set; } = -1;
         public bool ShieldWallDestroyed { get; private set; } = false;
+        public Territory AtomicsAftermath { get; private set; } = null;
         public BrownEconomicsStatus EconomicsStatus { get; private set; } = BrownEconomicsStatus.None;
         public Dictionary<Location, int> ResourcesOnPlanet { get; private set; } = new();
         public Dictionary<TerrorType, Territory> TerrorOnPlanet { get; private set; } = new();
@@ -251,6 +252,10 @@ namespace Treachery.Shared
 
                 case Phase.CollectionReport:
                     EnterMentatPhase();
+                    break;
+
+                case Phase.Extortion:
+                    ContinueMentatPhase();
                     break;
 
                 case Phase.Contemplate:
@@ -837,12 +842,12 @@ namespace Treachery.Shared
             return (!l.Territory.IsStronghold || (p.Is(Faction.Blue) && p.SpecialForcesIn(l) > 0) || NrOfOccupantsExcludingPlayer(l, p) < 2);
         }
 
-        private static Payment Payment(int amount)
+        public static Payment Payment(int amount)
         {
             return new Payment() { Amount = amount };
         }
 
-        private static Payment Payment(int amount, Faction by)
+        public static Payment Payment(int amount, Faction by)
         {
             return new Payment() { Amount = amount, By = by };
         }

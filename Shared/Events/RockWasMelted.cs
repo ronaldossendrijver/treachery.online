@@ -40,7 +40,7 @@ namespace Treachery.Shared
 
         public static Territory GetTerritory(Game g)
         {
-            return g.LastShippedOrMovedTo.Territory;
+            return g.LastShipmentOrMovement.To.Territory;
         }
 
         public static bool CanBePlayed(Game g, Player p)

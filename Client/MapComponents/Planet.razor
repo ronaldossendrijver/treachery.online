@@ -89,6 +89,11 @@
             return Skin.Current.STORM_OVERLAY_COLOR;
         }
 
+        if (Game.AtomicsAftermath == l.Territory)
+        {
+            return Skin.Current.BLOWNSHIELDWALL_OVERLAY_COLOR;
+        }
+
         if (Game.HasStormPrescience(Player) && NextStormWillPassOver(l))
         {
             return Skin.Current.STORM_PRESCIENCE_OVERLAY_COLOR;

@@ -45,12 +45,12 @@ namespace Treachery.Shared
         public static IEnumerable<Location> ValidTargets(Game g, Player p)
         {
             var result = new List<Location>();
-            if (g.LastShippedOrMovedTo != g.Map.PolarSink &&
-                !p.Occupies(g.LastShippedOrMovedTo.Territory) &&
+            if (g.LastShipmentOrMovement != g.Map.PolarSink &&
+                !p.Occupies(g.LastShipmentOrMovement.To.Territory) &&
                 BlueMayAccompanyToShipmentLocation(g) &&
                 !AllyPreventsAccompanyingToShipmentLocation(g, p))
             {
-                result.AddRange(g.LastShippedOrMovedTo.Territory.Locations.Where(l => g.Version <= 142 || (
+                result.AddRange(g.LastShipmentOrMovement.To.Territory.Locations.Where(l => g.Version <= 142 || (
                     l.Sector != g.SectorInStorm &&
                     (g.Applicable(Rule.BlueAdvisors) || g.IsNotFull(p, l))
                     )));
@@ -67,7 +67,7 @@ namespace Treachery.Shared
             return
                 !g.Applicable(Rule.AdvisorsDontConflictWithAlly) &&
                 (ally != null) &&
-                ally.AnyForcesIn(g.LastShippedOrMovedTo.Territory) != 0;
+                ally.AnyForcesIn(g.LastShipmentOrMovement.To.Territory) != 0;
         }
 
         protected override void ExecuteConcreteEvent()

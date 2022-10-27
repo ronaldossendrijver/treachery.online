@@ -485,7 +485,7 @@ namespace Treachery.Shared
             {
                 var initiator = GetPlayer(e.Initiator);
 
-                LastShippedOrMovedTo = e.To;
+                LastShipmentOrMovement = e;
                 int totalNumberOfForces = 0;
                 int totalNumberOfSpecialForces = 0;
                 foreach (var fl in e.ForceLocations)
@@ -515,6 +515,12 @@ namespace Treachery.Shared
 
             CheckIntrusion(e);
             DetermineNextShipmentAndMoveSubPhase();
+        }
+
+        private void EndWormRide(Phase beforeIntrusion)
+        {
+            CurrentPhase = beforeIntrusion;
+            EndWormRide();
         }
 
         private void EndWormRide()

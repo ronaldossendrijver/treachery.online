@@ -97,6 +97,7 @@ namespace Treachery.Shared
                 Do(DetermineDiscardedTaken, ref action, evts) ||
                 Do(DetermineBureaucracy, ref action, evts) ||
                 Do(DetermineNexusCardDrawn, ref action, evts) ||
+                Do(DetermineExtortionPrevented, ref action, evts) ||
 
                 //Brown
                 Do(DetermineBrownEconomics, ref action, evts) ||
@@ -128,6 +129,12 @@ namespace Treachery.Shared
 
                 //Red
                 Do(DetermineKarmaFreeRevival, ref action, evts) ||
+
+                //Cyan
+                Do(DetermineTerrorPlanted, ref action, evts) ||
+                Do(DetermineTerrorRevealed, ref action, evts) ||
+
+                //Pink
 
                 //Purple
                 Do(DetermineFaceDanced, ref action, evts) ||

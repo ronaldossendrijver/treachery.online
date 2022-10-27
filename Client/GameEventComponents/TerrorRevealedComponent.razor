@@ -1,0 +1,41 @@
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<TerrorRevealed>
+
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Resort to Terror against @Name(TerrorRevealed.GetVictim(Game)) in @Name(TerrorRevealed.GetTerritory(Game))?</Header>
+    <Body>
+
+        @if (TerrorRevealed.GetTypes(Game).Count() > 1)
+        {
+            <SelectComponent @bind-Value="_type" Values=@TerrorRevealed.GetTypes(Game)>
+                <Label>Token</Label>
+             </SelectComponent>
+        }
+        else
+        {
+
+            _type = TerrorRevealed.GetTypes(Game).First();
+        }
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText=@Name(_type) ConfirmError=@Validation Pass="Pass" OtherText="Pass" />
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override bool IsUrgent => true;
+    protected override Faction IsFactionSpecific => Faction.Cyan;
+
+    private TerrorType _type;
+
+    protected override TerrorRevealed ConfirmedResult => new TerrorRevealed(Game) { Initiator = Faction, Type = _type };
+
+    protected override TerrorRevealed PassedResult => new TerrorRevealed(Game) { Initiator = Faction, Passed = true };
+}

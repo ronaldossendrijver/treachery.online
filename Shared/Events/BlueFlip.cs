@@ -47,7 +47,7 @@ namespace Treachery.Shared
 
         public static Territory GetTerritory(Game g)
         {
-            return g.LastShippedOrMovedTo.Territory;
+            return g.LastShipmentOrMovement.To.Territory;
         }
     }
 }

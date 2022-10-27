@@ -103,134 +103,142 @@ namespace Treachery.Shared
 
     public enum Phase : int
     {
-        None = 0,
-        AwaitingPlayers = 10,
+        None = 00000,
+        AwaitingPlayers = 10000,
 
-        SelectingFactions = 29,
-        TradingFactions = 30,
-        CustomizingDecks = 31,
+        SelectingFactions = 29000,
+        TradingFactions = 30000,
+        CustomizingDecks = 31000,
 
-        BluePredicting = 50,
+        BluePredicting = 50000,
 
-        BlackMulligan = 60,
+        BlackMulligan = 60000,
 
-        AssigningInitialSkills = 64,
-        SelectingTraitors = 65,
-        PerformCustomSetup = 66,
+        AssigningInitialSkills = 64000,
+        SelectingTraitors = 65000,
+        PerformCustomSetup = 66000,
 
-        YellowSettingUp = 70,
+        YellowSettingUp = 70000,
 
-        BlueSettingUp = 90,
+        BlueSettingUp = 90000,
 
-        MetheorAndStormSpell = 95,
+        MetheorAndStormSpell = 95000,
 
-        HmsPlacement = 100,
-        HmsMovement = 101,
+        HmsPlacement = 100000,
+        HmsMovement = 101000,
 
-        DiallingStorm = 105,
-        StormLosses = 110,
-        StormReport = 113,
+        DiallingStorm = 105000,
+        StormLosses = 110000,
+        StormReport = 113000,
 
-        Thumper = 115,
-        BlowA = 120,
-        HarvesterA = 125,
-        BlowB = 130,
-        HarvesterB = 135,
+        Thumper = 115000,
+        BlowA = 120000,
+        HarvesterA = 125000,
+        BlowB = 130000,
+        HarvesterB = 135000,
 
-        YellowSendingMonsterA = 140,
+        YellowSendingMonsterA = 140000,
 
-        AllianceA = 150,
-        YellowRidingMonsterA = 160,
-        YellowSendingMonsterB = 170,
-        AllianceB = 180,
+        AllianceA = 150000,
+        YellowRidingMonsterA = 160000,
+        YellowSendingMonsterB = 170000,
+        AllianceB = 180000,
 
-        YellowRidingMonsterB = 190,
-        NexusCards = 191,
+        YellowRidingMonsterB = 190000,
+        NexusCards = 191000,
 
-        BlowReport = 194,
+        BlowReport = 194000,
 
-        BeginningOfCharity = 1941,
-        ClaimingCharity = 195,
-        CharityReport = 1951,
+        BeginningOfCharity = 194500,
+        ClaimingCharity = 195000,
+        CharityReport = 195100,
 
-        GreySelectingCard = 196,
-        GreyRemovingCardFromBid = 197,
-        GreySwappingCard = 198,
+        BlackMarketAnnouncement = 195500,
+        BlackMarketBidding = 195600,
+        WhiteAnnouncingAuction = 195700,
+        WhiteSpecifyingAuction = 195800,
+        WhiteKeepingUnsoldCard = 195900,
 
-        Bidding = 200,
-        ReplacingCardJustWon = 201,
-        WaitingForNextBiddingRound = 205,
-        BiddingReport = 208,
+        GreySelectingCard = 196000,
+        GreyRemovingCardFromBid = 197000,
+        GreySwappingCard = 198000,
 
-        BeginningOfResurrection = 209,
-        Resurrection = 210,
-        ResurrectionReport = 215,
+        Bidding = 200000,
+        ReplacingCardJustWon = 201000,
+        WaitingForNextBiddingRound = 205000,
+        BiddingReport = 208000,
 
-        BeginningOfShipAndMove = 219,
+        BeginningOfResurrection = 209000,
+        Resurrection = 210000,
+        ResurrectionReport = 215000,
 
-        NonOrangeShip = 220,
+        BeginningOfShipAndMove = 219000,
 
-        OrangeShip = 230,
+        NonOrangeShip = 220000,
 
-        BlueAccompaniesNonOrange = 240,
-        BlueAccompaniesOrange = 250,
-        BlueIntrudedByNonOrangeShip = 255,
-        BlueIntrudedByOrangeShip = 256,
+        OrangeShip = 230000,
 
-        NonOrangeMove = 260,
+        BlueAccompaniesNonOrange = 240000,
+        BlueAccompaniesOrange = 250000,
+        BlueIntrudedByNonOrangeShip = 255000,
+        TerrorTriggeredByOrangeShip = 255100,
+        BlueIntrudedByOrangeShip = 256000,
+        TerrorTriggeredByNonOrangeShip = 256100,
 
-        OrangeMove = 270,
+        NonOrangeMove = 260000,
 
-        BlueIntrudedByNonOrangeMove = 280,
-        BlueIntrudedByOrangeMove = 290,
-        BlueIntrudedByCaravan = 295,
-        BlueIntrudedByYellowRidingMonsterA = 296,
-        BlueIntrudedByYellowRidingMonsterB = 297,
+        OrangeMove = 270000,
 
-        ShipmentAndMoveConcluded = 299,
+        BlueIntrudedByNonOrangeMove = 280000,
+        TerrorTriggeredByNonOrangeMove = 281000,
+        BlueIntrudedByOrangeMove = 290000,
+        TerrorTriggeredByOrangeMove = 291000,
+        BlueIntrudedByCaravan = 295000,
+        TerrorTriggeredByCaravan = 295100,
+        BlueIntrudedByYellowRidingMonsterA = 296000,
+        TerrorTriggeredByYellowRidingMonsterA = 296100,
+        BlueIntrudedByYellowRidingMonsterB = 297000,
+        TerrorTriggeredByYellowRidingMonsterB = 297100,
 
-        BeginningOfBattle = 301,
-        BattlePhase = 300,
-        CallTraitorOrPass = 310,
-        CaptureDecision = 311,
-        AvoidingAudit = 312,
+        ShipmentAndMoveConcluded = 299000,
 
-        Auditing = 313,
-        Retreating = 314,
+        BeginningOfBattle = 299900,
+        BattlePhase = 300000,
+        CallTraitorOrPass = 310000,
+        CaptureDecision = 311000,
+        AvoidingAudit = 312000,
 
-        BattleConclusion = 315,
+        Auditing = 313000,
+        Retreating = 314000,
 
-        Facedancing = 320,
+        BattleConclusion = 315000,
 
-        BattleReport = 330,
+        Facedancing = 320000,
 
-        BeginningOfCollection = 339,
-        CollectionReport = 340,
+        BattleReport = 330000,
 
-        PerformingKarmaHandSwap = 350,
+        BeginningOfCollection = 339000,
+        CollectionReport = 340000,
 
-        TradingCards = 351,
+        PerformingKarmaHandSwap = 350000,
 
-        Clairvoyance = 360,
+        TradingCards = 351000,
 
-        SearchingDiscarded = 370,
+        Clairvoyance = 360000,
 
-        ReplacingFaceDancer = 395,
+        SearchingDiscarded = 370000,
 
-        Contemplate = 398,
-        TurnConcluded = 399,
-        GameEnded = 400,
+        ReplacingFaceDancer = 395000,
 
-        BlackMarketAnnouncement = 500,
-        BlackMarketBidding = 501,
-        WhiteAnnouncingAuction = 505,
-        WhiteSpecifyingAuction = 506,
-        WhiteKeepingUnsoldCard = 507,
+        Extortion = 397000,
+        Contemplate = 398000,
+        TurnConcluded = 399000,
+        GameEnded = 400000,
 
-        Bureaucracy = 508,
-        AssigningSkill = 509,
-        Thought = 510,
-        MeltingRock = 511
+        Bureaucracy = 508000,
+        AssigningSkill = 509000,
+        Thought = 510000,
+        MeltingRock = 511000,
     }
 
     public enum Milestone : int
