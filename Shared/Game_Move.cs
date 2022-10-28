@@ -631,6 +631,8 @@ namespace Treachery.Shared
                             Discard(initiator, initiator.TreacheryCards.RandomOrDefault());
                         }
 
+                        AtomicsAftermath = LastShipmentOrMovement.To.Territory;
+
                         Log(e.Initiator, " DETONATE ATOMICS in ", LastShipmentOrMovement.To.Territory);
                         break;
 

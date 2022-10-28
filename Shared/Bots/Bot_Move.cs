@@ -83,7 +83,7 @@ namespace Treachery.Shared
             bool winning = IAmWinning;
             LogInfo("DetermineMove(). AllIn: {0}, Winning: {1}.", LastTurn, winning);
 
-            if (decidedShipmentAction == ShipmentDecision.StrongholdNearResources)
+            if (decidedShipmentAction == ShipmentDecision.StrongholdNearResources && ForcesInLocations.ContainsKey(decidedShipment.To))
             {
                 LogInfo("Move to spice");
                 var toMove = ForcesInLocations[decidedShipment.To].Take(decidedShipment.ForceAmount + decidedShipment.SpecialForceAmount, Faction == Faction.Grey);

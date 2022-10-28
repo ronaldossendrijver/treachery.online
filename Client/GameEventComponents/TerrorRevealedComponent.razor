@@ -14,16 +14,16 @@
         @if (TerrorRevealed.GetTypes(Game).Count() > 1)
         {
             <SelectComponent @bind-Value="_type" Values=@TerrorRevealed.GetTypes(Game)>
-                <Label>Token</Label>
+                <Label>Which kind of terror to use?</Label>
              </SelectComponent>
         }
         else
         {
-
             _type = TerrorRevealed.GetTypes(Game).First();
+            <div>Use @Name(_type)?</div>
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText=@Name(_type) ConfirmError=@Validation Pass="Pass" OtherText="Pass" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText=@Skin.Current.Format("Use {0}", _type) ConfirmError=@Validation Pass="Pass" OtherText="Pass" />
     </Body>
 
 </GameEventComponentLayout>

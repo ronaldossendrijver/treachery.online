@@ -152,6 +152,11 @@
                 result += Skin.Current.Format("<p>Yields a victory point at end of turn.</p>");
             }
 
+            if (intelligenceLocation.Territory == Game.AtomicsAftermath)
+            {
+                result += Skin.Current.Format("<p>ATOMICS AFTERMATH - No shipping here.</p>");
+            }
+
             if (intelligenceLocation == Game.Map.Arrakeen || intelligenceLocation == Game.Map.Carthag)
             {
                 result += Skin.Current.Format("<p><strong>Harvesters: </strong>when occupied, grants a {0} collection rate of 3-per-force.</p>", Concept.Resource);

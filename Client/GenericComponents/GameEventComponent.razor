@@ -32,16 +32,19 @@
     protected async Task Confirm()
     {
         await Request(ConfirmedResult);
+        StateHasChanged();
     }
 
     protected async Task Pass()
     {
         await Request(PassedResult);
+        StateHasChanged();
     }
 
     protected async Task Other()
     {
         await Request(OtherResult);
+        StateHasChanged();
     }
 
     protected Message Validation

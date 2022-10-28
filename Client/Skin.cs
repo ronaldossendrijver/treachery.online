@@ -2445,6 +2445,7 @@ namespace Treachery.Client
 
             TerrorTokenName_STR = new Dictionary<TerrorType, string>()
             {
+                [TerrorType.None] = "None",
                 [TerrorType.Assassination] = "Assassination",
                 [TerrorType.Atomics] = "Atomics",
                 [TerrorType.Extortion] = "Extortion",
