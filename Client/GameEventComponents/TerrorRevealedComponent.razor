@@ -23,7 +23,39 @@
             <div>Use @Name(_type)?</div>
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText=@Skin.Current.Format("Use {0}", _type) ConfirmError=@Validation Pass="Pass" OtherText="Pass" />
+        @if(_type == TerrorType.Robbery)
+        {
+            <RadioComponent @bind-Value="_robberyTakesCard" Values="@(new bool[] {false,true})" ValueLabels="@(new string[] {"Steal half their spice (rounded up)", "Draw a Treachery Card"})">
+                <Label>Which kind of robbery?</Label>
+            </RadioComponent>
+        }
+        else
+        {
+            _robberyTakesCard = false;
+        }
+
+        @if (_type == TerrorType.Sabotage)
+        {
+            <SelectCardComponent @bind-Value="_toGiveInSabotage" Values="Player.TreacheryCards" Required="true">
+                <Label>You may select one of your treachery cards to give to them</Label>
+            </SelectCardComponent>
+        }
+        else
+        {
+            _toGiveInSabotage = null;
+        }
+
+        @if (_type == TerrorType.SneakAttack)
+        {
+            <SelectForcesComponent @bind-Value="_forcesInSneakAttack" Min="0" Max=@TerrorRevealed.MaxAmountOfForcesInSneakAttack(Game, Player) Faction="Faction" Special="false" Label="Amount of forces" />
+        }
+        else
+        {
+            _forcesInSneakAttack = 0;
+        }
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText=@Skin.Current.Format("Execute {0}", _type) ConfirmError=@Validation Pass="Pass" OtherText="Pass" />
+
     </Body>
 
 </GameEventComponentLayout>
@@ -34,8 +66,11 @@
     protected override Faction IsFactionSpecific => Faction.Cyan;
 
     private TerrorType _type;
+    private bool _robberyTakesCard;
+    private TreacheryCard _toGiveInSabotage;
+    private int _forcesInSneakAttack;
 
-    protected override TerrorRevealed ConfirmedResult => new TerrorRevealed(Game) { Initiator = Faction, Type = _type };
+    protected override TerrorRevealed ConfirmedResult => new TerrorRevealed(Game) { Initiator = Faction, Type = _type, RobberyTakesCard = _robberyTakesCard, CardToGiveInSabotage = _toGiveInSabotage, ForcesInSneakAttack = _forcesInSneakAttack };
 
     protected override TerrorRevealed PassedResult => new TerrorRevealed(Game) { Initiator = Faction, Passed = true };
 }

@@ -86,6 +86,9 @@ namespace Treachery.Shared
 
             switch (CurrentPhase)
             {
+                case Phase.Discarding:
+                    if (faction == FactionThatMustDiscard) result.Add(typeof(Discarded));
+                    break;
                 case Phase.Bureaucracy:
                     if (player == PlayerSkilledAs(LeaderSkill.Bureaucrat)) result.Add(typeof(Bureaucracy));
                     break;

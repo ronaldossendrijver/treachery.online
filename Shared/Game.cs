@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Treachery.Shared
@@ -267,6 +268,14 @@ namespace Treachery.Shared
                     EnterStormPhase();
                     break;
             }
+        }
+
+        private Phase PhaseBeforeDiscarding { get; set; }
+        private Faction FactionThatMustDiscard { get; set; }
+        public void HandleEvent(Discarded e)
+        {
+            Discard(e.Player, e.Card);
+            CurrentPhase = PhaseBeforeDiscarding;
         }
 
         #endregion EventHandling
@@ -840,6 +849,11 @@ namespace Treachery.Shared
         public bool IsNotFull(Player p, Location l)
         {
             return (!l.Territory.IsStronghold || (p.Is(Faction.Blue) && p.SpecialForcesIn(l) > 0) || NrOfOccupantsExcludingPlayer(l, p) < 2);
+        }
+
+        public bool IsNotFull(Player p, Territory t)
+        {
+            return (!t.IsStronghold || (p.Is(Faction.Blue) && p.SpecialForcesIn(t) > 0) || NrOfOccupantsExcludingPlayer(t, p) < 2);
         }
 
         public static Payment Payment(int amount)

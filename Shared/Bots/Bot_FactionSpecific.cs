@@ -928,7 +928,7 @@ namespace Treachery.Shared
         protected virtual TerrorPlanted DetermineTerrorPlanted()
         {
             //This is for now just random
-            var type = TerrorPlanted.ValidTerrorTypes(Game, false).First();
+            var type = TerrorPlanted.ValidTerrorTypes(Game, false).RandomOrDefault();
             if (TerrorPlanted.ValidTerrorTypes(Game, false).Contains(TerrorType.Extortion)) type = TerrorType.Extortion;
 
             return new TerrorPlanted(Game) { Initiator = Faction, Type = type, Stronghold = TerrorPlanted.ValidStrongholds(Game, this).First() };
@@ -937,7 +937,9 @@ namespace Treachery.Shared
         protected virtual TerrorRevealed DetermineTerrorRevealed()
         {
             //This is for now just random
-            return new TerrorRevealed(Game) { Initiator = Faction, Type = TerrorRevealed.GetTypes(Game).First() };
+            var type = TerrorRevealed.GetTypes(Game).RandomOrDefault();
+            var cardInSabotage = TreacheryCards.FirstOrDefault(c => c.IsUseless);
+            return new TerrorRevealed(Game) { Initiator = Faction, Type = type, RobberyTakesCard = false, CardToGiveInSabotage = cardInSabotage, ForcesInSneakAttack = TerrorRevealed.MaxAmountOfForcesInSneakAttack(Game, this) };
         }
 
         protected virtual ExtortionPrevented DetermineExtortionPrevented()

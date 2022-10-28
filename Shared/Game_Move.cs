@@ -600,61 +600,108 @@ namespace Treachery.Shared
 
         public void HandleEvent(TerrorRevealed e)
         {
+            var initiator = GetPlayer(e.Initiator);
+            var territory = LastShipmentOrMovement.To.Territory;
+            var victim = GetPlayer(LastShipmentOrMovement.Initiator);
+
             if (!e.Passed)
             {
-                var initiator = GetPlayer(e.Initiator);
                 TerrorOnPlanet.Remove(e.Type);
                 
                 switch (e.Type)
                 {
                     case TerrorType.Assassination:
 
-                        var randomLeader = GetPlayer(LastShipmentOrMovement.Initiator).Leaders.RandomOrDefault();
+                        var randomLeader = victim.Leaders.RandomOrDefault();
                         if (randomLeader != null)
                         {
-                            Log(e.Initiator, " gain ", Payment(randomLeader.CostToRevive), " from assassinating ", randomLeader, " in ", LastShipmentOrMovement.To.Territory);
+                            Log(e.Initiator, " gain ", Payment(randomLeader.CostToRevive), " from assassinating ", randomLeader, " in ", territory);
                             initiator.Resources += randomLeader.CostToRevive;
                             KillHero(randomLeader);
                         }
                         else
                         {
-                            Log(e.Initiator, " fail to assassinate a leader in ", LastShipmentOrMovement.To.Territory);
+                            Log(e.Initiator, " fail to assassinate a leader in ", territory);
                         }
                         break;
 
                     case TerrorType.Atomics:
 
-                        KillAllForcesIn(LastShipmentOrMovement.To.Territory);
+                        KillAllForcesIn(territory);
+                        AtomicsAftermath = territory;
 
                         if (initiator.TreacheryCards.Count > initiator.MaximumNumberOfCards)
                         {
                             Discard(initiator, initiator.TreacheryCards.RandomOrDefault());
                         }
 
-                        AtomicsAftermath = LastShipmentOrMovement.To.Territory;
-
-                        Log(e.Initiator, " DETONATE ATOMICS in ", LastShipmentOrMovement.To.Territory);
+                        Log(e.Initiator, " DETONATE ATOMICS in ", territory);
                         break;
 
                     case TerrorType.Extortion:
 
-                        Log(e.Initiator, " gain ", Payment(5), " from ", e.Type, " in ", LastShipmentOrMovement.To.Territory);
+                        Log(e.Initiator, " gain ", Payment(5), " from ", e.Type, " in ", territory);
                         initiator.Extortion += 5;
                         break;
 
-                }
+                    case TerrorType.Robbery:
 
-                FlipBeneGesseritWhenAlone();
+                        if (e.RobberyTakesCard)
+                        {
+                            initiator.TreacheryCards.Add(DrawTreacheryCard());
+                            Log(e.Initiator, " draw a Treachery Card");
+                        }
+                        else
+                        {
+                            var amountStolen = (int)Math.Ceiling(0.5f * victim.Resources);
+                            initiator.Resources += amountStolen;
+                            victim.Resources -= amountStolen;
+                            Log(e.Initiator, " steal ", Payment(amountStolen), " from ", e.Type, " in ", territory);
+                        }
+                        break;
+
+                    case TerrorType.Sabotage:
+
+                        Log(e.Initiator, " sabotage ", victim.Faction);
+
+                        if (victim.TreacheryCards.Any())
+                        {
+                            Discard(victim.TreacheryCards.RandomOrDefault());
+                        }
+
+                        if (e.CardToGiveInSabotage != null)
+                        {
+                            initiator.TreacheryCards.Remove(e.CardToGiveInSabotage);
+                            victim.TreacheryCards.Add(e.CardToGiveInSabotage);
+                            Log(e.Initiator, " give a treachery card to ", victim.Faction);
+                        }
+
+                        break;
+
+                    case TerrorType.SneakAttack:
+
+                        Log(e.Initiator, " sneak attack ", territory, " with ", e.ForcesInSneakAttack, initiator.Force);
+                        initiator.ShipForces(territory.MiddleLocation, e.ForcesInSneakAttack);
+                        break;
+
+                }
             }
             else
             {
-                Log(e.Initiator, " don't terrorize ", LastShipmentOrMovement.To.Territory);
+                Log(e.Initiator, " don't terrorize ", territory);
             }
 
-            if (e.Passed || !TerrorIn(LastShipmentOrMovement.To.Territory).Any())
+            if (e.Passed || !TerrorIn(territory).Any())
             {
                 TerrorTriggered = false;
                 DetermineNextShipmentAndMoveSubPhase();
+            }
+
+            if (!e.Passed && e.Type == TerrorType.Robbery && e.RobberyTakesCard && initiator.TreacheryCards.Count > initiator.MaximumNumberOfCards)
+            {
+                PhaseBeforeDiscarding = CurrentPhase;
+                FactionThatMustDiscard = e.Initiator;
+                Enter(Phase.Discarding);
             }
         }
 

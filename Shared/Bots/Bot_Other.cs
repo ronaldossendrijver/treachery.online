@@ -10,6 +10,12 @@ namespace Treachery.Shared
 {
     public partial class Player
     {
+        private Discarded DetermineDiscarded()
+        {
+            var worstCard = TreacheryCards.OrderBy(c => CardQuality(c)).First();
+            return new Discarded(Game) { Initiator = Faction, Card = worstCard };
+        }
+
         private CharityClaimed DetermineCharityClaimed()
         {
             if (!(Game.EconomicsStatus == BrownEconomicsStatus.Cancel || Game.EconomicsStatus == BrownEconomicsStatus.CancelFlipped))

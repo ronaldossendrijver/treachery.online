@@ -98,6 +98,7 @@ namespace Treachery.Shared
                 Do(DetermineBureaucracy, ref action, evts) ||
                 Do(DetermineNexusCardDrawn, ref action, evts) ||
                 Do(DetermineExtortionPrevented, ref action, evts) ||
+                Do(DetermineDiscarded, ref action, evts) ||
 
                 //Brown
                 Do(DetermineBrownEconomics, ref action, evts) ||

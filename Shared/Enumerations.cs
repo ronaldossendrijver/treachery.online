@@ -239,6 +239,7 @@ namespace Treachery.Shared
         AssigningSkill = 509000,
         Thought = 510000,
         MeltingRock = 511000,
+        Discarding = 600000,
     }
 
     public enum Milestone : int
