@@ -19,6 +19,8 @@ namespace Treachery.Shared
         {
         }
 
+        public bool AllianceOffered;
+
         public bool Passed { get; set; }
 
         public TerrorType Type { get; set; }
@@ -44,11 +46,14 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (!Passed)
-            {
-                if (Initiator != Faction.Cyan) return Message.Express("Your faction can't reveal terror tokens");
-                if (Type == TerrorType.SneakAttack && ForcesInSneakAttack > 0 && !MayPlaceForcesInSabotage(Game, Player)) return Message.Express("You can't send forces due to storm or occupancy");
-            }
+            if (Passed && !MayPass(Game)) return Message.Express("You must reveal a terror token");
+            if (AllianceOffered && !MayOfferAlliance(Game)) return Message.Express("You can't offer an alliance again");
+
+            if (Passed || AllianceOffered) return null;
+
+            if (Initiator != Faction.Cyan) return Message.Express("Your faction can't reveal terror tokens");
+            if (Type == TerrorType.SneakAttack && ForcesInSneakAttack > 0 && !MayPlaceForcesInSabotage(Game, Player)) return Message.Express("You can't send forces due to storm or occupancy");
+
             return null;
         }
 
@@ -59,15 +64,23 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            if (!Passed)
+            if (AllianceOffered)
             {
-                return Message.Express(Initiator, " resort to ", Type);
+                return Message.Express(Initiator, " offer an alliance to ", Type);
             }
-            else
+            if (Passed)
             {
                 return Message.Express(Initiator, " don't terrorize");
             }
+            else
+            {
+                return Message.Express(Initiator, " resort to ", Type);
+            }
         }
+
+        public static bool MayPass(Game g) => !g.AllianceByTerrorWasOffered;
+
+        public static bool MayOfferAlliance(Game g) => !g.AllianceByTerrorWasOffered && GetVictim(g) != Faction.Pink;
 
         public static Territory GetTerritory(Game g) => g.LastShipmentOrMovement.To.Territory;
 

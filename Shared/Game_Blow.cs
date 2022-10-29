@@ -355,7 +355,19 @@ namespace Treachery.Shared
             var matchingOffer = CurrentAllianceOffers.FirstOrDefault(x => x.Initiator == e.Target && x.Target == e.Initiator);
             if (matchingOffer != null)
             {
-                MakeAlliance(e);
+                MakeAlliance(e.Initiator, e.Target);
+
+                AllianceOffered invalidOffer;
+                while ((invalidOffer = CurrentAllianceOffers.FirstOrDefault(x => x.By(e.Initiator) || x.Initiator == e.Target)) != null)
+                {
+                    CurrentAllianceOffers.Remove(invalidOffer);
+                }
+
+                if (Version > 150)
+                {
+                    HasActedOrPassed.Add(e.Initiator);
+                    HasActedOrPassed.Add(e.Target);
+                }
             }
             else
             {
@@ -364,27 +376,15 @@ namespace Treachery.Shared
             }
         }
 
-        private void MakeAlliance(AllianceOffered e)
+        private void MakeAlliance(Faction a, Faction b)
         {
-            var initiator = GetPlayer(e.Initiator);
-            var target = GetPlayer(e.Target);
-            initiator.Ally = e.Target;
-            target.Ally = e.Initiator;
-            DiscardNexusCard(initiator);
-            DiscardNexusCard(target);
-            Log(e.Initiator, " and ", e.Target, " are now allies");
-
-            AllianceOffered invalidOffer;
-            while ((invalidOffer = CurrentAllianceOffers.FirstOrDefault(x => x.By(e.Initiator) || x.Initiator == e.Target)) != null)
-            {
-                CurrentAllianceOffers.Remove(invalidOffer);
-            }
-
-            if (Version > 150)
-            {
-                HasActedOrPassed.Add(e.Initiator);
-                HasActedOrPassed.Add(e.Target);
-            }
+            var playerA = GetPlayer(a);
+            var playerB = GetPlayer(b);
+            playerA.Ally = b;
+            playerB.Ally = a;
+            DiscardNexusCard(playerA);
+            DiscardNexusCard(playerB);
+            Log(a, " and ", b, " are now allies");
         }
 
         public void HandleEvent(AllianceBroken e)

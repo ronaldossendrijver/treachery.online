@@ -200,6 +200,8 @@ namespace Treachery.Shared
         BlueIntrudedByYellowRidingMonsterB = 297000,
         TerrorTriggeredByYellowRidingMonsterB = 297100,
 
+        AllianceByTerror = 298000,
+
         ShipmentAndMoveConcluded = 299000,
 
         BeginningOfBattle = 299900,

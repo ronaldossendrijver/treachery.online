@@ -89,6 +89,9 @@ namespace Treachery.Shared
                 case Phase.Discarding:
                     if (faction == FactionThatMustDiscard) result.Add(typeof(Discarded));
                     break;
+                case Phase.AllianceByTerror:
+                    if (faction == TerrorRevealed.GetVictim(this)) result.Add(typeof(AllianceByTerror));
+                    break;
                 case Phase.Bureaucracy:
                     if (player == PlayerSkilledAs(LeaderSkill.Bureaucrat)) result.Add(typeof(Bureaucracy));
                     break;

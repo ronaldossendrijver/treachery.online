@@ -54,7 +54,26 @@
             _forcesInSneakAttack = 0;
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText=@Skin.Current.Format("Execute {0}", _type) ConfirmError=@Validation Pass="Pass" OtherText="Pass" />
+        if (TerrorRevealed.MayOfferAlliance(Game))
+        {
+            <div>You may also offer them an alliance as an alternative to violence.</div>
+        }
+
+        @if (TerrorRevealed.MayPass(Game))
+        {
+            if (TerrorRevealed.MayOfferAlliance(Game))
+            {
+                <ButtonRowComponent Confirm="Confirm" ConfirmText=@Skin.Current.Format("Execute {0}", _type) ConfirmError=@Validation Pass="Pass" Other="Other" OtherText="Offer Alliance" />
+            }
+            else
+            {
+                <ButtonRowComponent Confirm="Confirm" ConfirmText=@Skin.Current.Format("Execute {0}", _type) ConfirmError=@Validation Pass="Pass" />
+            }
+        }
+        else
+        {
+            <ButtonRowComponent Confirm="Confirm" ConfirmText=@Skin.Current.Format("Execute {0}", _type) ConfirmError=@Validation />
+        }
 
     </Body>
 
@@ -73,4 +92,6 @@
     protected override TerrorRevealed ConfirmedResult => new TerrorRevealed(Game) { Initiator = Faction, Type = _type, RobberyTakesCard = _robberyTakesCard, CardToGiveInSabotage = _toGiveInSabotage, ForcesInSneakAttack = _forcesInSneakAttack };
 
     protected override TerrorRevealed PassedResult => new TerrorRevealed(Game) { Initiator = Faction, Passed = true };
+
+    protected override TerrorRevealed OtherResult => new TerrorRevealed(Game) { Initiator = Faction, AllianceOffered = true };
 }

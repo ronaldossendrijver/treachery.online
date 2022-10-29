@@ -598,16 +598,32 @@ namespace Treachery.Shared
             DetermineNextShipmentAndMoveSubPhase();
         }
 
+        private Phase PausedTerrorPhase { get; set; }
+        public bool AllianceByTerrorWasOffered { get; private set; } = false;
+
         public void HandleEvent(TerrorRevealed e)
         {
             var initiator = GetPlayer(e.Initiator);
             var territory = LastShipmentOrMovement.To.Territory;
             var victim = GetPlayer(LastShipmentOrMovement.Initiator);
 
-            if (!e.Passed)
+            if (e.Passed)
+            {
+                Log(e.Initiator, " don't terrorize ", territory);
+                AllianceByTerrorWasOffered = false;
+            }
+            else if (e.AllianceOffered)
+            {
+                Log(e.Initiator, " offer an alliance to ", territory, " as an alternative to terror");
+                AllianceByTerrorWasOffered = true;
+                PausedTerrorPhase = CurrentPhase;
+                Enter(Phase.AllianceByTerror);
+            }
+            else
             {
                 TerrorOnPlanet.Remove(e.Type);
-                
+                AllianceByTerrorWasOffered = false;
+
                 switch (e.Type)
                 {
                     case TerrorType.Assassination:
@@ -686,10 +702,6 @@ namespace Treachery.Shared
 
                 }
             }
-            else
-            {
-                Log(e.Initiator, " don't terrorize ", territory);
-            }
 
             if (e.Passed || !TerrorIn(territory).Any())
             {
@@ -703,6 +715,33 @@ namespace Treachery.Shared
                 FactionThatMustDiscard = e.Initiator;
                 Enter(Phase.Discarding);
             }
+        }
+
+        public void HandleEvent(AllianceByTerror e)
+        {
+            if (e.Passed)
+            {
+                if (e.Player.HasAlly)
+                {
+                    Log(e.Initiator, " and ", e.Player.Ally, " end their alliance");
+                    BreakAlliance(e.Initiator);
+                }
+
+                var cyan = GetPlayer(Faction.Cyan);
+                if (cyan.HasAlly)
+                {
+                    Log(Faction.Cyan, " and ", cyan.Ally, " end their alliance");
+                    BreakAlliance(Faction.Cyan);
+                }
+
+                MakeAlliance(e.Initiator, Faction.Cyan);
+            }
+            else
+            {
+                Log(e.Initiator, " don't ally with ", Faction.Cyan);
+            }
+
+            Enter(PausedTerrorPhase);
         }
 
         private void DetermineNextShipmentAndMoveSubPhase()
