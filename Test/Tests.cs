@@ -169,7 +169,7 @@ namespace Treachery.Test
                 }
                 else if (currentNumberOfCards != previousNumberOfCardsInPlay)
                 {
-                    return string.Format("Total number of cards has changed: {0} - {1}.",
+                    return string.Format("Total number of cards has changed from {0} to {1}.",
                         previousNumberOfCardsInPlay,
                         currentNumberOfCards);
                 }
@@ -178,7 +178,7 @@ namespace Treachery.Test
             if (g.CurrentTurn >= 1)
             {
                 int previousNumberOfLeadersInPlay = _leadercount.CountOf(g.Seed);
-                int currentNumberOfLeaders = g.Players.Sum(player => player.Leaders.Count);
+                int currentNumberOfLeaders = g.Players.Sum(player => player.Leaders.Where(l => l.HeroType != HeroType.Vidal).Count());
                 if (previousNumberOfLeadersInPlay == 0)
                 {
                     lock (_leadercount)
@@ -188,7 +188,7 @@ namespace Treachery.Test
                 }
                 else if (currentNumberOfLeaders != previousNumberOfLeadersInPlay)
                 {
-                    return string.Format("Total number of leaders has changed: {0} - {1}.",
+                    return string.Format("Total number of leaders has changed from {0} to {1}.",
                         previousNumberOfLeadersInPlay,
                         currentNumberOfLeaders);
                 }
@@ -232,7 +232,7 @@ namespace Treachery.Test
             }
 
 
-            if (g.Players.Any(p => p.Leaders.Any(l => l.Faction != p.Faction && p.Faction != Faction.Purple && !g.CapturedLeaders.ContainsKey(l))))
+            if (g.Players.Any(p => p.Leaders.Any(l => l.HeroType != HeroType.Vidal && l.Faction != p.Faction && p.Faction != Faction.Purple && !g.CapturedLeaders.ContainsKey(l))))
             {
                 return "Lost Leader";
             }

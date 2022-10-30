@@ -2,6 +2,7 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -95,7 +96,26 @@ namespace Treachery.Shared
             }
 
             DetermineStrongholdOwnership();
+            DetermineIfVidalIsSetAside();
             MainPhaseEnd();
+        }
+
+        private void DetermineIfVidalIsSetAside()
+        {
+            if (VidalWasGainedByCyanThisTurn)
+            {
+                var vidal = Vidal;
+
+                if (IsAlive(vidal))
+                {
+                    var cyan = GetPlayer(Faction.Cyan);
+                    if (cyan.Leaders.Contains(vidal) && IsAlive(vidal))
+                    {
+                        cyan.Leaders.Remove(vidal);
+                        Log(Faction.Cyan, " set aside ", vidal);
+                    }
+                }
+            }
         }
 
         private void AddBribesToPlayerResources()

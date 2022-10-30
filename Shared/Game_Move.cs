@@ -651,6 +651,7 @@ namespace Treachery.Shared
                             Discard(initiator, initiator.TreacheryCards.RandomOrDefault());
                         }
 
+                        RecentMilestones.Add(Milestone.MetheorUsed);
                         Log(e.Initiator, " DETONATE ATOMICS in ", territory);
                         break;
 
@@ -979,11 +980,49 @@ namespace Treachery.Shared
 
         private void ConcludeShipmentAndMove()
         {
+            CheckIfCyanGainsVidal();
             CurrentKarmaShipmentPrevention = null;
             MainPhaseEnd();
             Enter(Phase.ShipmentAndMoveConcluded);
             ReceiveShipsTechIncome();
             BrownHasExtraMove = false;
+        }
+
+        private Leader Vidal => LeaderState.Keys.FirstOrDefault(h => h.HeroType == HeroType.Vidal) as Leader;
+
+        private bool VidalWasGainedByCyanThisTurn { get; set; } = false;
+        private void CheckIfCyanGainsVidal()
+        {
+            var cyan = GetPlayer(Faction.Cyan);
+            if (cyan != null)
+            {
+                var vidal = Vidal;
+
+                if (vidal != null && IsAlive(vidal))
+                {
+                    var pink = GetPlayer(Faction.Pink);
+                    var nrOfBattlesInStrongholds = Battle.BattlesToBeFought(this, cyan).Select(batt => batt.Item1)
+                        .Where(t => (pink == null || pink.AnyForcesIn(t) == 0) && (t.IsStronghold || IsSpecialStronghold(t))).Distinct().Count();
+
+                    if (nrOfBattlesInStrongholds >= 2)
+                    {
+                        var playerWithVidal = Players.FirstOrDefault(p => p.Leaders.Any(l => l.HeroType == HeroType.Vidal));
+                        if (playerWithVidal == null)
+                        {
+                            Log(Faction.Cyan, " gain ", vidal);
+                            cyan.Leaders.Add(vidal);
+                            VidalWasGainedByCyanThisTurn = true;
+                        }
+                        else if (!playerWithVidal.Is(Faction.Black) && !playerWithVidal.Is(Faction.Purple) && !playerWithVidal.Is(Faction.Cyan))
+                        {
+                            Log(Faction.Cyan, " gain ", vidal, " taking him from ", playerWithVidal.Faction);
+                            cyan.Leaders.Add(vidal);
+                            VidalWasGainedByCyanThisTurn = true;
+                            playerWithVidal.Leaders.Remove(vidal);
+                        }
+                    }
+                }
+            }
         }
 
         public List<Territory> CurrentBlockedTerritories { get; private set; } = new List<Territory>();
