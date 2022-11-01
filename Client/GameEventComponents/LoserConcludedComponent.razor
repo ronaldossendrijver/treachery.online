@@ -1,0 +1,30 @@
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<LoserConcluded>
+
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>You may now select a card you wish to keep</Header>
+
+    <Body>
+
+        <SelectCardComponent @bind-Value="_cardToKeep" Values="Game.CardsToBeDiscardedByLoserAfterBattle" />
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText=@ConfirmLabel ConfirmError=@Validation />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    private TreacheryCard _cardToKeep;
+
+    protected override LoserConcluded ConfirmedResult => new LoserConcluded(Game) { Initiator = Faction, KeptCard = _cardToKeep };
+
+    private string ConfirmLabel => _cardToKeep == null ? "Don't keep any card" : Skin.Current.Format("Keep {0}", _cardToKeep);
+}

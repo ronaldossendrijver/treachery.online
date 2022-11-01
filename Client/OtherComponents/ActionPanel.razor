@@ -218,7 +218,12 @@
                     <BattleConcludedComponent h="@h" />
                 }
                 break;
-            case "RaiseDeadPlayed":
+            case "LoserConcluded":
+                {
+                    <LoserConcludedComponent h="@h" />
+                }
+                break;            
+           case "RaiseDeadPlayed":
                 {
                     <RaiseDeadComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.RaiseDead)" />
                 }

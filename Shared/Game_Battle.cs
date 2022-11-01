@@ -544,9 +544,11 @@ namespace Treachery.Shared
             }
             else
             {
-                Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
+                Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, EnterBattleConclusion);
             }
         }
+
+        
 
         private void PrepareAudit()
         {
@@ -567,8 +569,14 @@ namespace Treachery.Shared
             else
             {
                 Log(Auditee.Faction, " don't have cards to audit");
-                Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
+                Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, EnterBattleConclusion);
             }
+        }
+
+        private void EnterBattleConclusion()
+        {
+
+            Enter(Phase.BattleConclusion);
         }
 
         private void ReturnCapturedLeaders(IHero hero)
@@ -782,7 +790,7 @@ namespace Treachery.Shared
         private void HandleForceLosses()
         {
             ProcessWinnerLosses(CurrentBattle.Territory, BattleOutcome.Winner, BattleOutcome.WinnerBattlePlan, false);
-            ProcessLoserLosses(CurrentBattle.Territory, BattleOutcome.Loser, BattleOutcome.LoserBattlePlan, false);
+            ProcessLoserLosses(CurrentBattle.Territory, BattleOutcome.Loser, BattleOutcome.LoserBattlePlan);
         }
 
         private void DetermineCauseOfDeath(Battle playerPlan, Battle opponentPlan, IHero theHero, bool poisonToothUsed, bool artilleryUsed, bool rockMelterWasUsedToKill, Territory battleTerritory, ref bool heroDies, ref TreacheryCardType causeOfDeath, ref bool savedByCarthag)
@@ -809,14 +817,14 @@ namespace Treachery.Shared
             }
         }
 
-        private void ProcessLoserLosses(Territory territory, Player loser, Battle loserGambit, bool traitorWasRevealed)
+        private void ProcessLoserLosses(Territory territory, Player loser, Battle loserGambit)
         {
             bool hadMessiahBeforeLosses = loser.MessiahAvailable;
 
             Log(loser.Faction, " lose all ", loser.AnyForcesIn(territory), " forces in ", territory);
             loser.KillAllForces(territory, true);
-            LoseCards(loserGambit);
-            PayDialedSpice(loser, loserGambit, traitorWasRevealed);
+            LoseCards(loserGambit, loser.Ally == Faction.Cyan);
+            PayDialedSpice(loser, loserGambit, false);
 
             if (loser.MessiahAvailable && !hadMessiahBeforeLosses)
             {
@@ -1059,7 +1067,7 @@ namespace Treachery.Shared
 
             Log(loser.Faction, " lose all ", loser.SpecialForcesIn(territory) + loser.ForcesIn(territory), " forces in ", territory);
             loser.KillAllForces(territory, true);
-            LoseCards(loserGambit);
+            LoseCards(loserGambit, loser.Ally == Faction.Cyan);
             PayDialedSpice(loser, loserGambit, true);
 
             if (loser.MessiahAvailable && !hadMessiahBeforeLosses)
@@ -1082,10 +1090,10 @@ namespace Treachery.Shared
             Log(aggressor.Faction, " lose all ", aggressor.SpecialForcesIn(territory) + aggressor.ForcesIn(territory), " forces in ", territory);
             aggressor.KillAllForces(territory, true);
 
-            LoseCards(def);
+            LoseCards(def, false);
             PayDialedSpice(defender, def, true);
 
-            LoseCards(agg);
+            LoseCards(agg, false);
             PayDialedSpice(aggressor, agg, true);
 
             if ((aggressor.MessiahAvailable || defender.MessiahAvailable) && !hadMessiahBeforeLosses)
@@ -1119,10 +1127,10 @@ namespace Treachery.Shared
                 KillHero(LeaderManager.Messiah);
             }
 
-            LoseCards(agg);
+            LoseCards(agg, false);
             PayDialedSpice(aggressor, agg, false);
 
-            LoseCards(def);
+            LoseCards(def, false);
             PayDialedSpice(defender, def, false);
 
             int removed = RemoveResources(territory);
@@ -1158,8 +1166,11 @@ namespace Treachery.Shared
 
         #region BattleConclusion
 
+        private bool BattleWasConcludedByWinner { get; set; } = false;
         public void HandleEvent(BattleConcluded e)
         {
+            BattleWasConcludedByWinner = true;
+
             var winner = GetPlayer(e.Initiator);
 
             foreach (var c in e.DiscardedCards)
@@ -1182,8 +1193,30 @@ namespace Treachery.Shared
             DecideFateOfCapturedLeader(e);
             TakeTechToken(e, winner);
             ProcessGreyForceLossesAndSubstitutions(e, winner);
-            Enter(IsPlaying(Faction.Purple) && BattleWinner != Faction.Purple, Phase.Facedancing, FinishBattle);
+
+            if (!CardsToBeDiscardedByLoserAfterBattle.Any())
+            {
+                Enter(IsPlaying(Faction.Purple) && BattleWinner != Faction.Purple, Phase.Facedancing, FinishBattle);
+            }
         }
+
+        public void HandleEvent(LoserConcluded e)
+        {
+            Log(e);
+
+            foreach (var c in CardsToBeDiscardedByLoserAfterBattle.Where(c => c != e.KeptCard))
+            {
+                Discard(c);
+            }
+
+            CardsToBeDiscardedByLoserAfterBattle.Clear();
+
+            if (BattleWasConcludedByWinner)
+            {
+                Enter(IsPlaying(Faction.Purple) && BattleWinner != Faction.Purple, Phase.Facedancing, FinishBattle);
+            }
+        }
+
 
         private void DecideFateOfCapturedLeader(BattleConcluded e)
         {
@@ -1529,7 +1562,7 @@ namespace Treachery.Shared
                 }
             }
 
-            Enter(Phase.BattleConclusion);
+            EnterBattleConclusion();
         }
 
         public Player Auditee
@@ -1595,7 +1628,7 @@ namespace Treachery.Shared
             }
             else
             {
-                Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
+                Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, EnterBattleConclusion);
             }
         }
 
@@ -1608,7 +1641,7 @@ namespace Treachery.Shared
                 RegisterKnown(e.Player, card);
             }
 
-            Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
+            Enter(BattleWinner == Faction.None, FinishBattle, BlackMustDecideToCapture, Phase.CaptureDecision, EnterBattleConclusion);
         }
 
         private void CaptureLeaderIfApplicable()
@@ -1655,6 +1688,8 @@ namespace Treachery.Shared
             BattleLoser = Faction.None;
             HasActedOrPassed.Clear();
             BattleTriggeredBureaucracy = null;
+            CardsToBeDiscardedByLoserAfterBattle.Clear();
+            BattleWasConcludedByWinner = false;
         }
 
         #endregion
@@ -1680,10 +1715,20 @@ namespace Treachery.Shared
             }
         }
 
-        private void LoseCards(Battle plan)
+        public List<TreacheryCard> CardsToBeDiscardedByLoserAfterBattle { get; private set; } = new();
+
+        private void LoseCards(Battle plan, bool mayChooseToKeepOne)
         {
-            Discard(plan.Weapon);
-            Discard(plan.Defense);
+            if (mayChooseToKeepOne)
+            {
+                if (plan.Weapon != null) CardsToBeDiscardedByLoserAfterBattle.Add(plan.Weapon);
+                if (plan.Defense != null) CardsToBeDiscardedByLoserAfterBattle.Add(plan.Defense);
+            }
+            else
+            {
+                Discard(plan.Weapon);
+                Discard(plan.Defense);
+            }
         }
 
         public bool CanJoinCurrentBattle(IHero hero)

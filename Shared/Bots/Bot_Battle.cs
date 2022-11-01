@@ -1126,7 +1126,11 @@ namespace Treachery.Shared
             return null;
         }
 
-
+        protected LoserConcluded DetermineLoserConcluded()
+        {
+            var toKeep = Game.CardsToBeDiscardedByLoserAfterBattle.Where(c => CardQuality(c) > 2).OrderByDescending(c => CardQuality(c)).FirstOrDefault();
+            return new LoserConcluded(Game) { Initiator = Faction, KeptCard = toKeep };
+        }
     }
 
 }
