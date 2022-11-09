@@ -8,13 +8,45 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>You may now select a card you wish to keep</Header>
+    <Header>Please conclude the battle you lost</Header>
 
     <Body>
 
-        <SelectCardComponent @bind-Value="_cardToKeep" Values="Game.CardsToBeDiscardedByLoserAfterBattle" />
+        @if (LoserConcluded.CardsLoserMayKeep(Game).Any())
+        {
+            <SelectCardComponent @bind-Value="_cardToKeep" Values=@LoserConcluded.CardsLoserMayKeep(Game) Required=false>
+                <Label>You may select one card to keep:</Label>
+            </SelectCardComponent>
+        }
+        else
+        {
+            _cardToKeep = null;
+        }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText=@ConfirmLabel ConfirmError=@Validation />
+        @if (LoserConcluded.AssassinationTarget(Game, Player) != null) {
+
+            var assassinated = LoserConcluded.AssassinationTarget(Game, Player);
+
+            <RadioComponent @bind-Value=_assassinate 
+                Values=@(new bool[] {true, false}) 
+                ValueLabels="@(new string[] {"Yes","No"})">
+                <Label>
+                    @if (Game.IsAlive(assassinated))
+                    {
+                        <div>Do you wish to reveal <Image Shown=@assassinated Popover=@Popup.Get(assassinated, Game) Class="img-float" Width=50 /> as your traitor?</div>
+                    }
+                    else {
+                        <div>Do you wish <Image Shown=@assassinated Popover=@Popup.Get(assassinated, Game) Class="img-float" Width=50 /> to be assassinated?</div>
+                    }
+                </Label>
+            </RadioComponent>
+        }
+        else {
+
+            _assassinate = false;
+        }
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation />
 
     </Body>
 
@@ -24,7 +56,7 @@
 
     private TreacheryCard _cardToKeep;
 
-    protected override LoserConcluded ConfirmedResult => new LoserConcluded(Game) { Initiator = Faction, KeptCard = _cardToKeep };
+    private bool _assassinate;
 
-    private string ConfirmLabel => _cardToKeep == null ? "Don't keep any card" : Skin.Current.Format("Keep {0}", _cardToKeep);
+    protected override LoserConcluded ConfirmedResult => new LoserConcluded(Game) { Initiator = Faction, KeptCard = _cardToKeep, Assassinate = _assassinate };
 }

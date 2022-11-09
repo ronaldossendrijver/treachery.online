@@ -637,6 +637,8 @@ namespace Treachery.Shared
 
         #region BattleOutcome
 
+        public bool LoserMayTryToAssassinate { get; private set; } = false;
+
         public void HandleBattleOutcome(Battle agg, Battle def)
         {
             LogIf(BattleOutcome.AggHeroSkillBonus != 0, agg.Hero, " ", BattleOutcome.AggActivatedBonusSkill, " bonus: ", BattleOutcome.AggHeroSkillBonus);
@@ -680,6 +682,8 @@ namespace Treachery.Shared
                 Log(def.Initiator, " (defending) strength: ", BattleOutcome.DefTotal);
             }
 
+            LoserMayTryToAssassinate = BattleLoser == Faction.Cyan && Applicable(Rule.CyanAssassinate) && !Assassinated.Any(l => l.Faction == BattleWinner) && BattleOutcome.WinnerBattlePlan.Hero is Leader && IsAlive(BattleOutcome.WinnerBattlePlan.Hero);
+
             Log(BattleOutcome.Winner.Faction, " WIN THE BATTLE");
 
             bool loserMayRetreat =
@@ -688,7 +692,7 @@ namespace Treachery.Shared
                 (Retreat.MaxForces(this, BattleOutcome.Loser) > 0 || Retreat.MaxSpecialForces(this, BattleOutcome.Loser) > 0) &&
                 Retreat.ValidTargets(this, BattleOutcome.Loser).Any();
 
-            Enter(loserMayRetreat, Phase.Retreating, HandleForceLosses);
+            Enter(loserMayRetreat, Phase.Retreating, HandleLosses);
         }
 
         public BattleOutcome DetermineBattleOutcome(Battle agg, Battle def, Territory territory)
@@ -787,7 +791,7 @@ namespace Treachery.Shared
             return result;
         }
 
-        private void HandleForceLosses()
+        private void HandleLosses()
         {
             ProcessWinnerLosses(CurrentBattle.Territory, BattleOutcome.Winner, BattleOutcome.WinnerBattlePlan, false);
             ProcessLoserLosses(CurrentBattle.Territory, BattleOutcome.Loser, BattleOutcome.LoserBattlePlan);
@@ -1200,9 +1204,14 @@ namespace Treachery.Shared
             }
         }
 
+        public List<Leader> Assassinated { get; private set; } = new();
+
         public void HandleEvent(LoserConcluded e)
         {
-            Log(e);
+            if (e.KeptCard != null)
+            {
+                Log(e.Initiator, " keep ", e.KeptCard);
+            }
 
             foreach (var c in CardsToBeDiscardedByLoserAfterBattle.Where(c => c != e.KeptCard))
             {
@@ -1210,6 +1219,28 @@ namespace Treachery.Shared
             }
 
             CardsToBeDiscardedByLoserAfterBattle.Clear();
+
+            if (e.Assassinate)
+            {
+                var assassinated = LoserConcluded.AssassinationTarget(this, e.Player);
+
+                Assassinated.Add(assassinated);
+                e.Player.RevealedTraitors.Add(assassinated);
+
+                if (IsAlive(assassinated))
+                {
+                    Log(e.Initiator, " get ", Payment(assassinated.CostToRevive), " by ASSASSINATING ", assassinated, "!");
+                    e.Player.Resources += assassinated.CostToRevive;
+                    KillHero(assassinated);
+                    RecentMilestones.Add(Milestone.LeaderKilled);
+                }
+                else
+                {
+                    Log(e.Initiator, " reveal ", assassinated, " as one of their traitors!");
+                }
+            }
+
+            LoserMayTryToAssassinate = false;
 
             if (BattleWasConcludedByWinner)
             {
@@ -1606,7 +1637,7 @@ namespace Treachery.Shared
             }
 
             Log(e);
-            HandleForceLosses();
+            HandleLosses();
             FlipBeneGesseritWhenAlone();
             DetermineHowToProceedAfterRevealingBattlePlans();
         }
@@ -1690,6 +1721,7 @@ namespace Treachery.Shared
             BattleTriggeredBureaucracy = null;
             CardsToBeDiscardedByLoserAfterBattle.Clear();
             BattleWasConcludedByWinner = false;
+            LoserMayTryToAssassinate = false;
         }
 
         #endregion

@@ -3,7 +3,9 @@
  */
 
 using Newtonsoft.Json;
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Treachery.Shared
 {
@@ -16,6 +18,8 @@ namespace Treachery.Shared
         public LoserConcluded()
         {
         }
+
+        public bool Assassinate { get; set; }
 
         public int _keptCardId;
 
@@ -34,6 +38,9 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
+            if (Assassinate && AssassinationTarget(Game, Player) == null) return Message.Express("You can't assassinate");
+            if (KeptCard != null && !CardsLoserMayKeep(Game).Contains(KeptCard)) return Message.Express("You can't keep ", KeptCard);
+
             return null;
         }
 
@@ -43,16 +50,25 @@ namespace Treachery.Shared
             Game.HandleEvent(this);
         }
 
-        public override Message GetMessage()
+        public static Leader AssassinationTarget(Game g, Player p)
         {
-            if (KeptCard != null)
+            if (!g.LoserMayTryToAssassinate)
             {
-                return Message.Express(Initiator, " keep ", KeptCard);
+                return null;
             }
             else
             {
-                return Message.Express(Initiator, " don't keep any cards");
+                return p.Traitors.FirstOrDefault(l => l is Leader && l != g.WinnerHero && l.Faction == g.WinnerHero.Faction && !p.RevealedTraitors.Contains(l)) as Leader;
             }
+        }
+
+        public static IEnumerable<TreacheryCard> CardsLoserMayKeep(Game g) => g.CardsToBeDiscardedByLoserAfterBattle;
+
+        public static bool IsApplicable(Game g, Player p) => p.Faction == g.BattleLoser && (CardsLoserMayKeep(g).Any() || g.LoserMayTryToAssassinate);
+
+        public override Message GetMessage()
+        {
+            return Message.Express(Initiator, " conclude the battle");
         }
     }
 }

@@ -394,6 +394,10 @@ namespace Treachery.Client
             {
                 return Describe(Concept.Monster);
             }
+            else if (c.IsGreatMaker)
+            {
+                return Describe(Concept.GreatMonster);
+            }
             else if (c.IsSandTrout)
             {
                 return Describe(Concept.BabyMonster);
@@ -1499,6 +1503,7 @@ namespace Treachery.Client
 
                 [Concept.Messiah] = "Kwisatz Haderach",
                 [Concept.Monster] = "Shai Hulud",
+                [Concept.GreatMonster] = "Great Maker",
                 [Concept.Resource] = "Spice",
                 [Concept.Graveyard] = "Tleilaxu Tanks",
                 [Concept.BabyMonster] = "Sandtrout"

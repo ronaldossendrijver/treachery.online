@@ -26,9 +26,9 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (e is TerrorRevealed)
+            if (e is LoserConcluded lc && lc.Assassinate && g.RecentMilestones.Contains(Milestone.LeaderKilled) && lc.KeptCard != null)
             {
-                WriteSavegameIfApplicable(g, e.Player, "Terror revealed");
+                WriteSavegameIfApplicable(g, e.Player, "Assassination");
             }
 
             /*

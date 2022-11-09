@@ -218,7 +218,7 @@ namespace Treachery.Shared
         {
             Location target = null;
             var validLocations = YellowRidesMonster.ValidTargets(Game, this).ToList();
-            var battalionsToMove = ForcesInLocations.Where(forcesAtLocation => YellowRidesMonster.ValidSources(Game).Contains(forcesAtLocation.Key.Territory));
+            var battalionsToMove = ForcesOnPlanet.Where(forcesAtLocation => YellowRidesMonster.ValidSources(Game).Contains(forcesAtLocation.Key.Territory));
             var nrOfForces = battalionsToMove.Sum(forcesAtLocation => forcesAtLocation.Value.TotalAmountOfForces);
 
             if (validLocations.Contains(Game.Map.TueksSietch) && VacantAndSafeFromStorm(Game.Map.TueksSietch)) target = Game.Map.TueksSietch;
@@ -979,7 +979,7 @@ namespace Treachery.Shared
         {
             if (Game.CurrentPhase == Phase.ShipmentAndMoveConcluded)
             {
-                var locationWithNoField = ForcesInLocations.FirstOrDefault(b => b.Value.AmountOfSpecialForces > 0).Key;
+                var locationWithNoField = ForcesOnPlanet.FirstOrDefault(b => b.Value.AmountOfSpecialForces > 0).Key;
                 if (locationWithNoField != null && Game.ResourcesOnPlanet.ContainsKey(locationWithNoField) && !OccupiedByOpponent(locationWithNoField.Territory))
                 {
                     return new WhiteRevealedNoField(Game) { Initiator = Faction };

@@ -546,7 +546,7 @@ namespace Treachery.Shared
             return dialNeeded;
         }
 
-        private IEnumerable<Battalion> NearbyBattalionsOutsideStrongholds(Location l) => ForcesInLocations.Where(kvp => !kvp.Key.IsStronghold && WithinRange(kvp.Key, l, kvp.Value)).Select(kvp => kvp.Value);
+        private IEnumerable<Battalion> NearbyBattalionsOutsideStrongholds(Location l) => ForcesOnPlanet.Where(kvp => !kvp.Key.IsStronghold && WithinRange(kvp.Key, l, kvp.Value)).Select(kvp => kvp.Value);
 
         protected virtual bool IsSafeAndNearby(Location source, Location destination, Battalion b, bool mayFight)
         {
@@ -670,7 +670,7 @@ namespace Treachery.Shared
             }
         }
 
-        protected IEnumerable<KeyValuePair<Location, Battalion>> ForceLocationsOutsideStrongholds => ForcesInLocations.Where(f => !f.Key.IsStronghold);
+        protected IEnumerable<KeyValuePair<Location, Battalion>> ForceLocationsOutsideStrongholds => ForcesOnPlanet.Where(f => !f.Key.IsStronghold);
 
         protected Location RichestLocationNearShippableStrongholdFarFromExistingForces => Game.ResourcesOnPlanet.Where(kvp =>
                  !ForceLocationsOutsideStrongholds.Any(looseForce => WithinRange(looseForce.Key, kvp.Key, looseForce.Value)) &&

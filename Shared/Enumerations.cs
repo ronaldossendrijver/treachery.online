@@ -618,7 +618,8 @@ namespace Treachery.Shared
         Resource = 20,
         Monster = 30,
         Graveyard = 40,
-        BabyMonster = 41
+        BabyMonster = 50,
+        GreatMonster = 60,
     }
 
     public enum WinMethod : int

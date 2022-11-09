@@ -32,18 +32,36 @@ namespace Treachery.Shared
                 }
             }
 
+            
+
             Enter(Version >= 103, EnterMentatPause, ContinueMentatPhase);
         }
 
         private bool ExtortionToBeReturned { get; set; } = false;
         private void EnterMentatPause()
         {
+            DetermineIfCyanDrawsNewTraitor();
             ExtortionToBeReturned = Players.Any(p => p.Extortion > 0);
             GainExtortions();
             Enter(ExtortionToBeReturned, Phase.Extortion, EndMentatPause);
         }
 
-        
+        private void DetermineIfCyanDrawsNewTraitor()
+        {
+            var cyan = GetPlayer(Faction.Cyan);
+            if (cyan != null)
+            {
+                foreach (var l in Assassinated.Where(l => cyan.RevealedTraitors.Contains(l)).ToList()) {
+
+                    Log(Faction.Cyan, " set aside ", l, " and draw a new traitor card");
+                    cyan.Traitors.Remove(l);
+                    cyan.RevealedTraitors.Remove(l);
+                    cyan.Traitors.Add(TraitorDeck.Draw());
+
+                }
+            }
+        }
+
         public void HandleEvent(ExtortionPrevented e)
         {
             ExtortionToBeReturned = false;

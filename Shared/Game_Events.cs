@@ -393,7 +393,7 @@ namespace Treachery.Shared
 
                 case Phase.BattleConclusion:
                     if (faction == BattleWinner) result.Add(typeof(BattleConcluded));
-                    if (CardsToBeDiscardedByLoserAfterBattle.Any() && faction == BattleLoser) result.Add(typeof(LoserConcluded));
+                    if (LoserConcluded.IsApplicable(this, player)) result.Add(typeof(LoserConcluded));
                     break;
 
                 case Phase.AvoidingAudit:

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Treachery.Shared
 {
@@ -185,5 +186,11 @@ namespace Treachery.Shared
             }
         }
 
+        public static bool IsApplicable(Game g, Player p)
+        {
+            return
+                g.CardsToBeDiscardedByLoserAfterBattle.Any() && p.Is(g.BattleLoser) ||
+                p.Is(Faction.Cyan) && g.LoserMayTryToAssassinate;
+        }
     }
 }
