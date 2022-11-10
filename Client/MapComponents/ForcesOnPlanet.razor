@@ -129,7 +129,7 @@
         if (h.Game.StrongholdOwnership.ContainsKey(stronghold))
         {
             var opacity = stronghold == Game.Map.HiddenMobileStronghold && !showHMS ? 0.2f : 0.8f;
-            <Image X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src="@Skin.Current.FactionTableImage_URL[h.Game.StrongholdOwnership[stronghold]]"
+            <Image X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src="@Skin.Current.GetFactionTableImageURL(h.Game.StrongholdOwnership[stronghold])"
                 Opacity=opacity Popover=@Popup.Get(stronghold, Game.StrongholdOwnership[stronghold]) />
 
             y += Skin.Current.PlayerTokenRadius;
@@ -138,7 +138,7 @@
         foreach (var terr in Game.TerrorIn(stronghold.Territory))
         {
             var popover = Player.Faction == Faction.Cyan ? Skin.Current.Describe(terr) : "Terror";
-            <Image X=x Y=y Filter="hue-rotate(180deg);" Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.FactionTableImage_URL[h.Game.StrongholdOwnership[stronghold]]
+            <Image X=x Y=y Filter="hue-rotate(180deg);" Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetFactionTableImageURL(Faction.Cyan)
                 ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover />
             
             y += Skin.Current.PlayerTokenRadius;

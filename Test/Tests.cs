@@ -365,7 +365,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 100;
+            int nrOfGames = 200;
             int nrOfTurns = 10;
             int nrOfPlayers = 6;
 
@@ -582,11 +582,18 @@ namespace Treachery.Test
         private static void ExecuteBotEvent(Game game, bool performTests, GameEvent evt)
         {
             var executeResult = evt.Execute(performTests, true);
+            
+            var msg = "";
             if (performTests && executeResult != null)
             {
                 File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
+                msg = executeResult.ToString();
             }
-            if (performTests) Assert.IsNull(executeResult);
+            
+            if (performTests)
+            {
+                Assert.IsNull(executeResult, msg);
+            }
         }
 
         [TestMethod]

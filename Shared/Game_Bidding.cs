@@ -207,6 +207,8 @@ namespace Treachery.Shared
         private void EnterWhiteBidding()
         {
             NumberOfCardsOnAuction = PlayersThatCanBid.Count();
+            //Console.WriteLine("NCA1:" + NumberOfCardsOnAuction);
+
 
             if (CardSoldOnBlackMarket != null)
             {
@@ -283,7 +285,7 @@ namespace Treachery.Shared
             {
                 if (CurrentAuctionType == AuctionType.WhiteSilent)
                 {
-                    Log(Bids.Select(b => MessagePart.Express(b.Key, Payment(b.Value.TotalAmount), " ")).ToList());
+                    Log("Bids: ", Bids.Select(b => MessagePart.Express(b.Key, Payment(b.Value.TotalAmount), " ")).ToList());
                 }
 
                 var highestBid = DetermineHighestBid(Bids);
@@ -328,7 +330,7 @@ namespace Treachery.Shared
             RegularBiddingIsDone = true;
             int numberOfCardsToDraw = NumberOfCardsOnAuction;
 
-            if (IsPlaying(Faction.White) && (Version < 150 || WhiteCache.Count > 0))
+            if (IsPlaying(Faction.White) && (Version < 150 || !WhiteAuctionShouldStillHappen || WhiteAuctionShouldStillHappen && WhiteCache.Count > 0))
             {
                 numberOfCardsToDraw--;
             }

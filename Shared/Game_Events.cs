@@ -392,7 +392,7 @@ namespace Treachery.Shared
                     break;
 
                 case Phase.BattleConclusion:
-                    if (faction == BattleWinner) result.Add(typeof(BattleConcluded));
+                    if (faction == BattleWinner && !BattleWasConcludedByWinner) result.Add(typeof(BattleConcluded));
                     if (LoserConcluded.IsApplicable(this, player)) result.Add(typeof(LoserConcluded));
                     break;
 

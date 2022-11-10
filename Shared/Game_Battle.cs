@@ -164,7 +164,6 @@ namespace Treachery.Shared
                 }
 
                 KillHero(toKill);
-                RecentMilestones.Add(Milestone.LeaderKilled);
                 Log(TreacheryCardType.Residual, " kills ", toKill);
             }
             else
@@ -582,7 +581,7 @@ namespace Treachery.Shared
                 var usedLeaderInBattle = CurrentBattle?.PlanOf(black)?.Hero;
                 if (usedLeaderInBattle != null && usedLeaderInBattle is Leader capturedLeader && black.Leaders.Contains(capturedLeader) && CapturedLeaders.ContainsKey(capturedLeader))
                 {
-                    ReturnLeader(black, capturedLeader);
+                    ReturnCapturedLeader(black, capturedLeader);
                 }
 
                 //Captured leaders that must be returned because Black doesn't have any more leaders
@@ -591,13 +590,13 @@ namespace Treachery.Shared
                     Leader toReturn;
                     while ((toReturn = black.Leaders.FirstOrDefault(c => c.Faction != Faction.Black)) != null)
                     {
-                        ReturnLeader(black, toReturn);
+                        ReturnCapturedLeader(black, toReturn);
                     }
                 }
             }
         }
 
-        private void ReturnLeader(Player currentOwner, Leader toReturn)
+        private void ReturnCapturedLeader(Player currentOwner, Leader toReturn)
         {
             if (CapturedLeaders.ContainsKey(toReturn))
             {
@@ -991,7 +990,6 @@ namespace Treachery.Shared
         private void KillLeaderInBattle(IHero killedHero, TreacheryCardType causeOfDeath, Player winner, int heroValue)
         {
             Log(causeOfDeath, " kills ", killedHero, " → ", winner.Faction, " get ", Payment(heroValue));
-            RecentMilestones.Add(Milestone.LeaderKilled);
             if (killedHero is Leader) KillHero(killedHero);
             winner.Resources += heroValue;
         }
@@ -1052,8 +1050,6 @@ namespace Treachery.Shared
 
             Log(traitor, " is a ", traitorOwner, " traitor! ", loser.Faction, " lose everything");
 
-            RecentMilestones.Add(Milestone.LeaderKilled);
-
             if (traitor is Leader)
             {
                 Log("Treachery kills ", traitor, " → ", winner.Faction, " get ", Payment(traitorValue));
@@ -1077,8 +1073,6 @@ namespace Treachery.Shared
 
         private void TwoTraitorsCalled(Battle agg, Battle def, Player aggressor, Player defender, Territory territory, IHero aggLeader, IHero defLeader)
         {
-            RecentMilestones.Add(Milestone.LeaderKilled);
-
             bool hadMessiahBeforeLosses = aggressor.MessiahAvailable || defender.MessiahAvailable;
 
             Log("Treachery kills both ", defLeader, " and ", aggLeader);
@@ -1193,7 +1187,7 @@ namespace Treachery.Shared
             TakeTechToken(e, winner);
             ProcessGreyForceLossesAndSubstitutions(e, winner);
 
-            if (!CardsToBeDiscardedByLoserAfterBattle.Any())
+            if (!LoserConcluded.IsApplicable(this, GetPlayer(BattleLoser)))
             {
                 Enter(IsPlaying(Faction.Purple) && BattleWinner != Faction.Purple, Phase.Facedancing, FinishBattle);
             }
@@ -1227,7 +1221,6 @@ namespace Treachery.Shared
                     Log(e.Initiator, " get ", Payment(assassinated.CostToRevive), " by ASSASSINATING ", assassinated, "!");
                     e.Player.Resources += assassinated.CostToRevive;
                     KillHero(assassinated);
-                    RecentMilestones.Add(Milestone.LeaderKilled);
                 }
                 else
                 {
@@ -1305,7 +1298,6 @@ namespace Treachery.Shared
             else if (decision == CaptureDecision.Kill)
             {
                 Log(Faction.Black, " kill a leader for ", Payment(2));
-                RecentMilestones.Add(Milestone.LeaderKilled);
                 AssassinateLeader(BlackVictim);
                 harkonnen.Resources += 2;
             }
@@ -1321,12 +1313,12 @@ namespace Treachery.Shared
 
             Log(e.Initiator, " replaced ", toReplace, e.ReplacedTraitor, " with another leader from the traitor deck");
 
-            var deck = e.Initiator == Faction.Purple ? e.Player.FaceDancers : e.Player.Traitors;
+            var currentlyHeld = e.Initiator == Faction.Purple ? e.Player.FaceDancers : e.Player.Traitors;
 
-            deck.Add(e.NewTraitor);
+            currentlyHeld.Add(e.NewTraitor);
             TraitorsDeciphererCanLookAt.Remove(e.NewTraitor);
 
-            deck.Remove(e.ReplacedTraitor);
+            currentlyHeld.Remove(e.ReplacedTraitor);
             TraitorDeck.PutOnTop(e.ReplacedTraitor);
 
             RecentMilestones.Add(Milestone.Shuffled);

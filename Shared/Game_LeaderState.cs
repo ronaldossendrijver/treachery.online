@@ -15,6 +15,7 @@ namespace Treachery.Shared
             if (l is Leader || l is Messiah)
             {
                 LeaderState[l].Kill(this);
+                RecentMilestones.Add(Milestone.LeaderKilled);
                 DetermineIfCapturedLeadersMustReturn();
                 DetermineIfKilledGholaReturnsToOriginalFaction(l);
             }
@@ -34,6 +35,7 @@ namespace Treachery.Shared
         private void AssassinateLeader(Leader l)
         {
             LeaderState[l].Assassinate(this);
+            RecentMilestones.Add(Milestone.LeaderKilled);
 
             if (Version >= 150)
             {

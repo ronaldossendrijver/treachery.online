@@ -52,13 +52,14 @@ namespace Treachery.Shared
 
         public static Leader AssassinationTarget(Game g, Player p)
         {
-            if (!g.LoserMayTryToAssassinate)
+            var winner = g.GetPlayer(g.BattleWinner);
+            if (!g.LoserMayTryToAssassinate || winner == null)
             {
                 return null;
             }
             else
             {
-                return p.Traitors.FirstOrDefault(l => l is Leader && l != g.WinnerHero && l.Faction == g.WinnerHero.Faction && !p.RevealedTraitors.Contains(l)) as Leader;
+                return p.Traitors.FirstOrDefault(l => l is Leader && l != g.WinnerHero && winner.Leaders.Contains(l) && !p.RevealedTraitors.Contains(l)) as Leader;
             }
         }
 

@@ -369,7 +369,7 @@ namespace Treachery.Shared
             return !IsStronghold(l) || !(IAmWinning || OpponentsAreWinning);
         }
 
-        protected virtual KeyValuePair<Location, Battalion> BiggestBattalionThreatenedByStormWithoutSpice => ForcesInLocations.Where(locationWithBattalion =>
+        protected virtual KeyValuePair<Location, Battalion> BiggestBattalionThreatenedByStormWithoutSpice => ForcesOnPlanet.Where(locationWithBattalion =>
                 StormWillProbablyHit(locationWithBattalion.Key) &&
                 !InStorm(locationWithBattalion.Key) &&
                 MayFleeOutOf(locationWithBattalion.Key) &&
