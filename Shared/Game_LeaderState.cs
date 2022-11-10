@@ -15,12 +15,12 @@ namespace Treachery.Shared
             if (l is Leader || l is Messiah)
             {
                 LeaderState[l].Kill(this);
-                ReturnCapturedLeaders(l);
-                ReturnGholaToOriginalFaction(l);
+                DetermineIfCapturedLeadersMustReturn();
+                DetermineIfKilledGholaReturnsToOriginalFaction(l);
             }
         }
 
-        private void ReturnGholaToOriginalFaction(IHero l)
+        private void DetermineIfKilledGholaReturnsToOriginalFaction(IHero l)
         {
             var purple = GetPlayer(Faction.Purple);
             if (purple != null && l is Leader && purple.Leaders.Contains(l) && l.Faction != Faction.Purple)
@@ -35,9 +35,12 @@ namespace Treachery.Shared
         {
             LeaderState[l].Assassinate(this);
 
-            if (Version >= 150) ReturnGholaToOriginalFaction(l);
+            if (Version >= 150)
+            {
+                DetermineIfCapturedLeadersMustReturn();
+                DetermineIfKilledGholaReturnsToOriginalFaction(l);
+            }
         }
-
 
         public bool IsAlive(IHero l)
         {

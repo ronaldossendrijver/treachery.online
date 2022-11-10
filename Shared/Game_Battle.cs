@@ -369,14 +369,7 @@ namespace Treachery.Shared
                 HandleBattleOutcome(agg, def);
             }
 
-            if (aggressor.Is(Faction.Black))
-            {
-                ReturnCapturedLeaders(agg.Hero);
-            }
-            else if (defender.Is(Faction.Black))
-            {
-                ReturnCapturedLeaders(def.Hero);
-            }
+            DetermineIfCapturedLeadersMustReturn();
         }
 
         private void ActivateSmuggler(TreacheryCalled aggtrt, TreacheryCalled deftrt, BattleOutcome outcome, bool lasgunShield)
@@ -579,18 +572,20 @@ namespace Treachery.Shared
             Enter(Phase.BattleConclusion);
         }
 
-        private void ReturnCapturedLeaders(IHero hero)
+        private void DetermineIfCapturedLeadersMustReturn()
         {
             var black = GetPlayer(Faction.Black);
 
             if (black != null)
             {
-                //Captured leader used in battle
-                if (hero != null && hero is Leader capturedLeader && black.Leaders.Contains(capturedLeader) && CapturedLeaders.ContainsKey(capturedLeader))
+                //Captured leader that must be returned because it was used in battle
+                var usedLeaderInBattle = CurrentBattle?.PlanOf(black)?.Hero;
+                if (usedLeaderInBattle != null && usedLeaderInBattle is Leader capturedLeader && black.Leaders.Contains(capturedLeader) && CapturedLeaders.ContainsKey(capturedLeader))
                 {
                     ReturnLeader(black, capturedLeader);
                 }
 
+                //Captured leaders that must be returned because Black doesn't have any more leaders
                 if (!black.Leaders.Any(l => CapturedLeaders.ContainsKey(l) && IsAlive(l)))
                 {
                     Leader toReturn;
@@ -997,7 +992,7 @@ namespace Treachery.Shared
         {
             Log(causeOfDeath, " kills ", killedHero, " → ", winner.Faction, " get ", Payment(heroValue));
             RecentMilestones.Add(Milestone.LeaderKilled);
-            if (killedHero is Leader) KillHero(killedHero as Leader);
+            if (killedHero is Leader) KillHero(killedHero);
             winner.Resources += heroValue;
         }
 
@@ -1470,11 +1465,6 @@ namespace Treachery.Shared
                 if (facedancer is Leader && IsAlive(facedancer))
                 {
                     KillHero(facedancer);
-                }
-
-                if (BattleWinner == Faction.Black)
-                {
-                    ReturnCapturedLeaders(facedancer);
                 }
 
                 foreach (var p in Players)
