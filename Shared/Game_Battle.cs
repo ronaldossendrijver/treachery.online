@@ -1211,20 +1211,21 @@ namespace Treachery.Shared
 
             if (e.Assassinate)
             {
-                var assassinated = LoserConcluded.AssassinationTarget(this, e.Player);
+                var winner = GetPlayer(BattleWinner);
+                var assassinated = LoserConcluded.TargetOfAssassination(this, e.Player);
 
                 Assassinated.Add(assassinated);
                 e.Player.RevealedTraitors.Add(assassinated);
 
-                if (IsAlive(assassinated))
+                if (!IsAlive(assassinated) || !winner.Leaders.Contains(assassinated))
+                {
+                    Log(e.Initiator, " reveal ", assassinated, " as one of their traitors, but there is no one to kill...");
+                }
+                else
                 {
                     Log(e.Initiator, " get ", Payment(assassinated.CostToRevive), " by ASSASSINATING ", assassinated, "!");
                     e.Player.Resources += assassinated.CostToRevive;
                     KillHero(assassinated);
-                }
-                else
-                {
-                    Log(e.Initiator, " reveal ", assassinated, " as one of their traitors!");
                 }
             }
 

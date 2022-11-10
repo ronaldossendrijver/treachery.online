@@ -38,7 +38,7 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (Assassinate && AssassinationTarget(Game, Player) == null) return Message.Express("You can't assassinate");
+            if (Assassinate && !CanAssassinate(Game, Player)) return Message.Express("You can't assassinate");
             if (KeptCard != null && !CardsLoserMayKeep(Game).Contains(KeptCard)) return Message.Express("You can't keep ", KeptCard);
 
             return null;
@@ -50,18 +50,9 @@ namespace Treachery.Shared
             Game.HandleEvent(this);
         }
 
-        public static Leader AssassinationTarget(Game g, Player p)
-        {
-            var winner = g.GetPlayer(g.BattleWinner);
-            if (!g.LoserMayTryToAssassinate || winner == null)
-            {
-                return null;
-            }
-            else
-            {
-                return p.Traitors.FirstOrDefault(l => l is Leader && l != g.WinnerHero && winner.Leaders.Contains(l) && !p.RevealedTraitors.Contains(l)) as Leader;
-            }
-        }
+        public static bool CanAssassinate(Game g, Player p) => g.LoserMayTryToAssassinate && TargetOfAssassination(g,p) != null;
+
+        public static Leader TargetOfAssassination(Game g, Player p) => p.Traitors.FirstOrDefault(l => l is Leader && l != g.WinnerHero && (l.Faction == g.BattleWinner || g.BattleWinner == Faction.Purple && g.IsGhola(l)) && !p.RevealedTraitors.Contains(l)) as Leader;
 
         public static IEnumerable<TreacheryCard> CardsLoserMayKeep(Game g) => g.CardsToBeDiscardedByLoserAfterBattle;
 

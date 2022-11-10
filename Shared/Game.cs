@@ -450,6 +450,26 @@ namespace Treachery.Shared
             }
         }
 
+        private void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, bool condition3, Phase phaseIf3True, Phase phaseOtherwise)
+        {
+            if (condition1)
+            {
+                Enter(phaseIf1True);
+            }
+            else if (condition2)
+            {
+                Enter(phaseIf2True);
+            }
+            else if (condition3)
+            {
+                Enter(phaseIf3True);
+            }
+            else
+            {
+                Enter(phaseOtherwise);
+            }
+        }
+
         private void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, Action methodOtherwise)
         {
             if (condition1)

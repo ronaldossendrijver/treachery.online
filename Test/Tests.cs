@@ -26,9 +26,31 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (e is LoserConcluded lc && lc.Assassinate && g.RecentMilestones.Contains(Milestone.LeaderKilled) && lc.KeptCard != null)
+            if (e is LoserConcluded lc && lc.Assassinate && g.RecentMilestones.Contains(Milestone.LeaderKilled))
             {
-                WriteSavegameIfApplicable(g, e.Player, "Assassination");
+                if (e.Player.RevealedTraitors.Any(t => t.Faction != g.BattleWinner && g.BattleWinner == Faction.Purple))
+                {
+                    WriteSavegameIfApplicable(g, e.Player, "Assassination of Ghola");
+                }
+                else
+                {
+                    WriteSavegameIfApplicable(g, e.Player, "Assassination");
+                }
+            }
+
+            if (e is TerrorRevealed && g.CurrentPhase == Phase.TerrorTriggeredByBlueAccompaniesOrange)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "TerrorTriggeredByBlueAccompaniesOrange");
+            }
+
+            if (e is TerrorRevealed && g.CurrentPhase == Phase.TerrorTriggeredByBlueAccompaniesNonOrange)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "TerrorTriggeredByBlueAccompaniesNonOrange");
+            }
+
+            if (e is TerrorRevealed && g.CurrentMainPhase == MainPhase.Blow)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "TerrorTriggeredDuringBlow");
             }
 
             /*
@@ -365,7 +387,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 200;
+            int nrOfGames = 1000;
             int nrOfTurns = 10;
             int nrOfPlayers = 6;
 

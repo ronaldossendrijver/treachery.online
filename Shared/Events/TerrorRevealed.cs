@@ -82,13 +82,13 @@ namespace Treachery.Shared
 
         public static bool MayOfferAlliance(Game g) => !g.AllianceByTerrorWasOffered && GetVictim(g) != Faction.Pink;
 
-        public static Territory GetTerritory(Game g) => g.LastShipmentOrMovement.To.Territory;
+        public static Territory GetTerritory(Game g) => g.LastTerrorTrigger.To.Territory;
 
-        public static Faction GetVictim(Game g) => g.LastShipmentOrMovement.Initiator;
+        public static Faction GetVictim(Game g) => g.LastTerrorTrigger.Initiator;
 
-        public static IEnumerable<TerrorType> GetTypes(Game g) => g.TerrorIn(g.LastShipmentOrMovement.To.Territory);
+        public static IEnumerable<TerrorType> GetTypes(Game g) => g.TerrorIn(GetTerritory(g));
 
-        public static bool MayPlaceForcesInSabotage(Game g, Player p) => OpenDespiteAllyAndStormAndOccupancy(g, p, g.LastShipmentOrMovement.To.Territory.MiddleLocation);
+        public static bool MayPlaceForcesInSabotage(Game g, Player p) => OpenDespiteAllyAndStormAndOccupancy(g, p, GetTerritory(g).MiddleLocation);
 
         public static int MaxAmountOfForcesInSneakAttack(Game g, Player p) => MayPlaceForcesInSabotage(g, p) ? Math.Min(5, p.ForcesInReserve) : 0;
 

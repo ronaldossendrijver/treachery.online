@@ -179,7 +179,9 @@ namespace Treachery.Shared
         OrangeShip = 230000,
 
         BlueAccompaniesNonOrange = 240000,
+        TerrorTriggeredByBlueAccompaniesNonOrange = 241000,
         BlueAccompaniesOrange = 250000,
+        TerrorTriggeredByBlueAccompaniesOrange = 251000,
         BlueIntrudedByNonOrangeShip = 255000,
         TerrorTriggeredByOrangeShip = 255100,
         BlueIntrudedByOrangeShip = 256000,

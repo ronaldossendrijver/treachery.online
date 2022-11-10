@@ -486,6 +486,7 @@ namespace Treachery.Shared
                 var initiator = GetPlayer(e.Initiator);
 
                 LastShipmentOrMovement = e;
+                LastTerrorTrigger = e;
                 int totalNumberOfForces = 0;
                 int totalNumberOfSpecialForces = 0;
                 foreach (var fl in e.ForceLocations)

@@ -36,8 +36,8 @@
 
         @if (_type == TerrorType.Sabotage)
         {
-            <SelectCardComponent @bind-Value="_toGiveInSabotage" Values="Player.TreacheryCards" Required="true">
-                <Label>You may select one of your treachery cards to give to them</Label>
+            <SelectCardComponent @bind-Value="_toGiveInSabotage" Values="Player.TreacheryCards" Required="false">
+                <Label>You may select one of your treachery cards to give to them:</Label>
             </SelectCardComponent>
         }
         else
@@ -54,7 +54,7 @@
             _forcesInSneakAttack = 0;
         }
 
-        if (TerrorRevealed.MayOfferAlliance(Game))
+        @if (TerrorRevealed.MayOfferAlliance(Game))
         {
             <div>You may also offer them an alliance as an alternative to violence.</div>
         }

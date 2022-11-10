@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Treachery.Shared
 {
-    public class BlueAccompanies : GameEvent
+    public class BlueAccompanies : GameEvent, ILocationEvent
     {
         public int _targetId;
 
@@ -23,6 +23,9 @@ namespace Treachery.Shared
 
         [JsonIgnore]
         public Location Location { get { return Game.Map.LocationLookup.Find(_targetId); } set { _targetId = Game.Map.LocationLookup.GetId(value); } }
+
+        [JsonIgnore]
+        public Location To => Location;
 
         public bool Accompanies { get; set; }
 

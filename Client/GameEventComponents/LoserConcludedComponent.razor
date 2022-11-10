@@ -23,21 +23,15 @@
             _cardToKeep = null;
         }
 
-        @if (LoserConcluded.AssassinationTarget(Game, Player) != null) {
+        @if (LoserConcluded.CanAssassinate(Game, Player)) {
 
-            var assassinated = LoserConcluded.AssassinationTarget(Game, Player);
+            var assassinated = LoserConcluded.TargetOfAssassination(Game, Player);
 
             <RadioComponent @bind-Value=_assassinate 
                 Values=@(new bool[] {true, false}) 
                 ValueLabels="@(new string[] {"Yes","No"})">
                 <Label>
-                    @if (Game.IsAlive(assassinated))
-                    {
-                        <div>Do you wish to reveal <Image Shown=@assassinated Popover=@Popup.Get(assassinated, Game) Class="img-float" Width=50 /> as your traitor?</div>
-                    }
-                    else {
-                        <div>Do you wish <Image Shown=@assassinated Popover=@Popup.Get(assassinated, Game) Class="img-float" Width=50 /> to be assassinated?</div>
-                    }
+                    <div>Execute an assassination mission by revealing <Image Shown=@assassinated Popover=@Popup.Get(assassinated, Game) Class="img-float" Width=50 /> as your traitor?</div>
                 </Label>
             </RadioComponent>
         }

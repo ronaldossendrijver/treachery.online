@@ -2456,7 +2456,7 @@ namespace Treachery.Client
                 [TerrorType.Extortion] = "Extortion",
                 [TerrorType.Robbery] = "Robbery",
                 [TerrorType.Sabotage] = "Sabotage",
-                [TerrorType.SneakAttack] = "SneakAttack",
+                [TerrorType.SneakAttack] = "Sneak Attack",
             },
 
             StrongholdCardName_STR = new Dictionary<int, string>()

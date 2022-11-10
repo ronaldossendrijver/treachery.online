@@ -339,7 +339,6 @@ namespace Treachery.Shared
         {
             if (ForcesInReserve > 0)
             {
-
                 var target = BlueAccompanies.ValidTargets(Game, this).FirstOrDefault(l => l.IsStronghold);
 
                 bool shippingOpponentCanWin = false;
