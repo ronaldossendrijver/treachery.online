@@ -957,6 +957,42 @@ namespace Treachery.Shared
             return null;
         }
 
+        protected PerformCyanSetup DeterminePerformCyanSetup()
+        {
+            var forceLocations = new Dictionary<Location, Battalion>();
+
+            if (PerformCyanSetup.ValidLocations(Game).Contains(Game.Map.Carthag))
+            {
+                forceLocations.Add(Game.Map.Carthag, new Battalion() { Faction = Faction, AmountOfForces = 6 });
+            }
+            else if (PerformCyanSetup.ValidLocations(Game).Contains(Game.Map.Arrakeen))
+            {
+                forceLocations.Add(Game.Map.Arrakeen, new Battalion() { Faction = Faction, AmountOfForces = 6 });
+            }
+            else if (PerformCyanSetup.ValidLocations(Game).Contains(Game.Map.TueksSietch))
+            {
+                forceLocations.Add(Game.Map.TueksSietch, new Battalion() { Faction = Faction, AmountOfForces = 6 });
+            }
+            else if (PerformCyanSetup.ValidLocations(Game).Contains(Game.Map.HabbanyaSietch))
+            {
+                forceLocations.Add(Game.Map.HabbanyaSietch, new Battalion() { Faction = Faction, AmountOfForces = 6 });
+            }
+            else if (PerformCyanSetup.ValidLocations(Game).Contains(Game.Map.ImperialBasin.MiddleLocation))
+            {
+                forceLocations.Add(Game.Map.ImperialBasin.MiddleLocation, new Battalion() { Faction = Faction, AmountOfForces = 6 });
+            }
+            else if (PerformCyanSetup.ValidLocations(Game).Contains(Game.Map.PolarSink))
+            {
+                forceLocations.Add(Game.Map.PolarSink, new Battalion() { Faction = Faction, AmountOfForces = 6 });
+            }
+            else 
+            {
+                forceLocations.Add(PerformCyanSetup.ValidLocations(Game).FirstOrDefault(l => l.IsProtectedFromStorm), new Battalion() { Faction = Faction, AmountOfForces = 6 });
+            }
+
+            return new PerformCyanSetup(Game) { Initiator = Faction, ForceLocations = forceLocations };
+        }
+
         #endregion
 
         #region White

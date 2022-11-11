@@ -96,10 +96,10 @@
     {
         if (!AllowMultipleTerritories)
         {
-            var currentTerritory = Forces.Keys.FirstOrDefault()?.Territory;
-            if (currentTerritory != null && currentTerritory != Locations.FirstOrDefault()?.Territory)
+            var currentTerritory = Forces.Where(kvp => kvp.Value.TotalAmountOfForces > 0).Select(kvp => kvp.Key.Territory).FirstOrDefault();
+            if (currentTerritory != null)
             {
-                Forces.Clear();
+                RemoveForcesFromOtherTerritoriesThan(currentTerritory);
             }
         }
 
@@ -140,15 +140,19 @@
         }
     }
 
+    private void RemoveForcesFromOtherTerritoriesThan(Territory toCheck)
+    {
+        foreach (var bat in Forces.Where(kvp => kvp.Key.Territory != toCheck && kvp.Value.TotalAmountOfForces != 0).Select(kvp => kvp.Value).ToArray()) {
+
+            bat.Clear();
+        }
+    }
+
     private void ChangeForceAmount(Location location, int amount, bool specialForces)
     {
         if (!AllowMultipleTerritories)
         {
-            var currentLocation = Forces.Keys.FirstOrDefault();
-            if (currentLocation != null && currentLocation.Territory != location.Territory)
-            {
-                Forces.Clear();
-            }
+            RemoveForcesFromOtherTerritoriesThan(location.Territory);
         }
 
         if (Forces.ContainsKey(location))
@@ -179,15 +183,6 @@
 
     private void SetForceAmount(Location location, int amount, bool specialForces)
     {
-        if (!AllowMultipleTerritories)
-        {
-            var currentLocation = Forces.Keys.FirstOrDefault();
-            if (currentLocation != null && currentLocation.Territory != location.Territory)
-            {
-                Forces.Clear();
-            }
-        }
-
         if (Forces.ContainsKey(location))
         {
             if (specialForces && Forces[location].AmountOfSpecialForces != amount)

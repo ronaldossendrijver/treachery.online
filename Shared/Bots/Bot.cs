@@ -136,6 +136,7 @@ namespace Treachery.Shared
                 //Cyan
                 Do(DetermineTerrorPlanted, ref action, evts) ||
                 Do(DetermineTerrorRevealed, ref action, evts) ||
+                Do(DeterminePerformCyanSetup, ref action, evts) ||
 
                 //Pink
 

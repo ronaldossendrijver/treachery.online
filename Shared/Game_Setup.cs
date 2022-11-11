@@ -611,20 +611,21 @@ namespace Treachery.Shared
                     SetupPlayerSpiceAndForcesOnPlanet(p);
                 }
 
+                Action methodAfterSettingUp;
                 if (TreacheryCardsBeforeTraitors)
                 {
-                    Enter(
-                        IsPlaying(Faction.Yellow), Phase.YellowSettingUp,
-                        IsPlaying(Faction.Blue) && PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(this), Phase.BlueSettingUp,
-                        EnterStormPhase);
+                    methodAfterSettingUp = EnterStormPhase;
                 }
                 else
                 {
-                    Enter(
-                        IsPlaying(Faction.Yellow), Phase.YellowSettingUp,
-                        IsPlaying(Faction.Blue) && PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(this), Phase.BlueSettingUp,
-                        DealStartingTreacheryCards);
+                    methodAfterSettingUp = DealStartingTreacheryCards;
                 }
+
+                Enter(
+                    IsPlaying(Faction.Yellow), Phase.YellowSettingUp,
+                    IsPlaying(Faction.Blue) && PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(this), Phase.BlueSettingUp,
+                    IsPlaying(Faction.Cyan), Phase.CyanSettingUp,
+                    methodAfterSettingUp);
             }
         }
 
@@ -757,6 +758,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(PerformYellowSetup e)
         {
+            Console.WriteLine("PerformYellowSetup1");
             var initiator = GetPlayer(e.Initiator);
 
             foreach (var fl in e.ForceLocations)
@@ -765,9 +767,14 @@ namespace Treachery.Shared
                 initiator.ShipForces(location, fl.Value.AmountOfForces);
                 initiator.ShipSpecialForces(location, fl.Value.AmountOfSpecialForces);
             }
-
+            Console.WriteLine("PerformYellowSetup2");
             Log(e);
-            Enter(IsPlaying(Faction.Blue) && PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(this), Phase.BlueSettingUp, TreacheryCardsBeforeTraitors, EnterStormPhase, DealStartingTreacheryCards);
+            Enter(
+                IsPlaying(Faction.Blue) && PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(this), Phase.BlueSettingUp, 
+                IsPlaying(Faction.Cyan), Phase.CyanSettingUp, 
+                TreacheryCardsBeforeTraitors, EnterStormPhase, DealStartingTreacheryCards);
+
+            Console.WriteLine("PerformYellowSetup3" + CurrentPhase);
         }
 
         public void HandleEvent(PerformBluePlacement e)
@@ -780,6 +787,20 @@ namespace Treachery.Shared
             else
             {
                 player.ShipForces(e.Target, 1);
+            }
+
+            Log(e);
+            Enter(IsPlaying(Faction.Cyan), Phase.CyanSettingUp, TreacheryCardsBeforeTraitors, EnterStormPhase, DealStartingTreacheryCards);
+        }
+
+        public void HandleEvent(PerformCyanSetup e)
+        {
+            var initiator = GetPlayer(e.Initiator);
+
+            foreach (var fl in e.ForceLocations)
+            {
+                var location = fl.Key;
+                initiator.ShipForces(location, fl.Value.AmountOfForces);
             }
 
             Log(e);

@@ -1,0 +1,95 @@
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<PerformCyanSetup>
+@implements IDisposable
+
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Place @(6 - forces.Sum(fl => fl.Value.AmountOfForces)) forces in any unoccupied territory.</Header>
+    <Body>
+
+        <div>You may use the planet map:</div>
+        <div>Add @Skin.Current.Describe(Player.Force): <ClickHintComponent Button="ClickHintButton.LMB" /></div>
+        <div>Remove @Skin.Current.Describe(Player.Force): <ClickHintComponent Button="ClickHintButton.LMB" Modifier="ClickHintModifier.SHIFT" /></div>
+
+        <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces="forces" Locations="ValidLocations" MaySelectFromStorm="true" AlwaysShowLocation="true" FullLocationName="true" FixedMaxForces="6" AllowMultipleTerritories="false"/>
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm" ConfirmError=@Validation />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override bool IsUrgent => true;
+    protected override Faction IsFactionSpecific => Faction.Cyan;
+
+    private Dictionary<Location, Battalion> forces = new Dictionary<Location, Battalion>();
+
+    protected override PerformCyanSetup ConfirmedResult => new PerformCyanSetup(Game) { Initiator = Faction, ForceLocations = forces };
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            h.OnLocationSelected += HandleAddForce;
+            h.OnLocationSelectedWithShift += HandleRemoveForce;
+        }
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        h.OnLocationSelected -= HandleAddForce;
+        h.OnLocationSelectedWithShift -= HandleRemoveForce;
+    }
+
+    private void HandleAddForce(object sender, Location l)
+    {
+        if (ValidLocations.Contains(l))
+        {
+            ForceAmountButton(l, 1, false);
+        }
+    }
+
+    private void HandleRemoveForce(object sender, Location l)
+    {
+        if (ValidLocations.Contains(l))
+        {
+            ForceAmountButton(l, -1, false);
+        }
+    }
+
+    private IEnumerable<Location> ValidLocations => PerformCyanSetup.ValidLocations(Game);
+
+    protected int Forces(Location l)
+    {
+        if (forces.ContainsKey(l))
+        {
+            return forces[l].AmountOfForces;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    protected void ForceAmountButton(Location location, int amount, bool specialForces)
+    {
+        if (forces.ContainsKey(location))
+        {
+            forces[location].ChangeForces(amount);
+        }
+        else if (amount > 0)
+        {
+            forces.Add(location, new Battalion() { AmountOfSpecialForces = 0, AmountOfForces = amount });
+        }
+
+        StateHasChanged();
+    }
+}

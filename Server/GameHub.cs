@@ -164,6 +164,7 @@ namespace Treachery.Server
         public async Task RequestDiscarded(int hostID, Discarded e) { await Request(hostID, e); }
         public async Task RequestAllianceByTerror(int hostID, AllianceByTerror e) { await Request(hostID, e); }
         public async Task RequestLoserConcluded(int hostID, LoserConcluded e) { await Request(hostID, e); }
+        public async Task RequestPerformCyanSetup(int hostID, PerformCyanSetup e) { await Request(hostID, e); }
 
 
         private async Task Request<GameEventType>(int hostID, GameEventType e) where GameEventType : GameEvent

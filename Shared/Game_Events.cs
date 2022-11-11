@@ -119,6 +119,9 @@ namespace Treachery.Shared
                 case Phase.BlueSettingUp:
                     if (faction == Faction.Blue) result.Add(typeof(PerformBluePlacement));
                     break;
+                case Phase.CyanSettingUp:
+                    if (faction == Faction.Cyan) result.Add(typeof(PerformCyanSetup));
+                    break;
                 case Phase.BlackMulligan:
                     if (faction == Faction.Black) result.Add(typeof(MulliganPerformed));
                     break;

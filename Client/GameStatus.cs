@@ -410,7 +410,7 @@ namespace Treachery.Client
 
                 Phase.GameEnded => Status("The game has ended."),
 
-                Phase.None or _ => Status(Express("Unknown phase: ", game.CurrentPhase))
+                Phase.None or _ => Status(Express("Unknown phase: " + game.CurrentPhase))
             };
 
             result.FlashInfo = DetermineFlash(game, me != null ? me.Faction : Faction.None, isPlayer);

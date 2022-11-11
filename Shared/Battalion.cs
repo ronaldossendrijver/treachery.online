@@ -36,6 +36,12 @@ namespace Treachery.Shared
             }
         }
 
+        public void Clear()
+        {
+            AmountOfForces = 0;
+            AmountOfSpecialForces = 0;
+        }
+
         public Battalion TakeHalf()
         {
             return new Battalion() { Faction = Faction, AmountOfForces = (int)Math.Ceiling(0.5 * AmountOfForces), AmountOfSpecialForces = (int)Math.Ceiling(0.5 * AmountOfSpecialForces) };

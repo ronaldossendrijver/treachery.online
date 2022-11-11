@@ -122,6 +122,8 @@ namespace Treachery.Shared
 
         BlueSettingUp = 90000,
 
+        CyanSettingUp = 91000,
+
         MetheorAndStormSpell = 95000,
 
         HmsPlacement = 100000,

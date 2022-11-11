@@ -31,7 +31,7 @@
             <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="StateHasChanged" />
         }
 
-        <SelectComponent Disabled="@Readonly" @bind-Value="@Ruleset" Values="Rulesets">
+        <SelectComponent Disabled="@Readonly" @bind-Value="@Ruleset" Values=@EstablishPlayers.AvailableRulesets()>
             <Label>Rules</Label>
         </SelectComponent>
 
@@ -42,7 +42,7 @@
             <div class="text-info mt-2 mb-1">You can enable or disable individual rules below.</div>
         }
 
-        @foreach (var rulegroup in RuleGroups)
+        @foreach (var rulegroup in EstablishPlayers.AvailableRuleGroups())
         {
             if (Game.GetRulesInGroup(rulegroup, Game.ExpansionLevel).Any())
             {
@@ -151,10 +151,6 @@
     }
 
     private IEnumerable<string> Players => h.Host.JoinedPlayers.Where(p => info.HostParticipates || p != h.PlayerName);
-
-    private IEnumerable<Ruleset> Rulesets => EstablishPlayers.AvailableRulesets();
-
-    private IEnumerable<RuleGroup> RuleGroups => EstablishPlayers.AvailableRuleGroups();
 
     private string StyleDef(Faction f) => string.Format("background-color:{0}", Skin.Current.GetFactionColorTransparant(f));
 
