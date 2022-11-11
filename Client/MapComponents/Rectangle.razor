@@ -1,0 +1,35 @@
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@inherits MapComponent
+
+<svg width="@Round(Width)" height="@Round(Height)" style="position:absolute;left:@Px(X);top:@Px(Y)" pointer-events="none">
+    <rect width="@Round(Width)" height="@Round(Height)"
+        fill="@FillColor" fill-opacity="@Round(FillOpacity)"
+        stroke="@StrokeColor" stroke-width="@Px(StrokeWidth)" />
+</svg>
+
+@code {
+
+    [Parameter]
+    public float Radius { get; set; } = 1f;
+
+    [Parameter]
+    public string FillColor { get; set; }
+
+    [Parameter]
+    public float FillOpacity { get; set; } = 1f;
+
+    [Parameter]
+    public string FillRule { get; set; } = "";
+
+    [Parameter]
+    public string StrokeColor { get; set; } = "transparent";
+
+    [Parameter]
+    public float StrokeWidth { get; set; } = 0;
+
+    private int RoundedDiameter => (int)Math.Ceiling(Radius * 2);
+
+}

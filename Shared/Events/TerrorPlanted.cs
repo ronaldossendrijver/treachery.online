@@ -77,7 +77,12 @@ namespace Treachery.Shared
             Game.HandleEvent(this);
         }
 
-        public static bool IsApplicable(Game g, Player p) => g.CurrentPhase == Phase.Contemplate && !g.CyanHasPlantedTerror && !g.Prevented(FactionAdvantage.CyanPlantingTerror) && ValidTerrorTypes(g, false).Any() && ValidStrongholds(g, p).Any();
+        public static bool IsApplicable(Game g, Player p) => 
+            g.CurrentPhase == Phase.Contemplate && 
+            !g.CyanHasPlantedTerror && 
+            !g.Prevented(FactionAdvantage.CyanPlantingTerror) && 
+            ValidTerrorTypes(g, false).Any() && 
+            ValidStrongholds(g, p).Any();
 
         public override Message GetMessage()
         {

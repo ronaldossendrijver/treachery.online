@@ -9,7 +9,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Flip advisors to fighters</Header>
+    <Header>You may now place a Terror Token in a Stronghold</Header>
     <Body>
 
         @if (TerrorPlanted.MayRemoveTokens(Player))
@@ -29,7 +29,7 @@
             <Label>Stronghold</Label>
         </SelectComponent>
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmText="Place Terror" ConfirmError=@Validation />
+        <ButtonRowComponent Pass="Pass" Confirm="Confirm" ConfirmText="Place Terror" ConfirmError=@Validation />
 
     </Body>
 
@@ -52,6 +52,8 @@
     }
 
     protected override TerrorPlanted ConfirmedResult => new TerrorPlanted(Game) { Initiator = Faction, Type = _type, Stronghold = _remove ? null : _stronghold };
+
+    protected override TerrorPlanted PassedResult => new TerrorPlanted(Game) { Initiator = Faction, Passed = true };
 
     private void HandleLocationSelected(object sender, Location l)
     {

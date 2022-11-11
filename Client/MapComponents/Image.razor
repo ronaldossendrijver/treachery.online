@@ -5,6 +5,17 @@
 @inherits MapComponent
 @implements IDisposable;
 
+@if (BackgroundCircleColor != null)
+{
+    <Circle X=@(X + 0.5f * Width) Y=@(Y + 0.5f * Height) Radius=@(BackgroundCircleDiameter > 0 ? 0.5f * BackgroundCircleDiameter : 0.5f * Width) FillColor=@BackgroundCircleColor />
+}
+
+@if (BackgroundRectangleColor != null)
+{
+    <Rectangle X=X Y=Y Width="Width" Height="Height" FillColor=@BackgroundRectangleColor />
+}
+
+
 @if (Popover != null)
 {
     <img @ref=@element @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" style="@Style" src=@Src
@@ -37,6 +48,15 @@ else
 
     [Parameter]
     public string Filter { get; set; } = "";
+
+    [Parameter]
+    public string BackgroundCircleColor { get; set; } = null;
+
+    [Parameter]
+    public float BackgroundCircleDiameter { get; set; } = 0;
+
+    [Parameter]
+    public string BackgroundRectangleColor { get; set; } = null;
 
     [Parameter]
     public EventCallback<MouseEventArgs> OnClick { get; set; }
@@ -77,6 +97,10 @@ else
             await Browser.RefreshPopover(element);
         }
     }
+
+    private string BackgroundCircleStyle => string.Format("position:absolute;left:{0};top:{1};", Px(X + 0.5f*Width), Px(Y + 0.5f*Height));
+
+    private string BackgroundRectangleStyle => string.Format("position:absolute;left:{0};top:{1};", Px(X), Px(Y));
 
     private string Style
     {
