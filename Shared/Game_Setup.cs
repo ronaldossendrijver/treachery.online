@@ -758,7 +758,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(PerformYellowSetup e)
         {
-            Console.WriteLine("PerformYellowSetup1");
             var initiator = GetPlayer(e.Initiator);
 
             foreach (var fl in e.ForceLocations)
@@ -767,14 +766,12 @@ namespace Treachery.Shared
                 initiator.ShipForces(location, fl.Value.AmountOfForces);
                 initiator.ShipSpecialForces(location, fl.Value.AmountOfSpecialForces);
             }
-            Console.WriteLine("PerformYellowSetup2");
+
             Log(e);
             Enter(
                 IsPlaying(Faction.Blue) && PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(this), Phase.BlueSettingUp, 
                 IsPlaying(Faction.Cyan), Phase.CyanSettingUp, 
                 TreacheryCardsBeforeTraitors, EnterStormPhase, DealStartingTreacheryCards);
-
-            Console.WriteLine("PerformYellowSetup3" + CurrentPhase);
         }
 
         public void HandleEvent(PerformBluePlacement e)

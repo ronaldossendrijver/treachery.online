@@ -80,9 +80,9 @@
                 @if (p.Faction == Faction.Green)
                 {
                     <div>Traitors discarded at start</div>
-                    <PickFromImageComponent Value=@LeaderManager.HeroLookup.Find(Info.GetDiscardedTraitor(0)) OnChanged=@(hero => Info.ChangeDiscardedTraitor(0, hero?.Id)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
-                    <PickFromImageComponent Value=@LeaderManager.HeroLookup.Find(Info.GetDiscardedTraitor(1)) OnChanged=@(hero => Info.ChangeDiscardedTraitor(1, hero?.Id)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
-                    <PickFromImageComponent Value=@LeaderManager.HeroLookup.Find(Info.GetDiscardedTraitor(2)) OnChanged=@(hero => Info.ChangeDiscardedTraitor(2, hero?.Id)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
+                    <PickFromImageComponent Value=@GetDiscardedTraitor(0) OnChanged=@(hero => SetDiscardedTraitor(0, hero)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
+                    <PickFromImageComponent Value=@GetDiscardedTraitor(1) OnChanged=@(hero => SetDiscardedTraitor(1, hero)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
+                    <PickFromImageComponent Value=@GetDiscardedTraitor(2) OnChanged=@(hero => SetDiscardedTraitor(2, hero)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
                 }
                 else if (p.Faction != Faction.Purple)
                 {
@@ -90,7 +90,8 @@
                     @for (int i = 0; i < p.NumberOfTraitors; i++)
                     {
                         var selIndex = i;
-                        <PickFromImageComponent Value=@LeaderManager.HeroLookup.Find(Info.GetSelectedTraitor(p.Faction, selIndex)) OnChanged=@(hero => Info.ChangeSelectedTraitor(p.Faction, selIndex, hero?.Id)) Title="Select Revealed Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
+                        var faction = p.Faction;
+                        <PickFromImageComponent Value=@GetSelectedTraitor(faction, selIndex) OnChanged=@(hero => SetSelectedTraitor(faction, selIndex, hero)) Title="Select Revealed Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
                     }
                 }
                 else
@@ -99,7 +100,8 @@
                     @for (int i = 0; i < p.NumberOfFacedancers; i++)
                     {
                         var selIndex = i;
-                        <PickFromImageComponent Value=@LeaderManager.HeroLookup.Find(Info.GetSelectedTraitor(p.Faction, selIndex)) OnChanged=@(hero => Info.ChangeSelectedTraitor(p.Faction, selIndex, hero?.Id)) Title="Select Revealed Face Dancer" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
+                        var faction = p.Faction;
+                        <PickFromImageComponent Value=@GetSelectedTraitor(faction, selIndex) OnChanged=@(hero => SetSelectedTraitor(faction, selIndex, hero)) Title="Select Revealed Face Dancer" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups" />
                     }
                 }
             }
@@ -200,6 +202,23 @@
             popoversNeedUpdate = false;
             await Browser.RefreshPopovers(element);
         }
+    }
+
+    private IHero GetSelectedTraitor(Faction f, int nr) => LeaderManager.HeroLookup.Find(Info.GetSelectedTraitor(f, nr));
+
+    private void SetSelectedTraitor(Faction f, int nr, IHero hero)
+    {
+        if (Shown is Player p && f == p.Faction)
+        {
+            Info.ChangeSelectedTraitor(f, nr, hero?.Id);
+        }
+    }
+
+    private IHero GetDiscardedTraitor(int nr) => @LeaderManager.HeroLookup.Find(Info.GetDiscardedTraitor(nr));
+
+    private void SetDiscardedTraitor(int nr, IHero hero)
+    {
+        Info.ChangeDiscardedTraitor(nr, hero?.Id);
     }
 
     Faction currentlyPickedFaction = Faction.None;
