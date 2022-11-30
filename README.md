@@ -17,4 +17,4 @@ Each action a player can do in the game, like selecting a traitor or finalizing 
 8. The event has now been executed and all clients are in sync!
 
 #UI
-Namespace treachery.online.Client holds the UI of the application. It is a Blazor Webassembly app running in the Browser. It is basically a view on the client's Game object and changes with it.
+Namespace treachery.online.Client holds the UI of the application. It is a Blazor Webassembly app running in the Browser. It is basically a view on the client's Game object and changes with it. When playing a game, the UI is divided into 3 sections: the Map, an Actions section showing the GameEvents that can be executed by the player based on the local Game state and an Information-section, containing what is behing the player shield and the Log. An Observer has the same sections, except for the Actions section.

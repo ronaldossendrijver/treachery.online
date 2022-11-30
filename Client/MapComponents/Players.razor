@@ -13,6 +13,8 @@
 
         foreach (var p in Game.Players)
         {
+            var forcesToDraw = new List<MapForce>();
+
             float radiusModifier = 1;
             if (h.Status.PlayerShouldBeHighlighted(p))
             {
@@ -66,13 +68,14 @@
                        Popover="@Popup.GetNexusCard(p.Nexus)" />
             }
 
-            double ttRad = (TWOPI / 180) + 0.06 + (4.5 - positionSector) * TWOPI / Map.NUMBER_OF_SECTORS;
+            double ttRad = (TWOPI / 180) + (4.5 - positionSector) * TWOPI / Map.NUMBER_OF_SECTORS;
                         
             //Homeworlds
-            var deltaX = 0f;
             foreach (var homeworld in p.Homeworlds)
             {
-                var homeworldX = Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad) * Skin.Current.MapRadius) - Skin.Current.PlayerTokenRadius + deltaX;
+                ttRad += 0.09;
+
+                var homeworldX = Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad) * Skin.Current.MapRadius) - Skin.Current.PlayerTokenRadius;
                 var homeworldY = Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad) * Skin.Current.MapRadius) - Skin.Current.PlayerTokenRadius;
 
                 <Image X=homeworldX Y=@homeworldY
@@ -80,30 +83,30 @@
                        Src="@Skin.Current.GetImageURL(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
                        Popover="@HomeworldIntel(homeworld)" />
 
-                var reservesX = homeworldX + 0.75f * Skin.Current.PlayerTokenRadius;
-                var reservesY = homeworldY + 1.25f * Skin.Current.PlayerTokenRadius;
+                var reservesX = homeworldX + 0.8f * Skin.Current.PlayerTokenRadius;
+                var reservesY = homeworldY + 1.2f * Skin.Current.PlayerTokenRadius;
 
                 foreach (var b in Game.BattalionsIn(homeworld)) {
 
                     if (b.AmountOfForces > 0)
                     {
-                        <MapForce X=@reservesX Y=@reservesY Special=@false Amount=@b.AmountOfForces Faction=@p.Faction Threatened=@false ShowPopover="true" Font="@Skin.Current.SKILL_FONT" Diameter="@Skin.Current.FORCETOKEN_RADIUS" />
+                        forcesToDraw.Add(new MapForce() { X = reservesX, Y = reservesY, Special = false, Amount = b.AmountOfForces, Faction = p.Faction });
                         reservesX += Skin.Current.FORCETOKEN_RADIUS;
                     }
 
                     if (b.AmountOfSpecialForces > 0)
                     {
-                        <MapForce X=@reservesX Y=@reservesY Special=@true Amount=@b.AmountOfSpecialForces Faction=@p.Faction Threatened=@false ShowPopover="true" Font="@Skin.Current.SKILL_FONT" Diameter="@Skin.Current.FORCETOKEN_RADIUS" />
+                        forcesToDraw.Add(new MapForce() { X = reservesX, Y = reservesY, Special = true, Amount = b.AmountOfSpecialForces, Faction = p.Faction });
                     }
 
                     reservesY += Skin.Current.FORCETOKEN_RADIUS;
                 }
 
-                deltaX += 1.5f * Skin.Current.PlayerTokenRadius;
+                
             }
 
-            ttRad += 0.04;
- 
+            ttRad += 0.03;
+
             foreach (var tt in p.TechTokens)
             {
                 ttRad += (TWOPI / 90);
@@ -165,7 +168,7 @@
                     Src="@Skin.Current.Harvester_URL"
                     Title=@tooltip
                     BackgroundCircleColor="#black"
-                    BackgroundCircleDiameter=@(1.8f * Skin.Current.FORCETOKEN_RADIUS)
+                    BackgroundCircleDiameter=@(1.5f * Skin.Current.FORCETOKEN_RADIUS)
                     ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" />
 
                 <MapText ToShow=@totalSpiceToReceiveLater.ToString()
@@ -188,7 +191,7 @@
                     Src="@Skin.Current.Harvester_URL"
                     Title=@tooltip
                     BackgroundCircleColor="black"
-                    BackgroundCircleDiameter=@(1.8f * Skin.Current.FORCETOKEN_RADIUS)
+                    BackgroundCircleDiameter=@(1.5f * Skin.Current.FORCETOKEN_RADIUS)
                     ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" />
 
                 <MapText ToShow=@tooltip
@@ -197,6 +200,11 @@
                      Title=@tooltip
                      BorderWidth="@Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
                      Align="@TextAlignment.Center"/>
+            }
+
+            foreach (var f in forcesToDraw)
+            {
+                <MapForce X=@f.X Y=@f.Y Special=@f.Special Amount=@f.Amount Faction=@f.Faction Threatened=@false ShowPopover="true" Font="@Skin.Current.SKILL_FONT" Diameter="@Skin.Current.FORCETOKEN_RADIUS" />
             }
 
             <MapText ToShow="@p.Name"
@@ -257,5 +265,14 @@
         {
             return Skin.Current.Format("{0} Reserves", w.Faction);
         }
+    }
+
+    internal class MapForce
+    {
+        internal float X;
+        internal float Y;
+        internal bool Special;
+        internal int Amount;
+        internal Faction Faction;
     }
 }
