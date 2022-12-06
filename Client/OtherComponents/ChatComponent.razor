@@ -7,70 +7,74 @@
 @inherits GameComponent;
 @inject IJSRuntime JSRuntime;
 
-<div class="p-2" style="background-color:@BackgroundColor">
+<div class="card border-none" style="background-color:@BackgroundColor">
 
-    <div class="d-flex flex-row-reverse">
+    <div class="card-body" style="background-color:@BackgroundColor">
 
-        <input @bind-value=message class="form-control" type="text" maxlength="512" placeholder=@Placeholder id="messageSentBody" @onkeyup=@(e => KeyUp(e))/>
+        <div class="d-flex flex-row-reverse">
 
-    </div>
+            <input @bind-value=message class="form-control" type="text" maxlength="512" placeholder=@Placeholder id="messageSentBody" @onkeyup=@(e => KeyUp(e))/>
 
-    <div class="d-flex flex-row-reverse mt-1">
+        </div>
 
-        <button class="btn btn-primary" @onclick="(e => Send())">Send</button>
+        <div class="d-flex flex-row-reverse mt-1">
+
+            <button class="btn btn-primary" @onclick="(e => Send())">Send</button>
+
+            @if (ShowGameChat)
+            {
+                <select class="form-select" style="color:@SelectedFactionForegroundColor;background-color:@SelectedFactionColor" @bind="@playername" id="messageSentTarget">
+
+                    @if (!h.MuteGlobalChat)
+                    {
+                        <option style="color:red;font-weight:bold;background-color:white" value="@LABEL_GLOBAL_CHAT">@LABEL_GLOBAL_CHAT</option>
+                    }
+
+                    <option style="color:red;font-weight:bold;background-color:white" value="@LABEL_ALL_PLAYERS_IN_GAME">@LABEL_ALL_PLAYERS_IN_GAME</option>
+
+                    @foreach (var p in h.Game.Players.Where(p => p.Name != h.MyName))
+                    {
+                        <option style="color:@Skin.Current.GetFactionColor(p.Faction);background-color:white" value="@p.Name">@p.Name</option>
+                    }
+
+                </select>
+            }
+            else
+            {
+                playername = LABEL_GLOBAL_CHAT;
+            }
+
+        </div>
+
+        @foreach (var m in h.Messages.Where(message => !h.MuteGlobalChat || message is not GlobalChatMessage))
+        {
+            var bgcolor = (m) switch
+            {
+                GameChatMessage gcm => Skin.Current.GetFactionColor(gcm.GetSourceFaction(h.Game)),
+                GlobalChatMessage gcm => "grey",
+                _ => "grey"
+            };
+
+            <div class='text-break p-1 mt-1 small' style="background-color:@bgcolor">
+                <ExpressionComponent Game=Game Expression=@m.GetBodyIncludingPlayerInfo(h.MyName, h.Game, h.HostProxy == null).Expression />
+            </div>
+        }
 
         @if (ShowGameChat)
         {
-            <select class="form-select" style="color:@SelectedFactionForegroundColor;background-color:@SelectedFactionColor" @bind="@playername" id="messageSentTarget">
-
-                @if (!h.MuteGlobalChat)
-                {
-                    <option style="color:red;font-weight:bold;background-color:white" value="@LABEL_GLOBAL_CHAT">@LABEL_GLOBAL_CHAT</option>
-                }
-
-                <option style="color:red;font-weight:bold;background-color:white" value="@LABEL_ALL_PLAYERS_IN_GAME">@LABEL_ALL_PLAYERS_IN_GAME</option>
-
-                @foreach (var p in h.Game.Players.Where(p => p.Name != h.MyName))
-                {
-                    <option style="color:@Skin.Current.GetFactionColor(p.Faction);background-color:white" value="@p.Name">@p.Name</option>
-                }
-
-            </select>
-        }
-        else
-        {
-            playername = LABEL_GLOBAL_CHAT;
+            <div class="mt-1" style="color:black">
+                <CheckboxComponent @bind-Value="h.MuteGlobalChat">Hide global chat messages</CheckboxComponent>
+            </div>
         }
 
-    </div>
-
-    @foreach (var m in h.Messages.Where(message => !h.MuteGlobalChat || message is not GlobalChatMessage))
-    {
-        var bgcolor = (m) switch
-        {
-            GameChatMessage gcm => Skin.Current.GetFactionColor(gcm.GetSourceFaction(h.Game)),
-            GlobalChatMessage gcm => "grey",
-            _ => "grey"
-        };
-
-        <div class='text-break p-1 mt-1 small' style="background-color:@bgcolor">
-            <ExpressionComponent Game=Game Expression=@m.GetBodyIncludingPlayerInfo(h.MyName, h.Game, h.HostProxy == null).Expression />
         </div>
-    }
-
-    @if (ShowGameChat)
-    {
-        <div class="mt-1" style="color:black">
-            <CheckboxComponent @bind-Value="h.MuteGlobalChat">Hide global chat messages</CheckboxComponent>
-        </div>
-    }
 
 </div>
 
 @code {
 
     [Parameter]
-    public string BackgroundColor { get; set; } = "transparant";
+    public string BackgroundColor { get; set; } = "transparent";
 
     private const string LABEL_GLOBAL_CHAT = "everyone (on treachery.online)";
     private const string LABEL_ALL_PLAYERS_IN_GAME = "all players (this game)";
