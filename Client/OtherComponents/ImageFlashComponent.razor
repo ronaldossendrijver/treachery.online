@@ -72,7 +72,7 @@
 
             if (h.Status != null && h.Status.FlashInfo.Any())
             {
-                timeLeft += Time * 1000 + 2000;
+                timeLeft = 4000 + h.Status.FlashInfo.Count() * 1000;
                 StateHasChanged();
             }
         }
@@ -120,10 +120,6 @@
         string.Format("width:{0};font:normal normal normal 24px Advokat, Calibri, Tahoma, sans-serif;color:white;text-align:center;", Support.Px(CardWidth));
 
     private int ItemWidth => (int)(SPACING_X * CardWidth);
-
-    private string TimeString => string.Format("{0}s", Time);
-
-    private int Time => 2 + h.Status.FlashInfo.Count() * 3;
 
     private string AnimationType => timeLeft <= 1000 ? "fadeOut" : "fadeIn";
 }

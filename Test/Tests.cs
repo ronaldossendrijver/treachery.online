@@ -26,6 +26,16 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+
+
+            /*
+            if (e is BattleConcluded bc && bc.StolenToken != TechToken.None && g.CurrentBattle.TreacheryOf(bc.Initiator).TraitorCalled)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Stealing tech token after treachery");
+            }
+            */
+
+            /*
             if (e is LoserConcluded lc && lc.Assassinate && g.RecentMilestones.Contains(Milestone.LeaderKilled))
             {
                 if (e.Player.RevealedTraitors.Any(t => t.Faction != g.BattleWinner && g.BattleWinner == Faction.Purple))
@@ -52,7 +62,7 @@ namespace Treachery.Test
             {
                 WriteSavegameIfApplicable(g, e.Player, "TerrorTriggeredDuringBlow");
             }
-
+            */
             /*
             if (g.CurrentTurn > 12 && !g.RecentMilestones.Contains(Milestone.BabyMonster) && g.RecentMilestones.Contains(Milestone.Monster) && (g.ResourceCardDiscardPileA.Items.Take(3).Any(c => c.IsSandTrout) || g.ResourceCardDiscardPileB.Items.Take(3).Any(c => c.IsSandTrout)))
             {
@@ -387,7 +397,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 1000;
+            int nrOfGames = 100;
             int nrOfTurns = 10;
             int nrOfPlayers = 6;
 

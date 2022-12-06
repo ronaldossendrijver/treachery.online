@@ -587,10 +587,10 @@ namespace Treachery.Client
         #region ClientUpdates
         private async Task PerformPostEventTasks(GameEvent e)
         {
+            UpdateStatus(Game, Player, IsPlayer);
+
             if (!(e is AllyPermission || e is DealOffered))
             {
-                UpdateStatus(Game, Player, IsPlayer);
-
                 await TurnAlert();
                 await PlaySoundsForMilestones();
 
