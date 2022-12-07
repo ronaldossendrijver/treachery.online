@@ -1195,6 +1195,21 @@ namespace Treachery.Shared
 
         public List<Leader> Assassinated { get; private set; } = new();
 
+        public bool OccupationPreventsAlliance(Faction a, Faction b)
+        {
+            var playerA = GetPlayer(a);
+            var playerB = GetPlayer(b);
+            foreach (var t in playerA.ForcesOnPlanet.Select(kvp => kvp.Key.Territory).Distinct())
+            {
+                if (a == Faction.Blue && Applicable(Rule.AdvisorsDontConflictWithAlly) && playerA.ForcesIn(t) == 0) continue;
+                if (b == Faction.Blue && Applicable(Rule.AdvisorsDontConflictWithAlly) && playerB.ForcesIn(t) == 0) continue;
+
+                if (playerB.ForcesIn(t) > 0) return true;
+            }
+
+            return false;
+        }
+
         public void HandleEvent(LoserConcluded e)
         {
             if (e.KeptCard != null)
@@ -1209,9 +1224,37 @@ namespace Treachery.Shared
 
             CardsToBeDiscardedByLoserAfterBattle.Clear();
 
+            Log(e);
+
+            var winner = GetPlayer(BattleWinner);
+
+            if (e.KarmaForcedKeptCardDecision == LoserConcluded.KARMA_DISCARD || e.KarmaForcedKeptCardDecision == LoserConcluded.KARMA_KEEP)
+            {
+                BattleWinnerMayChooseToDiscard = false;
+                Discard(e.Player, TreacheryCardType.Karma);
+                RecentMilestones.Add(Milestone.Karma);
+
+                foreach (var c in e.ForcedKeptOrDiscardedCards)
+                {
+                    if (e.KarmaForcedKeptCardDecision == LoserConcluded.KARMA_DISCARD)
+                    {
+                        Log("Using ", TreacheryCardType.Karma, ", ", e.Initiator, " force ", winner.Faction, " to discard ", c);
+                        if (winner.Has(c)) Discard(c);
+                    }
+                    else if (e.KarmaForcedKeptCardDecision == LoserConcluded.KARMA_KEEP)
+                    {
+                        Log("Using ", TreacheryCardType.Karma, ", ", e.Initiator, " force ", winner.Faction, " to keep ", c);
+                        if (TreacheryDiscardPile.Items.Contains(c))
+                        {
+                            TreacheryDiscardPile.Items.Remove(c);
+                            winner.TreacheryCards.Add(c);
+                        }
+                    }
+                }
+            }
+
             if (e.Assassinate)
             {
-                var winner = GetPlayer(BattleWinner);
                 var assassinated = LoserConcluded.TargetOfAssassination(this, e.Player);
 
                 Assassinated.Add(assassinated);
@@ -1705,6 +1748,7 @@ namespace Treachery.Shared
             CardsToBeDiscardedByLoserAfterBattle.Clear();
             BattleWasConcludedByWinner = false;
             LoserMayTryToAssassinate = false;
+            BattleWinnerMayChooseToDiscard = true;
         }
 
         #endregion
@@ -1762,6 +1806,8 @@ namespace Treachery.Shared
                 return null;
             }
         }
+
+        public bool BattleWinnerMayChooseToDiscard { get; set; } = true;
 
         #endregion
     }

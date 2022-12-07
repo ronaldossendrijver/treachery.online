@@ -95,24 +95,27 @@ namespace Treachery.Shared
 
             var discarded = new List<TreacheryCard>();
 
-            if (myBattleplan.Weapon != null &&
-                TreacheryCards.Contains(myBattleplan.Weapon) &&
-                myBattleplan.Weapon.Type == TreacheryCardType.Useless &&
-                Faction != Faction.Brown &&
-                !Game.SkilledAs(this, LeaderSkill.Warmaster) &&
-                !Game.OwnsStronghold(Faction, Game.Map.TueksSietch))
+            if (BattleConcluded.MayChooseToDiscardCards(Game))
             {
-                discarded.Add(myBattleplan.Weapon);
-            }
+                if (myBattleplan.Weapon != null &&
+                    TreacheryCards.Contains(myBattleplan.Weapon) &&
+                    myBattleplan.Weapon.Type == TreacheryCardType.Useless &&
+                    Faction != Faction.Brown &&
+                    !Game.SkilledAs(this, LeaderSkill.Warmaster) &&
+                    !Game.OwnsStronghold(Faction, Game.Map.TueksSietch))
+                {
+                    discarded.Add(myBattleplan.Weapon);
+                }
 
-            if (myBattleplan.Defense != null &&
-                TreacheryCards.Contains(myBattleplan.Defense) &&
-                myBattleplan.Defense.Type == TreacheryCardType.Useless &&
-                Faction != Faction.Brown &&
-                !Game.SkilledAs(this, LeaderSkill.Warmaster) &&
-                !Game.OwnsStronghold(Faction, Game.Map.TueksSietch))
-            {
-                discarded.Add(myBattleplan.Defense);
+                if (myBattleplan.Defense != null &&
+                    TreacheryCards.Contains(myBattleplan.Defense) &&
+                    myBattleplan.Defense.Type == TreacheryCardType.Useless &&
+                    Faction != Faction.Brown &&
+                    !Game.SkilledAs(this, LeaderSkill.Warmaster) &&
+                    !Game.OwnsStronghold(Faction, Game.Map.TueksSietch))
+                {
+                    discarded.Add(myBattleplan.Defense);
+                }
             }
 
             bool kill = Game.BlackVictim != null && !Game.IsSkilled(Game.BlackVictim) && Game.BlackVictim.Value < 4;

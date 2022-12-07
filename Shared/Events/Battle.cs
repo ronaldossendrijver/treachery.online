@@ -408,6 +408,8 @@ namespace Treachery.Shared
             return result;
         }
 
+
+
         public static bool MustFight(Game g, Player player)
         {
             bool mayBattleUnderStorm = g.Applicable(Rule.BattlesUnderStorm);

@@ -121,6 +121,8 @@ namespace Treachery.Shared
                 if (NewTraitor == null && ReplacedTraitor != null) return Message.Express("Select a traitor to replace ", ReplacedTraitor);
             }
 
+            if (!MayChooseToDiscardCards(Game) && DiscardedCards.Any()) return Message.Express("You are not allowed to choose which cards to discard");
+
             return null;
         }
 
@@ -192,5 +194,9 @@ namespace Treachery.Shared
                 g.CardsToBeDiscardedByLoserAfterBattle.Any() && p.Is(g.BattleLoser) ||
                 p.Is(Faction.Cyan) && g.LoserMayTryToAssassinate;
         }
+
+        public static bool MayChooseToDiscardCards(Game g) => g.BattleWinnerMayChooseToDiscard;
+
+
     }
 }

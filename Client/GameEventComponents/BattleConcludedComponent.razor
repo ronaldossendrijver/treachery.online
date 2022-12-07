@@ -24,28 +24,31 @@
             {
                 replacementAmount = 0;
             }
+                       
+            if (BattleConcluded.MayChooseToDiscardCards(Game)) {
 
-            var discardableMercenary = DiscardableMercenaryAfterBattle;
-            var discardableWeapon = DiscardableWeaponAfterBattle;
-            var discardableDefense = DiscardableDefenseAfterBattle;
+                var discardableMercenary = DiscardableMercenaryAfterBattle;
+                var discardableWeapon = DiscardableWeaponAfterBattle;
+                var discardableDefense = DiscardableDefenseAfterBattle;
 
-            if (discardableMercenary != null || discardableWeapon != null || discardableDefense != null)
-            {
-                <div class="mt-2">Select any cards you wish to discard:</div>
-
-                if (discardableMercenary != null)
+                if (discardableMercenary != null || discardableWeapon != null || discardableDefense != null)
                 {
-                    <CheckboxComponent @bind-Value="discardMercenary">@Skin.Current.Describe(discardableMercenary)</CheckboxComponent>
-                }
+                    <div class="mt-2">Select any cards you wish to discard:</div>
 
-                if (discardableWeapon != null)
-                {
-                    <CheckboxComponent @bind-Value="discardWeapon">@Skin.Current.Describe(discardableWeapon)</CheckboxComponent>
-                }
+                    if (discardableMercenary != null)
+                    {
+                        <CheckboxComponent @bind-Value="discardMercenary">@Skin.Current.Describe(discardableMercenary)</CheckboxComponent>
+                    }
 
-                if (discardableDefense != null)
-                {
-                    <CheckboxComponent @bind-Value="discardDefense">@Skin.Current.Describe(discardableDefense)</CheckboxComponent>
+                    if (discardableWeapon != null)
+                    {
+                        <CheckboxComponent @bind-Value="discardWeapon">@Skin.Current.Describe(discardableWeapon)</CheckboxComponent>
+                    }
+
+                    if (discardableDefense != null)
+                    {
+                        <CheckboxComponent @bind-Value="discardDefense">@Skin.Current.Describe(discardableDefense)</CheckboxComponent>
+                    }
                 }
             }
 

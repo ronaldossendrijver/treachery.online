@@ -120,6 +120,8 @@ namespace Treachery.Shared
 
         public bool HasAlly => Ally != Faction.None;
 
+        public bool Has(TreacheryCard card) => TreacheryCards.Contains(card);
+
         public bool Has(TreacheryCardType cardtype) => TreacheryCards.Any(c => c.Type == cardtype);
 
         public bool Is(Faction f) => Faction == f;

@@ -47,7 +47,7 @@ namespace Treachery.Shared
         public override Message Validate()
         {
             if (Passed && !MayPass(Game)) return Message.Express("You must reveal a terror token");
-            if (AllianceOffered && !MayOfferAlliance(Game)) return Message.Express("You can't offer an alliance again");
+            if (AllianceOffered && !MayOfferAlliance(Game)) return Message.Express("You can't offer an alliance to this faction");
 
             if (Passed || AllianceOffered) return null;
 
@@ -80,7 +80,7 @@ namespace Treachery.Shared
 
         public static bool MayPass(Game g) => !g.AllianceByTerrorWasOffered;
 
-        public static bool MayOfferAlliance(Game g) => !g.AllianceByTerrorWasOffered && GetVictim(g) != Faction.Pink;
+        public static bool MayOfferAlliance(Game g) => !g.AllianceByTerrorWasOffered && GetVictim(g) != Faction.Pink && !g.OccupationPreventsAlliance(Faction.Cyan, GetVictim(g));
 
         public static Territory GetTerritory(Game g) => g.LastTerrorTrigger.To.Territory;
 

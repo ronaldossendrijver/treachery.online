@@ -40,6 +40,29 @@
             _assassinate = false;
         }
 
+        @if (LoserConcluded.MayUseKarmaToForceKeptCards(Game, Player))
+        {
+            <RadioComponent @bind-Value="_karmaDecision"
+                            Values=@DecisionValues
+                            ValueLabels=@DecisionValueLabels>
+                <Label>Use @Name(TreacheryCardType.Karma) to force your opponent to discard or keep any or all cards used in battle?</Label>
+            </RadioComponent>
+
+            @if (_karmaDecision == LoserConcluded.KARMA_KEEP || _karmaDecision == LoserConcluded.KARMA_DISCARD)
+            {
+                <SelectCardComponent Selected="_cardsToForceKeepOrDiscard" Values=@LoserConcluded.CardsThatMayBeKeptOrDiscarded(Game) OnChanged="e => StateHasChanged()" />
+            }
+            else
+            {
+                _cardsToForceKeepOrDiscard = new();
+            }
+        }
+        else
+        {
+            _karmaDecision = LoserConcluded.KARMA_NO;
+            _cardsToForceKeepOrDiscard = new();
+        }
+
         <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation />
 
     </Body>
@@ -52,5 +75,13 @@
 
     private bool _assassinate;
 
-    protected override LoserConcluded ConfirmedResult => new LoserConcluded(Game) { Initiator = Faction, KeptCard = _cardToKeep, Assassinate = _assassinate };
+    private int _karmaDecision = LoserConcluded.KARMA_NO;
+
+    protected override LoserConcluded ConfirmedResult => new LoserConcluded(Game) { Initiator = Faction, KeptCard = _cardToKeep, Assassinate = _assassinate, KarmaForcedKeptCardDecision = _karmaDecision, ForcedKeptOrDiscardedCards = _cardsToForceKeepOrDiscard };
+
+    private IEnumerable<int> DecisionValues => new int[] { LoserConcluded.KARMA_NO, LoserConcluded.KARMA_KEEP, LoserConcluded.KARMA_DISCARD };
+
+    private IEnumerable<string> DecisionValueLabels => new string[] { "no", "Force keeping...", "Force discarding..." };
+
+    private List<TreacheryCard> _cardsToForceKeepOrDiscard = new();
 }

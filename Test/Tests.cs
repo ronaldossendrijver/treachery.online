@@ -26,66 +26,10 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-
-
-            /*
-            if (e is BattleConcluded bc && bc.StolenToken != TechToken.None && g.CurrentBattle.TreacheryOf(bc.Initiator).TraitorCalled)
+            if (e is LoserConcluded && e.Initiator == Faction.Cyan && e.Player.HasKarma)
             {
-                WriteSavegameIfApplicable(g, e.Player, "Stealing tech token after treachery");
+                WriteSavegameIfApplicable(g, e.Player, "Cyan Loser may use Karma");
             }
-            */
-
-            /*
-            if (e is LoserConcluded lc && lc.Assassinate && g.RecentMilestones.Contains(Milestone.LeaderKilled))
-            {
-                if (e.Player.RevealedTraitors.Any(t => t.Faction != g.BattleWinner && g.BattleWinner == Faction.Purple))
-                {
-                    WriteSavegameIfApplicable(g, e.Player, "Assassination of Ghola");
-                }
-                else
-                {
-                    WriteSavegameIfApplicable(g, e.Player, "Assassination");
-                }
-            }
-
-            if (e is TerrorRevealed && g.CurrentPhase == Phase.TerrorTriggeredByBlueAccompaniesOrange)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "TerrorTriggeredByBlueAccompaniesOrange");
-            }
-
-            if (e is TerrorRevealed && g.CurrentPhase == Phase.TerrorTriggeredByBlueAccompaniesNonOrange)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "TerrorTriggeredByBlueAccompaniesNonOrange");
-            }
-
-            if (e is TerrorRevealed && g.CurrentMainPhase == MainPhase.Blow)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "TerrorTriggeredDuringBlow");
-            }
-            */
-            /*
-            if (g.CurrentTurn > 12 && !g.RecentMilestones.Contains(Milestone.BabyMonster) && g.RecentMilestones.Contains(Milestone.Monster) && (g.ResourceCardDiscardPileA.Items.Take(3).Any(c => c.IsSandTrout) || g.ResourceCardDiscardPileB.Items.Take(3).Any(c => c.IsSandTrout)))
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Sandtrout triggered...");
-            }
-            */
-            /*
-            if (g.Version >= 149 && e is Battle && e.Player.Resources > 0 && e.Player.Ally == Faction.Yellow)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Battle by Fremen ally (" + e.Player.AlliedPlayer.Name + ")...");
-            }
-            */
-            /*
-            if (e is BattleConcluded && e.Initiator == Faction.Black && !g.CurrentBattle.OpponentOf(Faction.Black).Leaders.Any(l => g.IsAlive(l)) && g.CurrentBattle.PlanOfOpponent(e.Player).Hero is Leader battleLeader &&  g.IsAlive(battleLeader))
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Capturing last leader used in battle by harkonnen opponent...");
-            }
-
-            if (e is BattleConcluded && e.Initiator == Faction.Black && !g.CurrentBattle.OpponentOf(Faction.Black).Leaders.Any(l => g.IsAlive(l)) && g.CurrentBattle.PlanOf(e.Player).Hero is Leader stolenLeader && g.IsAlive(stolenLeader))
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Capturing last leader returned after used in battle by harkonnen...");
-            }
-            */
         }
 
         private readonly List<Type> Written = new();
@@ -397,7 +341,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 10000;
+            int nrOfGames = 200;
             int nrOfTurns = 10;
             int nrOfPlayers = 6;
 
