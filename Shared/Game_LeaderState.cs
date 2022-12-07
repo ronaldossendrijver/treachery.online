@@ -26,9 +26,13 @@ namespace Treachery.Shared
             var purple = GetPlayer(Faction.Purple);
             if (purple != null && l is Leader && purple.Leaders.Contains(l) && l.Faction != Faction.Purple)
             {
-                var originalOwner = GetPlayer(l.Faction);
                 purple.Leaders.Remove(l as Leader);
-                originalOwner.Leaders.Add(l as Leader);
+                
+                var originalOwner = GetPlayer(l.Faction);
+                if (originalOwner != null)
+                {
+                    originalOwner.Leaders.Add(l as Leader);
+                }
             }
         }
 
