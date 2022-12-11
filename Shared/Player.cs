@@ -74,6 +74,8 @@ namespace Treachery.Shared
 
         public Dictionary<Location, Battalion> ForcesOnPlanet => ForcesInLocations.Where(kvp => kvp.Key is not Homeworld).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
+        public List<Faction> Ambassadors { get; set; } = new();
+
         public Faction PredictedFaction { get; set; } = 0;
 
         public int PredictedTurn { get; set; } = 0;

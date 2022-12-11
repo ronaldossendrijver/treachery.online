@@ -81,7 +81,7 @@
 
     private IEnumerable<int> DecisionValues => new int[] { LoserConcluded.KARMA_NO, LoserConcluded.KARMA_KEEP, LoserConcluded.KARMA_DISCARD };
 
-    private IEnumerable<string> DecisionValueLabels => new string[] { "no", "Force keeping...", "Force discarding..." };
+    private IEnumerable<string> DecisionValueLabels => new string[] { "No", "Force keeping...", "Force discarding..." };
 
     private List<TreacheryCard> _cardsToForceKeepOrDiscard = new();
 }

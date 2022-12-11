@@ -80,7 +80,7 @@ namespace Treachery.Shared
 
         public static bool MayPass(Game g) => !g.AllianceByTerrorWasOffered;
 
-        public static bool MayOfferAlliance(Game g) => !g.AllianceByTerrorWasOffered && GetVictim(g) != Faction.Pink && !g.OccupationPreventsAlliance(Faction.Cyan, GetVictim(g));
+        public static bool MayOfferAlliance(Game g) => !g.AllianceByTerrorWasOffered && GetVictim(g) != Faction.Pink;
 
         public static Territory GetTerritory(Game g) => g.LastTerrorTrigger.To.Territory;
 

@@ -23,6 +23,7 @@ namespace Treachery.Shared
             Allow(FactionAdvantage.RedReceiveBid);
             Allow(FactionAdvantage.GreyAllyDiscardingCard);
             RevivalTechTokenIncome = false;
+            AmbassadorsPlacedThisTurn = 0;
             FactionsThatTookFreeRevival.Clear();
             HasActedOrPassed.Clear();
 
@@ -377,6 +378,32 @@ namespace Treachery.Shared
             e.Player.SpecialKarmaPowerUsed = true;
             Log(e);
             RecentMilestones.Add(Milestone.Karma);
+        }
+
+        public int AmbassadorsPlacedThisTurn { get; private set; } = 0;
+
+        public Faction AmbassadorIn(Territory t) => AmbassadorsOnPlanet.ContainsKey(t) ? AmbassadorsOnPlanet[t] : Faction.None;
+
+        public void HandleEvent(AmbassadorPlaced e)
+        {
+            if (!e.Passed) {
+
+                AmbassadorsPlacedThisTurn++;
+                e.Player.Resources -= AmbassadorsPlacedThisTurn;
+                Log(e.Initiator, " place an Ambassador in ", e.Stronghold, " for ", Payment(AmbassadorsPlacedThisTurn));
+                AmbassadorsOnPlanet.Add(e.Stronghold, e.Faction);
+                e.Player.Ambassadors.Remove(e.Faction);
+
+                if (!e.Player.Ambassadors.Any())
+                {
+                    DrawRandomAmbassadors(e.Player);
+                    Log(e.Initiator, " draw 5 random Ambassadors");
+                }
+            }
+            else
+            {
+                Log(e);
+            }
         }
 
         #endregion

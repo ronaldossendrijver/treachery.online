@@ -52,6 +52,9 @@ namespace Treachery.Shared
         public BrownEconomicsStatus EconomicsStatus { get; private set; } = BrownEconomicsStatus.None;
         public Dictionary<Location, int> ResourcesOnPlanet { get; private set; } = new();
         public Dictionary<TerrorType, Territory> TerrorOnPlanet { get; private set; } = new();
+        public Deck<Faction> Ambassadors { get; private set; }
+
+        public Dictionary<Territory, Faction> AmbassadorsOnPlanet { get; private set; } = new();
         public Dictionary<IHero, LeaderState> LeaderState { get; private set; } = new();
         public Deck<LeaderSkill> SkillDeck { get; private set; }
         public Deck<Faction> NexusCardDeck { get; private set; }
@@ -649,6 +652,8 @@ namespace Treachery.Shared
         #region Forces
 
         public bool IsInStorm(Location l) => l.Sector == SectorInStorm;
+
+        public bool IsInStorm(Territory t) => t.Locations.Any(l => IsInStorm(l));
 
         public bool IsOccupied(Location l) => Players.Any(p => p.Occupies(l));
 

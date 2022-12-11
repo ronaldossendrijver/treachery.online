@@ -508,28 +508,32 @@ namespace Treachery.Shared
         public bool CyanHasPlantedTerror { get; private set; } = false;
 
         public IEnumerable<TerrorType> TerrorIn(Territory t) => TerrorOnPlanet.Where(kvp => kvp.Value == t).Select(kvp => kvp.Key);
-
+        
         public void HandleEvent(TerrorPlanted e)
         {
             Log(e);
-            CyanHasPlantedTerror = true;
 
-            if (e.Stronghold == null)
+            if (!e.Passed)
             {
-                TerrorOnPlanet.Remove(e.Type);
-                UnplacedTerrorTokens.Add(e.Type);
-            }
-            else
-            {
-                if (UnplacedTerrorTokens.Contains(e.Type))
+                CyanHasPlantedTerror = true;
+
+                if (e.Stronghold == null)
                 {
-                    TerrorOnPlanet.Add(e.Type, e.Stronghold);
-                    UnplacedTerrorTokens.Remove(e.Type);
+                    TerrorOnPlanet.Remove(e.Type);
+                    UnplacedTerrorTokens.Add(e.Type);
                 }
                 else
                 {
-                    TerrorOnPlanet.Remove(e.Type);
-                    TerrorOnPlanet.Add(e.Type, e.Stronghold);
+                    if (UnplacedTerrorTokens.Contains(e.Type))
+                    {
+                        TerrorOnPlanet.Add(e.Type, e.Stronghold);
+                        UnplacedTerrorTokens.Remove(e.Type);
+                    }
+                    else
+                    {
+                        TerrorOnPlanet.Remove(e.Type);
+                        TerrorOnPlanet.Add(e.Type, e.Stronghold);
+                    }
                 }
             }
         }

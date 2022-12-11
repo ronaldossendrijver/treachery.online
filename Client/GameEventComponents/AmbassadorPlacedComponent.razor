@@ -1,0 +1,58 @@
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<AmbassadorPlaced>
+@implements IDisposable
+
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>You may now place an Ambassador Token in a Stronghold</Header>
+    <Body>
+
+        <SelectFactionComponent @bind-Value=_faction Values="AmbassadorPlaced.ValidAmbassadors(Player)">
+            <Label>Of which Faction?</Label>
+        </SelectFactionComponent>
+
+        <SelectComponent ButtonHint=ClickHintButton.LMB @bind-Value=_stronghold Values=@TerrorPlanted.ValidStrongholds(Game, Player)>
+            <Label>In which Stronghold?</Label>
+        </SelectComponent>
+
+        <ButtonRowComponent Pass="Pass" Confirm="Confirm" ConfirmText="Place Ambassador" ConfirmError=@Validation />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override Faction IsFactionSpecific => Faction.Pink;
+
+    private Faction _faction;
+    private Territory _stronghold;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            h.OnLocationSelected += HandleLocationSelected;
+        }
+    }
+
+    protected override AmbassadorPlaced ConfirmedResult => new AmbassadorPlaced(Game) { Initiator = Faction, Faction = _faction, Stronghold = _stronghold };
+
+    protected override AmbassadorPlaced PassedResult => new AmbassadorPlaced(Game) { Initiator = Faction, Passed = true };
+
+    private void HandleLocationSelected(object sender, Location l)
+    {
+        SetIfValid<Territory, Territory>(ref _stronghold, AmbassadorPlaced.ValidStrongholds(Game, Player), l.Territory);
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        h.OnLocationSelected -= HandleLocationSelected;
+    }
+}

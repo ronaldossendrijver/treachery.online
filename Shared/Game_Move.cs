@@ -742,6 +742,22 @@ namespace Treachery.Shared
                 }
 
                 MakeAlliance(e.Initiator, Faction.Cyan);
+
+                if (HasActedOrPassed.Contains(e.Initiator) && HasActedOrPassed.Contains(Faction.Cyan))
+                {
+                    CheckIfForcesShouldBeDestroyedByAllyPresence(e.Player);
+                }
+
+                var territory = LastTerrorTrigger.To.Territory;
+                Log("Terror in ", territory, " is returned to supplies");
+                foreach (var t in TerrorIn(territory).ToList())
+                {
+                    TerrorOnPlanet.Remove(t);
+                    UnplacedTerrorTokens.Add(t);
+                }
+
+                TerrorTriggered = false;
+                DetermineNextShipmentAndMoveSubPhase();
             }
             else
             {

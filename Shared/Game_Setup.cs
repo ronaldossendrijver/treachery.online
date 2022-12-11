@@ -70,6 +70,7 @@ namespace Treachery.Shared
             }
 
             CreateTerrorTokens();
+            InitializeAmbassadors();
 
             OrangeAllyMayShipAsGuild = true;
             PurpleAllyMayReviveAsPurple = true;
@@ -94,9 +95,21 @@ namespace Treachery.Shared
 
             FillEmptySeatsWithBots();
             RemoveClaimedFactions();
+
+            var pink = GetPlayer(Faction.Pink);
+            if (pink != null)
+            {
+                AssignInitialAmbassadors(pink);
+            }
+
             InitializeTimers();
 
             Enter(Applicable(Rule.PlayersChooseFactions), Phase.SelectingFactions, AssignFactionsAndEnterFactionTrade);
+        }
+
+        private void InitializeAmbassadors()
+        {
+            Ambassadors = new Deck<Faction>(EstablishPlayers.AvailableFactions(), Random);
         }
 
         public List<TerrorType> UnplacedTerrorTokens { get; private set; } = new();
@@ -725,13 +738,24 @@ namespace Treachery.Shared
             }
         }
 
-        public Faction NextFactionToPerformCustomSetup
+        private void AssignInitialAmbassadors(Player p)
         {
-            get
+            p.Ambassadors.Add(Faction.Pink);
+            Ambassadors.Items.Remove(Faction.Pink);
+            DrawRandomAmbassadors(p);
+        }
+
+        private void DrawRandomAmbassadors(Player p)
+        {
+            Ambassadors.Shuffle();
+            RecentMilestones.Add(Milestone.Shuffled);
+            for (int i = 0; i < 5; i++)
             {
-                return Players.Select(p => p.Faction).Where(f => !HasActedOrPassed.Contains(f)).FirstOrDefault();
+                p.Ambassadors.Add(Ambassadors.Draw());
             }
         }
+
+        public Faction NextFactionToPerformCustomSetup => Players.Select(p => p.Faction).Where(f => !HasActedOrPassed.Contains(f)).FirstOrDefault();
 
         public void HandleEvent(PerformSetup e)
         {

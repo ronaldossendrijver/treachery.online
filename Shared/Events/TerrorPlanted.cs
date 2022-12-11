@@ -86,7 +86,11 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            if (Stronghold != null)
+            if (Passed)
+            {
+                return Message.Express(Initiator, " don't plant terror");
+            }
+            else if (Stronghold != null)
             {
                 return Message.Express(Initiator, " plant terror in ", Stronghold);
             }
