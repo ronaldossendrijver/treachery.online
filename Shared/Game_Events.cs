@@ -92,6 +92,9 @@ namespace Treachery.Shared
                 case Phase.AllianceByTerror:
                     if (faction == TerrorRevealed.GetVictim(this)) result.Add(typeof(AllianceByTerror));
                     break;
+                case Phase.AllianceByAmbassador:
+                    if (faction == AmbassadorActivated.GetVictim(this)) result.Add(typeof(AllianceByAmbassador));
+                    break;
                 case Phase.Bureaucracy:
                     if (player == PlayerSkilledAs(LeaderSkill.Bureaucrat)) result.Add(typeof(Bureaucracy));
                     break;
@@ -222,6 +225,11 @@ namespace Treachery.Shared
                 case Phase.BiddingReport:
                     if (faction == Faction.Purple && Players.Count > 1 && (Version < 113 || !Prevented(FactionAdvantage.PurpleIncreasingRevivalLimits))) result.Add(typeof(SetIncreasedRevivalLimits));
                     break;
+
+                case Phase.BeginningOfResurrection:
+                    if (faction == Faction.Purple && Players.Count > 1 && (Version < 113 || !Prevented(FactionAdvantage.PurpleIncreasingRevivalLimits))) result.Add(typeof(SetIncreasedRevivalLimits));
+                    break;             
+                    
                 case Phase.Resurrection:
                     if (IsPlaying(Faction.Purple) && faction != Faction.Purple &&
                         (Version <= 78 || !HasActedOrPassed.Contains(faction)) &&
@@ -233,9 +241,11 @@ namespace Treachery.Shared
                     if (faction == Faction.Purple && Players.Count > 1 && (Version < 113 || !Prevented(FactionAdvantage.PurpleIncreasingRevivalLimits))) result.Add(typeof(SetIncreasedRevivalLimits));
                     if (Version < 103 && player.Has(TreacheryCardType.Amal) && (Version <= 82 || HasActedOrPassed.Count == 0)) result.Add(typeof(AmalPlayed));
                     break;
-                case Phase.BeginningOfResurrection:
-                    if (faction == Faction.Purple && Players.Count > 1 && (Version < 113 || !Prevented(FactionAdvantage.PurpleIncreasingRevivalLimits))) result.Add(typeof(SetIncreasedRevivalLimits));
+
+                case Phase.ResurrectionReport:
+                    if (faction == Faction.Cyan && AmbassadorPlaced.IsApplicable(this, player)) result.Add(typeof(AmbassadorPlaced));
                     break;
+
                 case Phase.OrangeShip:
                     if (faction == Faction.Orange)
                     {

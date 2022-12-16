@@ -68,7 +68,7 @@ namespace Treachery.Shared
             {
                 return Message.Express(Initiator, " offer an alliance to ", Type);
             }
-            if (Passed)
+            else if (Passed)
             {
                 return Message.Express(Initiator, " don't terrorize");
             }

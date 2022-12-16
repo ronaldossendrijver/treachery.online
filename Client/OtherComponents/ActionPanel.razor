@@ -423,6 +423,11 @@
                     <TerrorPlantedComponent h="@h" />
                 }
                 break;
+            case "AmbassadorPlaced":
+                {
+                    <AmbassadorPlacedComponent h="@h" />
+                }
+                break;
             case "ExtortionPrevented":
                 {
                     <SimpleActionComponent GameEventType="ExtortionPrevented" h="@h" Title=@Skin.Current.Format("Pay 3 to prevent ", Faction.Cyan, " from regaining their ", TerrorType.Extortion, " token?") ConfirmLabel="Yes" Alert="false" />

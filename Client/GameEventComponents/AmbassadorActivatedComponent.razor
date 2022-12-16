@@ -1,0 +1,90 @@
+﻿<!--
+* Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<AmbassadorActivated>
+
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Activate your @AmbassadorActivated.GetFaction(Game) Ambassador?</Header>
+    <Body>
+
+        @switch (AmbassadorActivated.GetFaction(Game))
+        {
+
+            case Faction.Green:
+                <div>See the @AmbassadorActivated.GetVictim(Game) hand?</div>
+                break;
+
+            case Faction.Blue:
+                <SelectFactionComponent @bind-Value=_blueFaction Values="Game.Ambassadors.Items">
+                    <Label>Activate the effect of which ambassador?</Label>
+                </SelectFactionComponent>
+                break;
+
+            case Faction.Brown:
+                <SelectCardComponent Selected="_brownCards" Values="Player.TreacheryCards" OnChanged="e => StateHasChanged()">
+                    <Label>Select the cards you wish to discard for 3 @Skin.Current.Describe(Concept.Resource) each</Label>
+                </SelectCardComponent>
+                break;
+
+            case Faction.Pink:
+                
+                if (AmbassadorActivated.AllianceCanBeOffered(Game, Player))
+                {
+                    <CheckboxComponent @bind-Value="_pinkOfferAlliance">Offer an alliance to @Name(AmbassadorActivated.GetVictim(Game))</CheckboxComponent>
+                }
+                else
+                {
+                    _pinkOfferAlliance = false;
+                }
+
+                if (AmbassadorActivated.VidalCanBeTaken(Game, Player)) {
+
+                    <CheckboxComponent @bind-Value="_pinkTakeVidal">Take @Name(Game.Vidal)</CheckboxComponent>
+
+                    if (_pinkOfferAlliance)
+                    {
+                        <CheckboxComponent @bind-Value="_pinkGiveVidal">Give @Name(Game.Vidal) to @Name(AmbassadorActivated.GetVictim(Game)) instead (if they agree to ally)</CheckboxComponent>
+                    }
+                    else
+                    {
+                        _pinkGiveVidal = false;
+                    }
+                }
+                else
+                {
+                    _pinkTakeVidal = false;
+                    _pinkGiveVidal = false;
+                }
+
+                break;
+
+        }
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation Pass="Pass" />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override bool IsUrgent => true;
+    protected override Faction IsFactionSpecific => Faction.Pink;
+
+    private Faction _blueFaction;
+    private List<TreacheryCard> _brownCards = new List<TreacheryCard>();
+    private bool _pinkOfferAlliance;
+    private bool _pinkTakeVidal;
+    private bool _pinkGiveVidal;
+
+    protected override AmbassadorActivated ConfirmedResult => new AmbassadorActivated(Game) { Initiator = Faction, 
+        BlueSelectedFaction = _blueFaction,  
+        BrownCards = _brownCards,
+        PinkOfferAlliance = _pinkOfferAlliance, PinkGiveVidalToAlly = _pinkGiveVidal, PinkTakeVidal = _pinkTakeVidal};
+
+    protected override AmbassadorActivated PassedResult => new AmbassadorActivated(Game) { Initiator = Faction, Passed = true };
+}

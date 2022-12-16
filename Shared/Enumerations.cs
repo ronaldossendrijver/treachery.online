@@ -182,12 +182,16 @@ namespace Treachery.Shared
 
         BlueAccompaniesNonOrange = 240000,
         TerrorTriggeredByBlueAccompaniesNonOrange = 241000,
+        AmbassadorTriggeredByBlueAccompaniesNonOrange = 241010,
         BlueAccompaniesOrange = 250000,
         TerrorTriggeredByBlueAccompaniesOrange = 251000,
+        AmbassadorTriggeredByBlueAccompaniesOrange = 251010,
         BlueIntrudedByNonOrangeShip = 255000,
         TerrorTriggeredByOrangeShip = 255100,
+        AmbassadorTriggeredByOrangeShip = 255110,
         BlueIntrudedByOrangeShip = 256000,
         TerrorTriggeredByNonOrangeShip = 256100,
+        AmbassadorTriggeredByNonOrangeShip = 256110,
 
         NonOrangeMove = 260000,
 
@@ -195,16 +199,22 @@ namespace Treachery.Shared
 
         BlueIntrudedByNonOrangeMove = 280000,
         TerrorTriggeredByNonOrangeMove = 281000,
+        AmbassadorTriggeredByNonOrangeMove = 281010,
         BlueIntrudedByOrangeMove = 290000,
         TerrorTriggeredByOrangeMove = 291000,
+        AmbassadorTriggeredByOrangeMove = 291010,
         BlueIntrudedByCaravan = 295000,
         TerrorTriggeredByCaravan = 295100,
+        AmbassadorTriggeredByCaravan = 295110,
         BlueIntrudedByYellowRidingMonsterA = 296000,
         TerrorTriggeredByYellowRidingMonsterA = 296100,
+        AmbassadorTriggeredByYellowRidingMonsterA = 296110,
         BlueIntrudedByYellowRidingMonsterB = 297000,
         TerrorTriggeredByYellowRidingMonsterB = 297100,
+        AmbassadorTriggeredByYellowRidingMonsterB = 297110,
 
         AllianceByTerror = 298000,
+        AllianceByAmbassador = 298010,
 
         ShipmentAndMoveConcluded = 299000,
 

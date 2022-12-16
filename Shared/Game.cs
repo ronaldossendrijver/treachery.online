@@ -54,6 +54,8 @@ namespace Treachery.Shared
         public Dictionary<TerrorType, Territory> TerrorOnPlanet { get; private set; } = new();
         public Deck<Faction> Ambassadors { get; private set; }
 
+        public List<Faction> AmbassadorsSetAside { get; private set; }
+
         public Dictionary<Territory, Faction> AmbassadorsOnPlanet { get; private set; } = new();
         public Dictionary<IHero, LeaderState> LeaderState { get; private set; } = new();
         public Deck<LeaderSkill> SkillDeck { get; private set; }
@@ -490,6 +492,54 @@ namespace Treachery.Shared
             else
             {
                 methodOtherwise();
+            }
+        }
+
+        private void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, bool condition3, Phase phaseIf3True, bool condition4, Phase phaseIf4True, Action methodOtherwise)
+        {
+            if (condition1)
+            {
+                Enter(phaseIf1True);
+            }
+            else if (condition2)
+            {
+                Enter(phaseIf2True);
+            }
+            else if (condition3)
+            {
+                Enter(phaseIf3True);
+            }
+            else if (condition4)
+            {
+                Enter(phaseIf4True);
+            }
+            else
+            {
+                methodOtherwise();
+            }
+        }
+
+        private void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, bool condition3, Phase phaseIf3True, bool condition4, Phase phaseIf4True, Phase phaseOtherwise)
+        {
+            if (condition1)
+            {
+                Enter(phaseIf1True);
+            }
+            else if (condition2)
+            {
+                Enter(phaseIf2True);
+            }
+            else if (condition3)
+            {
+                Enter(phaseIf3True);
+            }
+            else if (condition4)
+            {
+                Enter(phaseIf4True);
+            }
+            else
+            {
+                Enter(phaseOtherwise);
             }
         }
 

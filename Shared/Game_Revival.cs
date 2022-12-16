@@ -393,12 +393,6 @@ namespace Treachery.Shared
                 Log(e.Initiator, " place an Ambassador in ", e.Stronghold, " for ", Payment(AmbassadorsPlacedThisTurn));
                 AmbassadorsOnPlanet.Add(e.Stronghold, e.Faction);
                 e.Player.Ambassadors.Remove(e.Faction);
-
-                if (!e.Player.Ambassadors.Any())
-                {
-                    DrawRandomAmbassadors(e.Player);
-                    Log(e.Initiator, " draw 5 random Ambassadors");
-                }
             }
             else
             {

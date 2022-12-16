@@ -49,10 +49,6 @@ namespace Treachery.Shared
                 g.AmbassadorIn(t) == Faction.None);
         }
 
-        public static bool MayRemoveTokens(Player p) => p.HasHighThreshold(World.Cyan);
-
-        public static bool MayPlaceAtExistingToken(Player p) => p.HasHighThreshold(World.Cyan);
-
         public static IEnumerable<Faction> ValidAmbassadors(Player p) => p.Ambassadors;
         
         protected override void ExecuteConcreteEvent()

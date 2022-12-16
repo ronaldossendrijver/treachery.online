@@ -747,6 +747,11 @@ namespace Treachery.Shared
 
         private void DrawRandomAmbassadors(Player p)
         {
+            foreach (var item in AmbassadorsSetAside)
+            {
+                Ambassadors.Items.Add(item);
+            }
+
             Ambassadors.Shuffle();
             RecentMilestones.Add(Milestone.Shuffled);
             for (int i = 0; i < 5; i++)

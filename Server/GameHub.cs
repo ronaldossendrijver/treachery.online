@@ -160,6 +160,8 @@ namespace Treachery.Server
         public async Task RequestNexusCardDrawn(int hostID, NexusCardDrawn e) { await Request(hostID, e); }
         public async Task RequestTerrorPlanted(int hostID, TerrorPlanted e) { await Request(hostID, e); }
         public async Task RequestTerrorRevealed(int hostID, TerrorRevealed e) { await Request(hostID, e); }
+        public async Task RequestAmbassadorPlaced(int hostID, AmbassadorPlaced e) { await Request(hostID, e); }
+        public async Task RequestAmbassadorRevealed(int hostID, AmbassadorActivated e) { await Request(hostID, e); }
         public async Task RequestExtortionPrevented(int hostID, ExtortionPrevented e) { await Request(hostID, e); }
         public async Task RequestDiscarded(int hostID, Discarded e) { await Request(hostID, e); }
         public async Task RequestAllianceByTerror(int hostID, AllianceByTerror e) { await Request(hostID, e); }

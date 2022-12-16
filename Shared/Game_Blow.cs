@@ -487,6 +487,7 @@ namespace Treachery.Shared
 
                 LastShipmentOrMovement = e;
                 LastTerrorTrigger = e;
+                LastAmbassadorTrigger = e;
                 int totalNumberOfForces = 0;
                 int totalNumberOfSpecialForces = 0;
                 foreach (var fl in e.ForceLocations)
