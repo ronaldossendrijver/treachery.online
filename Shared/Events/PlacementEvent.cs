@@ -75,12 +75,12 @@ namespace Treachery.Shared
 
         public bool Passed { get; set; }
 
-        protected static string ForceLocationsString(Game g, Dictionary<Location, Battalion> forceLocations)
+        public static string ForceLocationsString(Game g, Dictionary<Location, Battalion> forceLocations)
         {
             return string.Join(',', forceLocations.Select(x => g.Map.LocationLookup.GetId(x.Key) + ":" + x.Value.AmountOfForces + "|" + x.Value.AmountOfSpecialForces));
         }
 
-        protected static Dictionary<Location, Battalion> ParseForceLocations(Game g, Faction f, string forceLocations)
+        public static Dictionary<Location, Battalion> ParseForceLocations(Game g, Faction f, string forceLocations)
         {
             var result = new Dictionary<Location, Battalion>();
             if (forceLocations != null && forceLocations.Length > 0)

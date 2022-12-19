@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 
 namespace Treachery.Shared
 {
@@ -570,7 +569,7 @@ namespace Treachery.Shared
         {
             if (t == null)
             {
-                return new Location[] { };
+                return Array.Empty<Location>();
             }
             else
             {
@@ -579,7 +578,8 @@ namespace Treachery.Shared
         }
 
         public int MaximumNumberOfCards
-        {get
+        {
+            get
             {
                 return Faction switch
                 {

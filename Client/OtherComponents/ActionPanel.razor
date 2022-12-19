@@ -168,9 +168,19 @@
                     <TerrorRevealedComponent h="@h" />
                 }
                 break;
+            case "AmbassadorActivated":
+                {
+                    <AmbassadorActivatedComponent h="@h" />
+                }
+                break;
              case "AllianceByTerror":
                 {
                     <YesNoActionComponent GameEventType="AllianceByTerror" h="@h" Title=@Skin.Current.Format("Enter an alliance with {0}?", Faction.Cyan) Alert="true" />
+                }
+                break;
+            case "AllianceByAmbassador":
+                {
+                    <YesNoActionComponent GameEventType="AllianceByAmbassador" h="@h" Title=@Skin.Current.Format("Enter an alliance with {0}?", Faction.Pink) Alert="true" />
                 }
                 break;
             case "BlueBattleAnnouncement":

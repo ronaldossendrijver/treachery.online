@@ -243,7 +243,7 @@ namespace Treachery.Shared
                     break;
 
                 case Phase.ResurrectionReport:
-                    if (faction == Faction.Cyan && AmbassadorPlaced.IsApplicable(this, player)) result.Add(typeof(AmbassadorPlaced));
+                    if (faction == Faction.Pink && AmbassadorPlaced.IsApplicable(this, player)) result.Add(typeof(AmbassadorPlaced));
                     break;
 
                 case Phase.OrangeShip:
@@ -308,6 +308,18 @@ namespace Treachery.Shared
                 case Phase.TerrorTriggeredByYellowRidingMonsterB:
                 case Phase.TerrorTriggeredByCaravan:
                     if (faction == Faction.Cyan) result.Add(typeof(TerrorRevealed));
+                    break;
+
+                case Phase.AmbassadorTriggeredByOrangeShip:
+                case Phase.AmbassadorTriggeredByBlueAccompaniesOrange:
+                case Phase.AmbassadorTriggeredByNonOrangeShip:
+                case Phase.AmbassadorTriggeredByBlueAccompaniesNonOrange:
+                case Phase.AmbassadorTriggeredByOrangeMove:
+                case Phase.AmbassadorTriggeredByNonOrangeMove:
+                case Phase.AmbassadorTriggeredByYellowRidingMonsterA:
+                case Phase.AmbassadorTriggeredByYellowRidingMonsterB:
+                case Phase.AmbassadorTriggeredByCaravan:
+                    if (faction == Faction.Pink) result.Add(typeof(AmbassadorActivated));
                     break;
 
                 case Phase.ShipmentAndMoveConcluded:

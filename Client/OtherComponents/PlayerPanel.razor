@@ -129,6 +129,23 @@
                             }
                         }
 
+                        @if (ShownPlayer.Faction == Faction.Pink && h.CurrentPhase > Phase.BluePredicting)
+                        {
+                            <div>Ambassadors: <FactionsComponent Diameter=30 Factions=@ShownPlayer.Ambassadors/></div>
+                        }
+
+                        @if (ShownPlayer.Faction == Faction.Cyan && h.CurrentPhase > Phase.BluePredicting)
+                        {
+                            <div>
+                                Terror: 
+                                @foreach (var t in Game.UnplacedTerrorTokens)
+                                {
+                                    <Image Width=30 Popover=@Popup.Get(t)/>
+                                }
+
+                            </div>
+                        }
+
                         @if (h.Game.CurrentMainPhase == MainPhase.ShipmentAndMove && h.Game.HasResourceDeckPrescience(Player) && !h.Game.ResourceCardDeck.IsEmpty)
                         {
                             <Hoverable Popover=@Popup.Get(h.Game.ResourceCardDeck.Top)>Top card of @Name(Concept.Resource) Deck: <strong>@Name(h.Game.ResourceCardDeck.Top)</strong></Hoverable>

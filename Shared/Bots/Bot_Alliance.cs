@@ -13,8 +13,16 @@ namespace Treachery.Shared
         {
             var cyan = Game.GetPlayer(Faction.Cyan);
             var accept = !HasAlly || PlayerStanding(cyan) > 0.75f * PlayerStanding(AlliedPlayer);
-            return new AllianceByTerror(Game) { Initiator = Faction, Passed = accept };
+            return new AllianceByTerror(Game) { Initiator = Faction, Passed = !accept };
         }
+
+        protected virtual AllianceByAmbassador DetermineAllianceByAmbassador()
+        {
+            var pink = Game.GetPlayer(Faction.Pink);
+            var accept = !HasAlly || PlayerStanding(pink) > 0.75f * PlayerStanding(AlliedPlayer);
+            return new AllianceByAmbassador(Game) { Initiator = Faction, Passed = !accept };
+        }
+
 
         protected virtual AllianceOffered DetermineAllianceOffered()
         {

@@ -40,7 +40,12 @@
 
             if (safeLeaders.Any())
             {
-                <div>They say you can safely use: <strong>@Skin.Current.Join(safeLeaders)</strong>.</div>
+                <div>
+                    They say you can safely use:
+                    @foreach (var l in safeLeaders) {
+                        <Image Popover=@Popup.Get(l) Shown=l Width="30"/>
+                    }
+                </div>
             }
             else
             {

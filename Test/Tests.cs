@@ -26,9 +26,14 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (e is LoserConcluded && e.Initiator == Faction.Cyan && e.Player.HasKarma)
+            if (e is AmbassadorPlaced)
             {
-                WriteSavegameIfApplicable(g, e.Player, "Cyan Loser may use Karma");
+                WriteSavegameIfApplicable(g, typeof(AmbassadorPlaced));
+            }
+
+            if (e is AmbassadorActivated)
+            {
+                WriteSavegameIfApplicable(g, e.Player, Skin.Current.Describe(AmbassadorActivated.GetFaction(g)) + " Ambassador activated");
             }
         }
 
@@ -341,7 +346,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 200;
+            int nrOfGames = 100;
             int nrOfTurns = 10;
             int nrOfPlayers = 6;
 

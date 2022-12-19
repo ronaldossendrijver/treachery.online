@@ -15,6 +15,8 @@ namespace Treachery.Client
 
         public static string Get(ResourceCard c) => GetImageHoverHTML(Skin.Current.GetImageURL(c));
 
+        public static string Get(TerrorType t) => Get(Skin.Current.Describe(t));
+
         public static string Get(LeaderSkill c) => GetImageHoverHTML(Skin.Current.GetImageURL(c));
 
         public static string Get(TechToken tt) => GetImageHoverHTML(Skin.Current.GetImageURL(tt));

@@ -70,7 +70,7 @@ namespace Treachery.Shared
             }
 
             CreateTerrorTokens();
-            InitializeAmbassadors();
+            UnassignedAmbassadors = new Deck<Faction>(EstablishPlayers.AvailableFactions(), Random);
 
             OrangeAllyMayShipAsGuild = true;
             PurpleAllyMayReviveAsPurple = true;
@@ -96,20 +96,9 @@ namespace Treachery.Shared
             FillEmptySeatsWithBots();
             RemoveClaimedFactions();
 
-            var pink = GetPlayer(Faction.Pink);
-            if (pink != null)
-            {
-                AssignInitialAmbassadors(pink);
-            }
-
             InitializeTimers();
 
             Enter(Applicable(Rule.PlayersChooseFactions), Phase.SelectingFactions, AssignFactionsAndEnterFactionTrade);
-        }
-
-        private void InitializeAmbassadors()
-        {
-            Ambassadors = new Deck<Faction>(EstablishPlayers.AvailableFactions(), Random);
         }
 
         public List<TerrorType> UnplacedTerrorTokens { get; private set; } = new();
@@ -395,6 +384,12 @@ namespace Treachery.Shared
             foreach (var p in Players)
             {
                 p.AssignLeaders(this);
+            }
+
+            var pink = GetPlayer(Faction.Pink);
+            if (pink != null)
+            {
+                AssignInitialAmbassadors(pink);
             }
 
             Enter(IsPlaying(Faction.Blue), Phase.BluePredicting, TreacheryCardsBeforeTraitors, DealStartingTreacheryCards, DealTraitors);
@@ -729,6 +724,7 @@ namespace Treachery.Shared
                     break;
 
                 case Faction.Pink:
+                    p.Resources = 12;
                     p.AddForces(Map.ImperialBasin.MiddleLocation, 6, true);
                     break;
 
@@ -741,22 +737,25 @@ namespace Treachery.Shared
         private void AssignInitialAmbassadors(Player p)
         {
             p.Ambassadors.Add(Faction.Pink);
-            Ambassadors.Items.Remove(Faction.Pink);
-            DrawRandomAmbassadors(p);
+            UnassignedAmbassadors.Items.Remove(Faction.Pink);
+            Log(p.Faction, " receive the ", Faction.Pink, " ambassador");
+            AssignRandomAmbassadors(p);
         }
 
-        private void DrawRandomAmbassadors(Player p)
+        private void AssignRandomAmbassadors(Player p)
         {
             foreach (var item in AmbassadorsSetAside)
             {
-                Ambassadors.Items.Add(item);
+                UnassignedAmbassadors.Items.Add(item);
             }
+            AmbassadorsSetAside.Clear();
 
-            Ambassadors.Shuffle();
+            UnassignedAmbassadors.Shuffle();
             RecentMilestones.Add(Milestone.Shuffled);
+            Log(p.Faction, " draw 5 random Ambassadors");
             for (int i = 0; i < 5; i++)
             {
-                p.Ambassadors.Add(Ambassadors.Draw());
+                p.Ambassadors.Add(UnassignedAmbassadors.Draw());
             }
         }
 

@@ -924,32 +924,9 @@ namespace Treachery.Shared
             return null;
         }
 
-        protected virtual TerrorPlanted DetermineTerrorPlanted()
-        {
-            //This is for now just random
-            var type = TerrorPlanted.ValidTerrorTypes(Game, false).RandomOrDefault();
-            if (TerrorPlanted.ValidTerrorTypes(Game, false).Contains(TerrorType.Extortion)) type = TerrorType.Extortion;
+        #endregion
 
-            return new TerrorPlanted(Game) { Initiator = Faction, Type = type, Stronghold = TerrorPlanted.ValidStrongholds(Game, this).First() };
-        }
-
-        protected virtual TerrorRevealed DetermineTerrorRevealed()
-        {
-            //This is for now just random
-            var type = TerrorRevealed.GetTypes(Game).RandomOrDefault();
-            var cardInSabotage = TreacheryCards.FirstOrDefault(c => c.IsUseless);
-            var victim = Game.GetPlayer(TerrorRevealed.GetVictim(Game));
-            var offerAlliance = TerrorRevealed.MayOfferAlliance(Game) && PlayerStanding(victim) > 1.5f * PlayerStanding(this);
-
-            if (offerAlliance)
-            {
-                return new TerrorRevealed(Game) { Initiator = Faction, AllianceOffered = offerAlliance };
-            }
-            else
-            {
-                return new TerrorRevealed(Game) { Initiator = Faction, Type = type, RobberyTakesCard = false, CardToGiveInSabotage = cardInSabotage, ForcesInSneakAttack = TerrorRevealed.MaxAmountOfForcesInSneakAttack(Game, this) };
-            }
-        }
+        #region Cyan
 
         protected virtual ExtortionPrevented DetermineExtortionPrevented()
         {
@@ -993,7 +970,110 @@ namespace Treachery.Shared
             return new PerformCyanSetup(Game) { Initiator = Faction, ForceLocations = forceLocations };
         }
 
+        protected virtual TerrorPlanted DetermineTerrorPlanted()
+        {
+            //This is for now just random
+            var type = TerrorPlanted.ValidTerrorTypes(Game, false).RandomOrDefault();
+            if (TerrorPlanted.ValidTerrorTypes(Game, false).Contains(TerrorType.Extortion)) type = TerrorType.Extortion;
+
+            return new TerrorPlanted(Game) { Initiator = Faction, Type = type, Stronghold = TerrorPlanted.ValidStrongholds(Game, this).First() };
+        }
+
+        protected virtual TerrorRevealed DetermineTerrorRevealed()
+        {
+            //This is for now just random
+            var type = TerrorRevealed.GetTypes(Game).RandomOrDefault();
+            var cardInSabotage = TreacheryCards.FirstOrDefault(c => c.IsUseless);
+            var victim = Game.GetPlayer(TerrorRevealed.GetVictim(Game));
+            var offerAlliance = TerrorRevealed.MayOfferAlliance(Game) && PlayerStanding(victim) > 1.5f * PlayerStanding(this);
+
+            if (offerAlliance)
+            {
+                return new TerrorRevealed(Game) { Initiator = Faction, AllianceOffered = offerAlliance };
+            }
+            else
+            {
+                return new TerrorRevealed(Game) { Initiator = Faction, Type = type, RobberyTakesCard = false, CardToGiveInSabotage = cardInSabotage, ForcesInSneakAttack = TerrorRevealed.MaxAmountOfForcesInSneakAttack(Game, this) };
+            }
+        }
+
         #endregion
+
+        #region Pink
+
+        protected virtual AmbassadorPlaced DetermineAmbassadorPlaced()
+        {
+            if (Game.AmbassadorsPlacedThisTurn == 0 || Resources > 6 + Game.AmbassadorsPlacedThisTurn) {
+                //This is for now just random
+                var faction = AmbassadorPlaced.ValidAmbassadors(this).RandomOrDefault();
+
+                return new AmbassadorPlaced(Game) { Initiator = Faction, Faction = faction, Stronghold = TerrorPlanted.ValidStrongholds(Game, this).First() };
+            }
+            else {
+
+                return null;
+            }
+        }
+
+        protected virtual AmbassadorActivated DetermineAmbassadorActivated()
+        {
+            //This is for now just random
+            switch (AmbassadorActivated.GetFaction(Game))
+            {
+                case Faction.Blue:
+                    return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedFaction = AmbassadorActivated.GetValidBlueFactions(Game).First() };
+
+                case Faction.Brown:
+                    var toDiscard = AmbassadorActivated.GetValidBrownCards(this).Where(c => CardQuality(c) < 2);
+                    if (toDiscard.Any())
+                    {
+                        return new AmbassadorActivated(Game) { Initiator = Faction, BrownCards = toDiscard };
+                    }
+                    else
+                    {
+                        return new AmbassadorActivated(Game) { Initiator = Faction, Passed = true };
+                    }
+
+                case Faction.Pink:
+                    var victim = AmbassadorActivated.GetVictim(Game);
+                    var victimPlayer = Game.GetPlayer(victim);
+                    bool offerAlliance = AmbassadorActivated.AllianceCanBeOffered(Game, this) && PlayerStanding(victimPlayer) > 0.33 * PlayerStanding(this);
+                    bool takeVidal = AmbassadorActivated.VidalCanBeTaken(Game);
+                    bool offerVidal = takeVidal && AmbassadorActivated.VidalCanBeGivenTo(Game, victimPlayer) && HeroesForBattle(this, true).Count() >= 3 && HeroesForBattle(victimPlayer, true).Count() < 3;
+
+                    if (offerAlliance || takeVidal || offerVidal)
+                    {
+                        return new AmbassadorActivated(Game) { Initiator = Faction, PinkOfferAlliance = offerAlliance, PinkTakeVidal = takeVidal, PinkGiveVidalToAlly = offerVidal };
+                    }
+                    else
+                    {
+                        return new AmbassadorActivated(Game) { Initiator = Faction, Passed = true };
+                    }
+
+                case Faction.Yellow:
+                    var toMove = DetermineMovedBatallion(true);
+                    if (toMove != null && AmbassadorActivated.ValidYellowSources(Game, this).Contains(toMove.From.Territory))
+                    {
+                        var forcesToMove = new Dictionary<Location, Battalion>
+                        {
+                            { toMove.From, toMove.Batallion }
+                        };
+
+                        return new AmbassadorActivated(Game) { Initiator = Faction, YellowOrOrangeTo = toMove.To, YellowForceLocations = forcesToMove };
+                    }
+                    else
+                    {
+                        return null;
+                    }
+
+                default:
+                    return new AmbassadorActivated(Game) { Initiator = Faction };
+
+            }
+        }
+
+        #endregion
+
 
         #region White
 

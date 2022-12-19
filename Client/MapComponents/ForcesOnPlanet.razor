@@ -139,10 +139,21 @@
         {
             var popover = Player.Faction == Faction.Cyan ? Skin.Current.Describe(terr) : "Terror";
             <Image X=x Y=y Filter="hue-rotate(180deg);" Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetFactionTableImageURL(Faction.Cyan)
-                ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover />
-            
+        ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover />
+
             y += Skin.Current.PlayerTokenRadius;
         }
+
+        var ambassador = Game.AmbassadorIn(stronghold.Territory);
+        if (ambassador != Faction.None)
+        {
+            var popover = Player.Faction == Faction.Cyan ? Skin.Current.Describe(ambassador) : "Ambassador";
+            <Image X=x Y=y Filter="hue-rotate(180deg);" Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetFactionTableImageURL(Faction.Pink)
+               ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover />
+
+            y += Skin.Current.PlayerTokenRadius;
+        }
+
     }
 }
 

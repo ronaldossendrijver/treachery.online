@@ -40,7 +40,7 @@ namespace Treachery.Client
         public Dictionary<World, string> HomeWorldImage_URL;
         public Dictionary<World, string> HomeWorldCardImage_URL;
         public Dictionary<Faction, string> NexusCardImage_URL;
-        //public Dictionary<TerrorType, string> TerrorTokenImage_URL;
+        public Dictionary<TerrorType, string> TerrorTokenImage_URL;
         public Dictionary<TerrorType, string> TerrorTokenName_STR;
 
         public string Map_URL = null;
@@ -749,8 +749,8 @@ namespace Treachery.Client
                 Rule.Homeworlds => "Homeworlds",
                 Rule.NexusCards => "Nexus Cards",
                 Rule.Expansion3TreacheryCards => "Expansion Treachery Cards",
-                Rule.CyanAssassinate => Format("{0} can assassinate leaders", Faction.Yellow),
-                Rule.PinkLoyalty => Format("{0} gain a loyal leader", Faction.Yellow),
+                Rule.CyanAssassinate => Format("{0} can assassinate leaders", Faction.Cyan),
+                Rule.PinkLoyalty => Format("{0} gain a loyal leader", Faction.Pink),
 
                 Rule.CustomDecks => "Customized Treachery Card Deck",
                 Rule.ExtraKaramaCards => Format("Add three extra {0} cards to the game", TreacheryCardType.Karma),
@@ -802,10 +802,10 @@ namespace Treachery.Client
             return c != null ? GetURL(TreacheryCardImage_URL, c.SkinId) : ""; ;
         }
 
-        /*public string GetImageURL(TerrorType t)
+        public string GetImageURL(TerrorType t)
         {
             return GetURL(TerrorTokenImage_URL, t);
-        }*/
+        }
 
         public string GetImageURL(World w)
         {
@@ -2436,7 +2436,6 @@ namespace Treachery.Client
                 [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12nexus.gif",
             },
 
-            /*
             TerrorTokenImage_URL = new Dictionary<TerrorType, string>()
             {
                 [TerrorType.Atomics] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
@@ -2446,19 +2445,17 @@ namespace Treachery.Client
                 [TerrorType.Sabotage] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
                 [TerrorType.SneakAttack] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
             },
-            */
 
             TerrorTokenName_STR = new Dictionary<TerrorType, string>()
             {
                 [TerrorType.None] = "None",
-                [TerrorType.Assassination] = "Assassination",
-                [TerrorType.Atomics] = "Atomics",
-                [TerrorType.Extortion] = "Extortion",
-                [TerrorType.Robbery] = "Robbery",
-                [TerrorType.Sabotage] = "Sabotage",
-                [TerrorType.SneakAttack] = "Sneak Attack",
+                [TerrorType.Assassination] = "Assassination - Choose a random leader from that player and send it to the Tanks and collect spice for it",
+                [TerrorType.Atomics] = "Atomics - All forces in the territory go to the Tanks.  Place the Atomics Aftermath token in the territory.  No forces may ever ship into this territory (even Fremen). From this turn forward, your hand limit is reduced by 1 (as well as your ally’s), discarding a random card if a hand exceeds the limit",
+                [TerrorType.Extortion] = "Extortion - Gain 5 spice from the Spice Bank, placed in front of your shield. Collect it in the Mentat Pause, then regain this Terror token unless any one player in storm order pays you 3 spice",
+                [TerrorType.Robbery] = "Robbery - Steal half the spice (rounded up) from that player or take the top card of the Treachery Deck (then discarding a card of your choice if you exceed your hand size)",
+                [TerrorType.Sabotage] = "Sabotage - Draw a random Treachery Card from that player and discard it if possible. Then you may give that player a Treachery Card of your choice from your hand",
+                [TerrorType.SneakAttack] = "Sneak Attack - Send up to 5 of your forces in reserves into that territory at no cost (subject to storm and occupancy rules), even if the Atomics Aftermath token is there",
             },
-
             StrongholdCardName_STR = new Dictionary<int, string>()
             {
                 [2] = "Carthag",

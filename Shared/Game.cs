@@ -52,9 +52,9 @@ namespace Treachery.Shared
         public BrownEconomicsStatus EconomicsStatus { get; private set; } = BrownEconomicsStatus.None;
         public Dictionary<Location, int> ResourcesOnPlanet { get; private set; } = new();
         public Dictionary<TerrorType, Territory> TerrorOnPlanet { get; private set; } = new();
-        public Deck<Faction> Ambassadors { get; private set; }
+        public Deck<Faction> UnassignedAmbassadors { get; private set; }
 
-        public List<Faction> AmbassadorsSetAside { get; private set; }
+        public List<Faction> AmbassadorsSetAside { get; private set; } = new();
 
         public Dictionary<Territory, Faction> AmbassadorsOnPlanet { get; private set; } = new();
         public Dictionary<IHero, LeaderState> LeaderState { get; private set; } = new();
@@ -1021,6 +1021,11 @@ namespace Treachery.Shared
         private bool EveryoneActedOrPassed => HasActedOrPassed.Count == Players.Count;
 
         public bool AssistedNotekeepingEnabled(Player p) => Applicable(Rule.AssistedNotekeeping) || p.Is(Faction.Green) && Applicable(Rule.AssistedNotekeepingForGreen);
+
+        public bool HasRoomForLeaders(Player p) => 
+            p.Leaders.Count(l => IsAlive(l)) - 
+            (p.Is(Faction.Black) ? p.Leaders.Count(l => l.Faction != Faction.Black) : 0) 
+            < 5;
 
         public bool HasStormPrescience(Player p)
         {

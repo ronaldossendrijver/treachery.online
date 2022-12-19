@@ -100,6 +100,7 @@ namespace Treachery.Shared
                 Do(DetermineExtortionPrevented, ref action, evts) ||
                 Do(DetermineDiscarded, ref action, evts) ||
                 Do(DetermineAllianceByTerror, ref action, evts) ||
+                Do(DetermineAllianceByAmbassador, ref action, evts) ||
                 Do(DetermineLoserConcluded, ref action, evts) ||
 
                 //Brown
@@ -139,6 +140,8 @@ namespace Treachery.Shared
                 Do(DeterminePerformCyanSetup, ref action, evts) ||
 
                 //Pink
+                Do(DetermineAmbassadorPlaced, ref action, evts) ||
+                Do(DetermineAmbassadorActivated, ref action, evts) ||
 
                 //Purple
                 Do(DetermineFaceDanced, ref action, evts) ||

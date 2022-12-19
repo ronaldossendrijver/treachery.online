@@ -326,7 +326,7 @@ namespace Treachery.Shared
                 }
 
                 Log(c.Initiator, " accompany to ", c.Location);
-
+                LastShipmentOrMovement = c;
                 LastTerrorTrigger = c;
                 LastAmbassadorTrigger = c;
                 CheckIntrusion(c.Initiator, c.To.Territory);
@@ -390,14 +390,9 @@ namespace Treachery.Shared
             CurrentPlanetology = null;
         }
 
-        private void CheckIntrusion(PlacementEvent m)
+        private void CheckIntrusion(ILocationEvent e)
         {
-            CheckIntrusion(m.Initiator, m.To.Territory);
-        }
-
-        private void CheckIntrusion(Shipment s)
-        {
-            CheckIntrusion(s.Initiator, s.To.Territory);
+            CheckIntrusion(e.Initiator, e.To.Territory);
         }
 
         private bool BlueMayAccompany { get; set; } = false;
@@ -632,7 +627,7 @@ namespace Treachery.Shared
             {
                 Log("The ", ambassadorFaction, " Ambassador is removed from the game");
                 ambassadorFaction = e.BlueSelectedFaction;
-                Ambassadors.Items.Remove(e.BlueSelectedFaction);
+                UnassignedAmbassadors.Items.Remove(e.BlueSelectedFaction);
             }
             
             AmbassadorsSetAside.Add(ambassadorFaction);
@@ -641,12 +636,14 @@ namespace Treachery.Shared
 
             if (!e.Player.Ambassadors.Union(AmbassadorsOnPlanet.Values).Any(f => f != Faction.Pink))
             {
-                DrawRandomAmbassadors(e.Player);
+                AssignRandomAmbassadors(e.Player);
                 Log(e.Initiator, " draw 5 random Ambassadors");
             }
         }
 
         private AmbassadorActivated CurrentAmbassadorActivated { get; set; }
+        private Phase PausedAmbassadorPhase { get; set; }
+
         private void HandleAmbassador(AmbassadorActivated e, Faction ambassadorFaction)
         {
             CurrentAmbassadorActivated = e;
@@ -689,7 +686,8 @@ namespace Treachery.Shared
 
                     if (e.PinkOfferAlliance)
                     {
-                        Log(e.Initiator, " offer an alliance to ", victim);
+                        Log(e.Initiator, " offer an alliance to ", victim, MessagePart.ExpressIf(e.PinkGiveVidalToAlly, " offering ", Vidal, " if they accept"));
+                        PausedAmbassadorPhase = CurrentPhase;
                         Enter(Phase.AllianceByAmbassador);
                     }
                     else if (CurrentAmbassadorActivated.PinkTakeVidal)
@@ -699,12 +697,25 @@ namespace Treachery.Shared
 
                     break;
 
+                case Faction.Red:
+
+                    e.Player.Resources += 5;
+                    Log(e.Initiator, " get ", Payment(5));
+                    break;
+
+                case Faction.Yellow:
+
+                    PerformMoveFromLocations(e.Player, e.YellowForceLocations, e, false, false);
+                    CheckIntrusion(e);
+                    DetermineNextShipmentAndMoveSubPhase();
+                    break;
+
             }
 
             AmbassadorTriggered = false;
             DetermineNextShipmentAndMoveSubPhase();
         }
-
+        
         private Phase PausedTerrorPhase { get; set; }
         public bool AllianceByTerrorWasOffered { get; private set; } = false;
 
@@ -827,6 +838,8 @@ namespace Treachery.Shared
 
         public void HandleEvent(AllianceByTerror e)
         {
+            Enter(PausedTerrorPhase);
+
             if (!e.Passed)
             {
                 if (e.Player.HasAlly)
@@ -864,29 +877,29 @@ namespace Treachery.Shared
             {
                 Log(e.Initiator, " don't ally with ", Faction.Cyan);
             }
-
-            Enter(PausedTerrorPhase);
         }
 
         public void HandleEvent(AllianceByAmbassador e)
         {
+            Enter(PausedAmbassadorPhase);
+
             if (!e.Passed)
             {
-                MakeAlliance(e.Initiator, Faction.Cyan);
+                MakeAlliance(e.Initiator, Faction.Pink);
 
                 if (CurrentAmbassadorActivated.PinkGiveVidalToAlly)
                 {
                     TakeVidal(CurrentAmbassadorActivated.Player);
                 }
 
-                if (HasActedOrPassed.Contains(e.Initiator) && HasActedOrPassed.Contains(Faction.Cyan))
+                if (HasActedOrPassed.Contains(e.Initiator) && HasActedOrPassed.Contains(Faction.Pink))
                 {
                     CheckIfForcesShouldBeDestroyedByAllyPresence(e.Player);
                 }
             }
             else
             {
-                Log(e.Initiator, " don't ally with ", Faction.Cyan);
+                Log(e.Initiator, " don't ally with ", Faction.Pink);
 
                 if (CurrentAmbassadorActivated.PinkTakeVidal)
                 {
@@ -930,6 +943,8 @@ namespace Treachery.Shared
                 bool terrorOrAmbassadorTriggered = TerrorTriggered || AmbassadorTriggered;
                 bool somethingTriggered = BlueIntruded || terrorOrAmbassadorTriggered;
                 bool handleTerrorFirst = TerrorTriggered && (!AmbassadorTriggered || IsFirst(Faction.Cyan, Faction.Pink));
+
+                Console.WriteLine($"tOrAmTrigger: {terrorOrAmbassadorTriggered}, something: {somethingTriggered}, handleTerrorFirst: {handleTerrorFirst}, currentPhase: {CurrentPhase}");
 
                 switch (CurrentPhase)
                 {
@@ -1046,6 +1061,22 @@ namespace Treachery.Shared
                     case Phase.AmbassadorTriggeredByCaravan:
                         Enter(PausedPhase);
                         break;
+
+                        /*
+                         * take into account triggers from fremen ambassador moves?
+                    case Phase.Ambassa:
+                    case Phase.BlueIntrudedByYellowRidingMonsterA when somethingTriggered:
+                    case Phase.TerrorTriggeredByYellowRidingMonsterA when somethingTriggered:
+                    case Phase.AmbassadorTriggeredByYellowRidingMonsterA when somethingTriggered:
+                        Enter(BlueIntruded, Phase.BlueIntrudedByYellowRidingMonsterA, handleTerrorFirst, Phase.TerrorTriggeredByYellowRidingMonsterA, AmbassadorTriggered, Phase.AmbassadorTriggeredByYellowRidingMonsterA, EndWormRide);
+                        break;
+
+                    case Phase.BlueIntrudedByYellowRidingMonsterA:
+                    case Phase.TerrorTriggeredByYellowRidingMonsterA:
+                    case Phase.AmbassadorTriggeredByYellowRidingMonsterA:
+                        EndWormRide(Phase.YellowRidingMonsterA);
+                        break;
+                        */
 
                 }
             }
