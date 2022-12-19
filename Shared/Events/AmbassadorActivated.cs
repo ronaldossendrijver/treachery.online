@@ -69,35 +69,39 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            var player = Player;
-            var faction = GetFaction(Game);
-            var victim = GetVictim(Game);
-            var victimPlayer = Game.GetPlayer(victim);
+            if (!Passed)
+            {
+                var player = Player;
+                var faction = GetFaction(Game);
+                var victim = GetVictim(Game);
+                var victimPlayer = Game.GetPlayer(victim);
 
-            if (Initiator != Faction.Pink) return Message.Express("Your faction can't activate Ambassadors");
+                if (Initiator != Faction.Pink) return Message.Express("Your faction can't activate Ambassadors");
 
-            switch (faction) {
+                switch (faction)
+                {
 
-                case Faction.Blue:
-                    if (!GetValidBlueFactions(Game).Contains(BlueSelectedFaction)) return Message.Express("Invalid Ambassador selected");
-                    break;
+                    case Faction.Blue:
+                        if (!GetValidBlueFactions(Game).Contains(BlueSelectedFaction)) return Message.Express("Invalid Ambassador selected");
+                        break;
 
-                case Faction.Brown:
-                    if (BrownCards.Any(c => !GetValidBrownCards(player).Contains(c))) return Message.Express("Invalid card selected");
-                    break;
+                    case Faction.Brown:
+                        if (BrownCards.Any(c => !GetValidBrownCards(player).Contains(c))) return Message.Express("Invalid card selected");
+                        break;
 
-                case Faction.Pink:
-                    if (PinkOfferAlliance && !AllianceCanBeOffered(Game, player)) return Message.Express("You can't offer an alliance");
-                    if (PinkTakeVidal && !VidalCanBeTaken(Game)) return Message.Express("You can't take ", Game.Vidal);
-                    if (PinkGiveVidalToAlly && !VidalCanBeGivenTo(Game, victimPlayer)) return Message.Express("You can't give ", Game.Vidal, " to ", victim);
-                    break;
+                    case Faction.Pink:
+                        if (PinkOfferAlliance && !AllianceCanBeOffered(Game, player)) return Message.Express("You can't offer an alliance");
+                        if (PinkTakeVidal && !VidalCanBeTaken(Game)) return Message.Express("You can't take ", Game.Vidal);
+                        if (PinkGiveVidalToAlly && !VidalCanBeGivenTo(Game, victimPlayer)) return Message.Express("You can't give ", Game.Vidal, " to ", victim);
+                        break;
 
-                case Faction.Yellow:
-                    if (YellowForceLocations.Any(kvp => Game.IsInStorm(kvp.Key))) return Message.Express("Can't move from storm");
-                    if (YellowForceLocations.Any(kvp => player.ForcesIn(kvp.Key) < kvp.Value.AmountOfForces)) return Message.Express("Invalid amount of ", Player.Force);
-                    if (YellowForceLocations.Any(kvp => player.SpecialForcesIn(kvp.Key) < kvp.Value.AmountOfSpecialForces)) return Message.Express("Invalid amount of ", Player.SpecialForce);
-                    if (!ValidYellowTargets(Game, player, YellowForceLocations).Contains(YellowOrOrangeTo)) return Message.Express("Invalid target location");
-                    break;
+                    case Faction.Yellow:
+                        if (YellowForceLocations.Any(kvp => Game.IsInStorm(kvp.Key))) return Message.Express("Can't move from storm");
+                        if (YellowForceLocations.Any(kvp => player.ForcesIn(kvp.Key) < kvp.Value.AmountOfForces)) return Message.Express("Invalid amount of ", Player.Force);
+                        if (YellowForceLocations.Any(kvp => player.SpecialForcesIn(kvp.Key) < kvp.Value.AmountOfSpecialForces)) return Message.Express("Invalid amount of ", Player.SpecialForce);
+                        if (!ValidYellowTargets(Game, player, YellowForceLocations).Contains(YellowOrOrangeTo)) return Message.Express("Invalid target location");
+                        break;
+                }
             }
 
             return null;
@@ -123,9 +127,9 @@ namespace Treachery.Shared
 
         public static bool VidalCanBeTaken(Game g) => g.VidalIsAlive && !g.VidalIsCapturedOrGhola;
 
-        public static bool VidalCanBeGivenTo(Game g, Player p) => g.HasRoomForLeaders(p);
+        public static bool VidalCanBeGivenTo(Game g, Player p) => true; // g.HasRoomForLeaders(p);
 
-        public static bool VidalCanBeGivenTo(Game g, Faction f) => g.HasRoomForLeaders(g.GetPlayer(f));
+        public static bool VidalCanBeGivenTo(Game g, Faction f) => true; // g.HasRoomForLeaders(g.GetPlayer(f));
 
         public static IEnumerable<Faction> GetValidBlueFactions(Game g) => g.UnassignedAmbassadors.Items;
 

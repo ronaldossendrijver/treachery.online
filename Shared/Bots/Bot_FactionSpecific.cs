@@ -1063,7 +1063,7 @@ namespace Treachery.Shared
                     }
                     else
                     {
-                        return null;
+                        return new AmbassadorActivated(Game) { Initiator = Faction, Passed = true }; ;
                     }
 
                 default:

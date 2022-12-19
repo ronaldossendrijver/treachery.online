@@ -618,27 +618,37 @@ namespace Treachery.Shared
 
         public void HandleEvent(AmbassadorActivated e)
         {
-            var ambassadorFaction = AmbassadorActivated.GetFaction(this);
-            var ambassadorTerritory = AmbassadorActivated.GetTerritory(this);
-
-            AmbassadorsOnPlanet.Remove(ambassadorTerritory);
-
-            if (ambassadorFaction == Faction.Blue)
+            if (!e.Passed)
             {
-                Log("The ", ambassadorFaction, " Ambassador is removed from the game");
-                ambassadorFaction = e.BlueSelectedFaction;
-                UnassignedAmbassadors.Items.Remove(e.BlueSelectedFaction);
+                var ambassadorFaction = AmbassadorActivated.GetFaction(this);
+                var ambassadorTerritory = AmbassadorActivated.GetTerritory(this);
+
+                AmbassadorsOnPlanet.Remove(ambassadorTerritory);
+
+                if (ambassadorFaction == Faction.Blue)
+                {
+                    Log("The ", ambassadorFaction, " Ambassador is removed from the game");
+                    ambassadorFaction = e.BlueSelectedFaction;
+                    UnassignedAmbassadors.Items.Remove(e.BlueSelectedFaction);
+                }
+
+                AmbassadorsSetAside.Add(ambassadorFaction);
+
+                HandleAmbassador(e, ambassadorFaction);
+
+                if (!e.Player.Ambassadors.Union(AmbassadorsOnPlanet.Values).Any(f => f != Faction.Pink))
+                {
+                    AssignRandomAmbassadors(e.Player);
+                    Log(e.Initiator, " draw 5 random Ambassadors");
+                }
             }
-            
-            AmbassadorsSetAside.Add(ambassadorFaction);
-
-            HandleAmbassador(e, ambassadorFaction);
-
-            if (!e.Player.Ambassadors.Union(AmbassadorsOnPlanet.Values).Any(f => f != Faction.Pink))
+            else
             {
-                AssignRandomAmbassadors(e.Player);
-                Log(e.Initiator, " draw 5 random Ambassadors");
+                Log(e.Initiator, " don't activate their Ambassador");
             }
+
+            AmbassadorTriggered = false;
+            DetermineNextShipmentAndMoveSubPhase();
         }
 
         private AmbassadorActivated CurrentAmbassadorActivated { get; set; }
@@ -711,9 +721,6 @@ namespace Treachery.Shared
                     break;
 
             }
-
-            AmbassadorTriggered = false;
-            DetermineNextShipmentAndMoveSubPhase();
         }
         
         private Phase PausedTerrorPhase { get; set; }
@@ -889,7 +896,7 @@ namespace Treachery.Shared
 
                 if (CurrentAmbassadorActivated.PinkGiveVidalToAlly)
                 {
-                    TakeVidal(CurrentAmbassadorActivated.Player);
+                    TakeVidal(e.Player);
                 }
 
                 if (HasActedOrPassed.Contains(e.Initiator) && HasActedOrPassed.Contains(Faction.Pink))
@@ -944,7 +951,7 @@ namespace Treachery.Shared
                 bool somethingTriggered = BlueIntruded || terrorOrAmbassadorTriggered;
                 bool handleTerrorFirst = TerrorTriggered && (!AmbassadorTriggered || IsFirst(Faction.Cyan, Faction.Pink));
 
-                Console.WriteLine($"tOrAmTrigger: {terrorOrAmbassadorTriggered}, something: {somethingTriggered}, handleTerrorFirst: {handleTerrorFirst}, currentPhase: {CurrentPhase}");
+                //Console.WriteLine($"tOrAmTrigger: {terrorOrAmbassadorTriggered}, something: {somethingTriggered}, handleTerrorFirst: {handleTerrorFirst}, currentPhase: {CurrentPhase}");
 
                 switch (CurrentPhase)
                 {
@@ -1013,7 +1020,7 @@ namespace Treachery.Shared
                         break;
                     
                     case Phase.BlueAccompaniesNonOrange:
-                        Enter(somethingTriggered, Phase.TerrorTriggeredByBlueAccompaniesNonOrange, Phase.NonOrangeMove); 
+                        Enter(handleTerrorFirst, Phase.TerrorTriggeredByBlueAccompaniesNonOrange, AmbassadorTriggered, Phase.AmbassadorTriggeredByBlueAccompaniesNonOrange, Phase.NonOrangeMove); 
                         break;
 
                     case Phase.TerrorTriggeredByBlueAccompaniesNonOrange:

@@ -10,88 +10,92 @@
 
     <Header>Activate your <FactionComponent Faction=@AmbassadorActivated.GetFaction(Game)/> Ambassador?</Header>
     <Body>
+        @{
+            switch (AmbassadorActivated.GetFaction(Game))
+            {
+                case Faction.Green:
+                    <div>See the @AmbassadorActivated.GetVictim(Game) hand?</div>
+                    break;
 
-        @switch (AmbassadorActivated.GetFaction(Game))
-        {
+                case Faction.Blue:
+                    <SelectFactionComponent @bind-Value=_blueFaction Values=@AmbassadorActivated.GetValidBlueFactions(Game)>
+                        <Label>Activate the effect of which ambassador?</Label>
+                    </SelectFactionComponent>
+                    break;
 
-            case Faction.Green:
-                <div>See the @AmbassadorActivated.GetVictim(Game) hand?</div>
-                break;
+                case Faction.Brown:
 
-            case Faction.Blue:
-                <SelectFactionComponent @bind-Value=_blueFaction Values=@AmbassadorActivated.GetValidBlueFactions(Game)>
-                    <Label>Activate the effect of which ambassador?</Label>
-                </SelectFactionComponent>
-                break;
+                    <div>Discard cards from your hand for 3 @Name(Concept.Resource) each?</div>
+                    <SelectCardComponent Selected="_brownCards" Values=@AmbassadorActivated.GetValidBrownCards(Player) OnChanged="e => StateHasChanged()">
+                        <Label>Select the cards you wish to discard for 3 @Skin.Current.Describe(Concept.Resource) each</Label>
+                    </SelectCardComponent>
+                    break;
 
-            case Faction.Brown:
-                <SelectCardComponent Selected="_brownCards" Values=@AmbassadorActivated.GetValidBrownCards(Player) OnChanged="e => StateHasChanged()">
-                    <Label>Select the cards you wish to discard for 3 @Skin.Current.Describe(Concept.Resource) each</Label>
-                </SelectCardComponent>
-                break;
-
-            case Faction.Pink:
+                case Faction.Pink:
                 
-                if (AmbassadorActivated.AllianceCanBeOffered(Game, Player))
-                {
-                    <CheckboxComponent @bind-Value="_pinkOfferAlliance">Offer an alliance to @Name(AmbassadorActivated.GetVictim(Game))</CheckboxComponent>
-                }
-                else
-                {
-                    _pinkOfferAlliance = false;
-                }
-
-                if (AmbassadorActivated.VidalCanBeTaken(Game)) {
-
-                    <CheckboxComponent @bind-Value="_pinkTakeVidal">Take @Name(Game.Vidal)</CheckboxComponent>
-
-                    if (_pinkOfferAlliance && AmbassadorActivated.VidalCanBeGivenTo(Game, AmbassadorActivated.GetVictim(Game)))
+                    if (AmbassadorActivated.AllianceCanBeOffered(Game, Player))
                     {
-                        <CheckboxComponent @bind-Value="_pinkGiveVidal">Give @Name(Game.Vidal) to @Name(AmbassadorActivated.GetVictim(Game)) instead (if they agree to ally)</CheckboxComponent>
+                        <CheckboxComponent @bind-Value="_pinkOfferAlliance">Offer an alliance to @Name(AmbassadorActivated.GetVictim(Game))</CheckboxComponent>
                     }
                     else
                     {
+                        _pinkOfferAlliance = false;
+                    }
+
+                    if (AmbassadorActivated.VidalCanBeTaken(Game)) {
+
+                        <CheckboxComponent @bind-Value="_pinkTakeVidal">Take @Name(Game.Vidal)</CheckboxComponent>
+
+                        if (_pinkTakeVidal && _pinkOfferAlliance && AmbassadorActivated.VidalCanBeGivenTo(Game, AmbassadorActivated.GetVictim(Game)))
+                        {
+                            <CheckboxComponent @bind-Value="_pinkGiveVidal">Give @Name(Game.Vidal) to @Name(AmbassadorActivated.GetVictim(Game)) if they agree to ally</CheckboxComponent>
+                        }
+                        else
+                        {
+                            _pinkGiveVidal = false;
+                        }
+                    }
+                    else
+                    {
+                        _pinkTakeVidal = false;
                         _pinkGiveVidal = false;
                     }
-                }
-                else
-                {
-                    _pinkTakeVidal = false;
-                    _pinkGiveVidal = false;
-                }
 
-                break;
+                    break;
 
-            case Faction.Red:
-                <div>Get 5 @Name(Concept.Resource)?</div>
-                break;
+                case Faction.Red:
+                    <div>Get 5 @Name(Concept.Resource)?</div>
+                    break;
 
-            case Faction.Yellow:
+                case Faction.Yellow:
 
-                var validSources = AmbassadorActivated.ValidYellowSources(Game, Player);
+                    <div>Move a group of forces?</div>
 
-                if (validSources.Any())
-                {
-                    <SelectComponent OnChanged="StateHasChanged" ButtonHint="ClickHintButton.LMB" ModifierHint="ClickHintModifier.CTRL" @bind-Value="_yellowFromTerritory" Values="validSources">
-                        <Label>From</Label>
-                    </SelectComponent>
+                    var validSources = AmbassadorActivated.ValidYellowSources(Game, Player);
 
-                    <ForceSelectionComponent Game=Game Player=Player OnChanged="StateHasChanged" Forces="_yellowForces" Locations="Player.LocationsWithAnyForcesInTerritory(_yellowFromTerritory)" InitializeToMaximum=true />
+                    if (validSources.Any())
+                    {
+                        <SelectComponent OnChanged="StateHasChanged" ButtonHint="ClickHintButton.LMB" ModifierHint="ClickHintModifier.CTRL" @bind-Value="_yellowFromTerritory" Values="validSources">
+                            <Label>From</Label>
+                        </SelectComponent>
 
-                    <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="_yellowOrOrangeToLocation" Values=@AmbassadorActivated.ValidYellowTargets(Game, Player, _yellowForces)>
-                        <Label>To</Label>
-                    </SelectComponent>
-                }
-                else
-                {
-                    _yellowFromTerritory = null;
-                    _yellowForces = new();
-                    _yellowOrOrangeToLocation = null;
+                        <ForceSelectionComponent Game=Game Player=Player OnChanged="StateHasChanged" Forces="_yellowForces" Locations="Player.LocationsWithAnyForcesInTerritory(_yellowFromTerritory)" InitializeToMaximum=true />
 
-                    <div>You don't have any forces to move.</div>
-                }
-                break;
+                        <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="_yellowOrOrangeToLocation" Values=@AmbassadorActivated.ValidYellowTargets(Game, Player, _yellowForces)>
+                            <Label>To</Label>
+                        </SelectComponent>
+                    }
+                    else
+                    {
+                        _yellowFromTerritory = null;
+                        _yellowForces = new();
+                        _yellowOrOrangeToLocation = null;
 
+                        <div>You don't have any forces to move.</div>
+                    }
+                    break;
+
+            }
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation Pass="Pass" />
