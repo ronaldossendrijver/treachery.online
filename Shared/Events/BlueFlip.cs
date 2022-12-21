@@ -45,9 +45,6 @@ namespace Treachery.Shared
                 AsAdvisors ? (object)FactionSpecialForce.Blue : FactionForce.Blue);
         }
 
-        public static Territory GetTerritory(Game g)
-        {
-            return g.LastShipmentOrMovement.To.Territory;
-        }
+        public static Territory GetTerritory(Game g) => g.LastIntrusionTrigger.Territory;
     }
 }

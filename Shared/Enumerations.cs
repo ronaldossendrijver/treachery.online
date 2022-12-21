@@ -753,4 +753,12 @@ namespace Treachery.Shared
         Sabotage = 70,
         SneakAttack = 80
     }
+
+    public enum IntrusionType
+    {
+        None = 0,
+        BlueIntrusion = 10,
+        Terror = 20,
+        Ambassador = 30
+    }
 }

@@ -5,16 +5,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-using System.Runtime.Intrinsics.X86;
 
 namespace Treachery.Shared
 {
     public partial class Game
     {
         public ILocationEvent LastShipmentOrMovement { get; private set; }
-        public ILocationEvent LastTerrorTrigger { get; private set; }
-        public ILocationEvent LastAmbassadorTrigger { get; private set; }
+
+        private Queue<Intrusion> Intrusions { get; } = new();
+        private bool BlueIntruded => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.BlueIntrusion;
+        private bool TerrorTriggered => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.Terror;
+        private bool AmbassadorTriggered => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.Ambassador;
+
+        public Intrusion LastIntrusionTrigger => BlueIntruded ? Intrusions.Peek() : null;
+        public Intrusion LastTerrorTrigger => TerrorTriggered ? Intrusions.Peek() : null;
+        public Intrusion LastAmbassadorTrigger => AmbassadorTriggered ? Intrusions.Peek() : null;
+
         public PlayerSequence ShipmentAndMoveSequence { get; private set; }
         public bool ShipsTechTokenIncome { get; private set; }
         public List<PlacementEvent> RecentMoves { get; private set; } = new List<PlacementEvent>();
@@ -30,7 +36,7 @@ namespace Treachery.Shared
             FactionsWithOrnithoptersAtStartOfMovement = Players.Where(p => OccupiesArrakeenOrCarthag(p)).Select(p => p.Faction).ToList();
             RecentMoves.Clear();
             BeginningOfShipmentAndMovePhase = true;
-            FactionsWithIncreasedRevivalLimits = new Faction[] { };
+            FactionsWithIncreasedRevivalLimits = Array.Empty<Faction>();
             EarlyRevivalsOffers.Clear();
 
             ShipsTechTokenIncome = false;
@@ -42,8 +48,6 @@ namespace Treachery.Shared
 
             HasActedOrPassed.Clear();
             LastShipmentOrMovement = null;
-            LastTerrorTrigger = null;
-            LastAmbassadorTrigger = null;
 
             ShipmentAndMoveSequence = new PlayerSequence(this);
 
@@ -126,8 +130,6 @@ namespace Treachery.Shared
                 }
 
                 LastShipmentOrMovement = s;
-                LastTerrorTrigger = s;
-                LastAmbassadorTrigger = s;
                 bool mustBeAdvisors = (initiator.Is(Faction.Blue) && (initiator.SpecialForcesIn(s.To) > 0) || Version >= 148 && initiator.SpecialForcesIn(s.To.Territory) > 0);
 
                 if (s.IsSiteToSite)
@@ -329,8 +331,6 @@ namespace Treachery.Shared
 
                 Log(c.Initiator, " accompany to ", c.Location);
                 LastShipmentOrMovement = c;
-                LastTerrorTrigger = c;
-                LastAmbassadorTrigger = c;
                 CheckIntrusion(c);
             }
             else
@@ -393,18 +393,66 @@ namespace Treachery.Shared
         }
 
         private bool BlueMayAccompany { get; set; } = false;
-        private bool BlueIntruded { get; set; } = false;
-        private bool TerrorTriggered { get; set; } = false;
-
-        private bool AmbassadorTriggered { get; set; } = false;
 
         private void CheckIntrusion(ILocationEvent e)
         {
-            var initiator = e.Initiator;
-            var territory = e.To.Territory;
+            CheckBlueIntrusion(e, e.Initiator, e.To.Territory);
 
+            if (TerrorIn(e.To.Territory).Any() && AmbassadorIn(e.To.Territory) != Faction.None && IsFirst(Faction.Cyan, Faction.Pink))
+            {
+                CheckTerrorTriggered(e, e.Initiator, e.To.Territory);
+                CheckAmbassadorTriggered(e, e.Initiator, e.To.Territory);
+            }
+            else
+            {
+                CheckAmbassadorTriggered(e, e.Initiator, e.To.Territory);
+                CheckTerrorTriggered(e, e.Initiator, e.To.Territory);
+            }
+        }
+
+        private void CheckAmbassadorTriggered(ILocationEvent e, Faction initiator, Territory territory)
+        {
+            var pinkPlayer = GetPlayer(Faction.Pink);
+            if (pinkPlayer != null &&
+                initiator != Faction.Pink &&
+                initiator != pinkPlayer.Ally &&
+                AmbassadorIn(territory) != e.Initiator &&
+                AmbassadorIn(territory) != Faction.None)
+            {
+                QueueIntrusion(e, IntrusionType.Ambassador);
+            }
+        }
+
+        private void CheckTerrorTriggered(ILocationEvent e, Faction initiator, Territory territory)
+        {
+            var cyanPlayer = GetPlayer(Faction.Cyan);
+            if (cyanPlayer != null &&
+                initiator != Faction.Cyan &&
+                initiator != cyanPlayer.Ally &&
+                TerrorIn(territory).Any())
+            {
+                QueueIntrusion(e, IntrusionType.Terror);
+            }
+        }
+
+        private void QueueIntrusion(ILocationEvent e, IntrusionType type)
+        {
+            Intrusions.Enqueue(new Intrusion(e, type));
+        }
+
+        private Intrusion DequeueIntrusion(IntrusionType type)
+        {
+            if (Intrusions.Peek().Type != type)
+            {
+                throw new ArgumentException($"Wrong intrusion type: {type} vs {Intrusions.Peek().Type}");
+            }
+
+            return Intrusions.Dequeue();
+        }
+
+        private void CheckBlueIntrusion(ILocationEvent e, Faction initiator, Territory territory)
+        {
             var bgPlayer = GetPlayer(Faction.Blue);
-
             if (bgPlayer != null &&
                 territory != Map.PolarSink.Territory &&
                 Applicable(Rule.BlueAdvisors) &&
@@ -412,28 +460,7 @@ namespace Treachery.Shared
                 initiator != Faction.Blue &&
                 bgPlayer.ForcesIn(territory) > 0)
             {
-                BlueIntruded = true;
-            }
-
-            var cyanPlayer = GetPlayer(Faction.Cyan);
-
-            if (cyanPlayer != null &&
-                initiator != Faction.Cyan &&
-                initiator != cyanPlayer.Ally &&
-                TerrorIn(territory).Any())
-            {
-                TerrorTriggered = true;
-            }
-
-            var pinkPlayer = GetPlayer(Faction.Pink);
-
-            if (pinkPlayer != null &&
-                initiator != Faction.Pink &&
-                initiator != pinkPlayer.Ally &&
-                AmbassadorIn(territory) != e.Initiator &&
-                AmbassadorIn(territory) != Faction.None)
-            {
-                AmbassadorTriggered = true;
+                QueueIntrusion(e, IntrusionType.BlueIntrusion);
             }
         }
 
@@ -472,8 +499,6 @@ namespace Treachery.Shared
         private void PerformMoveFromLocations(Player initiator, Dictionary<Location, Battalion> forceLocations, ILocationEvent evt, bool asAdvisors, bool byCaravan)
         {
             LastShipmentOrMovement = evt;
-            LastTerrorTrigger = evt;
-            LastAmbassadorTrigger = evt;
             bool wasOccupiedBeforeMove = IsOccupied(evt.To.Territory);
             var dist = DetermineMaximumMoveDistance(initiator, forceLocations.Values);
 
@@ -605,7 +630,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(BlueFlip e)
         {
-            BlueIntruded = false;
             var initiator = GetPlayer(e.Initiator);
 
             Log(e.GetDynamicMessage(this));
@@ -614,6 +638,7 @@ namespace Treachery.Shared
 
             if (Version >= 102) FlipBeneGesseritWhenAlone();
 
+            DequeueIntrusion(IntrusionType.BlueIntrusion);
             DetermineNextShipmentAndMoveSubPhase();
         }
 
@@ -648,7 +673,7 @@ namespace Treachery.Shared
                 Log(e.Initiator, " don't activate their Ambassador");
             }
 
-            AmbassadorTriggered = false;
+            DequeueIntrusion(IntrusionType.Ambassador);
             DetermineNextShipmentAndMoveSubPhase();
         }
 
@@ -760,8 +785,6 @@ namespace Treachery.Shared
 
                     e.Player.ShipForces(e.YellowOrOrangeTo, e.OrangeForceAmount);
                     LastShipmentOrMovement = e;
-                    LastTerrorTrigger = e;
-                    LastAmbassadorTrigger = e;
                     CheckIntrusion(e);
                     DetermineNextShipmentAndMoveSubPhase();
                     break;
@@ -904,7 +927,7 @@ namespace Treachery.Shared
 
             if (e.Passed || !TerrorIn(territory).Any())
             {
-                TerrorTriggered = false;
+                DequeueIntrusion(IntrusionType.Terror);
                 DetermineNextShipmentAndMoveSubPhase();
             }
 
@@ -942,7 +965,7 @@ namespace Treachery.Shared
                     CheckIfForcesShouldBeDestroyedByAllyPresence(e.Player);
                 }
 
-                var territory = LastTerrorTrigger.To.Territory;
+                var territory = LastTerrorTrigger.Territory;
                 Log("Terror in ", territory, " is returned to supplies");
                 foreach (var t in TerrorIn(territory).ToList())
                 {
@@ -950,7 +973,7 @@ namespace Treachery.Shared
                     UnplacedTerrorTokens.Add(t);
                 }
 
-                TerrorTriggered = false;
+                DequeueIntrusion(IntrusionType.Terror);
                 DetermineNextShipmentAndMoveSubPhase();
             }
             else
@@ -987,7 +1010,7 @@ namespace Treachery.Shared
                 }
             }
 
-            AmbassadorTriggered = false;
+            DequeueIntrusion(IntrusionType.Ambassador);
             DetermineNextShipmentAndMoveSubPhase();
         }
 
@@ -1002,7 +1025,7 @@ namespace Treachery.Shared
             if (BlueIntruded && Prevented(FactionAdvantage.BlueIntrusion))
             {
                 LogPrevention(FactionAdvantage.BlueIntrusion);
-                BlueIntruded = false;
+                DequeueIntrusion(IntrusionType.Ambassador);
                 if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.BlueIntrusion);
             }
 

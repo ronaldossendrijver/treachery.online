@@ -178,7 +178,7 @@ namespace Treachery.Shared
             return Message.Express(Initiator, Passed ? " don't" : "", " activate an Ambassador");
         }
 
-        public static Territory GetTerritory(Game g) => g.LastAmbassadorTrigger.To.Territory;
+        public static Territory GetTerritory(Game g) => g.LastAmbassadorTrigger.Territory;
 
         public static Faction GetVictim(Game g) => g.LastAmbassadorTrigger.Initiator;
 
