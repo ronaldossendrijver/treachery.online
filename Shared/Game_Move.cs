@@ -5,6 +5,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
+using System.Runtime.Intrinsics.X86;
 
 namespace Treachery.Shared
 {
@@ -329,7 +331,7 @@ namespace Treachery.Shared
                 LastShipmentOrMovement = c;
                 LastTerrorTrigger = c;
                 LastAmbassadorTrigger = c;
-                CheckIntrusion(c.Initiator, c.To.Territory);
+                CheckIntrusion(c);
             }
             else
             {
@@ -390,19 +392,17 @@ namespace Treachery.Shared
             CurrentPlanetology = null;
         }
 
-        private void CheckIntrusion(ILocationEvent e)
-        {
-            CheckIntrusion(e.Initiator, e.To.Territory);
-        }
-
         private bool BlueMayAccompany { get; set; } = false;
         private bool BlueIntruded { get; set; } = false;
         private bool TerrorTriggered { get; set; } = false;
 
         private bool AmbassadorTriggered { get; set; } = false;
 
-        private void CheckIntrusion(Faction initiator, Territory territory)
+        private void CheckIntrusion(ILocationEvent e)
         {
+            var initiator = e.Initiator;
+            var territory = e.To.Territory;
+
             var bgPlayer = GetPlayer(Faction.Blue);
 
             if (bgPlayer != null &&
@@ -430,6 +430,7 @@ namespace Treachery.Shared
             if (pinkPlayer != null &&
                 initiator != Faction.Pink &&
                 initiator != pinkPlayer.Ally &&
+                AmbassadorIn(territory) != e.Initiator &&
                 AmbassadorIn(territory) != Faction.None)
             {
                 AmbassadorTriggered = true;
@@ -669,7 +670,7 @@ namespace Treachery.Shared
                     if (victimPlayer.TreacheryCards.Any())
                     {
                         Log(e.Initiator, " see all treachery cards owned by ", victim);
-                        LogTo(e.Initiator, " own: ", victimPlayer.TreacheryCards);
+                        LogTo(e.Initiator, victim, " own: ", victimPlayer.TreacheryCards);
                     }
                     else
                     {
@@ -720,6 +721,78 @@ namespace Treachery.Shared
                     DetermineNextShipmentAndMoveSubPhase();
                     break;
 
+                case Faction.Black:
+
+                    if (victim == Faction.Black)
+                    {
+                        Log(Faction.Pink, "See one of the ", Faction.Black, " traitors");
+                    }
+                    else if (victim == Faction.Purple)
+                    {
+                        Log(Faction.Pink, "See one of the ", Faction.Purple, " unrevealed Face Dancers");
+                    }
+                    else
+                    {
+                        Log(Faction.Pink, "See the ", victim, " traitor");
+                    }
+
+                    var toSelectFrom = victim == Faction.Purple ? victimPlayer.FaceDancers.Where(t => !victimPlayer.RevealedDancers.Contains(t)) : victimPlayer.Traitors;
+                    var revealed = toSelectFrom.RandomOrDefault();
+                    LogTo(e.Initiator, victim, " reveal ", revealed);
+                    LogTo(victim, e.Initiator, " get to see ", revealed);
+                    break;
+
+                case Faction.Grey:
+
+                    Discard(e.Player, e.GreyCard);
+                    Log(e.Initiator, " draw a new card");
+                    e.Player.TreacheryCards.Add(DrawTreacheryCard());
+                    break;
+
+                case Faction.White:
+
+                    Log(e.Initiator, " buy a card for ", Payment(3));
+                    e.Player.Resources -= 3;
+                    e.Player.TreacheryCards.Add(DrawTreacheryCard());
+                    break;
+
+                case Faction.Orange:
+
+                    e.Player.ShipForces(e.YellowOrOrangeTo, e.OrangeForceAmount);
+                    LastShipmentOrMovement = e;
+                    LastTerrorTrigger = e;
+                    LastAmbassadorTrigger = e;
+                    CheckIntrusion(e);
+                    DetermineNextShipmentAndMoveSubPhase();
+                    break;
+
+                case Faction.Purple:
+
+                    if (e.PurpleHero != null)
+                    {
+                        if (!LeaderState[e.PurpleHero].IsFaceDownDead)
+                        {
+                            Log(e.Initiator, " revive ", e.PurpleHero);
+                        }
+                        else
+                        {
+                            Log(e.Initiator, " revive a face down leader");
+                        }
+
+                        ReviveHero(e.PurpleHero);
+
+                        if (e.PurpleAssignSkill)
+                        {
+                            PrepareSkillAssignmentToRevivedLeader(e.Player, e.PurpleHero as Leader);
+                        }
+                    }
+                    else
+                    {
+                        Log(e.Initiator, " revive ", e.PurpleAmountOfForces, " ", e.Player.Force);
+
+                        e.Player.ReviveForces(e.PurpleAmountOfForces);
+                    }
+                    break;
             }
         }
         

@@ -74,7 +74,7 @@ namespace Treachery.Shared
             }
             else
             {
-                return Message.Express(Initiator, " resort to ", Type);
+                return Message.Express(Initiator, " reveal a terror token");
             }
         }
 

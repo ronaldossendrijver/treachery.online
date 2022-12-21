@@ -26,11 +26,6 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (e is AmbassadorPlaced)
-            {
-                WriteSavegameIfApplicable(g, typeof(AmbassadorPlaced));
-            }
-
             if (e is AmbassadorActivated)
             {
                 WriteSavegameIfApplicable(g, e.Player, Skin.Current.Describe(AmbassadorActivated.GetFaction(g)) + " Ambassador activated");

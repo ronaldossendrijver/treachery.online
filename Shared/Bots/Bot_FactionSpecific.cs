@@ -1017,37 +1017,43 @@ namespace Treachery.Shared
 
         protected virtual AmbassadorActivated DetermineAmbassadorActivated()
         {
-            //This is for now just random
-            switch (AmbassadorActivated.GetFaction(Game))
-            {
-                case Faction.Blue:
-                    return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedFaction = AmbassadorActivated.GetValidBlueFactions(Game).First() };
+            var victim = AmbassadorActivated.GetVictim(Game);
+            var victimPlayer = AmbassadorActivated.GetVictimPlayer(Game);
+            var ambassador = AmbassadorActivated.GetFaction(Game);
+            var blueSelectedFaction = Faction.None;
 
+            if (ambassador == Faction.Blue)
+            {
+                //This is for now just random
+                blueSelectedFaction = AmbassadorActivated.GetValidBlueFactions(Game).RandomOrDefault();
+                ambassador = blueSelectedFaction;
+            }
+
+            switch (ambassador)
+            {
                 case Faction.Brown:
                     var toDiscard = AmbassadorActivated.GetValidBrownCards(this).Where(c => CardQuality(c) < 2);
                     if (toDiscard.Any())
                     {
-                        return new AmbassadorActivated(Game) { Initiator = Faction, BrownCards = toDiscard };
+                        return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedFaction = blueSelectedFaction, BrownCards = toDiscard };
                     }
                     else
                     {
-                        return new AmbassadorActivated(Game) { Initiator = Faction, Passed = true };
+                        return PassAmbassadorActivated();
                     }
 
                 case Faction.Pink:
-                    var victim = AmbassadorActivated.GetVictim(Game);
-                    var victimPlayer = Game.GetPlayer(victim);
                     bool offerAlliance = AmbassadorActivated.AllianceCanBeOffered(Game, this) && PlayerStanding(victimPlayer) > 0.33 * PlayerStanding(this);
                     bool takeVidal = AmbassadorActivated.VidalCanBeTaken(Game);
                     bool offerVidal = takeVidal && AmbassadorActivated.VidalCanBeGivenTo(Game, victimPlayer) && HeroesForBattle(this, true).Count() >= 3 && HeroesForBattle(victimPlayer, true).Count() < 3;
 
                     if (offerAlliance || takeVidal || offerVidal)
                     {
-                        return new AmbassadorActivated(Game) { Initiator = Faction, PinkOfferAlliance = offerAlliance, PinkTakeVidal = takeVidal, PinkGiveVidalToAlly = offerVidal };
+                        return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedFaction = blueSelectedFaction, PinkOfferAlliance = offerAlliance, PinkTakeVidal = takeVidal, PinkGiveVidalToAlly = offerVidal };
                     }
                     else
                     {
-                        return new AmbassadorActivated(Game) { Initiator = Faction, Passed = true };
+                        return PassAmbassadorActivated();
                     }
 
                 case Faction.Yellow:
@@ -1059,18 +1065,82 @@ namespace Treachery.Shared
                             { toMove.From, toMove.Batallion }
                         };
 
-                        return new AmbassadorActivated(Game) { Initiator = Faction, YellowOrOrangeTo = toMove.To, YellowForceLocations = forcesToMove };
+                        return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedFaction = blueSelectedFaction, YellowOrOrangeTo = toMove.To, YellowForceLocations = forcesToMove };
                     }
                     else
                     {
-                        return new AmbassadorActivated(Game) { Initiator = Faction, Passed = true }; ;
+                        return PassAmbassadorActivated();
+                    }
+
+                case Faction.Grey:
+                    var toReplace = AmbassadorActivated.GetValidGreyCards(this).FirstOrDefault(c => CardQuality(c) < 2);
+                    if (toReplace != null)
+                    {
+                        return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedFaction = blueSelectedFaction, GreyCard = toReplace };
+                    }
+                    else
+                    {
+                        return PassAmbassadorActivated();
+                    }
+
+                case Faction.White:
+                    if (Resources > 3 && HasRoomForCards)
+                    {
+                        return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedFaction = blueSelectedFaction };
+                    }
+                    else
+                    {
+                        return PassAmbassadorActivated();
+                    }
+
+                case Faction.Orange:
+
+                    var potentialTargets = AmbassadorActivated.ValidOrangeTargets(Game, this).Where(l => l.IsStronghold);
+
+                    var dangerousOpponents = Opponents.Where(p => IsAlmostWinningOpponent(p));
+
+                    var possibleAttacks = potentialTargets
+                        .Where(l => !dangerousOpponents.Any() || dangerousOpponents.Any(p => p.Occupies(l)))
+                        .Where(l => l.Territory.IsStronghold && AnyForcesIn(l) == 0 && AllyNotIn(l.Territory) && !StormWillProbablyHit(l) && !InStorm(l) && IDontHaveAdvisorsIn(l))
+                        .Select(l => ConstructAttack(l, 0, 0, 4))
+                        .Where(s => s.ForcesToShip <= 4 && s.HasOpponent && !WinWasPredictedByMeThisTurn(s.Opponent.Faction));
+
+                    var attack = possibleAttacks.Where(s => s.HasForces && s.ShortageForShipment == 0).LowestOrDefault(s => s.DialNeeded + DeterminePenalty(s.Opponent));
+
+                    if (attack != null)
+                    {
+                        return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedFaction = blueSelectedFaction, YellowOrOrangeTo = attack.Location, OrangeForceAmount = AmbassadorActivated.ValidOrangeMaxForces(this) };
+                    }
+                    else
+                    {
+                        return PassAmbassadorActivated();
+                    }
+
+                case Faction.Purple:
+
+                    var heroToRevive = AmbassadorActivated.ValidPurpleHeroes(Game, this).Where(l => SafeOrKnownTraitorLeaders.Contains(l)).HighestOrDefault(l => l.Value);
+                    if (heroToRevive == null) heroToRevive = AmbassadorActivated.ValidPurpleHeroes(Game, this).HighestOrDefault(l => l.Value);
+
+                    if (heroToRevive != null && (ForcesInReserve > 3 || Battle.ValidBattleHeroes(Game, this).Count() <= 1))
+                    {
+                        return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedFaction = blueSelectedFaction, PurpleHero = heroToRevive, PurpleAssignSkill = Revival.MayAssignSkill(Game, this, heroToRevive) };
+                    }
+                    else if (AmbassadorActivated.ValidPurpleMaxAmount(this) >= 3)
+                    {
+                        return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedFaction = blueSelectedFaction, PurpleAmountOfForces = AmbassadorActivated.ValidPurpleMaxAmount(this) };
+                    }
+                    else
+                    {
+                        return PassAmbassadorActivated();
                     }
 
                 default:
-                    return new AmbassadorActivated(Game) { Initiator = Faction };
+                    return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedFaction = blueSelectedFaction, };
 
             }
         }
+
+        private AmbassadorActivated PassAmbassadorActivated() => new AmbassadorActivated(Game) { Initiator = Faction, Passed = true };
 
         #endregion
 
