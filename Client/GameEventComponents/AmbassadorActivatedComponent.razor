@@ -128,7 +128,7 @@
                 case Faction.Grey:
 
                     <div>Discard a card from your hand to draw a new one?</div>
-                    <SelectCardComponent Value=@_greyCard Values=@AmbassadorActivated.GetValidGreyCards(Player)>
+                    <SelectCardComponent @bind-Value=@_greyCard Values=@AmbassadorActivated.GetValidGreyCards(Player)>
                         <Label>Select the card you wish to discard</Label>
                     </SelectCardComponent>
                     break;

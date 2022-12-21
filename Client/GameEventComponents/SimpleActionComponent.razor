@@ -58,13 +58,6 @@
     public string DismissLabel { get; set; } = "Dismiss";
 
     [Parameter]
-    public new Faction IsFactionSpecific
-    {
-        get { return base.IsFactionSpecific; }
-        set { base.IsFactionSpecific = value; }
-    }
-
-    [Parameter]
     public bool AllowAutoConfirm { get; set; } = false;
 
     protected override GameEventType ConfirmedResult => new GameEventType() { Game = Game, Initiator = Faction };
