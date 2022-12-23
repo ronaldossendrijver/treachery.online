@@ -48,10 +48,15 @@
         @if (_type == TerrorType.SneakAttack)
         {
             <SelectForcesComponent @bind-Value="_forcesInSneakAttack" Min="0" Max=@TerrorRevealed.MaxAmountOfForcesInSneakAttack(Game, Player) Faction="Faction" Special="false" Label="Amount of forces" />
+
+            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="_sneakAttackTo" Values="TerrorRevealed.ValidSneakAttackTargets(Game, Player)">
+                <Label>To</Label>
+            </SelectComponent>
         }
         else
         {
             _forcesInSneakAttack = 0;
+            _sneakAttackTo = null;
         }
 
         @if (TerrorRevealed.MayOfferAlliance(Game))
@@ -88,8 +93,9 @@
     private bool _robberyTakesCard;
     private TreacheryCard _toGiveInSabotage;
     private int _forcesInSneakAttack;
+    private Location _sneakAttackTo;
 
-    protected override TerrorRevealed ConfirmedResult => new TerrorRevealed(Game) { Initiator = Faction, Type = _type, RobberyTakesCard = _robberyTakesCard, CardToGiveInSabotage = _toGiveInSabotage, ForcesInSneakAttack = _forcesInSneakAttack };
+    protected override TerrorRevealed ConfirmedResult => new TerrorRevealed(Game) { Initiator = Faction, Type = _type, RobberyTakesCard = _robberyTakesCard, CardToGiveInSabotage = _toGiveInSabotage, ForcesInSneakAttack = _forcesInSneakAttack, SneakAttackTo = _sneakAttackTo };
 
     protected override TerrorRevealed PassedResult => new TerrorRevealed(Game) { Initiator = Faction, Passed = true };
 

@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Treachery.Shared
 {
-    public class TerrorRevealed : GameEvent
+    public class TerrorRevealed : GameEvent, ILocationEvent
     {
         public TerrorRevealed(Game game) : base(game)
         {
@@ -26,6 +26,11 @@ namespace Treachery.Shared
         public TerrorType Type { get; set; }
 
         public int ForcesInSneakAttack { get; set; }
+
+        public int _sneakAttackTo;
+
+        [JsonIgnore]
+        public Location SneakAttackTo { get { return Game.Map.LocationLookup.Find(_sneakAttackTo); } set { _sneakAttackTo = Game.Map.LocationLookup.GetId(value); } }
 
         public bool RobberyTakesCard { get; set; }
 
@@ -44,6 +49,9 @@ namespace Treachery.Shared
             }
         }
 
+        [JsonIgnore]
+        public Location To => SneakAttackTo;
+
         public override Message Validate()
         {
             if (Passed && !MayPass(Game)) return Message.Express("You must reveal a terror token");
@@ -52,7 +60,9 @@ namespace Treachery.Shared
             if (Passed || AllianceOffered) return null;
 
             if (Initiator != Faction.Cyan) return Message.Express("Your faction can't reveal terror tokens");
-            if (Type == TerrorType.SneakAttack && ForcesInSneakAttack > 0 && !MayPlaceForcesInSabotage(Game, Player)) return Message.Express("You can't send forces due to storm or occupancy");
+            if (Type == TerrorType.SneakAttack && !ValidSneakAttackTargets(Game, Player).Contains(SneakAttackTo)) return Message.Express("Invalid location of sneak attack");
+            if (Type == TerrorType.SneakAttack && ForcesInSneakAttack > MaxAmountOfForcesInSneakAttack(Game, Player)) return Message.Express("Too many forces selected");
+            
 
             return null;
         }
@@ -88,11 +98,11 @@ namespace Treachery.Shared
 
         public static IEnumerable<TerrorType> GetTypes(Game g) => g.LastTerrorTrigger != null ? g.TerrorIn(GetTerritory(g)) : Array.Empty<TerrorType>();
 
-        public static bool MayPlaceForcesInSabotage(Game g, Player p) => OpenDespiteAllyAndStormAndOccupancy(g, p, GetTerritory(g).MiddleLocation);
+        public static int MaxAmountOfForcesInSneakAttack(Game g, Player p) => Math.Min(5, p.ForcesInReserve);
 
-        public static int MaxAmountOfForcesInSneakAttack(Game g, Player p) => MayPlaceForcesInSabotage(g, p) ? Math.Min(5, p.ForcesInReserve) : 0;
+        public static IEnumerable<Location> ValidSneakAttackTargets(Game g, Player p) => GetTerritory(g).Locations.Where(l => OpenDespiteAllyAndStormAndOccupancy(g, p, l));
 
-        public static bool OpenDespiteAllyAndStormAndOccupancy(Game g, Player p, Location l) =>
+        private static bool OpenDespiteAllyAndStormAndOccupancy(Game g, Player p, Location l) =>
             g.IsNotFull(p, l.Territory) &&
             l.Sector != g.SectorInStorm &&
             (!p.HasAlly || p.AlliedPlayer.AnyForcesIn(l.Territory) == 0 || p.Ally == Faction.Blue && g.Applicable(Rule.AdvisorsDontConflictWithAlly) && p.AlliedPlayer.ForcesIn(l.Territory) == 0);

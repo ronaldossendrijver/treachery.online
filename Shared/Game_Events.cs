@@ -299,9 +299,9 @@ namespace Treachery.Shared
                     break;
 
                 case Phase.TerrorTriggeredByOrangeShip:
-                case Phase.TerrorTriggeredByBlueAccompaniesOrange:
+                case Phase.TerrorTriggeredByBlueAccompaniesOrangeShip:
                 case Phase.TerrorTriggeredByNonOrangeShip:
-                case Phase.TerrorTriggeredByBlueAccompaniesNonOrange:
+                case Phase.TerrorTriggeredByBlueAccompaniesNonOrangeShip:
                 case Phase.TerrorTriggeredByOrangeMove:
                 case Phase.TerrorTriggeredByNonOrangeMove:
                 case Phase.TerrorTriggeredByYellowRidingMonsterA:
@@ -311,9 +311,9 @@ namespace Treachery.Shared
                     break;
 
                 case Phase.AmbassadorTriggeredByOrangeShip:
-                case Phase.AmbassadorTriggeredByBlueAccompaniesOrange:
+                case Phase.AmbassadorTriggeredByBlueAccompaniesOrangeShip:
                 case Phase.AmbassadorTriggeredByNonOrangeShip:
-                case Phase.AmbassadorTriggeredByBlueAccompaniesNonOrange:
+                case Phase.AmbassadorTriggeredByBlueAccompaniesNonOrangeShip:
                 case Phase.AmbassadorTriggeredByOrangeMove:
                 case Phase.AmbassadorTriggeredByNonOrangeMove:
                 case Phase.AmbassadorTriggeredByYellowRidingMonsterA:

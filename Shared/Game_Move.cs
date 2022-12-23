@@ -850,6 +850,8 @@ namespace Treachery.Shared
             {
                 Log(e.Initiator, " don't terrorize ", territory);
                 AllianceByTerrorWasOffered = false;
+                DequeueIntrusion(IntrusionType.Terror);
+                DetermineNextShipmentAndMoveSubPhase();
             }
             else if (e.AllianceOffered)
             {
@@ -861,6 +863,13 @@ namespace Treachery.Shared
             else
             {
                 TerrorOnPlanet.Remove(e.Type);
+
+                if (e.Passed || !TerrorIn(territory).Any())
+                {
+                    DequeueIntrusion(IntrusionType.Terror);
+                    DetermineNextShipmentAndMoveSubPhase();
+                }
+
                 AllianceByTerrorWasOffered = false;
 
                 switch (e.Type)
@@ -937,17 +946,15 @@ namespace Treachery.Shared
                     case TerrorType.SneakAttack:
 
                         Log(e.Initiator, " sneak attack ", territory, " with ", e.ForcesInSneakAttack, initiator.Force);
-                        initiator.ShipForces(territory.MiddleLocation, e.ForcesInSneakAttack);
+                        initiator.ShipForces(e.SneakAttackTo, e.ForcesInSneakAttack);
+                        CheckIntrusion(e);
+                        DetermineNextShipmentAndMoveSubPhase();
                         break;
 
                 }
             }
 
-            if (e.Passed || !TerrorIn(territory).Any())
-            {
-                DequeueIntrusion(IntrusionType.Terror);
-                DetermineNextShipmentAndMoveSubPhase();
-            }
+
 
             if (!e.Passed && e.Type == TerrorType.Robbery && e.RobberyTakesCard && initiator.TreacheryCards.Count > initiator.MaximumNumberOfCards)
             {
@@ -1039,14 +1046,6 @@ namespace Treachery.Shared
 
         private void DetermineNextShipmentAndMoveSubPhase()
         {
-            /*
-            if (BlueIntruded && Prevented(FactionAdvantage.BlueIntrusion))
-            {
-                LogPrevention(FactionAdvantage.BlueIntrusion);
-                DequeueIntrusion(IntrusionType.BlueIntrusion);
-                if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.BlueIntrusion);
-            }
-            */
             if (BlueMayAccompany && Prevented(FactionAdvantage.BlueAccompanies))
             {
                 LogPrevention(FactionAdvantage.BlueAccompanies);
@@ -1059,151 +1058,266 @@ namespace Treachery.Shared
                 PhaseBeforeStormLoss = CurrentPhase;
                 Enter(Phase.StormLosses);
             }
-            else {
-
-                bool terrorOrAmbassadorTriggered = TerrorTriggered || AmbassadorTriggered;
-                bool somethingTriggered = BlueIntruded || terrorOrAmbassadorTriggered;
-                bool handleTerrorFirst = TerrorTriggered && (!AmbassadorTriggered || IsFirst(Faction.Cyan, Faction.Pink));
-
-                //Console.WriteLine($"tOrAmTrigger: {terrorOrAmbassadorTriggered}, something: {somethingTriggered}, handleTerrorFirst: {handleTerrorFirst}, currentPhase: {CurrentPhase}");
-
-                switch (CurrentPhase)
+            else if (Intrusions.Any())
+            {
+                switch (Intrusions.Peek().Type)
                 {
-                    case Phase.YellowRidingMonsterA:
-                    case Phase.BlueIntrudedByYellowRidingMonsterA when somethingTriggered:
-                    case Phase.TerrorTriggeredByYellowRidingMonsterA when somethingTriggered:
-                    case Phase.AmbassadorTriggeredByYellowRidingMonsterA when somethingTriggered:
-                        Enter(BlueIntruded, Phase.BlueIntrudedByYellowRidingMonsterA, handleTerrorFirst, Phase.TerrorTriggeredByYellowRidingMonsterA, AmbassadorTriggered, Phase.AmbassadorTriggeredByYellowRidingMonsterA, EndWormRide);
+                    case IntrusionType.BlueIntrusion:
+
+                        DetermineNextShipmentAndMoveSubPhaseOnBlueIntruded();
                         break;
 
-                    case Phase.YellowRidingMonsterB:
-                    case Phase.BlueIntrudedByYellowRidingMonsterB when somethingTriggered:
-                    case Phase.TerrorTriggeredByYellowRidingMonsterB when somethingTriggered:
-                    case Phase.AmbassadorTriggeredByYellowRidingMonsterB when somethingTriggered:
-                        Enter(BlueIntruded, Phase.BlueIntrudedByYellowRidingMonsterB, handleTerrorFirst, Phase.TerrorTriggeredByYellowRidingMonsterB, AmbassadorTriggered, Phase.AmbassadorTriggeredByYellowRidingMonsterB, EndWormRide);
+                    case IntrusionType.Terror:
+
+                        DetermineNextShipmentAndMoveSubPhaseOnTerrorTriggered();
                         break;
 
-                    case Phase.BlueIntrudedByYellowRidingMonsterA:
-                    case Phase.TerrorTriggeredByYellowRidingMonsterA:
-                    case Phase.AmbassadorTriggeredByYellowRidingMonsterA:
-                        EndWormRide(Phase.YellowRidingMonsterA);
-                        break;
+                    case IntrusionType.Ambassador:
 
-                    case Phase.BlueIntrudedByYellowRidingMonsterB:
-                    case Phase.TerrorTriggeredByYellowRidingMonsterB:
-                    case Phase.AmbassadorTriggeredByYellowRidingMonsterB:
-                        EndWormRide(Phase.YellowRidingMonsterB);
+                        DetermineNextShipmentAndMoveSubPhaseOnAmbassadorTriggered();
                         break;
-
-                    case Phase.OrangeShip:
-                    case Phase.BlueIntrudedByOrangeShip when somethingTriggered:
-                    case Phase.TerrorTriggeredByOrangeShip when somethingTriggered:
-                    case Phase.AmbassadorTriggeredByOrangeShip when somethingTriggered:
-                        Enter(BlueIntruded, Phase.BlueIntrudedByOrangeShip, handleTerrorFirst, Phase.TerrorTriggeredByOrangeShip, AmbassadorTriggered, Phase.AmbassadorTriggeredByOrangeShip, IsPlaying(Faction.Blue) && BlueMayAccompany, Phase.BlueAccompaniesOrange, Phase.OrangeMove);
-                        break;
-
-                    case Phase.BlueIntrudedByOrangeShip:
-                    case Phase.TerrorTriggeredByOrangeShip:
-                    case Phase.AmbassadorTriggeredByOrangeShip:
-                        Enter(IsPlaying(Faction.Blue) && BlueMayAccompany, Phase.BlueAccompaniesOrange, Phase.OrangeMove);
-                        break;
-
-                    case Phase.BlueAccompaniesOrange:
-                        Enter(handleTerrorFirst, Phase.TerrorTriggeredByBlueAccompaniesOrange, AmbassadorTriggered, Phase.AmbassadorTriggeredByBlueAccompaniesOrange, Phase.OrangeMove); 
-                        break;
-
-                    case Phase.TerrorTriggeredByBlueAccompaniesOrange:
-                        Enter(somethingTriggered, Phase.AmbassadorTriggeredByBlueAccompaniesOrange, Phase.OrangeMove);
-                        break;
-
-                    case Phase.AmbassadorTriggeredByBlueAccompaniesOrange:
-                        Enter(somethingTriggered, Phase.TerrorTriggeredByBlueAccompaniesOrange, Phase.OrangeMove);
-                        break;
-
-                    case Phase.NonOrangeShip:
-                    case Phase.BlueIntrudedByNonOrangeShip when somethingTriggered:
-                    case Phase.TerrorTriggeredByNonOrangeShip when somethingTriggered:
-                    case Phase.AmbassadorTriggeredByNonOrangeShip when somethingTriggered:
-                        Enter(BlueIntruded, Phase.BlueIntrudedByNonOrangeShip, handleTerrorFirst, Phase.TerrorTriggeredByNonOrangeShip, AmbassadorTriggered, Phase.AmbassadorTriggeredByNonOrangeShip, IsPlaying(Faction.Blue) && BlueMayAccompany, Phase.BlueAccompaniesNonOrange, Phase.NonOrangeMove);
-                        break;
-
-                    case Phase.BlueIntrudedByNonOrangeShip:
-                    case Phase.TerrorTriggeredByNonOrangeShip:
-                    case Phase.AmbassadorTriggeredByNonOrangeShip:
-                        Enter(IsPlaying(Faction.Blue) && BlueMayAccompany, Phase.BlueAccompaniesNonOrange, Phase.NonOrangeMove);
-                        break;
-                    
-                    case Phase.BlueAccompaniesNonOrange:
-                        Enter(handleTerrorFirst, Phase.TerrorTriggeredByBlueAccompaniesNonOrange, AmbassadorTriggered, Phase.AmbassadorTriggeredByBlueAccompaniesNonOrange, Phase.NonOrangeMove); 
-                        break;
-
-                    case Phase.TerrorTriggeredByBlueAccompaniesNonOrange:
-                        Enter(somethingTriggered, Phase.AmbassadorTriggeredByBlueAccompaniesNonOrange, Phase.NonOrangeMove);
-                        break;
-
-                    case Phase.AmbassadorTriggeredByBlueAccompaniesNonOrange:
-                        Enter(somethingTriggered, Phase.TerrorTriggeredByBlueAccompaniesNonOrange, Phase.NonOrangeMove);
-                        break;
-
-                    case Phase.OrangeMove:
-                    case Phase.BlueIntrudedByOrangeMove when somethingTriggered:
-                    case Phase.TerrorTriggeredByOrangeMove when somethingTriggered:
-                    case Phase.AmbassadorTriggeredByOrangeMove when somethingTriggered:
-                        Enter(BlueIntruded, Phase.BlueIntrudedByOrangeMove, handleTerrorFirst, Phase.TerrorTriggeredByOrangeMove, AmbassadorTriggered, Phase.AmbassadorTriggeredByOrangeMove, DetermineNextSubPhaseAfterOrangeMove);
-                        break;
-
-                    case Phase.BlueIntrudedByOrangeMove:
-                    case Phase.TerrorTriggeredByOrangeMove:
-                    case Phase.AmbassadorTriggeredByOrangeMove:
-                        DetermineNextSubPhaseAfterOrangeMove(); 
-                        break;
-
-                    case Phase.NonOrangeMove:
-                    case Phase.BlueIntrudedByNonOrangeMove when somethingTriggered:
-                    case Phase.TerrorTriggeredByNonOrangeMove when somethingTriggered:
-                    case Phase.AmbassadorTriggeredByNonOrangeMove when somethingTriggered:
-                        Enter(BlueIntruded, Phase.BlueIntrudedByNonOrangeMove, handleTerrorFirst, Phase.TerrorTriggeredByNonOrangeMove, AmbassadorTriggered, Phase.AmbassadorTriggeredByNonOrangeMove, DetermineNextSubPhaseAfterNonOrangeMove);
-                        break;
-
-                    case Phase.BlueIntrudedByNonOrangeMove:
-                    case Phase.TerrorTriggeredByNonOrangeMove:
-                    case Phase.AmbassadorTriggeredByNonOrangeMove:
-                        DetermineNextSubPhaseAfterNonOrangeMove(); 
-                        break;
-
-                    case Phase.BlueIntrudedByCaravan when somethingTriggered:
-                    case Phase.TerrorTriggeredByCaravan when somethingTriggered:
-                    case Phase.AmbassadorTriggeredByCaravan when somethingTriggered:
-                        Enter(BlueIntruded, Phase.BlueIntrudedByCaravan, handleTerrorFirst, Phase.TerrorTriggeredByCaravan, Phase.AmbassadorTriggeredByCaravan);
-                        break;
-
-                    case Phase.BlueIntrudedByCaravan:
-                    case Phase.TerrorTriggeredByCaravan:
-                    case Phase.AmbassadorTriggeredByCaravan:
-                        Enter(PausedPhase);
-                        break;
-
-                        /*
-                         * take into account triggers from fremen ambassador moves?
-                    case Phase.Ambassa:
-                    case Phase.BlueIntrudedByYellowRidingMonsterA when somethingTriggered:
-                    case Phase.TerrorTriggeredByYellowRidingMonsterA when somethingTriggered:
-                    case Phase.AmbassadorTriggeredByYellowRidingMonsterA when somethingTriggered:
-                        Enter(BlueIntruded, Phase.BlueIntrudedByYellowRidingMonsterA, handleTerrorFirst, Phase.TerrorTriggeredByYellowRidingMonsterA, AmbassadorTriggered, Phase.AmbassadorTriggeredByYellowRidingMonsterA, EndWormRide);
-                        break;
-
-                    case Phase.BlueIntrudedByYellowRidingMonsterA:
-                    case Phase.TerrorTriggeredByYellowRidingMonsterA:
-                    case Phase.AmbassadorTriggeredByYellowRidingMonsterA:
-                        EndWormRide(Phase.YellowRidingMonsterA);
-                        break;
-                        */
-
                 }
+            }
+            else
+            {
+                DetermineNextShipmentAndMoveSubPhaseWhenNoIntrusionHappened();
             }
         }
 
-        //private Phase ChoosePhaseDependentOnBlowStage(Phase phaseIfBlowA, Phase phaseIfBlowB) => CurrentPhase == Phase.YellowRidingMonsterA ? Phase.BlueIntrudedByYellowRidingMonsterA : Phase.BlueIntrudedByYellowRidingMonsterB;
+        private void DetermineNextShipmentAndMoveSubPhaseWhenNoIntrusionHappened()
+        {
+            switch (CurrentPhase)
+            {
+                case Phase.YellowRidingMonsterA:
+                case Phase.BlueIntrudedByYellowRidingMonsterA:
+                case Phase.TerrorTriggeredByYellowRidingMonsterA:
+                case Phase.AmbassadorTriggeredByYellowRidingMonsterA:
+                    EndWormRide(Phase.YellowRidingMonsterA);
+                    break;
+
+                case Phase.YellowRidingMonsterB:
+                case Phase.BlueIntrudedByYellowRidingMonsterB:
+                case Phase.TerrorTriggeredByYellowRidingMonsterB:
+                case Phase.AmbassadorTriggeredByYellowRidingMonsterB:
+                    EndWormRide(Phase.YellowRidingMonsterB);
+                    break;
+
+                case Phase.OrangeShip:
+                case Phase.BlueIntrudedByOrangeShip:
+                case Phase.TerrorTriggeredByOrangeShip:
+                case Phase.AmbassadorTriggeredByOrangeShip:
+                    Enter(IsPlaying(Faction.Blue) && BlueMayAccompany, Phase.BlueAccompaniesOrange, Phase.OrangeMove);
+                    break;
+
+                case Phase.BlueAccompaniesOrange:
+                case Phase.TerrorTriggeredByBlueAccompaniesOrangeShip:
+                case Phase.AmbassadorTriggeredByBlueAccompaniesOrangeShip:
+                    Enter(Phase.OrangeMove);
+                    break;
+
+                case Phase.NonOrangeShip:
+                case Phase.BlueIntrudedByNonOrangeShip:
+                case Phase.TerrorTriggeredByNonOrangeShip:
+                case Phase.AmbassadorTriggeredByNonOrangeShip:
+                    Enter(IsPlaying(Faction.Blue) && BlueMayAccompany, Phase.BlueAccompaniesNonOrange, Phase.NonOrangeMove);
+                    break;
+
+                case Phase.BlueAccompaniesNonOrange:
+                case Phase.TerrorTriggeredByBlueAccompaniesNonOrangeShip:
+                case Phase.AmbassadorTriggeredByBlueAccompaniesNonOrangeShip:
+                    Enter(Phase.NonOrangeMove);
+                    break;
+
+                case Phase.OrangeMove:
+                case Phase.BlueIntrudedByOrangeMove:
+                case Phase.TerrorTriggeredByOrangeMove:
+                case Phase.AmbassadorTriggeredByOrangeMove:
+                    DetermineNextSubPhaseAfterOrangeMove();
+                    break;
+
+                case Phase.NonOrangeMove:
+                case Phase.BlueIntrudedByNonOrangeMove:
+                case Phase.TerrorTriggeredByNonOrangeMove:
+                case Phase.AmbassadorTriggeredByNonOrangeMove:
+                    DetermineNextSubPhaseAfterNonOrangeMove();
+                    break;
+
+                case Phase.BlueIntrudedByCaravan:
+                case Phase.TerrorTriggeredByCaravan:
+                case Phase.AmbassadorTriggeredByCaravan:
+                    Enter(PausedPhase);
+                    break;
+            }
+        }
+
+        private void DetermineNextShipmentAndMoveSubPhaseOnBlueIntruded()
+        {
+            switch (CurrentPhase)
+            {
+                case Phase.YellowRidingMonsterA:
+                case Phase.TerrorTriggeredByYellowRidingMonsterA:
+                case Phase.AmbassadorTriggeredByYellowRidingMonsterA:
+                    Enter(Phase.BlueIntrudedByYellowRidingMonsterA);
+                    break;
+                    
+                case Phase.YellowRidingMonsterB:
+                case Phase.TerrorTriggeredByYellowRidingMonsterB:
+                case Phase.AmbassadorTriggeredByYellowRidingMonsterB:
+                    Enter(Phase.BlueIntrudedByYellowRidingMonsterB);
+                    break;
+
+                case Phase.OrangeShip:
+                case Phase.TerrorTriggeredByOrangeShip:
+                case Phase.AmbassadorTriggeredByOrangeShip:
+                case Phase.TerrorTriggeredByBlueAccompaniesOrangeShip:
+                case Phase.AmbassadorTriggeredByBlueAccompaniesOrangeShip:
+                    Enter(Phase.BlueIntrudedByOrangeShip);
+                    break;
+
+                case Phase.NonOrangeShip:
+                case Phase.TerrorTriggeredByNonOrangeShip:
+                case Phase.AmbassadorTriggeredByNonOrangeShip:
+                case Phase.TerrorTriggeredByBlueAccompaniesNonOrangeShip:
+                case Phase.AmbassadorTriggeredByBlueAccompaniesNonOrangeShip:
+                    Enter(Phase.BlueIntrudedByNonOrangeShip);
+                    break;
+
+                case Phase.OrangeMove:
+                case Phase.TerrorTriggeredByOrangeMove:
+                case Phase.AmbassadorTriggeredByOrangeMove:
+                    Enter(Phase.BlueIntrudedByOrangeMove);
+                    break;
+
+                case Phase.NonOrangeMove:
+                case Phase.TerrorTriggeredByNonOrangeMove:
+                case Phase.AmbassadorTriggeredByNonOrangeMove:
+                    Enter(Phase.BlueIntrudedByNonOrangeMove);
+                    break;
+
+                case Phase.BlueIntrudedByCaravan:
+                case Phase.TerrorTriggeredByCaravan:
+                case Phase.AmbassadorTriggeredByCaravan:
+                    Enter(Phase.BlueIntrudedByCaravan);
+                    break;
+
+                default:
+                    throw new Exception($"Blue intrusion triggered during undefined phase: {CurrentPhase}");
+            }
+        }
+
+        private void DetermineNextShipmentAndMoveSubPhaseOnTerrorTriggered()
+        {
+            switch (CurrentPhase)
+            {
+                case Phase.YellowRidingMonsterA:
+                case Phase.TerrorTriggeredByYellowRidingMonsterA:
+                case Phase.AmbassadorTriggeredByYellowRidingMonsterA:
+                    Enter(Phase.TerrorTriggeredByYellowRidingMonsterA);
+                    break;
+
+                case Phase.YellowRidingMonsterB:
+                case Phase.TerrorTriggeredByYellowRidingMonsterB:
+                case Phase.AmbassadorTriggeredByYellowRidingMonsterB:
+                    Enter(Phase.TerrorTriggeredByYellowRidingMonsterB);
+                    break;
+
+                case Phase.OrangeShip:
+                case Phase.TerrorTriggeredByOrangeShip:
+                case Phase.AmbassadorTriggeredByOrangeShip:
+                case Phase.TerrorTriggeredByBlueAccompaniesOrangeShip:
+                case Phase.AmbassadorTriggeredByBlueAccompaniesOrangeShip:
+                    Enter(Phase.TerrorTriggeredByOrangeShip);
+                    break;
+
+                case Phase.NonOrangeShip:
+                case Phase.TerrorTriggeredByNonOrangeShip:
+                case Phase.AmbassadorTriggeredByNonOrangeShip:
+                case Phase.TerrorTriggeredByBlueAccompaniesNonOrangeShip:
+                case Phase.AmbassadorTriggeredByBlueAccompaniesNonOrangeShip:
+                    Enter(Phase.TerrorTriggeredByNonOrangeShip);
+                    break;
+
+                case Phase.OrangeMove:
+                case Phase.TerrorTriggeredByOrangeMove:
+                case Phase.AmbassadorTriggeredByOrangeMove:
+                    Enter(Phase.TerrorTriggeredByOrangeMove);
+                    break;
+
+                case Phase.NonOrangeMove:
+                case Phase.TerrorTriggeredByNonOrangeMove:
+                case Phase.AmbassadorTriggeredByNonOrangeMove:
+                    Enter(Phase.TerrorTriggeredByNonOrangeMove);
+                    break;
+
+                case Phase.BlueIntrudedByCaravan:
+                case Phase.TerrorTriggeredByCaravan:
+                case Phase.AmbassadorTriggeredByCaravan:
+                    Enter(Phase.TerrorTriggeredByCaravan);
+                    break;
+
+                default:
+                    throw new Exception($"Terror intrusion triggered during undefined phase: {CurrentPhase}");
+            }
+        }
+
+        private void DetermineNextShipmentAndMoveSubPhaseOnAmbassadorTriggered()
+        {
+            switch (CurrentPhase)
+            {
+                case Phase.YellowRidingMonsterA:
+                case Phase.TerrorTriggeredByYellowRidingMonsterA:
+                case Phase.AmbassadorTriggeredByYellowRidingMonsterA:
+                    Enter(Phase.AmbassadorTriggeredByYellowRidingMonsterA);
+                    break;
+
+                case Phase.YellowRidingMonsterB:
+                case Phase.TerrorTriggeredByYellowRidingMonsterB:
+                case Phase.AmbassadorTriggeredByYellowRidingMonsterB:
+                    Enter(Phase.AmbassadorTriggeredByYellowRidingMonsterB);
+                    break;
+
+                case Phase.OrangeShip:
+                case Phase.TerrorTriggeredByOrangeShip:
+                case Phase.AmbassadorTriggeredByOrangeShip:
+                case Phase.TerrorTriggeredByBlueAccompaniesOrangeShip:
+                case Phase.AmbassadorTriggeredByBlueAccompaniesOrangeShip:
+                    Enter(Phase.AmbassadorTriggeredByOrangeShip);
+                    break;
+
+                case Phase.NonOrangeShip:
+                case Phase.TerrorTriggeredByNonOrangeShip:
+                case Phase.AmbassadorTriggeredByNonOrangeShip:
+                case Phase.TerrorTriggeredByBlueAccompaniesNonOrangeShip:
+                case Phase.AmbassadorTriggeredByBlueAccompaniesNonOrangeShip:
+                    Enter(Phase.AmbassadorTriggeredByNonOrangeShip);
+                    break;
+
+                case Phase.OrangeMove:
+                case Phase.TerrorTriggeredByOrangeMove:
+                case Phase.AmbassadorTriggeredByOrangeMove:
+                    Enter(Phase.AmbassadorTriggeredByOrangeMove);
+                    break;
+
+                case Phase.NonOrangeMove:
+                case Phase.TerrorTriggeredByNonOrangeMove:
+                case Phase.AmbassadorTriggeredByNonOrangeMove:
+                    Enter(Phase.AmbassadorTriggeredByNonOrangeMove);
+                    break;
+
+                case Phase.BlueIntrudedByCaravan:
+                case Phase.TerrorTriggeredByCaravan:
+                case Phase.AmbassadorTriggeredByCaravan:
+                    Enter(Phase.AmbassadorTriggeredByCaravan);
+                    break;
+
+                default:
+                    throw new Exception($"Ambassador triggered during undefined phase: {CurrentPhase}");
+            }
+        }
+
+
+
+        //private Phase ChoosePhaseDependentOnBlowStage(Phase phaseIfBlowA, Phase phaseIfBlowB) => CurrentPhase == Phase.YellowRidingMonsterA ? Phase.TerrorTriggeredByYellowRidingMonsterA : Phase.BlueIntrudedByYellowRidingMonsterB;
 
         private bool IsFirst(Faction a, Faction b) => PlayerSequence.IsAfter(this, GetPlayer(a), GetPlayer(b));
 

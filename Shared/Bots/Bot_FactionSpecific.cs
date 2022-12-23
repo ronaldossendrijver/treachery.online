@@ -982,7 +982,7 @@ namespace Treachery.Shared
         protected virtual TerrorRevealed DetermineTerrorRevealed()
         {
             //This is for now just random
-            var type = TerrorRevealed.GetTypes(Game).RandomOrDefault();
+            var type = TerrorRevealed.GetTypes(Game).Where(t => t != TerrorType.SneakAttack || TerrorRevealed.ValidSneakAttackTargets(Game, this).Any()).RandomOrDefault();
             var cardInSabotage = TreacheryCards.FirstOrDefault(c => c.IsUseless);
             var victim = Game.GetPlayer(TerrorRevealed.GetVictim(Game));
 
@@ -994,7 +994,7 @@ namespace Treachery.Shared
             }
             else
             {
-                return new TerrorRevealed(Game) { Initiator = Faction, Type = type, RobberyTakesCard = false, CardToGiveInSabotage = cardInSabotage, ForcesInSneakAttack = TerrorRevealed.MaxAmountOfForcesInSneakAttack(Game, this) };
+                return new TerrorRevealed(Game) { Initiator = Faction, Type = type, RobberyTakesCard = false, CardToGiveInSabotage = cardInSabotage, ForcesInSneakAttack = TerrorRevealed.MaxAmountOfForcesInSneakAttack(Game, this), SneakAttackTo = TerrorRevealed.ValidSneakAttackTargets(Game, this).FirstOrDefault() };
             }
         }
 
