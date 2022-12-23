@@ -47,11 +47,21 @@
 
         @if (_type == TerrorType.SneakAttack)
         {
-            <SelectForcesComponent @bind-Value="_forcesInSneakAttack" Min="0" Max=@TerrorRevealed.MaxAmountOfForcesInSneakAttack(Game, Player) Faction="Faction" Special="false" Label="Amount of forces" />
+            if (TerrorRevealed.ValidSneakAttackTargets(Game, Player).Any())
+            {
+                <SelectForcesComponent @bind-Value="_forcesInSneakAttack" Min="0" Max=@TerrorRevealed.MaxAmountOfForcesInSneakAttack(Game, Player) Faction=Faction Special=false Label="Amount of forces" />
 
-            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="_sneakAttackTo" Values="TerrorRevealed.ValidSneakAttackTargets(Game, Player)">
-                <Label>To</Label>
-            </SelectComponent>
+                <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="_sneakAttackTo" Values="TerrorRevealed.ValidSneakAttackTargets(Game, Player)">
+                    <Label>To</Label>
+                </SelectComponent>
+            }
+            else
+            {
+                <div class="alert alert-danger mt-2">You cannot send forces there.</div>
+
+                _forcesInSneakAttack = 0;
+                _sneakAttackTo = null;
+            }
         }
         else
         {
@@ -68,16 +78,16 @@
         {
             if (TerrorRevealed.MayOfferAlliance(Game))
             {
-                <ButtonRowComponent Confirm="Confirm" ConfirmText=@Skin.Current.Format("Execute {0}", _type) ConfirmError=@Validation Pass="Pass" Other="Other" OtherText="Offer Alliance" />
+                <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation Pass="Pass" Other="Other" OtherText="Offer Alliance" />
             }
             else
             {
-                <ButtonRowComponent Confirm="Confirm" ConfirmText=@Skin.Current.Format("Execute {0}", _type) ConfirmError=@Validation Pass="Pass" />
+                <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation Pass="Pass" />
             }
         }
         else
         {
-            <ButtonRowComponent Confirm="Confirm" ConfirmText=@Skin.Current.Format("Execute {0}", _type) ConfirmError=@Validation />
+            <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation />
         }
 
     </Body>

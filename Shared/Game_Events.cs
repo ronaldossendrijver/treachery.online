@@ -256,8 +256,8 @@ namespace Treachery.Shared
                     if (Version < 103 && Version <= 96 && player.Has(TreacheryCardType.Amal) && HasActedOrPassed.Count == 0) result.Add(typeof(AmalPlayed));
                     if (Version < 103 && Version >= 97 && player.Has(TreacheryCardType.Amal) && BeginningOfShipmentAndMovePhase) result.Add(typeof(AmalPlayed));
                     break;
-                case Phase.BlueAccompaniesOrange:
-                case Phase.BlueAccompaniesNonOrange:
+                case Phase.BlueAccompaniesOrangeShip:
+                case Phase.BlueAccompaniesNonOrangeShip:
                     if (faction == Faction.Blue) result.Add(typeof(BlueAccompanies));
                     break;
                 case Phase.NonOrangeShip:

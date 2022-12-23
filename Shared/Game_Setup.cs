@@ -70,7 +70,7 @@ namespace Treachery.Shared
             }
 
             CreateTerrorTokens();
-            UnassignedAmbassadors = new Deck<Faction>(EstablishPlayers.AvailableFactions(), Random);
+            UnassignedAmbassadors = new Deck<Faction>(EstablishPlayers.AvailableFactions().Where(f => f != Faction.Cyan), Random);
 
             OrangeAllyMayShipAsGuild = true;
             PurpleAllyMayReviveAsPurple = true;
@@ -441,6 +441,7 @@ namespace Treachery.Shared
                 var factionsInPlay = Players.Select(p => p.Faction);
                 result.AddRange(LeaderManager.Leaders.Where(l =>
                     factionsInPlay.Contains(l.Faction) &&
+                    l.HeroType != HeroType.Vidal &&
                     (Version <= 140 || l.HeroType != HeroType.Auditor || Applicable(Rule.BrownAuditor))
                     ));
 

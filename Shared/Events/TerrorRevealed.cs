@@ -58,9 +58,11 @@ namespace Treachery.Shared
             if (AllianceOffered && !MayOfferAlliance(Game)) return Message.Express("You can't offer an alliance to this faction");
 
             if (Passed || AllianceOffered) return null;
-
+            if (!GetTypes(Game).Contains(Type)) return Message.Express("You cannot use this token");
             if (Initiator != Faction.Cyan) return Message.Express("Your faction can't reveal terror tokens");
-            if (Type == TerrorType.SneakAttack && !ValidSneakAttackTargets(Game, Player).Contains(SneakAttackTo)) return Message.Express("Invalid location of sneak attack");
+
+            if (Type == TerrorType.SneakAttack && SneakAttackTo == null && ForcesInSneakAttack > 0) return Message.Express("You cannot send forces there");
+            if (Type == TerrorType.SneakAttack && SneakAttackTo != null && !ValidSneakAttackTargets(Game, Player).Contains(SneakAttackTo)) return Message.Express("Invalid location of sneak attack");
             if (Type == TerrorType.SneakAttack && ForcesInSneakAttack > MaxAmountOfForcesInSneakAttack(Game, Player)) return Message.Express("Too many forces selected");
             
 

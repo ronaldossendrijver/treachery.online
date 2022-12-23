@@ -26,7 +26,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express(Initiator, Passed ? "" : " don't", " agree to ally");
+            return Message.Express(Initiator, !Passed ? "" : " don't", " agree to ally");
         }
     }
 }

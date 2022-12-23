@@ -319,7 +319,7 @@ namespace Treachery.Client
                     Express(Faction.Orange, " are thinking about shipping forces..."),
                     Faction.Orange, game.LatestEvent(typeof(EndPhase), typeof(OrangeDelay), typeof(Move))),
 
-                Phase.BlueAccompaniesNonOrange or Phase.BlueAccompaniesOrange => Status(game,
+                Phase.BlueAccompaniesNonOrangeShip or Phase.BlueAccompaniesOrangeShip => Status(game,
                     Express("Do you wish to accompany the latest shipment?"),
                     Express(Faction.Blue, " are thinking about accompanying the latest shipment..."),
                     Faction.Blue),
@@ -437,8 +437,8 @@ namespace Treachery.Client
                 Phase.BlueIntrudedByOrangeShip or
                 Phase.BlueIntrudedByYellowRidingMonsterA or
                 Phase.BlueIntrudedByYellowRidingMonsterB or
-                Phase.BlueAccompaniesOrange or
-                Phase.BlueAccompaniesNonOrange when game.LastShipmentOrMovement != null => new Territory[] { game.LastShipmentOrMovement.To.Territory },
+                Phase.BlueAccompaniesOrangeShip or
+                Phase.BlueAccompaniesNonOrangeShip when game.LastShipmentOrMovement != null => new Territory[] { game.LastShipmentOrMovement.To.Territory },
 
                 Phase.BattlePhase or
                 Phase.MeltingRock or

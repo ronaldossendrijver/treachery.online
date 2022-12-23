@@ -516,14 +516,11 @@ namespace Treachery.Shared
             DetermineNextShipmentAndMoveSubPhase();
         }
 
-        private void EndWormRide(Phase beforeIntrusion)
-        {
-            CurrentPhase = beforeIntrusion;
-            EndWormRide();
-        }
 
-        private void EndWormRide()
+        private void EndWormRideDuringPhase(Phase phase)
         {
+            CurrentPhase = phase;
+
             bool fremenCanRide = YellowRidesMonster.ValidSources(this).Any();
             if (fremenCanRide)
             {

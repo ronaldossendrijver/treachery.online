@@ -42,7 +42,9 @@ namespace Treachery.Shared
             return Message.Express(
                 Initiator,
                 hasAdvisorsThere ^ AsAdvisors ? " become " : " stay as ",
-                AsAdvisors ? (object)FactionSpecialForce.Blue : FactionForce.Blue);
+                AsAdvisors ? (object)FactionSpecialForce.Blue : FactionForce.Blue,
+                " in ",
+                territory);
         }
 
         public static Territory GetTerritory(Game g) => g.LastIntrusionTrigger.Territory;

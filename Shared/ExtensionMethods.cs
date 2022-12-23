@@ -89,7 +89,7 @@ namespace Treachery.Shared
             return RandomOrDefault(source.Where(v => selector(v).Equals(best)));
         }
 
-        private static readonly Random _random = new Random();
+        private static readonly Random _random = new();
         public static T RandomOrDefault<T>(this IEnumerable<T> source)
         {
             if (source is null)
@@ -110,6 +110,29 @@ namespace Treachery.Shared
             else
             {
                 return sourceArray[_random.Next(sourceArray.Length)];
+            }
+        }
+
+        public static T RandomOrDefault<T>(this IEnumerable<T> source, Random random)
+        {
+            if (source is null)
+            {
+                return default;
+            }
+
+            var sourceArray = source.ToArray();
+
+            if (sourceArray.Length == 0)
+            {
+                return default;
+            }
+            else if (sourceArray.Length == 1)
+            {
+                return sourceArray[0];
+            }
+            else
+            {
+                return sourceArray[random.Next(sourceArray.Length)];
             }
         }
 

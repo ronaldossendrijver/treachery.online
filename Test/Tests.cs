@@ -28,7 +28,7 @@ namespace Treachery.Test
         {
             if (g.LastAmbassadorTrigger != null)
             {
-                WriteSavegameIfApplicable(g, e.Player, Skin.Current.Describe(g.LastAmbassadorTrigger.Initiator) + " Ambassador activated");
+                WriteSavegameIfApplicable(g, e.Player, AmbassadorActivated.GetFaction(g) + " Ambassador activated");
             }
         }
 

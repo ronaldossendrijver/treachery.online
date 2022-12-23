@@ -180,10 +180,10 @@ namespace Treachery.Shared
 
         OrangeShip = 230000,
 
-        BlueAccompaniesNonOrange = 240000,
+        BlueAccompaniesNonOrangeShip = 240000,
         TerrorTriggeredByBlueAccompaniesNonOrangeShip = 241000,
         AmbassadorTriggeredByBlueAccompaniesNonOrangeShip = 241010,
-        BlueAccompaniesOrange = 250000,
+        BlueAccompaniesOrangeShip = 250000,
         TerrorTriggeredByBlueAccompaniesOrangeShip = 251000,
         AmbassadorTriggeredByBlueAccompaniesOrangeShip = 251010,
         BlueIntrudedByNonOrangeShip = 255000,

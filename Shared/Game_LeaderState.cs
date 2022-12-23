@@ -102,7 +102,10 @@ namespace Treachery.Shared
 
         private void SetInFrontOfShield(Leader l, bool value)
         {
-            LeaderState[l].InFrontOfShield = value;
+            if (l != null && LeaderState.ContainsKey(l))
+            {
+                LeaderState[l].InFrontOfShield = value;
+            }
         }
 
         public bool IsInFrontOfShield(IHero l)

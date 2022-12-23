@@ -242,14 +242,15 @@
         OrangeForceAmount = _orangeForceAmount,
         GreyCard = _greyCard,
         PurpleAmountOfForces = _purpleAmountOfForces, PurpleHero = _purpleHero, PurpleAssignSkill = _purpleAssignSkill
-        
+
     };
 
     protected override AmbassadorActivated PassedResult => new AmbassadorActivated(Game) { Initiator = Faction, Passed = true };
 
     private void HandleLocationSelected(object sender, Location l)
     {
-        SetIfValid(ref _yellowOrOrangeToLocation, AmbassadorActivated.ValidYellowTargets(Game, Player, _yellowForces).OrderByDescending(l => l.IsStronghold).ThenBy(l => Name(l)), l);
+        var targets = _actualAmbassador == Faction.Yellow ? AmbassadorActivated.ValidYellowTargets(Game, Player, _yellowForces) : AmbassadorActivated.ValidOrangeTargets(Game, Player);
+        SetIfValid(ref _yellowOrOrangeToLocation, targets.OrderByDescending(l => l.IsStronghold).ThenBy(l => Name(l)), l);
     }
 
     private void HandleLocationSelectedWithModifier(object sender, Location l)
