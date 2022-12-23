@@ -582,7 +582,7 @@ namespace Treachery.Shared
             }
         }
 
-        private Phase PhaseBeforeSkillAssignment;
+        private Phase PhaseBeforeSkillAssignment { get; set; }
         public void HandleEvent(SkillAssigned e)
         {
 

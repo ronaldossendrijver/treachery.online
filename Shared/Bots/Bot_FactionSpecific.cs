@@ -985,6 +985,7 @@ namespace Treachery.Shared
             var type = TerrorRevealed.GetTypes(Game).RandomOrDefault();
             var cardInSabotage = TreacheryCards.FirstOrDefault(c => c.IsUseless);
             var victim = Game.GetPlayer(TerrorRevealed.GetVictim(Game));
+
             var offerAlliance = TerrorRevealed.MayOfferAlliance(Game) && PlayerStanding(victim) > 1.5f * PlayerStanding(this);
 
             if (offerAlliance)

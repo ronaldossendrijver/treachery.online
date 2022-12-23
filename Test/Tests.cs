@@ -26,9 +26,9 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (e is AmbassadorActivated)
+            if (g.LastAmbassadorTrigger != null)
             {
-                WriteSavegameIfApplicable(g, e.Player, Skin.Current.Describe(AmbassadorActivated.GetFaction(g)) + " Ambassador activated");
+                WriteSavegameIfApplicable(g, e.Player, Skin.Current.Describe(g.LastAmbassadorTrigger.Initiator) + " Ambassador activated");
             }
         }
 

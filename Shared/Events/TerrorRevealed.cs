@@ -82,11 +82,11 @@ namespace Treachery.Shared
 
         public static bool MayOfferAlliance(Game g) => !g.AllianceByTerrorWasOffered && GetVictim(g) != Faction.Pink;
 
-        public static Territory GetTerritory(Game g) => g.LastTerrorTrigger.Territory;
+        public static Territory GetTerritory(Game g) => g.LastTerrorTrigger != null ? g.LastTerrorTrigger.Territory : g.LatestIntrusion.Territory;
 
-        public static Faction GetVictim(Game g) => g.LastTerrorTrigger.Initiator;
+        public static Faction GetVictim(Game g) => g.LastTerrorTrigger != null ? g.LastTerrorTrigger.Initiator : g.LatestIntrusion.Initiator;
 
-        public static IEnumerable<TerrorType> GetTypes(Game g) => g.TerrorIn(GetTerritory(g));
+        public static IEnumerable<TerrorType> GetTypes(Game g) => g.LastTerrorTrigger != null ? g.TerrorIn(GetTerritory(g)) : Array.Empty<TerrorType>();
 
         public static bool MayPlaceForcesInSabotage(Game g, Player p) => OpenDespiteAllyAndStormAndOccupancy(g, p, GetTerritory(g).MiddleLocation);
 

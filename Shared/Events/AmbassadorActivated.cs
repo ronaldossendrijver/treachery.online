@@ -156,7 +156,7 @@ namespace Treachery.Shared
 
                     case Faction.Purple:
                         if (PurpleAmountOfForces < 0) return Message.Express("You can't revive a negative amount of forces");
-                        if (PurpleAmountOfForces > ValidOrangeMaxForces(player)) return Message.Express("You can't revive that many");
+                        if (PurpleAmountOfForces > ValidPurpleMaxAmount(player)) return Message.Express("You can't revive that many");
                         if (PurpleAmountOfForces > 0 && PurpleHero != null) return Message.Express("You can't revive both forces and a leader");
                         if (PurpleHero != null && !ValidPurpleHeroes(Game, player).Contains(PurpleHero)) return Message.Express("Invalid leader");
                         if (PurpleAssignSkill && PurpleHero == null) return Message.Express("Select a leader to assign a skill to");
@@ -178,13 +178,13 @@ namespace Treachery.Shared
             return Message.Express(Initiator, Passed ? " don't" : "", " activate an Ambassador");
         }
 
-        public static Territory GetTerritory(Game g) => g.LastAmbassadorTrigger.Territory;
+        public static Territory GetTerritory(Game g) => g.LastAmbassadorTrigger != null ? g.LastAmbassadorTrigger.Territory : g.LatestIntrusion.Territory;
 
-        public static Faction GetVictim(Game g) => g.LastAmbassadorTrigger.Initiator;
+        public static Faction GetVictim(Game g) => g.LastAmbassadorTrigger != null ? g.LastAmbassadorTrigger.Initiator : g.LatestIntrusion.Initiator;
 
         public static Player GetVictimPlayer(Game g) => g.GetPlayer(GetVictim(g));
 
-        public static Faction GetFaction(Game g) => g.AmbassadorIn(GetTerritory(g));
+        public static Faction GetFaction(Game g) => g.LastAmbassadorTrigger != null ? g.AmbassadorIn(GetTerritory(g)) : Faction.None;
 
         public static bool AllianceCanBeOffered(Game g, Player p) => !p.HasAlly && !g.GetPlayer(GetVictim(g)).HasAlly;
 

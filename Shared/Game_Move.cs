@@ -410,6 +410,28 @@ namespace Treachery.Shared
             }
         }
 
+        private void CheckBlueIntrusion(ILocationEvent e, Faction initiator, Territory territory)
+        {
+            var bgPlayer = GetPlayer(Faction.Blue);
+            if (bgPlayer != null &&
+                territory != Map.PolarSink.Territory &&
+                Applicable(Rule.BlueAdvisors) &&
+                initiator != bgPlayer.Ally &&
+                initiator != Faction.Blue &&
+                bgPlayer.ForcesIn(territory) > 0)
+            {
+                if (Prevented(FactionAdvantage.BlueIntrusion))
+                {
+                    LogPrevention(FactionAdvantage.BlueIntrusion);
+                    if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.BlueIntrusion);
+                }
+                else
+                {
+                    QueueIntrusion(e, IntrusionType.BlueIntrusion);
+                }
+            }
+        }
+
         private void CheckAmbassadorTriggered(ILocationEvent e, Faction initiator, Territory territory)
         {
             var pinkPlayer = GetPlayer(Faction.Pink);
@@ -440,29 +462,23 @@ namespace Treachery.Shared
             Intrusions.Enqueue(new Intrusion(e, type));
         }
 
-        private Intrusion DequeueIntrusion(IntrusionType type)
+        public Intrusion LatestIntrusion { get; private set; }
+
+        private void DequeueIntrusion(IntrusionType type)
         {
-            if (Intrusions.Peek().Type != type)
+            if (Intrusions.Count == 0)
             {
-                throw new ArgumentException($"Wrong intrusion type: {type} vs {Intrusions.Peek().Type}");
+                throw new ArgumentException($"No intrusions to dequeue");
+            }
+            else if (Intrusions.Peek().Type != type)
+            {
+                throw new ArgumentException($"Wrong intrusion type: actual:{type} vs expected:{Intrusions.Peek().Type}");
             }
 
-            return Intrusions.Dequeue();
+            LatestIntrusion = Intrusions.Dequeue();
         }
 
-        private void CheckBlueIntrusion(ILocationEvent e, Faction initiator, Territory territory)
-        {
-            var bgPlayer = GetPlayer(Faction.Blue);
-            if (bgPlayer != null &&
-                territory != Map.PolarSink.Territory &&
-                Applicable(Rule.BlueAdvisors) &&
-                initiator != bgPlayer.Ally &&
-                initiator != Faction.Blue &&
-                bgPlayer.ForcesIn(territory) > 0)
-            {
-                QueueIntrusion(e, IntrusionType.BlueIntrusion);
-            }
-        }
+
 
         private Phase PausedPhase { get; set; }
 
@@ -644,12 +660,16 @@ namespace Treachery.Shared
 
         public void HandleEvent(AmbassadorActivated e)
         {
+            CurrentAmbassadorActivated = e;
+            var ambassadorFaction = AmbassadorActivated.GetFaction(this);
+            var territory = AmbassadorActivated.GetTerritory(this);
+            var victim = AmbassadorActivated.GetVictim(this);
+            DequeueIntrusion(IntrusionType.Ambassador);
+
             if (!e.Passed)
             {
-                var ambassadorFaction = AmbassadorActivated.GetFaction(this);
-                var ambassadorTerritory = AmbassadorActivated.GetTerritory(this);
 
-                AmbassadorsOnPlanet.Remove(ambassadorTerritory);
+                AmbassadorsOnPlanet.Remove(territory);
 
                 if (ambassadorFaction == Faction.Blue)
                 {
@@ -660,7 +680,7 @@ namespace Treachery.Shared
 
                 AmbassadorsSetAside.Add(ambassadorFaction);
 
-                HandleAmbassador(e, ambassadorFaction);
+                HandleAmbassador(e, e.Initiator, ambassadorFaction, victim, territory);
 
                 if (!e.Player.Ambassadors.Union(AmbassadorsOnPlanet.Values).Any(f => f != Faction.Pink))
                 {
@@ -673,20 +693,18 @@ namespace Treachery.Shared
                 Log(e.Initiator, " don't activate their Ambassador");
             }
 
-            DequeueIntrusion(IntrusionType.Ambassador);
             DetermineNextShipmentAndMoveSubPhase();
         }
 
         private AmbassadorActivated CurrentAmbassadorActivated { get; set; }
         private Phase PausedAmbassadorPhase { get; set; }
 
-        private void HandleAmbassador(AmbassadorActivated e, Faction ambassadorFaction)
+        private void HandleAmbassador(AmbassadorActivated e, Faction initiator, Faction ambassadorFaction, Faction victim, Territory territory)
         {
-            CurrentAmbassadorActivated = e;
-            var victim = AmbassadorActivated.GetVictim(this);
             var victimPlayer = GetPlayer(victim);
+            var initiatingPlayer = GetPlayer(initiator);
 
-            Log(e.Initiator, " active their ", ambassadorFaction, " Ambassador");
+            Log(initiator, " active their ", ambassadorFaction, " Ambassador");
 
             switch (ambassadorFaction)
             {
@@ -694,8 +712,8 @@ namespace Treachery.Shared
 
                     if (victimPlayer.TreacheryCards.Any())
                     {
-                        Log(e.Initiator, " see all treachery cards owned by ", victim);
-                        LogTo(e.Initiator, victim, " own: ", victimPlayer.TreacheryCards);
+                        Log(Faction.Pink, " see all treachery cards owned by ", victim);
+                        LogTo(Faction.Pink, victim, " own: ", victimPlayer.TreacheryCards);
                     }
                     else
                     {
@@ -710,11 +728,11 @@ namespace Treachery.Shared
                     foreach (var c in e.BrownCards)
                     {
                         totalEarned += 3;
-                        Discard(e.Player, c);
+                        Discard(initiatingPlayer, c);
                     }
 
-                    Log(e.Initiator, " get ", Payment(totalEarned));
-                    e.Player.Resources += totalEarned;
+                    Log(initiator, " get ", Payment(totalEarned));
+                    initiatingPlayer.Resources += totalEarned;
 
                     break;
 
@@ -722,26 +740,26 @@ namespace Treachery.Shared
 
                     if (e.PinkOfferAlliance)
                     {
-                        Log(e.Initiator, " offer an alliance to ", victim, MessagePart.ExpressIf(e.PinkGiveVidalToAlly, " offering ", Vidal, " if they accept"));
+                        Log(initiator, " offer an alliance to ", victim, MessagePart.ExpressIf(e.PinkGiveVidalToAlly, " offering ", Vidal, " if they accept"));
                         PausedAmbassadorPhase = CurrentPhase;
                         Enter(Phase.AllianceByAmbassador);
                     }
                     else if (CurrentAmbassadorActivated.PinkTakeVidal)
                     {
-                        TakeVidal(e.Player);
+                        TakeVidal(initiatingPlayer);
                     }
 
                     break;
 
                 case Faction.Red:
 
-                    e.Player.Resources += 5;
-                    Log(e.Initiator, " get ", Payment(5));
+                    initiatingPlayer.Resources += 5;
+                    Log(initiator, " get ", Payment(5));
                     break;
 
                 case Faction.Yellow:
 
-                    PerformMoveFromLocations(e.Player, e.YellowForceLocations, e, false, false);
+                    PerformMoveFromLocations(initiatingPlayer, e.YellowForceLocations, e, false, false);
                     CheckIntrusion(e);
                     DetermineNextShipmentAndMoveSubPhase();
                     break;
@@ -763,27 +781,27 @@ namespace Treachery.Shared
 
                     var toSelectFrom = victim == Faction.Purple ? victimPlayer.FaceDancers.Where(t => !victimPlayer.RevealedDancers.Contains(t)) : victimPlayer.Traitors;
                     var revealed = toSelectFrom.RandomOrDefault();
-                    LogTo(e.Initiator, victim, " reveal ", revealed);
-                    LogTo(victim, e.Initiator, " get to see ", revealed);
+                    LogTo(initiator, victim, " reveal ", revealed);
+                    LogTo(victim, initiator, " get to see ", revealed);
                     break;
 
                 case Faction.Grey:
 
-                    Discard(e.Player, e.GreyCard);
-                    Log(e.Initiator, " draw a new card");
-                    e.Player.TreacheryCards.Add(DrawTreacheryCard());
+                    Discard(initiatingPlayer, e.GreyCard);
+                    Log(initiator, " draw a new card");
+                    initiatingPlayer.TreacheryCards.Add(DrawTreacheryCard());
                     break;
 
                 case Faction.White:
 
-                    Log(e.Initiator, " buy a card for ", Payment(3));
-                    e.Player.Resources -= 3;
-                    e.Player.TreacheryCards.Add(DrawTreacheryCard());
+                    Log(initiator, " buy a card for ", Payment(3));
+                    initiatingPlayer.Resources -= 3;
+                    initiatingPlayer.TreacheryCards.Add(DrawTreacheryCard());
                     break;
 
                 case Faction.Orange:
 
-                    e.Player.ShipForces(e.YellowOrOrangeTo, e.OrangeForceAmount);
+                    initiatingPlayer.ShipForces(e.YellowOrOrangeTo, e.OrangeForceAmount);
                     LastShipmentOrMovement = e;
                     CheckIntrusion(e);
                     DetermineNextShipmentAndMoveSubPhase();
@@ -795,25 +813,25 @@ namespace Treachery.Shared
                     {
                         if (!LeaderState[e.PurpleHero].IsFaceDownDead)
                         {
-                            Log(e.Initiator, " revive ", e.PurpleHero);
+                            Log(initiator, " revive ", e.PurpleHero);
                         }
                         else
                         {
-                            Log(e.Initiator, " revive a face down leader");
+                            Log(initiator, " revive a face down leader");
                         }
 
                         ReviveHero(e.PurpleHero);
 
                         if (e.PurpleAssignSkill)
                         {
-                            PrepareSkillAssignmentToRevivedLeader(e.Player, e.PurpleHero as Leader);
+                            DetermineNextShipmentAndMoveSubPhase();
+                            PrepareSkillAssignmentToRevivedLeader(initiatingPlayer, e.PurpleHero as Leader);
                         }
                     }
                     else
                     {
-                        Log(e.Initiator, " revive ", e.PurpleAmountOfForces, " ", e.Player.Force);
-
-                        e.Player.ReviveForces(e.PurpleAmountOfForces);
+                        Log(initiator, " revive ", e.PurpleAmountOfForces, " ", initiatingPlayer.Force);
+                        initiatingPlayer.ReviveForces(e.PurpleAmountOfForces);
                     }
                     break;
             }
@@ -1010,7 +1028,6 @@ namespace Treachery.Shared
                 }
             }
 
-            DequeueIntrusion(IntrusionType.Ambassador);
             DetermineNextShipmentAndMoveSubPhase();
         }
 
@@ -1022,13 +1039,14 @@ namespace Treachery.Shared
 
         private void DetermineNextShipmentAndMoveSubPhase()
         {
+            /*
             if (BlueIntruded && Prevented(FactionAdvantage.BlueIntrusion))
             {
                 LogPrevention(FactionAdvantage.BlueIntrusion);
-                DequeueIntrusion(IntrusionType.Ambassador);
+                DequeueIntrusion(IntrusionType.BlueIntrusion);
                 if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.BlueIntrusion);
             }
-
+            */
             if (BlueMayAccompany && Prevented(FactionAdvantage.BlueAccompanies))
             {
                 LogPrevention(FactionAdvantage.BlueAccompanies);
@@ -1062,7 +1080,7 @@ namespace Treachery.Shared
                     case Phase.BlueIntrudedByYellowRidingMonsterB when somethingTriggered:
                     case Phase.TerrorTriggeredByYellowRidingMonsterB when somethingTriggered:
                     case Phase.AmbassadorTriggeredByYellowRidingMonsterB when somethingTriggered:
-                        Enter(BlueIntruded, Phase.BlueIntrudedByYellowRidingMonsterB, handleTerrorFirst, Phase.TerrorTriggeredByYellowRidingMonsterB, AmbassadorTriggered, Phase.TerrorTriggeredByYellowRidingMonsterB, EndWormRide);
+                        Enter(BlueIntruded, Phase.BlueIntrudedByYellowRidingMonsterB, handleTerrorFirst, Phase.TerrorTriggeredByYellowRidingMonsterB, AmbassadorTriggered, Phase.AmbassadorTriggeredByYellowRidingMonsterB, EndWormRide);
                         break;
 
                     case Phase.BlueIntrudedByYellowRidingMonsterA:
