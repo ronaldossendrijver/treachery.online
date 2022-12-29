@@ -330,7 +330,7 @@ namespace Treachery.Test
             Parallel.For(0, nrOfGames, po,
                 i =>
                 {
-                    var game = LetBotsPlay(rules, nrOfPlayers, nrOfTurns, p, false, false, null, f);
+                    var game = LetBotsPlay(expansionLevel, rules, nrOfPlayers, nrOfTurns, p, false, false, null, f);
                     var playerToCheck = game.Players.Single(p => p.Faction == f);
                     if (game.Winners.Contains(playerToCheck)) countWins++;
                     countSpice += playerToCheck.Resources;
@@ -414,7 +414,7 @@ namespace Treachery.Test
 
         private readonly List<TimedTest> timedTests = new();
         private readonly List<Game> failedGames = new();
-        private Game LetBotsPlay(Rule[] rules, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool infoLogging, bool performTests, Statistics statistics, Faction mustPlay = Faction.None)
+        private Game LetBotsPlay(int expansionLevel, Rule[] rules, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool infoLogging, bool performTests, Statistics statistics, Faction mustPlay = Faction.None)
         {
             BattleOutcome previousBattleOutcome = null;
 

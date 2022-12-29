@@ -850,6 +850,10 @@ namespace Treachery.Shared
                 {
                     TakeVidal(e.Player);
                 }
+                else if (CurrentAmbassadorActivated.PinkTakeVidal)
+                {
+                    TakeVidal(CurrentAmbassadorActivated.Player);
+                }
 
                 if (HasActedOrPassed.Contains(e.Initiator) && HasActedOrPassed.Contains(Faction.Pink))
                 {

@@ -62,11 +62,34 @@
     [Parameter]
     public Player Player { get; set; }
 
-    [Parameter]
-    public Dictionary<Location, Battalion> Forces { get; set; }
+    private Dictionary<Location, Battalion> _forces = new();
 
     [Parameter]
-    public IEnumerable<Location> Locations { get; set; }
+    public Dictionary<Location, Battalion> Forces {
+
+        get => _forces;
+
+        set
+        {
+            _forces = value;
+            RemoveIllegalForceLocations();
+        }
+    }
+
+    private IEnumerable<Location> _locations = new List<Location>();
+
+    [Parameter]
+    public IEnumerable<Location> Locations
+    {
+
+        get => _locations;
+
+        set
+        {
+            _locations = value;
+            RemoveIllegalForceLocations();
+        }
+    }
 
     [Parameter]
     public bool MaySelectFromStorm { get; set; } = false;
@@ -94,14 +117,7 @@
 
     protected override void OnParametersSet()
     {
-        if (!AllowMultipleTerritories)
-        {
-            var currentTerritory = Forces.Where(kvp => kvp.Value.TotalAmountOfForces > 0).Select(kvp => kvp.Key.Territory).FirstOrDefault();
-            if (currentTerritory != null)
-            {
-                RemoveForcesFromOtherTerritoriesThan(currentTerritory);
-            }
-        }
+        RemoveForcesFromOtherTerritororiesThanAvailableLocations();
 
         if (InitializeToMaximum)
         {
@@ -109,7 +125,11 @@
 
                 foreach (var l in Locations)
                 {
-                    Forces.Add(l, new Battalion() { AmountOfForces = Max(l), AmountOfSpecialForces = MaxSpecial(l) });
+                    var toAdd = new Battalion() { AmountOfForces = Max(l), AmountOfSpecialForces = MaxSpecial(l) };
+                    if (toAdd.TotalAmountOfForces > 0)
+                    {
+                        Forces.Add(l, toAdd);
+                    }
                 }
 
                 OnChanged?.Invoke();
@@ -137,6 +157,26 @@
         else
         {
             return 0;
+        }
+    }
+
+    private void RemoveIllegalForceLocations()
+    {
+        foreach (var bat in Forces.Where(kvp => !Locations.Contains(kvp.Key)).Select(kvp => kvp.Value))
+        {
+            bat.Clear();
+        }
+    }
+
+    private void RemoveForcesFromOtherTerritororiesThanAvailableLocations()
+    {
+        if (!AllowMultipleTerritories)
+        {
+            var locationWithForces = Forces.Where(kvp => kvp.Value.TotalAmountOfForces > 0).Select(kvp => kvp.Key).FirstOrDefault();
+            if (locationWithForces != null)
+            {
+                RemoveForcesFromOtherTerritoriesThan(locationWithForces.Territory);
+            }
         }
     }
 
