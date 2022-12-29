@@ -1003,7 +1003,7 @@ namespace Treachery.Shared
             }
             else
             {
-                return new TerrorRevealed(Game) { Initiator = Faction, Type = type, RobberyTakesCard = false, CardToGiveInSabotage = cardInSabotage, ForcesInSneakAttack = TerrorRevealed.MaxAmountOfForcesInSneakAttack(Game, this), SneakAttackTo = TerrorRevealed.ValidSneakAttackTargets(Game, this).FirstOrDefault() };
+                return new TerrorRevealed(Game) { Initiator = Faction, Type = type, RobberyTakesCard = false, CardToGiveInSabotage = cardInSabotage, ForcesInSneakAttack = TerrorRevealed.MaxAmountOfForcesInSneakAttack(this), SneakAttackTo = TerrorRevealed.ValidSneakAttackTargets(Game, this).FirstOrDefault() };
             }
         }
 

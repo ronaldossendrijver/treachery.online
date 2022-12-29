@@ -13,13 +13,10 @@ namespace Treachery.Shared
         public ILocationEvent LastShipmentOrMovement { get; private set; }
 
         private Queue<Intrusion> Intrusions { get; } = new();
-        private bool BlueIntruded => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.BlueIntrusion;
-        private bool TerrorTriggered => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.Terror;
-        private bool AmbassadorTriggered => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.Ambassador;
 
-        public Intrusion LastIntrusionTrigger => BlueIntruded ? Intrusions.Peek() : null;
-        public Intrusion LastTerrorTrigger => TerrorTriggered ? Intrusions.Peek() : null;
-        public Intrusion LastAmbassadorTrigger => AmbassadorTriggered ? Intrusions.Peek() : null;
+        public Intrusion LastBlueIntrusion => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.BlueIntrusion ? Intrusions.Peek() : null;
+        public Intrusion LastTerrorTrigger => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.Terror ? Intrusions.Peek() : null;
+        public Intrusion LastAmbassadorTrigger => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.Ambassador ? Intrusions.Peek() : null;
 
         public PlayerSequence ShipmentAndMoveSequence { get; private set; }
         public bool ShipsTechTokenIncome { get; private set; }
@@ -500,11 +497,8 @@ namespace Treachery.Shared
 
             CheckIntrusion(e);
 
-            if (BlueIntruded || TerrorTriggered)
-            {
-                PausedPhase = CurrentPhase;
-                Enter(BlueIntruded, Phase.BlueIntrudedByCaravan, Phase.TerrorTriggeredByCaravan);
-            }
+            PausedPhase = CurrentPhase;
+            Enter(LastBlueIntrusion != null, Phase.BlueIntrudedByCaravan, LastTerrorTrigger != null, Phase.TerrorTriggeredByCaravan, LastAmbassadorTrigger != null, Phase.AmbassadorTriggeredByCaravan);
 
             CurrentFlightUsed = null;
 
@@ -695,6 +689,7 @@ namespace Treachery.Shared
         }
 
         private AmbassadorActivated CurrentAmbassadorActivated { get; set; }
+        private Faction AllianceByAmbassadorOfferedTo { get; set; }
         private Phase PausedAmbassadorPhase { get; set; }
 
         private void HandleAmbassador(AmbassadorActivated e, Faction initiator, Faction ambassadorFaction, Faction victim, Territory territory)
@@ -702,7 +697,7 @@ namespace Treachery.Shared
             var victimPlayer = GetPlayer(victim);
             var initiatingPlayer = GetPlayer(initiator);
 
-            Log(initiator, " active their ", ambassadorFaction, " Ambassador");
+            Log(initiator, " activate their ", ambassadorFaction, " ambassador");
 
             switch (ambassadorFaction)
             {
@@ -736,9 +731,9 @@ namespace Treachery.Shared
 
                 case Faction.Pink:
 
-                    DetermineNextShipmentAndMoveSubPhase();
                     if (e.PinkOfferAlliance)
                     {
+                        AllianceByAmbassadorOfferedTo = victim;
                         Log(initiator, " offer an alliance to ", victim, MessagePart.ExpressIf(e.PinkGiveVidalToAlly, " offering ", Vidal, " if they accept"));
                         PausedAmbassadorPhase = CurrentPhase;
                         Enter(Phase.AllianceByAmbassador);
@@ -746,6 +741,7 @@ namespace Treachery.Shared
                     else if (CurrentAmbassadorActivated.PinkTakeVidal)
                     {
                         TakeVidal(initiatingPlayer);
+                        DetermineNextShipmentAndMoveSubPhase();
                     }
                     break;
 
@@ -767,15 +763,15 @@ namespace Treachery.Shared
 
                     if (victim == Faction.Black)
                     {
-                        Log(Faction.Pink, "See one of the ", Faction.Black, " traitors");
+                        Log(Faction.Pink, " see one of the ", Faction.Black, " traitors");
                     }
                     else if (victim == Faction.Purple)
                     {
-                        Log(Faction.Pink, "See one of the ", Faction.Purple, " unrevealed Face Dancers");
+                        Log(Faction.Pink, " see one of the ", Faction.Purple, " unrevealed Face Dancers");
                     }
                     else
                     {
-                        Log(Faction.Pink, "See the ", victim, " traitor");
+                        Log(Faction.Pink, " see the ", victim, " traitor");
                     }
 
                     var toSelectFrom = victim == Faction.Purple ? victimPlayer.FaceDancers.Where(t => !victimPlayer.RevealedDancers.Contains(t)) : victimPlayer.Traitors;
@@ -812,6 +808,7 @@ namespace Treachery.Shared
 
                 case Faction.Purple:
 
+                    DetermineNextShipmentAndMoveSubPhase();
                     if (e.PurpleHero != null)
                     {
                         if (!LeaderState[e.PurpleHero].IsFaceDownDead)
@@ -827,7 +824,6 @@ namespace Treachery.Shared
 
                         if (e.PurpleAssignSkill)
                         {
-                            DetermineNextShipmentAndMoveSubPhase();
                             PrepareSkillAssignmentToRevivedLeader(initiatingPlayer, e.PurpleHero as Leader);
                         }
                     }
@@ -836,14 +832,52 @@ namespace Treachery.Shared
                         Log(initiator, " revive ", e.PurpleAmountOfForces, " ", initiatingPlayer.Force);
                         initiatingPlayer.ReviveForces(e.PurpleAmountOfForces);
                     }
-                    DetermineNextShipmentAndMoveSubPhase();
+                    
                     break;
             }
         }
-        
+
+
+        public void HandleEvent(AllianceByAmbassador e)
+        {
+            Enter(PausedAmbassadorPhase);
+
+            if (!e.Passed)
+            {
+                MakeAlliance(e.Initiator, Faction.Pink);
+
+                if (CurrentAmbassadorActivated.PinkGiveVidalToAlly)
+                {
+                    TakeVidal(e.Player);
+                }
+
+                if (HasActedOrPassed.Contains(e.Initiator) && HasActedOrPassed.Contains(Faction.Pink))
+                {
+                    CheckIfForcesShouldBeDestroyedByAllyPresence(e.Player);
+                }
+            }
+            else
+            {
+                Log(e.Initiator, " don't ally with ", Faction.Pink);
+
+                if (CurrentAmbassadorActivated.PinkTakeVidal)
+                {
+                    TakeVidal(CurrentAmbassadorActivated.Player);
+                }
+            }
+
+            DetermineNextShipmentAndMoveSubPhase();
+        }
+
+        private void TakeVidal(Player p)
+        {
+            Log(p.Faction, " take ", Vidal);
+            p.Leaders.Add(Vidal);
+        }
+
         private Phase PausedTerrorPhase { get; set; }
         public bool AllianceByTerrorWasOffered { get; private set; } = false;
-
+        private Faction AllianceByTerrorOfferedTo { get; set; }
         public void HandleEvent(TerrorRevealed e)
         {
             var initiator = GetPlayer(e.Initiator);
@@ -861,6 +895,7 @@ namespace Treachery.Shared
             else if (e.AllianceOffered)
             {
                 Log(e.Initiator, " offer an alliance to ", victim, " as an alternative to terror");
+                AllianceByTerrorOfferedTo = victim;
                 AllianceByTerrorWasOffered = true;
                 PausedTerrorPhase = CurrentPhase;
                 Enter(Phase.AllianceByTerror);
@@ -1014,45 +1049,13 @@ namespace Treachery.Shared
             }
         }
 
-        public void HandleEvent(AllianceByAmbassador e)
-        {
-            Enter(PausedAmbassadorPhase);
-
-            if (!e.Passed)
-            {
-                MakeAlliance(e.Initiator, Faction.Pink);
-
-                if (CurrentAmbassadorActivated.PinkGiveVidalToAlly)
-                {
-                    TakeVidal(e.Player);
-                }
-
-                if (HasActedOrPassed.Contains(e.Initiator) && HasActedOrPassed.Contains(Faction.Pink))
-                {
-                    CheckIfForcesShouldBeDestroyedByAllyPresence(e.Player);
-                }
-            }
-            else
-            {
-                Log(e.Initiator, " don't ally with ", Faction.Pink);
-
-                if (CurrentAmbassadorActivated.PinkTakeVidal)
-                {
-                    TakeVidal(CurrentAmbassadorActivated.Player);
-                }
-            }
-
-            DetermineNextShipmentAndMoveSubPhase();
-        }
-
-        private void TakeVidal(Player p)
-        {
-            Log(p.Faction, " take ", Vidal);
-            p.Leaders.Add(Vidal);
-        }
 
         private void DetermineNextShipmentAndMoveSubPhase()
         {
+            //Console.WriteLine($"DetermineNextShipmentAndMoveSubPhase [enter]: {CurrentPhase}.");
+
+            CleanupObsoleteIntrusions();
+
             if (BlueMayAccompany && Prevented(FactionAdvantage.BlueAccompanies))
             {
                 LogPrevention(FactionAdvantage.BlueAccompanies);
@@ -1067,6 +1070,7 @@ namespace Treachery.Shared
             }
             else if (Intrusions.Any())
             {
+                //Console.WriteLine($"Intrusion: {Intrusions.Peek().Type}.");
                 switch (Intrusions.Peek().Type)
                 {
                     case IntrusionType.BlueIntrusion:
@@ -1087,9 +1091,42 @@ namespace Treachery.Shared
             }
             else
             {
+                //Console.WriteLine($"No intrusion.");
                 DetermineNextShipmentAndMoveSubPhaseOnNoIntrusion();
             }
 
+            //Console.WriteLine($"DetermineNextShipmentAndMoveSubPhase [exit]: {CurrentPhase}.");
+        }
+
+        private void CleanupObsoleteIntrusions()
+        {
+            if (Intrusions.Any()) {
+
+                int i = 0;
+                bool search = true;
+                while (search)
+                {
+                    i++;
+                    if (i > 100) throw new Exception("Stuck");
+
+                    if (LastBlueIntrusion != null && GetPlayer(Faction.Blue).ForcesIn(LastBlueIntrusion.Territory) == 0)
+                    {
+                        DequeueIntrusion(IntrusionType.BlueIntrusion);
+                    }
+                    else if (LastTerrorTrigger != null && !TerrorIn(LastTerrorTrigger.Territory).Any())
+                    {
+                        DequeueIntrusion(IntrusionType.Terror);
+                    }
+                    else if (LastAmbassadorTrigger != null && AmbassadorIn(LastAmbassadorTrigger.Territory) == Faction.None)
+                    {
+                        DequeueIntrusion(IntrusionType.Ambassador);
+                    }
+                    else
+                    {
+                        search = false;
+                    }
+                }
+            }
         }
 
         private void DetermineNextShipmentAndMoveSubPhaseOnNoIntrusion()

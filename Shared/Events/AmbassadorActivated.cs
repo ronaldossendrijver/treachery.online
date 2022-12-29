@@ -145,7 +145,7 @@ namespace Treachery.Shared
                         break;
 
                     case Faction.White:
-                        if (player.Resources < 3) return Message.Express("You don't enough ", Concept.Resource, " to buy a card");
+                        if (player.Resources < 3) return Message.Express("You don't have enough ", Concept.Resource, " to buy a card");
                         if (!player.HasRoomForCards) return Message.Express("You don't have room for an additional card");
                         break;
 
@@ -178,11 +178,11 @@ namespace Treachery.Shared
             return Message.Express(Initiator, Passed ? " don't" : "", " activate an Ambassador");
         }
 
-        public static Territory GetTerritory(Game g) => g.LastAmbassadorTrigger != null ? g.LastAmbassadorTrigger.Territory : g.LatestIntrusion.Territory;
+        public static Territory GetTerritory(Game g) => g.LastAmbassadorTrigger?.Territory;
 
-        public static Faction GetVictim(Game g) => g.LastAmbassadorTrigger != null ? g.LastAmbassadorTrigger.Initiator : g.LatestIntrusion.Initiator;
+        public static Faction GetVictim(Game g) => g.LastAmbassadorTrigger != null ? g.LastAmbassadorTrigger.Initiator : Faction.None;
 
-        public static Player GetVictimPlayer(Game g) => g.GetPlayer(GetVictim(g));
+        public static Player GetVictimPlayer(Game g) => g.LastAmbassadorTrigger != null ? g.GetPlayer(GetVictim(g)) : null;
 
         public static Faction GetFaction(Game g) => g.LastAmbassadorTrigger != null ? g.AmbassadorIn(GetTerritory(g)) : Faction.None;
 

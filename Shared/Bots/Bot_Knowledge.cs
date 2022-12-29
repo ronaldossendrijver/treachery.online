@@ -595,6 +595,8 @@ namespace Treachery.Shared
 
         protected bool IWillBeAggressorAgainst(Player opponent)
         {
+            if (opponent == null) return false;
+
             var firstPlayerPosition = PlayerSequence.DetermineFirstPlayer(Game).PositionAtTable;
 
             for (int i = 0; i < Game.MaximumNumberOfPlayers; i++)

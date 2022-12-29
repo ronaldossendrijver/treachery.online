@@ -49,7 +49,7 @@
         {
             if (TerrorRevealed.ValidSneakAttackTargets(Game, Player).Any())
             {
-                <SelectForcesComponent @bind-Value="_forcesInSneakAttack" Min="0" Max=@TerrorRevealed.MaxAmountOfForcesInSneakAttack(Game, Player) Faction=Faction Special=false Label="Amount of forces" />
+                <SelectForcesComponent @bind-Value="_forcesInSneakAttack" Min="0" Max=@TerrorRevealed.MaxAmountOfForcesInSneakAttack(Player) Faction=Faction Special=false Label="Amount of forces" />
 
                 <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="_sneakAttackTo" Values="TerrorRevealed.ValidSneakAttackTargets(Game, Player)">
                     <Label>To</Label>

@@ -63,7 +63,7 @@ namespace Treachery.Shared
 
             if (Type == TerrorType.SneakAttack && SneakAttackTo == null && ForcesInSneakAttack > 0) return Message.Express("You cannot send forces there");
             if (Type == TerrorType.SneakAttack && SneakAttackTo != null && !ValidSneakAttackTargets(Game, Player).Contains(SneakAttackTo)) return Message.Express("Invalid location of sneak attack");
-            if (Type == TerrorType.SneakAttack && ForcesInSneakAttack > MaxAmountOfForcesInSneakAttack(Game, Player)) return Message.Express("Too many forces selected");
+            if (Type == TerrorType.SneakAttack && ForcesInSneakAttack > MaxAmountOfForcesInSneakAttack(Player)) return Message.Express("Too many forces selected");
             
 
             return null;
@@ -94,13 +94,13 @@ namespace Treachery.Shared
 
         public static bool MayOfferAlliance(Game g) => !g.AllianceByTerrorWasOffered && GetVictim(g) != Faction.Pink;
 
-        public static Territory GetTerritory(Game g) => g.LastTerrorTrigger != null ? g.LastTerrorTrigger.Territory : g.LatestIntrusion.Territory;
+        public static Territory GetTerritory(Game g) => g.LastTerrorTrigger?.Territory;
 
-        public static Faction GetVictim(Game g) => g.LastTerrorTrigger != null ? g.LastTerrorTrigger.Initiator : g.LatestIntrusion.Initiator;
+        public static Faction GetVictim(Game g) => g.LastTerrorTrigger != null ? g.LastTerrorTrigger.Initiator : Faction.None;
 
         public static IEnumerable<TerrorType> GetTypes(Game g) => g.LastTerrorTrigger != null ? g.TerrorIn(GetTerritory(g)) : Array.Empty<TerrorType>();
 
-        public static int MaxAmountOfForcesInSneakAttack(Game g, Player p) => Math.Min(5, p.ForcesInReserve);
+        public static int MaxAmountOfForcesInSneakAttack(Player p) => Math.Min(5, p.ForcesInReserve);
 
         public static IEnumerable<Location> ValidSneakAttackTargets(Game g, Player p) => GetTerritory(g).Locations.Where(l => OpenDespiteAllyAndStormAndOccupancy(g, p, l));
 

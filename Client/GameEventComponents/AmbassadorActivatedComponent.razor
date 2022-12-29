@@ -113,15 +113,15 @@
                     
                     if (victim == Faction.Black)
                     {
-                        <div>See one of the @AmbassadorActivated.GetVictim(Game) traitors?</div>
+                        <div>See one of the <FactionComponent Faction=@victim Diameter=30 /> traitors?</div>
                     }
                     else if (victim == Faction.Purple)
                     {
-                        <div>See one of the @AmbassadorActivated.GetVictim(Game) unrevealed Face Dancers?</div>
+                        <div>See one of the <FactionComponent Faction=@victim Diameter=30 /> unrevealed Face Dancers?</div>
                     }
                     else {
 
-                        <div>See the @AmbassadorActivated.GetVictim(Game) traitor?</div>
+                        <div>See the<FactionComponent Faction=@victim Diameter=30 /> traitor?</div>
                     }
                     break;
 

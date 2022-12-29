@@ -47,6 +47,6 @@ namespace Treachery.Shared
                 territory);
         }
 
-        public static Territory GetTerritory(Game g) => g.LastIntrusionTrigger.Territory;
+        public static Territory GetTerritory(Game g) => g.LastBlueIntrusion.Territory;
     }
 }

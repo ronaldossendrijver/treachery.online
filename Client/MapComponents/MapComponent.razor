@@ -186,14 +186,14 @@
             }
         }
 
-        result += SpiceAndForceInfo(intelligenceLocation);
+        result += SpiceAndForceAndTokenInfo(intelligenceLocation);
 
         result += "</div>";
 
         return result;
     }
 
-    protected string SpiceAndForceInfo(Location intelligenceLocation)
+    protected string SpiceAndForceAndTokenInfo(Location intelligenceLocation)
     {
         var result = "";
 
@@ -228,6 +228,19 @@
                     }
                 }
             }
+        }
+
+        if (Game.TerrorIn(intelligenceLocation.Territory).Any())
+        {
+            result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
+                Skin.Current.GetFactionForceImageURL(Faction.Cyan),
+                Game.TerrorIn(intelligenceLocation.Territory).Count());
+        }
+
+        if (Game.AmbassadorIn(intelligenceLocation.Territory) != Faction.None)
+        {
+            result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
+                Skin.Current.GetFactionForceImageURL(Faction.Pink), 1);
         }
 
         foreach (var hero in Game.LeaderState.Where(state => state.Key is IHero && state.Value.Alive && state.Value.CurrentTerritory == intelligenceLocation.Territory).Select(state => state.Key))

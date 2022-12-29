@@ -90,10 +90,10 @@ namespace Treachery.Shared
                     if (faction == FactionThatMustDiscard) result.Add(typeof(Discarded));
                     break;
                 case Phase.AllianceByTerror:
-                    if (faction == TerrorRevealed.GetVictim(this)) result.Add(typeof(AllianceByTerror));
+                    if (faction == AllianceByTerrorOfferedTo) result.Add(typeof(AllianceByTerror));
                     break;
                 case Phase.AllianceByAmbassador:
-                    if (faction == AmbassadorActivated.GetVictim(this)) result.Add(typeof(AllianceByAmbassador));
+                    if (faction == AllianceByAmbassadorOfferedTo) result.Add(typeof(AllianceByAmbassador));
                     break;
                 case Phase.Bureaucracy:
                     if (player == PlayerSkilledAs(LeaderSkill.Bureaucrat)) result.Add(typeof(Bureaucracy));
