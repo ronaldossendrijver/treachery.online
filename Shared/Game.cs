@@ -846,13 +846,25 @@ namespace Treachery.Shared
         {
             int result = 0;
             var counted = new List<Faction>();
+
+            Faction pinkOrPinkAllyToExclude = Faction.None;
+
+            if (p.Is(Faction.Pink))
+            {
+                pinkOrPinkAllyToExclude = p.Ally;
+            }
+            else if (p.Ally == Faction.Pink)
+            {
+                pinkOrPinkAllyToExclude = p.Faction;
+            }
+
             foreach (Location l in t.Locations)
             {
                 if (OccupyingForcesOnPlanet.ContainsKey(l))
                 {
                     foreach (var b in OccupyingForcesOnPlanet[l])
                     {
-                        if (b.Faction != p.Faction && !counted.Contains(b.Faction))
+                        if (b.Faction != p.Faction && !counted.Contains(b.Faction) && b.Faction != pinkOrPinkAllyToExclude)
                         {
                             result++;
                             counted.Add(b.Faction);

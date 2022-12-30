@@ -176,13 +176,12 @@ namespace Treachery.Shared
 
         public bool ContainsConflictingAlly(Player initiator, Location to)
         {
-            if (initiator.Ally == Faction.None || to == Map.PolarSink || to == null) return false;
+            if (initiator.Ally == Faction.None || to == Map.PolarSink || initiator.Faction == Faction.Pink || initiator.Ally == Faction.Pink || to == null) return false;
 
             var ally = initiator.AlliedPlayer;
 
             if (initiator.Ally == Faction.Blue && Applicable(Rule.AdvisorsDontConflictWithAlly))
             {
-
                 return ally.ForcesIn(to.Territory) > 0;
             }
             else
@@ -1524,7 +1523,7 @@ namespace Treachery.Shared
                 if (VidalIsAlive)
                 {
                     var pink = GetPlayer(Faction.Pink);
-                    var nrOfBattlesInStrongholds = Battle.BattlesToBeFought(this, cyan).Select(batt => batt.Item1)
+                    var nrOfBattlesInStrongholds = Battle.BattlesToBeFought(this, cyan).Select(batt => batt.Territory)
                         .Where(t => (pink == null || pink.AnyForcesIn(t) == 0) && (t.IsStronghold || IsSpecialStronghold(t))).Distinct().Count();
 
                     if (nrOfBattlesInStrongholds >= 2)

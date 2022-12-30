@@ -22,7 +22,7 @@
     
     protected override bool IsUrgent => true;
 
-    private Tuple<Territory, Faction> battle;
+    private Fight battle;
 
     protected override void OnParametersSet()
     {
@@ -32,7 +32,7 @@
         }
     }
 
-    protected override BattleInitiated ConfirmedResult => new BattleInitiated(Game) { Initiator = Faction, Territory = battle.Item1, Target = battle.Item2 };
+    protected override BattleInitiated ConfirmedResult => new BattleInitiated(Game) { Initiator = Faction, Territory = battle.Territory, Target = battle.Faction };
 
-    private IEnumerable<string> BattleLabels => Battle.BattlesToBeFought(Game, Player).Select(b => Skin.Current.Format("{0} in {1}", b.Item2, b.Item1));
+    private IEnumerable<string> BattleLabels => Battle.BattlesToBeFought(Game, Player).Select(b => Skin.Current.Format("{0} in {1}", b.Faction, b.Territory));
 }

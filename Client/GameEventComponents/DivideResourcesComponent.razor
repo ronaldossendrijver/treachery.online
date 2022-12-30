@@ -1,0 +1,49 @@
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<DivideResources>
+
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Please choose how to divide collected @Name(Concept.Resource)</Header>
+    <Body>
+
+        @{
+            var toBeDivided = DivideResources.GetResourcesToBeDivided(Game);
+
+            <div class="mt-1">
+                @toBeDivided.Amount @Name(Concept.Resource) was collected from @Name(toBeDivided.Territory) by you and <FactionComponent Faction=@toBeDivided.OtherFaction Diameter=30 />
+            </div>
+
+            <div class="mt-1">
+                <SelectResourcesComponent @bind-Value="amountToFirstFaction" Min=0 Max=@toBeDivided.Amount Label="How much should go to you?" />
+            </div>
+
+            <div class="mt-1">
+                If <FactionComponent Faction=@toBeDivided.OtherFaction Diameter=30 /> agree, they will receive the remaining @(toBeDivided.Amount - amountToFirstFaction) @Name(Concept.Resource)
+            </div>
+
+            <div class="mt-1">
+                If you pass, you get @DivideResources.GainedByFirstFaction(Game, true, amountToFirstFaction) and <FactionComponent Faction=@toBeDivided.OtherFaction Diameter=30 /> get @DivideResources.GainedByOtherFaction(Game, true, amountToFirstFaction)
+            </div>
+
+            <ButtonRowComponent Pass="Pass" Confirm="Confirm" ConfirmError=@Validation />
+        }
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override bool IsUrgent => true;
+
+    private int amountToFirstFaction;
+
+    protected override DivideResources ConfirmedResult => new DivideResources(Game) { Initiator = Faction, PortionToFirstPlayer = amountToFirstFaction };
+
+    protected override DivideResources PassedResult => new DivideResources(Game) { Initiator = Faction, Passed = true };
+}

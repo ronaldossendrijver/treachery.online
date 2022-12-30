@@ -383,9 +383,9 @@ namespace Treachery.Shared
             }
         }
 
-        public static IEnumerable<Tuple<Territory, Faction>> BattlesToBeFought(Game g, Player player)
+        public static IEnumerable<Fight> BattlesToBeFought(Game g, Player player, bool returnOnlyOneBattle = false)
         {
-            var result = new List<Tuple<Territory, Faction>>();
+            var result = new List<Fight>();
 
             bool mayBattleUnderStorm = g.Applicable(Rule.BattlesUnderStorm);
 
@@ -396,11 +396,16 @@ namespace Treachery.Shared
                 foreach (var battalions in g.OccupyingForcesOnPlanet.Where(l => (mayBattleUnderStorm || l.Key.Sector != g.SectorInStorm) && locationsWithinRange.Contains(l.Key)))
                 {
                     var location = battalions.Key;
-                    var defenders = battalions.Value.Where(b => b.Faction != player.Faction);
+                    var defenders = battalions.Value.Where(b => b.Faction != player.Faction && b.Faction != player.Ally);
 
                     foreach (var f in defenders.Select(b => b.Faction))
                     {
-                        result.Add(new Tuple<Territory, Faction>(occupiedLocation.Territory, f));
+                        result.Add(new Fight(occupiedLocation.Territory, f));
+                        
+                        if (returnOnlyOneBattle)
+                        {
+                            break;
+                        }
                     }
                 }
             }
@@ -409,28 +414,9 @@ namespace Treachery.Shared
         }
 
 
-
         public static bool MustFight(Game g, Player player)
         {
-            bool mayBattleUnderStorm = g.Applicable(Rule.BattlesUnderStorm);
-
-            foreach (var occupiedLocation in player.OccupiedLocations.Where(l => (mayBattleUnderStorm || l.Sector != g.SectorInStorm) && l != g.Map.PolarSink))
-            {
-                var locationsWithinRange = Map.FindNeighboursWithinTerritory(occupiedLocation, false, g.SectorInStorm);
-
-                foreach (var battalions in g.OccupyingForcesOnPlanet.Where(l => (mayBattleUnderStorm || l.Key.Sector != g.SectorInStorm) && locationsWithinRange.Contains(l.Key)))
-                {
-                    var location = battalions.Key;
-                    var defenders = battalions.Value.Where(b => b.Faction != player.Faction);
-
-                    if (defenders.Any())
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            return BattlesToBeFought(g, player).Any();
         }
 
         public static bool AffectedByVoice(Game g, Player p, Voice voice)

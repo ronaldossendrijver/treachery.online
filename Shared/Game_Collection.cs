@@ -3,6 +3,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Treachery.Shared
@@ -28,6 +29,28 @@ namespace Treachery.Shared
         {
             CollectResourcesFromTerritories();
             CollectResourcesFromStrongholds();
+            Enter(CollectedResourcesToBeDivided.Any(), Phase.DividingCollectedResources, EndCollectionMainPhase);
+        }
+
+        public void HandleEvent(DivideResources e)
+        {
+            var toBeDivided = DivideResources.GetResourcesToBeDivided(this);
+
+            int gainedByOtherFaction = e.GainedByOtherFaction(this);
+            int gainedByFirstFaction = e.GainedByFirstFaction(this);
+
+            Log(toBeDivided.FirstFaction, " collect ", Payment(gainedByFirstFaction), " from ", toBeDivided.Territory);
+            GetPlayer(toBeDivided.FirstFaction).Resources += gainedByFirstFaction;
+
+            Log(toBeDivided.OtherFaction, " collect ", Payment(gainedByOtherFaction), " from ", toBeDivided.Territory);
+            GetPlayer(toBeDivided.OtherFaction).Resources += gainedByOtherFaction;
+
+            CollectedResourcesToBeDivided.Remove(toBeDivided);
+            Enter(CollectedResourcesToBeDivided.Any(), Phase.DividingCollectedResources, EndCollectionMainPhase);
+        }
+
+        private void EndCollectionMainPhase()
+        {
             MainPhaseEnd();
             Enter(Version >= 103, Phase.CollectionReport, EnterMentatPhase);
         }
@@ -56,23 +79,59 @@ namespace Treachery.Shared
             }
         }
 
+        public List<ResourcesToBeDivided> CollectedResourcesToBeDivided { get; private set; } = new();
         private void CollectResourcesFromTerritories()
         {
             foreach (var l in ResourcesOnPlanet.Where(x => x.Value > 0).ToList())
             {
-                foreach (var p in Players.Where(y => y.Occupies(l.Key)))
+                var playersToCollect = Players.Where(y => y.Occupies(l.Key)).ToArray();
+                int totalCollectedAmount = 0;
+
+                foreach (var p in playersToCollect)
                 {
                     int collectionRate = ResourceCollectionRate(p);
                     int forcesCollectingDefaultAmountOfSpice = p.Faction != Faction.Grey ? p.OccupyingForces(l.Key) : p.ForcesIn(l.Key);
                     int forcesCollecting3Spice = p.Is(Faction.Grey) ? p.SpecialForcesIn(l.Key) : 0;
                     int maximumSpiceThatCanBeCollected = forcesCollectingDefaultAmountOfSpice * collectionRate + forcesCollecting3Spice * 3;
-                    int collectedAmount = Math.Min(l.Value, maximumSpiceThatCanBeCollected);
-                    ChangeResourcesOnPlanet(l.Key, -collectedAmount);
-                    Log(p.Faction, " collect ", Payment(collectedAmount), " from ", l.Key);
-                    p.Resources += collectedAmount;
+                    int collectedAmountByThisPlayer = Math.Min(l.Value, maximumSpiceThatCanBeCollected);
+                    ChangeResourcesOnPlanet(l.Key, -collectedAmountByThisPlayer);
+
+                    if (playersToCollect.Length == 1)
+                    {
+                        Log(p.Faction, " collect ", Payment(collectedAmountByThisPlayer), " from ", l.Key.Territory);
+                        p.Resources += collectedAmountByThisPlayer;
+                    }
+                    else
+                    {
+                        totalCollectedAmount += collectedAmountByThisPlayer;
+                    }
+                }
+
+                if (playersToCollect.Length > 1)
+                {
+                    var toBeDivided = new ResourcesToBeDivided();
+
+                    if (playersToCollect.Any(p => p.Is(Faction.Pink)))
+                    {
+                        toBeDivided.FirstFaction = Faction.Pink;
+                        toBeDivided.OtherFaction = playersToCollect.First(p => !p.Is(Faction.Pink)).Faction;
+                    }
+                    else
+                    {
+                        toBeDivided.FirstFaction = playersToCollect[0].Faction;
+                        toBeDivided.OtherFaction = playersToCollect[1].Faction;
+                    }
+
+                    toBeDivided.Amount = totalCollectedAmount;
+                    toBeDivided.Territory = l.Key.Territory;
+                    CollectedResourcesToBeDivided.Add(toBeDivided);
                 }
             }
         }
+
+        
+
+
 
         public int ResourceCollectionRate(Player p)
         {

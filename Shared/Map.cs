@@ -1592,7 +1592,7 @@ namespace Treachery.Shared
         }
 
         private int NeighbourCacheTimestamp = -1;
-        private readonly Dictionary<NeighbourCacheKey, List<Location>> NeighbourCache = new Dictionary<NeighbourCacheKey, List<Location>>();
+        private readonly Dictionary<NeighbourCacheKey, List<Location>> NeighbourCache = new();
 
         public List<Location> FindNeighbours(Location start, int distance, bool ignoreStorm, Faction f, Game game, bool checkForceObstacles = true)
         {
@@ -1630,11 +1630,13 @@ namespace Treachery.Shared
             return neighbours;
         }
 
+        private static bool BelongsTo(Game game, Battalion b, Faction f) => b.Faction == f || game.GetPlayer(f).Ally == Faction.Pink && b.Faction == Faction.Pink;
+
         private static List<Location> DetermineForceObstacles(Faction f, Game game)
         {
             return game.Forces(false).Where(kvp =>
                 kvp.Key.IsStronghold &&
-                !kvp.Value.Any(b => b.Faction == f) &&
+                !kvp.Value.Any(b => BelongsTo(game, b, f)) &&
                 kvp.Value.Count(b => b.CanOccupy) >= 2)
                 .Select(kvp => kvp.Key)
                 .Distinct()
@@ -1755,7 +1757,7 @@ namespace Treachery.Shared
 
         public static List<Location> FindNeighboursForHmsMovement(Location start, int distance, bool ignoreStorm, int sectorInStorm)
         {
-            List<Location> neighbours = new List<Location>();
+            List<Location> neighbours = new();
             FindNeighboursForHmsMovement(neighbours, start, null, 0, distance, ignoreStorm, sectorInStorm);
             neighbours.Remove(start);
             return neighbours;
@@ -1787,7 +1789,7 @@ namespace Treachery.Shared
 
         public static List<Location> FindNeighboursWithinTerritory(Location start, bool ignoreStorm, int sectorInStorm)
         {
-            List<Location> neighbours = new List<Location>();
+            List<Location> neighbours = new();
             FindNeighboursWithinTerritory(neighbours, start, null, ignoreStorm, sectorInStorm);
             return neighbours;
         }

@@ -317,7 +317,7 @@ namespace Treachery.Shared
 
         public bool MeetsNormalVictoryCondition(Player p, bool contestedStongholdsCountAsOccupied)
         {
-            return NumberOfVictoryPoints(p, contestedStongholdsCountAsOccupied) >= TresholdForWin(p);
+            return MeetsPinkVictoryCondition(p, contestedStongholdsCountAsOccupied) || NumberOfVictoryPoints(p, contestedStongholdsCountAsOccupied) >= TresholdForWin(p);
         }
 
         public int CountChallengedVictoryPoints(Player p)
@@ -336,6 +336,12 @@ namespace Treachery.Shared
                 return (Players.Count <= 2) ? 4 : 3;
             }
         }
+
+        private IEnumerable<Territory> Strongholds => Map.Territories().Where(t => t.IsStronghold || IsSpecialStronghold(t));
+
+        public bool MeetsPinkVictoryCondition(Player p, bool contestedStongholdsCountAsOccupied) => 
+            (p.Is(Faction.Pink) && p.HasAlly || p.Ally == Faction.Pink) && 
+            Strongholds.Count(l => p.Controls(this, l, contestedStongholdsCountAsOccupied) && p.AlliedPlayer.Controls(this, l, contestedStongholdsCountAsOccupied)) >= 3;
 
         public int NumberOfVictoryPoints(Player p, bool contestedStongholdsCountAsOccupied)
         {

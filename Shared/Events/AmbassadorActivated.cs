@@ -214,10 +214,7 @@ namespace Treachery.Shared
             }
         }
 
-        public static IEnumerable<Location> ValidOrangeTargets(Game g, Player p) => Shipment.ValidShipmentLocations(g, p).Where(l => 
-            !p.HasAlly ||
-            p.AlliedPlayer.AnyForcesIn(l.Territory) == 0 ||
-            p.Ally == Faction.Blue && g.Applicable(Rule.AdvisorsDontConflictWithAlly) && p.AlliedPlayer.ForcesIn(l.Territory) == 0 );
+        public static IEnumerable<Location> ValidOrangeTargets(Game g, Player p) => Shipment.ValidShipmentLocations(g, p).Where(l => !g.ContainsConflictingAlly(p, l));
 
         public static int ValidOrangeMaxForces(Player p) => Math.Min(p.ForcesInReserve, 4);
 

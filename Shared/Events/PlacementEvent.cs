@@ -133,7 +133,7 @@ namespace Treachery.Shared
             }
             else
             {
-                return new Location[] { };
+                return Array.Empty<Location>();
             }
         }
 

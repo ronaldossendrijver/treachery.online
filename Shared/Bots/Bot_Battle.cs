@@ -56,13 +56,13 @@ namespace Treachery.Shared
 
         protected virtual BattleInitiated DetermineBattleInitiated()
         {
-            var battle = Battle.BattlesToBeFought(Game, this).OrderBy(b => MaxDial(Game.GetPlayer(b.Item2), b.Item1, this) - MaxDial(this, b.Item1, Game.GetPlayer(b.Item2))).FirstOrDefault();
+            var battle = Battle.BattlesToBeFought(Game, this).OrderBy(b => MaxDial(Game.GetPlayer(b.Faction), b.Territory, this) - MaxDial(this, b.Territory, Game.GetPlayer(b.Faction))).FirstOrDefault();
 
             return new BattleInitiated(Game)
             {
                 Initiator = Faction,
-                Target = battle.Item2,
-                Territory = battle.Item1
+                Target = battle.Faction,
+                Territory = battle.Territory
             };
         }
 
