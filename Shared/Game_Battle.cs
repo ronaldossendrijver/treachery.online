@@ -87,17 +87,18 @@ namespace Treachery.Shared
             else
             {
                 var initiatorIsWithPink = CurrentBattle.Initiator == Faction.Pink || CurrentBattle.Player.Ally == Faction.Pink;
-                if (initiatorIsWithPink)
-                {
-                    Log(CurrentBattle.Initiator, CurrentBattle.Player.Ally, " initiate battle with ", CurrentBattle.Target, " in ", CurrentBattle.Territory);
-                }
-                else
-                {
-                    Log(CurrentBattle.Initiator, " initiate battle with ", CurrentBattle.Target, GetPlayer(CurrentBattle.Target).Ally, " in ", CurrentBattle.Territory);
-                }
+                Log(CurrentBattle.Initiator, 
+                    MessagePart.ExpressIf(initiatorIsWithPink, CurrentBattle.Player.Ally), 
+                    " initiate battle with ", 
+                    CurrentBattle.Target, 
+                    MessagePart.ExpressIf(!initiatorIsWithPink, GetPlayer(CurrentBattle.Target).Ally), 
+                    " in ", 
+                    CurrentBattle.Territory, 
+                    ", where ", 
+                    CurrentPinkOrAllyFighter, 
+                    " will fight for their ally");
             }
 
-            Log(BattleAboutToStart);
             AnnounceHeroAvailability(BattleAboutToStart.AggressivePlayer);
             AnnounceHeroAvailability(BattleAboutToStart.DefendingPlayer);
             AssignBattleWheels(BattleAboutToStart.AggressivePlayer, BattleAboutToStart.DefendingPlayer);

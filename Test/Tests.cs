@@ -40,14 +40,7 @@ namespace Treachery.Test
                         WriteSavegameIfApplicable(g, e.Player, "Ally is on spice");
                     }
                 }
-
-                if (e is BattleInitiated b && e.Player.AlliedPlayer.ForcesIn(g.CurrentBattle.Territory) > 0 && e.Player.ForcesIn(g.CurrentBattle.Territory) > 0)
-                {
-                    WriteSavegameIfApplicable(g, e.Player, $"Battle with Ecaz and ally {e.Player.AlliedPlayer.Name}");
-                }
             }
-
-            
         }
 
         private readonly List<Type> Written = new();

@@ -539,7 +539,7 @@ namespace Treachery.Shared
 
         protected virtual bool IMustPayForForcesInBattle => Battle.MustPayForForcesInBattle(Game, this);
 
-        protected virtual float MaxDial(Player p, Territory t, Player opponent)
+        protected virtual float MaxDial(Player p, Territory t, Player opponent, bool ignoreSpiceDialing = false)
         {
             int countForcesForWhite = 0;
             if (p.Faction == Faction.White && p.SpecialForcesIn(t) > 0)
@@ -548,7 +548,7 @@ namespace Treachery.Shared
             }
 
             return MaxDial(
-                p.Resources,
+                ignoreSpiceDialing ? 99 : p.Resources,
                 p.ForcesIn(t) + countForcesForWhite,
                 p.Faction != Faction.White ? p.SpecialForcesIn(t) : 0,
                 p,

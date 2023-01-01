@@ -104,6 +104,7 @@ namespace Treachery.Shared
                 Do(DetermineLoserConcluded, ref action, evts) ||
                 Do(DetermineDivideResources, ref action, evts) ||
                 Do(DetermineDivideResourcesAccepted, ref action, evts) ||
+                Do(DetermineBattleClaimed, ref action, evts) ||
 
                 //Brown
                 Do(DetermineBrownEconomics, ref action, evts) ||

@@ -2,6 +2,7 @@
  * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
  */
 
+using System;
 using Newtonsoft.Json;
 
 namespace Treachery.Shared
@@ -21,17 +22,23 @@ namespace Treachery.Shared
         public Faction Target { get; set; }
 
         [JsonIgnore]
+        private Faction ActualInitiator => Game.CurrentPinkOrAllyFighter != Faction.None && Initiator == Game.GetAlly(Game.CurrentPinkOrAllyFighter) ? Game.CurrentPinkOrAllyFighter : Initiator;
+
+        [JsonIgnore]
+        private Faction ActualTarget => Game.CurrentPinkOrAllyFighter != Faction.None && Target == Game.GetAlly(Game.CurrentPinkOrAllyFighter) ? Game.CurrentPinkOrAllyFighter : Target;
+
+        [JsonIgnore]
         public Faction Defender
         {
             get
             {
-                if (Initiator == Aggressor)
+                if (ActualInitiator == Aggressor)
                 {
-                    return Target;
+                    return ActualTarget;
                 }
                 else
                 {
-                    return Initiator;
+                    return ActualInitiator;
                 }
             }
         }
@@ -44,20 +51,7 @@ namespace Treachery.Shared
         {
             get
             {
-                var target = Target;
-                var initiator = Initiator;
-
-                if (Game.CurrentPinkOrAllyFighter != Faction.None)
-                {
-                    if (Game.CurrentPinkOrAllyFighter == Game.GetAlly(target))
-                    {
-                        target = Game.CurrentPinkOrAllyFighter;
-                    }
-                    else if (Game.CurrentPinkOrAllyFighter == Game.GetAlly(initiator))
-                    {
-                        initiator = Game.CurrentPinkOrAllyFighter;
-                    }
-                }
+                var target = ActualTarget;
 
                 if (IsAggressorByJuice(Game, target))
                 {
@@ -73,7 +67,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    return initiator;
+                    return ActualInitiator;
                 }
             }
         }
@@ -141,35 +135,17 @@ namespace Treachery.Shared
         {
             if (p.Faction == Initiator || p.Ally == Initiator)
             {
-                return Game.GetPlayer(Target);
+                return Game.GetPlayer(ActualTarget);
             }
             else if (p.Faction == Target || p.Ally == Target)
             {
-                return Game.GetPlayer(Initiator);
+                return Game.GetPlayer(ActualInitiator);
             }
 
             return null;
         }
 
-        public Player OpponentOf(Faction f)
-        {
-            var p = Game.GetPlayer(f);
-
-            if (p == null)
-            {
-                return null;
-            }
-            else if (p.Faction == Initiator || p.Ally == Initiator)
-            {
-                return Game.GetPlayer(Target);
-            }
-            else if (p.Faction == Target || p.Ally == Target)
-            {
-                return Game.GetPlayer(Initiator);
-            }
-
-            return null;
-        }
+        public Player OpponentOf(Faction f) => OpponentOf(Game.GetPlayer(f));
 
         public Battle PlanOf(Player p)
         {

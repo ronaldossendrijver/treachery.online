@@ -10,6 +10,14 @@ namespace Treachery.Shared
 {
     public partial class Player
     {
+        protected virtual BattleClaimed DetermineBattleClaimed()
+        {
+            var territory = Game.BattleAboutToStart.Territory;
+            var opponent = Game.BattleAboutToStart.OpponentOf(this);
+            bool iWillFight = GetDialNeeded(AlliedPlayer, territory, opponent, false) > GetDialNeeded(this, territory, opponent, false);
+            return new BattleClaimed(Game) { Initiator = Faction, Passed = !iWillFight };
+        }
+
         protected virtual SwitchedSkilledLeader DetermineSwitchedSkilledLeader()
         {
             var leaderToSwitch = Leaders.FirstOrDefault(l => INeedToSwitchThisLeader(l));
@@ -177,6 +185,7 @@ namespace Treachery.Shared
             var voice = voicePlan != null && voicePlan.battle == Game.CurrentBattle ? voicePlan : null;
 
             var dialNeeded = GetDialNeededForBattle(
+                this,
                 IWillBeAggressorAgainst(opponent),
                 opponent,
                 Game.CurrentBattle.Territory,
@@ -864,33 +873,39 @@ namespace Treachery.Shared
             return hero != null ? hero.ValueInCombatAgainst(highestOpponentLeader) + Battle.DetermineSkillBonus(Game, this, hero, weapon, defense, Resources > 3 ? 3 : 0, ref usedSkill) : 0;
         }
 
-        protected float GetDialNeeded(Territory territory, Player opponent, bool takeReinforcementsIntoAccount)
+        protected float GetDialNeeded(Player inBattle, Territory territory, Player opponent, bool takeReinforcementsIntoAccount)
         {
             //var opponent = GetOpponentThatOccupies(territory);
-            var voicePlan = Voice.MayUseVoice(Game, this) ? BestVoice(null, this, opponent) : null;
-            var strength = MaxDial(opponent, territory, this);
-            var prescience = Prescience.MayUsePrescience(Game, this) ? BestPrescience(opponent, strength) : null;
+            var voicePlan = Voice.MayUseVoice(Game, inBattle) ? inBattle.BestVoice(null, inBattle, opponent) : null;
+            var strength = inBattle.MaxDial(opponent, territory, inBattle);
+            var prescience = Prescience.MayUsePrescience(Game, inBattle) ? inBattle.BestPrescience(opponent, strength) : null;
 
             //More could be done with the information obtained in the below call
-            return GetDialNeededForBattle(IWillBeAggressorAgainst(opponent), opponent, territory, voicePlan, prescience, takeReinforcementsIntoAccount, true, out _, out _, out _, out _, out _, out _, out _, out _, out _, out _);
+            return GetDialNeededForBattle(inBattle, inBattle.IWillBeAggressorAgainst(opponent), opponent, territory, voicePlan, prescience, takeReinforcementsIntoAccount, true, out _, out _, out _, out _, out _, out _, out _, out _, out _, out _);
+        }
+
+        protected float GetDialNeeded(Territory territory, Player opponent, bool takeReinforcementsIntoAccount)
+        {
+            //More could be done with the information obtained in the below call
+            return GetDialNeeded(this, territory, opponent, takeReinforcementsIntoAccount);
         }
 
         protected float GetDialNeededForBattle(
-            bool iAmAggressor, Player opponent, Territory territory, VoicePlan voicePlan, Prescience prescience, bool takeReinforcementsIntoAccount, bool includeInFrontOfShield,
+            Player inBattle, bool iAmAggressor, Player opponent, Territory territory, VoicePlan voicePlan, Prescience prescience, bool takeReinforcementsIntoAccount, bool includeInFrontOfShield,
             out TreacheryCard bestDefense, out TreacheryCard bestWeapon, out IHero hero, out bool messiah, out bool isTraitor, out bool lasgunShieldDetected, out bool stoneBurnerDetected, out int bankerBoost,
             out float chanceOfMyHeroSurviving, out float chanceOfEnemyHeroSurviving)
         {
 
-            chanceOfEnemyHeroSurviving = 1 - ChanceOfEnemyLeaderDying(opponent, voicePlan, prescience, out bestWeapon, out bool enemyCanDefendPoisonTooth);
+            chanceOfEnemyHeroSurviving = 1 - inBattle.ChanceOfEnemyLeaderDying(opponent, voicePlan, prescience, out bestWeapon, out bool enemyCanDefendPoisonTooth);
 
             LogInfo("Chance of enemy hero surviving: {0} with {1}", chanceOfEnemyHeroSurviving, bestWeapon);
 
-            chanceOfMyHeroSurviving = ChanceOfMyLeaderSurviving(opponent, voicePlan, prescience, out bestDefense, bestWeapon);
+            chanceOfMyHeroSurviving = inBattle.ChanceOfMyLeaderSurviving(opponent, voicePlan, prescience, out bestDefense, bestWeapon);
 
-            UseDestructiveWeaponIfApplicable(enemyCanDefendPoisonTooth, ref chanceOfMyHeroSurviving, ref chanceOfEnemyHeroSurviving, ref bestDefense, ref bestWeapon);
+            inBattle.UseDestructiveWeaponIfApplicable(enemyCanDefendPoisonTooth, ref chanceOfMyHeroSurviving, ref chanceOfEnemyHeroSurviving, ref bestDefense, ref bestWeapon);
 
-            bool iAssumeMyLeaderWillDie = chanceOfMyHeroSurviving < Param.Battle_MimimumChanceToAssumeMyLeaderSurvives;
-            bool iAssumeEnemyLeaderWillDie = chanceOfEnemyHeroSurviving < Param.Battle_MimimumChanceToAssumeEnemyHeroSurvives;
+            bool iAssumeMyLeaderWillDie = chanceOfMyHeroSurviving < inBattle.Param.Battle_MimimumChanceToAssumeMyLeaderSurvives;
+            bool iAssumeEnemyLeaderWillDie = chanceOfEnemyHeroSurviving < inBattle.Param.Battle_MimimumChanceToAssumeEnemyHeroSurvives;
 
             var opponentPlan = Game.CurrentBattle?.PlanOf(opponent);
             lasgunShieldDetected = HasLasgunShield(
@@ -902,7 +917,7 @@ namespace Treachery.Shared
             stoneBurnerDetected = bestWeapon != null && bestWeapon.IsRockmelter || (prescience != null && prescience.Aspect == PrescienceAspect.Weapon && opponentPlan != null && opponentPlan.Weapon != null && opponentPlan.Weapon.IsRockmelter);
 
             int myMessiahBonus = 0;
-            if (Battle.MessiahAvailableForBattle(Game, this) && !lasgunShieldDetected)
+            if (Battle.MessiahAvailableForBattle(Game, inBattle) && !lasgunShieldDetected)
             {
                 messiah = true;
                 myMessiahBonus = 2;
@@ -913,7 +928,7 @@ namespace Treachery.Shared
             }
 
             isTraitor = false;
-            int myHeroValue = SelectHeroForBattle(opponent, !lasgunShieldDetected && !iAssumeMyLeaderWillDie, false, messiah, bestWeapon, bestDefense, out hero, out isTraitor, includeInFrontOfShield);
+            int myHeroValue = inBattle.SelectHeroForBattle(opponent, !lasgunShieldDetected && !iAssumeMyLeaderWillDie, false, messiah, bestWeapon, bestDefense, out hero, out isTraitor, includeInFrontOfShield);
 
             var usedSkill = LeaderSkill.None;
             var opponentPenalty = Battle.DetermineSkillPenalty(Game, hero, opponent, ref usedSkill);
@@ -925,7 +940,7 @@ namespace Treachery.Shared
                 myMessiahBonus = 0;
             }
 
-            if (CanOnlyUseTraitorsOrFacedancers(opponent))
+            if (inBattle.CanOnlyUseTraitorsOrFacedancers(opponent))
             {
                 LogInfo("Opponent leader only has traitors or facedancers to use!");
                 bestWeapon = null;
@@ -951,7 +966,7 @@ namespace Treachery.Shared
             {
                 LogInfo("Lasgun/Shield detected!");
 
-                if (bestWeapon != null && !bestWeapon.IsLaser && MayPlayNoWeapon(bestDefense))
+                if (bestWeapon != null && !bestWeapon.IsLaser && inBattle.MayPlayNoWeapon(bestDefense))
                 {
                     bestWeapon = null;
                 }
@@ -965,10 +980,10 @@ namespace Treachery.Shared
 
             if (Game.SkilledAs(hero, LeaderSkill.Banker) && !iAssumeMyLeaderWillDie)
             {
-                bankerBoost = Math.Min(Resources, 3);
+                bankerBoost = Math.Min(inBattle.Resources, 3);
             }
 
-            if (hero is TreacheryCard && bestDefense != null && !bestDefense.IsUseless && MayPlayNoDefense(bestWeapon))
+            if (hero is TreacheryCard && bestDefense != null && !bestDefense.IsUseless && inBattle.MayPlayNoDefense(bestWeapon))
             {
                 bestDefense = null;
             }
@@ -976,11 +991,11 @@ namespace Treachery.Shared
             LogInfo("Chance of my hero surviving: {0} with {1} (my weapon: {2})", chanceOfMyHeroSurviving, bestDefense, bestWeapon);
 
             var myHeroToFightAgainst = hero;
-            var opponentLeader = (prescience != null && prescience.Aspect == PrescienceAspect.Leader && opponentPlan != null) ? opponentPlan.Hero : HeroesForBattle(opponent, true).OrderByDescending(l => l.ValueInCombatAgainst(myHeroToFightAgainst)).FirstOrDefault(l => !Traitors.Contains(l));
+            var opponentLeader = (prescience != null && prescience.Aspect == PrescienceAspect.Leader && opponentPlan != null) ? opponentPlan.Hero : inBattle.HeroesForBattle(opponent, true).OrderByDescending(l => l.ValueInCombatAgainst(myHeroToFightAgainst)).FirstOrDefault(l => !inBattle.Traitors.Contains(l));
             int opponentLeaderValue = opponentLeader == null ? 0 : opponentLeader.ValueInCombatAgainst(hero);
             int opponentMessiahBonus = Battle.MessiahAvailableForBattle(Game, opponent) ? 2 : 0;
-            int maxReinforcements = takeReinforcementsIntoAccount ? (int)Math.Ceiling(MaxReinforcedDialTo(opponent, territory)) : 0;
-            var opponentDial = (prescience != null && prescience.Aspect == PrescienceAspect.Dial && opponentPlan != null) ? opponentPlan.Dial(Game, Faction) : MaxDial(opponent, territory, this);
+            int maxReinforcements = takeReinforcementsIntoAccount ? (int)Math.Ceiling(inBattle.MaxReinforcedDialTo(opponent, territory)) : 0;
+            var opponentDial = (prescience != null && prescience.Aspect == PrescienceAspect.Dial && opponentPlan != null) ? opponentPlan.Dial(Game, inBattle.Faction) : inBattle.MaxDial(opponent, territory, inBattle);
 
             var result =
                 opponentDial +
@@ -990,7 +1005,7 @@ namespace Treachery.Shared
                 (iAssumeMyLeaderWillDie ? 0 : 1) * (myHeroValue + opponentPenalty + myMessiahBonus);
 
 
-            if (MaxDial(this, territory, opponent) - result >= 5)
+            if (inBattle.MaxDial(inBattle, territory, opponent) - result >= 5)
             {
                 //I think I only need a small fraction of available forces. Am I really sure amout this?
 
@@ -1023,8 +1038,8 @@ namespace Treachery.Shared
                 chanceOfEnemyHeroSurviving,
                 maxReinforcements,
                 myMessiahBonus,
-                Param.Battle_MimimumChanceToAssumeEnemyHeroSurvives,
-                Param.Battle_MimimumChanceToAssumeMyLeaderSurvives,
+                inBattle.Param.Battle_MimimumChanceToAssumeEnemyHeroSurvives,
+                inBattle.Param.Battle_MimimumChanceToAssumeMyLeaderSurvives,
                 bankerBoost,
                 territory,
                 opponent.Faction);
