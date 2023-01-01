@@ -45,6 +45,9 @@ namespace Treachery.Shared
             }
             else
             {
+                var toBeDivided = DivideResources.GetResourcesToBeDivided(this);
+                int gainedByOtherFaction = DivideResources.GainedByOtherFaction(this, true, e.PortionToFirstPlayer);
+                Log(e.Initiator, " propose that they take ", Payment(e.PortionToFirstPlayer), " and ", toBeDivided.OtherFaction, " take ", Payment(gainedByOtherFaction));
                 Enter(Phase.AcceptingResourceDivision);
             }
         }

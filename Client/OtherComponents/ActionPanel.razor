@@ -203,6 +203,11 @@
                     <BattleInitiatedComponent h="@h" />
                 }
                 break;
+            case "BattleClaimed":
+                {
+                    <YesNoActionComponent GameEventType="BattleClaimed" h="@h" Title=@Skin.Current.Format("Do you wish to fight the battle in {0}?", Game.BattleAboutToStart.Territory) Alert="true" />
+                }
+                break;
             case "Voice":
                 {
                     <VoiceComponent h="@h" />

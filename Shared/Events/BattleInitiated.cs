@@ -44,21 +44,36 @@ namespace Treachery.Shared
         {
             get
             {
-                if (IsAggressorByJuice(Game, Target))
+                var target = Target;
+                var initiator = Initiator;
+
+                if (Game.CurrentPinkOrAllyFighter != Faction.None)
                 {
-                    return Target;
+                    if (Game.CurrentPinkOrAllyFighter == Game.GetAlly(target))
+                    {
+                        target = Game.CurrentPinkOrAllyFighter;
+                    }
+                    else if (Game.CurrentPinkOrAllyFighter == Game.GetAlly(initiator))
+                    {
+                        initiator = Game.CurrentPinkOrAllyFighter;
+                    }
                 }
-                else if (IsInitiatorByJuice(Game, Player, Game.GetPlayer(Target)))
+
+                if (IsAggressorByJuice(Game, target))
                 {
-                    return Target;
+                    return target;
                 }
-                else if (IsTargetByJuice(Game, Player, Game.GetPlayer(Target)))
+                else if (IsInitiatorByJuice(Game, Player, Game.GetPlayer(target)))
                 {
-                    return Target;
+                    return target;
+                }
+                else if (IsTargetByJuice(Game, Player, Game.GetPlayer(target)))
+                {
+                    return target;
                 }
                 else
                 {
-                    return Initiator;
+                    return initiator;
                 }
             }
         }
@@ -119,7 +134,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express(Initiator, " initiate battle with ", Target, " in ", Territory);
+            return Message.Express(Initiator, " initiate a battle in ", Territory);
         }
 
         public Player OpponentOf(Player p)

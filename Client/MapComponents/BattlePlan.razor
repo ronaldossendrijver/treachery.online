@@ -81,7 +81,7 @@
             }
 
             var passiveSkill = Game.GetSkill(Plan.Player);
-            if (PassiveSkillIsRelevantForBattlePlan(passiveSkill))
+            if (passiveSkill != heroSkill && PassiveSkillIsRelevantForBattlePlan(passiveSkill))
             {
                 <Image X="@(skillX)" Y="@(skillY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" Src="@Skin.Current.GetImageURL(passiveSkill)"
                        ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0"

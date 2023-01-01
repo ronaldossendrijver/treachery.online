@@ -44,17 +44,63 @@ namespace Treachery.Shared
 
         #region BattleInitiation
 
+        public BattleInitiated BattleAboutToStart { get; private set; }
+
         public void HandleEvent(BattleInitiated b)
         {
+            BattleAboutToStart = b;
+            Enter(PinkAndTheirAllyAreBothInvolvedIn(b), Phase.ClaimingBattle, InitiateBattle);
+        }
+
+        public Faction CurrentPinkOrAllyFighter { get; private set; }
+
+        public void HandleEvent(BattleClaimed e)
+        {
+            CurrentPinkOrAllyFighter = e.Passed ? e.Player.Ally : e.Initiator;
+            Enter(Phase.BattlePhase);
+            InitiateBattle();
+        }
+
+        private bool PinkAndTheirAllyAreBothInvolvedIn(BattleInitiated b)
+        {
+            var pink = GetPlayer(Faction.Pink);
+            if (pink != null && pink.HasAlly)
+            {
+                return b.IsInvolved(Faction.Pink) && pink.Occupies(b.Territory) && pink.AlliedPlayer.Occupies(b.Territory);
+            }
+
+            return false;
+        }
+
+        private void InitiateBattle()
+        {
             CurrentReport = new Report(MainPhase.Battle);
-            CurrentBattle = b;
+            CurrentBattle = BattleAboutToStart;
             ChosenHMSAdvantage = StrongholdAdvantage.None;
             BattleOutcome = null;
             NrOfBattlesFought++;
-            Log(b);
-            AnnounceHeroAvailability(b.AggressivePlayer);
-            AnnounceHeroAvailability(b.DefendingPlayer);
-            AssignBattleWheels(b.AggressivePlayer, b.DefendingPlayer);
+
+            if (CurrentPinkOrAllyFighter == Faction.None)
+            {
+                Log(CurrentBattle.Initiator, " initiate battle with ", CurrentBattle.Target, " in ", CurrentBattle.Territory);
+            }
+            else
+            {
+                var initiatorIsWithPink = CurrentBattle.Initiator == Faction.Pink || CurrentBattle.Player.Ally == Faction.Pink;
+                if (initiatorIsWithPink)
+                {
+                    Log(CurrentBattle.Initiator, CurrentBattle.Player.Ally, " initiate battle with ", CurrentBattle.Target, " in ", CurrentBattle.Territory);
+                }
+                else
+                {
+                    Log(CurrentBattle.Initiator, " initiate battle with ", CurrentBattle.Target, GetPlayer(CurrentBattle.Target).Ally, " in ", CurrentBattle.Territory);
+                }
+            }
+
+            Log(BattleAboutToStart);
+            AnnounceHeroAvailability(BattleAboutToStart.AggressivePlayer);
+            AnnounceHeroAvailability(BattleAboutToStart.DefendingPlayer);
+            AssignBattleWheels(BattleAboutToStart.AggressivePlayer, BattleAboutToStart.DefendingPlayer);
         }
 
         private void AssignBattleWheels(params Player[] players)
@@ -1749,6 +1795,8 @@ namespace Treachery.Shared
             BattleWasConcludedByWinner = false;
             LoserMayTryToAssassinate = false;
             BattleWinnerMayChooseToDiscard = true;
+            BattleAboutToStart = null;
+            CurrentPinkOrAllyFighter = Faction.None;
         }
 
         #endregion

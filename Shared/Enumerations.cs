@@ -220,6 +220,7 @@ namespace Treachery.Shared
 
         BeginningOfBattle = 299900,
         BattlePhase = 300000,
+        ClaimingBattle = 305000,
         CallTraitorOrPass = 310000,
         CaptureDecision = 311000,
         AvoidingAudit = 312000,

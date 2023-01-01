@@ -739,7 +739,7 @@ namespace Treachery.Test
                         statistics.GameWinningFactionsInTurns.Count(fnt);
                     }
                 }
-                else if (latest is BattleInitiated)
+                else if (latest is BattleInitiated && game.CurrentBattle != null || latest is BattleClaimed)
                 {
                     statistics.Battles++;
                     statistics.BattlingFactions.Count(game.CurrentBattle.Aggressor);

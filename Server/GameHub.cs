@@ -170,6 +170,7 @@ namespace Treachery.Server
         public async Task RequestPerformCyanSetup(int hostID, PerformCyanSetup e) { await Request(hostID, e); }
         public async Task RequestDivideResources(int hostID, DivideResources e) { await Request(hostID, e); }
         public async Task RequestDivideResourcesAccepted(int hostID, DivideResourcesAccepted e) { await Request(hostID, e); }
+        public async Task RequestBattleClaimed(int hostID, BattleClaimed e) { await Request(hostID, e); }
 
         private async Task Request<GameEventType>(int hostID, GameEventType e) where GameEventType : GameEvent
         {
