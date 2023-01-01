@@ -208,7 +208,7 @@ namespace Treachery.Shared
 
         protected bool NotOccupiedByOthers(Territory t)
         {
-            return Game.NrOfOccupantsExcludingPlayer(t, this) == 0 && AllyNotIn(t);
+            return Game.NrOfOccupantsExcludingPlayer(t, this) == 0 && AllyDoesntBlock(t);
         }
 
         protected bool NotOccupied(Territory t)
@@ -284,14 +284,14 @@ namespace Treachery.Shared
             return Faction != Faction.Blue || SpecialForcesIn(l.Territory) == 0;
         }
 
-        protected bool AllyNotIn(Territory t)
+        protected bool AllyDoesntBlock(Territory t)
         {
-            return Ally == Faction.None || AlliedPlayer.AnyForcesIn(t) == 0;
+            return Ally == Faction.None || Faction == Faction.Pink || Ally == Faction.Pink || AlliedPlayer.ForcesIn(t) == 0;
         }
 
-        protected bool AllyNotIn(Location l)
+        protected bool AllyDoesntBlock(Location l)
         {
-            return AllyNotIn(l.Territory);
+            return AllyDoesntBlock(l.Territory);
         }
 
         protected virtual bool WithinRange(Location from, Location to, Battalion b)
@@ -349,7 +349,7 @@ namespace Treachery.Shared
                     return ForcesInLocations.Where(locationWithBattalion =>
                     !(locationWithBattalion.Key == Game.Map.PolarSink) &&
                     !InStorm(locationWithBattalion.Key) &&
-                    !AllyNotIn(locationWithBattalion.Key))
+                    !AllyDoesntBlock(locationWithBattalion.Key))
                     .HighestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
                 }
                 else
@@ -358,7 +358,7 @@ namespace Treachery.Shared
                     return ForcesInLocations.Where(locationWithBattalion =>
                     !(locationWithBattalion.Key == Game.Map.PolarSink) &&
                     !InStorm(locationWithBattalion.Key) &&
-                    !AllyNotIn(locationWithBattalion.Key.Territory))
+                    !AllyDoesntBlock(locationWithBattalion.Key.Territory))
                     .LowestOrDefault(locationWithBattalion => locationWithBattalion.Value.TotalAmountOfForces);
                 }
             }
@@ -464,7 +464,7 @@ namespace Treachery.Shared
             return ValidMovementLocations(from, battalion).Where(to =>
                 IsStronghold(to) &&
                 AnyForcesIn(to) > 0 &&
-                AllyNotIn(to.Territory) &&
+                AllyDoesntBlock(to.Territory) &&
                 !StormWillProbablyHit(to)
                 ).FirstOrDefault();
         }
@@ -473,7 +473,7 @@ namespace Treachery.Shared
         {
             return ValidMovementLocations(from, battalion).Where(to =>
                 IsStronghold(to) &&
-                AllyNotIn(to.Territory) &&
+                AllyDoesntBlock(to.Territory) &&
                 WinningOpponentsIWishToAttack(20, includeBots).Any(opponent => opponent.Occupies(to))
                 ).LowestOrDefault(l => TotalMaxDialOfOpponents(l.Territory));
         }
@@ -482,7 +482,7 @@ namespace Treachery.Shared
         {
             return ValidMovementLocations(from, battalion).Where(to =>
                 IsStronghold(to) &&
-                AllyNotIn(to.Territory) &&
+                AllyDoesntBlock(to.Territory) &&
                 AlmostWinningOpponentsIWishToAttack(20, includeBots).Any(opponent => opponent.Occupies(to))
                 ).LowestOrDefault(l => TotalMaxDialOfOpponents(l.Territory));
         }
@@ -506,7 +506,7 @@ namespace Treachery.Shared
             var enemyWeakStrongholds = ValidMovementLocations(from, battalion).Where(to =>
                 IsStronghold(to) &&
                 OccupiedByOpponent(to) &&
-                AllyNotIn(to) &&
+                AllyDoesntBlock(to) &&
                 !StormWillProbablyHit(to))
                 .Select(l => new { Stronghold = l, Opponent = OccupyingOpponentIn(l.Territory) })
                 .Where(s => s.Opponent != null).Select(s => new

@@ -355,9 +355,11 @@ namespace Treachery.Shared
             else
             {
                 int techTokenPoint = p.TechTokens.Count == 3 ? 1 : 0;
-                return techTokenPoint + (Map.Territories().Where(t => t.IsStronghold || IsSpecialStronghold(t)).Count(l => p.Controls(this, l, contestedStongholdsCountAsOccupied)));
+                return techTokenPoint + NumberOfOccupiedStrongholds(p, contestedStongholdsCountAsOccupied);
             }
         }
+
+        public int NumberOfOccupiedStrongholds(Player p, bool contestedStongholdsCountAsOccupied) => Map.Territories().Where(t => t.IsStronghold || IsSpecialStronghold(t)).Count(l => p.Controls(this, l, contestedStongholdsCountAsOccupied));
 
         private void CheckSpecialWinConditions()
         {

@@ -326,7 +326,7 @@ namespace Treachery.Shared
                 LogInfo("Suitable nearby Rock: {0}", result);
             }
 
-            if (result == null && mustMove) result = PlacementEvent.ValidTargets(Game, this, location, battalion).FirstOrDefault(l => AllyNotIn(l.Territory) && l != location);
+            if (result == null && mustMove) result = PlacementEvent.ValidTargets(Game, this, location, battalion).FirstOrDefault(l => AllyDoesntBlock(l.Territory) && l != location);
             LogInfo("Suitable - any location without my ally: {0}", result);
 
             return result;

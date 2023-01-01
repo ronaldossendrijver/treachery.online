@@ -26,10 +26,28 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (g.LastAmbassadorTrigger != null)
+            if (e.Player != null && e.Player.Is(Faction.Pink) && e.Player.HasAlly)
             {
-                WriteSavegameIfApplicable(g, g.GetPlayer(Faction.Pink), AmbassadorActivated.GetFaction(g) + " Ambassador activated");
+                if (e is Shipment s)
+                {
+                    if (g.NumberOfOccupiedStrongholds(s.Player.AlliedPlayer, true) >= 4 && g.NumberOfOccupiedStrongholds(s.Player, true) >= 3)
+                    {
+                        WriteSavegameIfApplicable(g, e.Player, "Promising situation for Ecaz and their ally");
+                    }
+
+                    if (s.Player.ForcesOnPlanet.Any(b => g.ResourcesOnPlanet.ContainsKey(b.Key)))
+                    {
+                        WriteSavegameIfApplicable(g, e.Player, "Ally is on spice");
+                    }
+                }
+
+                if (e is BattleInitiated b && e.Player.AlliedPlayer.ForcesIn(g.CurrentBattle.Territory) > 0 && e.Player.ForcesIn(g.CurrentBattle.Territory) > 0)
+                {
+                    WriteSavegameIfApplicable(g, e.Player, $"Battle with Ecaz and ally {e.Player.AlliedPlayer.Name}");
+                }
             }
+
+            
         }
 
         private readonly List<Type> Written = new();
@@ -213,7 +231,7 @@ namespace Treachery.Test
                 return "Lost Leader";
             }
             
-            if (g.CurrentMainPhase == MainPhase.Contemplate && g.OccupyingForcesOnPlanet.Any(kvp => kvp.Key != g.Map.PolarSink && !g.IsInStorm(kvp.Key.Territory) && kvp.Value.Count > 1)) {
+            if (g.CurrentMainPhase == MainPhase.Contemplate && g.OccupyingForcesOnPlanet.Any(kvp => kvp.Key != g.Map.PolarSink && !g.IsInStorm(kvp.Key.Territory) && kvp.Value.Count(b => b.Faction != Faction.Pink) > 1)) {
 
                 return "Territory occupied by more than one faction";
             }
@@ -354,7 +372,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 100;
+            int nrOfGames = 1000;
             int nrOfTurns = 10;
             int nrOfPlayers = 6;
 

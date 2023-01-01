@@ -1405,7 +1405,7 @@ namespace Treachery.Shared
 
         private void CheckIfForcesShouldBeDestroyedByAllyPresence(Player p)
         {
-            if (p.Ally != Faction.None)
+            if (p.Ally != Faction.None && p.Faction != Faction.Pink && p.Ally != Faction.Pink)
             {
                 //Forces that must be destroyed because moves ended where allies are
                 foreach (var t in ChosenDestinationsWithAllies)
@@ -1445,9 +1445,12 @@ namespace Treachery.Shared
             var ally = GetPlayer(p.Ally);
             if (ally == null) return false;
 
-            if (Applicable(Rule.AdvisorsDontConflictWithAlly))
+            if (p.Faction == Faction.Pink || p.Ally == Faction.Pink)
             {
-
+                return false;
+            }
+            else if (Applicable(Rule.AdvisorsDontConflictWithAlly))
+            {
                 if (p.Is(Faction.Blue) && !p.Occupies(t))
                 {
                     return false;

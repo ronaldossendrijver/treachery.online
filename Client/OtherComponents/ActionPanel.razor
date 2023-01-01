@@ -243,6 +243,11 @@
                     <DivideResourcesComponent h="@h" />
                 }
                 break;
+            case "DivideResourcesAccepted":
+                {
+                    <YesNoActionComponent GameEventType="DivideResourcesAccepted" h="@h" Title=@Skin.Current.Format("Agree with the proposed division of {0}?", Concept.Resource) Alert="true" />
+                }
+                break;
             case "RaiseDeadPlayed":
                 {
                     <RaiseDeadComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.RaiseDead)" />

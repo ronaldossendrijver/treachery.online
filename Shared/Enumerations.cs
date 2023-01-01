@@ -235,6 +235,7 @@ namespace Treachery.Shared
 
         BeginningOfCollection = 339000,
         DividingCollectedResources = 339100,
+        AcceptingResourceDivision = 339150,
         CollectionReport = 340000,
 
         PerformingKarmaHandSwap = 350000,

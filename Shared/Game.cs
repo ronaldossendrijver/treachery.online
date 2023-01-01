@@ -832,9 +832,20 @@ namespace Treachery.Shared
 
         public int NrOfOccupantsExcludingPlayer(Location l, Player p)
         {
+            Faction pinkOrPinkAllyToExclude = Faction.None;
+
+            if (p.Is(Faction.Pink))
+            {
+                pinkOrPinkAllyToExclude = p.Ally;
+            }
+            else if (p.Ally == Faction.Pink)
+            {
+                pinkOrPinkAllyToExclude = p.Faction;
+            }
+
             if (OccupyingForcesOnPlanet.ContainsKey(l))
             {
-                return OccupyingForcesOnPlanet[l].Where(of => of.Faction != p.Faction).Count();
+                return OccupyingForcesOnPlanet[l].Where(of => of.Faction != p.Faction && of.Faction != pinkOrPinkAllyToExclude).Count();
             }
             else
             {
@@ -940,7 +951,7 @@ namespace Treachery.Shared
                     ResourcesOnPlanet[location] = ResourcesOnPlanet[location] + amount;
                 }
             }
-            else
+            else if (amount != 0)
             {
                 ResourcesOnPlanet.Add(location, amount);
             }

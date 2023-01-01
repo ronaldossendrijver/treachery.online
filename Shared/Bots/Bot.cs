@@ -102,6 +102,8 @@ namespace Treachery.Shared
                 Do(DetermineAllianceByTerror, ref action, evts) ||
                 Do(DetermineAllianceByAmbassador, ref action, evts) ||
                 Do(DetermineLoserConcluded, ref action, evts) ||
+                Do(DetermineDivideResources, ref action, evts) ||
+                Do(DetermineDivideResourcesAccepted, ref action, evts) ||
 
                 //Brown
                 Do(DetermineBrownEconomics, ref action, evts) ||

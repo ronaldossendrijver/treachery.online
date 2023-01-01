@@ -32,12 +32,35 @@ namespace Treachery.Shared
             Enter(CollectedResourcesToBeDivided.Any(), Phase.DividingCollectedResources, EndCollectionMainPhase);
         }
 
+        public DivideResources CurrentDivideResources { get; private set; }
+
         public void HandleEvent(DivideResources e)
+        {
+            CurrentDivideResources = e;
+
+            if (e.Passed)
+            {
+                DivideResourcesFromCollection(false);
+                Enter(CollectedResourcesToBeDivided.Any(), Phase.DividingCollectedResources, EndCollectionMainPhase);
+            }
+            else
+            {
+                Enter(Phase.AcceptingResourceDivision);
+            }
+        }
+
+        public void HandleEvent(DivideResourcesAccepted e)
+        {
+            DivideResourcesFromCollection(!e.Passed);
+            Enter(CollectedResourcesToBeDivided.Any(), Phase.DividingCollectedResources, EndCollectionMainPhase);
+        }
+
+        private void DivideResourcesFromCollection(bool divisionWasAgreed)
         {
             var toBeDivided = DivideResources.GetResourcesToBeDivided(this);
 
-            int gainedByOtherFaction = e.GainedByOtherFaction(this);
-            int gainedByFirstFaction = e.GainedByFirstFaction(this);
+            int gainedByFirstFaction = DivideResources.GainedByFirstFaction(this, !divisionWasAgreed, CurrentDivideResources.PortionToFirstPlayer);
+            int gainedByOtherFaction = DivideResources.GainedByOtherFaction(this, !divisionWasAgreed, CurrentDivideResources.PortionToFirstPlayer);
 
             Log(toBeDivided.FirstFaction, " collect ", Payment(gainedByFirstFaction), " from ", toBeDivided.Territory);
             GetPlayer(toBeDivided.FirstFaction).Resources += gainedByFirstFaction;
@@ -46,7 +69,8 @@ namespace Treachery.Shared
             GetPlayer(toBeDivided.OtherFaction).Resources += gainedByOtherFaction;
 
             CollectedResourcesToBeDivided.Remove(toBeDivided);
-            Enter(CollectedResourcesToBeDivided.Any(), Phase.DividingCollectedResources, EndCollectionMainPhase);
+
+            CurrentDivideResources = null;
         }
 
         private void EndCollectionMainPhase()
@@ -86,6 +110,7 @@ namespace Treachery.Shared
             {
                 var playersToCollect = Players.Where(y => y.Occupies(l.Key)).ToArray();
                 int totalCollectedAmount = 0;
+                var spiceLeft = l.Value;
 
                 foreach (var p in playersToCollect)
                 {
@@ -93,8 +118,9 @@ namespace Treachery.Shared
                     int forcesCollectingDefaultAmountOfSpice = p.Faction != Faction.Grey ? p.OccupyingForces(l.Key) : p.ForcesIn(l.Key);
                     int forcesCollecting3Spice = p.Is(Faction.Grey) ? p.SpecialForcesIn(l.Key) : 0;
                     int maximumSpiceThatCanBeCollected = forcesCollectingDefaultAmountOfSpice * collectionRate + forcesCollecting3Spice * 3;
-                    int collectedAmountByThisPlayer = Math.Min(l.Value, maximumSpiceThatCanBeCollected);
+                    int collectedAmountByThisPlayer = Math.Min(spiceLeft, maximumSpiceThatCanBeCollected);
                     ChangeResourcesOnPlanet(l.Key, -collectedAmountByThisPlayer);
+                    spiceLeft -= collectedAmountByThisPlayer;
 
                     if (playersToCollect.Length == 1)
                     {
@@ -105,6 +131,8 @@ namespace Treachery.Shared
                     {
                         totalCollectedAmount += collectedAmountByThisPlayer;
                     }
+
+                    if (spiceLeft <= 0) break;
                 }
 
                 if (playersToCollect.Length > 1)
@@ -125,6 +153,7 @@ namespace Treachery.Shared
                     toBeDivided.Amount = totalCollectedAmount;
                     toBeDivided.Territory = l.Key.Territory;
                     CollectedResourcesToBeDivided.Add(toBeDivided);
+                    Log(toBeDivided.FirstFaction, " and ", toBeDivided.OtherFaction, " will have to share ", Payment(totalCollectedAmount), " from ", l.Key.Territory);
                 }
             }
         }

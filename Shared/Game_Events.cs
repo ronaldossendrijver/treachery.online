@@ -439,6 +439,14 @@ namespace Treachery.Shared
                     if (Version < 103 && player.Has(TreacheryCardType.Amal) && NextPlayerToBattle == null) result.Add(typeof(AmalPlayed));
                     break;
 
+                case Phase.DividingCollectedResources:
+                    if (DivideResources.IsApplicable(this, player)) result.Add(typeof(DivideResources));
+                    break;
+
+                case Phase.AcceptingResourceDivision:
+                    if (DivideResourcesAccepted.IsApplicable(this, player)) result.Add(typeof(DivideResourcesAccepted));
+                    break;
+
                 case Phase.ReplacingFaceDancer:
                     if (faction == Faction.Purple) result.Add(typeof(FaceDancerReplaced));
                     break;

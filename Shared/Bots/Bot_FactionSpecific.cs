@@ -1111,7 +1111,7 @@ namespace Treachery.Shared
 
                     var possibleAttacks = potentialTargets
                         .Where(l => !dangerousOpponents.Any() || dangerousOpponents.Any(p => p.Occupies(l)))
-                        .Where(l => l.Territory.IsStronghold && AnyForcesIn(l) == 0 && AllyNotIn(l.Territory) && !StormWillProbablyHit(l) && !InStorm(l) && IDontHaveAdvisorsIn(l))
+                        .Where(l => l.Territory.IsStronghold && AnyForcesIn(l) == 0 && AllyDoesntBlock(l.Territory) && !StormWillProbablyHit(l) && !InStorm(l) && IDontHaveAdvisorsIn(l))
                         .Select(l => ConstructAttack(l, 0, 0, 4))
                         .Where(s => s.ForcesToShip <= 4 && s.HasOpponent && !WinWasPredictedByMeThisTurn(s.Opponent.Faction));
 

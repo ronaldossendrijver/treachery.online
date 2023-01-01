@@ -10,6 +10,19 @@ namespace Treachery.Shared
 {
     public partial class Player
     {
+        private DivideResources DetermineDivideResources()
+        {
+            var spiceIWant = Math.Max(0, DivideResources.GetResourcesToBeDivided(Game).Amount - Resources);
+            return new DivideResources(Game) { Initiator = Faction, PortionToFirstPlayer = spiceIWant };
+        }
+
+        private DivideResourcesAccepted DetermineDivideResourcesAccepted()
+        {
+            var spiceIWant = Math.Max(0, DivideResources.GetResourcesToBeDivided(Game).Amount - Resources);
+            var iWouldGet = DivideResources.GainedByOtherFaction(Game, true, Game.CurrentDivideResources.PortionToFirstPlayer);
+            return new DivideResourcesAccepted(Game) { Initiator = Faction, Passed = (spiceIWant > iWouldGet + 1) };
+        }
+
         private Discarded DetermineDiscarded()
         {
             var worstCard = TreacheryCards.OrderBy(c => CardQuality(c)).First();

@@ -35,11 +35,8 @@ namespace Treachery.Shared
 
         public static bool IsApplicable(Game g, Player p) => g.CurrentPhase == Phase.DividingCollectedResources && GetResourcesToBeDivided(g).FirstFaction == p.Faction;
 
-        public static int GainedByOtherFaction(Game g, bool passed, int portionToFirstPlayer) => GetResourcesToBeDivided(g).Amount - GainedByFirstFaction(g, passed, portionToFirstPlayer);
-        public static int GainedByFirstFaction(Game g, bool passed, int portionToFirstPlayer) => passed ? (int)(0.5f * GetResourcesToBeDivided(g).Amount) : portionToFirstPlayer;
-
-        public int GainedByOtherFaction(Game g) => GetResourcesToBeDivided(g).Amount - GainedByFirstFaction(g);
-        public int GainedByFirstFaction(Game g) => Passed ? (int)(0.5f * GetResourcesToBeDivided(g).Amount) : PortionToFirstPlayer;
+        public static int GainedByOtherFaction(Game g, bool disagree, int portionToFirstPlayer) => GetResourcesToBeDivided(g).Amount - GainedByFirstFaction(g, disagree, portionToFirstPlayer);
+        public static int GainedByFirstFaction(Game g, bool disagree, int portionToFirstPlayer) => disagree ? (int)(0.5f * GetResourcesToBeDivided(g).Amount) : portionToFirstPlayer;
 
         protected override void ExecuteConcreteEvent()
         {
