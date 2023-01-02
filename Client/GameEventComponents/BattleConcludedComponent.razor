@@ -14,11 +14,13 @@
 
         @if (Faction == Game.BattleWinner)
         {
-            var maxReplacementForces = BattleConcluded.ValidMaxReplacementForceAmount(Game, Player);
+            var forceSupplier = Battle.DetermineForceSupplier(Game, Player);
+
+            var maxReplacementForces = BattleConcluded.ValidMaxReplacementForceAmount(Game, forceSupplier);
             if (maxReplacementForces > 0)
             {
-                <label for="replacementAmount">How many @Skin.Current.SpecialForceName_STR[Faction.Grey] losses should be exchanged with surviving @Skin.Current.ForceName_STR[Faction.Grey]?</label>
-                <SelectForcesComponent @bind-Value="replacementAmount" Min="0" Max="maxReplacementForces" Faction="Faction" Special="true" />
+                <label>How many <Image Shown=@forceSupplier.SpecialForce Width=20 ShowPopover=false /> losses should be exchanged with <Image Shown=@forceSupplier.Force Width=20 ShowPopover=false />?</label>
+                <SelectForcesComponent @bind-Value="replacementAmount" Min="0" Max="maxReplacementForces" Faction=@forceSupplier.Faction Special="true" />
             }
             else
             {

@@ -934,6 +934,9 @@ namespace Treachery.Shared
                     case TerrorType.Atomics:
 
                         KillAllForcesIn(territory);
+
+                        KillAmbassadorIn(territory);
+
                         AtomicsAftermath = territory;
 
                         if (initiator.TreacheryCards.Count > initiator.MaximumNumberOfCards)
@@ -1005,6 +1008,18 @@ namespace Treachery.Shared
                 PhaseBeforeDiscarding = CurrentPhase;
                 FactionThatMustDiscard = e.Initiator;
                 Enter(Phase.Discarding);
+            }
+        }
+
+        private void KillAmbassadorIn(Territory territory)
+        {
+            var ambassador = AmbassadorIn(territory);
+            if (ambassador != Faction.None)
+            {
+                var pink = GetPlayer(Faction.Pink);
+                AmbassadorsOnPlanet.Remove(territory);
+                pink.Ambassadors.Add(ambassador);
+                Log("The ambassador in ", territory, " returns to ", Faction.Pink);
             }
         }
 

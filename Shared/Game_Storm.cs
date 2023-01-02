@@ -327,6 +327,19 @@ namespace Treachery.Shared
                 }
             }
 
+
+            foreach (var t in Strongholds.Where(s => s.Locations.Any(l => l.Sector == SectorInStorm && !IsProtectedFromStorm(l))))
+            {
+                var ambassador = AmbassadorIn(t);
+                if (ambassador != Faction.None)
+                {
+                    var pink = GetPlayer(Faction.Pink);
+                    bool succ = AmbassadorsOnPlanet.Remove(t);
+                    pink.Ambassadors.Add(ambassador);
+                    Log("The ambassador in ", t, " returns to ", Faction.Pink);
+                }
+            }
+
             foreach (var l in Map.Locations().Where(l => l.Sector == SectorInStorm))
             {
                 int removed = RemoveResources(l);

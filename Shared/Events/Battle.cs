@@ -210,12 +210,19 @@ namespace Treachery.Shared
 
         public float Dial(Game g, Faction opponent)
         {
-            return ForceValue(g, Initiator, opponent, Forces, SpecialForces, ForcesAtHalfStrength, SpecialForcesAtHalfStrength);
+            if (Initiator != Faction.Pink || Game.CurrentPinkOrAllyFighter == Faction.None)
+            {
+                return ForceValue(g, Initiator, opponent, Forces, SpecialForces, ForcesAtHalfStrength, SpecialForcesAtHalfStrength) + g.CurrentPinkBattleContribution;
+            }
+            else
+            {
+                return ForceValue(g, Player.Ally, opponent, Forces, SpecialForces, ForcesAtHalfStrength, SpecialForcesAtHalfStrength) + g.CurrentPinkBattleContribution;
+            }
         }
 
-        public static float MaxDial(Game g, Faction initiator, Battalion battalion, Faction opponent)
+        public static Player DetermineForceSupplier(Game g, Player p)
         {
-            return ForceValue(g, initiator, opponent, battalion.AmountOfForces, battalion.AmountOfSpecialForces, 0, 0);
+            return p.Faction != Faction.Pink || g.CurrentPinkOrAllyFighter == Faction.None ? p : p.AlliedPlayer;
         }
 
         public static float ForceValue(Game g, Faction player, Faction opponent, int Forces, int SpecialForces, int ForcesAtHalfStrength, int SpecialForcesAtHalfStrength)

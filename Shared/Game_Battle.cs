@@ -53,12 +53,27 @@ namespace Treachery.Shared
         }
 
         public Faction CurrentPinkOrAllyFighter { get; private set; }
+        public int CurrentPinkBattleContribution { get; private set; }
 
         public void HandleEvent(BattleClaimed e)
         {
             CurrentPinkOrAllyFighter = e.Passed ? e.Player.Ally : e.Initiator;
             Enter(Phase.BattlePhase);
             InitiateBattle();
+            DeterminePinkContribution(GetPlayer(CurrentPinkOrAllyFighter));
+        }
+
+        private void DeterminePinkContribution(Player fighter)
+        {
+            if (CurrentBattle != null && (fighter.Is(Faction.Pink) || fighter.Ally == Faction.Pink))
+            {
+                var pink = GetPlayer(Faction.Pink);
+                CurrentPinkBattleContribution = (int)(0.5f * pink.AnyForcesIn(CurrentBattle.Territory));
+            }
+            else
+            {
+                CurrentPinkBattleContribution = 0;
+            }
         }
 
         private bool PinkAndTheirAllyAreBothInvolvedIn(BattleInitiated b)
@@ -347,6 +362,7 @@ namespace Treachery.Shared
             ResolveEffectOfOwnedTueksSietch(DefenderBattleAction);
 
             DiscardOneTimeCardsUsedInBattle(AggressorTraitorAction, DefenderTraitorAction);
+
             ResolveBattle(CurrentBattle, AggressorBattleAction, DefenderBattleAction, AggressorTraitorAction, DefenderTraitorAction);
 
             if (AggressorBattleAction.Initiator == BattleWinner) ActivateDeciphererIfApplicable(AggressorBattleAction);
@@ -866,6 +882,13 @@ namespace Treachery.Shared
         {
             bool hadMessiahBeforeLosses = loser.MessiahAvailable;
 
+            var forceSupplierOfLoser = Battle.DetermineForceSupplier(this, loser);
+            if (forceSupplierOfLoser != loser)
+            {
+                Log(forceSupplierOfLoser.Faction, " lose all ", forceSupplierOfLoser.SpecialForcesIn(territory) + forceSupplierOfLoser.ForcesIn(territory), " forces in ", territory);
+                forceSupplierOfLoser.KillAllForces(territory, true);
+            }
+
             Log(loser.Faction, " lose all ", loser.AnyForcesIn(territory), " forces in ", territory);
             loser.KillAllForces(territory, true);
             LoseCards(loserGambit, loser.Ally == Faction.Cyan);
@@ -959,11 +982,22 @@ namespace Treachery.Shared
         private void ProcessWinnerLosses(Territory territory, Player winner, Battle plan, bool traitorWasRevealed)
         {
             PayDialedSpice(winner, plan, traitorWasRevealed);
-            ProcessForceLosses(territory, winner, plan);
+            ProcessWinnerForceLosses(territory, winner, plan);
         }
 
-        private void ProcessForceLosses(Territory territory, Player player, Battle plan)
+        private void ProcessWinnerForceLosses(Territory territory, Player player, Battle plan)
         {
+            var forceSupplier = Battle.DetermineForceSupplier(this, player);
+            if (CurrentPinkBattleContribution > 0)
+            {
+                var pink = GetPlayer(Faction.Pink);
+                if (pink != null)
+                {
+                    pink.KillForces(territory, CurrentPinkBattleContribution, false, true);
+                    Log(forceSupplier.Faction, " lose ", CurrentPinkBattleContribution, pink.Force, " in ", territory);
+                }
+            }
+
             int specialForcesToLose = plan.SpecialForces + plan.SpecialForcesAtHalfStrength;
             int forcesToLose = plan.Forces + plan.ForcesAtHalfStrength;
 
@@ -972,7 +1006,7 @@ namespace Treachery.Shared
             int specialForcesToSaveInTerritory = 0;
             int forcesToSaveInTerritory = 0;
 
-            if (!MaySubstituteForceLosses(player))
+            if (!MaySubstituteForceLosses(forceSupplier))
             {
                 if (SkilledAs(plan.Hero, LeaderSkill.Graduate))
                 {
@@ -991,26 +1025,26 @@ namespace Treachery.Shared
 
             if (specialForcesToSaveInTerritory + forcesToSaveInTerritory + specialForcesToSaveToReserves + forcesToSaveToReserves > 0)
             {
-                if (specialForcesToSaveToReserves > 0) player.ForcesToReserves(territory, specialForcesToSaveToReserves, true);
+                if (specialForcesToSaveToReserves > 0) forceSupplier.ForcesToReserves(territory, specialForcesToSaveToReserves, true);
 
-                if (forcesToSaveToReserves > 0) player.ForcesToReserves(territory, forcesToSaveToReserves, false);
+                if (forcesToSaveToReserves > 0) forceSupplier.ForcesToReserves(territory, forcesToSaveToReserves, false);
 
                 Log(
                     LeaderSkill.Graduate,
                     " rescues ",
-                    MessagePart.ExpressIf(forcesToSaveInTerritory > 0, forcesToSaveInTerritory, player.Force),
-                    MessagePart.ExpressIf(specialForcesToSaveInTerritory > 0, specialForcesToSaveInTerritory, player.SpecialForce),
+                    MessagePart.ExpressIf(forcesToSaveInTerritory > 0, forcesToSaveInTerritory, forceSupplier.Force),
+                    MessagePart.ExpressIf(specialForcesToSaveInTerritory > 0, specialForcesToSaveInTerritory, forceSupplier.SpecialForce),
                     MessagePart.ExpressIf(forcesToSaveInTerritory > 0 || specialForcesToSaveInTerritory > 0, " on site and "),
-                    MessagePart.ExpressIf(forcesToSaveToReserves > 0, forcesToSaveToReserves, player.Force),
-                    MessagePart.ExpressIf(specialForcesToSaveToReserves > 0, specialForcesToSaveToReserves, player.SpecialForce),
+                    MessagePart.ExpressIf(forcesToSaveToReserves > 0, forcesToSaveToReserves, forceSupplier.Force),
+                    MessagePart.ExpressIf(specialForcesToSaveToReserves > 0, specialForcesToSaveToReserves, forceSupplier.SpecialForce),
                     MessagePart.ExpressIf(forcesToSaveToReserves > 0 || specialForcesToSaveToReserves > 0, " to reserves"));
             }
 
-            if (!MaySubstituteForceLosses(player) || specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory == 0 || player.ForcesIn(territory) <= plan.Forces + plan.ForcesAtHalfStrength)
+            if (!MaySubstituteForceLosses(forceSupplier) || specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory == 0 || forceSupplier.ForcesIn(territory) <= plan.Forces + plan.ForcesAtHalfStrength)
             {
                 int winnerForcesLost = forcesToLose - forcesToSaveToReserves - forcesToSaveInTerritory;
                 int winnerSpecialForcesLost = specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory;
-                HandleLoserLosses(territory, player, winnerForcesLost, winnerSpecialForcesLost);
+                HandleForceLosses(territory, forceSupplier, winnerForcesLost, winnerSpecialForcesLost);
             }
             else
             {
@@ -1020,15 +1054,16 @@ namespace Treachery.Shared
 
         private bool MaySubstituteForceLosses(Player p) => p.Faction == Faction.Grey && (Version < 113 || !Prevented(FactionAdvantage.GreyReplacingSpecialForces));
 
-        private void HandleLoserLosses(Territory territory, Player loser, int forcesLost, int specialForcesLost)
+        private void HandleForceLosses(Territory territory, Player player, int forcesLost, int specialForcesLost)
         {
-            bool hadMessiahBeforeLosses = loser.MessiahAvailable;
+            bool hadMessiahBeforeLosses = player.MessiahAvailable;
 
-            loser.KillForces(territory, forcesLost, false, true);
-            loser.KillForces(territory, specialForcesLost, true, true);
-            LogLosses(loser, forcesLost, specialForcesLost);
+            player.KillForces(territory, forcesLost, false, true);
+            player.KillForces(territory, specialForcesLost, true, true);
 
-            if (loser.MessiahAvailable && !hadMessiahBeforeLosses)
+            LogLosses(player, forcesLost, specialForcesLost);
+
+            if (player.MessiahAvailable && !hadMessiahBeforeLosses)
             {
                 RecentMilestones.Add(Milestone.Messiah);
             }
@@ -1107,6 +1142,13 @@ namespace Treachery.Shared
             BattleWinner = winner.Faction;
             BattleLoser = loser.Faction;
 
+            var forceSupplierOfLoser = Battle.DetermineForceSupplier(this, loser);
+            if (forceSupplierOfLoser != loser)
+            {
+                Log(forceSupplierOfLoser.Faction, " lose all ", forceSupplierOfLoser.SpecialForcesIn(territory) + forceSupplierOfLoser.ForcesIn(territory), " forces in ", territory);
+                forceSupplierOfLoser.KillAllForces(territory, true);
+            }
+
             Log(loser.Faction, " lose all ", loser.SpecialForcesIn(territory) + loser.ForcesIn(territory), " forces in ", territory);
             loser.KillAllForces(territory, true);
             LoseCards(loserGambit, loser.Ally == Faction.Cyan);
@@ -1125,8 +1167,24 @@ namespace Treachery.Shared
             Log("Treachery kills both ", defLeader, " and ", aggLeader);
             KillHero(defLeader);
             KillHero(aggLeader);
+
+            var forceSupplierOfDefender = Battle.DetermineForceSupplier(this, defender);
+            if (forceSupplierOfDefender != defender)
+            {
+                Log(forceSupplierOfDefender.Faction, " lose all ", forceSupplierOfDefender.SpecialForcesIn(territory) + forceSupplierOfDefender.ForcesIn(territory), " forces in ", territory);
+                forceSupplierOfDefender.KillAllForces(territory, true);
+            }
+
             Log(defender.Faction, " lose all ", defender.SpecialForcesIn(territory) + defender.ForcesIn(territory), " forces in ", territory);
             defender.KillAllForces(territory, true);
+
+            var forceSupplierOfAggressor = Battle.DetermineForceSupplier(this, aggressor);
+            if (forceSupplierOfAggressor != aggressor)
+            {
+                Log(forceSupplierOfAggressor.Faction, " lose all ", forceSupplierOfAggressor.SpecialForcesIn(territory) + forceSupplierOfAggressor.ForcesIn(territory), " forces in ", territory);
+                forceSupplierOfAggressor.KillAllForces(territory, true);
+            }
+
             Log(aggressor.Faction, " lose all ", aggressor.SpecialForcesIn(territory) + aggressor.ForcesIn(territory), " forces in ", territory);
             aggressor.KillAllForces(territory, true);
 
@@ -1180,6 +1238,7 @@ namespace Treachery.Shared
             }
 
             KillAllForcesIn(territory);
+            KillAmbassadorIn(territory);
 
             if ((aggressor.MessiahAvailable || defender.MessiahAvailable) && !hadMessiahBeforeLosses)
             {
@@ -1232,7 +1291,9 @@ namespace Treachery.Shared
 
             DecideFateOfCapturedLeader(e);
             TakeTechToken(e, winner);
-            ProcessGreyForceLossesAndSubstitutions(e, winner);
+
+            var forceSupplierOfWinner = Battle.DetermineForceSupplier(this, winner);
+            ProcessGreyForceLossesAndSubstitutions(e, forceSupplierOfWinner);
 
             if (!LoserConcluded.IsApplicable(this, GetPlayer(BattleLoser)))
             {
@@ -1511,7 +1572,7 @@ namespace Treachery.Shared
                         MessagePart.ExpressIf(forcesToSaveToReserves > 0 || specialForcesToSaveToReserves > 0, " to reserves"));
                 }
 
-                HandleLoserLosses(territory, winner,
+                HandleForceLosses(territory, winner,
                     forcesToLose - forcesToSaveToReserves - forcesToSaveInTerritory,
                     specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory);
             }
@@ -1798,6 +1859,7 @@ namespace Treachery.Shared
             BattleWinnerMayChooseToDiscard = true;
             BattleAboutToStart = null;
             CurrentPinkOrAllyFighter = Faction.None;
+            CurrentPinkBattleContribution = 0;
         }
 
         #endregion
