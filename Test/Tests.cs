@@ -34,12 +34,17 @@ namespace Treachery.Test
                     {
                         WriteSavegameIfApplicable(g, e.Player, "Promising situation for Ecaz and their ally");
                     }
-
-                    if (s.Player.ForcesOnPlanet.Any(b => g.ResourcesOnPlanet.ContainsKey(b.Key)))
-                    {
-                        WriteSavegameIfApplicable(g, e.Player, "Ally is on spice");
-                    }
                 }
+            }
+
+            if (e is FaceDanced f && !f.Passed && g.CurrentPinkOrAllyFighter != Faction.None && (g.CurrentPinkOrAllyFighter == Faction.Grey || g.GetPlayer(g.CurrentPinkOrAllyFighter).Ally == Faction.Grey))
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Facedancer in a battle with Ecaz and their Ixian ally");
+            }
+
+            if (e is BattleConcluded bc && (g.CurrentBattle.PlanOf(g.CurrentBattle.Aggressor).Weapon?.Type == TreacheryCardType.Rockmelter || g.CurrentBattle.PlanOf(g.CurrentBattle.Defender).Weapon?.Type == TreacheryCardType.Rockmelter) && g.CurrentPinkOrAllyFighter != Faction.None)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Stoneburner in a battle with Ecaz and ally");
             }
         }
 
@@ -365,7 +370,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 200;
+            int nrOfGames = 1000;
             int nrOfTurns = 10;
             int nrOfPlayers = 6;
 

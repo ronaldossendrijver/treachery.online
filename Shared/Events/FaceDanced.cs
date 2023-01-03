@@ -70,7 +70,12 @@ namespace Treachery.Shared
             if (ally == null || g.BattleWinner == p.Ally || ally.AnyForcesIn(g.CurrentBattle.Territory) == 0)
             {
                 var winner = g.GetPlayer(g.BattleWinner);
-                return winner.AnyForcesIn(g.CurrentBattle.Territory);
+                var coocupyingPlayer = (g.BattleWinner == g.CurrentPinkOrAllyFighter) ? winner.AlliedPlayer : null;
+
+                int nrOfForces = winner.AnyForcesIn(g.CurrentBattle.Territory);
+                if (coocupyingPlayer != null) nrOfForces += coocupyingPlayer.AnyForcesIn(g.CurrentBattle.Territory);
+
+                return nrOfForces;
             }
             else
             {

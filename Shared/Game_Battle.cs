@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Treachery.Shared
 {
@@ -812,7 +813,10 @@ namespace Treachery.Shared
             else
             {
                 aggForceDial = result.Aggressor.AnyForcesIn(CurrentBattle.Territory) - agg.TotalForces;
+                if (result.Aggressor.Faction == CurrentPinkOrAllyFighter) aggForceDial += (int)Math.Ceiling(0.5f * GetPlayer(Faction.Pink).AnyForcesIn(CurrentBattle.Territory));
+
                 defForceDial = result.Defender.AnyForcesIn(CurrentBattle.Territory) - def.TotalForces;
+                if (result.Defender.Faction == CurrentPinkOrAllyFighter) defForceDial += (int)Math.Ceiling(0.5f * GetPlayer(Faction.Pink).AnyForcesIn(CurrentBattle.Territory));
             }
 
             result.AggTotal = aggForceDial + aggHeroContribution;
@@ -1643,9 +1647,13 @@ namespace Treachery.Shared
             var winner = GetPlayer(BattleWinner);
             int nrOfRemovedForces = winner.AnyForcesIn(CurrentBattle.Territory);
 
+            var coocupyingPlayer = (BattleWinner == CurrentPinkOrAllyFighter) ? winner.AlliedPlayer : null;
+            if (coocupyingPlayer != null) nrOfRemovedForces += coocupyingPlayer.AnyForcesIn(CurrentBattle.Territory);
+
             if (nrOfRemovedForces > 0)
             {
                 winner.ForcesToReserves(CurrentBattle.Territory);
+                if (coocupyingPlayer != null) coocupyingPlayer.ForcesToReserves(CurrentBattle.Territory);
 
                 initiator.RemoveForcesFromReserves(f.ForcesFromReserve);
                 foreach (var fl in f.ForceLocations)
@@ -1662,7 +1670,12 @@ namespace Treachery.Shared
                     initiator.AddSpecialForces(location, fl.Value.AmountOfSpecialForces, false);
                 }
 
-                Log(nrOfRemovedForces, " ", winner.Faction, " forces go back to reserves and are replaced by ", f.TargetForceLocations.Sum(b => b.Value.TotalAmountOfForces), f.Player.Force, " (", f.ForcesFromReserve, " from reserves", DetermineSourceLocations(f), ")");
+                Log(nrOfRemovedForces, " ", winner.Faction, 
+                    MessagePart.ExpressIf(coocupyingPlayer != null, coocupyingPlayer?.Faction), 
+                    " forces go back to reserves and are replaced by ", 
+                    f.TargetForceLocations.Sum(b => b.Value.TotalAmountOfForces), 
+                    f.Player.Force, 
+                    " (", f.ForcesFromReserve, " from reserves", DetermineSourceLocations(f), ")");
             }
         }
 
