@@ -377,7 +377,7 @@ namespace Treachery.Shared
 
             if (Version < 116) CaptureLeaderIfApplicable();
 
-            FlipBeneGesseritWhenAlone();
+            FlipBeneGesseritWhenAloneOrWithPinkAlly();
 
             if (BattleTriggeredBureaucracy != null)
             {
@@ -812,10 +812,12 @@ namespace Treachery.Shared
             }
             else
             {
-                aggForceDial = result.Aggressor.AnyForcesIn(CurrentBattle.Territory) - agg.TotalForces;
+                var aggForceSupplier = Battle.DetermineForceSupplier(this, result.Aggressor);
+                aggForceDial = aggForceSupplier.AnyForcesIn(CurrentBattle.Territory) - agg.TotalForces;
                 if (result.Aggressor.Faction == CurrentPinkOrAllyFighter) aggForceDial += (int)Math.Ceiling(0.5f * GetPlayer(Faction.Pink).AnyForcesIn(CurrentBattle.Territory));
 
-                defForceDial = result.Defender.AnyForcesIn(CurrentBattle.Territory) - def.TotalForces;
+                var defForceSupplier = Battle.DetermineForceSupplier(this, result.Defender);
+                defForceDial = defForceSupplier.AnyForcesIn(CurrentBattle.Territory) - def.TotalForces;
                 if (result.Defender.Faction == CurrentPinkOrAllyFighter) defForceDial += (int)Math.Ceiling(0.5f * GetPlayer(Faction.Pink).AnyForcesIn(CurrentBattle.Territory));
             }
 
@@ -1632,7 +1634,7 @@ namespace Treachery.Shared
 
                 ReplaceForces(f, initiator);
 
-                FlipBeneGesseritWhenAlone();
+                FlipBeneGesseritWhenAloneOrWithPinkAlly();
             }
             else
             {
@@ -1785,7 +1787,7 @@ namespace Treachery.Shared
 
             Log(e);
             HandleLosses();
-            FlipBeneGesseritWhenAlone();
+            FlipBeneGesseritWhenAloneOrWithPinkAlly();
             DetermineHowToProceedAfterRevealingBattlePlans();
         }
 

@@ -33,7 +33,7 @@ namespace Treachery.Shared
 
                         if (CurrentNoFieldValue == 0)
                         {
-                            FlipBeneGesseritWhenAlone();
+                            FlipBeneGesseritWhenAloneOrWithPinkAlly();
                         }
 
                         CurrentNoFieldValue = -1;

@@ -30,21 +30,40 @@ namespace Treachery.Test
             {
                 if (e is Shipment s)
                 {
-                    if (g.NumberOfOccupiedStrongholds(s.Player.AlliedPlayer, true) >= 4 && g.NumberOfOccupiedStrongholds(s.Player, true) >= 3)
+                    if (g.NumberOfOccupiedStrongholds(s.Player.AlliedPlayer, true) >= 3 && g.NumberOfOccupiedStrongholds(s.Player, true) >= 3)
                     {
                         WriteSavegameIfApplicable(g, e.Player, "Promising situation for Ecaz and their ally");
                     }
                 }
             }
 
-            if (e is FaceDanced f && !f.Passed && g.CurrentPinkOrAllyFighter != Faction.None && (g.CurrentPinkOrAllyFighter == Faction.Grey || g.GetPlayer(g.CurrentPinkOrAllyFighter).Ally == Faction.Grey))
+            if (e is FaceDanced f && 
+                !f.Passed && 
+                g.CurrentPinkOrAllyFighter != Faction.None && 
+                (g.CurrentPinkOrAllyFighter == Faction.Grey || g.GetPlayer(g.CurrentPinkOrAllyFighter).Ally == Faction.Grey) &&
+                g.CurrentBattle.PlanOf(g.CurrentPinkOrAllyFighter).Forces + g.CurrentBattle.PlanOf(g.CurrentPinkOrAllyFighter).ForcesAtHalfStrength > 0 &&
+                g.CurrentBattle.PlanOf(g.CurrentPinkOrAllyFighter).SpecialForces + g.CurrentBattle.PlanOf(g.CurrentPinkOrAllyFighter).SpecialForcesAtHalfStrength > 0)
             {
                 WriteSavegameIfApplicable(g, e.Player, "Facedancer in a battle with Ecaz and their Ixian ally");
             }
 
-            if (e is BattleConcluded bc && (g.CurrentBattle.PlanOf(g.CurrentBattle.Aggressor).Weapon?.Type == TreacheryCardType.Rockmelter || g.CurrentBattle.PlanOf(g.CurrentBattle.Defender).Weapon?.Type == TreacheryCardType.Rockmelter) && g.CurrentPinkOrAllyFighter != Faction.None)
+            if (e is BattleConcluded && (g.CurrentBattle.PlanOf(g.CurrentBattle.Aggressor).Weapon?.Type == TreacheryCardType.Rockmelter || g.CurrentBattle.PlanOf(g.CurrentBattle.Defender).Weapon?.Type == TreacheryCardType.Rockmelter) && g.CurrentPinkOrAllyFighter != Faction.None)
             {
                 WriteSavegameIfApplicable(g, e.Player, "Stoneburner in a battle with Ecaz and ally");
+            }
+
+            if (e is Retreat r && r.Initiator == g.CurrentPinkOrAllyFighter)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Retreat in Ecaz-Ally battle");
+            }
+
+            if (e is BattleConcluded bc && g.CurrentPinkOrAllyFighter != Faction.None)
+            {
+                var hero = g.CurrentBattle.PlanOf(g.CurrentPinkOrAllyFighter).Hero;
+                if (hero is Leader && g.IsAlive(hero) && g.SkilledAs(hero, LeaderSkill.Graduate))
+                {
+                    WriteSavegameIfApplicable(g, e.Player, "Suk in Ecaz-Ally battle");
+                }
             }
         }
 

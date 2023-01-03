@@ -460,7 +460,7 @@ namespace Treachery.Shared
                 target.ForcesToReserves(e.Location, 1);
             }
 
-            FlipBeneGesseritWhenAlone();
+            FlipBeneGesseritWhenAloneOrWithPinkAlly();
             RecentMilestones.Add(Milestone.SpecialUselessPlayed);
         }
 

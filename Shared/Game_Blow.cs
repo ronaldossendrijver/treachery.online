@@ -325,7 +325,7 @@ namespace Treachery.Shared
             var devouredResources = RemoveResources(territory);
             LogIf(devouredResources > 0, Concept.Monster, " devours ", Payment(devouredResources), " in ", territory);
 
-            FlipBeneGesseritWhenAlone();
+            FlipBeneGesseritWhenAloneOrWithPinkAlly();
         }
 
         private void EnterBlowA()
@@ -505,7 +505,7 @@ namespace Treachery.Shared
                         e.To);
                 }
 
-                FlipBeneGesseritWhenAlone();
+                FlipBeneGesseritWhenAloneOrWithPinkAlly();
             }
             else
             {

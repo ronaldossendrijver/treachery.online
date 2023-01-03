@@ -165,7 +165,7 @@ namespace Treachery.Shared
                     ActivateBanker(initiator);
                 }
 
-                FlipBeneGesseritWhenAlone();
+                FlipBeneGesseritWhenAloneOrWithPinkAlly();
             }
             else
             {
@@ -379,7 +379,7 @@ namespace Treachery.Shared
 
             DetermineNextShipmentAndMoveSubPhase();
             CheckIfForcesShouldBeDestroyedByAllyPresence(initiator);
-            FlipBeneGesseritWhenAlone();
+            FlipBeneGesseritWhenAloneOrWithPinkAlly();
 
             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.YellowExtraMove);
             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyCyborgExtraMove);
@@ -531,7 +531,7 @@ namespace Treachery.Shared
             }
 
             RecentMilestones.Add(Milestone.Move);
-            FlipBeneGesseritWhenAlone();
+            FlipBeneGesseritWhenAloneOrWithPinkAlly();
         }
 
         private void CheckSandmaster(Player initiator, Location to, int dist, KeyValuePair<Location, Battalion> fl)
@@ -645,7 +645,7 @@ namespace Treachery.Shared
 
             initiator.FlipForces(LastShipmentOrMovement.To.Territory, e.AsAdvisors);
 
-            if (Version >= 102) FlipBeneGesseritWhenAlone();
+            if (Version >= 102) FlipBeneGesseritWhenAloneOrWithPinkAlly();
 
             DequeueIntrusion(IntrusionType.BlueIntrusion);
             DetermineNextShipmentAndMoveSubPhase();
@@ -858,6 +858,8 @@ namespace Treachery.Shared
                 {
                     CheckIfForcesShouldBeDestroyedByAllyPresence(e.Player);
                 }
+
+                FlipBeneGesseritWhenAloneOrWithPinkAlly();
             }
             else
             {
