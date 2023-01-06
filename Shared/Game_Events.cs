@@ -319,7 +319,7 @@ namespace Treachery.Shared
                 case Phase.AmbassadorTriggeredByYellowRidingMonsterA:
                 case Phase.AmbassadorTriggeredByYellowRidingMonsterB:
                 case Phase.AmbassadorTriggeredByCaravan:
-                    if (faction == Faction.Pink) result.Add(typeof(AmbassadorActivated));
+                    if (faction == Faction.Pink || player.Ally == Faction.Pink && PinkSharesAmbassadors) result.Add(typeof(AmbassadorActivated));
                     break;
 
                 case Phase.ShipmentAndMoveConcluded:

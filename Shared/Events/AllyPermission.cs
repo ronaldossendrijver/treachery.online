@@ -27,6 +27,9 @@ namespace Treachery.Shared
         public bool GreenSharesPrescience { get; set; }
         public bool BlueAllowsUseOfVoice { get; set; }
         public bool WhiteAllowsUseOfNoField { get; set; }
+        public bool CyanAllowsKeepingCards { get; set; }
+        public bool PinkSharesAmbassadors { get; set; }
+        
         public int PermittedResources { get; set; }
 
         public int _permittedKarmaCardId { get; set; }

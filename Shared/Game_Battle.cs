@@ -897,7 +897,7 @@ namespace Treachery.Shared
 
             Log(loser.Faction, " lose all ", loser.AnyForcesIn(territory), " forces in ", territory);
             loser.KillAllForces(territory, true);
-            LoseCards(loserGambit, loser.Ally == Faction.Cyan);
+            LoseCards(loserGambit, loser.Ally == Faction.Cyan && CyanAllowsKeepingCards);
             PayDialedSpice(loser, loserGambit, false);
 
             if (loser.MessiahAvailable && !hadMessiahBeforeLosses)
@@ -1157,7 +1157,7 @@ namespace Treachery.Shared
 
             Log(loser.Faction, " lose all ", loser.SpecialForcesIn(territory) + loser.ForcesIn(territory), " forces in ", territory);
             loser.KillAllForces(territory, true);
-            LoseCards(loserGambit, loser.Ally == Faction.Cyan);
+            LoseCards(loserGambit, loser.Ally == Faction.Cyan && CyanAllowsKeepingCards);
             PayDialedSpice(loser, loserGambit, true);
 
             if (loser.MessiahAvailable && !hadMessiahBeforeLosses)

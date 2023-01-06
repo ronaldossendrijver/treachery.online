@@ -57,7 +57,7 @@
 
                         <CheckboxComponent @bind-Value="_pinkTakeVidal">Take @Name(Game.Vidal)</CheckboxComponent>
 
-                        if (_pinkTakeVidal && _pinkOfferAlliance && AmbassadorActivated.VidalCanBeGivenTo(Game, victim))
+                        if (_pinkTakeVidal && _pinkOfferAlliance)
                         {
                             <CheckboxComponent @bind-Value="_pinkGiveVidal">Give @Name(Game.Vidal) to @Name(victim) if they agree to ally</CheckboxComponent>
                         }

@@ -682,7 +682,7 @@ namespace Treachery.Shared
             }
             else
             {
-                Log(e.Initiator, " don't activate their Ambassador");
+                Log(e.Initiator, " don't activate an Ambassador");
                 DetermineNextShipmentAndMoveSubPhase();
             }
         }
@@ -696,7 +696,7 @@ namespace Treachery.Shared
             var victimPlayer = GetPlayer(victim);
             var initiatingPlayer = GetPlayer(initiator);
 
-            Log(initiator, " activate their ", ambassadorFaction, " ambassador");
+            Log(initiator, " activate the ", ambassadorFaction, " ambassador");
 
             switch (ambassadorFaction)
             {
@@ -704,13 +704,14 @@ namespace Treachery.Shared
 
                     if (victimPlayer.TreacheryCards.Any())
                     {
-                        Log(Faction.Pink, " see all treachery cards owned by ", victim);
-                        LogTo(Faction.Pink, victim, " own: ", victimPlayer.TreacheryCards);
+                        Log(initiator, " see all treachery cards owned by ", victim);
+                        LogTo(initiator, victim, " own: ", victimPlayer.TreacheryCards);
                     }
                     else
                     {
                         Log(victim, " don't own any cards");
                     }
+
                     DetermineNextShipmentAndMoveSubPhase();
                     break;
 
@@ -762,15 +763,15 @@ namespace Treachery.Shared
 
                     if (victim == Faction.Black)
                     {
-                        Log(Faction.Pink, " see one of the ", Faction.Black, " traitors");
+                        Log(initiator, " see one of the ", Faction.Black, " traitors");
                     }
                     else if (victim == Faction.Purple)
                     {
-                        Log(Faction.Pink, " see one of the ", Faction.Purple, " unrevealed Face Dancers");
+                        Log(initiator, " see one of the ", Faction.Purple, " unrevealed Face Dancers");
                     }
                     else
                     {
-                        Log(Faction.Pink, " see the ", victim, " traitor");
+                        Log(initiator, " see the ", victim, " traitor");
                     }
 
                     var toSelectFrom = victim == Faction.Purple ? victimPlayer.FaceDancers.Where(t => !victimPlayer.RevealedDancers.Contains(t)) : victimPlayer.Traitors;
@@ -843,7 +844,7 @@ namespace Treachery.Shared
 
             if (!e.Passed)
             {
-                MakeAlliance(e.Initiator, Faction.Pink);
+                MakeAlliance(e.Initiator, CurrentAmbassadorActivated.Initiator);
 
                 if (CurrentAmbassadorActivated.PinkGiveVidalToAlly)
                 {
@@ -854,7 +855,7 @@ namespace Treachery.Shared
                     TakeVidal(CurrentAmbassadorActivated.Player);
                 }
 
-                if (HasActedOrPassed.Contains(e.Initiator) && HasActedOrPassed.Contains(Faction.Pink))
+                if (HasActedOrPassed.Contains(e.Initiator) && HasActedOrPassed.Contains(CurrentAmbassadorActivated.Initiator))
                 {
                     CheckIfForcesShouldBeDestroyedByAllyPresence(e.Player);
                 }
@@ -863,7 +864,7 @@ namespace Treachery.Shared
             }
             else
             {
-                Log(e.Initiator, " don't ally with ", Faction.Pink);
+                Log(e.Initiator, " don't ally with ", CurrentAmbassadorActivated.Initiator);
 
                 if (CurrentAmbassadorActivated.PinkTakeVidal)
                 {

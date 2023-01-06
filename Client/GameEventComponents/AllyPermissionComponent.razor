@@ -18,20 +18,20 @@
 
             if (ally.TreacheryCards.Any(c => c.IsWeapon))
             {
-                <div>They say they own a weapon.</div>
+                <div>They claim they own a weapon.</div>
             }
             else
             {
-                <div>They say they don't own weapons.</div>
+                <div>They claim they don't own weapons.</div>
             }
 
             if (ally.TreacheryCards.Any(c => c.IsDefense))
             {
-                <div>They say they own a defense.</div>
+                <div>They claim they own a defense.</div>
             }
             else
             {
-                <div>They say they don't own defenses.</div>
+                <div>They claim they don't own defenses.</div>
             }
 
             var safeLeaders = ally.KnownNonTraitors.Where(l => l.Faction == Faction)
@@ -41,7 +41,7 @@
             if (safeLeaders.Any())
             {
                 <div>
-                    They say you can safely use:
+                    They claim you can safely use:
                     @foreach (var l in safeLeaders) {
                         <Image Popover=@Popup.Get(l) Shown=l Width="30"/>
                     }
@@ -142,6 +142,19 @@
                     Allow shipment by No-Field (currently: <strong>@(Game.WhiteAllyMayUseNoField ? "yes" : "no")</strong>)
                 </CheckboxComponent>
                 break;
+
+            case Faction.Cyan:
+                <CheckboxComponent @bind-Value="cyanAllyMayKeepCards" OnChanged=SetEdited>
+                    Allow keeping a treachery card after a lost battle (currently: <strong>@(Game.CyanAllowsKeepingCards ? "yes" : "no")</strong>)
+                </CheckboxComponent>
+                break;
+
+            case Faction.Pink:
+                <CheckboxComponent @bind-Value="pinkAllyMayUseAmbassadors" OnChanged=SetEdited>
+                    Allow them to activate and benefit from ambassadors (currently: <strong>@(Game.PinkSharesAmbassadors ? "yes" : "no")</strong>)
+                </CheckboxComponent>
+                break;
+
         }
 
         <ButtonRowComponent Confirm="ConfirmAndSetUnedited" ConfirmText="Confirm Changes" ConfirmError=@Validation Disabled="@(!Dirty)"/>
@@ -163,6 +176,8 @@
     private bool greenSharePrescience;
     private bool blueAllyMayUseVoice;
     private bool whiteAllyMayUseNoField;
+    private bool cyanAllyMayKeepCards;
+    private bool pinkAllyMayUseAmbassadors;
 
     private int spice;
     private TreacheryCard karmaCard;
@@ -211,6 +226,15 @@
                 case Faction.White:
                     whiteAllyMayUseNoField = Game.WhiteAllyMayUseNoField;
                     break;
+
+                case Faction.Cyan:
+                    cyanAllyMayKeepCards = Game.CyanAllowsKeepingCards;
+                    break;
+
+                case Faction.Pink:
+                    pinkAllyMayUseAmbassadors = Game.PinkSharesAmbassadors;
+                    break;
+
             }
         }
     }
@@ -273,6 +297,14 @@
                 case Faction.White:
                     if (whiteAllyMayUseNoField != Game.WhiteAllyMayUseNoField) return true;
                     break;
+
+                case Faction.Cyan:
+                    if (cyanAllyMayKeepCards != Game.CyanAllowsKeepingCards) return true;
+                    break;
+
+                case Faction.Pink:
+                    if (pinkAllyMayUseAmbassadors != Game.PinkSharesAmbassadors) return true;
+                    break;
             }
 
             return false;
@@ -295,6 +327,8 @@
             AllyMayShipAsOrange = guildAllyMayShipAsGuild,
             AllyMayReviveAsPurple = purpleAllyMyReviveAsPurple,
             AllyMayReplaceCards = greyAllyMayReplace,
+            CyanAllowsKeepingCards = cyanAllyMayKeepCards,
+            PinkSharesAmbassadors = pinkAllyMayUseAmbassadors,
             PermittedResources = spice,
             PermittedKarmaCard = karmaCard
         };

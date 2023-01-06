@@ -112,8 +112,6 @@ namespace Treachery.Shared
                 var victim = GetVictim(Game);
                 var victimPlayer = Game.GetPlayer(victim);
 
-                if (Initiator != Faction.Pink) return Message.Express("Your faction can't activate Ambassadors");
-
                 if (ambassador == Faction.Blue)
                 {
                     if (!GetValidBlueFactions(Game).Contains(BlueSelectedFaction)) return Message.Express("Invalid Ambassador selected");
@@ -129,7 +127,6 @@ namespace Treachery.Shared
                     case Faction.Pink:
                         if (PinkOfferAlliance && !AllianceCanBeOffered(Game, player)) return Message.Express("You can't offer an alliance");
                         if (PinkTakeVidal && !VidalCanBeTaken(Game)) return Message.Express("You can't take ", Game.Vidal);
-                        if (PinkGiveVidalToAlly && !VidalCanBeGivenTo(Game, victimPlayer)) return Message.Express("You can't give ", Game.Vidal, " to ", victim);
                         break;
 
                     case Faction.Yellow:
@@ -189,10 +186,6 @@ namespace Treachery.Shared
         public static bool AllianceCanBeOffered(Game g, Player p) => !p.HasAlly && !g.GetPlayer(GetVictim(g)).HasAlly;
 
         public static bool VidalCanBeTaken(Game g) => g.VidalIsAlive && !g.VidalIsCapturedOrGhola;
-
-        public static bool VidalCanBeGivenTo(Game g, Player p) => true; // g.HasRoomForLeaders(p);
-
-        public static bool VidalCanBeGivenTo(Game g, Faction f) => true; // g.HasRoomForLeaders(g.GetPlayer(f));
 
         public static IEnumerable<Faction> GetValidBlueFactions(Game g) => g.UnassignedAmbassadors.Items;
 

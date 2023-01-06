@@ -1055,7 +1055,7 @@ namespace Treachery.Shared
                 case Faction.Pink:
                     bool offerAlliance = AmbassadorActivated.AllianceCanBeOffered(Game, this) && PlayerStanding(victimPlayer) > 0.33 * PlayerStanding(this);
                     bool takeVidal = AmbassadorActivated.VidalCanBeTaken(Game);
-                    bool offerVidal = takeVidal && AmbassadorActivated.VidalCanBeGivenTo(Game, victimPlayer) && HeroesForBattle(this, true).Count() >= 3 && HeroesForBattle(victimPlayer, true).Count() < 3;
+                    bool offerVidal = takeVidal && HeroesForBattle(this, true).Count() >= 3 && HeroesForBattle(victimPlayer, true).Count() < 3;
 
                     if (offerAlliance || takeVidal || offerVidal)
                     {

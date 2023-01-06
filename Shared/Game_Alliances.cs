@@ -52,6 +52,15 @@ namespace Treachery.Shared
                 case Faction.White:
                     WhiteAllyMayUseNoField = e.WhiteAllowsUseOfNoField;
                     break;
+
+                case Faction.Cyan:
+                    CyanAllowsKeepingCards = e.CyanAllowsKeepingCards;
+                    break;
+
+                case Faction.Pink:
+                    PinkSharesAmbassadors = e.PinkSharesAmbassadors;
+                    break;
+
             }
 
             Set(PermittedUseOfAllySpice, ally, e.PermittedResources);
@@ -69,6 +78,8 @@ namespace Treachery.Shared
         public bool YellowSharesPrescience { get; private set; } = false;
         public bool YellowRefundsBattleDial { get; private set; } = false;
         public bool GreenSharesPrescience { get; private set; } = false;
+        public bool CyanAllowsKeepingCards { get; private set; } = false;
+        public bool PinkSharesAmbassadors { get; private set; } = false;
 
         private Dictionary<Faction, int> PermittedUseOfAllySpice { get; } = new Dictionary<Faction, int>();
         private Dictionary<Faction, int> PermittedUseOfRedSpice { get; set; } = new Dictionary<Faction, int>();
