@@ -641,7 +641,7 @@ namespace Treachery.Shared
             Leaders = Faction switch
             {
                 Faction.Brown => LeaderManager.GetLeaders(Faction.Brown).Where(l => g.Applicable(Rule.BrownAuditor) || l.HeroType != HeroType.Auditor).ToList(),
-                Faction.Pink => LeaderManager.GetLeaders(Faction.Pink).Where(l => l.HeroType != HeroType.Vidal).ToList(),
+                Faction.Pink => LeaderManager.GetLeaders(Faction.Pink).Where(l => l.HeroType != HeroType.PinkAndCyan).ToList(),
                 _ => LeaderManager.GetLeaders(Faction).ToList(),
             };
         }

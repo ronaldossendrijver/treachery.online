@@ -189,7 +189,7 @@ namespace Treachery.Test
             if (g.CurrentTurn >= 1)
             {
                 int previousNumberOfLeadersInPlay = _leadercount.CountOf(g.Seed);
-                int currentNumberOfLeaders = g.Players.Sum(player => player.Leaders.Where(l => l.HeroType != HeroType.Vidal).Count());
+                int currentNumberOfLeaders = g.Players.Sum(player => player.Leaders.Where(l => l.HeroType != HeroType.PinkAndCyan).Count());
                 if (previousNumberOfLeadersInPlay == 0)
                 {
                     lock (_leadercount)
@@ -243,7 +243,7 @@ namespace Treachery.Test
             }
 
 
-            if (g.Players.Any(p => p.Leaders.Any(l => l.HeroType != HeroType.Vidal && l.Faction != p.Faction && p.Faction != Faction.Purple && !g.CapturedLeaders.ContainsKey(l))))
+            if (g.Players.Any(p => p.Leaders.Any(l => l.HeroType != HeroType.PinkAndCyan && l.Faction != p.Faction && p.Faction != Faction.Purple && !g.CapturedLeaders.ContainsKey(l))))
             {
                 return "Lost Leader";
             }

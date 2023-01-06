@@ -53,11 +53,13 @@
                         {
                             var style = Game.IsSkilled(v) ? "filter:brightness(150%) contrast(100%)" : "";
                             <UntypedImage Src=@Skin.Current.GetImageURL(v) Style=@style Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, h.Game)/>
+                            <span>@Game.LeaderState[v].DeathCounter</span>
                         }
 
                         @foreach (var v in ShownPlayer.Leaders.Where(l => !h.Game.IsAlive(l)))
                         {
                             <UntypedImage Src=@Skin.Current.GetImageURL(v) Style="filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8)" Class="img-fluid p-1" Width=60 Popover=@Popup.Get(v, h.Game)/>
+                            <span>@Game.LeaderState[v].DeathCounter</span>
                         }
 
                         <!-- Traitors and Face Dancers -->

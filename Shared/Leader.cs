@@ -6,8 +6,6 @@ namespace Treachery.Shared
 {
     public class Leader : IHero
     {
-        public const int VARIABLEVALUE = 99;
-
         public int Id { get; private set; }
 
         public Faction Faction { get; set; }
@@ -25,9 +23,9 @@ namespace Treachery.Shared
 
         public int ValueInCombatAgainst(IHero opposingHero)
         {
-            if (Value == VARIABLEVALUE)
+            if (HeroType == HeroType.VariableValue)
             {
-                if (opposingHero == null || opposingHero.Value == Leader.VARIABLEVALUE)
+                if (opposingHero == null)
                 {
                     return 0;
                 }
@@ -46,9 +44,13 @@ namespace Treachery.Shared
         {
             get
             {
-                if (Value == VARIABLEVALUE)
+                if (HeroType == HeroType.VariableValue)
                 {
                     return 6;
+                }
+                else if (HeroType == HeroType.PinkAndCyan)
+                {
+                    return 5;
                 }
                 else
                 {

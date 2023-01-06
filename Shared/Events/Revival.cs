@@ -147,17 +147,15 @@ namespace Treachery.Shared
         {
             var result = new List<IHero>();
 
-            if (p.Leaders.Count > 0)
+            if (AllAvailableLeadersHaveDiedOnce(g, p) || AtLeastFiveLeadersHaveDiedOnce(g, p))
             {
                 int lowestDeathCount = p.Leaders.Min(l => g.LeaderState[l].DeathCounter);
+
                 result.AddRange(p.Leaders.Where(l => g.LeaderState[l].DeathCounter == lowestDeathCount && !g.LeaderState[l].Alive));
 
-                if (p.Is(Faction.Green) && !g.IsAlive(LeaderManager.Messiah))
+                if (p.Is(Faction.Green) && !g.IsAlive(LeaderManager.Messiah) && g.LeaderState[LeaderManager.Messiah].DeathCounter == lowestDeathCount)
                 {
-                    if (g.LeaderState[LeaderManager.Messiah].DeathCounter == lowestDeathCount && !g.LeaderState[LeaderManager.Messiah].Alive)
-                    {
-                        result.Add(LeaderManager.Messiah);
-                    }
+                    result.Add(LeaderManager.Messiah);
                 }
             }
 
@@ -170,8 +168,23 @@ namespace Treachery.Shared
                 }
             }
 
+            if (p.Faction == Faction.Pink)
+            {
+                var vidal = p.Leaders.FirstOrDefault(l => l.HeroType == HeroType.PinkAndCyan);
+                if (vidal != null && !g.IsAlive(vidal) && !result.Contains(vidal))
+                {
+                    result.Add(vidal);
+                }
+            }
+
             return result;
+
         }
+
+        private static bool AtLeastFiveLeadersHaveDiedOnce(Game g, Player p) => p.Leaders.Count(l => g.LeaderState[l].DeathCounter > 0) >= 5;
+
+        private static bool AllAvailableLeadersHaveDiedOnce(Game g, Player p) => p.Leaders.All(l => g.LeaderState[l].DeathCounter > 0);
+
 
         public static IEnumerable<IHero> UnrestrictedRevivableHeroes(Game g, Player p)
         {

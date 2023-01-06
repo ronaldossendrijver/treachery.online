@@ -12,8 +12,8 @@ namespace Treachery.Shared
         public const int FIRST_ID = 1000;
         public static List<Leader> Leaders;
         public static Messiah Messiah = new Messiah() { Id = FIRST_ID, SkinId = 1098 };
-        public static LeaderFetcher LeaderLookup = new LeaderFetcher();
-        public static HeroFetcher HeroLookup = new HeroFetcher();
+        public static LeaderFetcher LeaderLookup = new();
+        public static HeroFetcher HeroLookup = new();
 
         static LeaderManager()
         {
@@ -68,7 +68,7 @@ namespace Treachery.Shared
                 new Leader(id++) { Value = 2, Faction = Faction.Grey, HeroType = HeroType.Normal },
                 new Leader(id++) { Value = 1, Faction = Faction.Grey, HeroType = HeroType.Normal },
 
-                new Leader(id++) { Value = Leader.VARIABLEVALUE, Faction = Faction.Purple },
+                new Leader(id++) { Faction = Faction.Purple, HeroType = HeroType.VariableValue },
                 new Leader(id++) { Value = 4, Faction = Faction.Purple, HeroType = HeroType.Normal },
                 new Leader(id++) { Value = 3, Faction = Faction.Purple, HeroType = HeroType.Normal },
                 new Leader(id++) { Value = 2, Faction = Faction.Purple, HeroType = HeroType.Normal },
@@ -92,7 +92,7 @@ namespace Treachery.Shared
                 new Leader(id++) { Value = 3, Faction = Faction.Pink, HeroType = HeroType.Normal },
                 new Leader(id++) { Value = 2, Faction = Faction.Pink, HeroType = HeroType.Normal },
                 new Leader(id++) { Value = 4, Faction = Faction.Pink, HeroType = HeroType.Normal },
-                new Leader(id++) { Value = 6, Faction = Faction.Pink, HeroType = HeroType.Vidal },
+                new Leader(id++) { Value = 6, Faction = Faction.Pink, HeroType = HeroType.PinkAndCyan },
 
                 new Leader(id++) { Value = 5, Faction = Faction.Cyan, HeroType = HeroType.Normal },
                 new Leader(id++) { Value = 4, Faction = Faction.Cyan, HeroType = HeroType.Normal },

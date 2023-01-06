@@ -58,7 +58,14 @@ namespace Treachery.Client
 
                 if (skill == LeaderSkill.None)
                 {
-                    return GetImageHoverHTML(Skin.Current.GetImageURL(h));
+                    if (h is Leader)
+                    {
+                        return GetImageHoverHTML(Skin.Current.GetImageURL(h));
+                    }
+                    else
+                    {
+                        return GetImageHoverHTML(Skin.Current.GetImageURL(h));
+                    }
                 }
                 else
                 {

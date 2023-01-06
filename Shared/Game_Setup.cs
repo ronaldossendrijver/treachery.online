@@ -441,7 +441,7 @@ namespace Treachery.Shared
                 var factionsInPlay = Players.Select(p => p.Faction);
                 result.AddRange(LeaderManager.Leaders.Where(l =>
                     factionsInPlay.Contains(l.Faction) &&
-                    l.HeroType != HeroType.Vidal &&
+                    l.HeroType != HeroType.PinkAndCyan &&
                     (Version <= 140 || l.HeroType != HeroType.Auditor || Applicable(Rule.BrownAuditor))
                     ));
 

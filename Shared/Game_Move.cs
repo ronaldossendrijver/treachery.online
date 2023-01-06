@@ -1530,7 +1530,7 @@ namespace Treachery.Shared
             BrownHasExtraMove = false;
         }
 
-        public Leader Vidal => LeaderState.Keys.FirstOrDefault(h => h.HeroType == HeroType.Vidal) as Leader;
+        public Leader Vidal => LeaderState.Keys.FirstOrDefault(h => h.HeroType == HeroType.PinkAndCyan) as Leader;
 
         private bool VidalWasGainedByCyanThisTurn { get; set; } = false;
         private void CheckIfCyanGainsVidal()
@@ -1548,7 +1548,7 @@ namespace Treachery.Shared
 
                     if (nrOfBattlesInStrongholds >= 2)
                     {
-                        var playerWithVidal = Players.FirstOrDefault(p => p.Leaders.Any(l => l.HeroType == HeroType.Vidal));
+                        var playerWithVidal = Players.FirstOrDefault(p => p.Leaders.Any(l => l.HeroType == HeroType.PinkAndCyan));
                         if (playerWithVidal == null)
                         {
                             Log(Faction.Cyan, " gain ", vidal);
@@ -1573,7 +1573,7 @@ namespace Treachery.Shared
         {
             get
             {
-                var playerWithVidal = Players.FirstOrDefault(p => p.Leaders.Any(l => l.HeroType == HeroType.Vidal));
+                var playerWithVidal = Players.FirstOrDefault(p => p.Leaders.Any(l => l.HeroType == HeroType.PinkAndCyan));
                 return playerWithVidal != null && (playerWithVidal.Is(Faction.Black) || playerWithVidal.Is(Faction.Purple));
             }
         }
