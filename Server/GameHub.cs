@@ -172,6 +172,8 @@ namespace Treachery.Server
         public async Task RequestDivideResourcesAccepted(int hostID, DivideResourcesAccepted e) { await Request(hostID, e); }
         public async Task RequestBattleClaimed(int hostID, BattleClaimed e) { await Request(hostID, e); }
 
+        public async Task RequestLoyaltyDecided(int hostID, LoyaltyDecided e) { await Request(hostID, e); }
+
         private async Task Request<GameEventType>(int hostID, GameEventType e) where GameEventType : GameEvent
         {
             Log("Request<" + e.GetType().Name + ">", hostID, e);
