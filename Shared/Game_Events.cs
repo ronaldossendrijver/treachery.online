@@ -128,6 +128,9 @@ namespace Treachery.Shared
                 case Phase.BlackMulligan:
                     if (faction == Faction.Black) result.Add(typeof(MulliganPerformed));
                     break;
+                case Phase.Loyalty:
+                    if (faction == Faction.Pink) result.Add(typeof(LoyaltyDecided));
+                    break;
                 case Phase.SelectingTraitors:
                     if (faction != Faction.Black && faction != Faction.Purple && !HasActedOrPassed.Contains(faction)) result.Add(typeof(TraitorsSelected));
                     break;

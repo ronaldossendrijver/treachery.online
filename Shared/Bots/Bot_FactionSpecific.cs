@@ -1011,6 +1011,11 @@ namespace Treachery.Shared
 
         #region Pink
 
+        protected virtual LoyaltyDecided DetermineLoyaltyDecided()
+        {
+            return new LoyaltyDecided(Game) { Initiator = Faction, Leader = LoyaltyDecided.ValidLeaders(this).HighestOrDefault(l => l.Value) };
+        }
+
         protected virtual AmbassadorPlaced DetermineAmbassadorPlaced()
         {
             if (Game.AmbassadorsPlacedThisTurn == 0 || Resources > 6 + Game.AmbassadorsPlacedThisTurn) {

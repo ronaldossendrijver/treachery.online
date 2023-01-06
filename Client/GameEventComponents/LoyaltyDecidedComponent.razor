@@ -1,0 +1,31 @@
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<LoyaltyDecided>
+
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Which of your leaders will forever be loyal to you?</Header>
+    <Body>
+
+        <SelectHeroComponent Game="Game" @bind-Value="leader" Values="LoyaltyDecided.ValidLeaders(Player)" Required=true />
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override Faction IsFactionSpecific => Faction.Pink;
+
+    protected override bool IsUrgent => true;
+
+    private IHero leader;
+
+    protected override LoyaltyDecided ConfirmedResult => new LoyaltyDecided(Game) { Initiator = Faction, Leader = leader as Leader };
+}

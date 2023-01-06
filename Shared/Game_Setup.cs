@@ -392,7 +392,7 @@ namespace Treachery.Shared
                 AssignInitialAmbassadors(pink);
             }
 
-            Enter(IsPlaying(Faction.Blue), Phase.BluePredicting, TreacheryCardsBeforeTraitors, DealStartingTreacheryCards, DealTraitors);
+            Enter(IsPlaying(Faction.Blue), Phase.BluePredicting, TreacheryCardsBeforeTraitors, DealStartingTreacheryCards, HandleLoyaltyOrDealTraitors);
         }
 
         private bool TreacheryCardsBeforeTraitors => Version >= 121 && Applicable(Rule.LeaderSkills);
@@ -402,10 +402,24 @@ namespace Treachery.Shared
             GetPlayer(e.Initiator).PredictedFaction = e.ToWin;
             GetPlayer(e.Initiator).PredictedTurn = e.Turn;
             Log(e);
-            Enter(TreacheryCardsBeforeTraitors, DealStartingTreacheryCards, DealTraitors);
+            Enter(TreacheryCardsBeforeTraitors, DealStartingTreacheryCards, HandleLoyaltyOrDealTraitors);
         }
 
         private Deck<IHero> TraitorDeck { get; set; }
+        private void HandleLoyaltyOrDealTraitors()
+        {
+            Enter(IsPlaying(Faction.Pink) && Applicable(Rule.PinkLoyalty), Phase.Loyalty, DealTraitors);
+            
+        }
+
+        public LoyaltyDecided PinkLoyalty { get; private set; }
+        public void HandleEvent(LoyaltyDecided e)
+        {
+            PinkLoyalty = e;
+            Log(e);
+            DealTraitors();
+        }
+
         private void DealTraitors()
         {
             RecentMilestones.Add(Milestone.Shuffled);
@@ -430,13 +444,16 @@ namespace Treachery.Shared
             }
         }
 
+        private void InitializeKnownNonTraitors()
+        {
+
+        }
+
         public IEnumerable<IHero> TraitorsInPlay
         {
             get
             {
                 var result = new List<IHero>();
-
-                //Leaders = LeaderManager.GetLeaders(Faction).Where(l => g.Applicable(Rule.BrownAuditor) || l.HeroType != HeroType.Auditor).ToList();
 
                 var factionsInPlay = Players.Select(p => p.Faction);
                 result.AddRange(LeaderManager.Leaders.Where(l =>
@@ -457,6 +474,22 @@ namespace Treachery.Shared
         private Deck<IHero> CreateAndShuffleTraitorDeck(Random random)
         {
             var result = new Deck<IHero>(TraitorsInPlay, random);
+
+            var generallySafeLeaders = new List<Leader>();
+
+            if (PinkLoyalty != null)
+            {
+                result.Items.Remove(PinkLoyalty.Leader);
+                generallySafeLeaders.Add(PinkLoyalty.Leader);
+            }
+
+            foreach (var p in Players)
+            {
+                p.KnownNonTraitors.AddRange(generallySafeLeaders);
+            }
+
+            InitializeKnownNonTraitors();
+
             result.Shuffle();
             return result;
         }
@@ -579,7 +612,7 @@ namespace Treachery.Shared
             }
             else
             {
-                Enter(TreacheryCardsBeforeTraitors, DealTraitors, SetupSpiceAndForces);
+                Enter(TreacheryCardsBeforeTraitors, HandleLoyaltyOrDealTraitors, SetupSpiceAndForces);
             }
         }
 
@@ -597,7 +630,7 @@ namespace Treachery.Shared
             if (!Players.Any(p => p.SkillsToChooseFrom.Any()))
             {
                 SkillDeck.Shuffle();
-                Enter(CurrentPhase != Phase.AssigningInitialSkills, PhaseBeforeSkillAssignment, TreacheryCardsBeforeTraitors, DealTraitors, SetupSpiceAndForces);
+                Enter(CurrentPhase != Phase.AssigningInitialSkills, PhaseBeforeSkillAssignment, TreacheryCardsBeforeTraitors, HandleLoyaltyOrDealTraitors, SetupSpiceAndForces);
             }
         }
 
