@@ -328,6 +328,11 @@
                     <SimpleActionComponent GameEventType="KarmaPrescience" h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" Title="@Skin.Current.Format("Use {0} to see the entire enemy battle plan", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Karma)" />
                 }
                 break;
+            case "KarmaPinkDial":
+                {
+                    <SimpleActionComponent GameEventType="KarmaPinkDial" h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" Title="@Skin.Current.Format("Use {0} to add the difference between the leader discs to your dial", TreacheryCardType.Karma)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Karma)" />
+                }
+                break;
             case "KarmaWhiteBuy":
                 {
                     <KarmaWhiteBuyComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.Karma)" />

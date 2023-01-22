@@ -505,6 +505,22 @@ namespace Treachery.Shared
                 result.Add(typeof(JuicePlayed));
             }
 
+            if (faction == Faction.Pink &&
+                CurrentPhase == Phase.CallTraitorOrPass &&
+                CurrentBattle != null &&
+                CurrentBattle.IsAggressorOrDefender(player) &&
+                !KarmaPrevented(faction) &&
+                !player.SpecialKarmaPowerUsed &&
+                player.Has(TreacheryCardType.Karma) &&
+                Applicable(Rule.AdvancedKarama))
+            {
+                var planOfPink = CurrentBattle.PlanOf(Faction.Pink);
+                if (planOfPink != null && planOfPink.Defense == null && planOfPink.Weapon == null)
+                {
+                    result.Add(typeof(KarmaPinkDial));
+                }
+            }
+
             if (isAfterSetup &&
                 (Version < 100 || !hasFinalizedBattlePlanWaitingToBeResolved) &&
                 CurrentMainPhase < MainPhase.Ended &&

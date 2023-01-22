@@ -421,6 +421,24 @@ namespace Treachery.Shared
             GreenKarma = true;
         }
 
+        public int PinkKarmaBonus { get; private set; } = 0;
+        public void HandleEvent(KarmaPinkDial e)
+        {
+            var initiator = GetPlayer(e.Initiator);
+            Discard(initiator, TreacheryCardType.Karma);
+            initiator.SpecialKarmaPowerUsed = true;
+            RecentMilestones.Add(Milestone.Karma);
+            var myLeader = CurrentBattle.PlanOf(e.Initiator).Hero;
+            var opponentLeader = CurrentBattle.PlanOfOpponent(initiator).Hero;
+
+            if (myLeader != null && opponentLeader != null)
+            {
+                PinkKarmaBonus = Math.Abs(myLeader.Value - opponentLeader.ValueInCombatAgainst(myLeader));
+            }
+
+            Log("Using ", TreacheryCardType.Karma, ", ", e.Initiator, " add ", PinkKarmaBonus, " to their dial" );
+        }
+
         public void HandleEvent(Karma e)
         {
             Discard(e.Card);

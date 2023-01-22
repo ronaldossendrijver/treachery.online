@@ -802,6 +802,9 @@ namespace Treachery.Shared
             int aggHeroContribution = result.AggHeroKilled || (Version < 145 && rockMelterUsed) ? 0 : result.AggHeroEffectiveStrength + result.AggHeroSkillBonus + result.AggMessiahContribution - result.AggBattlePenalty;
             int defHeroContribution = result.DefHeroKilled || (Version < 145 && rockMelterUsed) ? 0 : result.DefHeroEffectiveStrength + result.DefHeroSkillBonus + result.DefMessiahContribution - result.DefBattlePenalty;
 
+            int aggPinkKarmaContribution = agg.Initiator == Faction.Pink? PinkKarmaBonus : 0;
+            int defPinkKarmaContribution = def.Initiator == Faction.Pink ? PinkKarmaBonus : 0;
+
             float aggForceDial;
             float defForceDial;
 
@@ -821,8 +824,8 @@ namespace Treachery.Shared
                 if (result.Defender.Faction == CurrentPinkOrAllyFighter) defForceDial += (int)Math.Ceiling(0.5f * GetPlayer(Faction.Pink).AnyForcesIn(CurrentBattle.Territory));
             }
 
-            result.AggTotal = aggForceDial + aggHeroContribution;
-            result.DefTotal = defForceDial + defHeroContribution;
+            result.AggTotal = aggForceDial + aggHeroContribution + aggPinkKarmaContribution;
+            result.DefTotal = defForceDial + defHeroContribution + defPinkKarmaContribution;
 
             agg.DeactivateDynamicWeapons();
             def.DeactivateDynamicWeapons();
@@ -1486,7 +1489,6 @@ namespace Treachery.Shared
 
         private void FinishBattle()
         {
-            GreenKarma = false;
             ReturnSkilledLeadersInFrontOfShield();
             if (!Applicable(Rule.FullPhaseKarma)) AllowPreventedBattleFactionAdvantages();
             if (CurrentJuice != null && CurrentJuice.Type == JuiceType.Aggressor) CurrentJuice = null;
@@ -1875,6 +1877,8 @@ namespace Treachery.Shared
             BattleAboutToStart = null;
             CurrentPinkOrAllyFighter = Faction.None;
             CurrentPinkBattleContribution = 0;
+            GreenKarma = false;
+            PinkKarmaBonus = 0;
         }
 
         #endregion

@@ -25,7 +25,17 @@
                  X="@(forceX)" Y="@(forceY)"
                  Font="@Skin.Current.WHEEL_FONT" FontColor="@Skin.Current.WHEEL_FONTCOLOR"
                  BorderWidth="Skin.Current.WHEEL_FONT_BORDERWIDTH" BorderColor="@(IsAggressor ? Skin.Current.WHEEL_FONT_AGGRESSOR_BORDERCOLOR : Skin.Current.WHEEL_FONT_DEFENDER_BORDERCOLOR)"
-                 Align="@TextAlignment.Center" />
+        Align="@TextAlignment.Center" />
+
+        if (Plan.Initiator == Faction.Pink && Game.PinkKarmaBonus != 0)
+        {
+            var karmaBonusText = $"+{Game.PinkKarmaBonus}";
+            <MapText ToShow=@karmaBonusText
+                     X="@(forceX + 2 * Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY)"
+                     Font="@Skin.Current.WHEEL_FONT" FontColor="green"
+                     BorderWidth="Skin.Current.WHEEL_FONT_BORDERWIDTH" BorderColor="@(IsAggressor ? Skin.Current.WHEEL_FONT_AGGRESSOR_BORDERCOLOR : Skin.Current.WHEEL_FONT_DEFENDER_BORDERCOLOR)"
+                     Align="@TextAlignment.Center" />
+        }
     }
 
     if (Aspect == PrescienceAspect.None)

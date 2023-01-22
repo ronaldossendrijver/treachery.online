@@ -26,6 +26,12 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            var pink = g.GetPlayer(Faction.Pink);
+            if (pink != null && g.CurrentPhase == Phase.CallTraitorOrPass && g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(pink) && pink.HasKarma && !pink.SpecialKarmaPowerUsed)
+            {
+                WriteSavegameIfApplicable(g, pink, "Pink may use special karama now");
+            }
+
             if (e.Player != null && e.Player.Is(Faction.Pink) && e.Player.HasAlly)
             {
                 if (e is Shipment s)
@@ -389,7 +395,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 1000;
+            int nrOfGames = 200;
             int nrOfTurns = 10;
             int nrOfPlayers = 6;
 

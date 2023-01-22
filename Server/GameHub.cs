@@ -173,6 +173,7 @@ namespace Treachery.Server
         public async Task RequestBattleClaimed(int hostID, BattleClaimed e) { await Request(hostID, e); }
 
         public async Task RequestLoyaltyDecided(int hostID, LoyaltyDecided e) { await Request(hostID, e); }
+        public async Task RequestKarmaPinkDial(int hostID, KarmaPinkDial e) { await Request(hostID, e); }
 
         private async Task Request<GameEventType>(int hostID, GameEventType e) where GameEventType : GameEvent
         {

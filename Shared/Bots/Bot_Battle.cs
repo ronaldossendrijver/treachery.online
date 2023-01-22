@@ -824,7 +824,7 @@ namespace Treachery.Shared
             var knownNonTraitorsByAlly = ally != null ? ally.Traitors.Union(ally.KnownNonTraitors) : Array.Empty<IHero>();
             var revealedOrToldTraitorsByNonOpponents = Game.Players.Where(p => p != opponent && (p.Ally != Faction.Black || p.Faction != opponent.Ally)).SelectMany(p => p.RevealedTraitors.Union(p.ToldTraitors));
             var toldNonTraitorsByOpponent = opponent.Ally != Faction.Black ? opponent.ToldNonTraitors.AsEnumerable() : Array.Empty<IHero>();
-            var knownNonTraitors = Traitors.Union(KnownNonTraitors).Union(ally.KnownNonTraitors).Union(revealedOrToldTraitorsByNonOpponents).Union(toldNonTraitorsByOpponent);
+            var knownNonTraitors = Traitors.Union(KnownNonTraitors).Union(knownNonTraitorsByAlly).Union(revealedOrToldTraitorsByNonOpponents).Union(toldNonTraitorsByOpponent);
 
             var knownTraitorsForOpponentsInBattle = Game.Players.
                 Where(p => p == opponent || (p.Faction == Faction.Black && p.Faction == opponent.Ally)).SelectMany(p => p.RevealedTraitors.Union(p.ToldTraitors))
