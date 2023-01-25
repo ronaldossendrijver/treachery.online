@@ -527,10 +527,11 @@ namespace Treachery.Shared
 
         private void Prevent(Faction initiator, FactionAdvantage advantage)
         {
+            Log(initiator, " prevent ", advantage);
+
             if (!PreventedAdvantages.Contains(advantage))
             {
                 PreventedAdvantages.Add(advantage);
-                Log("Using ", TreacheryCardType.Karma, ", ", initiator, " prevent ", advantage);
             }
         }
 
@@ -654,6 +655,113 @@ namespace Treachery.Shared
         {
             Log(e);
             CurrentPlanetology = e;
+        }
+
+        public void HandleEvent(NexusPlayed e)
+        {
+            if (e.Initiator == e.Faction)
+            {
+                HandleCunning(e);
+            }
+            else if (!IsPlaying(e.Faction))
+            {
+                HandleSecretAlly(e);
+            }
+            else
+            {
+                HandleBetrayal(e);
+            }
+        }
+
+        
+
+        private bool BlackMayDrawNewTraitor { get; set; } = false;
+        private void HandleBetrayal(NexusPlayed e)
+        {
+            MessagePart action = null;
+
+            switch (e.Faction)
+            {
+                case Faction.Green:
+                    Prevent(e.Initiator, FactionAdvantage.GreenBattlePlanPrescience);
+                    break;
+
+                case Faction.Black:
+                    var treachery = CurrentBattle.TreacheryOf(Faction.Black);
+                    treachery.TraitorCalled = false;
+                    var traitor = CurrentBattle.PlanOfOpponent(Faction.Black).Hero;
+                    GetPlayer(Faction.Black).Traitors.Remove(traitor);
+                    TraitorDeck.Items.Add(traitor);
+                    TraitorDeck.Shuffle();
+                    RecentMilestones.Add(Milestone.Shuffled);
+                    BlackMayDrawNewTraitor = true;
+                    action = MessagePart.Express(" cancel the ", Faction.Black, " traitor call");
+                    Enter(Phase.CallTraitorOrPass);
+                    HandleRevealedBattlePlans();
+                    break;
+            }    
+
+            if (action != null)
+            {
+                Log(e.Initiator, " play ", e.Faction, " Nexus Betrayal to ", action);
+            }
+        }
+
+        public NexusPlayed CurrentNexusPrescience { get; private set; }
+        private void HandleCunning(NexusPlayed e)
+        {
+            var action = MessagePart.Express();
+
+            switch (e.Faction)
+            {
+                case Faction.Green: 
+                    CurrentNexusPrescience = e;
+                    action = MessagePart.Express("see their opponent's ", e.GreenPrescienceAspect);
+                    break;
+
+                case Faction.Black:
+                    PhaseBeforeDiscardingTraitor = CurrentPhase;
+                    FactionThatMustDiscardTraitor = e.Initiator;
+                    NumberOfTraitorsToDiscard = 1;
+                    action = MessagePart.Express("draw a new traitor");
+                    e.Player.Traitors.Add(TraitorDeck.Draw());
+                    Enter(Phase.DiscardingTraitor);
+                    break;
+
+
+
+
+            }
+
+            Log(e.Initiator, " play ", e.Faction, " Nexus Cunning to ", action);
+        }
+
+        private void HandleSecretAlly(NexusPlayed e)
+        {
+            var action = MessagePart.Express();
+
+            switch (e.Faction)
+            {
+                case Faction.Green:
+                    CurrentNexusPrescience = e;
+                    action = MessagePart.Express("see their opponent's ", e.GreenPrescienceAspect);
+                    break;
+
+                case Faction.Black:
+                    PhaseBeforeDiscardingTraitor = CurrentPhase;
+                    FactionThatMustDiscardTraitor = e.Initiator;
+                    NumberOfTraitorsToDiscard = 2;
+                    action = MessagePart.Express("draw two new traitors");
+                    e.Player.Traitors.Add(TraitorDeck.Draw());
+                    e.Player.Traitors.Add(TraitorDeck.Draw());
+                    Enter(Phase.DiscardingTraitor);
+                    break;
+
+
+
+            }
+
+            Log(e.Initiator, " play ", e.Faction, " Nexus Secret Ally to ", action);
         }
 
         private void LogPrevention(FactionAdvantage prevented)

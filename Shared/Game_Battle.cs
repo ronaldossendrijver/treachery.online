@@ -349,9 +349,20 @@ namespace Treachery.Shared
 
             if (AggressorTraitorAction != null && DefenderTraitorAction != null)
             {
-                HandleRevealedBattlePlans();
+                var treachery = CurrentBattle.TreacheryOf(Faction.Black);
+
+                if (Applicable(Rule.NexusCards) && treachery != null && treachery.Initiator == Faction.Black && treachery.TraitorCalled)
+                {
+                    Enter(Phase.CancellingTraitor);
+                }
+                else
+                {
+                    HandleRevealedBattlePlans();
+                }
             }
         }
+
+
 
         #endregion
 
@@ -643,18 +654,18 @@ namespace Treachery.Shared
             {
                 //Captured leader that must be returned because it was used in battle
                 var usedLeaderInBattle = CurrentBattle?.PlanOf(black)?.Hero;
-                if (usedLeaderInBattle != null && usedLeaderInBattle is Leader capturedLeader && black.Leaders.Contains(capturedLeader) && CapturedLeaders.ContainsKey(capturedLeader))
+                if (usedLeaderInBattle != null && usedLeaderInBattle is Leader leader && black.Leaders.Contains(leader) && CapturedLeaders.ContainsKey(leader))
                 {
-                    ReturnCapturedLeader(black, capturedLeader);
+                    ReturnCapturedLeader(black, leader);
                 }
 
                 //Captured leaders that must be returned because Black doesn't have any more leaders
-                if (!black.Leaders.Any(l => CapturedLeaders.ContainsKey(l) && IsAlive(l)))
+                if (!black.Leaders.Any(l => !CapturedLeaders.ContainsKey(l) && IsAlive(l)))
                 {
-                    Leader toReturn;
-                    while ((toReturn = black.Leaders.FirstOrDefault(c => c.Faction != Faction.Black)) != null)
+                    var captives = black.Leaders.Where(l => CapturedLeaders.ContainsKey(l)).ToList();
+                    foreach (var captive in captives)
                     {
-                        ReturnCapturedLeader(black, toReturn);
+                        ReturnCapturedLeader(black, captive);
                     }
                 }
             }
@@ -994,16 +1005,16 @@ namespace Treachery.Shared
             ProcessWinnerForceLosses(territory, winner, plan);
         }
 
-        private void ProcessWinnerForceLosses(Territory territory, Player player, Battle plan)
+        private void ProcessWinnerForceLosses(Territory territory, Player winner, Battle plan)
         {
-            var forceSupplier = Battle.DetermineForceSupplier(this, player);
+            var forceSupplier = Battle.DetermineForceSupplier(this, winner);
             if (CurrentPinkBattleContribution > 0)
             {
                 var pink = GetPlayer(Faction.Pink);
                 if (pink != null)
                 {
                     pink.KillForces(territory, CurrentPinkBattleContribution, false, true);
-                    Log(forceSupplier.Faction, " lose ", CurrentPinkBattleContribution, pink.Force, " in ", territory);
+                    Log(Faction.Pink, " lose ", CurrentPinkBattleContribution, pink.Force, " in ", territory);
                 }
             }
 
@@ -1025,7 +1036,7 @@ namespace Treachery.Shared
                     specialForcesToSaveToReserves = Math.Max(0, Math.Min(specialForcesToLose - specialForcesToSaveInTerritory - forcesToSaveInTerritory, 2));
                     forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose - forcesToSaveInTerritory, 2 - specialForcesToSaveToReserves));
                 }
-                else if (SkilledAs(player, LeaderSkill.Graduate))
+                else if (SkilledAs(winner, LeaderSkill.Graduate))
                 {
                     specialForcesToSaveToReserves = Math.Min(specialForcesToLose, 1);
                     forcesToSaveToReserves = Math.Max(0, Math.Min(forcesToLose, 1 - specialForcesToSaveToReserves));
@@ -1043,7 +1054,8 @@ namespace Treachery.Shared
                     " rescues ",
                     MessagePart.ExpressIf(forcesToSaveInTerritory > 0, forcesToSaveInTerritory, forceSupplier.Force),
                     MessagePart.ExpressIf(specialForcesToSaveInTerritory > 0, specialForcesToSaveInTerritory, forceSupplier.SpecialForce),
-                    MessagePart.ExpressIf(forcesToSaveInTerritory > 0 || specialForcesToSaveInTerritory > 0, " on site and "),
+                    MessagePart.ExpressIf(forcesToSaveInTerritory > 0 || specialForcesToSaveInTerritory > 0, " on site"),
+                    MessagePart.ExpressIf(forcesToSaveToReserves > 0 || specialForcesToSaveToReserves > 0, " and "),
                     MessagePart.ExpressIf(forcesToSaveToReserves > 0, forcesToSaveToReserves, forceSupplier.Force),
                     MessagePart.ExpressIf(specialForcesToSaveToReserves > 0, specialForcesToSaveToReserves, forceSupplier.SpecialForce),
                     MessagePart.ExpressIf(forcesToSaveToReserves > 0 || specialForcesToSaveToReserves > 0, " to reserves"));
@@ -1301,8 +1313,7 @@ namespace Treachery.Shared
             DecideFateOfCapturedLeader(e);
             TakeTechToken(e, winner);
 
-            var forceSupplierOfWinner = Battle.DetermineForceSupplier(this, winner);
-            ProcessGreyForceLossesAndSubstitutions(e, forceSupplierOfWinner);
+            ProcessGreyForceLossesAndSubstitutions(e, winner);
 
             if (!LoserConcluded.IsApplicable(this, GetPlayer(BattleLoser)))
             {
@@ -1540,7 +1551,9 @@ namespace Treachery.Shared
                 int forcesToLose = winnerGambit.Forces + winnerGambit.ForcesAtHalfStrength + e.SpecialForceLossesReplaced;
                 int specialForcesToLose = winnerGambit.SpecialForces + winnerGambit.SpecialForcesAtHalfStrength - e.SpecialForceLossesReplaced;
 
-                Log(winner.Faction, " substitute ", e.SpecialForceLossesReplaced, winner.SpecialForce, " losses by ", winner.Force, " losses");
+                var forceSupplierOfWinner = Battle.DetermineForceSupplier(this, winner);
+
+                Log(winner.Faction, " substitute ", e.SpecialForceLossesReplaced, forceSupplierOfWinner.SpecialForce, " losses by ", forceSupplierOfWinner.Force, " losses");
 
                 int specialForcesToSaveToReserves = 0;
                 int forcesToSaveToReserves = 0;
@@ -1563,24 +1576,24 @@ namespace Treachery.Shared
 
                 if (specialForcesToSaveInTerritory + forcesToSaveInTerritory + specialForcesToSaveToReserves + forcesToSaveToReserves > 0)
                 {
-                    if (specialForcesToSaveToReserves > 0) winner.ForcesToReserves(territory, specialForcesToSaveToReserves, true);
+                    if (specialForcesToSaveToReserves > 0) forceSupplierOfWinner.ForcesToReserves(territory, specialForcesToSaveToReserves, true);
 
-                    if (forcesToSaveToReserves > 0) winner.ForcesToReserves(territory, forcesToSaveToReserves, false);
+                    if (forcesToSaveToReserves > 0) forceSupplierOfWinner.ForcesToReserves(territory, forcesToSaveToReserves, false);
 
                     Log(
                         LeaderSkill.Graduate,
                         " saves ",
-                        MessagePart.ExpressIf(forcesToSaveInTerritory > 0, forcesToSaveInTerritory, winner.Force),
-                        MessagePart.ExpressIf(specialForcesToSaveInTerritory > 0, specialForcesToSaveInTerritory, winner.SpecialForce),
+                        MessagePart.ExpressIf(forcesToSaveInTerritory > 0, forcesToSaveInTerritory, forceSupplierOfWinner.Force),
+                        MessagePart.ExpressIf(specialForcesToSaveInTerritory > 0, specialForcesToSaveInTerritory, forceSupplierOfWinner.SpecialForce),
                         MessagePart.ExpressIf(forcesToSaveInTerritory > 0 || specialForcesToSaveInTerritory > 0, " in ", territory),
 
                         MessagePart.ExpressIf(forcesToSaveInTerritory > 0 || specialForcesToSaveInTerritory > 0 && forcesToSaveToReserves > 0 || specialForcesToSaveToReserves > 0, " and "),
-                        MessagePart.ExpressIf(forcesToSaveToReserves > 0, forcesToSaveToReserves, winner.Force),
-                        MessagePart.ExpressIf(specialForcesToSaveToReserves > 0, specialForcesToSaveToReserves, winner.SpecialForce),
+                        MessagePart.ExpressIf(forcesToSaveToReserves > 0, forcesToSaveToReserves, forceSupplierOfWinner.Force),
+                        MessagePart.ExpressIf(specialForcesToSaveToReserves > 0, specialForcesToSaveToReserves, forceSupplierOfWinner.SpecialForce),
                         MessagePart.ExpressIf(forcesToSaveToReserves > 0 || specialForcesToSaveToReserves > 0, " to reserves"));
                 }
 
-                HandleForceLosses(territory, winner,
+                HandleForceLosses(territory, forceSupplierOfWinner,
                     forcesToLose - forcesToSaveToReserves - forcesToSaveInTerritory,
                     specialForcesToLose - specialForcesToSaveToReserves - specialForcesToSaveInTerritory);
             }
@@ -1857,6 +1870,7 @@ namespace Treachery.Shared
         {
             CurrentBattle = null;
             CurrentPrescience = null;
+            CurrentNexusPrescience = null;
             CurrentThought = null;
             CurrentVoice = null;
             BlackVictim = null;

@@ -247,6 +247,11 @@ namespace Treachery.Shared
                     Enter(Phase.BattlePhase);
                     break;
 
+                case Phase.CancellingTraitor:
+                    Enter(Phase.CallTraitorOrPass);
+                    HandleRevealedBattlePlans();
+                    break;
+
                 case Phase.BattleReport:
                     ResetBattle();
                     Enter(NextPlayerToBattle != null, Phase.BattlePhase, EnterSpiceCollectionPhase);
@@ -281,6 +286,23 @@ namespace Treachery.Shared
         {
             Discard(e.Player, e.Card);
             CurrentPhase = PhaseBeforeDiscarding;
+        }
+
+        private Phase PhaseBeforeDiscardingTraitor { get; set; }
+        private Faction FactionThatMustDiscardTraitor { get; set; }
+        private int NumberOfTraitorsToDiscard { get; set; }
+        public void HandleEvent(TraitorDiscarded e)
+        {
+            Log(e);
+            TraitorDeck.Items.Add(e.Traitor);
+            e.Player.Traitors.Remove(e.Traitor);
+            NumberOfTraitorsToDiscard--;
+
+            if (NumberOfTraitorsToDiscard == 0)
+            {
+                CurrentPhase = PhaseBeforeDiscardingTraitor;
+            }
+
         }
 
         #endregion EventHandling

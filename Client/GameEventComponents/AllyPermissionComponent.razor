@@ -84,19 +84,19 @@
 
             case Faction.Orange:
                 <CheckboxComponent @bind-Value="guildAllyMayShipAsGuild" OnChanged=SetEdited>
-                    Allow shipment at @Skin.Current.Describe(Faction.Orange) rates and site-to-site (currently: <strong>@(Game.OrangeAllyMayShipAsGuild ? "yes" : "no")</strong>)
+                    Allow shipment at @Skin.Current.Describe(Faction.Orange) rates and site-to-site (currently: <strong>@(Game.AllyMayShipAsOrange ? "yes" : "no")</strong>)
                 </CheckboxComponent>
                 break;
 
             case Faction.Purple:
                 <CheckboxComponent @bind-Value="purpleAllyMyReviveAsPurple" OnChanged=SetEdited>
-                    Allow revival at @Skin.Current.Describe(Faction.Purple) rates (currently: <strong>@(Game.PurpleAllyMayReviveAsPurple ? "yes" : "no")</strong>)
+                    Allow revival at @Skin.Current.Describe(Faction.Purple) rates (currently: <strong>@(Game.AllyMayReviveAsPurple ? "yes" : "no")</strong>)
                 </CheckboxComponent>
                 break;
 
             case Faction.Grey:
                 <CheckboxComponent @bind-Value="greyAllyMayReplace" OnChanged=SetEdited>
-                    Allow replacing treachery cards they win (currently: <strong>@(Game.GreyAllyMayReplaceCards ? "yes" : "no")</strong>)
+                    Allow replacing treachery cards they win (currently: <strong>@(Game.AllyMayReplaceCards ? "yes" : "no")</strong>)
                 </CheckboxComponent>
                 break;
 
@@ -106,7 +106,7 @@
                 </CheckboxComponent>
 
                 <CheckboxComponent @bind-Value="fremenWillProtectFromShaiHulud" OnChanged=SetEdited>
-                    Protect them from @Skin.Current.Describe(Concept.Monster) (currently: <strong>@(Game.YellowWillProtectFromShaiHulud ? "yes" : "no")</strong>)
+                    Protect them from @Skin.Current.Describe(Concept.Monster) (currently: <strong>@(Game.YellowWillProtectFromMonster ? "yes" : "no")</strong>)
                 </CheckboxComponent>
 
                 @if (Game.Applicable(Rule.YellowSeesStorm))
@@ -133,13 +133,13 @@
 
             case Faction.Blue:
                 <CheckboxComponent @bind-Value="blueAllyMayUseVoice" OnChanged=SetEdited>
-                    Allow use of Voice (currently: <strong>@(Game.BlueAllyMayUseVoice ? "yes" : "no")</strong>)
+                    Allow use of Voice (currently: <strong>@(Game.BlueAllowsUseOfVoice ? "yes" : "no")</strong>)
                 </CheckboxComponent>
                 break;
 
             case Faction.White:
                 <CheckboxComponent @bind-Value="whiteAllyMayUseNoField" OnChanged=SetEdited>
-                    Allow shipment by No-Field (currently: <strong>@(Game.WhiteAllyMayUseNoField ? "yes" : "no")</strong>)
+                    Allow shipment by No-Field (currently: <strong>@(Game.WhiteAllowsUseOfNoField ? "yes" : "no")</strong>)
                 </CheckboxComponent>
                 break;
 
@@ -193,15 +193,15 @@
             switch (Faction)
             {
                 case Faction.Purple:
-                    purpleAllyMyReviveAsPurple = Game.PurpleAllyMayReviveAsPurple;
+                    purpleAllyMyReviveAsPurple = Game.AllyMayReviveAsPurple;
                     break;
 
                 case Faction.Grey:
-                    greyAllyMayReplace = Game.GreyAllyMayReplaceCards;
+                    greyAllyMayReplace = Game.AllyMayReplaceCards;
                     break;
 
                 case Faction.Orange:
-                    guildAllyMayShipAsGuild = Game.OrangeAllyMayShipAsGuild;
+                    guildAllyMayShipAsGuild = Game.AllyMayShipAsOrange;
                     break;
 
                 case Faction.Red:
@@ -209,7 +209,7 @@
                     break;
 
                 case Faction.Yellow:
-                    fremenWillProtectFromShaiHulud = Game.YellowWillProtectFromShaiHulud;
+                    fremenWillProtectFromShaiHulud = Game.YellowWillProtectFromMonster;
                     fremenAllowsThreeFreeRevivals = Game.YellowAllowsThreeFreeRevivals;
                     fremenShareStormPrescience = Game.YellowSharesPrescience;
                     fremenRefundsDial = Game.YellowRefundsBattleDial;
@@ -220,11 +220,11 @@
                     break;
 
                 case Faction.Blue:
-                    blueAllyMayUseVoice = Game.BlueAllyMayUseVoice;
+                    blueAllyMayUseVoice = Game.BlueAllowsUseOfVoice;
                     break;
 
                 case Faction.White:
-                    whiteAllyMayUseNoField = Game.WhiteAllyMayUseNoField;
+                    whiteAllyMayUseNoField = Game.WhiteAllowsUseOfNoField;
                     break;
 
                 case Faction.Cyan:
@@ -264,15 +264,15 @@
             switch (Faction)
             {
                 case Faction.Purple:
-                    if (purpleAllyMyReviveAsPurple != Game.PurpleAllyMayReviveAsPurple) return true;
+                    if (purpleAllyMyReviveAsPurple != Game.AllyMayReviveAsPurple) return true;
                     break;
 
                 case Faction.Grey:
-                    if (greyAllyMayReplace != Game.GreyAllyMayReplaceCards) return true;
+                    if (greyAllyMayReplace != Game.AllyMayReplaceCards) return true;
                     break;
 
                 case Faction.Orange:
-                    if (guildAllyMayShipAsGuild != Game.OrangeAllyMayShipAsGuild) return true;
+                    if (guildAllyMayShipAsGuild != Game.AllyMayShipAsOrange) return true;
                     break;
 
                 case Faction.Red:
@@ -280,7 +280,7 @@
                     break;
 
                 case Faction.Yellow:
-                    if (fremenWillProtectFromShaiHulud != Game.YellowWillProtectFromShaiHulud) return true;
+                    if (fremenWillProtectFromShaiHulud != Game.YellowWillProtectFromMonster) return true;
                     if (fremenAllowsThreeFreeRevivals != Game.YellowAllowsThreeFreeRevivals) return true;
                     if (fremenShareStormPrescience != Game.YellowSharesPrescience) return true;
                     if (fremenRefundsDial != Game.YellowRefundsBattleDial) return true;
@@ -291,11 +291,11 @@
                     break;
 
                 case Faction.Blue:
-                    if (blueAllyMayUseVoice != Game.BlueAllyMayUseVoice) return true;
+                    if (blueAllyMayUseVoice != Game.BlueAllowsUseOfVoice) return true;
                     break;
 
                 case Faction.White:
-                    if (whiteAllyMayUseNoField != Game.WhiteAllyMayUseNoField) return true;
+                    if (whiteAllyMayUseNoField != Game.WhiteAllowsUseOfNoField) return true;
                     break;
 
                 case Faction.Cyan:

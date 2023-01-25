@@ -309,7 +309,7 @@ namespace Treachery.Shared
                             {
                                 if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.YellowProtectedFromMonster);
                             }
-                            else if (p.Ally == Faction.Yellow && YellowWillProtectFromShaiHulud)
+                            else if (p.Ally == Faction.Yellow && YellowWillProtectFromMonster)
                             {
                                 if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.YellowProtectedFromMonsterAlly);
                             }
@@ -400,7 +400,7 @@ namespace Treachery.Shared
 
             if (f == Faction.Orange || initiator.Ally == Faction.Orange)
             {
-                OrangeAllyMayShipAsGuild = false;
+                AllyMayShipAsOrange = false;
             }
 
             if (f == Faction.Red || initiator.Ally == Faction.Red)
@@ -410,7 +410,7 @@ namespace Treachery.Shared
 
             if (f == Faction.Yellow || initiator.Ally == Faction.Yellow)
             {
-                YellowWillProtectFromShaiHulud = false;
+                YellowWillProtectFromMonster = false;
                 YellowAllowsThreeFreeRevivals = false;
             }
 
@@ -689,7 +689,7 @@ namespace Treachery.Shared
             }
             else
             {
-                return p.Ally == Faction.Yellow && YellowWillProtectFromShaiHulud && !Prevented(FactionAdvantage.YellowProtectedFromMonsterAlly);
+                return p.Ally == Faction.Yellow && YellowWillProtectFromMonster && !Prevented(FactionAdvantage.YellowProtectedFromMonsterAlly);
             }
         }
 

@@ -69,7 +69,7 @@
             <div class="text-danger bg-dark">Note: any of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
         }
 
-        @if (Faction == Faction.White && !Game.Prevented(FactionAdvantage.WhiteNofield) || Player.Ally == Faction.White && Game.WhiteAllyMayUseNoField)
+        @if (Faction == Faction.White && !Game.Prevented(FactionAdvantage.WhiteNofield) || Player.Ally == Faction.White && Game.WhiteAllowsUseOfNoField)
         {
             var validNoFieldValues = new List<int>();
             validNoFieldValues.Add(-1);

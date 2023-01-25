@@ -223,6 +223,7 @@ namespace Treachery.Shared
         BattlePhase = 300000,
         ClaimingBattle = 305000,
         CallTraitorOrPass = 310000,
+        CancellingTraitor = 310100,
         CaptureDecision = 311000,
         AvoidingAudit = 312000,
 
@@ -260,6 +261,7 @@ namespace Treachery.Shared
         Thought = 510000,
         MeltingRock = 511000,
         Discarding = 600000,
+        DiscardingTraitor = 700000,
     }
 
     public enum Milestone : int

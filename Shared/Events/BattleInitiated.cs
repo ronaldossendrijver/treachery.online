@@ -165,10 +165,10 @@ namespace Treachery.Shared
             }
         }
 
-        public Battle PlanOfOpponent(Player p)
-        {
-            return PlanOf(OpponentOf(p));
-        }
+        public Battle PlanOfOpponent(Player p) => PlanOf(OpponentOf(p));
+
+        public Battle PlanOfOpponent(Faction f) => PlanOf(OpponentOf(f));
+
 
         public Battle PlanOf(Faction f)
         {
@@ -195,11 +195,11 @@ namespace Treachery.Shared
         {
             if (p == null) return null;
 
-            if (p.Faction == Aggressor)
+            if (Game.AggressorTraitorAction != null && (Game.AggressorTraitorAction.Initiator == p.Faction || Game.AggressorTraitorAction.Initiator == p.Ally))
             {
                 return Game.AggressorTraitorAction;
             }
-            else if (p.Faction == Defender)
+            else if (Game.DefenderTraitorAction != null && (Game.DefenderTraitorAction.Initiator == p.Faction || Game.DefenderTraitorAction.Initiator == p.Ally))
             {
                 return Game.DefenderTraitorAction;
             }
@@ -209,21 +209,7 @@ namespace Treachery.Shared
             }
         }
 
-        public TreacheryCalled TreacheryOf(Faction f)
-        {
-            if (f == Aggressor)
-            {
-                return Game.AggressorTraitorAction;
-            }
-            else if (f == Defender)
-            {
-                return Game.DefenderTraitorAction;
-            }
-            else
-            {
-                return null;
-            }
-        }
+        public TreacheryCalled TreacheryOf(Faction f) => TreacheryOf(Game.GetPlayer(f));
 
         [JsonIgnore]
         public Battle AggressorAction => Game.AggressorBattleAction;

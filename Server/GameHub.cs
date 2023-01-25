@@ -171,9 +171,10 @@ namespace Treachery.Server
         public async Task RequestDivideResources(int hostID, DivideResources e) { await Request(hostID, e); }
         public async Task RequestDivideResourcesAccepted(int hostID, DivideResourcesAccepted e) { await Request(hostID, e); }
         public async Task RequestBattleClaimed(int hostID, BattleClaimed e) { await Request(hostID, e); }
-
         public async Task RequestLoyaltyDecided(int hostID, LoyaltyDecided e) { await Request(hostID, e); }
         public async Task RequestKarmaPinkDial(int hostID, KarmaPinkDial e) { await Request(hostID, e); }
+        public async Task RequestTraitorDiscarded(int hostID, TraitorDiscarded e) { await Request(hostID, e); }
+        public async Task RequestNexusPlayed(int hostID, NexusPlayed e) { await Request(hostID, e); }
 
         private async Task Request<GameEventType>(int hostID, GameEventType e) where GameEventType : GameEvent
         {

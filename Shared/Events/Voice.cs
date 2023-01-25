@@ -83,7 +83,7 @@ namespace Treachery.Shared
                 {
                     return g.CurrentBattle.IsInvolved(p);
                 }
-                else if (p.Ally == Faction.Blue && g.BlueAllyMayUseVoice)
+                else if (p.Ally == Faction.Blue && g.BlueAllowsUseOfVoice)
                 {
                     return g.CurrentBattle.IsAggressorOrDefender(p);
                 }

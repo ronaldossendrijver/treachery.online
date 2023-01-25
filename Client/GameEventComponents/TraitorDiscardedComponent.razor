@@ -1,0 +1,29 @@
+﻿<!--
+ * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<TraitorDiscarded>
+
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Select a card to discard</Header>
+    <Body>
+
+        <SelectHeroComponent @bind-Value="hero" Values=Player.Traitors Required="true" />
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Discard {0}", hero)" ConfirmError=@Validation />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override bool IsUrgent => true;
+
+    private IHero hero;
+
+    protected override TraitorDiscarded ConfirmedResult => new TraitorDiscarded(Game) { Initiator = Faction, Traitor = hero };
+}

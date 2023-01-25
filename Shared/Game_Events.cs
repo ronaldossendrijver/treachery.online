@@ -70,6 +70,7 @@ namespace Treachery.Shared
                 case Phase.Extortion:
                 case Phase.Contemplate:
                 case Phase.TurnConcluded:
+                case Phase.CancellingTraitor:
                     result.Add(typeof(EndPhase));
                     break;
             }
@@ -88,6 +89,9 @@ namespace Treachery.Shared
             {
                 case Phase.Discarding:
                     if (faction == FactionThatMustDiscard) result.Add(typeof(Discarded));
+                    break;
+                case Phase.DiscardingTraitor:
+                    if (faction == FactionThatMustDiscardTraitor) result.Add(typeof(TraitorDiscarded));
                     break;
                 case Phase.AllianceByTerror:
                     if (faction == AllianceByTerrorOfferedTo) result.Add(typeof(AllianceByTerror));
@@ -411,6 +415,10 @@ namespace Treachery.Shared
 
                     if (Diplomacy.CanBePlayed(this, player)) result.Add(typeof(Diplomacy));
 
+                    break;
+
+                case Phase.CancellingTraitor:
+                    if (NexusPlayed.IsApplicable(this, player)) result.Add(typeof(NexusPlayed));
                     break;
 
                 case Phase.Retreating:

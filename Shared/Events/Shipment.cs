@@ -124,7 +124,7 @@ namespace Treachery.Shared
             if (!ValidShipmentLocations(Game, p).Contains(To)) return Message.Express("Cannot ship there");
 
             bool isWhiteNoFieldShipment = p.Faction == Faction.White && NoFieldValue >= 0;
-            if (NoFieldValue >= 0 && !(p.Faction == Faction.White && !Game.Prevented(FactionAdvantage.WhiteNofield)) && !(p.Ally == Faction.White && Game.WhiteAllyMayUseNoField)) return Message.Express("You can't use a No-Field");
+            if (NoFieldValue >= 0 && !(p.Faction == Faction.White && !Game.Prevented(FactionAdvantage.WhiteNofield)) && !(p.Ally == Faction.White && Game.WhiteAllowsUseOfNoField)) return Message.Express("You can't use a No-Field");
             if (isWhiteNoFieldShipment && ForceAmount > 0) return Message.Express("You can't do both normal and No-Field shipment");
             if (isWhiteNoFieldShipment && SpecialForceAmount != 1) return Message.Express("Invalid special force value for No-Field shipment");
             if (p.Faction == Faction.White && SpecialForceAmount > 0 && !ValidNoFieldValues(Game, Player).Contains(NoFieldValue)) return Message.Express("Invalid No-Field value");
@@ -258,7 +258,7 @@ namespace Treachery.Shared
         {
             var result = new List<int>();
             if (p.Faction == Faction.White && !g.Prevented(FactionAdvantage.WhiteNofield) ||
-                p.Ally == Faction.White && g.WhiteAllyMayUseNoField)
+                p.Ally == Faction.White && g.WhiteAllowsUseOfNoField)
             {
                 if (p.Faction == Faction.White && g.LatestRevealedNoFieldValue != 0 && g.CurrentNoFieldValue != 0) result.Add(0);
                 if (g.LatestRevealedNoFieldValue != 3 && g.CurrentNoFieldValue != 3) result.Add(3);

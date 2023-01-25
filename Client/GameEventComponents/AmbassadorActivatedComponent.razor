@@ -8,7 +8,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Activate your <FactionComponent Faction=@AmbassadorActivated.GetFaction(Game)/> Ambassador?</Header>
+    <Header>Activate the <FactionComponent Faction=@AmbassadorActivated.GetFaction(Game)/> Ambassador?</Header>
     <Body>
 
         @{
@@ -191,7 +191,14 @@
             }
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation Pass="Pass" />
+        @if (AmbassadorActivated.MayPass(Player)) 
+        {
+            <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation Pass="Pass" />
+        }
+        else
+        {
+            <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation />
+        }
 
     </Body>
 

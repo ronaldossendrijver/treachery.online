@@ -1,0 +1,107 @@
+﻿<!--
+* Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<NexusPlayed>
+
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Activate your <FactionComponent Faction=@AmbassadorActivated.GetFaction(Game)/> Ambassador?</Header>
+    <Body>
+
+        @{
+            bool cunning = Faction == Player.Nexus;
+            bool secretAlly = !Game.IsPlaying(Player.Nexus);
+            bool betrayal = !(cunning || secretAlly);
+
+            switch (Player.Nexus)
+            {
+                case Faction.Green:
+
+                    if (cunning || secretAlly)
+                    {
+                        <RadioComponent @bind-Value=@greenPrescienceAspect Values=@Prescience.ValidAspects(Game, Player)>
+                            <Label>What should be foreseen?</Label>
+                        </RadioComponent>
+                    }
+                    else
+                    {
+                        <div>Prevent @Name(FactionAdvantage.GreenBattlePlanPrescience)?</div>
+                    }
+                    break;
+
+                case Faction.Black:
+
+                    if (cunning)
+                    {
+                        <div>Draw a new Traitor card, then shufle one of your traitors back into the traitor deck?</div>
+                    }
+                    else if (secretAlly)
+                    {
+                        <div>Draw two Traitor cards, then shufle two of your traitors back into the traitor deck?</div>
+                    }
+                    else
+                    {
+                        <div>Cancel the revealed <FactionComponent Faction=@Faction.Black Diameter=20/> traitor?</div>
+                    }
+                    break;
+
+            }
+        }
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation Pass="Pass" />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override bool IsUrgent => true;
+    protected override Faction IsFactionSpecific => Faction.Pink;
+
+    private PrescienceAspect greenPrescienceAspect;
+
+    /*
+    protected override void OnAfterRender(bool firstRender)
+            {
+            if (firstRender)
+            {
+            h.OnLocationSelected += HandleLocationSelected;
+            h.OnLocationSelectedWithCtrlOrAlt += HandleLocationSelectedWithModifier;
+    }
+    }
+    */
+
+    /*
+    public override void Dispose()
+        {
+
+        base.Dispose();
+        h.OnLocationSelected -= HandleLocationSelected;
+        h.OnLocationSelectedWithCtrlOrAlt -= HandleLocationSelectedWithModifier;
+
+    }
+    */
+
+    protected override NexusPlayed ConfirmedResult => new NexusPlayed(Game)
+    {
+        Initiator = Faction,
+        GreenPrescienceAspect = greenPrescienceAspect,
+    };
+
+    /*
+    private void HandleLocationSelected(object sender, Location l)
+    {
+        var targets = _actualAmbassador == Faction.Yellow ? AmbassadorActivated.ValidYellowTargets(Game, Player, _yellowForces) : AmbassadorActivated.ValidOrangeTargets(Game, Player);
+        SetIfValid(ref _yellowOrOrangeToLocation, targets.OrderByDescending(l => l.IsStronghold).ThenBy(l => Name(l)), l);
+    }
+
+    private void HandleLocationSelectedWithModifier(object sender, Location l)
+    {
+        SetIfValid(ref _yellowFromTerritory, AmbassadorActivated.ValidYellowSources(Game, Player), l.Territory);
+    }
+    */
+}

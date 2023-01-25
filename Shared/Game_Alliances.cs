@@ -19,15 +19,15 @@ namespace Treachery.Shared
             switch (e.Initiator)
             {
                 case Faction.Orange:
-                    OrangeAllyMayShipAsGuild = e.AllyMayShipAsOrange;
+                    AllyMayShipAsOrange = e.AllyMayShipAsOrange;
                     break;
 
                 case Faction.Purple:
-                    PurpleAllyMayReviveAsPurple = e.AllyMayReviveAsPurple;
+                    AllyMayReviveAsPurple = e.AllyMayReviveAsPurple;
                     break;
 
                 case Faction.Grey:
-                    GreyAllyMayReplaceCards = e.AllyMayReplaceCards;
+                    AllyMayReplaceCards = e.AllyMayReplaceCards;
                     break;
 
                 case Faction.Red:
@@ -35,7 +35,7 @@ namespace Treachery.Shared
                     break;
 
                 case Faction.Yellow:
-                    YellowWillProtectFromShaiHulud = e.YellowWillProtectFromMonster;
+                    YellowWillProtectFromMonster = e.YellowWillProtectFromMonster;
                     YellowAllowsThreeFreeRevivals = e.YellowAllowsThreeFreeRevivals;
                     YellowSharesPrescience = e.YellowSharesPrescience;
                     YellowRefundsBattleDial = e.YellowRefundsBattleDial;
@@ -46,11 +46,11 @@ namespace Treachery.Shared
                     break;
 
                 case Faction.Blue:
-                    BlueAllyMayUseVoice = e.BlueAllowsUseOfVoice;
+                    BlueAllowsUseOfVoice = e.BlueAllowsUseOfVoice;
                     break;
 
                 case Faction.White:
-                    WhiteAllyMayUseNoField = e.WhiteAllowsUseOfNoField;
+                    WhiteAllowsUseOfNoField = e.WhiteAllowsUseOfNoField;
                     break;
 
                 case Faction.Cyan:
@@ -67,13 +67,13 @@ namespace Treachery.Shared
             Set(PermittedUseOfAllyKarma, ally, e.PermittedKarmaCard);
         }
 
-        public bool OrangeAllyMayShipAsGuild { get; private set; } = false;
-        public bool PurpleAllyMayReviveAsPurple { get; private set; } = false;
-        public bool GreyAllyMayReplaceCards { get; private set; } = false;
-        public bool BlueAllyMayUseVoice { get; private set; } = false;
+        public bool AllyMayShipAsOrange { get; private set; } = false;
+        public bool AllyMayReviveAsPurple { get; private set; } = false;
+        public bool AllyMayReplaceCards { get; private set; } = false;
+        public bool BlueAllowsUseOfVoice { get; private set; } = false;
         public int RedWillPayForExtraRevival { get; private set; } = 0;
-        public bool WhiteAllyMayUseNoField { get; private set; } = false;
-        public bool YellowWillProtectFromShaiHulud { get; private set; } = false;
+        public bool WhiteAllowsUseOfNoField { get; private set; } = false;
+        public bool YellowWillProtectFromMonster { get; private set; } = false;
         public bool YellowAllowsThreeFreeRevivals { get; private set; } = false;
         public bool YellowSharesPrescience { get; private set; } = false;
         public bool YellowRefundsBattleDial { get; private set; } = false;

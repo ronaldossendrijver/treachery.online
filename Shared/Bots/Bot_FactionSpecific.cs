@@ -701,7 +701,6 @@ namespace Treachery.Shared
 
             if (Voice.MayUseVoice(Game, opponent))
             {
-                LogInfo("Opponent may use voice: {0} {1}", Game.CurrentVoice == null, Game.CurrentBattle.PlanOf(opponent) == null);
                 if (Game.CurrentVoice == null && Game.CurrentBattle.PlanOf(opponent) == null)
                 {
                     //Wait for voice or finalized battle plan
@@ -711,13 +710,15 @@ namespace Treachery.Shared
 
             if (Game.CurrentBattle.IsAggressorOrDefender(this))
             {
-                return BestPrescience(opponent, MaxDial(this, Game.CurrentBattle.Territory, opponent));
+                var existingAspect = Game.CurrentPrescience != null ? Game.CurrentPrescience.Aspect : PrescienceAspect.None;
+                return new Prescience(Game) { Initiator = Faction, Aspect = BestPrescience(opponent, MaxDial(this, Game.CurrentBattle.Territory, opponent), existingAspect) };
             }
 
             return null;
         }
+                
 
-        protected Prescience BestPrescience(Player opponent, float maxForceStrengthInBattle)
+        protected PrescienceAspect BestPrescience(Player opponent, float maxForceStrengthInBattle, PrescienceAspect earlierPrescience)
         {
             var myDefenses = Battle.ValidDefenses(Game, this, null).Where(c => Game.KnownCards(this).Contains(c));
             var myWeapons = Battle.ValidWeapons(Game, this, null, null).Where(c => Game.KnownCards(this).Contains(c));
@@ -734,34 +735,38 @@ namespace Treachery.Shared
             bool iHavePoisonBlade = myWeapons.Any(d => d.Type == TreacheryCardType.ProjectileAndPoison);
 
             PrescienceAspect aspect;
-            if (!weaponIsCertain && myDefenses.Any(d => d.IsProjectileDefense) && myDefenses.Any(d => d.IsPoisonDefense) && !iHaveShieldSnooper)
+            if (earlierPrescience != PrescienceAspect.Weapon && !weaponIsCertain && myDefenses.Any(d => d.IsProjectileDefense) && myDefenses.Any(d => d.IsPoisonDefense) && !iHaveShieldSnooper)
             {
                 //I dont have shield snooper and I have choice between shield and snooper, therefore ask for the weapon used
                 aspect = PrescienceAspect.Weapon;
             }
-            else if (!defenseIsCertain && myWeapons.Any(d => d.IsProjectileWeapon) && myWeapons.Any(d => d.IsPoisonWeapon) && !iHavePoisonBlade)
+            else if (earlierPrescience != PrescienceAspect.Defense && !defenseIsCertain && myWeapons.Any(d => d.IsProjectileWeapon) && myWeapons.Any(d => d.IsPoisonWeapon) && !iHavePoisonBlade)
             {
                 //I dont have poison blade and I have choice between poison weapon and projectile weapon, therefore ask for the defense used
                 aspect = PrescienceAspect.Defense;
             }
-            else if (!weaponIsCertain && myDefenses.Any() && !iHaveShieldSnooper)
+            else if (earlierPrescience != PrescienceAspect.Weapon && !weaponIsCertain && myDefenses.Any() && !iHaveShieldSnooper)
             {
                 aspect = PrescienceAspect.Weapon;
             }
-            else if (!defenseIsCertain && myWeapons.Any() && !iHavePoisonBlade)
+            else if (earlierPrescience != PrescienceAspect.Defense && !defenseIsCertain && myWeapons.Any() && !iHavePoisonBlade)
             {
                 aspect = PrescienceAspect.Defense;
             }
-            else if (maxForceStrengthInBattle > 2 && Prescience.ValidAspects(Game, this).Contains(PrescienceAspect.Dial))
+            else if (earlierPrescience != PrescienceAspect.Dial && maxForceStrengthInBattle > 2 && Prescience.ValidAspects(Game, this).Contains(PrescienceAspect.Dial))
             {
                 aspect = PrescienceAspect.Dial;
             }
-            else
+            else if (earlierPrescience != PrescienceAspect.Leader)
             {
                 aspect = PrescienceAspect.Leader;
             }
+            else
+            {
+                aspect = PrescienceAspect.None;
+            }
 
-            return new Prescience(Game) { Initiator = Faction, Aspect = aspect };
+            return aspect;
         }
 
         #endregion Green
@@ -1155,7 +1160,7 @@ namespace Treachery.Shared
             }
         }
 
-        private AmbassadorActivated PassAmbassadorActivated() => new AmbassadorActivated(Game) { Initiator = Faction, Passed = true };
+        private AmbassadorActivated PassAmbassadorActivated() => AmbassadorActivated.MayPass(this) ? new AmbassadorActivated(Game) { Initiator = Faction, Passed = true } : null;
 
         #endregion
 

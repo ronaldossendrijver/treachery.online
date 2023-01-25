@@ -29,6 +29,135 @@ namespace Treachery.Shared
             return new Discarded(Game) { Initiator = Faction, Card = worstCard };
         }
 
+        protected TraitorDiscarded DetermineTraitorDiscarded()
+        {
+            var worstTraitor = DetermineWorstTraitor();
+
+            if (worstTraitor == null)
+            {
+                worstTraitor = Traitors.LowestOrDefault(t => t.Value);
+            }
+
+            return new TraitorDiscarded(Game) { Initiator = Faction, Traitor = worstTraitor };
+        }
+
+        private IHero DetermineWorstTraitor()
+        {
+            var result = Traitors.Where(t => RevealedTraitors.Contains(t)).HighestOrDefault(t => t.Value);
+
+            if (result == null && (Ally == Faction.Purple || !Game.IsPlaying(Faction.Purple)))
+            {
+                result = Traitors.Where(t => t.Faction == Faction).LowestOrDefault(t => t.Value);
+            }
+
+            if (result == null)
+            {
+                result = Traitors.Where(t => !Game.IsAlive(t)).LowestOrDefault(t => t.Value);
+            }
+
+            if (result == null)
+            {
+                result = Traitors.LowestOrDefault(t => t.Value);
+            }
+
+            return result;
+        }
+
+        protected NexusPlayed DetermineNexusPlayed()
+        {
+            var result = new NexusPlayed(Game) { Initiator = Faction };
+
+            if (Nexus == Faction)
+            {
+                return DetermineNexusPlayed_Cunning(result);
+            }
+            else if (!Game.IsPlaying(Nexus))
+            {
+                return DetermineNexusPlayed_SecretAlly(result);
+            }
+            else
+            {
+                return DetermineNexusPlayed_Betrayal(result);
+            }
+        }
+
+
+        private NexusPlayed DetermineNexusPlayed_Betrayal(NexusPlayed result)
+        {
+            if (Ally != result.Faction)
+            {
+                switch (Nexus)
+                {
+                    case Faction.Green: return result;
+                    case Faction.Black: return result;
+                }
+            }
+
+            return null;
+        }
+
+        private NexusPlayed DetermineNexusPlayed_Cunning(NexusPlayed result)
+        {
+            switch (Nexus)
+            {
+                case Faction.Green:
+
+                    if (Game.CurrentPrescience != null)
+                    {
+                        var opponent = Game.CurrentBattle.OpponentOf(Faction);
+
+                        if (!(Voice.MayUseVoice(Game, opponent) && Game.CurrentVoice == null && Game.CurrentBattle.PlanOf(opponent) == null))
+                        {
+                            if (Game.CurrentBattle.IsAggressorOrDefender(this))
+                            {
+                                result.GreenPrescienceAspect = BestPrescience(opponent, MaxDial(this, Game.CurrentBattle.Territory, opponent), Game.CurrentPrescience.Aspect);
+
+                                if (result.GreenPrescienceAspect != PrescienceAspect.None)
+                                {
+                                    return result;
+                                }
+                            }
+                        }
+                    }
+                    break;
+
+                case Faction.Black: 
+                    if (DetermineWorstTraitor() != null) return result; 
+                    break;
+
+            }
+
+            return null;
+        }
+
+        private NexusPlayed DetermineNexusPlayed_SecretAlly(NexusPlayed result)
+        {
+            switch (Nexus)
+            {
+                case Faction.Green:
+
+                    var opponent = Game.CurrentBattle.OpponentOf(Faction);
+                    if (!(Voice.MayUseVoice(Game, opponent) && Game.CurrentVoice == null && Game.CurrentBattle.PlanOf(opponent) == null))
+                    {
+                        if (Game.CurrentBattle.IsAggressorOrDefender(this))
+                        {
+                            result.GreenPrescienceAspect = BestPrescience(opponent, MaxDial(this, Game.CurrentBattle.Territory, opponent), Game.CurrentPrescience.Aspect);
+                            if (result.GreenPrescienceAspect != PrescienceAspect.None)
+                            {
+                                return result;
+                            }
+                        }
+                    }
+                    break;
+
+                case Faction.Black:
+                    if (DetermineWorstTraitor() != null) return result;
+                    break;
+            }
+
+            return null;
+        }
+
         private CharityClaimed DetermineCharityClaimed()
         {
             if (!(Game.EconomicsStatus == BrownEconomicsStatus.Cancel || Game.EconomicsStatus == BrownEconomicsStatus.CancelFlipped))

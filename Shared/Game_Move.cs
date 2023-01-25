@@ -292,13 +292,13 @@ namespace Treachery.Shared
 
         public bool MayShipAsGuild(Player p)
         {
-            return !Prevented(FactionAdvantage.OrangeSpecialShipments) && (p.Is(Faction.Orange) || p.Ally == Faction.Orange && OrangeAllyMayShipAsGuild);
+            return !Prevented(FactionAdvantage.OrangeSpecialShipments) && (p.Is(Faction.Orange) || p.Ally == Faction.Orange && AllyMayShipAsOrange);
         }
 
         public bool MayShipWithDiscount(Player p)
         {
             return (p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeShipmentsDiscount)) ||
-                   (p.Ally == Faction.Orange && OrangeAllyMayShipAsGuild && !Prevented(FactionAdvantage.OrangeShipmentsDiscountAlly));
+                   (p.Ally == Faction.Orange && AllyMayShipAsOrange && !Prevented(FactionAdvantage.OrangeShipmentsDiscountAlly));
         }
 
         private bool BlueMustBeFighterIn(Location l)
@@ -674,10 +674,11 @@ namespace Treachery.Shared
 
                 HandleAmbassador(e, e.Initiator, ambassadorFaction, victim, territory);
 
-                if (!e.Player.Ambassadors.Union(AmbassadorsOnPlanet.Values).Any(f => f != Faction.Pink))
+                var pink = GetPlayer(Faction.Pink);
+                if (!pink.Ambassadors.Union(AmbassadorsOnPlanet.Values).Any(f => f != Faction.Pink))
                 {
-                    AssignRandomAmbassadors(e.Player);
-                    Log(e.Initiator, " draw 5 random Ambassadors");
+                    AssignRandomAmbassadors(pink);
+                    Log(Faction.Pink, " draw 5 random Ambassadors");
                 }
             }
             else

@@ -43,6 +43,14 @@ namespace Treachery.Shared
             DetermineIfCyanDrawsNewTraitor();
             ExtortionToBeReturned = Players.Any(p => p.Extortion > 0);
             GainExtortions();
+            
+            if (BlackMayDrawNewTraitor)
+            {
+                BlackMayDrawNewTraitor = false;
+                GetPlayer(Faction.Black).Traitors.Add(TraitorDeck.Draw());
+                Log(Faction.Black, " drew a new traitor after having been betrayed");
+            }
+
             Enter(ExtortionToBeReturned, Phase.Extortion, EndMentatPause);
         }
 

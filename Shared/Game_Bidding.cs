@@ -176,7 +176,7 @@ namespace Treachery.Shared
             WinningBid = CurrentBid;
             CardSoldOnBlackMarket = card;
 
-            if (winner != null && winner.Ally == Faction.Grey && GreyAllyMayReplaceCards)
+            if (winner != null && winner.Ally == Faction.Grey && AllyMayReplaceCards)
             {
                 if (!Prevented(FactionAdvantage.GreyAllyDiscardingCard))
                 {
@@ -805,7 +805,7 @@ namespace Treachery.Shared
 
             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreenBiddingPrescience);
 
-            if (winner != null && winner.Ally == Faction.Grey && GreyAllyMayReplaceCards)
+            if (winner != null && winner.Ally == Faction.Grey && AllyMayReplaceCards)
             {
                 if (Prevented(FactionAdvantage.GreyAllyDiscardingCard))
                 {

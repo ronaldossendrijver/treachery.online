@@ -220,9 +220,9 @@ namespace Treachery.Shared
             }
         }
 
-        public static Player DetermineForceSupplier(Game g, Player p)
+        public static Player DetermineForceSupplier(Game g, Player playerThatFights)
         {
-            return p.Faction != Faction.Pink || g.CurrentPinkOrAllyFighter == Faction.None ? p : p.AlliedPlayer;
+            return playerThatFights.Is(Faction.Pink) && g.CurrentPinkOrAllyFighter != Faction.None ? playerThatFights.AlliedPlayer : playerThatFights;
         }
 
         public static float ForceValue(Game g, Faction player, Faction opponent, int Forces, int SpecialForces, int ForcesAtHalfStrength, int SpecialForcesAtHalfStrength)
@@ -360,6 +360,8 @@ namespace Treachery.Shared
 
         public static int MaxForces(Game g, Player p, bool specialForces)
         {
+            var forceSupplier = DetermineForceSupplier(g, p);
+
             if (g.CurrentBattle == null || g.CurrentBattle.Territory == null)
             {
                 return 0;
@@ -367,20 +369,20 @@ namespace Treachery.Shared
 
             if (!specialForces)
             {
-                if (p.Faction == Faction.White && p.SpecialForcesIn(g.CurrentBattle.Territory) > 0)
+                if (forceSupplier.Faction == Faction.White && forceSupplier.SpecialForcesIn(g.CurrentBattle.Territory) > 0)
                 {
-                    return Math.Min(p.ForcesInReserve, g.CurrentNoFieldValue) + p.ForcesIn(g.CurrentBattle.Territory);
+                    return Math.Min(forceSupplier.ForcesInReserve, g.CurrentNoFieldValue) + forceSupplier.ForcesIn(g.CurrentBattle.Territory);
                 }
                 else
                 {
-                    return p.ForcesIn(g.CurrentBattle.Territory);
+                    return forceSupplier.ForcesIn(g.CurrentBattle.Territory);
                 }
             }
             else
             {
-                if (p.Faction != Faction.White)
+                if (forceSupplier.Faction != Faction.White)
                 {
-                    return p.SpecialForcesIn(g.CurrentBattle.Territory);
+                    return forceSupplier.SpecialForcesIn(g.CurrentBattle.Territory);
                 }
                 else
                 {

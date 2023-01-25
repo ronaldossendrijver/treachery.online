@@ -214,6 +214,8 @@ namespace Treachery.Shared
         public static int ValidPurpleMaxAmount(Player p) => Math.Min(p.ForcesKilled, 4);
 
         public static IEnumerable<IHero> ValidPurpleHeroes(Game game, Player player) => game.KilledHeroes(player);
+
+        public static bool MayPass(Player p) => p.Faction == Faction.Pink;
     }
 
 }

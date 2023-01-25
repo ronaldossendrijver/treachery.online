@@ -72,17 +72,17 @@ namespace Treachery.Shared
             CreateTerrorTokens();
             UnassignedAmbassadors = new Deck<Faction>(EstablishPlayers.AvailableFactions().Where(f => f != Faction.Cyan), Random);
 
-            OrangeAllyMayShipAsGuild = true;
-            PurpleAllyMayReviveAsPurple = true;
-            GreyAllyMayReplaceCards = true;
+            AllyMayShipAsOrange = true;
+            AllyMayReviveAsPurple = true;
+            AllyMayReplaceCards = true;
             RedWillPayForExtraRevival = 0;
-            YellowWillProtectFromShaiHulud = true;
+            YellowWillProtectFromMonster = true;
             YellowAllowsThreeFreeRevivals = true;
             YellowSharesPrescience = true;
             YellowRefundsBattleDial = true;
             GreenSharesPrescience = true;
-            BlueAllyMayUseVoice = true;
-            WhiteAllyMayUseNoField = true;
+            BlueAllowsUseOfVoice = true;
+            WhiteAllowsUseOfNoField = true;
 
             MaximumNumberOfTurns = e.MaximumTurns;
             MaximumNumberOfPlayers = e.MaximumNumberOfPlayers;

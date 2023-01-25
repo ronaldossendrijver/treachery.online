@@ -76,22 +76,37 @@
                     <div class="text-success mt-1">Opponent battle plan will be visible as soon as they confirm it.</div>
                 }
             }
-            else if (Game.CurrentPrescience != null)
+            else
             {
-                if (opponentBattlePlan != null)
+                if (Game.CurrentPrescience != null) 
                 {
-                    <Hoverable Class="text-success mt-1" Popover=@GetPopupForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan)>Enemy @Game.CurrentPrescience.Aspect: @GetTextForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan).</Hoverable>
+                    if (opponentBattlePlan != null)
+                    {
+                        <Hoverable Class="text-success mt-1" Popover=@GetPopupForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan)>Enemy @Game.CurrentPrescience.Aspect: @GetTextForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan).</Hoverable>
+                    }
+                    else
+                    {
+                        <div class="text-success mt-1">Opponent @Game.CurrentPrescience.Aspect will be visible as soon as they confirm their battle plan.</div>
+                    }
                 }
-                else
+
+                if (Game.CurrentNexusPrescience != null)
                 {
-                    <div class="text-success mt-1">Opponent @Game.CurrentPrescience.Aspect will be visible as soon as they confirm their battle plan.</div>
+                    if (opponentBattlePlan != null)
+                    {
+                        <Hoverable Class="text-success mt-1" Popover=@GetPopupForAspect(Game.CurrentNexusPrescience.GreenPrescienceAspect, opponentBattlePlan)>Enemy @Game.CurrentNexusPrescience.GreenPrescienceAspect: @GetTextForAspect(Game.CurrentNexusPrescience.GreenPrescienceAspect, opponentBattlePlan).</Hoverable>
+                    }
+                    else
+                    {
+                        <div class="text-success mt-1">Opponent @Game.CurrentNexusPrescience.GreenPrescienceAspect will be visible as soon as they confirm their battle plan.</div>
+                    }
                 }
             }
         }
 
         @if (Game.CurrentPinkBattleContribution > 0)
         {
-            <div class="text-success mt-1"><FactionComponent Faction=Faction.Pink Diameter=20 /> contribute <strong>@Game.CurrentPinkBattleContribution</strong> to your dial.</div>
+            <div class="text-success mt-1"><FactionComponent Faction=Faction.Pink Diameter=20 /> forces contribute <strong>@Game.CurrentPinkBattleContribution</strong> to your dial.</div>
         }
 
         <div class="mt-1">

@@ -22,7 +22,8 @@ namespace Treachery.Shared
         {
             GameEvent action = null;
 
-            if (Do(DetermineVoice, ref action, evts) ||
+            if (Do(DetermineNexusPlayed, ref action, evts) || 
+                Do(DetermineVoice, ref action, evts) ||
                 Do(DetermineDealCancelled, ref action, evts) ||
                 Do(DetermineAcceptOrCancelPurpleRevival, ref action, evts) ||
                 Do(DetermineThoughtAnswered, ref action, evts) ||
@@ -99,6 +100,7 @@ namespace Treachery.Shared
                 Do(DetermineNexusCardDrawn, ref action, evts) ||
                 Do(DetermineExtortionPrevented, ref action, evts) ||
                 Do(DetermineDiscarded, ref action, evts) ||
+                Do(DetermineTraitorDiscarded, ref action, evts) ||
                 Do(DetermineAllianceByTerror, ref action, evts) ||
                 Do(DetermineAllianceByAmbassador, ref action, evts) ||
                 Do(DetermineLoserConcluded, ref action, evts) ||

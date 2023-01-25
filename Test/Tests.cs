@@ -13,6 +13,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Treachery.Client;
@@ -26,10 +27,20 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            var pink = g.GetPlayer(Faction.Pink);
-            if (pink != null && g.CurrentPhase == Phase.CallTraitorOrPass && g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(pink) && pink.HasKarma && !pink.SpecialKarmaPowerUsed)
+            if (e is NexusPlayed np)
             {
-                WriteSavegameIfApplicable(g, pink, "Pink may use special karama now");
+                if (np.Cunning)
+                {
+                    WriteSavegameIfApplicable(g, e.Player, "Cunning-" + np.Faction);
+                }
+                else if (np.SecretAlly)
+                {
+                    WriteSavegameIfApplicable(g, e.Player, "SecretAlly-" + np.Faction);
+                }
+                else
+                {
+                    WriteSavegameIfApplicable(g, e.Player, "Betrayal-" + np.Faction);
+                }
             }
 
             if (e.Player != null && e.Player.Is(Faction.Pink) && e.Player.HasAlly)
@@ -371,7 +382,7 @@ namespace Treachery.Test
             Parallel.For(0, nrOfGames, po,
                 i =>
                 {
-                    var game = LetBotsPlay(expansionLevel, rules, nrOfPlayers, nrOfTurns, p, false, false, null, f);
+                    var game = LetBotsPlay(expansionLevel, rules, nrOfPlayers, nrOfTurns, p, false, false, null, 30, f);
                     var playerToCheck = game.Players.Single(p => p.Faction == f);
                     if (game.Winners.Contains(playerToCheck)) countWins++;
                     countSpice += playerToCheck.Resources;
@@ -395,9 +406,11 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 200;
+            int nrOfGames = 2000;
             int nrOfTurns = 10;
             int nrOfPlayers = 6;
+
+            int timeout = 10;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 
@@ -418,7 +431,7 @@ namespace Treachery.Test
             Parallel.For(0, nrOfGames, po,
                    index =>
                    {
-                       PlayGameAndRecordResults(expansionLevel, nrOfPlayers, nrOfTurns, rulesAsArray, wincounter, statistics);
+                       PlayGameAndRecordResults(expansionLevel, nrOfPlayers, nrOfTurns, rulesAsArray, wincounter, statistics, timeout);
                    });
 
             foreach (var f in wincounter.Counted.OrderByDescending(f => wincounter.CountOf(f)))
@@ -432,9 +445,9 @@ namespace Treachery.Test
             }
         }
 
-        private void PlayGameAndRecordResults(int expansionLevel, int nrOfPlayers, int nrOfTurns, Rule[] rulesAsArray, ObjectCounter<Faction> wincounter, Statistics statistics)
+        private void PlayGameAndRecordResults(int expansionLevel, int nrOfPlayers, int nrOfTurns, Rule[] rulesAsArray, ObjectCounter<Faction> wincounter, Statistics statistics, int timeout)
         {
-            var game = LetBotsPlay(expansionLevel, rulesAsArray, nrOfPlayers, nrOfTurns, null, false, true, statistics);
+            var game = LetBotsPlay(expansionLevel, rulesAsArray, nrOfPlayers, nrOfTurns, null, false, true, statistics, timeout);
 
             Console.WriteLine("{0};{1};{2};{3};{4};{5};{6};{7};{8}",
                 string.Join(",", game.Winners.Select(p => DetermineName(p))),
@@ -455,7 +468,7 @@ namespace Treachery.Test
 
         private readonly List<TimedTest> timedTests = new();
         private readonly List<Game> failedGames = new();
-        private Game LetBotsPlay(int expansionLevel, Rule[] rules, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool infoLogging, bool performTests, Statistics statistics, Faction mustPlay = Faction.None)
+        private Game LetBotsPlay(int expansionLevel, Rule[] rules, int nrOfPlayers, int nrOfTurns, Dictionary<Faction, BotParameters> p, bool infoLogging, bool performTests, Statistics statistics, int timeout, Faction mustPlay = Faction.None)
         {
             BattleOutcome previousBattleOutcome = null;
 
@@ -464,7 +477,7 @@ namespace Treachery.Test
                 BotInfologging = infoLogging,
             };
 
-            var timer = new TimedTest(game, 60);
+            var timer = new TimedTest(game, timeout);
             timer.Elapsed += HandleElapsedTestTime;
             timedTests.Add(timer);
 
@@ -510,12 +523,7 @@ namespace Treachery.Test
                         File.WriteAllText("stuck" + game.Seed + ".json", GameState.GetStateAsString(game));
                     }
                     Assert.AreNotEqual(nrOfTurns * 500, game.History.Count, "bots got stuck");
-
-                    if (failedGames.Contains(game))
-                    {
-                        File.WriteAllText("timeout" + game.Seed + ".json", GameState.GetStateAsString(game));
-                        failedGames.Remove(game);
-                    }
+                                        
                     Assert.IsFalse(failedGames.Contains(game), "timeout");
 
                     if (performTests)
@@ -549,6 +557,7 @@ namespace Treachery.Test
         private void HandleElapsedTestTime(object sender, ElapsedEventArgs e)
         {
             var game = sender as Game;
+            File.WriteAllText("timeout" + game.Seed + ".json", GameState.GetStateAsString(game));
             failedGames.Add(game);
         }
 
