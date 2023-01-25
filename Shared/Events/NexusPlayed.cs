@@ -3,9 +3,6 @@
  */
 
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Treachery.Shared
 {
@@ -19,15 +16,16 @@ namespace Treachery.Shared
         {
         }
 
-        public Faction Faction { get; set; }
-
         public PrescienceAspect GreenPrescienceAspect { get; set; }
 
+        public Faction Faction { get; set; }
 
         public override Message Validate()
         {
             switch (Faction)
             {
+                case Faction.None: return Message.Express("Invalid Nexus faction");
+                    
                 case Faction.Brown:
                     break;
 
@@ -60,17 +58,25 @@ namespace Treachery.Shared
 
         public static bool IsBetrayal(Game g, Player p) => !(IsCunning(p) || IsSecretAlly(g, p));
 
-        public bool Cunning => IsCunning(Player);
+        [JsonIgnore]
+        public bool Cunning => Initiator == Faction;
 
-        public bool SecretAlly => IsSecretAlly(Game, Player);
+        [JsonIgnore]
+        public bool SecretAlly => !Game.IsPlaying(Faction);
 
-        public bool Betrayal => IsBetrayal(Game, Player);
+        [JsonIgnore]
+        public bool Betrayal => !(Cunning && SecretAlly);
 
         public static bool IsApplicable(Game g, Player p)
         {
+            if (g.CurrentPhase == Phase.NexusCards)
+            {
+                return false;
+            }
+
             bool cunning = IsCunning(p);
             bool secretAlly = IsSecretAlly(g,p);
-            bool betrayal = IsBetrayal(g,p);
+            bool betrayal = !(cunning || secretAlly);
 
             return (p.Nexus) switch
             {

@@ -8,7 +8,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Activate your <FactionComponent Faction=@AmbassadorActivated.GetFaction(Game)/> Ambassador?</Header>
+    <Header>Nexus: Play <FactionComponent Faction=@Player.Nexus/> @NexusTypeText</Header>
     <Body>
 
         @{
@@ -64,8 +64,8 @@
 
     private PrescienceAspect greenPrescienceAspect;
 
-    /*
-    protected override void OnAfterRender(bool firstRender)
+            /*
+            protected override void OnAfterRender(bool firstRender)
             {
             if (firstRender)
             {
@@ -89,6 +89,7 @@
     protected override NexusPlayed ConfirmedResult => new NexusPlayed(Game)
     {
         Initiator = Faction,
+        Faction = Player.Nexus,
         GreenPrescienceAspect = greenPrescienceAspect,
     };
 
@@ -104,4 +105,6 @@
         SetIfValid(ref _yellowFromTerritory, AmbassadorActivated.ValidYellowSources(Game, Player), l.Territory);
     }
     */
+
+    private string NexusTypeText => NexusPlayed.IsCunning(Player) ? "Cunning" : NexusPlayed.IsSecretAlly(Game, Player) ? "Secret Ally" : "Betrayal";
 }

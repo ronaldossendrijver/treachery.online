@@ -659,11 +659,11 @@ namespace Treachery.Shared
 
         public void HandleEvent(NexusPlayed e)
         {
-            if (e.Initiator == e.Faction)
+            if (e.Cunning)
             {
                 HandleCunning(e);
             }
-            else if (!IsPlaying(e.Faction))
+            else if (e.SecretAlly)
             {
                 HandleSecretAlly(e);
             }
@@ -671,6 +671,8 @@ namespace Treachery.Shared
             {
                 HandleBetrayal(e);
             }
+
+            DiscardNexusCard(e.Player);
         }
 
         

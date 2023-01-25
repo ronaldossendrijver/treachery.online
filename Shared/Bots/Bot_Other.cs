@@ -52,12 +52,12 @@ namespace Treachery.Shared
 
             if (result == null)
             {
-                result = Traitors.Where(t => !Game.IsAlive(t)).LowestOrDefault(t => t.Value);
+                result = Traitors.Where(t => t is Leader && !Game.IsAlive(t)).LowestOrDefault(t => t.Value);
             }
 
             if (result == null)
             {
-                result = Traitors.LowestOrDefault(t => t.Value);
+                result = Traitors.Where(t => t is Leader).LowestOrDefault(t => t.Value);
             }
 
             return result;
@@ -65,7 +65,7 @@ namespace Treachery.Shared
 
         protected NexusPlayed DetermineNexusPlayed()
         {
-            var result = new NexusPlayed(Game) { Initiator = Faction };
+            var result = new NexusPlayed(Game) { Initiator = Faction, Faction = Nexus };
 
             if (NexusPlayed.IsCunning(this))
             {

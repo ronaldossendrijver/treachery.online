@@ -417,10 +417,6 @@ namespace Treachery.Shared
 
                     break;
 
-                case Phase.CancellingTraitor:
-                    if (NexusPlayed.IsApplicable(this, player)) result.Add(typeof(NexusPlayed));
-                    break;
-
                 case Phase.Retreating:
                     if (faction == BattleLoser) result.Add(typeof(Retreat));
                     break;
@@ -502,6 +498,8 @@ namespace Treachery.Shared
             {
                 result.Add(typeof(HideSecrets));
             }
+
+            if (NexusPlayed.IsApplicable(this, player)) result.Add(typeof(NexusPlayed));
 
             if (player.Ally != Faction.None) result.Add(typeof(AllyPermission));
 

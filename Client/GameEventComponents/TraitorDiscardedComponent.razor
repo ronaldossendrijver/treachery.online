@@ -8,10 +8,10 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Select a card to discard</Header>
+    <Header>Select a traitor to discard</Header>
     <Body>
 
-        <SelectHeroComponent @bind-Value="hero" Values=Player.Traitors Required="true" />
+        <SelectHeroComponent Game="Game" @bind-Value="hero" Values=Player.Traitors Required="true" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Discard {0}", hero)" ConfirmError=@Validation />
 
