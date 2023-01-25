@@ -67,11 +67,11 @@ namespace Treachery.Shared
         {
             var result = new NexusPlayed(Game) { Initiator = Faction };
 
-            if (Nexus == Faction)
+            if (NexusPlayed.IsCunning(this))
             {
                 return DetermineNexusPlayed_Cunning(result);
             }
-            else if (!Game.IsPlaying(Nexus))
+            else if (NexusPlayed.IsSecretAlly(Game, this))
             {
                 return DetermineNexusPlayed_SecretAlly(result);
             }
