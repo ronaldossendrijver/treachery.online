@@ -556,21 +556,28 @@ namespace Treachery.Shared
             }
         }
 
-        public List<Faction> FactionsThatDrewNexusCards { get; private set; }
+        public List<Faction> FactionsThatMayDrawNexusCard { get; private set; }
 
         private void EnterNexusCardPhase()
         {
             NexusHasOccured = false;
-            FactionsThatDrewNexusCards = new();
+            FactionsThatMayDrawNexusCard = Players.Where(p => !p.HasAlly).Select(p => p.Faction).ToList();
             Enter(Phase.NexusCards);
         }
 
         public void HandleEvent(NexusCardDrawn e)
         {
-            DealNexusCard(e.Player);
-            FactionsThatDrewNexusCards.Add(e.Initiator);
+            if (!e.Passed)
+            {
+                DealNexusCard(e.Player);
+            }
 
-            if (!Players.Any(p => NexusCardDrawn.Applicable(this, p)))
+            if (e.Passed || e.Player.Nexus != e.Initiator)
+            {
+                FactionsThatMayDrawNexusCard.Remove(e.Initiator);
+            }
+
+            if (!FactionsThatMayDrawNexusCard.Any())
             {
                 EndBlowPhase();
             }

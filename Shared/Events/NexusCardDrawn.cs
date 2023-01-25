@@ -39,7 +39,7 @@ namespace Treachery.Shared
 
         public static bool Applicable(Game g, Player p)
         {
-            return p.Ally == Faction.None && (!g.FactionsThatDrewNexusCards.Contains(p.Faction) || p.Faction == p.Nexus);
+            return g.FactionsThatMayDrawNexusCard.Contains(p.Faction);
         }
     }
 }

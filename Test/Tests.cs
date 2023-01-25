@@ -406,11 +406,11 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 10000;
+            int nrOfGames = 15000;
             int nrOfTurns = 10;
             int nrOfPlayers = 6;
 
-            int timeout = 10;
+            int timeout = 30;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 

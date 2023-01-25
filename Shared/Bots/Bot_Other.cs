@@ -141,7 +141,7 @@ namespace Treachery.Shared
                     {
                         if (Game.CurrentBattle.IsAggressorOrDefender(this))
                         {
-                            result.GreenPrescienceAspect = BestPrescience(opponent, MaxDial(this, Game.CurrentBattle.Territory, opponent), Game.CurrentPrescience.Aspect);
+                            result.GreenPrescienceAspect = BestPrescience(opponent, MaxDial(this, Game.CurrentBattle.Territory, opponent), PrescienceAspect.None);
                             if (result.GreenPrescienceAspect != PrescienceAspect.None)
                             {
                                 return result;

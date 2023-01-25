@@ -87,12 +87,13 @@ namespace Treachery.Shared
         {
             if (NexusCardDrawn.MayDraw(this))
             {
-                return new NexusCardDrawn(Game) { Initiator = Faction, Passed = false };
+                if (Nexus == Faction.None || Faction == Faction.Red && Nexus == Faction.Red || Faction == Faction.Blue && Nexus == Faction.Blue || Faction == Faction.Grey && Nexus == Faction.Grey)
+                {
+                    return new NexusCardDrawn(Game) { Initiator = Faction, Passed = false };
+                }
             }
-            else
-            {
-                return new NexusCardDrawn(Game) { Initiator = Faction, Passed = true };
-            }
+
+            return new NexusCardDrawn(Game) { Initiator = Faction, Passed = true };
         }
 
         protected virtual AllyPermission DetermineAlliancePermissions()
