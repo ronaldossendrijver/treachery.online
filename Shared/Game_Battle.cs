@@ -263,8 +263,8 @@ namespace Treachery.Shared
 
             if (AggressorBattleAction != null && DefenderBattleAction != null)
             {
-                RevealCurrentNoField(AggressorBattleAction.Player, CurrentBattle.Territory);
-                RevealCurrentNoField(DefenderBattleAction.Player, CurrentBattle.Territory);
+                RevealCurrentNoField(Battle.DetermineForceSupplier(this, AggressorBattleAction.Player), CurrentBattle.Territory);
+                RevealCurrentNoField(Battle.DetermineForceSupplier(this, DefenderBattleAction.Player), CurrentBattle.Territory);
 
                 Log(AggressorBattleAction.GetBattlePlanMessage());
                 Log(DefenderBattleAction.GetBattlePlanMessage());

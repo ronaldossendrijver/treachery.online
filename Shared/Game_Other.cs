@@ -29,7 +29,7 @@ namespace Treachery.Shared
                         player.SpecialForcesToReserves(noFieldLocation, 1);
                         int nrOfForces = Math.Min(player.ForcesInReserve, CurrentNoFieldValue);
                         player.ShipForces(noFieldLocation, nrOfForces);
-                        Log(player.Faction, " reveal ", nrOfForces, FactionForce.White, " under ", FactionSpecialForce.White, CurrentNoFieldValue, " in ", noFieldLocation);
+                        Log(player.Faction, " reveal ", nrOfForces, FactionForce.White, " under ", FactionSpecialForce.White, " in ", noFieldLocation);
 
                         if (CurrentNoFieldValue == 0)
                         {
