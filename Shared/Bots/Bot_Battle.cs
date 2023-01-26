@@ -408,6 +408,7 @@ namespace Treachery.Shared
             int spiceLeft = resourcesAvailable + strongholdBonus;
             int costPerForce = Battle.NormalForceCost(Game, this);
             int costPerSpecialForce = Battle.SpecialForceCost(Game, this);
+            int numberOfForcesWithCunningBonus = Game.CurrentRedNexus != null && Game.CurrentRedNexus.Initiator == Faction ? 5 : 0;
 
             LogInfo("DetermineValidForcesInBattle: {0} {1} {2} {3}", dialNeeded, spiceLeft, costPerSpecialForce, costPerForce);
 
@@ -425,7 +426,16 @@ namespace Treachery.Shared
                 forcesAtFullStrength = 0;
                 while (dialNeeded >= normalStrength && forcesAvailable >= 1 && spiceLeft >= costPerForce)
                 {
-                    dialNeeded -= normalStrength;
+                    if (numberOfForcesWithCunningBonus > 0)
+                    {
+                        numberOfForcesWithCunningBonus--;
+                        dialNeeded -= specialStrength;
+                    }
+                    else
+                    {
+                        dialNeeded -= normalStrength;
+                    }
+                    
                     forcesAtFullStrength++;
                     forcesAvailable--;
                     spiceLeft -= costPerForce;
@@ -442,7 +452,16 @@ namespace Treachery.Shared
                 forcesAtHalfStrength = 0;
                 while (dialNeeded > 0 && forcesAvailable >= 1)
                 {
-                    dialNeeded -= 0.5f * normalStrength;
+                    if (numberOfForcesWithCunningBonus > 0)
+                    {
+                        numberOfForcesWithCunningBonus--;
+                        dialNeeded -= 0.5f * specialStrength;
+                    }
+                    else
+                    {
+                        dialNeeded -= 0.5f * normalStrength;
+                    }
+
                     forcesAtHalfStrength++;
                     forcesAvailable--;
                 }
@@ -461,7 +480,16 @@ namespace Treachery.Shared
                 forcesAtFullStrength = 0;
                 while (dialNeeded > 0 && forcesAvailable >= 1 && spiceLeft >= costPerForce)
                 {
-                    dialNeeded -= normalStrength;
+                    if (numberOfForcesWithCunningBonus > 0)
+                    {
+                        numberOfForcesWithCunningBonus--;
+                        dialNeeded -= specialStrength;
+                    }
+                    else
+                    {
+                        dialNeeded -= normalStrength;
+                    }
+
                     forcesAtFullStrength++;
                     forcesAvailable--;
                     spiceLeft -= costPerForce;

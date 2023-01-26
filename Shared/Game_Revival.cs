@@ -52,7 +52,7 @@ namespace Treachery.Shared
             var initiator = GetPlayer(r.Initiator);
 
             //Payment
-            var cost = Revival.DetermineCost(this, initiator, r.Hero, r.AmountOfForces, r.AmountOfSpecialForces, r.ExtraForcesPaidByRed, r.ExtraSpecialForcesPaidByRed);
+            var cost = Revival.DetermineCost(this, initiator, r.Hero, r.AmountOfForces, r.AmountOfSpecialForces, r.ExtraForcesPaidByRed, r.ExtraSpecialForcesPaidByRed, r.UsesRedSecretAlly);
             if (cost.CostForEmperor > 0)
             {
                 var emperor = GetPlayer(Faction.Red);
@@ -71,7 +71,7 @@ namespace Treachery.Shared
 
             //Register free revival
             bool usesFreeRevival = false;
-            if (r.AmountOfForces + r.AmountOfSpecialForces > 0 && FreeRevivals(initiator) > 0)
+            if (r.AmountOfForces + r.AmountOfSpecialForces > 0 && FreeRevivals(initiator, r.UsesRedSecretAlly) > 0)
             {
                 usesFreeRevival = true;
                 FactionsThatTookFreeRevival.Add(r.Initiator);
@@ -194,7 +194,7 @@ namespace Treachery.Shared
             }
         }
 
-        public int FreeRevivals(Player player)
+        public int FreeRevivals(Player player, bool usesRedCunning)
         {
             if (FactionsThatTookFreeRevival.Contains(player.Faction) || FreeRevivalPrevented(player.Faction))
             {
@@ -229,6 +229,11 @@ namespace Treachery.Shared
                 if (CurrentYellowNexus != null && CurrentYellowNexus.Player == player)
                 {
                     nrOfFreeRevivals = 3;
+                }
+
+                if (usesRedCunning)
+                {
+                    nrOfFreeRevivals += 3;
                 }
 
                 return nrOfFreeRevivals;

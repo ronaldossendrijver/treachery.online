@@ -81,6 +81,7 @@ namespace Treachery.Shared
             }
         }
 
+        private bool IWishToAttack(int maxNumberOfContestedStrongholds, Faction f) => AlmostWinningOpponentsIWishToAttack(maxNumberOfContestedStrongholds, true).Select(p => p.Faction).Contains(f);
 
         private NexusPlayed DetermineNexusPlayed_Betrayal(NexusPlayed result)
         {
@@ -93,7 +94,12 @@ namespace Treachery.Shared
                     
                     case Faction.Yellow: 
                         if (Game.CurrentMainPhase == MainPhase.Blow && YellowRidesMonster.ValidSources(Game).Any() ||
-                            Game.CurrentMainPhase == MainPhase.ShipmentAndMove && AlmostWinningOpponentsIWishToAttack(0, true).Select(p => p.Faction).Contains(Faction.Yellow)) return result;
+                            Game.CurrentMainPhase == MainPhase.ShipmentAndMove && IWishToAttack(0, Faction.Yellow)) return result;
+                        break;
+
+                    case Faction.Red:
+                        if (Game.CurrentMainPhase == MainPhase.Bidding && (Game.CurrentBid != null && Game.CurrentBid.Player.Ally == Faction.Red && Game.CurrentBid.TotalAmount > 5 && !Game.Prevented(FactionAdvantage.RedReceiveBid)) ||
+                            Game.CurrentMainPhase == MainPhase.Battle && IWishToAttack(0, Faction.Red) && Game.CurrentBattle != null && Game.GetPlayer(Faction.Red).SpecialForcesIn(Game.CurrentBattle.Territory) >= 3) return result;
                         break;
                 }
             }
@@ -132,6 +138,10 @@ namespace Treachery.Shared
                     
                 case Faction.Yellow:
                     if (Game.Monsters.Any() && DetermineMovedBatallion(true) != null) return result;
+                    break;
+
+                case Faction.Red:
+                    if (ForcesIn(Game.CurrentBattle.Territory) >= 4) return result;
                     break;
             }
 
@@ -184,7 +194,7 @@ namespace Treachery.Shared
 
         protected KarmaFreeRevival DetermineKarmaFreeRevival()
         {
-            int specialForcesThatCanBeRevived = Math.Min(3, Revival.ValidMaxRevivals(Game, this, true));
+            int specialForcesThatCanBeRevived = Math.Min(3, Revival.ValidMaxRevivals(Game, this, true, false));
 
             if (LastTurn || ForcesKilled + specialForcesThatCanBeRevived >= 6)
             {
@@ -481,7 +491,7 @@ namespace Treachery.Shared
 
         protected virtual RaiseDeadPlayed DetermineRaiseDeadPlayed()
         {
-            int specialForcesThatCanBeRevived = Math.Min(5, Revival.ValidMaxRevivals(Game, this, true));
+            int specialForcesThatCanBeRevived = Math.Min(5, Revival.ValidMaxRevivals(Game, this, true, false));
 
             if (Game.CurrentTurn == Game.MaximumNumberOfTurns || Game.CurrentMainPhase > MainPhase.Resurrection)
             {
@@ -695,40 +705,35 @@ namespace Treachery.Shared
                     ).HighestOrDefault(l => l.Value + HeroRevivalPenalty(l));
             }
 
-            DetermineOptimalUseOfRedRevivals(Game, this, out int forcesRevivedByRed, out int specialForcesRevivedByRed);
+            bool useSecretAlly = Revival.MayUseRedSecretAlly(Game, this) && (ForcesKilled - Game.FreeRevivals(this, false) >= 3);
+
+            DetermineOptimalUseOfRedRevivals(Game, this, out int forcesRevivedByRed, out int specialForcesRevivedByRed, useSecretAlly);
 
             int specialForcesToRevive = 0;
             while (
                 //check limit of special forces
-                specialForcesRevivedByRed + specialForcesToRevive + 1 <= Revival.ValidMaxRevivals(Game, this, true) &&
+                specialForcesRevivedByRed + specialForcesToRevive + 1 <= Revival.ValidMaxRevivals(Game, this, true, useSecretAlly) &&
 
                 //check if there are enough forces killed
                 specialForcesRevivedByRed + specialForcesToRevive + 1 <= SpecialForcesKilled &&
 
-                Log(Revival.DetermineCost(Game, this, leaderToRevive, 0, specialForcesToRevive + 1, forcesRevivedByRed, specialForcesRevivedByRed)) &&
-
                 //check if i have enough spice
-                Revival.DetermineCost(Game, this, leaderToRevive, 0, specialForcesToRevive + 1, forcesRevivedByRed, specialForcesRevivedByRed).TotalCostForPlayer <= availableResources)
+                Revival.DetermineCost(Game, this, leaderToRevive, 0, specialForcesToRevive + 1, forcesRevivedByRed, specialForcesRevivedByRed, useSecretAlly).TotalCostForPlayer <= availableResources)
             {
                 specialForcesToRevive++;
             }
 
             int normalForcesToRevive = 0;
 
-            //LogInfo("valid max revivals:" + Revival.ValidMaxRevivals(Game, this, false) + ", specialForcesToRevive + normalForcesToRevive + 1 = " + (specialForcesToRevive + normalForcesToRevive + 1));
-            //LogInfo("ForcesKilled:" + ForcesKilled + ", forcesRevivedByRed + normalForcesToRevive + 1 = " + (forcesRevivedByRed + normalForcesToRevive + 1));
-
             while (
                 //check limit of total amount of forces
-                specialForcesToRevive + normalForcesToRevive + 1 <= Revival.ValidMaxRevivals(Game, this, false) &&
+                specialForcesToRevive + normalForcesToRevive + 1 <= Revival.ValidMaxRevivals(Game, this, false, useSecretAlly) &&
 
                 //check if there are enough forces killed
                 forcesRevivedByRed + normalForcesToRevive + 1 <= ForcesKilled &&
 
-                Log(Revival.DetermineCost(Game, this, leaderToRevive, normalForcesToRevive + 1, specialForcesToRevive, forcesRevivedByRed, specialForcesRevivedByRed)) &&
-
                 //check if i have enough spice
-                Revival.DetermineCost(Game, this, leaderToRevive, normalForcesToRevive + 1, specialForcesToRevive, forcesRevivedByRed, specialForcesRevivedByRed).TotalCostForPlayer <= availableResources)
+                Revival.DetermineCost(Game, this, leaderToRevive, normalForcesToRevive + 1, specialForcesToRevive, forcesRevivedByRed, specialForcesRevivedByRed, useSecretAlly).TotalCostForPlayer <= availableResources)
             {
                 normalForcesToRevive++;
             }
@@ -745,7 +750,8 @@ namespace Treachery.Shared
                     ExtraForcesPaidByRed = forcesRevivedByRed,
                     AmountOfSpecialForces = specialForcesToRevive,
                     ExtraSpecialForcesPaidByRed = specialForcesRevivedByRed,
-                    AssignSkill = assignSkill
+                    AssignSkill = assignSkill,
+                    UsesRedSecretAlly = useSecretAlly
                 };
             }
             else
@@ -754,14 +760,7 @@ namespace Treachery.Shared
             }
         }
 
-        private bool Log(RevivalCost c)
-        {
-
-            LogInfo("TotalCostForPlayer:{0}, CostForForceRevivalForPlayer:{1}, CostForEmperor:{2}, CostToReviveHero:{3}", c.TotalCostForPlayer, c.CostForForceRevivalForPlayer, c.CostForEmperor, c.CostToReviveHero);
-            return true;
-        }
-
-        private static void DetermineOptimalUseOfRedRevivals(Game g, Player p, out int forces, out int specialForces)
+        private static void DetermineOptimalUseOfRedRevivals(Game g, Player p, out int forces, out int specialForces, bool useCunning)
         {
             forces = 0;
             specialForces = 0;
@@ -772,9 +771,9 @@ namespace Treachery.Shared
 
             int potentialMaximumByRed = p.Ally == Faction.Red && (g.Version < 113 || !g.Prevented(FactionAdvantage.RedLetAllyReviveExtraForces)) ? g.RedWillPayForExtraRevival : 0;
 
-            int maxSpecialForces = Revival.ValidMaxRevivals(g, p, true);
+            int maxSpecialForces = Revival.ValidMaxRevivals(g, p, true, useCunning);
 
-            int freeRevivals = g.FreeRevivals(p);
+            int freeRevivals = g.FreeRevivals(p, useCunning);
 
             if (maxSpecialForces > 0 && freeRevivals > 0)
             {
@@ -791,7 +790,7 @@ namespace Treachery.Shared
                 specialForces++;
             }
 
-            int maxForces = Revival.ValidMaxRevivals(g, p, false);
+            int maxForces = Revival.ValidMaxRevivals(g, p, false, useCunning);
 
             maxForces = Math.Max(maxForces - freeRevivals, 0);
 

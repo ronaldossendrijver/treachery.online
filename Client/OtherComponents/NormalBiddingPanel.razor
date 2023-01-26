@@ -12,7 +12,15 @@
 
 @code {
 
-    protected override Bid ConfirmedResult => new Bid(Game) { Initiator = Faction, Passed = false, Amount = amount, KarmaBid = false, KarmaCard = karmaCard, AllyContributionAmount = allyContributionAmount, RedContributionAmount = redContributionAmount };
+    protected override Bid ConfirmedResult => new Bid(Game) { 
+        Initiator = Faction, 
+        Passed = false, 
+        Amount = amount, 
+        KarmaBid = false, 
+        KarmaCard = karmaCard, 
+        UsesRedSecretAlly = useRedCunning,
+        AllyContributionAmount = allyContributionAmount, 
+        RedContributionAmount = redContributionAmount };
 
     protected override Bid OtherResult => new Bid(Game) { Initiator = Faction, Passed = false, KarmaBid = true, KarmaCard = karmaCard };
 
@@ -21,6 +29,8 @@
     protected override bool ShowRepeatAutoPass => true;
 
     protected override bool CanUseKarma => Bid.CanKarma(Game, Player);
+
+    protected override bool CanUseRedCunning => Bid.MayUseRedSecretAlly(Game, Player);
 
     protected override int MaxAllyBidAmount => Bid.ValidMaxAllyAmount(Game, Player);
 

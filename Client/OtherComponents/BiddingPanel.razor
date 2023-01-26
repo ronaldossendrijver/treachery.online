@@ -62,6 +62,15 @@
 
                 @if (CanBid)
                 {
+                    if (CanUseRedCunning)
+                    {
+                        <CheckboxComponent @bind-Value=@useRedCunning>Use your Nexus card to keep the @Concept.Resource you bid on this card?</CheckboxComponent>
+                    }
+                    else
+                    {
+                        useRedCunning = false;
+                    }
+
                     if (CanUseKarma)
                     {
                         <div class="mt-1">
@@ -136,6 +145,7 @@
     protected int allyContributionAmount;
     protected int redContributionAmount;
     protected TreacheryCard karmaCard;
+    protected bool useRedCunning;
 
     private bool _canBid = false;
 

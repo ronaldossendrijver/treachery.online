@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace Treachery.Shared
 {
@@ -45,6 +46,8 @@ namespace Treachery.Shared
 
         public bool AssignSkill { get; set; } = false;
 
+        public bool UsesRedSecretAlly { get; set; }
+
         public override Message Validate()
         {
             var p = Player;
@@ -74,11 +77,13 @@ namespace Treachery.Shared
                 if (AmountOfForces + AmountOfSpecialForces > limit + emperorRevivals) Message.Express("You can't revive that many");
             }
 
-            var costOfRevival = DetermineCost(Game, p, Hero, AmountOfForces, AmountOfSpecialForces, ExtraForcesPaidByRed, ExtraSpecialForcesPaidByRed);
+            var costOfRevival = DetermineCost(Game, p, Hero, AmountOfForces, AmountOfSpecialForces, ExtraForcesPaidByRed, ExtraSpecialForcesPaidByRed, UsesRedSecretAlly);
             if (costOfRevival.TotalCostForPlayer > p.Resources) return Message.Express("You can't pay that many");
 
             if (AssignSkill && Hero == null) return Message.Express("You must revive a leader to assign a skill to");
             if (AssignSkill && !MayAssignSkill(Game, p, Hero)) return Message.Express("You can't assign a skill to this leader");
+
+            if (UsesRedSecretAlly && !MayUseRedSecretAlly(Game, Player)) return Message.Express("you can't use ", Faction.Red, " cunning");
 
             return null;
         }
@@ -88,9 +93,9 @@ namespace Treachery.Shared
             return (int)Math.Ceiling(forces * GetPricePerForce(g, red) + specialForces * GetPricePerSpecialForce(g, red, ally));
         }
 
-        public static RevivalCost DetermineCost(Game g, Player initiator, IHero hero, int amountOfForces, int amountOfSpecialForces, int extraForcesPaidByRed, int extraSpecialForcesPaidByRed)
+        public static RevivalCost DetermineCost(Game g, Player initiator, IHero hero, int amountOfForces, int amountOfSpecialForces, int extraForcesPaidByRed, int extraSpecialForcesPaidByRed, bool usesRedCunning)
         {
-            return new RevivalCost(g, initiator, hero, amountOfForces, amountOfSpecialForces, extraForcesPaidByRed, extraSpecialForcesPaidByRed);
+            return new RevivalCost(g, initiator, hero, amountOfForces, amountOfSpecialForces, extraForcesPaidByRed, extraSpecialForcesPaidByRed, usesRedCunning);
         }
 
         protected override void ExecuteConcreteEvent()
@@ -200,17 +205,20 @@ namespace Treachery.Shared
             return result;
         }
 
-        public static int ValidMaxRevivals(Game g, Player p, bool specialForces)
+        public static int ValidMaxRevivals(Game g, Player p, bool specialForces, bool usingRedCunning)
         {
+            int increasedRevivalDueToRedCunning = usingRedCunning ? 3 : 0;
+            int normalForceRevivalLimit = g.GetRevivalLimit(g, p) + increasedRevivalDueToRedCunning;
+
             if (g.Version >= 124)
             {
                 if (!specialForces)
                 {
-                    return Math.Min(g.GetRevivalLimit(g, p), p.ForcesKilled);
+                    return Math.Min(normalForceRevivalLimit, p.ForcesKilled);
                 }
                 else
                 {
-                    return Math.Min(p.Is(Faction.Grey) ? g.GetRevivalLimit(g, p) : (g.FactionsThatRevivedSpecialForcesThisTurn.Contains(p.Faction) ? 0 : 1), p.SpecialForcesKilled);
+                    return Math.Min(p.Is(Faction.Grey) ? normalForceRevivalLimit : (g.FactionsThatRevivedSpecialForcesThisTurn.Contains(p.Faction) ? 0 : 1), p.SpecialForcesKilled);
                 }
             }
             else
@@ -219,11 +227,11 @@ namespace Treachery.Shared
 
                 if (!specialForces)
                 {
-                    return Math.Min(g.GetRevivalLimit(g, p) + amountPaidByEmperor, p.ForcesKilled);
+                    return Math.Min(normalForceRevivalLimit + amountPaidByEmperor, p.ForcesKilled);
                 }
                 else
                 {
-                    return Math.Min(p.Is(Faction.Grey) ? g.GetRevivalLimit(g, p) + amountPaidByEmperor : (g.FactionsThatRevivedSpecialForcesThisTurn.Contains(p.Faction) ? 0 : 1), p.SpecialForcesKilled);
+                    return Math.Min(p.Is(Faction.Grey) ? normalForceRevivalLimit + amountPaidByEmperor : (g.FactionsThatRevivedSpecialForcesThisTurn.Contains(p.Faction) ? 0 : 1), p.SpecialForcesKilled);
                 }
             }
         }
@@ -328,7 +336,7 @@ namespace Treachery.Shared
             }
         }
 
-
+        public static bool MayUseRedSecretAlly(Game game, Player player) => player.Nexus == Faction.Red && NexusPlayed.IsSecretAlly(game, player);
     }
 
     public class RevivalCost
@@ -339,16 +347,16 @@ namespace Treachery.Shared
         public int CostToReviveHero;
         public bool CanBePaid;
 
-        public RevivalCost(Game g, Player initiator, IHero hero, int amountOfForces, int amountOfSpecialForces, int extraForcesPaidByRed, int extraSpecialForcesPaidByRed)
+        public RevivalCost(Game g, Player initiator, IHero hero, int amountOfForces, int amountOfSpecialForces, int extraForcesPaidByRed, int extraSpecialForcesPaidByRed, bool usingRedCunning)
         {
             if (g.Version >= 124)
             {
                 CostForEmperor = initiator.Ally == Faction.Red ? Revival.DetermineCostOfForcesForRed(g, initiator.AlliedPlayer, initiator.Faction, extraForcesPaidByRed, extraSpecialForcesPaidByRed) : 0;
-                CostForForceRevivalForPlayer = GetPriceOfForceRevival(g, initiator, amountOfForces, amountOfSpecialForces);
+                CostForForceRevivalForPlayer = GetPriceOfForceRevival(g, initiator, amountOfForces, amountOfSpecialForces, usingRedCunning);
             }
             else
             {
-                int costForForceRevival = GetPriceOfForceRevival(g, initiator, amountOfForces, amountOfSpecialForces);
+                int costForForceRevival = GetPriceOfForceRevival(g, initiator, amountOfForces, amountOfSpecialForces, usingRedCunning);
                 var amountPaidForByEmperor = Revival.ValidMaxRevivalsByRed(g, initiator);
                 var emperor = g.GetPlayer(Faction.Red);
                 var emperorsSpice = emperor != null ? emperor.Resources : 0;
@@ -362,9 +370,9 @@ namespace Treachery.Shared
             CanBePaid = initiator.Resources >= TotalCostForPlayer;
         }
 
-        public static int GetPriceOfForceRevival(Game g, Player initiator, int amountOfForces, int amountOfSpecialForces)
+        public static int GetPriceOfForceRevival(Game g, Player initiator, int amountOfForces, int amountOfSpecialForces, bool usingRedCunning)
         {
-            int nrOfFreeRevivals = g.FreeRevivals(initiator);
+            int nrOfFreeRevivals = g.FreeRevivals(initiator, usingRedCunning);
             int nrOfPaidSpecialForces = Math.Max(0, amountOfSpecialForces - nrOfFreeRevivals);
             int nrOfFreeRevivalsLeft = nrOfFreeRevivals - (amountOfSpecialForces - nrOfPaidSpecialForces);
             int nrOfPaidNormalForces = Math.Max(0, amountOfForces - nrOfFreeRevivalsLeft);

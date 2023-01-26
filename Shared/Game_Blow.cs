@@ -23,6 +23,7 @@ namespace Treachery.Shared
         private void EnterSpiceBlowPhase()
         {
             MainPhaseStart(MainPhase.Blow);
+            MonsterAppearedInTerritoryWithoutForces = false;
             ignoredMonsters.Clear();
             ignoredSandtrout = null;
             HasActedOrPassed.Clear();
@@ -71,7 +72,7 @@ namespace Treachery.Shared
                 {
                     ThumperUsed = false;
                     NumberOfMonsters++;
-                    ProcessMonsterCard(PreviousBlowCard == null || PreviousBlowCard.IsShaiHulud ? null : PreviousBlowCard.Location.Territory);
+                    LetMonsterAppear(PreviousBlowCard == null || PreviousBlowCard.IsShaiHulud ? null : PreviousBlowCard.Location.Territory);
                     if (CurrentPhase == Phase.YellowSendingMonsterA || CurrentPhase == Phase.YellowSendingMonsterB)
                     {
                         break;
@@ -96,7 +97,7 @@ namespace Treachery.Shared
                     {
                         SandTroutDoublesResources = false;
                         NumberOfMonsters++;
-                        ProcessMonsterCard(PreviousBlowCard == null || PreviousBlowCard.IsShaiHulud ? null : PreviousBlowCard.Location.Territory);
+                        LetMonsterAppear(PreviousBlowCard == null || PreviousBlowCard.IsShaiHulud ? null : PreviousBlowCard.Location.Territory);
                         if (CurrentPhase == Phase.YellowSendingMonsterA || CurrentPhase == Phase.YellowSendingMonsterB)
                         {
                             break;
@@ -245,7 +246,9 @@ namespace Treachery.Shared
             }
         }
 
-        private void ProcessMonsterCard(Territory t)
+        public bool MonsterAppearedInTerritoryWithoutForces { get; private set; } = false;
+
+        private void LetMonsterAppear(Territory t)
         {
             if (CurrentTurn != 1)
             {
@@ -256,6 +259,11 @@ namespace Treachery.Shared
                 else
                 {
                     Log(Concept.Monster, " appears in ", t);
+                }
+
+                if (!AnyForcesIn(t))
+                {
+                    MonsterAppearedInTerritoryWithoutForces = true;
                 }
 
                 if (Monsters.Count > 0)
@@ -479,7 +487,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(YellowRidesMonster e)
         {
-            if (Monsters.Contains(e.ForceLocations.Keys.Select(k => k.Territory).FirstOrDefault()))
+            if (e.Passed || Monsters.Contains(e.ForceLocations.Keys.Select(k => k.Territory).FirstOrDefault()))
             {
                 Monsters.RemoveAt(0);
             }

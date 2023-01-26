@@ -227,16 +227,24 @@ namespace Treachery.Shared
 
         public static float ForceValue(Game g, Faction player, Faction opponent, int Forces, int SpecialForces, int ForcesAtHalfStrength, int SpecialForcesAtHalfStrength)
         {
+            int nrOfForcesToCountAsSpecialDueToRedCunning = g.CurrentRedNexus != null && g.CurrentRedNexus.Initiator == player ? Math.Min(5, Forces) : 0;
+            int ForcesAdjustedForCunning = Forces - nrOfForcesToCountAsSpecialDueToRedCunning;
+            int SpecialForcesAdjustedForCunning = SpecialForces + nrOfForcesToCountAsSpecialDueToRedCunning;
+
+            int nrOfForcesAtHalfStrengthToCountAsSpecialDueToRedCunning = g.CurrentRedNexus != null && g.CurrentRedNexus.Initiator == player ? Math.Max(0, Math.Min(5, ForcesAtHalfStrength) - nrOfForcesToCountAsSpecialDueToRedCunning) : 0;
+            int ForcesAtHalfStrengthAdjustedForCunning = ForcesAtHalfStrength - nrOfForcesAtHalfStrengthToCountAsSpecialDueToRedCunning;
+            int SpecialForcesAtHalfStrengthAdjustedForCunning = SpecialForcesAtHalfStrength + nrOfForcesAtHalfStrengthToCountAsSpecialDueToRedCunning;
+
             float specialForceStrength = DetermineSpecialForceStrength(g, player, opponent);
             float specialForceNoSpiceFactor = DetermineSpecialForceNoSpiceFactor();
             float normalForceStrength = DetermineNormalForceStrength(player);
             float normalForceNoSpiceFactor = DetermineNormalForceNoSpiceFactor(player);
 
             return
-                normalForceStrength * Forces +
-                specialForceStrength * SpecialForces +
-                normalForceNoSpiceFactor * normalForceStrength * ForcesAtHalfStrength +
-                specialForceNoSpiceFactor * specialForceStrength * SpecialForcesAtHalfStrength;
+                normalForceStrength * ForcesAdjustedForCunning +
+                specialForceStrength * SpecialForcesAdjustedForCunning +
+                normalForceNoSpiceFactor * normalForceStrength * ForcesAtHalfStrengthAdjustedForCunning +
+                specialForceNoSpiceFactor * specialForceStrength * SpecialForcesAtHalfStrengthAdjustedForCunning;
         }
 
         public static bool MustPayForForcesInBattle(Game g, Player p)

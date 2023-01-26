@@ -402,7 +402,7 @@ namespace Treachery.Shared
             Log(e);
             RecentMilestones.Add(Milestone.Karma);
             NumberOfMonsters++;
-            ProcessMonsterCard(e.Territory);
+            LetMonsterAppear(e.Territory);
 
             if (CurrentPhase == Phase.BlowReport)
             {
@@ -713,7 +713,16 @@ namespace Treachery.Shared
                     }
                     break;
 
-
+                case Faction.Red:
+                    if (CurrentMainPhase == MainPhase.Bidding)
+                    {
+                        Prevent(e.Initiator, FactionAdvantage.RedReceiveBid);
+                    }
+                    else if (CurrentMainPhase == MainPhase.Battle && Applicable(Rule.RedSpecialForces))
+                    {
+                        Prevent(e.Initiator, FactionAdvantage.RedSpecialForceBonus);
+                    }
+                    break;
             }    
 
             if (action != null)
@@ -724,6 +733,7 @@ namespace Treachery.Shared
 
         public NexusPlayed CurrentGreenNexus { get; private set; }
         public NexusPlayed CurrentYellowNexus { get; private set; }
+        public NexusPlayed CurrentRedNexus { get; private set; }
         private void HandleCunning(NexusPlayed e)
         {
             var action = MessagePart.Express();
@@ -746,7 +756,12 @@ namespace Treachery.Shared
 
                 case Faction.Yellow:
                     CurrentYellowNexus = e;
-                    action = MessagePart.Express("let forces ride ", Concept.Monster, " from from another territory where it appeared");
+                    action = MessagePart.Express("let forces ride ", Concept.Monster, " from from another territory than where it appeared");
+                    break;
+
+                case Faction.Red:
+                    CurrentRedNexus = e;
+                    action = MessagePart.Express("let 5 ", FactionForce.Red, " count as " , FactionSpecialForce.Red, " during this battle");
                     break;
 
             }
@@ -786,7 +801,6 @@ namespace Treachery.Shared
                         action = MessagePart.Express("increase their free revival to 3");
                     }
                     break;
-                    
 
             }
 

@@ -18,18 +18,15 @@ namespace Treachery.Shared
 
         public int RedContributionAmount { get; set; }
 
+
         [JsonIgnore]
-        public int TotalAmount
-        {
-            get
-            {
-                return Amount + AllyContributionAmount + RedContributionAmount;
-            }
-        }
+        public int TotalAmount => Amount + AllyContributionAmount + RedContributionAmount;
 
         public bool Passed { get; set; }
 
         public int _karmaCardId = -1;
+
+        public bool UsesRedSecretAlly { get; set; }
 
         public Bid(Game game) : base(game)
         {
@@ -108,6 +105,8 @@ namespace Treachery.Shared
 
             if (!UsingKarmaToRemoveBidLimit && Amount > Player.Resources) return Message.Express("You can't pay ", new Payment(Amount));
             if (KarmaCard != null && !Karma.ValidKarmaCards(Game, p).Contains(KarmaCard)) return Message.Express("Invalid ", TreacheryCardType.Karma, " card");
+
+            if (UsesRedSecretAlly && !MayUseRedSecretAlly(Game, Player)) return Message.Express("you can't use ", Faction.Red, " cunning");
 
             return null;
         }
@@ -191,5 +190,7 @@ namespace Treachery.Shared
             return game.CurrentAuctionType == AuctionType.WhiteSilent && !game.Bids.ContainsKey(player.Faction) && player.HasRoomForCards ||
                    game.CurrentAuctionType != AuctionType.WhiteSilent && player == game.BidSequence.CurrentPlayer;
         }
+
+        public static bool MayUseRedSecretAlly(Game game, Player player) => game.CurrentAuctionType == AuctionType.Normal && player.Nexus == Faction.Red && NexusPlayed.IsSecretAlly(game, player);
     }
 }

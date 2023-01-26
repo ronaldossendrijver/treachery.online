@@ -121,6 +121,11 @@ namespace Treachery.Shared
             return Aggressor == p.Faction || Defender == p.Faction;
         }
 
+        public bool IsAggressorOrDefender(Faction f)
+        {
+            return Aggressor == f || Defender == f;
+        }
+
         protected override void ExecuteConcreteEvent()
         {
             Game.HandleEvent(this);

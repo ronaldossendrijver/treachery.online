@@ -10,6 +10,8 @@ namespace Treachery.Client.OtherComponents
 
         protected abstract bool CanUseKarma { get; }
 
+        protected abstract bool CanUseRedCunning { get; }
+
         protected abstract int MaxAllyBidAmount { get; }
 
         protected abstract int MaxBidAmount { get; }

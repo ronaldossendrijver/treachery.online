@@ -129,6 +129,8 @@ namespace Treachery.Shared
         {
             if (karmaCard == null)
             {
+                var useRedSecretAlly = amount > 6 && ForcesKilled < 12 && Bid.MayUseRedSecretAlly(Game, this);
+
                 int spiceLeftToPay = amount;
                 int redContribution = Math.Min(spiceLeftToPay, Game.SpiceForBidsRedCanPay(Faction));
                 spiceLeftToPay -= redContribution;
@@ -136,7 +138,7 @@ namespace Treachery.Shared
                 int allyContribution = Math.Min(spiceLeftToPay, Game.SpiceYourAllyCanPay(this));
                 spiceLeftToPay -= allyContribution;
 
-                return new Bid(Game) { Initiator = Faction, Amount = spiceLeftToPay, AllyContributionAmount = allyContribution, RedContributionAmount = redContribution, KarmaBid = false, KarmaCard = null, Passed = false };
+                return new Bid(Game) { Initiator = Faction, Amount = spiceLeftToPay, AllyContributionAmount = allyContribution, RedContributionAmount = redContribution, KarmaBid = false, KarmaCard = null, Passed = false, UsesRedSecretAlly = useRedSecretAlly };
             }
             else
             {

@@ -88,9 +88,12 @@ namespace Treachery.Shared
                 Faction.Black when secretAlly => g.CurrentPhase == Phase.Contemplate,
 
                 Faction.Yellow when betrayal => g.CurrentMainPhase == MainPhase.Blow || g.CurrentMainPhase == MainPhase.ShipmentAndMove,
-                Faction.Yellow when cunning => g.CurrentMainPhase == MainPhase.Blow,
+                Faction.Yellow when cunning => g.CurrentMainPhase == MainPhase.Blow && g.MonsterAppearedInTerritoryWithoutForces,
                 Faction.Yellow when secretAlly => g.CurrentMainPhase == MainPhase.Blow || g.CurrentMainPhase == MainPhase.Resurrection,
 
+                Faction.Red when betrayal => g.CurrentMainPhase == MainPhase.Bidding || g.CurrentMainPhase == MainPhase.Battle && g.Applicable(Rule.RedSpecialForces) && g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(Faction.Red),
+                Faction.Red when cunning => g.CurrentPhase == Phase.BattlePhase && g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(p) && (g.DefenderBattleAction == null || g.AggressorBattleAction == null),
+                //Faction.Red when secretAlly => g.CurrentMainPhase == MainPhase.Blow || g.CurrentMainPhase == MainPhase.Resurrection,
                 _ => false
             };
 

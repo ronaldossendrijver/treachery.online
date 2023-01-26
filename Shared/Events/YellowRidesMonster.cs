@@ -62,11 +62,12 @@ namespace Treachery.Shared
             var fremen = g.GetPlayer(Faction.Yellow);
             if (fremen != null)
             {
-                Territory firstMonsterLocationWithFremenForces;
                 if (g.CurrentYellowNexus != null)
                 {
-                    fremen.ForcesInLocations.Keys.Where(l => !g.IsInStorm(l)).Select(l => l.Territory).Distinct();
+                    return fremen.ForcesInLocations.Keys.Where(l => !g.IsInStorm(l)).Select(l => l.Territory).Distinct();
                 }
+
+                Territory firstMonsterLocationWithFremenForces;
                 if (g.Version < 136)
                 {
                     firstMonsterLocationWithFremenForces = g.Monsters.FirstOrDefault(t => fremen.AnyForcesIn(t) > 0);
@@ -83,7 +84,7 @@ namespace Treachery.Shared
                 }
             }
 
-            return new Territory[] { };
+            return Array.Empty<Territory>();
         }
 
         public static IEnumerable<Location> ValidTargets(Game g, Player p)

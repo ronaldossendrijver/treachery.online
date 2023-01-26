@@ -27,6 +27,22 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            var red = g.GetPlayer(Faction.Red);
+            if (e is BattleInitiated bi && bi.IsAggressorOrDefender(Faction.Red) && red.Nexus == Faction.Red && red.ForcesIn(bi.Territory) > 1)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Red should be able to use cunning");
+            }
+
+            if (e is Bid bid && bid.UsesRedSecretAlly)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "SecretAlly-Red-Bidding");
+            }
+
+            if (e is Revival rev && rev.UsesRedSecretAlly)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "SecretAlly-Red-Revival");
+            }
+
             if (e is NexusPlayed np)
             {
                 if (np.Cunning)
@@ -406,7 +422,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 200;
+            int nrOfGames = 2000;
             int nrOfTurns = 10;
             int nrOfPlayers = 6;
 
