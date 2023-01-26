@@ -701,6 +701,19 @@ namespace Treachery.Shared
                     Enter(Phase.CallTraitorOrPass);
                     HandleRevealedBattlePlans();
                     break;
+
+                case Faction.Yellow:
+                    if (CurrentMainPhase == MainPhase.Blow)
+                    {
+                        Prevent(e.Initiator, FactionAdvantage.YellowRidesMonster);
+                    }
+                    else if (CurrentMainPhase == MainPhase.ShipmentAndMove)
+                    {
+                        Prevent(e.Initiator, FactionAdvantage.YellowExtraMove);
+                    }
+                    break;
+
+
             }    
 
             if (action != null)
@@ -709,7 +722,8 @@ namespace Treachery.Shared
             }
         }
 
-        public NexusPlayed CurrentNexusPrescience { get; private set; }
+        public NexusPlayed CurrentGreenNexus { get; private set; }
+        public NexusPlayed CurrentYellowNexus { get; private set; }
         private void HandleCunning(NexusPlayed e)
         {
             var action = MessagePart.Express();
@@ -717,7 +731,7 @@ namespace Treachery.Shared
             switch (e.Faction)
             {
                 case Faction.Green: 
-                    CurrentNexusPrescience = e;
+                    CurrentGreenNexus = e;
                     action = MessagePart.Express("see their opponent's ", e.GreenPrescienceAspect);
                     break;
 
@@ -730,8 +744,10 @@ namespace Treachery.Shared
                     Enter(Phase.DiscardingTraitor);
                     break;
 
-
-
+                case Faction.Yellow:
+                    CurrentYellowNexus = e;
+                    action = MessagePart.Express("let forces ride ", Concept.Monster, " from from another territory where it appeared");
+                    break;
 
             }
 
@@ -741,11 +757,11 @@ namespace Treachery.Shared
         private void HandleSecretAlly(NexusPlayed e)
         {
             var action = MessagePart.Express();
-
+            
             switch (e.Faction)
             {
                 case Faction.Green:
-                    CurrentNexusPrescience = e;
+                    CurrentGreenNexus = e;
                     action = MessagePart.Express("see their opponent's ", e.GreenPrescienceAspect);
                     break;
 
@@ -759,7 +775,18 @@ namespace Treachery.Shared
                     Enter(Phase.DiscardingTraitor);
                     break;
 
-
+                case Faction.Yellow:
+                    CurrentYellowNexus = e;
+                    if (CurrentMainPhase == MainPhase.Blow)
+                    {
+                        action = MessagePart.Express("prevent their forces from being devoured by ", Concept.Monster);
+                    }
+                    else if (CurrentMainPhase == MainPhase.Resurrection)
+                    {
+                        action = MessagePart.Express("increase their free revival to 3");
+                    }
+                    break;
+                    
 
             }
 

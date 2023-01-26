@@ -226,6 +226,11 @@ namespace Treachery.Shared
                     nrOfFreeRevivals = 3;
                 }
 
+                if (CurrentYellowNexus != null && CurrentYellowNexus.Player == player)
+                {
+                    nrOfFreeRevivals = 3;
+                }
+
                 return nrOfFreeRevivals;
             }
         }
@@ -408,6 +413,7 @@ namespace Treachery.Shared
         {
             ReceiveGraveyardTechIncome();
             CurrentKarmaRevivalPrevention = null;
+            CurrentYellowNexus = null;
 
             if (Version < 122)
             {

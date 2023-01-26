@@ -327,6 +327,7 @@ namespace Treachery.Shared
         BlueCharity = 73,
 
         YellowControlsMonster = 80,
+        YellowRidesMonster = 81,
         YellowNotPayingForBattles = 85,
         YellowSpecialForceBonus = 90,
         YellowExtraMove = 95,

@@ -227,6 +227,7 @@ namespace Treachery.Shared
                 }
             }
         }
+
         public static bool MayAssignSkill(Game g, Player p, IHero h)
         {
             var capturedLeadersToConsider = g.IsPlaying(Faction.Black) ? g.GetPlayer(Faction.Black).Leaders.Where(l => l.Faction == p.Faction) : Array.Empty<Leader>();

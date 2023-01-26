@@ -87,6 +87,10 @@ namespace Treachery.Shared
                 Faction.Black when cunning => true,
                 Faction.Black when secretAlly => g.CurrentPhase == Phase.Contemplate,
 
+                Faction.Yellow when betrayal => g.CurrentMainPhase == MainPhase.Blow || g.CurrentMainPhase == MainPhase.ShipmentAndMove,
+                Faction.Yellow when cunning => g.CurrentMainPhase == MainPhase.Blow,
+                Faction.Yellow when secretAlly => g.CurrentMainPhase == MainPhase.Blow || g.CurrentMainPhase == MainPhase.Resurrection,
+
                 _ => false
             };
 

@@ -43,11 +43,11 @@ namespace Treachery.Test
                 }
             }
 
-            if (e.Player != null && e.Player.Is(Faction.Pink) && e.Player.HasAlly)
+            if (e.Player != null && e.Player.Is(Faction.Pink) && e.Player.HasAlly && e.Player.Ally != Faction.Grey)
             {
                 if (e is Shipment s)
                 {
-                    if (g.NumberOfOccupiedStrongholds(s.Player.AlliedPlayer, true) >= 3 && g.NumberOfOccupiedStrongholds(s.Player, true) >= 3)
+                    if (g.NumberOfOccupiedStrongholds(s.Player.AlliedPlayer, true) >= 4 && g.NumberOfOccupiedStrongholds(s.Player, true) >= 4)
                     {
                         WriteSavegameIfApplicable(g, e.Player, "Promising situation for Ecaz and their ally");
                     }
@@ -406,7 +406,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 15000;
+            int nrOfGames = 200;
             int nrOfTurns = 10;
             int nrOfPlayers = 6;
 

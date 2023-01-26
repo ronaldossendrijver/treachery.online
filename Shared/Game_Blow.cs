@@ -445,7 +445,7 @@ namespace Treachery.Shared
             NexusHasOccured = true;
             CurrentAllianceOffers.Clear();
 
-            bool fremenCanRide = YellowRidesMonster.ValidSources(this).Any();
+            bool fremenCanRide = YellowRidesMonster.ValidSources(this).Any() && !Prevented(FactionAdvantage.YellowRidesMonster);
             if (fremenCanRide)
             {
                 Enter(CurrentPhase == Phase.AllianceA, Phase.YellowRidingMonsterA, Phase.YellowRidingMonsterB);
@@ -479,7 +479,14 @@ namespace Treachery.Shared
 
         public void HandleEvent(YellowRidesMonster e)
         {
-            Monsters.RemoveAt(0);
+            if (Monsters.Contains(e.ForceLocations.Keys.Select(k => k.Territory).FirstOrDefault()))
+            {
+                Monsters.RemoveAt(0);
+            }
+            else
+            {
+                CurrentYellowNexus = null;
+            }
 
             if (!e.Passed)
             {
@@ -612,6 +619,7 @@ namespace Treachery.Shared
 
         private void EndBlowPhase()
         {
+            CurrentYellowNexus = null;
             HasActedOrPassed.Clear();
             ReshuffleIgnoredMonsters();
             MainPhaseEnd();
@@ -690,7 +698,11 @@ namespace Treachery.Shared
 
         public bool ProtectedFromMonster(Player p)
         {
-            if (p.Is(Faction.Yellow))
+            if (CurrentYellowNexus != null && CurrentYellowNexus.Player == p)
+            {
+                return true;
+            }
+            else if (p.Is(Faction.Yellow))
             {
                 return !Prevented(FactionAdvantage.YellowProtectedFromMonster);
             }

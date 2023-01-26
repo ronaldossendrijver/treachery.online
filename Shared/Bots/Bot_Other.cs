@@ -90,6 +90,11 @@ namespace Treachery.Shared
                 {
                     case Faction.Green: return result;
                     case Faction.Black: return result;
+                    
+                    case Faction.Yellow: 
+                        if (Game.CurrentMainPhase == MainPhase.Blow && YellowRidesMonster.ValidSources(Game).Any() ||
+                            Game.CurrentMainPhase == MainPhase.ShipmentAndMove && AlmostWinningOpponentsIWishToAttack(0, true).Select(p => p.Faction).Contains(Faction.Yellow)) return result;
+                        break;
                 }
             }
 
@@ -124,7 +129,10 @@ namespace Treachery.Shared
                 case Faction.Black: 
                     if (DetermineWorstTraitor() != null) return result; 
                     break;
-
+                    
+                case Faction.Yellow:
+                    if (Game.Monsters.Any() && DetermineMovedBatallion(true) != null) return result;
+                    break;
             }
 
             return null;
@@ -152,6 +160,10 @@ namespace Treachery.Shared
 
                 case Faction.Black:
                     if (DetermineWorstTraitor() != null) return result;
+                    break;
+
+                case Faction.Yellow:
+                    if (Game.CurrentMainPhase == MainPhase.Resurrection && ForcesKilled >= 3) return result;
                     break;
             }
 

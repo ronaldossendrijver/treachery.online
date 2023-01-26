@@ -90,15 +90,15 @@
                     }
                 }
 
-                if (Game.CurrentNexusPrescience != null)
+                if (Game.CurrentGreenNexus != null)
                 {
                     if (opponentBattlePlan != null)
                     {
-                        <Hoverable Class="text-success mt-1" Popover=@GetPopupForAspect(Game.CurrentNexusPrescience.GreenPrescienceAspect, opponentBattlePlan)>Enemy @Game.CurrentNexusPrescience.GreenPrescienceAspect: @GetTextForAspect(Game.CurrentNexusPrescience.GreenPrescienceAspect, opponentBattlePlan).</Hoverable>
+                        <Hoverable Class="text-success mt-1" Popover=@GetPopupForAspect(Game.CurrentGreenNexus.GreenPrescienceAspect, opponentBattlePlan)>Enemy @Game.CurrentGreenNexus.GreenPrescienceAspect: @GetTextForAspect(Game.CurrentGreenNexus.GreenPrescienceAspect, opponentBattlePlan).</Hoverable>
                     }
                     else
                     {
-                        <div class="text-success mt-1">Opponent @Game.CurrentNexusPrescience.GreenPrescienceAspect will be visible as soon as they confirm their battle plan.</div>
+                        <div class="text-success mt-1">Opponent @Game.CurrentGreenNexus.GreenPrescienceAspect will be visible as soon as they confirm their battle plan.</div>
                     }
                 }
             }
