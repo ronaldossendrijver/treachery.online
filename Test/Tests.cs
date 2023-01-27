@@ -29,7 +29,7 @@ namespace Treachery.Test
         private void SaveSpecialCases(Game g, GameEvent e)
         {
             var pink = g.GetPlayer(Faction.Pink);
-            if (pink != null && g.CurrentTurn < 10 && g.CurrentMainPhase == MainPhase.Ended && g.Winners.Contains(pink) && g.NumberOfOccupiedStrongholds(pink, false) < 4)
+            if (pink != null && g.CurrentTurn < 10 && g.CurrentMainPhase == MainPhase.Ended && g.Winners.Contains(pink) && g.MeetsPinkVictoryCondition(pink, false))
             {
                 WriteSavegameIfApplicable(g, pink, "3-stronghold victory with ally");
             }

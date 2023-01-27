@@ -705,7 +705,7 @@ namespace Treachery.Shared
                 }
 
                 if (faction == Faction.Blue && CurrentPhase > Phase.AllianceB &&
-                    CurrentPhase < Phase.NonOrangeShip &&
+                    (Version <= 150 && CurrentPhase < Phase.OrangeShip || CurrentMainPhase < MainPhase.ShipmentAndMove || player.Initiated(CurrentBlueNexus) && CurrentMainPhase == MainPhase.ShipmentAndMove) &&
                     BlueBattleAnnouncement.ValidTerritories(this, player).Any())
                 {
                     result.Add(typeof(BlueBattleAnnouncement));

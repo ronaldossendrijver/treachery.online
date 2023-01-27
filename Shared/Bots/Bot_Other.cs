@@ -89,7 +89,10 @@ namespace Treachery.Shared
             {
                 switch (Nexus)
                 {
-                    case Faction.Green: return result;
+                    case Faction.Green: 
+                        if (Game.CurrentBattle != null && Game.CurrentBattle.IsInvolved(this) && Game.CurrentBattle.IsInvolved(Faction.Green) && !Game.Prevented(FactionAdvantage.GreenBattlePlanPrescience)) return result;
+                        break;
+
                     case Faction.Black: return result;
                     
                     case Faction.Yellow: 
@@ -105,6 +108,11 @@ namespace Treachery.Shared
                     case Faction.Orange:
                         if (Game.RecentlyPaidTotalAmount > 5) return result;
                         break;
+
+                    case Faction.Blue:
+                        if (Game.CurrentBattle != null && Game.CurrentBattle.IsInvolved(this) && Game.CurrentBattle.IsInvolved(Faction.Blue) && !Game.Prevented(FactionAdvantage.BlueUsingVoice)) return result;
+                        break;
+
                 }
             }
 
@@ -153,6 +161,12 @@ namespace Treachery.Shared
                     if (shipment != null && !shipment.Passed && 
                         (decidedShipmentAction == ShipmentDecision.PreventNormalWin || decidedShipmentAction == ShipmentDecision.PreventFremenWin || decidedShipmentAction == ShipmentDecision.AttackWeakStronghold)) return result;
                     break;
+
+                case Faction.Blue:
+                    var flip = DetermineBlueBattleAnnouncement();
+                    if (flip != null) return result;
+                    break;
+
             }
 
             return null;
@@ -190,6 +204,11 @@ namespace Treachery.Shared
                     var shipment = DetermineShipment();
                     if (shipment != null && !shipment.Passed && Shipment.DetermineCost(Game, this, shipment) > 5) return result;
                     break;
+
+                case Faction.Blue:
+                    if (Game.CurrentBattle != null && Game.CurrentBattle.IsInvolved(this)) return result;
+                    break;
+
             }
 
             return null;

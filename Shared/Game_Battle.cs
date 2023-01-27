@@ -1873,6 +1873,7 @@ namespace Treachery.Shared
             CurrentThought = null;
             CurrentVoice = null;
             CurrentGreenNexus = null;
+            CurrentBlueNexus = null;
             CurrentRedNexus = null;
             BlackVictim = null;
             AggressorBattleAction = null;

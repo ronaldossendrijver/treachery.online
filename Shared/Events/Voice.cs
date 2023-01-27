@@ -77,15 +77,22 @@ namespace Treachery.Shared
         {
             bool disableWhenPrescienceIsUsed = g.Version >= 108 && g.CurrentPrescience != null;
 
-            if (!disableWhenPrescienceIsUsed && g.CurrentBattle != null && g.CurrentVoice == null && !g.Prevented(FactionAdvantage.BlueUsingVoice))
+            if (!disableWhenPrescienceIsUsed && g.CurrentBattle != null && g.CurrentVoice == null)
             {
-                if (p.Faction == Faction.Blue)
-                {
-                    return g.CurrentBattle.IsInvolved(p);
-                }
-                else if (p.Ally == Faction.Blue && g.BlueAllowsUseOfVoice)
+                if (p.Initiated(g.CurrentBlueNexus))
                 {
                     return g.CurrentBattle.IsAggressorOrDefender(p);
+                }
+                else if (!g.Prevented(FactionAdvantage.BlueUsingVoice))
+                {
+                    if (p.Faction == Faction.Blue)
+                    {
+                        return g.CurrentBattle.IsInvolved(p);
+                    }
+                    else if (p.Ally == Faction.Blue && g.BlueAllowsUseOfVoice)
+                    {
+                        return g.CurrentBattle.IsAggressorOrDefender(p);
+                    }
                 }
             }
 

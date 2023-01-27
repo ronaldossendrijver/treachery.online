@@ -298,17 +298,13 @@ namespace Treachery.Shared
 
         private BlueBattleAnnouncement DetermineBlueBattleAnnouncement()
         {
-            if (Game.CurrentMainPhase == MainPhase.Resurrection && NrOfBattlesToFight <= Battle.ValidBattleHeroes(Game, this).Count())
+            if (Game.CurrentMainPhase > MainPhase.Bidding && NrOfBattlesToFight <= Battle.ValidBattleHeroes(Game, this).Count())
             {
                 var territory = BlueBattleAnnouncement.ValidTerritories(Game, this).Where(t => IWantToAnnounceBattleIn(t)).LowestOrDefault(t => GetDialNeeded(t, GetOpponentThatOccupies(t), false));
 
                 if (territory != null)
                 {
                     return new BlueBattleAnnouncement(Game) { Initiator = Faction, Territory = territory };
-                }
-                else
-                {
-                    return null;
                 }
             }
 

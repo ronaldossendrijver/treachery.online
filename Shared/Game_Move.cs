@@ -1550,6 +1550,7 @@ namespace Treachery.Shared
             Enter(Phase.ShipmentAndMoveConcluded);
             ReceiveShipsTechIncome();
             BrownHasExtraMove = false;
+            CurrentBlueNexus = null;
         }
 
         public Leader Vidal => LeaderState.Keys.FirstOrDefault(h => h.HeroType == HeroType.PinkAndCyan) as Leader;

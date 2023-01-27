@@ -98,6 +98,10 @@ namespace Treachery.Shared
                 Faction.Orange when cunning => g.CurrentPhase == Phase.OrangeMove && !g.InOrangeCunningShipment,
                 Faction.Orange when secretAlly => g.CurrentPhase == Phase.NonOrangeShip,
 
+                Faction.Blue when betrayal => g.CurrentPhase == Phase.BattlePhase,
+                Faction.Blue when cunning => g.CurrentMainPhase == MainPhase.ShipmentAndMove,
+                Faction.Blue when secretAlly => g.CurrentPhase == Phase.BattlePhase && g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(p),
+
                 _ => false
             } ;
 

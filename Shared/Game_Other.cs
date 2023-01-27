@@ -739,14 +739,29 @@ namespace Treachery.Shared
 
                         e.Player.Resources += p.Amount;
                     }
+
+                    if (TargetOfBureaucracy == Faction.Orange)
+                    {
+                        TargetOfBureaucracy = e.Initiator;
+                    }
+
                     RecentlyPaid.Clear();
                     break;
-                    
-            }    
+
+                case Faction.Blue:
+                    Prevent(e.Initiator, FactionAdvantage.BlueUsingVoice);
+                    break;
+
+
+            }
 
             if (action != null)
             {
                 Log(e.Initiator, " play ", e.Faction, " Nexus Betrayal to ", action);
+            }
+            else
+            {
+                Log(e.Initiator, " play ", e.Faction, " Nexus Betrayal");
             }
         }
 
@@ -754,6 +769,7 @@ namespace Treachery.Shared
         public NexusPlayed CurrentYellowNexus { get; private set; }
         public NexusPlayed CurrentRedNexus { get; private set; }
         public NexusPlayed CurrentOrangeNexus { get; private set; }
+        public NexusPlayed CurrentBlueNexus { get; private set; }
         private void HandleCunning(NexusPlayed e)
         {
             var action = MessagePart.Express();
@@ -789,9 +805,20 @@ namespace Treachery.Shared
                     action = MessagePart.Express("perform an extra shipment after their move");
                     break;
 
+                case Faction.Blue:
+                    CurrentBlueNexus = e;
+                    action = MessagePart.Express("be able to flip advisor to fighters during ", MainPhase.ShipmentAndMove);
+                    break;
             }
 
-            Log(e.Initiator, " play ", e.Faction, " Nexus Cunning to ", action);
+            if (action != null)
+            {
+                Log(e.Initiator, " play ", e.Faction, " Nexus Cunning to ", action);
+            }
+            else
+            {
+                Log(e.Initiator, " play ", e.Faction, " Nexus Cunning");
+            }
         }
 
         private void HandleSecretAlly(NexusPlayed e)
@@ -832,9 +859,20 @@ namespace Treachery.Shared
                     action = MessagePart.Express("be able to ship as ", Faction.Orange);
                     break;
 
+                case Faction.Blue:
+                    CurrentBlueNexus = e;
+                    action = MessagePart.Express("use Voice");
+                    break;
             }
 
-            Log(e.Initiator, " play ", e.Faction, " Nexus Secret Ally to ", action);
+            if (action != null)
+            {
+                Log(e.Initiator, " play ", e.Faction, " Nexus Secret Ally to ", action);
+            }
+            else
+            {
+                Log(e.Initiator, " play ", e.Faction, " Nexus Secret Ally");
+            }
         }
 
         private void LogPrevention(FactionAdvantage prevented)
