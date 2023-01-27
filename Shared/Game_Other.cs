@@ -523,7 +523,7 @@ namespace Treachery.Shared
             }
         }
 
-        private List<FactionAdvantage> PreventedAdvantages = new List<FactionAdvantage>();
+        private List<FactionAdvantage> PreventedAdvantages = new();
 
         private void Prevent(Faction initiator, FactionAdvantage advantage)
         {
@@ -675,7 +675,6 @@ namespace Treachery.Shared
             DiscardNexusCard(e.Player);
         }
 
-        
 
         private bool BlackMayDrawNewTraitor { get; set; } = false;
         private void HandleBetrayal(NexusPlayed e)
@@ -723,6 +722,26 @@ namespace Treachery.Shared
                         Prevent(e.Initiator, FactionAdvantage.RedSpecialForceBonus);
                     }
                     break;
+
+                case Faction.Orange:
+                    foreach (var p in StoredRecentlyPaid)
+                    {
+                        object from = p.To == Faction.None ? "the Bank" : p.To;
+                        Log(e.Initiator, " play ", e.Faction, " Nexus Betrayal to get ", p.Amount, " from ", from);
+                        if (p.To != Faction.None)
+                        {
+                            var getFrom = GetPlayer(p.To);
+                            if (getFrom != null)
+                            {
+                                getFrom.Resources -= p.Amount;
+                            }
+                        }
+
+                        e.Player.Resources += p.Amount;
+                    }
+                    RecentlyPaid.Clear();
+                    break;
+                    
             }    
 
             if (action != null)
@@ -734,6 +753,7 @@ namespace Treachery.Shared
         public NexusPlayed CurrentGreenNexus { get; private set; }
         public NexusPlayed CurrentYellowNexus { get; private set; }
         public NexusPlayed CurrentRedNexus { get; private set; }
+        public NexusPlayed CurrentOrangeNexus { get; private set; }
         private void HandleCunning(NexusPlayed e)
         {
             var action = MessagePart.Express();
@@ -762,6 +782,11 @@ namespace Treachery.Shared
                 case Faction.Red:
                     CurrentRedNexus = e;
                     action = MessagePart.Express("let 5 ", FactionForce.Red, " count as " , FactionSpecialForce.Red, " during this battle");
+                    break;
+
+                case Faction.Orange:
+                    CurrentOrangeNexus = e;
+                    action = MessagePart.Express("perform an extra shipment after their move");
                     break;
 
             }
@@ -800,6 +825,11 @@ namespace Treachery.Shared
                     {
                         action = MessagePart.Express("increase their free revival to 3");
                     }
+                    break;
+
+                case Faction.Orange:
+                    CurrentOrangeNexus = e;
+                    action = MessagePart.Express("be able to ship as ", Faction.Orange);
                     break;
 
             }

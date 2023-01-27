@@ -18,6 +18,8 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
+            if (!Passed && Game.InOrangeCunningShipment) return Message.Express("You cannot move after Cunning shipment");
+
             return ValidateMove(AsAdvisors);
         }
 

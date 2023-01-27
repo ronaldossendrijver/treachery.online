@@ -49,9 +49,9 @@ namespace Treachery.Shared
                 if (decidedShipment == null && !winning && (feelingConfident && hasCards || hasWeapons)) DetermineShipment_AttackWeakStronghold(extraForces, minResourcesToKeep, feelingConfident || LastTurn ? 20 : 0);
                 if (decidedShipment == null && Faction != Faction.Yellow && !winning && !AlmostLastTurn && stillNeedsResources) DetermineShipment_ShipToStrongholdNearSpice();
                 if (decidedShipment == null && Faction == Faction.Yellow && !winning && !LastTurn && stillNeedsResources) DetermineShipment_ShipDirectlyToSpiceAsYellow();
-                if (decidedShipment == null && Game.MayShipAsGuild(this) && !winning && !AlmostLastTurn && stillNeedsResources) DetermineShipment_ShipDirectlyToSpiceAsOrangeOrOrangeAlly();
+                if (decidedShipment == null && Game.MayShipWithDiscount(this) && !winning && !AlmostLastTurn && stillNeedsResources) DetermineShipment_ShipDirectlyToSpiceAsOrangeOrOrangeAlly();
                 if (decidedShipment == null) DetermineShipment_UnlockMoveBonus(minResourcesToKeep);
-                if (decidedShipment == null && Faction == Faction.Orange && !LastTurn && Game.MayShipAsGuild(this)) DetermineShipment_BackToReserves();
+                if (decidedShipment == null && Faction == Faction.Orange && !LastTurn && Game.MayShipToReserves(this)) DetermineShipment_BackToReserves();
                 if (decidedShipment == null) DetermineShipment_DummyAttack(minResourcesToKeep);
                 if (decidedShipment == null) DetermineShipment_StrengthenWeakestStronghold(true, extraForces, Param.Shipment_DialShortageToAccept, !MayFlipToAdvisors);
                 if (decidedShipment == null && Faction == Faction.Yellow && AnyForcesIn(Game.Map.PolarSink) <= 2 && (AlmostLastTurn || LastTurn || ForcesInReserve + SpecialForcesInReserve * 2 >= 8)) DetermineShipment_PolarSinkAsYellow();
@@ -397,7 +397,7 @@ namespace Treachery.Shared
             int roundedDialNeeded = (int)Math.Ceiling(dialNeeded);
             if (roundedDialNeeded <= 0) roundedDialNeeded = 1;
 
-            if (Game.MayShipAsGuild(this) && (roundedDialNeeded % 2) != 0)
+            if (Game.MayShipWithDiscount(this) && (roundedDialNeeded % 2) != 0)
             {
                 return roundedDialNeeded + 1;
             }
@@ -699,7 +699,7 @@ namespace Treachery.Shared
             if (
                 HasKarma && !Game.KarmaPrevented(Faction) &&
                 (!Param.Karma_SaveCardToUseSpecialKarmaAbility || SpecialKarmaPowerUsed) &&
-                !Game.MayShipAsGuild(this) &&
+                !Game.MayShipWithDiscount(this) &&
                 Shipment.DetermineCost(Game, this, shipment) > 7)
             {
                 shipment.KarmaShipment = true;

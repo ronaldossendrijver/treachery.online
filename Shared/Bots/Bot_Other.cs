@@ -101,6 +101,10 @@ namespace Treachery.Shared
                         if (Game.CurrentMainPhase == MainPhase.Bidding && (Game.CurrentBid != null && Game.CurrentBid.Player.Ally == Faction.Red && Game.CurrentBid.TotalAmount > 5 && !Game.Prevented(FactionAdvantage.RedReceiveBid)) ||
                             Game.CurrentMainPhase == MainPhase.Battle && IWishToAttack(0, Faction.Red) && Game.CurrentBattle != null && Game.GetPlayer(Faction.Red).SpecialForcesIn(Game.CurrentBattle.Territory) >= 3) return result;
                         break;
+
+                    case Faction.Orange:
+                        if (Game.RecentlyPaidTotalAmount > 5) return result;
+                        break;
                 }
             }
 
@@ -143,6 +147,12 @@ namespace Treachery.Shared
                 case Faction.Red:
                     if (ForcesIn(Game.CurrentBattle.Territory) >= 4) return result;
                     break;
+
+                case Faction.Orange:
+                    var shipment = DetermineShipment();
+                    if (shipment != null && !shipment.Passed && 
+                        (decidedShipmentAction == ShipmentDecision.PreventNormalWin || decidedShipmentAction == ShipmentDecision.PreventFremenWin || decidedShipmentAction == ShipmentDecision.AttackWeakStronghold)) return result;
+                    break;
             }
 
             return null;
@@ -174,6 +184,11 @@ namespace Treachery.Shared
 
                 case Faction.Yellow:
                     if (Game.CurrentMainPhase == MainPhase.Resurrection && ForcesKilled >= 3) return result;
+                    break;
+
+                case Faction.Orange:
+                    var shipment = DetermineShipment();
+                    if (shipment != null && !shipment.Passed && Shipment.DetermineCost(Game, this, shipment) > 5) return result;
                     break;
             }
 

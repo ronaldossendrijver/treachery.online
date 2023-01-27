@@ -596,6 +596,11 @@ namespace Treachery.Client
                     //Show Faction
                     case EstablishPlayers when g.CurrentPhase != Phase.SelectingFactions && isPlayer: Flash(result, myFaction); break;
                     case FactionTradeOffered fto when (fto.Initiator == myFaction || fto.Target == myFaction) && !g.CurrentTradeOffers.Any(t => t.Initiator == myFaction): Flash(result, myFaction); break;
+
+                    //Show Nexus card played
+                    case NexusPlayed np: Flash(result, Message.Express(np.Initiator, " play a Nexus card"), Skin.Current.GetNexusCardImageURL(np.Faction)); break;
+                    case Revival nexusrev when nexusrev.UsesRedSecretAlly: Flash(result, Message.Express(nexusrev.Initiator, " play a Nexus card"), Skin.Current.GetNexusCardImageURL(Faction.Red)); break;
+                    case Bid nexusbid when nexusbid.UsesRedSecretAlly: Flash(result, Message.Express(nexusbid.Initiator, " play a Nexus card"), Skin.Current.GetNexusCardImageURL(Faction.Red)); break;
                 }
             }
 

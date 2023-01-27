@@ -15,7 +15,7 @@
         {
             <div>Bring any number of forces onto @Skin.Current.Describe(Game.Map.TheGreatFlat.Territory) or onto any one territory within two territories of @Skin.Current.Describe(Game.Map.TheGreatFlat.Territory).</div>
 
-            @if (Game.MayShipAsGuild(Player))
+            @if (Game.MayShipCrossPlanet(Player))
             {
                 <div>In addition, your ally allows you to ship to other locations as well from your reserves.</div>
             }
@@ -25,12 +25,12 @@
             <div>Select forces to ship, or pass.</div>
         }
 
-        @if (Game.MayShipAsGuild(Player))
+        @if (Game.MayShipCrossPlanet(Player))
         {
             <div>You may ship site-to-site any number of forces from a source location to another location.</div>
         }
 
-        @if (Faction == Faction.Orange)
+        @if (Game.MayShipToReserves(Player))
         {
             <div>You may ship any number of forces from any one location back to your reserves.</div>
         }
@@ -38,7 +38,7 @@
     </Header>
     <Body>
 
-        @if (Game.MayShipAsGuild(Player))
+        @if (Game.MayShipCrossPlanet(Player) || Game.MayShipToReserves(Player))
         {
             <RadioComponent @bind-Value="shipmentType" Values="@ValidShipmentTypes" ValueLabels="@ValidShipmentTypeLabels" />
         }
@@ -162,7 +162,7 @@
             shipmentAllyContributionAmount = 0;
         }
 
-        @if (Shipment.CanKarma(Game, Player) && (Faction != Faction.Yellow || shipmentType == SHIPMENT_SITETOSITE) && !Game.MayShipAsGuild(Player))
+        @if (Shipment.CanKarma(Game, Player) && (Faction != Faction.Yellow || shipmentType == SHIPMENT_SITETOSITE) && !Game.MayShipCrossPlanet(Player))
         {
             <div class="mt-1">
                 <SelectCardComponent @bind-Value="karmaCard" Values="Shipment.ValidKarmaCards(Game, Player)" Required="false">
@@ -333,19 +333,15 @@
     {
         get
         {
-            @if (Game.MayShipAsGuild(Player))
-            {
-                if (Faction == Faction.Orange)
-                {
-                    return new int[] { SHIPMENT_NORMAL, SHIPMENT_SITETOSITE, SHIPMENT_BACK };
-                }
-                else
-                {
-                    return new int[] { SHIPMENT_NORMAL, SHIPMENT_SITETOSITE };
-                }
-            }
+            var result = new List<int>();
 
-            return Array.Empty<int>();
+            result.Add(SHIPMENT_NORMAL);
+
+            if (Game.MayShipCrossPlanet(Player)) result.Add(SHIPMENT_SITETOSITE);
+
+            if (Game.MayShipToReserves(Player)) result.Add(SHIPMENT_BACK);
+
+            return result;
         }
     }
 
@@ -353,19 +349,15 @@
     {
         get
         {
-            @if (Game.MayShipAsGuild(Player))
-            {
-                if (Faction == Faction.Orange)
-                {
-                    return new string[] { "Normal Shipment", "Site-to-site", "Back to reserves" };
-                }
-                else
-                {
-                    return new string[] { "Normal Shipment", "Site-to-site" };
-                }
-            }
+            var result = new List<string>();
 
-            return Array.Empty<string>();
+            result.Add("Normal Shipment");
+
+            if (Game.MayShipCrossPlanet(Player)) result.Add("Site-to-site");
+
+            if (Game.MayShipToReserves(Player)) result.Add("Back to reserves");
+
+            return result;
         }
     }
 }

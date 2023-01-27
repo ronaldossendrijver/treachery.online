@@ -100,7 +100,7 @@ namespace Treachery.Shared
             BlueMayAccompany = false;
             var initiator = GetPlayer(s.Initiator);
 
-            MessagePart orangeIncome = MessagePart.Express();
+            MessagePart receivedPaymentMessage = MessagePart.Express();
             int totalCost = 0;
 
             if (!s.Passed)
@@ -157,10 +157,10 @@ namespace Treachery.Shared
 
                 DetermineNextShipmentAndMoveSubPhase();
 
-                int orangeProfit = HandleOrangeProfit(s, initiator, ref orangeIncome);
-                Log(s.GetVerboseMessage(totalCost, orangeIncome, ownerOfKarma));
+                int receivedPayment = HandleReceivedShipmentPayment(s, initiator, ref receivedPaymentMessage);
+                Log(s.GetVerboseMessage(totalCost, receivedPaymentMessage, ownerOfKarma));
 
-                if (totalCost - orangeProfit >= 4)
+                if (totalCost - receivedPayment >= 4)
                 {
                     ActivateBanker(initiator);
                 }
@@ -169,7 +169,7 @@ namespace Treachery.Shared
             }
             else
             {
-                Log(s.GetVerboseMessage(totalCost, orangeIncome, null));
+                Log(s.GetVerboseMessage(totalCost, receivedPaymentMessage, null));
                 DetermineNextShipmentAndMoveSubPhase();
             }
         }
@@ -211,8 +211,10 @@ namespace Treachery.Shared
             return costToInitiator + s.AllyContributionAmount;
         }
 
-        private int HandleOrangeProfit(Shipment s, Player initiator, ref MessagePart profitMessage)
+        private int HandleReceivedShipmentPayment(Shipment s, Player initiator, ref MessagePart profitMessage)
         {
+            int totalCost = Shipment.DetermineCost(this, initiator, s);
+
             int receiverProfit = 0;
             var orange = GetPlayer(Faction.Orange);
 
@@ -243,6 +245,9 @@ namespace Treachery.Shared
                     }
                 }
             }
+
+            SetRecentPayment(receiverProfit, initiator.Faction, Faction.Orange, s);
+            SetRecentPayment(totalCost - receiverProfit, initiator.Faction, s);
 
             return receiverProfit;
         }
@@ -290,15 +295,24 @@ namespace Treachery.Shared
             }
         }
 
-        public bool MayShipAsGuild(Player p)
+        public bool MayShipCrossPlanet(Player p)
         {
-            return !Prevented(FactionAdvantage.OrangeSpecialShipments) && (p.Is(Faction.Orange) || p.Ally == Faction.Orange && AllyMayShipAsOrange);
+            return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeSpecialShipments) ||
+                   p.Ally == Faction.Orange && AllyMayShipAsOrange || 
+                   p.Initiated(CurrentOrangeNexus);
+        }
+
+        public bool MayShipToReserves(Player p)
+        {
+            return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeSpecialShipments) || 
+                   p.Initiated(CurrentOrangeNexus);
         }
 
         public bool MayShipWithDiscount(Player p)
         {
-            return (p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeShipmentsDiscount)) ||
-                   (p.Ally == Faction.Orange && AllyMayShipAsOrange && !Prevented(FactionAdvantage.OrangeShipmentsDiscountAlly));
+            return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeShipmentsDiscount) ||
+                   p.Ally == Faction.Orange && AllyMayShipAsOrange && !Prevented(FactionAdvantage.OrangeShipmentsDiscountAlly) ||
+                   p.Initiated(CurrentOrangeNexus);
         }
 
         private bool BlueMustBeFighterIn(Location l)
@@ -347,7 +361,7 @@ namespace Treachery.Shared
 
             MayPerformExtraMove = (CurrentFlightUsed != null && CurrentFlightUsed.Initiator == m.Initiator && CurrentFlightUsed.ExtraMove);
 
-            if (!MayPerformExtraMove)
+            if (!MayPerformExtraMove && !InOrangeCunningShipment)
             {
                 HasActedOrPassed.Add(m.Initiator);
 
@@ -360,6 +374,12 @@ namespace Treachery.Shared
                         ShipmentAndMoveSequence.NextPlayer();
                     }
                 }
+            }
+
+            if (InOrangeCunningShipment)
+            {
+                CurrentOrangeNexus = null;
+                InOrangeCunningShipment = false;
             }
 
             if (!m.Passed)
@@ -1074,8 +1094,6 @@ namespace Treachery.Shared
 
         private void DetermineNextShipmentAndMoveSubPhase()
         {
-            //Console.WriteLine($"DetermineNextShipmentAndMoveSubPhase [enter]: {CurrentPhase}.");
-
             CleanupObsoleteIntrusions();
 
             if (BlueMayAccompany && Prevented(FactionAdvantage.BlueAccompanies))
@@ -1092,7 +1110,6 @@ namespace Treachery.Shared
             }
             else if (Intrusions.Any())
             {
-                //Console.WriteLine($"Intrusion: {Intrusions.Peek().Type}.");
                 switch (Intrusions.Peek().Type)
                 {
                     case IntrusionType.BlueIntrusion:
@@ -1113,11 +1130,8 @@ namespace Treachery.Shared
             }
             else
             {
-                //Console.WriteLine($"No intrusion.");
                 DetermineNextShipmentAndMoveSubPhaseOnNoIntrusion();
             }
-
-            //Console.WriteLine($"DetermineNextShipmentAndMoveSubPhase [exit]: {CurrentPhase}.");
         }
 
         private void CleanupObsoleteIntrusions()
@@ -1199,7 +1213,7 @@ namespace Treachery.Shared
                 case Phase.BlueIntrudedByOrangeMove:
                 case Phase.TerrorTriggeredByOrangeMove:
                 case Phase.AmbassadorTriggeredByOrangeMove:
-                    DetermineNextSubPhaseAfterOrangeMove();
+                    DetermineNextSubPhaseAfterOrangeShipAndMove();
                     break;
 
                 case Phase.NonOrangeMove:
@@ -1509,12 +1523,18 @@ namespace Treachery.Shared
 
         private bool OrangeMayShipOutOfTurnOrder => Applicable(Rule.OrangeDetermineShipment) && (Version < 113 || !Prevented(FactionAdvantage.OrangeDetermineMoveMoment));
 
-        private void DetermineNextSubPhaseAfterOrangeMove()
+        public bool InOrangeCunningShipment { get; private set; }
+        private void DetermineNextSubPhaseAfterOrangeShipAndMove()
         {
             if (MayPerformExtraMove)
             {
                 MayPerformExtraMove = false;
                 Enter(Phase.OrangeMove);
+            }
+            else if (!InOrangeCunningShipment && CurrentOrangeNexus != null && CurrentOrangeNexus.Initiator == Faction.Orange)
+            {
+                InOrangeCunningShipment = true;
+                Enter(Phase.OrangeShip);
             }
             else
             {

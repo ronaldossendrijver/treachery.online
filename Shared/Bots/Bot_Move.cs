@@ -14,6 +14,11 @@ namespace Treachery.Shared
         {
             LogInfo("DetermineMove()");
 
+            if (Game.InOrangeCunningShipment)
+            {
+                return new Move(Game) { Initiator = Faction, Passed = true };
+            }
+
             var moved = DetermineMovedBatallion(true);
 
             if (moved == null)

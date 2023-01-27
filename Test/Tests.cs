@@ -13,6 +13,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
@@ -27,6 +28,12 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            var pink = g.GetPlayer(Faction.Pink);
+            if (pink != null && g.CurrentTurn < 10 && g.CurrentMainPhase == MainPhase.Ended && g.Winners.Contains(pink) && g.NumberOfOccupiedStrongholds(pink, false) < 4)
+            {
+                WriteSavegameIfApplicable(g, pink, "3-stronghold victory with ally");
+            }
+
             var red = g.GetPlayer(Faction.Red);
             if (e is BattleInitiated bi && bi.IsAggressorOrDefender(Faction.Red) && red.Nexus == Faction.Red && red.ForcesIn(bi.Territory) > 1)
             {
@@ -58,7 +65,7 @@ namespace Treachery.Test
                     WriteSavegameIfApplicable(g, e.Player, "Betrayal-" + np.Faction);
                 }
             }
-
+            /*
             if (e.Player != null && e.Player.Is(Faction.Pink) && e.Player.HasAlly && e.Player.Ally != Faction.Grey)
             {
                 if (e is Shipment s)
@@ -69,7 +76,7 @@ namespace Treachery.Test
                     }
                 }
             }
-
+            
             if (e is FaceDanced f && 
                 !f.Passed && 
                 g.CurrentPinkOrAllyFighter != Faction.None && 
@@ -98,6 +105,7 @@ namespace Treachery.Test
                     WriteSavegameIfApplicable(g, e.Player, "Suk in Ecaz-Ally battle");
                 }
             }
+            */
         }
 
         private readonly List<Type> Written = new();
@@ -422,7 +430,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 2000;
+            int nrOfGames = 20000;
             int nrOfTurns = 10;
             int nrOfPlayers = 6;
 
@@ -534,11 +542,11 @@ namespace Treachery.Test
 
                     evt.Time = DateTime.Now;
 
-                    if (game.History.Count == nrOfTurns * 500)
+                    if (game.History.Count == game.CurrentTurn * 400)
                     {
                         File.WriteAllText("stuck" + game.Seed + ".json", GameState.GetStateAsString(game));
                     }
-                    Assert.AreNotEqual(nrOfTurns * 500, game.History.Count, "bots got stuck");
+                    Assert.AreNotEqual(game.CurrentTurn * 400, game.History.Count, "bots got stuck");
                                         
                     Assert.IsFalse(failedGames.Contains(game), "timeout");
 

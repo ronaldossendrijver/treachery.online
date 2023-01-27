@@ -93,9 +93,13 @@ namespace Treachery.Shared
 
                 Faction.Red when betrayal => g.CurrentMainPhase == MainPhase.Bidding || g.CurrentMainPhase == MainPhase.Battle && g.Applicable(Rule.RedSpecialForces) && g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(Faction.Red),
                 Faction.Red when cunning => g.CurrentPhase == Phase.BattlePhase && g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(p) && (g.DefenderBattleAction == null || g.AggressorBattleAction == null),
-                //Faction.Red when secretAlly => g.CurrentMainPhase == MainPhase.Blow || g.CurrentMainPhase == MainPhase.Resurrection,
+
+                Faction.Orange when betrayal => g.RecentlyPaid != null && g.HasRecentPaymentFor(typeof(Shipment)),
+                Faction.Orange when cunning => g.CurrentPhase == Phase.OrangeMove && !g.InOrangeCunningShipment,
+                Faction.Orange when secretAlly => g.CurrentPhase == Phase.NonOrangeShip,
+
                 _ => false
-            };
+            } ;
 
 
 

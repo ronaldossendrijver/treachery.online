@@ -1177,6 +1177,8 @@ namespace Treachery.Shared
             var toKeep = LoserConcluded.CardsLoserMayKeep(Game).Where(c => CardQuality(c) > 2).OrderByDescending(c => CardQuality(c)).FirstOrDefault();
             return new LoserConcluded(Game) { Initiator = Faction, KeptCard = toKeep, Assassinate = LoserConcluded.CanAssassinate(Game, this) };
         }
+
+        public bool Initiated(GameEvent e) => e != null && e.Initiator == Faction;
     }
 
 }

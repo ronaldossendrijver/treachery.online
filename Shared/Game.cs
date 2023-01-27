@@ -104,13 +104,44 @@ namespace Treachery.Shared
 
         #region EventHandling
 
+        public List<Payment> RecentlyPaid { get; private set; } = new();
+
+        public void SetRecentPayment(int amount, Faction by, Faction to, GameEvent reason)
+        {
+            if (amount > 0)
+            {
+                RecentlyPaid.Add(new Payment(amount, by, to, reason));
+            }
+        }
+
+        public void SetRecentPayment(int amount, Faction by, GameEvent reason)
+        {
+            SetRecentPayment(amount, by, Faction.None, reason);
+        }
+
+        public bool HasRecentPaymentFor(Type t) => RecentlyPaid.Any(p => p.Reason != null && p.Reason.GetType() == t);
+
+        public int RecentlyPaidTotalAmount => RecentlyPaid.Sum(p => p.Amount);
+
+        private List<Payment> StoredRecentlyPaid { get; set; } = new();
+        public void ClearRecentPayments()
+        {
+            StoredRecentlyPaid = RecentlyPaid;
+            RecentlyPaid = new();
+        }
+
         public void PerformPreEventTasks(GameEvent e)
         {
             UpdateTimers(e);
 
-            if (!(e is AllyPermission || e is PlayerReplaced || e is DealOffered || e is DealAccepted))
+            if (!(e is AllyPermission || e is PlayerReplaced))
             {
-                RecentlyDiscarded.Clear();
+                ClearRecentPayments();
+
+                if (!(e is DealOffered || e is DealAccepted))
+                {
+                    RecentlyDiscarded.Clear();
+                }
             }
         }
 

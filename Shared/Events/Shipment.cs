@@ -110,9 +110,8 @@ namespace Treachery.Shared
                 return Message.Express(TreacheryCardType.Karma, " prevents you from shipping");
             }
 
-            if (IsBackToReserves && Initiator != Faction.Orange) return Message.Express("You can't ship back to reserves");
-            if (IsSiteToSite && !Game.MayShipAsGuild(p)) return Message.Express("You can't site-to-site ship");
-            if (IsBackToReserves && !Game.MayShipAsGuild(p) && Initiator == Faction.Orange) return Message.Express("You can't ship back to reserves");
+            if (IsBackToReserves && !Game.MayShipToReserves(p)) return Message.Express("You can't ship back to reserves");
+            if (IsSiteToSite && !Game.MayShipCrossPlanet(p)) return Message.Express("You can't ship site-to-site");
 
             if (!IsBackToReserves && (ForceAmount < 0 || SpecialForceAmount < 0)) return Message.Express("Can't ship less than zero forces");
             if (ForceAmount == 0 && SpecialForceAmount == 0) return Message.Express("Select forces to ship");
@@ -222,7 +221,7 @@ namespace Treachery.Shared
             IEnumerable<Location> potentialLocations;
             if (p.Is(Faction.Yellow))
             {
-                if (g.MayShipAsGuild(p))
+                if (g.MayShipCrossPlanet(p))
                 {
                     potentialLocations = YellowSpawnLocations(g, p).Union(NormalShipmentLocations(g, p)).Distinct();
                 }
