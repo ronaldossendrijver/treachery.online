@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Treachery.Shared
 {
@@ -49,6 +50,11 @@ namespace Treachery.Shared
             BidSequence = new PlayerSequence(this);
             WinningBid = null;
 
+            Enter(Version > 150, Phase.BeginningOfBidding, StartBiddingPhase);
+        }
+
+        private void StartBiddingPhase()
+        {
             var white = GetPlayer(Faction.White);
             Enter(white != null && Applicable(Rule.WhiteBlackMarket) && !Prevented(FactionAdvantage.WhiteBlackMarket) && white.TreacheryCards.Count > 0,
                 Phase.BlackMarketAnnouncement,
@@ -170,28 +176,37 @@ namespace Treachery.Shared
             }
         }
 
+        public Faction FactionThatMayReplaceBoughtCard { get; private set; }
         private void FinishBlackMarketBid(Player winner, TreacheryCard card)
         {
             CardJustWon = card;
             WinningBid = CurrentBid;
             CardSoldOnBlackMarket = card;
+            FactionThatMayReplaceBoughtCard = Faction.None;
+            bool enterReplacingCardJustWon = Version > 150 && Players.Any(p => p.Nexus != Faction.None);
 
-            if (winner != null && winner.Ally == Faction.Grey && AllyMayReplaceCards)
+            if (winner != null) 
             {
-                if (!Prevented(FactionAdvantage.GreyAllyDiscardingCard))
+                if (winner.Ally == Faction.Grey && AllyMayReplaceCards)
                 {
-                    Enter(Phase.ReplacingCardJustWon);
+                    if (!Prevented(FactionAdvantage.GreyAllyDiscardingCard))
+                    {
+                        FactionThatMayReplaceBoughtCard = winner.Faction;
+                        enterReplacingCardJustWon = true;
+                    }
+                    else
+                    {
+                        if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyAllyDiscardingCard);
+                    }
                 }
-                else
+                else if (winner.Nexus == Faction.Grey && NexusPlayed.CanUseSecretAlly(this, winner))
                 {
-                    if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyAllyDiscardingCard);
-                    EnterWhiteBidding();
+                    FactionThatMayReplaceBoughtCard = winner.Faction;
+                    enterReplacingCardJustWon = true;
                 }
             }
-            else
-            {
-                EnterWhiteBidding();
-            }
+
+            Enter(enterReplacingCardJustWon, Phase.ReplacingCardJustWon, EnterWhiteBidding);
 
             if (BiddingTriggeredBureaucracy != null)
             {
@@ -207,8 +222,6 @@ namespace Treachery.Shared
         private void EnterWhiteBidding()
         {
             NumberOfCardsOnAuction = PlayersThatCanBid.Count();
-            //Console.WriteLine("NCA1:" + NumberOfCardsOnAuction);
-
 
             if (CardSoldOnBlackMarket != null)
             {
@@ -335,7 +348,7 @@ namespace Treachery.Shared
                 numberOfCardsToDraw--;
             }
 
-            if (numberOfCardsToDraw > 0 && IsPlaying(Faction.Grey))
+            if (numberOfCardsToDraw > 0 && IsPlaying(Faction.Grey) && !Prevented(FactionAdvantage.GreySelectingCardsOnAuction))
             {
                 numberOfCardsToDraw++;
             }
@@ -810,26 +823,36 @@ namespace Treachery.Shared
             CardJustWon = card;
             WinningBid = CurrentBid;
             CurrentBid = null;
+            FactionThatMayReplaceBoughtCard = Faction.None;
+
             Bids.Clear();
 
             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreenBiddingPrescience);
 
-            if (winner != null && winner.Ally == Faction.Grey && AllyMayReplaceCards)
+            bool enterReplacingCardJustWon = Version > 150 && Players.Any(p => p.Nexus != Faction.None);
+
+            if (winner != null)
             {
-                if (Prevented(FactionAdvantage.GreyAllyDiscardingCard))
+                if (winner.Ally == Faction.Grey && AllyMayReplaceCards)
                 {
-                    if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyAllyDiscardingCard);
-                    DetermineNextStepAfterCardWasSold();
+                    if (!Prevented(FactionAdvantage.GreyAllyDiscardingCard))
+                    {
+                        FactionThatMayReplaceBoughtCard = winner.Faction;
+                        enterReplacingCardJustWon = true;
+                    }
+                    else
+                    {
+                        if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyAllyDiscardingCard);
+                    }
                 }
-                else
+                else if (winner.Nexus == Faction.Grey && NexusPlayed.CanUseSecretAlly(this, winner))
                 {
-                    Enter(Phase.ReplacingCardJustWon);
+                    FactionThatMayReplaceBoughtCard = winner.Faction;
+                    enterReplacingCardJustWon = true;
                 }
             }
-            else
-            {
-                DetermineNextStepAfterCardWasSold();
-            }
+
+            Enter(enterReplacingCardJustWon, Phase.ReplacingCardJustWon, DetermineNextStepAfterCardWasSold);
 
             if (BiddingTriggeredBureaucracy != null)
             {
@@ -846,11 +869,16 @@ namespace Treachery.Shared
                 var initiator = GetPlayer(e.Initiator);
                 var newCard = DrawTreacheryCard();
                 initiator.TreacheryCards.Add(newCard);
-                LogTo(initiator.Faction, "You replaced your ", CardJustWon, " with a ", newCard);
                 RecentMilestones.Add(Milestone.CardWonSwapped);
+                
+                if (!IsPlaying(Faction.Grey))
+                {
+                    DiscardNexusCard(e.Player);
+                }
+                
+                LogTo(initiator.Faction, "You replaced your ", CardJustWon, " with a ", newCard);
+                Log(e);
             }
-
-            Log(e);
 
             if (CardJustWon == CardSoldOnBlackMarket)
             {
@@ -1066,6 +1094,7 @@ namespace Treachery.Shared
 
         private void EndBiddingPhase()
         {
+            CurrentGreyNexus = null;
             var red = GetPlayer(Faction.Red);
             if (red != null)
             {

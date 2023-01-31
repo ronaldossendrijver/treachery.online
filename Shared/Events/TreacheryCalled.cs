@@ -27,6 +27,8 @@ namespace Treachery.Shared
             return null;
         }
 
+        public bool TreacherySucceeded(Game g) => TraitorCalled && (Initiator != Faction.Black || !g.BlackTraitorWasCancelled);
+
         protected override void ExecuteConcreteEvent()
         {
             Game.HandleEvent(this);

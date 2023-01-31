@@ -188,9 +188,9 @@ namespace Treachery.Shared
             return 0.5f;
         }
 
-        public static float DetermineNormalForceStrength(Faction player)
+        public static float DetermineNormalForceStrength(Game g, Faction player)
         {
-            if (player == Faction.Grey)
+            if (player == Faction.Grey && g.CurrentGreyNexus == null)
             {
                 return 0.5f;
             }
@@ -237,7 +237,7 @@ namespace Treachery.Shared
 
             float specialForceStrength = DetermineSpecialForceStrength(g, player, opponent);
             float specialForceNoSpiceFactor = DetermineSpecialForceNoSpiceFactor();
-            float normalForceStrength = DetermineNormalForceStrength(player);
+            float normalForceStrength = DetermineNormalForceStrength(g, player);
             float normalForceNoSpiceFactor = DetermineNormalForceNoSpiceFactor(player);
 
             return

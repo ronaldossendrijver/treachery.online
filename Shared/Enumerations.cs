@@ -156,6 +156,7 @@ namespace Treachery.Shared
         ClaimingCharity = 195000,
         CharityReport = 195100,
 
+        BeginningOfBidding = 195300,
         BlackMarketAnnouncement = 195500,
         BlackMarketBidding = 195600,
         WhiteAnnouncingAuction = 195700,

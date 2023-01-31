@@ -19,8 +19,7 @@
 
 @code {
 
-    protected override bool IsUrgent => true;
-    protected override Faction IsFactionSpecific => Faction.Grey;
+    protected override bool IsUrgent => false;
 
     protected override ReplacedCardWon ConfirmedResult => new ReplacedCardWon(Game) { Initiator = Faction, Passed = false };
 

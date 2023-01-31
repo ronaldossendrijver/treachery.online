@@ -402,7 +402,7 @@ namespace Treachery.Shared
         protected float DetermineDialShortageForBattle(float dialNeeded, Faction opponent, int forcesAvailable, int specialForcesAvailable, int resourcesAvailable, Territory territory,
             out int forcesAtFullStrength, out int forcesAtHalfStrength, out int specialForcesAtFullStrength, out int specialForcesAtHalfStrength)
         {
-            var normalStrength = Battle.DetermineNormalForceStrength(Faction);
+            var normalStrength = Battle.DetermineNormalForceStrength(Game, Faction);
             var specialStrength = Battle.DetermineSpecialForceStrength(Game, Faction, opponent);
             int strongholdBonus = Game.HasStrongholdAdvantage(Faction, StrongholdAdvantage.FreeResourcesForBattles, territory) ? 2 : 0;
             int spiceLeft = resourcesAvailable + strongholdBonus;

@@ -56,6 +56,8 @@ namespace Treachery.Shared
                 case Phase.BeginningOfCharity:
                 case Phase.ClaimingCharity:
                 case Phase.CharityReport:
+                case Phase.BeginningOfBidding:
+                case Phase.ReplacingCardJustWon when Version > 150:
                 case Phase.WaitingForNextBiddingRound:
                 case Phase.BiddingReport:
                 case Phase.BeginningOfResurrection:
@@ -224,7 +226,7 @@ namespace Treachery.Shared
                     if (Version < 103 && player.Has(TreacheryCardType.Amal) && CardNumber == 1 && !Bids.Any()) result.Add(typeof(AmalPlayed));
                     break;
                 case Phase.ReplacingCardJustWon:
-                    if (player.Ally == Faction.Grey) result.Add(typeof(ReplacedCardWon));
+                    if (faction == FactionThatMayReplaceBoughtCard) result.Add(typeof(ReplacedCardWon));
                     break;
                 case Phase.WaitingForNextBiddingRound:
                     if (!isHost && faction == Faction.Green) result.Add(typeof(EndPhase));

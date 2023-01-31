@@ -336,7 +336,7 @@ namespace Treachery.Shared
             }
         }
 
-        public static bool MayUseRedSecretAlly(Game game, Player player) => player.Nexus == Faction.Red && NexusPlayed.IsSecretAlly(game, player);
+        public static bool MayUseRedSecretAlly(Game game, Player player) => player.Nexus == Faction.Red && NexusPlayed.CanUseSecretAlly(game, player);
     }
 
     public class RevivalCost

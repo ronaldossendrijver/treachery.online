@@ -106,5 +106,5 @@
     }
     */
 
-    private string NexusTypeText => NexusPlayed.IsCunning(Player) ? "Cunning" : NexusPlayed.IsSecretAlly(Game, Player) ? "Secret Ally" : "Betrayal";
+    private string NexusTypeText => NexusPlayed.CanUseCunning(Player) ? "Cunning" : NexusPlayed.CanUseSecretAlly(Game, Player) ? "Secret Ally" : "Betrayal";
 }

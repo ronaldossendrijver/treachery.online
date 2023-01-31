@@ -676,7 +676,7 @@ namespace Treachery.Shared
         }
 
 
-        private bool BlackMayDrawNewTraitor { get; set; } = false;
+        public bool BlackTraitorWasCancelled { get; private set; } = false;
         private void HandleBetrayal(NexusPlayed e)
         {
             MessagePart action = null;
@@ -688,14 +688,12 @@ namespace Treachery.Shared
                     break;
 
                 case Faction.Black:
-                    var treachery = CurrentBattle.TreacheryOf(Faction.Black);
-                    treachery.TraitorCalled = false;
                     var traitor = CurrentBattle.PlanOfOpponent(Faction.Black).Hero;
                     GetPlayer(Faction.Black).Traitors.Remove(traitor);
                     TraitorDeck.Items.Add(traitor);
                     TraitorDeck.Shuffle();
                     RecentMilestones.Add(Milestone.Shuffled);
-                    BlackMayDrawNewTraitor = true;
+                    BlackTraitorWasCancelled = true;
                     action = MessagePart.Express(" cancel the ", Faction.Black, " traitor call");
                     Enter(Phase.CallTraitorOrPass);
                     HandleRevealedBattlePlans();
@@ -752,6 +750,16 @@ namespace Treachery.Shared
                     Prevent(e.Initiator, FactionAdvantage.BlueUsingVoice);
                     break;
 
+                case Faction.Grey:
+                    if (CurrentPhase == Phase.BeginningOfBidding)
+                    {
+                        Prevent(e.Initiator, FactionAdvantage.GreySelectingCardsOnAuction);
+                    }
+                    else if (CurrentPhase > Phase.BeginningOfBidding && CurrentPhase < Phase.BiddingReport)
+                    {
+                        Prevent(e.Initiator, FactionAdvantage.GreySwappingCard);
+                    }
+                    break;
 
             }
 
@@ -770,6 +778,7 @@ namespace Treachery.Shared
         public NexusPlayed CurrentRedNexus { get; private set; }
         public NexusPlayed CurrentOrangeNexus { get; private set; }
         public NexusPlayed CurrentBlueNexus { get; private set; }
+        public NexusPlayed CurrentGreyNexus { get; private set; }
         private void HandleCunning(NexusPlayed e)
         {
             var action = MessagePart.Express();
@@ -809,6 +818,12 @@ namespace Treachery.Shared
                     CurrentBlueNexus = e;
                     action = MessagePart.Express("be able to flip advisor to fighters during ", MainPhase.ShipmentAndMove);
                     break;
+
+                case Faction.Grey:
+                    CurrentGreyNexus = e;
+                    action = MessagePart.Express("let ", FactionForce.Grey, " be full strength during this battle");
+                    break;
+
             }
 
             if (action != null)
@@ -862,6 +877,11 @@ namespace Treachery.Shared
                 case Faction.Blue:
                     CurrentBlueNexus = e;
                     action = MessagePart.Express("use Voice");
+                    break;
+
+                case Faction.Grey:
+                    CurrentGreyNexus = e;
+                    action = MessagePart.Express("discard a card you buy and draw a new card from the treachery deck");
                     break;
             }
 

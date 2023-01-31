@@ -246,6 +246,21 @@ namespace Treachery.Shared
                     EnterBiddingPhase();
                     break;
 
+                case Phase.BeginningOfBidding:
+                    StartBiddingPhase();
+                    break;
+
+                case Phase.ReplacingCardJustWon:
+                    if (CardJustWon == CardSoldOnBlackMarket)
+                    {
+                        EnterWhiteBidding();
+                    }
+                    else
+                    {
+                        DetermineNextStepAfterCardWasSold();
+                    }
+                    break;
+
                 case Phase.WaitingForNextBiddingRound:
                     PutNextCardOnAuction();
                     break;

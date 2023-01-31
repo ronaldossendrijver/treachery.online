@@ -430,7 +430,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 20000;
+            int nrOfGames = 2000;
             int nrOfTurns = 10;
             int nrOfPlayers = 6;
 
@@ -801,7 +801,7 @@ namespace Treachery.Test
                     statistics.BattlingFactions.Count(game.CurrentBattle.Aggressor);
                     statistics.BattlingFactions.Count(game.CurrentBattle.Defender);
                 }
-                else if (latest is TreacheryCalled traitorcalled && traitorcalled.TraitorCalled)
+                else if (latest is TreacheryCalled traitorcalled && traitorcalled.TreacherySucceeded(game))
                 {
                     statistics.TraitoredLeaders.Count(Skin.Current.Describe(game.CurrentBattle.PlanOfOpponent(traitorcalled.Player).Hero));
                 }

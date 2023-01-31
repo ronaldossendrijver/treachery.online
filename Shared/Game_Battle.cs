@@ -404,13 +404,13 @@ namespace Treachery.Shared
 
         private void DiscardOneTimeCardsUsedInBattle(TreacheryCalled aggressorCall, TreacheryCalled defenderCall)
         {
-            bool aggressorKeepsCards = aggressorCall.TraitorCalled && !defenderCall.TraitorCalled;
+            bool aggressorKeepsCards = aggressorCall.TreacherySucceeded(this) && !defenderCall.TreacherySucceeded(this);
             if (!aggressorKeepsCards)
             {
                 DiscardOneTimeCards(AggressorBattleAction);
             }
 
-            bool defenderKeepsCards = defenderCall.TraitorCalled && !aggressorCall.TraitorCalled;
+            bool defenderKeepsCards = defenderCall.TreacherySucceeded(this) && !aggressorCall.TreacherySucceeded(this);
             if (!defenderKeepsCards)
             {
                 DiscardOneTimeCards(DefenderBattleAction);
@@ -421,14 +421,14 @@ namespace Treachery.Shared
         {
             BattleOutcome = DetermineBattleOutcome(agg, def, b.Territory);
 
-            bool lasgunShield = !aggtrt.TraitorCalled && !deftrt.TraitorCalled && (agg.HasLaser || def.HasLaser) && (agg.HasShield || def.HasShield);
+            bool lasgunShield = !aggtrt.TreacherySucceeded(this) && !deftrt.TreacherySucceeded(this) && (agg.HasLaser || def.HasLaser) && (agg.HasShield || def.HasShield);
 
             ActivateSmuggler(aggtrt, deftrt, BattleOutcome, lasgunShield);
 
             var aggressor = GetPlayer(agg.Initiator);
             var defender = GetPlayer(def.Initiator);
 
-            if (aggtrt.TraitorCalled || deftrt.TraitorCalled)
+            if (aggtrt.TreacherySucceeded(this) || deftrt.TreacherySucceeded(this))
             {
                 TraitorCalled(b, agg, def, deftrt, aggressor, defender, agg.Hero, def.Hero);
             }
@@ -448,8 +448,8 @@ namespace Treachery.Shared
 
         private void ActivateSmuggler(TreacheryCalled aggtrt, TreacheryCalled deftrt, BattleOutcome outcome, bool lasgunShield)
         {
-            bool aggHeroSurvives = !deftrt.TraitorCalled && (aggtrt.TraitorCalled || !lasgunShield && !outcome.AggHeroKilled);
-            bool defHeroSurvives = !aggtrt.TraitorCalled && (deftrt.TraitorCalled || !lasgunShield && !outcome.DefHeroKilled);
+            bool aggHeroSurvives = !deftrt.TreacherySucceeded(this) && (aggtrt.TreacherySucceeded(this) || !lasgunShield && !outcome.AggHeroKilled);
+            bool defHeroSurvives = !aggtrt.TreacherySucceeded(this) && (deftrt.TreacherySucceeded(this) || !lasgunShield && !outcome.DefHeroKilled);
 
             if (aggHeroSurvives)
             {
@@ -694,7 +694,7 @@ namespace Treachery.Shared
                 var brown = GetPlayer(Faction.Brown);
                 if (brown != null && CurrentBattle.IsAggressorOrDefender(brown))
                 {
-                    return CurrentBattle.TreacheryOfOpponent(brown).TraitorCalled;
+                    return CurrentBattle.TreacheryOfOpponent(brown).TreacherySucceeded(this);
                 }
                 return false;
             }
@@ -1129,16 +1129,16 @@ namespace Treachery.Shared
 
         private void TraitorCalled(BattleInitiated b, Battle agg, Battle def, TreacheryCalled deftrt, Player aggressor, Player defender, IHero aggLeader, IHero defLeader)
         {
-            if (AggressorTraitorAction.TraitorCalled && deftrt.TraitorCalled)
+            if (AggressorTraitorAction.TreacherySucceeded(this) && deftrt.TreacherySucceeded(this))
             {
                 TwoTraitorsCalled(agg, def, aggressor, defender, b.Territory, aggLeader, defLeader);
             }
             else
             {
-                var winner = AggressorTraitorAction.TraitorCalled ? aggressor : defender;
-                var loser = AggressorTraitorAction.TraitorCalled ? defender : aggressor;
-                var loserGambit = AggressorTraitorAction.TraitorCalled ? def : agg;
-                var winnerGambit = AggressorTraitorAction.TraitorCalled ? agg : def;
+                var winner = AggressorTraitorAction.TreacherySucceeded(this) ? aggressor : defender;
+                var loser = AggressorTraitorAction.TreacherySucceeded(this) ? defender : aggressor;
+                var loserGambit = AggressorTraitorAction.TreacherySucceeded(this) ? def : agg;
+                var winnerGambit = AggressorTraitorAction.TreacherySucceeded(this) ? agg : def;
                 OneTraitorCalled(b.Territory, winner, loser, loserGambit, winnerGambit);
             }
         }
@@ -1875,6 +1875,7 @@ namespace Treachery.Shared
             CurrentGreenNexus = null;
             CurrentBlueNexus = null;
             CurrentRedNexus = null;
+            CurrentGreyNexus = null;
             BlackVictim = null;
             AggressorBattleAction = null;
             DefenderBattleAction = null;

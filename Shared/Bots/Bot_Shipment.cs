@@ -441,7 +441,7 @@ namespace Treachery.Shared
             specialForces = 0;
             forces = 0;
 
-            var normalStrength = Battle.DetermineNormalForceStrength(Faction);
+            var normalStrength = Battle.DetermineNormalForceStrength(Game,Faction);
             var specialStrength = Battle.DetermineSpecialForceStrength(Game, Faction, opponent);
             int spiceAvailable = ResourcesIncludingAllyContribution - minResourcesToKeep;
             float noSpiceForForceModifier = Battle.MustPayForForcesInBattle(Game, this) ? 0.5f : 1;

@@ -12,8 +12,8 @@
     bool MaySeeBothBattlePlans = Game.AggressorBattleAction != null && Game.DefenderBattleAction != null;
     bool AggressorIsAffectedByPartialPrescience = (Game.CurrentPrescience != null || Game.CurrentGreenNexus != null) && Game.AggressorBattleAction != null && Game.CurrentBattle.OpponentOf(Faction.Green) == Game.AggressorBattleAction.Player;
     bool DefenderIsAffectedByPartialPrescience = (Game.CurrentPrescience != null || Game.CurrentGreenNexus != null) && Game.DefenderBattleAction != null && Game.CurrentBattle.OpponentOf(Faction.Green) == Game.DefenderBattleAction.Player;
-    bool AggressorCallsTraitor = Game.AggressorTraitorAction != null && Game.AggressorTraitorAction.TraitorCalled;
-    bool DefenderCallsTraitor = Game.DefenderTraitorAction != null && Game.DefenderTraitorAction.TraitorCalled;
+    bool AggressorCallsTraitor = Game.AggressorTraitorAction != null && Game.AggressorTraitorAction.TreacherySucceeded(Game);
+    bool DefenderCallsTraitor = Game.DefenderTraitorAction != null && Game.DefenderTraitorAction.TreacherySucceeded(Game);
 
     var x = 0.1f * Skin.Current.MapDimensions.X;
     var y = 0.1f * Skin.Current.MapDimensions.Y;

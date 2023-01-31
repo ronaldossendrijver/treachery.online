@@ -67,11 +67,11 @@ namespace Treachery.Shared
         {
             var result = new NexusPlayed(Game) { Initiator = Faction, Faction = Nexus };
 
-            if (NexusPlayed.IsCunning(this))
+            if (NexusPlayed.CanUseCunning(this))
             {
                 return DetermineNexusPlayed_Cunning(result);
             }
-            else if (NexusPlayed.IsSecretAlly(Game, this))
+            else if (NexusPlayed.CanUseSecretAlly(Game, this))
             {
                 return DetermineNexusPlayed_SecretAlly(result);
             }
@@ -113,6 +113,7 @@ namespace Treachery.Shared
                         if (Game.CurrentBattle != null && Game.CurrentBattle.IsInvolved(this) && Game.CurrentBattle.IsInvolved(Faction.Blue) && !Game.Prevented(FactionAdvantage.BlueUsingVoice)) return result;
                         break;
 
+                    case Faction.Grey: return result;
                 }
             }
 
@@ -167,6 +168,11 @@ namespace Treachery.Shared
                     if (flip != null) return result;
                     break;
 
+                case Faction.Grey:
+                    if (ForcesIn(Game.CurrentBattle.Territory) >= 3) return result;
+                    break;
+
+
             }
 
             return null;
@@ -207,6 +213,10 @@ namespace Treachery.Shared
 
                 case Faction.Blue:
                     if (Game.CurrentBattle != null && Game.CurrentBattle.IsInvolved(this)) return result;
+                    break;
+
+                case Faction.Grey:
+                    if (CardQuality(Game.CardJustWon) < 2) return result;
                     break;
 
             }

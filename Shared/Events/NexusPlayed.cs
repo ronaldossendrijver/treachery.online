@@ -52,11 +52,11 @@ namespace Treachery.Shared
             return null;
         }
 
-        public static bool IsCunning(Player p) => p.Faction == p.Nexus;
+        public static bool CanUseCunning(Player p) => p.Faction == p.Nexus;
 
-        public static bool IsSecretAlly(Game g, Player p) => !g.IsPlaying(p.Nexus);
+        public static bool CanUseSecretAlly(Game g, Player p) => !g.IsPlaying(p.Nexus);
 
-        public static bool IsBetrayal(Game g, Player p) => !(IsCunning(p) || IsSecretAlly(g, p));
+        public static bool CanUseBetrayal(Game g, Player p) => !(CanUseCunning(p) || CanUseSecretAlly(g, p));
 
         [JsonIgnore]
         public bool Cunning => Initiator == Faction;
@@ -74,14 +74,16 @@ namespace Treachery.Shared
                 return false;
             }
 
-            bool cunning = IsCunning(p);
-            bool secretAlly = IsSecretAlly(g,p);
+            bool cunning = CanUseCunning(p);
+            bool secretAlly = CanUseSecretAlly(g,p);
             bool betrayal = !(cunning || secretAlly);
+
+            bool isCurrentlyFormulatingBattlePlan = g.CurrentPhase == Phase.BattlePhase && g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(p) && (g.DefenderBattleAction == null || g.AggressorBattleAction == null);
 
             return (p.Nexus) switch
             {
                 Faction.Green when betrayal => g.CurrentPhase == Phase.BattlePhase,
-                Faction.Green when cunning || secretAlly => g.CurrentPhase == Phase.BattlePhase && g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(p),
+                Faction.Green when cunning || secretAlly => isCurrentlyFormulatingBattlePlan,
 
                 Faction.Black when betrayal => g.CurrentPhase == Phase.CancellingTraitor,
                 Faction.Black when cunning => true,
@@ -92,7 +94,7 @@ namespace Treachery.Shared
                 Faction.Yellow when secretAlly => g.CurrentMainPhase == MainPhase.Blow || g.CurrentMainPhase == MainPhase.Resurrection,
 
                 Faction.Red when betrayal => g.CurrentMainPhase == MainPhase.Bidding || g.CurrentMainPhase == MainPhase.Battle && g.Applicable(Rule.RedSpecialForces) && g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(Faction.Red),
-                Faction.Red when cunning => g.CurrentPhase == Phase.BattlePhase && g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(p) && (g.DefenderBattleAction == null || g.AggressorBattleAction == null),
+                Faction.Red when cunning => isCurrentlyFormulatingBattlePlan,
 
                 Faction.Orange when betrayal => g.RecentlyPaid != null && g.HasRecentPaymentFor(typeof(Shipment)),
                 Faction.Orange when cunning => g.CurrentPhase == Phase.OrangeMove && !g.InOrangeCunningShipment,
@@ -101,6 +103,9 @@ namespace Treachery.Shared
                 Faction.Blue when betrayal => g.CurrentPhase == Phase.BattlePhase,
                 Faction.Blue when cunning => g.CurrentMainPhase == MainPhase.ShipmentAndMove,
                 Faction.Blue when secretAlly => g.CurrentPhase == Phase.BattlePhase && g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(p),
+
+                Faction.Grey when betrayal => g.CurrentPhase == Phase.BeginningOfBidding || g.CurrentPhase > Phase.BeginningOfBidding && g.CurrentPhase < Phase.BiddingReport,
+                Faction.Grey when cunning => isCurrentlyFormulatingBattlePlan,
 
                 _ => false
             } ;
