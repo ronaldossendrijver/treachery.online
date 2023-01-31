@@ -150,6 +150,7 @@ namespace Treachery.Shared
                 Do(DetermineAmbassadorActivated, ref action, evts) ||
 
                 //Purple
+                Do(DetermineFaceDancerRevealed, ref action, evts) ||
                 Do(DetermineFaceDanced, ref action, evts) ||
                 Do(DetermineFaceDancerReplaced, ref action, evts) ||
 

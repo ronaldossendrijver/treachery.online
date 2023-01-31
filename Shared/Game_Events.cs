@@ -444,6 +444,10 @@ namespace Treachery.Shared
                     if (faction == Faction.Brown) result.Add(typeof(Audited));
                     break;
 
+                case Phase.RevealingFacedancer:
+                    if (faction == Faction.Purple) result.Add(typeof(FaceDancerRevealed));
+                    break;
+
                 case Phase.Facedancing:
                     if (faction == Faction.Purple) result.Add(typeof(FaceDanced));
                     break;

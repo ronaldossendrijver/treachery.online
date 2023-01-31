@@ -782,7 +782,7 @@ namespace Treachery.Shared
             }
         }
 
-        protected virtual FaceDanced DetermineFaceDanced()
+        protected virtual FaceDancerRevealed DetermineFaceDancerRevealed()
         {
             if (FaceDanced.MayCallFaceDancer(Game, this))
             {
@@ -791,35 +791,42 @@ namespace Treachery.Shared
 
                 if ((FaceDanced.MaximumNumberOfForces(Game, this) > 0 || facedancedHeroIsLivingLeader) && Game.BattleWinner != Ally)
                 {
-                    var forcesFromPlanet = new Dictionary<Location, Battalion>();
-
-                    int toPlace = FaceDanced.MaximumNumberOfForces(Game, this);
-
-                    var biggest = BiggestBattalionThreatenedByStormWithoutSpice;
-                    if (biggest.Key != null)
-                    {
-                        var toTake = biggest.Value.Take(toPlace, false);
-                        forcesFromPlanet.Add(biggest.Key, toTake);
-                        toPlace -= toTake.TotalAmountOfForces;
-                    }
-
-                    int fromReserves = Math.Min(ForcesInReserve, toPlace);
-
-                    var targetLocation = FaceDanced.ValidTargetLocations(Game).FirstOrDefault(l => Game.ResourcesOnPlanet.ContainsKey(l));
-                    if (targetLocation == null) targetLocation = FaceDanced.ValidTargetLocations(Game).FirstOrDefault();
-
-                    var targetLocations = new Dictionary<Location, Battalion>
-                    {
-                        { targetLocation, new Battalion() { AmountOfForces = forcesFromPlanet.Sum(kvp => kvp.Value.AmountOfForces) + fromReserves, AmountOfSpecialForces = forcesFromPlanet.Sum(kvp => kvp.Value.AmountOfSpecialForces) } }
-                    };
-
-                    var result = new FaceDanced(Game) { Initiator = Faction, FaceDancerCalled = true, ForceLocations = forcesFromPlanet, ForcesFromReserve = fromReserves, TargetForceLocations = targetLocations };
+                    var result = new FaceDancerRevealed(Game) { Initiator = Faction, Passed = false };
                     LogInfo(result.GetMessage());
                     return result;
                 }
             }
 
-            return new FaceDanced(Game) { Initiator = Faction, FaceDancerCalled = false };
+            return new FaceDancerRevealed(Game) { Initiator = Faction, Passed = true };
+        }
+
+        protected virtual FaceDanced DetermineFaceDanced()
+        {
+            var forcesFromPlanet = new Dictionary<Location, Battalion>();
+
+            int toPlace = FaceDanced.MaximumNumberOfForces(Game, this);
+
+            var biggest = BiggestBattalionThreatenedByStormWithoutSpice;
+            if (biggest.Key != null)
+            {
+                var toTake = biggest.Value.Take(toPlace, false);
+                forcesFromPlanet.Add(biggest.Key, toTake);
+                toPlace -= toTake.TotalAmountOfForces;
+            }
+
+            int fromReserves = Math.Min(ForcesInReserve, toPlace);
+
+            var targetLocation = FaceDanced.ValidTargetLocations(Game).FirstOrDefault(l => Game.ResourcesOnPlanet.ContainsKey(l));
+            if (targetLocation == null) targetLocation = FaceDanced.ValidTargetLocations(Game).FirstOrDefault();
+
+            var targetLocations = new Dictionary<Location, Battalion>
+            {
+                { targetLocation, new Battalion() { AmountOfForces = forcesFromPlanet.Sum(kvp => kvp.Value.AmountOfForces) + fromReserves, AmountOfSpecialForces = forcesFromPlanet.Sum(kvp => kvp.Value.AmountOfSpecialForces) } }
+            };
+
+            var result = new FaceDanced(Game) { Initiator = Faction, ForceLocations = forcesFromPlanet, ForcesFromReserve = fromReserves, TargetForceLocations = targetLocations };
+            LogInfo(result.GetMessage());
+            return result;
         }
 
         protected virtual FaceDancerReplaced DetermineFaceDancerReplaced()

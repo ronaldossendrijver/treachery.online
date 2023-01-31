@@ -93,7 +93,9 @@ namespace Treachery.Shared
                         if (Game.CurrentBattle != null && Game.CurrentBattle.IsInvolved(this) && Game.CurrentBattle.IsInvolved(Faction.Green) && !Game.Prevented(FactionAdvantage.GreenBattlePlanPrescience)) return result;
                         break;
 
-                    case Faction.Black: return result;
+                    case Faction.Black: 
+                        if (Game.CurrentBattle.IsInvolved(this)) return result;
+                        break;
                     
                     case Faction.Yellow: 
                         if (Game.CurrentMainPhase == MainPhase.Blow && YellowRidesMonster.ValidSources(Game).Any() ||
@@ -114,6 +116,10 @@ namespace Treachery.Shared
                         break;
 
                     case Faction.Grey: return result;
+
+                    case Faction.Purple:
+                        if (Game.CurrentBattle.IsInvolved(this)) return result;
+                        break;
                 }
             }
 

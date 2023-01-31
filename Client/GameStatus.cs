@@ -391,10 +391,15 @@ namespace Treachery.Client
                     Express(game.BattleWinner, " are celebrating their victory in battle..."),
                     game.BattleWinner),
 
-                Phase.Facedancing => Status(game,
+                Phase.RevealingFacedancer => Status(game,
                     Express("You may reveal a leader to be one of your face dancers."),
                     Express("Waiting for ", Faction.Purple, " to reveal a face dancer..."),
                     Faction.Purple),
+
+                Phase.Facedancing => 
+                    game.Version <= 150 ? 
+                    Status(game, Express("You may reveal a leader to be one of your face dancers."), Express("Waiting for ", Faction.Purple, " to reveal a face dancer..."), Faction.Purple) : 
+                    Status(game, Express("You may now replace opponent forces by your own."), Express("Waiting for ", Faction.Purple, " to replace forces..."), Faction.Purple),
 
                 Phase.BattleReport when game.NextPlayerToBattle != null => Status(Express("Factions may now review the battle report before the next battle begins...")),
                 Phase.BattleReport when game.NextPlayerToBattle == null => Status(Express(game.CurrentMainPhase, " phase ended.")),
@@ -447,7 +452,7 @@ namespace Treachery.Client
                 Phase.BattleConclusion or
                 Phase.AvoidingAudit or
                 Phase.Auditing or
-                Phase.Facedancing when game.CurrentBattle != null => new Territory[] { game.CurrentBattle.Territory },
+                Phase.RevealingFacedancer when game.CurrentBattle != null => new Territory[] { game.CurrentBattle.Territory },
 
                 _ => Array.Empty<Territory>()
             };

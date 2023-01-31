@@ -107,6 +107,8 @@ namespace Treachery.Shared
                 Faction.Grey when betrayal => g.CurrentPhase == Phase.BeginningOfBidding || g.CurrentPhase > Phase.BeginningOfBidding && g.CurrentPhase < Phase.BiddingReport,
                 Faction.Grey when cunning => isCurrentlyFormulatingBattlePlan,
 
+                Faction.Purple when betrayal => g.CurrentPhase == Phase.Facedancing,
+
                 _ => false
             } ;
 

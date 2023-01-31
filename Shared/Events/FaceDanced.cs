@@ -10,6 +10,7 @@ namespace Treachery.Shared
 {
     public class FaceDanced : PlacementEvent
     {
+        //Needed for game version <= 150
         public bool FaceDancerCalled { get; set; }
 
         public int ForcesFromReserve { get; set; }

@@ -95,6 +95,7 @@ namespace Treachery.Server
         public async Task RequestKarmaWhiteBuy(int hostID, KarmaWhiteBuy e) { await Request(hostID, e); }
         public async Task RequestAllyPermission(int hostID, AllyPermission e) { await Request(hostID, e); }
         public async Task RequestMulliganPerformed(int hostID, MulliganPerformed e) { await Request(hostID, e); }
+        public async Task RequestFaceDancerRevealed(int hostID, FaceDancerRevealed e) { await Request(hostID, e); }
         public async Task RequestFaceDanced(int hostID, FaceDanced e) { await Request(hostID, e); }
         public async Task RequestFaceDancerReplaced(int hostID, FaceDancerReplaced e) { await Request(hostID, e); }
         public async Task RequestSetIncreasedRevivalLimits(int hostID, SetIncreasedRevivalLimits e) { await Request(hostID, e); }

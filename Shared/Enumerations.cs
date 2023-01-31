@@ -233,6 +233,7 @@ namespace Treachery.Shared
 
         BattleConclusion = 315000,
 
+        RevealingFacedancer = 319000,
         Facedancing = 320000,
 
         BattleReport = 330000,

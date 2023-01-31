@@ -1317,7 +1317,7 @@ namespace Treachery.Shared
 
             if (!LoserConcluded.IsApplicable(this, GetPlayer(BattleLoser)))
             {
-                Enter(IsPlaying(Faction.Purple) && BattleWinner != Faction.Purple, Phase.Facedancing, FinishBattle);
+                Enter(!IsPlaying(Faction.Purple) || BattleWinner == Faction.Purple, FinishBattle, Version <= 150, Phase.Facedancing, Phase.RevealingFacedancer);
             }
         }
 
@@ -1404,7 +1404,7 @@ namespace Treachery.Shared
 
             if (BattleWasConcludedByWinner)
             {
-                Enter(IsPlaying(Faction.Purple) && BattleWinner != Faction.Purple, Phase.Facedancing, FinishBattle);
+                Enter(!IsPlaying(Faction.Purple) || BattleWinner == Faction.Purple, FinishBattle, Version <= 150, Phase.Facedancing, Phase.RevealingFacedancer );
             }
         }
 
@@ -1617,9 +1617,9 @@ namespace Treachery.Shared
 
         #region FaceDancing
 
-        public void HandleEvent(FaceDanced f)
+        public void HandleEvent(FaceDancerRevealed f)
         {
-            if (f.FaceDancerCalled)
+            if (!f.Passed)
             {
                 var initiator = GetPlayer(f.Initiator);
                 var facedancer = initiator.FaceDancers.FirstOrDefault(f => WinnerHero.IsFaceDancer(f));
@@ -1627,6 +1627,28 @@ namespace Treachery.Shared
 
                 RecentMilestones.Add(Milestone.FaceDanced);
 
+                Enter(Phase.Facedancing);
+            }
+            else
+            {
+                Log(f.Initiator, " don't reveal a Face Dancer");
+                FinishBattle();
+            }
+        }
+
+        public void HandleEvent(FaceDanced f)
+        {
+            if (Version > 150 || Version <= 150 && f.FaceDancerCalled)
+            {
+                var initiator = GetPlayer(f.Initiator);
+                var facedancer = initiator.FaceDancers.FirstOrDefault(f => WinnerHero.IsFaceDancer(f));
+
+                if (Version <= 150)
+                {
+                    Log(f.Initiator, " reveal ", facedancer, " as one of their Face Dancers!");
+                    RecentMilestones.Add(Milestone.FaceDanced);
+                }
+                    
                 if (facedancer is Leader && IsAlive(facedancer))
                 {
                     KillHero(facedancer);
@@ -1641,7 +1663,7 @@ namespace Treachery.Shared
                 {
                     initiator.RevealedDancers.Add(facedancer);
                 }
-
+                
                 if (!initiator.HasUnrevealedFaceDancers)
                 {
                     ReplaceFacedancers(f, initiator);
@@ -1868,6 +1890,7 @@ namespace Treachery.Shared
 
         private void ResetBattle()
         {
+            FacedancerWasCancelled = false;
             CurrentBattle = null;
             CurrentPrescience = null;
             CurrentThought = null;

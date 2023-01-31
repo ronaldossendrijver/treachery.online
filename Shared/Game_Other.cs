@@ -677,6 +677,7 @@ namespace Treachery.Shared
 
 
         public bool BlackTraitorWasCancelled { get; private set; } = false;
+        public bool FacedancerWasCancelled { get; private set; } = false;
         private void HandleBetrayal(NexusPlayed e)
         {
             MessagePart action = null;
@@ -759,6 +760,12 @@ namespace Treachery.Shared
                     {
                         Prevent(e.Initiator, FactionAdvantage.GreySwappingCard);
                     }
+                    break;
+
+                case Faction.Purple:
+                    FacedancerWasCancelled = true;
+                    action = MessagePart.Express(" cancel the ", Faction.Purple, " face dancer reveal");
+                    FinishBattle();
                     break;
 
             }
