@@ -50,7 +50,11 @@ namespace Treachery.Shared
             if (Initiator != Faction.Grey && AmountOfSpecialForces > 1) return Message.Express("You can only revive one ", p.SpecialForce, " per turn");
             if (AmountOfSpecialForces > 0 && Initiator != Faction.Grey && Game.FactionsThatRevivedSpecialForcesThisTurn.Contains(Initiator)) return Message.Express("You already revived one ", p.SpecialForce, " this turn");
             if (AmountOfForces + AmountOfSpecialForces > 0 && Hero != null) return Message.Express("You can't revive both forces and a leader");
-            if (Hero != null && !RaiseDeadPlayed.ValidHeroes(Game, p).Contains(Hero)) return Message.Express("Invalid leader");
+            if (Hero != null && !ValidHeroes(Game, p).Contains(Hero)) return Message.Express("Invalid leader");
+
+            if (AssignSkill && Hero == null) return Message.Express("You must revive a leader to assign a skill to");
+            if (AssignSkill && !Revival.MayAssignSkill(Game, p, Hero)) return Message.Express("You can't assign a skill to this leader");
+
             return null;
         }
 
@@ -86,32 +90,20 @@ namespace Treachery.Shared
             }
         }
 
-        public static IEnumerable<int> ValidAmounts(Player p, bool specialForces)
+        public static int ValidMaxAmount(Game g, Player p, bool specialForces)
         {
             if (specialForces)
             {
                 if (p.Faction == Faction.Red || p.Faction == Faction.Yellow)
                 {
-                    return Enumerable.Range(0, Math.Min(p.SpecialForcesKilled, 1) + 1);
-                }
-                else
-                {
-                    return Enumerable.Range(0, Math.Min(p.SpecialForcesKilled, 5) + 1);
-                }
-            }
-            else
-            {
-                return Enumerable.Range(0, Math.Min(p.ForcesKilled, 5) + 1);
-            }
-        }
-
-        public static int ValidMaxAmount(Player p, bool specialForces)
-        {
-            if (specialForces)
-            {
-                if (p.Faction == Faction.Red || p.Faction == Faction.Yellow)
-                {
-                    return Math.Min(p.SpecialForcesKilled, 1);
+                    if (g.FactionsThatRevivedSpecialForcesThisTurn.Contains(p.Faction))
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return Math.Min(p.SpecialForcesKilled, 1);
+                    }
                 }
                 else
                 {

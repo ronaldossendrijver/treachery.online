@@ -533,17 +533,7 @@ namespace Treachery.Shared
                 }
             }
 
-            if (isAfterSetup &&
-                (Version < 100 || !hasFinalizedBattlePlanWaitingToBeResolved) &&
-                CurrentMainPhase < MainPhase.Ended &&
-                CurrentPhase != Phase.AssigningSkill &&
-                CurrentPhase != Phase.Clairvoyance &&
-                CurrentPhase != Phase.Thought &&
-                CurrentPhase != Phase.TradingCards &&
-                CurrentPhase != Phase.Bureaucracy &&
-                CurrentPhase != Phase.SearchingDiscarded &&
-                CurrentPhase != Phase.PerformingKarmaHandSwap &&
-                CurrentPhase != Phase.ReplacingCardJustWon)
+            if (isAfterSetup && (Version < 100 || !hasFinalizedBattlePlanWaitingToBeResolved) && !CurrentPhaseIsUnInterruptable)
             {
                 if (CurrentMainPhase < MainPhase.Battle && player.NoFieldIsActive)
                 {
@@ -762,6 +752,17 @@ namespace Treachery.Shared
             }
 
         }
+
+        public bool CurrentPhaseIsUnInterruptable =>
+                CurrentMainPhase == MainPhase.Ended ||
+                CurrentPhase == Phase.AssigningSkill ||
+                CurrentPhase == Phase.Clairvoyance ||
+                CurrentPhase == Phase.Thought ||
+                CurrentPhase == Phase.TradingCards ||
+                CurrentPhase == Phase.Bureaucracy ||
+                CurrentPhase == Phase.SearchingDiscarded ||
+                CurrentPhase == Phase.PerformingKarmaHandSwap ||
+                CurrentPhase == Phase.ReplacingCardJustWon;
 
         public static IEnumerable<Type> GetGameEventTypes()
         {

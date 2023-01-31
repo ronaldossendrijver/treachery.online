@@ -75,9 +75,7 @@ namespace Treachery.Shared
 
         public static bool MayDonate(Game g, Player p)
         {
-            if (g.CurrentPhase == Phase.Bidding && g.CurrentBid != null && g.CurrentBid.Initiator == p.Faction) return false;
-
-            if (g.CurrentPhase == Phase.Bidding && g.CurrentBid != null && g.CurrentBid.AllyContributionAmount > 0 && g.CurrentBid.Player.Ally == p.Faction) return false;
+            if (g.HasBidToPay(p)) return false;
 
             return true;
         }

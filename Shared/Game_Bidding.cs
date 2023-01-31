@@ -1082,6 +1082,11 @@ namespace Treachery.Shared
             Enter(KarmaHandSwapPausedPhase);
         }
 
+        public bool HasBidToPay(Player p) => CurrentPhase == Phase.Bidding && CurrentBid != null && 
+            (CurrentBid.Initiator == p.Faction || CurrentBid.Initiator == p.Ally && CurrentBid.AllyContributionAmount > 0);
+
+
+
         public void HandleEvent(RedBidSupport e)
         {
             PermittedUseOfRedSpice = e.Amounts;

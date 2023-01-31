@@ -3,6 +3,9 @@
  */
 
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System;
+using System.Linq;
 
 namespace Treachery.Shared
 {
@@ -16,9 +19,31 @@ namespace Treachery.Shared
         {
         }
 
+        public Faction Faction { get; set; }
+
         public PrescienceAspect GreenPrescienceAspect { get; set; }
 
-        public Faction Faction { get; set; }
+        public int PurpleForces { get; set; }
+
+        public int PurpleSpecialForces { get; set; }
+
+        public int _purpleHeroId = -1;
+
+        [JsonIgnore]
+        public IHero PurpleHero
+        {
+            get
+            {
+                return LeaderManager.HeroLookup.Find(_purpleHeroId);
+            }
+            set
+            {
+                _purpleHeroId = LeaderManager.HeroLookup.GetId(value);
+            }
+        }
+
+        public bool PurpleAssignSkill { get; set; } = false;
+               
 
         public override Message Validate()
         {
@@ -26,7 +51,8 @@ namespace Treachery.Shared
             {
                 case Faction.None: return Message.Express("Invalid Nexus faction");
                     
-                case Faction.Brown:
+                case Faction.Green:
+                    if (GreenPrescienceAspect == PrescienceAspect.None) return Message.Express("Invalid battle plan element");
                     break;
 
                 case Faction.Pink:
@@ -45,6 +71,13 @@ namespace Treachery.Shared
                     break;
 
                 case Faction.Purple:
+                    if (PurpleHero != null && !ValidPurpleHeroes(Game, Player).Contains(PurpleHero)) return Message.Express("Invalid leader");
+                    if (PurpleForces > ValidPurpleMaxAmount(Game, Player, false)) return Message.Express("You can't revive that many ", Player.Force);
+                    if (PurpleSpecialForces > ValidPurpleMaxAmount(Game, Player, true)) return Message.Express("You can't revive that many ", Player.SpecialForce);
+                    if (DeterminePurpleCost() > Player.Resources) return Message.Express("You can't pay that many");
+                    if (PurpleForces + PurpleSpecialForces > 5) return Message.Express("You can't revive that many forces");
+                    if (PurpleAssignSkill && PurpleHero == null) return Message.Express("You must revive a leader to assign a skill to");
+                    if (PurpleAssignSkill && !Revival.MayAssignSkill(Game, Player, PurpleHero)) return Message.Express("You can't assign a skill to this leader");
                     break;
             }
             
@@ -69,7 +102,7 @@ namespace Treachery.Shared
 
         public static bool IsApplicable(Game g, Player p)
         {
-            if (g.CurrentPhase == Phase.NexusCards)
+            if (g.CurrentPhase == Phase.NexusCards || g.CurrentPhaseIsUnInterruptable)
             {
                 return false;
             }
@@ -108,6 +141,8 @@ namespace Treachery.Shared
                 Faction.Grey when cunning => isCurrentlyFormulatingBattlePlan,
 
                 Faction.Purple when betrayal => g.CurrentPhase == Phase.Facedancing,
+                Faction.Purple when cunning => true,
+                Faction.Purple when secretAlly => g.CurrentPhase == Phase.Resurrection,
 
                 _ => false
             } ;
@@ -125,6 +160,44 @@ namespace Treachery.Shared
         {
             return Message.Express(Initiator, " play a Nexus card");
         }
+
+        public int DeterminePurpleCost()
+        {
+            return DeterminePurpleCost(PurpleForces, PurpleSpecialForces);
+        }
+
+        public static int DeterminePurpleCost(int Forces, int SpecialForces)
+        {
+            return (Forces + SpecialForces);
+        }
+
+        public static int ValidPurpleMaxAmount(Game g, Player p, bool specialForces)
+        {
+            if (specialForces)
+            {
+                if (p.Faction == Faction.Red || p.Faction == Faction.Yellow)
+                {
+                    if (g.FactionsThatRevivedSpecialForcesThisTurn.Contains(p.Faction))
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return Math.Min(p.SpecialForcesKilled, 1);
+                    }
+                }
+                else
+                {
+                    return Math.Min(p.SpecialForcesKilled, 5);
+                }
+            }
+            else
+            {
+                return Math.Min(p.ForcesKilled, 5);
+            }
+        }
+
+        public static IEnumerable<IHero> ValidPurpleHeroes(Game game, Player player) => game.KilledHeroes(player);
 
     }
 

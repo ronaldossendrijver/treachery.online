@@ -178,6 +178,10 @@ namespace Treachery.Shared
                     if (ForcesIn(Game.CurrentBattle.Territory) >= 3) return result;
                     break;
 
+                case Faction.Purple:
+                    if (Game.CurrentMainPhase == MainPhase.Battle && RevealedDancers.Any()) return result;
+                    break;
+
 
             }
 
@@ -223,6 +227,35 @@ namespace Treachery.Shared
 
                 case Faction.Grey:
                     if (CardQuality(Game.CardJustWon) < 2) return result;
+                    break;
+
+                case Faction.Purple:
+                    int amountOfSpecialForces = 0;
+                    int amountOfForces = 0;
+                    
+                    while (amountOfSpecialForces + 1 < NexusPlayed.ValidPurpleMaxAmount(Game, this, true) && 
+                        NexusPlayed.DeterminePurpleCost(0, amountOfSpecialForces + 1) < Resources &&
+                        amountOfSpecialForces + 1 + amountOfForces <= 5)
+                    {
+                        amountOfSpecialForces++;
+                    }
+                    
+                    while (amountOfForces + 1 < NexusPlayed.ValidPurpleMaxAmount(Game, this, false) &&
+                        NexusPlayed.DeterminePurpleCost(0, amountOfForces + 1) < Resources &&
+                        amountOfSpecialForces + amountOfForces + 1 <= 5)
+                    {
+                        amountOfForces++;
+                    }
+
+                    var hero = NexusPlayed.ValidPurpleHeroes(Game, this).HighestOrDefault(l => l.Value);
+                    if (hero != null && amountOfForces + amountOfSpecialForces > 2)
+                    {
+                        result.PurpleForces = amountOfForces;
+                        result.PurpleSpecialForces = amountOfSpecialForces;
+                        result.PurpleHero = hero;
+                        result.PurpleAssignSkill = Revival.MayAssignSkill(Game, this, hero);
+                        return result;
+                    }
                     break;
 
             }

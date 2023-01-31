@@ -831,6 +831,30 @@ namespace Treachery.Shared
                     action = MessagePart.Express("let ", FactionForce.Grey, " be full strength during this battle");
                     break;
 
+                case Faction.Purple:
+                    var purple = GetPlayer(Faction.Purple);
+                    action = MessagePart.Express("replace their ", purple.RevealedDancers.Count, " revealed face dancers");
+                    if (purple.RevealedDancers.Count > 0)
+                    {
+                        for (int i = 0; i < purple.RevealedDancers.Count; i++)
+                        {
+                            purple.FaceDancers.Add(TraitorDeck.Draw());
+                        }
+
+                        TraitorDeck.Items.AddRange(purple.RevealedDancers);
+                        TraitorDeck.Shuffle();
+
+                        foreach (var dancer in purple.RevealedDancers)
+                        {
+                            purple.FaceDancers.Remove(dancer);
+                        }
+                        purple.RevealedDancers.Clear();
+                        
+                        RecentMilestones.Add(Milestone.Shuffled);
+                    }
+                    break;
+
+
             }
 
             if (action != null)
@@ -889,6 +913,38 @@ namespace Treachery.Shared
                 case Faction.Grey:
                     CurrentGreyNexus = e;
                     action = MessagePart.Express("discard a card you buy and draw a new card from the treachery deck");
+                    break;
+
+                case Faction.Purple:
+                    RecentMilestones.Add(Milestone.RaiseDead);
+                    var player = GetPlayer(e.Initiator);
+
+                    player.ReviveForces(e.PurpleForces);
+                    player.ReviveSpecialForces(e.PurpleSpecialForces);
+
+                    if (e.PurpleSpecialForces > 0)
+                    {
+                        FactionsThatRevivedSpecialForcesThisTurn.Add(e.Initiator);
+                    }
+
+                    if (e.PurpleHero != null)
+                    {
+                        ReviveHero(e.PurpleHero);
+
+                        if (e.PurpleAssignSkill)
+                        {
+                            PrepareSkillAssignmentToRevivedLeader(player, e.PurpleHero as Leader);
+                        }
+
+                    }
+
+                    action = MessagePart.Express("revive ",
+                        MessagePart.ExpressIf(e.PurpleHero != null, e.PurpleHero),
+                        MessagePart.ExpressIf(e.PurpleHero != null && e.PurpleForces + e.PurpleSpecialForces > 0, " and "),
+                        MessagePart.ExpressIf(e.PurpleForces > 0, e.PurpleForces, " ", player.Force),
+                        MessagePart.ExpressIf(e.PurpleForces > 0 && e.PurpleSpecialForces > 0, " and "),
+                        MessagePart.ExpressIf(e.PurpleSpecialForces > 0, e.PurpleSpecialForces, " ", player.SpecialForce));
+
                     break;
             }
 
