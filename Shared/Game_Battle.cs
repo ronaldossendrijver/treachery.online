@@ -443,7 +443,7 @@ namespace Treachery.Shared
                 HandleBattleOutcome(agg, def);
             }
 
-            DetermineIfCapturedLeadersMustReturn();
+            DetermineIfCapturedLeadersMustBeReleased();
         }
 
         private void ActivateSmuggler(TreacheryCalled aggtrt, TreacheryCalled deftrt, BattleOutcome outcome, bool lasgunShield)
@@ -646,20 +646,27 @@ namespace Treachery.Shared
             Enter(Phase.BattleConclusion);
         }
 
-        private void DetermineIfCapturedLeadersMustReturn()
+        private void DetermineIfCapturedLeadersMustBeReleased()
         {
             var black = GetPlayer(Faction.Black);
 
             if (black != null)
             {
-                //Captured leader that must be returned because it was used in battle
+                //DetermineIfDeadLeaderMustBeReleased
+                var deadCaptives = black.Leaders.Where(l => CapturedLeaders.ContainsKey(l) && !IsAlive(l)).ToList();
+                foreach (var captive in deadCaptives)
+                {
+                    ReturnCapturedLeader(black, captive);
+                }
+
+                //DetermineIfLeaderUsedInBattleMustBeReleased
                 var usedLeaderInBattle = CurrentBattle?.PlanOf(black)?.Hero;
-                if (usedLeaderInBattle != null && usedLeaderInBattle is Leader leader && black.Leaders.Contains(leader) && CapturedLeaders.ContainsKey(leader))
+                if (usedLeaderInBattle != null && usedLeaderInBattle is Leader leader && CapturedLeaders.ContainsKey(leader))
                 {
                     ReturnCapturedLeader(black, leader);
                 }
 
-                //Captured leaders that must be returned because Black doesn't have any more leaders
+                //DetermineIfCapturedLeadersMustBeReleasedWhenBlackHasNoLeadersLeft
                 if (!black.Leaders.Any(l => !CapturedLeaders.ContainsKey(l) && IsAlive(l)))
                 {
                     var captives = black.Leaders.Where(l => CapturedLeaders.ContainsKey(l)).ToList();

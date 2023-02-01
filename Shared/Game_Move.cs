@@ -900,6 +900,7 @@ namespace Treachery.Shared
         {
             Log(p.Faction, " take ", Vidal);
             p.Leaders.Add(Vidal);
+            SetInFrontOfShield(Vidal, false);
         }
 
         private Phase PausedTerrorPhase { get; set; }

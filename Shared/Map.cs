@@ -1605,9 +1605,9 @@ namespace Treachery.Shared
                     NeighbourCache.Clear();
                     NeighbourCacheTimestamp = game.History.Count;
                 }
-                else if (NeighbourCache.ContainsKey(cacheKey))
+                else if (NeighbourCache.TryGetValue(cacheKey, out List<Location> value))
                 {
-                    return NeighbourCache[cacheKey];
+                    return value;
                 }
             }
 
@@ -1617,7 +1617,7 @@ namespace Treachery.Shared
                 forceObstacles = DetermineForceObstacles(f, game);
             }
 
-            List<Location> neighbours = new List<Location>();
+            List<Location> neighbours = new();
             FindNeighbours(neighbours, start, null, 0, distance, f, ignoreStorm ? 99 : game.SectorInStorm, forceObstacles);
 
             neighbours.Remove(start);

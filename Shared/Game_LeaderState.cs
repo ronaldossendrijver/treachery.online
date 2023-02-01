@@ -16,7 +16,7 @@ namespace Treachery.Shared
             {
                 LeaderState[l].Kill(this);
                 RecentMilestones.Add(Milestone.LeaderKilled);
-                DetermineIfCapturedLeadersMustReturn();
+                DetermineIfCapturedLeadersMustBeReleased();
                 DetermineIfKilledGholaReturnsToOriginalFaction(l);
             }
         }
@@ -43,7 +43,7 @@ namespace Treachery.Shared
 
             if (Version >= 150)
             {
-                DetermineIfCapturedLeadersMustReturn();
+                DetermineIfCapturedLeadersMustBeReleased();
                 DetermineIfKilledGholaReturnsToOriginalFaction(l);
             }
         }
@@ -102,9 +102,9 @@ namespace Treachery.Shared
 
         private void SetInFrontOfShield(Leader l, bool value)
         {
-            if (l != null && LeaderState.ContainsKey(l))
+            if (l != null && LeaderState.TryGetValue(l, out LeaderState ls))
             {
-                LeaderState[l].InFrontOfShield = value;
+                ls.InFrontOfShield = value;
             }
         }
 
