@@ -177,6 +177,7 @@ namespace Treachery.Shared
 
             if (decidedShipmentAction == ShipmentDecision.DummyShipment)
             {
+                LogInfo("I'm spending as little as possible on this fight because this is a dummy shipment");
                 return ConstructLostBattleMinimizingLosses(opponent);
             }
 
@@ -344,38 +345,72 @@ namespace Treachery.Shared
 
         private void RemoveIllegalChoices(ref IHero hero, ref TreacheryCard weapon, ref TreacheryCard defense)
         {
-            var weapClairvoyance = RulingWeaponClairvoyanceForThisBattle;
-            if (weapClairvoyance != null && !IsAllowedWithClairvoyance(weapClairvoyance, weapon, true))
-            {
-                weapon = Weapons(defense, hero).FirstOrDefault(c => IsAllowedWithClairvoyance(weapClairvoyance, c, true));
-            }
+            LogInfo($"Removing Illegal Choices: hero: {hero}, weapon: {weapon}, defense: {defense}...");
 
-            var defClairvoyance = RulingDefenseClairvoyanceForThisBattle;
-            if (defClairvoyance != null && !IsAllowedWithClairvoyance(defClairvoyance, defense, false))
+            for (int check = 0; check < 3; check++)
             {
-                defense = Defenses(weapon).FirstOrDefault(c => IsAllowedWithClairvoyance(defClairvoyance, c, false));
-            }
+                if (hero == null)
+                {
+                    defense = null;
+                    weapon = null;
+                    LogInfo("Removed weapon and defense because no leader available");
+                }
 
-            if (defense == weapon && weapon != null && weapon.Type == TreacheryCardType.Chemistry) weapon = null;
-            if (defense == weapon && weapon != null && weapon.Type == TreacheryCardType.WeirdingWay) defense = null;
-            if (defense == weapon) defense = null;
-            if (weapon == null && defense != null && defense.Type == TreacheryCardType.WeirdingWay) defense = null;
-            if (defense == null && weapon != null && weapon.Type == TreacheryCardType.Chemistry) weapon = null;
+                var weapClairvoyance = RulingWeaponClairvoyanceForThisBattle;
+                if (weapClairvoyance != null && !IsAllowedWithClairvoyance(weapClairvoyance, weapon, true))
+                {
+                    weapon = Weapons(defense, hero).FirstOrDefault(c => IsAllowedWithClairvoyance(weapClairvoyance, c, true));
+                    LogInfo($"Replaced weapon by: {weapon}");
+                }
 
-            if (!Battle.ValidWeapons(Game, this, defense, hero, true).Contains(weapon))
-            {
-                weapon = Weapons(defense, hero).FirstOrDefault(w => w.Type != TreacheryCardType.Chemistry);
-            }
+                var defClairvoyance = RulingDefenseClairvoyanceForThisBattle;
+                if (defClairvoyance != null && !IsAllowedWithClairvoyance(defClairvoyance, defense, false))
+                {
+                    defense = Defenses(weapon).FirstOrDefault(c => IsAllowedWithClairvoyance(defClairvoyance, c, false));
+                    LogInfo($"Replaced defense by: {defense}");
+                }
 
-            if (!Battle.ValidDefenses(Game, this, weapon, true).Contains(defense))
-            {
-                defense = Defenses(weapon).FirstOrDefault(w => w.Type != TreacheryCardType.WeirdingWay);
-            }
+                if (weapon != null && defense == weapon && weapon.Type == TreacheryCardType.Chemistry)
+                {
+                    LogInfo($"Removing illegal weapon: {weapon}");
+                    weapon = null;
+                }
 
-            if (hero == null)
-            {
-                defense = null;
-                weapon = null;
+                if (weapon != null && defense == weapon && weapon.Type == TreacheryCardType.WeirdingWay)
+                {
+                    LogInfo($"Removing illegal defense: {defense}");
+                    defense = null;
+                }
+
+                if (weapon == null && defense != null && defense.Type == TreacheryCardType.WeirdingWay)
+                {
+                    LogInfo($"Removing illegal defense: {defense}");
+                    defense = null;
+                }
+
+                if (defense == null && weapon != null && weapon.Type == TreacheryCardType.Chemistry)
+                {
+                    LogInfo($"Removing illegal weapon: {weapon}");
+                    weapon = null;
+                }
+
+                if (defense == weapon)
+                {
+                    LogInfo($"Removing illegal defense: {defense}");
+                    defense = null;
+                }
+
+                if (!Battle.ValidWeapons(Game, this, defense, hero, true).Contains(weapon))
+                {
+                    weapon = Weapons(defense, hero).FirstOrDefault(w => w.Type != TreacheryCardType.Chemistry);
+                    LogInfo($"Replaced weapon by: {weapon}");
+                }
+
+                if (!Battle.ValidDefenses(Game, this, weapon, true).Contains(defense))
+                {
+                    defense = Defenses(weapon).FirstOrDefault(w => w.Type != TreacheryCardType.WeirdingWay);
+                    LogInfo($"Replaced defense by: {defense}");
+                }
             }
         }
 
@@ -833,9 +868,7 @@ namespace Treachery.Shared
                     clairvoyance.Answer.Answer == ClairVoyanceAnswer.Yes && toUse != null && inScope ||
                     clairvoyance.Answer.Answer == ClairVoyanceAnswer.No && (toUse == null || !inScope);
 
-            LogInfo("IsAllowedWithClairvoyance(): in scope: {0}, answer: {1}.",
-                inScope,
-                answer);
+            //LogInfo("IsAllowedWithClairvoyance(): in scope: {0}, answer: {1}.", inScope, answer);
 
             return answer;
         }

@@ -17,7 +17,7 @@
     var forceX = X + Skin.Current.BattleWheelForcesX;
     var forceY = Y + Skin.Current.BattleWheelForcesY;
 
-    if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Dial || CunningAspect == PrescienceAspect.Dial)
+    if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Dial || Cunning != null && Cunning.GreenPrescienceAspect == PrescienceAspect.Dial)
     {
         var dial = Support.RoundWithHalves(Plan.Dial(Game, IsAggressor ? Game.CurrentBattle.Defender : Game.CurrentBattle.Aggressor));
 
@@ -62,7 +62,7 @@
         }
     }
 
-    if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Leader || CunningAspect == PrescienceAspect.Leader)
+    if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Leader || Cunning != null && Cunning.GreenPrescienceAspect == PrescienceAspect.Leader)
     {
         if (Plan.Hero == null)
         {
@@ -156,7 +156,7 @@
         }
     }
 
-    if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Defense || CunningAspect == PrescienceAspect.Defense)
+    if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Defense || Cunning != null && Cunning.GreenPrescienceAspect == PrescienceAspect.Defense)
     {
         bool isUsingPortableAntidote = Battle.IsUsingPortableAntidote(Game, Plan.Initiator) && Plan.Player.Card(TreacheryCardType.PortableAntidote) != null;
         if (Plan.Defense != null || isUsingPortableAntidote)
@@ -177,7 +177,7 @@
         }
     }
 
-    if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Weapon || CunningAspect == PrescienceAspect.Weapon)
+    if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Weapon || Cunning != null && Cunning.GreenPrescienceAspect == PrescienceAspect.Weapon)
     {
         if (Plan.Weapon != null)
         {
@@ -228,7 +228,7 @@ else
     public PrescienceAspect Aspect { get; set; } = PrescienceAspect.None;
 
     [Parameter]
-    public PrescienceAspect CunningAspect { get; set; } = PrescienceAspect.None;
+    public NexusPlayed Cunning { get; set; }
 
     private static bool PassiveSkillIsRelevantForBattlePlan(LeaderSkill skill)
     {

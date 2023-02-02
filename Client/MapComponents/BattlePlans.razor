@@ -28,7 +28,7 @@
     }
     else if (AggressorIsAffectedByPartialPrescience)
     {
-        <BattlePlan h="h" Plan="Game.AggressorBattleAction" OpponentPlan="Game.DefenderBattleAction" TraitorCalled="false" IsAggressor="true" X="x" Y="y" Aspect="Game.CurrentPrescience.Aspect" CunningAspect="Game.CurrentGreenNexus.GreenPrescienceAspect" Opacity="0.5f" />
+        <BattlePlan h="h" Plan="Game.AggressorBattleAction" OpponentPlan="Game.DefenderBattleAction" TraitorCalled="false" IsAggressor="true" X="x" Y="y" Aspect="Game.CurrentPrescience.Aspect" Cunning="Game.CurrentGreenNexus" Opacity="0.5f" />
     }
 
     x = 0.4f * Skin.Current.MapDimensions.X;
@@ -44,7 +44,7 @@
     }
     else if (DefenderIsAffectedByPartialPrescience)
     {
-        <BattlePlan h="h" Plan="Game.DefenderBattleAction" OpponentPlan="Game.AggressorBattleAction" TraitorCalled="false" IsAggressor="false" X="x" Y="y" Aspect="Game.CurrentPrescience.Aspect" CunningAspect="Game.CurrentGreenNexus.GreenPrescienceAspect" Opacity="0.5f" />
+        <BattlePlan h="h" Plan="Game.DefenderBattleAction" OpponentPlan="Game.AggressorBattleAction" TraitorCalled="false" IsAggressor="false" X="x" Y="y" Aspect="Game.CurrentPrescience.Aspect" Cunning="Game.CurrentGreenNexus" Opacity="0.5f" />
     }
 }
 
