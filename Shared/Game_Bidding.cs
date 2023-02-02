@@ -245,17 +245,23 @@ namespace Treachery.Shared
         {
             Log(e);
 
-            if (!e.First && NumberOfCardsOnAuction > 1)
+            int threshold = Version > 150 ? 0 : 1;
+            if (Version > 150)
+            {
+                NumberOfCardsOnAuction--;
+            }
+
+            if (!e.First && NumberOfCardsOnAuction > threshold)
             {
                 WhiteAuctionShouldStillHappen = true;
             }
 
-            if (NumberOfCardsOnAuction == 1)
+            if (NumberOfCardsOnAuction == threshold)
             {
                 RegularBiddingIsDone = true;
             }
 
-            Enter(e.First || NumberOfCardsOnAuction == 1, Phase.WhiteSpecifyingAuction, StartRegularBidding);
+            Enter(e.First || NumberOfCardsOnAuction == threshold, Phase.WhiteSpecifyingAuction, StartRegularBidding);
         }
 
         public void HandleEvent(WhiteSpecifiesAuction e)
@@ -343,9 +349,12 @@ namespace Treachery.Shared
             RegularBiddingIsDone = true;
             int numberOfCardsToDraw = NumberOfCardsOnAuction;
 
-            if (IsPlaying(Faction.White) && (Version < 150 || !WhiteAuctionShouldStillHappen || WhiteAuctionShouldStillHappen && WhiteCache.Count > 0))
+            if (Version <= 150)
             {
-                numberOfCardsToDraw--;
+                if (IsPlaying(Faction.White) && (Version < 150 || !WhiteAuctionShouldStillHappen || WhiteAuctionShouldStillHappen && WhiteCache.Count > 0))
+                {
+                    numberOfCardsToDraw--;
+                }
             }
 
             if (numberOfCardsToDraw > 0 && IsPlaying(Faction.Grey) && !Prevented(FactionAdvantage.GreySelectingCardsOnAuction))
