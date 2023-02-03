@@ -39,6 +39,10 @@ namespace Treachery.Shared
 
         protected bool OpponentsAreWinning => Opponents.Any(o => Game.MeetsNormalVictoryCondition(o, true));
 
+        protected bool IsWinning(Player p) => Game.MeetsNormalVictoryCondition(p, true);
+
+        protected bool IsWinning(Faction f) => Game.MeetsNormalVictoryCondition(Game.GetPlayer(f), true);
+
         protected Prescience MyPrescience => Game.CurrentPrescience != null && (Game.CurrentPrescience.Initiator == Faction || Game.CurrentPrescience.Initiator == Ally) ? Game.CurrentPrescience : null;
 
         protected ClairVoyanceQandA MyClairVoyanceAboutEnemyDefenseInCurrentBattle =>

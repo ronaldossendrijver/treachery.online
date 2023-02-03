@@ -358,10 +358,19 @@ namespace Treachery.Shared
 
             if (e.UseUselessCard)
             {
-                var card = TakeLosses.ValidUselessCardToPreventLosses(this, e.Player);
-                Log(e.Initiator, " use ", card, " to prevent losing forces in ", StormLossesToTake[0].Location);
+                if (player.Is(Faction.Brown) && NexusPlayed.CanUseCunning(player))
+                {
+                    DiscardNexusCard(player);
+                    LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
+                }
+                else
+                {
+                    var card = TakeLosses.ValidUselessCardToPreventLosses(this, e.Player);
+                    Discard(e.Player, card);
+                }
+
+                Log(e.Initiator, " prevent losing forces in ", StormLossesToTake[0].Location);
                 StormLossesToTake.RemoveAt(0);
-                Discard(e.Player, card);
                 RecentMilestones.Add(Milestone.SpecialUselessPlayed);
             }
             else

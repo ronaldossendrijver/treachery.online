@@ -43,7 +43,21 @@ namespace Treachery.Shared
         }
 
         public bool PurpleAssignSkill { get; set; } = false;
-               
+
+        public int _brownCardId;
+
+        [JsonIgnore]
+        public TreacheryCard BrownCard
+        {
+            get
+            {
+                return TreacheryCardManager.Get(_brownCardId);
+            }
+            set
+            {
+                _brownCardId = TreacheryCardManager.GetId(value);
+            }
+        }
 
         public override Message Validate()
         {
@@ -55,21 +69,6 @@ namespace Treachery.Shared
                     if (GreenPrescienceAspect == PrescienceAspect.None) return Message.Express("Invalid battle plan element");
                     break;
 
-                case Faction.Pink:
-                    break;
-
-                case Faction.Yellow:
-                    break;
-
-                case Faction.Grey:
-                    break;
-
-                case Faction.White:
-                    break;
-
-                case Faction.Orange:
-                    break;
-
                 case Faction.Purple:
                     if (PurpleHero != null && !ValidPurpleHeroes(Game, Player).Contains(PurpleHero)) return Message.Express("Invalid leader");
                     if (PurpleForces > ValidPurpleMaxAmount(Game, Player, false)) return Message.Express("You can't revive that many ", Player.Force);
@@ -79,26 +78,31 @@ namespace Treachery.Shared
                     if (PurpleAssignSkill && PurpleHero == null) return Message.Express("You must revive a leader to assign a skill to");
                     if (PurpleAssignSkill && !Revival.MayAssignSkill(Game, Player, PurpleHero)) return Message.Express("You can't assign a skill to this leader");
                     break;
+
+                case Faction.Brown:
+                    if (BrownCard == null) return Message.Express("Select a ", TreacheryCardType.Useless, " card to discard");
+                    if (BrownCard != null && !ValidBrownCards(Player).Contains(BrownCard)) return Message.Express("Invalid card");
+                    break;
             }
             
 
             return null;
         }
 
-        public static bool CanUseCunning(Player p) => p.Faction == p.Nexus;
+        public static bool CanUseCunning(Player p) => p.Nexus != Faction.None && p.Nexus == p.Faction;
 
-        public static bool CanUseSecretAlly(Game g, Player p) => !g.IsPlaying(p.Nexus);
+        public static bool CanUseSecretAlly(Game g, Player p) => p.Nexus != Faction.None && !g.IsPlaying(p.Nexus);
 
-        public static bool CanUseBetrayal(Game g, Player p) => !(CanUseCunning(p) || CanUseSecretAlly(g, p));
-
-        [JsonIgnore]
-        public bool Cunning => Initiator == Faction;
+        public static bool CanUseBetrayal(Game g, Player p) => p.Nexus != Faction.None && p.Nexus != p.Faction && g.IsPlaying(p.Nexus);
 
         [JsonIgnore]
-        public bool SecretAlly => !Game.IsPlaying(Faction);
+        public bool IsCunning => Initiator == Faction;
 
         [JsonIgnore]
-        public bool Betrayal => !(Cunning && SecretAlly);
+        public bool IsSecretAlly => !Game.IsPlaying(Faction);
+
+        [JsonIgnore]
+        public bool IsBetrayal => !(IsCunning && IsSecretAlly);
 
         public static bool IsApplicable(Game g, Player p)
         {
@@ -109,13 +113,14 @@ namespace Treachery.Shared
 
             bool cunning = CanUseCunning(p);
             bool secretAlly = CanUseSecretAlly(g,p);
-            bool betrayal = !(cunning || secretAlly);
+            bool betrayal = CanUseBetrayal(g,p);
 
-            bool isCurrentlyFormulatingBattlePlan = g.CurrentPhase == Phase.BattlePhase && g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(p) && (g.DefenderBattleAction == null || g.AggressorBattleAction == null);
+            bool gameIsInBattle = g.CurrentPhase == Phase.BattlePhase && g.CurrentBattle != null;
+            bool isCurrentlyFormulatingBattlePlan = gameIsInBattle && g.CurrentBattle.IsAggressorOrDefender(p) && (g.DefenderBattleAction == null || g.AggressorBattleAction == null);
 
             return (p.Nexus) switch
             {
-                Faction.Green when betrayal => g.CurrentPhase == Phase.BattlePhase,
+                Faction.Green when betrayal => gameIsInBattle && g.CurrentBattle.IsAggressorOrDefender(Faction.Green),
                 Faction.Green when cunning || secretAlly => isCurrentlyFormulatingBattlePlan,
 
                 Faction.Black when betrayal => g.CurrentPhase == Phase.CancellingTraitor,
@@ -126,14 +131,14 @@ namespace Treachery.Shared
                 Faction.Yellow when cunning => g.CurrentMainPhase == MainPhase.Blow && g.MonsterAppearedInTerritoryWithoutForces,
                 Faction.Yellow when secretAlly => g.CurrentMainPhase == MainPhase.Blow || g.CurrentMainPhase == MainPhase.Resurrection,
 
-                Faction.Red when betrayal => g.CurrentMainPhase == MainPhase.Bidding || g.CurrentMainPhase == MainPhase.Battle && g.Applicable(Rule.RedSpecialForces) && g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(Faction.Red),
+                Faction.Red when betrayal => g.CurrentMainPhase == MainPhase.Bidding || gameIsInBattle && g.Applicable(Rule.RedSpecialForces) && g.CurrentBattle.IsAggressorOrDefender(Faction.Red),
                 Faction.Red when cunning => isCurrentlyFormulatingBattlePlan,
 
                 Faction.Orange when betrayal => g.RecentlyPaid != null && g.HasRecentPaymentFor(typeof(Shipment)),
                 Faction.Orange when cunning => g.CurrentPhase == Phase.OrangeMove && !g.InOrangeCunningShipment,
                 Faction.Orange when secretAlly => g.CurrentPhase == Phase.NonOrangeShip,
 
-                Faction.Blue when betrayal => g.CurrentPhase == Phase.BattlePhase,
+                Faction.Blue when betrayal => gameIsInBattle && g.CurrentBattle.IsAggressorOrDefender(Faction.Blue),
                 Faction.Blue when cunning => g.CurrentMainPhase == MainPhase.ShipmentAndMove,
                 Faction.Blue when secretAlly => g.CurrentPhase == Phase.BattlePhase && g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(p),
 
@@ -143,6 +148,9 @@ namespace Treachery.Shared
                 Faction.Purple when betrayal => g.CurrentPhase == Phase.Facedancing,
                 Faction.Purple when cunning => true,
                 Faction.Purple when secretAlly => g.CurrentPhase == Phase.Resurrection,
+
+                Faction.Brown when betrayal => true,
+                Faction.Brown when secretAlly => g.CurrentMainPhase == MainPhase.Collection && ValidBrownCards(p).Any() || g.CurrentPhase == Phase.BattleConclusion && g.CurrentBattle != null && p.Faction == g.BattleWinner,
 
                 _ => false
             } ;
@@ -199,6 +207,6 @@ namespace Treachery.Shared
 
         public static IEnumerable<IHero> ValidPurpleHeroes(Game game, Player player) => game.KilledHeroes(player);
 
+        public static IEnumerable<TreacheryCard> ValidBrownCards(Player player) => player.TreacheryCards.Where(c => c.Type == TreacheryCardType.Useless);
     }
-
 }

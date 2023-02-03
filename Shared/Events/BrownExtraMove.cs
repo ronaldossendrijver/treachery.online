@@ -28,12 +28,12 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express(Initiator, " use a ", TreacheryCardType.Useless, " card to gain extra movement");
+            return Message.Express(Initiator, " gain extra movement");
         }
 
         public static bool CanBePlayedBy(Game g, Player p)
         {
-            return p.Faction == Faction.Brown && !g.Prevented(FactionAdvantage.BrownDiscarding) && CardToUse(p) != null;
+            return p.Faction == Faction.Brown && (!g.Prevented(FactionAdvantage.BrownDiscarding) && CardToUse(p) != null || NexusPlayed.CanUseCunning(p) && p.TreacheryCards.Any());
         }
 
         public static TreacheryCard CardToUse(Player p)

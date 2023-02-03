@@ -36,7 +36,7 @@ namespace Treachery.Shared
 
         public static bool CanBePlayed(Game g, Player p)
         {
-            return g.ChosenHMSAdvantage == StrongholdAdvantage.None && g.CurrentBattle?.Territory == g.Map.HiddenMobileStronghold.Territory && g.OwnsStronghold(p.Faction, g.Map.HiddenMobileStronghold) && ValidAdvantages(g, p).Any();
+            return g.ChosenHMSAdvantage == StrongholdAdvantage.None && g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(p) && g.CurrentBattle.Territory == g.Map.HiddenMobileStronghold.Territory && g.OwnsStronghold(p.Faction, g.Map.HiddenMobileStronghold) && ValidAdvantages(g, p).Any();
         }
 
         public static IEnumerable<StrongholdAdvantage> ValidAdvantages(Game g, Player p)

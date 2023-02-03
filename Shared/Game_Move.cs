@@ -1003,6 +1003,10 @@ namespace Treachery.Shared
                         {
                             Discard(victimPlayer.TreacheryCards.RandomOrDefault(Random));
                         }
+                        else
+                        {
+                            Log(victimPlayer.Faction, " have no treachery cards to discard");
+                        }
 
                         if (e.CardToGiveInSabotage != null)
                         {
@@ -1030,10 +1034,15 @@ namespace Treachery.Shared
 
             if (!e.Passed && e.Type == TerrorType.Robbery && e.RobberyTakesCard && initiator.TreacheryCards.Count > initiator.MaximumNumberOfCards)
             {
-                PhaseBeforeDiscarding = CurrentPhase;
-                FactionThatMustDiscard = e.Initiator;
-                Enter(Phase.Discarding);
+                LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
             }
+        }
+
+        private void LetPlayerDiscardTreacheryCardOfChoice(Faction f)
+        {
+            PhaseBeforeDiscarding = CurrentPhase;
+            FactionThatMustDiscard = f;
+            Enter(Phase.Discarding);
         }
 
         private void KillAmbassadorIn(Territory territory)
@@ -1606,7 +1615,17 @@ namespace Treachery.Shared
         public void HandleEvent(BrownMovePrevention e)
         {
             Log(e);
-            Discard(e.CardUsed());
+            
+            if (NexusPlayed.CanUseCunning(e.Player))
+            {
+                DiscardNexusCard(e.Player);
+                LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
+            }
+            else
+            {
+                Discard(e.CardUsed());
+            }
+
             CurrentBlockedTerritories.Add(e.Territory);
             RecentMilestones.Add(Milestone.SpecialUselessPlayed);
         }
@@ -1615,7 +1634,17 @@ namespace Treachery.Shared
         public void HandleEvent(BrownExtraMove e)
         {
             Log(e);
-            Discard(e.CardUsed());
+
+            if (NexusPlayed.CanUseCunning(e.Player))
+            {
+                DiscardNexusCard(e.Player);
+                LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
+            }
+            else
+            {
+                Discard(e.CardUsed());
+            }
+
             BrownHasExtraMove = true;
             RecentMilestones.Add(Milestone.SpecialUselessPlayed);
         }

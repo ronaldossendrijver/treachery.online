@@ -563,7 +563,17 @@ namespace Treachery.Shared
         public void HandleEvent(BrownKarmaPrevention e)
         {
             Log(e);
-            Discard(e.CardUsed());
+            
+            if (NexusPlayed.CanUseCunning(e.Player))
+            {
+                DiscardNexusCard(e.Player);
+                LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
+            }
+            else
+            {
+                Discard(e.CardUsed());
+            }
+
             CurrentKarmaPrevention = e;
             RecentMilestones.Add(Milestone.SpecialUselessPlayed);
         }
@@ -659,11 +669,11 @@ namespace Treachery.Shared
 
         public void HandleEvent(NexusPlayed e)
         {
-            if (e.Cunning)
+            if (e.IsCunning)
             {
                 HandleCunning(e);
             }
-            else if (e.SecretAlly)
+            else if (e.IsSecretAlly)
             {
                 HandleSecretAlly(e);
             }
@@ -766,6 +776,19 @@ namespace Treachery.Shared
                     FacedancerWasCancelled = true;
                     action = MessagePart.Express(" cancel the ", Faction.Purple, " face dancer reveal");
                     FinishBattle();
+                    break;
+
+                case Faction.Brown:
+                    var victimPlayer = GetPlayer(Faction.Brown);
+                    if (victimPlayer.TreacheryCards.Any())
+                    {
+                        action = MessagePart.Express(" force ", Faction.Brown, " to discard one of their treachery cards at random");
+                        Discard(victimPlayer.TreacheryCards.RandomOrDefault(Random));
+                    }
+                    else
+                    {
+                        Log(victimPlayer.Faction, " have no treachery cards to discard");
+                    }
                     break;
 
             }
@@ -946,6 +969,34 @@ namespace Treachery.Shared
                         MessagePart.ExpressIf(e.PurpleSpecialForces > 0, e.PurpleSpecialForces, " ", player.SpecialForce));
 
                     break;
+
+                case Faction.Brown:
+                    if (CurrentMainPhase == MainPhase.Collection)
+                    {
+                        action = MessagePart.Express("discard a ", TreacheryCardType.Useless, " card to get ", Payment(2));
+                        Discard(e.Player, e.BrownCard);
+                        e.Player.Resources += 2;
+                    }
+                    else if (CurrentPhase == Phase.BattleConclusion)
+                    {
+                        var auditee = CurrentBattle.OpponentOf(e.Initiator);
+                        var recentBattlePlan = CurrentBattle.PlanOf(auditee);
+                        var auditableCards = auditee.TreacheryCards.Where(c => c != recentBattlePlan.Weapon && c != recentBattlePlan.Defense && c != recentBattlePlan.Hero);
+
+                        if (auditableCards.Any())
+                        {
+                            var auditedCard = auditableCards.RandomOrDefault(Random);
+                            RegisterKnown(e.Player, auditedCard);
+                            LogTo(e.Initiator, "You see: ", auditedCard);
+                            action = MessagePart.Express("see a random treachery card in the ", auditee.Faction, " hand");
+                        }
+                        else
+                        {
+                            Log(Auditee.Faction, " don't have cards to audit");
+                        }
+                    }
+                    break;
+
             }
 
             if (action != null)

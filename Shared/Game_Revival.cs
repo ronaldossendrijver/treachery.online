@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace Treachery.Shared
 {
@@ -373,7 +374,17 @@ namespace Treachery.Shared
         public void HandleEvent(BrownFreeRevivalPrevention e)
         {
             Log(e);
-            Discard(e.CardUsed());
+
+            if (NexusPlayed.CanUseCunning(e.Player))
+            {
+                DiscardNexusCard(e.Player);
+                LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
+            }
+            else
+            {
+                Discard(e.CardUsed());
+            }
+
             CurrentFreeRevivalPrevention = e;
             RecentMilestones.Add(Milestone.SpecialUselessPlayed);
         }

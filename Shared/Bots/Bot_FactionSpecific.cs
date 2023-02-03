@@ -186,7 +186,7 @@ namespace Treachery.Shared
         {
             int normalForces = Math.Min(TakeLosses.LossesToTake(Game).Amount, TakeLosses.ValidMaxForceAmount(Game, this));
             int specialForces = TakeLosses.LossesToTake(Game).Amount - normalForces;
-            bool useUseless = TakeLosses.ValidUselessCardToPreventLosses(Game, this) != null;
+            bool useUseless = TakeLosses.CanPreventLosses(Game, this);
             return new TakeLosses(Game) { Initiator = Faction, ForceAmount = normalForces, SpecialForceAmount = specialForces, UseUselessCard = useUseless };
         }
 
@@ -927,6 +927,51 @@ namespace Treachery.Shared
                 Game.Players.Where(p => p.Faction != Ally).Count(p => p.Resources < 2 || Game.Applicable(Rule.BlueAutoCharity) && p.Faction == Faction.Blue) <= 2)
             {
                 return new BrownEconomics(Game) { Initiator = Faction, Status = BrownEconomicsStatus.Double };
+            }
+
+            return null;
+        }
+
+        protected virtual BrownRemoveForce DetermineBrownRemoveForce()
+        {
+            var opponents = WinningOpponentsIWishToAttack(20, true);
+
+            var stronghold = Game.Map.Carthag;
+            var opponentWithOneBattaltionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold).TotalAmountOfForces == 1);
+
+            if (opponentWithOneBattaltionInStronghold == null)
+            {
+                stronghold = Game.Map.Arrakeen;
+                opponentWithOneBattaltionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold).TotalAmountOfForces == 1);
+            }
+
+            if (opponentWithOneBattaltionInStronghold == null)
+            {
+                stronghold = Game.Map.TueksSietch;
+                opponentWithOneBattaltionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold).TotalAmountOfForces == 1);
+            }
+
+            if (opponentWithOneBattaltionInStronghold == null)
+            {
+                stronghold = Game.Map.SietchTabr;
+                opponentWithOneBattaltionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold).TotalAmountOfForces == 1);
+            }
+
+            if (opponentWithOneBattaltionInStronghold == null)
+            {
+                stronghold = Game.Map.HabbanyaSietch;
+                opponentWithOneBattaltionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold).TotalAmountOfForces == 1);
+            }
+
+            if (opponentWithOneBattaltionInStronghold == null)
+            {
+                stronghold = Game.Map.HiddenMobileStronghold;
+                opponentWithOneBattaltionInStronghold = opponents.FirstOrDefault(opp => opp.BattalionIn(stronghold).TotalAmountOfForces == 1);
+            }
+
+            if (opponentWithOneBattaltionInStronghold != null)
+            {
+                return new BrownRemoveForce(Game) { Initiator = Faction, Location = stronghold, Target = opponentWithOneBattaltionInStronghold.Faction, SpecialForce = opponentWithOneBattaltionInStronghold.SpecialForcesIn(stronghold) > 0 };
             }
 
             return null;

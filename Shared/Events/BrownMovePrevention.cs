@@ -38,9 +38,9 @@ namespace Treachery.Shared
             return p.TerritoriesWithForces;
         }
 
-        public static bool CanBePlayedBy(Player p)
+        public static bool CanBePlayedBy(Game g, Player p)
         {
-            return p.Faction == Faction.Brown && ValidTerritories(p).Any() && CardToUse(p) != null;
+            return p.Faction == Faction.Brown && ValidTerritories(p).Any() && (!g.Prevented(FactionAdvantage.BrownDiscarding) && CardToUse(p) != null || NexusPlayed.CanUseCunning(p) && p.TreacheryCards.Any());
         }
 
         public static TreacheryCard CardToUse(Player p)
@@ -55,7 +55,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express(Initiator, " use a ", TreacheryCardType.Useless, " card to prevent forces moving into ", Territory);
+            return Message.Express(Initiator, " prevent forces moving into ", Territory);
         }
 
         public TreacheryCard CardUsed() => CardToUse(Player);

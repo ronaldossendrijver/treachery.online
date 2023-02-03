@@ -52,14 +52,20 @@ namespace Treachery.Shared
 
         public bool BattalionIn(Location location, out Battalion battalion)
         {
-            if (ForcesInLocations.ContainsKey(location))
-            {
-                battalion = ForcesInLocations[location];
-                return true;
-            }
+            return ForcesInLocations.TryGetValue(location, out battalion);
+        }
 
-            battalion = null;
-            return false;
+        public Battalion BattalionIn(Location location)
+        {
+            BattalionIn(location, out Battalion result);
+            if (result != null)
+            {
+                return result;
+            }
+            else
+            {
+                return new Battalion() { Faction = Faction, AmountOfForces = 0, AmountOfSpecialForces = 0 };
+            }
         }
 
         protected virtual BattleInitiated DetermineBattleInitiated()

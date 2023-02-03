@@ -560,7 +560,7 @@ namespace Treachery.Shared
                     result.Add(typeof(DiscardedSearchedAnnounced));
                 }
 
-                if (CurrentMainPhase == MainPhase.ShipmentAndMove && BrownMovePrevention.CanBePlayedBy(player))
+                if (CurrentMainPhase == MainPhase.ShipmentAndMove && BrownMovePrevention.CanBePlayedBy(this, player))
                 {
                     result.Add(typeof(BrownMovePrevention));
                 }

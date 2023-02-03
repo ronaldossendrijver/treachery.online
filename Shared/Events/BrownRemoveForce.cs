@@ -85,7 +85,7 @@ namespace Treachery.Shared
 
         public static bool CanBePlayedBy(Game g, Player p)
         {
-            return p.Faction == Faction.Brown && !g.Prevented(FactionAdvantage.BrownDiscarding) && CardToUse(p) != null;
+            return p.Faction == Faction.Brown && (!g.Prevented(FactionAdvantage.BrownDiscarding) && CardToUse(p) != null || NexusPlayed.CanUseCunning(p) && p.TreacheryCards.Any());
         }
 
         public static TreacheryCard CardToUse(Player p)
@@ -101,7 +101,7 @@ namespace Treachery.Shared
         public override Message GetMessage()
         {
             var targetPlayer = Game.GetPlayer(Target);
-            return Message.Express(Initiator, " use a ", TreacheryCardType.Useless, " card to remove ", 1, SpecialForce ? (object)targetPlayer.SpecialForce : targetPlayer.Force, " from ", Location);
+            return Message.Express(Initiator, " remove ", 1, SpecialForce ? (object)targetPlayer.SpecialForce : targetPlayer.Force, " from ", Location);
         }
 
         public TreacheryCard CardUsed() => CardToUse(Player);

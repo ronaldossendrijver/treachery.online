@@ -456,7 +456,17 @@ namespace Treachery.Shared
         public void HandleEvent(BrownRemoveForce e)
         {
             Log(e);
-            Discard(e.CardUsed());
+            
+            if (NexusPlayed.CanUseCunning(e.Player))
+            {
+                DiscardNexusCard(e.Player);
+                LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
+            }
+            else
+            {
+                Discard(e.CardUsed());
+            }
+
             var target = GetPlayer(e.Target);
 
             if (e.SpecialForce)

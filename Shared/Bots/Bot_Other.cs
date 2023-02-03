@@ -90,7 +90,7 @@ namespace Treachery.Shared
                 switch (Nexus)
                 {
                     case Faction.Green: 
-                        if (Game.CurrentBattle != null && Game.CurrentBattle.IsInvolved(this) && Game.CurrentBattle.IsInvolved(Faction.Green) && !Game.Prevented(FactionAdvantage.GreenBattlePlanPrescience)) return result;
+                        if (IsWinningOrIsOpponentInBattle(Faction.Green) && !Game.Prevented(FactionAdvantage.GreenBattlePlanPrescience)) return result;
                         break;
 
                     case Faction.Black: 
@@ -104,7 +104,7 @@ namespace Treachery.Shared
 
                     case Faction.Red:
                         if (Game.CurrentMainPhase == MainPhase.Bidding && (Game.CurrentBid != null && Game.CurrentBid.Player.Ally == Faction.Red && Game.CurrentBid.TotalAmount > 5 && !Game.Prevented(FactionAdvantage.RedReceiveBid)) ||
-                            Game.CurrentMainPhase == MainPhase.Battle && IWishToAttack(0, Faction.Red) && Game.CurrentBattle != null && Game.GetPlayer(Faction.Red).SpecialForcesIn(Game.CurrentBattle.Territory) >= 3) return result;
+                            Game.CurrentMainPhase == MainPhase.Battle && IsWinningOrIsOpponentInBattle(Faction.Red) && Game.GetPlayer(Faction.Red).SpecialForcesIn(Game.CurrentBattle.Territory) >= 3) return result;
                         break;
 
                     case Faction.Orange:
@@ -112,7 +112,7 @@ namespace Treachery.Shared
                         break;
 
                     case Faction.Blue:
-                        if (Game.CurrentBattle != null && Game.CurrentBattle.IsInvolved(this) && Game.CurrentBattle.IsInvolved(Faction.Blue) && !Game.Prevented(FactionAdvantage.BlueUsingVoice)) return result;
+                        if (IsWinningOrIsOpponentInBattle(Faction.Blue) && !Game.Prevented(FactionAdvantage.BlueUsingVoice)) return result;
                         break;
 
                     case Faction.Grey: return result;
@@ -120,11 +120,19 @@ namespace Treachery.Shared
                     case Faction.Purple:
                         if (Game.CurrentBattle.IsInvolved(this)) return result;
                         break;
+
+                    case Faction.Brown:
+                        if (IsWinningOrIsOpponentInBattle(Faction.Brown)) return result;
+                        break;
                 }
             }
 
             return null;
         }
+
+        private bool IsWinningOrIsOpponentInBattle(Faction faction) => faction != Ally && Game.CurrentBattle != null && Game.CurrentBattle.IsInvolved(faction) && (IsWinning(faction) || Game.CurrentBattle.IsInvolved(this));
+
+
 
         private NexusPlayed DetermineNexusPlayed_Cunning(NexusPlayed result)
         {
@@ -181,7 +189,6 @@ namespace Treachery.Shared
                 case Faction.Purple:
                     if (Game.CurrentMainPhase == MainPhase.Battle && RevealedDancers.Any()) return result;
                     break;
-
 
             }
 
@@ -257,7 +264,28 @@ namespace Treachery.Shared
                         return result;
                     }
                     break;
+                
+                case Faction.Brown:
+                    if (Game.CurrentMainPhase == MainPhase.Collection)
+                    {
+                        if (Faction != Faction.Blue)
+                        {
+                            result.BrownCard = NexusPlayed.ValidBrownCards(this).FirstOrDefault();
+                            return result;
+                        }
+                    }
+                    else if (Game.CurrentMainPhase == MainPhase.Battle)
+                    {
+                        var auditee = Game.CurrentBattle.OpponentOf(this);
+                        var recentBattlePlan = Game.CurrentBattle.PlanOf(auditee);
+                        var auditableCards = auditee.TreacheryCards.Where(c => c != recentBattlePlan.Weapon && c != recentBattlePlan.Defense && c != recentBattlePlan.Hero);
 
+                        if (auditableCards.Any(c => !KnownCards.Contains(c)))
+                        {
+                            return result;
+                        }
+                    }
+                    break;
             }
 
             return null;

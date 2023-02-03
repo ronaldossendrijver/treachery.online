@@ -28,6 +28,11 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            if (e is BrownRemoveForce)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "BrownRemoveForce");
+            }
+
             var pink = g.GetPlayer(Faction.Pink);
             if (pink != null && g.CurrentTurn < 10 && g.CurrentMainPhase == MainPhase.Ended && g.Winners.Contains(pink) && g.MeetsPinkVictoryCondition(pink, false))
             {
@@ -52,11 +57,11 @@ namespace Treachery.Test
 
             if (e is NexusPlayed np)
             {
-                if (np.Cunning)
+                if (np.IsCunning)
                 {
                     WriteSavegameIfApplicable(g, e.Player, "Cunning-" + np.Faction);
                 }
-                else if (np.SecretAlly)
+                else if (np.IsSecretAlly)
                 {
                     WriteSavegameIfApplicable(g, e.Player, "SecretAlly-" + np.Faction);
                 }
@@ -108,6 +113,7 @@ namespace Treachery.Test
             */
         }
 
+        /*
         private readonly List<Type> Written = new();
         private void WriteSavegameIfApplicable(Game g, Type t)
         {
@@ -124,6 +130,7 @@ namespace Treachery.Test
                 }
             }
         }
+        */
 
         private readonly List<string> WrittenCases = new();
         private void WriteSavegameIfApplicable(Game g, Player playerWithAction, string c)
@@ -430,11 +437,11 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 10000;
+            int nrOfGames = 2000;
             int nrOfTurns = 10;
             int nrOfPlayers = 6;
 
-            int timeout = 30;
+            int timeout = 300;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 

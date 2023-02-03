@@ -24,7 +24,7 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (UseUselessCard && ValidUselessCardToPreventLosses(Game, Player) == null) return Message.Express("You can't use a card to prevent force losses");
+            if (UseUselessCard && !CanPreventLosses(Game, Player)) return Message.Express("You can't use a card to prevent force losses");
             if (UseUselessCard) return null;
 
             int valueToBeKilled = LossesToTake(Game).Amount;
@@ -70,6 +70,8 @@ namespace Treachery.Shared
 
             return null;
         }
+
+        public static bool CanPreventLosses(Game g, Player p) => !g.Prevented(FactionAdvantage.BrownDiscarding) && ValidUselessCardToPreventLosses(g, p) != null || NexusPlayed.CanUseCunning(p) && p.TreacheryCards.Any();
 
         protected override void ExecuteConcreteEvent()
         {
