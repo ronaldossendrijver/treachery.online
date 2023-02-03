@@ -1,10 +1,10 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using Newtonsoft.Json;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Treachery.Shared
@@ -64,7 +64,7 @@ namespace Treachery.Shared
             switch (Faction)
             {
                 case Faction.None: return Message.Express("Invalid Nexus faction");
-                    
+
                 case Faction.Green:
                     if (GreenPrescienceAspect == PrescienceAspect.None) return Message.Express("Invalid battle plan element");
                     break;
@@ -84,7 +84,7 @@ namespace Treachery.Shared
                     if (BrownCard != null && !ValidBrownCards(Player).Contains(BrownCard)) return Message.Express("Invalid card");
                     break;
             }
-            
+
 
             return null;
         }
@@ -112,8 +112,8 @@ namespace Treachery.Shared
             }
 
             bool cunning = CanUseCunning(p);
-            bool secretAlly = CanUseSecretAlly(g,p);
-            bool betrayal = CanUseBetrayal(g,p);
+            bool secretAlly = CanUseSecretAlly(g, p);
+            bool betrayal = CanUseBetrayal(g, p);
 
             bool gameIsInBattle = g.CurrentPhase == Phase.BattlePhase && g.CurrentBattle != null;
             bool isCurrentlyFormulatingBattlePlan = gameIsInBattle && g.CurrentBattle.IsAggressorOrDefender(p) && (g.DefenderBattleAction == null || g.AggressorBattleAction == null);
@@ -153,7 +153,7 @@ namespace Treachery.Shared
                 Faction.Brown when secretAlly => g.CurrentMainPhase == MainPhase.Collection && ValidBrownCards(p).Any() || g.CurrentPhase == Phase.BattleConclusion && g.CurrentBattle != null && p.Faction == g.BattleWinner,
 
                 _ => false
-            } ;
+            };
 
 
 

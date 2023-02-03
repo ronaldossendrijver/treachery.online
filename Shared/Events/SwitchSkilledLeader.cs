@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using System.Linq;
@@ -31,7 +31,7 @@ namespace Treachery.Shared
             return Message.Express(Initiator, " switch their skilled leader");
         }
 
-        public static Leader SwitchableLeader(Game game, Player player) => player.Leaders.FirstOrDefault(l => game.IsSkilled(l) && !game.CapturedLeaders.ContainsKey(l) && (player.Faction == Faction.Pink || l.HeroType != HeroType.PinkAndCyan ));
+        public static Leader SwitchableLeader(Game game, Player player) => player.Leaders.FirstOrDefault(l => game.IsSkilled(l) && !game.CapturedLeaders.ContainsKey(l) && (player.Faction == Faction.Pink || l.HeroType != HeroType.PinkAndCyan));
 
         public static bool CanBePlayed(Game game, Player player)
         {

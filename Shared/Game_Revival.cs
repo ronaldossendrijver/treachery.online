@@ -1,11 +1,10 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 
 namespace Treachery.Shared
 {
@@ -407,7 +406,8 @@ namespace Treachery.Shared
 
         public void HandleEvent(AmbassadorPlaced e)
         {
-            if (!e.Passed) {
+            if (!e.Passed)
+            {
 
                 AmbassadorsPlacedThisTurn++;
                 e.Player.Resources -= AmbassadorsPlacedThisTurn;

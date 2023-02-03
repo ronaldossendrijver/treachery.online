@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using Newtonsoft.Json;
@@ -35,7 +35,7 @@ namespace Treachery.Shared
         {
             if (!ValidStrongholds(Game, Player).Contains(Stronghold)) return Message.Express("Invalid stronghold");
             if (!ValidAmbassadors(Player).Contains(Faction)) return Message.Express("Ambassador not available");
-            
+
             return null;
         }
 
@@ -50,24 +50,24 @@ namespace Treachery.Shared
         }
 
         public static IEnumerable<Faction> ValidAmbassadors(Player p) => p.Ambassadors;
-        
+
         protected override void ExecuteConcreteEvent()
         {
             Game.HandleEvent(this);
         }
 
-        public static bool IsApplicable(Game g, Player p) => 
-            g.CurrentPhase == Phase.ResurrectionReport && 
+        public static bool IsApplicable(Game g, Player p) =>
+            g.CurrentPhase == Phase.ResurrectionReport &&
             p.Resources > g.AmbassadorsPlacedThisTurn &&
             !g.Prevented(FactionAdvantage.PinkAmbassadors) &&
-            ValidAmbassadors(p).Any() && 
+            ValidAmbassadors(p).Any() &&
             ValidStrongholds(g, p).Any();
 
         public override Message GetMessage()
         {
             if (Passed)
             {
-                return Message.Express(Initiator, " don't place an ambassador"); 
+                return Message.Express(Initiator, " don't place an ambassador");
             }
             else
             {

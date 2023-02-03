@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using System;
@@ -27,7 +27,7 @@ namespace Treachery.Shared
             if (purple != null && l is Leader && purple.Leaders.Contains(l) && l.Faction != Faction.Purple)
             {
                 purple.Leaders.Remove(l as Leader);
-                
+
                 var originalOwner = GetPlayer(l.Faction);
                 if (originalOwner != null)
                 {

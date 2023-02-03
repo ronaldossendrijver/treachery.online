@@ -1,11 +1,10 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace Treachery.Shared
 {
@@ -185,7 +184,7 @@ namespace Treachery.Shared
             FactionThatMayReplaceBoughtCard = Faction.None;
             bool enterReplacingCardJustWon = Version > 150 && Players.Any(p => p.Nexus != Faction.None);
 
-            if (winner != null) 
+            if (winner != null)
             {
                 if (winner.Ally == Faction.Grey && AllyMayReplaceCards)
                 {
@@ -879,12 +878,12 @@ namespace Treachery.Shared
                 var newCard = DrawTreacheryCard();
                 initiator.TreacheryCards.Add(newCard);
                 RecentMilestones.Add(Milestone.CardWonSwapped);
-                
+
                 if (!IsPlaying(Faction.Grey))
                 {
                     DiscardNexusCard(e.Player);
                 }
-                
+
                 LogTo(initiator.Faction, "You replaced your ", CardJustWon, " with a ", newCard);
                 Log(e);
             }
@@ -1091,7 +1090,7 @@ namespace Treachery.Shared
             Enter(KarmaHandSwapPausedPhase);
         }
 
-        public bool HasBidToPay(Player p) => CurrentPhase == Phase.Bidding && CurrentBid != null && 
+        public bool HasBidToPay(Player p) => CurrentPhase == Phase.Bidding && CurrentBid != null &&
             (CurrentBid.Initiator == p.Faction || CurrentBid.Initiator == p.Ally && CurrentBid.AllyContributionAmount > 0);
 
 

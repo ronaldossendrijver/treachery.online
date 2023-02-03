@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using Newtonsoft.Json;
@@ -29,7 +29,7 @@ namespace Treachery.Shared
         public bool WhiteAllowsUseOfNoField { get; set; }
         public bool CyanAllowsKeepingCards { get; set; }
         public bool PinkSharesAmbassadors { get; set; }
-        
+
         public int PermittedResources { get; set; }
 
         public int _permittedKarmaCardId { get; set; }

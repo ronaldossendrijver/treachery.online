@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using System;
@@ -396,9 +396,9 @@ namespace Treachery.Client
                     Express("Waiting for ", Faction.Purple, " to reveal a face dancer..."),
                     Faction.Purple),
 
-                Phase.Facedancing => 
-                    game.Version <= 150 ? 
-                    Status(game, Express("You may reveal a leader to be one of your face dancers."), Express("Waiting for ", Faction.Purple, " to reveal a face dancer..."), Faction.Purple) : 
+                Phase.Facedancing =>
+                    game.Version <= 150 ?
+                    Status(game, Express("You may reveal a leader to be one of your face dancers."), Express("Waiting for ", Faction.Purple, " to reveal a face dancer..."), Faction.Purple) :
                     Status(game, Express("You may now replace opponent forces by your own."), Express("Waiting for ", Faction.Purple, " to replace forces..."), Faction.Purple),
 
                 Phase.BattleReport when game.NextPlayerToBattle != null => Status(Express("Factions may now review the battle report before the next battle begins...")),

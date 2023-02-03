@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using Newtonsoft.Json;
@@ -190,13 +190,13 @@ namespace Treachery.Shared
                 result.Add(Faction.Brown);
                 result.Add(Faction.White);
             }
-            
+
             if (Game.ExpansionLevel >= 3)
             {
                 result.Add(Faction.Pink);
                 result.Add(Faction.Cyan);
             }
-            
+
             return result;
         }
 

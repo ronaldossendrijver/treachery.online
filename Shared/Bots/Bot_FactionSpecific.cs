@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using System;
@@ -712,7 +712,7 @@ namespace Treachery.Shared
 
             return null;
         }
-                
+
 
         protected PrescienceAspect BestPrescience(Player opponent, float maxForceStrengthInBattle, PrescienceAspect earlierPrescience)
         {
@@ -1015,7 +1015,7 @@ namespace Treachery.Shared
             {
                 forceLocations.Add(Game.Map.PolarSink, new Battalion() { Faction = Faction, AmountOfForces = 6 });
             }
-            else 
+            else
             {
                 forceLocations.Add(PerformCyanSetup.ValidLocations(Game).FirstOrDefault(l => l.IsProtectedFromStorm), new Battalion() { Faction = Faction, AmountOfForces = 6 });
             }
@@ -1071,13 +1071,15 @@ namespace Treachery.Shared
 
         protected virtual AmbassadorPlaced DetermineAmbassadorPlaced()
         {
-            if (Game.AmbassadorsPlacedThisTurn == 0 || Resources > 6 + Game.AmbassadorsPlacedThisTurn) {
+            if (Game.AmbassadorsPlacedThisTurn == 0 || Resources > 6 + Game.AmbassadorsPlacedThisTurn)
+            {
                 //This is for now just random
                 var faction = AmbassadorPlaced.ValidAmbassadors(this).RandomOrDefault();
 
                 return new AmbassadorPlaced(Game) { Initiator = Faction, Faction = faction, Stronghold = TerrorPlanted.ValidStrongholds(Game, this).First() };
             }
-            else {
+            else
+            {
 
                 return null;
             }

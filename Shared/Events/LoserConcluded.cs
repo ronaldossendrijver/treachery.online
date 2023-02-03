@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using Newtonsoft.Json;
@@ -64,7 +64,7 @@ namespace Treachery.Shared
             if (karmaUsed && !MayUseKarmaToForceKeptCards(Game, Player)) return Message.Express("You can't use ", TreacheryCardType.Karma, " to force keeping or discarding cards");
             if (!(KarmaForcedKeptCardDecision == KARMA_NO || karmaUsed)) return Message.Express("Invalid decision", KeptCard);
             if (!karmaUsed && ForcedKeptOrDiscardedCards.Any()) return Message.Express("You need to decide to either force keeping or discarding cards", KeptCard);
-            
+
             return null;
         }
 
@@ -74,7 +74,7 @@ namespace Treachery.Shared
             Game.HandleEvent(this);
         }
 
-        public static bool CanAssassinate(Game g, Player p) => g.LoserMayTryToAssassinate && TargetOfAssassination(g,p) != null;
+        public static bool CanAssassinate(Game g, Player p) => g.LoserMayTryToAssassinate && TargetOfAssassination(g, p) != null;
 
         public static Leader TargetOfAssassination(Game g, Player p) => p.Traitors.FirstOrDefault(l => l is Leader && l != g.WinnerHero && (l.Faction == g.BattleWinner || g.BattleWinner == Faction.Purple && g.IsGhola(l)) && !p.RevealedTraitors.Contains(l)) as Leader;
 

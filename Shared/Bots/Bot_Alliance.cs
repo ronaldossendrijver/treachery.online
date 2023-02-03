@@ -1,11 +1,10 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
-using Newtonsoft.Json.Linq;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 
 
 namespace Treachery.Shared
@@ -86,10 +85,10 @@ namespace Treachery.Shared
         protected virtual NexusCardDrawn DetermineNexusCardDrawn()
         {
             if (NexusCardDrawn.MayDraw(this))
-            { 
+            {
                 if (Nexus == Faction.None ||
-                    Faction == Faction.Red && Nexus == Faction.Red && !Game.Applicable(Rule.RedSpecialForces) || 
-                    Faction == Faction.Blue && Nexus == Faction.Blue && !Game.Applicable(Rule.BlueAdvisors) || 
+                    Faction == Faction.Red && Nexus == Faction.Red && !Game.Applicable(Rule.RedSpecialForces) ||
+                    Faction == Faction.Blue && Nexus == Faction.Blue && !Game.Applicable(Rule.BlueAdvisors) ||
                     Faction == Faction.Grey && Nexus == Faction.Grey && !Game.Applicable(Rule.AdvancedCombat))
                 {
                     return new NexusCardDrawn(Game) { Initiator = Faction, Passed = false };
@@ -105,7 +104,7 @@ namespace Treachery.Shared
 
             if (Game.CurrentMainPhase == MainPhase.Blow || Game.CurrentMainPhase == MainPhase.Bidding || Game.CurrentMainPhase == MainPhase.ShipmentAndMove || Game.CurrentMainPhase == MainPhase.Battle)
             {
-                
+
                 var allowedResources = DetermineAllowedResources();
                 var allowedKarmaCard = TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
                 var permission = new AllyPermission(Game) { Initiator = Faction, PermittedResources = allowedResources, PermittedKarmaCard = allowedKarmaCard };
@@ -230,7 +229,7 @@ namespace Treachery.Shared
         private bool BoolPermissionsNeedUpdate(AllyPermission permission)
         {
             bool result = false;
-            
+
             foreach (var p in GetPermissionProperties())
             {
                 typeof(AllyPermission).GetProperty(p).SetValue(permission, true);

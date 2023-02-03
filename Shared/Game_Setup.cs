@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using System;
@@ -409,7 +409,7 @@ namespace Treachery.Shared
         private void HandleLoyaltyOrDealTraitors()
         {
             Enter(IsPlaying(Faction.Pink) && Applicable(Rule.PinkLoyalty), Phase.Loyalty, DealTraitors);
-            
+
         }
 
         public LoyaltyDecided PinkLoyalty { get; private set; }
@@ -831,8 +831,8 @@ namespace Treachery.Shared
 
             Log(e);
             Enter(
-                IsPlaying(Faction.Blue) && PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(this), Phase.BlueSettingUp, 
-                IsPlaying(Faction.Cyan), Phase.CyanSettingUp, 
+                IsPlaying(Faction.Blue) && PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(this), Phase.BlueSettingUp,
+                IsPlaying(Faction.Cyan), Phase.CyanSettingUp,
                 TreacheryCardsBeforeTraitors, EnterStormPhase, DealStartingTreacheryCards);
         }
 

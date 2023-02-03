@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,8 +13,6 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
-using System.Net.NetworkInformation;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Treachery.Client;
@@ -295,8 +293,9 @@ namespace Treachery.Test
             {
                 return "Lost Leader";
             }
-            
-            if (g.CurrentMainPhase == MainPhase.Contemplate && g.OccupyingForcesOnPlanet.Any(kvp => kvp.Key != g.Map.PolarSink && !g.IsInStorm(kvp.Key.Territory) && kvp.Value.Count(b => b.Faction != Faction.Pink) > 1)) {
+
+            if (g.CurrentMainPhase == MainPhase.Contemplate && g.OccupyingForcesOnPlanet.Any(kvp => kvp.Key != g.Map.PolarSink && !g.IsInStorm(kvp.Key.Territory) && kvp.Value.Count(b => b.Faction != Faction.Pink) > 1))
+            {
 
                 return "Territory occupied by more than one faction";
             }
@@ -554,7 +553,7 @@ namespace Treachery.Test
                         File.WriteAllText("stuck" + game.Seed + ".json", GameState.GetStateAsString(game));
                     }
                     Assert.AreNotEqual(game.CurrentTurn * 400, game.History.Count, "bots got stuck");
-                                        
+
                     Assert.IsFalse(failedGames.Contains(game), "timeout");
 
                     if (performTests)
@@ -652,14 +651,14 @@ namespace Treachery.Test
         private static void ExecuteBotEvent(Game game, bool performTests, GameEvent evt)
         {
             var executeResult = evt.Execute(performTests, true);
-            
+
             var msg = "";
             if (performTests && executeResult != null)
             {
                 File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
                 msg = executeResult.ToString();
             }
-            
+
             if (performTests)
             {
                 Assert.IsNull(executeResult, msg);

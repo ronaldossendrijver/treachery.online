@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using Newtonsoft.Json;
@@ -2417,7 +2417,7 @@ namespace Treachery.Client
                 [World.Pink] = DEFAULT_ART_LOCATION + "/art/EcazCard.gif",
                 [World.Cyan] = DEFAULT_ART_LOCATION + "/art/GrummanCard.gif",
             },
-                        
+
             NexusCardImage_URL = new Dictionary<Faction, string>()
             {
                 [Faction.Green] = DEFAULT_ART_LOCATION + "/art/faction1nexus.gif",

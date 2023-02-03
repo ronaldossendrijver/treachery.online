@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using System;
@@ -89,15 +89,15 @@ namespace Treachery.Shared
             {
                 switch (Nexus)
                 {
-                    case Faction.Green: 
+                    case Faction.Green:
                         if (IsWinningOrIsOpponentInBattle(Faction.Green) && !Game.Prevented(FactionAdvantage.GreenBattlePlanPrescience)) return result;
                         break;
 
-                    case Faction.Black: 
+                    case Faction.Black:
                         if (Game.CurrentBattle.IsInvolved(this)) return result;
                         break;
-                    
-                    case Faction.Yellow: 
+
+                    case Faction.Yellow:
                         if (Game.CurrentMainPhase == MainPhase.Blow && YellowRidesMonster.ValidSources(Game).Any() ||
                             Game.CurrentMainPhase == MainPhase.ShipmentAndMove && IWishToAttack(0, Faction.Yellow)) return result;
                         break;
@@ -159,10 +159,10 @@ namespace Treachery.Shared
                     }
                     break;
 
-                case Faction.Black: 
-                    if (DetermineWorstTraitor() != null) return result; 
+                case Faction.Black:
+                    if (DetermineWorstTraitor() != null) return result;
                     break;
-                    
+
                 case Faction.Yellow:
                     if (Game.Monsters.Any() && DetermineMovedBatallion(true) != null) return result;
                     break;
@@ -173,7 +173,7 @@ namespace Treachery.Shared
 
                 case Faction.Orange:
                     var shipment = DetermineShipment();
-                    if (shipment != null && !shipment.Passed && 
+                    if (shipment != null && !shipment.Passed &&
                         (decidedShipmentAction == ShipmentDecision.PreventNormalWin || decidedShipmentAction == ShipmentDecision.PreventFremenWin || decidedShipmentAction == ShipmentDecision.AttackWeakStronghold)) return result;
                     break;
 
@@ -239,14 +239,14 @@ namespace Treachery.Shared
                 case Faction.Purple:
                     int amountOfSpecialForces = 0;
                     int amountOfForces = 0;
-                    
-                    while (amountOfSpecialForces + 1 < NexusPlayed.ValidPurpleMaxAmount(Game, this, true) && 
+
+                    while (amountOfSpecialForces + 1 < NexusPlayed.ValidPurpleMaxAmount(Game, this, true) &&
                         NexusPlayed.DeterminePurpleCost(0, amountOfSpecialForces + 1) < Resources &&
                         amountOfSpecialForces + 1 + amountOfForces <= 5)
                     {
                         amountOfSpecialForces++;
                     }
-                    
+
                     while (amountOfForces + 1 < NexusPlayed.ValidPurpleMaxAmount(Game, this, false) &&
                         NexusPlayed.DeterminePurpleCost(0, amountOfForces + 1) < Resources &&
                         amountOfSpecialForces + amountOfForces + 1 <= 5)
@@ -264,7 +264,7 @@ namespace Treachery.Shared
                         return result;
                     }
                     break;
-                
+
                 case Faction.Brown:
                     if (Game.CurrentMainPhase == MainPhase.Collection)
                     {

@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using System;
@@ -635,7 +635,7 @@ namespace Treachery.Shared
                 };
             }
         }
-                
+
         public void AssignLeaders(Game g)
         {
             Leaders = Faction switch

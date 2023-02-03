@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using System;
@@ -22,7 +22,7 @@ namespace Treachery.Shared
         {
             GameEvent action = null;
 
-            if (Do(DetermineNexusPlayed, ref action, evts) || 
+            if (Do(DetermineNexusPlayed, ref action, evts) ||
                 Do(DetermineVoice, ref action, evts) ||
                 Do(DetermineDealCancelled, ref action, evts) ||
                 Do(DetermineAcceptOrCancelPurpleRevival, ref action, evts) ||

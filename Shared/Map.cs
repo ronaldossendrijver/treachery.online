@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using System;
@@ -1155,7 +1155,7 @@ namespace Treachery.Shared
             }
 
             {
-                var t =  new Territory(42)
+                var t = new Territory(42)
                 {
                     IsStronghold = true,
                     IsProtectedFromStorm = true,

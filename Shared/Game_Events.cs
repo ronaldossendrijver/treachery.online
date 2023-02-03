@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using System;
@@ -237,8 +237,8 @@ namespace Treachery.Shared
 
                 case Phase.BeginningOfResurrection:
                     if (faction == Faction.Purple && Players.Count > 1 && (Version < 113 || !Prevented(FactionAdvantage.PurpleIncreasingRevivalLimits))) result.Add(typeof(SetIncreasedRevivalLimits));
-                    break;             
-                    
+                    break;
+
                 case Phase.Resurrection:
                     if (IsPlaying(Faction.Purple) && faction != Faction.Purple &&
                         (Version <= 78 || !HasActedOrPassed.Contains(faction)) &&

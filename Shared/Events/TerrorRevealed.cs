@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using Newtonsoft.Json;
@@ -35,7 +35,7 @@ namespace Treachery.Shared
         public bool RobberyTakesCard { get; set; }
 
         public int _cardToGiveInSabotageId;
-                
+
         [JsonIgnore]
         public TreacheryCard CardToGiveInSabotage
         {
@@ -64,7 +64,7 @@ namespace Treachery.Shared
             if (Type == TerrorType.SneakAttack && SneakAttackTo == null && ForcesInSneakAttack > 0) return Message.Express("You cannot send forces there");
             if (Type == TerrorType.SneakAttack && SneakAttackTo != null && !ValidSneakAttackTargets(Game, Player).Contains(SneakAttackTo)) return Message.Express("Invalid location of sneak attack");
             if (Type == TerrorType.SneakAttack && ForcesInSneakAttack > MaxAmountOfForcesInSneakAttack(Player)) return Message.Express("Too many forces selected");
-            
+
 
             return null;
         }

@@ -1,8 +1,6 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
-
-using System.Linq;
 
 namespace Treachery.Shared
 {

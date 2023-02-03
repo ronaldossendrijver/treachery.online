@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using Treachery.Shared;
@@ -27,7 +27,7 @@ namespace Treachery.Client
         {
             return string.Format("<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{0}' width=300/><span style='color:{1};font-size:large;position:absolute;left:20px;top:20px;filter:drop-shadow(-1px 1px 1px black);'>{2}</span><img src='{3}' width=100 style='position:absolute;left:240px;top:120px;filter:drop-shadow(-3px 3px 2px black);'/></div>",
                         Skin.Current.GetHomeworldCardImageURL(w.World),
-                        status.IsHigh ? "green" : "red", 
+                        status.IsHigh ? "green" : "red",
                         status.IsHigh ? "High Threshold" : "Low Threshold",
                         Skin.Current.GetImageURL(status.Occupant));
         }

@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using Newtonsoft.Json;
@@ -69,8 +69,8 @@ namespace Treachery.Shared
             {
 
                 if (In(g, MainPhase.Bidding)) result.Add(FactionAdvantage.GreenBiddingPrescience);
-                if (In(g, MainPhase.Resurrection) || In(g, MainPhase.ShipmentAndMove)) result.Add(FactionAdvantage.GreenSpiceBlowPrescience);                
-                
+                if (In(g, MainPhase.Resurrection) || In(g, MainPhase.ShipmentAndMove)) result.Add(FactionAdvantage.GreenSpiceBlowPrescience);
+
                 if (In(g, MainPhase.Battle))
                 {
                     if (g.Applicable(Rule.GreenMessiah)) result.Add(FactionAdvantage.GreenUseMessiah);
@@ -85,7 +85,7 @@ namespace Treachery.Shared
                 if (In(g, MainPhase.Battle))
                 {
                     if (g.Applicable(Rule.BlackCapturesOrKillsLeaders)) result.Add(FactionAdvantage.BlackCaptureLeader);
-                    
+
                     result.Add(FactionAdvantage.BlackCallTraitorForAlly);
                 }
             }

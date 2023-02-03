@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 namespace Treachery.Shared
@@ -7,7 +7,7 @@ namespace Treachery.Shared
     public class Intrusion
     {
         public ILocationEvent TriggeringEvent { get; set; }
-        
+
         public IntrusionType Type { get; set; }
 
         public Territory Territory => TriggeringEvent.To.Territory;

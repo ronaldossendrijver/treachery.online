@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using Newtonsoft.Json;
@@ -418,7 +418,7 @@ namespace Treachery.Shared
                     foreach (var f in defenders.Select(b => b.Faction))
                     {
                         result.Add(new Fight(occupiedLocation.Territory, f));
-                        
+
                         if (returnOnlyOneBattle)
                         {
                             break;

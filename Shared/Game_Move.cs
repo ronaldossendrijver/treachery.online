@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using System;
@@ -87,7 +87,7 @@ namespace Treachery.Shared
             Enter(Phase.NonOrangeShip);
         }
 
-        
+
         private readonly List<Territory> ChosenDestinationsWithAllies = new List<Territory>();
 
         public void HandleEvent(Shipment s)
@@ -298,13 +298,13 @@ namespace Treachery.Shared
         public bool MayShipCrossPlanet(Player p)
         {
             return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeSpecialShipments) ||
-                   p.Ally == Faction.Orange && AllyMayShipAsOrange || 
+                   p.Ally == Faction.Orange && AllyMayShipAsOrange ||
                    p.Initiated(CurrentOrangeNexus);
         }
 
         public bool MayShipToReserves(Player p)
         {
-            return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeSpecialShipments) || 
+            return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeSpecialShipments) ||
                    p.Initiated(CurrentOrangeNexus);
         }
 
@@ -853,7 +853,7 @@ namespace Treachery.Shared
                         Log(initiator, " revive ", e.PurpleAmountOfForces, " ", initiatingPlayer.Force);
                         initiatingPlayer.ReviveForces(e.PurpleAmountOfForces);
                     }
-                    
+
                     break;
             }
         }
@@ -1146,7 +1146,8 @@ namespace Treachery.Shared
 
         private void CleanupObsoleteIntrusions()
         {
-            if (Intrusions.Any()) {
+            if (Intrusions.Any())
+            {
 
                 int i = 0;
                 bool search = true;
@@ -1251,7 +1252,7 @@ namespace Treachery.Shared
                 case Phase.AmbassadorTriggeredByYellowRidingMonsterA:
                     Enter(Phase.BlueIntrudedByYellowRidingMonsterA);
                     break;
-                    
+
                 case Phase.YellowRidingMonsterB:
                 case Phase.BlueIntrudedByYellowRidingMonsterB:
                 case Phase.TerrorTriggeredByYellowRidingMonsterB:
@@ -1615,7 +1616,7 @@ namespace Treachery.Shared
         public void HandleEvent(BrownMovePrevention e)
         {
             Log(e);
-            
+
             if (NexusPlayed.CanUseCunning(e.Player))
             {
                 DiscardNexusCard(e.Player);

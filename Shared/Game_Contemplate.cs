@@ -1,8 +1,7 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -32,7 +31,7 @@ namespace Treachery.Shared
                 }
             }
 
-            
+
 
             Enter(Version >= 103, EnterMentatPause, ContinueMentatPhase);
         }
@@ -43,7 +42,7 @@ namespace Treachery.Shared
             DetermineIfCyanDrawsNewTraitor();
             ExtortionToBeReturned = Players.Any(p => p.Extortion > 0);
             GainExtortions();
-            
+
             if (BlackTraitorWasCancelled)
             {
                 BlackTraitorWasCancelled = false;
@@ -59,7 +58,8 @@ namespace Treachery.Shared
             var cyan = GetPlayer(Faction.Cyan);
             if (cyan != null)
             {
-                foreach (var l in Assassinated.Where(l => cyan.RevealedTraitors.Contains(l)).ToList()) {
+                foreach (var l in Assassinated.Where(l => cyan.RevealedTraitors.Contains(l)).ToList())
+                {
 
                     Log(Faction.Cyan, " set aside ", l, " and draw a new traitor card");
                     cyan.Traitors.Remove(l);
@@ -347,8 +347,8 @@ namespace Treachery.Shared
 
         private IEnumerable<Territory> Strongholds => Map.Territories().Where(t => t.IsStronghold || IsSpecialStronghold(t));
 
-        public bool MeetsPinkVictoryCondition(Player p, bool contestedStongholdsCountAsOccupied) => 
-            (p.Is(Faction.Pink) && p.HasAlly || p.Ally == Faction.Pink) && 
+        public bool MeetsPinkVictoryCondition(Player p, bool contestedStongholdsCountAsOccupied) =>
+            (p.Is(Faction.Pink) && p.HasAlly || p.Ally == Faction.Pink) &&
             Strongholds.Count(l => p.Controls(this, l, contestedStongholdsCountAsOccupied) && p.AlliedPlayer.Controls(this, l, contestedStongholdsCountAsOccupied)) >= 3;
 
         public int NumberOfVictoryPoints(Player p, bool contestedStongholdsCountAsOccupied)
@@ -456,7 +456,7 @@ namespace Treachery.Shared
         public void HandleEvent(BrownRemoveForce e)
         {
             Log(e);
-            
+
             if (NexusPlayed.CanUseCunning(e.Player))
             {
                 DiscardNexusCard(e.Player);
@@ -534,7 +534,7 @@ namespace Treachery.Shared
         public bool CyanHasPlantedTerror { get; private set; } = false;
 
         public IEnumerable<TerrorType> TerrorIn(Territory t) => TerrorOnPlanet.Where(kvp => kvp.Value == t).Select(kvp => kvp.Key);
-        
+
         public void HandleEvent(TerrorPlanted e)
         {
             Log(e);

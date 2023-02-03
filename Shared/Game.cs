@@ -1,10 +1,9 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
 namespace Treachery.Shared
@@ -13,10 +12,10 @@ namespace Treachery.Shared
     {
         public const int LowestSupportedVersion = 100;
         public const int LatestVersion = 151;
-        public const int ExpansionLevel = 2;
+        public const int ExpansionLevel = 3;
 
         public bool BotInfologging = true;
-        
+
         #region GameState
         public int Seed { get; private set; } = -1;
         public int MaximumNumberOfTurns { get; private set; }
@@ -40,8 +39,8 @@ namespace Treachery.Shared
         public Report CurrentReport { get; private set; }
         public Deck<TreacheryCard> TreacheryDeck { get; private set; }
         public Deck<TreacheryCard> TreacheryDiscardPile { get; private set; }
-        public List<TreacheryCard> RemovedTreacheryCards { get; private set; } = new ();
-        public List<TreacheryCard> WhiteCache { get; private set; } = new ();
+        public List<TreacheryCard> RemovedTreacheryCards { get; private set; } = new();
+        public List<TreacheryCard> WhiteCache { get; private set; } = new();
         public Deck<ResourceCard> ResourceCardDeck { get; private set; }
         public Deck<ResourceCard> ResourceCardDiscardPileA { get; private set; }
         public Deck<ResourceCard> ResourceCardDiscardPileB { get; private set; }
@@ -451,7 +450,7 @@ namespace Treachery.Shared
             CurrentMoment = MainPhaseMoment.End;
 
             List<FactionAdvantage> exceptionsToAllowing = new();
-            
+
             if (CurrentMainPhase == MainPhase.Bidding && Prevented(FactionAdvantage.PurpleIncreasingRevivalLimits))
             {
                 exceptionsToAllowing.Add(FactionAdvantage.PurpleIncreasingRevivalLimits);
@@ -994,7 +993,7 @@ namespace Treachery.Shared
             if (bg != null)
             {
                 var pink = GetPlayer(Faction.Pink);
-                var territoriesWhereAdvisorsAreAloneOrWithPink = Map.Territories(true).Where(t => bg.SpecialForcesIn(t) > 0 && 
+                var territoriesWhereAdvisorsAreAloneOrWithPink = Map.Territories(true).Where(t => bg.SpecialForcesIn(t) > 0 &&
                     (!Players.Any(p => p.Faction != Faction.Blue && p.AnyForcesIn(t) > 0) || bg.Ally == Faction.Pink && pink.AnyForcesIn(t) > 0));
                 foreach (var t in territoriesWhereAdvisorsAreAloneOrWithPink)
                 {
@@ -1131,9 +1130,9 @@ namespace Treachery.Shared
 
         public bool AssistedNotekeepingEnabled(Player p) => Applicable(Rule.AssistedNotekeeping) || p.Is(Faction.Green) && Applicable(Rule.AssistedNotekeepingForGreen);
 
-        public bool HasRoomForLeaders(Player p) => 
-            p.Leaders.Count(l => IsAlive(l)) - 
-            (p.Is(Faction.Black) ? p.Leaders.Count(l => l.Faction != Faction.Black) : 0) 
+        public bool HasRoomForLeaders(Player p) =>
+            p.Leaders.Count(l => IsAlive(l)) -
+            (p.Is(Faction.Black) ? p.Leaders.Count(l => l.Faction != Faction.Black) : 0)
             < 5;
 
         public bool HasStormPrescience(Player p)
@@ -1308,7 +1307,7 @@ namespace Treachery.Shared
 
         #endregion SupportMethods
 
-        
+
 
     }
 }

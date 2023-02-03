@@ -1,11 +1,10 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace Treachery.Shared
 {
@@ -103,15 +102,15 @@ namespace Treachery.Shared
             else
             {
                 var initiatorIsWithPink = CurrentBattle.Initiator == Faction.Pink || CurrentBattle.Player.Ally == Faction.Pink;
-                Log(CurrentBattle.Initiator, 
-                    MessagePart.ExpressIf(initiatorIsWithPink, CurrentBattle.Player.Ally), 
-                    " initiate battle with ", 
-                    CurrentBattle.Target, 
-                    MessagePart.ExpressIf(!initiatorIsWithPink, GetPlayer(CurrentBattle.Target).Ally), 
-                    " in ", 
-                    CurrentBattle.Territory, 
-                    ", where ", 
-                    CurrentPinkOrAllyFighter, 
+                Log(CurrentBattle.Initiator,
+                    MessagePart.ExpressIf(initiatorIsWithPink, CurrentBattle.Player.Ally),
+                    " initiate battle with ",
+                    CurrentBattle.Target,
+                    MessagePart.ExpressIf(!initiatorIsWithPink, GetPlayer(CurrentBattle.Target).Ally),
+                    " in ",
+                    CurrentBattle.Territory,
+                    ", where ",
+                    CurrentPinkOrAllyFighter,
                     " will fight for their ally");
             }
 
@@ -615,7 +614,7 @@ namespace Treachery.Shared
             }
         }
 
-        
+
 
         private void PrepareAudit()
         {
@@ -820,7 +819,7 @@ namespace Treachery.Shared
             int aggHeroContribution = result.AggHeroKilled || (Version < 145 && rockMelterUsed) ? 0 : result.AggHeroEffectiveStrength + result.AggHeroSkillBonus + result.AggMessiahContribution - result.AggBattlePenalty;
             int defHeroContribution = result.DefHeroKilled || (Version < 145 && rockMelterUsed) ? 0 : result.DefHeroEffectiveStrength + result.DefHeroSkillBonus + result.DefMessiahContribution - result.DefBattlePenalty;
 
-            int aggPinkKarmaContribution = agg.Initiator == Faction.Pink? PinkKarmaBonus : 0;
+            int aggPinkKarmaContribution = agg.Initiator == Faction.Pink ? PinkKarmaBonus : 0;
             int defPinkKarmaContribution = def.Initiator == Faction.Pink ? PinkKarmaBonus : 0;
 
             float aggForceDial;
@@ -1411,7 +1410,7 @@ namespace Treachery.Shared
 
             if (BattleWasConcludedByWinner)
             {
-                Enter(!IsPlaying(Faction.Purple) || BattleWinner == Faction.Purple, FinishBattle, Version <= 150, Phase.Facedancing, Phase.RevealingFacedancer );
+                Enter(!IsPlaying(Faction.Purple) || BattleWinner == Faction.Purple, FinishBattle, Version <= 150, Phase.Facedancing, Phase.RevealingFacedancer);
             }
         }
 
@@ -1655,7 +1654,7 @@ namespace Treachery.Shared
                     Log(f.Initiator, " reveal ", facedancer, " as one of their Face Dancers!");
                     RecentMilestones.Add(Milestone.FaceDanced);
                 }
-                    
+
                 if (facedancer is Leader && IsAlive(facedancer))
                 {
                     KillHero(facedancer);
@@ -1670,7 +1669,7 @@ namespace Treachery.Shared
                 {
                     initiator.RevealedDancers.Add(facedancer);
                 }
-                
+
                 if (!initiator.HasUnrevealedFaceDancers)
                 {
                     ReplaceFacedancers(f, initiator);
@@ -1716,11 +1715,11 @@ namespace Treachery.Shared
                     initiator.AddSpecialForces(location, fl.Value.AmountOfSpecialForces, false);
                 }
 
-                Log(nrOfRemovedForces, " ", winner.Faction, 
-                    MessagePart.ExpressIf(coocupyingPlayer != null, coocupyingPlayer?.Faction), 
-                    " forces go back to reserves and are replaced by ", 
-                    f.TargetForceLocations.Sum(b => b.Value.TotalAmountOfForces), 
-                    f.Player.Force, 
+                Log(nrOfRemovedForces, " ", winner.Faction,
+                    MessagePart.ExpressIf(coocupyingPlayer != null, coocupyingPlayer?.Faction),
+                    " forces go back to reserves and are replaced by ",
+                    f.TargetForceLocations.Sum(b => b.Value.TotalAmountOfForces),
+                    f.Player.Force,
                     " (", f.ForcesFromReserve, " from reserves", DetermineSourceLocations(f), ")");
             }
         }

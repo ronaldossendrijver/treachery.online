@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using System;
@@ -436,7 +436,7 @@ namespace Treachery.Shared
                 PinkKarmaBonus = Math.Abs(myLeader.Value - opponentLeader.ValueInCombatAgainst(myLeader));
             }
 
-            Log("Using ", TreacheryCardType.Karma, ", ", e.Initiator, " add ", PinkKarmaBonus, " to their dial" );
+            Log("Using ", TreacheryCardType.Karma, ", ", e.Initiator, " add ", PinkKarmaBonus, " to their dial");
         }
 
         public void HandleEvent(Karma e)
@@ -563,7 +563,7 @@ namespace Treachery.Shared
         public void HandleEvent(BrownKarmaPrevention e)
         {
             Log(e);
-            
+
             if (NexusPlayed.CanUseCunning(e.Player))
             {
                 DiscardNexusCard(e.Player);
@@ -815,7 +815,7 @@ namespace Treachery.Shared
 
             switch (e.Faction)
             {
-                case Faction.Green: 
+                case Faction.Green:
                     CurrentGreenNexus = e;
                     action = MessagePart.Express("see their opponent's ", e.GreenPrescienceAspect);
                     break;
@@ -836,7 +836,7 @@ namespace Treachery.Shared
 
                 case Faction.Red:
                     CurrentRedNexus = e;
-                    action = MessagePart.Express("let 5 ", FactionForce.Red, " count as " , FactionSpecialForce.Red, " during this battle");
+                    action = MessagePart.Express("let 5 ", FactionForce.Red, " count as ", FactionSpecialForce.Red, " during this battle");
                     break;
 
                 case Faction.Orange:
@@ -872,7 +872,7 @@ namespace Treachery.Shared
                             purple.FaceDancers.Remove(dancer);
                         }
                         purple.RevealedDancers.Clear();
-                        
+
                         RecentMilestones.Add(Milestone.Shuffled);
                     }
                     break;
@@ -893,7 +893,7 @@ namespace Treachery.Shared
         private void HandleSecretAlly(NexusPlayed e)
         {
             var action = MessagePart.Express();
-            
+
             switch (e.Faction)
             {
                 case Faction.Green:

@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using System;
@@ -441,7 +441,7 @@ namespace Treachery.Shared
             specialForces = 0;
             forces = 0;
 
-            var normalStrength = Battle.DetermineNormalForceStrength(Game,Faction);
+            var normalStrength = Battle.DetermineNormalForceStrength(Game, Faction);
             var specialStrength = Battle.DetermineSpecialForceStrength(Game, Faction, opponent);
             int spiceAvailable = ResourcesIncludingAllyContribution - minResourcesToKeep;
             float noSpiceForForceModifier = Battle.MustPayForForcesInBattle(Game, this) ? 0.5f : 1;

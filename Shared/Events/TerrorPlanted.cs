@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2020-2022 Ronald Ossendrijver. All rights reserved.
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
 using Newtonsoft.Json;
@@ -42,7 +42,7 @@ namespace Treachery.Shared
                 if (!ValidStrongholds(Game, Player).Contains(Stronghold)) return Message.Express("Invalid Stronghold");
                 if (!ValidTerrorTypes(Game, false).Contains(Type)) return Message.Express("Token not available");
             }
-            
+
             return null;
         }
 
@@ -77,11 +77,11 @@ namespace Treachery.Shared
             Game.HandleEvent(this);
         }
 
-        public static bool IsApplicable(Game g, Player p) => 
-            g.CurrentPhase == Phase.Contemplate && 
-            !g.CyanHasPlantedTerror && 
-            !g.Prevented(FactionAdvantage.CyanPlantingTerror) && 
-            ValidTerrorTypes(g, false).Any() && 
+        public static bool IsApplicable(Game g, Player p) =>
+            g.CurrentPhase == Phase.Contemplate &&
+            !g.CyanHasPlantedTerror &&
+            !g.Prevented(FactionAdvantage.CyanPlantingTerror) &&
+            ValidTerrorTypes(g, false).Any() &&
             ValidStrongholds(g, p).Any();
 
         public override Message GetMessage()
