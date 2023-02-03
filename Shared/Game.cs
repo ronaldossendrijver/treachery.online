@@ -120,6 +120,8 @@ namespace Treachery.Shared
 
         public bool HasRecentPaymentFor(Type t) => RecentlyPaid.Any(p => p.Reason != null && p.Reason.GetType() == t);
 
+        public bool HasReceivedPaymentFor(Faction receiver, Type t) => RecentlyPaid.Any(p => p.To == receiver && p.Reason != null && p.Reason.GetType() == t);
+
         public int RecentlyPaidTotalAmount => RecentlyPaid.Sum(p => p.Amount);
 
         private List<Payment> StoredRecentlyPaid { get; set; } = new();
@@ -460,6 +462,8 @@ namespace Treachery.Shared
             {
                 exceptionsToAllowing.Add(FactionAdvantage.GreenSpiceBlowPrescience);
             }
+
+            WasVictimOfBureaucracy = Faction.None;
 
             if (Version >= 103) AllowAllPreventedFactionAdvantages(exceptionsToAllowing);
         }

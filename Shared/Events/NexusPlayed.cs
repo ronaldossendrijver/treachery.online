@@ -134,7 +134,7 @@ namespace Treachery.Shared
                 Faction.Red when betrayal => g.CurrentMainPhase == MainPhase.Bidding || gameIsInBattle && g.Applicable(Rule.RedSpecialForces) && g.CurrentBattle.IsAggressorOrDefender(Faction.Red),
                 Faction.Red when cunning => isCurrentlyFormulatingBattlePlan,
 
-                Faction.Orange when betrayal => g.RecentlyPaid != null && g.HasRecentPaymentFor(typeof(Shipment)),
+                Faction.Orange when betrayal => g.CurrentMainPhase == MainPhase.ShipmentAndMove && g.RecentlyPaid != null && g.HasRecentPaymentFor(typeof(Shipment)),
                 Faction.Orange when cunning => g.CurrentPhase == Phase.OrangeMove && !g.InOrangeCunningShipment,
                 Faction.Orange when secretAlly => g.CurrentPhase == Phase.NonOrangeShip,
 
@@ -151,6 +151,10 @@ namespace Treachery.Shared
 
                 Faction.Brown when betrayal => true,
                 Faction.Brown when secretAlly => g.CurrentMainPhase == MainPhase.Collection && ValidBrownCards(p).Any() || g.CurrentPhase == Phase.BattleConclusion && g.CurrentBattle != null && p.Faction == g.BattleWinner,
+
+                Faction.White when betrayal => g.CurrentMainPhase == MainPhase.Bidding && g.WhiteBiddingJustFinished && g.CardJustWon != null,
+                Faction.Orange when cunning => g.CurrentPhase == Phase.OrangeMove && !g.InOrangeCunningShipment,
+                Faction.Orange when secretAlly => g.CurrentPhase == Phase.NonOrangeShip,
 
                 _ => false
             };

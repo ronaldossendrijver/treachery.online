@@ -133,6 +133,7 @@ namespace Treachery.Shared
                 {
                     var card = WinByHighestBid(
                         highestBid.Player,
+                        highestBid,
                         highestBid.Amount,
                         highestBid.AllyContributionAmount,
                         highestBid.RedContributionAmount,
@@ -158,6 +159,7 @@ namespace Treachery.Shared
                 {
                     var card = WinByHighestBid(
                         CurrentBid.Player,
+                        CurrentBid,
                         CurrentBid.Amount,
                         CurrentBid.AllyContributionAmount,
                         CurrentBid.RedContributionAmount,
@@ -311,11 +313,12 @@ namespace Treachery.Shared
                 {
                     var card = WinByHighestBid(
                         highestBid.Player,
+                        highestBid,
                         highestBid.Amount,
                         highestBid.AllyContributionAmount,
                         highestBid.RedContributionAmount,
                         highestBid.Initiator != Faction.White ? Faction.White : Faction.Red,
-                        CardsOnAuction, bid.UsesRedSecretAlly);
+                        CardsOnAuction, false);
 
                     FinishBid(highestBid.Player, card);
                 }
@@ -557,6 +560,7 @@ namespace Treachery.Shared
                         var receiver = Faction.Red;
                         var card = WinByHighestBid(
                             CurrentBid.Player,
+                            CurrentBid,
                             CurrentBid.Amount,
                             CurrentBid.AllyContributionAmount,
                             CurrentBid.RedContributionAmount,
@@ -601,7 +605,7 @@ namespace Treachery.Shared
             CurrentBid = bid;
             var winner = GetPlayer(CurrentBid.Initiator);
             var receiverIncomeMessage = MessagePart.Express();
-            PayForCard(winner, CurrentBid.Amount, CurrentBid.AllyContributionAmount, CurrentBid.RedContributionAmount, paymentReceiver, ref receiverIncomeMessage, bid.UsesRedSecretAlly);
+            PayForCard(winner, bid, CurrentBid.Amount, CurrentBid.AllyContributionAmount, CurrentBid.RedContributionAmount, paymentReceiver, ref receiverIncomeMessage, bid.UsesRedSecretAlly);
             LogBid(winner, CurrentBid.Amount, CurrentBid.AllyContributionAmount, CurrentBid.RedContributionAmount, receiverIncomeMessage);
             RecentMilestones.Add(Milestone.AuctionWon);
             var card = toDrawFrom.Draw();
@@ -647,10 +651,10 @@ namespace Treachery.Shared
             EndBiddingPhase();
         }
 
-        private TreacheryCard WinByHighestBid(Player winner, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, Faction paymentReceiver, Deck<TreacheryCard> toDrawFrom, bool usesRedCunning)
+        private TreacheryCard WinByHighestBid(Player winner, IBid bid, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, Faction paymentReceiver, Deck<TreacheryCard> toDrawFrom, bool usesRedCunning)
         {
             var receiverIncomeMessage = MessagePart.Express();
-            PayForCard(winner, bidAmount, bidAllyContributionAmount, bidRedContributionAmount, paymentReceiver, ref receiverIncomeMessage, usesRedCunning);
+            PayForCard(winner, bid, bidAmount, bidAllyContributionAmount, bidRedContributionAmount, paymentReceiver, ref receiverIncomeMessage, usesRedCunning);
             LogBid(winner, bidAmount, bidAllyContributionAmount, bidRedContributionAmount, receiverIncomeMessage);
             RecentMilestones.Add(Milestone.AuctionWon);
             var card = toDrawFrom.Draw();
@@ -705,9 +709,9 @@ namespace Treachery.Shared
             }
         }
 
-        private void PayForCard(Player initiator, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, Faction paymentReceiver, ref MessagePart message, bool usesRedCunning)
+        private void PayForCard(Player initiator, IBid bid, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, Faction paymentReceiver, ref MessagePart message, bool usesRedSecretAlly)
         {
-            if (!usesRedCunning)
+            if (!usesRedSecretAlly)
             {
                 initiator.Resources -= bidAmount;
 
@@ -727,15 +731,20 @@ namespace Treachery.Shared
 
                 var receiver = GetPlayer(paymentReceiver);
                 var receiverAndAllyAreWhite = initiator.Ally == Faction.White && paymentReceiver == Faction.White;
-                var received = bidAmount + (Version >= 139 && receiverAndAllyAreWhite ? 0 : bidAllyContributionAmount);
+                var totalAmount = bidAmount + (Version >= 139 && receiverAndAllyAreWhite ? 0 : bidAllyContributionAmount);
 
                 if (receiver != null && initiator.Faction != paymentReceiver)
                 {
-                    if (paymentReceiver != Faction.Red || !Prevented(FactionAdvantage.RedReceiveBid))
+                    if (paymentReceiver == Faction.Red && Prevented(FactionAdvantage.RedReceiveBid))
+                    {
+                        message = MessagePart.Express(TreacheryCardType.Karma, " prevents ", paymentReceiver, " from receiving ", Concept.Resource, " for this card");
+                        if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.RedReceiveBid);
+                    }
+                    else
                     {
                         if (bidRedContributionAmount > 0)
                         {
-                            receiverProfit = received;
+                            receiverProfit = totalAmount;
                             receiverProfitAfterBidding = bidRedContributionAmount;
                             message = MessagePart.Express(" → ", receiver, " get ", Payment(receiverProfit), " immediately and ", Payment(receiverProfitAfterBidding), " at the end of the bidding phase");
                             receiver.Resources += receiverProfit;
@@ -743,7 +752,7 @@ namespace Treachery.Shared
                         }
                         else
                         {
-                            receiverProfit = received + bidRedContributionAmount;
+                            receiverProfit = totalAmount;
                             message = MessagePart.Express(" → ", paymentReceiver, " get ", Payment(receiverProfit));
                             receiver.Resources += receiverProfit;
 
@@ -752,15 +761,12 @@ namespace Treachery.Shared
                                 BiddingTriggeredBureaucracy = new TriggeredBureaucracy() { PaymentFrom = initiator.Faction, PaymentTo = paymentReceiver };
                             }
                         }
-                    }
-                    else
-                    {
-                        message = MessagePart.Express(TreacheryCardType.Karma, " prevents ", paymentReceiver, " from receiving ", Concept.Resource, " for this card");
-                        if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.RedReceiveBid);
+
+                        SetRecentPayment(receiverProfit, initiator.Faction, receiver.Faction, (GameEvent)bid);
                     }
                 }
 
-                if (received + bidRedContributionAmount - receiverProfit - receiverProfitAfterBidding >= 4)
+                if (totalAmount + bidRedContributionAmount - receiverProfit - receiverProfitAfterBidding >= 4)
                 {
                     ActivateBanker(initiator);
                 }
@@ -898,7 +904,7 @@ namespace Treachery.Shared
             }
         }
 
-        private bool WhiteBiddingJustFinished { get; set; }
+        public bool WhiteBiddingJustFinished { get; private set; }
 
         private void DetermineNextStepAfterCardWasSold()
         {

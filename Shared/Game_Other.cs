@@ -632,6 +632,7 @@ namespace Treachery.Shared
             }
         }
 
+        private Faction WasVictimOfBureaucracy { get; set; }
         public void HandleEvent(Bureaucracy e)
         {
             Log(e.GetDynamicMessage());
@@ -639,6 +640,7 @@ namespace Treachery.Shared
             {
                 BureaucratWasUsedThisPhase = true;
                 GetPlayer(TargetOfBureaucracy).Resources -= 2;
+                WasVictimOfBureaucracy = TargetOfBureaucracy;
             }
             Enter(_phaseBeforeBureaucratWasActivated);
             TargetOfBureaucracy = Faction.None;
@@ -754,7 +756,7 @@ namespace Treachery.Shared
                         TargetOfBureaucracy = e.Initiator;
                     }
 
-                    RecentlyPaid.Clear();
+                    //RecentlyPaid.Clear();
                     break;
 
                 case Faction.Blue:
@@ -791,6 +793,23 @@ namespace Treachery.Shared
                     }
                     break;
 
+                case Faction.White:
+                    var paymentToWhite = StoredRecentlyPaid.FirstOrDefault(p => p.To == Faction.White);
+                    var white = GetPlayer(Faction.White);
+
+                    if (paymentToWhite != null)
+                    {
+                        var amountReceived = paymentToWhite.Amount - (WasVictimOfBureaucracy == Faction.White ? 2 : 0);
+                        action = MessagePart.Express("lose the payment of ", Payment(amountReceived), " they just received");
+                        white.Resources -= amountReceived;
+                        //RecentlyPaid.Clear();
+                    }
+                    else if (white.TreacheryCards.Contains(CardJustWon))
+                    {
+                        action = MessagePart.Express("discard the card they just won");
+                        Discard(white, CardJustWon);
+                    }
+                    break;
             }
 
             if (action != null)

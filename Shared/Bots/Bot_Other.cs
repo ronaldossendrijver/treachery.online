@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Treachery.Shared
@@ -25,7 +26,7 @@ namespace Treachery.Shared
 
         private Discarded DetermineDiscarded()
         {
-            var worstCard = TreacheryCards.OrderBy(c => CardQuality(c)).First();
+            var worstCard = TreacheryCards.OrderBy(c => CardQuality(c, null)).First();
             return new Discarded(Game) { Initiator = Faction, Card = worstCard };
         }
 
@@ -123,6 +124,15 @@ namespace Treachery.Shared
 
                     case Faction.Brown:
                         if (IsWinningOrIsOpponentInBattle(Faction.Brown)) return result;
+                        break;
+
+                    case Faction.White:
+                        var white = Game.GetPlayer(Faction.White);
+                        if (white.TreacheryCards.Contains(Game.CardJustWon))
+                        {
+                            if (CardQuality(Game.CardJustWon, white) > 3) return result;
+                        }
+                        else if (Game.RecentlyPaidTotalAmount > 5) return result;
                         break;
                 }
             }
@@ -233,7 +243,7 @@ namespace Treachery.Shared
                     break;
 
                 case Faction.Grey:
-                    if (CardQuality(Game.CardJustWon) < 2) return result;
+                    if (CardQuality(Game.CardJustWon, this) < 2) return result;
                     break;
 
                 case Faction.Purple:
@@ -321,7 +331,7 @@ namespace Treachery.Shared
         protected KarmaHandSwap DetermineKarmaHandSwap()
         {
             var toReturn = new List<TreacheryCard>();
-            foreach (var c in TreacheryCards.OrderBy(c => CardQuality(c)))
+            foreach (var c in TreacheryCards.OrderBy(c => CardQuality(c, this)))
             {
                 if (toReturn.Count == Game.KarmaHandSwapNumberOfCards) break;
 
@@ -356,24 +366,24 @@ namespace Treachery.Shared
         {
             if (Game.CurrentPhase == Phase.BiddingReport)
             {
-                if (TreacheryCards.Count(c => CardQuality(c) <= 2) >= 2)
+                if (TreacheryCards.Count(c => CardQuality(c, this) <= 2) >= 2)
                 {
-                    var bestOpponentToSwapWith = Opponents.HighestOrDefault(o => CardsPlayerHas(o).Count(c => CardQuality(c) >= 3));
+                    var bestOpponentToSwapWith = Opponents.HighestOrDefault(o => CardsPlayerHas(o).Count(c => CardQuality(c, this) >= 3));
                     LogInfo("opponent with most known good cards: " + bestOpponentToSwapWith);
 
-                    if (bestOpponentToSwapWith != null && CardsPlayerHas(bestOpponentToSwapWith).Count(c => CardQuality(c) >= 3) >= 2)
+                    if (bestOpponentToSwapWith != null && CardsPlayerHas(bestOpponentToSwapWith).Count(c => CardQuality(c, this) >= 3) >= 2)
                     {
                         //Swap with an opponent that 2 or more good cards that i know of
-                        LogInfo("swapping, because number of good cards = " + CardsPlayerHas(bestOpponentToSwapWith).Count(c => CardQuality(c) >= 3));
+                        LogInfo("swapping, because number of good cards = " + CardsPlayerHas(bestOpponentToSwapWith).Count(c => CardQuality(c, this) >= 3));
                         return new KarmaHandSwapInitiated(Game) { Initiator = Faction, Target = bestOpponentToSwapWith.Faction };
                     }
 
                     bestOpponentToSwapWith = Opponents.FirstOrDefault(o => o.TreacheryCards.Count == 4);
                     LogInfo("opponent with 4 cards: " + bestOpponentToSwapWith);
 
-                    if (bestOpponentToSwapWith != null && CardsPlayerHas(bestOpponentToSwapWith).Count(c => CardQuality(c) < 3) <= 2)
+                    if (bestOpponentToSwapWith != null && CardsPlayerHas(bestOpponentToSwapWith).Count(c => CardQuality(c, this) < 3) <= 2)
                     {
-                        LogInfo("swapping, because number of known bad cards = " + CardsPlayerHas(bestOpponentToSwapWith).Count(c => CardQuality(c) < 3));
+                        LogInfo("swapping, because number of known bad cards = " + CardsPlayerHas(bestOpponentToSwapWith).Count(c => CardQuality(c, this) < 3));
                         //Swap with an opponent that has 4 cards and 2 or less useless cards that i know of
                         return new KarmaHandSwapInitiated(Game) { Initiator = Faction, Target = bestOpponentToSwapWith.Faction };
                     }
@@ -756,8 +766,8 @@ namespace Treachery.Shared
         {
             if (Game.CurrentPhase == Phase.WaitingForNextBiddingRound)
             {
-                var worstCard = DistransUsed.ValidCards(this).LowestOrDefault(c => CardQuality(c));
-                if (worstCard != null && CardQuality(worstCard) <= 1)
+                var worstCard = DistransUsed.ValidCards(this).LowestOrDefault(c => CardQuality(c, this));
+                if (worstCard != null && CardQuality(worstCard, this) <= 1)
                 {
                     var target = DistransUsed.ValidTargets(Game, this)
                         .Where(f => f != Ally && (!Game.Applicable(Rule.BlueWorthlessAsKarma) || f != Faction.Blue))
@@ -919,8 +929,8 @@ namespace Treachery.Shared
         {
             if (Game.CurrentMainPhase == MainPhase.Contemplate)
             {
-                var cardToSearch = DiscardedSearched.ValidCards(Game).HighestOrDefault(c => CardQuality(c));
-                if (cardToSearch != null && CardQuality(cardToSearch) >= 4)
+                var cardToSearch = DiscardedSearched.ValidCards(Game).HighestOrDefault(c => CardQuality(c, this));
+                if (cardToSearch != null && CardQuality(cardToSearch, this) >= 4)
                 {
                     return new DiscardedSearchedAnnounced(Game) { Initiator = Faction };
                 }
@@ -931,14 +941,14 @@ namespace Treachery.Shared
 
         public DiscardedSearched DetermineDiscardedSearched()
         {
-            var cardToSearch = DiscardedSearched.ValidCards(Game).HighestOrDefault(c => CardQuality(c));
+            var cardToSearch = DiscardedSearched.ValidCards(Game).HighestOrDefault(c => CardQuality(c, this));
             return new DiscardedSearched(Game) { Initiator = Faction, Card = cardToSearch };
         }
 
         public DiscardedTaken DetermineDiscardedTaken()
         {
-            var cardToTake = DiscardedTaken.ValidCards(Game, this).HighestOrDefault(c => CardQuality(c));
-            if (cardToTake != null && CardQuality(cardToTake) >= 4)
+            var cardToTake = DiscardedTaken.ValidCards(Game, this).HighestOrDefault(c => CardQuality(c, this));
+            if (cardToTake != null && CardQuality(cardToTake, this) >= 4)
             {
                 return new DiscardedTaken(Game) { Initiator = Faction, Card = cardToTake };
             }

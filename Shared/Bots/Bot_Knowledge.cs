@@ -91,8 +91,17 @@ namespace Treachery.Shared
             return player.TreacheryCards.Where(c => known.Contains(c));
         }
 
-        protected int CardQuality(TreacheryCard cardToRate)
+        protected int CardQuality(TreacheryCard cardToRate, Player forWhom)
         {
+            var cardsToTakeIntoAccount = TreacheryCards;
+            if (forWhom != null && forWhom != this)
+            {
+                var myKnownCards = Game.KnownCards(this).ToList();
+                cardsToTakeIntoAccount = forWhom.TreacheryCards.Where(c => myKnownCards.Contains(c)).ToList();
+            }
+            
+            cardsToTakeIntoAccount.Remove(cardToRate);
+
             if (cardToRate.Type == TreacheryCardType.Useless) return 0;
 
             if (cardToRate.Type == TreacheryCardType.Thumper ||
@@ -107,15 +116,15 @@ namespace Treachery.Shared
             if (cardToRate.Type == TreacheryCardType.Karma && Faction == Faction.Black && !SpecialKarmaPowerUsed) return 5;
 
             int qualityWhenObtainingBothKinds = (Faction == Faction.Green || Faction == Faction.Blue) ? 5 : 4;
-            if (cardToRate.IsProjectileDefense && !TreacheryCards.Any(c => c != cardToRate && c.IsProjectileDefense) && TreacheryCards.Any(c => c != cardToRate && c.IsPoisonDefense)) return qualityWhenObtainingBothKinds;
-            if (cardToRate.IsPoisonDefense && !TreacheryCards.Any(c => c != cardToRate && c.IsPoisonDefense) && TreacheryCards.Any(c => c != cardToRate && c.IsProjectileDefense)) return qualityWhenObtainingBothKinds;
-            if (cardToRate.IsProjectileWeapon && !TreacheryCards.Any(c => c != cardToRate && c.IsProjectileWeapon) && TreacheryCards.Any(c => c != cardToRate && c.IsPoisonWeapon)) return qualityWhenObtainingBothKinds;
-            if (cardToRate.IsPoisonWeapon && !TreacheryCards.Any(c => c != cardToRate && c.IsPoisonWeapon) && TreacheryCards.Any(c => c != cardToRate && c.IsProjectileWeapon)) return qualityWhenObtainingBothKinds;
+            if (cardToRate.IsProjectileDefense && !cardsToTakeIntoAccount.Any(c => c != cardToRate && c.IsProjectileDefense) && cardsToTakeIntoAccount.Any(c => c != cardToRate && c.IsPoisonDefense)) return qualityWhenObtainingBothKinds;
+            if (cardToRate.IsPoisonDefense && !cardsToTakeIntoAccount.Any(c => c != cardToRate && c.IsPoisonDefense) && cardsToTakeIntoAccount.Any(c => c != cardToRate && c.IsProjectileDefense)) return qualityWhenObtainingBothKinds;
+            if (cardToRate.IsProjectileWeapon && !cardsToTakeIntoAccount.Any(c => c != cardToRate && c.IsProjectileWeapon) && cardsToTakeIntoAccount.Any(c => c != cardToRate && c.IsPoisonWeapon)) return qualityWhenObtainingBothKinds;
+            if (cardToRate.IsPoisonWeapon && !cardsToTakeIntoAccount.Any(c => c != cardToRate && c.IsPoisonWeapon) && cardsToTakeIntoAccount.Any(c => c != cardToRate && c.IsProjectileWeapon)) return qualityWhenObtainingBothKinds;
 
             if (Faction == Faction.Blue)
             {
-                if (cardToRate.IsProjectileWeapon && !TreacheryCards.Any(c => c != cardToRate && c.IsProjectileWeapon)) return 5;
-                if (cardToRate.IsPoisonWeapon && !TreacheryCards.Any(c => c != cardToRate && c.IsPoisonWeapon)) return 5;
+                if (cardToRate.IsProjectileWeapon && !cardsToTakeIntoAccount.Any(c => c != cardToRate && c.IsProjectileWeapon)) return 5;
+                if (cardToRate.IsPoisonWeapon && !cardsToTakeIntoAccount.Any(c => c != cardToRate && c.IsPoisonWeapon)) return 5;
             }
 
             if (cardToRate.Type == TreacheryCardType.Chemistry) return 4;
@@ -125,10 +134,10 @@ namespace Treachery.Shared
             if (cardToRate.Type == TreacheryCardType.SearchDiscarded) return 3;
             if (cardToRate.Type == TreacheryCardType.TakeDiscarded) return 3;
 
-            if (cardToRate.IsPoisonWeapon && !TreacheryCards.Any(c => c != cardToRate && c.IsPoisonWeapon)) return 3;
-            if (cardToRate.IsProjectileWeapon && !TreacheryCards.Any(c => c != cardToRate && c.IsProjectileWeapon)) return 3;
-            if (cardToRate.IsPoisonDefense && !TreacheryCards.Any(c => c != cardToRate && c.IsPoisonDefense)) return 3;
-            if (cardToRate.IsProjectileDefense && !TreacheryCards.Any(c => c != cardToRate && c.IsProjectileDefense)) return 3;
+            if (cardToRate.IsPoisonWeapon && !cardsToTakeIntoAccount.Any(c => c != cardToRate && c.IsPoisonWeapon)) return 3;
+            if (cardToRate.IsProjectileWeapon && !cardsToTakeIntoAccount.Any(c => c != cardToRate && c.IsProjectileWeapon)) return 3;
+            if (cardToRate.IsPoisonDefense && !cardsToTakeIntoAccount.Any(c => c != cardToRate && c.IsPoisonDefense)) return 3;
+            if (cardToRate.IsProjectileDefense && !cardsToTakeIntoAccount.Any(c => c != cardToRate && c.IsProjectileDefense)) return 3;
 
             return 2;
         }
@@ -683,6 +692,11 @@ namespace Treachery.Shared
         private IEnumerable<TreacheryCard> KnownOpponentWeapons(Player opponent)
         {
             return opponent.TreacheryCards.Where(c => c.IsWeapon && Game.KnownCards(this).Contains(c));
+        }
+
+        private IEnumerable<TreacheryCard> KnownOpponentCards(Player opponent)
+        {
+            return opponent.TreacheryCards.Where(c => Game.KnownCards(this).Contains(c));
         }
 
         private IEnumerable<TreacheryCard> KnownOpponentDefenses(Player opponent)
