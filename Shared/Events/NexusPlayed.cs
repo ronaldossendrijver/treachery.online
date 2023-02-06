@@ -153,8 +153,6 @@ namespace Treachery.Shared
                 Faction.Brown when secretAlly => g.CurrentMainPhase == MainPhase.Collection && ValidBrownCards(p).Any() || g.CurrentPhase == Phase.BattleConclusion && g.CurrentBattle != null && p.Faction == g.BattleWinner,
 
                 Faction.White when betrayal => g.CurrentMainPhase == MainPhase.Bidding && g.WhiteBiddingJustFinished && g.CardJustWon != null,
-                Faction.Orange when cunning => g.CurrentPhase == Phase.OrangeMove && !g.InOrangeCunningShipment,
-                Faction.Orange when secretAlly => g.CurrentPhase == Phase.NonOrangeShip,
 
                 _ => false
             };

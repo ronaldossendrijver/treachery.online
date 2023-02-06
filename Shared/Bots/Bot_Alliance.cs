@@ -273,7 +273,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    result = new CardTraded(Game) { Initiator = Faction, Target = Game.CurrentCardTradeOffer.Initiator, Card = TreacheryCards.OrderBy(c => CardQuality(c)).FirstOrDefault(), RequestedCard = null };
+                    result = new CardTraded(Game) { Initiator = Faction, Target = Game.CurrentCardTradeOffer.Initiator, Card = TreacheryCards.OrderBy(c => CardQuality(c, this)).FirstOrDefault(), RequestedCard = null };
                 }
 
                 return result;

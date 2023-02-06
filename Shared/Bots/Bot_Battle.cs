@@ -1163,7 +1163,7 @@ namespace Treachery.Shared
             var opponent = Game.CurrentBattle.OpponentOf(this);
             if (OpponentCardsUnknownToMe(opponent).Any())
             {
-                var unknownWeapons = CardsUnknownToMe.Where(c => c.IsWeapon).OrderByDescending(c => CardQuality(c));
+                var unknownWeapons = CardsUnknownToMe.Where(c => c.IsWeapon).OrderByDescending(c => CardQuality(c, opponent));
                 if (unknownWeapons.Any())
                 {
                     return new Thought(Game) { Initiator = Faction, Card = unknownWeapons.First() };
@@ -1175,7 +1175,7 @@ namespace Treachery.Shared
 
         protected ThoughtAnswered DetermineThoughtAnswered()
         {
-            return new ThoughtAnswered(Game) { Initiator = Faction, Card = ThoughtAnswered.ValidCards(Game, this).LowestOrDefault(c => CardQuality(c)) };
+            return new ThoughtAnswered(Game) { Initiator = Faction, Card = ThoughtAnswered.ValidCards(Game, this).LowestOrDefault(c => CardQuality(c, this)) };
         }
 
         protected HMSAdvantageChosen DetermineHMSAdvantageChosen()
@@ -1213,7 +1213,7 @@ namespace Treachery.Shared
 
         protected LoserConcluded DetermineLoserConcluded()
         {
-            var toKeep = LoserConcluded.CardsLoserMayKeep(Game).Where(c => CardQuality(c) > 2).OrderByDescending(c => CardQuality(c)).FirstOrDefault();
+            var toKeep = LoserConcluded.CardsLoserMayKeep(Game).Where(c => CardQuality(c, this) > 2).OrderByDescending(c => CardQuality(c, this)).FirstOrDefault();
             return new LoserConcluded(Game) { Initiator = Faction, KeptCard = toKeep, Assassinate = LoserConcluded.CanAssassinate(Game, this) };
         }
 

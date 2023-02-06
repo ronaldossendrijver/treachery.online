@@ -26,6 +26,19 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            if (e is Shipment ship && ship.Initiator == Faction.White && ship.Player.Nexus == Faction.White)
+            {
+                if (ship.CunningNoFieldValue >= 0)
+                {
+                    WriteSavegameIfApplicable(g, e.Player, "White shipped 2 nofields");
+                }
+                else
+                {
+                    WriteSavegameIfApplicable(g, e.Player, "White can ship 2 nofields");
+                }
+                
+            }
+
             if (e is BrownRemoveForce)
             {
                 WriteSavegameIfApplicable(g, e.Player, "BrownRemoveForce");
@@ -436,7 +449,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 500;
+            int nrOfGames = 2000;
             int nrOfTurns = 10;
             int nrOfPlayers = 6;
 

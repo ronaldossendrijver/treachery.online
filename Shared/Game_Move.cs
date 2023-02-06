@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace Treachery.Shared
 {
@@ -110,6 +111,14 @@ namespace Treachery.Shared
 
                 if (s.IsNoField)
                 {
+                    if (s.CunningNoFieldValue >= 0)
+                    {
+                        RevealCurrentNoField(GetPlayer(Faction.White));
+                        initiator.ShipSpecialForces(s.To, 1);
+                        CurrentNoFieldValue = s.CunningNoFieldValue;
+                        Log(s.Initiator, " use Nexus Cunning to ship and reveal a second ", FactionSpecialForce.White);
+                    }
+
                     RevealCurrentNoField(GetPlayer(Faction.White));
                     CurrentNoFieldValue = s.NoFieldValue;
 
@@ -1593,6 +1602,7 @@ namespace Treachery.Shared
                         {
                             Log(Faction.Cyan, " gain ", vidal, " taking him from ", playerWithVidal.Faction);
                             cyan.Leaders.Add(vidal);
+                            SetInFrontOfShield(vidal, false);
                             VidalWasGainedByCyanThisTurn = true;
                             playerWithVidal.Leaders.Remove(vidal);
                         }

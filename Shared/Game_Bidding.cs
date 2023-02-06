@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Treachery.Shared
 {
@@ -178,6 +179,8 @@ namespace Treachery.Shared
         }
 
         public Faction FactionThatMayReplaceBoughtCard { get; private set; }
+        public bool ReplacingBoughtCardUsingNexus { get; private set; } = false;
+
         private void FinishBlackMarketBid(Player winner, TreacheryCard card)
         {
             CardJustWon = card;
@@ -198,12 +201,20 @@ namespace Treachery.Shared
                     else
                     {
                         if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyAllyDiscardingCard);
+
+                        if (NexusAllowsReplacingBoughtCards(winner))
+                        {
+                            FactionThatMayReplaceBoughtCard = winner.Faction;
+                            ReplacingBoughtCardUsingNexus = true;
+                            enterReplacingCardJustWon = true;
+                        }
                     }
                 }
-                else if (winner.Nexus == Faction.Grey && NexusPlayed.CanUseSecretAlly(this, winner))
+                else if (NexusAllowsReplacingBoughtCards(winner))
                 {
                     FactionThatMayReplaceBoughtCard = winner.Faction;
                     enterReplacingCardJustWon = true;
+                    ReplacingBoughtCardUsingNexus = true;
                 }
             }
 
@@ -215,6 +226,8 @@ namespace Treachery.Shared
                 BiddingTriggeredBureaucracy = null;
             }
         }
+
+        private bool NexusAllowsReplacingBoughtCards(Player p) => (p.Nexus == Faction.Grey || p.Nexus == Faction.White) && NexusPlayed.CanUseSecretAlly(this, p);
 
         #endregion
 
@@ -857,12 +870,20 @@ namespace Treachery.Shared
                     else
                     {
                         if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyAllyDiscardingCard);
+
+                        if (NexusAllowsReplacingBoughtCards(winner))
+                        {
+                            FactionThatMayReplaceBoughtCard = winner.Faction;
+                            enterReplacingCardJustWon = true;
+                            ReplacingBoughtCardUsingNexus = true;
+                        }
                     }
                 }
-                else if (winner.Nexus == Faction.Grey && NexusPlayed.CanUseSecretAlly(this, winner))
+                else if (NexusAllowsReplacingBoughtCards(winner))
                 {
                     FactionThatMayReplaceBoughtCard = winner.Faction;
                     enterReplacingCardJustWon = true;
+                    ReplacingBoughtCardUsingNexus = true;
                 }
             }
 
@@ -885,9 +906,10 @@ namespace Treachery.Shared
                 initiator.TreacheryCards.Add(newCard);
                 RecentMilestones.Add(Milestone.CardWonSwapped);
 
-                if (!IsPlaying(Faction.Grey))
+                if (ReplacingBoughtCardUsingNexus)
                 {
                     DiscardNexusCard(e.Player);
+                    ReplacingBoughtCardUsingNexus = false;
                 }
 
                 LogTo(initiator.Faction, "You replaced your ", CardJustWon, " with a ", newCard);

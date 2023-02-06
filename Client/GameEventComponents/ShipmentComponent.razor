@@ -69,7 +69,7 @@
             <div class="text-danger bg-dark">Note: any of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
         }
 
-        @if (Faction == Faction.White && !Game.Prevented(FactionAdvantage.WhiteNofield) || Player.Ally == Faction.White && Game.WhiteAllowsUseOfNoField)
+        @if (Shipment.MayUseNoField(Game, Player))
         {
             var validNoFieldValues = new List<int>();
             validNoFieldValues.Add(-1);
@@ -82,10 +82,30 @@
             <RadioComponent @bind-Value="nofieldValue" Values="validNoFieldValues" ValueLabels="validNoFieldValueLabels">
                 <Label>Use a @Skin.Current.Describe(Faction.White) No-Field for this shipment?</Label>
             </RadioComponent>
+
+            if (Shipment.MayUseCunningNoField(Player))
+            {
+                var cunningValidNoFieldValues = new List<int>();
+                cunningValidNoFieldValues.Add(-1);
+                cunningValidNoFieldValues.AddRange(Shipment.ValidCunningNoFieldValues(Game, Player, nofieldValue));
+
+                var validCunningNoFieldValueLabels = new List<string>();
+                validCunningNoFieldValueLabels.Add("Don't use a second No-Field");
+                validCunningNoFieldValueLabels.AddRange(Shipment.ValidCunningNoFieldValues(Game, Player, nofieldValue).Select(v => string.Format("No-Field of {0}", v)));
+
+                <RadioComponent @bind-Value="cunningNofieldValue" Values="cunningValidNoFieldValues" ValueLabels="validCunningNoFieldValueLabels">
+                    <Label>Use Nexus Cunning to ship a second No-Field (that will be immediately revealed)?</Label>
+                </RadioComponent>
+            }
+            else
+            {
+                cunningNofieldValue = -1;
+            }
         }
         else
         {
             nofieldValue = -1;
+            cunningNofieldValue = -1;
         }
 
         @if (!(Faction == Faction.White && nofieldValue >= 0))
@@ -212,6 +232,7 @@
     private Location shipmentTo;
     private int shipmentAllyContributionAmount;
     private int nofieldValue = -1;
+    private int cunningNofieldValue = -1;
     private int smuggledForceAmount;
     private int smuggledSpecialForceAmount;
 
@@ -230,6 +251,7 @@
                 SmuggledAmount = smuggledForceAmount,
                 SmuggledSpecialAmount = smuggledSpecialForceAmount,
                 NoFieldValue = nofieldValue,
+                CunningNoFieldValue = cunningNofieldValue,
                 From = from,
                 To = shipmentTo,
                 Passed = false,

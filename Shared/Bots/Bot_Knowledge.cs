@@ -93,7 +93,7 @@ namespace Treachery.Shared
 
         protected int CardQuality(TreacheryCard cardToRate, Player forWhom)
         {
-            var cardsToTakeIntoAccount = TreacheryCards;
+            var cardsToTakeIntoAccount = new List<TreacheryCard>(TreacheryCards);
             if (forWhom != null && forWhom != this)
             {
                 var myKnownCards = Game.KnownCards(this).ToList();

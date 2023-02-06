@@ -23,7 +23,7 @@ namespace Treachery.Shared
 
             bool thisCardIsUseless = isKnownCard && !MayUseUselessAsKarma && Game.CardsOnAuction.Top.Type == TreacheryCardType.Useless;
             bool thisCardIsCrappy = isKnownCard && !WannaHave(Game.CardsOnAuction.Top);
-            bool thisCardIsPerfect = isKnownCard && CardQuality(Game.CardsOnAuction.Top) == 5;
+            bool thisCardIsPerfect = isKnownCard && CardQuality(Game.CardsOnAuction.Top, this) == 5;
 
             int resourcesToKeep = thisCardIsPerfect ? Param.Bidding_ResourcesToKeepWhenCardIsPerfect : Param.Bidding_ResourcesToKeepWhenCardIsntPerfect;
             int resourcesAvailable = Math.Max(0, Resources - resourcesToKeep) + ResourcesFromAlly + ResourcesFromRed;

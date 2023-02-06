@@ -86,9 +86,9 @@ namespace Treachery.Shared
                 var forcesNeededForCollection = MakeEvenIfEfficientForShipping(Math.Min((float)Game.ResourcesOnPlanet[bestLocationWithSpice] / Game.ResourceCollectionRate(this), 4) + TotalMaxDialOfOpponents(bestLocationWithSpice.Territory));
                 //LogInfo("" + bestLocationWithSpice + " -> " + forcesNeededForCollection);
 
-                if (DetermineShortageForShipment(forcesNeededForCollection, false, bestLocationWithSpice, Faction.Black, ForcesInReserve, 0, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, 0, 99, false) <= 0)
+                if (DetermineShortageForShipment(forcesNeededForCollection, false, bestLocationWithSpice, Faction.Black, ForcesInReserve, 0, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, out int cunningNoFieldValue, 0, 99, false) <= 0)
                 {
-                    DoShipment(ShipmentDecision.AtResources, nrOfForces, nrOfSpecialForces, noFieldValue, bestLocationWithSpice, true, true);
+                    DoShipment(ShipmentDecision.AtResources, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, bestLocationWithSpice, true, true);
                 }
             }
         }
@@ -100,7 +100,7 @@ namespace Treachery.Shared
             var battaltionToEvacuate = BiggestBattalionInSpicelessNonStrongholdLocationNotNearStrongholdAndSpice;
             if (battaltionToEvacuate.Key != null)
             {
-                DoShipment(ShipmentDecision.BackToReserves, -battaltionToEvacuate.Value.AmountOfForces, -battaltionToEvacuate.Value.AmountOfSpecialForces, -1, battaltionToEvacuate.Key, false, true);
+                DoShipment(ShipmentDecision.BackToReserves, -battaltionToEvacuate.Value.AmountOfForces, -battaltionToEvacuate.Value.AmountOfSpecialForces, -1, -1, battaltionToEvacuate.Key, false, true);
             }
         }
 
@@ -138,7 +138,7 @@ namespace Treachery.Shared
                 nrOfForces = Math.Min(ForcesInReserve, 8 - Math.Min(8, 2 * nrOfSpecialForces));
             }
 
-            DoShipment(ShipmentDecision.PolarSink, nrOfForces, nrOfSpecialForces, -1, Game.Map.PolarSink, false, false);
+            DoShipment(ShipmentDecision.PolarSink, nrOfForces, nrOfSpecialForces, -1, -1, Game.Map.PolarSink, false, false);
         }
 
         protected virtual void DetermineShipment_ShipDirectlyToSpiceAsYellow()
@@ -157,9 +157,9 @@ namespace Treachery.Shared
             {
                 var forcesToRally = Math.Max(7, 2 + TotalMaxDialOfOpponents(bestLocation.Territory) + Game.ResourcesOnPlanet[bestLocation] / Game.ResourceCollectionRate(this));
 
-                if (DetermineShortageForShipment(forcesToRally, false, bestLocation, Faction.Black, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, 0, 99, false) <= 3)
+                if (DetermineShortageForShipment(forcesToRally, false, bestLocation, Faction.Black, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, out int cunningNoFieldValue, 0, 99, false) <= 3)
                 {
-                    DoShipment(ShipmentDecision.AtResources, nrOfForces, nrOfSpecialForces, noFieldValue, bestLocation, false, false);
+                    DoShipment(ShipmentDecision.AtResources, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, bestLocation, false, false);
                 }
             }
         }
@@ -188,8 +188,8 @@ namespace Treachery.Shared
                     var forcesNeededForCollection = MakeEvenIfEfficientForShipping(Math.Min(6, DetermineForcesNeededForCollection(richestLocation)));
                     var opponent = OccupyingOpponentsIn(richestLocation.Territory).FirstOrDefault();
                     var opponentFaction = opponent != null ? opponent.Faction : Faction.Black;
-                    DetermineShortageForShipment(forcesNeededForCollection + TotalMaxDialOfOpponents(richestLocation.Territory), false, locationToShipTo, opponentFaction, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, 0, 99, Faction == Faction.Grey);
-                    DoShipment(ShipmentDecision.StrongholdNearResources, locationToShipTo, nrOfForces, nrOfSpecialForces, noFieldValue, richestLocation, true, true);
+                    DetermineShortageForShipment(forcesNeededForCollection + TotalMaxDialOfOpponents(richestLocation.Territory), false, locationToShipTo, opponentFaction, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, out int cunningNoFieldValue, 0, 99, Faction == Faction.Grey);
+                    DoShipment(ShipmentDecision.StrongholdNearResources, locationToShipTo, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, richestLocation, true, true);
                 }
             }
         }
@@ -213,10 +213,10 @@ namespace Treachery.Shared
                 var opponentFaction = opponentBattaltion != null ? opponentBattaltion.Faction : Faction.None;
                 var dialNeeded = MakeEvenIfEfficientForShipping(weakestStronghold.Difference + extraForces);
 
-                if (DetermineShortageForShipment(dialNeeded, true, weakestStronghold.Location, opponentFaction, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, 0, 0, true) <= shortageToAccept)
+                if (DetermineShortageForShipment(dialNeeded, true, weakestStronghold.Location, opponentFaction, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, out int cunningNoFieldValue, 0, 0, true) <= shortageToAccept)
                 {
                     LogInfo("Shipping to weakest stronghold: " + weakestStronghold);
-                    DoShipment(ShipmentDecision.StrengthenWeakStronghold, nrOfForces, nrOfSpecialForces, noFieldValue, weakestStronghold.Location, true, true);
+                    DoShipment(ShipmentDecision.StrengthenWeakStronghold, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, weakestStronghold.Location, true, true);
                 }
             }
         }
@@ -243,9 +243,9 @@ namespace Treachery.Shared
                 {
                     DoZeroNoFieldShipment(ShipmentDecision.DummyShipment, targetOfDummyAttack);
                 }
-                else if (DetermineShortageForShipment(0.5f, true, targetOfDummyAttack, OccupyingOpponentIn(targetOfDummyAttack.Territory).Faction, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, minResourcesToKeep, 1, false) <= 0)
+                else if (DetermineShortageForShipment(0.5f, true, targetOfDummyAttack, OccupyingOpponentIn(targetOfDummyAttack.Territory).Faction, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, out int cunningNoFieldValue, minResourcesToKeep, 1, false) <= 0)
                 {
-                    DoShipment(ShipmentDecision.DummyShipment, nrOfForces, nrOfSpecialForces, noFieldValue, targetOfDummyAttack, false, true);
+                    DoShipment(ShipmentDecision.DummyShipment, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, targetOfDummyAttack, false, true);
                 }
             }
         }
@@ -272,9 +272,9 @@ namespace Treachery.Shared
                         needed = Math.Max(0.5f, MaxPotentialForceShortage(opponent != null && OpponentsToShipAndMove.Contains(opponent), target) - AnyForcesIn(Game.Map.PolarSink));
                     }
 
-                    if (DetermineShortageForShipment(needed, true, target, opponent != null ? opponent.Faction : Faction.Black, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, minResourcesToKeep, 1, false) <= 0)
+                    if (DetermineShortageForShipment(needed, true, target, opponent != null ? opponent.Faction : Faction.Black, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, out int cunningNoFieldValue, minResourcesToKeep, 1, false) <= 0)
                     {
-                        DoShipment(ShipmentDecision.DummyShipment, nrOfForces, nrOfSpecialForces, noFieldValue, target, false, true);
+                        DoShipment(ShipmentDecision.DummyShipment, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, target, false, true);
                     }
                 }
             }
@@ -304,9 +304,9 @@ namespace Treachery.Shared
             if (target != null)
             {
                 var dialNeeded = MakeEvenIfEfficientForShipping(forcestrength);
-                if (DetermineShortageForShipment(dialNeeded, false, target, Faction.Yellow, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, minResourcesToKeep, maxUnsupportedForces, true) <= 2)
+                if (DetermineShortageForShipment(dialNeeded, false, target, Faction.Yellow, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, out int cunningNoFieldValue, minResourcesToKeep, maxUnsupportedForces, true) <= 2)
                 {
-                    DoShipment(ShipmentDecision.VacantStronghold, nrOfForces, nrOfSpecialForces, noFieldValue, target, true, true);
+                    DoShipment(ShipmentDecision.VacantStronghold, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, target, true, true);
                 }
             }
         }
@@ -321,13 +321,13 @@ namespace Treachery.Shared
             {
                 if (ValidShipmentLocations.Where(l => AllyDoesntBlock(l.Territory) && IDontHaveAdvisorsIn(l)).Contains(Game.Map.HabbanyaSietch))
                 {
-                    DetermineShortageForShipment(99, true, Game.Map.HabbanyaSietch, Faction.Black, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, 0, 99, true);
-                    DoShipment(ShipmentDecision.PreventFremenWin, nrOfForces, nrOfSpecialForces, noFieldValue, Game.Map.HabbanyaSietch, true, true);
+                    DetermineShortageForShipment(99, true, Game.Map.HabbanyaSietch, Faction.Black, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, out int cunningNoFieldValue, 0, 99, true);
+                    DoShipment(ShipmentDecision.PreventFremenWin, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, Game.Map.HabbanyaSietch, true, true);
                 }
                 else if (ValidShipmentLocations.Where(l => AllyDoesntBlock(l.Territory) && IDontHaveAdvisorsIn(l)).Contains(Game.Map.SietchTabr))
                 {
-                    DetermineShortageForShipment(99, true, Game.Map.SietchTabr, Faction.Black, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, 0, 99, true);
-                    DoShipment(ShipmentDecision.PreventFremenWin, nrOfForces, nrOfSpecialForces, noFieldValue, Game.Map.SietchTabr, true, true);
+                    DetermineShortageForShipment(99, true, Game.Map.SietchTabr, Faction.Black, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, out int cunningNoFieldValue, 0, 99, true);
+                    DoShipment(ShipmentDecision.PreventFremenWin, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, Game.Map.SietchTabr, true, true);
                 }
             }
         }
@@ -430,6 +430,7 @@ namespace Treachery.Shared
             out int forces,
             out int specialForces,
             out int noFieldValue,
+            out int cunningNoFieldValue,
             int minResourcesToKeep,
             int maxUnsupportedForces,
             bool preferSpecialForces)
@@ -438,6 +439,7 @@ namespace Treachery.Shared
                 dialNeeded, location, opponent, forcesAvailable, specialForcesAvailable);*/
 
             noFieldValue = -1;
+            cunningNoFieldValue = -1;
             specialForces = 0;
             forces = 0;
 
@@ -473,6 +475,14 @@ namespace Treachery.Shared
                 if (shortageWhenUsingNoField <= shortage)
                 {
                     var bigEnoughNoFields = Shipment.ValidNoFieldValues(Game, this).Where(v => v >= forcesWithNoField + specialForcesWithNoField);
+                    if (Shipment.MayUseCunningNoField(this) && Shipment.ValidNoFieldValues(Game, this).Any() && !bigEnoughNoFields.Any())
+                    {
+                        var biggestAvailableNoField = Shipment.ValidNoFieldValues(Game, this).Max();
+                        var biggestCunningNoField = Shipment.ValidCunningNoFieldValues(Game, this, biggestAvailableNoField).Max();
+                        bigEnoughNoFields = Shipment.ValidNoFieldValues(Game, this).Where(v => v + biggestCunningNoField >= forcesWithNoField + specialForcesWithNoField);
+                        cunningNoFieldValue = bigEnoughNoFields.Any() ? biggestCunningNoField : -1;
+                    }
+
                     noFieldValue = bigEnoughNoFields.Any() ? bigEnoughNoFields.Min() : bigEnoughNoFields.Max();
                     int specialForcesShipped = Math.Min(availableSpecialForcesNoField, noFieldValue);
                     int forcesShipped = Math.Min(availableForcesNoField, noFieldValue - specialForcesShipped);
@@ -582,19 +592,19 @@ namespace Treachery.Shared
             return null;
         }
 
-        private void DoShipment(ShipmentDecision decision, int nrOfForces, int nrOfSpecialForces, int noFieldValue, Location destination, bool useKarma, bool useAllyResources)
+        private void DoShipment(ShipmentDecision decision, int nrOfForces, int nrOfSpecialForces, int noFieldValue, int cunningNoFieldValue, Location destination, bool useKarma, bool useAllyResources)
         {
-            DoShipment(decision, destination, nrOfForces, nrOfSpecialForces, noFieldValue, null, useKarma, useAllyResources);
+            DoShipment(decision, destination, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, null, useKarma, useAllyResources);
         }
 
         private void DoShipment(ShipmentDecision decision, Attack attack, bool useKarma, bool useAllyResources)
         {
-            DoShipment(decision, attack.Location, attack.ForcesToShip, attack.SpecialForcesToShip, attack.NoFieldValue, null, useKarma, useAllyResources);
+            DoShipment(decision, attack.Location, attack.ForcesToShip, attack.SpecialForcesToShip, attack.NoFieldValue, attack.CunningNoFieldValue, null, useKarma, useAllyResources);
         }
 
-        private void DoShipment(ShipmentDecision decision, Location destination, int nrOfForces, int nrOfSpecialForces, int noFieldValue, Location destinationforMove, bool useKarma, bool useAllyResources)
+        private void DoShipment(ShipmentDecision decision, Location destination, int nrOfForces, int nrOfSpecialForces, int noFieldValue, int cunningNoFieldValue, Location destinationforMove, bool useKarma, bool useAllyResources)
         {
-            var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, noFieldValue, destination, useKarma, useAllyResources);
+            var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, destination, useKarma, useAllyResources);
 
             var error = shipment.Validate();
             if (error == null)
@@ -609,7 +619,7 @@ namespace Treachery.Shared
             }
         }
 
-        private Shipment ConstructShipment(int nrOfForces, int nrOfSpecialForces, int noFieldValue, Location location, bool useKarma, bool useAllyResources)
+        private Shipment ConstructShipment(int nrOfForces, int nrOfSpecialForces, int noFieldValue, int cunningNoFieldValue, Location location, bool useKarma, bool useAllyResources)
         {
             Shipment result;
 
@@ -635,6 +645,7 @@ namespace Treachery.Shared
                 SmuggledAmount = nrOfSmuggledForces,
                 SmuggledSpecialAmount = nrOfSmuggledSpecialForces,
                 NoFieldValue = noFieldValue,
+                CunningNoFieldValue = cunningNoFieldValue,
                 Passed = false,
                 From = null,
                 KarmaCard = null,
@@ -720,6 +731,7 @@ namespace Treachery.Shared
             internal int ForcesToShip { get; set; }
             internal int SpecialForcesToShip { get; set; }
             internal int NoFieldValue { get; set; }
+            internal int CunningNoFieldValue { get; set; }
             internal float ShortageForShipment { get; set; }
             internal bool HasOpponent => Opponent != null;
             internal bool HasForces => ForcesToShip > 0 || SpecialForcesToShip > 0;
@@ -738,7 +750,7 @@ namespace Treachery.Shared
             {
 
                 var dialNeeded = GetDialNeeded(location.Territory, opponent, true);
-                var shortageForShipment = DetermineShortageForShipment(Math.Max(dialNeeded, 0.5f) + extraForces, true, location, opponent.Faction, ForcesInReserve, SpecialForcesInReserve, out int forcesToShip, out int specialForcesToShip, out int noFieldValue, minResourcesToKeep, maxUnsupportedForces, !RedVersusYellow(opponent));
+                var shortageForShipment = DetermineShortageForShipment(Math.Max(dialNeeded, 0.5f) + extraForces, true, location, opponent.Faction, ForcesInReserve, SpecialForcesInReserve, out int forcesToShip, out int specialForcesToShip, out int noFieldValue, out int cunningNoFieldValue, minResourcesToKeep, maxUnsupportedForces, !RedVersusYellow(opponent));
 
                 return new Attack()
                 {
@@ -748,6 +760,7 @@ namespace Treachery.Shared
                     ForcesToShip = forcesToShip,
                     SpecialForcesToShip = specialForcesToShip,
                     NoFieldValue = noFieldValue,
+                    CunningNoFieldValue = cunningNoFieldValue,
                     ShortageForShipment = shortageForShipment
                 };
             }
@@ -761,6 +774,7 @@ namespace Treachery.Shared
                     ForcesToShip = 0,
                     SpecialForcesToShip = 0,
                     NoFieldValue = -1,
+                    CunningNoFieldValue = -1,
                     ShortageForShipment = 0
                 };
             }

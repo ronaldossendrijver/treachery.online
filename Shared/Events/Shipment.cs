@@ -42,14 +42,25 @@ namespace Treachery.Shared
         [JsonIgnore]
         public int NoFieldValue
         {
-            get
-            {
-                return _noFieldValue - 1;
-            }
+            get => _noFieldValue - 1;
 
             set
             {
                 _noFieldValue = value + 1;
+            }
+        }
+
+        //This is needed for compatibility with pre-exp2 game versions where _cunningNoFieldValue is 0 by default.
+        public int _cunningNoFieldValue;
+
+        [JsonIgnore]
+        public int CunningNoFieldValue
+        {
+            get => _cunningNoFieldValue - 1;
+
+            set
+            {
+                _cunningNoFieldValue = value + 1;
             }
         }
 
@@ -68,10 +79,7 @@ namespace Treachery.Shared
         [JsonIgnore]
         public TreacheryCard KarmaCard
         {
-            get
-            {
-                return TreacheryCardManager.Lookup.Find(_karmaCardId);
-            }
+            get => TreacheryCardManager.Lookup.Find(_karmaCardId);
 
             set
             {
@@ -122,18 +130,26 @@ namespace Treachery.Shared
             if (cost < AllyContributionAmount) return Message.Express("Your ally is paying more than needed");
             if (!ValidShipmentLocations(Game, p).Contains(To)) return Message.Express("Cannot ship there");
 
+            //no field checks, requires refactoring
+            if (NoFieldValue >= 0 && !MayUseNoField(Game, Player)) return Message.Express("You can't use a No-Field");
+            
             bool isWhiteNoFieldShipment = p.Faction == Faction.White && NoFieldValue >= 0;
-            if (NoFieldValue >= 0 && !(p.Faction == Faction.White && !Game.Prevented(FactionAdvantage.WhiteNofield)) && !(p.Ally == Faction.White && Game.WhiteAllowsUseOfNoField)) return Message.Express("You can't use a No-Field");
             if (isWhiteNoFieldShipment && ForceAmount > 0) return Message.Express("You can't do both normal and No-Field shipment");
             if (isWhiteNoFieldShipment && SpecialForceAmount != 1) return Message.Express("Invalid special force value for No-Field shipment");
+            
             if (p.Faction == Faction.White && SpecialForceAmount > 0 && !ValidNoFieldValues(Game, Player).Contains(NoFieldValue)) return Message.Express("Invalid No-Field value");
+
+            if (CunningNoFieldValue >= 0 && !MayUseCunningNoField(p)) return Message.Express("You cannot use cunning to ship a second No-Field");
+            if (NoFieldValue < 0 && CunningNoFieldValue >= 0) return Message.Express("You can only use cunning when you also ship a regular No-Field");
+            if (CunningNoFieldValue >= 0 && ForceAmount > 0) return Message.Express("You can't do both normal and No-Field shipment");
+            if (CunningNoFieldValue >= 0 && !ValidCunningNoFieldValues(Game, Player, NoFieldValue).Contains(CunningNoFieldValue)) return Message.Express("Invalid Cunning No-Field value");
 
             if (From == null && ForceAmount + SmuggledAmount > p.ForcesInReserve) return Message.Express("Not enough ", p.Force, " in reserve");
             if (From == null && !isWhiteNoFieldShipment && SpecialForceAmount + SmuggledSpecialAmount > p.SpecialForcesInReserve) return Message.Express("Not enough ", p.SpecialForce, " in reserve");
 
             bool isSmuggling = SmuggledAmount > 0 || SmuggledSpecialAmount > 0;
             bool isShippingFromOffPlanet = !(IsBackToReserves || IsSiteToSite) && Initiator != Faction.Yellow && (ForceAmount > 0 || SpecialForceAmount > 0);
-            if (isSmuggling && (!isShippingFromOffPlanet || !MaySmuggle(Game, Player, To))) return Message.Express("You can't smuggle forces here");
+            if (isSmuggling && (!isShippingFromOffPlanet || !MaySmuggle(Game, p, To))) return Message.Express("You can't smuggle forces here");
             if (SmuggledAmount + SmuggledSpecialAmount > 1) return Message.Express("You can't smuggle more than 1 force");
 
             if (From != null && ForceAmount > p.ForcesIn(From)) return Message.Express("Not enough ", p.Force, " for site-to-site shipment");
@@ -266,6 +282,19 @@ namespace Treachery.Shared
             return result;
         }
 
+        public static IEnumerable<int> ValidCunningNoFieldValues(Game g, Player p, int valueOfNormalNoField)
+        {
+            var result = new List<int>();
+            if (p.Faction == Faction.White && !g.Prevented(FactionAdvantage.WhiteNofield) ||
+                p.Ally == Faction.White && g.WhiteAllowsUseOfNoField)
+            {
+                if (p.Faction == Faction.White && g.LatestRevealedNoFieldValue != 0 && g.CurrentNoFieldValue != 0 && valueOfNormalNoField != 0) result.Add(0);
+                if (g.LatestRevealedNoFieldValue != 3 && g.CurrentNoFieldValue != 3 && valueOfNormalNoField != 3) result.Add(3);
+                if (g.LatestRevealedNoFieldValue != 5 && g.CurrentNoFieldValue != 5 && valueOfNormalNoField != 5) result.Add(5);
+            }
+            return result;
+        }
+
         protected override void ExecuteConcreteEvent()
         {
             Game.HandleEvent(this);
@@ -390,5 +419,9 @@ namespace Treachery.Shared
         {
             return l != null && !g.AnyForcesIn(l.Territory) && p.Faction != Faction.Yellow && g.SkilledAs(p, LeaderSkill.Smuggler);
         }
+
+        public static bool MayUseNoField(Game g, Player p) => p.Faction == Faction.White && !g.Prevented(FactionAdvantage.WhiteNofield) || p.Ally == Faction.White && g.WhiteAllowsUseOfNoField;
+
+        public static bool MayUseCunningNoField(Player p) => p.Faction == Faction.White && NexusPlayed.CanUseCunning(p);
     }
 }

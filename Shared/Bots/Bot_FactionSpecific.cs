@@ -14,7 +14,7 @@ namespace Treachery.Shared
 
         protected virtual ReplacedCardWon DetermineReplacedCardWon()
         {
-            var replace = Game.CardJustWon != null && CardQuality(Game.CardJustWon) <= 2;
+            var replace = Game.CardJustWon != null && CardQuality(Game.CardJustWon, this) <= 2;
             return new ReplacedCardWon(Game) { Initiator = Faction, Passed = !replace };
         }
 
@@ -34,27 +34,27 @@ namespace Treachery.Shared
                 if (TreacheryCards.Count >= 3 || ResourcesIncludingAllyAndRedContribution < 5)
                 {
                     //Remove the best card from auction
-                    toBeRemoved = Game.CardsOnAuction.Items.HighestOrDefault(c => CardQuality(c));
+                    toBeRemoved = Game.CardsOnAuction.Items.HighestOrDefault(c => CardQuality(c, this));
                 }
                 else
                 {
                     //Remove the worst card from auction
-                    toBeRemoved = Game.CardsOnAuction.Items.LowestOrDefault(c => CardQuality(c));
+                    toBeRemoved = Game.CardsOnAuction.Items.LowestOrDefault(c => CardQuality(c, this));
                 }
             }
 
             if (toBeRemoved == null) Game.CardsOnAuction.Items.FirstOrDefault();
 
-            bool putOnTop = CardQuality(toBeRemoved) <= 2 && Ally == Faction.None || CardQuality(toBeRemoved) >= 4 && Ally != Faction.None;
+            bool putOnTop = CardQuality(toBeRemoved, this) <= 2 && Ally == Faction.None || CardQuality(toBeRemoved, this) >= 4 && Ally != Faction.None;
 
             return new GreyRemovedCardFromAuction(Game) { Initiator = Faction, Card = toBeRemoved, PutOnTop = putOnTop };
         }
 
         protected GreySwappedCardOnBid DetermineGreySwappedCardOnBid()
         {
-            var card = TreacheryCards.LowestOrDefault(c => CardQuality(c));
+            var card = TreacheryCards.LowestOrDefault(c => CardQuality(c, this));
 
-            if (card != null && CardQuality(card) <= 2)
+            if (card != null && CardQuality(card, this) <= 2)
             {
                 return new GreySwappedCardOnBid(Game) { Initiator = Faction, Passed = false, Card = card };
             }
@@ -1102,7 +1102,7 @@ namespace Treachery.Shared
             switch (ambassador)
             {
                 case Faction.Brown:
-                    var toDiscard = AmbassadorActivated.GetValidBrownCards(this).Where(c => CardQuality(c) < 2);
+                    var toDiscard = AmbassadorActivated.GetValidBrownCards(this).Where(c => CardQuality(c, this) < 2);
                     if (toDiscard.Any())
                     {
                         return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedFaction = blueSelectedFaction, BrownCards = toDiscard };
@@ -1143,7 +1143,7 @@ namespace Treachery.Shared
                     }
 
                 case Faction.Grey:
-                    var toReplace = AmbassadorActivated.GetValidGreyCards(this).FirstOrDefault(c => CardQuality(c) < 2);
+                    var toReplace = AmbassadorActivated.GetValidGreyCards(this).FirstOrDefault(c => CardQuality(c, this) < 2);
                     if (toReplace != null)
                     {
                         return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedFaction = blueSelectedFaction, GreyCard = toReplace };
@@ -1219,7 +1219,7 @@ namespace Treachery.Shared
 
         protected virtual WhiteAnnouncesBlackMarket DetermineWhiteAnnouncesBlackMarket()
         {
-            var card = TreacheryCards.FirstOrDefault(c => CardQuality(c) < 3);
+            var card = TreacheryCards.FirstOrDefault(c => CardQuality(c, this) < 3);
             if (card != null)
             {
                 return new WhiteAnnouncesBlackMarket(Game) { Initiator = Faction, Passed = false, Card = card, AuctionType = D(1, 2) > 1 ? AuctionType.BlackMarketSilent : AuctionType.BlackMarketOnceAround, Direction = D(1, 2) > 1 ? 1 : -1 };
