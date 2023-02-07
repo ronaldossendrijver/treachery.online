@@ -58,7 +58,7 @@ namespace Treachery.Shared
 
         public static bool MayRemoveTokens(Player p) => p.HasHighThreshold(World.Cyan);
 
-        public static bool MayPlaceAtExistingToken(Player p) => p.HasHighThreshold(World.Cyan);
+        public static bool MayPlaceAtExistingToken(Player p) => p.HasHighThreshold(World.Cyan) || p.Nexus == Faction.Cyan && NexusPlayed.CanUseCunning(p);
 
         public static IEnumerable<TerrorType> ValidTerrorTypes(Game g, bool toRemove)
         {

@@ -917,7 +917,7 @@ namespace Treachery.Shared
 
             Log(loser.Faction, " lose all ", loser.AnyForcesIn(territory), " forces in ", territory);
             loser.KillAllForces(territory, true);
-            LoseCards(loserGambit, loser.Ally == Faction.Cyan && CyanAllowsKeepingCards);
+            LoseCards(loserGambit, MayKeepCardsAfterLosingBattle(loser));
             PayDialedSpice(loser, loserGambit, false);
 
             if (loser.MessiahAvailable && !hadMessiahBeforeLosses)
@@ -925,6 +925,8 @@ namespace Treachery.Shared
                 RecentMilestones.Add(Milestone.Messiah);
             }
         }
+
+        private bool MayKeepCardsAfterLosingBattle(Player p) => p.Ally == Faction.Cyan && CyanAllowsKeepingCards || p.Nexus == Faction.Cyan && NexusPlayed.CanUseSecretAlly(this, p);
 
         private bool DialledResourcesAreRefunded(Player p) => Applicable(Rule.YellowAllyGetsDialedResourcesRefunded) && p.Ally == Faction.Yellow && YellowRefundsBattleDial;
 
@@ -1178,7 +1180,7 @@ namespace Treachery.Shared
 
             Log(loser.Faction, " lose all ", loser.SpecialForcesIn(territory) + loser.ForcesIn(territory), " forces in ", territory);
             loser.KillAllForces(territory, true);
-            LoseCards(loserGambit, loser.Ally == Faction.Cyan && CyanAllowsKeepingCards);
+            LoseCards(loserGambit, MayKeepCardsAfterLosingBattle(loser));
             PayDialedSpice(loser, loserGambit, true);
 
             if (loser.MessiahAvailable && !hadMessiahBeforeLosses)
@@ -1349,6 +1351,12 @@ namespace Treachery.Shared
             if (e.KeptCard != null)
             {
                 Log(e.Initiator, " keep ", e.KeptCard);
+
+                if (SecretAllyAllowsKeepingCardsAfterLosingBattle)
+                {
+                    SecretAllyAllowsKeepingCardsAfterLosingBattle = false;
+                    DiscardNexusCard(e.Player);
+                }
             }
 
             foreach (var c in CardsToBeDiscardedByLoserAfterBattle.Where(c => c != e.KeptCard))
@@ -1950,10 +1958,17 @@ namespace Treachery.Shared
             }
         }
 
+
+        private bool SecretAllyAllowsKeepingCardsAfterLosingBattle = false;
         public List<TreacheryCard> CardsToBeDiscardedByLoserAfterBattle { get; private set; } = new();
 
         private void LoseCards(Battle plan, bool mayChooseToKeepOne)
         {
+            if (!(plan.Player.Ally == Faction.Cyan && CyanAllowsKeepingCards) && plan.Player.Nexus == Faction.Cyan && NexusPlayed.CanUseSecretAlly(this, plan.Player))
+            {
+                SecretAllyAllowsKeepingCardsAfterLosingBattle = true;
+            }
+
             if (mayChooseToKeepOne)
             {
                 if (plan.Weapon != null) CardsToBeDiscardedByLoserAfterBattle.Add(plan.Weapon);

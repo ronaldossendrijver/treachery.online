@@ -70,6 +70,16 @@ namespace Treachery.Shared
 
         public Faction PinkFaction { get; set; }
 
+        public int _cyanTerritoryId;
+
+        [JsonIgnore]
+        public Territory CyanTerritory
+        {
+            get { return Game.Map.TerritoryLookup.Find(_cyanTerritoryId); }
+            set { _cyanTerritoryId = Game.Map.TerritoryLookup.GetId(value); }
+        }
+
+
         public override Message Validate()
         {
             switch (Faction)
@@ -106,6 +116,11 @@ namespace Treachery.Shared
                         if (!ValidPinkFactions(Game).Contains(PinkFaction)) return Message.Express("Invalid faction");
                     }
                     break;
+
+                case Faction.Cyan:
+                    if (IsBetrayal && !ValidCyanTerritories(Game).Contains(CyanTerritory)) return Message.Express("This territory contains no terror token");
+                    break;
+
 
             }
 
@@ -181,7 +196,7 @@ namespace Treachery.Shared
                 Faction.Pink when betrayal => g.CurrentMainPhase < MainPhase.ShipmentAndMove && ValidPinkTerritories(g).Any(),
                 Faction.Pink when cunning || secretAlly => true,
 
-
+                Faction.Cyan when betrayal => ValidCyanTerritories(g).Any(),
 
                 _ => false
             };
@@ -253,5 +268,7 @@ namespace Treachery.Shared
         }
 
         public static IEnumerable<Faction> ValidPinkFactions(Game g) => g.Players.Where(p => p.Faction != Faction.Pink).Select(p => p.Faction);
+
+        public static IEnumerable<Territory> ValidCyanTerritories(Game g) => g.TerrorOnPlanet.Values.Distinct();
     }
 }

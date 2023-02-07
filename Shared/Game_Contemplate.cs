@@ -550,6 +550,12 @@ namespace Treachery.Shared
                 }
                 else
                 {
+                    if (TerrorIn(e.Stronghold).Any() && !e.Player.HasHighThreshold(World.Cyan))
+                    {
+                        Log(e.Initiator, " use Nexus Cunning to plant additional Terror in ", e.Stronghold);
+                        DiscardNexusCard(e.Player);
+                    }
+
                     if (UnplacedTerrorTokens.Contains(e.Type))
                     {
                         TerrorOnPlanet.Add(e.Type, e.Stronghold);

@@ -1025,11 +1025,15 @@ namespace Treachery.Shared
 
         protected virtual TerrorPlanted DetermineTerrorPlanted()
         {
-            //This is for now just random
             var type = TerrorPlanted.ValidTerrorTypes(Game, false).RandomOrDefault();
             if (TerrorPlanted.ValidTerrorTypes(Game, false).Contains(TerrorType.Extortion)) type = TerrorType.Extortion;
 
-            return new TerrorPlanted(Game) { Initiator = Faction, Type = type, Stronghold = TerrorPlanted.ValidStrongholds(Game, this).First() };
+            var stronghold = TerrorPlanted.ValidStrongholds(Game, this).FirstOrDefault(t => AnyForcesIn(t) > 0);
+            if (stronghold == null && HasAlly) stronghold = TerrorPlanted.ValidStrongholds(Game, this).FirstOrDefault(t => AlliedPlayer.AnyForcesIn(t) > 0);
+            if (stronghold == null) stronghold = TerrorPlanted.ValidStrongholds(Game, this).FirstOrDefault(t => !Game.AnyForcesIn(t));
+            if (stronghold == null) stronghold = TerrorPlanted.ValidStrongholds(Game, this).First();
+
+            return new TerrorPlanted(Game) { Initiator = Faction, Type = type, Stronghold = stronghold };
         }
 
         protected virtual TerrorRevealed DetermineTerrorRevealed()
@@ -1043,8 +1047,6 @@ namespace Treachery.Shared
             }
 
             var type = TerrorRevealed.GetTypes(Game).Where(t => t != TerrorType.SneakAttack || TerrorRevealed.ValidSneakAttackTargets(Game, this).Any()).RandomOrDefault();
-
-
             var cardInSabotage = TreacheryCards.FirstOrDefault(c => c.IsUseless);
             var victim = Game.GetPlayer(TerrorRevealed.GetVictim(Game));
 

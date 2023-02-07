@@ -816,6 +816,13 @@ namespace Treachery.Shared
                     pink.ForcesToReserves(e.PinkTerritory);
                     action = MessagePart.Express("return all ", Faction.Pink, " forces in ", e.PinkTerritory, " to reserves");
                     break;
+
+                case Faction.Cyan:
+                    var terrorToRemove = TerrorIn(e.CyanTerritory).RandomOrDefault(Random);
+                    TerrorOnPlanet.Remove(terrorToRemove);
+                    action = MessagePart.Express("remove a terror token from ", e.CyanTerritory);
+                    break;
+
             }
 
             if (action != null)

@@ -144,6 +144,11 @@ namespace Treachery.Shared
                             return result;
                         }
                         break;
+
+                    case Faction.Cyan:
+                        if ((Faction == Faction.Orange && Game.CurrentPhase == Phase.OrangeShip || Faction != Faction.Orange && Game.CurrentPhase == Phase.NonOrangeShip && Game.ShipmentAndMoveSequence.CurrentPlayer == this) &&
+                            decidedShipment != null && Game.TerrorIn(decidedShipment.To.Territory).Any()) return result;
+                        break;
                 }
             }
 
