@@ -907,8 +907,20 @@ namespace Treachery.Shared
 
         private void TakeVidal(Player p)
         {
-            Log(p.Faction, " take ", Vidal);
+            var currentOwner = Players.FirstOrDefault(p => p.Leaders.Contains(Vidal));
+            if (currentOwner != null)
+            {
+                currentOwner.Leaders.Remove(Vidal);
+
+                if (IsAlive(Vidal))
+                {
+                    Log(currentOwner, " lose ", Vidal);
+                }
+            }
+            
             p.Leaders.Add(Vidal);
+            Log(p.Faction, " take ", Vidal);
+
             SetInFrontOfShield(Vidal, false);
         }
 

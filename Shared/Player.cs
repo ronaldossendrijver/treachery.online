@@ -650,6 +650,8 @@ namespace Treachery.Shared
 
         public bool HasUnrevealedFaceDancers => UnrevealedFaceDancers.Any();
 
+        public IEnumerable<IHero> UnrevealedTraitors => Traitors.Where(f => !RevealedTraitors.Contains(f));
+
         public IEnumerable<IHero> UnrevealedFaceDancers => FaceDancers.Where(f => !RevealedDancers.Contains(f));
 
         public bool MessiahAvailable => Game.Applicable(Rule.GreenMessiah) && Is(Faction.Green) && TotalForcesKilledInBattle >= 7 && Game.IsAlive(LeaderManager.Messiah);

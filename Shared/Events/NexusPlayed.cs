@@ -59,6 +59,17 @@ namespace Treachery.Shared
             }
         }
 
+        public int _pinkTerritoryId;
+
+        [JsonIgnore]
+        public Territory PinkTerritory
+        {
+            get { return Game.Map.TerritoryLookup.Find(_pinkTerritoryId); }
+            set { _pinkTerritoryId = Game.Map.TerritoryLookup.GetId(value); }
+        }
+
+        public Faction PinkFaction { get; set; }
+
         public override Message Validate()
         {
             switch (Faction)
@@ -83,6 +94,19 @@ namespace Treachery.Shared
                     if (BrownCard == null) return Message.Express("Select a ", TreacheryCardType.Useless, " card to discard");
                     if (BrownCard != null && !ValidBrownCards(Player).Contains(BrownCard)) return Message.Express("Invalid card");
                     break;
+
+                case Faction.Pink:
+                    if (IsBetrayal)
+                    {
+                        if (PinkTerritory == null) return Message.Express("Select a territory");
+                        if (!ValidPinkTerritories(Game).Contains(PinkTerritory)) return Message.Express("Invalid territory");
+                    }
+                    else if (IsSecretAlly)
+                    {
+                        if (!ValidPinkFactions(Game).Contains(PinkFaction)) return Message.Express("Invalid faction");
+                    }
+                    break;
+
             }
 
 
@@ -154,6 +178,11 @@ namespace Treachery.Shared
 
                 Faction.White when betrayal => g.CurrentMainPhase == MainPhase.Bidding && g.WhiteBiddingJustFinished && g.CardJustWon != null,
 
+                Faction.Pink when betrayal => g.CurrentMainPhase < MainPhase.ShipmentAndMove && ValidPinkTerritories(g).Any(),
+                Faction.Pink when cunning || secretAlly => true,
+
+
+
                 _ => false
             };
 
@@ -210,5 +239,19 @@ namespace Treachery.Shared
         public static IEnumerable<IHero> ValidPurpleHeroes(Game game, Player player) => game.KilledHeroes(player);
 
         public static IEnumerable<TreacheryCard> ValidBrownCards(Player player) => player.TreacheryCards.Where(c => c.Type == TreacheryCardType.Useless);
+
+        public static IEnumerable<Territory> ValidPinkTerritories(Game g) 
+        {
+            var pink = g.GetPlayer(Faction.Pink);
+
+            if (pink != null && pink.HasAlly)
+            {
+                return g.Map.Territories(false).Where(t => pink.AnyForcesIn(t) > 0 && pink.AlliedPlayer.AnyForcesIn(t) > 0);
+            }
+
+            return Array.Empty<Territory>();
+        }
+
+        public static IEnumerable<Faction> ValidPinkFactions(Game g) => g.Players.Where(p => p.Faction != Faction.Pink).Select(p => p.Faction);
     }
 }

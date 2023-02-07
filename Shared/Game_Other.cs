@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace Treachery.Shared
 {
@@ -756,7 +757,6 @@ namespace Treachery.Shared
                         TargetOfBureaucracy = e.Initiator;
                     }
 
-                    //RecentlyPaid.Clear();
                     break;
 
                 case Faction.Blue:
@@ -809,6 +809,12 @@ namespace Treachery.Shared
                         action = MessagePart.Express("discard the card they just won");
                         Discard(white, CardJustWon);
                     }
+                    break;
+
+                case Faction.Pink:
+                    var pink = GetPlayer(Faction.Pink);
+                    pink.ForcesToReserves(e.PinkTerritory);
+                    action = MessagePart.Express("return all ", Faction.Pink, " forces in ", e.PinkTerritory, " to reserves");
                     break;
             }
 
@@ -896,7 +902,19 @@ namespace Treachery.Shared
                     }
                     break;
 
+                case Faction.Pink:
+                    if (!IsAlive(Vidal))
+                    {
+                        ReviveHero(Vidal);
 
+                        if (e.PurpleAssignSkill)
+                        {
+                            PrepareSkillAssignmentToRevivedLeader(e.Player, Vidal);
+                        }
+                    }
+                    TakeVidal(e.Player);
+                    action = MessagePart.Express("take ", Vidal, " this turn");
+                    break;
             }
 
             if (action != null)
@@ -1014,6 +1032,11 @@ namespace Treachery.Shared
                             Log(Auditee.Faction, " don't have cards to audit");
                         }
                     }
+                    break;
+
+                case Faction.Pink:
+                    action = MessagePart.Express("force ", e.PinkFaction, " to reveal if they have an ", Faction.Pink, " traitor");
+                    Log(e.PinkFaction, " reveal that they ", GetPlayer(e.PinkFaction).Traitors.Any(t => t.Faction == Faction.Pink) ? "do" : "don't", " have a ", Faction.Pink, " traitor ");
                     break;
 
             }

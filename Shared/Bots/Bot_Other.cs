@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net.NetworkInformation;
 
 namespace Treachery.Shared
 {
@@ -134,15 +135,43 @@ namespace Treachery.Shared
                         }
                         else if (Game.RecentlyPaidTotalAmount > 5) return result;
                         break;
+
+                    case Faction.Pink:
+                        var territoryToRemovePinkFrom = DetermineTerritoryToRemovePinkFrom();
+                        if (territoryToRemovePinkFrom != null)
+                        {
+                            result.PinkTerritory = territoryToRemovePinkFrom;
+                            return result;
+                        }
+                        break;
                 }
             }
 
             return null;
         }
 
+        private Territory DetermineTerritoryToRemovePinkFrom()
+        {
+            Territory result = null;
+            var territoriesWithPinkAndPinkAlly = NexusPlayed.ValidPinkTerritories(Game).Where(t => t.IsStronghold || Game.IsSpecialStronghold(t)).ToList();
+            if (territoriesWithPinkAndPinkAlly.Any())
+            {
+                var pink = Game.GetPlayer(Faction.Pink);
+
+                if (territoriesWithPinkAndPinkAlly.Count >= 2)
+                {
+                    result = territoriesWithPinkAndPinkAlly.HighestOrDefault(t => pink.AnyForcesIn(t));
+                }
+
+                if (result == null)
+                {
+                    result = territoriesWithPinkAndPinkAlly.Where(t => pink.AnyForcesIn(t) > 7).HighestOrDefault(t => pink.AnyForcesIn(t));
+                }
+            }
+            return result;
+        }
+
         private bool IsWinningOrIsOpponentInBattle(Faction faction) => faction != Ally && Game.CurrentBattle != null && Game.CurrentBattle.IsInvolved(faction) && (IsWinning(faction) || Game.CurrentBattle.IsInvolved(this));
-
-
 
         private NexusPlayed DetermineNexusPlayed_Cunning(NexusPlayed result)
         {
@@ -198,6 +227,10 @@ namespace Treachery.Shared
 
                 case Faction.Purple:
                     if (Game.CurrentMainPhase == MainPhase.Battle && RevealedDancers.Any()) return result;
+                    break;
+
+                case Faction.Pink:
+                    if (Game.CurrentPhase == Phase.BattlePhase && Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(this) && !Leaders.Contains(Game.Vidal)) return result;
                     break;
 
             }
@@ -292,6 +325,18 @@ namespace Treachery.Shared
 
                         if (auditableCards.Any(c => !KnownCards.Contains(c)))
                         {
+                            return result;
+                        }
+                    }
+                    break;
+
+                case Faction.Pink:
+                    if (Game.CurrentPhase == Phase.BattlePhase && Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(this))
+                    {
+                        var opp = Game.CurrentBattle.OpponentOf(this);
+                        if (opp.Faction != Faction.Purple && opp.UnrevealedTraitors.Any())
+                        {
+                            result.PinkFaction = opp.Faction;
                             return result;
                         }
                     }
