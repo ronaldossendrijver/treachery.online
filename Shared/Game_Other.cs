@@ -815,6 +815,7 @@ namespace Treachery.Shared
                     var pink = GetPlayer(Faction.Pink);
                     pink.ForcesToReserves(e.PinkTerritory);
                     action = MessagePart.Express("return all ", Faction.Pink, " forces in ", e.PinkTerritory, " to reserves");
+                    FlipBeneGesseritWhenAloneOrWithPinkAlly();
                     break;
 
                 case Faction.Cyan:
@@ -972,11 +973,6 @@ namespace Treachery.Shared
                     action = MessagePart.Express("be able to ship as ", Faction.Orange);
                     break;
 
-                case Faction.Blue:
-                    CurrentBlueNexus = e;
-                    action = MessagePart.Express("use Voice");
-                    break;
-
                 case Faction.Grey:
                     CurrentGreyNexus = e;
                     action = MessagePart.Express("discard a card you buy and draw a new card from the treachery deck");
@@ -1043,7 +1039,8 @@ namespace Treachery.Shared
 
                 case Faction.Pink:
                     action = MessagePart.Express("force ", e.PinkFaction, " to reveal if they have an ", Faction.Pink, " traitor");
-                    Log(e.PinkFaction, " reveal that they ", GetPlayer(e.PinkFaction).Traitors.Any(t => t.Faction == Faction.Pink) ? "do" : "don't", " have a ", Faction.Pink, " traitor ");
+                    Log(e.PinkFaction, " reveal to ", e.Initiator, " if they have a ", Faction.Pink, " traitor");
+                    LogTo(e.PinkFaction, " reveal that they ", GetPlayer(e.PinkFaction).Traitors.Any(t => t.Faction == Faction.Pink) ? "DO" : "DON'T", " have a ", Faction.Pink, " traitor ");
                     break;
 
             }

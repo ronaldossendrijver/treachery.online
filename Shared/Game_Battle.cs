@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Treachery.Shared
 {
@@ -144,6 +145,12 @@ namespace Treachery.Shared
         public void HandleEvent(Voice e)
         {
             CurrentVoice = e;
+
+            if (!IsPlaying(Faction.Blue))
+            {
+                Log(e.Initiator, " play ", e.Initiator, " Nexus Secret Ally to use Voice");
+                DiscardNexusCard(e.Player);
+            }
 
             if (CurrentBattle != null)
             {

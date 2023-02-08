@@ -79,7 +79,7 @@ namespace Treachery.Shared
 
             if (!disableWhenPrescienceIsUsed && g.CurrentBattle != null && g.CurrentVoice == null)
             {
-                if (p.Initiated(g.CurrentBlueNexus))
+                if (p.Nexus == Faction.Blue && NexusPlayed.CanUseSecretAlly(g, p))
                 {
                     return g.CurrentBattle.IsAggressorOrDefender(p);
                 }

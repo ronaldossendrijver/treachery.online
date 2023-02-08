@@ -12,40 +12,174 @@
     <Body>
 
         @{
-            bool cunning = Faction == Player.Nexus;
-            bool secretAlly = !Game.IsPlaying(Player.Nexus);
-            bool betrayal = !(cunning || secretAlly);
+            bool cunning = NexusPlayed.CanUseCunning(Player);
+            bool secretAlly = NexusPlayed.CanUseSecretAlly(Game, Player);
+            bool betrayal = NexusPlayed.CanUseBetrayal(Game, Player);
 
             switch (Player.Nexus)
             {
-                case Faction.Green:
+                case Faction.Green when betrayal:                    
+                    <div>Prevent @Name(FactionAdvantage.GreenBattlePlanPrescience)?</div>
+                    break;                
+                    
+                case Faction.Green when cunning || secretAlly:
+                    <RadioComponent @bind-Value=@greenPrescienceAspect Values=@Prescience.ValidAspects(Game, Player)>
+                        <Label>What should be foreseen?</Label>
+                    </RadioComponent>
+                    break;
 
-                    if (cunning || secretAlly)
+                case Faction.Black when betrayal: 
+                    <div>Cancel the revealed <FactionComponent Faction=@Faction.Black Diameter=20/> traitor?</div>
+                    break;
+
+                case Faction.Black when cunning:
+                    <div>Draw a new Traitor card, then shufle one of your traitors back into the traitor deck?</div>
+                    break;
+
+                case Faction.Black when secretAlly:
+                    <div>Draw two Traitor cards, then shufle two of your traitors back into the traitor deck?</div>
+                    break;
+
+                case Faction.Yellow when betrayal && Game.CurrentMainPhase == MainPhase.Blow:
+                    <div>Prevent <FactionComponent Faction=@Faction.Yellow Diameter=20 /> from riding @Name(Concept.Monster)?</div>
+                    break;
+
+                case Faction.Yellow when betrayal && Game.CurrentMainPhase == MainPhase.ShipmentAndMove:
+                    <div>Prevent <FactionComponent Faction=@Faction.Yellow Diameter=20 /> moving 2 territories?</div>
+                    break;
+
+                case Faction.Red when betrayal && Game.CurrentMainPhase == MainPhase.Bidding:
+                    <div>Force <FactionComponent Faction=@Faction.Red Diameter=20 /> to pay for the next card their ally buys?</div>
+                    break;
+
+                case Faction.Red when betrayal && Game.CurrentMainPhase == MainPhase.Battle:
+                    <div>Let <Image Shown=FactionSpecialForce.Red /> count as <Image Shown=FactionForce.Red /> in this battle?</div>
+                    break;
+
+                case Faction.Red when cunning:
+                    <div>Let up to 5 <Image Shown=FactionForce.Red /> count as <Image Shown=FactionSpecialForce.Red /> in this battle?</div>
+                    break;
+
+                case Faction.Orange when betrayal:
+                    <div>Gain the next payment for shipping in full?</div>
+                    break;
+
+                case Faction.Orange when cunning:
+                    <div>Make a second shipment after performing your move?</div>
+                    break;
+
+                case Faction.Orange when cunning:
+                    <div>Ship at <Image Shown=FactionForce.Orange /> rates or perform a shipment cross-planet or to reserves?</div>
+                    break;
+
+                case Faction.Blue when betrayal:
+                    <div>Prevent @Name(FactionAdvantage.BlueUsingVoice)?</div>
+                    break;
+
+                case Faction.Blue when cunning:
+                    <div>Be able to flip advisor to fighters during @Name(MainPhase.ShipmentAndMove)?</div>
+                    break;
+
+                case Faction.Grey when betrayal && Game.CurrentPhase == Phase.BeginningOfBidding:
+                    <div>Prevent @Name(FactionAdvantage.GreySelectingCardsOnAuction)?</div>
+                    break;
+
+                case Faction.Grey when betrayal && Game.CurrentPhase > Phase.BeginningOfBidding:
+                    <div>Prevent @Name(FactionAdvantage.GreySwappingCard)?</div>
+                    break;
+
+                case Faction.Grey when cunning:
+                    <div>Let all <Image Shown=FactionForce.Grey /> in this battle count full strength?</div>
+                    break;
+
+                case Faction.Purple when betrayal:
+                    <div>Cancel the revealed <FactionComponent Faction=@Faction.Purple Diameter=20 /> face dancer?</div>
+                    break;
+
+                case Faction.Purple when cunning:
+                    <div>Replace your revealed face dancers?</div>
+                    break;
+
+                case Faction.Purple when secretAlly:
+                    <div>Revive up to 5 forces for 1 @Name(Concept.Resource) each and one leader for free?</div>
+                    @if (NexusPlayed.ValidPurpleMaxAmount(Game, Player, false) > 0)
                     {
-                        <RadioComponent @bind-Value=@greenPrescienceAspect Values=@Prescience.ValidAspects(Game, Player)>
-                            <Label>What should be foreseen?</Label>
+                        <SelectForcesComponent @bind-Value="purpleAmountOfForces" Min="0" Max="NexusPlayed.ValidPurpleMaxAmount(Game, Player, false)" Faction="Faction" Special="false" />
+                    }
+                    else
+                    {
+                        purpleAmountOfForces = 0;
+                    }
+
+                    @if (NexusPlayed.ValidPurpleMaxAmount(Game, Player, true) > 0)
+                    {
+                        <SelectForcesComponent @bind-Value="purpleAmountOfSpecialForces" Min="0" Max="NexusPlayed.ValidPurpleMaxAmount(Game, Player, true)" Faction="Faction" Special="true" />
+                    }
+                    else
+                    {
+                        purpleAmountOfSpecialForces = 0;
+                    }
+
+                    <SelectHeroComponent Game="Game" @bind-Value="purpleHero" Values="NexusPlayed.ValidPurpleHeroes(Game, Player)" Required="false" />
+
+                    @if (purpleHero != null && Revival.MayAssignSkill(Game, Player, purpleHero))
+                    {
+                        <RadioComponent @bind-Value="purpleAssignSkill" Values="@(new bool[] {false,true})" ValueLabels="@(new string[] {"No","Yes"})">
+                            <Label>Do you wish to assign a skill to this leader?</Label>
                         </RadioComponent>
                     }
                     else
                     {
-                        <div>Prevent @Name(FactionAdvantage.GreenBattlePlanPrescience)?</div>
+                        purpleAssignSkill = false;
                     }
+
                     break;
 
-                case Faction.Black:
+                case Faction.Brown when betrayal:
+                    <div>Force <FactionComponent Faction=@Faction.Brown Diameter=20 /> to discard a random card from their hand?</div>
+                    break;
 
-                    if (cunning)
+                case Faction.Brown when secretAlly && Game.CurrentMainPhase == MainPhase.Collection:
+                    <div>Discard a @Skin.Current.Describe(TreacheryCardType.Useless) card for 2 @Skin.Current.Describe(Concept.Resource)?</div>
+                    <SelectCardComponent @bind-Value=brownCard Values="NexusPlayed.ValidBrownCards(Player)" Required="true" />
+                    break;
+
+                case Faction.Brown when secretAlly && Game.CurrentMainPhase == MainPhase.Battle:
+                    <div>Look at a random card not used in battle owned by your opponent?</div>
+                    break;
+
+                case Faction.White when betrayal:
+                    if (Game.GetPlayer(Faction.White).TreacheryCards.Contains(Game.CardJustWon))
                     {
-                        <div>Draw a new Traitor card, then shufle one of your traitors back into the traitor deck?</div>
-                    }
-                    else if (secretAlly)
-                    {
-                        <div>Draw two Traitor cards, then shufle two of your traitors back into the traitor deck?</div>
+                        <div>Force <FactionComponent Faction=@Faction.White Diameter=20 /> to discard the <FactionComponent Faction=@Faction.White Diameter=20 /> they just bought?</div>
                     }
                     else
                     {
-                        <div>Cancel the revealed <FactionComponent Faction=@Faction.Black Diameter=20/> traitor?</div>
+                        <div>Prevent <FactionComponent Faction=@Faction.White Diameter=20 /> from getting paid for the they just sold?</div>
                     }
+                    break;
+
+                case Faction.Pink when betrayal:
+                    <div>Return all <FactionComponent Faction=@Faction.Pink Diameter=20 /> in a territory they occupy with their ally to reserves?</div>
+                    <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value=pinkTerritory Values=@NexusPlayed.ValidPinkTerritories(Game)>
+                        <Label>Territory</Label>
+                    </SelectComponent>
+                    break;
+
+                case Faction.Pink when cunning:
+                    <div>Gain <Image Shown=Game.Vidal Width="30"/> this turn?</div>
+                    break;
+
+                case Faction.Pink when secretAlly:
+                    <div>Force a faction to reveal whether or not they have any of your leaders as traitor?</div>
+                    <SelectFactionComponent @bind-Value=pinkFaction Values=@NexusPlayed.ValidPinkFactions(Game) />
+                    break;
+
+                case Faction.Cyan when betrayal:
+                    <div>Remove a Terror token from a stronghold?</div>
+                    <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value=cyanTerritory Values=@NexusPlayed.ValidCyanTerritories(Game)>
+                        <Label>Stronghold</Label>
+                    </SelectComponent>
                     break;
 
             }
@@ -64,47 +198,60 @@
 
     private PrescienceAspect greenPrescienceAspect;
 
-            /*
-            protected override void OnAfterRender(bool firstRender)
-            {
-            if (firstRender)
-            {
-            h.OnLocationSelected += HandleLocationSelected;
-            h.OnLocationSelectedWithCtrlOrAlt += HandleLocationSelectedWithModifier;
-    }
-    }
-    */
+    private int purpleAmountOfForces;
+    private int purpleAmountOfSpecialForces;
+    private IHero purpleHero;
+    private bool purpleAssignSkill;
 
-    /*
-    public override void Dispose()
+    private TreacheryCard brownCard;
+
+    private Territory pinkTerritory;
+    private Faction pinkFaction;
+
+    private Territory cyanTerritory;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
         {
+            h.OnLocationSelected += HandleLocationSelected;
+        }
 
+        BackgroundImage = Skin.Current.GetNexusCardImageURL(Player.Nexus);
+    }
+
+    public override void Dispose()
+    {
         base.Dispose();
         h.OnLocationSelected -= HandleLocationSelected;
-        h.OnLocationSelectedWithCtrlOrAlt -= HandleLocationSelectedWithModifier;
-
     }
-    */
 
     protected override NexusPlayed ConfirmedResult => new NexusPlayed(Game)
     {
         Initiator = Faction,
         Faction = Player.Nexus,
         GreenPrescienceAspect = greenPrescienceAspect,
+        PurpleForces = purpleAmountOfForces,
+        PurpleSpecialForces = purpleAmountOfSpecialForces,
+        PurpleHero = purpleHero,
+        PurpleAssignSkill = purpleAssignSkill,
+        BrownCard = brownCard,
+        PinkTerritory = pinkTerritory,
+        PinkFaction = pinkFaction,
+        CyanTerritory = cyanTerritory,
     };
 
-    /*
     private void HandleLocationSelected(object sender, Location l)
     {
-        var targets = _actualAmbassador == Faction.Yellow ? AmbassadorActivated.ValidYellowTargets(Game, Player, _yellowForces) : AmbassadorActivated.ValidOrangeTargets(Game, Player);
-        SetIfValid(ref _yellowOrOrangeToLocation, targets.OrderByDescending(l => l.IsStronghold).ThenBy(l => Name(l)), l);
+        if (Faction == Faction.Pink)
+        {
+            SetIfValid(ref pinkTerritory, NexusPlayed.ValidPinkTerritories(Game).OrderBy(l => l.IsStronghold).ThenBy(l => Name(l)), l.Territory);
+        }
+        else
+        {
+            SetIfValid(ref cyanTerritory, NexusPlayed.ValidCyanTerritories(Game).OrderBy(l => Name(l)), l.Territory);
+        }
     }
-
-    private void HandleLocationSelectedWithModifier(object sender, Location l)
-    {
-        SetIfValid(ref _yellowFromTerritory, AmbassadorActivated.ValidYellowSources(Game, Player), l.Territory);
-    }
-    */
 
     private string NexusTypeText => NexusPlayed.CanUseCunning(Player) ? "Cunning" : NexusPlayed.CanUseSecretAlly(Game, Player) ? "Secret Ally" : "Betrayal";
 }

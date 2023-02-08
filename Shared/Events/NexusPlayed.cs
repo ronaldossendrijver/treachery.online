@@ -179,7 +179,6 @@ namespace Treachery.Shared
 
                 Faction.Blue when betrayal => gameIsInBattle && g.CurrentBattle.IsAggressorOrDefender(Faction.Blue),
                 Faction.Blue when cunning => g.CurrentMainPhase == MainPhase.ShipmentAndMove,
-                Faction.Blue when secretAlly => g.CurrentPhase == Phase.BattlePhase && g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(p),
 
                 Faction.Grey when betrayal => g.CurrentPhase == Phase.BeginningOfBidding || g.CurrentPhase > Phase.BeginningOfBidding && g.CurrentPhase < Phase.BiddingReport,
                 Faction.Grey when cunning => isCurrentlyFormulatingBattlePlan,
@@ -267,7 +266,7 @@ namespace Treachery.Shared
             return Array.Empty<Territory>();
         }
 
-        public static IEnumerable<Faction> ValidPinkFactions(Game g) => g.Players.Where(p => p.Faction != Faction.Pink).Select(p => p.Faction);
+        public static IEnumerable<Faction> ValidPinkFactions(Game g) => g.Players.Where(p => p.Faction != Faction.Pink && p.Faction != Faction.Purple).Select(p => p.Faction);
 
         public static IEnumerable<Territory> ValidCyanTerritories(Game g) => g.TerrorOnPlanet.Values.Distinct();
     }

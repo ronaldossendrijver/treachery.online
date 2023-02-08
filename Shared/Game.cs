@@ -999,6 +999,7 @@ namespace Treachery.Shared
                 var pink = GetPlayer(Faction.Pink);
                 var territoriesWhereAdvisorsAreAloneOrWithPink = Map.Territories(true).Where(t => bg.SpecialForcesIn(t) > 0 &&
                     (!Players.Any(p => p.Faction != Faction.Blue && p.AnyForcesIn(t) > 0) || bg.Ally == Faction.Pink && pink.AnyForcesIn(t) > 0));
+
                 foreach (var t in territoriesWhereAdvisorsAreAloneOrWithPink)
                 {
                     bg.FlipForces(t, false);
