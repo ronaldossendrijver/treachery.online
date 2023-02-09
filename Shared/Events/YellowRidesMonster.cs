@@ -64,7 +64,7 @@ namespace Treachery.Shared
             {
                 if (g.CurrentYellowNexus != null)
                 {
-                    return fremen.ForcesInLocations.Keys.Where(l => !g.IsInStorm(l)).Select(l => l.Territory).Distinct();
+                    return fremen.ForcesOnPlanet.Keys.Where(l => !g.IsInStorm(l)).Select(l => l.Territory).Distinct();
                 }
 
                 Territory firstMonsterLocationWithFremenForces;

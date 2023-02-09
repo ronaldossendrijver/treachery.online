@@ -137,11 +137,14 @@ namespace Treachery.Shared
                         break;
 
                     case Faction.Pink:
-                        var territoryToRemovePinkFrom = DetermineTerritoryToRemovePinkFrom();
-                        if (territoryToRemovePinkFrom != null)
+                        if (Game.CurrentPhase == Phase.ResurrectionReport)
                         {
-                            result.PinkTerritory = territoryToRemovePinkFrom;
-                            return result;
+                            var territoryToRemovePinkFrom = DetermineTerritoryToRemovePinkFrom();
+                            if (territoryToRemovePinkFrom != null)
+                            {
+                                result.PinkTerritory = territoryToRemovePinkFrom;
+                                return result;
+                            }
                         }
                         break;
 
@@ -204,7 +207,7 @@ namespace Treachery.Shared
                     break;
 
                 case Faction.Black:
-                    if (DetermineWorstTraitor() != null) return result;
+                    if (Game.CurrentPhase == Phase.ShipmentAndMoveConcluded && DetermineWorstTraitor() != null) return result;
                     break;
 
                 case Faction.Yellow:

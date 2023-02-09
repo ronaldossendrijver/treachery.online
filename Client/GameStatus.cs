@@ -605,7 +605,7 @@ namespace Treachery.Client
                     //Show Nexus card played
                     case NexusPlayed np: Flash(result, Message.Express(np.Initiator, " play a Nexus card"), Skin.Current.GetNexusCardImageURL(np.Faction)); break;
                     case Revival nexusrev when nexusrev.UsesRedSecretAlly: Flash(result, Message.Express(nexusrev.Initiator, " play a Nexus card"), Skin.Current.GetNexusCardImageURL(Faction.Red)); break;
-                    case Bid nexusbid when nexusbid.UsesRedSecretAlly: Flash(result, Message.Express(nexusbid.Initiator, " play a Nexus card"), Skin.Current.GetNexusCardImageURL(Faction.Red)); break;
+                    //case Bid nexusbid when nexusbid.UsesRedSecretAlly: Flash(result, Message.Express(nexusbid.Initiator, " play a Nexus card"), Skin.Current.GetNexusCardImageURL(Faction.Red)); break;
                 }
             }
 

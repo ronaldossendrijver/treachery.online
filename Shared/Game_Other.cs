@@ -888,7 +888,7 @@ namespace Treachery.Shared
 
                 case Faction.Yellow:
                     CurrentYellowNexus = e;
-                    LogNexusPlayed(e, "let forces ride ", Concept.Monster, " from from another territory than where it appeared");
+                    LogNexusPlayed(e, "let forces ride ", Concept.Monster, " from from another territory");
                     break;
 
                 case Faction.Red:
@@ -1043,6 +1043,7 @@ namespace Treachery.Shared
                             var auditedCard = auditableCards.RandomOrDefault(Random);
                             RegisterKnown(e.Player, auditedCard);
                             LogTo(e.Initiator, "You see: ", auditedCard);
+                            LogTo(auditee.Faction, "You showed them: ", auditedCard);
                         }
                         else
                         {
@@ -1053,8 +1054,10 @@ namespace Treachery.Shared
 
                 case Faction.Pink:
                     LogNexusPlayed(e, "force ", e.PinkFaction, " to reveal if they have an ", Faction.Pink, " traitor");
-                    Log(e.PinkFaction, " reveal to ", e.Initiator, " if they have a ", Faction.Pink, " traitor");
-                    LogTo(e.PinkFaction, " reveal that they ", GetPlayer(e.PinkFaction).Traitors.Any(t => t.Faction == Faction.Pink) ? "DO" : "DON'T", " have a ", Faction.Pink, " traitor ");
+                    Log(e.PinkFaction, " reveal to ", e.Initiator, " if they have a ", e.Initiator, " traitor");
+                    var hasTraitor = GetPlayer(e.PinkFaction).Traitors.Any(t => t.Faction == e.Initiator);
+                    LogTo(e.Initiator, e.PinkFaction, " reveal that they ", hasTraitor ? "DO" : "DON'T", " have a ", e.Initiator, " traitor ");
+                    LogTo(e.PinkFaction, " you revealed to them that you ", hasTraitor ? "DO" : "DON'T", " have a ", e.Initiator, " traitor ");
                     break;
 
             }

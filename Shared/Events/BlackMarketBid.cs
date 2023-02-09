@@ -18,6 +18,9 @@ namespace Treachery.Shared
         public int RedContributionAmount { get; set; }
 
         [JsonIgnore]
+        public bool UsesRedSecretAlly => false;
+
+        [JsonIgnore]
         public int TotalAmount
         {
             get

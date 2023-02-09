@@ -116,7 +116,8 @@ namespace Treachery.Shared
                         RevealCurrentNoField(GetPlayer(Faction.White));
                         initiator.ShipSpecialForces(s.To, 1);
                         CurrentNoFieldValue = s.CunningNoFieldValue;
-                        Log(s.Initiator, " use Nexus Cunning to ship and reveal a second ", FactionSpecialForce.White);
+                        LogNexusPlayed(s.Initiator, Faction.White, "Cunning", "ship and reveal a second ", FactionSpecialForce.White);
+                        DiscardNexusCard(s.Player);
                     }
 
                     RevealCurrentNoField(GetPlayer(Faction.White));

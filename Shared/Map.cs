@@ -1167,9 +1167,9 @@ namespace Treachery.Shared
             }
 
             int homeworldTerritoryId = 43;
-            _locations.Add(new Homeworld(World.Yellow, Faction.Yellow, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, true, 3, id++));
             _locations.Add(new Homeworld(World.Green, Faction.Green, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 6, id++));
             _locations.Add(new Homeworld(World.Black, Faction.Black, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 7, id++));
+            _locations.Add(new Homeworld(World.Yellow, Faction.Yellow, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, true, 3, id++));
             _locations.Add(new Homeworld(World.Red, Faction.Red, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 5, id++));
             _locations.Add(new Homeworld(World.RedStar, Faction.Red, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, false, true, 2, id++));
             _locations.Add(new Homeworld(World.Orange, Faction.Orange, new Territory(homeworldTerritoryId++) { IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, true, false, 5, id++));
