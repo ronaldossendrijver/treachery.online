@@ -17,7 +17,7 @@
     var forceX = X + Skin.Current.BattleWheelForcesX;
     var forceY = Y + Skin.Current.BattleWheelForcesY;
 
-    if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Dial || Cunning != null && Cunning.GreenPrescienceAspect == PrescienceAspect.Dial)
+    if (ShowEntirePlan || Game.CurrentPrescience != null && Game.CurrentPrescience.Aspect == PrescienceAspect.Dial || Game.CurrentGreenNexus != null && Game.CurrentGreenNexus.GreenPrescienceAspect == PrescienceAspect.Dial)
     {
         var dial = Support.RoundWithHalves(Plan.Dial(Game, IsAggressor ? Game.CurrentBattle.Defender : Game.CurrentBattle.Aggressor));
 
@@ -38,7 +38,7 @@
         }
     }
 
-    if (Aspect == PrescienceAspect.None)
+    if (ShowEntirePlan)
     {
         int costsOfBattle = Plan.Cost(Game);
         if (costsOfBattle > 0)
@@ -62,11 +62,11 @@
         }
     }
 
-    if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Leader || Cunning != null && Cunning.GreenPrescienceAspect == PrescienceAspect.Leader)
+    if (ShowEntirePlan || Game.CurrentPrescience != null && Game.CurrentPrescience.Aspect == PrescienceAspect.Leader || Game.CurrentGreenNexus != null && Game.CurrentGreenNexus.GreenPrescienceAspect == PrescienceAspect.Leader)
     {
         if (Plan.Hero == null)
         {
-            if (Aspect == PrescienceAspect.Leader)
+            if (!ShowEntirePlan)
             {
                 <MapText ToShow="no leader"
                          X="@(X + Skin.Current.BattleScreenHeroX + Skin.Current.BattleWheelHeroWidth / 2)" Y="@(Y + Skin.Current.BattleScreenHeroY + Skin.Current.BattleWheelHeroWidth / 2)"
@@ -143,6 +143,15 @@
                      Align="@TextAlignment.Center" />
         }
 
+        if (Facedanced)
+        {
+            <MapText ToShow="FACE DANCER!"
+                     X="@(X + Skin.Current.BattleScreenHeroX + Skin.Current.BattleWheelHeroWidth / 2)" Y="@(Y + Skin.Current.BattleScreenHeroY + Skin.Current.BattleWheelHeroWidth / 1.5f)"
+                     Font="@Skin.Current.CARDPILE_FONT" FontColor="red"
+                     BorderWidth="Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="white"
+                     Align="@TextAlignment.Center" />
+        }
+
         if (Plan.Initiator == Faction.Green && Plan.Messiah)
         {
             <Image X="@(X + Skin.Current.BattleScreenHeroX + Skin.Current.BattleWheelHeroWidth / 1.5f)" Y="@(Y + 0.8f * Skin.Current.BattleScreenHeroY)" 
@@ -156,7 +165,7 @@
         }
     }
 
-    if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Defense || Cunning != null && Cunning.GreenPrescienceAspect == PrescienceAspect.Defense)
+    if (ShowEntirePlan || Game.CurrentPrescience != null && Game.CurrentPrescience.Aspect == PrescienceAspect.Defense || Game.CurrentGreenNexus != null && Game.CurrentGreenNexus.GreenPrescienceAspect == PrescienceAspect.Defense)
     {
         bool isUsingPortableAntidote = Battle.IsUsingPortableAntidote(Game, Plan.Initiator) && Plan.Player.Card(TreacheryCardType.PortableAntidote) != null;
         if (Plan.Defense != null || isUsingPortableAntidote)
@@ -167,7 +176,7 @@
                    Src="@Skin.Current.GetImageURL(defenseToShow)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                    Popover="@Popup.Get(defenseToShow)" PopoverStyle=""/>
         }
-        else if (Aspect == PrescienceAspect.Defense)
+        else if (!ShowEntirePlan)
         {
             <MapText ToShow="no defense"
                      X="@(X + Skin.Current.BattleWheelCardX + 1.6f * Skin.Current.BattleWheelCardWidth)" Y="@(Y + 1.1f * Skin.Current.BattleWheelCardY + Skin.Current.BattleWheelCardHeight / 2)"
@@ -177,7 +186,7 @@
         }
     }
 
-    if (Aspect == PrescienceAspect.None || Aspect == PrescienceAspect.Weapon || Cunning != null && Cunning.GreenPrescienceAspect == PrescienceAspect.Weapon)
+    if (ShowEntirePlan || Game.CurrentPrescience != null && Game.CurrentPrescience.Aspect == PrescienceAspect.Weapon || Game.CurrentGreenNexus != null && Game.CurrentGreenNexus.GreenPrescienceAspect == PrescienceAspect.Weapon)
     {
         if (Plan.Weapon != null)
         {
@@ -185,7 +194,7 @@
                    Src="@Skin.Current.GetImageURL(Plan.Weapon)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                    Popover="@Popup.Get(Plan.Weapon)" PopoverStyle=""/>
         }
-        else if (Aspect == PrescienceAspect.Weapon)
+        else if (!ShowEntirePlan)
         {
             <MapText ToShow="no weapon"
                      X="@(X + Skin.Current.BattleWheelCardX + Skin.Current.BattleWheelCardWidth / 2)" Y="@(Y + 1.1f * Skin.Current.BattleWheelCardY + Skin.Current.BattleWheelCardHeight / 2)"
@@ -201,7 +210,7 @@ else
        ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"/>
 }
 
-<Image X=@(X + 0.5f * Skin.Current.BattleScreenWidth - 0.5f * Skin.Current.FORCETOKEN_RADIUS) Y=@(Y + 0.5f * Skin.Current.FORCETOKEN_RADIUS)
+<Image X=@(X + 0.5f * Skin.Current.BattleScreenWidth - 0.45f * Skin.Current.FORCETOKEN_RADIUS) Y=@(Y + 0.5f * Skin.Current.FORCETOKEN_RADIUS)
     Diameter=@Skin.Current.FORCETOKEN_RADIUS
     Src="@(showPlan ? Skin.Current.Eye_URL : Skin.Current.EyeSlash_URL)"
     OnClick="OnShowPlanClick"
@@ -209,7 +218,7 @@ else
     Title="@(showPlan ? "Hide Wheel" : "Show Wheel")" />
 
 @code {
-    
+
     private bool showPlan = true;
 
     [Parameter]
@@ -222,13 +231,13 @@ else
     public bool TraitorCalled { get; set; }
 
     [Parameter]
+    public bool Facedanced { get; set; }
+
+    [Parameter]
     public bool IsAggressor { get; set; }
 
     [Parameter]
-    public PrescienceAspect Aspect { get; set; } = PrescienceAspect.None;
-
-    [Parameter]
-    public NexusPlayed Cunning { get; set; }
+    public bool ShowEntirePlan { get; set; } = false;
 
     private static bool PassiveSkillIsRelevantForBattlePlan(LeaderSkill skill)
     {

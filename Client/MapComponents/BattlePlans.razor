@@ -9,26 +9,37 @@
 {
     bool MaySeeAggressorBattlePlan = Game.AggressorBattleAction != null && (Game.AggressorBattleAction.Initiator == h.Faction || Game.GreenKarma && Game.CurrentBattle.OpponentOf(Faction.Green) == Game.AggressorBattleAction.Player);
     bool MaySeeDefenderBattlePlan = Game.DefenderBattleAction != null && (Game.DefenderBattleAction.Initiator == h.Faction || Game.GreenKarma && Game.CurrentBattle.OpponentOf(Faction.Green) == Game.DefenderBattleAction.Player);
+
     bool MaySeeBothBattlePlans = Game.AggressorBattleAction != null && Game.DefenderBattleAction != null;
-    bool AggressorIsAffectedByPartialPrescience = (Game.CurrentPrescience != null || Game.CurrentGreenNexus != null) && Game.AggressorBattleAction != null && Game.CurrentBattle.OpponentOf(Faction.Green) == Game.AggressorBattleAction.Player;
-    bool DefenderIsAffectedByPartialPrescience = (Game.CurrentPrescience != null || Game.CurrentGreenNexus != null) && Game.DefenderBattleAction != null && Game.CurrentBattle.OpponentOf(Faction.Green) == Game.DefenderBattleAction.Player;
+    
+    bool AggressorIsAffectedByPartialPrescience = Game.AggressorBattleAction != null && 
+        (Game.CurrentPrescience != null && Game.CurrentBattle.OpponentOf(Game.CurrentPrescience.Initiator) == Game.AggressorBattleAction.Player ||
+         Game.CurrentGreenNexus != null && Game.CurrentBattle.OpponentOf(Game.CurrentGreenNexus.Initiator) == Game.AggressorBattleAction.Player);
+
+    bool DefenderIsAffectedByPartialPrescience = Game.DefenderBattleAction != null && 
+        (Game.CurrentPrescience != null && Game.CurrentBattle.OpponentOf(Game.CurrentPrescience.Initiator) == Game.DefenderBattleAction.Player ||
+         Game.CurrentGreenNexus != null && Game.CurrentBattle.OpponentOf(Game.CurrentGreenNexus.Initiator) == Game.DefenderBattleAction.Player);
+
     bool AggressorCallsTraitor = Game.AggressorTraitorAction != null && Game.AggressorTraitorAction.TreacherySucceeded(Game);
     bool DefenderCallsTraitor = Game.DefenderTraitorAction != null && Game.DefenderTraitorAction.TreacherySucceeded(Game);
+
+    bool AggressorWasFacedanced = Game.CurrentPhase == Phase.Facedancing && Game.CurrentBattle.Aggressor == Game.BattleWinner;
+    bool DefenderWasFacedanced = Game.CurrentPhase == Phase.Facedancing && Game.CurrentBattle.Defender == Game.BattleWinner;
 
     var x = 0.1f * Skin.Current.MapDimensions.X;
     var y = 0.1f * Skin.Current.MapDimensions.Y;
 
     if (MaySeeAggressorBattlePlan || MaySeeBothBattlePlans)
     {
-        <BattlePlan h="h" Plan="Game.AggressorBattleAction" OpponentPlan="Game.DefenderBattleAction" TraitorCalled="DefenderCallsTraitor" IsAggressor="true" X="x" Y="y" />
+        <BattlePlan h="h" Plan="Game.AggressorBattleAction" ShowEntirePlan=true OpponentPlan="Game.DefenderBattleAction" Facedanced="AggressorWasFacedanced" TraitorCalled="DefenderCallsTraitor" IsAggressor="true" X="x" Y="y" />
     }
     else if (MaySeeAggressorBattlePlanUnderConstruction)
     {
-        <BattlePlan h="h" Plan="h.BattleUnderConstruction" OpponentPlan="Game.DefenderBattleAction" TraitorCalled="false" IsAggressor="true" X="x" Y="y" />
+        <BattlePlan h="h" Plan="h.BattleUnderConstruction" ShowEntirePlan=true OpponentPlan="Game.DefenderBattleAction" Facedanced="AggressorWasFacedanced" TraitorCalled="false" IsAggressor="true" X="x" Y="y" />
     }
     else if (AggressorIsAffectedByPartialPrescience)
     {
-        <BattlePlan h="h" Plan="Game.AggressorBattleAction" OpponentPlan="Game.DefenderBattleAction" TraitorCalled="false" IsAggressor="true" X="x" Y="y" Aspect="Game.CurrentPrescience.Aspect" Cunning="Game.CurrentGreenNexus" Opacity="0.5f" />
+        <BattlePlan h="h" Plan="Game.AggressorBattleAction" ShowEntirePlan=false OpponentPlan="Game.DefenderBattleAction" Facedanced="AggressorWasFacedanced" TraitorCalled="false" IsAggressor="true" X="x" Y="y" Opacity="0.5f" />
     }
 
     x = 0.4f * Skin.Current.MapDimensions.X;
@@ -36,15 +47,15 @@
 
     if (MaySeeDefenderBattlePlan || MaySeeBothBattlePlans)
     {
-        <BattlePlan h="h" Plan="Game.DefenderBattleAction" OpponentPlan="Game.AggressorBattleAction" TraitorCalled="AggressorCallsTraitor" IsAggressor="false" X="x" Y="y" />
+        <BattlePlan h="h" Plan="Game.DefenderBattleAction" ShowEntirePlan=true OpponentPlan="Game.AggressorBattleAction" Facedanced="DefenderWasFacedanced" TraitorCalled="AggressorCallsTraitor" IsAggressor="false" X="x" Y="y" />
     }
     else if (MaySeeDefenderBattlePlanUnderConstruction)
     {
-        <BattlePlan h="h" Plan="h.BattleUnderConstruction" OpponentPlan="Game.AggressorBattleAction" TraitorCalled="false" IsAggressor="false" X="x" Y="y" />
+        <BattlePlan h="h" Plan="h.BattleUnderConstruction" ShowEntirePlan=true OpponentPlan="Game.AggressorBattleAction" Facedanced="DefenderWasFacedanced" TraitorCalled="false" IsAggressor="false" X="x" Y="y" />
     }
     else if (DefenderIsAffectedByPartialPrescience)
     {
-        <BattlePlan h="h" Plan="Game.DefenderBattleAction" OpponentPlan="Game.AggressorBattleAction" TraitorCalled="false" IsAggressor="false" X="x" Y="y" Aspect="Game.CurrentPrescience.Aspect" Cunning="Game.CurrentGreenNexus" Opacity="0.5f" />
+        <BattlePlan h="h" Plan="Game.DefenderBattleAction" ShowEntirePlan=false OpponentPlan="Game.AggressorBattleAction" Facedanced="DefenderWasFacedanced" TraitorCalled="false" IsAggressor="false" X="x" Y="y" Opacity="0.5f" />
     }
 }
 

@@ -18,16 +18,26 @@ namespace Treachery.Shared
 
         public bool AllyIsBot => Ally != Faction.None && AlliedPlayer.IsBot;
 
-        public GameEvent DetermineHighPrioInPhaseAction(IEnumerable<Type> evts)
+        public GameEvent DetermineHighestPrioInPhaseAction(IEnumerable<Type> evts)
         {
             GameEvent action = null;
 
             if (Do(DetermineNexusPlayed, ref action, evts) ||
-                Do(DetermineVoice, ref action, evts) ||
                 Do(DetermineDealCancelled, ref action, evts) ||
                 Do(DetermineAcceptOrCancelPurpleRevival, ref action, evts) ||
                 Do(DetermineThoughtAnswered, ref action, evts) ||
                 Do(DetermineThought, ref action, evts)) return action;
+
+            return null;
+        }
+
+        public GameEvent DetermineHighPrioInPhaseAction(IEnumerable<Type> evts)
+        {
+            GameEvent action = null;
+
+            if (Do(DetermineVoice, ref action, evts)
+
+                ) return action;
 
             return null;
         }

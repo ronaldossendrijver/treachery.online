@@ -51,6 +51,12 @@ namespace Treachery.Shared
         {
             var initiator = GetPlayer(r.Initiator);
 
+            if (r.UsesRedSecretAlly)
+            {
+                LogNexusPlayed(r.Initiator, Faction.Red, "Cunning", "revive ", 3 , " additional forces beyond revival limits for free");
+                DiscardNexusCard(initiator);
+            }
+
             //Payment
             var cost = Revival.DetermineCost(this, initiator, r.Hero, r.AmountOfForces, r.AmountOfSpecialForces, r.ExtraForcesPaidByRed, r.ExtraSpecialForcesPaidByRed, r.UsesRedSecretAlly);
             if (cost.CostForEmperor > 0)
@@ -194,7 +200,7 @@ namespace Treachery.Shared
             }
         }
 
-        public int FreeRevivals(Player player, bool usesRedCunning)
+        public int FreeRevivals(Player player, bool usesRedSecretAlly)
         {
             if (FactionsThatTookFreeRevival.Contains(player.Faction) || FreeRevivalPrevented(player.Faction))
             {
@@ -231,7 +237,7 @@ namespace Treachery.Shared
                     nrOfFreeRevivals = 3;
                 }
 
-                if (usesRedCunning)
+                if (usesRedSecretAlly)
                 {
                     nrOfFreeRevivals += 3;
                 }

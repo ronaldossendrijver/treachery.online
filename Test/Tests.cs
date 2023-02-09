@@ -616,6 +616,17 @@ namespace Treachery.Test
 
             foreach (var bot in bots)
             {
+                var evt = bot.DetermineHighestPrioInPhaseAction(botEvents[bot]);
+
+                if (evt != null)
+                {
+                    ExecuteBotEvent(game, performTests, evt);
+                    return evt;
+                }
+            }
+
+            foreach (var bot in bots)
+            {
                 var evt = bot.DetermineHighPrioInPhaseAction(botEvents[bot]);
 
                 if (evt != null)

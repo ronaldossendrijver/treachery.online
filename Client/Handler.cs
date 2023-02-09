@@ -412,6 +412,18 @@ namespace Treachery.Client
                 foreach (var bot in bots)
                 {
                     var evts = Game.GetApplicableEvents(bot, false);
+                    var evt = bot.DetermineHighestPrioInPhaseAction(evts);
+
+                    if (evt != null && HostProxy != null)
+                    {
+                        await HostProxy.Request(evt);
+                        return;
+                    }
+                }
+
+                foreach (var bot in bots)
+                {
+                    var evts = Game.GetApplicableEvents(bot, false);
                     var evt = bot.DetermineHighPrioInPhaseAction(evts);
 
                     if (evt != null && HostProxy != null)

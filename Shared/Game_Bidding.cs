@@ -750,7 +750,7 @@ namespace Treachery.Shared
                 {
                     if (paymentReceiver == Faction.Red && Prevented(FactionAdvantage.RedReceiveBid))
                     {
-                        message = MessagePart.Express(TreacheryCardType.Karma, " prevents ", paymentReceiver, " from receiving ", Concept.Resource, " for this card");
+                        message = MessagePart.Express(" → ", paymentReceiver, " do not receive ", Concept.Resource, " for this card");
                         if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.RedReceiveBid);
                     }
                     else

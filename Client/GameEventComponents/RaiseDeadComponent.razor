@@ -1,5 +1,5 @@
 ﻿<!--
- * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
+* Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
 
 @using Treachery.Shared
@@ -11,35 +11,49 @@
     <Header>Use @Skin.Current.Describe(TreacheryCardType.RaiseDead) to revive up to five forces or one leader for free</Header>
     <Body>
 
-        @if (RaiseDeadPlayed.ValidMaxAmount(Game, Player, false) > 0)
-        {
-            <SelectForcesComponent @bind-Value="amountOfForces" Min="0" Max="RaiseDeadPlayed.ValidMaxAmount(Game, Player, false)" Faction="Faction" Special="false" />
-        }
-        else
-        {
-            amountOfForces = 0;
-        }
+        @{
+            var hasForcesToRevive = RaiseDeadPlayed.ValidMaxAmount(Game, Player, false) > 0;
+            var hasSpecialForcesToRevive = RaiseDeadPlayed.ValidMaxAmount(Game, Player, true) > 0;
+            var hasHeroesToRevive = RaiseDeadPlayed.ValidHeroes(Game, Player).Any();
 
-        @if (RaiseDeadPlayed.ValidMaxAmount(Game, Player, true) > 0)
-        {
-            <SelectForcesComponent @bind-Value="amountOfSpecialForces" Min="0" Max="RaiseDeadPlayed.ValidMaxAmount(Game, Player, true)" Faction="Faction" Special="true" />
-        }
-        else
-        {
-            amountOfSpecialForces = 0;
-        }
+            if (hasForcesToRevive)
+            {
+                <SelectForcesComponent @bind-Value="amountOfForces" Min="0" Max="RaiseDeadPlayed.ValidMaxAmount(Game, Player, false)" Faction="Faction" Special="false" />
+            }
+            else
+            {
+                amountOfForces = 0;
+            }
 
-        <SelectHeroComponent Game="Game" @bind-Value="hero" Values="RaiseDeadPlayed.ValidHeroes(Game, Player)" Required="false" />
+            if (hasSpecialForcesToRevive)
+            {
+                <SelectForcesComponent @bind-Value="amountOfSpecialForces" Min="0" Max="RaiseDeadPlayed.ValidMaxAmount(Game, Player, true)" Faction="Faction" Special="true" />
+            }
+            else
+            {
+                amountOfSpecialForces = 0;
+            }
 
-        @if (hero != null && Revival.MayAssignSkill(Game, Player, hero))
-        {
-            <RadioComponent @bind-Value="assignSkill" Values="@(new bool[] {false,true})" ValueLabels="@(new string[] {"No","Yes"})">
-                <Label>Do you wish to assign a skill to this leader?</Label>
-            </RadioComponent>
-        }
-        else
-        {
-            assignSkill = false;
+            if (hasHeroesToRevive)
+            {
+                <SelectHeroComponent Game="Game" @bind-Value="hero" Values="RaiseDeadPlayed.ValidHeroes(Game, Player)" Required="    false" />
+            }
+
+            if (hero != null && Revival.MayAssignSkill(Game, Player, hero))
+            {
+                <RadioComponent @bind-Value="assignSkill" Values="@(new bool[] {false,true})" ValueLabels="@(new string[] {"No","Yes"})">
+                    <Label>Do you wish to assign a skill to this leader?</Label>
+                </RadioComponent>
+            }
+            else
+            {
+                assignSkill = false;
+            }
+
+            if (!(hasForcesToRevive || hasSpecialForcesToRevive || hasHeroesToRevive))
+            {
+                <div class="text-info small">You currently have nothing to revive</div>
+            }
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.RaiseDead)" ConfirmError=@Validation />

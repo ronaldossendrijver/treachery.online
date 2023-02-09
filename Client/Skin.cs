@@ -2404,9 +2404,9 @@ namespace Treachery.Client
                 [World.Black] = DEFAULT_ART_LOCATION + "/art/GiediPrimeCard.gif",
                 [World.Yellow] = DEFAULT_ART_LOCATION + "/art/ArrakisCard.gif",
                 [World.Red] = DEFAULT_ART_LOCATION + "/art/KaitainCard.gif",
-                [World.RedStar] = DEFAULT_ART_LOCATION + "/art/SalusaSecundusCardFront.gif",
-                [World.Orange] = DEFAULT_ART_LOCATION + "/art/JunctionCardFront.gif",
-                [World.Blue] = DEFAULT_ART_LOCATION + "/art/WallachIXCardFront.gif",
+                [World.RedStar] = DEFAULT_ART_LOCATION + "/art/SalusaSecundusCard.gif",
+                [World.Orange] = DEFAULT_ART_LOCATION + "/art/JunctionCard.gif",
+                [World.Blue] = DEFAULT_ART_LOCATION + "/art/WallachIXCard.gif",
 
                 [World.Grey] = DEFAULT_ART_LOCATION + "/art/IxCard.gif",
                 [World.Purple] = DEFAULT_ART_LOCATION + "/art/TleilaxCard.gif",

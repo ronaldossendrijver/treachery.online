@@ -25,11 +25,12 @@ namespace Treachery.Client
 
         public static string Get(Homeworld w, HomeworldStatus status)
         {
-            return string.Format("<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{0}' width=300/><span style='color:{1};font-size:large;position:absolute;left:20px;top:20px;filter:drop-shadow(-1px 1px 1px black);'>{2}</span><img src='{3}' width=100 style='position:absolute;left:240px;top:120px;filter:drop-shadow(-3px 3px 2px black);'/></div>",
+            return string.Format("<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{0}' width=300/><span style='color:{1};font-size:24px;position:absolute;left:6px;top:-6px;{4};'>{2}</span><img src='{3}' width=100 style='position:absolute;left:240px;top:120px;filter:drop-shadow(-3px 3px 2px black);'/></div>",
                         Skin.Current.GetHomeworldCardImageURL(w.World),
                         status.IsHigh ? "green" : "red",
-                        status.IsHigh ? "High Threshold" : "Low Threshold",
-                        Skin.Current.GetImageURL(status.Occupant));
+                        status.IsHigh ? "HIGH" : "LOW",
+                        Skin.Current.GetImageURL(status.Occupant),
+                        Support.TextBorder(2, "white"));
         }
 
         public static string Get(TreacheryCard c)

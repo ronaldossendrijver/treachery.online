@@ -1219,13 +1219,13 @@ namespace Treachery.Shared
                 case Phase.BlueIntrudedByOrangeShip:
                 case Phase.TerrorTriggeredByOrangeShip:
                 case Phase.AmbassadorTriggeredByOrangeShip:
-                    Enter(IsPlaying(Faction.Blue) && BlueMayAccompany, Phase.BlueAccompaniesOrangeShip, Phase.OrangeMove);
+                    Enter(IsPlaying(Faction.Blue) && BlueMayAccompany, Phase.BlueAccompaniesOrangeShip, !InOrangeCunningShipment, Phase.OrangeMove, Phase.NonOrangeMove);
                     break;
 
                 case Phase.BlueAccompaniesOrangeShip:
                 case Phase.TerrorTriggeredByBlueAccompaniesOrangeShip:
                 case Phase.AmbassadorTriggeredByBlueAccompaniesOrangeShip:
-                    Enter(Phase.OrangeMove);
+                    Enter(!InOrangeCunningShipment, Phase.OrangeMove, Phase.NonOrangeMove);
                     break;
 
                 case Phase.NonOrangeShip:
@@ -1461,10 +1461,6 @@ namespace Treachery.Shared
                     throw new Exception($"Ambassador triggered during undefined phase: {CurrentPhase}");
             }
         }
-
-
-
-        //private Phase ChoosePhaseDependentOnBlowStage(Phase phaseIfBlowA, Phase phaseIfBlowB) => CurrentPhase == Phase.YellowRidingMonsterA ? Phase.TerrorTriggeredByYellowRidingMonsterA : Phase.BlueIntrudedByYellowRidingMonsterB;
 
         private bool IsFirst(Faction a, Faction b) => PlayerSequence.IsAfter(this, GetPlayer(a), GetPlayer(b));
 

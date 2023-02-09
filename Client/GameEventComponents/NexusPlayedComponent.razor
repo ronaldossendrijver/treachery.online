@@ -53,23 +53,23 @@
                     break;
 
                 case Faction.Red when betrayal && Game.CurrentMainPhase == MainPhase.Battle:
-                    <div>Let <Image Shown=FactionSpecialForce.Red /> count as <Image Shown=FactionForce.Red /> in this battle?</div>
+                    <div>Let <Image Shown=FactionSpecialForce.Red Width=20 /> count as <Image Shown=FactionForce.Red Width=20 /> in this battle?</div>
                     break;
 
                 case Faction.Red when cunning:
-                    <div>Let up to 5 <Image Shown=FactionForce.Red /> count as <Image Shown=FactionSpecialForce.Red /> in this battle?</div>
+                    <div>Let up to 5 <Image Shown=FactionForce.Red Width=20 /> count as <Image Shown=FactionSpecialForce.Red Width=20 /> in this battle?</div>
                     break;
 
                 case Faction.Orange when betrayal:
-                    <div>Gain the next payment for shipping in full?</div>
+                    <div>Gain the payment for this shipment in full?</div>
                     break;
 
                 case Faction.Orange when cunning:
                     <div>Make a second shipment after performing your move?</div>
                     break;
 
-                case Faction.Orange when cunning:
-                    <div>Ship at <Image Shown=FactionForce.Orange /> rates or perform a shipment cross-planet or to reserves?</div>
+                case Faction.Orange when secretAlly:
+                    <div>Ship at <Image Shown=FactionForce.Orange Width=20 /> rates or perform a shipment cross-planet or to reserves?</div>
                     break;
 
                 case Faction.Blue when betrayal:
@@ -80,16 +80,16 @@
                     <div>Be able to flip advisor to fighters during @Name(MainPhase.ShipmentAndMove)?</div>
                     break;
 
-                case Faction.Grey when betrayal && Game.CurrentPhase == Phase.BeginningOfBidding:
+                case Faction.Grey when betrayal && Game.CurrentPhase < Phase.GreySelectingCard:
                     <div>Prevent @Name(FactionAdvantage.GreySelectingCardsOnAuction)?</div>
                     break;
 
-                case Faction.Grey when betrayal && Game.CurrentPhase > Phase.BeginningOfBidding:
+                case Faction.Grey when betrayal && Game.CurrentPhase > Phase.GreySelectingCard:
                     <div>Prevent @Name(FactionAdvantage.GreySwappingCard)?</div>
                     break;
 
                 case Faction.Grey when cunning:
-                    <div>Let all <Image Shown=FactionForce.Grey /> in this battle count full strength?</div>
+                    <div>Let all <Image Shown=FactionForce.Grey Width=20 /> in this battle count full strength?</div>
                     break;
 
                 case Faction.Purple when betrayal:
@@ -185,7 +185,7 @@
             }
         }
 
-        <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation Pass="Pass" />
+        <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation />
 
     </Body>
 
@@ -210,14 +210,17 @@
 
     private Territory cyanTerritory;
 
+    protected override void OnInitialized()
+    {
+        BackgroundImage = Skin.Current.GetNexusCardImageURL(Player.Nexus);
+    }
+
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
         {
             h.OnLocationSelected += HandleLocationSelected;
         }
-
-        BackgroundImage = Skin.Current.GetNexusCardImageURL(Player.Nexus);
     }
 
     public override void Dispose()
@@ -238,7 +241,7 @@
         BrownCard = brownCard,
         PinkTerritory = pinkTerritory,
         PinkFaction = pinkFaction,
-        CyanTerritory = cyanTerritory,
+        CyanTerritory = cyanTerritory
     };
 
     private void HandleLocationSelected(object sender, Location l)
