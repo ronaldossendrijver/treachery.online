@@ -878,6 +878,17 @@ namespace Treachery.Shared
             return result;
         }
 
+        public IEnumerable<Battalion> BattalionsIn(Territory t)
+        {
+            var result = new List<Battalion>();
+            foreach (var l in t.Locations)
+            {
+                result.AddRange(BattalionsIn(l));
+            }
+
+            return result;
+        }
+
         public Dictionary<Location, List<Battalion>> OccupyingForcesOnPlanet
         {
             get

@@ -457,8 +457,9 @@ namespace Treachery.Shared
         {
             Log(e);
 
-            if (NexusPlayed.CanUseCunning(e.Player))
+            if (e.CardUsed() == null && NexusPlayed.CanUseCunning(e.Player))
             {
+                LogNexusPlayed(e.Initiator, Faction.Brown, "Cunning", "send a force back to reserves");
                 DiscardNexusCard(e.Player);
                 LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
             }

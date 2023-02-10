@@ -87,22 +87,28 @@ namespace Treachery.Shared
                 case Faction.None: return Message.Express("Invalid Nexus faction");
 
                 case Faction.Green:
-                    if (GreenPrescienceAspect == PrescienceAspect.None) return Message.Express("Invalid battle plan element");
+                    if ((IsCunning || IsSecretAlly) && GreenPrescienceAspect == PrescienceAspect.None) return Message.Express("Invalid battle plan element");
                     break;
 
                 case Faction.Purple:
-                    if (PurpleHero != null && !ValidPurpleHeroes(Game, Player).Contains(PurpleHero)) return Message.Express("Invalid leader");
-                    if (PurpleForces > ValidPurpleMaxAmount(Game, Player, false)) return Message.Express("You can't revive that many ", Player.Force);
-                    if (PurpleSpecialForces > ValidPurpleMaxAmount(Game, Player, true)) return Message.Express("You can't revive that many ", Player.SpecialForce);
-                    if (DeterminePurpleCost() > Player.Resources) return Message.Express("You can't pay that many");
-                    if (PurpleForces + PurpleSpecialForces > 5) return Message.Express("You can't revive that many forces");
-                    if (PurpleAssignSkill && PurpleHero == null) return Message.Express("You must revive a leader to assign a skill to");
-                    if (PurpleAssignSkill && !Revival.MayAssignSkill(Game, Player, PurpleHero)) return Message.Express("You can't assign a skill to this leader");
+                    if (IsSecretAlly)
+                    {
+                        if (PurpleHero != null && !ValidPurpleHeroes(Game, Player).Contains(PurpleHero)) return Message.Express("Invalid leader");
+                        if (PurpleForces > ValidPurpleMaxAmount(Game, Player, false)) return Message.Express("You can't revive that many ", Player.Force);
+                        if (PurpleSpecialForces > ValidPurpleMaxAmount(Game, Player, true)) return Message.Express("You can't revive that many ", Player.SpecialForce);
+                        if (DeterminePurpleCost() > Player.Resources) return Message.Express("You can't pay that many");
+                        if (PurpleForces + PurpleSpecialForces > 5) return Message.Express("You can't revive that many forces");
+                        if (PurpleAssignSkill && PurpleHero == null) return Message.Express("You must revive a leader to assign a skill to");
+                        if (PurpleAssignSkill && !Revival.MayAssignSkill(Game, Player, PurpleHero)) return Message.Express("You can't assign a skill to this leader");
+                    }
                     break;
 
                 case Faction.Brown:
-                    if (BrownCard == null) return Message.Express("Select a ", TreacheryCardType.Useless, " card to discard");
-                    if (BrownCard != null && !ValidBrownCards(Player).Contains(BrownCard)) return Message.Express("Invalid card");
+                    if (IsCunning)
+                    {
+                        if (BrownCard == null) return Message.Express("Select a ", TreacheryCardType.Useless, " card to discard");
+                        if (BrownCard != null && !ValidBrownCards(Player).Contains(BrownCard)) return Message.Express("Invalid card");
+                    }
                     break;
 
                 case Faction.Pink:

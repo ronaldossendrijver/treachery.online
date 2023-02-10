@@ -9,7 +9,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Use @Skin.Current.Describe(BrownRemoveForce.CardToUse(Player)) to force a player to send 1 force to their reserves?</Header>
+    <Header>Use @ToUse to force a player to send 1 force to their reserves?</Header>
 
     <Body>
 
@@ -33,7 +33,7 @@
 
     protected override Faction IsFactionSpecific => Faction.Brown;
 
-    protected override string Background => Skin.Current.GetImageURL(BrownRemoveForce.CardToUse(Player));
+    protected override string Background => BrownRemoveForce.CardToUse(Player) != null ? Skin.Current.GetImageURL(BrownRemoveForce.CardToUse(Player)) : Skin.Current.GetNexusCardImageURL(Faction.Brown);
 
     private Location location;
     private Faction target;
@@ -63,4 +63,6 @@
     {
         SetIfValid(ref location, BrownRemoveForce.ValidLocations(Game), l);
     }
+
+    private string ToUse => BrownRemoveForce.CardToUse(Player) != null ? Skin.Current.Describe(BrownRemoveForce.CardToUse(Player)) : "Nexus Cunning";
 }

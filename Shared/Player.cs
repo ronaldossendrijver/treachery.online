@@ -700,6 +700,8 @@ namespace Treachery.Shared
 
         public bool HasHighThreshold(World w)
         {
+            if (!Game.Applicable(Rule.Homeworlds)) return false;
+
             var homeworld = Homeworlds.FirstOrDefault(hw => hw.World == w);
             return homeworld != null && AnyForcesIn(homeworld) >= homeworld.Threshold;
         }

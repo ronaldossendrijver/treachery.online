@@ -107,7 +107,8 @@ namespace Treachery.Shared
             if (cardToRate.Type == TreacheryCardType.Thumper ||
                 cardToRate.Type == TreacheryCardType.Harvester ||
                 cardToRate.Type == TreacheryCardType.Flight ||
-                cardToRate.Type == TreacheryCardType.Juice) return 1;
+                cardToRate.Type == TreacheryCardType.Juice ||
+                cardToRate.IsMirrorWeapon) return 1;
 
             if (cardToRate.Type == TreacheryCardType.ProjectileAndPoison) return 5;
             if (cardToRate.Type == TreacheryCardType.ShieldAndAntidote) return 5;
@@ -129,8 +130,9 @@ namespace Treachery.Shared
 
             if (cardToRate.Type == TreacheryCardType.Chemistry) return 4;
             if (cardToRate.Type == TreacheryCardType.WeirdingWay) return 4;
+            if (cardToRate.Type == TreacheryCardType.ArtilleryStrike) return 4;
+            if (cardToRate.Type == TreacheryCardType.PoisonTooth) return 4;
 
-            if (cardToRate.IsMirrorWeapon) return 3;
             if (cardToRate.Type == TreacheryCardType.SearchDiscarded) return 3;
             if (cardToRate.Type == TreacheryCardType.TakeDiscarded) return 3;
 
@@ -693,6 +695,8 @@ namespace Treachery.Shared
         {
             return opponent.TreacheryCards.Where(c => c.IsWeapon && Game.KnownCards(this).Contains(c));
         }
+
+        private IEnumerable<TreacheryCard> KnownOpponentCards(Faction opponent) => KnownOpponentCards(Game.GetPlayer(opponent));
 
         private IEnumerable<TreacheryCard> KnownOpponentCards(Player opponent)
         {

@@ -280,7 +280,7 @@ namespace Treachery.Client
                 Phase.ReplacingCardJustWon => Status(
                     Express("You may now discard the card you just won and draw a new card instead."),
                     Express(game.WinningBid?.Initiator, " might replace the card they just won with a card from the deck..."),
-                    game.GetAlliedPlayer(Faction.Grey)),
+                    game.GetPlayer(game.FactionThatMayReplaceBoughtCard)),
 
                 Phase.WaitingForNextBiddingRound => Status("Factions are waiting for the next card to be put on auction..."),
 

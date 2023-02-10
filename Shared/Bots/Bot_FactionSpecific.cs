@@ -1031,9 +1031,15 @@ namespace Treachery.Shared
             var stronghold = TerrorPlanted.ValidStrongholds(Game, this).FirstOrDefault(t => AnyForcesIn(t) > 0);
             if (stronghold == null && HasAlly) stronghold = TerrorPlanted.ValidStrongholds(Game, this).FirstOrDefault(t => AlliedPlayer.AnyForcesIn(t) > 0);
             if (stronghold == null) stronghold = TerrorPlanted.ValidStrongholds(Game, this).FirstOrDefault(t => !Game.AnyForcesIn(t));
-            if (stronghold == null) stronghold = TerrorPlanted.ValidStrongholds(Game, this).First();
 
-            return new TerrorPlanted(Game) { Initiator = Faction, Type = type, Stronghold = stronghold };
+            if (stronghold == null)
+            {
+                return new TerrorPlanted(Game) { Initiator = Faction, Passed = true };
+            }
+            else
+            {
+                return new TerrorPlanted(Game) { Initiator = Faction, Type = type, Stronghold = stronghold };
+            }
         }
 
         protected virtual TerrorRevealed DetermineTerrorRevealed()

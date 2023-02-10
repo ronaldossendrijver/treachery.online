@@ -124,7 +124,7 @@ namespace Treachery.Shared
                         break;
 
                     case Faction.Brown:
-                        if (IsWinningOrIsOpponentInBattle(Faction.Brown)) return result;
+                        if (IsWinningOrIsOpponentInBattle(Faction.Brown) && KnownOpponentCards(Faction.Brown).Any(c => c.IsWeapon || c.IsDefense)) return result;
                         break;
 
                     case Faction.White:
@@ -149,8 +149,17 @@ namespace Treachery.Shared
                         break;
 
                     case Faction.Cyan:
-                        if ((Faction == Faction.Orange && Game.CurrentPhase == Phase.OrangeShip || Faction != Faction.Orange && Game.CurrentPhase == Phase.NonOrangeShip && Game.ShipmentAndMoveSequence.CurrentPlayer == this) &&
-                            decidedShipment != null && Game.TerrorIn(decidedShipment.To.Territory).Any()) return result;
+                        if (Faction == Faction.Orange && Game.CurrentPhase == Phase.OrangeShip && !Game.OrangeMayDelay || 
+                            Faction != Faction.Orange && Game.CurrentPhase == Phase.NonOrangeShip && Game.ShipmentAndMoveSequence.CurrentPlayer == this)
+                        {
+                            var shipment = DetermineShipment();
+                            if (shipment != null && Game.TerrorIn(shipment.To.Territory).Any())
+                            {
+                                result.CyanTerritory = shipment.To.Territory;
+                                return result;
+                            }
+                        }
+                            
                         break;
                 }
             }
@@ -179,7 +188,7 @@ namespace Treachery.Shared
             return result;
         }
 
-        private bool IsWinningOrIsOpponentInBattle(Faction faction) => faction != Ally && Game.CurrentBattle != null && Game.CurrentBattle.IsInvolved(faction) && (IsWinning(faction) || Game.CurrentBattle.IsInvolved(this));
+        private bool IsWinningOrIsOpponentInBattle(Faction faction) => faction != Ally && Game.CurrentBattle != null && (Game.CurrentBattle.IsInvolved(faction) && IsWinning(faction) || Game.CurrentBattle.OpponentOf(faction) == this);
 
         private NexusPlayed DetermineNexusPlayed_Cunning(NexusPlayed result)
         {

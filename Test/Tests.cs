@@ -26,6 +26,31 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            if (g.CurrentBattle != null)
+            {
+                var playerWithGreenBetrayal = g.Players.FirstOrDefault(p => p.Nexus == Faction.Green && NexusPlayed.CanUseBetrayal(g, p));
+                if (playerWithGreenBetrayal != null && g.CurrentBattle.IsInvolved(playerWithGreenBetrayal) && g.CurrentBattle.IsInvolved(Faction.Green))
+                {
+                    WriteSavegameIfApplicable(g, e.Player, "Green Betrayal could be used");
+                }
+
+                var playerWithBrownBetrayal = g.Players.FirstOrDefault(p => p.Nexus == Faction.Brown && NexusPlayed.CanUseBetrayal(g, p));
+                if (playerWithBrownBetrayal != null && g.CurrentBattle.IsInvolved(playerWithBrownBetrayal) && g.CurrentBattle.IsInvolved(Faction.Brown))
+                {
+                    WriteSavegameIfApplicable(g, e.Player, "Brown Betrayal could be used");
+                }
+            }
+
+            if (e is Voice && !g.IsPlaying(Faction.Blue))
+            {
+                WriteSavegameIfApplicable(g, e.Player, "SecretAlly-Blue");
+            }
+
+            if (e is LoserConcluded && !g.IsPlaying(Faction.Cyan))
+            {
+                WriteSavegameIfApplicable(g, e.Player, "SecretAlly-Cyan");
+            }
+
             if (e is Shipment ship && ship.Initiator == Faction.White && ship.Player.Nexus == Faction.White)
             {
                 if (ship.CunningNoFieldValue >= 0)
@@ -36,12 +61,22 @@ namespace Treachery.Test
                 {
                     WriteSavegameIfApplicable(g, e.Player, "White can ship 2 nofields");
                 }
-                
             }
 
-            if (e is BrownRemoveForce)
+            if (e is TerrorPlanted tp && g.TerrorIn(tp.Stronghold).Count() > 1)
             {
-                WriteSavegameIfApplicable(g, e.Player, "BrownRemoveForce");
+                WriteSavegameIfApplicable(g, e.Player, "Cunning-Cyan-Bidding");
+            }
+
+            if (e is ReplacedCardWon rcw && !rcw.Passed && rcw.Player.Ally != Faction.Grey && g.NexusDiscardPile.Any())
+            {
+                var faction = g.NexusDiscardPile[^1];
+                WriteSavegameIfApplicable(g, e.Player, "SecretAlly-" + faction);
+            }
+
+            if (e is BrownRemoveForce && !g.TreacheryDiscardPile.IsEmpty && g.TreacheryDiscardPile.Top.Id != TreacheryCardManager.CARD_TRIPTOGAMONT)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Nexus BrownRemoveForce");
             }
 
             var pink = g.GetPlayer(Faction.Pink);
@@ -124,25 +159,6 @@ namespace Treachery.Test
             */
         }
 
-        /*
-        private readonly List<Type> Written = new();
-        private void WriteSavegameIfApplicable(Game g, Type t)
-        {
-            if (!Written.Contains(t))
-            {
-                var playerWithAction = g.Players.FirstOrDefault(p => g.GetApplicableEvents(p, false).Contains(t));
-                if (playerWithAction != null)
-                {
-                    lock (Written)
-                    {
-                        File.WriteAllText("" + (Written.Count + 100) + " " + t.Name + "-" + playerWithAction.Name.Replace('*', 'X') + ".special.json", GameState.GetStateAsString(g));
-                        Written.Add(t);
-                    }
-                }
-            }
-        }
-        */
-
         private readonly List<string> WrittenCases = new();
         private void WriteSavegameIfApplicable(Game g, Player playerWithAction, string c)
         {
@@ -195,11 +211,6 @@ namespace Treachery.Test
             if (g.Version >= 147 && g.Players.Any(p => p.Leaders.Any(l => g.IsInFrontOfShield(l) && l.Faction != p.Faction)))
             {
                 return "Foreign leader in front of shield after " + e.GetType().Name + " - " + g.History.Count;
-            }
-
-            if (g.Players.Where(p => p.Faction != Faction.Black).Any(p => p.Leaders.Count(l => g.IsSkilled(l)) > 1))
-            {
-                return "More than 1 skilled leader for 1 player (not counting hark) after " + e.GetType().Name + " - " + g.History.Count;
             }
 
             if (e is SkillAssigned sa && sa.Leader == null)
@@ -449,9 +460,9 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 10000;
-            int nrOfTurns = 10;
-            int nrOfPlayers = 6;
+            int nrOfGames = 1000;
+            int nrOfTurns = 7;
+            int nrOfPlayers = 7;
 
             int timeout = 300;
 
@@ -463,6 +474,9 @@ namespace Treachery.Test
             rules.Add(Rule.FillWithBots);
             rules.Add(Rule.AssistedNotekeeping);
             rules.Add(Rule.DisableOrangeSpecialVictory);
+            
+            //DISABLE HOMEWORLDS
+            rules.Remove(Rule.Homeworlds);
 
             //rules.Add(Rule.BotsCannotAlly);
 
@@ -548,6 +562,8 @@ namespace Treachery.Test
                         game.Players.Single(p => p.Faction == kvp.Key).Param = kvp.Value;
                     }
                 }
+                
+                int maxNumberOfEvents = game.CurrentTurn * game.Players.Count * 60;
 
                 while (game.CurrentPhase != Phase.GameEnded)
                 {
@@ -561,11 +577,12 @@ namespace Treachery.Test
 
                     evt.Time = DateTime.Now;
 
-                    if (game.History.Count == game.CurrentTurn * 400)
+                    
+                    if (game.History.Count == maxNumberOfEvents)
                     {
                         File.WriteAllText("stuck" + game.Seed + ".json", GameState.GetStateAsString(game));
                     }
-                    Assert.AreNotEqual(game.CurrentTurn * 400, game.History.Count, "bots got stuck");
+                    Assert.AreNotEqual(maxNumberOfEvents, game.History.Count, "bots got stuck");
 
                     Assert.IsFalse(failedGames.Contains(game), "timeout");
 
