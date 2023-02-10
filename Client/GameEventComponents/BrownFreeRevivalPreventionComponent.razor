@@ -8,7 +8,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Use @Skin.Current.Describe(BrownFreeRevivalPrevention.CardToUse(Player)) to prevent a faction from taking Free Revival?</Header>
+    <Header>Use @ToUse to prevent a faction from taking Free Revival?</Header>
 
     <Body>
         <SelectFactionComponent @bind-Value="target" Values="Game.PlayersOtherThan(Player)" />
@@ -26,4 +26,6 @@
     private Faction target;
 
     protected override BrownFreeRevivalPrevention ConfirmedResult => new BrownFreeRevivalPrevention(Game) { Initiator = Faction, Target = target };
+
+    private string ToUse => BrownFreeRevivalPrevention.CardToUse(Player) != null ? Skin.Current.Describe(BrownFreeRevivalPrevention.CardToUse(Player)) : "Nexus Cunning";
 }

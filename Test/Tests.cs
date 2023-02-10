@@ -26,6 +26,43 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            var brown = g.GetPlayer(Faction.Brown);
+            if (brown != null && brown.Nexus == Faction.Brown && brown.TreacheryCards.Any())
+            {
+                if (e is Revival && e.Initiator != Faction.Brown)
+                {
+                    WriteSavegameIfApplicable(g, brown, "Nexus BrownFreeRevivalPrevention");
+                }
+
+                if ((e is Karma || e is Bid karmabid && karmabid.KarmaCard != null || e is Shipment karmashipment && karmashipment.KarmaCard != null) && e.Initiator != Faction.Brown)
+                {
+                    WriteSavegameIfApplicable(g, brown, "Nexus BrownKarmaPrevention");
+                }
+
+                if (e is Move m && !m.Passed && e.Initiator != Faction.Brown && brown.AnyForcesIn(m.To) > 0)
+                {
+                    WriteSavegameIfApplicable(g, brown, "Nexus BrownMovePrevention");
+                }
+
+                if (e is Move mbrown && e.Initiator == Faction.Brown && !mbrown.Passed)
+                {
+                    WriteSavegameIfApplicable(g, brown, "Nexus BrownExtraMove");
+                }
+            }
+
+            if (e is TakeLosses tl && tl.Initiator == Faction.Brown && !g.TreacheryDiscardPile.IsEmpty && g.TreacheryDiscardPile.Top.Id != TreacheryCardManager.CARD_JUBBACLOAK)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Nexus TakeLosses");
+            }
+
+            if (e is BrownRemoveForce && !g.TreacheryDiscardPile.IsEmpty && g.TreacheryDiscardPile.Top.Id != TreacheryCardManager.CARD_TRIPTOGAMONT)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Nexus BrownRemoveForce");
+            }
+
+            /*
+             * NEXUS TESTING
+             * 
             if (g.CurrentBattle != null)
             {
                 var playerWithGreenBetrayal = g.Players.FirstOrDefault(p => p.Nexus == Faction.Green && NexusPlayed.CanUseBetrayal(g, p));
@@ -74,11 +111,6 @@ namespace Treachery.Test
                 WriteSavegameIfApplicable(g, e.Player, "SecretAlly-" + faction);
             }
 
-            if (e is BrownRemoveForce && !g.TreacheryDiscardPile.IsEmpty && g.TreacheryDiscardPile.Top.Id != TreacheryCardManager.CARD_TRIPTOGAMONT)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Nexus BrownRemoveForce");
-            }
-
             var pink = g.GetPlayer(Faction.Pink);
             if (pink != null && g.CurrentTurn < 10 && g.CurrentMainPhase == MainPhase.Ended && g.Winners.Contains(pink) && g.MeetsPinkVictoryCondition(pink, false))
             {
@@ -116,6 +148,8 @@ namespace Treachery.Test
                     WriteSavegameIfApplicable(g, e.Player, "Betrayal-" + np.Faction);
                 }
             }
+            */
+
             /*
             if (e.Player != null && e.Player.Is(Faction.Pink) && e.Player.HasAlly && e.Player.Ally != Faction.Grey)
             {
@@ -460,7 +494,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 1000;
+            int nrOfGames = 2000;
             int nrOfTurns = 7;
             int nrOfPlayers = 7;
 

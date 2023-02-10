@@ -9,7 +9,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Use @Skin.Current.Describe(BrownMovePrevention.CardToUse(Player)) to prevent the current player from moving forces into a territory you occupy?</Header>
+    <Header>Use @ToUse to prevent the current player from moving forces into a territory you occupy?</Header>
 
     <Body>
 
@@ -51,4 +51,6 @@
         base.Dispose();
         h.OnLocationSelected -= HandleLocationSelected;
     }
+
+    private string ToUse => BrownMovePrevention.CardToUse(Player) != null ? Skin.Current.Describe(BrownMovePrevention.CardToUse(Player)) : "Nexus Cunning";
 }

@@ -71,7 +71,7 @@ namespace Treachery.Shared
             return null;
         }
 
-        public static bool CanPreventLosses(Game g, Player p) => !g.Prevented(FactionAdvantage.BrownDiscarding) && ValidUselessCardToPreventLosses(g, p) != null || NexusPlayed.CanUseCunning(p) && p.TreacheryCards.Any();
+        public static bool CanPreventLosses(Game g, Player p) => p.Is(Faction.Brown) && (!g.Prevented(FactionAdvantage.BrownDiscarding) && ValidUselessCardToPreventLosses(g, p) != null || NexusPlayed.CanUseCunning(p) && p.TreacheryCards.Any());
 
         protected override void ExecuteConcreteEvent()
         {

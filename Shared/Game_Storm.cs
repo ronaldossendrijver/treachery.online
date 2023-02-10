@@ -309,7 +309,7 @@ namespace Treachery.Shared
                             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.YellowProtectedFromStorm);
                         }
                     }
-                    else if (battalion.Is(Faction.Brown) && !Prevented(FactionAdvantage.BrownDiscarding))
+                    else if (battalion.Is(Faction.Brown) && TakeLosses.CanPreventLosses(this, GetPlayer(Faction.Brown)))
                     {
                         StormLossesToTake.Add(new LossToTake() { Location = l.Key, Amount = battalion.TotalAmountOfForces, Faction = battalion.Faction });
                     }
@@ -355,17 +355,18 @@ namespace Treachery.Shared
         public void HandleEvent(TakeLosses e)
         {
             var player = GetPlayer(e.Initiator);
+            bool mustDiscard = false;
 
             if (e.UseUselessCard)
             {
-                if (player.Is(Faction.Brown) && NexusPlayed.CanUseCunning(player))
+                var card = TakeLosses.ValidUselessCardToPreventLosses(this, e.Player);
+                if (card == null && NexusPlayed.CanUseCunning(player))
                 {
                     DiscardNexusCard(player);
-                    LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
+                    mustDiscard = true;
                 }
                 else
                 {
-                    var card = TakeLosses.ValidUselessCardToPreventLosses(this, e.Player);
                     Discard(e.Player, card);
                 }
 
@@ -388,6 +389,11 @@ namespace Treachery.Shared
             {
                 Enter(PhaseBeforeStormLoss);
                 DetermineNextShipmentAndMoveSubPhase();
+            }
+
+            if (mustDiscard)
+            {
+                LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
             }
         }
 

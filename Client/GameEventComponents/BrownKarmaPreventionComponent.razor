@@ -8,7 +8,7 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Use @Skin.Current.Describe(BrownKarmaPrevention.CardToUse(Player)) to prevent a faction from playing @Skin.Current.Describe(TreacheryCardType.Karma) this phase?</Header>
+    <Header>Use @ToUse to prevent a faction from playing @Skin.Current.Describe(TreacheryCardType.Karma) this phase?</Header>
 
     <Body>
         <SelectFactionComponent @bind-Value="target" Values="Game.PlayersOtherThan(Player)" />
@@ -26,4 +26,6 @@
     private Faction target;
 
     protected override BrownKarmaPrevention ConfirmedResult => new BrownKarmaPrevention(Game) { Initiator = Faction, Target = target };
+
+    private string ToUse => BrownKarmaPrevention.CardToUse(Player) != null ? Skin.Current.Describe(BrownKarmaPrevention.CardToUse(Player)) : "Nexus Cunning";
 }

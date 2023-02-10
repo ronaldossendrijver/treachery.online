@@ -510,7 +510,10 @@
                 break;
             case "BrownExtraMove":
                 {
-                    <SimpleActionComponent GameEventType="BrownExtraMove" h="@h" BackgroundImage="@Skin.Current.GetImageURL(BrownExtraMove.CardToUse(h.Player))" Title="@Skin.Current.Format("Use {0} to be able to move your forces one extra territory?", BrownExtraMove.CardToUse(h.Player))" Alert="false" />
+                    var cardToUse = BrownExtraMove.CardToUse(h.Player);
+                    var title = Skin.Current.Format("Use {0} to be able to move your forces one extra territory?", cardToUse != null ? Name(cardToUse) : "Nexus Cunning");
+                    var background = cardToUse != null ? Skin.Current.GetImageURL(cardToUse) : Skin.Current.GetNexusCardImageURL(Faction.Brown);
+                    <SimpleActionComponent GameEventType="BrownExtraMove" h="@h" BackgroundImage=@background Title=@title Alert="false" />
                 }
                 break;
             case "BrownMovePrevention":
