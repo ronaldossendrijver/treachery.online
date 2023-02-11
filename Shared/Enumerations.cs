@@ -771,4 +771,11 @@ namespace Treachery.Shared
         Terror = 20,
         Ambassador = 30
     }
+
+    public enum VidalMoment
+    {
+        None = 0,
+        AfterUsedInBattle = 10,
+        EndOfTurn = 20
+    }
 }

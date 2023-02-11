@@ -122,26 +122,27 @@ namespace Treachery.Shared
             }
 
             DetermineStrongholdOwnership();
-            DetermineIfVidalIsSetAside();
+            
+            if (WhenToSetAsideVidal == VidalMoment.EndOfTurn)
+            {
+                SetAsideVidal();
+            }
+            
             MainPhaseEnd();
         }
 
-        private void DetermineIfVidalIsSetAside()
+        private void SetAsideVidal()
         {
-            if (VidalWasGainedByCyanThisTurn)
+            var player = GetPlayer(FactionToSetAsideVidal);
+            
+            if (player.Leaders.Contains(Vidal))
             {
-                var vidal = Vidal;
-
-                if (IsAlive(vidal))
-                {
-                    var cyan = GetPlayer(Faction.Cyan);
-                    if (cyan.Leaders.Contains(vidal) && IsAlive(vidal))
-                    {
-                        cyan.Leaders.Remove(vidal);
-                        Log(Faction.Cyan, " set aside ", vidal);
-                    }
-                }
+                player.Leaders.Remove(Vidal);
+                Log(Vidal, " is set aside");
             }
+
+            FactionToSetAsideVidal = Faction.None;
+            WhenToSetAsideVidal = VidalMoment.None;
         }
 
         private void AddBribesToPlayerResources()

@@ -771,7 +771,7 @@ namespace Treachery.Shared
                     }
                     else if (CurrentAmbassadorActivated.PinkTakeVidal)
                     {
-                        TakeVidal(initiatingPlayer);
+                        TakeVidal(initiatingPlayer, VidalMoment.AfterUsedInBattle);
                         DetermineNextShipmentAndMoveSubPhase();
                     }
                     break;
@@ -868,7 +868,6 @@ namespace Treachery.Shared
             }
         }
 
-
         public void HandleEvent(AllianceByAmbassador e)
         {
             Enter(PausedAmbassadorPhase);
@@ -879,11 +878,11 @@ namespace Treachery.Shared
 
                 if (CurrentAmbassadorActivated.PinkGiveVidalToAlly)
                 {
-                    TakeVidal(e.Player);
+                    TakeVidal(e.Player, VidalMoment.EndOfTurn);
                 }
                 else if (CurrentAmbassadorActivated.PinkTakeVidal)
                 {
-                    TakeVidal(CurrentAmbassadorActivated.Player);
+                    TakeVidal(CurrentAmbassadorActivated.Player, VidalMoment.AfterUsedInBattle);
                 }
 
                 if (HasActedOrPassed.Contains(e.Initiator) && HasActedOrPassed.Contains(CurrentAmbassadorActivated.Initiator))
@@ -899,14 +898,16 @@ namespace Treachery.Shared
 
                 if (CurrentAmbassadorActivated.PinkTakeVidal)
                 {
-                    TakeVidal(CurrentAmbassadorActivated.Player);
+                    TakeVidal(CurrentAmbassadorActivated.Player, VidalMoment.AfterUsedInBattle);
                 }
             }
 
             DetermineNextShipmentAndMoveSubPhase();
         }
 
-        private void TakeVidal(Player p)
+        private Faction FactionToSetAsideVidal {  get; set; }
+        private VidalMoment WhenToSetAsideVidal { get; set; }
+        private void TakeVidal(Player p, VidalMoment whenToSetAside)
         {
             var currentOwner = Players.FirstOrDefault(p => p.Leaders.Contains(Vidal));
             if (currentOwner != null)
@@ -922,6 +923,9 @@ namespace Treachery.Shared
             }
 
             p.Leaders.Add(Vidal);
+            FactionToSetAsideVidal = p.Faction;
+            WhenToSetAsideVidal = whenToSetAside;
+
             Log(p.Faction, " take ", Vidal);
 
             SetInFrontOfShield(Vidal, false);
@@ -1586,7 +1590,6 @@ namespace Treachery.Shared
 
         public Leader Vidal => LeaderState.Keys.FirstOrDefault(h => h.HeroType == HeroType.PinkAndCyan) as Leader;
 
-        private bool VidalWasGainedByCyanThisTurn { get; set; } = false;
         private void CheckIfCyanGainsVidal()
         {
             var cyan = GetPlayer(Faction.Cyan);
@@ -1600,23 +1603,9 @@ namespace Treachery.Shared
                     var nrOfBattlesInStrongholds = Battle.BattlesToBeFought(this, cyan).Select(batt => batt.Territory)
                         .Where(t => (pink == null || pink.AnyForcesIn(t) == 0) && (t.IsStronghold || IsSpecialStronghold(t))).Distinct().Count();
 
-                    if (nrOfBattlesInStrongholds >= 2)
+                    if (nrOfBattlesInStrongholds >= 2 && !VidalIsCapturedOrGhola)
                     {
-                        var playerWithVidal = Players.FirstOrDefault(p => p.Leaders.Any(l => l.HeroType == HeroType.PinkAndCyan));
-                        if (playerWithVidal == null)
-                        {
-                            Log(Faction.Cyan, " gain ", vidal);
-                            cyan.Leaders.Add(vidal);
-                            VidalWasGainedByCyanThisTurn = true;
-                        }
-                        else if (!VidalIsCapturedOrGhola && !playerWithVidal.Is(Faction.Cyan))
-                        {
-                            Log(Faction.Cyan, " gain ", vidal, " taking him from ", playerWithVidal.Faction);
-                            cyan.Leaders.Add(vidal);
-                            SetInFrontOfShield(vidal, false);
-                            VidalWasGainedByCyanThisTurn = true;
-                            playerWithVidal.Leaders.Remove(vidal);
-                        }
+                        TakeVidal(cyan, VidalMoment.EndOfTurn);
                     }
                 }
             }

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace Treachery.Shared
 {
@@ -1520,6 +1521,16 @@ namespace Treachery.Shared
 
         private void FinishBattle()
         {
+            if (AggressorBattleAction.Hero == Vidal && WhenToSetAsideVidal == VidalMoment.AfterUsedInBattle && !(AggressorTraitorAction.TreacherySucceeded(this) && !DefenderTraitorAction.TreacherySucceeded(this)))
+            {
+                SetAsideVidal();
+            }
+
+            if (DefenderBattleAction.Hero == Vidal && WhenToSetAsideVidal == VidalMoment.AfterUsedInBattle && !(DefenderTraitorAction.TreacherySucceeded(this) && !AggressorTraitorAction.TreacherySucceeded(this)))
+            {
+                SetAsideVidal();
+            }
+
             ReturnSkilledLeadersInFrontOfShield();
             if (!Applicable(Rule.FullPhaseKarma)) AllowPreventedBattleFactionAdvantages();
             if (CurrentJuice != null && CurrentJuice.Type == JuiceType.Aggressor) CurrentJuice = null;
@@ -1533,13 +1544,18 @@ namespace Treachery.Shared
 
         private void ReturnSkilledLeadersInFrontOfShield()
         {
-            foreach (var leader in LeaderState.Where(ls => ls.Key is Leader l && IsSkilled(l) && !ls.Value.InFrontOfShield && !CapturedLeaders.ContainsKey(l)).Select(ls => ls.Key as Leader))
+            foreach (var leader in LeaderState.Where(ls => ls.Key is Leader l && IsSkilled(l) && !ls.Value.InFrontOfShield).Select(ls => ls.Key as Leader))
             {
-                SetInFrontOfShield(leader, true);
+                var currentOwner = Players.FirstOrDefault(p => p.Leaders.Contains(leader));
 
-                if (IsAlive(leader))
+                if (currentOwner == null || !CapturedLeaders.ContainsKey(leader) && !(currentOwner.Faction != Faction.Pink && leader.HeroType == HeroType.PinkAndCyan))
                 {
-                    Log(Skill(leader), " ", leader, " is placed back in front of shield");
+                    SetInFrontOfShield(leader, true);
+
+                    if (IsAlive(leader))
+                    {
+                        Log(Skill(leader), " ", leader, " is placed back in front of shield");
+                    }
                 }
             }
         }

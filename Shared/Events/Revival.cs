@@ -174,10 +174,9 @@ namespace Treachery.Shared
 
             if (p.Faction == Faction.Pink)
             {
-                var vidal = p.Leaders.FirstOrDefault(l => l.HeroType == HeroType.PinkAndCyan);
-                if (vidal != null && !g.IsAlive(vidal) && !result.Contains(vidal))
+                if (!g.IsAlive(g.Vidal) && !result.Contains(g.Vidal))
                 {
-                    result.Add(vidal);
+                    result.Add(g.Vidal);
                 }
             }
 

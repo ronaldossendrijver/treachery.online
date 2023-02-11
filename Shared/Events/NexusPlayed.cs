@@ -256,7 +256,7 @@ namespace Treachery.Shared
             }
         }
 
-        public static IEnumerable<IHero> ValidPurpleHeroes(Game game, Player player) => game.KilledHeroes(player);
+        public static IEnumerable<IHero> ValidPurpleHeroes(Game game, Player player) => RaiseDeadPlayed.ValidHeroes(game, player);
 
         public static IEnumerable<TreacheryCard> ValidBrownCards(Player player) => player.TreacheryCards.Where(c => c.Type == TreacheryCardType.Useless);
 

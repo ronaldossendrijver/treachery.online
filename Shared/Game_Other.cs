@@ -944,7 +944,7 @@ namespace Treachery.Shared
                             PrepareSkillAssignmentToRevivedLeader(e.Player, Vidal);
                         }
                     }
-                    TakeVidal(e.Player);
+                    TakeVidal(e.Player, VidalMoment.EndOfTurn);
                     LogNexusPlayed(e, "take ", Vidal, " this turn");
                     break;
             }

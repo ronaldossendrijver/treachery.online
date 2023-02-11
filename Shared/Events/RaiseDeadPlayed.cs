@@ -116,6 +116,19 @@ namespace Treachery.Shared
             }
         }
 
-        public static IEnumerable<IHero> ValidHeroes(Game game, Player player) => game.KilledHeroes(player);
+        public static IEnumerable<IHero> ValidHeroes(Game game, Player player)
+        {
+            var result = game.KilledHeroes(player).ToList();
+            
+            if (player.Faction == Faction.Pink)
+            {
+                if (!game.IsAlive(game.Vidal) && !result.Contains(game.Vidal))
+                {
+                    result.Add(game.Vidal);
+                }
+            }
+
+            return result;
+        }
     }
 }
