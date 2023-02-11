@@ -309,7 +309,7 @@ namespace Treachery.Shared
                             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.YellowProtectedFromStorm);
                         }
                     }
-                    else if (battalion.Is(Faction.Brown) && TakeLosses.CanPreventLosses(this, GetPlayer(Faction.Brown)))
+                    else if (battalion.Is(Faction.Brown) && (!Prevented(FactionAdvantage.BrownDiscarding) || Applicable(Rule.NexusCards)))
                     {
                         StormLossesToTake.Add(new LossToTake() { Location = l.Key, Amount = battalion.TotalAmountOfForces, Faction = battalion.Faction });
                     }

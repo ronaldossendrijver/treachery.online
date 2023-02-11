@@ -917,8 +917,10 @@ namespace Treachery.Shared
                 {
                     Log(currentOwner, " lose ", Vidal);
                 }
+
+                CapturedLeaders.Remove(Vidal);
             }
-            
+
             p.Leaders.Add(Vidal);
             Log(p.Faction, " take ", Vidal);
 
