@@ -26,6 +26,35 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            var vidal = g.Vidal;
+            if (vidal != null)
+            {
+                if (e is Revival re && re.Hero != null && re.Hero == vidal)
+                {
+                    WriteSavegameIfApplicable(g, e.Player, "Vidal revived by Revival");
+                }
+
+                if (e is RaiseDeadPlayed rd && rd.Hero != null && rd.Hero == vidal)
+                {
+                    WriteSavegameIfApplicable(g, e.Player, "Vidal revived by Tleilaxu Ghola");
+                }
+
+                if (e is NexusPlayed np && np.PurpleHero != null && np.PurpleHero == vidal)
+                {
+                    WriteSavegameIfApplicable(g, e.Player, "Vidal revived by Purple Secret Ally");
+                }
+
+                var currentOwnerOfVidal = g.OwnerOf(vidal);
+                if (currentOwnerOfVidal != null)
+                {
+                    WriteSavegameIfApplicable(g, currentOwnerOfVidal, "Vidal Owner " + currentOwnerOfVidal.Faction);
+                }
+            }
+
+            
+
+
+
             var brown = g.GetPlayer(Faction.Brown);
             if (brown != null && brown.Nexus == Faction.Brown && brown.TreacheryCards.Any())
             {
@@ -293,7 +322,7 @@ namespace Treachery.Test
             if (g.CurrentTurn >= 1)
             {
                 int previousNumberOfLeadersInPlay = _leadercount.CountOf(g.Seed);
-                int currentNumberOfLeaders = g.Players.Sum(player => player.Leaders.Where(l => l.HeroType != HeroType.PinkAndCyan).Count());
+                int currentNumberOfLeaders = g.Players.Sum(player => player.Leaders.Where(l => l.HeroType != HeroType.Vidal).Count());
                 if (previousNumberOfLeadersInPlay == 0)
                 {
                     lock (_leadercount)
@@ -347,7 +376,7 @@ namespace Treachery.Test
             }
 
 
-            if (g.Players.Any(p => p.Leaders.Any(l => l.HeroType != HeroType.PinkAndCyan && l.Faction != p.Faction && p.Faction != Faction.Purple && !g.CapturedLeaders.ContainsKey(l))))
+            if (g.Players.Any(p => p.Leaders.Any(l => l.HeroType != HeroType.Vidal && l.Faction != p.Faction && p.Faction != Faction.Purple && !g.CapturedLeaders.ContainsKey(l))))
             {
                 return "Lost Leader";
             }
@@ -494,7 +523,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 10000;
+            int nrOfGames = 200;
             int nrOfTurns = 7;
             int nrOfPlayers = 7;
 

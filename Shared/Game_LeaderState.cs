@@ -10,14 +10,25 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        private void KillHero(IHero l)
+        private void KillHero(IHero h)
         {
-            if (l is Leader || l is Messiah)
+            if (h is Leader || h is Messiah)
             {
-                LeaderState[l].Kill(this);
+                LeaderState[h].Kill(this);
                 RecentMilestones.Add(Milestone.LeaderKilled);
                 DetermineIfCapturedLeadersMustBeReleased();
-                DetermineIfKilledGholaReturnsToOriginalFaction(l);
+                DetermineIfKilledGholaReturnsToOriginalFaction(h);
+                
+                if (h.HeroType == HeroType.Vidal)
+                {
+                    var currentOwner = OwnerOf(h);
+                    currentOwner.Leaders.Remove(h as Leader);
+                    var pink = GetPlayer(Faction.Pink);
+                    if (pink != null)
+                    {
+                        pink.Leaders.Add(h as Leader);
+                    }
+                }
             }
         }
 

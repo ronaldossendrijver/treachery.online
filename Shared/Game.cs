@@ -1256,20 +1256,13 @@ namespace Treachery.Shared
             }
         }
 
-        public Player OwnerOf(TreacheryCard karmaCard)
-        {
-            return karmaCard != null ? Players.FirstOrDefault(p => p.TreacheryCards.Contains(karmaCard)) : null;
-        }
+        public Player OwnerOf(IHero hero) => Players.FirstOrDefault(p => p.Leaders.Contains(hero));
 
-        public Player OwnerOf(TreacheryCardType cardType)
-        {
-            return Players.FirstOrDefault(p => p.TreacheryCards.Any(c => c.Type == cardType));
-        }
+        public Player OwnerOf(TreacheryCard karmaCard) => karmaCard != null ? Players.FirstOrDefault(p => p.TreacheryCards.Contains(karmaCard)) : null;
 
-        public Player OwnerOf(Location stronghold)
-        {
-            return StrongholdOwnership.ContainsKey(stronghold) ? GetPlayer(StrongholdOwnership[stronghold]) : null;
-        }
+        public Player OwnerOf(TreacheryCardType cardType) => Players.FirstOrDefault(p => p.TreacheryCards.Any(c => c.Type == cardType));
+
+        public Player OwnerOf(Location stronghold) => StrongholdOwnership.ContainsKey(stronghold) ? GetPlayer(StrongholdOwnership[stronghold]) : null;
 
         public static Message TryLoad(GameState state, bool performValidation, bool isHost, out Game result, bool trackStatesForReplay)
         {

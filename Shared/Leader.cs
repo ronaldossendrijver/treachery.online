@@ -48,7 +48,7 @@ namespace Treachery.Shared
                 {
                     return 6;
                 }
-                else if (HeroType == HeroType.PinkAndCyan)
+                else if (HeroType == HeroType.Vidal)
                 {
                     return 5;
                 }

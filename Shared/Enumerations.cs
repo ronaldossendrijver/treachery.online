@@ -663,7 +663,7 @@ namespace Treachery.Shared
         Messiah = 20,
         Mercenary = 30,
         Auditor = 40,
-        PinkAndCyan = 50,
+        Vidal = 50,
         VariableValue = 60
     }
 

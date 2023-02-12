@@ -133,15 +133,13 @@ namespace Treachery.Shared
 
         private void SetAsideVidal()
         {
-            var player = GetPlayer(FactionToSetAsideVidal);
-            
-            if (player.Leaders.Contains(Vidal))
+            if (IsAlive(Vidal) && PlayerToSetAsideVidal.Leaders.Contains(Vidal))
             {
-                player.Leaders.Remove(Vidal);
+                PlayerToSetAsideVidal.Leaders.Remove(Vidal);
                 Log(Vidal, " is set aside");
             }
 
-            FactionToSetAsideVidal = Faction.None;
+            PlayerToSetAsideVidal = null;
             WhenToSetAsideVidal = VidalMoment.None;
         }
 

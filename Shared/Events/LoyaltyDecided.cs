@@ -50,6 +50,6 @@ namespace Treachery.Shared
             return Message.Express(Leader, " will always be loyal to ", Initiator);
         }
 
-        public static IEnumerable<Leader> ValidLeaders(Player p) => p.Leaders.Where(l => l.HeroType != HeroType.PinkAndCyan);
+        public static IEnumerable<Leader> ValidLeaders(Player p) => p.Leaders.Where(l => l.HeroType != HeroType.Vidal);
     }
 }

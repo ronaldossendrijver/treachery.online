@@ -1548,7 +1548,7 @@ namespace Treachery.Shared
             {
                 var currentOwner = Players.FirstOrDefault(p => p.Leaders.Contains(leader));
 
-                if (currentOwner == null || !CapturedLeaders.ContainsKey(leader) && !(currentOwner.Faction != Faction.Pink && leader.HeroType == HeroType.PinkAndCyan))
+                if (currentOwner == null || !CapturedLeaders.ContainsKey(leader) && !(currentOwner.Faction != Faction.Pink && leader.HeroType == HeroType.Vidal))
                 {
                     SetInFrontOfShield(leader, true);
 

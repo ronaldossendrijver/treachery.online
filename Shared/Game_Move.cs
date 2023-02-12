@@ -905,30 +905,32 @@ namespace Treachery.Shared
             DetermineNextShipmentAndMoveSubPhase();
         }
 
-        private Faction FactionToSetAsideVidal {  get; set; }
+        private Player PlayerToSetAsideVidal {  get; set; }
         private VidalMoment WhenToSetAsideVidal { get; set; }
         private void TakeVidal(Player p, VidalMoment whenToSetAside)
         {
-            var currentOwner = Players.FirstOrDefault(p => p.Leaders.Contains(Vidal));
+            var vidal = Vidal;
+
+            var currentOwner = OwnerOf(vidal);
             if (currentOwner != null)
             {
-                currentOwner.Leaders.Remove(Vidal);
+                currentOwner.Leaders.Remove(vidal);
 
-                if (IsAlive(Vidal))
+                if (IsAlive(vidal))
                 {
-                    Log(currentOwner, " lose ", Vidal);
+                    Log(currentOwner, " lose ", vidal);
                 }
 
-                CapturedLeaders.Remove(Vidal);
+                CapturedLeaders.Remove(vidal);
             }
 
-            p.Leaders.Add(Vidal);
-            FactionToSetAsideVidal = p.Faction;
+            p.Leaders.Add(vidal);
+            PlayerToSetAsideVidal = p;
             WhenToSetAsideVidal = whenToSetAside;
 
-            Log(p.Faction, " take ", Vidal);
+            Log(p.Faction, " take ", vidal);
 
-            SetInFrontOfShield(Vidal, false);
+            SetInFrontOfShield(vidal, false);
         }
 
         private Phase PausedTerrorPhase { get; set; }
@@ -1588,7 +1590,7 @@ namespace Treachery.Shared
             CurrentBlueNexus = null;
         }
 
-        public Leader Vidal => LeaderState.Keys.FirstOrDefault(h => h.HeroType == HeroType.PinkAndCyan) as Leader;
+        public Leader Vidal => LeaderState.Keys.FirstOrDefault(h => h.HeroType == HeroType.Vidal) as Leader;
 
         private void CheckIfCyanGainsVidal()
         {
@@ -1617,7 +1619,7 @@ namespace Treachery.Shared
         {
             get
             {
-                var playerWithVidal = Players.FirstOrDefault(p => p.Leaders.Any(l => l.HeroType == HeroType.PinkAndCyan));
+                var playerWithVidal = Players.FirstOrDefault(p => p.Leaders.Any(l => l.HeroType == HeroType.Vidal));
                 return playerWithVidal != null && (playerWithVidal.Is(Faction.Black) || playerWithVidal.Is(Faction.Purple));
             }
         }
