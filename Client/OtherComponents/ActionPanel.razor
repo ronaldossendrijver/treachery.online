@@ -268,6 +268,11 @@
                     <YesNoActionComponent GameEventType="DivideResourcesAccepted" h="@h" Title=@Skin.Current.Format("Agree with the proposed division of {0}?", Concept.Resource) Alert="true" />
                 }
                 break;
+            case "CardGiven":
+                {
+                    <YesNoActionComponent GameEventType="CardGiven" h="@h" Title=@Skin.Current.Format("Give your ally the {0} you just received?", Game.CardThatMustBeKeptOrGivenToAlly) Alert="true" />
+                }
+                break;
             case "RaiseDeadPlayed":
                 {
                     <RaiseDeadComponent h="@h" BackgroundImage="@GetImage(TreacheryCardType.RaiseDead)" />

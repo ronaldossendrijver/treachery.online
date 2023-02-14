@@ -537,9 +537,9 @@ namespace Treachery.Shared
             }
         }
 
-        public bool Controls(Game g, Location l, bool contestedStongholdsCountAsOccupied)
+        public bool Controls(Game g, Location l, bool contestedStongholdsCountAsControlled)
         {
-            if (contestedStongholdsCountAsOccupied)
+            if (contestedStongholdsCountAsControlled)
             {
                 return Occupies(l);
             }

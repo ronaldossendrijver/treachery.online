@@ -636,7 +636,7 @@ namespace Treachery.Shared
             RegisterWonCardAsKnown(card);
             winner.TreacheryCards.Add(card);
             LogTo(winner.Faction, "You won: ", card);
-            GiveBlackExtraCard(winner);
+            GivePlayerExtraCardIfApplicable();
             return card;
         }
 
@@ -696,7 +696,7 @@ namespace Treachery.Shared
             RegisterWonCardAsKnown(card);
             winner.TreacheryCards.Add(card);
             LogTo(winner.Faction, "You won: ", card);
-            GiveBlackExtraCard(winner);
+            GivePlayerExtraCardIfApplicable();
             return card;
         }
 
@@ -731,7 +731,7 @@ namespace Treachery.Shared
             winner.TreacheryCards.Add(card);
             RegisterWonCardAsKnown(card);
             LogTo(winner.Faction, "You won: ", card);
-            GiveBlackExtraCard(winner);
+            GivePlayerExtraCardIfApplicable();
             return card;
         }
 
@@ -805,27 +805,75 @@ namespace Treachery.Shared
             }
         }
 
-        private void GiveBlackExtraCard(Player initiator)
+        public TreacheryCard CardThatMustBeKeptOrGivenToAlly { get; private set; }
+        private Phase PhaseBeforeDecidingAboutGivingCardToAlly { get; set; }
+        private void GivePlayerExtraCardIfApplicable()
         {
-            if (initiator.Is(Faction.Black) && initiator.TreacheryCards.Count < 8)
-            {
-                if (!Prevented(FactionAdvantage.BlackFreeCard))
-                {
-                    var extraCard = DrawTreacheryCard();
+            bool extraCardMustBeDecidedAbout = false;
+            var black = GetPlayer(Faction.Black);
+            Player receiver = null;
 
-                    if (extraCard != null)
+            if (black != null)
+            {
+                var occupierOfBlackHomeworld = OccupierOf(World.Black);
+                if (occupierOfBlackHomeworld != null)
+                {
+                    if (occupierOfBlackHomeworld.HasRoomForCards)
                     {
-                        initiator.TreacheryCards.Add(extraCard);
-                        Log(initiator.Faction, " receive an extra treachery card");
-                        LogTo(initiator.Faction, "Your extra card is: ", extraCard);
+                        receiver = occupierOfBlackHomeworld;
+                        extraCardMustBeDecidedAbout = occupierOfBlackHomeworld.HasAlly && occupierOfBlackHomeworld.AlliedPlayer.HasRoomForCards;
+
+                    }
+                    else if (occupierOfBlackHomeworld.HasAlly)
+                    {
+                        receiver = occupierOfBlackHomeworld.AlliedPlayer;
                     }
                 }
-                else
+                else if (receiver.HasRoomForCards)
                 {
-                    LogPreventionByKarma(FactionAdvantage.BlackFreeCard);
-                    if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.BlackFreeCard);
+                    if (!Prevented(FactionAdvantage.BlackFreeCard))
+                    {
+                        receiver = black;
+                    }
+                    else
+                    {
+                        LogPreventionByKarma(FactionAdvantage.BlackFreeCard);
+                        if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.BlackFreeCard);
+                    }
                 }
             }
+
+            if (receiver != null)
+            {
+                var extraCard = DrawTreacheryCard();
+
+                if (extraCard != null)
+                {
+                    receiver.TreacheryCards.Add(extraCard);
+                    Log(receiver.Faction, " receive an extra treachery card");
+                    LogTo(receiver.Faction, "Your extra card is: ", extraCard);
+                    if (extraCardMustBeDecidedAbout)
+                    {
+                        PhaseBeforeDecidingAboutGivingCardToAlly = CurrentPhase;
+                        Enter(Phase.DecideAboutGivingCardToAlly);
+                        CardThatMustBeKeptOrGivenToAlly = extraCard;
+                    }
+                }
+            }
+        }
+
+        public void HandleEvent(CardGiven e)
+        {
+            Log(e);
+
+            if (!e.Passed)
+            {
+                e.Player.TreacheryCards.Remove(CardThatMustBeKeptOrGivenToAlly);
+                e.Player.AlliedPlayer.TreacheryCards.Add(CardThatMustBeKeptOrGivenToAlly);
+            }
+
+            CardThatMustBeKeptOrGivenToAlly = null;
+            Enter(PhaseBeforeDecidingAboutGivingCardToAlly);
         }
 
         private TreacheryCard DrawTreacheryCard()

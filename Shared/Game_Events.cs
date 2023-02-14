@@ -225,6 +225,9 @@ namespace Treachery.Shared
                     if (faction == Faction.Grey) result.Add(typeof(GreySwappedCardOnBid));
                     if (Version < 103 && player.Has(TreacheryCardType.Amal) && CardNumber == 1 && !Bids.Any()) result.Add(typeof(AmalPlayed));
                     break;
+                case Phase.DecideAboutGivingCardToAlly:
+                    if (CardGiven.IsApplicable(this, player)) result.Add(typeof(CardGiven));
+                    break;
                 case Phase.ReplacingCardJustWon:
                     if (faction == FactionThatMayReplaceBoughtCard) result.Add(typeof(ReplacedCardWon));
                     break;

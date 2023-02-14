@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace Treachery.Shared
 {
@@ -1187,10 +1188,57 @@ namespace Treachery.Shared
 
             return
                 isPubliclyKnown ||
+
+                Occupies(p.Faction, World.Green) || 
+                Occupies(p.Ally, World.Green) ||
+                
                 (p != null &&
                 !Prevented(FactionAdvantage.GreenBiddingPrescience) &&
                 (p.Faction == Faction.Green || (p.Ally == Faction.Green && GreenSharesPrescience) || HasDeal(p.Faction, DealType.ShareBiddingPrescience)));
         }
+
+        public Dictionary<World, Faction> HomeworldOccupation { get; private set; } = new();
+        public void DetermineOccupationAfterLocationEvent(ILocationEvent e)
+        {
+            var player = GetPlayer(e.Initiator);
+
+            if (e.To is Homeworld hw && !player.Homeworlds.Contains(hw) && player.Controls(this, e.To, false))
+            {
+                if (!Occupies(e.Initiator, hw.World))
+                {
+                    HomeworldOccupation.Remove(hw.World);
+                    HomeworldOccupation.Add(hw.World, e.Initiator);
+                    Log(e.Initiator, " now occupy ", e.To);
+                }
+            }
+        }
+
+        public void DetermineOccupationAtStartOfTurn(ILocationEvent e)
+        {
+            var newOccupation = new Dictionary<World, Faction>();
+
+            foreach (var hw in Map.Homeworlds)
+            {
+                foreach (var player in Players)
+                {
+                    if (player.AnyForcesIn(hw) > 0 && !player.Homeworlds.Contains(hw))
+                    {
+                        newOccupation.Add(hw.World, player.Faction);
+
+                        if (!Occupies(player.Faction, hw.World))
+                        {
+                            Log(e.Initiator, " now occupy ", e.To);
+                        }
+                    }
+                }
+            }
+
+            HomeworldOccupation = newOccupation;
+        }
+
+        public bool Occupies(Faction f, World w) => f != Faction.None && HomeworldOccupation.TryGetValue(w, out Faction value) && value == f;
+
+        public Player OccupierOf(World w) => HomeworldOccupation.TryGetValue(w, out Faction value) ? GetPlayer(value) : null;
 
         public HomeworldStatus GetStatusOf(Homeworld w)
         {

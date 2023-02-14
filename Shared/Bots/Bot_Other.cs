@@ -18,6 +18,12 @@ namespace Treachery.Shared
             return new DivideResources(Game) { Initiator = Faction, PortionToFirstPlayer = spiceIWant };
         }
 
+        private CardGiven DetermineCardGiven()
+        {
+            return new CardGiven(Game) { Initiator = Faction, Passed = 
+                CardQuality(Game.CardThatMustBeKeptOrGivenToAlly, this) <= 2 && (Ally == Faction.Blue || Ally == Faction.Brown || CardQuality(Game.CardThatMustBeKeptOrGivenToAlly, AlliedPlayer) > 0) };
+        }
+
         private DivideResourcesAccepted DetermineDivideResourcesAccepted()
         {
             var spiceIWant = Math.Max(0, DivideResources.GetResourcesToBeDivided(Game).Amount - Resources);
