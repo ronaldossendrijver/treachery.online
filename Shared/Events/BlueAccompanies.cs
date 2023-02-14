@@ -29,6 +29,8 @@ namespace Treachery.Shared
 
         public bool Accompanies { get; set; }
 
+        public bool ExtraAdvisor { get; set; }
+
         public override Message Validate()
         {
             if (Accompanies)
@@ -38,6 +40,7 @@ namespace Treachery.Shared
                 if (Initiator != Faction.Blue) return Message.Express("You can't accompany shipments");
                 if (Location == null) return Message.Express("To not selected");
                 if (Accompanies && Player.ForcesInReserve == 0) return Message.Express("No forces available");
+                if (ExtraAdvisor && !MaySendExtraAdvisor(Game, Player, Location)) return Message.Express("You cannot send an extra advisor");
             }
 
             return null;
@@ -73,6 +76,8 @@ namespace Treachery.Shared
                 ally.AnyForcesIn(g.LastShipmentOrMovement.To.Territory) != 0;
         }
 
+        public static bool MaySendExtraAdvisor(Game g, Player p, Location l) => p.HasHighThreshold() && l == g.Map.PolarSink && p.ForcesInReserve >= 2;
+
         protected override void ExecuteConcreteEvent()
         {
             Game.HandleEvent(this);
@@ -89,5 +94,7 @@ namespace Treachery.Shared
                 return Message.Express(Initiator, " don't accompany shipment");
             }
         }
+
+        public int TotalAmountOfForces => (Accompanies?1:0) + (ExtraAdvisor?1:0);
     }
 }

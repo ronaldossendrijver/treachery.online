@@ -9,5 +9,7 @@ namespace Treachery.Shared
         public Faction Initiator { get; }
 
         public Location To { get; }
+
+        public int TotalAmountOfForces { get; }
     }
 }

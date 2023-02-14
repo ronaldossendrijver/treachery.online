@@ -16,6 +16,8 @@ namespace Treachery.Shared
 
         public List<Faction> FactionsThatTookFreeRevival { get; private set; } = new List<Faction>();
 
+        private bool PurpleStartedRevivalWithLowThreshold { get; set; }
+
         private void EnterRevivalPhase()
         {
             MainPhaseStart(MainPhase.Resurrection);
@@ -26,6 +28,7 @@ namespace Treachery.Shared
             AmbassadorsPlacedThisTurn = 0;
             FactionsThatTookFreeRevival.Clear();
             HasActedOrPassed.Clear();
+            PurpleStartedRevivalWithLowThreshold = HasLowThreshold(Faction.Purple);
 
             if (Version < 122)
             {
@@ -94,7 +97,7 @@ namespace Treachery.Shared
             int totalProfitsForPurple = 0;
             if (purple != null)
             {
-                if (usesFreeRevival)
+                if (usesFreeRevival && !PurpleStartedRevivalWithLowThreshold)
                 {
                     totalProfitsForPurple += 1;
                 }
@@ -108,7 +111,7 @@ namespace Treachery.Shared
                 if (totalProfitsForPurple > 0 && Prevented(FactionAdvantage.PurpleReceiveRevive))
                 {
                     totalProfitsForPurple = 0;
-                    LogPrevention(FactionAdvantage.PurpleReceiveRevive);
+                    LogPreventionByKarma(FactionAdvantage.PurpleReceiveRevive);
                     if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.PurpleReceiveRevive);
                 }
 

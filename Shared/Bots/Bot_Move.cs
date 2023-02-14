@@ -234,7 +234,14 @@ namespace Treachery.Shared
 
         protected virtual MovedBatallion ConstructMove(Location to, Location from, Battalion battalion)
         {
-            return new MovedBatallion() { To = to, From = from, Batallion = battalion };
+            if (Faction == Faction.White && Game.HasLowThreshold(Faction.White) && battalion.AmountOfSpecialForces != 0)
+            {
+                return null;
+            }
+            else
+            {
+                return new MovedBatallion() { To = to, From = from, Batallion = battalion };
+            }
         }
 
 

@@ -1161,11 +1161,23 @@ namespace Treachery.Shared
                 (p.Faction == Faction.Yellow || (p.Ally == Faction.Yellow && YellowSharesPrescience) || HasDeal(p.Faction, DealType.ShareStormPrescience));
         }
 
+        public bool HasHighThreshold(Faction f)
+        {
+            var player = GetPlayer(f);
+            return player != null && player.HasHighThreshold();
+        }
+
+        public bool HasLowThreshold(Faction f)
+        {
+            var player = GetPlayer(f);
+            return player != null && player.HasLowThreshold();
+        }
         public bool HasResourceDeckPrescience(Player p)
         {
             return
                 p != null &&
                 !Prevented(FactionAdvantage.GreenSpiceBlowPrescience) &&
+                !HasLowThreshold(Faction.Green) &&
                 (p.Faction == Faction.Green || (p.Ally == Faction.Green && GreenSharesPrescience) || HasDeal(p.Faction, DealType.ShareResourceDeckPrescience));
         }
 

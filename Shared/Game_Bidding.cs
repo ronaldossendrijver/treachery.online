@@ -419,7 +419,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    LogPrevention(FactionAdvantage.GreySwappingCard);
+                    LogPreventionByKarma(FactionAdvantage.GreySwappingCard);
                     if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreySwappingCard);
                     StartBiddingRound();
                 }
@@ -822,7 +822,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    LogPrevention(FactionAdvantage.BlackFreeCard);
+                    LogPreventionByKarma(FactionAdvantage.BlackFreeCard);
                     if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.BlackFreeCard);
                 }
             }
@@ -982,7 +982,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    LogPrevention(FactionAdvantage.GreySwappingCard);
+                    LogPreventionByKarma(FactionAdvantage.GreySwappingCard);
                     if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreySwappingCard);
                     Enter(Version >= 107 || IsPlaying(Faction.Green), Phase.WaitingForNextBiddingRound, PutNextCardOnAuction);
                 }

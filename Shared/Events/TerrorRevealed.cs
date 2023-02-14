@@ -109,5 +109,6 @@ namespace Treachery.Shared
             l.Sector != g.SectorInStorm &&
             (!p.HasAlly || p.AlliedPlayer.AnyForcesIn(l.Territory) == 0 || p.Ally == Faction.Blue && g.Applicable(Rule.AdvisorsDontConflictWithAlly) && p.AlliedPlayer.ForcesIn(l.Territory) == 0);
 
+        public int TotalAmountOfForces => ForcesInSneakAttack;
     }
 }

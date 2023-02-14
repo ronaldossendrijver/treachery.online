@@ -57,6 +57,8 @@ namespace Treachery.Shared
             if (numberOfSelectedTerritories > 1 && !canMoveFromTwoTerritories) return Message.Express("You can't move from two territories at the same time");
             if (numberOfSelectedTerritories > 2) return Message.Express("You can't move from more than two territories at the same time");
 
+            if (Initiator == Faction.White && ForceLocations.Values.Any(v => v.AmountOfSpecialForces != 0) && Game.HasLowThreshold(Faction.White)) return Message.Express("Low Threshold prevents you from moving your No-Field");
+
             return null;
         }
 
@@ -149,5 +151,7 @@ namespace Treachery.Shared
         {
             return g.Map.Territories().Where(t => t.Locations.Any(l => l.Sector != g.SectorInStorm && p.AnyForcesIn(l) > 0));
         }
+
+        public int TotalAmountOfForces => ForceLocations != null ? ForceLocations.Values.Sum(b => b.TotalAmountOfForces) : 0;
     }
 }

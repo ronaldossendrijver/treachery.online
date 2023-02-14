@@ -423,5 +423,7 @@ namespace Treachery.Shared
         public static bool MayUseNoField(Game g, Player p) => p.Faction == Faction.White && !g.Prevented(FactionAdvantage.WhiteNofield) || p.Ally == Faction.White && g.WhiteAllowsUseOfNoField;
 
         public static bool MayUseCunningNoField(Player p) => p.Faction == Faction.White && NexusPlayed.CanUseCunning(p);
+
+        public int TotalAmountOfForces => ForceAmount + SpecialForceAmount + SmuggledAmount + SmuggledSpecialAmount;
     }
 }

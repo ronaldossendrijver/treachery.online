@@ -276,7 +276,7 @@ namespace Treachery.Shared
                         else
                         {
                             Monsters.Add(t);
-                            LogPrevention(FactionAdvantage.YellowControlsMonster);
+                            LogPreventionByKarma(FactionAdvantage.YellowControlsMonster);
                             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.YellowControlsMonster);
                         }
                     }

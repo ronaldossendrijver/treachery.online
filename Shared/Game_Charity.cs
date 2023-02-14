@@ -54,7 +54,7 @@ namespace Treachery.Shared
             }
             else
             {
-                LogPrevention(FactionAdvantage.BrownControllingCharity);
+                LogPreventionByKarma(FactionAdvantage.BrownControllingCharity);
             }
 
             var blue = GetPlayer(Faction.Blue);
@@ -68,7 +68,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    LogPrevention(FactionAdvantage.BlueCharity);
+                    LogPreventionByKarma(FactionAdvantage.BlueCharity);
                     if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.BlueCharity);
                 }
             }

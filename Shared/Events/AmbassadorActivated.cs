@@ -216,6 +216,8 @@ namespace Treachery.Shared
         public static IEnumerable<IHero> ValidPurpleHeroes(Game game, Player player) => game.KilledHeroes(player);
 
         public static bool MayPass(Player p) => p.Faction == Faction.Pink;
+
+        public int TotalAmountOfForces => YellowForceLocations != null ? YellowForceLocations.Values.Sum(b => b.TotalAmountOfForces) : 0;
     }
 
 }

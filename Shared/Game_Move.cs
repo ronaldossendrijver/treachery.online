@@ -426,13 +426,13 @@ namespace Treachery.Shared
 
             if (TerrorIn(e.To.Territory).Any() && AmbassadorIn(e.To.Territory) != Faction.None && IsFirst(Faction.Cyan, Faction.Pink))
             {
-                CheckTerrorTriggered(e, e.Initiator, e.To.Territory);
-                CheckAmbassadorTriggered(e, e.Initiator, e.To.Territory);
+                CheckTerrorTriggered(e);
+                CheckAmbassadorTriggered(e);
             }
             else
             {
-                CheckAmbassadorTriggered(e, e.Initiator, e.To.Territory);
-                CheckTerrorTriggered(e, e.Initiator, e.To.Territory);
+                CheckAmbassadorTriggered(e);
+                CheckTerrorTriggered(e);
             }
         }
 
@@ -448,7 +448,7 @@ namespace Treachery.Shared
             {
                 if (Prevented(FactionAdvantage.BlueIntrusion))
                 {
-                    LogPrevention(FactionAdvantage.BlueIntrusion);
+                    LogPreventionByKarma(FactionAdvantage.BlueIntrusion);
                     if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.BlueIntrusion);
                 }
                 else
@@ -458,26 +458,27 @@ namespace Treachery.Shared
             }
         }
 
-        private void CheckAmbassadorTriggered(ILocationEvent e, Faction initiator, Territory territory)
+        private void CheckAmbassadorTriggered(ILocationEvent e)
         {
             var pinkPlayer = GetPlayer(Faction.Pink);
             if (pinkPlayer != null &&
-                initiator != Faction.Pink &&
-                initiator != pinkPlayer.Ally &&
-                AmbassadorIn(territory) != e.Initiator &&
-                AmbassadorIn(territory) != Faction.None)
+                e.Initiator != Faction.Pink &&
+                e.Initiator != pinkPlayer.Ally &&
+                AmbassadorIn(e.To.Territory) != e.Initiator &&
+                AmbassadorIn(e.To.Territory) != Faction.None)
             {
                 QueueIntrusion(e, IntrusionType.Ambassador);
             }
         }
 
-        private void CheckTerrorTriggered(ILocationEvent e, Faction initiator, Territory territory)
+        private void CheckTerrorTriggered(ILocationEvent e)
         {
             var cyanPlayer = GetPlayer(Faction.Cyan);
             if (cyanPlayer != null &&
-                initiator != Faction.Cyan &&
-                initiator != cyanPlayer.Ally &&
-                TerrorIn(territory).Any())
+                (e.TotalAmountOfForces >= 3 || !cyanPlayer.HasLowThreshold()) &&
+                e.Initiator != Faction.Cyan &&
+                e.Initiator != cyanPlayer.Ally &&
+                TerrorIn(e.To.Territory).Any())
             {
                 QueueIntrusion(e, IntrusionType.Terror);
             }
@@ -1136,11 +1137,19 @@ namespace Treachery.Shared
         {
             CleanupObsoleteIntrusions();
 
-            if (BlueMayAccompany && Prevented(FactionAdvantage.BlueAccompanies))
+            if (BlueMayAccompany)
             {
-                LogPrevention(FactionAdvantage.BlueAccompanies);
-                BlueMayAccompany = false;
-                if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.BlueAccompanies);
+                if (Prevented(FactionAdvantage.BlueAccompanies))
+                {
+                    LogPreventionByKarma(FactionAdvantage.BlueAccompanies);
+                    BlueMayAccompany = false;
+                    if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.BlueAccompanies);
+                }
+                else if (HasLowThreshold(Faction.Blue))
+                {
+                    LogPreventionByLowThreshold(FactionAdvantage.BlueAccompanies);
+                    BlueMayAccompany = false;
+                }
             }
 
             if (StormLossesToTake.Count > 0)

@@ -709,7 +709,7 @@ namespace Treachery.Shared
         public bool HasHighThreshold()
         {
             if (!Game.Applicable(Rule.Homeworlds)) return false;
-            return homeworlds.Any(w => AnyForcesIn(w) >= w.Threshold);
+            return Homeworlds.Any(w => AnyForcesIn(w) >= w.Threshold);
         }
 
         public bool HasLowThreshold(World w)
@@ -723,7 +723,7 @@ namespace Treachery.Shared
         public bool HasLowThreshold()
         {
             if (!Game.Applicable(Rule.Homeworlds)) return false;
-            return homeworlds.Any(w => AnyForcesIn(w) < w.Threshold);
+            return Homeworlds.Any(w => AnyForcesIn(w) < w.Threshold);
         }
     }
 }

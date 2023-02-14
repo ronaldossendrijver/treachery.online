@@ -1006,7 +1006,7 @@ namespace Treachery.Shared
                     }
                     else
                     {
-                        LogPrevention(FactionAdvantage.BrownReceiveForcePayment);
+                        LogPreventionByKarma(FactionAdvantage.BrownReceiveForcePayment);
                     }
                 }
             }
@@ -1436,7 +1436,7 @@ namespace Treachery.Shared
             {
                 if (Version > 125 && Prevented(FactionAdvantage.BlackCaptureLeader))
                 {
-                    LogPrevention(FactionAdvantage.BlackCaptureLeader);
+                    LogPreventionByKarma(FactionAdvantage.BlackCaptureLeader);
                 }
                 else
                 {
@@ -1807,7 +1807,7 @@ namespace Treachery.Shared
             {
                 if (Version > 125 && Prevented(FactionAdvantage.BlackCaptureLeader))
                 {
-                    LogPrevention(FactionAdvantage.BlackCaptureLeader);
+                    LogPreventionByKarma(FactionAdvantage.BlackCaptureLeader);
                 }
                 else
                 {
@@ -1907,7 +1907,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    LogPrevention(FactionAdvantage.BlackCaptureLeader);
+                    LogPreventionByKarma(FactionAdvantage.BlackCaptureLeader);
                 }
             }
         }

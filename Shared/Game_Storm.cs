@@ -78,7 +78,18 @@ namespace Treachery.Shared
         {
             if (IsPlaying(Faction.Grey) && GetPlayer(Faction.Grey).AnyForcesIn(Map.HiddenMobileStronghold) > 0)
             {
-                if (!Prevented(FactionAdvantage.GreyMovingHMS))
+                if (Prevented(FactionAdvantage.GreyMovingHMS))
+                {
+                    LogPreventionByKarma(FactionAdvantage.GreyMovingHMS);
+                    if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyMovingHMS);
+                    DetermineStorm();
+                }
+                else if (HasLowThreshold(Faction.Grey))
+                {
+                    LogPreventionByLowThreshold(FactionAdvantage.GreyMovingHMS);
+                    DetermineStorm();
+                }
+                else
                 {
                     if (Map.HiddenMobileStronghold.AttachedToLocation.Sector == SectorInStorm)
                     {
@@ -90,12 +101,6 @@ namespace Treachery.Shared
                         HmsMovesLeft = 3;
                         Enter(Phase.HmsMovement);
                     }
-                }
-                else
-                {
-                    LogPrevention(FactionAdvantage.GreyMovingHMS);
-                    if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyMovingHMS);
-                    DetermineStorm();
                 }
             }
             else

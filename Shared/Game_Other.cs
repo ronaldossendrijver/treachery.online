@@ -1063,9 +1063,19 @@ namespace Treachery.Shared
             }
         }
 
-        private void LogPrevention(FactionAdvantage prevented)
+        private void LogPreventionByKarma(FactionAdvantage prevented)
         {
             Log(TreacheryCardType.Karma, " prevents ", prevented);
+        }
+
+        private void LogPreventionByLowThreshold(FactionAdvantage prevented)
+        {
+            Log("Low Threshold prevents ", prevented);
+        }
+
+        private void LogPreventionByHighThreshold(FactionAdvantage prevented)
+        {
+            Log("Low Threshold prevents ", prevented);
         }
 
         public bool CharityIsCancelled => EconomicsStatus == BrownEconomicsStatus.Cancel || EconomicsStatus == BrownEconomicsStatus.CancelFlipped;
