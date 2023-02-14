@@ -706,6 +706,24 @@ namespace Treachery.Shared
             return homeworld != null && AnyForcesIn(homeworld) >= homeworld.Threshold;
         }
 
-        public bool HasLowThreshold(World w) => !HasHighThreshold(w);
+        public bool HasHighThreshold()
+        {
+            if (!Game.Applicable(Rule.Homeworlds)) return false;
+            return homeworlds.Any(w => AnyForcesIn(w) >= w.Threshold);
+        }
+
+        public bool HasLowThreshold(World w)
+        {
+            if (!Game.Applicable(Rule.Homeworlds)) return false;
+
+            var homeworld = Homeworlds.FirstOrDefault(hw => hw.World == w);
+            return homeworld != null && AnyForcesIn(homeworld) < homeworld.Threshold;
+        }
+
+        public bool HasLowThreshold()
+        {
+            if (!Game.Applicable(Rule.Homeworlds)) return false;
+            return homeworlds.Any(w => AnyForcesIn(w) < w.Threshold);
+        }
     }
 }

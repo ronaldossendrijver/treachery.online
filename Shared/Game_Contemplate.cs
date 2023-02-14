@@ -547,6 +547,7 @@ namespace Treachery.Shared
                 {
                     TerrorOnPlanet.Remove(e.Type);
                     UnplacedTerrorTokens.Add(e.Type);
+                    e.Player.Resources += 4;
                 }
                 else
                 {

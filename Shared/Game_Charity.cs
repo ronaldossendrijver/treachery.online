@@ -3,6 +3,7 @@
  */
 
 using System.Linq;
+using System.Numerics;
 
 namespace Treachery.Shared
 {
@@ -109,26 +110,32 @@ namespace Treachery.Shared
             }
         }
 
-        private void GiveCharity(Player to, int amount)
+        private void GiveCharity(Player to, int basicAmount)
         {
+            int homeworldBonus = 0;
+            if (to.Is(Faction.Red) && to.HasLowThreshold(World.Red) || to.HasLowThreshold())
+            {
+                homeworldBonus = 1;
+            }
+            
             var brown = GetPlayer(Faction.Brown);
 
-            to.Resources += amount;
+            to.Resources += basicAmount + homeworldBonus;
             if (brown != null && !Prevented(FactionAdvantage.BrownControllingCharity))
             {
-                if (brown.Resources >= amount)
+                if (brown.Resources >= basicAmount)
                 {
-                    brown.Resources -= amount;
-                    Log(to.Faction, " claim ", Payment(amount), " from ", Faction.Brown);
+                    brown.Resources -= basicAmount;
+                    Log(to.Faction, " get ", Payment(basicAmount), " from ", Faction.Brown, MessagePart.ExpressIf(homeworldBonus > 0, " and ", Payment(homeworldBonus), " from the bank"));
                 }
                 else
                 {
-                    Log(to.Faction, " are unable to claim ", Payment(amount), " from ", Faction.Brown);
+                    Log(to.Faction, " are unable to claim ", Payment(basicAmount), " from ", Faction.Brown, MessagePart.ExpressIf(homeworldBonus > 0, " but get ", Payment(homeworldBonus), " from the bank"));
                 }
             }
             else
             {
-                Log(to.Faction, " claim ", Payment(amount));
+                Log(to.Faction, " claim ", Payment(basicAmount + homeworldBonus));
             }
         }
 

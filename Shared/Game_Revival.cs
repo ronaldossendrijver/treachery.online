@@ -242,6 +242,11 @@ namespace Treachery.Shared
                     nrOfFreeRevivals += 3;
                 }
 
+                if (player.Is(Faction.Red) && player.HasLowThreshold(World.Red) || player.HasLowThreshold())
+                {
+                    nrOfFreeRevivals += 1;
+                }
+
                 return nrOfFreeRevivals;
             }
         }
