@@ -764,7 +764,9 @@ namespace Treachery.Shared
                 CurrentPhase == Phase.Bureaucracy ||
                 CurrentPhase == Phase.SearchingDiscarded ||
                 CurrentPhase == Phase.PerformingKarmaHandSwap ||
-                CurrentPhase == Phase.ReplacingCardJustWon;
+                CurrentPhase == Phase.ReplacingCardJustWon ||
+                CurrentPhase == Phase.DividingCollectedResources ||
+                CurrentPhase == Phase.AcceptingResourceDivision;
 
         public static IEnumerable<Type> GetGameEventTypes()
         {

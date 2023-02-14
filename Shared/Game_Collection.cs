@@ -10,9 +10,11 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
+        private int ResourcesCollectedByYellow { get; set; }
         private void EnterSpiceCollectionPhase()
         {
             MainPhaseStart(MainPhase.Collection);
+            ResourcesCollectedByYellow = 0;
             CallHeroesHome();
 
             if (Version < 122)
@@ -65,19 +67,34 @@ namespace Treachery.Shared
             int gainedByFirstFaction = DivideResources.GainedByFirstFaction(this, !divisionWasAgreed, CurrentDivideResources.PortionToFirstPlayer);
             int gainedByOtherFaction = DivideResources.GainedByOtherFaction(this, !divisionWasAgreed, CurrentDivideResources.PortionToFirstPlayer);
 
-            Log(toBeDivided.FirstFaction, " collect ", Payment(gainedByFirstFaction), " from ", toBeDivided.Territory);
-            GetPlayer(toBeDivided.FirstFaction).Resources += gainedByFirstFaction;
-
-            Log(toBeDivided.OtherFaction, " collect ", Payment(gainedByOtherFaction), " from ", toBeDivided.Territory);
-            GetPlayer(toBeDivided.OtherFaction).Resources += gainedByOtherFaction;
+            Collect(toBeDivided.FirstFaction, toBeDivided.Territory, gainedByFirstFaction);
+            Collect(toBeDivided.OtherFaction, toBeDivided.Territory, gainedByOtherFaction);
 
             CollectedResourcesToBeDivided.Remove(toBeDivided);
 
             CurrentDivideResources = null;
         }
 
+        private void Collect(Faction faction, object from, int amount)
+        {
+            Log(faction, " collect ", Payment(amount), " from ", from);
+            GetPlayer(faction).Resources += amount;
+            if (faction == Faction.Yellow) ResourcesCollectedByYellow += amount;
+        }
+
         private void EndCollectionMainPhase()
         {
+            if (ResourcesCollectedByYellow > 1) {
+                var occupierOfYellowHomeworld = OccupierOf(World.Yellow);
+                if (occupierOfYellowHomeworld != null)
+                {
+                    var amountToOccupier = (int)(0.5f * ResourcesCollectedByYellow);
+                    occupierOfYellowHomeworld.Resources += amountToOccupier;
+                    GetPlayer(Faction.Yellow).Resources -= amountToOccupier;
+                    Log(Payment(amountToOccupier), " collected by ", Faction.Yellow, " is transferred to ", occupierOfYellowHomeworld);
+                }
+            }
+
             MainPhaseEnd();
             Enter(Version >= 103, Phase.CollectionReport, EnterMentatPhase);
         }
@@ -88,20 +105,17 @@ namespace Treachery.Shared
             {
                 foreach (var playerInArrakeen in Players.Where(p => p.Controls(this, Map.Arrakeen, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
                 {
-                    Log(playerInArrakeen.Faction, " collect ", Payment(2), " from ", Map.Arrakeen);
-                    playerInArrakeen.Resources += 2;
+                    Collect(playerInArrakeen.Faction, Map.Arrakeen, 2);
                 }
 
                 foreach (var playerInCarthag in Players.Where(p => p.Controls(this, Map.Carthag, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
                 {
-                    Log(playerInCarthag.Faction, " collect ", Payment(2), " from ", Map.Carthag);
-                    playerInCarthag.Resources += 2;
+                    Collect(playerInCarthag.Faction, Map.Carthag, 2);
                 }
 
                 foreach (var playerInTueksSietch in Players.Where(p => p.Controls(this, Map.TueksSietch, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
                 {
-                    Log(playerInTueksSietch.Faction, " collect ", Payment(1), " from ", Map.TueksSietch);
-                    playerInTueksSietch.Resources += 1;
+                    Collect(playerInTueksSietch.Faction, Map.TueksSietch, 1);
                 }
             }
         }
@@ -127,8 +141,7 @@ namespace Treachery.Shared
 
                     if (playersToCollect.Length == 1)
                     {
-                        Log(p.Faction, " collect ", Payment(collectedAmountByThisPlayer), " from ", l.Key.Territory);
-                        p.Resources += collectedAmountByThisPlayer;
+                        Collect(p.Faction, l.Key.Territory, collectedAmountByThisPlayer);
                     }
                     else
                     {
