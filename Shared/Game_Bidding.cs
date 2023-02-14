@@ -636,7 +636,7 @@ namespace Treachery.Shared
             RegisterWonCardAsKnown(card);
             winner.TreacheryCards.Add(card);
             LogTo(winner.Faction, "You won: ", card);
-            GivePlayerExtraCardIfApplicable();
+            GivePlayerExtraCardIfApplicable(winner);
             return card;
         }
 
@@ -696,7 +696,7 @@ namespace Treachery.Shared
             RegisterWonCardAsKnown(card);
             winner.TreacheryCards.Add(card);
             LogTo(winner.Faction, "You won: ", card);
-            GivePlayerExtraCardIfApplicable();
+            GivePlayerExtraCardIfApplicable(winner);
             return card;
         }
 
@@ -731,7 +731,7 @@ namespace Treachery.Shared
             winner.TreacheryCards.Add(card);
             RegisterWonCardAsKnown(card);
             LogTo(winner.Faction, "You won: ", card);
-            GivePlayerExtraCardIfApplicable();
+            GivePlayerExtraCardIfApplicable(winner);
             return card;
         }
 
@@ -806,15 +806,13 @@ namespace Treachery.Shared
         }
 
         public TreacheryCard CardThatMustBeKeptOrGivenToAlly { get; private set; }
-        private Phase PhaseBeforeDecidingAboutGivingCardToAlly { get; set; }
-        private void GivePlayerExtraCardIfApplicable()
+        private void GivePlayerExtraCardIfApplicable(Player winner)
         {
-            bool extraCardMustBeDecidedAbout = false;
-            var black = GetPlayer(Faction.Black);
-            Player receiver = null;
-
-            if (black != null)
+            if (winner.Is(Faction.Black))
             {
+                bool extraCardMustBeDecidedAbout = false;
+                Player receiver = null;
+
                 var occupierOfBlackHomeworld = OccupierOf(World.Black);
                 if (occupierOfBlackHomeworld != null)
                 {
@@ -829,11 +827,11 @@ namespace Treachery.Shared
                         receiver = occupierOfBlackHomeworld.AlliedPlayer;
                     }
                 }
-                else if (receiver.HasRoomForCards)
+                else if (winner.HasRoomForCards)
                 {
                     if (!Prevented(FactionAdvantage.BlackFreeCard))
                     {
-                        receiver = black;
+                        receiver = winner;
                     }
                     else
                     {
@@ -841,22 +839,21 @@ namespace Treachery.Shared
                         if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.BlackFreeCard);
                     }
                 }
-            }
 
-            if (receiver != null)
-            {
-                var extraCard = DrawTreacheryCard();
-
-                if (extraCard != null)
+                if (receiver != null)
                 {
-                    receiver.TreacheryCards.Add(extraCard);
-                    Log(receiver.Faction, " receive an extra treachery card");
-                    LogTo(receiver.Faction, "Your extra card is: ", extraCard);
-                    if (extraCardMustBeDecidedAbout)
+                    var extraCard = DrawTreacheryCard();
+
+                    if (extraCard != null)
                     {
-                        PhaseBeforeDecidingAboutGivingCardToAlly = CurrentPhase;
-                        Enter(Phase.DecideAboutGivingCardToAlly);
-                        CardThatMustBeKeptOrGivenToAlly = extraCard;
+                        receiver.TreacheryCards.Add(extraCard);
+                        Log(receiver.Faction, " receive an extra treachery card");
+                        LogTo(receiver.Faction, "Your extra card is: ", extraCard);
+
+                        if (extraCardMustBeDecidedAbout)
+                        {
+                            CardThatMustBeKeptOrGivenToAlly = extraCard;
+                        }
                     }
                 }
             }
@@ -873,7 +870,6 @@ namespace Treachery.Shared
             }
 
             CardThatMustBeKeptOrGivenToAlly = null;
-            Enter(PhaseBeforeDecidingAboutGivingCardToAlly);
         }
 
         private TreacheryCard DrawTreacheryCard()
@@ -1021,6 +1017,7 @@ namespace Treachery.Shared
         private void MoveToNextCardOnAuction()
         {
             CardNumber++;
+            CardThatMustBeKeptOrGivenToAlly = null;
 
             if (GreyMaySwapCardOnBid)
             {
@@ -1197,6 +1194,7 @@ namespace Treachery.Shared
 
         private void EndBiddingPhase()
         {
+            CardThatMustBeKeptOrGivenToAlly = null;
             CurrentGreyNexus = null;
             var red = GetPlayer(Faction.Red);
             if (red != null)

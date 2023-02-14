@@ -26,6 +26,11 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            if (e is CardGiven)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "CardGiven");
+            }
+
             var vidal = g.Vidal;
             if (vidal != null)
             {
@@ -523,7 +528,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 1000;
+            int nrOfGames = 20000;
             int nrOfTurns = 7;
             int nrOfPlayers = 7;
 

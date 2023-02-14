@@ -60,6 +60,7 @@ namespace Treachery.Shared
                 Do(DetermineHMSAdvantageChosen, ref action, evts) ||
                 Do(DeterminePlanetology, ref action, evts) ||
                 Do(DeterminePrescience, ref action, evts) ||
+                Do(DetermineCardGiven, ref action, evts) ||
                 Do(DetermineKarmaShipmentPrevention, ref action, evts)) return action;
 
             return null;
@@ -117,7 +118,6 @@ namespace Treachery.Shared
                 Do(DetermineDivideResources, ref action, evts) ||
                 Do(DetermineDivideResourcesAccepted, ref action, evts) ||
                 Do(DetermineBattleClaimed, ref action, evts) ||
-                Do(DetermineCardGiven, ref action, evts) ||
 
                 //Brown
                 Do(DetermineBrownEconomics, ref action, evts) ||

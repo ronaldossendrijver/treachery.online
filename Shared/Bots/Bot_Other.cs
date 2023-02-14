@@ -21,7 +21,7 @@ namespace Treachery.Shared
         private CardGiven DetermineCardGiven()
         {
             return new CardGiven(Game) { Initiator = Faction, Passed = 
-                CardQuality(Game.CardThatMustBeKeptOrGivenToAlly, this) <= 2 && (Ally == Faction.Blue || Ally == Faction.Brown || CardQuality(Game.CardThatMustBeKeptOrGivenToAlly, AlliedPlayer) > 0) };
+                !(CardQuality(Game.CardThatMustBeKeptOrGivenToAlly, this) <= 2 && (Ally == Faction.Blue || Ally == Faction.Brown || CardQuality(Game.CardThatMustBeKeptOrGivenToAlly, AlliedPlayer) > 0)) };
         }
 
         private DivideResourcesAccepted DetermineDivideResourcesAccepted()

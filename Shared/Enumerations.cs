@@ -169,7 +169,6 @@ namespace Treachery.Shared
 
         Bidding = 200000,
         ReplacingCardJustWon = 201000,
-        DecideAboutGivingCardToAlly = 202000,
         WaitingForNextBiddingRound = 205000,
         BiddingReport = 208000,
 
