@@ -113,7 +113,7 @@ namespace Treachery.Shared
         private void GiveCharity(Player to, int basicAmount)
         {
             int homeworldBonus = 0;
-            if (to.Is(Faction.Red) && to.HasLowThreshold(World.Red) || to.HasLowThreshold())
+            if (GetsExtraCharityAndFreeRevivalDueToLowThreshold(to))
             {
                 homeworldBonus = 1;
             }

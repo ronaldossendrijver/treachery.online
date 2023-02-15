@@ -167,7 +167,7 @@ namespace Treachery.Shared
             {
                 return 1;
             }
-            else if (player == Faction.Red && (g.Prevented(FactionAdvantage.RedSpecialForceBonus) || opponent == Faction.Yellow))
+            else if (player == Faction.Red && (g.Prevented(FactionAdvantage.RedSpecialForceBonus) || opponent == Faction.Yellow || g.OccupierOf(World.RedStar) != null))
             {
                 return 1;
             }

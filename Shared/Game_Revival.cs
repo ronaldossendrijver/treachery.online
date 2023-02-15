@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace Treachery.Shared
 {
@@ -245,7 +246,7 @@ namespace Treachery.Shared
                     nrOfFreeRevivals += 3;
                 }
 
-                if (player.Is(Faction.Red) && player.HasLowThreshold(World.Red) || player.HasLowThreshold())
+                if (GetsExtraCharityAndFreeRevivalDueToLowThreshold(player))
                 {
                     nrOfFreeRevivals += 1;
                 }
@@ -254,10 +255,15 @@ namespace Treachery.Shared
             }
         }
 
+        private bool GetsExtraCharityAndFreeRevivalDueToLowThreshold(Player player) =>
+            !(player.Is(Faction.Red) || player.Is(Faction.Brown)) && player.HasLowThreshold() ||
+            player.Is(Faction.Red) && player.HasLowThreshold(World.Red) ||
+            player.Is(Faction.Brown) && OccupierOf(World.Brown) == null;
+
         private void LogRevival(Revival r, Player initiator, RevivalCost cost, int purpleReceivedResources, bool asGhola)
         {
             Log(
-                r.Initiator,
+            r.Initiator,
                 " revive ",
                 MessagePart.ExpressIf(r.Hero != null, r.Hero),
                 MessagePart.ExpressIf(asGhola, " as Ghola"),
