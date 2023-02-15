@@ -108,6 +108,8 @@ namespace Treachery.Shared
 
         public TechToken StolenToken { get; set; }
 
+        public bool AddExtraForce { get; set; }
+
         public override Message Validate()
         {
             var p = Player;
@@ -121,6 +123,8 @@ namespace Treachery.Shared
             }
 
             if (!MayChooseToDiscardCards(Game) && DiscardedCards.Any()) return Message.Express("You are not allowed to choose which cards to discard");
+
+            if (AddExtraForce && !MayAddExtraForce(Game, Player)) return Message.Express("You cannot add a force");
 
             return null;
         }
@@ -196,6 +200,6 @@ namespace Treachery.Shared
 
         public static bool MayChooseToDiscardCards(Game g) => g.BattleWinnerMayChooseToDiscard;
 
-
+        public static bool MayAddExtraForce(Game g, Player p) => p.Is(Faction.Green) && p.HasHighThreshold() && p.ForcesInReserve >= 1 && p.AnyForcesIn(g.CurrentBattle.Territory) > 0;
     }
 }

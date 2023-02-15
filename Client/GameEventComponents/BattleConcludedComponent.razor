@@ -110,6 +110,15 @@
                 selectedNewTraitor = null;
                 traitorToReplace = null;
             }
+
+            if (BattleConcluded.MayAddExtraForce(Game, Player))
+            {
+                <CheckboxComponent @bind-Value="addExtraForce">Do you wish to add one force from reserves in @Name(Game.CurrentBattle.Territory)?</CheckboxComponent>
+            }
+            else
+            {
+                addExtraForce = false;
+            }
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError=@Validation />
@@ -130,6 +139,7 @@
     private int replacementAmount;
     private IHero selectedNewTraitor;
     private IHero traitorToReplace;
+    private bool addExtraForce;
 
     protected override BattleConcluded ConfirmedResult => new BattleConcluded(Game) {
 
@@ -139,7 +149,8 @@
         SpecialForceLossesReplaced = replacementAmount,
         DecisionToCapture = captureDecision,
         ReplacedTraitor = traitorToReplace,
-        NewTraitor = selectedNewTraitor
+        NewTraitor = selectedNewTraitor,
+        AddExtraForce = addExtraForce
     };
 
     private IEnumerable<TreacheryCard> DetermineSelectedCards()
