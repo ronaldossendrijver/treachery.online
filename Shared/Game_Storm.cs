@@ -32,6 +32,8 @@ namespace Treachery.Shared
             {
                 MoveHMSBeforeDiallingStorm();
             }
+
+            DetermineOccupationAtStartOfTurn();
         }
 
         public void HandleEvent(StormDialled e)

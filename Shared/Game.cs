@@ -330,11 +330,16 @@ namespace Treachery.Shared
         }
 
         private Phase PhaseBeforeDiscarding { get; set; }
-        private Faction FactionThatMustDiscard { get; set; }
+        private List<Faction> FactionsThatMustDiscard { get; set; } = new();
         public void HandleEvent(Discarded e)
         {
+            FactionsThatMustDiscard.Remove(e.Initiator);
             Discard(e.Player, e.Card);
-            CurrentPhase = PhaseBeforeDiscarding;
+
+            if (!FactionsThatMustDiscard.Any())
+            {
+                CurrentPhase = PhaseBeforeDiscarding;
+            }
         }
 
         private Phase PhaseBeforeDiscardingTraitor { get; set; }
@@ -1200,22 +1205,27 @@ namespace Treachery.Shared
         public Dictionary<World, Faction> HomeworldOccupation { get; private set; } = new();
         public void DetermineOccupationAfterLocationEvent(ILocationEvent e)
         {
+            var currentOccupierOfPinkHomeworld = OccupierOf(World.Pink);
             var player = GetPlayer(e.Initiator);
 
-            if (e.To is Homeworld hw && !player.Homeworlds.Contains(hw) && player.Controls(this, e.To, false))
+            if (e.To is Homeworld hw && !player.Homeworlds.Contains(hw) && player.Controls(this, hw, false))
             {
                 if (!Occupies(e.Initiator, hw.World))
                 {
                     HomeworldOccupation.Remove(hw.World);
                     HomeworldOccupation.Add(hw.World, e.Initiator);
-                    Log(e.Initiator, " now occupy ", e.To);
+                    Log(e.Initiator, " now occupy ", hw);
                 }
             }
+
+            CheckIfOccupierTakesVidal(currentOccupierOfPinkHomeworld);
+            LetFactionsMustDiscardSurplusCards();
         }
 
-        public void DetermineOccupationAtStartOfTurn(ILocationEvent e)
+        public void DetermineOccupationAtStartOfTurn()
         {
-            var newOccupation = new Dictionary<World, Faction>();
+            var currentOccupierOfPinkHomeworld = OccupierOf(World.Pink);
+            var updatedOccupation = new Dictionary<World, Faction>();
 
             foreach (var hw in Map.Homeworlds)
             {
@@ -1223,17 +1233,46 @@ namespace Treachery.Shared
                 {
                     if (player.AnyForcesIn(hw) > 0 && !player.Homeworlds.Contains(hw))
                     {
-                        newOccupation.Add(hw.World, player.Faction);
+                        updatedOccupation.Add(hw.World, player.Faction);
 
                         if (!Occupies(player.Faction, hw.World))
                         {
-                            Log(e.Initiator, " now occupy ", e.To);
+                            Log(player.Faction, " now occupy ", hw);
                         }
                     }
                 }
             }
 
-            HomeworldOccupation = newOccupation;
+            HomeworldOccupation = updatedOccupation;
+
+            CheckIfOccupierTakesVidal(currentOccupierOfPinkHomeworld);
+            LetFactionsMustDiscardSurplusCards();
+        }
+
+        private void LetFactionsMustDiscardSurplusCards()
+        {
+            FactionsThatMustDiscard.AddRange(Players.Where(p => p.TreacheryCards.Count > p.MaximumNumberOfCards).Select(p => p.Faction));
+            if (FactionsThatMustDiscard.Any())
+            {
+                PhaseBeforeDiscarding = CurrentPhase;
+                Enter(Phase.Discarding);
+            }
+        }
+
+        private void CheckIfOccupierTakesVidal(Player previousOccupierOfPinkHomeworld)
+        {
+            var occupierOfPinkHomeworld = OccupierOf(World.Pink);
+            if (occupierOfPinkHomeworld != null)
+            {
+                if (!occupierOfPinkHomeworld.Leaders.Contains(Vidal))
+                {
+                    TakeVidal(occupierOfPinkHomeworld, VidalMoment.WhilePinkWorldIsOccupied);
+                }
+            }
+            else if (previousOccupierOfPinkHomeworld != null)
+            {
+                previousOccupierOfPinkHomeworld.Leaders.Remove(Vidal);
+            }
         }
 
         public bool Occupies(Faction f, World w) => f != Faction.None && HomeworldOccupation.TryGetValue(w, out Faction value) && value == f;

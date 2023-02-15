@@ -776,6 +776,7 @@ namespace Treachery.Shared
     {
         None = 0,
         AfterUsedInBattle = 10,
-        EndOfTurn = 20
+        EndOfTurn = 20,
+        WhilePinkWorldIsOccupied = 30
     }
 }

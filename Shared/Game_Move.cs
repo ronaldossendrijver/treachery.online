@@ -176,6 +176,7 @@ namespace Treachery.Shared
                 }
 
                 FlipBeneGesseritWhenAloneOrWithPinkAlly();
+                DetermineOccupationAfterLocationEvent(s);
             }
             else
             {
@@ -437,6 +438,18 @@ namespace Treachery.Shared
             }
         }
 
+        public bool IsOccupiedByFactionOrTheirAlly(World world, Player p)
+        {
+            var occupier = OccupierOf(world);
+            return occupier != null && (occupier == p || occupier.Ally == p.Faction);
+        }
+
+        public bool IsOccupiedByFactionOrTheirAlly(World world, Faction f)
+        {
+            var occupier = OccupierOf(world);
+            return occupier != null && (occupier.Is(f) || occupier.Ally == f);
+        }
+
         private void CheckBlueIntrusion(ILocationEvent e, Faction initiator, Territory territory)
         {
             var bgPlayer = GetPlayer(Faction.Blue);
@@ -479,6 +492,7 @@ namespace Treachery.Shared
                 (e.TotalAmountOfForces >= 3 || !cyanPlayer.HasLowThreshold()) &&
                 e.Initiator != Faction.Cyan &&
                 e.Initiator != cyanPlayer.Ally &&
+                !IsOccupiedByFactionOrTheirAlly(World.Cyan, e.Initiator) &&
                 TerrorIn(e.To.Territory).Any())
             {
                 QueueIntrusion(e, IntrusionType.Terror);
@@ -1073,7 +1087,7 @@ namespace Treachery.Shared
         private void LetPlayerDiscardTreacheryCardOfChoice(Faction f)
         {
             PhaseBeforeDiscarding = CurrentPhase;
-            FactionThatMustDiscard = f;
+            FactionsThatMustDiscard.Add(f);
             Enter(Phase.Discarding);
         }
 
@@ -1615,7 +1629,7 @@ namespace Treachery.Shared
                     var nrOfBattlesInStrongholds = Battle.BattlesToBeFought(this, cyan).Select(batt => batt.Territory)
                         .Where(t => (pink == null || pink.AnyForcesIn(t) == 0) && (t.IsStronghold || IsSpecialStronghold(t))).Distinct().Count();
 
-                    if (nrOfBattlesInStrongholds >= 2 && !VidalIsCapturedOrGhola)
+                    if (nrOfBattlesInStrongholds >= 2 && !VidalIsCapturedOrGhola && OccupierOf(World.Pink) == null)
                     {
                         TakeVidal(cyan, VidalMoment.EndOfTurn);
                     }

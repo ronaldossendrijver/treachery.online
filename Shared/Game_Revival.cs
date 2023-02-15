@@ -258,7 +258,7 @@ namespace Treachery.Shared
         private bool GetsExtraCharityAndFreeRevivalDueToLowThreshold(Player player) =>
             !(player.Is(Faction.Red) || player.Is(Faction.Brown)) && player.HasLowThreshold() ||
             player.Is(Faction.Red) && player.HasLowThreshold(World.Red) ||
-            player.Is(Faction.Brown) && OccupierOf(World.Brown) == null;
+            player.Is(Faction.Brown) && player.HasLowThreshold() && OccupierOf(World.Brown) == null;
 
         private void LogRevival(Revival r, Player initiator, RevivalCost cost, int purpleReceivedResources, bool asGhola)
         {

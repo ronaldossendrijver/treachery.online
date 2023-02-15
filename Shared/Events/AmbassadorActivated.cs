@@ -185,7 +185,7 @@ namespace Treachery.Shared
 
         public static bool AllianceCanBeOffered(Game g, Player p) => !p.HasAlly && !g.GetPlayer(GetVictim(g)).HasAlly;
 
-        public static bool VidalCanBeTaken(Game g) => g.VidalIsAlive && !g.VidalIsCapturedOrGhola;
+        public static bool VidalCanBeTaken(Game g) => g.VidalIsAlive && !g.VidalIsCapturedOrGhola && g.OccupierOf(World.Pink) == null;
 
         public static IEnumerable<Faction> GetValidBlueFactions(Game g) => g.UnassignedAmbassadors.Items;
 

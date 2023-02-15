@@ -83,21 +83,15 @@ namespace Treachery.Shared
                 {
                     return g.CurrentBattle.IsAggressorOrDefender(p);
                 }
-                else if (!g.Prevented(FactionAdvantage.BlueUsingVoice))
+                else if (!g.Prevented(FactionAdvantage.BlueUsingVoice) && !g.IsOccupiedByFactionOrTheirAlly(World.Blue, g.CurrentBattle.OpponentOf(p)))
                 {
-                    var occupierOfBlueHomeworld = g.OccupierOf(World.Blue);
-                    var opponent = g.CurrentBattle.OpponentOf(p);
-
-                    if (occupierOfBlueHomeworld == null || (occupierOfBlueHomeworld != opponent && occupierOfBlueHomeworld != opponent.AlliedPlayer))
+                    if (p.Faction == Faction.Blue)
                     {
-                        if (p.Faction == Faction.Blue)
-                        {
-                            return g.CurrentBattle.IsInvolved(p);
-                        }
-                        else if (p.Ally == Faction.Blue && g.BlueAllowsUseOfVoice)
-                        {
-                            return g.CurrentBattle.IsAggressorOrDefender(p);
-                        }
+                        return g.CurrentBattle.IsInvolved(p);
+                    }
+                    else if (p.Ally == Faction.Blue && g.BlueAllowsUseOfVoice)
+                    {
+                        return g.CurrentBattle.IsAggressorOrDefender(p);
                     }
                 }
             }

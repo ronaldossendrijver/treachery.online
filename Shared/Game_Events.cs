@@ -90,7 +90,7 @@ namespace Treachery.Shared
             switch (CurrentPhase)
             {
                 case Phase.Discarding:
-                    if (faction == FactionThatMustDiscard) result.Add(typeof(Discarded));
+                    if (FactionsThatMustDiscard.Contains(faction)) result.Add(typeof(Discarded));
                     break;
                 case Phase.DiscardingTraitor:
                     if (faction == FactionThatMustDiscardTraitor) result.Add(typeof(TraitorDiscarded));
