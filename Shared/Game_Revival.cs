@@ -70,8 +70,10 @@ namespace Treachery.Shared
             }
             initiator.Resources -= cost.TotalCostForPlayer;
 
+            int highThresholdBonus = r.Initiator == Faction.Grey && HasHighThreshold(Faction.Grey) ? Math.Max(0, Math.Min(2, r.Player.ForcesKilled - r.AmountOfForces - r.ExtraForcesPaidByRed)) : 0;
+
             //Force revival
-            initiator.ReviveForces(r.AmountOfForces + r.ExtraForcesPaidByRed);
+            initiator.ReviveForces(r.AmountOfForces + r.ExtraForcesPaidByRed + highThresholdBonus);
             initiator.ReviveSpecialForces(r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed);
 
             if (r.AmountOfSpecialForces > 0)
@@ -162,7 +164,7 @@ namespace Treachery.Shared
 
             //Logging
             RecentMilestones.Add(Milestone.Revival);
-            LogRevival(r, initiator, cost, totalProfitsForPurple, asGhola);
+            LogRevival(r, initiator, cost, totalProfitsForPurple, asGhola, highThresholdBonus);
 
             if (r.Initiator != Faction.Purple)
             {
@@ -260,15 +262,17 @@ namespace Treachery.Shared
             player.Is(Faction.Red) && player.HasLowThreshold(World.Red) ||
             player.Is(Faction.Brown) && player.HasLowThreshold() && OccupierOf(World.Brown) == null;
 
-        private void LogRevival(Revival r, Player initiator, RevivalCost cost, int purpleReceivedResources, bool asGhola)
+        private void LogRevival(Revival r, Player initiator, RevivalCost cost, int purpleReceivedResources, bool asGhola, int highThresholdBonus)
         {
+            int totalAmountOfForces = r.AmountOfForces + r.ExtraForcesPaidByRed + highThresholdBonus;
+
             Log(
             r.Initiator,
                 " revive ",
                 MessagePart.ExpressIf(r.Hero != null, r.Hero),
                 MessagePart.ExpressIf(asGhola, " as Ghola"),
-                MessagePart.ExpressIf(r.Hero != null && r.AmountOfForces + r.ExtraForcesPaidByRed + r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed > 0, " and "),
-                MessagePart.ExpressIf(r.AmountOfForces + r.ExtraForcesPaidByRed > 0, r.AmountOfForces + r.ExtraForcesPaidByRed, initiator.Force),
+                MessagePart.ExpressIf(r.Hero != null && totalAmountOfForces + r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed > 0, " and "),
+                MessagePart.ExpressIf(totalAmountOfForces > 0, totalAmountOfForces, initiator.Force),
                 MessagePart.ExpressIf(r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed > 0, r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed, initiator.SpecialForce),
                 " for ",
                 Payment(cost.TotalCostForPlayer + cost.CostForEmperor),

@@ -344,23 +344,27 @@ namespace Treachery.Shared
         public int CostForEmperor;
         public int CostToReviveHero;
         public bool CanBePaid;
+        public bool IncludesCostsForSpecialForces;
 
         public RevivalCost(Game g, Player initiator, IHero hero, int amountOfForces, int amountOfSpecialForces, int extraForcesPaidByRed, int extraSpecialForcesPaidByRed, bool usingRedCunning)
         {
             if (g.Version >= 124)
             {
                 CostForEmperor = initiator.Ally == Faction.Red ? Revival.DetermineCostOfForcesForRed(g, initiator.AlliedPlayer, initiator.Faction, extraForcesPaidByRed, extraSpecialForcesPaidByRed) : 0;
-                CostForForceRevivalForPlayer = GetPriceOfForceRevival(g, initiator, amountOfForces, amountOfSpecialForces, usingRedCunning);
+                CostForForceRevivalForPlayer = GetPriceOfForceRevival(g, initiator, amountOfForces, amountOfSpecialForces, usingRedCunning, out int nrOfPaidSpecialForces);
+                IncludesCostsForSpecialForces = nrOfPaidSpecialForces > 0;
             }
             else
             {
-                int costForForceRevival = GetPriceOfForceRevival(g, initiator, amountOfForces, amountOfSpecialForces, usingRedCunning);
+                int costForForceRevival = GetPriceOfForceRevival(g, initiator, amountOfForces, amountOfSpecialForces, usingRedCunning, out int nrOfPaidSpecialForces);
                 var amountPaidForByEmperor = Revival.ValidMaxRevivalsByRed(g, initiator);
                 var emperor = g.GetPlayer(Faction.Red);
                 var emperorsSpice = emperor != null ? emperor.Resources : 0;
 
                 CostForEmperor = DetermineCostForEmperor(g, initiator.Faction, costForForceRevival, amountOfForces, amountOfSpecialForces, emperorsSpice, amountPaidForByEmperor);
                 CostForForceRevivalForPlayer = costForForceRevival - CostForEmperor;
+
+                IncludesCostsForSpecialForces = nrOfPaidSpecialForces > 0;
             }
 
             CostToReviveHero = Revival.GetPriceOfHeroRevival(g, initiator, hero);
@@ -368,10 +372,10 @@ namespace Treachery.Shared
             CanBePaid = initiator.Resources >= TotalCostForPlayer;
         }
 
-        public static int GetPriceOfForceRevival(Game g, Player initiator, int amountOfForces, int amountOfSpecialForces, bool usingRedCunning)
+        public static int GetPriceOfForceRevival(Game g, Player initiator, int amountOfForces, int amountOfSpecialForces, bool usingRedCunning, out int nrOfPaidSpecialForces)
         {
             int nrOfFreeRevivals = g.FreeRevivals(initiator, usingRedCunning);
-            int nrOfPaidSpecialForces = initiator.Is(Faction.Red) && initiator.HasLowThreshold(World.RedStar) ? amountOfSpecialForces : Math.Max(0, amountOfSpecialForces - nrOfFreeRevivals);
+            nrOfPaidSpecialForces = initiator.Is(Faction.Red) && initiator.HasLowThreshold(World.RedStar) ? amountOfSpecialForces : Math.Max(0, amountOfSpecialForces - nrOfFreeRevivals);
             int nrOfFreeRevivalsLeft = nrOfFreeRevivals - (amountOfSpecialForces - nrOfPaidSpecialForces);
             int nrOfPaidNormalForces = Math.Max(0, amountOfForces - nrOfFreeRevivalsLeft);
             int priceOfSpecialForces = initiator.Is(Faction.Grey) ? 3 : 2;

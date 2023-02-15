@@ -183,9 +183,16 @@ namespace Treachery.Shared
             return 2;
         }
 
-        public static float DetermineSpecialForceNoSpiceFactor()
+        public static float DetermineSpecialForceNoSpiceFactor(Game g, Faction player)
         {
-            return 0.5f;
+            if (player == Faction.Red && g.HasHighThreshold(player, World.RedStar))
+            {
+                return 1;
+            }
+            else
+            {
+                return 0.5f;
+            }
         }
 
         public static float DetermineNormalForceStrength(Game g, Faction player)
@@ -236,7 +243,7 @@ namespace Treachery.Shared
             int SpecialForcesAtHalfStrengthAdjustedForCunning = SpecialForcesAtHalfStrength + nrOfForcesAtHalfStrengthToCountAsSpecialDueToRedCunning;
 
             float specialForceStrength = DetermineSpecialForceStrength(g, player, opponent);
-            float specialForceNoSpiceFactor = DetermineSpecialForceNoSpiceFactor();
+            float specialForceNoSpiceFactor = DetermineSpecialForceNoSpiceFactor(g, player);
             float normalForceStrength = DetermineNormalForceStrength(g, player);
             float normalForceNoSpiceFactor = DetermineNormalForceNoSpiceFactor(player);
 

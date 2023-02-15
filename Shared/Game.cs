@@ -1173,6 +1173,12 @@ namespace Treachery.Shared
             return player != null && player.HasHighThreshold();
         }
 
+        public bool HasHighThreshold(Faction f, World w)
+        {
+            var player = GetPlayer(f);
+            return player != null && player.HasHighThreshold(w);
+        }
+
         public bool HasLowThreshold(Faction f)
         {
             var player = GetPlayer(f);

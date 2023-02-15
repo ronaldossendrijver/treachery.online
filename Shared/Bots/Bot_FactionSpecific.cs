@@ -351,7 +351,7 @@ namespace Treachery.Shared
                     AnyForcesIn(target) < 8 &&
                     (!LastTurn && AnyForcesIn(target) > 0 || !HasAlly && ForcesInLocations.Count(kvp => IsStronghold(kvp.Key)) <= 3))
                 {
-                    return new BlueAccompanies(Game) { Initiator = Faction, Location = target, Accompanies = true };
+                    return new BlueAccompanies(Game) { Initiator = Faction, Location = target, Accompanies = true, ExtraAdvisor = false };
                 }
 
                 if (BlueAccompanies.ValidTargets(Game, this).Contains(Game.Map.PolarSink) &&
@@ -359,7 +359,7 @@ namespace Treachery.Shared
                     !(LastTurn && Game.HasActedOrPassed.Contains(Faction)) &&
                     AnyForcesIn(Game.Map.PolarSink) < 8)
                 {
-                    return new BlueAccompanies(Game) { Initiator = Faction, Location = Game.Map.PolarSink, Accompanies = true };
+                    return new BlueAccompanies(Game) { Initiator = Faction, Location = Game.Map.PolarSink, Accompanies = true, ExtraAdvisor = BlueAccompanies.MaySendExtraAdvisor(Game, this, Game.Map.PolarSink) };
                 }
             }
 

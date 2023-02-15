@@ -16,6 +16,16 @@
             <Label>To</Label>
         </SelectComponent>
 
+
+        @if (BlueAccompanies.MaySendExtraAdvisor(Game, Player, target))
+        {
+            <CheckboxComponent @bind-Value="addExtraAdvisor">Do you wish to send one additional @Name(Player.SpecialForce)?</CheckboxComponent>
+        }
+        else
+        {
+            addExtraAdvisor = false;
+        }
+
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError=@Validation Pass="Pass" PassText="No" />
 
     </Body>
@@ -28,6 +38,7 @@
     protected override Faction IsFactionSpecific => Faction.Blue;
 
     private Location target;
+    private bool addExtraAdvisor;
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -43,7 +54,7 @@
         h.OnLocationSelected -= HandleLocationSelected;
     }
 
-    protected override BlueAccompanies ConfirmedResult => new BlueAccompanies(Game) { Initiator = Faction, Location = target, Accompanies = true };
+    protected override BlueAccompanies ConfirmedResult => new BlueAccompanies(Game) { Initiator = Faction, Location = target, Accompanies = true, ExtraAdvisor = addExtraAdvisor };
 
     protected override BlueAccompanies PassedResult => new BlueAccompanies(Game) { Initiator = Faction, Accompanies = false };
 
