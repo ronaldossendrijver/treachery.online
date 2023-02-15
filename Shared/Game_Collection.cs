@@ -84,19 +84,27 @@ namespace Treachery.Shared
 
         private void EndCollectionMainPhase()
         {
-            if (ResourcesCollectedByYellow > 1) {
-                var occupierOfYellowHomeworld = OccupierOf(World.Yellow);
-                if (occupierOfYellowHomeworld != null)
-                {
-                    var amountToOccupier = (int)(0.5f * ResourcesCollectedByYellow);
-                    occupierOfYellowHomeworld.Resources += amountToOccupier;
-                    GetPlayer(Faction.Yellow).Resources -= amountToOccupier;
-                    Log(Payment(amountToOccupier), " collected by ", Faction.Yellow, " is transferred to ", occupierOfYellowHomeworld);
-                }
-            }
-
+            int receivedAmountByYellow = ResourcesCollectedByYellow;
+            ModyfyIncomeBasedOnThresholdOrOccupation(GetPlayer(Faction.Yellow), ref receivedAmountByYellow);
             MainPhaseEnd();
             Enter(Version >= 103, Phase.CollectionReport, EnterMentatPhase);
+        }
+
+        private void ModyfyIncomeBasedOnThresholdOrOccupation(Player from, ref int receivedAmount)
+        {
+            if (receivedAmount > 1 && Applicable(Rule.Homeworlds))
+            {
+                int amountLost = from.HasLowThreshold() ? (int)(0.5f * receivedAmount) : 0;
+                receivedAmount -= amountLost;
+
+                var homeworld = from.Homeworlds.First();
+                var occupier = OccupierOf(homeworld.World);
+                if (occupier != null)
+                {
+                    occupier.Resources += amountLost;
+                    Log(Payment(amountLost), " received by ", from, " goes to ", occupier.Faction);
+                }
+            }
         }
 
         private void CollectResourcesFromStrongholds()

@@ -542,12 +542,7 @@ namespace Treachery.Test
             rules.Add(Rule.FillWithBots);
             rules.Add(Rule.AssistedNotekeeping);
             rules.Add(Rule.DisableOrangeSpecialVictory);
-            
-            //DISABLE HOMEWORLDS
-            rules.Remove(Rule.Homeworlds);
-
-            //rules.Add(Rule.BotsCannotAlly);
-
+           
             var rulesAsArray = rules.ToArray();
             var wincounter = new ObjectCounter<Faction>();
 

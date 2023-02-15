@@ -236,16 +236,17 @@ namespace Treachery.Shared
                 {
                     if (!Prevented(FactionAdvantage.OrangeReceiveShipment))
                     {
+                        ModyfyIncomeBasedOnThresholdOrOccupation(orange, ref receiverProfit);
                         orange.Resources += receiverProfit;
 
                         if (receiverProfit > 0)
                         {
                             profitMessage = MessagePart.Express(" → ", Faction.Orange, " get ", Payment(receiverProfit));
-                        }
 
-                        if (receiverProfit >= 5)
-                        {
-                            ApplyBureaucracy(initiator.Faction, Faction.Orange);
+                            if (receiverProfit >= 5)
+                            {
+                                ApplyBureaucracy(initiator.Faction, Faction.Orange);
+                            }
                         }
                     }
                     else

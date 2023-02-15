@@ -749,7 +749,6 @@ namespace Treachery.Shared
             initiator.Resources -= bidAmount;
 
             int receiverProfit = 0;
-            int receiverProfitAfterBidding = 0;
 
             if (bidAllyContributionAmount > 0)
             {
@@ -775,31 +774,23 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    if (bidRedContributionAmount > 0)
-                    {
-                        receiverProfit = totalAmount;
-                        receiverProfitAfterBidding = bidRedContributionAmount;
-                        message = MessagePart.Express(" → ", receiver, " get ", Payment(receiverProfit), " immediately and ", Payment(receiverProfitAfterBidding), " at the end of the bidding phase");
-                        receiver.Resources += receiverProfit;
-                        receiver.ResourcesAfterBidding += receiverProfitAfterBidding;
-                    }
-                    else
-                    {
-                        receiverProfit = totalAmount;
-                        message = MessagePart.Express(" → ", paymentReceiver, " get ", Payment(receiverProfit));
-                        receiver.Resources += receiverProfit;
+                    receiverProfit = totalAmount;
+                    ModyfyIncomeBasedOnThresholdOrOccupation(receiver, ref receiverProfit);
+                    receiver.Resources += receiverProfit;
+                    receiver.ResourcesAfterBidding += bidRedContributionAmount;
 
-                        if (receiverProfit >= 5)
-                        {
-                            BiddingTriggeredBureaucracy = new TriggeredBureaucracy() { PaymentFrom = initiator.Faction, PaymentTo = paymentReceiver };
-                        }
+                    if (receiverProfit >= 5)
+                    {
+                        //This should also take into account payments received by an occupier
+                        BiddingTriggeredBureaucracy = new TriggeredBureaucracy() { PaymentFrom = initiator.Faction, PaymentTo = paymentReceiver };
                     }
 
+                    
                     SetRecentPayment(receiverProfit, initiator.Faction, receiver.Faction, (GameEvent)bid);
                 }
             }
 
-            if (totalAmount + bidRedContributionAmount - receiverProfit - receiverProfitAfterBidding >= 4)
+            if (totalAmount - receiverProfit >= 4)
             {
                 ActivateBanker(initiator);
             }
