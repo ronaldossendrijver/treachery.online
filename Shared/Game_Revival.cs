@@ -162,6 +162,20 @@ namespace Treachery.Shared
                 }
             }
 
+            if (r.Location != null)
+            {
+                if (r.Initiator == Faction.Yellow)
+                {
+                    initiator.ShipSpecialForces(r.Location, 1);
+                    Log(r.Initiator, " place ", FactionSpecialForce.Yellow, " in ", r.Location);
+                }
+                else if (r.Initiator == Faction.Purple) 
+                {
+                    initiator.ShipForces(r.Location, r.AmountOfForces + r.ExtraForcesPaidByRed);
+                    Log(r.Initiator, " place ", r.AmountOfForces + r.ExtraForcesPaidByRed, FactionForce.Purple, " in ", r.Location);
+                }
+            }
+
             //Logging
             RecentMilestones.Add(Milestone.Revival);
             LogRevival(r, initiator, cost, totalProfitsForPurple, asGhola, highThresholdBonus);
@@ -347,6 +361,12 @@ namespace Treachery.Shared
                 {
                     FactionsThatRevivedSpecialForcesThisTurn.Add(r.Initiator);
                 }
+            }
+
+            if (r.Location != null && r.Initiator == Faction.Yellow)
+            {
+                player.ShipSpecialForces(r.Location, 1);
+                Log(r.Initiator, " place ", FactionSpecialForce.Yellow, " in ", r.Location);
             }
         }
 

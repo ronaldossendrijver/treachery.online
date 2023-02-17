@@ -1021,6 +1021,12 @@ namespace Treachery.Shared
                         MessagePart.ExpressIf(e.PurpleForces > 0 && e.PurpleSpecialForces > 0, " and "),
                         MessagePart.ExpressIf(e.PurpleSpecialForces > 0, e.PurpleSpecialForces, " ", player.SpecialForce));
 
+                    if (e.PurpleLocation != null && e.Initiator == Faction.Yellow)
+                    {
+                        player.ShipSpecialForces(e.PurpleLocation, 1);
+                        Log(e.Initiator, " place ", FactionSpecialForce.Yellow, " in ", e.PurpleLocation);
+                    }
+
                     break;
 
                 case Faction.Brown:

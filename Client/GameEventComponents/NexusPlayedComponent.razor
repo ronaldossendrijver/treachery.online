@@ -5,6 +5,7 @@
 @using Treachery.Shared
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<NexusPlayed>
+@implements IDisposable
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
@@ -145,6 +146,26 @@
                         purpleAssignSkill = false;
                     }
 
+                    @if (NexusPlayed.MaySelectLocationForRevivedForces(Game, Player, purpleAmountOfSpecialForces))
+                    {
+                        <CheckboxComponent @bind-Value="purpleReviveToLocation">Place revived @(Faction == Faction.Yellow ? Skin.Current.SpecialForceName_STR[Faction.Yellow] : Skin.Current.ForceName_STR[Faction.Purple]) on the planet?</CheckboxComponent>
+
+                        if (purpleReviveToLocation)
+                        {
+                            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value=@purpleOrYellowLocation Values=@Revival.ValidRevivedForceLocations(Game, Player)>
+                                <Label>Place them where?</Label>
+                            </SelectComponent>
+                        }
+                        else
+                        {
+                            purpleOrYellowLocation = null;
+                        }
+                    }
+                    else
+                    {
+                        purpleOrYellowLocation = null;
+                    }
+
                     break;
 
                 case Faction.Brown when betrayal:
@@ -214,6 +235,7 @@
     private int purpleAmountOfSpecialForces;
     private IHero purpleHero;
     private bool purpleAssignSkill;
+    private bool purpleReviveToLocation;
 
     private TreacheryCard brownCard;
 
@@ -221,6 +243,8 @@
     private Faction pinkFaction;
 
     private Territory cyanTerritory;
+
+    private Location purpleOrYellowLocation;
 
     protected override void OnInitialized()
     {
@@ -250,6 +274,7 @@
         PurpleSpecialForces = purpleAmountOfSpecialForces,
         PurpleHero = purpleHero,
         PurpleAssignSkill = purpleAssignSkill,
+        PurpleLocation = purpleOrYellowLocation,
         BrownCard = brownCard,
         PinkTerritory = pinkTerritory,
         PinkFaction = pinkFaction,
@@ -262,11 +287,17 @@
         {
             SetIfValid(ref pinkTerritory, NexusPlayed.ValidPinkTerritories(Game).OrderBy(l => l.IsStronghold).ThenBy(l => Name(l)), l.Territory);
         }
-        else
+        else if (Faction == Faction.Cyan)
         {
             SetIfValid(ref cyanTerritory, NexusPlayed.ValidCyanTerritories(Game).OrderBy(l => Name(l)), l.Territory);
+        }
+        else if (Faction == Faction.Purple || Faction == Faction.Yellow)
+        {
+            SetIfValid(ref purpleOrYellowLocation, Revival.ValidRevivedForceLocations(Game, Player).OrderBy(l => Name(l)), l);
         }
     }
 
     private string NexusTypeText => NexusPlayed.CanUseCunning(Player) ? "Cunning" : NexusPlayed.CanUseSecretAlly(Game, Player) ? "Secret Ally" : "Betrayal";
+
+
 }

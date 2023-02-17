@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Treachery.Shared
 {
-    public class RaiseDeadPlayed : GameEvent
+    public class RaiseDeadPlayed : GameEvent, ILocationEvent
     {
         public int _heroId;
 
@@ -40,6 +40,17 @@ namespace Treachery.Shared
             }
         }
 
+        public int _locationId;
+
+        [JsonIgnore]
+        public Location Location { get { return Game.Map.LocationLookup.Find(_locationId); } set { _locationId = Game.Map.LocationLookup.GetId(value); } }
+
+        [JsonIgnore]
+        public Location To => Location;
+
+        [JsonIgnore]
+        public int TotalAmountOfForces => Initiator == Faction.Yellow ? AmountOfSpecialForces : AmountOfForces;
+
         public override Message Validate()
         {
             var p = Player;
@@ -54,6 +65,12 @@ namespace Treachery.Shared
 
             if (AssignSkill && Hero == null) return Message.Express("You must revive a leader to assign a skill to");
             if (AssignSkill && !Revival.MayAssignSkill(Game, p, Hero)) return Message.Express("You can't assign a skill to this leader");
+
+            if (Location != null)
+            {
+                if (!Revival.MaySelectLocationForRevivedForces(Game, Player, AmountOfForces, AmountOfSpecialForces, false)) return Message.Express("You can't place revived forces directly on the planet");
+                if (!Revival.ValidRevivedForceLocations(Game, Player).Contains(Location)) return Message.Express("You can't place revived forces there");
+            }
 
             return null;
         }
@@ -117,5 +134,9 @@ namespace Treachery.Shared
         }
 
         public static IEnumerable<IHero> ValidHeroes(Game game, Player player) => game.KilledHeroes(player);
+
+        public static bool MaySelectLocationForRevivedForces(Game game, Player player, int specialForces) =>
+            player.Is(Faction.Yellow) && specialForces >= 1 && player.HasHighThreshold() && Revival.ValidRevivedForceLocations(game, player).Any();
+
     }
 }

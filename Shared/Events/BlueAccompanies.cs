@@ -11,8 +11,6 @@ namespace Treachery.Shared
 {
     public class BlueAccompanies : GameEvent, ILocationEvent
     {
-        public int _targetId;
-
         public BlueAccompanies(Game game) : base(game)
         {
         }
@@ -20,6 +18,8 @@ namespace Treachery.Shared
         public BlueAccompanies()
         {
         }
+
+        public int _targetId;
 
         [JsonIgnore]
         public Location Location { get { return Game.Map.LocationLookup.Find(_targetId); } set { _targetId = Game.Map.LocationLookup.GetId(value); } }

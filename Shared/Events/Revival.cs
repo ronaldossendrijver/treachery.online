@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Treachery.Shared
 {
-    public class Revival : GameEvent
+    public class Revival : GameEvent, ILocationEvent
     {
         public int _heroId;
 
@@ -28,6 +28,17 @@ namespace Treachery.Shared
         public int ExtraForcesPaidByRed { get; set; } = 0;
 
         public int ExtraSpecialForcesPaidByRed { get; set; } = 0;
+
+        public int _locationId;
+
+        [JsonIgnore]
+        public Location Location { get { return Game.Map.LocationLookup.Find(_locationId); } set { _locationId = Game.Map.LocationLookup.GetId(value); } }
+
+        [JsonIgnore]
+        public Location To => Location;
+
+        [JsonIgnore]
+        public int TotalAmountOfForces => Initiator == Faction.Yellow ? AmountOfSpecialForces + ExtraForcesPaidByRed : AmountOfForces + ExtraSpecialForcesPaidByRed;
 
 
         [JsonIgnore]
@@ -84,6 +95,12 @@ namespace Treachery.Shared
 
             if (UsesRedSecretAlly && !MayUseRedSecretAlly(Game, Player)) return Message.Express("you can't use ", Faction.Red, " cunning");
 
+            if (Location != null)
+            {
+                if (!MaySelectLocationForRevivedForces(Game, Player, AmountOfForces + ExtraForcesPaidByRed, AmountOfSpecialForces + ExtraSpecialForcesPaidByRed, UsesRedSecretAlly)) return Message.Express("You can't place revived forces directly on the planet");
+                if (!ValidRevivedForceLocations(Game, Player).Contains(Location)) return Message.Express("You can't place revived forces there");
+            }
+
             return null;
         }
 
@@ -92,9 +109,9 @@ namespace Treachery.Shared
             return (int)Math.Ceiling(forces * GetPricePerForce(g, red) + specialForces * GetPricePerSpecialForce(g, red, ally));
         }
 
-        public static RevivalCost DetermineCost(Game g, Player initiator, IHero hero, int amountOfForces, int amountOfSpecialForces, int extraForcesPaidByRed, int extraSpecialForcesPaidByRed, bool usesRedCunning)
+        public static RevivalCost DetermineCost(Game g, Player initiator, IHero hero, int amountOfForces, int amountOfSpecialForces, int extraForcesPaidByRed, int extraSpecialForcesPaidByRed, bool usesRedSecretAlly)
         {
-            return new RevivalCost(g, initiator, hero, amountOfForces, amountOfSpecialForces, extraForcesPaidByRed, extraSpecialForcesPaidByRed, usesRedCunning);
+            return new RevivalCost(g, initiator, hero, amountOfForces, amountOfSpecialForces, extraForcesPaidByRed, extraSpecialForcesPaidByRed, usesRedSecretAlly);
         }
 
         protected override void ExecuteConcreteEvent()
@@ -335,92 +352,18 @@ namespace Treachery.Shared
         }
 
         public static bool MayUseRedSecretAlly(Game game, Player player) => player.Nexus == Faction.Red && NexusPlayed.CanUseSecretAlly(game, player);
-    }
 
-    public class RevivalCost
-    {
-        public int TotalCostForPlayer;
-        public int CostForForceRevivalForPlayer;
-        public int CostForEmperor;
-        public int CostToReviveHero;
-        public bool CanBePaid;
-        public bool IncludesCostsForSpecialForces;
+        public static bool MaySelectLocationForRevivedForces(Game game, Player player, int forces, int specialForces, bool usesRedSecretAlly) => 
+            (player.Is(Faction.Yellow) && specialForces >= 1 || player.Is(Faction.Purple) && forces >= 1 && game.FreeRevivals(player, usesRedSecretAlly) > 0) && 
+            player.HasHighThreshold() && ValidRevivedForceLocations(game, player).Any();
 
-        public RevivalCost(Game g, Player initiator, IHero hero, int amountOfForces, int amountOfSpecialForces, int extraForcesPaidByRed, int extraSpecialForcesPaidByRed, bool usingRedCunning)
+        public static IEnumerable<Location> ValidRevivedForceLocations(Game g, Player p)
         {
-            if (g.Version >= 124)
-            {
-                CostForEmperor = initiator.Ally == Faction.Red ? Revival.DetermineCostOfForcesForRed(g, initiator.AlliedPlayer, initiator.Faction, extraForcesPaidByRed, extraSpecialForcesPaidByRed) : 0;
-                CostForForceRevivalForPlayer = GetPriceOfForceRevival(g, initiator, amountOfForces, amountOfSpecialForces, usingRedCunning, out int nrOfPaidSpecialForces);
-                IncludesCostsForSpecialForces = nrOfPaidSpecialForces > 0;
-            }
-            else
-            {
-                int costForForceRevival = GetPriceOfForceRevival(g, initiator, amountOfForces, amountOfSpecialForces, usingRedCunning, out int nrOfPaidSpecialForces);
-                var amountPaidForByEmperor = Revival.ValidMaxRevivalsByRed(g, initiator);
-                var emperor = g.GetPlayer(Faction.Red);
-                var emperorsSpice = emperor != null ? emperor.Resources : 0;
-
-                CostForEmperor = DetermineCostForEmperor(g, initiator.Faction, costForForceRevival, amountOfForces, amountOfSpecialForces, emperorsSpice, amountPaidForByEmperor);
-                CostForForceRevivalForPlayer = costForForceRevival - CostForEmperor;
-
-                IncludesCostsForSpecialForces = nrOfPaidSpecialForces > 0;
-            }
-
-            CostToReviveHero = Revival.GetPriceOfHeroRevival(g, initiator, hero);
-            TotalCostForPlayer = CostForForceRevivalForPlayer + CostToReviveHero;
-            CanBePaid = initiator.Resources >= TotalCostForPlayer;
-        }
-
-        public static int GetPriceOfForceRevival(Game g, Player initiator, int amountOfForces, int amountOfSpecialForces, bool usingRedCunning, out int nrOfPaidSpecialForces)
-        {
-            int nrOfFreeRevivals = g.FreeRevivals(initiator, usingRedCunning);
-            nrOfPaidSpecialForces = initiator.Is(Faction.Red) && initiator.HasLowThreshold(World.RedStar) ? amountOfSpecialForces : Math.Max(0, amountOfSpecialForces - nrOfFreeRevivals);
-            int nrOfFreeRevivalsLeft = nrOfFreeRevivals - (amountOfSpecialForces - nrOfPaidSpecialForces);
-            int nrOfPaidNormalForces = Math.Max(0, amountOfForces - nrOfFreeRevivalsLeft);
-            int priceOfSpecialForces = initiator.Is(Faction.Grey) ? 3 : 2;
-            int priceOfNormalForces = initiator.Is(Faction.Brown) && !g.Prevented(FactionAdvantage.BrownRevival) ? 1 : 2;
-
-            var cost = nrOfPaidSpecialForces * priceOfSpecialForces + nrOfPaidNormalForces * priceOfNormalForces;
-
-            if (Revival.MayReviveWithDiscount(g, initiator))
-            {
-                cost = (int)Math.Ceiling(0.5 * cost);
-            }
-
-            return cost;
-        }
-
-
-        public int Total => TotalCostForPlayer + CostForEmperor;
-
-        public int TotalCostForForceRevival => CostForForceRevivalForPlayer + CostForEmperor;
-
-        public static int DetermineCostForEmperor(Game g, Faction initiator, int totalCostForForceRevival, int amountOfForces, int amountOfSpecialForces, int emperorsSpice, int amountPaidForByEmperor)
-        {
-            int priceOfSpecialForces = initiator == Faction.Grey ? 3 : 2;
-            int priceOfNormalForces = initiator == Faction.Brown && !g.Prevented(FactionAdvantage.BrownRevival) && g.Version >= 122 ? 1 : 2;
-
-            int specialForcesPaidByEmperor = 0;
-            while (
-                (specialForcesPaidByEmperor + 1) <= amountOfSpecialForces &&
-                (specialForcesPaidByEmperor + 1) * priceOfSpecialForces <= emperorsSpice &&
-                specialForcesPaidByEmperor + 1 <= amountPaidForByEmperor)
-            {
-                specialForcesPaidByEmperor++;
-            }
-
-            int forcesPaidByEmperor = 0;
-            while (
-                (forcesPaidByEmperor + 1) <= amountOfForces &&
-                specialForcesPaidByEmperor * priceOfSpecialForces + (forcesPaidByEmperor + 1) * priceOfNormalForces <= emperorsSpice &&
-                specialForcesPaidByEmperor + forcesPaidByEmperor + 1 <= amountPaidForByEmperor)
-            {
-                forcesPaidByEmperor++;
-            }
-
-            int costForEmperor = specialForcesPaidByEmperor * priceOfSpecialForces + forcesPaidByEmperor * priceOfNormalForces;
-            return Math.Min(totalCostForForceRevival, Math.Min(costForEmperor, emperorsSpice));
+            return g.Map.Locations(false).Where(l => 
+                    (p.Faction == Faction.Yellow || l.Sector != g.SectorInStorm) && 
+                    (!l.Territory.IsStronghold || g.NrOfOccupantsExcludingPlayer(l, p) < 2) &&
+                    (!p.HasAlly || l == g.Map.PolarSink || !p.AlliedPlayer.Occupies(l)) &&
+                    (p.Faction == Faction.Purple || p.Faction == Faction.Yellow && p.AnyForcesIn(l.Territory) >= 1));
         }
     }
 }

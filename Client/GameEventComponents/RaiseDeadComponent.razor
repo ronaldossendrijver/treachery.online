@@ -5,6 +5,7 @@
 @using Treachery.Shared
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<RaiseDeadPlayed>
+@implements IDisposable
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
@@ -50,6 +51,26 @@
                 assignSkill = false;
             }
 
+            if (RaiseDeadPlayed.MaySelectLocationForRevivedForces(Game, Player, amountOfSpecialForces))
+            {
+                <CheckboxComponent @bind-Value="reviveToLocation">Place revived @(Faction == Faction.Yellow ? Skin.Current.SpecialForceName_STR[Faction.Yellow] : Skin.Current.ForceName_STR[Faction.Purple]) on the planet?</CheckboxComponent>
+
+                if (reviveToLocation)
+                {
+                    <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="location" Values=@Revival.ValidRevivedForceLocations(Game, Player)>
+                        <Label>Place them where?</Label>
+                    </SelectComponent>
+                }
+                else
+                {
+                    location = null;
+                }
+            }
+            else
+            {
+                location = null;
+            }
+
             if (!(hasForcesToRevive || hasSpecialForcesToRevive || hasHeroesToRevive))
             {
                 <div class="text-info small">You currently have nothing to revive</div>
@@ -68,6 +89,34 @@
     private int amountOfSpecialForces;
     private IHero hero;
     private bool assignSkill;
+    private bool reviveToLocation;
+    private Location location;
 
-    protected override RaiseDeadPlayed ConfirmedResult => new RaiseDeadPlayed(Game) { Initiator = Faction, AmountOfForces = amountOfForces, AmountOfSpecialForces = amountOfSpecialForces, Hero = hero, AssignSkill = assignSkill };
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            h.OnLocationSelected += HandleLocationSelected;
+        }
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        h.OnLocationSelected -= HandleLocationSelected;
+    }
+
+    protected override RaiseDeadPlayed ConfirmedResult => new RaiseDeadPlayed(Game) { 
+        Initiator = Faction, 
+        AmountOfForces = amountOfForces, 
+        AmountOfSpecialForces = amountOfSpecialForces, 
+        Hero = hero, 
+        AssignSkill = assignSkill,
+        Location = location
+    };
+
+    private void HandleLocationSelected(object sender, Location l)
+    {
+        SetIfValid<Location, Location>(ref location, Revival.ValidRevivedForceLocations(Game, Player), l);
+    }
 }

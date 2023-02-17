@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Treachery.Shared
 {
-    public class NexusPlayed : GameEvent
+    public class NexusPlayed : GameEvent, ILocationEvent
     {
         public NexusPlayed(Game game) : base(game)
         {
@@ -79,6 +79,16 @@ namespace Treachery.Shared
             set { _cyanTerritoryId = Game.Map.TerritoryLookup.GetId(value); }
         }
 
+        public int _locationId;
+
+        [JsonIgnore]
+        public Location PurpleLocation { get { return Game.Map.LocationLookup.Find(_locationId); } set { _locationId = Game.Map.LocationLookup.GetId(value); } }
+
+        [JsonIgnore]
+        public Location To => PurpleLocation;
+
+        [JsonIgnore]
+        public int TotalAmountOfForces => Initiator == Faction.Yellow ? PurpleSpecialForces : PurpleForces;
 
         public override Message Validate()
         {
@@ -100,6 +110,11 @@ namespace Treachery.Shared
                         if (PurpleForces + PurpleSpecialForces > 5) return Message.Express("You can't revive that many forces");
                         if (PurpleAssignSkill && PurpleHero == null) return Message.Express("You must revive a leader to assign a skill to");
                         if (PurpleAssignSkill && !Revival.MayAssignSkill(Game, Player, PurpleHero)) return Message.Express("You can't assign a skill to this leader");
+                        if (PurpleLocation != null)
+                        {
+                            if (!Revival.MaySelectLocationForRevivedForces(Game, Player, PurpleForces, PurpleSpecialForces, false)) return Message.Express("You can't place revived forces directly on the planet");
+                            if (!Revival.ValidRevivedForceLocations(Game, Player).Contains(PurpleLocation)) return Message.Express("You can't place revived forces there");
+                        }
                     }
                     break;
 
@@ -275,5 +290,9 @@ namespace Treachery.Shared
         public static IEnumerable<Faction> ValidPinkFactions(Game g) => g.Players.Where(p => p.Faction != Faction.Pink && p.Faction != Faction.Purple).Select(p => p.Faction);
 
         public static IEnumerable<Territory> ValidCyanTerritories(Game g) => g.TerrorOnPlanet.Values.Distinct();
+
+        public static bool MaySelectLocationForRevivedForces(Game game, Player player, int specialForces) =>
+            player.Is(Faction.Yellow) && specialForces >= 1 && player.HasHighThreshold() && Revival.ValidRevivedForceLocations(game, player).Any();
+
     }
 }

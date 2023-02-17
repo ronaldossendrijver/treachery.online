@@ -16,7 +16,6 @@
             <Label>To</Label>
         </SelectComponent>
 
-
         @if (BlueAccompanies.MaySendExtraAdvisor(Game, Player, target))
         {
             <CheckboxComponent @bind-Value="addExtraAdvisor">Do you wish to send one additional @Name(Player.SpecialForce)?</CheckboxComponent>
