@@ -218,13 +218,19 @@ namespace Treachery.Shared
                     if (faction == Faction.White) result.Add(typeof(WhiteKeepsUnsoldCard));
                     break;
                 case Phase.GreyRemovingCardFromBid:
-                    if (faction == Faction.Grey) result.Add(typeof(GreyRemovedCardFromAuction));
-                    if (Version < 103 && player.Has(TreacheryCardType.Amal) && CardNumber == 1 && !Bids.Any()) result.Add(typeof(AmalPlayed));
-                    break;
+                    {
+                        var occupierOfGreyHomeworld = OccupierOf(World.Grey);
+                        if (occupierOfGreyHomeworld == null && faction == Faction.Grey || occupierOfGreyHomeworld == player) result.Add(typeof(GreyRemovedCardFromAuction));
+                        if (Version < 103 && player.Has(TreacheryCardType.Amal) && CardNumber == 1 && !Bids.Any()) result.Add(typeof(AmalPlayed));
+                        break;
+                    }
                 case Phase.GreySwappingCard:
-                    if (faction == Faction.Grey) result.Add(typeof(GreySwappedCardOnBid));
-                    if (Version < 103 && player.Has(TreacheryCardType.Amal) && CardNumber == 1 && !Bids.Any()) result.Add(typeof(AmalPlayed));
-                    break;
+                    {
+                        var occupierOfGreyHomeworld = OccupierOf(World.Grey);
+                        if (occupierOfGreyHomeworld == null && faction == Faction.Grey || occupierOfGreyHomeworld == player) result.Add(typeof(GreySwappedCardOnBid));
+                        if (Version < 103 && player.Has(TreacheryCardType.Amal) && CardNumber == 1 && !Bids.Any()) result.Add(typeof(AmalPlayed));
+                        break;
+                    }
                 case Phase.ReplacingCardJustWon:
                     if (faction == FactionThatMayReplaceBoughtCard) result.Add(typeof(ReplacedCardWon));
                     break;

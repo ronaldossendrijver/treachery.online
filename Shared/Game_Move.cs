@@ -149,7 +149,7 @@ namespace Treachery.Shared
                 }
                 else if (s.IsNoField && s.Initiator == Faction.White)
                 {
-                    PerformNormalShipment(initiator, s.To, 0 + s.SmuggledAmount, 1, false);
+                    PerformNormalShipment(initiator, s.To, s.ForceAmount + s.SmuggledAmount, 1, false);
                 }
                 else
                 {

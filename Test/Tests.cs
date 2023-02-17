@@ -831,7 +831,7 @@ namespace Treachery.Test
                 var result = evt.Execute(true, true);
                 if (result != null)
                 {
-                    File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
+                    File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
                 }
                 Assert.IsNull(result, fileData + ", " + evt.GetType().Name + " (" + valueId + ", " + evt.GetMessage() + ")");
 
@@ -839,7 +839,7 @@ namespace Treachery.Test
                 tc.Testvalues[valueId].Equals(actualValues);
                 if (!tc.Testvalues[valueId].Equals(actualValues))
                 {
-                    File.WriteAllText("invalid.json", GameState.GetStateAsString(game));
+                    File.WriteAllText("invalid" + game.Seed + ".json", GameState.GetStateAsString(game));
                 }
                 Assert.AreEqual(tc.Testvalues[valueId], actualValues, fileData + ", " + previousPhase + " - " + game.CurrentPhase + ", " + evt.GetType().Name + " (" + valueId + ", " + evt.GetMessage() + "): " + Testvalues.Difference);
 

@@ -29,7 +29,7 @@ namespace Treachery.Shared
 
         public int ExtraSpecialForcesPaidByRed { get; set; } = 0;
 
-        public int _locationId;
+        public int _locationId = -1;
 
         [JsonIgnore]
         public Location Location { get { return Game.Map.LocationLookup.Find(_locationId); } set { _locationId = Game.Map.LocationLookup.GetId(value); } }

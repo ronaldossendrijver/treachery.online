@@ -79,10 +79,10 @@ namespace Treachery.Shared
             set { _cyanTerritoryId = Game.Map.TerritoryLookup.GetId(value); }
         }
 
-        public int _locationId;
+        public int _purpleLocationId = -1;
 
         [JsonIgnore]
-        public Location PurpleLocation { get { return Game.Map.LocationLookup.Find(_locationId); } set { _locationId = Game.Map.LocationLookup.GetId(value); } }
+        public Location PurpleLocation { get { return Game.Map.LocationLookup.Find(_purpleLocationId); } set { _purpleLocationId = Game.Map.LocationLookup.GetId(value); } }
 
         [JsonIgnore]
         public Location To => PurpleLocation;

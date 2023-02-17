@@ -1359,6 +1359,16 @@ namespace Treachery.Shared
                 TreacheryDiscardPile.PutOnTop(card);
                 RegisterKnown(card);
                 RecentlyDiscarded.Add(card, player.Faction);
+
+                if (card.Type == TreacheryCardType.Poison || card.Type == TreacheryCardType.ProjectileAndPoison || card.Type == TreacheryCardType.PoisonTooth)
+                {
+                    var pink = GetPlayer(Faction.Pink);
+                    if (pink != null && pink.HasHighThreshold())
+                    {
+                        Log(Faction.Pink, " get ", Payment(3), " from the discarded ", card);
+                        pink.Resources += 3;
+                    }
+                }
             }
         }
 
