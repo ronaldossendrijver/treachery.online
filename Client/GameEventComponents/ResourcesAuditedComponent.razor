@@ -1,0 +1,25 @@
+﻿<!--
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<ResourcesAudited>
+
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Force a faction to reveal the amount of @Name(Concept.Resource), weapons and defenses?</Header>
+
+    <Body>
+        <SelectFactionComponent @bind-Value="target" Values=@ResourcesAudited.ValidFactions(Game, Player) />
+        <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation />
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    private Faction target;
+
+    protected override ResourcesAudited ConfirmedResult => new ResourcesAudited(Game) { Initiator = Faction, Target = target };
+}

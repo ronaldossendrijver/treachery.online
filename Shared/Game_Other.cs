@@ -11,6 +11,17 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
+        public List<Faction> ResourceAuditedFactions { get; private set; } = new();
+
+        public void HandleEvent(ResourcesAudited e)
+        {
+            ResourceAuditedFactions.Add(e.Target);
+            var target = GetPlayer(e.Target);
+
+            Log(e);
+            LogTo(e.Initiator, e.Target, " own ", Payment(target.Resources), ", ", target.TreacheryCards.Count(tc => tc.IsWeapon), " weapons and ", target.TreacheryCards.Count(tc => tc.IsDefense), " defenses");
+        }
+
         public void HandleEvent(WhiteRevealedNoField e)
         {
             RevealCurrentNoField(e.Player);

@@ -916,6 +916,21 @@ namespace Treachery.Shared
 
         #region Brown
 
+        protected ResourcesAudited DetermineResourcesAudited()
+        {
+            if (Game.CurrentBattle != null && Game.CurrentBattle.IsAggressorOrDefender(this))
+            {
+                var opponent = Game.CurrentBattle.OpponentOf(this);
+
+                if (opponent.TreacheryCards.Any(tc => !KnownCards.Contains(tc)) && ResourcesAudited.ValidFactions(Game, this).Contains(opponent.Faction))
+                {
+                    return new ResourcesAudited(Game) { Initiator = Faction, Target = opponent.Faction };
+                }
+            }
+
+            return null;
+        }
+
         protected virtual BrownEconomics DetermineBrownEconomics()
         {
             if (ResourcesIncludingAllyContribution >= 14 &&

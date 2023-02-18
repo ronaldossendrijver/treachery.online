@@ -122,6 +122,7 @@ namespace Treachery.Shared
                 //Brown
                 Do(DetermineBrownEconomics, ref action, evts) ||
                 Do(DetermineBrownRemoveForce, ref action, evts) ||
+                Do(DetermineResourcesAudited, ref action, evts) ||
 
                 //Black
                 Do(DetermineCaptured, ref action, evts) ||

@@ -511,6 +511,11 @@ namespace Treachery.Shared
             }
 
             //Events that are (amost) always valid
+            if (CurrentMainPhase > MainPhase.Setup)
+            {
+                if (faction == Faction.Brown && player.HasHighThreshold() && ResourcesAudited.ValidFactions(this, player).Any()) result.Add(typeof(ResourcesAudited));
+            }
+
             if (Version <= 123)
             {
                 result.Add(typeof(HideSecrets));
