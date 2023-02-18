@@ -33,7 +33,7 @@ namespace Treachery.Shared
                 MoveHMSBeforeDiallingStorm();
             }
 
-            DetermineOccupationAtStartOfTurn();
+            DetermineOccupationAtStartOrEndOfTurn();
         }
 
         public void HandleEvent(StormDialled e)

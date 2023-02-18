@@ -1228,7 +1228,7 @@ namespace Treachery.Shared
             LetFactionsMustDiscardSurplusCards();
         }
 
-        public void DetermineOccupationAtStartOfTurn()
+        public void DetermineOccupationAtStartOrEndOfTurn()
         {
             var currentOccupierOfPinkHomeworld = OccupierOf(World.Pink);
             var updatedOccupation = new Dictionary<World, Faction>();

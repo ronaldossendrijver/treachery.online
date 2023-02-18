@@ -339,9 +339,9 @@ namespace Treachery.Shared
             if (target != null)
             {
                 var dialNeeded = MakeEvenIfEfficientForShipping(forcestrength);
-                if (DetermineShortageForShipment(dialNeeded, false, target, Faction.Yellow, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, out int cunningNoFieldValue, minResourcesToKeep, maxUnsupportedForces, true) <= 2)
+                if (DetermineShortageForShipment(dialNeeded, false, target, Faction.None, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, out int cunningNoFieldValue, minResourcesToKeep, maxUnsupportedForces, true) <= 2)
                 {
-                    DoShipment(ShipmentDecision.VacantStronghold, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, target, true, true);
+                    DoShipment(ShipmentDecision.Homeworld, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, target, true, true);
                 }
             }
         }
@@ -452,7 +452,8 @@ namespace Treachery.Shared
             AtResources,
             BackToReserves,
             PolarSink,
-            DummyShipment
+            DummyShipment,
+            Homeworld
         }
 
         protected virtual float DetermineShortageForShipment(
