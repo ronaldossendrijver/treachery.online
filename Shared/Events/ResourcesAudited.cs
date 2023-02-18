@@ -37,7 +37,11 @@ namespace Treachery.Shared
             return Message.Express(Initiator, " force ", Target, " to reveal amount of weapons, defenses and ", Concept.Resource);
         }
 
-        public static IEnumerable<Faction> ValidFactions(Game game, Player player) => game.Players.Where(p => p != player && !game.ResourceAuditedFactions.Contains(p.Faction)).Select(p => p.Faction);
+        public static IEnumerable<Faction> ValidFactions(Game game, Player player) => 
+            game.Players.Where(opp => opp != player &&
+            !game.ResourceAuditedFactions.Contains(opp.Faction) &&
+            (player.Homeworlds.Any(hw => opp.AnyForcesIn(hw) > 0) || opp.Homeworlds.Any(hw => player.AnyForcesIn(hw) > 0))
+            ).Select(p => p.Faction);
         
     }
 }
