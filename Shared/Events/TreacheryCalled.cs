@@ -50,22 +50,25 @@ namespace Treachery.Shared
         {
             if (g.AggressorBattleAction != null && g.DefenderBattleAction != null)
             {
-                if (!g.DefenderBattleAction.Messiah)
+                if (!g.CurrentBattle.Territory.IsHomeworld || p.IsNative(g.CurrentBattle.Territory))
                 {
-                    if (g.AggressorBattleAction.Initiator == p.Faction && HasTraitor(g, p, g.DefenderBattleAction.Hero) ||
-                         p.Is(Faction.Black) && p.Ally == g.AggressorBattleAction.Initiator && !g.Prevented(FactionAdvantage.BlackCallTraitorForAlly) && HasTraitor(g, p, g.DefenderBattleAction.Hero))
-
+                    if (!g.DefenderBattleAction.Messiah)
                     {
-                        return true;
+                        if (g.AggressorBattleAction.Initiator == p.Faction && HasTraitor(g, p, g.DefenderBattleAction.Hero) ||
+                             p.Is(Faction.Black) && p.Ally == g.AggressorBattleAction.Initiator && !g.Prevented(FactionAdvantage.BlackCallTraitorForAlly) && HasTraitor(g, p, g.DefenderBattleAction.Hero))
+
+                        {
+                            return true;
+                        }
                     }
-                }
 
-                if (!g.AggressorBattleAction.Messiah)
-                {
-                    if (g.DefenderBattleAction.Initiator == p.Faction && HasTraitor(g, p, g.AggressorBattleAction.Hero) ||
-                         p.Is(Faction.Black) && p.Ally == g.DefenderBattleAction.Initiator && !g.Prevented(FactionAdvantage.BlackCallTraitorForAlly) && HasTraitor(g, p, g.AggressorBattleAction.Hero))
+                    if (!g.AggressorBattleAction.Messiah)
                     {
-                        return true;
+                        if (g.DefenderBattleAction.Initiator == p.Faction && HasTraitor(g, p, g.AggressorBattleAction.Hero) ||
+                             p.Is(Faction.Black) && p.Ally == g.DefenderBattleAction.Initiator && !g.Prevented(FactionAdvantage.BlackCallTraitorForAlly) && HasTraitor(g, p, g.AggressorBattleAction.Hero))
+                        {
+                            return true;
+                        }
                     }
                 }
             }

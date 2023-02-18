@@ -45,6 +45,7 @@ namespace Treachery.Shared
                 if (decidedShipment == null && winning && hasCards) DetermineShipment_StrengthenWeakestStronghold(false, extraForces, Param.Shipment_DialShortageToAccept, !MayFlipToAdvisors);
                 if (decidedShipment == null && !winning && !AlmostLastTurn && inGreatNeedOfSpice && !Is(Faction.Red)) DetermineShipment_ShipToStrongholdNearSpice();
                 if (decidedShipment == null && !winning && hasCards) DetermineShipment_TakeVacantStronghold(OpponentsToShipAndMove.Count() + extraForces, minResourcesToKeep, Param.Battle_MaximumUnsupportedForces);
+                if (decidedShipment == null && !winning && hasCards) DetermineShipment_AttackHomeworld(OpponentsToShipAndMove.Count() + extraForces, minResourcesToKeep, Param.Battle_MaximumUnsupportedForces);
                 if (decidedShipment == null && Faction == Faction.Grey && decidedShipment == null && AnyForcesIn(Game.Map.HiddenMobileStronghold) == 0) DetermineShipment_AttackWeakHMS(1, Param.Shipment_DialShortageToAccept, 0, LastTurn ? 99 : Param.Battle_MaximumUnsupportedForces);
                 if (decidedShipment == null && !winning && (feelingConfident && hasCards || hasWeapons)) DetermineShipment_AttackWeakStronghold(extraForces, minResourcesToKeep, feelingConfident || LastTurn ? 20 : 0);
                 if (decidedShipment == null && Faction != Faction.Yellow && !winning && !AlmostLastTurn && stillNeedsResources) DetermineShipment_ShipToStrongholdNearSpice();
@@ -65,6 +66,20 @@ namespace Treachery.Shared
             }
 
             return decidedShipment;
+        }
+
+        private bool WillLeaveMyHomeDefenseless(int shippedAmountOfForces, int shippedAmountOfSpecialForces)
+        {
+            if (Game.Applicable(Rule.Homeworlds))
+            {
+                if (Faction != Faction.Red && ForcesInReserve + SpecialForcesInReserve - shippedAmountOfForces - shippedAmountOfSpecialForces <= 3 ||
+                    Faction == Faction.Red && (ForcesInReserve - shippedAmountOfForces <= 3 || SpecialForcesInReserve - shippedAmountOfSpecialForces <= 2)) 
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         protected virtual void DetermineShipment_ShipDirectlyToSpiceAsOrangeOrOrangeAlly()
@@ -300,6 +315,26 @@ namespace Treachery.Shared
                 if (VacantAndValid(Game.Map.ShieldWall.Locations.First())) target = Game.Map.ShieldWall.Locations.First();
                 else if (VacantAndValid(Game.Map.ShieldWall.Locations.Last())) target = Game.Map.ShieldWall.Locations.Last();
             }
+
+            if (target != null)
+            {
+                var dialNeeded = MakeEvenIfEfficientForShipping(forcestrength);
+                if (DetermineShortageForShipment(dialNeeded, false, target, Faction.Yellow, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, out int cunningNoFieldValue, minResourcesToKeep, maxUnsupportedForces, true) <= 2)
+                {
+                    DoShipment(ShipmentDecision.VacantStronghold, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, target, true, true);
+                }
+            }
+        }
+
+        protected virtual void DetermineShipment_AttackHomeworld(int forcestrength, int minResourcesToKeep, int maxUnsupportedForces)
+        {
+            LogInfo("DetermineShipment_TakeVacantHomeworld()");
+
+            var validHomeworlds = ValidShipmentLocations.Where(l => l is Homeworld hw).Cast<Homeworld>();
+
+            var target = WinningOpponentsIWishToAttack(99, false).SelectMany(p => p.Homeworlds).FirstOrDefault(w => validHomeworlds.Contains(w));
+            if (target == null) target = WinningOpponentsIWishToAttack(99, true).SelectMany(p => p.Homeworlds).FirstOrDefault(w => validHomeworlds.Contains(w));
+            if (target == null && !WinningOpponentsIWishToAttack(99, true).Any()) target = validHomeworlds.Where(l => NotOccupied(l)).RandomOrDefault();
 
             if (target != null)
             {
@@ -604,18 +639,21 @@ namespace Treachery.Shared
 
         private void DoShipment(ShipmentDecision decision, Location destination, int nrOfForces, int nrOfSpecialForces, int noFieldValue, int cunningNoFieldValue, Location destinationforMove, bool useKarma, bool useAllyResources)
         {
-            var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, destination, useKarma, useAllyResources);
+            if (!WillLeaveMyHomeDefenseless(nrOfForces, nrOfSpecialForces))
+            {
+                var shipment = ConstructShipment(nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, destination, useKarma, useAllyResources);
 
-            var error = shipment.Validate();
-            if (error == null)
-            {
-                decidedShipmentAction = decision;
-                finalDestination = destinationforMove;
-                decidedShipment = shipment;
-            }
-            else
-            {
-                LogInfo(error);
+                var error = shipment.Validate();
+                if (error == null)
+                {
+                    decidedShipmentAction = decision;
+                    finalDestination = destinationforMove;
+                    decidedShipment = shipment;
+                }
+                else
+                {
+                    LogInfo(error);
+                }
             }
         }
 

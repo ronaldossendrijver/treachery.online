@@ -266,6 +266,7 @@ namespace Treachery.Shared
             return g.Map.Locations(g.Applicable(Rule.Homeworlds)).Where(l =>
                 l.Sector != g.SectorInStorm &&
                 (l != g.Map.HiddenMobileStronghold || p.Is(Faction.Grey)) &&
+                (!p.HasAlly || l is not Homeworld hw || !p.AlliedPlayer.IsNative(hw)) &&
                 g.IsNotFull(p, l));
         }
 

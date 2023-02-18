@@ -3,7 +3,9 @@
  */
 
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Treachery.Shared
@@ -70,6 +72,20 @@ namespace Treachery.Shared
         public static IEnumerable<TreacheryCard> ValidCards(Game g)
         {
             return g.WhiteCache;
+        }
+
+        public static bool MaySpecifyCard(Game g, Player p)
+        {
+            var occupierOfWhiteHomeworld = g.OccupierOf(World.White);
+            return occupierOfWhiteHomeworld == null && p.Faction == Faction.White ||
+                   occupierOfWhiteHomeworld != null && !g.WhiteOccupierSpecifiedCard && occupierOfWhiteHomeworld.Is(p.Faction);
+        }
+
+        public static bool MaySpecifyTypeOfAuction(Game g, Player p)
+        {
+            var occupierOfWhiteHomeworld = g.OccupierOf(World.White);
+            return occupierOfWhiteHomeworld == null && p.Faction == Faction.White ||
+                   occupierOfWhiteHomeworld != null && g.WhiteOccupierSpecifiedCard && p.Faction == Faction.White;
         }
     }
 }

@@ -18,6 +18,8 @@ namespace Treachery.Shared
 
         public int SkinId => Id;
 
+        public bool IsHomeworld { get; set; }
+
         public bool IsStronghold { get; set; }
 
         public bool IsProtectedFromStorm { get; set; }

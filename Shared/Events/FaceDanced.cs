@@ -88,10 +88,13 @@ namespace Treachery.Shared
         {
             if (g.BattleWinner != Faction.None)
             {
-                var winnerHero = g.WinnerHero;
-                if (winnerHero != null && !g.IsOccupiedByFactionOrTheirAlly(World.Purple, g.BattleWinner))
+                if (!g.CurrentBattle.Territory.IsHomeworld || p.IsNative(g.CurrentBattle.Territory))
                 {
-                    return p.FaceDancers.Any(t => t.IsFaceDancer(winnerHero) && !p.RevealedDancers.Contains(t));
+                    var winnerHero = g.WinnerHero;
+                    if (winnerHero != null && !g.IsOccupiedByFactionOrTheirAlly(World.Purple, g.BattleWinner))
+                    {
+                        return p.FaceDancers.Any(t => t.IsFaceDancer(winnerHero) && !p.RevealedDancers.Contains(t));
+                    }
                 }
             }
 

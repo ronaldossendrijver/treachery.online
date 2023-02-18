@@ -1219,6 +1219,13 @@ namespace Treachery.Shared
         }
 
         public bool Initiated(GameEvent e) => e != null && e.Initiator == Faction;
+
+        public bool IsNative(Territory territory) => territory.Locations.Any(l => IsNative(l));
+
+        public bool IsNative(Location l) => l is Homeworld hw && IsNative(hw);
+
+        public bool IsNative(Homeworld hw) => Homeworlds.Contains(hw);
+        
     }
 
 }

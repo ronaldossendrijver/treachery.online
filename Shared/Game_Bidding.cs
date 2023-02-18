@@ -255,8 +255,11 @@ namespace Treachery.Shared
             }
         }
 
+        public bool WhiteOccupierSpecifiedCard { get; private set; }
+
         public void HandleEvent(WhiteAnnouncesAuction e)
         {
+            WhiteOccupierSpecifiedCard = false;
             Log(e);
 
             int threshold = Version > 150 ? 0 : 1;
@@ -280,13 +283,30 @@ namespace Treachery.Shared
 
         public void HandleEvent(WhiteSpecifiesAuction e)
         {
-            WhiteAuctionShouldStillHappen = false;
-            Log(e);
-            CardsOnAuction.PutOnTop(e.Card);
-            WhiteCache.Remove(e.Card);
-            RegisterKnown(e.Card);
-            StartBidSequenceAndAuctionType(e.AuctionType, e.Player, e.Direction);
-            StartBiddingRound();
+            if (!WhiteOccupierSpecifiedCard)
+            {
+                WhiteAuctionShouldStillHappen = false;
+                Log(e);
+                CardsOnAuction.PutOnTop(e.Card);
+                WhiteCache.Remove(e.Card);
+                RegisterKnown(e.Card);
+
+                var occupierOfWhiteHomeworld = OccupierOf(World.White);
+                if (occupierOfWhiteHomeworld == null)
+                {
+                    StartBidSequenceAndAuctionType(e.AuctionType, e.Player, e.Direction);
+                    StartBiddingRound();
+                }
+                else
+                {
+                    WhiteOccupierSpecifiedCard = true;
+                }
+            }
+            else
+            {
+                StartBidSequenceAndAuctionType(e.AuctionType, e.Player, e.Direction);
+                StartBiddingRound();
+            }
         }
 
         public void HandleEvent(WhiteKeepsUnsoldCard e)

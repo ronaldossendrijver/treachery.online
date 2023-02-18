@@ -8,20 +8,26 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Select a card from your cache to sell and choose the type of auction</Header>
+    <Header>Define the auction</Header>
     <Body>
 
-        <SelectCardComponent @bind-Value="card" Values="WhiteSpecifiesAuction.ValidCards(Game)" Required="true" />
-
-        <RadioComponent @bind-Value="auctionType" Values="new AuctionType[] { AuctionType.WhiteOnceAround, AuctionType.WhiteSilent }" ValueLabels="@(new string[] { "Once Around", "Silent"})">
-            <Label>Type of auction</Label>
-        </RadioComponent>
-
-        @if (auctionType == AuctionType.WhiteOnceAround)
+        @if (WhiteSpecifiesAuction.MaySpecifyCard(Game, Player))
         {
-            <RadioComponent @bind-Value="direction" Values="new int[] { 1, -1 }" ValueLabels="@(new string[] { "Counter-clockwise", "Clockwise"})">
-                <Label>Bidding direction</Label>
+            <SelectCardComponent @bind-Value="card" Values="WhiteSpecifiesAuction.ValidCards(Game)" Required="  true" />
+        }
+
+        @if (WhiteSpecifiesAuction.MaySpecifyTypeOfAuction(Game, Player))
+        {
+            <RadioComponent @bind-Value="auctionType" Values="new AuctionType[] { AuctionType.WhiteOnceAround, AuctionType.WhiteSilent }" ValueLabels="@(new string[] { "Once Around", "Silent"})">
+                <Label>Type of auction</Label>
             </RadioComponent>
+
+            @if (auctionType == AuctionType.WhiteOnceAround)
+            {
+                <RadioComponent @bind-Value=direction Values="new int[] { 1, -1 }" ValueLabels="@(new string[] { "Counter-clockwise", "Clockwise"})">
+                    <Label>Bidding direction</Label>
+                </RadioComponent>
+            }
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Start Auction" ConfirmError=@Validation />

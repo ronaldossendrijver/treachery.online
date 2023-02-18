@@ -204,8 +204,13 @@ namespace Treachery.Shared
                     if (faction == Faction.White) result.Add(typeof(WhiteAnnouncesAuction));
                     break;
                 case Phase.WhiteSpecifyingAuction:
-                    if (faction == Faction.White) result.Add(typeof(WhiteSpecifiesAuction));
-                    break;
+                    {
+                        if (WhiteSpecifiesAuction.MaySpecifyCard(this, player) || WhiteSpecifiesAuction.MaySpecifyTypeOfAuction(this, player))
+                        {
+                            result.Add(typeof(WhiteSpecifiesAuction));
+                        }
+                        break;
+                    }
                 case Phase.Bidding:
                     if (Bid.MayBePlayed(this, player))
                     {
