@@ -328,7 +328,7 @@ namespace Treachery.Shared
 
         protected virtual void DetermineShipment_AttackHomeworld(int forcestrength, int minResourcesToKeep, int maxUnsupportedForces)
         {
-            LogInfo("DetermineShipment_TakeVacantHomeworld()");
+            LogInfo("DetermineShipment_AttackHomeworld()");
 
             var validHomeworlds = ValidShipmentLocations.Where(l => l is Homeworld hw).Cast<Homeworld>();
 
@@ -341,6 +341,7 @@ namespace Treachery.Shared
                 var dialNeeded = MakeEvenIfEfficientForShipping(forcestrength);
                 if (DetermineShortageForShipment(dialNeeded, false, target, Faction.None, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, out int cunningNoFieldValue, minResourcesToKeep, maxUnsupportedForces, true) <= 2)
                 {
+                    LogInfo($"Shipping to: {target.Id} {target.Territory.Id} {target} {target.Territory}");
                     DoShipment(ShipmentDecision.Homeworld, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, target, true, true);
                 }
             }

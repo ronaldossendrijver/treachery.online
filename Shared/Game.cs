@@ -2,6 +2,7 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -201,7 +202,7 @@ namespace Treachery.Shared
                     break;
 
                 case Phase.TradingFactions:
-                    EstablishHomeworldsAndDecks();
+                    EstablishDecks();
                     break;
 
                 case Phase.MetheorAndStormSpell:
@@ -1208,7 +1209,7 @@ namespace Treachery.Shared
                 (p.Faction == Faction.Green || (p.Ally == Faction.Green && GreenSharesPrescience) || HasDeal(p.Faction, DealType.ShareBiddingPrescience)));
         }
 
-        public Dictionary<World, Faction> HomeworldOccupation { get; private set; } = new();
+        public Dictionary<Homeworld, Faction> HomeworldOccupation { get; private set; } = new();
         public void DetermineOccupationAfterLocationEvent(ILocationEvent e)
         {
             var currentOccupierOfPinkHomeworld = OccupierOf(World.Pink);
@@ -1218,8 +1219,8 @@ namespace Treachery.Shared
             {
                 if (!Occupies(e.Initiator, hw.World))
                 {
-                    HomeworldOccupation.Remove(hw.World);
-                    HomeworldOccupation.Add(hw.World, e.Initiator);
+                    HomeworldOccupation.Remove(hw);
+                    HomeworldOccupation.Add(hw, e.Initiator);
                     Log(e.Initiator, " now occupy ", hw);
                 }
             }
@@ -1231,7 +1232,7 @@ namespace Treachery.Shared
         public void DetermineOccupationAtStartOrEndOfTurn()
         {
             var currentOccupierOfPinkHomeworld = OccupierOf(World.Pink);
-            var updatedOccupation = new Dictionary<World, Faction>();
+            var updatedOccupation = new Dictionary<Homeworld, Faction>();
 
             foreach (var hw in Map.Homeworlds)
             {
@@ -1239,13 +1240,21 @@ namespace Treachery.Shared
                 {
                     if (player.AnyForcesIn(hw) > 0 && !player.Homeworlds.Contains(hw))
                     {
-                        updatedOccupation.Add(hw.World, player.Faction);
+                        updatedOccupation.Add(hw, player.Faction);
 
                         if (!Occupies(player.Faction, hw.World))
                         {
                             Log(player.Faction, " now occupy ", hw);
                         }
                     }
+                }
+            }
+
+            foreach (var kvp in HomeworldOccupation)
+            {
+                if (!updatedOccupation.Contains(kvp))
+                {
+                    Log(kvp.Value, " no longer occupies ", kvp.Key);
                 }
             }
 
@@ -1281,36 +1290,43 @@ namespace Treachery.Shared
             }
         }
 
-        public bool Occupies(Faction f, World w) => f != Faction.None && HomeworldOccupation.TryGetValue(w, out Faction value) && value == f;
+        public bool Occupies(Faction f, World w)
+        {
+            if (f != Faction.None)
+            {
+                var hwOccupation = HomeworldOccupation.Keys.FirstOrDefault(hw => hw.World == w);
+                if (hwOccupation != null)
+                {
+                    return HomeworldOccupation[hwOccupation] == f;
+                }
+            }
 
-        public Player OccupierOf(World w) => HomeworldOccupation.TryGetValue(w, out Faction value) ? GetPlayer(value) : null;
+            return false;
+        }
+
+        public bool Occupies(Faction f, Homeworld w) => f != Faction.None && HomeworldOccupation.TryGetValue(w, out Faction value) && value == f;
+
+        public Player OccupierOf(Homeworld w) => HomeworldOccupation.TryGetValue(w, out Faction value) ? GetPlayer(value) : null;
+
+        public Player OccupierOf(World w)
+        {
+            var hwOccupation = HomeworldOccupation.Keys.FirstOrDefault(hw => hw.World == w);
+            if (hwOccupation != null)
+            {
+                return GetPlayer(HomeworldOccupation[hwOccupation]);
+            }
+
+            return null;
+        }
 
         public HomeworldStatus GetStatusOf(Homeworld w)
         {
-            var player = Players.FirstOrDefault(p => p.Homeworlds.Contains(w));
+            var player = Players.FirstOrDefault(p => p.IsNative(w));
 
             if (player != null)
             {
-                int nrOfForces = 0;
-                if (w.IsHomeOfNormalForces) nrOfForces += player.ForcesInReserve;
-                if (w.IsHomeOfSpecialForces) nrOfForces += player.SpecialForcesInReserve;
-
-                if (nrOfForces >= w.Threshold)
-                {
-                    return new HomeworldStatus(true, player.Faction);
-                }
-                else
-                {
-                    var enemyOccupant = BattalionsIn(w).FirstOrDefault(b => b.Faction != player.Faction);
-                    if (enemyOccupant != null)
-                    {
-                        return new HomeworldStatus(false, enemyOccupant.Faction);
-                    }
-                    else
-                    {
-                        return new HomeworldStatus(false, player.Faction);
-                    }
-                }
+                var occupier = OccupierOf(w.World);
+                return new HomeworldStatus(player.HasHighThreshold(w.World), occupier != null ? occupier.Faction : Faction.None);
             }
 
             return null;

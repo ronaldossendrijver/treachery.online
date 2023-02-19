@@ -351,10 +351,8 @@ namespace Treachery.Shared
 
         #region SettingUp
 
-        private void EstablishHomeworldsAndDecks()
+        private void EstablishDecks()
         {
-            Map.AddHomeworlds(Players.Select(p => p.Faction));
-
             if (IsPlaying(Faction.White))
             {
                 WhiteCache = TreacheryCardManager.GetWhiteCards();

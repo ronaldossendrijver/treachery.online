@@ -1208,34 +1208,25 @@ namespace Treachery.Shared
                 HiddenMobileStronghold = new HiddenMobileStronghold(t, id++) { SpiceBlowAmount = 0 };
                 _locations.Add(HiddenMobileStronghold);
             }
+
+            AddHomeworld(43, id++, World.Green, Faction.Green, true, false, 6);
+            AddHomeworld(44, id++, World.Black, Faction.Black, true, false, 7);
+            AddHomeworld(45, id++, World.Yellow, Faction.Yellow, true, true, 3);
+            AddHomeworld(46, id++, World.Red, Faction.Red, true, false, 5);
+            AddHomeworld(47, id++, World.RedStar, Faction.Red, false, true, 2);
+            AddHomeworld(48, id++, World.Orange, Faction.Orange, true, false, 5);
+            AddHomeworld(49, id++, World.Blue, Faction.Blue, true, false, 11);
+            AddHomeworld(50, id++, World.Grey, Faction.Grey, true, true, 5);
+            AddHomeworld(51, id++, World.Purple, Faction.Purple, true, false, 9);
+            AddHomeworld(52, id++, World.Brown, Faction.Brown, true, false, 11);
+            AddHomeworld(53, id++, World.White, Faction.White, true, false, 10);
+            AddHomeworld(54, id++, World.Pink, Faction.Pink, true, false, 7);
+            AddHomeworld(55, id++, World.Cyan, Faction.Cyan, true, false, 8);
         }
 
-        public void AddHomeworlds(IEnumerable<Faction> factionsInPlay)
+        private void AddHomeworld(int territoryId, int locationId, World world, Faction faction, bool isHomeOfNormalForces, bool isHomeOfSpecialForces, int threshold)
         {
-            int territoryId = Territories(false).Max(x => x.Id) + 1;
-            int locationId = Locations(false).Max(x => x.Id) + 1;
-
-            AddHomeworldIfFactionIsInPlay(factionsInPlay, ref territoryId, ref locationId, World.Green, Faction.Green, true, false, 6);
-            AddHomeworldIfFactionIsInPlay(factionsInPlay, ref territoryId, ref locationId, World.Black, Faction.Black, true, false, 7);
-            AddHomeworldIfFactionIsInPlay(factionsInPlay, ref territoryId, ref locationId, World.Yellow, Faction.Yellow, true, true, 3);
-            AddHomeworldIfFactionIsInPlay(factionsInPlay, ref territoryId, ref locationId, World.Red, Faction.Red, true, false, 5);
-            AddHomeworldIfFactionIsInPlay(factionsInPlay, ref territoryId, ref locationId, World.RedStar, Faction.Red, false, true, 2);
-            AddHomeworldIfFactionIsInPlay(factionsInPlay, ref territoryId, ref locationId, World.Orange, Faction.Orange, true, false, 5);
-            AddHomeworldIfFactionIsInPlay(factionsInPlay, ref territoryId, ref locationId, World.Blue, Faction.Blue    , true, false, 11);
-            AddHomeworldIfFactionIsInPlay(factionsInPlay, ref territoryId, ref locationId, World.Grey, Faction.Grey    , true, true, 5);
-            AddHomeworldIfFactionIsInPlay(factionsInPlay, ref territoryId, ref locationId, World.Purple, Faction.Purple, true, false, 9);
-            AddHomeworldIfFactionIsInPlay(factionsInPlay, ref territoryId, ref locationId, World.Brown, Faction.Brown  , true, false, 11);
-            AddHomeworldIfFactionIsInPlay(factionsInPlay, ref territoryId, ref locationId, World.White, Faction.White  , true, false, 10);
-            AddHomeworldIfFactionIsInPlay(factionsInPlay, ref territoryId, ref locationId, World.Pink, Faction.Pink    , true, false, 7);
-            AddHomeworldIfFactionIsInPlay(factionsInPlay, ref territoryId, ref locationId, World.Cyan, Faction.Cyan    , true, false, 8);
-        }
-
-        private void AddHomeworldIfFactionIsInPlay(IEnumerable<Faction> factionsInPlay, ref int territoryId, ref int locationId, World world, Faction faction, bool isHomeOfNormalForces, bool isHomeOfSpecialForces, int threshold)
-        {
-            if (factionsInPlay.Contains(faction))
-            {
-                _locations.Add(new Homeworld(world, faction, new Territory(territoryId++) { IsHomeworld = true, IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, isHomeOfNormalForces, isHomeOfSpecialForces, threshold, locationId++));
-            }
+            _locations.Add(new Homeworld(world, faction, new Territory(territoryId) { IsHomeworld = true, IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, isHomeOfNormalForces, isHomeOfSpecialForces, threshold, locationId));
         }
 
         public void InitializeLocationNeighbours()

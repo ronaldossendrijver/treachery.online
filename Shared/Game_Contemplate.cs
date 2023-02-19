@@ -86,6 +86,7 @@ namespace Treachery.Shared
             }
 
             Enter(Phase.Contemplate);
+            DetermineOccupationAtStartOrEndOfTurn();
         }
 
         private void GainExtortions()
@@ -100,7 +101,6 @@ namespace Treachery.Shared
 
         private void ContinueMentatPhase()
         {
-            DetermineOccupationAtStartOrEndOfTurn();
             CheckNormalWin();
             CheckBeneGesseritPrediction();
             CheckFinalTurnWin();
