@@ -383,7 +383,6 @@ namespace Treachery.Shared
 
         public int DetermineCostToInitiator(Game g)
         {
-            //return DetermineCost(Game, Player, ForceAmount + SpecialForceAmount, To, UsingKarma(Game), IsBackToReserves, IsNoField) - AllyContributionAmount;
             if (g.Version <= 106)
             {
                 return DetermineCost(Game, Player, ForceAmount + SpecialForceAmount, To, IsUsingKarma, IsBackToReserves, IsNoField) - AllyContributionAmount;

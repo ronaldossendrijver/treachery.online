@@ -455,6 +455,7 @@ namespace Treachery.Shared
             var bgPlayer = GetPlayer(Faction.Blue);
             if (bgPlayer != null &&
                 territory != Map.PolarSink.Territory &&
+                !territory.IsHomeworld &&
                 Applicable(Rule.BlueAdvisors) &&
                 initiator != bgPlayer.Ally &&
                 initiator != Faction.Blue &&

@@ -301,7 +301,7 @@ namespace Treachery.Shared
         public void ForcesToReserves(Territory t, int amount, bool special)
         {
             int toRemoveInTotal = amount;
-            foreach (var l in Game.Map.Locations().Where(l => l.Territory == t).OrderBy(l => l.SpiceBlowAmount))
+            foreach (var l in t.Locations.OrderBy(l => l.SpiceBlowAmount))
             {
                 int forcesIn = special ? SpecialForcesIn(l) : ForcesIn(l);
                 if (forcesIn > 0)
@@ -413,7 +413,7 @@ namespace Treachery.Shared
         public void KillForces(Territory t, int amount, bool special, bool inBattle)
         {
             int toKill = amount;
-            foreach (var l in Game.Map.Locations().Where(l => l.Territory == t).OrderBy(l => l.SpiceBlowAmount))
+            foreach (var l in t.Locations.OrderBy(l => l.SpiceBlowAmount))
             {
                 int forcesIn = special ? SpecialForcesIn(l) : ForcesIn(l);
                 if (forcesIn > 0)
@@ -506,36 +506,15 @@ namespace Treachery.Shared
             }
         }
 
-        public int OccupyingForces(Location l)
-        {
-            return ForcesIn(l) + (Faction == Faction.Blue ? 0 : SpecialForcesIn(l));
-        }
+        public int OccupyingForces(Location l) => ForcesIn(l) + (Faction == Faction.Blue ? 0 : SpecialForcesIn(l));
 
-        public bool Occupies(Location l)
-        {
-            return OccupyingForces(l) > 0;
-        }
+        public bool Occupies(Location l) => OccupyingForces(l) > 0;
 
-        public bool Occupies(Territory t)
-        {
-            return t.Locations.Any(l => Occupies(l));
-        }
+        public bool Occupies(Territory t) => t.Locations.Any(l => Occupies(l));
 
-        public IEnumerable<Location> OccupiedLocations
-        {
-            get
-            {
-                return Game.Map.Locations().Where(l => Occupies(l));
-            }
-        }
+        public IEnumerable<Location> OccupiedLocations => Game.Map.Locations(true).Where(l => Occupies(l));
 
-        public IEnumerable<Territory> OccupiedTerritories
-        {
-            get
-            {
-                return Game.Map.Territories(true).Where(t => Occupies(t));
-            }
-        }
+        public IEnumerable<Territory> OccupiedTerritories => Game.Map.Territories(true).Where(t => Occupies(t));
 
         public bool Controls(Game g, Location l, bool contestedStongholdsCountAsControlled)
         {
@@ -561,7 +540,7 @@ namespace Treachery.Shared
             }
         }
 
-        public IEnumerable<Territory> TerritoriesWithForces => Game.Map.Territories().Where(t => AnyForcesIn(t) > 0);
+        public IEnumerable<Territory> TerritoriesWithForces => Game.Map.Territories(true).Where(t => AnyForcesIn(t) > 0);
 
         public IEnumerable<Location> LocationsWithAnyForces => ForcesInLocations.Keys;
 

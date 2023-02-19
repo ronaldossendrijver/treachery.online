@@ -24,7 +24,7 @@ namespace Treachery.Shared
         public string Name { get; private set; }
         public List<Milestone> RecentMilestones { get; private set; } = new();
         public int Version { get; private set; }
-        public Map Map { get; private set; } = new Map();
+        public Map Map { get; private set; } = new();
         public List<Rule> Rules { get; private set; } = new();
         public List<Rule> RulesForBots { get; private set; } = new();
         public List<Rule> AllRules { get; private set; } = new();
@@ -201,7 +201,7 @@ namespace Treachery.Shared
                     break;
 
                 case Phase.TradingFactions:
-                    EstablishDecks();
+                    EstablishHomeworldsAndDecks();
                     break;
 
                 case Phase.MetheorAndStormSpell:
@@ -807,7 +807,7 @@ namespace Treachery.Shared
         {
             Dictionary<Location, List<Battalion>> result = new();
 
-            foreach (var l in Map.Locations())
+            foreach (var l in Map.Locations(includeHomeworlds))
             {
                 result.Add(l, new List<Battalion>());
             }
@@ -1006,7 +1006,7 @@ namespace Treachery.Shared
 
         public IEnumerable<Location> LocationsWithAnyForcesNotInStorm(Player p)
         {
-            return Map.Locations().Where(l => l.Sector != SectorInStorm && p.AnyForcesIn(l) > 0);
+            return Map.Locations(true).Where(l => l.Sector != SectorInStorm && p.AnyForcesIn(l) > 0);
         }
 
         private void FlipBeneGesseritWhenAloneOrWithPinkAlly()

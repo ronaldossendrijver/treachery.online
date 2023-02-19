@@ -25,7 +25,7 @@ namespace Treachery.Shared
             return null;
         }
 
-        public static IEnumerable<Location> ValidLocations(Game g) => g.Map.Locations().Where(l => l != g.Map.HiddenMobileStronghold && !g.AnyForcesIn(l.Territory));
+        public static IEnumerable<Location> ValidLocations(Game g) => g.Map.Locations(false).Where(l => l != g.Map.HiddenMobileStronghold && !g.AnyForcesIn(l.Territory));
 
         protected override void ExecuteConcreteEvent()
         {

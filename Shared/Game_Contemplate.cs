@@ -348,7 +348,7 @@ namespace Treachery.Shared
             }
         }
 
-        private IEnumerable<Territory> Strongholds => Map.Territories().Where(t => t.IsStronghold || IsSpecialStronghold(t));
+        private IEnumerable<Territory> Strongholds => Map.Territories(false).Where(t => t.IsStronghold || IsSpecialStronghold(t));
 
         public bool MeetsBasicPinkVictoryCondition(Player p, bool contestedStongholdsCountAsOccupied) =>
             (p.Is(Faction.Pink) && p.HasAlly || p.Ally == Faction.Pink) &&
@@ -367,7 +367,7 @@ namespace Treachery.Shared
             if (ally != null)
             {
                 int techTokenPoint = p.TechTokens.Count == 3 || p.AlliedPlayer.TechTokens.Count == 3 ? 1 : 0;
-                return techTokenPoint + (Map.Territories().Where(t => t.IsStronghold || IsSpecialStronghold(t)).Count(l => p.Controls(this, l, contestedStongholdsCountAsOccupied) || ally.Controls(this, l, contestedStongholdsCountAsOccupied)));
+                return techTokenPoint + (Map.Territories(false).Where(t => t.IsStronghold || IsSpecialStronghold(t)).Count(l => p.Controls(this, l, contestedStongholdsCountAsOccupied) || ally.Controls(this, l, contestedStongholdsCountAsOccupied)));
             }
             else
             {
@@ -376,7 +376,7 @@ namespace Treachery.Shared
             }
         }
 
-        public int NumberOfOccupiedStrongholds(Player p, bool contestedStongholdsCountAsOccupied) => Map.Territories().Where(t => t.IsStronghold || IsSpecialStronghold(t)).Count(l => p.Controls(this, l, contestedStongholdsCountAsOccupied));
+        public int NumberOfOccupiedStrongholds(Player p, bool contestedStongholdsCountAsOccupied) => Map.Territories(false).Where(t => t.IsStronghold || IsSpecialStronghold(t)).Count(l => p.Controls(this, l, contestedStongholdsCountAsOccupied));
 
         private void CheckSpecialWinConditions()
         {

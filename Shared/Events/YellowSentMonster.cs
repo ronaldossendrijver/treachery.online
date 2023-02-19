@@ -43,7 +43,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<Territory> ValidTargets(Game g)
         {
-            return g.Map.Territories().Where(t => !t.IsProtectedFromWorm);
+            return g.Map.Territories(false).Where(t => !t.IsProtectedFromWorm);
         }
     }
 }

@@ -262,8 +262,8 @@ namespace Treachery.Test
             if (g.CurrentTurn >= 1)
             {
                 p = g.Players.FirstOrDefault(p =>
-                    p.ForcesInReserve + p.ForcesKilled + p.ForcesOnPlanet.Sum(b => b.Value.AmountOfForces) +
-                    (p.Faction != Faction.White ? p.SpecialForcesInReserve + p.SpecialForcesKilled + p.ForcesOnPlanet.Sum(b => b.Value.AmountOfSpecialForces) : 0) != 20);
+                    p.ForcesKilled + p.ForcesInLocations.Sum(b => b.Value.AmountOfForces) +
+                    (p.Faction != Faction.White ? p.SpecialForcesKilled + p.ForcesInLocations.Sum(b => b.Value.AmountOfSpecialForces) : 0) != 20);
 
                 if (p != null)
                 {

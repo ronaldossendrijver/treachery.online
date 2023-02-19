@@ -347,7 +347,7 @@ namespace Treachery.Shared
                 }
             }
 
-            foreach (var l in Map.Locations().Where(l => l.Sector == SectorInStorm))
+            foreach (var l in Map.Locations(false).Where(l => l.Sector == SectorInStorm))
             {
                 int removed = RemoveResources(l);
                 if (removed > 0)

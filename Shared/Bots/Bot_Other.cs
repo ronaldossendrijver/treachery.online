@@ -809,7 +809,7 @@ namespace Treachery.Shared
 
             for (moves = 1; moves <= 10; moves++)
             {
-                var affectedLocations = Game.Map.Locations().Where(l => l.Sector == (Game.SectorInStorm + moves) % Map.NUMBER_OF_SECTORS && !Game.IsProtectedFromStorm(l));
+                var affectedLocations = Game.Map.Locations(false).Where(l => l.Sector == (Game.SectorInStorm + moves) % Map.NUMBER_OF_SECTORS && !Game.IsProtectedFromStorm(l));
                 int myAndAllyForces = affectedLocations.Sum(l => Game.BattalionsIn(l).Where(bat => bat.Faction == Faction || bat.Faction == Ally).Sum(bat => bat.TotalAmountOfForces));
                 int enemyForces = affectedLocations.Sum(l => Game.BattalionsIn(l).Where(bat => bat.Faction != Faction && bat.Faction != Ally).Sum(bat => bat.TotalAmountOfForces));
                 myKills.Add(moves, myKills[moves - 1] + myAndAllyForces);

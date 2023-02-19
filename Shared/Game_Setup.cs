@@ -95,7 +95,6 @@ namespace Treachery.Shared
 
             FillEmptySeatsWithBots();
             RemoveClaimedFactions();
-
             InitializeTimers();
 
             Enter(Applicable(Rule.PlayersChooseFactions), Phase.SelectingFactions, AssignFactionsAndEnterFactionTrade);
@@ -352,8 +351,10 @@ namespace Treachery.Shared
 
         #region SettingUp
 
-        private void EstablishDecks()
+        private void EstablishHomeworldsAndDecks()
         {
+            Map.AddHomeworlds(Players.Select(p => p.Faction));
+
             if (IsPlaying(Faction.White))
             {
                 WhiteCache = TreacheryCardManager.GetWhiteCards();

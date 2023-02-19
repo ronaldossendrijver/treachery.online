@@ -106,7 +106,7 @@
         }
     }
 
-    private IEnumerable<Location> ValidLocations => Game.Map.Locations().OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l));
+    private IEnumerable<Location> ValidLocations => Game.Map.Locations(false).OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l));
 
     protected int Forces(Location l, bool special)
     {

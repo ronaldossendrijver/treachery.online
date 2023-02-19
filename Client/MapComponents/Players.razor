@@ -83,20 +83,22 @@
                        Src="@Skin.Current.GetImageURL(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
                        Popover="@HomeworldIntel(homeworld)" />
 
-                var reservesX = homeworldX + 0.8f * Skin.Current.PlayerTokenRadius;
-                var reservesY = homeworldY + 1.2f * Skin.Current.PlayerTokenRadius;
+                var verticalRoomRequired = Game.BattalionsIn(homeworld).Count() * Skin.Current.FORCETOKEN_RADIUS;
+                var reservesY = homeworldY + Skin.Current.PlayerTokenRadius + 0.5f * (Skin.Current.PlayerTokenRadius - verticalRoomRequired);
 
                 foreach (var b in Game.BattalionsIn(homeworld)) {
 
+                    var reservesX = homeworldX + 0.8f * Skin.Current.PlayerTokenRadius;
+
                     if (b.AmountOfForces > 0)
                     {
-                        forcesToDraw.Add(new MapForce() { X = reservesX, Y = reservesY, Special = false, Amount = b.AmountOfForces, Faction = p.Faction });
+                        forcesToDraw.Add(new MapForce() { X = reservesX, Y = reservesY, Special = false, Amount = b.AmountOfForces, Faction = b.Faction });
                         reservesX += Skin.Current.FORCETOKEN_RADIUS;
                     }
 
                     if (b.AmountOfSpecialForces > 0)
                     {
-                        forcesToDraw.Add(new MapForce() { X = reservesX, Y = reservesY, Special = true, Amount = b.AmountOfSpecialForces, Faction = p.Faction });
+                        forcesToDraw.Add(new MapForce() { X = reservesX, Y = reservesY, Special = true, Amount = b.AmountOfSpecialForces, Faction = b.Faction });
                     }
 
                     reservesY += Skin.Current.FORCETOKEN_RADIUS;
