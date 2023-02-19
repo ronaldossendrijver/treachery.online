@@ -267,7 +267,7 @@ namespace Treachery.Shared
                 l.Sector != g.SectorInStorm &&
                 (l != g.Map.HiddenMobileStronghold || p.Is(Faction.Grey)) &&
                 (l is not Homeworld hw || g.Players.Any(native => native.IsNative(hw))) &&
-                (!p.HasAlly || l is not Homeworld hwOfAlly || !p.AlliedPlayer.IsNative(hwOfAlly)) &&
+                (!p.HasAlly || l is not Homeworld hwOfAlly || !p.AlliedPlayer.IsNative(hwOfAlly) && p.AlliedPlayer.AnyForcesIn(hwOfAlly) == 0) &&
                 g.IsNotFull(p, l));
         }
 

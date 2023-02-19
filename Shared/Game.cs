@@ -1238,7 +1238,7 @@ namespace Treachery.Shared
             {
                 foreach (var player in Players)
                 {
-                    if (player.AnyForcesIn(hw) > 0 && !player.Homeworlds.Contains(hw))
+                    if (player.Controls(this, hw, false) && !player.IsNative(hw))
                     {
                         updatedOccupation.Add(hw, player.Faction);
 

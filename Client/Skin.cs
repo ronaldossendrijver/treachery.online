@@ -305,7 +305,6 @@ namespace Treachery.Client
                 TechToken tt => Describe(tt),
                 Territory t => Describe(t),
                 Location l => Describe(l),
-                World w => Describe(w),
                 IHero hero => Describe(hero),
                 WinMethod w => Describe(w),
                 Phase p => Describe(p),

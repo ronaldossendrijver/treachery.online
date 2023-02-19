@@ -170,13 +170,16 @@ namespace Treachery.Shared
 
             if (AllAvailableLeadersHaveDiedOnce(g, p) || AtLeastFiveLeadersHaveDiedOnce(g, p))
             {
-                int lowestDeathCount = p.Leaders.Min(l => g.LeaderState[l].DeathCounter);
-
-                result.AddRange(p.Leaders.Where(l => g.LeaderState[l].DeathCounter == lowestDeathCount && !g.LeaderState[l].Alive));
-
-                if (p.Is(Faction.Green) && !g.IsAlive(LeaderManager.Messiah) && g.LeaderState[LeaderManager.Messiah].DeathCounter == lowestDeathCount)
+                if (p.Leaders.Any())
                 {
-                    result.Add(LeaderManager.Messiah);
+                    int lowestDeathCount = p.Leaders.Min(l => g.LeaderState[l].DeathCounter);
+
+                    result.AddRange(p.Leaders.Where(l => g.LeaderState[l].DeathCounter == lowestDeathCount && !g.LeaderState[l].Alive));
+
+                    if (p.Is(Faction.Green) && !g.IsAlive(LeaderManager.Messiah) && g.LeaderState[LeaderManager.Messiah].DeathCounter == lowestDeathCount)
+                    {
+                        result.Add(LeaderManager.Messiah);
+                    }
                 }
             }
 

@@ -386,9 +386,8 @@ namespace Treachery.Test
                 return "Lost Leader";
             }
 
-            if (g.CurrentMainPhase == MainPhase.Contemplate && g.OccupyingForcesOnPlanet.Any(kvp => kvp.Key != g.Map.PolarSink && !g.IsInStorm(kvp.Key.Territory) && kvp.Value.Count(b => b.Faction != Faction.Pink) > 1))
+            if (g.CurrentMainPhase == MainPhase.Contemplate && g.OccupyingForcesOnPlanet.Any(kvp => kvp.Key is not Homeworld && kvp.Key != g.Map.PolarSink && !g.IsInStorm(kvp.Key.Territory) && kvp.Value.Count(b => b.Faction != Faction.Pink) > 1))
             {
-
                 return "Territory occupied by more than one faction";
             }
 
