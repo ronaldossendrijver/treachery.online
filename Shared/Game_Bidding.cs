@@ -833,7 +833,7 @@ namespace Treachery.Shared
                         extraCardMustBeDecidedAbout = occupierOfBlackHomeworld.HasAlly && occupierOfBlackHomeworld.AlliedPlayer.HasRoomForCards;
 
                     }
-                    else if (occupierOfBlackHomeworld.HasAlly)
+                    else if (occupierOfBlackHomeworld.HasAlly && occupierOfBlackHomeworld.AlliedPlayer.HasRoomForCards)
                     {
                         receiver = occupierOfBlackHomeworld.AlliedPlayer;
                     }

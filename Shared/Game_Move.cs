@@ -1146,6 +1146,8 @@ namespace Treachery.Shared
             {
                 Log(e.Initiator, " don't ally with ", Faction.Cyan);
             }
+
+            LetFactionsDiscardSurplusCards();
         }
 
 

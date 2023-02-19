@@ -77,7 +77,7 @@ namespace Treachery.Shared
         {
             bool disableWhenPrescienceIsUsed = g.Version >= 108 && g.CurrentPrescience != null;
 
-            if (!disableWhenPrescienceIsUsed && g.CurrentBattle != null && g.CurrentVoice == null)
+            if (!disableWhenPrescienceIsUsed && g.CurrentVoice == null && g.CurrentBattle != null && g.CurrentBattle.IsInvolved(p))
             {
                 if (p.Nexus == Faction.Blue && NexusPlayed.CanUseSecretAlly(g, p))
                 {

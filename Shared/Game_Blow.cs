@@ -341,6 +341,7 @@ namespace Treachery.Shared
             Enter(Phase.BlowA);
             LogIf(Applicable(Rule.IncreasedResourceFlow), "*** Spice Blow A ***");
             DrawSpiceCard();
+            LetFactionsDiscardSurplusCards();
         }
 
         private void EnterBlowB()
@@ -349,6 +350,7 @@ namespace Treachery.Shared
             Enter(Phase.BlowB);
             Log("*** Spice Blow B ***");
             DrawSpiceCard();
+            LetFactionsDiscardSurplusCards();
         }
 
         #endregion
@@ -398,6 +400,7 @@ namespace Treachery.Shared
         {
             Log(e);
             BreakAlliance(e.Initiator);
+            LetFactionsDiscardSurplusCards();
         }
 
         private void BreakAlliance(Faction f)
@@ -482,6 +485,7 @@ namespace Treachery.Shared
             PerformMonster(e.Territory);
             Enter(CurrentPhase == Phase.YellowSendingMonsterA, Phase.BlowA, Phase.BlowB);
             DrawSpiceCard();
+            LetFactionsDiscardSurplusCards();
         }
 
         public void HandleEvent(YellowRidesMonster e)

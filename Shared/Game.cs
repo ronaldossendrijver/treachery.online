@@ -1225,7 +1225,7 @@ namespace Treachery.Shared
             }
 
             CheckIfOccupierTakesVidal(currentOccupierOfPinkHomeworld);
-            LetFactionsMustDiscardSurplusCards();
+            LetFactionsDiscardSurplusCards();
         }
 
         public void DetermineOccupationAtStartOrEndOfTurn()
@@ -1252,10 +1252,10 @@ namespace Treachery.Shared
             HomeworldOccupation = updatedOccupation;
 
             CheckIfOccupierTakesVidal(currentOccupierOfPinkHomeworld);
-            LetFactionsMustDiscardSurplusCards();
+            LetFactionsDiscardSurplusCards();
         }
 
-        private void LetFactionsMustDiscardSurplusCards()
+        private void LetFactionsDiscardSurplusCards()
         {
             FactionsThatMustDiscard.AddRange(Players.Where(p => p.TreacheryCards.Count > p.MaximumNumberOfCards).Select(p => p.Faction));
             if (FactionsThatMustDiscard.Any())
