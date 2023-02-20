@@ -393,6 +393,11 @@
                     <SimpleActionComponent GameEventType="AmalPlayed" h="@h" BackgroundImage="@GetImage(TreacheryCardType.Amal)" Title="@DescribeCard(TreacheryCardType.Amal)" Alert="false" ConfirmLabel="@Skin.Current.Format("Use {0}", TreacheryCardType.Amal)" />
                 }
                 break;
+            case "RecruitsPlayed":
+                {
+                    <SimpleActionComponent GameEventType="RecruitsPlayed" h="@h" BackgroundImage="@GetImage(TreacheryCardType.Recruits)" Title="@DescribeCard(TreacheryCardType.Recruits)" Alert="false" ConfirmLabel="@Skin.Current.Format("Play {0}", TreacheryCardType.Recruits)" />
+                }
+                break;
             case "WhiteAnnouncesBlackMarket":
                 {
                     <WhiteAnnouncesBlackMarketComponent h="@h" />

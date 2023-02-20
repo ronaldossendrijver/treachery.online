@@ -247,6 +247,11 @@ namespace Treachery.Shared
                     case Faction.Cyan: nrOfFreeRevivals = 2; break;
                 }
 
+                if (CurrentRecruitsPlayed != null)
+                {
+                    nrOfFreeRevivals *= 2;
+                }
+
                 if (player.Ally == Faction.Yellow && player.Ally == Faction.Yellow && YellowAllowsThreeFreeRevivals)
                 {
                     nrOfFreeRevivals = 3;
@@ -311,6 +316,10 @@ namespace Treachery.Shared
             if (p.Is(Faction.Purple) || (p.Is(Faction.Brown) && !g.Prevented(FactionAdvantage.BrownRevival)))
             {
                 return 100;
+            }
+            else if (CurrentRecruitsPlayed != null)
+            {
+                return 7;
             }
             else if (FactionsWithIncreasedRevivalLimits.Contains(p.Faction))
             {
@@ -474,6 +483,7 @@ namespace Treachery.Shared
             ReceiveGraveyardTechIncome();
             CurrentKarmaRevivalPrevention = null;
             CurrentYellowNexus = null;
+            CurrentRecruitsPlayed = null;
 
             if (Version < 122)
             {

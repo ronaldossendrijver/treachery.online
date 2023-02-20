@@ -48,6 +48,7 @@ namespace Treachery.Shared
 
             if (Do(DetermineMetheorPlayed, ref action, evts) ||
                 Do(DetermineAmalPlayed, ref action, evts) ||
+                Do(DetermineRecruitsPlayed, ref action, evts) ||
                 Do(DetermineSetIncreasedRevivalLimits, ref action, evts) ||
                 Do(DetermineDealAccepted, ref action, evts) ||
                 Do(DetermineRequestPurpleRevival, ref action, evts) ||

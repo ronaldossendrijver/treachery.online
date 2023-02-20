@@ -749,6 +749,17 @@ namespace Treachery.Shared
             }
         }
 
+        protected virtual RecruitsPlayed DetermineRecruitsPlayed()
+        {
+            if (ForcesKilled + SpecialForcesKilled >= 7 && Resources > 14 ||
+                ForcesKilled + SpecialForcesKilled >= 4 && Game.FreeRevivals(this, false) >= 2)
+            {
+                return new RecruitsPlayed(Game) { Initiator = Faction };
+            }
+
+            return null;
+        }
+
         protected virtual MetheorPlayed DetermineMetheorPlayed()
         {
             var otherForcesInArrakeen = Game.BattalionsIn(Game.Map.Arrakeen).Where(b => b.Faction != Faction && b.Faction != Ally).Sum(b => b.TotalAmountOfForces);
