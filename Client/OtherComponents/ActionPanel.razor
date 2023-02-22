@@ -215,7 +215,11 @@
                 break;
             case "BattleClaimed":
                 {
-                    <YesNoActionComponent GameEventType="BattleClaimed" h="@h" Title=@Skin.Current.Format("Do you wish to fight the battle in {0}?", Game.BattleAboutToStart.Territory) Alert="true" />
+                    string title = Faction == Faction.Pink ? 
+                        Skin.Current.Format("Do you wish to fight the battle in {0}?", Game.BattleAboutToStart.Territory) : 
+                        Skin.Current.Format("Should {0} fight the battle in {1}?", Faction.Pink, Game.BattleAboutToStart.Territory);
+
+                    <YesNoActionComponent GameEventType="BattleClaimed" h="@h" Title=@title Alert="true" />
                 }
                 break;
             case "Voice":

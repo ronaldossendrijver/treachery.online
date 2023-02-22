@@ -604,7 +604,7 @@ namespace Treachery.Shared
         private static IEnumerable<TreacheryCard> CardsPlayableAsDefense(Game g, Player p, TreacheryCard withWeapon, Territory territoryOfBattle)
         {
             var fightingOnOwnHomeworld = territoryOfBattle != null && p.IsNative(territoryOfBattle);
-            var forcesToRevealUnderNoField = p.Is(Faction.White) && p.SpecialForcesIn(territoryOfBattle) != 0 ? Math.Min(p.ForcesInReserve, g.CurrentNoFieldValue) : 0;
+            var forcesToRevealUnderNoField = territoryOfBattle != null && p.Is(Faction.White) && p.SpecialForcesIn(territoryOfBattle) != 0 ? Math.Min(p.ForcesInReserve, g.CurrentNoFieldValue) : 0;
 
             return p.TreacheryCards.Where(c =>
             c.Type != TreacheryCardType.WeirdingWay && (c.IsDefense || c.Type == TreacheryCardType.Useless) ||

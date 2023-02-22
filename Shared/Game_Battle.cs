@@ -58,7 +58,8 @@ namespace Treachery.Shared
 
         public void HandleEvent(BattleClaimed e)
         {
-            CurrentPinkOrAllyFighter = e.Passed ? e.Player.Ally : e.Initiator;
+            Log(e);
+            CurrentPinkOrAllyFighter = e.Passed ? GetAlly(Faction.Pink) : Faction.Pink;
             Enter(Phase.BattlePhase);
             InitiateBattle();
             DeterminePinkContribution(GetPlayer(CurrentPinkOrAllyFighter));

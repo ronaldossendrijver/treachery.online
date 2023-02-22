@@ -28,11 +28,11 @@ namespace Treachery.Shared
         {
             if (Passed)
             {
-                return Message.Express(Initiator, " let their ally fight this battle");
+                return Message.Express(Faction.Pink, " will fight this battle");
             }
             else
             {
-                return Message.Express(Initiator, " fight this battle for their ally");
+                return Message.Express(Faction.Pink, "'s ally will fight this battle");
             }
         }
     }
