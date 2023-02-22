@@ -10,6 +10,25 @@ namespace Treachery.Shared
 {
     public partial class Player
     {
+        #region Red
+
+        private RedDiscarded DetermineRedDiscarded()
+        {
+            if (Resources >= 10 && !HasRoomForCards)
+            {
+                var worstCard = TreacheryCards.OrderBy(c => CardQuality(c, null)).First();
+
+                if (CardQuality(worstCard, null) <= 1)
+                {
+                    return new RedDiscarded(Game) { Initiator = Faction, Card = worstCard };
+                }
+            }
+
+            return null;
+        }
+
+        #endregion
+
         #region Grey
 
         protected virtual ReplacedCardWon DetermineReplacedCardWon()

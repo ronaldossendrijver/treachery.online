@@ -244,6 +244,7 @@ namespace Treachery.Shared
                     break;
                 case Phase.BiddingReport:
                     if (faction == Faction.Purple && Players.Count > 1 && (Version < 113 || !Prevented(FactionAdvantage.PurpleIncreasingRevivalLimits))) result.Add(typeof(SetIncreasedRevivalLimits));
+                    if (faction == Faction.Red && player.HasHighThreshold() && player.Resources >= 2) result.Add(typeof(RedDiscarded));
                     break;
 
                 case Phase.BeginningOfResurrection:
@@ -680,7 +681,8 @@ namespace Treachery.Shared
                     !KarmaPrevented(faction) &&
                     !player.SpecialKarmaPowerUsed &&
                     player.Has(TreacheryCardType.Karma) &&
-                    Applicable(Rule.AdvancedKarama))
+                    Applicable(Rule.AdvancedKarama) &&
+                    !HasBidToPay(player))
                 {
                     result.Add(typeof(KarmaWhiteBuy));
                 }

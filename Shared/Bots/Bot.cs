@@ -152,6 +152,7 @@ namespace Treachery.Shared
 
                 //Red
                 Do(DetermineKarmaFreeRevival, ref action, evts) ||
+                Do(DetermineRedDiscarded, ref action, evts) ||
 
                 //Cyan
                 Do(DetermineTerrorPlanted, ref action, evts) ||

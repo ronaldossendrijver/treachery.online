@@ -360,6 +360,13 @@ namespace Treachery.Shared
 
         }
 
+        public void HandleEvent(RedDiscarded e)
+        {
+            Log(e);
+            e.Player.Resources -= 2;
+            Discard(e.Player, e.Card);
+        }
+
         #endregion EventHandling
 
         #region Timers

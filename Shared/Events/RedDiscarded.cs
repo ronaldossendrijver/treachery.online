@@ -6,15 +6,15 @@ using Newtonsoft.Json;
 
 namespace Treachery.Shared
 {
-    public class Discarded : GameEvent
+    public class RedDiscarded : GameEvent
     {
         public int _cardId;
 
-        public Discarded(Game game) : base(game)
+        public RedDiscarded(Game game) : base(game)
         {
         }
 
-        public Discarded()
+        public RedDiscarded()
         {
         }
 
@@ -46,7 +46,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express(Initiator, " discard ", Card);
+            return Message.Express(Initiator, " pay ", Game.Payment(2), " to discard ", Card);
         }
     }
 }
