@@ -1226,7 +1226,7 @@ namespace Treachery.Shared
 
         private void AddHomeworld(int territoryId, int locationId, World world, Faction faction, bool isHomeOfNormalForces, bool isHomeOfSpecialForces, int threshold, int battleBonusAtHighThreshold, int battleBonusAtLowThreshold)
         {
-            _locations.Add(new Homeworld(world, faction, new Territory(territoryId) { IsHomeworld = true, IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, isHomeOfNormalForces, isHomeOfSpecialForces, threshold, battleBonusAtHighThreshold, battleBonusAtLowThreshold, locationId));
+            _locations.Add(new Homeworld(world, faction, new Territory(territoryId) { IsHomeworld = true, IsStronghold = false, IsProtectedFromStorm = true, IsProtectedFromWorm = true }, isHomeOfNormalForces, isHomeOfSpecialForces, threshold, battleBonusAtHighThreshold, battleBonusAtLowThreshold, locationId));
         }
 
         public void InitializeLocationNeighbours()

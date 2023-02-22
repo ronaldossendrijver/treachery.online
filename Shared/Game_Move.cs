@@ -237,7 +237,7 @@ namespace Treachery.Shared
                 {
                     if (!Prevented(FactionAdvantage.OrangeReceiveShipment))
                     {
-                        ModyfyIncomeBasedOnThresholdOrOccupation(orange, ref receiverProfit);
+                        ModifyIncomeBasedOnThresholdOrOccupation(orange, ref receiverProfit);
                         orange.Resources += receiverProfit;
 
                         if (receiverProfit > 0)

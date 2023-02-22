@@ -795,7 +795,7 @@ namespace Treachery.Shared
                 else
                 {
                     receiverProfit = totalAmount;
-                    ModyfyIncomeBasedOnThresholdOrOccupation(receiver, ref receiverProfit);
+                    ModifyIncomeBasedOnThresholdOrOccupation(receiver, ref receiverProfit);
                     receiver.Resources += receiverProfit;
                     receiver.ResourcesAfterBidding += bidRedContributionAmount;
 

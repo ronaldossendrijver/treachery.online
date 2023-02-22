@@ -11,10 +11,13 @@ namespace Treachery.Shared
     public partial class Game
     {
         private int ResourcesCollectedByYellow { get; set; }
+        private int ResourcesCollectedByBlackFromDesertOrHomeworld { get; set; }
+
         private void EnterSpiceCollectionPhase()
         {
             MainPhaseStart(MainPhase.Collection);
             ResourcesCollectedByYellow = 0;
+            ResourcesCollectedByBlackFromDesertOrHomeworld = 0;
             CallHeroesHome();
 
             if (Version < 122)
@@ -75,34 +78,51 @@ namespace Treachery.Shared
             CurrentDivideResources = null;
         }
 
-        private void Collect(Faction faction, object from, int amount)
+        private void Collect(Faction faction, Territory from, int amount)
         {
             Log(faction, " collect ", Payment(amount), " from ", from);
             GetPlayer(faction).Resources += amount;
             if (faction == Faction.Yellow) ResourcesCollectedByYellow += amount;
+            if (faction == Faction.Black && !from.IsStronghold && !from.IsProtectedFromWorm) ResourcesCollectedByBlackFromDesertOrHomeworld += amount;
         }
 
         private void EndCollectionMainPhase()
         {
             int receivedAmountByYellow = ResourcesCollectedByYellow;
-            ModyfyIncomeBasedOnThresholdOrOccupation(GetPlayer(Faction.Yellow), ref receivedAmountByYellow);
+            ModifyIncomeBasedOnThresholdOrOccupation(GetPlayer(Faction.Yellow), ref receivedAmountByYellow, out Player occupier, out int amountToOccupier);
+            if (occupier != null && occupier.Is(Faction.Black)) ResourcesCollectedByBlackFromDesertOrHomeworld += amountToOccupier;
+
+            var black = GetPlayer(Faction.Black);
+            if (ResourcesCollectedByBlackFromDesertOrHomeworld != 0 && black.HasHighThreshold())
+            {
+                black.Resources += 2;
+                Log(Faction.Black, " get ", Payment(2), " from ", black.PrimaryHomeworld);
+            }
+
             MainPhaseEnd();
             Enter(Version >= 103, Phase.CollectionReport, EnterMentatPhase);
         }
 
-        private void ModyfyIncomeBasedOnThresholdOrOccupation(Player from, ref int receivedAmount)
+        private void ModifyIncomeBasedOnThresholdOrOccupation(Player from, ref int receivedAmount) => ModifyIncomeBasedOnThresholdOrOccupation(from, ref receivedAmount, out _, out _);
+
+
+        private void ModifyIncomeBasedOnThresholdOrOccupation(Player from, ref int receivedAmount, out Player occupier, out int amountToOccupier)
         {
+            occupier = null;
+            amountToOccupier = 0;
+
             if (receivedAmount > 1 && Applicable(Rule.Homeworlds))
             {
-                int amountLost = from.HasLowThreshold() ? (int)(0.5f * receivedAmount) : 0;
-                receivedAmount -= amountLost;
+                amountToOccupier = from.HasLowThreshold() ? (int)(0.5f * receivedAmount) : 0;
+                receivedAmount -= amountToOccupier;
 
                 var homeworld = from.Homeworlds.First();
-                var occupier = OccupierOf(homeworld.World);
+                occupier = OccupierOf(homeworld.World);
+
                 if (occupier != null)
                 {
-                    occupier.Resources += amountLost;
-                    Log(Payment(amountLost), " received by ", from, " goes to ", occupier.Faction);
+                    occupier.Resources += amountToOccupier;
+                    Log(Payment(amountToOccupier), " received by ", from, " goes to ", occupier.Faction);
                 }
             }
         }
@@ -113,17 +133,17 @@ namespace Treachery.Shared
             {
                 foreach (var playerInArrakeen in Players.Where(p => p.Controls(this, Map.Arrakeen, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
                 {
-                    Collect(playerInArrakeen.Faction, Map.Arrakeen, 2);
+                    Collect(playerInArrakeen.Faction, Map.Arrakeen.Territory, 2);
                 }
 
                 foreach (var playerInCarthag in Players.Where(p => p.Controls(this, Map.Carthag, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
                 {
-                    Collect(playerInCarthag.Faction, Map.Carthag, 2);
+                    Collect(playerInCarthag.Faction, Map.Carthag.Territory, 2);
                 }
 
                 foreach (var playerInTueksSietch in Players.Where(p => p.Controls(this, Map.TueksSietch, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
                 {
-                    Collect(playerInTueksSietch.Faction, Map.TueksSietch, 1);
+                    Collect(playerInTueksSietch.Faction, Map.TueksSietch.Territory, 1);
                 }
             }
         }
