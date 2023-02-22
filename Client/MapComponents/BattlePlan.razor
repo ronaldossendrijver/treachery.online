@@ -41,7 +41,7 @@
             dialBonusX += 2 * Skin.Current.RESOURCETOKEN_RADIUS;
         }
 
-        int homeworldBonus = Plan.Player.GetHomeworldBattleContribution(Game.CurrentBattle.Territory);
+        int homeworldBonus = Plan.Player.GetHomeworldBattleContributionAndLasgunShieldLimit(Game.CurrentBattle.Territory);
         if (homeworldBonus != 0) 
         {
             var homeworld = Game.CurrentBattle.Territory.Locations.First() as Homeworld;

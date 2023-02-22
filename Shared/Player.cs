@@ -721,7 +721,7 @@ namespace Treachery.Shared
 
         public bool IsNative(Homeworld hw) => Homeworlds.Contains(hw);
 
-        public int GetHomeworldBattleContribution(Territory whereBattleHappens)
+        public int GetHomeworldBattleContributionAndLasgunShieldLimit(Territory whereBattleHappens)
         {
             if (!whereBattleHappens.IsHomeworld || !IsNative(whereBattleHappens)) return 0;
 
@@ -729,11 +729,11 @@ namespace Treachery.Shared
 
             if (HasHighThreshold(homeworld.World))
             {
-                return homeworld.BattleBonusAtHighThreshold;
+                return homeworld.BattleBonusAndLasgunShieldLimitAtHighThreshold;
             }
             else
             {
-                return homeworld.BattleBonusAtLowThreshold;
+                return homeworld.BattleBonusAndLasgunShieldLimitAtLowThreshold;
             }
 
         }

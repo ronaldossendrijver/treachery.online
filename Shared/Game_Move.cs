@@ -1005,7 +1005,7 @@ namespace Treachery.Shared
 
                     case TerrorType.Atomics:
 
-                        KillAllForcesIn(territory);
+                        KillAllForcesIn(territory, false);
 
                         KillAmbassadorIn(territory);
 

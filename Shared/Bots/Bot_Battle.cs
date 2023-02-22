@@ -1091,8 +1091,8 @@ namespace Treachery.Shared
             int opponentMessiahBonus = Battle.MessiahAvailableForBattle(Game, opponent) ? 2 : 0;
             int maxReinforcements = takeReinforcementsIntoAccount ? (int)Math.Ceiling(inBattle.MaxReinforcedDialTo(opponent, territory)) : 0;
             var opponentDial = (prescience == PrescienceAspect.Dial && opponentPlan != null) ? opponentPlan.Dial(Game, inBattle.Faction) : inBattle.MaxDial(opponent, territory, inBattle);
-            int myHomeworldBonus = GetHomeworldBattleContribution(territory);
-            int opponentHomeworldBonus = opponent.GetHomeworldBattleContribution(territory);
+            int myHomeworldBonus = GetHomeworldBattleContributionAndLasgunShieldLimit(territory);
+            int opponentHomeworldBonus = opponent.GetHomeworldBattleContributionAndLasgunShieldLimit(territory);
 
             var result =
                 opponentDial +

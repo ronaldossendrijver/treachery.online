@@ -905,8 +905,8 @@ namespace Treachery.Shared
             result.AggReinforcementsContribution = agg.HasReinforcements ? 3 : 0;
             result.DefReinforcementsContribution = def.HasReinforcements ? 3 : 0;
 
-            result.AggHomeworldContribution = agg.Player.GetHomeworldBattleContribution(territory);
-            result.DefHomeworldContribution = def.Player.GetHomeworldBattleContribution(territory);
+            result.AggHomeworldContribution = agg.Player.GetHomeworldBattleContributionAndLasgunShieldLimit(territory);
+            result.DefHomeworldContribution = def.Player.GetHomeworldBattleContributionAndLasgunShieldLimit(territory);
 
             result.AggTotal = aggForceDial + aggHeroContribution + aggPinkKarmaContribution + result.AggHomeworldContribution + result.AggReinforcementsContribution;
             result.DefTotal = defForceDial + defHeroContribution + defPinkKarmaContribution + result.DefHomeworldContribution + result.DefReinforcementsContribution;
@@ -1333,7 +1333,7 @@ namespace Treachery.Shared
                 Log("The explosion destroys ", Payment(removed), " in ", territory);
             }
 
-            KillAllForcesIn(territory);
+            KillAllForcesIn(territory, true);
             KillAmbassadorIn(territory);
 
             if ((aggressor.MessiahAvailable || defender.MessiahAvailable) && !hadMessiahBeforeLosses)
@@ -1342,17 +1342,34 @@ namespace Treachery.Shared
             }
         }
 
-        private void KillAllForcesIn(Territory territory)
+        private void KillAllForcesIn(Territory territory, bool lasgunShield)
         {
             foreach (var p in Players)
             {
-                RevealCurrentNoField(p, territory);
-
-                int numberOfForces = p.AnyForcesIn(territory);
-                if (numberOfForces > 0)
+                if (p.AnyForcesIn(territory) > 0)
                 {
-                    Log("The explosion kills all ", numberOfForces, p.Faction, " forces in ", territory);
-                    p.KillAllForces(territory, true);
+                    RevealCurrentNoField(p, territory);
+
+                    int homeworldKillLimit = lasgunShield ? p.GetHomeworldBattleContributionAndLasgunShieldLimit(territory) : 0;
+                    if (homeworldKillLimit == 0)
+                    {
+                        Log("The explosion kills all ", p.Faction, " forces in ", territory);
+                        p.KillAllForces(territory, true);
+                    }
+                    else
+                    {
+                        int normalForcesToKill = Math.Min(p.ForcesIn(territory), homeworldKillLimit);
+                        int specialForcesToKill = Math.Min(p.SpecialForcesIn(territory), homeworldKillLimit - normalForcesToKill);
+
+                        if (normalForcesToKill > 0) p.KillForces(territory, normalForcesToKill, false, true);
+                        if (specialForcesToKill > 0) p.KillForces(territory, specialForcesToKill, true, true);
+
+                        Log("The explosion kills ", 
+                            MessagePart.ExpressIf(normalForcesToKill > 0, normalForcesToKill, p.Force),
+                            MessagePart.ExpressIf(normalForcesToKill > 0 && specialForcesToKill > 0, " and "),
+                            MessagePart.ExpressIf(specialForcesToKill > 0, specialForcesToKill, p.SpecialForce),
+                            " in ", territory);
+                    }
                 }
             }
         }
