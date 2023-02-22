@@ -1209,24 +1209,24 @@ namespace Treachery.Shared
                 _locations.Add(HiddenMobileStronghold);
             }
 
-            AddHomeworld(43, id++, World.Green, Faction.Green, true, false, 6);
-            AddHomeworld(44, id++, World.Black, Faction.Black, true, false, 7);
-            AddHomeworld(45, id++, World.Yellow, Faction.Yellow, true, true, 3);
-            AddHomeworld(46, id++, World.Red, Faction.Red, true, false, 5);
-            AddHomeworld(47, id++, World.RedStar, Faction.Red, false, true, 2);
-            AddHomeworld(48, id++, World.Orange, Faction.Orange, true, false, 5);
-            AddHomeworld(49, id++, World.Blue, Faction.Blue, true, false, 11);
-            AddHomeworld(50, id++, World.Grey, Faction.Grey, true, true, 5);
-            AddHomeworld(51, id++, World.Purple, Faction.Purple, true, false, 9);
-            AddHomeworld(52, id++, World.Brown, Faction.Brown, true, false, 11);
-            AddHomeworld(53, id++, World.White, Faction.White, true, false, 10);
-            AddHomeworld(54, id++, World.Pink, Faction.Pink, true, false, 7);
-            AddHomeworld(55, id++, World.Cyan, Faction.Cyan, true, false, 8);
+            AddHomeworld(43, id++, World.Green, Faction.Green, true, false, 6, 2, 2);
+            AddHomeworld(44, id++, World.Black, Faction.Black, true, false, 7, 2, 2);
+            AddHomeworld(45, id++, World.Yellow, Faction.Yellow, true, true, 3, 2, 2);
+            AddHomeworld(46, id++, World.Red, Faction.Red, true, false, 5, 2, 3);
+            AddHomeworld(47, id++, World.RedStar, Faction.Red, false, true, 2, 3, 2);
+            AddHomeworld(48, id++, World.Orange, Faction.Orange, true, false, 5, 2, 2);
+            AddHomeworld(49, id++, World.Blue, Faction.Blue, true, false, 11, 3, 2);
+            AddHomeworld(50, id++, World.Grey, Faction.Grey, true, true, 5, 2, 2);
+            AddHomeworld(51, id++, World.Purple, Faction.Purple, true, false, 9, 2, 2);
+            AddHomeworld(52, id++, World.Brown, Faction.Brown, true, false, 11, 2, 2);
+            AddHomeworld(53, id++, World.White, Faction.White, true, false, 10, 2, 2);
+            AddHomeworld(54, id++, World.Pink, Faction.Pink, true, false, 7, 2, 2);
+            AddHomeworld(55, id++, World.Cyan, Faction.Cyan, true, false, 8, 2, 2);
         }
 
-        private void AddHomeworld(int territoryId, int locationId, World world, Faction faction, bool isHomeOfNormalForces, bool isHomeOfSpecialForces, int threshold)
+        private void AddHomeworld(int territoryId, int locationId, World world, Faction faction, bool isHomeOfNormalForces, bool isHomeOfSpecialForces, int threshold, int battleBonusAtHighThreshold, int battleBonusAtLowThreshold)
         {
-            _locations.Add(new Homeworld(world, faction, new Territory(territoryId) { IsHomeworld = true, IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, isHomeOfNormalForces, isHomeOfSpecialForces, threshold, locationId));
+            _locations.Add(new Homeworld(world, faction, new Territory(territoryId) { IsHomeworld = true, IsStronghold = false, IsProtectedFromStorm = false, IsProtectedFromWorm = false }, isHomeOfNormalForces, isHomeOfSpecialForces, threshold, battleBonusAtHighThreshold, battleBonusAtLowThreshold, locationId));
         }
 
         public void InitializeLocationNeighbours()

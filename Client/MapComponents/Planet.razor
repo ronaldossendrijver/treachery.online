@@ -42,7 +42,7 @@
     }
 
     <!-- Highlighted Territories -->
-    @foreach (var territory in h.Status.HighlightedTerritories.Where(t => t != Game.Map.HiddenMobileStronghold.Territory)) {
+    @foreach (var territory in h.Status.HighlightedTerritories.Where(t => t != Game.Map.HiddenMobileStronghold.Territory && !t.IsHomeworld)) {
 
         <path d="@Skin.Current.GetTerritoryBorder(territory)" fill="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" fill-opacity="1" stroke="red" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
     }

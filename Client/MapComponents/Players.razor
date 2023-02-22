@@ -83,6 +83,12 @@
                        Src="@Skin.Current.GetImageURL(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
                        Popover="@HomeworldIntel(homeworld)" />
 
+                if (h.Status.HighlightedTerritories.Any(t => t.Locations.Contains(homeworld)))
+                {
+                    <Circle X=@(homeworldX + Skin.Current.PlayerTokenRadius) Y=@(@homeworldY + Skin.Current.PlayerTokenRadius) Radius=@Skin.Current.PlayerTokenRadius 
+                            FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" StrokeWidth="1" StrokeColor="red"/>
+                }
+
                 var verticalRoomRequired = Game.BattalionsIn(homeworld).Count() * Skin.Current.FORCETOKEN_RADIUS;
                 var reservesY = homeworldY + Skin.Current.PlayerTokenRadius + 0.5f * (Skin.Current.PlayerTokenRadius - verticalRoomRequired);
 

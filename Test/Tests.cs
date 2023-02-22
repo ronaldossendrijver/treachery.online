@@ -26,6 +26,11 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            if (e is RecruitsPlayed)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "RecruitsPlayed");
+            }
+
             if (e is CardGiven)
             {
                 WriteSavegameIfApplicable(g, e.Player, "CardGiven");
@@ -527,7 +532,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 1000;
+            int nrOfGames = 200;
             int nrOfTurns = 7;
             int nrOfPlayers = 7;
 

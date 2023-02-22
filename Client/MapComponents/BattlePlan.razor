@@ -25,16 +25,53 @@
                  X="@(forceX)" Y="@(forceY)"
                  Font="@Skin.Current.WHEEL_FONT" FontColor="@Skin.Current.WHEEL_FONTCOLOR"
                  BorderWidth="Skin.Current.WHEEL_FONT_BORDERWIDTH" BorderColor="@(IsAggressor ? Skin.Current.WHEEL_FONT_AGGRESSOR_BORDERCOLOR : Skin.Current.WHEEL_FONT_DEFENDER_BORDERCOLOR)"
-        Align="@TextAlignment.Center" />
+                 Align="@TextAlignment.Center" />
+        
+        float dialBonusX = forceX + 2 * Skin.Current.RESOURCETOKEN_RADIUS;
 
         if (Plan.Initiator == Faction.Pink && Game.PinkKarmaBonus != 0)
         {
             var karmaBonusText = $"+{Game.PinkKarmaBonus}";
             <MapText ToShow=@karmaBonusText
-                     X="@(forceX + 2 * Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY)"
+                     X=@dialBonusX Y=@forceY
+                     Font="@Skin.Current.WHEEL_FONT" FontColor="green"
+                     BorderWidth="Skin.Current.WHEEL_FONT_BORDERWIDTH" BorderColor="@(IsAggressor ? Skin.Current.WHEEL_FONT_AGGRESSOR_BORDERCOLOR : Skin.Current.WHEEL_FONT_DEFENDER_BORDERCOLOR)"
+            Align="@TextAlignment.Center" />
+
+            dialBonusX += 2 * Skin.Current.RESOURCETOKEN_RADIUS;
+        }
+
+        int homeworldBonus = Plan.Player.GetHomeworldBattleContribution(Game.CurrentBattle.Territory);
+        if (homeworldBonus != 0) 
+        {
+            var homeworld = Game.CurrentBattle.Territory.Locations.First() as Homeworld;
+
+            <Image X=@(dialBonusX - Skin.Current.RESOURCETOKEN_RADIUS) Y=@(forceY - Skin.Current.RESOURCETOKEN_RADIUS)
+                   Diameter=@(2 * Skin.Current.PlayerTokenRadius)
+                   Src="@Skin.Current.GetImageURL(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" />
+
+            var homeworldBonusText = $"+{homeworldBonus}";
+
+            <MapText ToShow=@homeworldBonusText
+                    X=@dialBonusX Y=@forceY
+                    Popover="Homeworld Bonus"
+                    Font="@Skin.Current.WHEEL_FONT" FontColor="green"
+                    BorderWidth="Skin.Current.WHEEL_FONT_BORDERWIDTH" BorderColor="@(IsAggressor ? Skin.Current.WHEEL_FONT_AGGRESSOR_BORDERCOLOR : Skin.Current.WHEEL_FONT_DEFENDER_BORDERCOLOR)"
+                    Align="@TextAlignment.Center" />
+
+            dialBonusX += 2 * Skin.Current.RESOURCETOKEN_RADIUS;
+        }
+
+        if (Plan.HasReinforcements)
+        {
+            <MapText ToShow="+3"
+                     X=@dialBonusX Y=@forceY
+                     Popover=@Skin.Current.Describe(TreacheryCardType.Reinforcements)
                      Font="@Skin.Current.WHEEL_FONT" FontColor="green"
                      BorderWidth="Skin.Current.WHEEL_FONT_BORDERWIDTH" BorderColor="@(IsAggressor ? Skin.Current.WHEEL_FONT_AGGRESSOR_BORDERCOLOR : Skin.Current.WHEEL_FONT_DEFENDER_BORDERCOLOR)"
                      Align="@TextAlignment.Center" />
+
+            dialBonusX += 2 * Skin.Current.RESOURCETOKEN_RADIUS;
         }
     }
 
@@ -43,11 +80,11 @@
         int costsOfBattle = Plan.Cost(Game);
         if (costsOfBattle > 0)
         {
-            <Image X="@(forceX + 3 * Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY - Skin.Current.RESOURCETOKEN_RADIUS)" Diameter="@(Skin.Current.RESOURCETOKEN_RADIUS * 2)" 
+            <Image X="@(forceX + 5 * Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY)" Diameter="@(Skin.Current.RESOURCETOKEN_RADIUS * 2)" 
                    Src="@Skin.Current.Harvester_URL" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
 
             <MapText ToShow="@costsOfBattle.ToString()"
-                     X="@(forceX + 4 * Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY)"
+                     X="@(forceX + 6 * Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY + Skin.Current.RESOURCETOKEN_RADIUS)"
                      Font="@Skin.Current.RESOURCETOKEN_FONT" FontColor="@Skin.Current.RESOURCETOKEN_FONTCOLOR"
                      BorderWidth="Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
                      Align="@TextAlignment.Center" />
@@ -55,7 +92,7 @@
 
         if (Game.HasStrongholdAdvantage(Plan.Initiator, StrongholdAdvantage.FreeResourcesForBattles, Game.CurrentBattle.Territory))
         {
-            <Image X="@(forceX + 6f * Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY - 0.2f * Skin.Current.BattleWheelCardHeight)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" 
+            <Image X="@(forceX + 8f * Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" 
             Src="@Skin.Current.GetImageURL(Game.Map.Arrakeen)" 
             ShadowColor="@Skin.Current.SHADOW" ShadowX="3" ShadowY="3" ShadowBlur="1" 
             Popover="@Popup.Get(Game.Map.Arrakeen, Plan.Initiator)"/>

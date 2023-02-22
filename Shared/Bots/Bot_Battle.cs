@@ -185,7 +185,7 @@ namespace Treachery.Shared
             if (decidedShipmentAction == ShipmentDecision.DummyShipment)
             {
                 LogInfo("I'm spending as little as possible on this fight because this is a dummy shipment");
-                return ConstructLostBattleMinimizingLosses(opponent);
+                return ConstructLostBattleMinimizingLosses(opponent, null);
             }
 
             int forcesAvailable = Battle.MaxForces(Game, this, false);
@@ -231,6 +231,18 @@ namespace Treachery.Shared
                 out int specialForcesAtFullStrength,
                 out int specialForcesAtHalfStrength);
 
+            if (dialShortage <= 3 && (weapon == null || defense == null))
+            {
+                var reinforcements = Battle.ValidWeapons(Game, this, defense, hero, Game.CurrentBattle.Territory, false).FirstOrDefault(c => c.Type == TreacheryCardType.Reinforcements);
+                if (reinforcements != null)
+                {
+                    if (weapon == null) weapon = reinforcements;
+                    else defense = reinforcements;
+
+                    dialShortage -= 3;
+                }
+            }
+
             bool predicted = WinWasPredictedByMeThisTurn(opponent.Faction);
             var totalForces = forcesAtFullStrength + forcesAtHalfStrength + specialForcesAtFullStrength + specialForcesAtHalfStrength;
             bool minimizeSpendingsInThisLostFight = predicted || isTraitor && !messiah || Resources + ResourcesFromAlly < 10 && totalForces <= 8 && dialShortage > Param.Battle_DialShortageThresholdForThrowing;
@@ -240,7 +252,7 @@ namespace Treachery.Shared
                 if (weapon == null && !MayUseUselessAsKarma && Faction != Faction.Brown) weapon = UselessAsWeapon(defense);
                 if (defense == null && !MayUseUselessAsKarma && Faction != Faction.Brown) defense = UselessAsDefense(weapon);
 
-                RemoveIllegalChoices(ref hero, ref weapon, ref defense);
+                RemoveIllegalChoices(ref hero, ref weapon, ref defense, Game.CurrentBattle.Territory);
 
                 AvoidLasgunShieldExplosion(ref weapon, ref defense);
 
@@ -267,7 +279,7 @@ namespace Treachery.Shared
                 LogInfo("I'm spending as little as possible on this fight: predicted:{0}, isTraitor:{1} && !messiah:{2}, Resources:{3} < 10 && totalForces:{4} < 10 && dialShortage:{5} >= dialShortageToAccept:{6}",
                     predicted, isTraitor, messiah, Resources, totalForces, dialShortage, Param.Battle_DialShortageThresholdForThrowing);
 
-                return ConstructLostBattleMinimizingLosses(opponent);
+                return ConstructLostBattleMinimizingLosses(opponent, Game.CurrentBattle.Territory);
             }
         }
 
@@ -275,16 +287,16 @@ namespace Treachery.Shared
         {
             if (weapon == null && myHeroSurviving < Param.Battle_MimimumChanceToAssumeMyLeaderSurvives && enemyHeroSurviving >= Param.Battle_MimimumChanceToAssumeEnemyHeroSurvives)
             {
-                weapon = Weapons(defense, null).FirstOrDefault(c => c.Type == TreacheryCardType.Rockmelter);
+                weapon = Weapons(defense, null, null).FirstOrDefault(c => c.Type == TreacheryCardType.Rockmelter);
 
                 if (weapon == null)
                 {
-                    weapon = Weapons(defense, null).FirstOrDefault(c => c.Type == TreacheryCardType.ArtilleryStrike);
+                    weapon = Weapons(defense, null, null).FirstOrDefault(c => c.Type == TreacheryCardType.ArtilleryStrike);
                 }
 
                 if (weapon == null && !enemyCanDefendPoisonTooth)
                 {
-                    weapon = Weapons(defense, null).FirstOrDefault(c => c.Type == TreacheryCardType.PoisonTooth);
+                    weapon = Weapons(defense, null, null).FirstOrDefault(c => c.Type == TreacheryCardType.PoisonTooth);
                 }
 
                 if (weapon != null)
@@ -298,7 +310,7 @@ namespace Treachery.Shared
             }
         }
 
-        private Battle ConstructLostBattleMinimizingLosses(Player opponent)
+        private Battle ConstructLostBattleMinimizingLosses(Player opponent, Territory territory)
         {
             IHero lowestAvailableHero = Battle.ValidBattleHeroes(Game, this).FirstOrDefault(h => h is TreacheryCard);
             if (lowestAvailableHero == null)
@@ -306,18 +318,33 @@ namespace Treachery.Shared
                 SelectHeroForBattle(opponent, false, true, false, null, null, out lowestAvailableHero, out _);
             }
 
-            var uselessAsWeapon = lowestAvailableHero == null || MayUseUselessAsKarma || Faction == Faction.Brown ? null : UselessAsWeapon(null);
-            var uselessAsDefense = lowestAvailableHero == null || MayUseUselessAsKarma || Faction == Faction.Brown ? null : UselessAsDefense(uselessAsWeapon);
+            var weapon = lowestAvailableHero == null || MayUseUselessAsKarma || Faction == Faction.Brown ? null : UselessAsWeapon(null);
+            var defense = lowestAvailableHero == null || MayUseUselessAsKarma || Faction == Faction.Brown ? null : UselessAsDefense(weapon);
 
-            RemoveIllegalChoices(ref lowestAvailableHero, ref uselessAsWeapon, ref uselessAsDefense);
+            RemoveIllegalChoices(ref lowestAvailableHero, ref weapon, ref defense, territory);
+
+            TreacheryCard harassAndWithdraw = null;
+            if (territory != null && AnyForcesIn(territory) >= 4)
+            {
+                if (weapon == null && Battle.ValidWeapons(Game, this, defense, lowestAvailableHero, territory).Any(c => c.Type == TreacheryCardType.HarassAndWithdraw))
+                {
+                    harassAndWithdraw = TreacheryCards.First(tc => tc.Type == TreacheryCardType.HarassAndWithdraw);
+                    weapon = harassAndWithdraw;
+                }
+                else if (defense == null && Battle.ValidDefenses(Game, this, weapon, territory).Any(c => c.Type == TreacheryCardType.HarassAndWithdraw))
+                {
+                    harassAndWithdraw = TreacheryCards.First(tc => tc.Type == TreacheryCardType.HarassAndWithdraw);
+                    defense = harassAndWithdraw;
+                }
+            }
 
             bool messiah = lowestAvailableHero != null && Battle.MessiahMayBeUsedInBattle(Game, this);
 
             if (Battle.MustPayForForcesInBattle(Game, this))
             {
                 int strongholdFreeForces = Game.HasStrongholdAdvantage(Faction, StrongholdAdvantage.FreeResourcesForBattles, Game.CurrentBattle.Territory) ? 2 : 0;
-                int specialAtFull = Math.Min(strongholdFreeForces, Battle.MaxForces(Game, this, true));
-                int normalAtFull = Math.Min(strongholdFreeForces - specialAtFull, Battle.MaxForces(Game, this, false));
+                int specialAtFull = harassAndWithdraw != null ? 0 : Math.Min(strongholdFreeForces, Battle.MaxForces(Game, this, true));
+                int normalAtFull = harassAndWithdraw != null ? 0 : Math.Min(strongholdFreeForces - specialAtFull, Battle.MaxForces(Game, this, false));
                 return new Battle(Game)
                 {
                     Initiator = Faction,
@@ -326,8 +353,8 @@ namespace Treachery.Shared
                     ForcesAtHalfStrength = Battle.MaxForces(Game, this, false) - normalAtFull,
                     SpecialForces = specialAtFull,
                     SpecialForcesAtHalfStrength = Battle.MaxForces(Game, this, true) - specialAtFull,
-                    Defense = uselessAsDefense,
-                    Weapon = uselessAsWeapon,
+                    Defense = defense,
+                    Weapon = weapon,
                     BankerBonus = 0,
                     Messiah = messiah
                 };
@@ -342,15 +369,15 @@ namespace Treachery.Shared
                     ForcesAtHalfStrength = 0,
                     SpecialForces = Battle.MaxForces(Game, this, true),
                     SpecialForcesAtHalfStrength = 0,
-                    Defense = uselessAsDefense,
-                    Weapon = uselessAsWeapon,
+                    Defense = defense,
+                    Weapon = weapon,
                     BankerBonus = 0,
                     Messiah = messiah
                 };
             }
         }
 
-        private void RemoveIllegalChoices(ref IHero hero, ref TreacheryCard weapon, ref TreacheryCard defense)
+        private void RemoveIllegalChoices(ref IHero hero, ref TreacheryCard weapon, ref TreacheryCard defense, Territory territory)
         {
             LogInfo($"Removing Illegal Choices: hero: {hero}, weapon: {weapon}, defense: {defense}...");
 
@@ -366,14 +393,14 @@ namespace Treachery.Shared
                 var weapClairvoyance = RulingWeaponClairvoyanceForThisBattle;
                 if (weapClairvoyance != null && !IsAllowedWithClairvoyance(weapClairvoyance, weapon, true))
                 {
-                    weapon = Weapons(defense, hero).FirstOrDefault(c => IsAllowedWithClairvoyance(weapClairvoyance, c, true));
+                    weapon = Weapons(defense, hero, territory).FirstOrDefault(c => IsAllowedWithClairvoyance(weapClairvoyance, c, true));
                     LogInfo($"Replaced weapon by: {weapon}");
                 }
 
                 var defClairvoyance = RulingDefenseClairvoyanceForThisBattle;
                 if (defClairvoyance != null && !IsAllowedWithClairvoyance(defClairvoyance, defense, false))
                 {
-                    defense = Defenses(weapon).FirstOrDefault(c => IsAllowedWithClairvoyance(defClairvoyance, c, false));
+                    defense = Defenses(weapon, territory).FirstOrDefault(c => IsAllowedWithClairvoyance(defClairvoyance, c, false));
                     LogInfo($"Replaced defense by: {defense}");
                 }
 
@@ -407,15 +434,15 @@ namespace Treachery.Shared
                     defense = null;
                 }
 
-                if (!Battle.ValidWeapons(Game, this, defense, hero, true).Contains(weapon))
+                if (!Battle.ValidWeapons(Game, this, defense, hero, territory, true).Contains(weapon))
                 {
-                    weapon = Weapons(defense, hero).FirstOrDefault(w => w.Type != TreacheryCardType.Chemistry);
+                    weapon = Weapons(defense, hero, territory).FirstOrDefault(w => w.Type != TreacheryCardType.Chemistry);
                     LogInfo($"Replaced weapon by: {weapon}");
                 }
 
-                if (!Battle.ValidDefenses(Game, this, weapon, true).Contains(defense))
+                if (!Battle.ValidDefenses(Game, this, weapon, territory, true).Contains(defense))
                 {
-                    defense = Defenses(weapon).FirstOrDefault(w => w.Type != TreacheryCardType.WeirdingWay);
+                    defense = Defenses(weapon, territory).FirstOrDefault(w => w.Type != TreacheryCardType.WeirdingWay);
                     LogInfo($"Replaced defense by: {defense}");
                 }
             }
@@ -568,7 +595,7 @@ namespace Treachery.Shared
                 return voicePlan.playerHeroWillCertainlySurvive ? 1 : 0.5f;
             }
 
-            var availableDefenses = Defenses(chosenWeapon).Where(def =>
+            var availableDefenses = Defenses(chosenWeapon, Game.CurrentBattle?.Territory).Where(def =>
                 def != chosenWeapon &&
                 (chosenWeapon == null || !(chosenWeapon.IsLaser && def.IsShield)) &&
                 (def.Type != TreacheryCardType.WeirdingWay || chosenWeapon != null) &&
@@ -604,7 +631,7 @@ namespace Treachery.Shared
                     }
                     else
                     {
-                        mostEffectiveDefense = Defenses(chosenWeapon).FirstOrDefault();
+                        mostEffectiveDefense = Defenses(chosenWeapon, null).FirstOrDefault();
                     }
 
                     return 1;
@@ -661,7 +688,7 @@ namespace Treachery.Shared
         private float DetermineBestDefense(Player opponent, TreacheryCard chosenWeapon, out TreacheryCard mostEffectiveDefense)
         {
             var knownEnemyWeapons = KnownOpponentWeapons(opponent).ToArray();
-            var availableDefenses = Defenses(chosenWeapon).Where(def =>
+            var availableDefenses = Defenses(chosenWeapon, null).Where(def =>
                 def != chosenWeapon &&
                 (chosenWeapon == null || !(chosenWeapon.IsLaser && def.IsShield)) &&
                 (def.Type != TreacheryCardType.WeirdingWay || chosenWeapon != null) &&
@@ -769,7 +796,7 @@ namespace Treachery.Shared
                 return voicePlan.opponentHeroWillCertainlyBeZero ? 1 : 0.5f;
             }
 
-            var availableWeapons = Weapons(null, null).Where(w => w.Type != TreacheryCardType.Useless && w.Type != TreacheryCardType.ArtilleryStrike && w.Type != TreacheryCardType.PoisonTooth && w.Type != TreacheryCardType.Rockmelter)
+            var availableWeapons = Weapons(null, null, null).Where(w => w.Type != TreacheryCardType.Useless && w.Type != TreacheryCardType.ArtilleryStrike && w.Type != TreacheryCardType.PoisonTooth && w.Type != TreacheryCardType.Rockmelter)
                 .OrderBy(w => NumberOfUnknownDefensesThatCouldCounterThisWeapon(CardsUnknownToMe, w)).ToArray();
 
             var opponentPlan = Game.CurrentBattle?.PlanOf(opponent);
@@ -946,7 +973,7 @@ namespace Treachery.Shared
             //var opponent = GetOpponentThatOccupies(territory);
             var voicePlan = Voice.MayUseVoice(Game, inBattle) ? inBattle.BestVoice(null, inBattle, opponent) : null;
             var strength = inBattle.MaxDial(opponent, territory, inBattle);
-            var prescience = Prescience.MayUsePrescience(Game, inBattle) ? inBattle.BestPrescience(opponent, strength, PrescienceAspect.None) : PrescienceAspect.None;
+            var prescience = Prescience.MayUsePrescience(Game, inBattle) ? inBattle.BestPrescience(opponent, strength, PrescienceAspect.None, territory) : PrescienceAspect.None;
 
             //More could be done with the information obtained in the below call
             return GetDialNeededForBattle(inBattle, inBattle.IWillBeAggressorAgainst(opponent), opponent, territory, voicePlan, prescience, takeReinforcementsIntoAccount, true, out _, out _, out _, out _, out _, out _, out _, out _, out _, out _);
@@ -1064,13 +1091,17 @@ namespace Treachery.Shared
             int opponentMessiahBonus = Battle.MessiahAvailableForBattle(Game, opponent) ? 2 : 0;
             int maxReinforcements = takeReinforcementsIntoAccount ? (int)Math.Ceiling(inBattle.MaxReinforcedDialTo(opponent, territory)) : 0;
             var opponentDial = (prescience == PrescienceAspect.Dial && opponentPlan != null) ? opponentPlan.Dial(Game, inBattle.Faction) : inBattle.MaxDial(opponent, territory, inBattle);
+            int myHomeworldBonus = GetHomeworldBattleContribution(territory);
+            int opponentHomeworldBonus = opponent.GetHomeworldBattleContribution(territory);
 
             var result =
                 opponentDial +
+                opponentHomeworldBonus + 
                 maxReinforcements +
                 (iAssumeEnemyLeaderWillDie ? 0 : 1) * (opponentLeaderValue + opponentMessiahBonus) +
                 (iAmAggressor ? 0 : 0.5f) -
-                (iAssumeMyLeaderWillDie ? 0 : 1) * (myHeroValue + opponentPenalty + myMessiahBonus);
+                (iAssumeMyLeaderWillDie ? 0 : 1) * (myHeroValue + opponentPenalty + myMessiahBonus) -
+                myHomeworldBonus;
 
 
             if (inBattle.MaxDial(inBattle, territory, opponent) - result >= 5)
@@ -1218,14 +1249,6 @@ namespace Treachery.Shared
             return new LoserConcluded(Game) { Initiator = Faction, KeptCard = toKeep, Assassinate = LoserConcluded.CanAssassinate(Game, this) };
         }
 
-        public bool Initiated(GameEvent e) => e != null && e.Initiator == Faction;
-
-        public bool IsNative(Territory territory) => territory.Locations.Any(l => IsNative(l));
-
-        public bool IsNative(Location l) => l is Homeworld hw && IsNative(hw);
-
-        public bool IsNative(Homeworld hw) => Homeworlds.Contains(hw);
-        
     }
 
 }

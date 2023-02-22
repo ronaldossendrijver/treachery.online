@@ -431,6 +431,9 @@ namespace Treachery.Shared
 
             ActivateSmuggler(aggtrt, deftrt, BattleOutcome, lasgunShield);
 
+            HandleReinforcements(agg);
+            HandleReinforcements(def);
+
             var aggressor = GetPlayer(agg.Initiator);
             var defender = GetPlayer(def.Initiator);
 
@@ -446,10 +449,34 @@ namespace Treachery.Shared
             {
                 SetHeroLocations(agg, b.Territory);
                 SetHeroLocations(def, b.Territory);
-                HandleBattleOutcome(agg, def);
+                HandleBattleOutcome(agg, def, b.Territory);
             }
 
             DetermineIfCapturedLeadersMustBeReleased();
+        }
+
+        private void HandleReinforcements(Battle plan)
+        {
+            if (plan.HasReinforcements)
+            {
+                int forcesToRemove = Math.Min(3, plan.Player.ForcesInReserve);
+                plan.Player.RemoveForcesFromReserves(forcesToRemove);
+                plan.Player.ForcesKilled += forcesToRemove;
+
+                int specialForcesToRemove = 3 - forcesToRemove;
+                if (specialForcesToRemove > 0)
+                {
+                    plan.Player.RemoveSpecialForcesFromReserves(specialForcesToRemove);
+                    plan.Player.SpecialForcesKilled += specialForcesToRemove;
+                }
+
+                Log(
+                    plan.Initiator,
+                    MessagePart.ExpressIf(forcesToRemove > 0, forcesToRemove, plan.Player.Force),
+                    MessagePart.ExpressIf(forcesToRemove > 0 && specialForcesToRemove > 0, " and "),
+                    MessagePart.ExpressIf(specialForcesToRemove > 0, specialForcesToRemove, plan.Player.SpecialForce),
+                    " reinforcements from reserves were killed");
+            }
         }
 
         private void ActivateSmuggler(TreacheryCalled aggtrt, TreacheryCalled deftrt, BattleOutcome outcome, bool lasgunShield)
@@ -721,7 +748,7 @@ namespace Treachery.Shared
 
         public bool LoserMayTryToAssassinate { get; private set; } = false;
 
-        public void HandleBattleOutcome(Battle agg, Battle def)
+        public void HandleBattleOutcome(Battle agg, Battle def, Territory territory)
         {
             LogIf(BattleOutcome.AggHeroSkillBonus != 0, agg.Hero, " ", BattleOutcome.AggActivatedBonusSkill, " bonus: ", BattleOutcome.AggHeroSkillBonus);
             LogIf(BattleOutcome.DefHeroSkillBonus != 0, def.Hero, " ", BattleOutcome.DefActivatedBonusSkill, " bonus: ", BattleOutcome.DefHeroSkillBonus);
@@ -768,6 +795,9 @@ namespace Treachery.Shared
 
             Log(BattleOutcome.Winner.Faction, " WIN THE BATTLE");
 
+            HandleHarassAndWithdraw(agg, territory);
+            HandleHarassAndWithdraw(def, territory);
+
             bool loserMayRetreat =
                 !BattleOutcome.LoserHeroKilled &&
                 SkilledAs(BattleOutcome.LoserBattlePlan.Hero, LeaderSkill.Diplomat) &&
@@ -775,6 +805,30 @@ namespace Treachery.Shared
                 Retreat.ValidTargets(this, BattleOutcome.Loser).Any();
 
             Enter(loserMayRetreat, Phase.Retreating, HandleLosses);
+        }
+
+        private void HandleHarassAndWithdraw(Battle plan, Territory territory)
+        {
+            if (plan.Weapon != null && plan.Weapon.Type == TreacheryCardType.HarassAndWithdraw ||
+                plan.Defense != null && plan.Defense.Type == TreacheryCardType.HarassAndWithdraw)
+            {
+                var forceSupplier = Battle.DetermineForceSupplier(this, plan.Player);
+                int undialledNormalForces = forceSupplier.ForcesIn(CurrentBattle.Territory) - plan.Forces - plan.ForcesAtHalfStrength;
+                int undialledSpecialForces = forceSupplier.SpecialForcesIn(CurrentBattle.Territory) - plan.SpecialForces - plan.SpecialForcesAtHalfStrength;
+                forceSupplier.ForcesToReserves(territory, undialledNormalForces, false);
+                forceSupplier.ForcesToReserves(territory, undialledSpecialForces, true);
+
+                if (undialledNormalForces + undialledSpecialForces > 0)
+                {
+                    Log(
+                        plan.Initiator,
+                        " withdraw ",
+                        MessagePart.ExpressIf(undialledNormalForces > 0, undialledNormalForces, forceSupplier.Force),
+                        MessagePart.ExpressIf(undialledNormalForces > 0 && undialledSpecialForces > 0, " and "),
+                        MessagePart.ExpressIf(undialledSpecialForces > 0, undialledSpecialForces, forceSupplier.SpecialForce), 
+                        " to reserves");
+                }
+            }
         }
 
         public BattleOutcome DetermineBattleOutcome(Battle agg, Battle def, Territory territory)
@@ -848,8 +902,14 @@ namespace Treachery.Shared
                 if (result.Defender.Faction == CurrentPinkOrAllyFighter) defForceDial += (int)Math.Ceiling(0.5f * GetPlayer(Faction.Pink).AnyForcesIn(CurrentBattle.Territory));
             }
 
-            result.AggTotal = aggForceDial + aggHeroContribution + aggPinkKarmaContribution;
-            result.DefTotal = defForceDial + defHeroContribution + defPinkKarmaContribution;
+            result.AggReinforcementsContribution = agg.HasReinforcements ? 3 : 0;
+            result.DefReinforcementsContribution = def.HasReinforcements ? 3 : 0;
+
+            result.AggHomeworldContribution = agg.Player.GetHomeworldBattleContribution(territory);
+            result.DefHomeworldContribution = def.Player.GetHomeworldBattleContribution(territory);
+
+            result.AggTotal = aggForceDial + aggHeroContribution + aggPinkKarmaContribution + result.AggHomeworldContribution + result.AggReinforcementsContribution;
+            result.DefTotal = defForceDial + defHeroContribution + defPinkKarmaContribution + result.DefHomeworldContribution + result.DefReinforcementsContribution;
 
             agg.DeactivateDynamicWeapons();
             def.DeactivateDynamicWeapons();

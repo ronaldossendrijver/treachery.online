@@ -210,7 +210,7 @@ namespace Treachery.Shared
                         {
                             if (Game.CurrentBattle.IsAggressorOrDefender(this))
                             {
-                                result.GreenPrescienceAspect = BestPrescience(opponent, MaxDial(this, Game.CurrentBattle.Territory, opponent), Game.CurrentPrescience.Aspect);
+                                result.GreenPrescienceAspect = BestPrescience(opponent, MaxDial(this, Game.CurrentBattle.Territory, opponent), Game.CurrentPrescience.Aspect, Game.CurrentBattle.Territory);
 
                                 if (result.GreenPrescienceAspect != PrescienceAspect.None)
                                 {
@@ -272,7 +272,7 @@ namespace Treachery.Shared
                     {
                         if (Game.CurrentBattle.IsAggressorOrDefender(this))
                         {
-                            result.GreenPrescienceAspect = BestPrescience(opponent, MaxDial(this, Game.CurrentBattle.Territory, opponent), PrescienceAspect.None);
+                            result.GreenPrescienceAspect = BestPrescience(opponent, MaxDial(this, Game.CurrentBattle.Territory, opponent), PrescienceAspect.None, Game.CurrentBattle.Territory);
                             if (result.GreenPrescienceAspect != PrescienceAspect.None)
                             {
                                 return result;
@@ -506,8 +506,8 @@ namespace Treachery.Shared
                 {
                     LogInfo("Start using Clairvoyance against " + opponent);
 
-                    var myWeapons = Battle.ValidWeapons(Game, this, null, null);
-                    var enemyDefenses = Battle.ValidDefenses(Game, opponent, null, false).Where(w => Game.KnownCards(this).Contains(w));
+                    var myWeapons = Battle.ValidWeapons(Game, this, null, null, Game.CurrentBattle.Territory);
+                    var enemyDefenses = Battle.ValidDefenses(Game, opponent, null, Game.CurrentBattle.Territory, false).Where(w => Game.KnownCards(this).Contains(w));
 
                     if (
                         (MyPrescience == null || MyPrescience.Aspect != PrescienceAspect.Defense) &&
@@ -517,8 +517,8 @@ namespace Treachery.Shared
                         if (myWeapons.Any(w => w.IsProjectileWeapon) && !OpponentMayNotUse(TreacheryCardType.ProjectileDefense, false) && !enemyDefenses.Any(w => w.IsProjectileDefense)) return UseClairvoyanceInBattle(opponent.Faction, ClairvoyanceQuestion.CardTypeAsDefenseInBattle, TreacheryCardType.ProjectileDefense);
                     }
 
-                    var enemyWeapons = Battle.ValidWeapons(Game, opponent, null, null).Where(w => Game.KnownCards(this).Contains(w));
-                    var myDefenses = Battle.ValidDefenses(Game, this, null, false);
+                    var enemyWeapons = Battle.ValidWeapons(Game, opponent, null, null, Game.CurrentBattle.Territory).Where(w => Game.KnownCards(this).Contains(w));
+                    var myDefenses = Battle.ValidDefenses(Game, this, null, Game.CurrentBattle.Territory, false);
 
                     if (
                         (MyPrescience == null || MyPrescience.Aspect != PrescienceAspect.Weapon) &&

@@ -108,6 +108,12 @@ namespace Treachery.Shared
         public bool HasArtillery => Weapon != null && Weapon.IsArtillery;
 
         [JsonIgnore]
+        public bool HasReinforcements => Weapon != null && Weapon.Type == TreacheryCardType.Reinforcements || Defense != null && Defense.Type == TreacheryCardType.Reinforcements;
+
+        [JsonIgnore]
+        public bool HasHarassAndWithdraw => Weapon != null && Weapon.Type == TreacheryCardType.HarassAndWithdraw || Defense != null && Defense.Type == TreacheryCardType.HarassAndWithdraw;
+
+        [JsonIgnore]
         public TreacheryCard OriginalWeapon { get; set; } = null;
 
         [JsonIgnore]
@@ -323,8 +329,8 @@ namespace Treachery.Shared
             if (Messiah && !MessiahMayBeUsedInBattle(Game, p)) return Message.Express(Concept.Messiah, " is not available");
             if (Weapon == null && Defense != null && Defense.Type == TreacheryCardType.WeirdingWay) return Message.Express("You can't use ", TreacheryCardType.WeirdingWay, " as defense without using a weapon");
             if (Defense == null && Weapon != null && Weapon.Type == TreacheryCardType.Chemistry) return Message.Express("You can't use ", TreacheryCardType.Chemistry, " as weapon without using a defense");
-            if (!ValidWeapons(Game, p, Defense, Hero, true).Contains(Weapon)) return Message.Express("Invalid weapon");
-            if (!ValidDefenses(Game, p, Weapon, true).Contains(Defense)) return Message.Express("Invalid defense");
+            if (!ValidWeapons(Game, p, Defense, Hero, Game.CurrentBattle.Territory, true).Contains(Weapon)) return Message.Express("Invalid weapon");
+            if (!ValidDefenses(Game, p, Weapon, Game.CurrentBattle.Territory, true).Contains(Defense)) return Message.Express("Invalid defense");
             if (Game.IsInFrontOfShield(Hero)) return Message.Express(Hero, " is currently in front of your player shield");
             if (BankerBonus > 0 && !Game.SkilledAs(Hero, LeaderSkill.Banker)) return Message.Express("Only a leader skilled as ", LeaderSkill.Banker, " can be boosted by ", Concept.Resource);
             if (BankerBonus > MaxBankerBoost(Game, Player, Hero)) return Message.Express("You cannot boost your leader this much");
@@ -479,7 +485,7 @@ namespace Treachery.Shared
         }
 
 
-        public static IEnumerable<TreacheryCard> ValidWeapons(Game g, Player p, TreacheryCard selectedDefense, IHero selectedHero, bool includingNone = false)
+        public static IEnumerable<TreacheryCard> ValidWeapons(Game g, Player p, TreacheryCard selectedDefense, IHero selectedHero, Territory territoryOfBattle, bool includingNone = false)
         {
             List<TreacheryCard> result = null;
 
@@ -490,7 +496,9 @@ namespace Treachery.Shared
                 return result;
             }
 
-            bool isPlanetologist = selectedHero != null && g.SkilledAs(selectedHero, LeaderSkill.Planetologist);
+            var playableWeapons = CardsPlayableAsWeapon(p, selectedDefense, 
+                selectedHero != null && g.SkilledAs(selectedHero, LeaderSkill.Planetologist),
+                territoryOfBattle != null && p.IsNative(territoryOfBattle));
 
             if (AffectedByVoice(g, p, g.CurrentVoice))
             {
@@ -498,31 +506,31 @@ namespace Treachery.Shared
                 {
                     if (selectedDefense != null && selectedDefense.Type == g.CurrentVoice.Type)
                     {
-                        result = CardsPlayableAsWeapon(p, selectedDefense, isPlanetologist).ToList();
+                        result = playableWeapons.ToList();
                         if (includingNone) result.Add(null);
                     }
-                    else if (CardsPlayableAsWeapon(p, selectedDefense, isPlanetologist).Any(w => Voice.IsVoicedBy(g, true, true, w.Type, g.CurrentVoice.Type)))
+                    else if (playableWeapons.Any(w => Voice.IsVoicedBy(g, true, true, w.Type, g.CurrentVoice.Type)))
                     {
-                        result = CardsPlayableAsWeapon(p, selectedDefense, isPlanetologist).Where(w => Voice.IsVoicedBy(g, true, true, w.Type, g.CurrentVoice.Type)).ToList();
+                        result = playableWeapons.Where(w => Voice.IsVoicedBy(g, true, true, w.Type, g.CurrentVoice.Type)).ToList();
                     }
                 }
                 else if (g.CurrentVoice.MayNot)
                 {
-                    result = CardsPlayableAsWeapon(p, selectedDefense, isPlanetologist).Where(w => !Voice.IsVoicedBy(g, true, false, w.Type, g.CurrentVoice.Type)).ToList();
+                    result = playableWeapons.Where(w => !Voice.IsVoicedBy(g, true, false, w.Type, g.CurrentVoice.Type)).ToList();
                     if (includingNone) result.Add(null);
                 }
             }
 
             if (result == null)
             {
-                result = CardsPlayableAsWeapon(p, selectedDefense, isPlanetologist).ToList();
+                result = playableWeapons.ToList();
                 if (includingNone) result.Add(null);
             }
 
             return result;
         }
 
-        public static IEnumerable<TreacheryCard> ValidDefenses(Game g, Player p, TreacheryCard selectedWeapon, bool includingNone = false)
+        public static IEnumerable<TreacheryCard> ValidDefenses(Game g, Player p, TreacheryCard selectedWeapon, Territory territoryOfBattle, bool includingNone = false)
         {
             List<TreacheryCard> result = null;
 
@@ -533,23 +541,25 @@ namespace Treachery.Shared
                 return result;
             }
 
+            var playableDefenses = CardsPlayableAsDefense(p, selectedWeapon, territoryOfBattle != null && p.IsNative(territoryOfBattle));
+
             if (AffectedByVoice(g, p, g.CurrentVoice))
             {
                 if (g.CurrentVoice.Must)
                 {
                     if (selectedWeapon != null && selectedWeapon.Type == g.CurrentVoice.Type)
                     {
-                        result = CardsPlayableAsDefense(p, selectedWeapon).ToList();
+                        result = playableDefenses.ToList();
                         if (includingNone) result.Add(null);
                     }
-                    else if (CardsPlayableAsDefense(p, selectedWeapon).Any(w => Voice.IsVoicedBy(g, false, true, w.Type, g.CurrentVoice.Type)))
+                    else if (playableDefenses.Any(w => Voice.IsVoicedBy(g, false, true, w.Type, g.CurrentVoice.Type)))
                     {
-                        result = CardsPlayableAsDefense(p, selectedWeapon).Where(w => Voice.IsVoicedBy(g, false, true, w.Type, g.CurrentVoice.Type)).ToList();
+                        result = playableDefenses.Where(w => Voice.IsVoicedBy(g, false, true, w.Type, g.CurrentVoice.Type)).ToList();
                     }
                 }
                 else if (g.CurrentVoice.MayNot)
                 {
-                    result = CardsPlayableAsDefense(p, selectedWeapon).Where(w => !Voice.IsVoicedBy(g, false, false, w.Type, g.CurrentVoice.Type)).ToList();
+                    result = playableDefenses.Where(w => !Voice.IsVoicedBy(g, false, false, w.Type, g.CurrentVoice.Type)).ToList();
                     if (includingNone) result.Add(null);
                 }
             }
@@ -557,7 +567,7 @@ namespace Treachery.Shared
             if (result == null)
             {
 
-                result = CardsPlayableAsDefense(p, selectedWeapon).ToList();
+                result = playableDefenses.ToList();
                 if (includingNone) result.Add(null);
             }
 
@@ -569,12 +579,14 @@ namespace Treachery.Shared
             return p.TreacheryCards.Where(c => c.Type == TreacheryCardType.Mercenary);
         }
 
-        private static IEnumerable<TreacheryCard> CardsPlayableAsWeapon(Player p, TreacheryCard withDefense, bool withPlanetologist)
+        private static IEnumerable<TreacheryCard> CardsPlayableAsWeapon(Player p, TreacheryCard withDefense, bool withPlanetologist, bool fightingOnOwnHomeworld)
         {
             return p.TreacheryCards.Where(c =>
             c.Type != TreacheryCardType.Chemistry && (c.IsWeapon || c.Type == TreacheryCardType.Useless) ||
             c.Type == TreacheryCardType.Chemistry && withDefense != null && withDefense.IsDefense && withDefense.Type != TreacheryCardType.WeirdingWay ||
-            withPlanetologist && c.IsGreen);
+            withPlanetologist && c.IsGreen ||
+            c.Type == TreacheryCardType.Reinforcements && p.ForcesInReserve + p.SpecialForcesInReserve >= 3 ||
+            !fightingOnOwnHomeworld && c.Type == TreacheryCardType.HarassAndWithdraw);
         }
 
         public static int MaxBankerBoost(Game g, Player p, IHero hero)
@@ -587,11 +599,13 @@ namespace Treachery.Shared
             return 0;
         }
 
-        private static IEnumerable<TreacheryCard> CardsPlayableAsDefense(Player p, TreacheryCard withWeapon)
+        private static IEnumerable<TreacheryCard> CardsPlayableAsDefense(Player p, TreacheryCard withWeapon, bool fightingOnOwnHomeworld)
         {
             return p.TreacheryCards.Where(c =>
             c.Type != TreacheryCardType.WeirdingWay && (c.IsDefense || c.Type == TreacheryCardType.Useless) ||
-            c.Type == TreacheryCardType.WeirdingWay && withWeapon != null && withWeapon.IsWeapon && withWeapon.Type != TreacheryCardType.Chemistry);
+            c.Type == TreacheryCardType.WeirdingWay && withWeapon != null && withWeapon.IsWeapon && withWeapon.Type != TreacheryCardType.Chemistry ||
+            c.Type == TreacheryCardType.Reinforcements && p.ForcesInReserve + p.SpecialForcesInReserve >= 3 ||
+            !fightingOnOwnHomeworld && c.Type == TreacheryCardType.HarassAndWithdraw);
         }
 
         public static bool MessiahAvailableForBattle(Game g, Player p)

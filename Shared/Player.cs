@@ -300,38 +300,40 @@ namespace Treachery.Shared
 
         public void ForcesToReserves(Territory t, int amount, bool special)
         {
-            int toRemoveInTotal = amount;
-            foreach (var l in t.Locations.OrderBy(l => l.SpiceBlowAmount))
+            if (amount > 0)
             {
-                int forcesIn = special ? SpecialForcesIn(l) : ForcesIn(l);
-                if (forcesIn > 0)
+                int toRemoveInTotal = amount;
+                foreach (var l in t.Locations.OrderBy(l => l.SpiceBlowAmount))
                 {
-                    int toRemoveInThisLocation = Math.Min(forcesIn, toRemoveInTotal);
+                    int forcesIn = special ? SpecialForcesIn(l) : ForcesIn(l);
+                    if (forcesIn > 0)
+                    {
+                        int toRemoveInThisLocation = Math.Min(forcesIn, toRemoveInTotal);
 
-                    if (special && Faction != Faction.Blue)
-                    {
-                        AddSpecialForcesToReserves(toRemoveInTotal);
-                    }
-                    else if (!special || Faction != Faction.White)
-                    {
-                        AddForcesToReserves(toRemoveInTotal);
+                        if (special && Faction != Faction.Blue)
+                        {
+                            AddSpecialForcesToReserves(toRemoveInTotal);
+                        }
+                        else if (!special || Faction != Faction.White)
+                        {
+                            AddForcesToReserves(toRemoveInTotal);
+                        }
+
+                        if (special)
+                        {
+                            ChangeSpecialForces(l, -toRemoveInTotal);
+                        }
+                        else
+                        {
+                            ChangeForces(l, -toRemoveInTotal);
+                        }
+
+                        toRemoveInTotal -= toRemoveInThisLocation;
                     }
 
-                    if (special)
-                    {
-                        ChangeSpecialForces(l, -toRemoveInTotal);
-                    }
-                    else
-                    {
-                        ChangeForces(l, -toRemoveInTotal);
-                    }
-
-                    toRemoveInTotal -= toRemoveInThisLocation;
+                    if (toRemoveInTotal == 0) break;
                 }
-
-                if (toRemoveInTotal == 0) break;
             }
-
         }
 
         public void ForcesToReserves(Territory t)
@@ -708,6 +710,32 @@ namespace Treachery.Shared
         {
             if (!Game.Applicable(Rule.Homeworlds)) return false;
             return Homeworlds.Any(w => AnyForcesIn(w) < w.Threshold);
+        }
+
+
+        public bool Initiated(GameEvent e) => e != null && e.Initiator == Faction;
+
+        public bool IsNative(Territory territory) => territory.Locations.Any(l => IsNative(l));
+
+        public bool IsNative(Location l) => l is Homeworld hw && IsNative(hw);
+
+        public bool IsNative(Homeworld hw) => Homeworlds.Contains(hw);
+
+        public int GetHomeworldBattleContribution(Territory whereBattleHappens)
+        {
+            if (!whereBattleHappens.IsHomeworld || !IsNative(whereBattleHappens)) return 0;
+
+            var homeworld = whereBattleHappens.Locations.First() as Homeworld;
+
+            if (HasHighThreshold(homeworld.World))
+            {
+                return homeworld.BattleBonusAtHighThreshold;
+            }
+            else
+            {
+                return homeworld.BattleBonusAtLowThreshold;
+            }
+
         }
     }
 }

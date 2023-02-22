@@ -38,7 +38,7 @@ namespace Treachery.Shared
             if (card != null)
             {
                 var plan = g.CurrentBattle?.PlanOf(p);
-                if (plan != null && plan.Defense == null && g.CurrentPortableAntidoteUsed == null && Battle.ValidDefenses(g, p, plan.Weapon, false).Contains(card))
+                if (plan != null && plan.Defense == null && g.CurrentPortableAntidoteUsed == null && Battle.ValidDefenses(g, p, plan.Weapon, g.CurrentBattle?.Territory, false).Contains(card))
                 {
                     return true;
                 }

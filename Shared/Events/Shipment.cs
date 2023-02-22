@@ -266,10 +266,15 @@ namespace Treachery.Shared
             return g.Map.Locations(g.Applicable(Rule.Homeworlds)).Where(l =>
                 l.Sector != g.SectorInStorm &&
                 (l != g.Map.HiddenMobileStronghold || p.Is(Faction.Grey)) &&
-                (l is not Homeworld hw || g.Players.Any(native => native.IsNative(hw))) &&
-                (!p.HasAlly || l is not Homeworld hwOfAlly || !p.AlliedPlayer.IsNative(hwOfAlly) && p.AlliedPlayer.AnyForcesIn(hwOfAlly) == 0) &&
+                IsEitherValidHomeworldOrNoHomeworld(g, p, l) &&
                 g.IsNotFull(p, l));
         }
+
+        private static bool IsEitherValidHomeworldOrNoHomeworld(Game g, Player p, Location l) =>
+            l is not Homeworld hw ||
+            g.Applicable(Rule.Homeworlds) &&
+            g.Players.Any(native => native.IsNative(hw)) &&
+            (!p.HasAlly || !p.AlliedPlayer.IsNative(hw) && p.AlliedPlayer.AnyForcesIn(hw) == 0);
 
         public static IEnumerable<int> ValidNoFieldValues(Game g, Player p)
         {

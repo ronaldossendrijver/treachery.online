@@ -425,7 +425,7 @@ namespace Treachery.Shared
             var knownOpponentWeapons = KnownOpponentWeapons(opponent);
             int nrOfUnknownOpponentCards = NrOfUnknownOpponentCards(opponent);
 
-            var weapons = Weapons(null, null).Where(w => w.Type != TreacheryCardType.Useless && w.Type != TreacheryCardType.ArtilleryStrike && w.Type != TreacheryCardType.PoisonTooth);
+            var weapons = Weapons(null, null, null).Where(w => w.Type != TreacheryCardType.Useless && w.Type != TreacheryCardType.ArtilleryStrike && w.Type != TreacheryCardType.PoisonTooth);
             result.weaponToUse = weapons.FirstOrDefault(w => w.Type == TreacheryCardType.ProjectileAndPoison); //use poisonblade if available
             if (result.weaponToUse == null) result.weaponToUse = weapons.FirstOrDefault(w => w.Type == TreacheryCardType.Laser); //use lasgun if available
             if (result.weaponToUse == null) result.weaponToUse = weapons.FirstOrDefault(w => Game.KnownCards(this).Contains(w)); //use a known weapon if available
@@ -707,20 +707,20 @@ namespace Treachery.Shared
             if (Game.CurrentBattle.IsAggressorOrDefender(this))
             {
                 var existingAspect = Game.CurrentPrescience != null ? Game.CurrentPrescience.Aspect : PrescienceAspect.None;
-                return new Prescience(Game) { Initiator = Faction, Aspect = BestPrescience(opponent, MaxDial(this, Game.CurrentBattle.Territory, opponent), existingAspect) };
+                return new Prescience(Game) { Initiator = Faction, Aspect = BestPrescience(opponent, MaxDial(this, Game.CurrentBattle.Territory, opponent), existingAspect, Game.CurrentBattle.Territory) };
             }
 
             return null;
         }
 
 
-        protected PrescienceAspect BestPrescience(Player opponent, float maxForceStrengthInBattle, PrescienceAspect earlierPrescience)
+        protected PrescienceAspect BestPrescience(Player opponent, float maxForceStrengthInBattle, PrescienceAspect earlierPrescience, Territory territory)
         {
-            var myDefenses = Battle.ValidDefenses(Game, this, null).Where(c => Game.KnownCards(this).Contains(c));
-            var myWeapons = Battle.ValidWeapons(Game, this, null, null).Where(c => Game.KnownCards(this).Contains(c));
+            var myDefenses = Battle.ValidDefenses(Game, this, null, territory).Where(c => Game.KnownCards(this).Contains(c));
+            var myWeapons = Battle.ValidWeapons(Game, this, null, null, territory).Where(c => Game.KnownCards(this).Contains(c));
 
-            var knownOpponentDefenses = Battle.ValidDefenses(Game, opponent, null).Where(c => Game.KnownCards(this).Contains(c));
-            var knownOpponentWeapons = Battle.ValidWeapons(Game, opponent, null, null).Where(c => Game.KnownCards(this).Contains(c));
+            var knownOpponentDefenses = Battle.ValidDefenses(Game, opponent, null, territory).Where(c => Game.KnownCards(this).Contains(c));
+            var knownOpponentWeapons = Battle.ValidWeapons(Game, opponent, null, null, territory).Where(c => Game.KnownCards(this).Contains(c));
             //int nrOfUnknownOpponentCards = opponent.TreacheryCards.Count(c => !Game.KnownCards(this).Contains(c));
 
             var cardsOpponentHasOrMightHave = CardsPlayerHasOrMightHave(opponent);
