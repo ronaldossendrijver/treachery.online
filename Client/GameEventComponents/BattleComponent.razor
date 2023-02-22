@@ -29,7 +29,13 @@
                     <span>&nbsp;<strong>@Opponent.SpecialForcesIn(Game.CurrentBattle.Territory)</strong></span>
                 }
             }
+
         </div>
+
+        @if (Game.CurrentPinkBattleContribution > 0 && Opponent.Ally == Faction.Pink)
+        {
+            <div class="text-success mt-1"><FactionComponent Faction=Faction.Pink Diameter=20 /> forces contribute <strong>@Game.CurrentPinkBattleContribution</strong> to your opponents dial.</div>
+        }
 
         @if (!Battle.ValidBattleHeroes(Game, Opponent).Any())
         {
@@ -104,7 +110,7 @@
             }
         }
 
-        @if (Game.CurrentPinkBattleContribution > 0)
+        @if (Game.CurrentPinkBattleContribution > 0 && Player.Ally == Faction.Pink)
         {
             <div class="text-success mt-1"><FactionComponent Faction=Faction.Pink Diameter=20 /> forces contribute <strong>@Game.CurrentPinkBattleContribution</strong> to your dial.</div>
         }

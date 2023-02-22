@@ -496,9 +496,8 @@ namespace Treachery.Shared
                 return result;
             }
 
-            var playableWeapons = CardsPlayableAsWeapon(p, selectedDefense, 
-                selectedHero != null && g.SkilledAs(selectedHero, LeaderSkill.Planetologist),
-                territoryOfBattle != null && p.IsNative(territoryOfBattle));
+            var playableWeapons = CardsPlayableAsWeapon(g, p, selectedDefense, territoryOfBattle,
+                selectedHero != null && g.SkilledAs(selectedHero, LeaderSkill.Planetologist));
 
             if (AffectedByVoice(g, p, g.CurrentVoice))
             {
@@ -541,7 +540,7 @@ namespace Treachery.Shared
                 return result;
             }
 
-            var playableDefenses = CardsPlayableAsDefense(p, selectedWeapon, territoryOfBattle != null && p.IsNative(territoryOfBattle));
+            var playableDefenses = CardsPlayableAsDefense(g, p, selectedWeapon, territoryOfBattle);
 
             if (AffectedByVoice(g, p, g.CurrentVoice))
             {
@@ -579,13 +578,16 @@ namespace Treachery.Shared
             return p.TreacheryCards.Where(c => c.Type == TreacheryCardType.Mercenary);
         }
 
-        private static IEnumerable<TreacheryCard> CardsPlayableAsWeapon(Player p, TreacheryCard withDefense, bool withPlanetologist, bool fightingOnOwnHomeworld)
+        private static IEnumerable<TreacheryCard> CardsPlayableAsWeapon(Game g, Player p, TreacheryCard withDefense, Territory territoryOfBattle, bool withPlanetologist)
         {
+            var fightingOnOwnHomeworld = territoryOfBattle != null && p.IsNative(territoryOfBattle);
+            var forcesToRevealUnderNoField = territoryOfBattle != null && p.Is(Faction.White) && p.SpecialForcesIn(territoryOfBattle) != 0 ? Math.Min(p.ForcesInReserve, g.CurrentNoFieldValue) : 0;
+
             return p.TreacheryCards.Where(c =>
             c.Type != TreacheryCardType.Chemistry && (c.IsWeapon || c.Type == TreacheryCardType.Useless) ||
             c.Type == TreacheryCardType.Chemistry && withDefense != null && withDefense.IsDefense && withDefense.Type != TreacheryCardType.WeirdingWay ||
             withPlanetologist && c.IsGreen ||
-            c.Type == TreacheryCardType.Reinforcements && p.ForcesInReserve + p.SpecialForcesInReserve >= 3 ||
+            c.Type == TreacheryCardType.Reinforcements && p.ForcesInReserve + p.SpecialForcesInReserve - forcesToRevealUnderNoField >= 3 ||
             !fightingOnOwnHomeworld && c.Type == TreacheryCardType.HarassAndWithdraw);
         }
 
@@ -599,12 +601,15 @@ namespace Treachery.Shared
             return 0;
         }
 
-        private static IEnumerable<TreacheryCard> CardsPlayableAsDefense(Player p, TreacheryCard withWeapon, bool fightingOnOwnHomeworld)
+        private static IEnumerable<TreacheryCard> CardsPlayableAsDefense(Game g, Player p, TreacheryCard withWeapon, Territory territoryOfBattle)
         {
+            var fightingOnOwnHomeworld = territoryOfBattle != null && p.IsNative(territoryOfBattle);
+            var forcesToRevealUnderNoField = p.Is(Faction.White) && p.SpecialForcesIn(territoryOfBattle) != 0 ? Math.Min(p.ForcesInReserve, g.CurrentNoFieldValue) : 0;
+
             return p.TreacheryCards.Where(c =>
             c.Type != TreacheryCardType.WeirdingWay && (c.IsDefense || c.Type == TreacheryCardType.Useless) ||
             c.Type == TreacheryCardType.WeirdingWay && withWeapon != null && withWeapon.IsWeapon && withWeapon.Type != TreacheryCardType.Chemistry ||
-            c.Type == TreacheryCardType.Reinforcements && p.ForcesInReserve + p.SpecialForcesInReserve >= 3 ||
+            c.Type == TreacheryCardType.Reinforcements && p.ForcesInReserve + p.SpecialForcesInReserve - forcesToRevealUnderNoField >= 3 ||
             !fightingOnOwnHomeworld && c.Type == TreacheryCardType.HarassAndWithdraw);
         }
 
