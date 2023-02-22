@@ -1232,6 +1232,7 @@ namespace Treachery.Shared
                 }
             }
 
+            CheckIfShipmentPermissionsShouldBeRevoked();
             CheckIfOccupierTakesVidal(currentOccupierOfPinkHomeworld);
             LetFactionsDiscardSurplusCards();
         }
@@ -1267,8 +1268,18 @@ namespace Treachery.Shared
 
             HomeworldOccupation = updatedOccupation;
 
+            CheckIfShipmentPermissionsShouldBeRevoked();
             CheckIfOccupierTakesVidal(currentOccupierOfPinkHomeworld);
             LetFactionsDiscardSurplusCards();
+        }
+
+        private void CheckIfShipmentPermissionsShouldBeRevoked()
+        {
+            if (!HasHighThreshold(Faction.Orange) && ShipmentPermissions.Any())
+            {
+                ShipmentPermissions.Clear();
+                Log("Only ", Faction.Orange, " can ship cross/from planet now");
+            }
         }
 
         private void LetFactionsDiscardSurplusCards()

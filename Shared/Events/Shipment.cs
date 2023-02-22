@@ -171,7 +171,7 @@ namespace Treachery.Shared
                 return 0;
             }
 
-            return DetermineCost(g, p, Math.Abs(s.ForceAmount) + Math.Abs(s.SpecialForceAmount), s.To, s.IsUsingKarma, s.IsBackToReserves, s.IsNoField);
+            return DetermineCost(g, p, Math.Abs(s.ForceAmount) + Math.Abs(s.SpecialForceAmount), s.To, s.IsUsingKarma, s.IsBackToReserves, s.IsSiteToSite, s.IsNoField);
         }
 
         public static bool ShipsForFree(Game g, Player p, Location to)
@@ -179,7 +179,7 @@ namespace Treachery.Shared
             return p.Is(Faction.Yellow) && YellowSpawnLocations(g, p).Contains(to);
         }
 
-        public static int DetermineCost(Game g, Player p, int amount, Location to, bool karamaShipment, bool backToReserves, bool noField)
+        public static int DetermineCost(Game g, Player p, int amount, Location to, bool karamaShipment, bool backToReserves, bool siteToSite, bool noField)
         {
             var amountToPayFor = amount;
             if (g.Version < 139 && amountToPayFor > 1 && g.SkilledAs(p, LeaderSkill.Smuggler) && !g.AnyForcesIn(to.Territory))
@@ -202,9 +202,9 @@ namespace Treachery.Shared
                     return 0;
                 }
 
-                double costOfShipment = Math.Abs(amountToPayFor) * (to.Territory.IsStronghold ? 1 : 2);
+                double costOfShipment = Math.Abs(amountToPayFor) * (to.Territory.IsStronghold || to.Territory.IsHomeworld ? 1 : 2);
 
-                if (g.MayShipWithDiscount(p) || karamaShipment)
+                if (g.MayShipWithDiscount(p) || karamaShipment || siteToSite && g.ShipmentPermissions.TryGetValue(p.Faction, out var permission) && permission == ShipmentPermission.CrossAtOrangeRates)
                 {
                     costOfShipment /= 2;
                 }
@@ -391,7 +391,7 @@ namespace Treachery.Shared
         {
             if (g.Version <= 106)
             {
-                return DetermineCost(Game, Player, ForceAmount + SpecialForceAmount, To, IsUsingKarma, IsBackToReserves, IsNoField) - AllyContributionAmount;
+                return DetermineCost(Game, Player, ForceAmount + SpecialForceAmount, To, IsUsingKarma, IsBackToReserves, IsNoField, false) - AllyContributionAmount;
             }
             else
             {

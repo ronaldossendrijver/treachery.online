@@ -105,5 +105,7 @@ namespace Treachery.Shared
             CurrentRecruitsPlayed = e;
             Discard(e.Player, TreacheryCardType.Recruits);
         }
+
+        
     }
 }

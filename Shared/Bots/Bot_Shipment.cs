@@ -532,7 +532,9 @@ namespace Treachery.Shared
             return shortage;
         }
 
-        private float DetermineForcesInShipment(float dialNeeded, Location location, int forcesAvailable, int specialForcesAvailable, ref int forces, ref int specialForces, int maxUnsupportedForces, bool preferSpecialForces, float normalStrength, float specialStrength, int spiceAvailable, float noSpiceForForceModifier, int costPerForceInBattle)
+        private float DetermineForcesInShipment(float dialNeeded, Location location, 
+            int forcesAvailable, int specialForcesAvailable, ref int forces, ref int specialForces, 
+            int maxUnsupportedForces, bool preferSpecialForces, float normalStrength, float specialStrength, int spiceAvailable, float noSpiceForForceModifier, int costPerForceInBattle)
         {
             specialForces = 0;
             forces = 0;
@@ -546,7 +548,7 @@ namespace Treachery.Shared
                     dialNeeded > 0 &&
                     (dialNeeded > normalStrength || forcesAvailable == 0) &&
                     specialForcesAvailable >= 1 &&
-                    (shipcost = Shipment.DetermineCost(Game, this, forces + specialForces + 1, location, false, false, false)) <= spiceAvailable &&
+                    (shipcost = Shipment.DetermineCost(Game, this, forces + specialForces + 1, location, false, false, false, false)) <= spiceAvailable &&
                     shipcost + costOfBattle - spiceAvailable < maxUnsupportedForces)
                 {
                     specialForces++;
@@ -561,7 +563,7 @@ namespace Treachery.Shared
             while (
                 dialNeeded > 0 &&
                 forcesAvailable >= 1 &&
-                (shipcost = Shipment.DetermineCost(Game, this, forces + specialForces + 1, location, false, false, false)) <= spiceAvailable &&
+                (shipcost = Shipment.DetermineCost(Game, this, forces + specialForces + 1, location, false, false, false, false)) <= spiceAvailable &&
                 shipcost + costOfBattle - spiceAvailable < maxUnsupportedForces)
             {
                 forces++;
@@ -574,7 +576,7 @@ namespace Treachery.Shared
 
             while (dialNeeded > 0 &&
                 specialForcesAvailable >= 1 &&
-                (shipcost = Shipment.DetermineCost(Game, this, forces + specialForces + 1, location, false, false, false)) <= spiceAvailable &&
+                (shipcost = Shipment.DetermineCost(Game, this, forces + specialForces + 1, location, false, false, false, false)) <= spiceAvailable &&
                 shipcost + costOfBattle - spiceAvailable < maxUnsupportedForces)
             {
                 specialForces++;

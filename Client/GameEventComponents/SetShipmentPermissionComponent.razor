@@ -1,0 +1,75 @@
+﻿<!--
+ * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<SetShipmentPermission>
+
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Manage shipment permissions</Header>
+    <Body>
+
+        @if (Game.ShipmentPermissions.Any())
+        {
+            <div>Current ship cross/from planet shipping permissions:</div>
+            <table class="table table-striped table-sm">
+
+                <tbody>
+
+                    @foreach (var kvp in Game.ShipmentPermissions)
+                    {
+                        <tr>
+                            <td><img width=24 src="@Skin.Current.GetImageURL(kvp.Key)" /></td>
+                            <td>@DescribePermission(kvp.Value)</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" @onclick="e => Revoke(kvp.Key)">Revoke</button>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+        }
+
+        <div class="mt-2">
+            <RadioComponent @bind-Value="permission" 
+                Values="@(new ShipmentPermission[] {ShipmentPermission.CrossAtNormalRates, ShipmentPermission.CrossAtOrangeRates})"
+                ValueLabels="@(new string[] { DescribePermission(ShipmentPermission.CrossAtNormalRates), DescribePermission(ShipmentPermission.CrossAtOrangeRates) })">
+                <Label>Allow shipping cross/from planet?</Label>
+            </RadioComponent>
+        </div>
+        
+        <SelectFactionComponent @bind-Value="target" Values=@SetShipmentPermission.ValidTargets(Game, Player).Where(f => !Game.MayShipCrossPlanet(Game.GetPlayer(f)))>
+            <Label>For which faction?</Label>
+        </SelectFactionComponent>
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    private Faction target;
+    private ShipmentPermission permission;
+
+    protected override Faction IsFactionSpecific => Faction.Orange;
+
+    protected override SetShipmentPermission ConfirmedResult => new SetShipmentPermission(Game) { Initiator = Faction, Target = target, Permission = permission };
+
+    private async Task Revoke(Faction f) => await Request(new SetShipmentPermission(Game) { Initiator = Faction, Target = target, Permission = ShipmentPermission.None });
+
+    private string DescribePermission(ShipmentPermission p)
+    {
+        return p switch
+        {
+            ShipmentPermission.CrossAtNormalRates => "Full price",
+            ShipmentPermission.CrossAtOrangeRates => "Half price",
+            _ => "unknown"
+        };
+    }
+}

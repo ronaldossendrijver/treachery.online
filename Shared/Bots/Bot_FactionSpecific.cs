@@ -5,11 +5,26 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 
 namespace Treachery.Shared
 {
     public partial class Player
     {
+        #region Orange
+
+        private SetShipmentPermission DetermineSetShipmentPermission()
+        {
+            var toDeny = Game.ShipmentPermissions.Keys.FirstOrDefault(f => IsWinningOpponent(f));
+            if (toDeny != Faction.None) return new SetShipmentPermission(Game) { Initiator = Faction, Target = toDeny, Permission = ShipmentPermission.None };
+
+            var intendedPermission = Resources > 10 || WinningOpponentsIWishToAttack(99, true).Any() ? ShipmentPermission.CrossAtOrangeRates : ShipmentPermission.CrossAtNormalRates;
+            var toAllow = SetShipmentPermission.ValidTargets(Game, this).FirstOrDefault(f => f != Ally && !IsWinningOpponent(f) && (!Game.ShipmentPermissions.TryGetValue(f, out var currentpermission) || currentpermission != intendedPermission));
+            return new SetShipmentPermission(Game) { Initiator = Faction, Target = toAllow, Permission = intendedPermission };
+        }
+
+        #endregion
+
         #region Red
 
         private RedDiscarded DetermineRedDiscarded()

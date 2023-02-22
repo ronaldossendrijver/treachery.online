@@ -524,6 +524,8 @@ namespace Treachery.Shared
                 if (faction == Faction.Brown && player.HasLowThreshold() && ResourcesAudited.ValidFactions(this, player).Any()) result.Add(typeof(ResourcesAudited));
             }
 
+            if (CurrentMainPhase == MainPhase.ShipmentAndMove && SetShipmentPermission.IsApplicable(this, player)) result.Add(typeof(SetShipmentPermission));
+
             if (Version <= 123)
             {
                 result.Add(typeof(HideSecrets));

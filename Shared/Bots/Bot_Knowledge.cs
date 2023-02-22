@@ -504,6 +504,8 @@ namespace Treachery.Shared
 
         private bool IsWinningOpponent(Player p) => p != this && p.Faction != Ally && Game.MeetsNormalVictoryCondition(p, true);
 
+        private bool IsWinningOpponent(Faction f) => IsWinningOpponent(Game.GetPlayer(f));
+
         private bool IsAlmostWinningOpponent(Player p) =>
             p != this && p != AlliedPlayer &&
             Game.NumberOfVictoryPoints(p, true) + 1 >= Game.TresholdForWin(p) &&
@@ -651,12 +653,12 @@ namespace Treachery.Shared
                 bool opponentMayUseWorthlessAsKarma = player.Faction == Faction.Blue && Game.Applicable(Rule.BlueWorthlessAsKarma);
                 bool hasKarma = CardsPlayerHas(player).Any(c => c.Type == TreacheryCardType.Karma || (opponentMayUseWorthlessAsKarma && c.Type == TreacheryCardType.Karma));
 
-                while (specialForces + 1 <= player.SpecialForcesInReserve && Shipment.DetermineCost(Game, player, normalForces + specialForces + 1, to.MiddleLocation, hasKarma, false, false) <= opponentResources)
+                while (specialForces + 1 <= player.SpecialForcesInReserve && Shipment.DetermineCost(Game, player, normalForces + specialForces + 1, to.MiddleLocation, hasKarma, false, false, false) <= opponentResources)
                 {
                     specialForces++;
                 }
 
-                while (normalForces + 1 <= player.ForcesInReserve && Shipment.DetermineCost(Game, player, normalForces + 1 + specialForces, to.MiddleLocation, hasKarma, false, false) <= opponentResources)
+                while (normalForces + 1 <= player.ForcesInReserve && Shipment.DetermineCost(Game, player, normalForces + 1 + specialForces, to.MiddleLocation, hasKarma, false, false, false) <= opponentResources)
                 {
                     normalForces++;
                 }

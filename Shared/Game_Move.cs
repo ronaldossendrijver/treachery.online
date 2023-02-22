@@ -25,6 +25,8 @@ namespace Treachery.Shared
         public int CurrentNoFieldValue { get; private set; } = -1;
         public int LatestRevealedNoFieldValue { get; private set; } = -1;
 
+        public Dictionary<Faction, ShipmentPermission> ShipmentPermissions { get; private set; } = new();
+
         private List<Faction> FactionsWithOrnithoptersAtStartOfMovement;
         private bool BeginningOfShipmentAndMovePhase;
 
@@ -311,7 +313,8 @@ namespace Treachery.Shared
         {
             return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeSpecialShipments) ||
                    p.Ally == Faction.Orange && AllyMayShipAsOrange ||
-                   p.Initiated(CurrentOrangeNexus);
+                   p.Initiated(CurrentOrangeNexus) ||
+                   ShipmentPermissions.TryGetValue(p.Faction, out var permission) && (permission == ShipmentPermission.CrossAtNormalRates || permission == ShipmentPermission.CrossAtOrangeRates);
         }
 
         public bool MayShipToReserves(Player p)
@@ -1713,6 +1716,18 @@ namespace Treachery.Shared
             e.Player.SpecialKarmaPowerUsed = true;
             Log(e);
             RecentMilestones.Add(Milestone.Karma);
+        }
+
+        public void HandleEvent(SetShipmentPermission e)
+        {
+            Log(e);
+
+            ShipmentPermissions.Remove(e.Target);
+
+            if (e.Permission != ShipmentPermission.None)
+            {
+                ShipmentPermissions.Add(e.Target, e.Permission);
+            }
         }
     }
 }

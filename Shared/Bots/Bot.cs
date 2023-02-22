@@ -50,6 +50,7 @@ namespace Treachery.Shared
                 Do(DetermineAmalPlayed, ref action, evts) ||
                 Do(DetermineRecruitsPlayed, ref action, evts) ||
                 Do(DetermineSetIncreasedRevivalLimits, ref action, evts) ||
+                Do(DetermineSetShipmentPermission, ref action, evts) ||
                 Do(DetermineDealAccepted, ref action, evts) ||
                 Do(DetermineRequestPurpleRevival, ref action, evts) ||
                 Do(DetermineDistransUsed, ref action, evts) ||

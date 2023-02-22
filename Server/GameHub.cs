@@ -99,6 +99,7 @@ namespace Treachery.Server
         public async Task RequestFaceDanced(int hostID, FaceDanced e) { await Request(hostID, e); }
         public async Task RequestFaceDancerReplaced(int hostID, FaceDancerReplaced e) { await Request(hostID, e); }
         public async Task RequestSetIncreasedRevivalLimits(int hostID, SetIncreasedRevivalLimits e) { await Request(hostID, e); }
+        public async Task RequestSetShipmentPermission(int hostID, SetShipmentPermission e) { await Request(hostID, e); }
         public async Task RequestRequestPurpleRevival(int hostID, RequestPurpleRevival e) { await Request(hostID, e); }
         public async Task RequestAcceptOrCancelPurpleRevival(int hostID, AcceptOrCancelPurpleRevival e) { await Request(hostID, e); }
         public async Task RequestPerformHmsPlacement(int hostID, PerformHmsPlacement e) { await Request(hostID, e); }
