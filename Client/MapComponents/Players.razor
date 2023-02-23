@@ -74,7 +74,7 @@
                 <Image X=homeworldX Y=@homeworldY
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
-                       Popover="@HomeworldIntel(homeworld)" />
+                       Popover="@HomeworldIntel(homeworld)" OnClick="e => OnClick(e, homeworld)"/>
 
                 if (h.Status.HighlightedTerritories.Any(t => t.Locations.Contains(homeworld)))
                 {
@@ -220,6 +220,9 @@
 
 @code {
 
+    [Parameter]
+    public EventCallback<LocationEventArgs> OnLocationClick { get; set; }
+
     private Situation situation = new();
     protected override bool ShouldRender() => situation.RequiresUpdate(Game);
 
@@ -266,6 +269,11 @@
         {
             return Skin.Current.Format("{0} Reserves", w.Faction);
         }
+    }
+
+    private async Task OnClick(MouseEventArgs e, Location l)
+    {
+        await OnLocationClick.InvokeAsync(new LocationEventArgs() { Location = l, AltKey = e.AltKey, CtrlKey = e.CtrlKey, ShiftKey = e.ShiftKey });
     }
 
     internal class MapForce

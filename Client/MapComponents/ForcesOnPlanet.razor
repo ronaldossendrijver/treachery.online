@@ -23,7 +23,7 @@
 
         foreach (var terr in Game.TerrorIn(stronghold.Territory))
         {
-            var popover = Player.Faction == Faction.Cyan ? Skin.Current.Describe(terr) : "Terror";
+            var popover = Player.Faction == Faction.Cyan ? Skin.Current.Format("{0} - {1}", terr, Skin.Current.GetTerrorTypeDescription(terr)) : "Terror";
             <Image X=x Y=y Filter="hue-rotate(180deg);" Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetFactionTableImageURL(Faction.Cyan)
                ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover />
 
@@ -33,7 +33,7 @@
         var ambassador = Game.AmbassadorIn(stronghold.Territory);
         if (ambassador != Faction.None)
         {
-            var popover = Player.Faction == Faction.Pink ? Skin.Current.Describe(ambassador) : "Ambassador";
+            var popover = Player.Faction == Faction.Pink ? Skin.Current.Format("{0} Ambassador - {1}", ambassador, Skin.Current.GetAmbassadorDescription(ambassador)) : "Ambassador";
             <Image X=x Y=y Filter="hue-rotate(180deg);" Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetFactionTableImageURL(Faction.Pink)
                ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover />
 

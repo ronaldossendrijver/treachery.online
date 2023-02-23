@@ -7,7 +7,7 @@
 
 <SelectFromImageComponent @bind-Value="Value" Values="@Values" Selected="@Selected" 
                           ImageURLs="Values.Select(f => Skin.Current.GetImageURL(f))" ImageWidth="40" 
-                          Required="@(Selected == null)" Disabled="@Disabled" OnChanged="@OnChanged" PopupHTMLs="@FactionTooltips" PopupsAsTooltip=true>
+                          Required="@(Selected == null)" Disabled="@Disabled" OnChanged="@OnChanged" PopupHTMLs=@ValueLabels PopupsAsTooltip=true>
     <Label>@Label</Label>
 </SelectFromImageComponent>
 
@@ -15,6 +15,9 @@
 
     [Parameter]
     public IEnumerable<Faction> Values { get; set; }
+
+    [Parameter]
+    public IEnumerable<string> ValueLabels { get; set; }
 
     [Parameter]
     public List<Faction> Selected { get; set; } = null;
@@ -49,6 +52,14 @@
 
     [Parameter]
     public Action<Faction> OnChanged { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (ValueLabels == null)
+        {
+            ValueLabels = FactionTooltips;
+        }
+    }
 
     private IEnumerable<string> FactionTooltips => Values.Select(f => Skin.Current.Describe(f));
 }

@@ -12,13 +12,17 @@
     <Header>You may now place an Ambassador Token in a Stronghold</Header>
     <Body>
 
-        <SelectFactionComponent @bind-Value=_faction Values="AmbassadorPlaced.ValidAmbassadors(Player)">
+        <SelectFactionComponent @bind-Value=_faction Values=@AmbassadorPlaced.ValidAmbassadors(Player) ValueLabels=@AmbassadorPlaced.ValidAmbassadors(Player).Select(f => Skin.Current.GetAmbassadorDescription(f))>
             <Label>Of which Faction?</Label>
         </SelectFactionComponent>
 
-        <SelectComponent ButtonHint=ClickHintButton.LMB @bind-Value=_stronghold Values=@TerrorPlanted.ValidStrongholds(Game, Player)>
+        <SelectComponent ButtonHint=ClickHintButton.LMB @bind-Value=_stronghold Values=@AmbassadorPlaced.ValidStrongholds(Game, Player)>
             <Label>In which Stronghold?</Label>
         </SelectComponent>
+
+        <div>
+            Cost: <SimpleNumberComponent Size=20>@(Game.AmbassadorsPlacedThisTurn + 1)</SimpleNumberComponent>
+        </div>
 
         <ButtonRowComponent Pass="Pass" Confirm="Confirm" ConfirmText="Place Ambassador" ConfirmError=@Validation />
 

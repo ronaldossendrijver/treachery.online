@@ -25,6 +25,10 @@
             <Label>Token</Label>
         </SelectComponent>
 
+        <div class="text-info">
+            @Skin.Current.GetTerrorTypeDescription(_type)
+        </div>
+
         <SelectComponent ButtonHint=ClickHintButton.LMB @bind-Value=_stronghold Values=@TerrorPlanted.ValidStrongholds(Game, Player)>
             <Label>Stronghold</Label>
         </SelectComponent>

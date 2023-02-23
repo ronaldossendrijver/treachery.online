@@ -42,6 +42,8 @@ namespace Treachery.Client
         public Dictionary<Faction, string> NexusCardImage_URL;
         public Dictionary<TerrorType, string> TerrorTokenImage_URL;
         public Dictionary<TerrorType, string> TerrorTokenName_STR;
+        public Dictionary<TerrorType, string> TerrorTokenDescription_STR;
+        public Dictionary<Faction, string> AmbassadorDescription_STR;
 
         public string Map_URL = null;
         public string Eye_URL = null;
@@ -421,6 +423,16 @@ namespace Treachery.Client
         public string Describe(TerrorType terr)
         {
             return TerrorTokenName_STR[terr];
+        }
+
+        public string GetTerrorTypeDescription(TerrorType terr)
+        {
+            return TerrorTokenDescription_STR[terr];
+        }
+
+        public string GetAmbassadorDescription(Faction faction)
+        {
+            return AmbassadorDescription_STR[faction];
         }
 
         public string Describe(MainPhase p)
@@ -2248,6 +2260,26 @@ namespace Treachery.Client
                 { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10specialforce.svg" }
             },
 
+            AmbassadorDescription_STR = new Dictionary<Faction, string>()
+            {
+                [Faction.None] = "None",
+
+                [Faction.Green] = "See visitor's hand",
+                [Faction.Black] = "Look at a random Traitor Card the visiting faction holds",
+                [Faction.Yellow] = "Move a group of your forces on the board to any territory (subject to storm and occupancy rules)",
+                [Faction.Red] = "Gain 5 spice",
+                [Faction.Orange] = "Send up to 4 of your forces in reserves to any territory not in storm for free",
+                [Faction.Blue] = "Trigger the effect of any Ambassador that was not part of your supply",
+
+                [Faction.Grey] = "Discard a Treachery Card and draw from the deck",
+                [Faction.Purple] = "Revive one of your leaders or up to 4 of your forces for free",
+
+                [Faction.Brown] = "Discard any of your Treachery Cards and gain 3 spice for each one",
+                [Faction.White] = "Pay 3 spice to the Bank for a Treachery Card",
+
+                [Faction.Pink] = "Gain Vidal if he is not in the Tanks, captured, or a ghola until used in a battle, or form an alliance with the visiting faction (if neither of you are allied); they may take control of Vidal instead. This token returns to your available supply"
+            },
+
             TechTokenName_STR = new Dictionary<TechToken, string>()
             {
                 { TechToken.Graveyard, "Axlotl Tanks" },
@@ -2450,13 +2482,25 @@ namespace Treachery.Client
             TerrorTokenName_STR = new Dictionary<TerrorType, string>()
             {
                 [TerrorType.None] = "None",
-                [TerrorType.Assassination] = "Assassination - Choose a random leader from that player and send it to the Tanks and collect spice for it",
-                [TerrorType.Atomics] = "Atomics - All forces in the territory go to the Tanks.  Place the Atomics Aftermath token in the territory.  No forces may ever ship into this territory (even Fremen). From this turn forward, your hand limit is reduced by 1 (as well as your ally’s), discarding a random card if a hand exceeds the limit",
-                [TerrorType.Extortion] = "Extortion - Gain 5 spice from the Spice Bank, placed in front of your shield. Collect it in the Mentat Pause, then regain this Terror token unless any one player in storm order pays you 3 spice",
-                [TerrorType.Robbery] = "Robbery - Steal half the spice (rounded up) from that player or take the top card of the Treachery Deck (then discarding a card of your choice if you exceed your hand size)",
-                [TerrorType.Sabotage] = "Sabotage - Draw a random Treachery Card from that player and discard it if possible. Then you may give that player a Treachery Card of your choice from your hand",
-                [TerrorType.SneakAttack] = "Sneak Attack - Send up to 5 of your forces in reserves into that territory at no cost (subject to storm and occupancy rules), even if the Atomics Aftermath token is there",
+                [TerrorType.Assassination] = "Assassination",
+                [TerrorType.Atomics] = "Atomics",
+                [TerrorType.Extortion] = "Extortion",
+                [TerrorType.Robbery] = "Robbery",
+                [TerrorType.Sabotage] = "Sabotage",
+                [TerrorType.SneakAttack] = "Sneak Attack",
             },
+
+            TerrorTokenDescription_STR = new Dictionary<TerrorType, string>()
+            {
+                [TerrorType.None] = "None",
+                [TerrorType.Assassination] = "Choose a random leader from that player and send it to the Tanks and collect spice for it",
+                [TerrorType.Atomics] = "All forces in the territory go to the Tanks.  Place the Atomics Aftermath token in the territory.  No forces may ever ship into this territory (even Fremen). From this turn forward, your hand limit is reduced by 1 (as well as your ally’s), discarding a random card if a hand exceeds the limit",
+                [TerrorType.Extortion] = "Gain 5 spice from the Spice Bank, placed in front of your shield. Collect it in the Mentat Pause, then regain this Terror token unless any one player in storm order pays you 3 spice",
+                [TerrorType.Robbery] = "Steal half the spice (rounded up) from that player or take the top card of the Treachery Deck (then discarding a card of your choice if you exceed your hand size)",
+                [TerrorType.Sabotage] = "Draw a random Treachery Card from that player and discard it if possible. Then you may give that player a Treachery Card of your choice from your hand",
+                [TerrorType.SneakAttack] = "Send up to 5 of your forces in reserves into that territory at no cost (subject to storm and occupancy rules), even if the Atomics Aftermath token is there",
+            },
+
             StrongholdCardName_STR = new Dictionary<int, string>()
             {
                 [2] = "Carthag",

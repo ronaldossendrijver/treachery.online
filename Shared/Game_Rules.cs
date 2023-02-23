@@ -267,7 +267,6 @@ namespace Treachery.Shared
                 Rule.PurpleGholas,
                 Rule.BrownAuditor,
                 Rule.WhiteBlackMarket,
-                Rule.StrongholdBonus,
                 Rule.CyanAssassinate,
                 Rule.PinkLoyalty,
             },

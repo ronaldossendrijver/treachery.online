@@ -217,6 +217,7 @@ namespace Treachery.Shared
 
         public static bool MayPass(Player p) => p.Faction == Faction.Pink;
 
+        [JsonIgnore]
         public int TotalAmountOfForces => YellowForceLocations != null ? YellowForceLocations.Values.Sum(b => b.TotalAmountOfForces) : 0;
     }
 

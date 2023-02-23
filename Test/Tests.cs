@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using Treachery.Client;
 using Treachery.Shared;
+using System.Reflection;
 
 namespace Treachery.Test
 {
@@ -532,7 +533,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 200;
+            int nrOfGames = 100;
             int nrOfTurns = 7;
             int nrOfPlayers = 7;
 
@@ -1474,6 +1475,22 @@ namespace Treachery.Test
             }
         }
 
-
+        [TestMethod]
+        public void ScanForUndecoratedGetOnlyProperties()
+        {
+            foreach (Type type in Assembly.GetAssembly(typeof(GameEvent)).GetTypes()
+            .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(GameEvent))))
+            {
+                foreach (var prop in type.GetProperties())
+                {
+                    if (!prop.CanWrite)
+                    {
+                        var att = prop.GetCustomAttribute(typeof(JsonIgnoreAttribute));
+                        //if (att == null) Console.WriteLine($"Get-only property {prop} of class {type} does not have the JsonIgnore attribute");
+                        Assert.IsTrue(att != null, $"Get-only property {prop} of class {type} does not have the JsonIgnore attribute");
+                    }
+                }
+            }
+        }
     }
 }

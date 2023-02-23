@@ -761,7 +761,7 @@ namespace Treachery.Client
             {
                 return 2500 + nrOfFlashMessages * 3000;
             }
-            else if (phase == MainPhase.Resurrection || phase == MainPhase.Charity || e is AllyPermission || e is DealOffered)
+            else if (phase == MainPhase.Resurrection || phase == MainPhase.Charity || e is AllyPermission || e is DealOffered || e is SetShipmentPermission)
             {
                 return 400;
             }

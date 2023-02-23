@@ -131,7 +131,7 @@
 
                         @if (ShownPlayer.Faction == Faction.Pink && h.CurrentPhase > Phase.BluePredicting)
                         {
-                            <div>Ambassadors: <FactionsComponent Diameter=30 Factions=@ShownPlayer.Ambassadors/></div>
+                            <div>Ambassadors: <FactionsComponent Diameter=30 Factions=@ShownPlayer.Ambassadors Labels=@ShownPlayer.Ambassadors.ToDictionary(f => f, f => Skin.Current.GetAmbassadorDescription(f)) /></div>
                         }
 
                         @if (ShownPlayer.Faction == Faction.Cyan && h.CurrentPhase > Phase.BluePredicting)
@@ -140,7 +140,7 @@
                                 Terror: 
                                 @foreach (var t in Game.UnplacedTerrorTokens)
                                 {
-                                    <Image Width=30 Popover=@Popup.Get(t)/>
+                                    <Image Width=30 Popover=@Skin.Current.GetTerrorTypeDescription(t) />
                                 }
 
                             </div>

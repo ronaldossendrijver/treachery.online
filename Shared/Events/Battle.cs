@@ -163,8 +163,10 @@ namespace Treachery.Shared
             }
         }
 
+        [JsonIgnore]
         public bool HasRockMelter => Weapon != null && Weapon.IsRockmelter;
 
+        [JsonIgnore]
         public bool HasUseless => Weapon != null && Weapon.IsUseless || Defense != null && Defense.IsUseless;
 
         public static float DetermineSpecialForceStrength(Game g, Faction player, Faction opponent)

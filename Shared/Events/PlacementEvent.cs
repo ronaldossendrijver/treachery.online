@@ -152,6 +152,7 @@ namespace Treachery.Shared
             return g.Map.Territories(false).Where(t => t.Locations.Any(l => l.Sector != g.SectorInStorm && p.AnyForcesIn(l) > 0));
         }
 
+        [JsonIgnore]
         public int TotalAmountOfForces => ForceLocations != null ? ForceLocations.Values.Sum(b => b.TotalAmountOfForces) : 0;
     }
 }

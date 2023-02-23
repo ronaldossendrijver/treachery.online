@@ -15,12 +15,17 @@ namespace Treachery.Shared
 
         private SetShipmentPermission DetermineSetShipmentPermission()
         {
-            var toDeny = Game.ShipmentPermissions.Keys.FirstOrDefault(f => IsWinningOpponent(f));
-            if (toDeny != Faction.None) return new SetShipmentPermission(Game) { Initiator = Faction, Target = toDeny, Permission = ShipmentPermission.None };
+            if (Game.CurrentPhase == Phase.BeginningOfShipAndMove)
+            {
+                var toDeny = Game.ShipmentPermissions.Keys.FirstOrDefault(f => IsWinningOpponent(f));
+                if (toDeny != Faction.None) return new SetShipmentPermission(Game) { Initiator = Faction, Target = toDeny, Permission = ShipmentPermission.None };
 
-            var intendedPermission = Resources > 10 || WinningOpponentsIWishToAttack(99, true).Any() ? ShipmentPermission.CrossAtOrangeRates : ShipmentPermission.CrossAtNormalRates;
-            var toAllow = SetShipmentPermission.ValidTargets(Game, this).FirstOrDefault(f => f != Ally && !IsWinningOpponent(f) && (!Game.ShipmentPermissions.TryGetValue(f, out var currentpermission) || currentpermission != intendedPermission));
-            return new SetShipmentPermission(Game) { Initiator = Faction, Target = toAllow, Permission = intendedPermission };
+                var intendedPermission = Resources > 10 || WinningOpponentsIWishToAttack(99, true).Any() ? ShipmentPermission.CrossAtOrangeRates : ShipmentPermission.CrossAtNormalRates;
+                var toAllow = SetShipmentPermission.ValidTargets(Game, this).FirstOrDefault(f => f != Ally && !IsWinningOpponent(f) && (!Game.ShipmentPermissions.TryGetValue(f, out var currentpermission) || currentpermission != intendedPermission));
+                return new SetShipmentPermission(Game) { Initiator = Faction, Target = toAllow, Permission = intendedPermission };
+            }
+
+            return null;
         }
 
         #endregion

@@ -214,7 +214,6 @@ namespace Treachery.Shared
                 result.Add(RuleGroup.CoreAdvanced);
                 result.Add(RuleGroup.CoreBasicExceptions);
                 result.Add(RuleGroup.CoreAdvancedExceptions);
-                result.Add(RuleGroup.House);
             }
 
             if (Game.ExpansionLevel >= 1)
@@ -233,6 +232,11 @@ namespace Treachery.Shared
             {
                 result.Add(RuleGroup.ExpansionPinkAndCyanBasic);
                 result.Add(RuleGroup.ExpansionPinkAndCyanAdvanced);
+            }
+
+            if (Game.ExpansionLevel >= 0)
+            {
+                result.Add(RuleGroup.House);
             }
 
             return result;

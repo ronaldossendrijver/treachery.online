@@ -95,6 +95,7 @@ namespace Treachery.Shared
             }
         }
 
+        [JsonIgnore]
         public int TotalAmountOfForces => (Accompanies?1:0) + (ExtraAdvisor?1:0);
     }
 }

@@ -94,6 +94,7 @@ namespace Treachery.Shared
             }
         }
 
+        [JsonIgnore]
         public bool IsUsingKarma => KarmaCard != null;
 
         //To be removed later on
@@ -430,6 +431,7 @@ namespace Treachery.Shared
 
         public static bool MayUseCunningNoField(Player p) => p.Faction == Faction.White && NexusPlayed.CanUseCunning(p);
 
+        [JsonIgnore]
         public int TotalAmountOfForces => ForceAmount + SpecialForceAmount + SmuggledAmount + SmuggledSpecialAmount;
     }
 }
