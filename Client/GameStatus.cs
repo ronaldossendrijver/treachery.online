@@ -624,7 +624,7 @@ namespace Treachery.Client
                         }
                     case Milestone.BabyMonster:
                         {
-                            Flash(result, Message.Express(Concept.BabyMonster, " detected!"), Skin.Current.GetImageURL(Map.GetResourceCardsInAndOutsidePlay(g.Map).FirstOrDefault(c => c.IsSandTrout)));
+                            Flash(result, Message.Express(Concept.BabyMonster, " detected!"), Skin.Current.GetImageURL(Map.GetResourceCardsInPlay(g).FirstOrDefault(c => c.IsSandTrout)));
                             break;
                         }
                     case Milestone.Karma when latestEvent is Bid:
@@ -637,7 +637,7 @@ namespace Treachery.Client
                         }
                     case Milestone.Monster:
                         {
-                            Flash(result, Message.Express(Concept.Monster, " detected!"), Skin.Current.GetImageURL(Map.GetResourceCardsInAndOutsidePlay(g.Map).FirstOrDefault(c => c.IsShaiHulud)));
+                            Flash(result, Message.Express(Concept.Monster, " detected!"), Skin.Current.GetImageURL(Map.GetResourceCardsInPlay(g).FirstOrDefault(c => c.IsShaiHulud)));
                             break;
                         }
                     case Milestone.Resource:

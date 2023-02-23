@@ -144,7 +144,7 @@ namespace Treachery.Shared
         private Deck<ResourceCard> CreateAndShuffleResourceCardDeck()
         {
             var result = new Deck<ResourceCard>(Random);
-            foreach (var c in Map.GetResourceCardsInAndOutsidePlay(Map).Where(c => IsInPlay(c)))
+            foreach (var c in Map.GetResourceCardsInPlay(this))
             {
                 result.PutOnTop(c);
             }
@@ -154,15 +154,7 @@ namespace Treachery.Shared
             return result;
         }
 
-        private bool IsInPlay(ResourceCard c)
-        {
-            return
-                c.IsShaiHulud ||
-                c.IsSpiceBlow ||
-                c.IsSandTrout && Applicable(Rule.SandTrout) ||
-                c.IsGreatMaker && Applicable(Rule.GreatMaker) ||
-                c.IsDiscovery && Applicable(Rule.DiscoveryTokens);
-        }
+        
 
         private void AddPlayersToGame(EstablishPlayers e)
         {

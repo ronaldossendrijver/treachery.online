@@ -43,6 +43,7 @@ namespace Treachery.Client
         public Dictionary<TerrorType, string> TerrorTokenImage_URL;
         public Dictionary<TerrorType, string> TerrorTokenName_STR;
         public Dictionary<TerrorType, string> TerrorTokenDescription_STR;
+        public Dictionary<Faction, string> AmbassadorImage_URL;
         public Dictionary<Faction, string> AmbassadorDescription_STR;
 
         public string Map_URL = null;
@@ -57,6 +58,8 @@ namespace Treachery.Client
         public string Harvester_URL = null;
         public string Resource_URL = null;
         public string HMS_URL = null;
+        public string DiscoveryYellow_URL = null;
+        public string DiscoveryOrange_URL = null;
 
         public Dictionary<Concept, string> Concept_STR;
         public Dictionary<MainPhase, string> MainPhase_STR;
@@ -433,6 +436,11 @@ namespace Treachery.Client
         public string GetAmbassadorDescription(Faction faction)
         {
             return AmbassadorDescription_STR[faction];
+        }
+
+        public string GetAmbassadorImage(Faction faction)
+        {
+            return AmbassadorImage_URL[faction];
         }
 
         public string Describe(MainPhase p)
@@ -1412,7 +1420,13 @@ namespace Treachery.Client
                 <h5>Advantages</h5>
                 You forge strong alliances:
                 <ul>
-                <li><strong>AMBASSADORS</strong> - you see the treachery card on bid.</li>
+                <li><strong>AMBASSADORS</strong> - At start, take the {48} Ambassador token and 5 random Ambassadors for other factions to form a supply. At the end of Revival you may spend spice to place Ambassadors in any stronghold not in storm that does not have one.  The cost is 1 spice for a single Ambassador but it increases by 1 spice for each subsequent Ambassador that turn.  
+                When another faction (other than your ally or the faction matching the marker) enters a stronghold with an Ambassador, you may trigger its effect, setting it aside.
+                After triggering your random markers, draw 5 at random again as at start.  Ambassadors are vulnerable to game effects like storm or explosions, returning to your supply.</li>
+                <li><strong>OCCUPY</strong> - When you are in an alliance, you and your ally’s forces are considered the same faction, and may enter and occupy the same territory.  If you are both collecting spice from a desert territory, you split the collection however you both agree, or as evenly as possible with your ally gaining the remainder if you can’t agree.
+If you are both in a battle with another faction, you decide which of you is considered the faction in the battle (choosing a leader and playing Treachery Cards) once battle order is determined.  Regardless of who fights the battle, your ally's forces are the ones dialed, and half of your forces in the territory (rounded down) are added to the number dialed (without needing spice in the advanced game).  After the battle, half of your forces rounded up remain in the territory if your side wins, and the rest go to the Tanks.  If you and your ally both occupy a stronghold at the end of a turn, it only counts as one stronghold for both of you, and you control it.	 
+It only takes three strongholds for you and your ally to win, if you both are co-occupied in all three.</li>
+<li><strong>REVIVAL</strong> - You may always revive Duke Vidal for 5 spice, no matter how many of your leaders are in the Tanks.  You may revive leaders normally when at least 5 are in the Tanks (counting Duke Vidal).
                 </ul>" +
 
               If(g.Applicable(Rule.PinkLoyalty) || g.Applicable(Rule.IncreasedResourceFlow), "<h5>Advanced Game Advantages</h5>") +
@@ -1420,13 +1434,13 @@ namespace Treachery.Client
               If(g, Rule.IncreasedResourceFlow, "<p><strong>Collection:</strong> you and your ally both gain income from strongholds that yield {16} during collection.</p>") +
 
               If(g, Rule.AdvancedKarama,
-              @"<p><strong>Special {19}:</strong> xxx.</p>") +
+              @"<p><strong>Special {19}:</strong> If you played neither a weapon nor a defense, you may add the difference between your leader disc and your opponent’s leader disc to your number dialed..</p>") +
 
               @"<h5>Alliance</h5>
                 <p>You may have your ally benefit from a triggered Ambassador's effect.</p>
 
                 <h5>Strategy</h5>
-                <p>xxx.</p>
+                <p>Much of your strength comes from being in an alliance as soon as possible.  Your Occupy advantage can provide a significant boost when you send several forces into a stronghold your ally occupies.  Your Ambassadors can provide you with useful perks, and placing them requires careful consideration, not only with the order you select them, but in how their presence on the map can influence the other factions..</p>
                 </div>";
         }
 
@@ -1510,6 +1524,8 @@ namespace Treachery.Client
             Resource_URL = DEFAULT_ART_LOCATION + "/art/PassiveSpice.svg",
             Harvester_URL = DEFAULT_ART_LOCATION + "/art/ActiveSpice.svg",
             HMS_URL = DEFAULT_ART_LOCATION + "/art/hms.svg",
+            DiscoveryYellow_URL = DEFAULT_ART_LOCATION + "/art/discovery1.jpg",
+            DiscoveryOrange_URL = DEFAULT_ART_LOCATION + "/art/discovery2.jpg",
 
             Concept_STR = new Dictionary<Concept, string>()
             {
@@ -1791,12 +1807,12 @@ namespace Treachery.Client
                 [37] = DEFAULT_ART_LOCATION + "/art/HabbanyaErg.gif",
                 [39] = DEFAULT_ART_LOCATION + "/art/WindPassNorth.gif",
 
-                [40] = DEFAULT_ART_LOCATION + "/art/SihayaRidge.gif",
-                [41] = DEFAULT_ART_LOCATION + "/art/RockOutcroppings.gif",
-                [42] = DEFAULT_ART_LOCATION + "/art/HaggaBasin.gif",
-                [43] = DEFAULT_ART_LOCATION + "/art/FuneralPlain.gif",
-                [44] = DEFAULT_ART_LOCATION + "/art/WindPassNorth.gif",
-                [45] = DEFAULT_ART_LOCATION + "/art/OldGapDiscovery.gif",
+                [40] = DEFAULT_ART_LOCATION + "/art/SihayaRidgeDiscovery.gif",
+                [41] = DEFAULT_ART_LOCATION + "/art/RockOutcroppingsDiscovery.gif",
+                [42] = DEFAULT_ART_LOCATION + "/art/HaggaBasinDiscovery.gif",
+                [43] = DEFAULT_ART_LOCATION + "/art/FuneralPlainDiscovery.gif",
+                [44] = DEFAULT_ART_LOCATION + "/art/WindPassNorthDiscovery.gif",
+                [45] = DEFAULT_ART_LOCATION + "/art/OHGapDiscovery.gif",
 
                 [98] = DEFAULT_ART_LOCATION + "/art/Shai-Hulud.gif",
                 [99] = DEFAULT_ART_LOCATION + "/art/Sandtrout.gif",
@@ -2190,8 +2206,8 @@ namespace Treachery.Client
                 [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.svg",
                 [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.svg",
 
-                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11.png",
-                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12.png",
+                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11.svg",
+                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12.svg",
             },
 
             FactionTableImage_URL = new Dictionary<Faction, string>()
@@ -2209,8 +2225,8 @@ namespace Treachery.Client
                 [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.svg",
                 [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.svg",
 
-                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11.png",
-                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12.png",
+                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11.svg",
+                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12.svg",
             },
 
             FactionFacedownImage_URL = new Dictionary<Faction, string>()
@@ -2227,8 +2243,8 @@ namespace Treachery.Client
                 [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.svg",
                 [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.svg",
 
-                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11.png",
-                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12.png",
+                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11.svg",
+                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12.svg",
             },
 
             FactionForceImage_URL = new Dictionary<Faction, string>()
@@ -2245,8 +2261,8 @@ namespace Treachery.Client
                 [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9force.svg",
                 [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10force.svg",
 
-                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11force.png",
-                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12force.png",
+                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11force.svg",
+                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12force.svg",
             },
 
             FactionSpecialForceImage_URL = new Dictionary<Faction, string>()
@@ -2258,6 +2274,24 @@ namespace Treachery.Client
                 { Faction.Grey, DEFAULT_ART_LOCATION + "/art/faction7specialforce.svg" },
 
                 { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10specialforce.svg" }
+            },
+
+            AmbassadorImage_URL = new Dictionary<Faction, string>()
+            {
+                [Faction.Green] = DEFAULT_ART_LOCATION + "/art/faction1ambassador.svg",
+                [Faction.Black] = DEFAULT_ART_LOCATION + "/art/faction2ambassador.svg",
+                [Faction.Yellow] = DEFAULT_ART_LOCATION + "/art/faction3ambassador.svg",
+                [Faction.Red] = DEFAULT_ART_LOCATION + "/art/faction4ambassador.svg",
+                [Faction.Orange] = DEFAULT_ART_LOCATION + "/art/faction5ambassador.svg",
+                [Faction.Blue] = DEFAULT_ART_LOCATION + "/art/faction6ambassador.svg",
+                [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7ambassador.svg",
+                [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8ambassador.svg",
+
+                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9ambassador.svg",
+                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10ambassador.svg",
+
+                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11ambassador.svg",
+                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12ambassador.svg",
             },
 
             AmbassadorDescription_STR = new Dictionary<Faction, string>()

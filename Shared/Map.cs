@@ -130,25 +130,16 @@ namespace Treachery.Shared
             return result;
         }
 
-        public static IEnumerable<ResourceCard> GetResourceCardsInPlay(Game g)
+        public static IEnumerable<ResourceCard> GetResourceCardsInPlay(Game g) => GetResourceCardsInAndOutsidePlay(g.Map).Where(c => IsInPlay(g, c));
+
+        private static bool IsInPlay(Game g, ResourceCard c)
         {
-            var result = new List<ResourceCard>();
-            foreach (var location in g.Map._locations.Where(l => l.SpiceBlowAmount > 0))
-            {
-                result.Add(new ResourceCard(location.Territory.Id) { Location = location });
-            }
-
-            for (int i = 1; i <= 6; i++)
-            {
-                result.Add(new ResourceCard(98));
-            }
-
-            if (g.Applicable(Rule.SandTrout))
-            {
-                result.Add(new ResourceCard(99) { IsSandTrout = true });
-            }
-
-            return result;
+            return
+                c.IsShaiHulud ||
+                c.IsSpiceBlow ||
+                c.IsSandTrout && g.Applicable(Rule.SandTrout) ||
+                c.IsGreatMaker && g.Applicable(Rule.GreatMaker) ||
+                c.IsDiscovery && g.Applicable(Rule.DiscoveryTokens);
         }
 
         private void InitializeLocations()
@@ -1691,14 +1682,14 @@ namespace Treachery.Shared
         }
 
         private static void FindNeighbours(
-            List<Location> found,
-            Location current,
-            Location previous,
-            int currentDistance,
-            int maxDistance,
-            Faction f,
-            int sectorInStorm,
-            List<Location> forceObstacles)
+        List<Location> found,
+        Location current,
+        Location previous,
+        int currentDistance,
+        int maxDistance,
+        Faction f,
+        int sectorInStorm,
+        List<Location> forceObstacles)
         {
             if (!found.Contains(current))
             {

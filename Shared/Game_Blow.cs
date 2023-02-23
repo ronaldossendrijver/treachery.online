@@ -62,7 +62,7 @@ namespace Treachery.Shared
 
         private bool SandTroutDoublesResources { get; set; } = false;
 
-        private void DrawSpiceCard()
+        private void DrawResourceCard()
         {
             ResourceCard drawn = null;
             while (ThumperUsed || !(drawn = DrawAndDiscardResourceCard(CurrentDiscardPile)).IsSpiceBlow)
@@ -340,7 +340,7 @@ namespace Treachery.Shared
             Monsters.Clear();
             Enter(Phase.BlowA);
             LogIf(Applicable(Rule.IncreasedResourceFlow), "*** Spice Blow A ***");
-            DrawSpiceCard();
+            DrawResourceCard();
             LetFactionsDiscardSurplusCards();
         }
 
@@ -349,7 +349,7 @@ namespace Treachery.Shared
             Monsters.Clear();
             Enter(Phase.BlowB);
             Log("*** Spice Blow B ***");
-            DrawSpiceCard();
+            DrawResourceCard();
             LetFactionsDiscardSurplusCards();
         }
 
@@ -484,7 +484,7 @@ namespace Treachery.Shared
             Monsters.Add(e.Territory);
             PerformMonster(e.Territory);
             Enter(CurrentPhase == Phase.YellowSendingMonsterA, Phase.BlowA, Phase.BlowB);
-            DrawSpiceCard();
+            DrawResourceCard();
             LetFactionsDiscardSurplusCards();
         }
 

@@ -33,9 +33,8 @@
         var ambassador = Game.AmbassadorIn(stronghold.Territory);
         if (ambassador != Faction.None)
         {
-            var popover = Player.Faction == Faction.Pink ? Skin.Current.Format("{0} Ambassador - {1}", ambassador, Skin.Current.GetAmbassadorDescription(ambassador)) : "Ambassador";
-            <Image X=x Y=y Filter="hue-rotate(180deg);" Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetFactionTableImageURL(Faction.Pink)
-               ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover />
+            <Image X=x Y=y Filter="hue-rotate(180deg);" Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetAmbassadorImage(Faction.Pink)
+               ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@Skin.Current.GetAmbassadorDescription(ambassador) />
 
             y += Skin.Current.PlayerTokenRadius;
         }
