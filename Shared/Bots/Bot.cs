@@ -120,6 +120,7 @@ namespace Treachery.Shared
                 Do(DetermineDivideResources, ref action, evts) ||
                 Do(DetermineDivideResourcesAccepted, ref action, evts) ||
                 Do(DetermineBattleClaimed, ref action, evts) ||
+                Do(DetermineNexusVoted, ref action, evts) ||
 
                 //Brown
                 Do(DetermineBrownEconomics, ref action, evts) ||

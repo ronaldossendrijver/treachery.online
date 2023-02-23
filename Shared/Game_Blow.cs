@@ -14,6 +14,7 @@ namespace Treachery.Shared
         public List<Territory> Monsters { get; private set; } = new List<Territory>();
         private readonly List<ResourceCard> ignoredMonsters = new List<ResourceCard>();
         private ResourceCard ignoredSandtrout = null;
+        private List<NexusVoted> NexusVotes { get; set; } = new();
 
         #endregion State
 
@@ -62,6 +63,9 @@ namespace Treachery.Shared
 
         private bool SandTroutDoublesResources { get; set; } = false;
 
+        private bool GreatMonsterOccured { get; set; } = false;
+        private bool NexusVoteMustHappen { get; set; } = false;
+
         private void DrawResourceCard()
         {
             ResourceCard drawn = null;
@@ -71,21 +75,28 @@ namespace Treachery.Shared
                 {
                     ThumperUsed = false;
                     NumberOfMonsters++;
-                    LetMonsterAppear(PreviousBlowCard == null || PreviousBlowCard.IsShaiHulud ? null : PreviousBlowCard.Location.Territory);
+                    LetMonsterAppear(PreviousBlowCard == null || PreviousBlowCard.IsShaiHulud || PreviousBlowCard.IsGreatMaker ? null : PreviousBlowCard.Location.Territory, false);
                     if (CurrentPhase == Phase.YellowSendingMonsterA || CurrentPhase == Phase.YellowSendingMonsterB)
                     {
                         break;
                     }
                 }
-                else if (drawn != null && drawn.IsShaiHulud && CurrentTurn == 1)
+                else if (drawn != null && (drawn.IsShaiHulud || drawn.IsGreatMaker) && CurrentTurn == 1)
                 {
-                    Log(Concept.Monster, " on turn 1 was ignored");
+                    Log(drawn.IsShaiHulud ? Concept.Monster : Concept.GreatMonster, " on turn 1 was ignored");
                     ignoredMonsters.Add(CurrentDiscardPile.Draw());
                 }
-                else if (ThumperUsed && Version > 150 || drawn.IsShaiHulud)
+                else if (ThumperUsed && Version > 150 || drawn.IsShaiHulud || drawn.IsGreatMaker)
                 {
-                    ThumperUsed = false;
-                    SandTroutDoublesResources = false;
+                    if (!ThumperUsed && drawn.IsGreatMaker)
+                    {
+                        GreatMonsterOccured = true;
+                        NexusVoteMustHappen = true;
+                    }
+                    else
+                    {
+                        NexusVoteMustHappen = false;
+                    }
 
                     if (!ThumperUsed)
                     {
@@ -96,7 +107,7 @@ namespace Treachery.Shared
                     {
                         SandTroutDoublesResources = false;
                         NumberOfMonsters++;
-                        LetMonsterAppear(PreviousBlowCard == null || PreviousBlowCard.IsShaiHulud ? null : PreviousBlowCard.Location.Territory);
+                        LetMonsterAppear(PreviousBlowCard == null || PreviousBlowCard.IsShaiHulud || PreviousBlowCard.IsGreatMaker ? null : PreviousBlowCard.Location.Territory, !ThumperUsed && drawn.IsGreatMaker);
                         if (CurrentPhase == Phase.YellowSendingMonsterA || CurrentPhase == Phase.YellowSendingMonsterB)
                         {
                             break;
@@ -133,6 +144,8 @@ namespace Treachery.Shared
                         ignoredSandtrout = CurrentDiscardPile.Draw();
                     }
                 }
+
+                ThumperUsed = false;
             }
 
             if (CurrentPhase != Phase.YellowSendingMonsterA && CurrentPhase != Phase.YellowSendingMonsterB)
@@ -241,17 +254,48 @@ namespace Treachery.Shared
             else
             {
                 CurrentAllianceOffers.Clear();
-                Enter((CurrentPhase == Phase.BlowA || CurrentPhase == Phase.HarvesterA), Phase.AllianceA, Phase.AllianceB);
+
+                if (NexusVoteMustHappen)
+                {
+                    NexusVotes.Clear();
+                    Enter(CurrentPhase == Phase.BlowA || CurrentPhase == Phase.HarvesterA, Phase.VoteAllianceA, Phase.VoteAllianceB);
+                }
+                else
+                {
+                    Enter(CurrentPhase == Phase.BlowA || CurrentPhase == Phase.HarvesterA, Phase.AllianceA, Phase.AllianceB);
+                }
+            }
+        }
+
+
+        public void HandleEvent(NexusVoted e)
+        {
+            Log(e);
+            NexusVotes.Add(e);
+            if (NexusVotes.Count == Players.Count)
+            {
+                if (2 * NexusVotes.Count(v => v.Passed) >= Players.Count)
+                {
+                    Enter(CurrentPhase == Phase.VoteAllianceA && Applicable(Rule.IncreasedResourceFlow), EnterBlowB, StartNexusCardPhase);
+                }
+                else
+                {
+                    Enter(CurrentPhase == Phase.VoteAllianceA, Phase.AllianceA, Phase.AllianceB);
+                }
             }
         }
 
         public bool MonsterAppearedInTerritoryWithoutForces { get; private set; } = false;
 
-        private void LetMonsterAppear(Territory t)
+        private void LetMonsterAppear(Territory t, bool isGreatMaker)
         {
             if (CurrentTurn != 1)
             {
-                if (Monsters.Count > 0)
+                if (isGreatMaker)
+                {
+                    Log(Concept.GreatMonster, " appears in ", t);
+                }
+                else if (Monsters.Count > 0)
                 {
                     Log(Concept.Monster, " appears a ", Natural(Monsters.Count + 1), " time during this ", MainPhase.Blow);
                 }
@@ -293,7 +337,7 @@ namespace Treachery.Shared
             }
             else
             {
-                Log(Concept.Monster, " on turn 1 was ignored");
+                Log(isGreatMaker ? Concept.GreatMonster : Concept.Monster, " on turn 1 was ignored");
             }
         }
 
@@ -338,6 +382,8 @@ namespace Treachery.Shared
         private void EnterBlowA()
         {
             Monsters.Clear();
+            NexusVoteMustHappen = false;
+            GreatMonsterOccured = false;
             Enter(Phase.BlowA);
             LogIf(Applicable(Rule.IncreasedResourceFlow), "*** Spice Blow A ***");
             DrawResourceCard();
@@ -347,6 +393,8 @@ namespace Treachery.Shared
         private void EnterBlowB()
         {
             Monsters.Clear();
+            NexusVoteMustHappen = false;
+            GreatMonsterOccured = false;
             Enter(Phase.BlowB);
             Log("*** Spice Blow B ***");
             DrawResourceCard();

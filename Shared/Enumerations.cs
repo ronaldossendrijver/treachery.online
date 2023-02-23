@@ -142,9 +142,11 @@ namespace Treachery.Shared
 
         YellowSendingMonsterA = 140000,
 
+        VoteAllianceA = 149900,
         AllianceA = 150000,
         YellowRidingMonsterA = 160000,
         YellowSendingMonsterB = 170000,
+        VoteAllianceB = 179900,
         AllianceB = 180000,
 
         YellowRidingMonsterB = 190000,

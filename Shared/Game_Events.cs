@@ -157,6 +157,10 @@ namespace Treachery.Shared
                     if (player.Has(TreacheryCardType.Thumper) && CurrentTurn > 1) result.Add(typeof(ThumperPlayed));
                     if (Version < 103 && player.Has(TreacheryCardType.Amal)) result.Add(typeof(AmalPlayed));
                     break;
+                case Phase.VoteAllianceA:
+                case Phase.VoteAllianceB:
+                    if (!NexusVotes.Any(v => v.Initiator == faction)) result.Add(typeof(NexusVoted));
+                    break;
                 case Phase.HarvesterA:
                 case Phase.HarvesterB:
                     if (player.Has(TreacheryCardType.Harvester)) result.Add(typeof(HarvesterPlayed));

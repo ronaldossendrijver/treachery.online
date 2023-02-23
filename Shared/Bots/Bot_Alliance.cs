@@ -25,6 +25,10 @@ namespace Treachery.Shared
             return new AllianceByAmbassador(Game) { Initiator = Faction, Passed = !accept };
         }
 
+        protected NexusVoted DetermineNexusVoted()
+        {
+            return new NexusVoted(Game) { Initiator = Faction, Passed = false };
+        }
 
         protected virtual AllianceOffered DetermineAllianceOffered()
         {

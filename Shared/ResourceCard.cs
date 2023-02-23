@@ -22,7 +22,7 @@ namespace Treachery.Shared
 
         public bool IsShaiHulud => Location == null && !IsSandTrout && !IsGreatMaker;
 
-        public bool IsSpiceBlow => Location != null && !IsDiscovery;
+        public bool IsSpiceBlow => Location != null;
 
         public bool IsDiscovery => DiscoveryLocation != null;
 

@@ -136,7 +136,7 @@ namespace Treachery.Shared
         {
             return
                 c.IsShaiHulud ||
-                c.IsSpiceBlow ||
+                c.IsSpiceBlow && !c.IsDiscovery ||
                 c.IsSandTrout && g.Applicable(Rule.SandTrout) ||
                 c.IsGreatMaker && g.Applicable(Rule.GreatMaker) ||
                 c.IsDiscovery && g.Applicable(Rule.DiscoveryTokens);

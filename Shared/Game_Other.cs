@@ -414,7 +414,7 @@ namespace Treachery.Shared
             Log(e);
             RecentMilestones.Add(Milestone.Karma);
             NumberOfMonsters++;
-            LetMonsterAppear(e.Territory);
+            LetMonsterAppear(e.Territory, false);
 
             if (CurrentPhase == Phase.BlowReport)
             {
