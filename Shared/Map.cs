@@ -120,12 +120,12 @@ namespace Treachery.Shared
 
             result.Add(new ResourceCard(100) { IsGreatMaker = true });
 
-            result.Add(new ResourceCard(40) { Location = m.SihayaRidge.ResourceBlowLocation, DiscoveryLocation = m.CielagoEast.DiscoveryTokenLocation });
-            result.Add(new ResourceCard(41) { Location = m.RockOutcroppings.ResourceBlowLocation, DiscoveryLocation = m.Meridan.DiscoveryTokenLocation });
-            result.Add(new ResourceCard(42) { Location = m.HaggaBasin.ResourceBlowLocation, DiscoveryLocation = m.GaraKulon.DiscoveryTokenLocation });
-            result.Add(new ResourceCard(43) { Location = m.FuneralPlain, DiscoveryLocation = m.PastyMesa.DiscoveryTokenLocation });
-            result.Add(new ResourceCard(44) { Location = m.WindPassNorth.ResourceBlowLocation, DiscoveryLocation = m.PlasticBasin.DiscoveryTokenLocation });
-            result.Add(new ResourceCard(45) { Location = m.OldGap.ResourceBlowLocation, DiscoveryLocation = m.FalseWallWest.DiscoveryTokenLocation });
+            result.Add(new ResourceCard(41) { Location = m.SihayaRidge.ResourceBlowLocation, DiscoveryLocation = m.CielagoEast.DiscoveryTokenLocation });
+            result.Add(new ResourceCard(42) { Location = m.RockOutcroppings.ResourceBlowLocation, DiscoveryLocation = m.Meridan.DiscoveryTokenLocation });
+            result.Add(new ResourceCard(43) { Location = m.HaggaBasin.ResourceBlowLocation, DiscoveryLocation = m.GaraKulon.DiscoveryTokenLocation });
+            result.Add(new ResourceCard(44) { Location = m.FuneralPlain, DiscoveryLocation = m.PastyMesa.DiscoveryTokenLocation });
+            result.Add(new ResourceCard(45) { Location = m.WindPassNorth.ResourceBlowLocation, DiscoveryLocation = m.PlasticBasin.DiscoveryTokenLocation });
+            result.Add(new ResourceCard(46) { Location = m.OldGap.ResourceBlowLocation, DiscoveryLocation = m.FalseWallWest.DiscoveryTokenLocation });
 
             return result;
         }
@@ -364,7 +364,7 @@ namespace Treachery.Shared
                     Orientation = "West",
                     Sector = 0,
                     SpiceBlowAmount = 0,
-                    TokenType = DiscoveryTokenType.Hiereg
+                    DiscoveryTokenType = DiscoveryTokenType.Yellow
                 });
                 _locations.Add(new Location(id++)
                 {
@@ -413,7 +413,7 @@ namespace Treachery.Shared
                     Orientation = "West",
                     Sector = 2,
                     SpiceBlowAmount = 0,
-                    TokenType = DiscoveryTokenType.Hiereg
+                    DiscoveryTokenType = DiscoveryTokenType.Yellow
                 });
                 _locations.Add(new Location(id++)
                 {
@@ -583,7 +583,7 @@ namespace Treachery.Shared
                     Orientation = "North",
                     Sector = 6,
                     SpiceBlowAmount = 0,
-                    TokenType = DiscoveryTokenType.Smuggler
+                    DiscoveryTokenType = DiscoveryTokenType.Orange
                 });
                 _locations.Add(new Location(id++)
                 {
@@ -748,7 +748,7 @@ namespace Treachery.Shared
                     Orientation = "",
                     Sector = 7,
                     SpiceBlowAmount = 0,
-                    TokenType = DiscoveryTokenType.Hiereg
+                    DiscoveryTokenType = DiscoveryTokenType.Yellow
                 });
             }
 
@@ -907,7 +907,7 @@ namespace Treachery.Shared
                     Orientation = "Middle",
                     Sector = 12,
                     SpiceBlowAmount = 0,
-                    TokenType = DiscoveryTokenType.Smuggler
+                    DiscoveryTokenType = DiscoveryTokenType.Orange
                 });
                 _locations.Add(new Location(id++)
                 {
@@ -1104,7 +1104,7 @@ namespace Treachery.Shared
                     Orientation = "Middle",
                     Sector = 16,
                     SpiceBlowAmount = 0,
-                    TokenType = DiscoveryTokenType.Smuggler
+                    DiscoveryTokenType = DiscoveryTokenType.Orange
                 });
                 _locations.Add(new Location(id++)
                 {

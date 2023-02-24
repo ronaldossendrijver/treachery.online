@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Treachery.Shared;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Treachery.Client
 {
@@ -43,6 +44,11 @@ namespace Treachery.Client
         public Dictionary<TerrorType, string> TerrorTokenImage_URL;
         public Dictionary<TerrorType, string> TerrorTokenName_STR;
         public Dictionary<TerrorType, string> TerrorTokenDescription_STR;
+        public Dictionary<DiscoveryToken, string> DiscoveryTokenImage_URL;
+        public Dictionary<DiscoveryToken, string> DiscoveryTokenName_STR;
+        public Dictionary<DiscoveryToken, string> DiscoveryTokenDescription_STR;
+        public Dictionary<DiscoveryTokenType, string> DiscoveryTokenTypeName_STR;
+        public Dictionary<DiscoveryTokenType, string> DiscoveryTokenTypeImage_URL;
         public Dictionary<Faction, string> AmbassadorImage_URL;
         public Dictionary<Faction, string> AmbassadorDescription_STR;
 
@@ -58,8 +64,6 @@ namespace Treachery.Client
         public string Harvester_URL = null;
         public string Resource_URL = null;
         public string HMS_URL = null;
-        public string DiscoveryYellow_URL = null;
-        public string DiscoveryOrange_URL = null;
 
         public Dictionary<Concept, string> Concept_STR;
         public Dictionary<MainPhase, string> MainPhase_STR;
@@ -303,6 +307,8 @@ namespace Treachery.Client
                 TreacheryCardType tct => Describe(tct),
                 LeaderSkill ls => Describe(ls),
                 TerrorType terr => Describe(terr),
+                DiscoveryToken dt => Describe(dt),
+                DiscoveryTokenType dtd => Describe(dtd),
                 Ruleset r => Describe(r),
                 RuleGroup rg => Describe(rg),
                 Rule rule => Describe(rule),
@@ -421,6 +427,32 @@ namespace Treachery.Client
         public string Describe(LeaderSkill l)
         {
             return LeaderSkillCardName_STR[l];
+        }
+
+        public string GetImageURL(DiscoveryToken dt)
+        {
+            return DiscoveryTokenImage_URL[dt];
+        }
+
+        public string Describe(DiscoveryToken dt)
+        {
+            return DiscoveryTokenName_STR[dt];
+        }
+
+        public string GetDiscoveryTokenDescription(DiscoveryToken dt)
+        {
+            return DiscoveryTokenDescription_STR[dt];
+        }
+
+        public string GetImageURL(DiscoveryTokenType dtt)
+        {
+            return DiscoveryTokenTypeImage_URL[dtt];
+        }
+
+
+        public string Describe(DiscoveryTokenType dtt)
+        {
+            return DiscoveryTokenTypeName_STR[dtt];
         }
 
         public string Describe(TerrorType terr)
@@ -1524,8 +1556,6 @@ It only takes three strongholds for you and your ally to win, if you both are co
             Resource_URL = DEFAULT_ART_LOCATION + "/art/PassiveSpice.svg",
             Harvester_URL = DEFAULT_ART_LOCATION + "/art/ActiveSpice.svg",
             HMS_URL = DEFAULT_ART_LOCATION + "/art/hms.svg",
-            DiscoveryYellow_URL = DEFAULT_ART_LOCATION + "/art/discovery1.jpg",
-            DiscoveryOrange_URL = DEFAULT_ART_LOCATION + "/art/discovery2.jpg",
 
             Concept_STR = new Dictionary<Concept, string>()
             {
@@ -1806,13 +1836,14 @@ It only takes three strongholds for you and your ally to win, if you both are co
                 [34] = DEFAULT_ART_LOCATION + "/art/TheGreatFlat.gif",
                 [37] = DEFAULT_ART_LOCATION + "/art/HabbanyaErg.gif",
                 [39] = DEFAULT_ART_LOCATION + "/art/WindPassNorth.gif",
+                [40] = DEFAULT_ART_LOCATION + "/art/HabbanyaRidgeFlat.gif",
 
-                [40] = DEFAULT_ART_LOCATION + "/art/SihayaRidgeDiscovery.gif",
-                [41] = DEFAULT_ART_LOCATION + "/art/RockOutcroppingsDiscovery.gif",
-                [42] = DEFAULT_ART_LOCATION + "/art/HaggaBasinDiscovery.gif",
-                [43] = DEFAULT_ART_LOCATION + "/art/FuneralPlainDiscovery.gif",
-                [44] = DEFAULT_ART_LOCATION + "/art/WindPassNorthDiscovery.gif",
-                [45] = DEFAULT_ART_LOCATION + "/art/OHGapDiscovery.gif",
+                [41] = DEFAULT_ART_LOCATION + "/art/SihayaRidgeDiscovery.gif",
+                [42] = DEFAULT_ART_LOCATION + "/art/RockOutcroppingsDiscovery.gif",
+                [43] = DEFAULT_ART_LOCATION + "/art/HaggaBasinDiscovery.gif",
+                [44] = DEFAULT_ART_LOCATION + "/art/FuneralPlainDiscovery.gif",
+                [45] = DEFAULT_ART_LOCATION + "/art/WindPassNorthDiscovery.gif",
+                [46] = DEFAULT_ART_LOCATION + "/art/OHGapDiscovery.gif",
 
                 [98] = DEFAULT_ART_LOCATION + "/art/Shai-Hulud.gif",
                 [99] = DEFAULT_ART_LOCATION + "/art/Sandtrout.gif",
@@ -2533,6 +2564,42 @@ It only takes three strongholds for you and your ally to win, if you both are co
                 [TerrorType.Robbery] = "Steal half the spice (rounded up) from that player or take the top card of the Treachery Deck (then discarding a card of your choice if you exceed your hand size)",
                 [TerrorType.Sabotage] = "Draw a random Treachery Card from that player and discard it if possible. Then you may give that player a Treachery Card of your choice from your hand",
                 [TerrorType.SneakAttack] = "Send up to 5 of your forces in reserves into that territory at no cost (subject to storm and occupancy rules), even if the Atomics Aftermath token is there",
+            },
+
+            DiscoveryTokenName_STR = new Dictionary<DiscoveryToken, string>()
+            {
+                [DiscoveryToken.Jacurutu] = "Jacurutu Sietch",
+                [DiscoveryToken.Shrine] = "Shrine",
+                [DiscoveryToken.TestingStation] = "Ecological Testing Station",
+                [DiscoveryToken.Cistern] = "Cistern",
+                [DiscoveryToken.ProcessingStation] = "Orgiz Processing Station",
+                [DiscoveryToken.CardStash] = "Treachery Card Stash",
+                [DiscoveryToken.ResourceStash] = "Spice Stash",
+                [DiscoveryToken.Flight] = "Ornithopter"
+            },
+            
+            DiscoveryTokenDescription_STR = new Dictionary<DiscoveryToken, string>()
+            {
+                [DiscoveryToken.Jacurutu] = "Counts as a normal stronghold.  If you win a battle here, gain 1 spice for each of your opponent’s undialed forces that go to the Tanks",
+                [DiscoveryToken.Shrine] = "If occupied, you may play Truthtrance as a Karama card, and vice versa",
+                [DiscoveryToken.TestingStation] = "If occupied during Storm, you may add or subtract the movement of the storm by 1, not affecting Weather Control",
+                [DiscoveryToken.Cistern] = "If occupied during Collection, gain 2 spice from the bank",
+                [DiscoveryToken.ProcessingStation] = "If occupied during Collection, steal 1 spice of each spice blow collected",
+                [DiscoveryToken.CardStash] = "Gain a treachery card, remove this token from the game and discard a card if you exceed your maximum hand size",
+                [DiscoveryToken.ResourceStash] = "Gain 7 spice from the bank and remove this token from the game",
+                [DiscoveryToken.Flight] = "Gain the token and remove it from the game to gain 3 movement for one movement action."
+            },
+            
+            DiscoveryTokenTypeName_STR = new Dictionary<DiscoveryTokenType, string>()
+            {
+                [DiscoveryTokenType.Yellow] = "Hiereg",
+                [DiscoveryTokenType.Orange] = "Smuggler",
+            },
+            
+            DiscoveryTokenTypeImage_URL = new Dictionary<DiscoveryTokenType, string>()
+            {
+                [DiscoveryTokenType.Yellow] = "/art/discovery1.jpg",
+                [DiscoveryTokenType.Orange] = "/art/discovery2.jpg",
             },
 
             StrongholdCardName_STR = new Dictionary<int, string>()

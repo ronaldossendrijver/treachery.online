@@ -215,6 +215,34 @@ namespace Treachery.Shared
         {
             RecentMilestones.Add(Milestone.Resource);
 
+            if (blowCard.IsDiscovery)
+            {
+                if (AnyForcesIn(blowCard.Territory))
+                {
+                    KillAllForcesIn(blowCard.Territory, false);
+                }
+
+                var devouredResources = RemoveResources(blowCard.Territory);
+                LogIf(devouredResources > 0, Payment(devouredResources), " in ", blowCard.Territory, " is destroyed");
+
+                DiscoveryToken drawnToken = DiscoveryToken.None;
+                if (blowCard.DiscoveryLocation.DiscoveryTokenType == DiscoveryTokenType.Orange && !OrangeDiscoveryTokens.IsEmpty)
+                {
+                    drawnToken = OrangeDiscoveryTokens.Draw();
+                    DiscoveriesOnPlanet.Add(blowCard.DiscoveryLocation, new Discovery(drawnToken, DiscoveryTokenType.Orange));
+                }
+                else if (blowCard.DiscoveryLocation.DiscoveryTokenType == DiscoveryTokenType.Yellow && !YellowDiscoveryTokens.IsEmpty)
+                {
+                    drawnToken = YellowDiscoveryTokens.Draw();
+                    DiscoveriesOnPlanet.Add(blowCard.DiscoveryLocation, new Discovery(drawnToken, DiscoveryTokenType.Yellow));
+                }
+
+                if (drawnToken != DiscoveryToken.None)
+                {
+                    Log("A ", blowCard.DiscoveryLocation.DiscoveryTokenType, " discovery awaits in ", blowCard.DiscoveryLocation.Territory, "...");
+                }
+            }
+
             int spiceFactor = SandTroutDoublesResources ? 2 : 1;
             int spiceAmount = spiceFactor * blowCard.Location.SpiceBlowAmount;
 

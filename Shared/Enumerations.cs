@@ -439,11 +439,24 @@ namespace Treachery.Shared
         Custom = 1000
     }
 
+    public enum DiscoveryToken : int
+    {
+        None = 0,
+        Jacurutu = 10,
+        Shrine = 20,
+        TestingStation = 30,
+        Cistern = 40,
+        ProcessingStation = 50,
+        CardStash = 60,
+        ResourceStash = 70,
+        Flight = 80
+    }
+
     public enum DiscoveryTokenType : int
     {
         None = 0,
-        Hiereg = 10,
-        Smuggler = 20
+        Yellow = 10,
+        Orange = 20
     }
 
     public enum Rule : int

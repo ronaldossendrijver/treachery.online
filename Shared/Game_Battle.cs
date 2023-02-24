@@ -1343,7 +1343,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void KillAllForcesIn(Territory territory, bool lasgunShield)
+        private void KillAllForcesIn(Territory territory, bool inBattle)
         {
             foreach (var p in Players)
             {
@@ -1351,25 +1351,24 @@ namespace Treachery.Shared
                 {
                     RevealCurrentNoField(p, territory);
 
-                    int homeworldKillLimit = lasgunShield ? p.GetHomeworldBattleContributionAndLasgunShieldLimit(territory) : 0;
+                    int homeworldKillLimit = inBattle ? p.GetHomeworldBattleContributionAndLasgunShieldLimit(territory) : 0;
                     if (homeworldKillLimit == 0)
                     {
-                        Log("The explosion kills all ", p.Faction, " forces in ", territory);
-                        p.KillAllForces(territory, true);
+                        Log("All ", p.Faction, " forces in ", territory, " were killed");
+                        p.KillAllForces(territory, inBattle);
                     }
                     else
                     {
                         int normalForcesToKill = Math.Min(p.ForcesIn(territory), homeworldKillLimit);
                         int specialForcesToKill = Math.Min(p.SpecialForcesIn(territory), homeworldKillLimit - normalForcesToKill);
 
-                        if (normalForcesToKill > 0) p.KillForces(territory, normalForcesToKill, false, true);
-                        if (specialForcesToKill > 0) p.KillForces(territory, specialForcesToKill, true, true);
+                        if (normalForcesToKill > 0) p.KillForces(territory, normalForcesToKill, false, inBattle);
+                        if (specialForcesToKill > 0) p.KillForces(territory, specialForcesToKill, true, inBattle);
 
-                        Log("The explosion kills ", 
-                            MessagePart.ExpressIf(normalForcesToKill > 0, normalForcesToKill, p.Force),
+                        Log(MessagePart.ExpressIf(normalForcesToKill > 0, normalForcesToKill, p.Force),
                             MessagePart.ExpressIf(normalForcesToKill > 0 && specialForcesToKill > 0, " and "),
                             MessagePart.ExpressIf(specialForcesToKill > 0, specialForcesToKill, p.SpecialForce),
-                            " in ", territory);
+                            " in ", territory, " were killed");
                     }
                 }
             }

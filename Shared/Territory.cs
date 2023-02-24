@@ -44,7 +44,7 @@ namespace Treachery.Shared
 
         public Location ResourceBlowLocation => Locations.FirstOrDefault(l => l.SpiceBlowAmount > 0);
 
-        public Location DiscoveryTokenLocation => Locations.FirstOrDefault(l => l.TokenType != DiscoveryTokenType.None);
+        public Location DiscoveryTokenLocation => Locations.FirstOrDefault(l => l.DiscoveryTokenType != DiscoveryTokenType.None);
 
         public override string ToString()
         {

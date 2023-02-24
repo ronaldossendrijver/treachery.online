@@ -25,7 +25,7 @@
         {
             var popover = Player.Faction == Faction.Cyan ? Skin.Current.Format("{0} - {1}", terr, Skin.Current.GetTerrorTypeDescription(terr)) : "Terror";
             <Image X=x Y=y Filter="hue-rotate(180deg);" Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetFactionTableImageURL(Faction.Cyan)
-               ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover />
+                ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover />
 
             y += Skin.Current.PlayerTokenRadius;
         }
@@ -33,8 +33,9 @@
         var ambassador = Game.AmbassadorIn(stronghold.Territory);
         if (ambassador != Faction.None)
         {
-            <Image X=x Y=y Filter="hue-rotate(180deg);" Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetAmbassadorImage(Faction.Pink)
-               ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@Skin.Current.GetAmbassadorDescription(ambassador) />
+            var popover = $"{Skin.Current.Describe(ambassador)} Ambassador - {@Skin.Current.GetAmbassadorDescription(ambassador)}";
+            <Image X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetAmbassadorImage(Faction.Pink)
+                ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=popover />
 
             y += Skin.Current.PlayerTokenRadius;
         }
@@ -48,6 +49,18 @@
         int xOffset = 0;
         int yOffset = 0;
         var pos = Skin.Current.GetCenter(location);
+
+        if (Game.DiscoveriesOnPlanet.TryGetValue(location, out var discovery))
+        {
+            string popoverToShow =
+                (Player.Faction == Faction.Yellow && discovery.TokenType == DiscoveryTokenType.Yellow || Player.Faction == Faction.Orange && discovery.TokenType == DiscoveryTokenType.Orange) ?
+                $"{Skin.Current.Describe(discovery.Token)} - {Skin.Current.GetDiscoveryTokenDescription(discovery.Token)}" : Skin.Current.Describe(discovery.TokenType);
+
+            <Image X=@pos.X Y=@(yOffset + pos.Y) Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS) Src=@Skin.Current.GetImageURL(discovery.TokenType) Popover=@popoverToShow
+               ShadowX="1" ShadowY="1" />
+
+            yOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
+        }
 
         if (forceLocations.ContainsKey(location))
         {

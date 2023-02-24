@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Treachery.Shared
 {
@@ -54,6 +55,9 @@ namespace Treachery.Shared
             ResourceCardDeck = CreateAndShuffleResourceCardDeck();
             TreacheryDeck = TreacheryCardManager.CreateTreacheryDeck(this, Random);
 
+            CreateDiscoveryTokens();
+            
+
             if (!Applicable(Rule.CustomDecks))
             {
                 TreacheryDeck.Shuffle();
@@ -98,6 +102,27 @@ namespace Treachery.Shared
             InitializeTimers();
 
             Enter(Applicable(Rule.PlayersChooseFactions), Phase.SelectingFactions, AssignFactionsAndEnterFactionTrade);
+        }
+
+        private void CreateDiscoveryTokens()
+        {
+            YellowDiscoveryTokens = new Deck<DiscoveryToken>(Random);
+            OrangeDiscoveryTokens = new Deck<DiscoveryToken>(Random);
+
+            if (Applicable(Rule.DiscoveryTokens))
+            {
+                YellowDiscoveryTokens.Items.Add(DiscoveryToken.Jacurutu);
+                YellowDiscoveryTokens.Items.Add(DiscoveryToken.Shrine);
+                YellowDiscoveryTokens.Items.Add(DiscoveryToken.TestingStation);
+                YellowDiscoveryTokens.Items.Add(DiscoveryToken.Cistern);
+                YellowDiscoveryTokens.Shuffle();
+
+                OrangeDiscoveryTokens.Items.Add(DiscoveryToken.ProcessingStation);
+                OrangeDiscoveryTokens.Items.Add(DiscoveryToken.CardStash);
+                OrangeDiscoveryTokens.Items.Add(DiscoveryToken.ResourceStash);
+                OrangeDiscoveryTokens.Items.Add(DiscoveryToken.Flight);
+                OrangeDiscoveryTokens.Shuffle();
+            }
         }
 
         public List<TerrorType> UnplacedTerrorTokens { get; private set; } = new();

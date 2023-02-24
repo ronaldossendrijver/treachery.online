@@ -57,6 +57,10 @@ namespace Treachery.Shared
 
         public List<Faction> AmbassadorsSetAside { get; private set; } = new();
 
+        public Deck<DiscoveryToken> YellowDiscoveryTokens { get; set; }
+        public Deck<DiscoveryToken> OrangeDiscoveryTokens { get; set; }
+        public Dictionary<Location, Discovery> DiscoveriesOnPlanet { get; private set; } = new();
+
         public Dictionary<Territory, Faction> AmbassadorsOnPlanet { get; private set; } = new();
         public Dictionary<IHero, LeaderState> LeaderState { get; private set; } = new();
         public Deck<LeaderSkill> SkillDeck { get; private set; }
@@ -1468,5 +1472,18 @@ namespace Treachery.Shared
 
 
 
+    }
+
+    public class Discovery
+    {
+        public DiscoveryToken Token { get; private set; }
+
+        public DiscoveryTokenType TokenType { get; private set; }
+
+        public Discovery(DiscoveryToken token, DiscoveryTokenType tokenType)
+        {
+            Token = token;
+            TokenType = tokenType;
+        }
     }
 }
