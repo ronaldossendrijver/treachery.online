@@ -273,6 +273,7 @@ namespace Treachery.Shared
         None = 0,
         GameStarted = 50,
         Monster = 100,
+        GreatMonster = 110,
         BabyMonster = 150,
         Resource = 200,
         MetheorUsed = 300,

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace Treachery.Shared
 {
@@ -17,6 +18,10 @@ namespace Treachery.Shared
         public YellowRidesMonster()
         {
         }
+
+        public int ForcesFromReserves { get; set; }
+
+        public int SpecialForcesFromReserves { get; set; }
 
         public override Message Validate()
         {
@@ -36,6 +41,9 @@ namespace Treachery.Shared
             bool tooManySpecialForces = ForceLocations.Any(bl => bl.Value.AmountOfSpecialForces > Player.SpecialForcesIn(bl.Key));
             if (tooManySpecialForces) return Message.Express("Invalid amount of special forces");
 
+            if (ForcesFromReserves > MaxForcesFromReserves(Game, Player, false) ||
+                SpecialForcesFromReserves > MaxForcesFromReserves(Game, Player, true)) return Message.Express("You can't ride with that many reserves");
+
             return null;
         }
 
@@ -48,44 +56,49 @@ namespace Treachery.Shared
         {
             if (Passed)
             {
-                return Message.Express(Initiator, " pass a ride on ", Concept.Monster);
+                return Message.Express(Initiator, " don't ride");
             }
             else
             {
                 var from = ForceLocations.Keys.First().Territory;
-                return Message.Express(Initiator, " ride ", Concept.Monster, " from ", from, " to ", To);
+                return Message.Express(Initiator, " ride from ", from, " to ", To);
             }
         }
+
+        public static MonsterAppearence ToRide(Game g, Player p) => g.Monsters.FirstOrDefault(m => m.HasForcesThatCanRide(g, p));
 
         public static IEnumerable<Territory> ValidSources(Game g)
         {
-            var fremen = g.GetPlayer(Faction.Yellow);
-            if (fremen != null)
-            {
-                if (g.CurrentYellowNexus != null)
-                {
-                    return fremen.ForcesOnPlanet.Keys.Where(l => !g.IsInStorm(l)).Select(l => l.Territory).Distinct();
-                }
+            var yellow = g.GetPlayer(Faction.Yellow);
 
-                Territory firstMonsterLocationWithFremenForces;
-                if (g.Version < 136)
+            if (g.CurrentYellowNexus != null)
+            {
+                return yellow.ForcesOnPlanet.Keys.Where(l => !g.IsInStorm(l) || g.Applicable(Rule.YellowMayMoveIntoStorm)).Select(l => l.Territory).Distinct();
+            }
+            else
+            {
+                var rideFrom = ToRide(g, yellow);
+                if (rideFrom != null)
                 {
-                    firstMonsterLocationWithFremenForces = g.Monsters.FirstOrDefault(t => fremen.AnyForcesIn(t) > 0);
+                    return new Territory[] { ToRide(g, yellow).Territory };
                 }
                 else
                 {
-                    firstMonsterLocationWithFremenForces = g.Monsters.FirstOrDefault(t =>
-                        t.Locations.Any(l => (g.Applicable(Rule.YellowMayMoveIntoStorm) || !g.IsInStorm(l)) && fremen.AnyForcesIn(l) > 0));
-                }
-
-                if (firstMonsterLocationWithFremenForces != null)
-                {
-                    return new Territory[] { firstMonsterLocationWithFremenForces };
+                    return Array.Empty<Territory>();
                 }
             }
-
-            return Array.Empty<Territory>();
         }
+
+        public static int MaxForcesFromReserves(Game g, Player p, bool special)
+        {
+            var rideFrom = ToRide(g, p);
+            if (rideFrom != null && ToRide(g, p).IsGreatMonster)
+            {
+                return special ? p.SpecialForcesInReserve : p.ForcesInReserve;
+            }
+
+            return 0;
+        } 
 
         public static IEnumerable<Location> ValidTargets(Game g, Player p)
         {
@@ -96,5 +109,8 @@ namespace Treachery.Shared
                     (!l.Territory.IsStronghold || g.NrOfOccupantsExcludingPlayer(l, p) < 2) &&
                     (!p.HasAlly || l == g.Map.PolarSink || !p.AlliedPlayer.Occupies(l)));
         }
+
+        [JsonIgnore]
+        public override int TotalAmountOfForces => base.TotalAmountOfForces + ForcesFromReserves + SpecialForcesFromReserves;
     }
 }

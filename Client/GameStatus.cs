@@ -640,6 +640,11 @@ namespace Treachery.Client
                             Flash(result, Message.Express(Concept.Monster, " detected!"), Skin.Current.GetImageURL(Map.GetResourceCardsInPlay(g).FirstOrDefault(c => c.IsShaiHulud)));
                             break;
                         }
+                    case Milestone.GreatMonster:
+                        {
+                            Flash(result, Message.Express(Concept.GreatMonster, " detected!"), Skin.Current.GetImageURL(Map.GetResourceCardsInPlay(g).FirstOrDefault(c => c.IsGreatMaker)));
+                            break;
+                        }
                     case Milestone.Resource:
                         {
                             ResourceCard cardToShow = null;

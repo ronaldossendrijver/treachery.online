@@ -11,8 +11,8 @@ namespace Treachery.Shared
     {
         #region State
 
-        public List<Territory> Monsters { get; private set; } = new List<Territory>();
-        private readonly List<ResourceCard> ignoredMonsters = new List<ResourceCard>();
+        public List<MonsterAppearence> Monsters { get; private set; } = new();
+        private readonly List<ResourceCard> ignoredMonsters = new();
         private ResourceCard ignoredSandtrout = null;
         private List<NexusVoted> NexusVotes { get; set; } = new();
 
@@ -63,7 +63,6 @@ namespace Treachery.Shared
 
         private bool SandTroutDoublesResources { get; set; } = false;
 
-        private bool GreatMonsterOccured { get; set; } = false;
         private bool NexusVoteMustHappen { get; set; } = false;
 
         private void DrawResourceCard()
@@ -75,7 +74,7 @@ namespace Treachery.Shared
                 {
                     ThumperUsed = false;
                     NumberOfMonsters++;
-                    LetMonsterAppear(PreviousBlowCard == null || PreviousBlowCard.IsShaiHulud || PreviousBlowCard.IsGreatMaker ? null : PreviousBlowCard.Location.Territory, false);
+                    LetMonsterAppear(PreviousBlowCard == null || PreviousBlowCard.IsShaiHulud || PreviousBlowCard.IsGreatMaker ? null : PreviousBlowCard.Territory, false);
                     if (CurrentPhase == Phase.YellowSendingMonsterA || CurrentPhase == Phase.YellowSendingMonsterB)
                     {
                         break;
@@ -90,7 +89,6 @@ namespace Treachery.Shared
                 {
                     if (!ThumperUsed && drawn.IsGreatMaker)
                     {
-                        GreatMonsterOccured = true;
                         NexusVoteMustHappen = true;
                     }
                     else
@@ -100,14 +98,21 @@ namespace Treachery.Shared
 
                     if (!ThumperUsed)
                     {
-                        RecentMilestones.Add(Milestone.Monster);
+                        if (drawn.IsShaiHulud)
+                        {
+                            RecentMilestones.Add(Milestone.Monster);
+                        }
+                        else
+                        {
+                            RecentMilestones.Add(Milestone.GreatMonster);
+                        }
                     }
 
                     if (!SandTroutOccured)
                     {
                         SandTroutDoublesResources = false;
                         NumberOfMonsters++;
-                        LetMonsterAppear(PreviousBlowCard == null || PreviousBlowCard.IsShaiHulud || PreviousBlowCard.IsGreatMaker ? null : PreviousBlowCard.Location.Territory, !ThumperUsed && drawn.IsGreatMaker);
+                        LetMonsterAppear(PreviousBlowCard == null || PreviousBlowCard.IsShaiHulud || PreviousBlowCard.IsGreatMaker ? null : PreviousBlowCard.Territory, !ThumperUsed && drawn.IsGreatMaker);
                         if (CurrentPhase == Phase.YellowSendingMonsterA || CurrentPhase == Phase.YellowSendingMonsterB)
                         {
                             break;
@@ -215,13 +220,13 @@ namespace Treachery.Shared
 
             if (blowCard.Location.Sector != SectorInStorm)
             {
-                Log(Payment(spiceAmount), " detected in ", blowCard.Location.Territory, SandtroutMessage(SandTroutDoublesResources));
+                Log(Payment(spiceAmount), " detected in ", blowCard.Territory, SandtroutMessage(SandTroutDoublesResources));
                 SandTroutDoublesResources = false;
                 ChangeResourcesOnPlanet(blowCard.Location, spiceAmount);
             }
             else
             {
-                Log(Payment(spiceAmount), " in ", blowCard.Location.Territory, " is lost in the storm");
+                Log(Payment(spiceAmount), " in ", blowCard.Territory, " is lost in the storm");
             }
 
             Enter(Applicable(Rule.ExpansionTreacheryCardsExceptPBandSSandAmal), CurrentPhase == Phase.BlowA ? Phase.HarvesterA : Phase.HarvesterB, MoveToNextPhaseAfterResourceBlow);
@@ -287,13 +292,15 @@ namespace Treachery.Shared
 
         public bool MonsterAppearedInTerritoryWithoutForces { get; private set; } = false;
 
-        private void LetMonsterAppear(Territory t, bool isGreatMaker)
+        private void LetMonsterAppear(Territory t, bool isGreatMonster)
         {
+            var m = new MonsterAppearence(t, isGreatMonster);
+
             if (CurrentTurn != 1)
             {
-                if (isGreatMaker)
+                if (m.IsGreatMonster)
                 {
-                    Log(Concept.GreatMonster, " appears in ", t);
+                    Log(Concept.GreatMonster, " appears in ", m.Territory);
                 }
                 else if (Monsters.Count > 0)
                 {
@@ -301,10 +308,10 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    Log(Concept.Monster, " appears in ", t);
+                    Log(Concept.Monster, " appears in ", m.Territory);
                 }
 
-                if (!AnyForcesIn(t))
+                if (!AnyForcesIn(m.Territory))
                 {
                     MonsterAppearedInTerritoryWithoutForces = true;
                 }
@@ -319,31 +326,31 @@ namespace Treachery.Shared
                         }
                         else
                         {
-                            Monsters.Add(t);
+                            Monsters.Add(m);
                             LogPreventionByKarma(FactionAdvantage.YellowControlsMonster);
                             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.YellowControlsMonster);
                         }
                     }
                     else
                     {
-                        Monsters.Add(t);
+                        Monsters.Add(m);
                     }
                 }
                 else if (Monsters.Count == 0)
                 {
-                    Monsters.Add(t);
-                    PerformMonster(t);
+                    Monsters.Add(m);
+                    PerformMonster(m);
                 }
             }
             else
             {
-                Log(isGreatMaker ? Concept.GreatMonster : Concept.Monster, " on turn 1 was ignored");
+                Log(m.DescribingConcept, " on turn 1 was ignored");
             }
         }
 
-        private void PerformMonster(Territory territory)
+        private void PerformMonster(MonsterAppearence m)
         {
-            foreach (var l in territory.Locations)
+            foreach (var l in m.Territory.Locations)
             {
                 foreach (var p in Players)
                 {
@@ -353,7 +360,7 @@ namespace Treachery.Shared
                         {
                             RevealCurrentNoField(p);
 
-                            Log(Concept.Monster, " devours ", p.AnyForcesIn(l), p.Faction, " forces in ", l);
+                            Log(m.DescribingConcept, " devours ", p.AnyForcesIn(l), p.Faction, " forces in ", l);
                             p.KillAllForces(l, false);
 
                             if (p.Is(Faction.Yellow))
@@ -367,14 +374,14 @@ namespace Treachery.Shared
                         }
                         else
                         {
-                            Log(p.Faction, " survive ", Concept.Monster, " in ", l);
+                            Log(p.Faction, " survive ", m.DescribingConcept, " in ", l);
                         }
                     }
                 }
             }
 
-            var devouredResources = RemoveResources(territory);
-            LogIf(devouredResources > 0, Concept.Monster, " devours ", Payment(devouredResources), " in ", territory);
+            var devouredResources = RemoveResources(m.Territory);
+            LogIf(devouredResources > 0, m.DescribingConcept, " devours ", Payment(devouredResources), " in ", m.Territory);
 
             FlipBeneGesseritWhenAloneOrWithPinkAlly();
         }
@@ -383,7 +390,6 @@ namespace Treachery.Shared
         {
             Monsters.Clear();
             NexusVoteMustHappen = false;
-            GreatMonsterOccured = false;
             Enter(Phase.BlowA);
             LogIf(Applicable(Rule.IncreasedResourceFlow), "*** Spice Blow A ***");
             DrawResourceCard();
@@ -394,7 +400,6 @@ namespace Treachery.Shared
         {
             Monsters.Clear();
             NexusVoteMustHappen = false;
-            GreatMonsterOccured = false;
             Enter(Phase.BlowB);
             Log("*** Spice Blow B ***");
             DrawResourceCard();
@@ -498,13 +503,14 @@ namespace Treachery.Shared
 
         private bool NexusHasOccured { get; set; } = false;
 
+        private bool YellowCanRide => IsPlaying(Faction.Yellow) && !Prevented(FactionAdvantage.YellowRidesMonster) && YellowRidesMonster.ValidSources(this).Any();
+
         private void EndNexus()
         {
             NexusHasOccured = true;
             CurrentAllianceOffers.Clear();
 
-            bool fremenCanRide = YellowRidesMonster.ValidSources(this).Any() && !Prevented(FactionAdvantage.YellowRidesMonster);
-            if (fremenCanRide)
+            if (YellowCanRide)
             {
                 Enter(CurrentPhase == Phase.AllianceA, Phase.YellowRidingMonsterA, Phase.YellowRidingMonsterB);
             }
@@ -529,8 +535,9 @@ namespace Treachery.Shared
         public void HandleEvent(YellowSentMonster e)
         {
             Log(e);
-            Monsters.Add(e.Territory);
-            PerformMonster(e.Territory);
+            var m = new MonsterAppearence(e.Territory, false);
+            Monsters.Add(m);
+            PerformMonster(m);
             Enter(CurrentPhase == Phase.YellowSendingMonsterA, Phase.BlowA, Phase.BlowB);
             DrawResourceCard();
             LetFactionsDiscardSurplusCards();
@@ -538,7 +545,8 @@ namespace Treachery.Shared
 
         public void HandleEvent(YellowRidesMonster e)
         {
-            if (e.Passed || Monsters.Contains(e.ForceLocations.Keys.Select(k => k.Territory).FirstOrDefault()))
+            var ridesFrom = e.ForceLocations.Keys.FirstOrDefault()?.Territory;
+            if (e.Passed || Monsters.Any(m => m.Territory == ridesFrom))
             {
                 Monsters.RemoveAt(0);
             }
@@ -563,11 +571,20 @@ namespace Treachery.Shared
                     Log(
                         MessagePart.ExpressIf(fl.Value.AmountOfForces > 0, fl.Value.AmountOfForces, initiator.Force),
                         MessagePart.ExpressIf(fl.Value.AmountOfSpecialForces > 0, fl.Value.AmountOfSpecialForces, initiator.SpecialForce),
-                        " ride ",
-                        Concept.Monster,
-                        " from ",
+                        " ride from ",
                         from,
                         " to ",
+                        e.To);
+                }
+
+                if (e.ForcesFromReserves > 0 || e.SpecialForcesFromReserves > 0)
+                {
+                    if (e.ForcesFromReserves > 0) initiator.ShipForces(e.To, e.ForcesFromReserves);
+                    if (e.SpecialForcesFromReserves > 0) initiator.ShipSpecialForces(e.To, e.SpecialForcesFromReserves);
+                    Log(
+                        MessagePart.ExpressIf(e.ForcesFromReserves > 0, e.ForcesFromReserves, initiator.Force),
+                        MessagePart.ExpressIf(e.SpecialForcesFromReserves > 0, e.SpecialForcesFromReserves, initiator.SpecialForce),
+                        " ride from their reserves to ",
                         e.To);
                 }
 
@@ -587,8 +604,7 @@ namespace Treachery.Shared
         {
             CurrentPhase = phase;
 
-            bool fremenCanRide = YellowRidesMonster.ValidSources(this).Any();
-            if (fremenCanRide)
+            if (YellowCanRide)
             {
                 Enter(CurrentPhase == Phase.AllianceA || CurrentPhase == Phase.YellowRidingMonsterA, Phase.YellowRidingMonsterA, Phase.YellowRidingMonsterB);
             }

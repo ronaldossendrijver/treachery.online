@@ -27,6 +27,16 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            if (e is YellowRidesMonster ride && ride.ForcesFromReserves + ride.SpecialForcesFromReserves > 0 )
+            {
+                WriteSavegameIfApplicable(g, e.Player, "YellowRidesMonster");
+            }
+
+            if (e is NexusVoted)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "NexusVoted");
+            }
+
             if (e is RecruitsPlayed)
             {
                 WriteSavegameIfApplicable(g, e.Player, "RecruitsPlayed");
@@ -533,7 +543,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 100;
+            int nrOfGames = 10000;
             int nrOfTurns = 7;
             int nrOfPlayers = 7;
 

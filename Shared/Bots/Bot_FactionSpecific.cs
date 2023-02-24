@@ -258,24 +258,41 @@ namespace Treachery.Shared
             Location target = null;
             var validLocations = YellowRidesMonster.ValidTargets(Game, this).ToList();
             var battalionsToMove = ForcesOnPlanet.Where(forcesAtLocation => YellowRidesMonster.ValidSources(Game).Contains(forcesAtLocation.Key.Territory));
-            var nrOfForces = battalionsToMove.Sum(forcesAtLocation => forcesAtLocation.Value.TotalAmountOfForces);
+            int forcesFromReserves = 0;
+            int specialForcesFromReserves = 0;
 
             if (validLocations.Contains(Game.Map.TueksSietch) && VacantAndSafeFromStorm(Game.Map.TueksSietch)) target = Game.Map.TueksSietch;
             if (target == null && validLocations.Contains(Game.Map.Carthag) && VacantAndSafeFromStorm(Game.Map.Carthag)) target = Game.Map.Carthag;
             if (target == null && validLocations.Contains(Game.Map.Arrakeen) && VacantAndSafeFromStorm(Game.Map.Arrakeen)) target = Game.Map.Arrakeen;
             if (target == null && validLocations.Contains(Game.Map.HabbanyaSietch) && VacantAndSafeFromStorm(Game.Map.HabbanyaSietch)) target = Game.Map.HabbanyaSietch;
 
+            /*
             if (target == null && Game.LatestSpiceCardA != null && validLocations.Contains(Game.LatestSpiceCardA.Location) && Game.ResourcesOnPlanet.ContainsKey(Game.LatestSpiceCardA.Location) && VacantAndSafeFromStorm(Game.LatestSpiceCardA.Location)) target = Game.LatestSpiceCardA.Location;
             if (target == null && Game.LatestSpiceCardB != null && validLocations.Contains(Game.LatestSpiceCardB.Location) && Game.ResourcesOnPlanet.ContainsKey(Game.LatestSpiceCardB.Location) && VacantAndSafeFromStorm(Game.LatestSpiceCardB.Location)) target = Game.LatestSpiceCardB.Location;
+            */
+
             if (target == null) target = Game.ResourcesOnPlanet.Where(l => validLocations.Contains(l.Key) && VacantAndSafeFromStorm(l.Key)).HighestOrDefault(r => r.Value).Key;
 
-            if (target == null && Game.LatestSpiceCardA != null && validLocations.Contains(Game.LatestSpiceCardA.Location) && Game.ResourcesOnPlanet.ContainsKey(Game.LatestSpiceCardA.Location) && TotalMaxDialOfOpponents(Game.LatestSpiceCardA.Location.Territory) + 3 < nrOfForces) target = Game.LatestSpiceCardA.Location;
-            if (target == null && Game.LatestSpiceCardB != null && validLocations.Contains(Game.LatestSpiceCardB.Location) && Game.ResourcesOnPlanet.ContainsKey(Game.LatestSpiceCardB.Location) && TotalMaxDialOfOpponents(Game.LatestSpiceCardB.Location.Territory) + 3 < nrOfForces) target = Game.LatestSpiceCardB.Location;
-            if (target == null) target = Game.ResourcesOnPlanet.Where(l => validLocations.Contains(l.Key) && VacantAndSafeFromStorm(l.Key) && TotalMaxDialOfOpponents(l.Key.Territory) + 3 < nrOfForces).HighestOrDefault(r => r.Value).Key;
+            /*
+            if (target == null && Game.LatestSpiceCardA != null && validLocations.Contains(Game.LatestSpiceCardA.Location) && Game.ResourcesOnPlanet.ContainsKey(Game.LatestSpiceCardA.Location) && TotalMaxDialOfOpponents(Game.LatestSpiceCardA.Location.Territory) < strength) target = Game.LatestSpiceCardA.Location;
+            if (target == null && Game.LatestSpiceCardB != null && validLocations.Contains(Game.LatestSpiceCardB.Location) && Game.ResourcesOnPlanet.ContainsKey(Game.LatestSpiceCardB.Location) && TotalMaxDialOfOpponents(Game.LatestSpiceCardB.Location.Territory) < strength) target = Game.LatestSpiceCardB.Location;
+            */
+            if (target == null)
+            {
+                var strength = battalionsToMove.Sum(forcesAtLocation => forcesAtLocation.Value.AmountOfForces + forcesAtLocation.Value.AmountOfSpecialForces * 2);
+                if (target == null) target = validLocations.Where(l => Game.ResourcesOnPlanet.ContainsKey(l) && TotalMaxDialOfOpponents(l.Territory) < strength).HighestOrDefault(l => Game.ResourcesOnPlanet[l]);
+                if (target == null) target = validLocations.Where(l => l != Game.Map.SietchTabr && l.IsStronghold && TotalMaxDialOfOpponents(l.Territory) < strength).LowestOrDefault(l => TotalMaxDialOfOpponents(l.Territory));
+
+                if (target != null)
+                {
+                    forcesFromReserves = Math.Min(YellowRidesMonster.MaxForcesFromReserves(Game, this, false), 2);
+                    specialForcesFromReserves = Math.Min(YellowRidesMonster.MaxForcesFromReserves(Game, this, true), 2);
+                }
+            }
 
             if (target == null) target = Game.Map.PolarSink;
 
-            return new YellowRidesMonster(Game) { Initiator = Faction, Passed = false, ForceLocations = new Dictionary<Location, Battalion>(battalionsToMove), To = target };
+            return new YellowRidesMonster(Game) { Initiator = Faction, Passed = false, ForceLocations = new Dictionary<Location, Battalion>(battalionsToMove), To = target, ForcesFromReserves = forcesFromReserves, SpecialForcesFromReserves = specialForcesFromReserves };
         }
 
         #endregion Yellow

@@ -26,6 +26,8 @@ namespace Treachery.Shared
 
         public bool IsDiscovery => DiscoveryLocation != null;
 
+        public Territory Territory => Location?.Territory;
+
         public override string ToString()
         {
             if (Message.DefaultDescriber != null)

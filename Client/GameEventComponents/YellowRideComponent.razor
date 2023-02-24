@@ -1,5 +1,5 @@
 ﻿<!--
- * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
+* Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
 
 @using Treachery.Shared
@@ -17,6 +17,34 @@
 
         <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces="forces" Locations="Player.LocationsWithAnyForcesInTerritory(fromTerritory)" />
 
+        @{
+            var maxForcesFromReserves = YellowRidesMonster.MaxForcesFromReserves(Game, Player, false);
+            var maxSpecialForcesFromReserves = YellowRidesMonster.MaxForcesFromReserves(Game, Player, true);
+
+            <div>Bring forces from your reserves?</div>
+
+            if (maxForcesFromReserves > 0 || maxSpecialForcesFromReserves > 0)
+            {
+                if (maxForcesFromReserves > 0)
+                {
+                    <SelectForcesComponent @bind-Value="_forcesFromReserves" Min="0" Max=@maxForcesFromReserves Faction="Faction" Special="false" />
+                }
+                else
+                {
+                    _forcesFromReserves = 0;
+                }
+
+                if (maxSpecialForcesFromReserves > 0)
+                {
+                    <SelectForcesComponent @bind-Value="_specialForcesFromReserves" Min="0" Max=@maxSpecialForcesFromReserves Faction="Faction" Special="true" />
+                }
+                else
+                {
+                    _specialForcesFromReserves = 0;
+                }
+            }
+        }
+        
         <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="toLocation" Values="ValidTargets">
             <Label>To</Label>
         </SelectComponent>
@@ -29,10 +57,13 @@
 
 @code {
 
+    private int _forcesFromReserves;
+    private int _specialForcesFromReserves;
+
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Yellow;
 
-    override protected YellowRidesMonster ConfirmedResult => new YellowRidesMonster(Game) { Initiator = Faction, ForceLocations = forces, To = toLocation, Passed = false };
+    override protected YellowRidesMonster ConfirmedResult => new YellowRidesMonster(Game) { Initiator = Faction, ForceLocations = forces, To = toLocation, ForcesFromReserves = _forcesFromReserves, SpecialForcesFromReserves = _specialForcesFromReserves, Passed = false };
 
     override protected YellowRidesMonster PassedResult => new YellowRidesMonster(Game) { Initiator = Faction, Passed = true };
 

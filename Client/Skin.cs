@@ -2573,6 +2573,7 @@ It only takes three strongholds for you and your ally to win, if you both are co
                 [Milestone.Shuffled] = DEFAULT_ART_LOCATION + "/art/shuffleanddeal.mp3",
                 [Milestone.BabyMonster] = DEFAULT_ART_LOCATION + "/art/monster.mp3",
                 [Milestone.Monster] = DEFAULT_ART_LOCATION + "/art/monster.mp3",
+                [Milestone.GreatMonster] = DEFAULT_ART_LOCATION + "/art/monster.mp3",
                 [Milestone.Resource] = DEFAULT_ART_LOCATION + "/art/resource.mp3",
                 [Milestone.MetheorUsed] = DEFAULT_ART_LOCATION + "/art/explosion.mp3",
                 [Milestone.CharityClaimed] = DEFAULT_ART_LOCATION + "/art/bid.mp3",

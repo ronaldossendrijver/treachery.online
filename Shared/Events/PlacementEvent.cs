@@ -153,6 +153,6 @@ namespace Treachery.Shared
         }
 
         [JsonIgnore]
-        public int TotalAmountOfForces => ForceLocations != null ? ForceLocations.Values.Sum(b => b.TotalAmountOfForces) : 0;
+        public virtual int TotalAmountOfForces => ForceLocations != null ? ForceLocations.Values.Sum(b => b.TotalAmountOfForces) : 0;
     }
 }
