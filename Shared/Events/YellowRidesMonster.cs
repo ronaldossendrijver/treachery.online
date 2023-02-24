@@ -65,26 +65,30 @@ namespace Treachery.Shared
             }
         }
 
-        public static MonsterAppearence ToRide(Game g, Player p) => g.Monsters.FirstOrDefault(m => m.HasForcesThatCanRide(g, p));
+        public static MonsterAppearence ToRide(Game g, Player p) => g.Monsters.FirstOrDefault(m => m.LocationsWithForcesThatCanRide(g, p).Any());
 
-        public static IEnumerable<Territory> ValidSources(Game g)
+        public static IEnumerable<Location> ValidSources(Game g)
         {
             var yellow = g.GetPlayer(Faction.Yellow);
-
-            if (g.CurrentYellowNexus != null)
+            var rideFrom = ToRide(g, yellow);
+            
+            if (rideFrom != null && rideFrom.IsGreatMonster)
             {
-                return yellow.ForcesOnPlanet.Keys.Where(l => !g.IsInStorm(l) || g.Applicable(Rule.YellowMayMoveIntoStorm)).Select(l => l.Territory).Distinct();
+                return Array.Empty<Location>();
+            }
+            else if (g.CurrentYellowNexus != null)
+            {
+                return yellow.ForcesOnPlanet.Keys.Where(l => !g.IsInStorm(l) || g.Applicable(Rule.YellowMayMoveIntoStorm));
             }
             else
             {
-                var rideFrom = ToRide(g, yellow);
                 if (rideFrom != null)
                 {
-                    return new Territory[] { ToRide(g, yellow).Territory };
+                    return rideFrom.LocationsWithForcesThatCanRide(g, yellow);
                 }
                 else
                 {
-                    return Array.Empty<Territory>();
+                    return Array.Empty<Location>();
                 }
             }
         }

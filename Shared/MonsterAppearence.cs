@@ -2,6 +2,8 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Treachery.Shared
@@ -19,16 +21,20 @@ namespace Treachery.Shared
 
         public Concept DescribingConcept => IsGreatMonster ? Concept.GreatMonster : Concept.Monster;
 
-        public bool HasForcesThatCanRide(Game g, Player p)
+        public IEnumerable<Location> LocationsWithForcesThatCanRide(Game g, Player p)
         {
-            if (g.Version < 136)
+            if (IsGreatMonster)
             {
-                return p.AnyForcesIn(Territory) > 0;
+                return Array.Empty<Location>();
+            }
+            else if (g.Version < 136)
+            {
+                return Territory.Locations.Where(l => p.AnyForcesIn(l) > 0);
             }
             else
             {
                 bool mayRideFromStorm = p.Is(Faction.Yellow) && g.Applicable(Rule.YellowMayMoveIntoStorm);
-                return Territory.Locations.Any(l => (mayRideFromStorm || !g.IsInStorm(l)) && p.AnyForcesIn(l) > 0);
+                return Territory.Locations.Where(l => (mayRideFromStorm || !g.IsInStorm(l)) && p.AnyForcesIn(l) > 0);
             }
         }
     }

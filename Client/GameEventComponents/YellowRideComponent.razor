@@ -11,20 +11,19 @@
     <Header>@Title</Header>
     <Body>
 
-        <SelectComponent ButtonHint="ClickHintButton.LMB" ModifierHint="ClickHintModifier.CTRL" @bind-Value="fromTerritory" Values="ValidSources">
-            <Label>From</Label>
-        </SelectComponent>
-
-        <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces="forces" Locations="Player.LocationsWithAnyForcesInTerritory(fromTerritory)" />
-
-        @{
+        @if (YellowRidesMonster.ValidSources(Game).Any())
+        {
+            <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces=@forces Locations=@YellowRidesMonster.ValidSources(Game) />
+        }
+        else
+        {
             var maxForcesFromReserves = YellowRidesMonster.MaxForcesFromReserves(Game, Player, false);
             var maxSpecialForcesFromReserves = YellowRidesMonster.MaxForcesFromReserves(Game, Player, true);
 
-            <div>Bring forces from your reserves?</div>
-
             if (maxForcesFromReserves > 0 || maxSpecialForcesFromReserves > 0)
             {
+                <div>Ride with forces from your reserves?</div>
+
                 if (maxForcesFromReserves > 0)
                 {
                     <SelectForcesComponent @bind-Value="_forcesFromReserves" Min="0" Max=@maxForcesFromReserves Faction="Faction" Special="false" />
@@ -66,8 +65,6 @@
     override protected YellowRidesMonster ConfirmedResult => new YellowRidesMonster(Game) { Initiator = Faction, ForceLocations = forces, To = toLocation, ForcesFromReserves = _forcesFromReserves, SpecialForcesFromReserves = _specialForcesFromReserves, Passed = false };
 
     override protected YellowRidesMonster PassedResult => new YellowRidesMonster(Game) { Initiator = Faction, Passed = true };
-
-    override protected IEnumerable<Territory> ValidSources => YellowRidesMonster.ValidSources(Game);
 
     override protected IEnumerable<Location> ValidTargets => YellowRidesMonster.ValidTargets(Game, Player).OrderByDescending(l => l.IsStronghold).ThenBy(l => Skin.Current.Describe(l));
 

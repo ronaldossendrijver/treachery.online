@@ -257,9 +257,9 @@ namespace Treachery.Shared
         {
             Location target = null;
             var validLocations = YellowRidesMonster.ValidTargets(Game, this).ToList();
-            var battalionsToMove = ForcesOnPlanet.Where(forcesAtLocation => YellowRidesMonster.ValidSources(Game).Contains(forcesAtLocation.Key.Territory));
+            var battalionsToMove = YellowRidesMonster.ValidSources(Game).ToDictionary(l => l, l => BattalionIn(l));
             int forcesFromReserves = 0;
-            int specialForcesFromReserves = 0;
+            int specialForcesFromReserves = Math.Min(YellowRidesMonster.MaxForcesFromReserves(Game, this, true), 2);
 
             if (validLocations.Contains(Game.Map.TueksSietch) && VacantAndSafeFromStorm(Game.Map.TueksSietch)) target = Game.Map.TueksSietch;
             if (target == null && validLocations.Contains(Game.Map.Carthag) && VacantAndSafeFromStorm(Game.Map.Carthag)) target = Game.Map.Carthag;
@@ -279,15 +279,13 @@ namespace Treachery.Shared
             */
             if (target == null)
             {
-                var strength = battalionsToMove.Sum(forcesAtLocation => forcesAtLocation.Value.AmountOfForces + forcesAtLocation.Value.AmountOfSpecialForces * 2);
+                forcesFromReserves = Math.Min(YellowRidesMonster.MaxForcesFromReserves(Game, this, false), 4);
+                specialForcesFromReserves = Math.Min(YellowRidesMonster.MaxForcesFromReserves(Game, this, true), 2);
+
+                var strength = battalionsToMove.Sum(forcesAtLocation => forcesAtLocation.Value.AmountOfForces + forcesAtLocation.Value.AmountOfSpecialForces * 2) + forcesFromReserves + specialForcesFromReserves * 2;
+
                 if (target == null) target = validLocations.Where(l => Game.ResourcesOnPlanet.ContainsKey(l) && TotalMaxDialOfOpponents(l.Territory) < strength).HighestOrDefault(l => Game.ResourcesOnPlanet[l]);
                 if (target == null) target = validLocations.Where(l => l != Game.Map.SietchTabr && l.IsStronghold && TotalMaxDialOfOpponents(l.Territory) < strength).LowestOrDefault(l => TotalMaxDialOfOpponents(l.Territory));
-
-                if (target != null)
-                {
-                    forcesFromReserves = Math.Min(YellowRidesMonster.MaxForcesFromReserves(Game, this, false), 2);
-                    specialForcesFromReserves = Math.Min(YellowRidesMonster.MaxForcesFromReserves(Game, this, true), 2);
-                }
             }
 
             if (target == null) target = Game.Map.PolarSink;
