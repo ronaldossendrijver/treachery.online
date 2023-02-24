@@ -33,8 +33,6 @@ namespace Treachery.Shared
             var forceAmount = ForceLocations.Values.Sum(b => b.AmountOfForces);
             var specialForceAmount = ForceLocations.Values.Sum(b => b.AmountOfSpecialForces);
 
-            if (forceAmount == 0 && specialForceAmount == 0) return Message.Express("No forces selected");
-
             bool tooManyForces = ForceLocations.Any(bl => bl.Value.AmountOfForces > Player.ForcesIn(bl.Key));
             if (tooManyForces) return Message.Express("Invalid amount of forces");
 
@@ -60,17 +58,26 @@ namespace Treachery.Shared
             }
             else
             {
-                var from = ForceLocations.Keys.First().Territory;
-                return Message.Express(Initiator, " ride from ", from, " to ", To);
+                var from = ForceLocations.Keys.FirstOrDefault()?.Territory;
+                if (from != null)
+                {
+                    return Message.Express(Initiator, " ride from ", from, " to ", To);
+                }
+                else
+                {
+                    return Message.Express(Initiator, " ride from reserves to ", To);
+                }
             }
         }
 
-        public static MonsterAppearence ToRide(Game g, Player p) => g.Monsters.FirstOrDefault(m => m.LocationsWithForcesThatCanRide(g, p).Any());
+        public static bool IsApplicable(Game g) => g.IsPlaying(Faction.Yellow) && !g.Prevented(FactionAdvantage.YellowRidesMonster) && ToRide(g) != null;
+
+        public static MonsterAppearence ToRide(Game g) => g.Monsters.FirstOrDefault(m => m.IsGreatMonster || m.LocationsWithForcesThatCanRide(g).Any());
 
         public static IEnumerable<Location> ValidSources(Game g)
         {
             var yellow = g.GetPlayer(Faction.Yellow);
-            var rideFrom = ToRide(g, yellow);
+            var rideFrom = ToRide(g);
             
             if (rideFrom != null && rideFrom.IsGreatMonster)
             {
@@ -84,7 +91,7 @@ namespace Treachery.Shared
             {
                 if (rideFrom != null)
                 {
-                    return rideFrom.LocationsWithForcesThatCanRide(g, yellow);
+                    return rideFrom.LocationsWithForcesThatCanRide(g);
                 }
                 else
                 {
@@ -95,8 +102,8 @@ namespace Treachery.Shared
 
         public static int MaxForcesFromReserves(Game g, Player p, bool special)
         {
-            var rideFrom = ToRide(g, p);
-            if (rideFrom != null && ToRide(g, p).IsGreatMonster)
+            var rideFrom = ToRide(g);
+            if (rideFrom != null && ToRide(g).IsGreatMonster)
             {
                 return special ? p.SpecialForcesInReserve : p.ForcesInReserve;
             }

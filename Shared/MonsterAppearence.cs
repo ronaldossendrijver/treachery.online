@@ -21,9 +21,11 @@ namespace Treachery.Shared
 
         public Concept DescribingConcept => IsGreatMonster ? Concept.GreatMonster : Concept.Monster;
 
-        public IEnumerable<Location> LocationsWithForcesThatCanRide(Game g, Player p)
+        public IEnumerable<Location> LocationsWithForcesThatCanRide(Game g)
         {
-            if (IsGreatMonster)
+            var p = g.GetPlayer(Faction.Yellow);
+
+            if (p == null || IsGreatMonster)
             {
                 return Array.Empty<Location>();
             }

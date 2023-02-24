@@ -531,14 +531,12 @@ namespace Treachery.Shared
 
         private bool NexusHasOccured { get; set; } = false;
 
-        private bool YellowCanRide => IsPlaying(Faction.Yellow) && !Prevented(FactionAdvantage.YellowRidesMonster) && YellowRidesMonster.ValidSources(this).Any();
-
         private void EndNexus()
         {
             NexusHasOccured = true;
             CurrentAllianceOffers.Clear();
 
-            if (YellowCanRide)
+            if (YellowRidesMonster.IsApplicable(this))
             {
                 Enter(CurrentPhase == Phase.AllianceA, Phase.YellowRidingMonsterA, Phase.YellowRidingMonsterB);
             }
@@ -632,7 +630,7 @@ namespace Treachery.Shared
         {
             CurrentPhase = phase;
 
-            if (YellowCanRide)
+            if (YellowRidesMonster.IsApplicable(this))
             {
                 Enter(CurrentPhase == Phase.AllianceA || CurrentPhase == Phase.YellowRidingMonsterA, Phase.YellowRidingMonsterA, Phase.YellowRidingMonsterB);
             }

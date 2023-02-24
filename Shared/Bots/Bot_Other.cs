@@ -106,8 +106,7 @@ namespace Treachery.Shared
                         break;
 
                     case Faction.Yellow:
-                        var yellow = Game.GetPlayer(Faction.Yellow);
-                        if (Game.CurrentMainPhase == MainPhase.Blow && YellowRidesMonster.ToRide(Game, yellow) != null ||
+                        if (Game.CurrentMainPhase == MainPhase.Blow && YellowRidesMonster.ToRide(Game) != null ||
                             Game.CurrentMainPhase == MainPhase.ShipmentAndMove && IWishToAttack(0, Faction.Yellow)) return result;
                         break;
 
