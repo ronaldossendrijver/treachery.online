@@ -87,6 +87,40 @@
         </div>
     }
 
+    @if (h.Game.Applicable(Rule.NexusCards))
+    {
+        <h5 class="mt-2">Nexus Cards</h5>
+        <div class="row row-cols-3 row-cols-md-6 ms-0 me-0">
+
+            @foreach (var f in Enumerations.GetValuesExceptDefault(typeof(Faction), Faction.None))
+            {
+                <div class="card">
+                    <Hoverable Class="card-img-top" Popover=@Popup.GetNexusCard(f)>
+                        <img src="@Skin.Current.GetNexusCardImageURL(f)" class="card-img" alt=@Name(f)>
+                    </Hoverable>
+                </div>
+            }
+
+        </div>
+    }
+
+    @if (h.Game.Applicable(Rule.Homeworlds))
+    {
+        <h5 class="mt-2">Homeworld Cards</h5>
+        <div class="row row-cols-3 row-cols-md-6 ms-0 me-0">
+
+            @foreach (var w in h.Game.Map.Homeworlds)
+            {
+                <div class="card">
+                    <Hoverable Class="card-img-top" Popover=@Popup.Get(w)>
+                        <img src="@Skin.Current.GetHomeworldCardImageURL(w.World)" class="card-img" alt=@Name(w)>
+                    </Hoverable>
+                </div>
+            }
+
+        </div>
+    }
+
 </ModalComponent>
 
 @code {

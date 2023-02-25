@@ -2598,8 +2598,8 @@ It only takes three strongholds for you and your ally to win, if you both are co
             
             DiscoveryTokenTypeImage_URL = new Dictionary<DiscoveryTokenType, string>()
             {
-                [DiscoveryTokenType.Yellow] = "/art/discovery1.jpg",
-                [DiscoveryTokenType.Orange] = "/art/discovery2.jpg",
+                [DiscoveryTokenType.Yellow] = "/art/discovery1.png",
+                [DiscoveryTokenType.Orange] = "/art/discovery2.png",
             },
 
             StrongholdCardName_STR = new Dictionary<int, string>()

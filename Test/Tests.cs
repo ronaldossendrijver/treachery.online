@@ -32,7 +32,7 @@ namespace Treachery.Test
                 WriteSavegameIfApplicable(g, e.Player, "Yellow may ride Great Maker");
             }
 
-            if ((g.CurrentPhase == Phase.YellowRidingMonsterA || g.CurrentPhase == Phase.YellowRidingMonsterB) && e.Player.Nexus == Faction.Yellow)
+            if ((g.CurrentPhase == Phase.YellowRidingMonsterA || g.CurrentPhase == Phase.YellowRidingMonsterB) && YellowRidesMonster.ValidSources(g).Any(l => l.Territory != YellowRidesMonster.ToRide(g)?.Territory))
             {
                 WriteSavegameIfApplicable(g, e.Player, "Yellow may ride and has yellow nexus");
             }
@@ -548,7 +548,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 1000;
+            int nrOfGames = 5000;
             int nrOfTurns = 7;
             int nrOfPlayers = 7;
 
