@@ -87,7 +87,7 @@ namespace Treachery.Shared
                 }
                 else if (ThumperUsed && Version > 150 || drawn.IsShaiHulud || drawn.IsGreatMaker)
                 {
-                    if (!ThumperUsed && drawn.IsGreatMaker)
+                    if (!ThumperUsed && drawn.IsGreatMaker && Monsters.Count == 0)
                     {
                         NexusVoteMustHappen = true;
                     }
@@ -288,7 +288,7 @@ namespace Treachery.Shared
             {
                 CurrentAllianceOffers.Clear();
 
-                if (NexusVoteMustHappen)
+                if (Monsters.Count == 1 && Monsters[0].IsGreatMonster)
                 {
                     NexusVotes.Clear();
                     Enter(CurrentPhase == Phase.BlowA || CurrentPhase == Phase.HarvesterA, Phase.VoteAllianceA, Phase.VoteAllianceB);
@@ -571,18 +571,25 @@ namespace Treachery.Shared
 
         public void HandleEvent(YellowRidesMonster e)
         {
-            var ridesFrom = e.ForceLocations.Keys.FirstOrDefault()?.Territory;
-            if (e.Passed || Monsters.Any(m => m.Territory == ridesFrom))
+            var toRide = YellowRidesMonster.ToRide(this);
+
+            if (Version <= 150)
             {
                 Monsters.RemoveAt(0);
             }
             else
             {
-                CurrentYellowNexus = null;
+                Monsters.Remove(toRide);
             }
-
+            
             if (!e.Passed)
             {
+                if (e.ForceLocations.Keys.Any(l => l.Territory != toRide.Territory))
+                {
+                    LogNexusPlayed(e.Initiator, e.Initiator, "cunning", "to ride from any territory on the planet");
+                    DiscardNexusCard(e.Player);
+                }
+
                 var initiator = GetPlayer(e.Initiator);
                 LastShipmentOrMovement = e;
                 int totalNumberOfForces = 0;
@@ -615,16 +622,15 @@ namespace Treachery.Shared
                 }
 
                 FlipBeneGesseritWhenAloneOrWithPinkAlly();
+                CheckIntrusion(e);
             }
             else
             {
                 Log(e.Initiator, " pass a ride on ", Concept.Monster);
             }
-
-            CheckIntrusion(e);
+                        
             DetermineNextShipmentAndMoveSubPhase();
         }
-
 
         private void EndWormRideDuringPhase(Phase phase)
         {

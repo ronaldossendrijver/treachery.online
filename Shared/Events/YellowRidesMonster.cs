@@ -70,34 +70,59 @@ namespace Treachery.Shared
             }
         }
 
-        public static bool IsApplicable(Game g) => g.IsPlaying(Faction.Yellow) && !g.Prevented(FactionAdvantage.YellowRidesMonster) && ToRide(g) != null;
+        public static bool IsApplicable(Game g) => ToRide(g) != null;
 
-        public static MonsterAppearence ToRide(Game g) => g.Monsters.FirstOrDefault(m => m.IsGreatMonster || m.LocationsWithForcesThatCanRide(g).Any());
-
-        public static IEnumerable<Location> ValidSources(Game g)
+        public static MonsterAppearence ToRide(Game g)
         {
             var yellow = g.GetPlayer(Faction.Yellow);
-            var rideFrom = ToRide(g);
-            
-            if (rideFrom != null && rideFrom.IsGreatMonster)
+            if (yellow != null)
             {
-                return Array.Empty<Location>();
+                return g.Monsters.FirstOrDefault(m =>
+                    m.IsGreatMonster && yellow.AnyForcesInReserves > 0 && !g.Prevented(FactionAdvantage.YellowRidesMonster) ||
+                    !m.IsGreatMonster && LocationsWithForcesThatCanRide(g, yellow, m.Territory).Any());
             }
-            else if (g.CurrentYellowNexus != null)
+
+            return null;
+        }
+
+        private static IEnumerable<Location> LocationsWithForcesThatCanRide(Game g, Player yellow, Territory territory)
+        {
+            if (g.Version >= 136)
             {
-                return yellow.ForcesOnPlanet.Keys.Where(l => !g.IsInStorm(l) || g.Applicable(Rule.YellowMayMoveIntoStorm));
-            }
-            else
-            {
-                if (rideFrom != null)
+                bool mayRideFromStorm = g.Applicable(Rule.YellowMayMoveIntoStorm);
+
+                if (NexusPlayed.CanUseCunning(yellow) && yellow.AnyForcesIn(territory) == 0)
                 {
-                    return rideFrom.LocationsWithForcesThatCanRide(g);
+                    return yellow.ForcesOnPlanet.Keys.Where(l => !l.IsProtectedFromStorm && !l.IsStronghold && (mayRideFromStorm || !g.IsInStorm(l)));
+                }
+                else if (!g.Prevented(FactionAdvantage.YellowRidesMonster))
+                {
+                    return territory.Locations.Where(l => (mayRideFromStorm || !g.IsInStorm(l)) && yellow.AnyForcesIn(l) > 0);
                 }
                 else
                 {
                     return Array.Empty<Location>();
                 }
             }
+            else
+            {
+                return territory.Locations.Where(l => yellow.AnyForcesIn(l) > 0);
+            }
+        }
+
+        public static IEnumerable<Location> ValidSources(Game g)
+        {
+            var yellow = g.GetPlayer(Faction.Yellow);
+            if (yellow != null)
+            {
+                var toRide = ToRide(g);
+                if (!toRide.IsGreatMonster)
+                {
+                    return LocationsWithForcesThatCanRide(g, yellow, toRide.Territory);
+                }
+            }
+
+            return Array.Empty<Location>();
         }
 
         public static int MaxForcesFromReserves(Game g, Player p, bool special)

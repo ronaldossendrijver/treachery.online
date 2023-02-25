@@ -99,6 +99,8 @@ namespace Treachery.Shared
         public bool IsGhola(IHero l) => l.Faction != Faction.Purple && IsPlaying(Faction.Purple) && GetPlayer(Faction.Purple).Leaders.Contains(l);
 
         private RecruitsPlayed CurrentRecruitsPlayed { get; set; }
+        
+
         public void HandleEvent(RecruitsPlayed e)
         {
             Log(e);

@@ -106,7 +106,7 @@ namespace Treachery.Shared
                         break;
 
                     case Faction.Yellow:
-                        if (Game.CurrentMainPhase == MainPhase.Blow && YellowRidesMonster.ToRide(Game) != null ||
+                        if (Game.CurrentMainPhase == MainPhase.Blow && YellowRidesMonster.IsApplicable(Game) ||
                             Game.CurrentMainPhase == MainPhase.ShipmentAndMove && IWishToAttack(0, Faction.Yellow)) return result;
                         break;
 

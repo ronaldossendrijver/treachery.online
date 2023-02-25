@@ -69,6 +69,8 @@ namespace Treachery.Shared
 
         public int SpecialForcesInReserve => Homeworlds.Sum(w => SpecialForcesIn(w));
 
+        public int AnyForcesInReserves => ForcesInReserve + SpecialForcesInReserve;
+
         public Dictionary<Location, Battalion> ForcesInLocations { get; set; } = new();
 
         public Dictionary<Location, Battalion> ForcesOnPlanet => ForcesInLocations.Where(kvp => kvp.Key is not Homeworld).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);

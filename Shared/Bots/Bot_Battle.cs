@@ -13,9 +13,19 @@ namespace Treachery.Shared
         protected virtual BattleClaimed DetermineBattleClaimed()
         {
             var territory = Game.BattleAboutToStart.Territory;
-            var opponent = Game.BattleAboutToStart.OpponentOf(this);
-            bool iWillFight = GetDialNeeded(AlliedPlayer, territory, opponent, false) > GetDialNeeded(this, territory, opponent, false);
-            return new BattleClaimed(Game) { Initiator = Faction, Passed = !iWillFight };
+
+            if (Is(Faction.Pink))
+            {
+                var opponent = Game.BattleAboutToStart.OpponentOf(this);
+                bool iWillFight = GetDialNeeded(AlliedPlayer, territory, opponent, false) > GetDialNeeded(this, territory, opponent, false);
+                return new BattleClaimed(Game) { Initiator = Faction, Passed = !iWillFight };
+            }
+            else
+            {
+                var pinkOpponent = Game.GetPlayer(Faction.Pink);
+                bool pinkWillFight = GetDialNeeded(this, territory, pinkOpponent.AlliedPlayer, false) > GetDialNeeded(this, territory, pinkOpponent, false);
+                return new BattleClaimed(Game) { Initiator = Faction, Passed = !pinkWillFight };
+            }
         }
 
         protected virtual SwitchedSkilledLeader DetermineSwitchedSkilledLeader()
@@ -779,6 +789,8 @@ namespace Treachery.Shared
             (Game.LatestClairvoyanceQandA.Question.Question == ClairvoyanceQuestion.CardTypeAsDefenseInBattle || Game.LatestClairvoyanceQandA.Question.Question == ClairvoyanceQuestion.CardTypeInBattle) ? Game.LatestClairvoyanceQandA : null;
 
         public Homeworld PrimaryHomeworld => Homeworlds.First();
+
+        
 
         protected float ChanceOfEnemyLeaderDying(Player opponent, VoicePlan voicePlan, PrescienceAspect prescience, out TreacheryCard mostEffectiveWeapon, out bool enemyCanDefendPoisonTooth)
         {

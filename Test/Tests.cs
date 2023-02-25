@@ -27,9 +27,14 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (e is YellowRidesMonster ride && ride.ForcesFromReserves + ride.SpecialForcesFromReserves > 0 )
+            if ((g.CurrentPhase == Phase.YellowRidingMonsterA || g.CurrentPhase == Phase.YellowRidingMonsterB) && YellowRidesMonster.ToRide(g).IsGreatMonster)
             {
-                WriteSavegameIfApplicable(g, e.Player, "YellowRidesMonster");
+                WriteSavegameIfApplicable(g, e.Player, "Yellow may ride Great Maker");
+            }
+
+            if ((g.CurrentPhase == Phase.YellowRidingMonsterA || g.CurrentPhase == Phase.YellowRidingMonsterB) && e.Player.Nexus == Faction.Yellow)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Yellow may ride and has yellow nexus");
             }
 
             if (e is NexusVoted)
@@ -543,11 +548,11 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 100;
+            int nrOfGames = 1000;
             int nrOfTurns = 7;
             int nrOfPlayers = 7;
 
-            int timeout = 300;
+            int timeout = 30;
 
             Console.WriteLine("Winner;Method;Turn;Events;Leaders killed;Forces killed;Owned cards;Owned Spice;Discarded");
 

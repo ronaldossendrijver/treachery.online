@@ -22,8 +22,6 @@
 
             if (maxForcesFromReserves > 0 || maxSpecialForcesFromReserves > 0)
             {
-                <div>Ride with forces from your reserves?</div>
-
                 if (maxForcesFromReserves > 0)
                 {
                     <SelectForcesComponent @bind-Value="_forcesFromReserves" Min="0" Max=@maxForcesFromReserves Faction="Faction" Special="false" />
@@ -70,7 +68,21 @@
 
     override protected bool InformAboutCaravan => false;
 
-    override protected string Title => Skin.Current.Format("Ride {0}", Concept.Monster);
+    override protected string Title
+    {
+        get
+        {
+            var toRide = YellowRidesMonster.ToRide(Game);
+            if (toRide.IsGreatMonster)
+            {
+                return Skin.Current.Format("Ride the {0} with forces from your reserves?", Concept.GreatMonster);
+            }
+            else
+            {
+                return Skin.Current.Format("Ride the Worm that appeared in {0}?", toRide.Territory);
+            }
+        }
+    }
 
     override protected bool MayPass => false;
 }

@@ -897,11 +897,6 @@ namespace Treachery.Shared
                     Enter(Phase.DiscardingTraitor);
                     break;
 
-                case Faction.Yellow:
-                    CurrentYellowNexus = e;
-                    LogNexusPlayed(e, "let forces ride ", Concept.Monster, " from from another territory");
-                    break;
-
                 case Faction.Red:
                     CurrentRedNexus = e;
                     LogNexusPlayed(e, "let 5 ", FactionForce.Red, " count as ", FactionSpecialForce.Red, " during this battle");
