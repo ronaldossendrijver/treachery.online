@@ -17,7 +17,7 @@ namespace Treachery.Client
     {
         #region Attributes
 
-        public const int CurrentVersion = 150;
+        public const int CurrentVersion = 151;
         public const int MINIMUM_SUPPORTED_VERSION = 23;
         public const string DEFAULT_ART_LOCATION = ".";
 
@@ -41,10 +41,8 @@ namespace Treachery.Client
         public Dictionary<World, string> HomeWorldImage_URL;
         public Dictionary<World, string> HomeWorldCardImage_URL;
         public Dictionary<Faction, string> NexusCardImage_URL;
-        public Dictionary<TerrorType, string> TerrorTokenImage_URL;
         public Dictionary<TerrorType, string> TerrorTokenName_STR;
         public Dictionary<TerrorType, string> TerrorTokenDescription_STR;
-        public Dictionary<DiscoveryToken, string> DiscoveryTokenImage_URL;
         public Dictionary<DiscoveryToken, string> DiscoveryTokenName_STR;
         public Dictionary<DiscoveryToken, string> DiscoveryTokenDescription_STR;
         public Dictionary<DiscoveryTokenType, string> DiscoveryTokenTypeName_STR;
@@ -204,7 +202,6 @@ namespace Treachery.Client
         public string PLAYEDCARD_MESSAGE_FONT;
         public string FACTION_INFORMATIONCARDSTYLE;
         public string TRACKER_FONT;
-        public string JSPANEL_DEFAULTSTYLE;
 
         #endregion Attributes
 
@@ -427,11 +424,6 @@ namespace Treachery.Client
         public string Describe(LeaderSkill l)
         {
             return LeaderSkillCardName_STR[l];
-        }
-
-        public string GetImageURL(DiscoveryToken dt)
-        {
-            return DiscoveryTokenImage_URL[dt];
         }
 
         public string Describe(DiscoveryToken dt)
@@ -853,11 +845,6 @@ namespace Treachery.Client
         public string GetImageURL(TreacheryCard c)
         {
             return c != null ? GetURL(TreacheryCardImage_URL, c.SkinId) : ""; ;
-        }
-
-        public string GetImageURL(TerrorType t)
-        {
-            return GetURL(TerrorTokenImage_URL, t);
         }
 
         public string GetImageURL(World w)
@@ -2527,16 +2514,6 @@ namespace Treachery.Client
                 [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12nexus.gif",
             },
 
-            TerrorTokenImage_URL = new Dictionary<TerrorType, string>()
-            {
-                [TerrorType.Atomics] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
-                [TerrorType.Assassination] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
-                [TerrorType.Extortion] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
-                [TerrorType.Robbery] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
-                [TerrorType.Sabotage] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
-                [TerrorType.SneakAttack] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
-            },
-
             TerrorTokenName_STR = new Dictionary<TerrorType, string>()
             {
                 [TerrorType.None] = "None",
@@ -2775,8 +2752,7 @@ namespace Treachery.Client
             GAMEVERSION_FONT = "normal normal normal 16px Advokat, Calibri, Tahoma, sans-serif;",
             PLAYEDCARD_MESSAGE_FONT = "normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif",
             FACTION_INFORMATIONCARDSTYLE = "font: normal normal normal 14px Verdana, Open Sans, Calibri, Tahoma, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; line-height: 95%; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;",
-            TRACKER_FONT = "normal normal normal 12px Verdana, Open Sans, Calibri, Tahoma, sans-serif;",
-            JSPANEL_DEFAULTSTYLE = "font-family: Verdana, Open Sans, Calibri, Tahoma, sans-serif"
+            TRACKER_FONT = "normal normal normal 12px Verdana, Open Sans, Calibri, Tahoma, sans-serif;"
         };
 
         public static Skin Current { get; set; } = Dune1979;

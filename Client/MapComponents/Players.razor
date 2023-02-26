@@ -25,28 +25,7 @@
             var x = position.X - radiusModifier * Skin.Current.PlayerTokenRadius;
             var y = position.Y - radiusModifier * Skin.Current.PlayerTokenRadius;
             var factionTokenDiameter = (radiusModifier * Skin.Current.PlayerTokenRadius * 2);
-
             var positionSector = Math.Floor((float)p.PositionAtTable * Map.NUMBER_OF_SECTORS / Game.MaximumNumberOfPlayers);
-
-            double vidRad = (TWOPI / 180) - 0.17 + (4.5 - positionSector) * TWOPI / Map.NUMBER_OF_SECTORS;
-            var factionLogoIsOnRightSideOfMap = x > 0.5f * Skin.Current.PlanetCenter.X;
-            var videoposition = factionLogoIsOnRightSideOfMap ? x + factionTokenDiameter + 1 : x - 2*factionTokenDiameter - 1;
-            
-            if (p == h.Player && EnableCameras)
-            {
-                <Videocapture h=@h 
-                    X=@(Skin.Current.PlanetCenter.X + (float)(Math.Cos(vidRad) * techtokenOrbitRadius) - factionTokenDiameter)
-                    Y=@(Skin.Current.PlanetCenter.Y + (float)(Math.Sin(vidRad) * techtokenOrbitRadius) - factionTokenDiameter) 
-                    Width=2*factionTokenDiameter Height=2*factionTokenDiameter SymbolOnRight=!factionLogoIsOnRightSideOfMap/>
-            }
-
-            if (p != h.Player)
-            {
-                <Videostream h=@h 
-                    X=@(Skin.Current.PlanetCenter.X + (float)(Math.Cos(vidRad) * techtokenOrbitRadius) - factionTokenDiameter) 
-                    Y=@(Skin.Current.PlanetCenter.Y + (float)(Math.Sin(vidRad) * techtokenOrbitRadius) - factionTokenDiameter) 
-                    Width=2*factionTokenDiameter Height=2*factionTokenDiameter StreamId=@DetermineVideoStreamId(p)/>
-            }
 
             <Circle X="@position.X" Y="@position.Y" Radius="@(1.35f * Skin.Current.PlayerTokenRadius)" FillColor="@Skin.Current.TABLEPOSITION_BACKGROUNDCOLOR" />
 

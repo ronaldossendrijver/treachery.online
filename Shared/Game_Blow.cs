@@ -248,13 +248,13 @@ namespace Treachery.Shared
 
             if (blowCard.Location.Sector != SectorInStorm)
             {
-                Log(Payment(spiceAmount), " detected in ", blowCard.Territory, SandtroutMessage(SandTroutDoublesResources));
+                Log(Payment(spiceAmount), " detected in ", blowCard, SandtroutMessage(SandTroutDoublesResources));
                 SandTroutDoublesResources = false;
                 ChangeResourcesOnPlanet(blowCard.Location, spiceAmount);
             }
             else
             {
-                Log(Payment(spiceAmount), " in ", blowCard.Territory, " is lost in the storm");
+                Log(Payment(spiceAmount), " in ", blowCard, " is lost in the storm");
             }
 
             Enter(Applicable(Rule.ExpansionTreacheryCardsExceptPBandSSandAmal), CurrentPhase == Phase.BlowA ? Phase.HarvesterA : Phase.HarvesterB, MoveToNextPhaseAfterResourceBlow);
