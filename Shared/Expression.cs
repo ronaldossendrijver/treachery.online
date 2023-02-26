@@ -19,5 +19,10 @@ namespace Treachery.Shared
         {
             Elements = elements.ToArray();
         }
+
+        public static Expression Express(params object[] list)
+        {
+            return new Expression(list);
+        }
     }
 }

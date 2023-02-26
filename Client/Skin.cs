@@ -2551,8 +2551,8 @@ namespace Treachery.Client
             TerrorTokenDescription_STR = new Dictionary<TerrorType, string>()
             {
                 [TerrorType.None] = "None",
-                [TerrorType.Assassination] = "Choose a random leader from that player and send it to the Tanks and collect spice for it",
-                [TerrorType.Atomics] = "All forces in the territory go to the Tanks.  Place the Atomics Aftermath token in the territory.  No forces may ever ship into this territory (even Fremen). From this turn forward, your hand limit is reduced by 1 (as well as your ally’s), discarding a random card if a hand exceeds the limit",
+                [TerrorType.Assassination] = "Choose a random leader from that player, send it to the Tanks and collect spice for it",
+                [TerrorType.Atomics] = "All forces in the territory go to the Tanks. Place the Atomics Aftermath token in the territory. No forces may ever ship into this territory (even Fremen). From this turn forward, your hand limit is reduced by 1 (as well as your ally’s), discarding a random card if a hand exceeds the limit",
                 [TerrorType.Extortion] = "Gain 5 spice from the Spice Bank, placed in front of your shield. Collect it in the Mentat Pause, then regain this Terror token unless any one player in storm order pays you 3 spice",
                 [TerrorType.Robbery] = "Steal half the spice (rounded up) from that player or take the top card of the Treachery Deck (then discarding a card of your choice if you exceed your hand size)",
                 [TerrorType.Sabotage] = "Draw a random Treachery Card from that player and discard it if possible. Then you may give that player a Treachery Card of your choice from your hand",

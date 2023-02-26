@@ -25,7 +25,7 @@
 
                 for (int i = 0; i < elts.Count; i++)
                 {
-                    <ExpressionComponent Expression=elts[i] Size=@Size Game=Game/>
+                    <ExpressionComponent Expression=elts[i] Size=@Size Game=Game TextBorder=@TextBorder/>
                 }
             }
             break;
@@ -68,6 +68,10 @@
     
         case IHero hero:
             <RichText Shown=@Skin.Current.Describe(hero) Popover=@Popup.Get(hero, Game) Class="fw-bold" Style=@TextBorder />
+            break;
+
+        case TerrorType terror:
+            <RichText Shown=@Skin.Current.Describe(terror) Popover=@Popup.Get(terror) Class="fw-bold" Style=@TextBorder />
             break;
 
         case Concept monster when monster == Concept.Monster:

@@ -10,12 +10,12 @@ namespace Treachery.Client
     {
         public static string Get(string c)
         {
-            return string.Format("<div style='background-color:white;border-color:black;border-width:1px;border-style:solid;color:black;'>{0}</div>", c);
+            return string.Format("<div style='background-color:white;border-color:black;border-width:1px;border-style:solid;color:black;padding:2px;'>{0}</div>", c);
         }
 
         public static string Get(ResourceCard c) => GetImageHoverHTML(Skin.Current.GetImageURL(c));
 
-        public static string Get(TerrorType t) => Get(Skin.Current.Describe(t));
+        public static string Get(TerrorType t) => Get(Skin.Current.GetTerrorTypeDescription(t));
 
         public static string Get(LeaderSkill c) => GetImageHoverHTML(Skin.Current.GetImageURL(c));
 
