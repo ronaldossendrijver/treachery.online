@@ -18,8 +18,6 @@ namespace Treachery.Shared
         {
         }
 
-        public bool Passed;
-
         public Faction Faction;
 
         public int _strongholdId;
@@ -65,14 +63,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            if (Passed)
-            {
-                return Message.Express(Initiator, " don't place an ambassador");
-            }
-            else
-            {
-                return Message.Express(Initiator, " place an ambassador in ", Stronghold);
-            }
+            return Message.Express(Initiator, " station the ", Faction, " ambassador in ", Stronghold);
         }
     }
 }

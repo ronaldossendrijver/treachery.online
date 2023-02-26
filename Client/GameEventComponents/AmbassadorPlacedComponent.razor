@@ -24,7 +24,7 @@
             Cost: <SimpleNumberComponent Size=20>@(Game.AmbassadorsPlacedThisTurn + 1)</SimpleNumberComponent>
         </div>
 
-        <ButtonRowComponent Pass="Pass" Confirm="Confirm" ConfirmText="Place Ambassador" ConfirmError=@Validation />
+        <ButtonRowComponent Confirm="Confirm" ConfirmText="Place Ambassador" ConfirmError=@Validation />
 
     </Body>
 
@@ -46,8 +46,6 @@
     }
 
     protected override AmbassadorPlaced ConfirmedResult => new AmbassadorPlaced(Game) { Initiator = Faction, Faction = _faction, Stronghold = _stronghold };
-
-    protected override AmbassadorPlaced PassedResult => new AmbassadorPlaced(Game) { Initiator = Faction, Passed = true };
 
     private void HandleLocationSelected(object sender, Location l)
     {

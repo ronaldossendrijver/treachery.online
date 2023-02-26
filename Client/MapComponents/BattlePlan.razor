@@ -27,7 +27,7 @@
                  BorderWidth="Skin.Current.WHEEL_FONT_BORDERWIDTH" BorderColor="@(IsAggressor ? Skin.Current.WHEEL_FONT_AGGRESSOR_BORDERCOLOR : Skin.Current.WHEEL_FONT_DEFENDER_BORDERCOLOR)"
                  Align="@TextAlignment.Center" />
         
-        float dialBonusX = forceX + 2 * Skin.Current.RESOURCETOKEN_RADIUS;
+        float dialBonusX = forceX + 3 * Skin.Current.RESOURCETOKEN_RADIUS;
 
         if (Plan.Initiator == Faction.Pink && Game.PinkKarmaBonus != 0)
         {
@@ -64,7 +64,7 @@
 
         if (Plan.HasReinforcements)
         {
-            <MapText ToShow="+3"
+            <MapText ToShow="+2"
                      X=@dialBonusX Y=@forceY
                      Popover=@Skin.Current.Describe(TreacheryCardType.Reinforcements)
                      Font="@Skin.Current.WHEEL_FONT" FontColor="green"
@@ -205,7 +205,7 @@
     if (ShowEntirePlan || Game.CurrentPrescience != null && Game.CurrentPrescience.Aspect == PrescienceAspect.Defense || Game.CurrentGreenNexus != null && Game.CurrentGreenNexus.GreenPrescienceAspect == PrescienceAspect.Defense)
     {
         bool isUsingPortableAntidote = Battle.IsUsingPortableAntidote(Game, Plan.Initiator) && Plan.Player.Card(TreacheryCardType.PortableAntidote) != null;
-        if (Plan.Defense != null || isUsingPortableAntidote)
+        if (Plan.Defense != null && (ShowEntirePlan || Plan.Defense.IsDefense) || isUsingPortableAntidote)
         {
             var defenseToShow = isUsingPortableAntidote ? Plan.Player.Card(TreacheryCardType.PortableAntidote) : Plan.Defense;
 
@@ -225,7 +225,7 @@
 
     if (ShowEntirePlan || Game.CurrentPrescience != null && Game.CurrentPrescience.Aspect == PrescienceAspect.Weapon || Game.CurrentGreenNexus != null && Game.CurrentGreenNexus.GreenPrescienceAspect == PrescienceAspect.Weapon)
     {
-        if (Plan.Weapon != null)
+        if (Plan.Weapon != null && (ShowEntirePlan || Plan.Weapon.IsWeapon))
         {
             <Image X="@(X + Skin.Current.BattleWheelCardX)" Y="@(Y + Skin.Current.BattleWheelCardY)" Width=@(Skin.Current.BattleWheelCardWidth) Height="@(Skin.Current.BattleWheelCardHeight)" 
                    Src="@Skin.Current.GetImageURL(Plan.Weapon)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 

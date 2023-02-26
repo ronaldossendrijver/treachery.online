@@ -903,8 +903,8 @@ namespace Treachery.Shared
                 if (result.Defender.Faction == CurrentPinkOrAllyFighter) defForceDial += (int)Math.Ceiling(0.5f * GetPlayer(Faction.Pink).AnyForcesIn(CurrentBattle.Territory));
             }
 
-            result.AggReinforcementsContribution = agg.HasReinforcements ? 3 : 0;
-            result.DefReinforcementsContribution = def.HasReinforcements ? 3 : 0;
+            result.AggReinforcementsContribution = agg.HasReinforcements ? 2 : 0;
+            result.DefReinforcementsContribution = def.HasReinforcements ? 2 : 0;
 
             result.AggHomeworldContribution = agg.Player.GetHomeworldBattleContributionAndLasgunShieldLimit(territory);
             result.DefHomeworldContribution = def.Player.GetHomeworldBattleContributionAndLasgunShieldLimit(territory);
@@ -1131,7 +1131,7 @@ namespace Treachery.Shared
                     MessagePart.ExpressIf(forcesToSaveInTerritory > 0, forcesToSaveInTerritory, forceSupplier.Force),
                     MessagePart.ExpressIf(specialForcesToSaveInTerritory > 0, specialForcesToSaveInTerritory, forceSupplier.SpecialForce),
                     MessagePart.ExpressIf(forcesToSaveInTerritory > 0 || specialForcesToSaveInTerritory > 0, " on site"),
-                    MessagePart.ExpressIf(forcesToSaveToReserves > 0 || specialForcesToSaveToReserves > 0, " and "),
+                    MessagePart.ExpressIf(forcesToSaveToReserves > 0 && specialForcesToSaveToReserves > 0, " and "),
                     MessagePart.ExpressIf(forcesToSaveToReserves > 0, forcesToSaveToReserves, forceSupplier.Force),
                     MessagePart.ExpressIf(specialForcesToSaveToReserves > 0, specialForcesToSaveToReserves, forceSupplier.SpecialForce),
                     MessagePart.ExpressIf(forcesToSaveToReserves > 0 || specialForcesToSaveToReserves > 0, " to reserves"));

@@ -115,7 +115,6 @@ namespace Treachery.Shared
         BlackMulligan = 60000,
 
         AssigningInitialSkills = 64000,
-        Loyalty = 64900,
         SelectingTraitors = 65000,
         PerformCustomSetup = 66000,
 

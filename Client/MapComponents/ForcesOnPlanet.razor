@@ -34,8 +34,8 @@
         if (ambassador != Faction.None)
         {
             var popover = $"{Skin.Current.Describe(ambassador)} Ambassador - {@Skin.Current.GetAmbassadorDescription(ambassador)}";
-            <Image X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetAmbassadorImage(Faction.Pink)
-                ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=popover />
+            <Image X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetAmbassadorImageURL(ambassador)
+                ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover />
 
             y += Skin.Current.PlayerTokenRadius;
         }

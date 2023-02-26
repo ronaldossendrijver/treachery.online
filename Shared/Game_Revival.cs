@@ -459,19 +459,11 @@ namespace Treachery.Shared
 
         public void HandleEvent(AmbassadorPlaced e)
         {
-            if (!e.Passed)
-            {
-
-                AmbassadorsPlacedThisTurn++;
-                e.Player.Resources -= AmbassadorsPlacedThisTurn;
-                Log(e.Initiator, " place an Ambassador in ", e.Stronghold, " for ", Payment(AmbassadorsPlacedThisTurn));
-                AmbassadorsOnPlanet.Add(e.Stronghold, e.Faction);
-                e.Player.Ambassadors.Remove(e.Faction);
-            }
-            else
-            {
-                Log(e);
-            }
+            AmbassadorsPlacedThisTurn++;
+            e.Player.Resources -= AmbassadorsPlacedThisTurn;
+            Log(e.Initiator, " station the ", e.Faction, " ambassador in ", e.Stronghold, " for ", Payment(AmbassadorsPlacedThisTurn));
+            AmbassadorsOnPlanet.Add(e.Stronghold, e.Faction);
+            e.Player.Ambassadors.Remove(e.Faction);
         }
 
         #endregion

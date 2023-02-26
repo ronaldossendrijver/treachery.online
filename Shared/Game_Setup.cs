@@ -408,7 +408,7 @@ namespace Treachery.Shared
                 AssignInitialAmbassadors(pink);
             }
 
-            Enter(IsPlaying(Faction.Blue), Phase.BluePredicting, TreacheryCardsBeforeTraitors, DealStartingTreacheryCards, HandleLoyaltyOrDealTraitors);
+            Enter(IsPlaying(Faction.Blue), Phase.BluePredicting, TreacheryCardsBeforeTraitors, DealStartingTreacheryCards, DealTraitors);
         }
 
         private bool TreacheryCardsBeforeTraitors => Version >= 121 && Applicable(Rule.LeaderSkills);
@@ -418,23 +418,10 @@ namespace Treachery.Shared
             GetPlayer(e.Initiator).PredictedFaction = e.ToWin;
             GetPlayer(e.Initiator).PredictedTurn = e.Turn;
             Log(e);
-            Enter(TreacheryCardsBeforeTraitors, DealStartingTreacheryCards, HandleLoyaltyOrDealTraitors);
+            Enter(TreacheryCardsBeforeTraitors, DealStartingTreacheryCards, DealTraitors);
         }
 
         private Deck<IHero> TraitorDeck { get; set; }
-        private void HandleLoyaltyOrDealTraitors()
-        {
-            Enter(IsPlaying(Faction.Pink) && Applicable(Rule.PinkLoyalty), Phase.Loyalty, DealTraitors);
-
-        }
-
-        public LoyaltyDecided PinkLoyalty { get; private set; }
-        public void HandleEvent(LoyaltyDecided e)
-        {
-            PinkLoyalty = e;
-            Log(e);
-            DealTraitors();
-        }
 
         private void DealTraitors()
         {
@@ -493,10 +480,12 @@ namespace Treachery.Shared
 
             var generallySafeLeaders = new List<Leader>();
 
-            if (PinkLoyalty != null)
+            if (IsPlaying(Faction.Pink) && Applicable(Rule.PinkLoyalty))
             {
-                result.Items.Remove(PinkLoyalty.Leader);
-                generallySafeLeaders.Add(PinkLoyalty.Leader);
+                var loyalLeader = result.Items.Where(t => t.Faction == Faction.Pink).RandomOrDefault(Random) as Leader;
+                result.Items.Remove(loyalLeader);
+                Log(loyalLeader, " is set aside as the loyal ", Faction.Pink, " leader");
+                generallySafeLeaders.Add(loyalLeader);
             }
 
             foreach (var p in Players)
@@ -628,7 +617,7 @@ namespace Treachery.Shared
             }
             else
             {
-                Enter(TreacheryCardsBeforeTraitors, HandleLoyaltyOrDealTraitors, SetupSpiceAndForces);
+                Enter(TreacheryCardsBeforeTraitors, DealTraitors, SetupSpiceAndForces);
             }
         }
 
@@ -646,7 +635,7 @@ namespace Treachery.Shared
             if (!Players.Any(p => p.SkillsToChooseFrom.Any()))
             {
                 SkillDeck.Shuffle();
-                Enter(CurrentPhase != Phase.AssigningInitialSkills, PhaseBeforeSkillAssignment, TreacheryCardsBeforeTraitors, HandleLoyaltyOrDealTraitors, SetupSpiceAndForces);
+                Enter(CurrentPhase != Phase.AssigningInitialSkills, PhaseBeforeSkillAssignment, TreacheryCardsBeforeTraitors, DealTraitors, SetupSpiceAndForces);
             }
         }
 

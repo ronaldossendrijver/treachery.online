@@ -162,7 +162,6 @@ namespace Treachery.Shared
                 Do(DeterminePerformCyanSetup, ref action, evts) ||
 
                 //Pink
-                Do(DetermineLoyaltyDecided, ref action, evts) ||
                 Do(DetermineAmbassadorPlaced, ref action, evts) ||
                 Do(DetermineAmbassadorActivated, ref action, evts) ||
 

@@ -72,10 +72,10 @@
             {
                 if (opponentBattlePlan != null)
                 {
-                    <div class="text-success mt-1">Enemy @PrescienceAspect.Dial: @GetTextForAspect(PrescienceAspect.Dial, opponentBattlePlan).</div>
-                    <Hoverable Class="text-success mt-0" Popover=@GetPopupForAspect(PrescienceAspect.Weapon, opponentBattlePlan)>Enemy @PrescienceAspect.Weapon: @GetTextForAspect(PrescienceAspect.Weapon, opponentBattlePlan).</Hoverable>
-                    <Hoverable Class="text-success mt-0" Popover=@GetPopupForAspect(PrescienceAspect.Defense, opponentBattlePlan)>Enemy @PrescienceAspect.Defense: @GetTextForAspect(PrescienceAspect.Defense, opponentBattlePlan).</Hoverable>
-                    <Hoverable Class="text-success mt-0" Popover=@GetPopupForAspect(PrescienceAspect.Leader, opponentBattlePlan) >Enemy @PrescienceAspect.Leader: @GetTextForAspect(PrescienceAspect.Leader, opponentBattlePlan).</Hoverable>
+                    <div class="text-success mt-1">Enemy @PrescienceAspect.Dial: @GetTextForAspect(PrescienceAspect.Dial, opponentBattlePlan, true).</div>
+                    <Hoverable Class="text-success mt-0" Popover=@GetPopupForAspect(PrescienceAspect.Weapon, opponentBattlePlan, true)>Enemy @PrescienceAspect.Weapon: @GetTextForAspect(PrescienceAspect.Weapon, opponentBattlePlan, true).</Hoverable>
+                    <Hoverable Class="text-success mt-0" Popover=@GetPopupForAspect(PrescienceAspect.Defense, opponentBattlePlan, true)>Enemy @PrescienceAspect.Defense: @GetTextForAspect(PrescienceAspect.Defense, opponentBattlePlan, true).</Hoverable>
+                    <Hoverable Class="text-success mt-0" Popover=@GetPopupForAspect(PrescienceAspect.Leader, opponentBattlePlan, true)>Enemy @PrescienceAspect.Leader: @GetTextForAspect(PrescienceAspect.Leader, opponentBattlePlan, true).</Hoverable>
                 }
                 else
                 {
@@ -88,7 +88,7 @@
                 {
                     if (opponentBattlePlan != null)
                     {
-                        <Hoverable Class="text-success mt-1" Popover=@GetPopupForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan)>Enemy @Game.CurrentPrescience.Aspect: @GetTextForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan).</Hoverable>
+                        <Hoverable Class="text-success mt-1" Popover=@GetPopupForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan, false)>Enemy @Game.CurrentPrescience.Aspect: @GetTextForAspect(Game.CurrentPrescience.Aspect, opponentBattlePlan, false).</Hoverable>
                     }
                     else
                     {
@@ -100,7 +100,7 @@
                 {
                     if (opponentBattlePlan != null)
                     {
-                        <Hoverable Class="text-success mt-1" Popover=@GetPopupForAspect(Game.CurrentGreenNexus.GreenPrescienceAspect, opponentBattlePlan)>Enemy @Game.CurrentGreenNexus.GreenPrescienceAspect: @GetTextForAspect(Game.CurrentGreenNexus.GreenPrescienceAspect, opponentBattlePlan).</Hoverable>
+                        <Hoverable Class="text-success mt-1" Popover=@GetPopupForAspect(Game.CurrentGreenNexus.GreenPrescienceAspect, opponentBattlePlan, false)>Enemy @Game.CurrentGreenNexus.GreenPrescienceAspect: @GetTextForAspect(Game.CurrentGreenNexus.GreenPrescienceAspect, opponentBattlePlan, false).</Hoverable>
                     }
                     else
                     {
@@ -334,12 +334,12 @@
 
     private Player Opponent => Game.CurrentBattle.OpponentOf(Faction);
 
-    private string GetTextForAspect(PrescienceAspect aspect, Battle plan)
+    private string GetTextForAspect(PrescienceAspect aspect, Battle plan, bool showEverything)
     {
         switch (aspect)
         {
-            case PrescienceAspect.Defense: return plan.Defense == null ? "None" : Name(plan.Defense);
-            case PrescienceAspect.Weapon: return plan.Weapon == null ? "None" : Name(plan.Weapon);
+            case PrescienceAspect.Defense: return plan.Defense == null || (!showEverything && !plan.Defense.IsDefense) ? "None" : Name(plan.Defense);
+            case PrescienceAspect.Weapon: return plan.Weapon == null || (!showEverything && !plan.Weapon.IsWeapon) ? "None" : Name(plan.Weapon);
             case PrescienceAspect.Dial: return plan.Dial(Game, Faction).ToString();
             case PrescienceAspect.Leader: return plan.Hero == null ? "None" : Name(plan.Hero);
         }
@@ -347,12 +347,12 @@
         return "?";
     }
 
-    private string GetPopupForAspect(PrescienceAspect aspect, Battle plan)
+    private string GetPopupForAspect(PrescienceAspect aspect, Battle plan, bool showEverything)
     {
         switch (aspect)
         {
-            case PrescienceAspect.Defense: return plan.Defense == null ? "" : Popup.Get(plan.Defense);
-            case PrescienceAspect.Weapon: return plan.Weapon == null ? "" : Popup.Get(plan.Weapon);
+            case PrescienceAspect.Defense: return plan.Defense == null || (!showEverything && !plan.Defense.IsDefense) ? "" : Popup.Get(plan.Defense);
+            case PrescienceAspect.Weapon: return plan.Weapon == null || (!showEverything && !plan.Weapon.IsWeapon) ? "" : Popup.Get(plan.Weapon);
             case PrescienceAspect.Dial: return "";
             case PrescienceAspect.Leader: return plan.Hero == null ? "" : Popup.Get(plan.Hero, Game);
         }

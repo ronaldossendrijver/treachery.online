@@ -233,14 +233,21 @@
         if (Game.TerrorIn(intelligenceLocation.Territory).Any())
         {
             result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
-                Skin.Current.GetFactionForceImageURL(Faction.Cyan),
+                Skin.Current.GetImageURL(Faction.Cyan),
                 Game.TerrorIn(intelligenceLocation.Territory).Count());
         }
 
-        if (Game.AmbassadorIn(intelligenceLocation.Territory) != Faction.None)
+        var ambassador = Game.AmbassadorIn(intelligenceLocation.Territory);
+        if (ambassador != Faction.None)
         {
-            result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
-                Skin.Current.GetFactionForceImageURL(Faction.Pink), 1);
+            result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong></div>",
+                Skin.Current.GetAmbassadorImageURL(ambassador));
+        }
+
+        if (Game.DiscoveriesOnPlanet.TryGetValue(intelligenceLocation, out var discovery))
+        {
+            result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" /></div>",
+                Skin.Current.GetImageURL(discovery.TokenType));
         }
 
         foreach (var hero in Game.LeaderState.Where(state => state.Key is IHero && state.Value.Alive && state.Value.CurrentTerritory == intelligenceLocation.Territory).Select(state => state.Key))

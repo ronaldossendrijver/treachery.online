@@ -470,7 +470,7 @@ namespace Treachery.Client
             return AmbassadorDescription_STR[faction];
         }
 
-        public string GetAmbassadorImage(Faction faction)
+        public string GetAmbassadorImageURL(Faction faction)
         {
             return AmbassadorImage_URL[faction];
         }
@@ -1093,15 +1093,13 @@ namespace Treachery.Client
 
                 <h5>Advantages</h5>
                 You have limited prescience:
-                <ul>
-                <li><strong>{45}</strong> - you see the treachery card on bid.</li>
-                <li><strong>{21}</strong> - you see the top card of the {16} deck.</li>
-                <li><strong>{46}</strong> - you may force your opponent to tell you your choice of one of the four elements he will use in his battle plan against you; the leader, the weapon, the defense or the number dialed. If your opponent tells you that he is not playing a weapon or defense, you may not ask something else.</li>
-                </ul>" +
+                <strong>{45}</strong> - you see the treachery card on bid.
+                <strong>{21}</strong> - you see the top card of the {16} deck.
+                <strong>{46}</strong> - you may force your opponent to tell you your choice of one of the four elements he will use in his battle plan against you; the leader, the weapon, the defense or the number dialed. If your opponent tells you that he is not playing a weapon or defense, you may not ask something else." +
 
               If(g, Rule.GreenMessiah,
               @"<h5>Advanced Game Advantages</h5>
-                <p>After losing a total of at least 7 forces in battle, you may use the {20}. It cannot be used alone in battle but may add its +2 strength to any one leader or {13} per turn. If the leader or {13} is killed, the {20} has no effect in the battle. {20} can only be killed if blown up by a {18}/{17} explosion. A leader accompanied by {20} cannot turn traitor. If killed, the {20} must be revived like any other leader. The {20} has no effect on {0} leader revival.</p>") +
+                <p><strong>Kwizatz Haderach</strong> - After losing a total of at least 7 forces in battle, you may use the {20}. It cannot be used alone in battle but may add its +2 strength to any one leader or {13} per turn. If the leader or {13} is killed, the {20} has no effect in the battle. {20} can only be killed if blown up by a {18}/{17} explosion. A leader accompanied by {20} cannot turn traitor. If killed, the {20} must be revived like any other leader. The {20} has no effect on {0} leader revival.</p>") +
 
               If(g, Rule.AdvancedKarama,
               @"<p><strong>Special {19}:</strong> you may use a {19} card to ask one player's entire battle plan.</p>") +
@@ -1123,17 +1121,14 @@ namespace Treachery.Client
 
                 <h5>Advantages</h5>
                 You excel in treachery:
-                <ul>
-                <li>You keep all traitors you draw at the start of the game.</li>
-                <li>You may hold up to 8 treachery cards. At start of game, you are dealt 2 cards instead of 1, and every time you buy a card you get an extra card free from the deck (if you have less than 8 total).</li>" +
+                <p><strong>Traitors</strong> - You keep all traitors you draw at the start of the game.</p>
+                <p><string>Treachery</strong> - You may hold up to 8 treachery cards. At start of game, you are dealt 2 cards instead of 1, and every time you buy a card you get an extra card free from the deck (if you have less than 8 total).</p>" +
 
-             If(g, Rule.BlackMulligan, "<li>At start, when you draw 2 or more of your own leaders as traitors, you may shuffle them back and redraw four traitors.</li>") +
-
-                "</ul>" +
+             If(g, Rule.BlackMulligan, "At start, when you draw 2 or more of your own leaders as traitors, you may shuffle them back and redraw four traitors.") +
 
              If(g, Rule.BlackCapturesOrKillsLeaders,
               @"<h5>Advanced Game Advantages</h5>
-                <p>Every time you win a battle you can select randomly one leader from the loser (including the leader used in battle, if not killed, but excluding all leaders already used elsewhere that turn). You can kill that leader for 2 {16}; or use the leader once in a battle after which you must return it to the original owner. If all your own leaders have been killed, all captured leaders are immediately returned to their original owners. Killed captured leaders are put in the 'tanks' from which the original owners can revive them (subject to the revival rules).</p>") +
+                <p><strong>Captured leaders</strong> - Every time you win a battle you can select randomly one leader from the loser (including the leader used in battle, if not killed, but excluding all leaders already used elsewhere that turn). You can kill that leader for 2 {16}; or use the leader once in a battle after which you must return it to the original owner. If all your own leaders have been killed, all captured leaders are immediately returned to their original owners. Killed captured leaders are put in the 'tanks' from which the original owners can revive them (subject to the revival rules).</p>") +
 
              If(g, Rule.AdvancedKarama,
               @"<p><strong>Special {19}:</strong> during the Bidding phase, you may use a {19} card to take at random up to all treachery cards of any one player of your choice, as long has your maximum hand size is not exceeded. Then, for each card you took you must give him one of your cards in return.</p>") +
@@ -1429,9 +1424,9 @@ namespace Treachery.Client
                 </ul>" +
 
               If(hasAdvancedAdvantages, "<h5>Advanced Game Advantages</h5>") +
-              If(g, Rule.AdvancedCombat, "<p><strong>Forces:</strong> when other players pay for their forces in battle, half of the {16} (rounded down) goes to you.</p>") +
-              If(g, Rule.BrownAuditor, "<p><strong>Auditor:</strong> you gain the Auditor Leader and it is added to the Traitor deck at the start of the game. Whenever you use the Auditor as a leader in a battle, you may audit your opponent. You may look at two cards in your opponent's hand at random (not counting cards used in battle) if the Auditor survived, or one card if killed. That faction may pay you 1 {16} per card you would get to see to cancel the audit. The Auditor may be revived as if all of your leaders were in the Tanks. The Auditor can't be revived as a ghola, nor be captured by {1}. The Auditor can't have a Leader Skill.</p>") +
-              If(g, Rule.AdvancedKarama, "<p><strong>Special {19}:</strong> you may discard any Treachery cards from your hand and gain 3 {16} each.</p>") +
+              If(g, Rule.AdvancedCombat, "<p><strong>Forces</strong> - when other players pay for their forces in battle, half of the {16} (rounded down) goes to you.</p>") +
+              If(g, Rule.BrownAuditor, "<p><strong>Auditor</strong> - you gain the Auditor Leader and it is added to the Traitor deck at the start of the game. Whenever you use the Auditor as a leader in a battle, you may audit your opponent. You may look at two cards in your opponent's hand at random (not counting cards used in battle) if the Auditor survived, or one card if killed. That faction may pay you 1 {16} per card you would get to see to cancel the audit. The Auditor may be revived as if all of your leaders were in the Tanks. The Auditor can't be revived as a ghola, nor be captured by {1}. The Auditor can't have a Leader Skill.</p>") +
+              If(g, Rule.AdvancedKarama, "<p><strong>Special {19}</strong> - you may discard any Treachery cards from your hand and gain 3 {16} each.</p>") +
 
               @"<h5>Alliance</h5>
                 <p>Once per turn at the end of a phase, you may trade a Treachery Card with your ally. This trade is simultaneous and two-way.</p>
@@ -1445,28 +1440,24 @@ namespace Treachery.Client
         private static string GetPinkTemplate(Game g)
         {
             return
-              @"<div style='{48}'>
+              @"<div style='{25}'>
                 <p><strong>At start:</strong> 6 tokens in {50} and 14 in reserve (off-planet). Start with 12 {16}.</p>
                 <p><strong>Free revival:</strong> 2.</p>
 
                 <h5>Advantages</h5>
                 You forge strong alliances:
                 <ul>
-                <li><strong>AMBASSADORS</strong> - At start, take the {48} Ambassador token and 5 random Ambassadors for other factions to form a supply. At the end of Revival you may spend spice to place Ambassadors in any stronghold not in storm that does not have one.  The cost is 1 spice for a single Ambassador but it increases by 1 spice for each subsequent Ambassador that turn.  
-                When another faction (other than your ally or the faction matching the marker) enters a stronghold with an Ambassador, you may trigger its effect, setting it aside.
-                After triggering your random markers, draw 5 at random again as at start.  Ambassadors are vulnerable to game effects like storm or explosions, returning to your supply.</li>
-                <li><strong>OCCUPY</strong> - When you are in an alliance, you and your ally’s forces are considered the same faction, and may enter and occupy the same territory.  If you are both collecting spice from a desert territory, you split the collection however you both agree, or as evenly as possible with your ally gaining the remainder if you can’t agree.
-If you are both in a battle with another faction, you decide which of you is considered the faction in the battle (choosing a leader and playing Treachery Cards) once battle order is determined.  Regardless of who fights the battle, your ally's forces are the ones dialed, and half of your forces in the territory (rounded down) are added to the number dialed (without needing spice in the advanced game).  After the battle, half of your forces rounded up remain in the territory if your side wins, and the rest go to the Tanks.  If you and your ally both occupy a stronghold at the end of a turn, it only counts as one stronghold for both of you, and you control it.	 
-It only takes three strongholds for you and your ally to win, if you both are co-occupied in all three.</li>
-<li><strong>REVIVAL</strong> - You may always revive Duke Vidal for 5 spice, no matter how many of your leaders are in the Tanks.  You may revive leaders normally when at least 5 are in the Tanks (counting Duke Vidal).
+                <li><strong>Ambassadors</strong> - At start you get the {48} Ambassador token and 5 random Ambassadors for other factions. At the end of Revival you may place Ambassadors in any stronghold not in storm that does not have one for 1 spice (cost increases by 1 spice for each subsequent Ambassador that turn). When another faction (other than your ally or the faction matching the marker) enters a stronghold with an Ambassador, you may trigger its effect, setting it aside. After triggering all non-{48} Ambassadors, you get 5 random new ones. Ambassadors are vulnerable to game effects like storm or explosions, returning to your supply.</li>
+                <li><strong>Occupy</strong> - When you are in an alliance, you and your ally’s forces are considered the same faction, and may enter and occupy the same territory. If you both collect spice from a desert territory, you split the it however you both agree (as evenly as possible if you can’t agree). If both in a battle, you decide which of you is considered the faction that fights. Regardless of who fights, your ally's forces are the ones dialed, and half of your forces in the territory (rounded down) are added to the number dialed. After the battle, half of your forces rounded up remain in the territory if your side wins, and the rest go to the Tanks. If you and your ally both occupy a stronghold at the end of a turn, it only counts as one stronghold for both of you, and you control it. It only takes three strongholds for you and your ally to win, if you both are co-occupied in all three.</li>
+                <li><strong>Revival</strong> - You may always revive Duke Vidal for 5 spice, no matter how many of your leaders are in the Tanks.  You may revive leaders normally when at least 5 are in the Tanks (counting Duke Vidal).
                 </ul>" +
 
               If(g.Applicable(Rule.PinkLoyalty) || g.Applicable(Rule.IncreasedResourceFlow), "<h5>Advanced Game Advantages</h5>") +
-              If(g, Rule.PinkLoyalty, "<p><strong>Loyalty:</strong> at the start of the game, one of your leader (selected randomly) is not added to the Traitor deck.</p>") +
-              If(g, Rule.IncreasedResourceFlow, "<p><strong>Collection:</strong> you and your ally both gain income from strongholds that yield {16} during collection.</p>") +
+              If(g, Rule.PinkLoyalty, "<p><strong>Loyalty</strong> - at the start of the game, one of your leader (selected randomly) is removed from the Traitor deck.</p>") +
+              If(g, Rule.IncreasedResourceFlow, "<p><strong>Collection</strong> - you and your ally both gain income from strongholds that yield {16} during collection.</p>") +
 
               If(g, Rule.AdvancedKarama,
-              @"<p><strong>Special {19}:</strong> If you played neither a weapon nor a defense, you may add the difference between your leader disc and your opponent’s leader disc to your number dialed..</p>") +
+              @"<p><strong>Special {19}:</strong> if you played neither a weapon nor a defense, you may add the difference between your leader disc and your opponent’s leader disc to your number dialed.</p>") +
 
               @"<h5>Alliance</h5>
                 <p>You may have your ally benefit from a triggered Ambassador's effect.</p>
@@ -1480,28 +1471,30 @@ It only takes three strongholds for you and your ally to win, if you both are co
         private static string GetCyanTemplate(Game g)
         {
             return
-              @"<div style='{49}'>
+              @"<div style='{25}'>
                 <p><strong>At start:</strong> 6 tokens in any unoccupied territory when all other factions set up and 14 in reserve (off-planet). Start with 12 {16}.</p>
                 <p><strong>Free revival:</strong> 2.</p>
 
                 <h5>Advantages</h5>
                 You resort to terrorism:
                 <ul>
-                <li><strong>TERRORIZE</strong> - you see the treachery card on bid.</li>
+                <li><strong>Terrorize</strong> - During the Mentat Pause, you may place a Terror token face down in any stronghold that doesn't have one (other than the Ixian Hidden Mobile Stronghold), even one under storm, or else move one to a stronghold that doesn't have one.  You may reveal and activate a Terror token when another faction (other than your ally) enters a stronghold containing one (either moving or shipping in, including advisors), applying effects to that faction. Revealed tokens are removed from the game.</li>
+                <li><strong>Duke Vidal</strong> - You gain Duke Vidal at the end of Shipping and Movement if you are in at least two battles in strongholds (not counting battles involving Ecaz) if he is not captured, a ghola, or in the Tanks, taking him from any faction currently controlling him.  Set him aside at the end of the turn if he’s not in the Tanks or captured.</li>
+                <li><strong>Enemy of my Enemy</strong> - When a faction (other than Ecaz) would trigger a Terror token, you may offer to enter into an alliance with that faction before the token is revealed.  If that faction accepts, you both are now allied (breaking existing alliances either or both of you were in).  Your Terror token is not revealed, and returns to your supply.  If that faction does not accept, the Terror token must be revealed. You may reveal a Traitor Card normally, but then this advantage is lost.</li>
                 </ul>" +
 
               If(g, Rule.CyanAssassinate,
               @"<h5>Advanced Game Advantages</h5>
-                <p>x.</p>") +
+                <p>When you lose a battle in which the opposing player had a leader disc that was not killed (and no Traitor was called), you may reveal a Traitor Card for the same faction (other than the leader you opposed).  If they are not in the Tanks, kill that leader and collect spice for them.  During the Mentat Pause, set the revealed card aside face up as a marker, then draw a new Traitor Card.  You may only use this advantage once against each other faction in the game.</p>") +
 
               If(g, Rule.AdvancedKarama,
-              @"<p><strong>Special {19}:</strong> xxx.</p>") +
+              @"<p><strong>Special {19}:</strong> if you lose a battle, force your opponent to discard or keep any or all Treachery Cards they played.</p>") +
 
               @"<h5>Alliance</h5>
-                <p>When your ally loses a battle that had a winner, they may keep one treachery card played in battle that they would have been able to keep if they had won.</p>
+                <p>When your ally loses a battle that had a winner, they may keep one Treachery Card they played in the battle that they would have been able to keep had they won.</p>
 
                 <h5>Strategy</h5>
-                <p>xxx.</p>
+                <p>You are handicapped by having to wait a few turns before you can get multiple Terror tokens onto the board, and you can only gain Duke Vidal by getting into battles in strongholds.  It’s to your advantage to prolong the game until you can maneuver into a situation where you can either utilize Enemy of My Enemy to gain a useful ally at a critical moment, or the other factions have been weakened enough by your Terror tokens that you can go for the win alone.</p>
                 </div>";
         }
 
@@ -1913,7 +1906,7 @@ It only takes three strongholds for you and your ally to win, if you both are co
                 [1056] = "Whitmore Bludd",
                 [1057] = "Duke Prad Vidal",
                 [1058] = "Lupino Ord",
-                [1059] = "Hiir Resser",
+                [1059] = "Hiih Resser",
                 [1060] = "Trin Kronos",
                 [1061] = "Grieu Kronos",
                 [1062] = "Vando Terboli",

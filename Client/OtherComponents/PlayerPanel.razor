@@ -137,10 +137,10 @@
                         @if (ShownPlayer.Faction == Faction.Cyan && h.CurrentPhase > Phase.BluePredicting)
                         {
                             <div>
-                                Terror: 
+                                Available Terror Tokens: 
                                 @foreach (var t in Game.UnplacedTerrorTokens)
                                 {
-                                    <Image Width=30 Popover=@Skin.Current.GetTerrorTypeDescription(t) />
+                                    <Hoverable Popover=@Skin.Current.GetTerrorTypeDescription(t)><strong>@Name(t)&nbsp;</strong></Hoverable>
                                 }
 
                             </div>
