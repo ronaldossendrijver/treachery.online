@@ -1,5 +1,5 @@
 ﻿<!--
- * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
+* Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
 
 @using Treachery.Shared
@@ -11,28 +11,30 @@
     <Header>Select whom and where to battle</Header>
     <Body>
 
-        <SelectComponent @bind-Value="battle" Values="Battle.BattlesToBeFought(Game, Player)" ValueLabels="BattleLabels"/>
+        <SelectComponent @bind-Value="battle" Values=@battles ValueLabels=@battles.Select(b => Skin.Current.Format("{0} in {1}", b.Faction, b.Territory))/>
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Initiate Battle" ConfirmError=@Validation />
 
     </Body>
 
 </GameEventComponentLayout>
 
-@code { 
-    
+@code {
+
     protected override bool IsUrgent => true;
+
+    private IEnumerable<Fight> battles;
 
     private Fight battle;
 
     protected override void OnParametersSet()
     {
-        if (Battle.BattlesToBeFought(Game, Player).Count() == 1)
+        battles = Battle.BattlesToBeFought(Game, Player);
+
+        if (battles.Count() == 1)
         {
             _ = Task.Delay(500).ContinueWith(e => Confirm());
         }
     }
 
     protected override BattleInitiated ConfirmedResult => new BattleInitiated(Game) { Initiator = Faction, Territory = battle.Territory, Target = battle.Faction };
-
-    private IEnumerable<string> BattleLabels => Battle.BattlesToBeFought(Game, Player).Select(b => Skin.Current.Format("{0} in {1}", b.Faction, b.Territory));
 }
