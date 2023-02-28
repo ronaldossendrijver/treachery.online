@@ -428,17 +428,8 @@ namespace Treachery.Shared
         private void CheckIntrusion(ILocationEvent e)
         {
             CheckBlueIntrusion(e, e.Initiator, e.To.Territory);
-
-            if (TerrorIn(e.To.Territory).Any() && AmbassadorIn(e.To.Territory) != Faction.None && IsFirst(Faction.Cyan, Faction.Pink))
-            {
-                CheckTerrorTriggered(e);
-                CheckAmbassadorTriggered(e);
-            }
-            else
-            {
-                CheckAmbassadorTriggered(e);
-                CheckTerrorTriggered(e);
-            }
+            CheckAmbassadorTriggered(e);
+            CheckTerrorTriggered(e);
         }
 
         public bool IsOccupiedByFactionOrTheirAlly(World world, Player p)

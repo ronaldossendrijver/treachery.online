@@ -94,7 +94,7 @@
 
                             <ForceSelectionComponent Game=Game Player=Player OnChanged="StateHasChanged" Forces="_yellowForces" Locations="Player.LocationsWithAnyForcesInTerritory(_yellowFromTerritory)" InitializeToMaximum=true />
 
-                            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="_yellowOrOrangeToLocation" Values=@AmbassadorActivated.ValidYellowTargets(Game, Player, _yellowForces)>
+                            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="_yellowOrOrangeToLocation" Values=@AmbassadorActivated.ValidYellowTargets(Game, Player)>
                                 <Label>To</Label>
                             </SelectComponent>
                         </div>
@@ -256,7 +256,7 @@
 
     private void HandleLocationSelected(object sender, Location l)
     {
-        var targets = _actualAmbassador == Faction.Yellow ? AmbassadorActivated.ValidYellowTargets(Game, Player, _yellowForces) : AmbassadorActivated.ValidOrangeTargets(Game, Player);
+        var targets = _actualAmbassador == Faction.Yellow ? AmbassadorActivated.ValidYellowTargets(Game, Player) : AmbassadorActivated.ValidOrangeTargets(Game, Player);
         SetIfValid(ref _yellowOrOrangeToLocation, targets.OrderByDescending(l => l.IsStronghold).ThenBy(l => Name(l)), l);
     }
 

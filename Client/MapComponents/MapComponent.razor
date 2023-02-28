@@ -265,7 +265,7 @@
 
         if (Game.TerrorIn(intelligenceLocation.Territory).Any())
         {
-            result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" /><strong>&nbsp;{1}</strong></div>",
+            result += string.Format("<div class=\"col col-auto\"><img class=\"img-fluid m-0 p-0\" width=\"32\" height=\"32\" src=\"{0}\" style=\"filter:hue-rotate(180deg);\" /><strong>&nbsp;{1}</strong></div>",
                 Skin.Current.GetImageURL(Faction.Cyan),
                 Game.TerrorIn(intelligenceLocation.Territory).Count());
         }
