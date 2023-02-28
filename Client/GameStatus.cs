@@ -118,6 +118,8 @@ namespace Treachery.Client
                     "Waiting for Bureaucracy to be applied to the latest payment...",
                     game.PlayerSkilledAs(LeaderSkill.Bureaucrat)),
 
+                Phase.Discarding => Status(game, "Please decide which card to discard.", "Waiting factions to discard...", game.FactionsThatMustDiscard),
+
                 /* Setup */
 
                 Phase.AwaitingPlayers => Status(
@@ -164,6 +166,11 @@ namespace Treachery.Client
                     Express("Please select your starting force position."),
                     Express(Faction.Blue, " are selecting their starting force position..."),
                     Faction.Blue),
+
+                Phase.CyanSettingUp => Status(game,
+                    Express("Please select your starting force position."),
+                    Express(Faction.Cyan, " are selecting their starting force position..."),
+                    Faction.Cyan),
 
                 Phase.GreySelectingCard => Status(game,
                     Express("Please select your starting Treachery Card."),
@@ -213,6 +220,11 @@ namespace Treachery.Client
 
                 Phase.BlowA or Phase.HarvesterA => Status(Express("Factions may use a ", TreacheryCardType.Harvester, " to double the ", Concept.Resource, " blow in ", game.LatestSpiceCardA.Location.Territory, "...")),
                 Phase.BlowB or Phase.HarvesterB => Status(Express("Factions may use a ", TreacheryCardType.Harvester, " to double the ", Concept.Resource, " blow in ", game.LatestSpiceCardB.Location.Territory, "...")),
+
+                Phase.VoteAllianceA or Phase.VoteAllianceB => Status(
+                    "Please vote Yes or No to a Nexus.",
+                    "Factions are voting on about a Nexus...",
+                    PlayersThatHaventActedOrPassed(game)),
 
                 Phase.AllianceA or Phase.AllianceB => Status("Factions may now make and break alliances."),
 
@@ -324,6 +336,42 @@ namespace Treachery.Client
                     Express(Faction.Blue, " are thinking about accompanying the latest shipment..."),
                     Faction.Blue),
 
+                Phase.TerrorTriggeredByBlueAccompaniesNonOrangeShip or 
+                Phase.TerrorTriggeredByBlueAccompaniesOrangeShip or 
+                Phase.TerrorTriggeredByOrangeShip or 
+                Phase.TerrorTriggeredByNonOrangeShip or 
+                Phase.TerrorTriggeredByNonOrangeShip or
+                Phase.TerrorTriggeredByOrangeShip or
+                Phase.TerrorTriggeredByNonOrangeMove or
+                Phase.TerrorTriggeredByOrangeMove or
+                Phase.TerrorTriggeredByCaravan => Status(game,
+                    Express("Do you wish to respond to this intrusion with terror?"),
+                    Express(Faction.Cyan, " are thinking about resorting to terror..."),
+                    Faction.Cyan),
+
+                Phase.AllianceByTerror => Status(game,
+                    Express("Please decide about entering an alliance offered to you by ", Faction.Cyan),
+                    Express(game.AllianceByTerrorOfferedTo, " are considering entering an alliance with ", Faction.Cyan, "..."),
+                    game.AllianceByTerrorOfferedTo),
+
+                Phase.AmbassadorTriggeredByBlueAccompaniesNonOrangeShip or
+                Phase.AmbassadorTriggeredByBlueAccompaniesOrangeShip or
+                Phase.AmbassadorTriggeredByOrangeShip or
+                Phase.AmbassadorTriggeredByNonOrangeShip or
+                Phase.AmbassadorTriggeredByNonOrangeShip or
+                Phase.AmbassadorTriggeredByOrangeShip or
+                Phase.AmbassadorTriggeredByNonOrangeMove or
+                Phase.AmbassadorTriggeredByOrangeMove or
+                Phase.AmbassadorTriggeredByCaravan => Status(game,
+                    Express("Do you wish to activate your ambassador?"),
+                    Express(Faction.Cyan, Ally(game, Faction.Pink), " are thinking about activating their ambassador..."),
+                    PlayerAndAlly(game, Faction.Pink)),
+
+                Phase.AllianceByAmbassador => Status(game,
+                    Express("Please decide about entering an alliance offered to you by ", Faction.Pink),
+                    Express(game.AllianceByAmbassadorOfferedTo, " are considering entering an alliance with ", Faction.Pink, "..."),
+                    game.AllianceByAmbassadorOfferedTo),
+
                 Phase.BlueIntrudedByNonOrangeShip or
                 Phase.BlueIntrudedByOrangeShip or
                 Phase.BlueIntrudedByNonOrangeMove or
@@ -349,6 +397,11 @@ namespace Treachery.Client
                     "You may proceed to the first battle when ready.",
                     "Waiting for the host to proceed to the first battle..."),
 
+                Phase.ClaimingBattle => Status(
+                    Express("You may now decide who will fight this battle",
+                    Express(FactionOrOccupier(game, Faction.Pink, World.Pink), " are deciding who will fight this battle..."),
+                    FactionOrOccupier(game, Faction.Pink, World.Pink))),
+
                 Phase.Thought => Status(
                     Express(game.CurrentThought.Initiator, " asked you a question and are waiting for your answer."),
                     Express("Waiting for ", game.CurrentBattle.OpponentOf(game.CurrentThought.Initiator).Faction, " to answer a question..."),
@@ -365,6 +418,10 @@ namespace Treachery.Client
                     "You may now call TREACHERY if the enemy leader is a traitor under your command.",
                     "Waiting for a faction to call TREACHERY...",
                     PlayersThatNeedToCallTraitor(game)),
+
+                Phase.CancellingTraitor => Status(
+                    "You may proceed when done waiting for players to cancel a traitor call.",
+                    "Players may now try to cancel a traitor call..."),
 
                 Phase.Retreating => Status(game,
                     Express("Please decide about retreating forces from ", game.CurrentBattle.Territory, "."),
@@ -404,7 +461,23 @@ namespace Treachery.Client
                 Phase.BattleReport when game.NextPlayerToBattle != null => Status(Express("Factions may now review the battle report before the next battle begins...")),
                 Phase.BattleReport when game.NextPlayerToBattle == null => Status(Express(game.CurrentMainPhase, " phase ended.")),
 
+                /* Collection */
+
+                Phase.DividingCollectedResources => Status(game,
+                    Express("Please make a proposal about how to divide collected ", Concept.Resource, "."),
+                    Express("Waiting for ", game.CollectedResourcesToBeDivided.FirstOrDefault()?.FirstFaction, " to propose how to divide collected", Concept.Resource),
+                    game.CollectedResourcesToBeDivided.FirstOrDefault().FirstFaction),
+
+                Phase.AcceptingResourceDivision => Status(game,
+                    Express("Please decide about the proposed division of ", Concept.Resource, "."),
+                    Express(game.CollectedResourcesToBeDivided.FirstOrDefault()?.OtherFaction, " are thinking about the proposed division"),
+                    game.CollectedResourcesToBeDivided.FirstOrDefault().OtherFaction),
+
                 /* Mentat */
+
+                Phase.Extortion => Status(
+                    Skin.Current.Format("You may proceed when done waiting for players to avoid future {0} by {1}", TerrorType.Extortion, Faction.Cyan),
+                    Skin.Current.Format("Players may pay {0} to avoid future {1} by {2}...", Concept.Resource, TerrorType.Extortion, Faction.Cyan)),
 
                 Phase.ReplacingFaceDancer => Status(game,
                     "You may replace an unrevealed Face Dancer with a new one from the Traitor Deck.",
@@ -422,6 +495,36 @@ namespace Treachery.Client
             result.HighlightedTerritories = DetermineHighlights(game);
 
             return result;
+        }
+
+        private static Faction FactionOrOccupier(Game g, Faction f, World w)
+        {
+            var occupier = g.OccupierOf(w);
+            if (occupier != null)
+            {
+                return occupier.Faction;
+            }
+            else
+            {
+                return f;
+            }
+        }
+
+        private static IEnumerable<Player> PlayerAndAlly(Game g, Faction f)
+        {
+            var player = g.GetPlayer(f);
+            var result = new List<Player>
+            {
+                player
+            };
+            if (player.HasAlly) result.Add(player.AlliedPlayer);
+            return result;
+        }
+
+        private static MessagePart Ally(Game g, Faction f)
+        {
+            var player = g.GetPlayer(f);
+            return MessagePart.ExpressIf(player.HasAlly, player.Ally);
         }
 
         private static IEnumerable<Territory> DetermineHighlights(Game game)
@@ -540,6 +643,9 @@ namespace Treachery.Client
 
         private static GameStatus Status(Game game, Message messageWhenAwaited, Message messageWhenWaiting, Faction waitingForFaction, GameEvent timedEvent = null) =>
             new(messageWhenAwaited, messageWhenWaiting, game.GetPlayer(waitingForFaction), timedEvent);
+
+        private static GameStatus Status(Game game, Message messageWhenAwaited, Message messageWhenWaiting, IEnumerable<Player> waitingForPlayers, GameEvent timedEvent = null) =>
+            new(messageWhenAwaited, messageWhenWaiting, waitingForPlayers, timedEvent);
 
         private static List<FlashInfo> DetermineFlash(Game g, Faction myFaction, bool isPlayer)
         {

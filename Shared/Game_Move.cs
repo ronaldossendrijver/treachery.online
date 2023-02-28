@@ -730,7 +730,7 @@ namespace Treachery.Shared
         }
 
         private AmbassadorActivated CurrentAmbassadorActivated { get; set; }
-        private Faction AllianceByAmbassadorOfferedTo { get; set; }
+        public Faction AllianceByAmbassadorOfferedTo { get; private set; }
         private Phase PausedAmbassadorPhase { get; set; }
 
         private void HandleAmbassador(AmbassadorActivated e, Faction initiator, Faction ambassadorFaction, Faction victim, Territory territory)
@@ -946,7 +946,7 @@ namespace Treachery.Shared
 
         private Phase PausedTerrorPhase { get; set; }
         public bool AllianceByTerrorWasOffered { get; private set; } = false;
-        private Faction AllianceByTerrorOfferedTo { get; set; }
+        public Faction AllianceByTerrorOfferedTo { get; private set; }
         public void HandleEvent(TerrorRevealed e)
         {
             var initiator = GetPlayer(e.Initiator);

@@ -1199,20 +1199,30 @@ namespace Treachery.Shared
                     }
 
                 case Faction.Yellow:
-                    var toMove = DetermineMovedBatallion(true);
-                    if (toMove != null && AmbassadorActivated.ValidYellowSources(Game, this).Contains(toMove.From.Territory))
-                    {
-                        var forcesToMove = new Dictionary<Location, Battalion>
-                        {
-                            { toMove.From, toMove.Batallion }
-                        };
 
-                        return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedFaction = blueSelectedFaction, YellowOrOrangeTo = toMove.To, YellowForceLocations = forcesToMove };
-                    }
-                    else
+                    Location target = null;
+                    var validLocations = AmbassadorActivated.ValidYellowTargets(Game, this).ToList();
+                    if (validLocations.Contains(Game.Map.TueksSietch) && VacantAndSafeFromStorm(Game.Map.TueksSietch)) target = Game.Map.TueksSietch;
+                    if (target == null && validLocations.Contains(Game.Map.Carthag) && VacantAndSafeFromStorm(Game.Map.Carthag)) target = Game.Map.Carthag;
+                    if (target == null && validLocations.Contains(Game.Map.Arrakeen) && VacantAndSafeFromStorm(Game.Map.Arrakeen)) target = Game.Map.Arrakeen;
+                    if (target == null && validLocations.Contains(Game.Map.HabbanyaSietch) && VacantAndSafeFromStorm(Game.Map.HabbanyaSietch)) target = Game.Map.HabbanyaSietch;
+                    if (target == null) target = Game.ResourcesOnPlanet.Where(l => validLocations.Contains(l.Key) && VacantAndSafeFromStorm(l.Key)).HighestOrDefault(r => r.Value).Key;
+
+                    if (target != null)
                     {
-                        return PassAmbassadorActivated();
+                        var toMove = DetermineMovedBatallion(true);
+                        if (toMove != null && AmbassadorActivated.ValidYellowSources(Game, this).Contains(toMove.From.Territory))
+                        {
+                            var forcesToMove = new Dictionary<Location, Battalion>
+                            {
+                                { toMove.From, toMove.Batallion }
+                            };
+
+                            return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedFaction = blueSelectedFaction, YellowOrOrangeTo = target, YellowForceLocations = forcesToMove };
+                        }
                     }
+                    
+                    return PassAmbassadorActivated();
 
                 case Faction.Grey:
                     var toReplace = AmbassadorActivated.GetValidGreyCards(this).FirstOrDefault(c => CardQuality(c, this) < 2);
