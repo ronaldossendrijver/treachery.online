@@ -860,14 +860,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(PerformCyanSetup e)
         {
-            var initiator = GetPlayer(e.Initiator);
-
-            foreach (var fl in e.ForceLocations)
-            {
-                var location = fl.Key;
-                initiator.ShipForces(location, fl.Value.AmountOfForces);
-            }
-
+            e.Player.ShipForces(e.Target, 6);
             Log(e);
             Enter(TreacheryCardsBeforeTraitors, EnterStormPhase, DealStartingTreacheryCards);
         }

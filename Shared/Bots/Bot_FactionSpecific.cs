@@ -1058,38 +1058,38 @@ namespace Treachery.Shared
 
         protected PerformCyanSetup DeterminePerformCyanSetup()
         {
-            var forceLocations = new Dictionary<Location, Battalion>();
+            Location target;
 
-            if (PerformCyanSetup.ValidLocations(Game).Contains(Game.Map.Carthag))
+            if (PerformCyanSetup.ValidLocations(Game).Contains(Game.Map.Carthag)) 
             {
-                forceLocations.Add(Game.Map.Carthag, new Battalion() { Faction = Faction, AmountOfForces = 6 });
+                target = Game.Map.Carthag;
             }
             else if (PerformCyanSetup.ValidLocations(Game).Contains(Game.Map.Arrakeen))
             {
-                forceLocations.Add(Game.Map.Arrakeen, new Battalion() { Faction = Faction, AmountOfForces = 6 });
+                target = Game.Map.Arrakeen;
             }
             else if (PerformCyanSetup.ValidLocations(Game).Contains(Game.Map.TueksSietch))
             {
-                forceLocations.Add(Game.Map.TueksSietch, new Battalion() { Faction = Faction, AmountOfForces = 6 });
+                target = Game.Map.TueksSietch;
             }
             else if (PerformCyanSetup.ValidLocations(Game).Contains(Game.Map.HabbanyaSietch))
             {
-                forceLocations.Add(Game.Map.HabbanyaSietch, new Battalion() { Faction = Faction, AmountOfForces = 6 });
+                target = Game.Map.HabbanyaSietch;
             }
             else if (PerformCyanSetup.ValidLocations(Game).Contains(Game.Map.ImperialBasin.MiddleLocation))
             {
-                forceLocations.Add(Game.Map.ImperialBasin.MiddleLocation, new Battalion() { Faction = Faction, AmountOfForces = 6 });
+                target = Game.Map.ImperialBasin.MiddleLocation;
             }
             else if (PerformCyanSetup.ValidLocations(Game).Contains(Game.Map.PolarSink))
             {
-                forceLocations.Add(Game.Map.PolarSink, new Battalion() { Faction = Faction, AmountOfForces = 6 });
+                target = Game.Map.PolarSink;
             }
             else
             {
-                forceLocations.Add(PerformCyanSetup.ValidLocations(Game).FirstOrDefault(l => l.IsProtectedFromStorm), new Battalion() { Faction = Faction, AmountOfForces = 6 });
+                target = PerformCyanSetup.ValidLocations(Game).FirstOrDefault(l => l.IsProtectedFromStorm);
             }
 
-            return new PerformCyanSetup(Game) { Initiator = Faction, ForceLocations = forceLocations };
+            return new PerformCyanSetup(Game) { Initiator = Faction, Target = target };
         }
 
         protected virtual TerrorPlanted DetermineTerrorPlanted()

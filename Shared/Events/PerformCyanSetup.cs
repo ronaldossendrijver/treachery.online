@@ -2,13 +2,19 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Treachery.Shared
 {
-    public class PerformCyanSetup : PlacementEvent
+    public class PerformCyanSetup : GameEvent
     {
+        public int _targetId;
+
+        [JsonIgnore]
+        public Location Target { get { return Game.Map.LocationLookup.Find(_targetId); } set { _targetId = Game.Map.LocationLookup.GetId(value); } }
+
         public PerformCyanSetup(Game game) : base(game)
         {
         }
@@ -19,8 +25,7 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (ForceLocations.Sum(fl => fl.Value.AmountOfForces) != 6) return Message.Express("Place 6 forces");
-            if (ForceLocations.Keys.Select(l => l.Territory).Distinct().Count() > 1) Message.Express("Place forces within 1 territory");
+            if (!ValidLocations(Game).Contains(Target)) return Message.Express("Invalid location");
 
             return null;
         }
