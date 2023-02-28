@@ -4,15 +4,15 @@
 @using Treachery.Shared
 @using System.Linq;
 
-@foreach (var f in Factions.Where(f => f != Faction.None))
+@foreach (var f in Ambassadors.Where(f => f != Faction.None))
 {
-    <img class="img-fluid" src="@Skin.Current.GetImageURL(f)" width="@Diameter" height="@Diameter" title=@Labels[f] style="@Shadow" />
+    <img class="img-fluid" src="@Skin.Current.GetAmbassadorImageURL(f)" width="@Diameter" height="@Diameter" title=@Skin.Current.GetAmbassadorDescription(f) style="@Shadow" />
 }
 
 @code {
 
     [Parameter]
-    public IEnumerable<Faction> Factions { get; set; } = Array.Empty<Faction>();
+    public IEnumerable<Faction> Ambassadors { get; set; } = Array.Empty<Faction>();
 
     [Parameter]
     public Dictionary<Faction, string> Labels { get; set; }
@@ -29,7 +29,7 @@
     {
         if (Labels == null)
         {
-            Labels = Factions.ToDictionary(f => f, f => Skin.Current.Describe(f));
+            Labels = Ambassadors.ToDictionary(f => f, f => Skin.Current.Describe(f));
         }
     }
 }

@@ -71,9 +71,10 @@ namespace Treachery.Client
             Game = new Game();
             UpdateStatus(Game, Player, IsPlayer);
             RegisterHandlers();
-            Browser.OnVideoData += ProcessVideoData;
+            //Browser.OnVideoData += ProcessVideoData;
         }
 
+        /*
         private void ProcessVideoData(byte[] data)
         {
             if (HostProxy != null)
@@ -81,6 +82,7 @@ namespace Treachery.Client
                 _ = HostProxy.SendVideo(Player.PositionAtTable, data);
             }
         }
+        */
 
         public bool IsDisconnected
         {
@@ -146,7 +148,7 @@ namespace Treachery.Client
             _connection.On<GameChatMessage>("HandleChatMessage", (message) => HandleChatMessage(message));
             _connection.On<int>("HandleUndo", (untilEventNr) => HandleUndo(untilEventNr));
             _connection.On<string>("HandleLoadSkin", (skin) => HandleLoadSkin(skin));
-            _connection.On<int, byte[]>("ReceiveVideo", (playerposition, data) => ReceiveVideo(playerposition, data));
+            //_connection.On<int, byte[]>("ReceiveVideo", (playerposition, data) => ReceiveVideo(playerposition, data));
             _connection.On<string, string, string>("HandleLoadGame", (state, playerName, skin) => HandleLoadGame(state, playerName, skin));
             _connection.On<int>("UpdateTimer", (value) => UpdateTimer(value));
             _connection.On<GlobalChatMessage>("ReceiveGlobalChatMessage", (message) => HandleGlobalChatMessage(message));
@@ -157,10 +159,10 @@ namespace Treachery.Client
             Timer = value;
         }
 
-        private async Task ReceiveVideo(int playerPosition, byte[] data)
+        /*private async Task ReceiveVideo(int playerPosition, byte[] data)
         {
             await Browser.PushVideoData("video" + playerPosition, data, 0.01f * CurrentVideoVolume);
-        }
+        }*/
 
         //Process information about a currently running game on treachery.online
         public IEnumerable<GameInfo> RunningGames => _availableGames.Where(gameAndDate => DateTime.Now.Subtract(gameAndDate.Value).TotalSeconds < 15).Select(gameAndDate => gameAndDate.Key);

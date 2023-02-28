@@ -133,7 +133,7 @@ namespace Treachery.Shared
                         if (YellowForceLocations.Any(kvp => Game.IsInStorm(kvp.Key))) return Message.Express("Can't move from storm");
                         if (YellowForceLocations.Any(kvp => player.ForcesIn(kvp.Key) < kvp.Value.AmountOfForces)) return Message.Express("Invalid amount of ", Player.Force);
                         if (YellowForceLocations.Any(kvp => player.SpecialForcesIn(kvp.Key) < kvp.Value.AmountOfSpecialForces)) return Message.Express("Invalid amount of ", Player.SpecialForce);
-                        if (!ValidYellowTargets(Game, player, YellowForceLocations).Contains(YellowOrOrangeTo)) return Message.Express("Invalid target location");
+                        if (!ValidYellowTargets(Game, player).Contains(YellowOrOrangeTo)) return Message.Express("Invalid target location");
                         break;
 
                     case Faction.Grey:
@@ -195,17 +195,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<Territory> ValidYellowSources(Game g, Player p) => PlacementEvent.TerritoriesWithAnyForcesNotInStorm(g, p);
 
-        public static IEnumerable<Location> ValidYellowTargets(Game g, Player p, Dictionary<Location, Battalion> forces)
-        {
-            if (forces.Sum(kvp => kvp.Value.TotalAmountOfForces) > 0)
-            {
-                return PlacementEvent.ValidTargets(g, p, forces);
-            }
-            else
-            {
-                return Array.Empty<Location>();
-            }
-        }
+        public static IEnumerable<Location> ValidYellowTargets(Game g, Player p) => g.Map.Locations(false).Where(l => l.Sector != g.SectorInStorm && l != g.Map.HiddenMobileStronghold && g.IsNotFull(p, l));
 
         public static IEnumerable<Location> ValidOrangeTargets(Game g, Player p) => Shipment.ValidShipmentLocations(g, p).Where(l => !g.ContainsConflictingAlly(p, l));
 

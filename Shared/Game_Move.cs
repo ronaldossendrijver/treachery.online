@@ -1025,7 +1025,7 @@ namespace Treachery.Shared
 
                     case TerrorType.Extortion:
 
-                        Log(e.Initiator, " gain ", Payment(5), " from ", e.Type, " in ", territory);
+                        Log(e.Initiator, " will get ", Payment(5), " from ", e.Type, " during ", MainPhase.Contemplate);
                         initiator.Extortion += 5;
                         break;
 
@@ -1501,7 +1501,7 @@ namespace Treachery.Shared
             }
         }
 
-        private bool IsFirst(Faction a, Faction b) => PlayerSequence.IsAfter(this, GetPlayer(a), GetPlayer(b));
+        private bool IsFirst(Faction a, Faction b) => !PlayerSequence.IsAfter(this, GetPlayer(a), GetPlayer(b));
 
         private void CheckIfForcesShouldBeDestroyedByAllyPresence(Player p)
         {

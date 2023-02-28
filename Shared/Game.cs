@@ -320,7 +320,7 @@ namespace Treachery.Shared
                     break;
 
                 case Phase.Extortion:
-                    ContinueMentatPhase();
+                    EndMentatPause();
                     break;
 
                 case Phase.Contemplate:
@@ -1122,12 +1122,12 @@ namespace Treachery.Shared
 
         public bool IsNotFull(Player p, Location l)
         {
-            return (!l.Territory.IsStronghold || (p.Is(Faction.Blue) && p.SpecialForcesIn(l) > 0) || NrOfOccupantsExcludingPlayer(l, p) < 2);
-        }
-
-        public bool IsNotFull(Player p, Territory t)
-        {
-            return (!t.IsStronghold || (p.Is(Faction.Blue) && p.SpecialForcesIn(t) > 0) || NrOfOccupantsExcludingPlayer(t, p) < 2);
+            return 
+                !(l.Territory.IsStronghold || l.Territory.IsHomeworld) || 
+                p.Is(Faction.Blue) && p.SpecialForcesIn(l) > 0 || 
+                p.Is(Faction.Pink) && p.HasAlly && p.AlliedPlayer.AnyForcesIn(l.Territory) > 0 ||
+                p.Ally == Faction.Pink && p.AlliedPlayer.AnyForcesIn(l.Territory) > 0 ||
+                NrOfOccupantsExcludingPlayer(l, p) < 2;
         }
 
         public static Payment Payment(int amount)

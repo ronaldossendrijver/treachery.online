@@ -105,7 +105,7 @@ namespace Treachery.Shared
         public static IEnumerable<Location> ValidSneakAttackTargets(Game g, Player p) => GetTerritory(g).Locations.Where(l => OpenDespiteAllyAndStormAndOccupancy(g, p, l));
 
         private static bool OpenDespiteAllyAndStormAndOccupancy(Game g, Player p, Location l) =>
-            g.IsNotFull(p, l.Territory) &&
+            g.IsNotFull(p, l) &&
             l.Sector != g.SectorInStorm &&
             (!p.HasAlly || p.AlliedPlayer.AnyForcesIn(l.Territory) == 0 || p.Ally == Faction.Blue && g.Applicable(Rule.AdvisorsDontConflictWithAlly) && p.AlliedPlayer.ForcesIn(l.Territory) == 0);
 

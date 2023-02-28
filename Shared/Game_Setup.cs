@@ -474,6 +474,7 @@ namespace Treachery.Shared
             }
         }
 
+        public Leader PinkLoyalLeader { get; private set; }
         private Deck<IHero> CreateAndShuffleTraitorDeck(Random random)
         {
             var result = new Deck<IHero>(TraitorsInPlay, random);
@@ -482,10 +483,10 @@ namespace Treachery.Shared
 
             if (IsPlaying(Faction.Pink) && Applicable(Rule.PinkLoyalty))
             {
-                var loyalLeader = result.Items.Where(t => t.Faction == Faction.Pink).RandomOrDefault(Random) as Leader;
-                result.Items.Remove(loyalLeader);
-                Log(loyalLeader, " is set aside as the loyal ", Faction.Pink, " leader");
-                generallySafeLeaders.Add(loyalLeader);
+                PinkLoyalLeader = result.Items.Where(t => t.Faction == Faction.Pink).RandomOrDefault(Random) as Leader;
+                result.Items.Remove(PinkLoyalLeader);
+                Log(PinkLoyalLeader, " is set aside as the loyal ", Faction.Pink, " leader");
+                generallySafeLeaders.Add(PinkLoyalLeader);
             }
 
             foreach (var p in Players)

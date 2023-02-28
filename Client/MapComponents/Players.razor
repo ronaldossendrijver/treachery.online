@@ -3,14 +3,13 @@
 --->
 
 @using Treachery.Shared
+@using System.Drawing
 @inherits MapComponent
 
 <div @ref=@element>
 
     @if (Game.CurrentPhase > Phase.SelectingFactions)
     {
-        var techtokenOrbitRadius = 1.01f * Skin.Current.MapRadius;
-
         foreach (var p in Game.Players)
         {
             var forcesToDraw = new List<MapForce>();
@@ -25,7 +24,7 @@
             var x = position.X - radiusModifier * Skin.Current.PlayerTokenRadius;
             var y = position.Y - radiusModifier * Skin.Current.PlayerTokenRadius;
             var factionTokenDiameter = (radiusModifier * Skin.Current.PlayerTokenRadius * 2);
-            var positionSector = Math.Floor((float)p.PositionAtTable * Map.NUMBER_OF_SECTORS / Game.MaximumNumberOfPlayers);
+            var positionSector = (float)Math.Floor((float)p.PositionAtTable * Map.NUMBER_OF_SECTORS / Game.MaximumNumberOfPlayers);
 
             <Circle X="@position.X" Y="@position.Y" Radius="@(1.35f * Skin.Current.PlayerTokenRadius)" FillColor="@Skin.Current.TABLEPOSITION_BACKGROUNDCOLOR" />
 
@@ -40,33 +39,32 @@
                        Popover="@Intel(p.AlliedPlayer)"/>
             }
 
-            double ttRad = (TWOPI / 180) + (4.5 - positionSector) * TWOPI / Map.NUMBER_OF_SECTORS;
+            float positionOnCircle = (TWOPI / 180) + (4.5f - positionSector) * TWOPI / Map.NUMBER_OF_SECTORS;
                         
             //Homeworlds
             foreach (var homeworld in p.Homeworlds)
             {
-                ttRad += 0.09;
+                positionOnCircle += 0.06f;
 
-                var homeworldX = Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad) * Skin.Current.MapRadius) - Skin.Current.PlayerTokenRadius;
-                var homeworldY = Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad) * Skin.Current.MapRadius) - Skin.Current.PlayerTokenRadius;
+                var homeworldXY = Pos(positionOnCircle, Skin.Current.PlayerTokenRadius);
 
-                <Image X=homeworldX Y=@homeworldY
+                <Image X=homeworldXY.X Y=@homeworldXY.Y
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
                        Popover="@HomeworldIntel(homeworld)" OnClick="e => OnClick(e, homeworld)"/>
 
-                if (h.Status.HighlightedTerritories.Any(t => t.Locations.Contains(homeworld)))
+                if (h.Status.HighlightedTerritories.Contains(homeworld.Territory))
                 {
-                    <Circle X=@(homeworldX + Skin.Current.PlayerTokenRadius) Y=@(@homeworldY + Skin.Current.PlayerTokenRadius) Radius=@Skin.Current.PlayerTokenRadius 
+                    <Circle X=@(homeworldXY.X + Skin.Current.PlayerTokenRadius) Y=@(@homeworldXY.Y + Skin.Current.PlayerTokenRadius) Radius=@Skin.Current.PlayerTokenRadius 
                             FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" StrokeWidth="1" StrokeColor="red"/>
                 }
 
                 var verticalRoomRequired = Game.BattalionsIn(homeworld).Count() * Skin.Current.FORCETOKEN_RADIUS;
-                var reservesY = homeworldY + Skin.Current.PlayerTokenRadius + 0.5f * (Skin.Current.PlayerTokenRadius - verticalRoomRequired);
+                var reservesY = homeworldXY.Y + Skin.Current.PlayerTokenRadius + 0.5f * (Skin.Current.PlayerTokenRadius - verticalRoomRequired);
 
                 foreach (var b in Game.BattalionsIn(homeworld)) {
 
-                    var reservesX = homeworldX + 0.8f * Skin.Current.PlayerTokenRadius;
+                    var reservesX = homeworldXY.X + 0.8f * Skin.Current.PlayerTokenRadius;
 
                     if (b.AmountOfForces > 0)
                     {
@@ -81,17 +79,12 @@
 
                     reservesY += Skin.Current.FORCETOKEN_RADIUS;
                 }
-
-                
             }
-
-            ttRad += 0.03;
 
             foreach (var tt in p.TechTokens)
             {
-                ttRad += (TWOPI / 90);
-                <Image X="@(Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad) * techtokenOrbitRadius) - Skin.Current.PlayerTokenRadius)"
-                       Y="@(Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad) * techtokenOrbitRadius) - Skin.Current.PlayerTokenRadius)"
+                positionOnCircle += (TWOPI / 90);
+                <Image XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(tt)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                        Popover="@Popup.Get(tt)" PopoverStyle=""/>
@@ -99,18 +92,15 @@
 
             foreach (var skilledLeader in Game.GetSkilledLeaders(p).Where(l => Game.IsInFrontOfShield(l))) {
 
-                ttRad += (TWOPI / 90);
-                var ttx = Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad) * techtokenOrbitRadius) - Skin.Current.PlayerTokenRadius;
-                var tty = Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad) * techtokenOrbitRadius) - Skin.Current.PlayerTokenRadius;
+                positionOnCircle += (TWOPI / 90);
 
-                <Image X="@(ttx)"
-                        Y="@(tty)"
+                <Image XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
                         Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                         Src="@Skin.Current.GetImageURL(skilledLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                         Popover="@Popup.Get(skilledLeader, h.Game.Skill(skilledLeader))" PopoverStyle=""/>
 
                 <MapText ToShow="@Skin.Current.Describe(Game.Skill(skilledLeader))"
-                        X="@(ttx + Skin.Current.PlayerTokenRadius)" Y="@(tty + Skin.Current.PlayerTokenRadius)"
+                        XY=@Pos(positionOnCircle)
                         Font="@Skin.Current.SKILL_FONT" FontColor="@Skin.Current.SKILL_FONTCOLOR"
                         BorderWidth="@Skin.Current.SKILL_FONT_BORDERWIDTH" BorderColor="@Skin.Current.SKILL_FONT_BORDERCOLOR"
                         Align="@TextAlignment.Center" MaxWidth="2.2f * Skin.Current.PlayerTokenRadius"
@@ -119,55 +109,63 @@
 
             if (p.Faction == Faction.White && Game.LatestRevealedNoFieldValue >= 0)
             {
-                ttRad += (TWOPI / 90);
-                var ttx = Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad)) * techtokenOrbitRadius - Skin.Current.FORCETOKEN_RADIUS;
-                var tty = Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad)) * techtokenOrbitRadius - Skin.Current.FORCETOKEN_RADIUS;
+                positionOnCircle += (TWOPI / 90);
 
-                <Image X="@(ttx)" Y="@(tty)" Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS) Src="@Skin.Current.FactionSpecialForceImage_URL[Faction.White]" 
+                <Image XY=@Pos(positionOnCircle, Skin.Current.FORCETOKEN_RADIUS) Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS) Src="@Skin.Current.FactionSpecialForceImage_URL[Faction.White]"
                        ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
                        Popover="@Skin.Current.Format("Latest revealed No-Field: {0}", Game.LatestRevealedNoFieldValue)"/>
 
                 <MapText ToShow="@Game.LatestRevealedNoFieldValue.ToString()"
-                         X="@(ttx + Skin.Current.FORCETOKEN_RADIUS)" Y="@(tty + Skin.Current.FORCETOKEN_RADIUS)"
+                         XY=@Pos(positionOnCircle)
                          Font="@Skin.Current.FORCETOKEN_FONT" FontColor="@Skin.Current.FORCETOKEN_FONTCOLOR"
                          BorderWidth="@Skin.Current.FORCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.FORCETOKEN_FONT_BORDERCOLOR"
                          Align="@TextAlignment.Center"/>
             }
 
-            var totalSpiceToReceiveLater = p.Bribes + p.BankedResources;
+            if (p.Faction == Faction.Pink && Game.PinkLoyalLeader != null)
+            {
+                positionOnCircle += (TWOPI / 90);
+
+                <Image XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
+                       Diameter=@(2 * Skin.Current.PlayerTokenRadius)
+                       Src="@Skin.Current.GetImageURL(Game.PinkLoyalLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
+            Popover="@Skin.Current.Format("{0} is Loyal to {1}", Game.PinkLoyalLeader, Faction.Pink)" PopoverStyle="" />
+            }
+
+            var totalSpiceToReceiveLater = p.Bribes + p.BankedResources + p.Extortion;
 
             if (totalSpiceToReceiveLater > 0)
             {
-                ttRad += (TWOPI / 90);
-                var ttx = Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad)) * techtokenOrbitRadius - Skin.Current.FORCETOKEN_RADIUS;
-                var tty = Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad)) * techtokenOrbitRadius - Skin.Current.FORCETOKEN_RADIUS;
+                positionOnCircle += (TWOPI / 90);
+                string tooltip = Skin.Current.Format("To be collected during {0}", MainPhase.Contemplate);
 
-                string tooltip = "Bribes";
-
-                <Image X=ttx Y=tty Width=@(2 * Skin.Current.FORCETOKEN_RADIUS) Height=@(2 * Skin.Current.FORCETOKEN_RADIUS) 
+                <Image 
+                    XY=@Pos(positionOnCircle, Skin.Current.FORCETOKEN_RADIUS) 
+                    Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS)
                     Src="@Skin.Current.Harvester_URL"
                     Title=@tooltip
                     BackgroundCircleColor="#black"
                     BackgroundCircleDiameter=@(1.5f * Skin.Current.FORCETOKEN_RADIUS)
                     ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" />
 
-                <MapText ToShow=@totalSpiceToReceiveLater.ToString()
-                     X=@(ttx + Skin.Current.FORCETOKEN_RADIUS) Y=@(tty + Skin.Current.FORCETOKEN_RADIUS)
-                     Font="@Skin.Current.RESOURCETOKEN_FONT" FontColor="@Skin.Current.RESOURCETOKEN_FONTCOLOR"
-                     Title=@tooltip
-                     BorderWidth="@Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
-                     Align="@TextAlignment.Center"/>
+                <MapText 
+                    ToShow=@totalSpiceToReceiveLater.ToString()
+                    XY=@Pos(positionOnCircle)
+                    Font="@Skin.Current.RESOURCETOKEN_FONT" FontColor="@Skin.Current.RESOURCETOKEN_FONTCOLOR"
+                    Title=@tooltip
+                    BorderWidth="@Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
+                    Align="@TextAlignment.Center"/>
             }
 
             if (p.ResourcesAfterBidding > 0)
             {
-                ttRad += (TWOPI / 90);
-                var ttx = Skin.Current.PlanetCenter.X + (float)(Math.Cos(ttRad)) * techtokenOrbitRadius - Skin.Current.FORCETOKEN_RADIUS;
-                var tty = Skin.Current.PlanetCenter.Y + (float)(Math.Sin(ttRad)) * techtokenOrbitRadius - Skin.Current.FORCETOKEN_RADIUS;
-
+                positionOnCircle += (TWOPI / 90);
                 string tooltip = Skin.Current.Format("Subbed {0}", Concept.Resource);
 
-                <Image X=ttx Y=tty Width=@(2 * Skin.Current.FORCETOKEN_RADIUS) Height=@(2 * Skin.Current.FORCETOKEN_RADIUS) Popover=@tooltip
+                <Image 
+                    XY=@Pos(positionOnCircle, Skin.Current.FORCETOKEN_RADIUS) 
+                    Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS) 
+                    Popover=@tooltip
                     Src="@Skin.Current.Harvester_URL"
                     Title=@tooltip
                     BackgroundCircleColor="black"
@@ -175,11 +173,11 @@
                     ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" />
 
                 <MapText ToShow=@tooltip
-                     X=@(ttx + Skin.Current.FORCETOKEN_RADIUS) Y=@(tty + Skin.Current.FORCETOKEN_RADIUS)
-                     Font="@Skin.Current.RESOURCETOKEN_FONT" FontColor="@Skin.Current.RESOURCETOKEN_FONTCOLOR"
-                     Title=@tooltip
-                     BorderWidth="@Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
-                     Align="@TextAlignment.Center"/>
+                    XY=@Pos(positionOnCircle)
+                    Font="@Skin.Current.RESOURCETOKEN_FONT" FontColor="@Skin.Current.RESOURCETOKEN_FONTCOLOR"
+                    Title=@tooltip
+                    BorderWidth="@Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
+                    Align="@TextAlignment.Center"/>
             }
 
             foreach (var f in forcesToDraw)
@@ -263,4 +261,13 @@
         internal int Amount;
         internal Faction Faction;
     }
+
+    private PointF Pos(float positionOnCircle, float radiusOfToken = 0) {
+
+        var mapradius = 1.05f * Skin.Current.MapRadius;
+        return new PointF(
+            X = Skin.Current.PlanetCenter.X + (float)(Math.Cos(positionOnCircle) * mapradius) - radiusOfToken, 
+            Y = Skin.Current.PlanetCenter.Y + (float)(Math.Sin(positionOnCircle) * mapradius) - radiusOfToken);
+    }
+    
 }

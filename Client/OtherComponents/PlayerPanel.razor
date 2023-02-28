@@ -131,7 +131,7 @@
 
                         @if (ShownPlayer.Faction == Faction.Pink && h.CurrentPhase > Phase.BluePredicting)
                         {
-                            <div>Ambassadors: <FactionsComponent Diameter=30 Factions=@ShownPlayer.Ambassadors Labels=@ShownPlayer.Ambassadors.ToDictionary(f => f, f => Skin.Current.GetAmbassadorDescription(f)) /></div>
+                            <div>Ambassadors: <AmbassadorsComponent Diameter=30 Ambassadors=@ShownPlayer.Ambassadors Labels=@ShownPlayer.Ambassadors.ToDictionary(f => f, f => Skin.Current.GetAmbassadorDescription(f)) /></div>
                         }
 
                         @if (ShownPlayer.Faction == Faction.Cyan && h.CurrentPhase > Phase.BluePredicting)

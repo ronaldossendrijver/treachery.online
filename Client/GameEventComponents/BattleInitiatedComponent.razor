@@ -11,7 +11,7 @@
     <Header>Select whom and where to battle</Header>
     <Body>
 
-        <SelectComponent @bind-Value="battle" Values=@battles ValueLabels=@battles.Select(b => Skin.Current.Format("{0} in {1}", b.Faction, b.Territory))/>
+        <SelectComponent @bind-Value="battle" Values=@battles ValueLabels=@battles.Select(b => Label(b))/>
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Initiate Battle" ConfirmError=@Validation />
 
     </Body>
@@ -37,4 +37,6 @@
     }
 
     protected override BattleInitiated ConfirmedResult => new BattleInitiated(Game) { Initiator = Faction, Territory = battle.Territory, Target = battle.Faction };
+
+    private string Label(Fight b) => Skin.Current.Format("{0} {1} {2}", b.Faction, b.Territory.IsHomeworld ? "on" : "in", b.Territory);
 }

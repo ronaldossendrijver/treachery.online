@@ -96,9 +96,9 @@ namespace Treachery.Shared
 
         public LeaderSkill Skill(IHero l)
         {
-            if (l != null && LeaderState.ContainsKey(l))
+            if (l != null && LeaderState.TryGetValue(l, out var state))
             {
-                return LeaderState[l].Skill;
+                return state.Skill;
             }
             else
             {

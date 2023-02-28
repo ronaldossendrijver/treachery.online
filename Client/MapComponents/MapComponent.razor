@@ -4,36 +4,34 @@
 
 @using Treachery.Shared
 @using System.Globalization;
+@using System.Drawing;
 
 @code {
 
     [Parameter]
     public Handler h { get; set; }
 
+    private float _x;
     [Parameter]
     public float X { get; set; }
 
+    private float _y;
     [Parameter]
     public float Y { get; set; }
 
+    private PointF _xy;
     [Parameter]
-    public float Diameter {
+    public PointF XY { get; set; }
 
-        get {
+    private float _diameter;
+    [Parameter]
+    public float Diameter { get; set; }
 
-            return Width;
-        }
-
-        set {
-
-            Width = value;
-            Height = value;
-        }
-    }
-
+    private float _width;
     [Parameter]
     public float Width { get; set; }
 
+    private float _height;
     [Parameter]
     public float Height { get; set; }
 
@@ -42,6 +40,41 @@
 
     [Parameter]
     public string PopoverStyle { get; set; } = "background-color:black;text-align:center;border:1px solid white;padding:3px 3px 3px 3px;filter:drop-shadow(-5px 5px 2px #000000AA);";
+
+    protected override void OnParametersSet()
+    {
+        if (Diameter != _diameter)
+        {
+            _diameter = Diameter;
+            _width = _diameter;
+            Width = _diameter;
+            _height = _diameter;
+            Height = _diameter;
+        }
+        else if (Width != _width || Height != _height)
+        {
+            _width = Width;
+            _height = Height;
+            _diameter = Math.Max(_width, _height);
+            Diameter = _diameter;
+        }
+
+        if (XY != _xy)
+        {
+            _xy = XY;
+            _x = _xy.X;
+            X = _xy.X;
+            _y = _xy.Y;
+            Y = _xy.Y;
+        }
+        else if (X != _x || Y != _y)
+        {
+            _x = X;
+            _y = Y;
+            _xy = new PointF(_x, _y);
+            XY = _xy;
+        }
+    }
 
     protected const float TWOPI = 6.2831853072f;
 
@@ -73,23 +106,23 @@
         return (nextId++).ToString();
     }
 
-    protected static bool Near(Point p, int x, int y, int distance)
+    protected static bool Near(PointF p, int x, int y, int distance)
     {
         return Math.Abs(p.X - x) < distance && Math.Abs(p.Y - y) < distance;
     }
 
-    protected static bool Near(Point p, Point p2, int distance)
+    protected static bool Near(PointF p, PointF p2, int distance)
     {
         return Math.Abs(p.X - p2.X) < distance && Math.Abs(p.Y - p2.Y) < distance;
     }
 
-    protected static Point PlayerTokenPosition(Game game, int positionAtTable)
+    protected static PointF PlayerTokenPosition(Game game, int positionAtTable)
     {
         var positionSector = Math.Floor((float)positionAtTable * Map.NUMBER_OF_SECTORS / game.MaximumNumberOfPlayers);
         double angle = (4.5 - positionSector) * TWOPI / Map.NUMBER_OF_SECTORS;
-        var x = Skin.Current.PlanetCenter.X + (int)(Skin.Current.MapRadius * Math.Cos(angle));
-        var y = Skin.Current.PlanetCenter.Y + (int)(Skin.Current.MapRadius * Math.Sin(angle));
-        return new Point(x, y);
+        var x = Skin.Current.PlanetCenter.X + (float)(Skin.Current.MapRadius * Math.Cos(angle));
+        var y = Skin.Current.PlanetCenter.Y + (float)(Skin.Current.MapRadius * Math.Sin(angle));
+        return new PointF(x, y);
     }
 
     protected string PopoverTemplate => string.Format("<div class=\"popover\" role=\"tooltip\" style=\"{0}\"><div class=\"arrow\"></div><h3 class=\"popover-header p-0\"></h3><div class=\"popover-body p-0\"></div></div>", PopoverStyle);
