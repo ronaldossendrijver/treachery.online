@@ -1616,7 +1616,7 @@ namespace Treachery.Shared
         private void CheckIfCyanGainsVidal()
         {
             var cyan = GetPlayer(Faction.Cyan);
-            if (cyan != null)
+            if (cyan != null && !Prevented(FactionAdvantage.CyanGainingVidal))
             {
                 var vidal = Vidal;
 

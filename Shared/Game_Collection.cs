@@ -131,20 +131,21 @@ namespace Treachery.Shared
         {
             if (Applicable(Rule.IncreasedResourceFlow) || Applicable(Rule.ResourceBonusForStrongholds))
             {
-                foreach (var playerInArrakeen in Players.Where(p => p.Controls(this, Map.Arrakeen, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
+                foreach (var player in Players)
                 {
-                    Collect(playerInArrakeen.Faction, Map.Arrakeen.Territory, 2);
+                    GetResourcesFrom(Map.Arrakeen, player, 2);
+                    GetResourcesFrom(Map.Carthag, player, 2);
+                    GetResourcesFrom(Map.TueksSietch, player, 1);
                 }
+            }
+        }
 
-                foreach (var playerInCarthag in Players.Where(p => p.Controls(this, Map.Carthag, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
-                {
-                    Collect(playerInCarthag.Faction, Map.Carthag.Territory, 2);
-                }
-
-                foreach (var playerInTueksSietch in Players.Where(p => p.Controls(this, Map.TueksSietch, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
-                {
-                    Collect(playerInTueksSietch.Faction, Map.TueksSietch.Territory, 1);
-                }
+        private void GetResourcesFrom(Location stronghold, Player player, int amount)
+        {
+            if (player.Controls(this, stronghold, Applicable(Rule.ContestedStongholdsCountAsOccupied)) && 
+                !(player.Is(Faction.Pink) && Prevented(FactionAdvantage.PinkCollection) && player.HasAlly && !player.AlliedPlayer.Controls(this, Map.Arrakeen, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
+            {
+                Collect(player.Faction, Map.Arrakeen.Territory, amount);
             }
         }
 

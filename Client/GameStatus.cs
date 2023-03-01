@@ -80,6 +80,7 @@ namespace Treachery.Client
 
                 Phase.Thumper or
                 Phase.BeginningOfCharity or
+                Phase.BeginningOfBidding or
                 Phase.BeginningOfResurrection or
                 Phase.BeginningOfCollection => Status(
                     Express("You may now continue with the ", game.CurrentMainPhase, " phase..."),

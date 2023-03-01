@@ -225,20 +225,19 @@ namespace Treachery.Shared
 
         public float Dial(Game g, Faction opponent)
         {
+            var pinkBattleContribution = !g.Prevented(FactionAdvantage.PinkOccupation) ? g.CurrentPinkBattleContribution : 0;
             if (Initiator != Faction.Pink || Game.CurrentPinkOrAllyFighter == Faction.None)
             {
-                return ForceValue(g, Initiator, opponent, Forces, SpecialForces, ForcesAtHalfStrength, SpecialForcesAtHalfStrength) + g.CurrentPinkBattleContribution;
+                return ForceValue(g, Initiator, opponent, Forces, SpecialForces, ForcesAtHalfStrength, SpecialForcesAtHalfStrength) + pinkBattleContribution;
             }
             else
             {
-                return ForceValue(g, Player.Ally, opponent, Forces, SpecialForces, ForcesAtHalfStrength, SpecialForcesAtHalfStrength) + g.CurrentPinkBattleContribution;
+                return ForceValue(g, Player.Ally, opponent, Forces, SpecialForces, ForcesAtHalfStrength, SpecialForcesAtHalfStrength) + pinkBattleContribution;
             }
         }
 
-        public static Player DetermineForceSupplier(Game g, Player playerThatFights)
-        {
-            return playerThatFights.Is(Faction.Pink) && g.CurrentPinkOrAllyFighter != Faction.None ? playerThatFights.AlliedPlayer : playerThatFights;
-        }
+        public static Player DetermineForceSupplier(Game g, Player playerThatFights) =>
+            playerThatFights.Is(Faction.Pink) && g.CurrentPinkOrAllyFighter != Faction.None && !g.Prevented(FactionAdvantage.PinkOccupation) ? playerThatFights.AlliedPlayer : playerThatFights;
 
         public static float ForceValue(Game g, Faction player, Faction opponent, int Forces, int SpecialForces, int ForcesAtHalfStrength, int SpecialForcesAtHalfStrength)
         {
@@ -262,10 +261,8 @@ namespace Treachery.Shared
                 specialForceNoSpiceFactor * specialForceStrength * SpecialForcesAtHalfStrengthAdjustedForCunning;
         }
 
-        public static bool MustPayForForcesInBattle(Game g, Player p)
-        {
-            return g.Applicable(Rule.AdvancedCombat) && (g.Prevented(FactionAdvantage.YellowNotPayingForBattles) || p.Faction != Faction.Yellow);
-        }
+        public static bool MustPayForForcesInBattle(Game g, Player p) =>
+            g.Applicable(Rule.AdvancedCombat) && (g.Prevented(FactionAdvantage.YellowNotPayingForBattles) || p.Faction != Faction.Yellow);
 
         public static bool MessiahMayBeUsedInBattle(Game g, Player p) => MessiahAvailableForBattle(g, p);
 

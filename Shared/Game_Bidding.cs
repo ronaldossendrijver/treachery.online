@@ -798,6 +798,8 @@ namespace Treachery.Shared
                     ModifyIncomeBasedOnThresholdOrOccupation(receiver, ref receiverProfit);
                     receiver.Resources += receiverProfit;
                     receiver.ResourcesAfterBidding += bidRedContributionAmount;
+                    message = MessagePart.Express(" → ", receiver, " get ", Payment(receiverProfit), 
+                        MessagePart.ExpressIf(bidRedContributionAmount > 0, " immediately and ", Payment(bidRedContributionAmount), " at the end of the bidding phase"));
 
                     if (receiverProfit >= 5)
                     {
