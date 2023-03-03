@@ -301,7 +301,7 @@ namespace Treachery.Shared
 
         protected bool AllyDoesntBlock(Territory t)
         {
-            return Ally == Faction.None || Faction == Faction.Pink || Ally == Faction.Pink || AlliedPlayer.ForcesIn(t) == 0;
+            return Ally == Faction.None || Faction == Faction.Pink || Ally == Faction.Pink || AlliedPlayer.AnyForcesIn(t) == 0;
         }
 
         protected bool AllyDoesntBlock(Location l)

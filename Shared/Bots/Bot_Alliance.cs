@@ -85,7 +85,7 @@ namespace Treachery.Shared
 
         protected virtual NexusCardDrawn DetermineNexusCardDrawn()
         {
-            if (NexusCardDrawn.MayDraw(this))
+            if (NexusCardDrawn.MayDraw(Game, this))
             {
                 if (Nexus == Faction.None ||
                     Faction == Faction.Red && Nexus == Faction.Red && !Game.Applicable(Rule.RedSpecialForces) ||

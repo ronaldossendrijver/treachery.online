@@ -827,9 +827,9 @@ namespace Treachery.Shared
                     break;
 
                 case Faction.Pink:
-                    var pink = GetPlayer(Faction.Pink);
-                    pink.ForcesToReserves(e.PinkTerritory);
-                    LogNexusPlayed(e, "return all ", Faction.Pink, " forces in ", e.PinkTerritory, " to reserves");
+                    var pinksAlly = GetAlliedPlayer(Faction.Pink);
+                    pinksAlly.ForcesToReserves(e.PinkTerritory);
+                    LogNexusPlayed(e, "return all ", pinksAlly.Faction, " forces in ", e.PinkTerritory, " to reserves");
                     FlipBeneGesseritWhenAloneOrWithPinkAlly();
                     break;
 

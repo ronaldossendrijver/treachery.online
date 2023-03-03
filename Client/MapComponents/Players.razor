@@ -79,6 +79,8 @@
 
                     reservesY += Skin.Current.FORCETOKEN_RADIUS;
                 }
+
+                positionOnCircle += 0.01f;
             }
 
             foreach (var tt in p.TechTokens)
@@ -88,6 +90,16 @@
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(tt)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                        Popover="@Popup.Get(tt)" PopoverStyle=""/>
+            }
+
+            if (p.Faction == Faction.Pink && Game.PinkLoyalLeader != null)
+            {
+                positionOnCircle += (TWOPI / 90);
+
+                <Image XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
+                       Diameter=@(2 * Skin.Current.PlayerTokenRadius)
+                       Src="@Skin.Current.GetImageURL(Game.PinkLoyalLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
+                       Popover="@Skin.Current.Format("{0} is Loyal to {1}", Game.PinkLoyalLeader, Faction.Pink)" PopoverStyle="" />
             }
 
             foreach (var skilledLeader in Game.GetSkilledLeaders(p).Where(l => Game.IsInFrontOfShield(l))) {
@@ -120,16 +132,6 @@
                          Font="@Skin.Current.FORCETOKEN_FONT" FontColor="@Skin.Current.FORCETOKEN_FONTCOLOR"
                          BorderWidth="@Skin.Current.FORCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.FORCETOKEN_FONT_BORDERCOLOR"
                          Align="@TextAlignment.Center"/>
-            }
-
-            if (p.Faction == Faction.Pink && Game.PinkLoyalLeader != null)
-            {
-                positionOnCircle += (TWOPI / 90);
-
-                <Image XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
-                       Diameter=@(2 * Skin.Current.PlayerTokenRadius)
-                       Src="@Skin.Current.GetImageURL(Game.PinkLoyalLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
-            Popover="@Skin.Current.Format("{0} is Loyal to {1}", Game.PinkLoyalLeader, Faction.Pink)" PopoverStyle="" />
             }
 
             var totalSpiceToReceiveLater = p.Bribes + p.BankedResources + p.Extortion;

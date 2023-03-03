@@ -559,8 +559,11 @@ namespace Treachery.Shared
 
                 foreach (var fl in forceLocations.Where(fl => fl.Key.Territory == fromTerritory))
                 {
-                    PerformMoveFromLocation(initiator, fl.Key, fl.Value, evt.To, ref totalNumberOfForces, ref totalNumberOfSpecialForces);
-                    CheckSandmaster(initiator, evt.To, dist, fl);
+                    if (Version <= 150 || fl.Value.TotalAmountOfForces > 0)
+                    {
+                        PerformMoveFromLocation(initiator, fl.Key, fl.Value, evt.To, ref totalNumberOfForces, ref totalNumberOfSpecialForces);
+                        CheckSandmaster(initiator, evt.To, dist, fl);
+                    }
                 }
 
                 if (initiator.Is(Faction.Blue))
@@ -568,7 +571,10 @@ namespace Treachery.Shared
                     initiator.FlipForces(evt.To, wasOccupiedBeforeMove && asAdvisors);
                 }
 
-                LogMove(initiator, fromTerritory, evt.To, totalNumberOfForces, totalNumberOfSpecialForces, wasOccupiedBeforeMove && asAdvisors, byCaravan);
+                if (totalNumberOfForces > 0 || totalNumberOfSpecialForces > 0)
+                {
+                    LogMove(initiator, fromTerritory, evt.To, totalNumberOfForces, totalNumberOfSpecialForces, wasOccupiedBeforeMove && asAdvisors, byCaravan);
+                }
             }
 
             RecentMilestones.Add(Milestone.Move);
@@ -704,18 +710,26 @@ namespace Treachery.Shared
             {
                 AmbassadorsOnPlanet.Remove(territory);
 
+                var pink = GetPlayer(Faction.Pink);
+
                 if (ambassadorFaction == Faction.Blue)
                 {
-                    Log("The ", ambassadorFaction, " Ambassador is removed from the game");
                     ambassadorFaction = e.BlueSelectedFaction;
-                    UnassignedAmbassadors.Items.Remove(e.BlueSelectedFaction);
+                    Log("The ", ambassadorFaction, " Ambassador is removed from the game");
+                }
+                else if (ambassadorFaction == Faction.Pink)
+                {
+                    pink.Ambassadors.Add(ambassadorFaction);
+                    Log("The ", ambassadorFaction, " Ambassador returns to supply");
+                }
+                else
+                {
+                    AmbassadorsSetAside.Add(ambassadorFaction);
+                    Log("The ", ambassadorFaction, " Ambassador is set aside");
                 }
 
-                AmbassadorsSetAside.Add(ambassadorFaction);
-
                 HandleAmbassador(e, e.Initiator, ambassadorFaction, victim, territory);
-
-                var pink = GetPlayer(Faction.Pink);
+                                
                 if (!pink.Ambassadors.Union(AmbassadorsOnPlanet.Values).Any(f => f != Faction.Pink))
                 {
                     AssignRandomAmbassadors(pink);
@@ -1159,7 +1173,6 @@ namespace Treachery.Shared
                 }
                 else if (HasLowThreshold(Faction.Blue))
                 {
-                    LogPreventionByLowThreshold(FactionAdvantage.BlueAccompanies);
                     BlueMayAccompany = false;
                 }
             }
@@ -1641,7 +1654,7 @@ namespace Treachery.Shared
             get
             {
                 var playerWithVidal = Players.FirstOrDefault(p => p.Leaders.Any(l => l.HeroType == HeroType.Vidal));
-                return playerWithVidal != null && (playerWithVidal.Is(Faction.Black) || playerWithVidal.Is(Faction.Purple));
+                return playerWithVidal != null && (CapturedLeaders.Keys.Any(h => h.HeroType == HeroType.Vidal) || playerWithVidal.Is(Faction.Purple));
             }
         }
 

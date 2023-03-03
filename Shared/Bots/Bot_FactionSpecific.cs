@@ -22,7 +22,7 @@ namespace Treachery.Shared
 
                 var intendedPermission = Resources > 10 || WinningOpponentsIWishToAttack(99, true).Any() ? ShipmentPermission.CrossAtOrangeRates : ShipmentPermission.CrossAtNormalRates;
                 var toAllow = SetShipmentPermission.ValidTargets(Game, this).FirstOrDefault(f => f != Ally && !IsWinningOpponent(f) && (!Game.ShipmentPermissions.TryGetValue(f, out var currentpermission) || currentpermission != intendedPermission));
-                return new SetShipmentPermission(Game) { Initiator = Faction, Target = toAllow, Permission = intendedPermission };
+                if (toAllow != Faction.None) return new SetShipmentPermission(Game) { Initiator = Faction, Target = toAllow, Permission = intendedPermission };
             }
 
             return null;
@@ -1143,12 +1143,34 @@ namespace Treachery.Shared
 
         protected virtual AmbassadorPlaced DetermineAmbassadorPlaced()
         {
-            if (Game.AmbassadorsPlacedThisTurn == 0 || Resources > 6 + Game.AmbassadorsPlacedThisTurn)
+            if (Resources > 1 && Game.AmbassadorsPlacedThisTurn == 0 || Resources > 6 + Game.AmbassadorsPlacedThisTurn)
             {
-                //This is for now just random
-                var faction = AmbassadorPlaced.ValidAmbassadors(this).RandomOrDefault();
+                var stronghold = TerrorPlanted.ValidStrongholds(Game, this).Where(s => AnyForcesIn(s) > 0).RandomOrDefault();
+                if (stronghold == null && HasAlly) stronghold = TerrorPlanted.ValidStrongholds(Game, this).Where(s => AlliedPlayer.AnyForcesIn(s) > 0).RandomOrDefault();
+                bool avoidEntering = stronghold != null;
 
-                return new AmbassadorPlaced(Game) { Initiator = Faction, Faction = faction, Stronghold = TerrorPlanted.ValidStrongholds(Game, this).First() };
+                if (stronghold == null) stronghold = TerrorPlanted.ValidStrongholds(Game, this).Where(s => Vacant(s)).RandomOrDefault();
+                if (stronghold == null) stronghold = TerrorPlanted.ValidStrongholds(Game, this).RandomOrDefault();
+
+                Faction faction = Faction.None;
+                var availableAmbassadors = AmbassadorPlaced.ValidAmbassadors(this).ToList();
+                if (avoidEntering)
+                {
+                    if (faction == Faction.None && availableAmbassadors.Contains(Faction.Black)) faction = Faction.Black;
+                    if (faction == Faction.None && availableAmbassadors.Contains(Faction.Green)) faction = Faction.Green;
+                }
+
+                if (faction == Faction.None && availableAmbassadors.Contains(Faction.Purple) && Leaders.Count(l => !Game.IsAlive(l)) >= 2 && ForcesKilled >= 4) faction = Faction.Purple;
+                if (faction == Faction.None && availableAmbassadors.Contains(Faction.Orange) && TreacheryCards.Any(c => c.IsWeapon) && TreacheryCards.Any(c => c.IsDefense)) faction = Faction.Orange;
+                if (faction == Faction.None && availableAmbassadors.Contains(Faction.Brown) && TreacheryCards.Count(c => CardQuality(c, this) <= 1) >= 2) faction = Faction.Brown;
+                if (faction == Faction.None && availableAmbassadors.Contains(Faction.Grey) && TreacheryCards.Any(c => CardQuality(c, this) <= 1)) faction = Faction.Grey;
+                if (faction == Faction.None && availableAmbassadors.Contains(Faction.White) && HasRoomForCards && Resources > 6) faction = Faction.White;
+                if (faction == Faction.None && availableAmbassadors.Contains(Faction.Red) && Resources <= 4) faction = Faction.Red;
+                if (faction == Faction.None && availableAmbassadors.Contains(Faction.Yellow) && DetermineMovedBatallion(false) != null) faction = Faction.Yellow;
+                if (faction == Faction.None && availableAmbassadors.Contains(Faction.Pink) && !HasAlly) faction = Faction.Pink;
+                if (faction == Faction.None) faction = AmbassadorPlaced.ValidAmbassadors(this).RandomOrDefault();
+
+                return new AmbassadorPlaced(Game) { Initiator = Faction, Faction = faction, Stronghold = stronghold };
             }
             else
             {

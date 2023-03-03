@@ -1488,7 +1488,7 @@ namespace Treachery.Shared
 
                 if (!IsAlive(assassinated) || !winner.Leaders.Contains(assassinated))
                 {
-                    Log(e.Initiator, " reveal ", assassinated, " as one of their traitors, but there is no one to kill...");
+                    Log(e.Initiator, " reveal ", assassinated, " as their target of assassination...");
                 }
                 else
                 {

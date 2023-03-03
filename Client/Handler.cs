@@ -765,19 +765,23 @@ namespace Treachery.Client
             }
             else if (phase == MainPhase.Resurrection || phase == MainPhase.Charity || e is AllyPermission || e is DealOffered || e is SetShipmentPermission)
             {
-                return 400;
+                return 300;
             }
             else if (e is Bid)
             {
-                return 1500;
+                return 800;
             }
-            else if (phase == MainPhase.Battle || phase == MainPhase.ShipmentAndMove)
+            else if (phase == MainPhase.ShipmentAndMove)
             {
-                return 5000;
+                return 3200;
+            }
+            else if (phase == MainPhase.Battle)
+            {
+                return 3200;
             }
             else
             {
-                return 2000;
+                return 1600;
             }
         }
 

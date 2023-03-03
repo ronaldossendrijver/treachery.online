@@ -18,7 +18,7 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (!Passed && !MayDraw(Player)) return Message.Express("You're not allowed to draw a Nexus Card");
+            if (!Passed && !MayDraw(Game, Player)) return Message.Express("You're not allowed to draw a Nexus Card");
             return null;
         }
 
@@ -32,9 +32,9 @@ namespace Treachery.Shared
             return Message.Express(Initiator, MessagePart.ExpressIf(Passed, " don't"), " draw a Nexus card");
         }
 
-        public static bool MayDraw(Player p)
+        public static bool MayDraw(Game g, Player p)
         {
-            return p.Nexus == Faction.None || p.Faction == p.Nexus;
+            return !g.FactionsThatDrewNexusCard.Contains(p.Faction) || p.Faction == p.Nexus;
         }
 
         public static bool Applicable(Game g, Player p)

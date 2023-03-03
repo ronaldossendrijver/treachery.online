@@ -12,7 +12,7 @@
     <Header>You may now place a Terror Token in a Stronghold</Header>
     <Body>
 
-        @if (TerrorPlanted.MayRemoveTokens(Player))
+        @if (TerrorPlanted.MayRemoveTokens(Game, Player))
         {
             <RadioComponent Value=_remove Values="new bool[] {false, true}" ValueLabels=@ValueLabels/>
         }
@@ -33,7 +33,7 @@
             <Label>Stronghold</Label>
         </SelectComponent>
 
-        <ButtonRowComponent Pass="Pass" Confirm="Confirm" ConfirmText="Place Terror" ConfirmError=@Validation />
+        <ButtonRowComponent Pass="Pass" Confirm="Confirm" ConfirmText=@ConfirmLabel ConfirmError=@Validation />
 
     </Body>
 
@@ -70,7 +70,7 @@
         h.OnLocationSelected -= HandleLocationSelected;
     }
 
-    private string[] ValueLabels => new string[] { "Place or move a token", "Remove a token" };
+    private string[] ValueLabels => new string[] { "Place or move a token", Skin.Current.Format("Remove a token to gain 4 ", Concept.Resource) };
 
     private string ConfirmLabel => _remove ? "Remove token" : (Game.UnplacedTerrorTokens.Contains(_type) ? "Place token" : "Move token");
 }

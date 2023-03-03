@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace Treachery.Shared
 {
@@ -33,7 +34,7 @@ namespace Treachery.Shared
         private void StartCollection()
         {
             CollectResourcesFromTerritories();
-            CollectResourcesFromStrongholds();
+            CollectResourcesFromStrongholdsAndHomeworlds();
             Enter(CollectedResourcesToBeDivided.Any(), Phase.DividingCollectedResources, EndCollectionMainPhase);
         }
 
@@ -83,7 +84,7 @@ namespace Treachery.Shared
             Log(faction, " collect ", Payment(amount), " from ", from);
             GetPlayer(faction).Resources += amount;
             if (faction == Faction.Yellow) ResourcesCollectedByYellow += amount;
-            if (faction == Faction.Black && !from.IsStronghold && !from.IsProtectedFromWorm) ResourcesCollectedByBlackFromDesertOrHomeworld += amount;
+            if (faction == Faction.Black && !from.IsStronghold && !from.IsHomeworld && !from.IsProtectedFromWorm) ResourcesCollectedByBlackFromDesertOrHomeworld += amount;
         }
 
         private void EndCollectionMainPhase()
@@ -127,25 +128,34 @@ namespace Treachery.Shared
             }
         }
 
-        private void CollectResourcesFromStrongholds()
+        private void CollectResourcesFromStrongholdsAndHomeworlds()
         {
             if (Applicable(Rule.IncreasedResourceFlow) || Applicable(Rule.ResourceBonusForStrongholds))
             {
                 foreach (var player in Players)
                 {
-                    GetResourcesFrom(Map.Arrakeen, player, 2);
-                    GetResourcesFrom(Map.Carthag, player, 2);
-                    GetResourcesFrom(Map.TueksSietch, player, 1);
+                    GetResourcesFromStronghold(Map.Arrakeen, player, 2);
+                    GetResourcesFromStronghold(Map.Carthag, player, 2);
+                    GetResourcesFromStronghold(Map.TueksSietch, player, 1);
+                }
+            }
+
+            foreach (var homeworld in Map.Homeworlds)
+            {
+                var occupier = OccupierOf(homeworld);
+                if (occupier != null)
+                {
+                    Collect(occupier.Faction, homeworld.Territory, homeworld.ResourceAmount);
                 }
             }
         }
 
-        private void GetResourcesFrom(Location stronghold, Player player, int amount)
+        private void GetResourcesFromStronghold(Location stronghold, Player player, int amount)
         {
             if (player.Controls(this, stronghold, Applicable(Rule.ContestedStongholdsCountAsOccupied)) && 
-                !(player.Is(Faction.Pink) && Prevented(FactionAdvantage.PinkCollection) && player.HasAlly && !player.AlliedPlayer.Controls(this, Map.Arrakeen, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
+                !(player.Is(Faction.Pink) && Prevented(FactionAdvantage.PinkCollection) && player.HasAlly && !player.AlliedPlayer.Controls(this, stronghold, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
             {
-                Collect(player.Faction, Map.Arrakeen.Territory, amount);
+                Collect(player.Faction, stronghold.Territory, amount);
             }
         }
 

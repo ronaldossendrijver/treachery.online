@@ -80,33 +80,33 @@
         var fromX = From.X - MarginX - Radius;
         var fromY = From.Y - MarginY - Radius;
         var fromZ = (int)Math.Pow(Radius * Radius - fromX * fromX - fromY * fromY, 0.5);
-        var fromAsArray = new float[] { fromX, fromY, fromZ };
+        var fromAsArray = new double[] { fromX, fromY, fromZ };
 
         var toX = To.X - MarginX - Radius;
         var toY = To.Y - MarginY - Radius;
         var toZ = (int)Math.Pow(Radius * Radius - toX * toX - toY * toY, 0.5);
-        var toAsArray = new float[] { toX, toY, toZ };
+        var toAsArray = new double[] { toX, toY, toZ };
 
         var u = fromAsArray.Select(a => a / Radius).ToArray();
         var w = Cross(fromAsArray, toAsArray);
         var v = Cross(u, w).Select(a => a / Length(w)).ToArray();
-        var tMax = (float)Math.Acos(Inner(fromAsArray, toAsArray) / Length(fromAsArray) / Length(toAsArray));
-        var n = (int)Math.Round((50f * tMax) / Math.PI);
+        var tMax = Math.Acos(Inner(fromAsArray, toAsArray) / Length(fromAsArray) / Length(toAsArray));
+        var n = (int)Math.Round((50d * tMax) / Math.PI);
 
         ArrowTemplateId = "arrowtemplate" + Id;
         ArrowShadowId = "arrowshadow" + Id;
         ArrowGradientId = "arrowgradient" + Id;
-
+        
         arrows = new ArrowDef[n];
 
         for (int i = 1; i <= n; i++)
         {
-            var iAsFloat = (float)i;
-            var t = -tMax * (iAsFloat / n);
+            var iAsDouble = (double)i;
+            var t = -tMax * (iAsDouble / n);
             var x = Radius * (u[0] * Math.Cos(t) + v[0] * Math.Sin(t));
             var y = Radius * (u[1] * Math.Cos(t) + v[1] * Math.Sin(t));
 
-            var t2 = -tMax * ((iAsFloat + 1) / n);
+            var t2 = -tMax * ((iAsDouble + 1) / n);
             var x2 = Radius * (u[0] * Math.Cos(t2) + v[0] * Math.Sin(t2));
             var y2 = Radius * (u[1] * Math.Cos(t2) + v[1] * Math.Sin(t2));
 
@@ -121,19 +121,19 @@
         }
     }
 
-    private float[] Cross(float[] a, float[] b) => new float[] {
+    private double[] Cross(double[] a, double[] b) => new double[] {
         a[1] * b[2] - a[2] * b[1],
         a[2] * b[0] - a[0] * b[2],
         a[0] * b[1] - a[1] * b[0]
     };
 
-    private float Inner(float[] v1, float[] v2)
+    private double Inner(double[] v1, double[] v2)
     {
-        if (v1.Length != v2.Length) return float.NaN;
+        if (v1.Length != v2.Length) return double.NaN;
         return v1.Zip(v2, (x, y) => x * y).Sum();
     }
 
-    private float Length(float[] vector) => (float)Math.Sqrt(vector.Select(v => v * v).Sum());
+    private double Length(double[] vector) => Math.Sqrt(vector.Select(v => v * v).Sum());
 
     private struct ArrowDef
     {

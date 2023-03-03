@@ -476,9 +476,8 @@ namespace Treachery.Shared
                 CardsOnAuction.PutOnTop(e.Card);
                 RegisterKnown(Faction.Grey, e.Card);
                 RecentMilestones.Add(Milestone.CardOnBidSwapped);
+                Log(e);
             }
-
-            Log(e);
 
             if (!BiddingRoundWasStarted)
             {
@@ -798,7 +797,7 @@ namespace Treachery.Shared
                     ModifyIncomeBasedOnThresholdOrOccupation(receiver, ref receiverProfit);
                     receiver.Resources += receiverProfit;
                     receiver.ResourcesAfterBidding += bidRedContributionAmount;
-                    message = MessagePart.Express(" → ", receiver, " get ", Payment(receiverProfit), 
+                    message = MessagePart.Express(" → ", receiver.Faction, " get ", Payment(receiverProfit), 
                         MessagePart.ExpressIf(bidRedContributionAmount > 0, " immediately and ", Payment(bidRedContributionAmount), " at the end of the bidding phase"));
 
                     if (receiverProfit >= 5)

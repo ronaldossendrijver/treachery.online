@@ -671,11 +671,13 @@ namespace Treachery.Shared
         }
 
         public List<Faction> FactionsThatMayDrawNexusCard { get; private set; }
+        public List<Faction> FactionsThatDrewNexusCard { get; private set; }
 
         private void EnterNexusCardPhase()
         {
             NexusHasOccured = false;
             FactionsThatMayDrawNexusCard = Players.Where(p => !p.HasAlly).Select(p => p.Faction).ToList();
+            FactionsThatDrewNexusCard.Clear();
             Enter(Phase.NexusCards);
         }
 
@@ -684,9 +686,10 @@ namespace Treachery.Shared
             if (!e.Passed)
             {
                 DealNexusCard(e.Player);
+                FactionsThatDrewNexusCard.Add(e.Initiator);
             }
 
-            if (e.Passed || e.Player.Nexus != e.Initiator)
+            if (e.Passed)
             {
                 FactionsThatMayDrawNexusCard.Remove(e.Initiator);
             }

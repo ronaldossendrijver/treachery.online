@@ -11,7 +11,7 @@
     <Header>Draw a Nexus Card?</Header>
     <Body>
 
-        @if (NexusCardDrawn.MayDraw(Player))
+        @if (NexusCardDrawn.MayDraw(Game, Player))
         {
             <ButtonRowComponent Confirm="Confirm" ConfirmText="Yes" ConfirmError=@Validation Pass="Pass" PassText="No" />
         }
