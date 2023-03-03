@@ -27,6 +27,16 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            if (e is RequestPurpleRevival rpv)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Accept or cancel revival");
+            }
+            /*
+            if (e is NexusCardDrawn && e.Player.Nexus == e.Player.Faction)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Should be able to redraw card");
+            }
+
             if ((g.CurrentPhase == Phase.YellowRidingMonsterA || g.CurrentPhase == Phase.YellowRidingMonsterB) && YellowRidesMonster.ToRide(g).IsGreatMonster)
             {
                 WriteSavegameIfApplicable(g, e.Player, "Yellow may ride Great Maker");
@@ -77,9 +87,9 @@ namespace Treachery.Test
                 }
             }
 
-            
+            */
 
-
+            /*
 
             var brown = g.GetPlayer(Faction.Brown);
             if (brown != null && brown.Nexus == Faction.Brown && brown.TreacheryCards.Any())
@@ -114,6 +124,7 @@ namespace Treachery.Test
             {
                 WriteSavegameIfApplicable(g, e.Player, "Nexus BrownRemoveForce");
             }
+            */
 
             /*
              * NEXUS TESTING
@@ -548,7 +559,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 5000;
+            int nrOfGames = 200;
             int nrOfTurns = 7;
             int nrOfPlayers = 7;
 

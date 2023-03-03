@@ -677,7 +677,7 @@ namespace Treachery.Shared
         {
             NexusHasOccured = false;
             FactionsThatMayDrawNexusCard = Players.Where(p => !p.HasAlly).Select(p => p.Faction).ToList();
-            FactionsThatDrewNexusCard.Clear();
+            FactionsThatDrewNexusCard = new();
             Enter(Phase.NexusCards);
         }
 

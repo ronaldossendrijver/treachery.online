@@ -48,20 +48,27 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            if (!Cancel)
+            if (Hero == null)
             {
-                if (IsDenial)
-                {
-                    return Message.Express(Initiator, " deny ", Hero.Faction, " early revival of a leader");
-                }
-                else
-                {
-                    return Message.Express(Initiator, " offer ", Hero.Faction, " revival of a leader for ", new Payment(Price));
-                }
+                return Message.Express(Initiator, " deny all outstanding requests for early revival");
             }
             else
             {
-                return Message.Express(Initiator, " cancel their revival offer to ", Hero.Faction);
+                if (!Cancel)
+                {
+                    if (IsDenial)
+                    {
+                        return Message.Express(Initiator, " deny ", Hero.Faction, " early revival of a leader");
+                    }
+                    else
+                    {
+                        return Message.Express(Initiator, " offer ", Hero.Faction, " revival of a leader for ", new Payment(Price));
+                    }
+                }
+                else
+                {
+                    return Message.Express(Initiator, " cancel their revival offer to ", Hero.Faction);
+                }
             }
         }
 

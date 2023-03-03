@@ -12,7 +12,7 @@
     {
         <MapText ToShow="@string.Format("Turn {0} of {1}", h.Game.CurrentTurn, h.Game.MaximumNumberOfTurns)"
                  X="x"
-                 Y=0
+                 Y=@(0.2f * turnFontHeight)
                  Font="@Skin.Current.TURN_FONT"
                  FontColor="@Skin.Current.TURN_FONT_COLOR"
                  BorderWidth="@Skin.Current.TURN_FONT_BORDERWIDTH"
@@ -37,13 +37,13 @@
     if (Game.CurrentMainPhase > MainPhase.Setup)
     {
         float posX = x;
-        float posY = 0.45f * turnFontHeight;
+        float posY = 0.5f * turnFontHeight;
 
         foreach (var phase in Enumerations.GetValues<MainPhase>(typeof(MainPhase)).Where(p => p >= MainPhase.Storm && p <= MainPhase.Contemplate))
         {
             if (phase == Game.CurrentMainPhase)
             {
-                posY += 0.7f * activeFontHeight;
+                posY += 0.6f * activeFontHeight;
 
                 <MapText ToShow="@Skin.Current.Describe(phase)"
                          X="@(posX)" Y="@(posY)"
@@ -64,7 +64,7 @@
                              Align="@TextAlignment.Center"/>
                 }
 
-                posY += 0.7f * activeFontHeight;
+                posY += 0.6f * activeFontHeight;
             }
             else
             {
@@ -87,7 +87,7 @@
                              Align="@TextAlignment.Center"/>
                 }
 
-                posY += 0.6f * passiveFontHeight;
+                posY += 0.5f * passiveFontHeight;
             }
         }
     }

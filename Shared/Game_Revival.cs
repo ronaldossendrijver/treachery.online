@@ -397,20 +397,32 @@ namespace Treachery.Shared
         {
             Log(e);
 
-            if (EarlyRevivalsOffers.ContainsKey(e.Hero))
+            if (e.Hero == null)
             {
-                EarlyRevivalsOffers.Remove(e.Hero);
-            }
+                foreach (var r in CurrentRevivalRequests)
+                {
+                    EarlyRevivalsOffers.Add(r.Hero, int.MaxValue);
+                }
 
-            if (!e.Cancel)
-            {
-                EarlyRevivalsOffers.Add(e.Hero, e.Price);
+                CurrentRevivalRequests.Clear();
             }
-
-            var requestToRemove = CurrentRevivalRequests.FirstOrDefault(r => r.Hero == e.Hero);
-            if (requestToRemove != null)
+            else
             {
-                CurrentRevivalRequests.Remove(requestToRemove);
+                if (EarlyRevivalsOffers.ContainsKey(e.Hero))
+                {
+                    EarlyRevivalsOffers.Remove(e.Hero);
+                }
+
+                if (!e.Cancel)
+                {
+                    EarlyRevivalsOffers.Add(e.Hero, e.Price);
+                }
+
+                var requestToRemove = CurrentRevivalRequests.FirstOrDefault(r => r.Hero == e.Hero);
+                if (requestToRemove != null)
+                {
+                    CurrentRevivalRequests.Remove(requestToRemove);
+                }
             }
         }
 

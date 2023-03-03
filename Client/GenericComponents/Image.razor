@@ -24,52 +24,21 @@
 
 @code {
 
+    [Parameter]
+    public object Shown { get; set; }
     private object _shown;
 
     [Parameter]
-    public object Shown { 
-
-        get
-        {
-            return _shown;
-        }
-
-        set
-        {
-            if (value != _shown)
-            {
-                _popoverNeedsRefresh = (Popover != null);
-                _shown = value;
-            }
-        }
-    }
-
+    public string Src { get; set; }
     private string _src;
 
     [Parameter]
-    public string Src { 
+    public string Popover { get; set; }
+    private string _popover;
+    private bool _popoverNeedsRefresh = false;
 
-        get
-        {
-            if (_src != null) {
-
-                return _src;
-            }
-            else if (Shown != null) {
-
-                return GetImageURL(Shown);
-            }
-            else {
-
-                return "";
-            }
-        } 
-
-        set
-        {
-            _src = value;
-        }
-    }
+    [Parameter]
+    public bool ShowPopover { get; set; } = true;
 
     [Parameter]
     public float Width { get; set; } = 0;
@@ -82,42 +51,6 @@
 
     [Parameter]
     public string Filter { get; set; } = "";
-
-    private string _popover;
-    private bool _popoverNeedsRefresh = false;
-
-    [Parameter]
-    public string Popover { 
-
-        get
-        {
-            if (_popover != null) {
-
-                return _popover;
-            }
-            else if (ShowPopover && Shown != null) {
-
-                return GetHoverHTML(Shown);
-            }
-            else {
-
-                return null;
-            }
-        } 
-
-        set
-        {
-            if (value != _popover)
-            {
-                _popoverNeedsRefresh = (Popover != null);
-
-                _popover = value;
-            }
-        }
-    }
-
-    [Parameter]
-    public bool ShowPopover { get; set; } = true;
 
     [Parameter]
     public EventCallback OnClick { get; set; }
@@ -140,6 +73,33 @@
     protected override void OnParametersSet()
     {
         ImgWidth = Width > 0 ? Support.Round(Width) : "";
+
+        if (_shown != Shown)
+        {
+            _shown = Shown;
+
+            if (Shown != null)
+            {
+                Src = GetImageURL(Shown);
+                if (ShowPopover) Popover = GetHoverHTML(Shown);
+            }
+            else
+            {
+                Src = "";
+                Popover = "";
+            }
+        }
+
+        if (_popover != Popover)
+        {
+            _popover = Popover;
+            _popoverNeedsRefresh = true;
+        }
+
+        if (_src != Src)
+        {
+            _src = Src;
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
