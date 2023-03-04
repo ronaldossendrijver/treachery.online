@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
+using System.Collections;
 
 namespace Treachery.Shared
 {
@@ -13,6 +13,7 @@ namespace Treachery.Shared
     {
         private int ResourcesCollectedByYellow { get; set; }
         private int ResourcesCollectedByBlackFromDesertOrHomeworld { get; set; }
+        public IList<DiscoveryToken> PendingDiscoveries { get; set; }
 
         private void EnterSpiceCollectionPhase()
         {
@@ -20,6 +21,7 @@ namespace Treachery.Shared
             ResourcesCollectedByYellow = 0;
             ResourcesCollectedByBlackFromDesertOrHomeworld = 0;
             CallHeroesHome();
+            PendingDiscoveries = DiscoveriesOnPlanet.Where(kvp => AnyForcesIn(kvp.Key.Territory)).Select(kvp => kvp.Value.Token).ToList();
 
             if (Version < 122)
             {
@@ -87,6 +89,54 @@ namespace Treachery.Shared
             if (faction == Faction.Black && !from.IsStronghold && !from.IsHomeworld && !from.IsProtectedFromWorm) ResourcesCollectedByBlackFromDesertOrHomeworld += amount;
         }
 
+        public Faction OwnerOfFlightDiscovery { get; private set; }
+        public void HandleEvent(DiscoveryRevealed e)
+        {
+            PendingDiscoveries.Remove(e.Token);
+
+            if (!e.Passed)
+            {
+                var discoveryInLocation = DiscoveriesOnPlanet.FirstOrDefault(kvp => kvp.Value.Token == e.Token);
+                DiscoveriesOnPlanet.Remove(discoveryInLocation.Key);
+
+                Log(e);
+                switch (e.Token)
+                {
+                    case DiscoveryToken.Jacurutu:
+                    case DiscoveryToken.Shrine:
+                    case DiscoveryToken.TestingStation:
+                    case DiscoveryToken.Cistern:
+                    case DiscoveryToken.ProcessingStation:
+                        var sh = Map.GetDiscoveryStronghold(e.Token);
+                        sh.PointAt(discoveryInLocation.Key);
+                        break;
+
+                    case DiscoveryToken.CardStash:
+                        var card = DrawTreacheryCard();
+                        e.Player.TreacheryCards.Add(card);
+                        Log(e.Initiator, " draw a treachery card");
+                        if (e.Player.HandSizeExceeded)
+                        {
+                            LetFactionsDiscardSurplusCards();
+                        }
+                        break;
+
+                    case DiscoveryToken.ResourceStash:
+                        e.Player.Resources += 7;
+                        Log(e.Initiator, " get ", Payment(7));
+                        break;
+
+                    case DiscoveryToken.Flight:
+                        OwnerOfFlightDiscovery = e.Initiator;
+                        Log(e.Initiator, " gain the ", e.Token, " discovery token");
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        }
+
         private void EndCollectionMainPhase()
         {
             int receivedAmountByYellow = ResourcesCollectedByYellow;
@@ -137,6 +187,7 @@ namespace Treachery.Shared
                     GetResourcesFromStronghold(Map.Arrakeen, player, 2);
                     GetResourcesFromStronghold(Map.Carthag, player, 2);
                     GetResourcesFromStronghold(Map.TueksSietch, player, 1);
+                    GetResourcesFromStronghold(Map.Cistern, player, 2);
                 }
             }
 
@@ -162,11 +213,20 @@ namespace Treachery.Shared
         public List<ResourcesToBeDivided> CollectedResourcesToBeDivided { get; private set; } = new();
         private void CollectResourcesFromTerritories()
         {
+            var thief = Players.FirstOrDefault(p => p.Occupies(Map.ProcessingStation));
+
             foreach (var l in ResourcesOnPlanet.Where(x => x.Value > 0).ToList())
             {
                 var playersToCollect = Players.Where(y => y.Occupies(l.Key)).ToArray();
                 int totalCollectedAmount = 0;
                 var spiceLeft = l.Value;
+                
+                if (spiceLeft > 0 && thief != null)
+                {
+                    spiceLeft -= 1;
+                    thief.Resources += 1;
+                    Log(thief.Faction, " steal ", Payment(1), " from ", l.Key.Territory);
+                }
 
                 foreach (var p in playersToCollect)
                 {

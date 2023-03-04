@@ -393,6 +393,9 @@ namespace Treachery.Shared
             if (AggressorBattleAction.Initiator == BattleWinner) ResolveEffectOfOwnedSietchTabr(AggressorBattleAction, DefenderBattleAction);
             if (DefenderBattleAction.Initiator == BattleWinner) ResolveEffectOfOwnedSietchTabr(DefenderBattleAction, AggressorBattleAction);
 
+            if (AggressorBattleAction.Initiator == BattleWinner) ResolveEffectOfOccupiedJacurutu(AggressorBattleAction, BattleOutcome.DefUndialedForces);
+            if (DefenderBattleAction.Initiator == BattleWinner) ResolveEffectOfOccupiedJacurutu(DefenderBattleAction, BattleOutcome.AggUndialedForces);
+
             if (Version < 116) CaptureLeaderIfApplicable();
 
             FlipBeneGesseritWhenAloneOrWithPinkAlly();
@@ -624,15 +627,27 @@ namespace Treachery.Shared
             }
         }
 
-        private void ResolveEffectOfOwnedSietchTabr(Battle playerPlan, Battle opponentPlan)
+        private void ResolveEffectOfOwnedSietchTabr(Battle winnerPlan, Battle opponentPlan)
         {
-            if (HasStrongholdAdvantage(playerPlan.Initiator, StrongholdAdvantage.CollectResourcesForDial, CurrentBattle.Territory))
+            if (HasStrongholdAdvantage(winnerPlan.Initiator, StrongholdAdvantage.CollectResourcesForDial, CurrentBattle.Territory))
             {
-                int collected = (int)Math.Floor(opponentPlan.Dial(this, playerPlan.Initiator));
+                int collected = (int)Math.Floor(opponentPlan.Dial(this, winnerPlan.Initiator));
                 if (collected > 0)
                 {
-                    Log(Map.SietchTabr, " stronghold advantage: ", playerPlan.Initiator, " collect ", Payment(collected), " from enemy force dial");
-                    playerPlan.Player.Resources += collected;
+                    Log(Map.SietchTabr, " stronghold advantage: ", winnerPlan.Initiator, " collect ", Payment(collected), " from enemy force dial");
+                    winnerPlan.Player.Resources += collected;
+                }
+            }
+        }
+
+        private void ResolveEffectOfOccupiedJacurutu(Battle winnerPlan, int opponentUndialedForces)
+        {
+            if (CurrentBattle.Territory == Map.Jacurutu.Territory)
+            {
+                if (opponentUndialedForces > 0)
+                {
+                    Log(winnerPlan.Initiator, " get ", Payment(opponentUndialedForces), " from winning a fight in ", Map.Jacurutu);
+                    winnerPlan.Player.Resources += opponentUndialedForces;
                 }
             }
         }
@@ -887,6 +902,12 @@ namespace Treachery.Shared
             float aggForceDial;
             float defForceDial;
 
+            var aggForceSupplier = Battle.DetermineForceSupplier(this, result.Aggressor);
+            result.AggUndialedForces = aggForceSupplier.AnyForcesIn(CurrentBattle.Territory) - agg.TotalForces;
+
+            var defForceSupplier = Battle.DetermineForceSupplier(this, result.Defender);
+            result.DefUndialedForces = defForceSupplier.AnyForcesIn(CurrentBattle.Territory) - def.TotalForces;
+
             if (!rockMelterUsed)
             {
                 aggForceDial = agg.Dial(this, result.Defender.Faction);
@@ -894,12 +915,10 @@ namespace Treachery.Shared
             }
             else
             {
-                var aggForceSupplier = Battle.DetermineForceSupplier(this, result.Aggressor);
-                aggForceDial = aggForceSupplier.AnyForcesIn(CurrentBattle.Territory) - agg.TotalForces;
+                aggForceDial = result.AggUndialedForces;
                 if (result.Aggressor.Faction == CurrentPinkOrAllyFighter) aggForceDial += (int)Math.Ceiling(0.5f * GetPlayer(Faction.Pink).AnyForcesIn(CurrentBattle.Territory));
 
-                var defForceSupplier = Battle.DetermineForceSupplier(this, result.Defender);
-                defForceDial = defForceSupplier.AnyForcesIn(CurrentBattle.Territory) - def.TotalForces;
+                defForceDial = result.DefUndialedForces;
                 if (result.Defender.Faction == CurrentPinkOrAllyFighter) defForceDial += (int)Math.Ceiling(0.5f * GetPlayer(Faction.Pink).AnyForcesIn(CurrentBattle.Territory));
             }
 

@@ -30,14 +30,19 @@ namespace Treachery.Shared
 
         public bool AggHeroKilled;
         public bool LoserHeroKilled => Loser == Aggressor ? AggHeroKilled : DefHeroKilled;
+
         public TreacheryCardType AggHeroCauseOfDeath;
         public int AggHeroEffectiveStrength;
         
         public bool DefHeroKilled;
         public bool WinnerHeroKilled => Winner == Aggressor ? AggHeroKilled : DefHeroKilled;
+                
         public TreacheryCardType DefHeroCauseOfDeath;
         public int DefHeroEffectiveStrength;
-        
+
+        public int AggUndialedForces;
+        public int DefUndialedForces;
+
         public float AggTotal;
         public float DefTotal;
         

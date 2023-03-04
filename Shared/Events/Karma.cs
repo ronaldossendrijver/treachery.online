@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace Treachery.Shared
 {
@@ -246,9 +247,10 @@ namespace Treachery.Shared
 
         public static IEnumerable<TreacheryCard> ValidKarmaCards(Game g, Player p)
         {
-            return
-                p.TreacheryCards.Where(c => c.Type == TreacheryCardType.Karma ||
-                (p.Is(Faction.Blue) && c.Type == TreacheryCardType.Useless && g.Applicable(Rule.BlueWorthlessAsKarma)));
+            return p.TreacheryCards.Where(c => 
+                c.Type == TreacheryCardType.Karma ||
+                c.Type == TreacheryCardType.Useless && p.Is(Faction.Blue) && g.Applicable(Rule.BlueWorthlessAsKarma) ||
+                c.Type == TreacheryCardType.Clairvoyance && p.Occupies(g.Map.Shrine));
         }
 
         public static bool CanKarma(Game g, Player p)

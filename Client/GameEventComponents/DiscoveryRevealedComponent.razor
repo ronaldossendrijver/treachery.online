@@ -1,0 +1,46 @@
+﻿<!--
+* Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<DiscoveryRevealed>
+
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Reveal a Discovery?</Header>
+    <Body>
+
+        @{
+            var tokens = DiscoveryRevealed.GetTokens(Game, Player).ToList();
+
+            if (tokens.Count() > 1)
+            {
+                <SelectComponent @bind-Value="_token" Values=@tokens>
+                    <Label>Which discovery to reveal?</Label>
+                 </SelectComponent>
+            }
+            else
+            {
+                _token = tokens.First();
+                <div>Reveal @Name(_token)?</div>
+            }
+        }
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation Pass="Pass" />
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    protected override bool IsUrgent => true;
+    protected override Faction IsFactionSpecific => Faction.Cyan;
+
+    private DiscoveryToken _token;
+
+    protected override DiscoveryRevealed ConfirmedResult => new DiscoveryRevealed(Game) { Initiator = Faction, Token = _token };
+
+    protected override DiscoveryRevealed PassedResult => new DiscoveryRevealed(Game) { Initiator = Faction, Passed = true };
+}

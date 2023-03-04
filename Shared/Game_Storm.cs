@@ -21,6 +21,7 @@ namespace Treachery.Shared
             MainPhaseStart(MainPhase.Storm, CurrentTurn > 1);
             FactionsThatRevivedSpecialForcesThisTurn.Clear();
             StormLossesToTake.Clear();
+            CurrentTestingStationUsed = false;
 
             if (CurrentTurn == 1)
             {
@@ -265,6 +266,13 @@ namespace Treachery.Shared
             EndStormPhase();
         }
 
+        public bool CurrentTestingStationUsed { get; private set; }
+        public void HandleEvent(TestingStationUsed e)
+        {
+            Log(e);
+            CurrentTestingStationUsed = true;
+            NextStormMoves += e.ValueAdded;
+        }
 
         private void EnterNormalStormPhase()
         {

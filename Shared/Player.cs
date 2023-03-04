@@ -581,6 +581,8 @@ namespace Treachery.Shared
 
         public bool HasRoomForCards => TreacheryCards.Count < MaximumNumberOfCards;
 
+        public bool HandSizeExceeded => TreacheryCards.Count > MaximumNumberOfCards;
+
         public int NumberOfTraitors => Faction == Faction.Black ? 4 : 1;
 
         public int NumberOfFacedancers => Faction == Faction.Purple ? 3 : 0;
@@ -655,7 +657,7 @@ namespace Treachery.Shared
             }
         }
 
-        public bool HasKarma => Karma.ValidKarmaCards(Game, this).Any();
+        public bool HasKarma(Game g) => Karma.ValidKarmaCards(g, this).Any();
 
 
         public void InitializeHomeworld(Homeworld world, int initialNormalForces, int initialSpecialForces)

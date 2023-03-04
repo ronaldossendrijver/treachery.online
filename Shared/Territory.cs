@@ -14,6 +14,14 @@ namespace Treachery.Shared
             Id = id;
         }
 
+        public Territory(bool isHomeworld, bool isStronghold, bool isProtectedFromStorm, bool isProtectedFromWorm, int id) : this(id)
+        {
+            IsHomeworld = isHomeworld;
+            IsStronghold = isStronghold;
+            IsProtectedFromStorm = isProtectedFromStorm;
+            IsProtectedFromWorm = isProtectedFromWorm;
+        }
+
         public int Id { get; private set; }
 
         public int SkinId => Id;

@@ -28,6 +28,8 @@ namespace Treachery.Shared
             }
         }
 
+        public virtual bool Visible => true;
+
         public virtual List<Location> Neighbours { get; set; } = new List<Location>();
 
         public string Orientation { get; set; } = "";

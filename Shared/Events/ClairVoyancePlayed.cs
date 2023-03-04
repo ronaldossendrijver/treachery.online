@@ -227,6 +227,20 @@ namespace Treachery.Shared
 
             return false;
         }
+
+        public static TreacheryCard Card(Game g, Player p)
+        {
+            if (p.Has(TreacheryCardType.Clairvoyance))
+            {
+                return p.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Clairvoyance);
+            }
+            else if (p.Occupies(g.Map.Cistern))
+            {
+                return Karma.ValidKarmaCards(g,p).FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
+            }
+
+            return null;
+        }
     }
 
 

@@ -750,7 +750,7 @@ namespace Treachery.Shared
         protected virtual void UseKarmaIfApplicable(Shipment shipment)
         {
             if (
-                HasKarma && !Game.KarmaPrevented(Faction) &&
+                HasKarma(Game) && !Game.KarmaPrevented(Faction) &&
                 (!Param.Karma_SaveCardToUseSpecialKarmaAbility || SpecialKarmaPowerUsed) &&
                 !Game.MayShipWithDiscount(this) &&
                 Shipment.DetermineCost(Game, this, shipment) > 7)

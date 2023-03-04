@@ -226,15 +226,29 @@ namespace Treachery.Shared
                 LogIf(devouredResources > 0, Payment(devouredResources), " in ", blowCard.Territory, " is destroyed");
 
                 DiscoveryToken drawnToken = DiscoveryToken.None;
-                if (blowCard.DiscoveryLocation.DiscoveryTokenType == DiscoveryTokenType.Orange && !OrangeDiscoveryTokens.IsEmpty)
+                if (blowCard.DiscoveryLocation.DiscoveryTokenType == DiscoveryTokenType.Orange)
                 {
-                    drawnToken = OrangeDiscoveryTokens.Draw();
-                    DiscoveriesOnPlanet.Add(blowCard.DiscoveryLocation, new Discovery(drawnToken, DiscoveryTokenType.Orange));
+                    if (!OrangeDiscoveryTokens.IsEmpty)
+                    {
+                        drawnToken = OrangeDiscoveryTokens.Draw();
+                        DiscoveriesOnPlanet.Add(blowCard.DiscoveryLocation, new Discovery(drawnToken, DiscoveryTokenType.Orange));
+                    }
+                    else
+                    {
+                        Log("There are no more ", DiscoveryTokenType.Orange, " discoveries left");
+                    }
                 }
-                else if (blowCard.DiscoveryLocation.DiscoveryTokenType == DiscoveryTokenType.Yellow && !YellowDiscoveryTokens.IsEmpty)
+                else if (blowCard.DiscoveryLocation.DiscoveryTokenType == DiscoveryTokenType.Yellow)
                 {
-                    drawnToken = YellowDiscoveryTokens.Draw();
-                    DiscoveriesOnPlanet.Add(blowCard.DiscoveryLocation, new Discovery(drawnToken, DiscoveryTokenType.Yellow));
+                    if (!YellowDiscoveryTokens.IsEmpty)
+                    {
+                        drawnToken = YellowDiscoveryTokens.Draw();
+                        DiscoveriesOnPlanet.Add(blowCard.DiscoveryLocation, new Discovery(drawnToken, DiscoveryTokenType.Yellow));
+                    }
+                    else
+                    {
+                        Log("There are no more ", DiscoveryTokenType.Yellow, " discoveries left");
+                    }
                 }
 
                 if (drawnToken != DiscoveryToken.None)

@@ -91,7 +91,7 @@ namespace Treachery.Shared
             player.Faction == Faction.Cyan &&
             !game.KarmaPrevented(player.Faction) &&
             !player.SpecialKarmaPowerUsed &&
-            player.HasKarma &&
+            player.HasKarma(game) &&
             game.CurrentPhase == Phase.BattleConclusion &&
             game.BattleLoser == player.Faction &&
             game.Applicable(Rule.AdvancedKarama);

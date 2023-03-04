@@ -6,13 +6,16 @@ using System.Collections.Generic;
 
 namespace Treachery.Shared
 {
-    public class HiddenMobileStronghold : Location
+    public class DiscoveryStronghold : Location
     {
+        public DiscoveryToken Discovery { get; private set; }
+
         public Location AttachedToLocation { get; private set; } = null;
 
-        public HiddenMobileStronghold(Territory t, int id) : base(id)
+        public DiscoveryStronghold(Territory t, int id, DiscoveryToken discovery) : base(id)
         {
             Territory = t;
+            Discovery = discovery;
         }
 
         public override bool Visible => AttachedToLocation != null;
@@ -29,7 +32,6 @@ namespace Treachery.Shared
         }
 
         public override int Sector => -1;
-
 
         public override List<Location> Neighbours
         {

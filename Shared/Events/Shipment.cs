@@ -18,7 +18,8 @@ namespace Treachery.Shared
         {
             return g.Map.Locations(g.Applicable(Rule.Homeworlds)).Where(l => g.IsNotFull(p, l) && (l == g.Map.TheGreatFlat || l == g.Map.TheGreaterFlat || l == g.Map.FuneralPlain || l.Territory == g.Map.BightOfTheCliff || l == g.Map.SietchTabr ||
                 l.Territory == g.Map.PlasticBasin || l.Territory == g.Map.RockOutcroppings || l.Territory == g.Map.BrokenLand || l.Territory == g.Map.Tsimpo || l.Territory == g.Map.HaggaBasin ||
-                l == g.Map.PolarSink || l.Territory == g.Map.WindPass || l.Territory == g.Map.WindPassNorth || l.Territory == g.Map.CielagoWest || l.Territory == g.Map.FalseWallWest || l.Territory == g.Map.HabbanyaErg))
+                l == g.Map.PolarSink || l.Territory == g.Map.WindPass || l.Territory == g.Map.WindPassNorth || l.Territory == g.Map.CielagoWest || l.Territory == g.Map.FalseWallWest || l.Territory == g.Map.HabbanyaErg ||
+                l is DiscoveryStronghold dsPastyMesa && dsPastyMesa.Visible && dsPastyMesa.AttachedToLocation.Territory == g.Map.PastyMesa || l is DiscoveryStronghold dsFalseWallWest && dsFalseWallWest.Visible && dsFalseWallWest.AttachedToLocation.Territory == g.Map.FalseWallWest))
                 .ToList();
         }
 
@@ -268,6 +269,7 @@ namespace Treachery.Shared
                 l.Sector != g.SectorInStorm &&
                 (l != g.Map.HiddenMobileStronghold || p.Is(Faction.Grey)) &&
                 IsEitherValidHomeworldOrNoHomeworld(g, p, l) &&
+                IsEitherValidDiscoveryOrNoDiscovery(l) &&
                 g.IsNotFull(p, l));
         }
 
@@ -276,6 +278,8 @@ namespace Treachery.Shared
             g.Applicable(Rule.Homeworlds) &&
             g.Players.Any(native => native.IsNative(hw)) &&
             (!p.HasAlly || !p.AlliedPlayer.IsNative(hw) && p.AlliedPlayer.AnyForcesIn(hw) == 0);
+
+        private static bool IsEitherValidDiscoveryOrNoDiscovery(Location l) => l is not DiscoveryStronghold ds || ds.Visible;
 
         public static IEnumerable<int> ValidNoFieldValues(Game g, Player p)
         {

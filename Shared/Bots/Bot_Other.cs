@@ -12,6 +12,52 @@ namespace Treachery.Shared
 {
     public partial class Player
     {
+        private DiscoveryRevealed DetermineDiscoveryRevealed()
+        {
+            return new DiscoveryRevealed(Game) { Initiator = Faction, Token = DiscoveryRevealed.GetTokens(Game, this).First() };
+        }
+
+        private TestingStationUsed DetermineTestingStationUsed()
+        {
+            var currentStormEnd = (Game.SectorInStorm + Game.NextStormMoves) % Map.NUMBER_OF_SECTORS;
+            var locationsInSector = Game.Map.Locations(false).Where(l => l.Sector == currentStormEnd && !l.IsProtectedFromStorm).ToList();
+            var locationsInSectorMinus1 = Game.Map.Locations(false).Where(l => !l.IsProtectedFromStorm && l.Sector == (currentStormEnd == 0 ? Map.NUMBER_OF_SECTORS : currentStormEnd - 1)).ToList();
+            var locationsInSectorPlus1 = Game.Map.Locations(false).Where(l => !l.IsProtectedFromStorm && l.Sector == (currentStormEnd == Map.NUMBER_OF_SECTORS ? 0 : currentStormEnd + 1)).ToList();
+
+            int myForcesKilledInSector = locationsInSector.Sum(l => Game.BattalionsIn(l).Where(b => b.Faction == Faction && b.Faction == Ally).Sum(b => b.TotalAmountOfForces));
+            int myForcesKilledInSectorMinus1 = locationsInSectorMinus1.Sum(l => Game.BattalionsIn(l).Where(b => b.Faction == Faction && b.Faction == Ally).Sum(b => b.TotalAmountOfForces));
+            int myForcesKilledInSectorPlus1 = locationsInSectorPlus1.Sum(l => Game.BattalionsIn(l).Where(b => b.Faction == Faction && b.Faction == Ally).Sum(b => b.TotalAmountOfForces));
+
+            int myStrongholdsInSector = locationsInSector.Count(l => l.IsStronghold && (Occupies(l) && AnyForcesIn(l) < 6 || HasAlly && AlliedPlayer.Occupies(l) && AlliedPlayer.AnyForcesIn(l) < 6));
+            int myStrongholdsInSectorMinus1 = locationsInSectorMinus1.Count(l => l.IsStronghold && (Occupies(l) && AnyForcesIn(l) < 6 || HasAlly && AlliedPlayer.Occupies(l) && AlliedPlayer.AnyForcesIn(l) < 6));
+            int myStrongholdsInSectorPlus1 = locationsInSectorPlus1.Count(l => l.IsStronghold && (Occupies(l) && AnyForcesIn(l) < 6 || HasAlly && AlliedPlayer.Occupies(l) && AlliedPlayer.AnyForcesIn(l) < 6));
+
+            int enemyForcesKilledInSector = locationsInSector.Sum(l => Game.BattalionsIn(l).Where(b => b.Faction != Faction && b.Faction != Ally).Sum(b => b.TotalAmountOfForces));
+            int enemyForcesKilledInSectorMinus1 = locationsInSectorMinus1.Sum(l => Game.BattalionsIn(l).Where(b => b.Faction != Faction && b.Faction != Ally).Sum(b => b.TotalAmountOfForces));
+            int enemyForcesKilledInSectorPlus1 = locationsInSectorPlus1.Sum(l => Game.BattalionsIn(l).Where(b => b.Faction != Faction && b.Faction != Ally).Sum(b => b.TotalAmountOfForces));
+
+            int enemyStrongholdsInSector = locationsInSector.Count(l => l.IsStronghold && OccupiedByOpponent(l));
+            int enemyStrongholdsInSectorMinus1 = locationsInSectorMinus1.Count(l => l.IsStronghold && OccupiedByOpponent(l));
+            int enemyStrongholdsInSectorPlus1 = locationsInSectorPlus1.Count(l => l.IsStronghold && OccupiedByOpponent(l));
+
+            int scoreIfMinus1 = enemyForcesKilledInSectorMinus1 + myStrongholdsInSectorMinus1 * 3 - myForcesKilledInSectorMinus1 - enemyStrongholdsInSectorMinus1 * 3;
+            int scoreIfPassed = scoreIfMinus1 + enemyForcesKilledInSector + myStrongholdsInSector * 3 - myForcesKilledInSector - enemyStrongholdsInSector * 3;
+            int scoreIfPlus1  = scoreIfPassed + enemyForcesKilledInSectorPlus1 + myStrongholdsInSectorPlus1 * 3 - myForcesKilledInSectorPlus1 - enemyStrongholdsInSectorPlus1 * 3;
+
+            if (scoreIfMinus1 > scoreIfPassed && scoreIfMinus1 > scoreIfPlus1)
+            {
+                return new TestingStationUsed(Game) { Initiator = Faction, ValueAdded = -1 };
+            }
+            else if (scoreIfPlus1 > scoreIfPassed && scoreIfPlus1 > scoreIfMinus1)
+            {
+                return new TestingStationUsed(Game) { Initiator = Faction, ValueAdded = 1 };
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         private DivideResources DetermineDivideResources()
         {
             var spiceIWant = Math.Max(0, DivideResources.GetResourcesToBeDivided(Game).Amount - Resources);

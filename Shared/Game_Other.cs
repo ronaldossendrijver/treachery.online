@@ -217,7 +217,7 @@ namespace Treachery.Shared
         public void HandleEvent(ClairVoyancePlayed e)
         {
             var initiator = GetPlayer(e.Initiator);
-            var card = initiator.Card(TreacheryCardType.Clairvoyance);
+            var card = ClairVoyancePlayed.Card(this, e.Player);
 
             if (card != null)
             {

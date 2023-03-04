@@ -1839,7 +1839,12 @@ namespace Treachery.Client
                 [52] = "Tupile",
                 [53] = "Richese",
                 [54] = "Ecaz",
-                [55] = "Grumman"
+                [55] = "Grumman",
+                [56] = "Jacurutu Sietch",
+                [57] = "Cistern",
+                [58] = "Ecological Testing Station",
+                [59] = "Shrine",
+                [60] = "Orgiz Processing Station",
             },
 
             TerritoryBorder_SVG = new Dictionary<int, string>()

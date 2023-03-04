@@ -990,7 +990,8 @@ namespace Treachery.Shared
 
         public bool HasOrnithopters(Player p) =>
             (Applicable(Rule.MovementBonusRequiresOccupationBeforeMovement) ? FactionsWithOrnithoptersAtStartOfMovement.Contains(p.Faction) : OccupiesArrakeenOrCarthag(p)) ||
-            CurrentFlightUsed != null && CurrentFlightUsed.MoveThreeTerritories;
+            CurrentFlightUsed != null && CurrentFlightUsed.MoveThreeTerritories && CurrentFlightUsed.Player == p ||
+            CurrentFlightDiscoveryUsed != null && CurrentFlightDiscoveryUsed.Player == p;
 
         public int DetermineMaximumMoveDistance(Player p, IEnumerable<Battalion> moved)
         {
@@ -1122,9 +1123,9 @@ namespace Treachery.Shared
 
         public bool IsNotFull(Player p, Location l)
         {
-            return 
-                !(l.Territory.IsStronghold || l.Territory.IsHomeworld) || 
-                p.Is(Faction.Blue) && p.SpecialForcesIn(l) > 0 || 
+            return
+                !(l.Territory.IsStronghold || l.Territory.IsHomeworld) ||
+                p.Is(Faction.Blue) && p.SpecialForcesIn(l) > 0 ||
                 p.Is(Faction.Pink) && p.HasAlly && p.AlliedPlayer.AnyForcesIn(l.Territory) > 0 ||
                 p.Ally == Faction.Pink && p.AlliedPlayer.AnyForcesIn(l.Territory) > 0 ||
                 NrOfOccupantsExcludingPlayer(l, p) < 2;
@@ -1212,9 +1213,9 @@ namespace Treachery.Shared
             return
                 isPubliclyKnown ||
 
-                Occupies(p.Faction, World.Green) || 
+                Occupies(p.Faction, World.Green) ||
                 Occupies(p.Ally, World.Green) ||
-                
+
                 (p != null &&
                 !Prevented(FactionAdvantage.GreenBiddingPrescience) &&
                 (p.Faction == Faction.Green || (p.Ally == Faction.Green && GreenSharesPrescience) || HasDeal(p.Faction, DealType.ShareBiddingPrescience)));
@@ -1288,7 +1289,7 @@ namespace Treachery.Shared
 
         private void LetFactionsDiscardSurplusCards()
         {
-            FactionsThatMustDiscard.AddRange(Players.Where(p => p.TreacheryCards.Count > p.MaximumNumberOfCards).Select(p => p.Faction));
+            FactionsThatMustDiscard.AddRange(Players.Where(p => p.HandSizeExceeded).Select(p => p.Faction));
             if (FactionsThatMustDiscard.Any())
             {
                 PhaseBeforeDiscarding = CurrentPhase;
@@ -1469,21 +1470,5 @@ namespace Treachery.Shared
         }
 
         #endregion SupportMethods
-
-
-
-    }
-
-    public class Discovery
-    {
-        public DiscoveryToken Token { get; private set; }
-
-        public DiscoveryTokenType TokenType { get; private set; }
-
-        public Discovery(DiscoveryToken token, DiscoveryTokenType tokenType)
-        {
-            Token = token;
-            TokenType = tokenType;
-        }
     }
 }

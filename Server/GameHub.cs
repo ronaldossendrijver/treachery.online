@@ -62,6 +62,7 @@ namespace Treachery.Server
         public async Task RequestPerformBluePlacement(int hostID, PerformBluePlacement e) { await Request(hostID, e); }
         public async Task RequestTraitorsSelected(int hostID, TraitorsSelected e) { await Request(hostID, e); }
         public async Task RequestStormSpellPlayed(int hostID, StormSpellPlayed e) { await Request(hostID, e); }
+        public async Task RequestTestingStationUsed(int hostID, TestingStationUsed e) { await Request(hostID, e); }
         public async Task RequestTakeLosses(int hostID, TakeLosses e) { await Request(hostID, e); }
         public async Task RequestMetheorPlayed(int hostID, MetheorPlayed e) { await Request(hostID, e); }
         public async Task RequestYellowSentMonster(int hostID, YellowSentMonster e) { await Request(hostID, e); }
@@ -146,6 +147,7 @@ namespace Treachery.Server
         public async Task RequestRockWasMelted(int hostID, RockWasMelted e) { await Request(hostID, e); }
         public async Task RequestResidualPlayed(int hostID, ResidualPlayed e) { await Request(hostID, e); }
         public async Task RequestFlightUsed(int hostID, FlightUsed e) { await Request(hostID, e); }
+        public async Task RequestFlightDiscoveryUsed(int hostID, FlightDiscoveryUsed e) { await Request(hostID, e); }
         public async Task RequestDistransUsed(int hostID, DistransUsed e) { await Request(hostID, e); }
         public async Task RequestDiscardedTaken(int hostID, DiscardedTaken e) { await Request(hostID, e); }
         public async Task RequestDiscardedSearchedAnnounced(int hostID, DiscardedSearchedAnnounced e) { await Request(hostID, e); }
@@ -165,6 +167,7 @@ namespace Treachery.Server
         public async Task RequestNexusCardDrawn(int hostID, NexusCardDrawn e) { await Request(hostID, e); }
         public async Task RequestTerrorPlanted(int hostID, TerrorPlanted e) { await Request(hostID, e); }
         public async Task RequestTerrorRevealed(int hostID, TerrorRevealed e) { await Request(hostID, e); }
+        public async Task RequestDiscoveryRevealed(int hostID, DiscoveryRevealed e) { await Request(hostID, e); }
         public async Task RequestAmbassadorPlaced(int hostID, AmbassadorPlaced e) { await Request(hostID, e); }
         public async Task RequestAmbassadorActivated(int hostID, AmbassadorActivated e) { await Request(hostID, e); }
         public async Task RequestExtortionPrevented(int hostID, ExtortionPrevented e) { await Request(hostID, e); }

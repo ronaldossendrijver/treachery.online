@@ -16,69 +16,79 @@ namespace Treachery.Shared
         public readonly LocationFetcher LocationLookup;
         public readonly TerritoryFetcher TerritoryLookup;
 
-        public Location TheGreaterFlat { get; set; }
+        public Location TheGreaterFlat { get; private set; }
 
-        public Location PolarSink { get; set; }
+        public Location PolarSink { get; private set; }
 
-        public Location Arrakeen { get; set; }
+        public Location Arrakeen { get; private set; }
 
-        public Location Carthag { get; set; }
+        public Location Carthag { get; private set; }
 
-        public Location TueksSietch { get; set; }
+        public Location TueksSietch { get; private set; }
 
-        public Location SietchTabr { get; set; }
+        public Location SietchTabr { get; private set; }
 
-        public Location HabbanyaSietch { get; set; }
+        public Location HabbanyaSietch { get; private set; }
 
-        public Territory FalseWallSouth { get; set; }
+        public Territory FalseWallSouth { get; private set; }
 
-        public Territory Meridan { get; set; }
+        public Territory Meridan { get; private set; }
 
-        public Territory FalseWallWest { get; set; }
+        public Territory FalseWallWest { get; private set; }
 
-        public Territory ImperialBasin { get; set; }
+        public Territory ImperialBasin { get; private set; }
 
-        public Territory ShieldWall { get; set; }
+        public Territory ShieldWall { get; private set; }
 
-        public Territory HoleInTheRock { get; set; }
+        public Territory HoleInTheRock { get; private set; }
 
-        public Territory FalseWallEast { get; set; }
+        public Territory FalseWallEast { get; private set; }
 
-        public Territory TheMinorErg { get; set; }
+        public Territory TheMinorErg { get; private set; }
 
-        public Territory PastyMesa { get; set; }
+        public Territory PastyMesa { get; private set; }
 
-        public Territory GaraKulon { get; set; }
+        public Territory GaraKulon { get; private set; }
 
-        public Territory OldGap { get; set; }
+        public Territory OldGap { get; private set; }
 
-        public Territory SihayaRidge { get; set; }
+        public Territory SihayaRidge { get; private set; }
 
-        public Location FuneralPlain { get; set; }
+        public Location FuneralPlain { get; private set; }
 
-        public Territory BightOfTheCliff { get; set; }
+        public Territory BightOfTheCliff { get; private set; }
 
-        public Territory PlasticBasin { get; set; }
+        public Territory PlasticBasin { get; private set; }
 
-        public Territory RockOutcroppings { get; set; }
+        public Territory RockOutcroppings { get; private set; }
 
-        public Territory BrokenLand { get; set; }
+        public Territory BrokenLand { get; private set; }
 
-        public Territory Tsimpo { get; set; }
+        public Territory Tsimpo { get; private set; }
 
-        public Territory HaggaBasin { get; set; }
+        public Territory HaggaBasin { get; private set; }
 
-        public Territory WindPass { get; set; }
+        public Territory WindPass { get; private set; }
 
-        public Territory WindPassNorth { get; set; }
+        public Territory WindPassNorth { get; private set; }
 
-        public Territory CielagoEast { get; set; }
+        public Territory CielagoEast { get; private set; }
 
-        public Territory CielagoWest { get; set; }
+        public Territory CielagoWest { get; private set; }
 
         public Territory HabbanyaErg { get; private set; }
 
-        public Location TheGreatFlat { get; set; }
+        public Location TheGreatFlat { get; private set; }
+
+        public DiscoveryStronghold GetDiscoveryStronghold(DiscoveryToken discovery) => Locations(false).FirstOrDefault(l => l is DiscoveryStronghold ds && ds.Discovery == discovery) as DiscoveryStronghold;
+
+        public DiscoveryStronghold Shrine { get; private set; }
+
+        public DiscoveryStronghold Cistern { get; private set; }
+
+        public DiscoveryStronghold TestingStation { get; private set; }
+        public DiscoveryStronghold Jacurutu { get; private set; }
+        public DiscoveryStronghold ProcessingStation { get; private set; }
 
         public HiddenMobileStronghold HiddenMobileStronghold { get; set; }
 
@@ -1213,11 +1223,26 @@ namespace Treachery.Shared
             AddHomeworld(53, id++, World.White, Faction.White, true, false, 10, 2, 2, 1);
             AddHomeworld(54, id++, World.Pink, Faction.Pink, true, false, 7, 2, 2, 2);
             AddHomeworld(55, id++, World.Cyan, Faction.Cyan, true, false, 8, 2, 2, 2);
+
+            Jacurutu = AddDiscoveryStronghold(56, id++, DiscoveryToken.Jacurutu);
+            Cistern = AddDiscoveryStronghold(57, id++, DiscoveryToken.Cistern);
+            TestingStation = AddDiscoveryStronghold(58, id++, DiscoveryToken.TestingStation);
+            Shrine = AddDiscoveryStronghold(59, id++, DiscoveryToken.Shrine);
+            ProcessingStation = AddDiscoveryStronghold(60, id++, DiscoveryToken.ProcessingStation);
         }
 
-        private void AddHomeworld(int territoryId, int locationId, World world, Faction faction, bool isHomeOfNormalForces, bool isHomeOfSpecialForces, int threshold, int battleBonusAtHighThreshold, int battleBonusAtLowThreshold, int resourceAmount)
+        private Homeworld AddHomeworld(int territoryId, int locationId, World world, Faction faction, bool isHomeOfNormalForces, bool isHomeOfSpecialForces, int threshold, int battleBonusAtHighThreshold, int battleBonusAtLowThreshold, int resourceAmount)
         {
-            _locations.Add(new Homeworld(world, faction, new Territory(territoryId) { IsHomeworld = true, IsStronghold = false, IsProtectedFromStorm = true, IsProtectedFromWorm = true }, isHomeOfNormalForces, isHomeOfSpecialForces, threshold, battleBonusAtHighThreshold, battleBonusAtLowThreshold, resourceAmount, locationId));
+            var result = new Homeworld(world, faction, new Territory(territoryId) { IsHomeworld = true, IsStronghold = false, IsProtectedFromStorm = true, IsProtectedFromWorm = true }, isHomeOfNormalForces, isHomeOfSpecialForces, threshold, battleBonusAtHighThreshold, battleBonusAtLowThreshold, resourceAmount, locationId);
+            _locations.Add(result);
+            return result;
+        }
+
+        private DiscoveryStronghold AddDiscoveryStronghold(int territoryId, int locationId, DiscoveryToken discovery)
+        {
+            var result = new DiscoveryStronghold(new Territory(false, true, true, true, territoryId), locationId, discovery);
+            _locations.Add(result);
+            return result;
         }
 
         public void InitializeLocationNeighbours()

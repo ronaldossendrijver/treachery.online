@@ -296,6 +296,21 @@ namespace Treachery.Shared
             }
         }
 
+        protected virtual FlightDiscoveryUsed DetermineFlightDiscoveryUsed()
+        {
+            LogInfo("DetermineFlightDiscoveryUsed()");
+
+            if (!Game.HasOrnithopters(this) && 
+                (BiggestBattalionInSpicelessNonStrongholdLocationInSandOrNotNearStronghold.Key != null || BiggestBattalionInSpicelessNonStrongholdLocationNotNearStrongholdAndSpice.Key != null) )
+            {
+                return new FlightDiscoveryUsed(Game) { Initiator = Faction };
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         private Location DetermineMostSuitableNearbyLocation(KeyValuePair<Location, Battalion> battalionAtLocation, bool includeSecondBestLocations, bool mustMove)
         {
             return DetermineMostSuitableNearbyLocation(battalionAtLocation.Key, battalionAtLocation.Value, includeSecondBestLocations, mustMove);

@@ -79,6 +79,7 @@ namespace Treachery.Shared
                 Do(DetermineClairVoyanceAnswered, ref action, evts) ||
                 Do(DetermineTraitorsSelected, ref action, evts) ||
                 Do(DetermineStormSpellPlayed, ref action, evts) ||
+                Do(DetermineTestingStationUsed, ref action, evts) ||
                 Do(DetermineThumperPlayed, ref action, evts) ||
                 Do(DetermineHarvesterPlayed, ref action, evts) ||
                 Do(DetermineAllianceBroken, ref action, evts) ||
@@ -106,6 +107,7 @@ namespace Treachery.Shared
                 Do(DetermineRockWasMelted, ref action, evts) ||
                 Do(DetermineResidualPlayed, ref action, evts) ||
                 Do(DetermineFlightUsed, ref action, evts) ||
+                Do(DetermineFlightDiscoveryUsed, ref action, evts) ||
                 Do(DetermineDiscardedSearchedAnnounced, ref action, evts) ||
                 Do(DetermineDiscardedSearched, ref action, evts) ||
                 Do(DetermineDiscardedTaken, ref action, evts) ||
@@ -121,6 +123,7 @@ namespace Treachery.Shared
                 Do(DetermineDivideResourcesAccepted, ref action, evts) ||
                 Do(DetermineBattleClaimed, ref action, evts) ||
                 Do(DetermineNexusVoted, ref action, evts) ||
+                Do(DetermineDiscoveryRevealed, ref action, evts) ||
 
                 //Brown
                 Do(DetermineBrownEconomics, ref action, evts) ||

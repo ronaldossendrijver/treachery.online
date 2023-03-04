@@ -420,6 +420,7 @@ namespace Treachery.Shared
             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyCyborgExtraMove);
 
             CurrentFlightUsed = null;
+            CurrentFlightDiscoveryUsed = null;
             CurrentPlanetology = null;
         }
 
@@ -541,6 +542,7 @@ namespace Treachery.Shared
             Enter(LastBlueIntrusion != null, Phase.BlueIntrudedByCaravan, LastTerrorTrigger != null, Phase.TerrorTriggeredByCaravan, LastAmbassadorTrigger != null, Phase.AmbassadorTriggeredByCaravan);
 
             CurrentFlightUsed = null;
+            CurrentFlightDiscoveryUsed = null;
 
             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.YellowExtraMove);
             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyCyborgExtraMove);
@@ -655,6 +657,15 @@ namespace Treachery.Shared
             Log(e);
             Discard(e.Player, TreacheryCardType.Flight);
             CurrentFlightUsed = e;
+        }
+
+        private FlightDiscoveryUsed CurrentFlightDiscoveryUsed { get; set; }
+
+        public void HandleEvent(FlightDiscoveryUsed e)
+        {
+            Log(e);
+            OwnerOfFlightDiscovery = Faction.None;
+            CurrentFlightDiscoveryUsed = e;
         }
 
         private bool MustMoveThroughStorm(Player initiator, Location from, Location to, Battalion moved)

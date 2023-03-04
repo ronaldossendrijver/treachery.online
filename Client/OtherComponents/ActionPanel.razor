@@ -272,6 +272,11 @@
                     <YesNoActionComponent GameEventType="DivideResourcesAccepted" h="@h" Title=@Skin.Current.Format("Agree with the proposed division of {0}?", Concept.Resource) Alert="true" />
                 }
                 break;
+            case "DiscoveryRevealed":
+                {
+                    <DiscoveryRevealedComponent h="@h" />
+                }
+                break;
             case "CardGiven":
                 {
                     <YesNoActionComponent GameEventType="CardGiven" h="@h" Title=@Skin.Current.Format("Give your ally the {0} you just received?", Game.CardThatMustBeKeptOrGivenToAlly) Alert="true" />
@@ -600,6 +605,11 @@
             case "FlightUsed":
                 {
                     <FlightUsedComponent h="@h" />
+                }
+                break;
+            case "FlightDiscoveryUsed":
+                {
+                    <SimpleActionComponent GameEventType="FlightDiscoveryUsed" h="@h" Title=@Skin.Current.Format("Use your {0} Discovery Token to gain extra movement speed?", DiscoveryToken.Flight) Alert="false" ConfirmLabel="Yes" />
                 }
                 break;
             case "RockWasMelted":

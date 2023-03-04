@@ -149,6 +149,7 @@ namespace Treachery.Shared
                 case Phase.MetheorAndStormSpell:
                     if (player.Has(TreacheryCardType.StormSpell) && CurrentTurn > 1) result.Add(typeof(StormSpellPlayed));
                     if (MetheorPlayed.MayPlayMetheor(this, player)) result.Add(typeof(MetheorPlayed));
+                    if (TestingStationUsed.CanBePlayed(this, player)) result.Add(typeof(TestingStationUsed));
                     break;
                 case Phase.Thumper:
                     if (player.Has(TreacheryCardType.Thumper) && CurrentTurn > 1) result.Add(typeof(ThumperPlayed));
@@ -297,6 +298,7 @@ namespace Treachery.Shared
                         if (player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Caravan)) result.Add(typeof(Caravan));
                         result.Add(typeof(Move));
                         if (FlightUsed.IsAvailable(player)) result.Add(typeof(FlightUsed));
+                        if (FlightDiscoveryUsed.IsAvailable(this, player)) result.Add(typeof(FlightDiscoveryUsed));
                         if (Planetology.CanBePlayed(this, player)) result.Add(typeof(Planetology));
                     }
                     break;
@@ -306,6 +308,7 @@ namespace Treachery.Shared
                         if (player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Caravan)) result.Add(typeof(Caravan));
                         result.Add(typeof(Move));
                         if (FlightUsed.IsAvailable(player)) result.Add(typeof(FlightUsed));
+                        if (FlightDiscoveryUsed.IsAvailable(this, player)) result.Add(typeof(FlightDiscoveryUsed));
                         if (Planetology.CanBePlayed(this, player)) result.Add(typeof(Planetology));
                     }
                     break;
@@ -527,6 +530,8 @@ namespace Treachery.Shared
 
             if (CurrentMainPhase == MainPhase.ShipmentAndMove && SetShipmentPermission.IsApplicable(this, player)) result.Add(typeof(SetShipmentPermission));
 
+            if (CurrentMainPhase == MainPhase.Collection && DiscoveryRevealed.Applicable(this, player)) result.Add(typeof(DiscoveryRevealed));
+
             if (Version <= 123)
             {
                 result.Add(typeof(HideSecrets));
@@ -552,7 +557,7 @@ namespace Treachery.Shared
                 CurrentBattle.IsAggressorOrDefender(player) &&
                 !KarmaPrevented(faction) &&
                 !player.SpecialKarmaPowerUsed &&
-                player.Has(TreacheryCardType.Karma) &&
+                player.HasKarma(this) &&
                 Applicable(Rule.AdvancedKarama))
             {
                 var planOfPink = CurrentBattle.PlanOf(Faction.Pink);
@@ -629,12 +634,12 @@ namespace Treachery.Shared
                     result.Add(typeof(RaiseDeadPlayed));
                 }
 
-                if (player.Has(TreacheryCardType.Clairvoyance))
+                if (player.Has(TreacheryCardType.Clairvoyance) || player.Occupies(Map.Shrine) && player.HasKarma(this))
                 {
                     result.Add(typeof(ClairVoyancePlayed));
                 }
 
-                if (player.HasKarma && !KarmaPrevented(faction))
+                if (!KarmaPrevented(faction) && player.HasKarma(this))
                 {
                     result.Add(typeof(Karma));
                 }
@@ -643,7 +648,7 @@ namespace Treachery.Shared
                     faction == Faction.Black &&
                     !KarmaPrevented(faction) &&
                     !player.SpecialKarmaPowerUsed &&
-                    player.Has(TreacheryCardType.Karma) &&
+                    player.HasKarma(this) &&
                     CurrentMainPhase == MainPhase.Bidding &&
                     Applicable(Rule.AdvancedKarama))
                 {
@@ -653,7 +658,7 @@ namespace Treachery.Shared
                 if (faction == Faction.Orange &&
                     !KarmaPrevented(faction) &&
                     !player.SpecialKarmaPowerUsed &&
-                    player.Has(TreacheryCardType.Karma) &&
+                    player.HasKarma(this) &&
                     CurrentMainPhase == MainPhase.ShipmentAndMove &&
                     Applicable(Rule.AdvancedKarama))
                 {
@@ -663,7 +668,7 @@ namespace Treachery.Shared
                 if (faction == Faction.Purple &&
                     !KarmaPrevented(faction) &&
                     !player.SpecialKarmaPowerUsed &&
-                    player.Has(TreacheryCardType.Karma) &&
+                    player.HasKarma(this) &&
                     CurrentMainPhase == MainPhase.Resurrection &&
                     Applicable(Rule.AdvancedKarama))
                 {
@@ -674,7 +679,7 @@ namespace Treachery.Shared
                 if (faction == Faction.Brown &&
                     !KarmaPrevented(faction) &&
                     !player.SpecialKarmaPowerUsed &&
-                    player.Has(TreacheryCardType.Karma) &&
+                    player.HasKarma(this) &&
                     Applicable(Rule.AdvancedKarama))
                 {
                     result.Add(typeof(KarmaBrownDiscard));
@@ -683,7 +688,7 @@ namespace Treachery.Shared
                 if (faction == Faction.White &&
                     !KarmaPrevented(faction) &&
                     !player.SpecialKarmaPowerUsed &&
-                    player.Has(TreacheryCardType.Karma) &&
+                    player.HasKarma(this) &&
                     Applicable(Rule.AdvancedKarama) &&
                     !HasBidToPay(player))
                 {
@@ -693,7 +698,7 @@ namespace Treachery.Shared
                 if (faction == Faction.Red &&
                     !KarmaPrevented(faction) &&
                     !player.SpecialKarmaPowerUsed &&
-                    player.Has(TreacheryCardType.Karma) &&
+                    player.HasKarma(this) &&
                     CurrentMainPhase == MainPhase.Resurrection &&
                     Applicable(Rule.AdvancedKarama))
                 {
@@ -701,7 +706,7 @@ namespace Treachery.Shared
                 }
 
                 if (faction == Faction.Grey &&
-                    (!KarmaPrevented(faction) && !player.SpecialKarmaPowerUsed && player.Has(TreacheryCardType.Karma) || KarmaHmsMovesLeft == 1) &&
+                    (!KarmaPrevented(faction) && !player.SpecialKarmaPowerUsed && player.HasKarma(this) || KarmaHmsMovesLeft == 1) &&
                     CurrentMainPhase == MainPhase.ShipmentAndMove &&
                     player == ShipmentAndMoveSequence.CurrentPlayer &&
                     player.AnyForcesIn(Map.HiddenMobileStronghold) > 0 &&
@@ -713,7 +718,7 @@ namespace Treachery.Shared
                 if (faction == Faction.Yellow && CurrentMainPhase == MainPhase.Blow && CurrentTurn > 1 &&
                     !KarmaPrevented(faction) &&
                     !player.SpecialKarmaPowerUsed &&
-                    player.Has(TreacheryCardType.Karma) &&
+                    player.HasKarma(this) &&
                     Applicable(Rule.AdvancedKarama))
                 {
                     result.Add(typeof(KarmaMonster));
@@ -724,7 +729,7 @@ namespace Treachery.Shared
                     CurrentBattle.IsInvolved(player) &&
                     !KarmaPrevented(faction) &&
                     !player.SpecialKarmaPowerUsed &&
-                    player.Has(TreacheryCardType.Karma) &&
+                    player.HasKarma(this) &&
                     Applicable(Rule.AdvancedKarama))
                 {
                     result.Add(typeof(KarmaPrescience));
