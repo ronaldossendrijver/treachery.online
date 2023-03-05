@@ -231,7 +231,7 @@ namespace Treachery.Shared
                     if (!OrangeDiscoveryTokens.IsEmpty)
                     {
                         drawnToken = OrangeDiscoveryTokens.Draw();
-                        DiscoveriesOnPlanet.Add(blowCard.DiscoveryLocation, new Discovery(drawnToken, DiscoveryTokenType.Orange));
+                        DiscoveriesOnPlanet.Add(blowCard.DiscoveryLocation, new Discovery(drawnToken, DiscoveryTokenType.Orange, blowCard.DiscoveryLocation));
                     }
                     else
                     {
@@ -243,7 +243,7 @@ namespace Treachery.Shared
                     if (!YellowDiscoveryTokens.IsEmpty)
                     {
                         drawnToken = YellowDiscoveryTokens.Draw();
-                        DiscoveriesOnPlanet.Add(blowCard.DiscoveryLocation, new Discovery(drawnToken, DiscoveryTokenType.Yellow));
+                        DiscoveriesOnPlanet.Add(blowCard.DiscoveryLocation, new Discovery(drawnToken, DiscoveryTokenType.Yellow, blowCard.DiscoveryLocation));
                     }
                     else
                     {

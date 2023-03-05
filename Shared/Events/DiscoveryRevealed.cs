@@ -5,6 +5,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace Treachery.Shared
 {
@@ -18,7 +19,10 @@ namespace Treachery.Shared
         {
         }
 
-        public DiscoveryToken Token { get; set; }
+        public int _locationId;
+
+        [JsonIgnore]
+        public Location Location { get { return Game.Map.LocationLookup.Find(_locationId); } set { _locationId = Game.Map.LocationLookup.GetId(value); } }
 
         public override Message Validate()
         {
@@ -40,13 +44,13 @@ namespace Treachery.Shared
             }
             else 
             {
-                return Message.Express(Initiator, " discover ", Token);
+                return Message.Express(Initiator, " reveal a discovery in ", Location.Territory);
             }
         }
 
-        public static bool Applicable(Game g, Player p) => g.CurrentMainPhase == MainPhase.Collection && GetTokens(g, p).Any();
+        public static bool Applicable(Game g, Player p) => g.CurrentMainPhase == MainPhase.Collection && GetLocations(g, p).Any();
 
-        public static IEnumerable<DiscoveryToken> GetTokens(Game g, Player p) => g.DiscoveriesOnPlanet.Where(kvp => g.PendingDiscoveries.Contains(kvp.Value.Token) && p.Occupies(kvp.Key.Territory)).Select(kvp => kvp.Value.Token);
+        public static IEnumerable<Location> GetLocations(Game g, Player p) => g.DiscoveriesOnPlanet.Where(kvp => g.PendingDiscoveries.Contains(kvp.Value.Token) && p.Occupies(kvp.Key.Territory)).Select(kvp => kvp.Key);
 
     }
 }

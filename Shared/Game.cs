@@ -209,6 +209,10 @@ namespace Treachery.Shared
                     EstablishDecks();
                     break;
 
+                case Phase.BeginningOfStorm:
+                    MoveHMSBeforeDiallingStorm();
+                    break;
+
                 case Phase.MetheorAndStormSpell:
                     EnterNormalStormPhase();
                     break;

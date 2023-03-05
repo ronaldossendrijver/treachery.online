@@ -12,18 +12,18 @@
     <Body>
 
         @{
-            var tokens = DiscoveryRevealed.GetTokens(Game, Player).ToList();
+            var locations = DiscoveryRevealed.GetLocations(Game, Player).ToList();
 
-            if (tokens.Count() > 1)
+            if (locations.Count() > 1)
             {
-                <SelectComponent @bind-Value="_token" Values=@tokens>
-                    <Label>Which discovery to reveal?</Label>
+                <SelectComponent @bind-Value="_location" Values=@locations>
+                    <Label>Where to reveal a discovery?</Label>
                  </SelectComponent>
             }
             else
             {
-                _token = tokens.First();
-                <div>Reveal @Name(_token)?</div>
+                _location = locations.First();
+                <div>Reveal the discovery in @Name(_location)?</div>
             }
         }
 
@@ -35,12 +35,9 @@
 
 @code {
 
-    protected override bool IsUrgent => true;
-    protected override Faction IsFactionSpecific => Faction.Cyan;
+    private Location _location;
 
-    private DiscoveryToken _token;
-
-    protected override DiscoveryRevealed ConfirmedResult => new DiscoveryRevealed(Game) { Initiator = Faction, Token = _token };
+    protected override DiscoveryRevealed ConfirmedResult => new DiscoveryRevealed(Game) { Initiator = Faction, Location = _location };
 
     protected override DiscoveryRevealed PassedResult => new DiscoveryRevealed(Game) { Initiator = Faction, Passed = true };
 }

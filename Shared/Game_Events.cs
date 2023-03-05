@@ -45,6 +45,7 @@ namespace Treachery.Shared
                     break;
                 case Phase.SelectingFactions:
                 case Phase.TradingFactions:
+                case Phase.BeginningOfStorm:
                 case Phase.MetheorAndStormSpell:
                 case Phase.StormReport:
                 case Phase.Thumper:
@@ -142,6 +143,9 @@ namespace Treachery.Shared
                     break;
                 case Phase.HmsPlacement:
                     if (faction == Faction.Grey) result.Add(typeof(PerformHmsPlacement));
+                    break;
+                case Phase.BeginningOfStorm:
+                    if (DiscoveryEntered.ValidTargets(this, player).Any()) result.Add(typeof(DiscoveryEntered));
                     break;
                 case Phase.HmsMovement:
                     if (faction == Faction.Grey) result.Add(typeof(PerformHmsMovement));

@@ -12,9 +12,16 @@ namespace Treachery.Shared
 {
     public partial class Player
     {
+        private DiscoveryEntered DetermineDiscoveryEntered()
+        {
+            var to = DiscoveryEntered.ValidTargets(Game, this).FirstOrDefault();
+            var battalionsToMove = DiscoveryEntered.ValidSources(this, to).ToDictionary(l => l, l => BattalionIn(l));
+            return new DiscoveryEntered(Game) { Initiator = Faction, ForceLocations = new Dictionary<Location, Battalion>(battalionsToMove) };
+        }
+
         private DiscoveryRevealed DetermineDiscoveryRevealed()
         {
-            return new DiscoveryRevealed(Game) { Initiator = Faction, Token = DiscoveryRevealed.GetTokens(Game, this).First() };
+            return new DiscoveryRevealed(Game) { Initiator = Faction, Location = DiscoveryRevealed.GetLocations(Game, this).First() };
         }
 
         private TestingStationUsed DetermineTestingStationUsed()

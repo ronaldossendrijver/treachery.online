@@ -120,6 +120,7 @@ namespace Treachery.Server
         public async Task RequestRedBidSupport(int hostID, RedBidSupport e) { await Request(hostID, e); }
         public async Task RequestDealOffered(int hostID, DealOffered e) { await Request(hostID, e); }
         public async Task RequestDealAccepted(int hostID, DealAccepted e) { await Request(hostID, e); }
+        public async Task RequestDiscoveryEntered(int hostID, DiscoveryEntered e) { await Request(hostID, e); }
         public async Task RequestStormDialled(int hostID, StormDialled e) { await Request(hostID, e); }
         public async Task RequestHideSecrets(int hostID, HideSecrets e) { await Request(hostID, e); }
         public async Task RequestPlayerReplaced(int hostID, PlayerReplaced e) { await Request(hostID, e); }

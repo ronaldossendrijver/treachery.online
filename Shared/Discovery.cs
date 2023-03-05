@@ -10,10 +10,13 @@ namespace Treachery.Shared
 
         public DiscoveryTokenType TokenType { get; private set; }
 
-        public Discovery(DiscoveryToken token, DiscoveryTokenType tokenType)
+        public Location Location { get; private set; }
+
+        public Discovery(DiscoveryToken token, DiscoveryTokenType tokenType, Location location)
         {
             Token = token;
             TokenType = tokenType;
+            Location = location;
         }
     }
 }

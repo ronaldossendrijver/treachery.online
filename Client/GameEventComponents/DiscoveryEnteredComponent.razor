@@ -1,0 +1,44 @@
+﻿<!--
+* Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@using Treachery.Client.GenericComponents;
+@inherits GameEventComponent<DiscoveryEntered>
+
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+
+    <Header>Enter a discovered stronghold?</Header>
+    <Body>
+
+        @if (DiscoveryEntered.ValidTargets(Game, Player).Count() > 1)
+        {
+            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="toLocation" Values=@DiscoveryEntered.ValidTargets(Game, Player)>
+                <Label>Which stronghold to enter?</Label>
+            </SelectComponent>
+        }
+        else
+        {
+            toLocation = DiscoveryEntered.ValidTargets(Game, Player).FirstOrDefault();
+            <div>Enter @Name(toLocation)?</div>
+        }
+
+        <ForceSelectionComponent Game=Game Player=Player OnChanged="@StateHasChanged" Forces=@forces Locations=@DiscoveryEntered.ValidSources(Player, toLocation) />
+        
+
+        <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation Pass="Pass"/>
+
+    </Body>
+
+</GameEventComponentLayout>
+
+@code {
+
+    private Dictionary<Location, Battalion> forces = new Dictionary<Location, Battalion>();
+
+    private DiscoveryStronghold toLocation;
+
+    override protected DiscoveryEntered ConfirmedResult => new DiscoveryEntered(Game) { Initiator = Faction, ForceLocations = forces, To = toLocation, Passed = false };
+
+    override protected DiscoveryEntered PassedResult => new DiscoveryEntered(Game) { Initiator = Faction, Passed = true };
+}

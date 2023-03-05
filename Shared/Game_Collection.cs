@@ -90,25 +90,28 @@ namespace Treachery.Shared
         }
 
         public Faction OwnerOfFlightDiscovery { get; private set; }
+        public List<DiscoveryStronghold> JustRevealedDiscoveryStrongholds { get; private set; } = new();
         public void HandleEvent(DiscoveryRevealed e)
         {
-            PendingDiscoveries.Remove(e.Token);
+            var discovery = DiscoveriesOnPlanet[e.Location];
+            PendingDiscoveries.Remove(discovery.Token);
 
             if (!e.Passed)
             {
-                var discoveryInLocation = DiscoveriesOnPlanet.FirstOrDefault(kvp => kvp.Value.Token == e.Token);
+                var discoveryInLocation = DiscoveriesOnPlanet.FirstOrDefault(kvp => kvp.Value.Token == discovery.Token);
                 DiscoveriesOnPlanet.Remove(discoveryInLocation.Key);
 
                 Log(e);
-                switch (e.Token)
+                switch (discovery.Token)
                 {
                     case DiscoveryToken.Jacurutu:
                     case DiscoveryToken.Shrine:
                     case DiscoveryToken.TestingStation:
                     case DiscoveryToken.Cistern:
                     case DiscoveryToken.ProcessingStation:
-                        var sh = Map.GetDiscoveryStronghold(e.Token);
+                        var sh = Map.GetDiscoveryStronghold(discovery.Token);
                         sh.PointAt(discoveryInLocation.Key);
+                        JustRevealedDiscoveryStrongholds.Add(sh);
                         break;
 
                     case DiscoveryToken.CardStash:
@@ -128,7 +131,7 @@ namespace Treachery.Shared
 
                     case DiscoveryToken.Flight:
                         OwnerOfFlightDiscovery = e.Initiator;
-                        Log(e.Initiator, " gain the ", e.Token, " discovery token");
+                        Log(e.Initiator, " gain the ", discovery.Token, " discovery token");
                         break;
 
                     default:
@@ -221,13 +224,6 @@ namespace Treachery.Shared
                 int totalCollectedAmount = 0;
                 var spiceLeft = l.Value;
                 
-                if (spiceLeft > 0 && thief != null)
-                {
-                    spiceLeft -= 1;
-                    thief.Resources += 1;
-                    Log(thief.Faction, " steal ", Payment(1), " from ", l.Key.Territory);
-                }
-
                 foreach (var p in playersToCollect)
                 {
                     int collectionRate = ResourceCollectionRate(p);
@@ -237,6 +233,14 @@ namespace Treachery.Shared
                     int collectedAmountByThisPlayer = Math.Min(spiceLeft, maximumSpiceThatCanBeCollected);
                     ChangeResourcesOnPlanet(l.Key, -collectedAmountByThisPlayer);
                     spiceLeft -= collectedAmountByThisPlayer;
+
+                    if (collectedAmountByThisPlayer > 0 && thief != null)
+                    {
+                        collectedAmountByThisPlayer -= 1;
+                        thief.Resources += 1;
+                        Log(thief.Faction, " steal ", Payment(1), " from the ", Concept.Resource, " collected by ", p.Faction);
+                        thief = null;
+                    }
 
                     if (playersToCollect.Length == 1)
                     {

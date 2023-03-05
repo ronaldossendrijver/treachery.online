@@ -48,6 +48,7 @@ namespace Treachery.Client
         public Dictionary<TerrorType, string> TerrorTokenDescription_STR;
         public Dictionary<DiscoveryToken, string> DiscoveryTokenName_STR;
         public Dictionary<DiscoveryToken, string> DiscoveryTokenDescription_STR;
+        public Dictionary<DiscoveryToken, string> DiscoveryTokenImage_URL;
         public Dictionary<DiscoveryTokenType, string> DiscoveryTokenTypeName_STR;
         public Dictionary<DiscoveryTokenType, string> DiscoveryTokenTypeImage_URL;
         public Dictionary<Faction, string> AmbassadorImage_URL;
@@ -275,6 +276,18 @@ namespace Treachery.Client
                     return new Point(HmsDX, HmsDX);
                 }
             }
+            else if (location is DiscoveryStronghold ds)
+            {
+                if (ds.AttachedToLocation != null)
+                {
+                    var attachedToCenter = GetCenter(ds.AttachedToLocation);
+                    return new Point(attachedToCenter.X - FORCETOKEN_RADIUS, attachedToCenter.Y - FORCETOKEN_RADIUS);
+                }
+                else
+                {
+                    return new Point(-4 * FORCETOKEN_RADIUS, -4 * FORCETOKEN_RADIUS);
+                }
+            }
             else
             {
                 return LocationCenter_Point[location.Id];
@@ -444,6 +457,10 @@ namespace Treachery.Client
             return DiscoveryTokenTypeImage_URL[dtt];
         }
 
+        public string GetImageURL(DiscoveryToken dt)
+        {
+            return DiscoveryTokenImage_URL[dt];
+        }
 
         public string Describe(DiscoveryTokenType dtt)
         {
@@ -2388,8 +2405,17 @@ namespace Treachery.Client
             
             DiscoveryTokenTypeImage_URL = new Dictionary<DiscoveryTokenType, string>()
             {
-                [DiscoveryTokenType.Yellow] = "/art/discovery1.png",
-                [DiscoveryTokenType.Orange] = "/art/discovery2.png",
+                [DiscoveryTokenType.Yellow] = "/art/discoverytype1.png",
+                [DiscoveryTokenType.Orange] = "/art/discoverytype2.png",
+            },
+
+            DiscoveryTokenImage_URL = new Dictionary<DiscoveryToken, string>()
+            {
+                [DiscoveryToken.Jacurutu] = "/art/discovery1.png",
+                [DiscoveryToken.Cistern] = "/art/discovery2.png",
+                [DiscoveryToken.TestingStation] = "/art/discovery3.png",
+                [DiscoveryToken.Shrine] = "/art/discovery4.png",
+                [DiscoveryToken.ProcessingStation] = "/art/discovery5.png",
             },
 
             StrongholdCardName_STR = new Dictionary<int, string>()

@@ -27,10 +27,26 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (e is RequestPurpleRevival rpv)
+            if (e is DiscoveryEntered)
             {
-                WriteSavegameIfApplicable(g, e.Player, "Accept or cancel revival");
+                WriteSavegameIfApplicable(g, e.Player, "DiscoveryEntered");
             }
+
+            if (e is DiscoveryRevealed dr)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "DiscoveryRevealed-" + dr.Token);
+            }
+
+            if (e is FlightDiscoveryUsed)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "FlightDiscoveryUsed");
+            }
+
+            if (e is TestingStationUsed)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "TestingStationUsed");
+            }
+
             /*
             if (e is NexusCardDrawn && e.Player.Nexus == e.Player.Faction)
             {
@@ -559,7 +575,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 200;
+            int nrOfGames = 500;
             int nrOfTurns = 7;
             int nrOfPlayers = 7;
 

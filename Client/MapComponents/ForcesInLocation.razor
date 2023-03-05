@@ -1,0 +1,56 @@
+﻿<!--
+* Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
+--->
+
+@using Treachery.Shared
+@inherits MapComponent
+
+@{
+    var pos = Skin.Current.GetCenter(Location);
+    int yOffset = 0;
+
+    if (Battalions.TryGetValue(Location, out var battalionInLocation))
+    {
+        yOffset = -(battalionInLocation.Count - 1) * Skin.Current.FORCETOKEN_RADIUS;
+
+        foreach (var battalion in battalionInLocation)
+        {
+            var player = Game.GetPlayer(battalion.Faction);
+            var threatened = Game.ThreatenedByAllyPresence(player, Location.Territory);
+
+            int xOffset = 0;
+            if (battalion.AmountOfForces > 0)
+            {
+                <MapForce X=@pos.X Y=@(yOffset + pos.Y) Special=@false Amount=@battalion.AmountOfForces Faction=@battalion.Faction Threatened=@threatened ShowPopover="   false"/>
+                xOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
+            }
+
+            if (battalion.AmountOfSpecialForces > 0)
+            {
+                <MapForce X=@(pos.X + xOffset) Y=@(yOffset + pos.Y) Special=@true Amount=@battalion.AmountOfSpecialForces Faction=@battalion.Faction Threatened=@threatened ShowPopover=" false"/>
+                xOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
+            }
+
+            yOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
+        }
+    }
+
+    if (Game.AnyForcesIn(Location.Territory) ? battalionInLocation != null : Location == Location.Territory.MiddleLocation)
+    {
+        int xOffset = 0;
+        foreach (var hero in Game.LeaderState.Where(state => state.Key is IHero && state.Value.Alive && state.Value.CurrentTerritory == Location.Territory).Select(state => state.Key))
+        {
+            <MapLeader h="h" ToShow="hero" X=@(pos.X + xOffset - Skin.Current.FORCETOKEN_RADIUS) Y=@(yOffset + pos.Y - Skin.Current.FORCETOKEN_RADIUS) Diameter="@(3 * Skin.Current.FORCETOKEN_RADIUS)" />
+            xOffset += 3 * Skin.Current.FORCETOKEN_RADIUS;
+        }
+    }
+}
+
+@code {
+
+    [Parameter]
+    public Location Location { get; set; }
+
+    [Parameter]
+    public Dictionary<Location, List<Battalion>> Battalions { get; set; }
+}
