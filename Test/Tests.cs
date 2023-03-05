@@ -27,34 +27,14 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            /*if (g.CurrentPhase == Phase.CollectionReport && g.Map.Homeworlds.Any(hw => hw.ResourceAmount > 0 && g.OccupierOf(hw) != null))
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Spice collected for occupation");
-            }*/
-
-            if (e is ResourcesTransferred)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "ResourcesTransferred");
-            }
-
-            if (e is DiscoveryEntered de)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "DiscoveryEntered-" + Skin.Current.Describe(de.To));
-            }
-
-            if (e is DiscoveryRevealed dr)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "DiscoveryRevealed-" + Skin.Current.Describe(dr.Location));
-            }
-
             if (e is FlightDiscoveryUsed)
             {
                 WriteSavegameIfApplicable(g, e.Player, "FlightDiscoveryUsed");
             }
 
-            if (e is TestingStationUsed)
+            if (e is RecruitsPlayed)
             {
-                WriteSavegameIfApplicable(g, e.Player, "TestingStationUsed");
+                WriteSavegameIfApplicable(g, e.Player, "RecruitsPlayed");
             }
 
             /*
@@ -78,10 +58,7 @@ namespace Treachery.Test
                 WriteSavegameIfApplicable(g, e.Player, "NexusVoted");
             }
 
-            if (e is RecruitsPlayed)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "RecruitsPlayed");
-            }
+
 
             if (e is CardGiven)
             {
@@ -585,7 +562,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 500;
+            int nrOfGames = 1000;
             int nrOfTurns = 7;
             int nrOfPlayers = 7;
 

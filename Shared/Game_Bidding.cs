@@ -1143,7 +1143,7 @@ namespace Treachery.Shared
             var victim = GetPlayer(e.Target);
 
             initiator.SpecialKarmaPowerUsed = true;
-            Discard(initiator, TreacheryCardType.Karma);
+            Discard(initiator, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
 
             KarmaHandSwapNumberOfCards = victim.TreacheryCards.Count;
             KarmaHandSwapTarget = e.Target;

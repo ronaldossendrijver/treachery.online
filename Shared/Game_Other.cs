@@ -329,7 +329,7 @@ namespace Treachery.Shared
 
             if (!initiator.SpecialKarmaPowerUsed)
             {
-                Discard(initiator, TreacheryCardType.Karma);
+                Discard(initiator, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
                 initiator.SpecialKarmaPowerUsed = true;
             }
 
@@ -353,7 +353,7 @@ namespace Treachery.Shared
         public void HandleEvent(KarmaBrownDiscard e)
         {
             RecentMilestones.Add(Milestone.Discard);
-            Discard(e.Player, TreacheryCardType.Karma);
+            Discard(e.Player, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
             Log(e);
 
             foreach (var card in e.Cards)
@@ -367,7 +367,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(KarmaWhiteBuy e)
         {
-            Discard(e.Player, TreacheryCardType.Karma);
+            Discard(e.Player, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
             Log(e);
             e.Player.TreacheryCards.Add(e.Card);
             WhiteCache.Remove(e.Card);
@@ -381,7 +381,7 @@ namespace Treachery.Shared
             Log(e);
             var initiator = GetPlayer(e.Initiator);
 
-            Discard(initiator, TreacheryCardType.Karma);
+            Discard(initiator, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
             initiator.SpecialKarmaPowerUsed = true;
 
             if (e.Hero != null)
@@ -409,7 +409,7 @@ namespace Treachery.Shared
         public void HandleEvent(KarmaMonster e)
         {
             var initiator = GetPlayer(e.Initiator);
-            Discard(initiator, TreacheryCardType.Karma);
+            Discard(initiator, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
             initiator.SpecialKarmaPowerUsed = true;
             Log(e);
             RecentMilestones.Add(Milestone.Karma);
@@ -426,7 +426,7 @@ namespace Treachery.Shared
         public void HandleEvent(KarmaPrescience e)
         {
             var initiator = GetPlayer(e.Initiator);
-            Discard(initiator, TreacheryCardType.Karma);
+            Discard(initiator, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
             initiator.SpecialKarmaPowerUsed = true;
             Log(e);
             RecentMilestones.Add(Milestone.Karma);
@@ -437,7 +437,7 @@ namespace Treachery.Shared
         public void HandleEvent(KarmaPinkDial e)
         {
             var initiator = GetPlayer(e.Initiator);
-            Discard(initiator, TreacheryCardType.Karma);
+            Discard(initiator, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
             initiator.SpecialKarmaPowerUsed = true;
             RecentMilestones.Add(Milestone.Karma);
             var myLeader = CurrentBattle.PlanOf(e.Initiator).Hero;

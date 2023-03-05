@@ -459,7 +459,7 @@ namespace Treachery.Shared
         public void HandleEvent(KarmaRevivalPrevention e)
         {
             CurrentKarmaRevivalPrevention = e;
-            Discard(e.Player, TreacheryCardType.Karma);
+            Discard(e.Player, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
             e.Player.SpecialKarmaPowerUsed = true;
             Log(e);
             RecentMilestones.Add(Milestone.Karma);
