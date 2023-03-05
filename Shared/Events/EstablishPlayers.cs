@@ -200,11 +200,6 @@ namespace Treachery.Shared
             return result;
         }
 
-        public static IEnumerable<Ruleset> AvailableRulesets()
-        {
-            return Enumerations.GetValuesExceptDefault(typeof(Ruleset), Ruleset.None);
-        }
-
         public static IEnumerable<RuleGroup> AvailableRuleGroups()
         {
             var result = new List<RuleGroup>();

@@ -31,7 +31,7 @@
             <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="StateHasChanged" />
         }
 
-        <SelectComponent Disabled="@Readonly" @bind-Value="@Ruleset" Values=@EstablishPlayers.AvailableRulesets()>
+        <SelectComponent Disabled="@Readonly" @bind-Value="@Ruleset" Values=@Game.GetAvailableRulesets()>
             <Label>Rules</Label>
         </SelectComponent>
 

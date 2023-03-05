@@ -3,6 +3,7 @@
  */
 
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 namespace Treachery.Shared
@@ -302,6 +303,11 @@ namespace Treachery.Shared
             return Enumerations.GetValues<Rule>(typeof(Rule)).Where(r => GetRuleGroup(r) == group && GetRuleExpansion(r) <= expansionLevel);
         }
 
+        public static IEnumerable<Ruleset> GetAvailableRulesets()
+        {
+            return Enumerations.GetValuesExceptDefault(typeof(Ruleset), Ruleset.None).Where(rs => GetRulesetExpansion(rs) <= ExpansionLevel);
+        }
+
         public bool Applicable(Rule rule)
         {
             return Rules.Contains(rule) || RulesForBots.Contains(rule);
@@ -401,6 +407,36 @@ namespace Treachery.Shared
             }
 
             return RuleGroup.None;
+        }
+
+        public static int GetRulesetExpansion(Ruleset ruleset)
+        {
+            switch (ruleset)
+            {
+                case Ruleset.None:
+                case Ruleset.BasicGame:
+                case Ruleset.AdvancedGame:
+                case Ruleset.ServerClassic:
+                case Ruleset.Custom:
+                case Ruleset.AllExpansionsBasicGame:
+                case Ruleset.AllExpansionsAdvancedGame:
+                    return 0;
+
+                case Ruleset.ExpansionBasicGame:
+                case Ruleset.ExpansionAdvancedGame:
+                    return 1;
+
+                case Ruleset.Expansion2BasicGame:
+                case Ruleset.Expansion2AdvancedGame:
+                    return 2;
+
+                case Ruleset.Expansion3BasicGame:
+                case Ruleset.Expansion3AdvancedGame:
+                    return 3;
+
+            }
+
+            return int.MaxValue;
         }
 
         public static int GetRuleExpansion(Rule rule)

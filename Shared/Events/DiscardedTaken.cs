@@ -55,7 +55,7 @@ namespace Treachery.Shared
 
         public static bool CanBePlayed(Game g, Player p)
         {
-            return p.Has(TreacheryCardType.TakeDiscarded) && ValidCards(g, p).Any();
+            return !g.CurrentPhaseIsUnInterruptable && p.Has(TreacheryCardType.TakeDiscarded) && ValidCards(g, p).Any();
         }
     }
 }
