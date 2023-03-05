@@ -341,13 +341,12 @@ namespace Treachery.Shared
             LogInfo("DetermineShipment_TakeVacantStronghold()");
 
             Location target = null;
-            var validStrongholdsToShipTo = ValidShipmentLocations.Where(l => l.IsStronghold).ToList();
 
             if (Faction == Faction.Grey && VacantAndValid(Game.Map.HiddenMobileStronghold)) target = Game.Map.HiddenMobileStronghold;
-            else if (AnyForcesIn(Game.Map.Arrakeen) < 8 && VacantAndValid(Game.Map.Carthag)) target = Game.Map.Carthag;
             else if (AnyForcesIn(Game.Map.Carthag) < 8 && VacantAndValid(Game.Map.Arrakeen)) target = Game.Map.Arrakeen;
-            else if (VacantAndValid(Game.Map.HabbanyaSietch)) target = Game.Map.HabbanyaSietch;
+            else if (AnyForcesIn(Game.Map.Arrakeen) < 8 && VacantAndValid(Game.Map.Carthag)) target = Game.Map.Carthag;
             else if (VacantAndValid(Game.Map.TueksSietch)) target = Game.Map.TueksSietch;
+            else if (VacantAndValid(Game.Map.HabbanyaSietch)) target = Game.Map.HabbanyaSietch;
             else if (VacantAndValid(Game.Map.Carthag)) target = Game.Map.Carthag;
             else if (VacantAndValid(Game.Map.Arrakeen)) target = Game.Map.Arrakeen;
             else if (VacantAndValid(Game.Map.SietchTabr) && (LastTurn || !Game.IsInStorm(Game.Map.SietchTabr))) target = Game.Map.SietchTabr;
@@ -356,6 +355,8 @@ namespace Treachery.Shared
                 if (VacantAndValid(Game.Map.ShieldWall.Locations.First())) target = Game.Map.ShieldWall.Locations.First();
                 else if (VacantAndValid(Game.Map.ShieldWall.Locations.Last())) target = Game.Map.ShieldWall.Locations.Last();
             }
+
+            if (target == null) target = ValidShipmentLocations.Where(l => l.IsStronghold).FirstOrDefault(s => VacantAndValid(s));
 
             if (target != null)
             {
