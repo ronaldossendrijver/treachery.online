@@ -98,10 +98,11 @@ namespace Treachery.Shared
 
             if (!e.Passed)
             {
-                var discoveryInLocation = DiscoveriesOnPlanet.FirstOrDefault(kvp => kvp.Value.Token == discovery.Token);
-                DiscoveriesOnPlanet.Remove(discoveryInLocation.Key);
+                DiscoveriesOnPlanet.Remove(discovery.Location);
 
-                Log(e);
+                Log(e.Initiator, " reveal ", discovery.Token, " in ", discovery.Location.Territory);
+
+
                 switch (discovery.Token)
                 {
                     case DiscoveryToken.Jacurutu:
@@ -110,7 +111,7 @@ namespace Treachery.Shared
                     case DiscoveryToken.Cistern:
                     case DiscoveryToken.ProcessingStation:
                         var sh = Map.GetDiscoveryStronghold(discovery.Token);
-                        sh.PointAt(discoveryInLocation.Key);
+                        sh.PointAt(discovery.Location);
                         JustRevealedDiscoveryStrongholds.Add(sh);
                         break;
 

@@ -10,6 +10,161 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
+        #region Nexus
+
+        public readonly IList<AllianceOffered> CurrentAllianceOffers = new List<AllianceOffered>();
+
+        public void HandleEvent(AllianceOffered e)
+        {
+            var matchingOffer = CurrentAllianceOffers.FirstOrDefault(x => x.Initiator == e.Target && x.Target == e.Initiator);
+            if (matchingOffer != null)
+            {
+                MakeAlliance(e.Initiator, e.Target);
+
+                AllianceOffered invalidOffer;
+                while ((invalidOffer = CurrentAllianceOffers.FirstOrDefault(x => x.By(e.Initiator) || x.Initiator == e.Target)) != null)
+                {
+                    CurrentAllianceOffers.Remove(invalidOffer);
+                }
+
+                if (Version > 150)
+                {
+                    HasActedOrPassed.Add(e.Initiator);
+                    HasActedOrPassed.Add(e.Target);
+                }
+            }
+            else
+            {
+                Log(e);
+                CurrentAllianceOffers.Add(e);
+            }
+        }
+
+        private void MakeAlliance(Faction a, Faction b)
+        {
+            var playerA = GetPlayer(a);
+            var playerB = GetPlayer(b);
+            playerA.Ally = b;
+            playerB.Ally = a;
+            DiscardNexusCard(playerA);
+            DiscardNexusCard(playerB);
+            Log(a, " and ", b, " are now allies");
+
+            if (Version > 150)
+            {
+                SetPermissions(a, true);
+                SetPermissions(b, true);
+            }
+        }
+
+        public void HandleEvent(AllianceBroken e)
+        {
+            Log(e);
+            BreakAlliance(e.Initiator);
+            LetFactionsDiscardSurplusCards();
+        }
+
+        private void BreakAlliance(Faction f)
+        {
+            var initiator = GetPlayer(f);
+            var currentAlly = GetPlayer(initiator.Ally);
+
+            if (Version <= 150)
+            {
+                if (f == Faction.Orange || initiator.Ally == Faction.Orange)
+                {
+                    AllyMayShipAsOrange = false;
+                }
+
+                if (f == Faction.Red || initiator.Ally == Faction.Red)
+                {
+                    RedWillPayForExtraRevival = 0;
+                }
+
+                if (f == Faction.Yellow || initiator.Ally == Faction.Yellow)
+                {
+                    YellowWillProtectFromMonster = false;
+                    YellowAllowsThreeFreeRevivals = false;
+                }
+            }
+            else
+            {
+                SetPermissions(f, false);
+                SetPermissions(initiator.Ally, false);
+            }
+
+            if (PermittedUseOfAllySpice.ContainsKey(f))
+            {
+                PermittedUseOfAllySpice.Remove(f);
+            }
+
+            if (PermittedUseOfAllySpice.ContainsKey(initiator.Ally))
+            {
+                PermittedUseOfAllySpice.Remove(initiator.Ally);
+            }
+
+            if (PermittedUseOfAllyKarma.ContainsKey(f))
+            {
+                PermittedUseOfAllyKarma.Remove(f);
+            }
+
+            if (PermittedUseOfAllyKarma.ContainsKey(initiator.Ally))
+            {
+                PermittedUseOfAllyKarma.Remove(initiator.Ally);
+            }
+
+            initiator.Ally = Faction.None;
+            currentAlly.Ally = Faction.None;
+        }
+
+        private void SetPermissions(Faction f, bool enabled)
+        {
+            switch (f)
+            {
+                case Faction.Orange: AllyMayShipAsOrange = enabled; break;
+                case Faction.Purple: AllyMayReviveAsPurple = enabled; break;
+                case Faction.Grey: AllyMayReplaceCards = enabled; break;
+                case Faction.Blue: BlueAllowsUseOfVoice = enabled; break;
+                case Faction.Red: RedWillPayForExtraRevival = enabled ? 3 : 0; break;
+                case Faction.White: WhiteAllowsUseOfNoField = enabled; break;
+                case Faction.Yellow: 
+                    YellowWillProtectFromMonster = enabled;
+                    YellowAllowsThreeFreeRevivals = enabled;
+                    YellowSharesPrescience = enabled;
+                    YellowRefundsBattleDial = enabled;
+                    break;
+                case Faction.Green: GreenSharesPrescience = enabled; break;
+                case Faction.Cyan: CyanAllowsKeepingCards = enabled; break;
+                case Faction.Pink: PinkSharesAmbassadors = enabled; break;
+            }
+        }
+
+        private bool NexusHasOccured { get; set; } = false;
+
+        private void EndNexus()
+        {
+            NexusHasOccured = true;
+            CurrentAllianceOffers.Clear();
+
+            if (YellowRidesMonster.IsApplicable(this))
+            {
+                Enter(CurrentPhase == Phase.AllianceA, Phase.YellowRidingMonsterA, Phase.YellowRidingMonsterB);
+            }
+            else
+            {
+                if (CurrentPhase == Phase.AllianceA)
+                {
+                    Enter(Applicable(Rule.IncreasedResourceFlow), EnterBlowB, StartNexusCardPhase);
+                }
+                else if (CurrentPhase == Phase.AllianceB)
+                {
+                    StartNexusCardPhase();
+                }
+            }
+        }
+
+        #endregion
+
         #region Permissions
 
         public void HandleEvent(AllyPermission e)

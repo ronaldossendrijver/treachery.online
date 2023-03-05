@@ -48,10 +48,12 @@
     {
         var pos = Skin.Current.GetCenter(location);
         bool showForces = forceLocations.ContainsKey(location);
+        float forceDiameter = 2 * Skin.Current.FORCETOKEN_RADIUS;
 
         if (location is HiddenMobileStronghold hms)
         {
             if (!showHMS) showForces = false;
+            forceDiameter = 1.5f * Skin.Current.FORCETOKEN_RADIUS;
 
             <Image X="@(pos.X - 0.7f * Skin.Current.HmsRadius)"
                Y="@(pos.Y - Skin.Current.HmsRadius)"
@@ -59,10 +61,10 @@
                Src="@Skin.Current.HMS_URL"
                ShadowColor="@Skin.Current.SHADOW" ShadowX="5" ShadowY="5" ShadowBlur="1"
                Opacity="@(showHMS ? 1f : 0.3f)"
-               Popover="@Intel(h.Game.Map.HiddenMobileStronghold)"
-               OnClick="@(e => OnClick(e, h.Game.Map.HiddenMobileStronghold))" />
+               Popover="@Intel(location)"
+               OnClick="@(e => OnClick(e, location))" />
 
-            @if (showHMS && h.Status.HighlightedTerritories.Contains(h.Game.Map.HiddenMobileStronghold.Territory))
+            @if (showHMS && h.Status.HighlightedTerritories.Contains(location.Territory))
             {
                 <Circle X="(pos.X + 0.3f * Skin.Current.HmsRadius)" Y="pos.Y" Radius="(0.85f * Skin.Current.HmsRadius)"
                     FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1" />
@@ -78,9 +80,11 @@
         }
         else if (location is DiscoveryStronghold ds)
         {
-            <Image X=@(pos.X - 2 * Skin.Current.FORCETOKEN_RADIUS) Y=@(pos.Y - 2 * Skin.Current.FORCETOKEN_RADIUS) Diameter=@(4 * Skin.Current.FORCETOKEN_RADIUS) 
-                Src=@Skin.Current.GetImageURL(ds.Discovery) Popover=@Skin.Current.Describe(ds.Territory)
-                Opacity="0.9f" ShadowX="2" ShadowY="2" />
+            forceDiameter = 1.5f * Skin.Current.FORCETOKEN_RADIUS;
+
+            <Image X=@(pos.X - 1.5f * Skin.Current.FORCETOKEN_RADIUS) Y=@(pos.Y - 2f * Skin.Current.FORCETOKEN_RADIUS) Diameter=@(3 * Skin.Current.FORCETOKEN_RADIUS) 
+                Src=@Skin.Current.GetImageURL(ds.Discovery) Popover=@Intel(ds)
+                ShadowX=1 ShadowY=1 />
         }
         else if (Game.DiscoveriesOnPlanet.TryGetValue(location, out var discovery))
         {
@@ -88,14 +92,14 @@
                 (Player.Faction == Faction.Yellow && discovery.TokenType == DiscoveryTokenType.Yellow || Player.Faction == Faction.Orange && discovery.TokenType == DiscoveryTokenType.Orange) ?
                 $"{Skin.Current.Describe(discovery.Token)} - {Skin.Current.GetDiscoveryTokenDescription(discovery.Token)}" : Skin.Current.Describe(discovery.TokenType);
 
-            <Image X=@(pos.X - 2 * Skin.Current.FORCETOKEN_RADIUS) Y=@pos.Y Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS) 
-                Src=@Skin.Current.GetImageURL(discovery.TokenType) Popover=@popoverToShow
-                Opacity="0.8f" ShadowX="2" ShadowY="2" />
+            <Image X=@(pos.X - 3 * Skin.Current.FORCETOKEN_RADIUS) Y=@(pos.Y - 3 * Skin.Current.FORCETOKEN_RADIUS) Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS)
+               Src=@Skin.Current.GetImageURL(discovery.TokenType) Popover=@popoverToShow
+                Opacity="0.9f" ShadowX=1 ShadowY=1 />
         }
 
         if (showForces)
         {
-            <ForcesInLocation h=@h Location=@location Battalions=forceLocations />
+            <ForcesInLocation h=@h Location=@location Battalions=@forceLocations Diameter=@forceDiameter />
         }
     }
 }

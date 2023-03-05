@@ -78,6 +78,7 @@ namespace Treachery.Client
             {
                 /* Phase Beginnings */
 
+                Phase.BeginningOfStorm or 
                 Phase.Thumper or
                 Phase.BeginningOfCharity or
                 Phase.BeginningOfBidding or

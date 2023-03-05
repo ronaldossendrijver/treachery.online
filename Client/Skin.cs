@@ -281,7 +281,7 @@ namespace Treachery.Client
                 if (ds.AttachedToLocation != null)
                 {
                     var attachedToCenter = GetCenter(ds.AttachedToLocation);
-                    return new Point(attachedToCenter.X - FORCETOKEN_RADIUS, attachedToCenter.Y - FORCETOKEN_RADIUS);
+                    return new Point(attachedToCenter.X - 2 * FORCETOKEN_RADIUS, attachedToCenter.Y - 2 * FORCETOKEN_RADIUS);
                 }
                 else
                 {

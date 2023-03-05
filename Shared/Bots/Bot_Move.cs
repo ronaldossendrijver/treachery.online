@@ -341,6 +341,9 @@ namespace Treachery.Shared
             if (result == null) result = WinnableNearbyStronghold(location, battalion);
             LogInfo("Suitable WinnableNearbyStronghold: {0}", result);
 
+            if (result == null && !LastTurn) result = BestSafeAndNearbyDiscovery(location, battalion, false);
+            LogInfo("Nearby Discovery: {0}", result);
+
             if (result == null && !LastTurn) result = BestSafeAndNearbyResources(location, battalion, true);
             LogInfo("Suitable BestSafeAndNearbyResources with fighting: {0}", result);
 

@@ -27,14 +27,14 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (e is DiscoveryEntered)
+            if (e is DiscoveryEntered de)
             {
-                WriteSavegameIfApplicable(g, e.Player, "DiscoveryEntered");
+                WriteSavegameIfApplicable(g, e.Player, "DiscoveryEntered-" + Skin.Current.Describe(de.To));
             }
 
             if (e is DiscoveryRevealed dr)
             {
-                WriteSavegameIfApplicable(g, e.Player, "DiscoveryRevealed-" + dr.Token);
+                WriteSavegameIfApplicable(g, e.Player, "DiscoveryRevealed-" + Skin.Current.Describe(dr.Location));
             }
 
             if (e is FlightDiscoveryUsed)
