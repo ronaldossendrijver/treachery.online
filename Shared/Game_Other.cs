@@ -1075,6 +1075,14 @@ namespace Treachery.Shared
             }
         }
 
+        public void HandleEvent(ResourcesTransferred e)
+        {
+            Log(e);
+            e.Player.Resources -= e.Resources;
+            e.Player.TransferrableResources -= e.Resources;
+            e.Player.AlliedPlayer.Resources += e.Resources;
+        }
+
         private void LogPreventionByKarma(FactionAdvantage prevented)
         {
             Log(TreacheryCardType.Karma, " prevents ", prevented);

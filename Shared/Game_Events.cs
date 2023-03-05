@@ -746,6 +746,8 @@ namespace Treachery.Shared
                     result.Add(typeof(BlueBattleAnnouncement));
                 }
 
+                if (ResourcesTransferred.CanBePlayed(this, player)) result.Add(typeof(ResourcesTransferred));
+
                 if (Players.Count > 1 &&
                     Donated.ValidTargets(this, player).Any() &&
                     (isHost || player.Resources > 0) &&

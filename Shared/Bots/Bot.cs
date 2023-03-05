@@ -125,6 +125,7 @@ namespace Treachery.Shared
                 Do(DetermineNexusVoted, ref action, evts) ||
                 Do(DetermineDiscoveryRevealed, ref action, evts) ||
                 Do(DetermineDiscoveryEntered, ref action, evts) ||
+                Do(DetermineResourcesTransferred, ref action, evts) ||
 
                 //Brown
                 Do(DetermineBrownEconomics, ref action, evts) ||

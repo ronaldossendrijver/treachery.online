@@ -27,6 +27,16 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            /*if (g.CurrentPhase == Phase.CollectionReport && g.Map.Homeworlds.Any(hw => hw.ResourceAmount > 0 && g.OccupierOf(hw) != null))
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Spice collected for occupation");
+            }*/
+
+            if (e is ResourcesTransferred)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "ResourcesTransferred");
+            }
+
             if (e is DiscoveryEntered de)
             {
                 WriteSavegameIfApplicable(g, e.Player, "DiscoveryEntered-" + Skin.Current.Describe(de.To));

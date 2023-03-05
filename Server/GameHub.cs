@@ -52,6 +52,7 @@ namespace Treachery.Server
         public async Task RequestEstablishPlayers(int hostID, EstablishPlayers e) { await Request(hostID, e); }
         public async Task RequestEndPhase(int hostID, EndPhase e) { await Request(hostID, e); }
         public async Task RequestDonated(int hostID, Donated e) { await Request(hostID, e); }
+        public async Task RequestResourcesTransferred(int hostID, ResourcesTransferred e) { await Request(hostID, e); }
         public async Task RequestFactionSelected(int hostID, FactionSelected e) { await Request(hostID, e); }
         public async Task RequestFactionTradeOffered(int hostID, FactionTradeOffered e) { await Request(hostID, e); }
         public async Task RequestPerformSetup(int hostID, PerformSetup e) { await Request(hostID, e); }

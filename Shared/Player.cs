@@ -30,6 +30,8 @@ namespace Treachery.Shared
 
         public int Resources { get; set; } = 0;
 
+        public int TransferrableResources { get; set; } = 0;
+
         public int Extortion { get; set; } = 0;
 
         public int Bribes { get; set; } = 0;

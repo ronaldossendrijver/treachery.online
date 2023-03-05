@@ -12,6 +12,17 @@ namespace Treachery.Shared
 {
     public partial class Player
     {
+        private ResourcesTransferred DetermineResourcesTransferred()
+        {
+            var amount = ResourcesTransferred.MaxAmount(this);
+            if (Resources - amount > 15 && AlliedPlayer.Resources < Resources)
+            {
+                return new ResourcesTransferred(Game) { Initiator = Faction, Resources = amount };
+            }
+
+            return null;
+        }
+
         private DiscoveryEntered DetermineDiscoveryEntered()
         {
             var to = DiscoveryEntered.ValidTargets(Game, this).FirstOrDefault();

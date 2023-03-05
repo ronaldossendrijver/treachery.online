@@ -201,6 +201,7 @@ namespace Treachery.Shared
                 if (occupier != null)
                 {
                     Collect(occupier.Faction, homeworld.Territory, homeworld.ResourceAmount);
+                    occupier.TransferrableResources += homeworld.ResourceAmount;
                 }
             }
         }
@@ -277,10 +278,6 @@ namespace Treachery.Shared
                 }
             }
         }
-
-
-
-
 
         public int ResourceCollectionRate(Player p)
         {

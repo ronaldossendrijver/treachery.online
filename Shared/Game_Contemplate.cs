@@ -15,6 +15,11 @@ namespace Treachery.Shared
 
         private void EnterMentatPhase()
         {
+            foreach (var player in Players)
+            {
+                player.TransferrableResources = 0;
+            }
+
             MainPhaseStart(MainPhase.Contemplate, Version >= 103);
             AllowAllPreventedFactionAdvantages(null);
             HandleEconomics();
