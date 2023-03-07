@@ -57,7 +57,7 @@ namespace Treachery.Shared
 
             if (r.UsesRedSecretAlly)
             {
-                LogNexusPlayed(r.Initiator, Faction.Red, "Cunning", "revive ", 3 , " additional forces beyond revival limits for free");
+                LogNexusPlayed(r.Initiator, Faction.Red, "Secret Ally", "revive ", 3 , " additional forces beyond revival limits for free");
                 DiscardNexusCard(initiator);
             }
 

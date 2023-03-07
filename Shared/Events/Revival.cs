@@ -73,6 +73,7 @@ namespace Treachery.Shared
             if (Game.Version >= 124)
             {
                 var limit = Game.GetRevivalLimit(Game, p);
+                if (UsesRedSecretAlly) limit += 3;
                 if (AmountOfForces + AmountOfSpecialForces > limit) return Message.Express("You can't revive more than your limit of ", limit);
 
                 var allyLimit = ValidMaxRevivalsByRed(Game, p);
@@ -81,9 +82,7 @@ namespace Treachery.Shared
             else
             {
                 int emperorRevivals = ValidMaxRevivalsByRed(Game, p);
-
                 int limit = Game.GetRevivalLimit(Game, p);
-
                 if (AmountOfForces + AmountOfSpecialForces > limit + emperorRevivals) Message.Express("You can't revive that many");
             }
 

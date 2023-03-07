@@ -154,7 +154,8 @@
         ExtraSpecialForcesPaidByRed = specialForcesPaidByRed, 
         Hero = hero, 
         AssignSkill = assignSkill,
-        Location = location
+        Location = location,
+        UsesRedSecretAlly = useRedSecretAlly
     };
 
     private RevivalCost CostOfRevival => Revival.DetermineCost(Game, Player, hero, amountOfForces, amountOfSpecialForces, forcesPaidByRed, specialForcesPaidByRed, useRedSecretAlly);

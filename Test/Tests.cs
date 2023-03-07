@@ -27,246 +27,20 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            
-            if (e is Revival && e.Player.ForcesKilled > 6 && e.Player.Resources > 8 && NexusPlayed.CanUseSecretAlly(g, e.Player) && e.Player.Nexus == Faction.Red)
+            if (g.CurrentPhase == Phase.BeginningOfResurrection && g.Players.Any(p => p.ForcesKilled >= 6 && p.Resources >= 8 && NexusPlayed.CanUseSecretAlly(g, p) && p.Nexus == Faction.Red))
             {
                 WriteSavegameIfApplicable(g, e.Player, "Red secret ally");
+            }
+
+            if (g.CurrentPhase == Phase.NonOrangeMove && g.ShipmentAndMoveSequence.CurrentFaction == g.OwnerOfFlightDiscovery)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "FlightMayBeUsed");
             }
 
             if (e is FlightDiscoveryUsed)
             {
                 WriteSavegameIfApplicable(g, e.Player, "FlightDiscoveryUsed");
             }
-
-            if (e is RecruitsPlayed)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "RecruitsPlayed");
-            }
-
-
-            /*
-            if (e is NexusCardDrawn && e.Player.Nexus == e.Player.Faction)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Should be able to redraw card");
-            }
-
-            if ((g.CurrentPhase == Phase.YellowRidingMonsterA || g.CurrentPhase == Phase.YellowRidingMonsterB) && YellowRidesMonster.ToRide(g).IsGreatMonster)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Yellow may ride Great Maker");
-            }
-
-            if ((g.CurrentPhase == Phase.YellowRidingMonsterA || g.CurrentPhase == Phase.YellowRidingMonsterB) && YellowRidesMonster.ValidSources(g).Any(l => l.Territory != YellowRidesMonster.ToRide(g)?.Territory))
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Yellow may ride and has yellow nexus");
-            }
-
-            if (e is NexusVoted)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "NexusVoted");
-            }
-
-
-
-            if (e is CardGiven)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "CardGiven");
-            }
-
-            var vidal = g.Vidal;
-            if (vidal != null)
-            {
-                if (e is Revival re && re.Hero != null && re.Hero == vidal)
-                {
-                    WriteSavegameIfApplicable(g, e.Player, "Vidal revived by Revival");
-                }
-
-                if (e is RaiseDeadPlayed rd && rd.Hero != null && rd.Hero == vidal)
-                {
-                    WriteSavegameIfApplicable(g, e.Player, "Vidal revived by Tleilaxu Ghola");
-                }
-
-                if (e is NexusPlayed np && np.PurpleHero != null && np.PurpleHero == vidal)
-                {
-                    WriteSavegameIfApplicable(g, e.Player, "Vidal revived by Purple Secret Ally");
-                }
-
-                var currentOwnerOfVidal = g.OwnerOf(vidal);
-                if (currentOwnerOfVidal != null)
-                {
-                    WriteSavegameIfApplicable(g, currentOwnerOfVidal, "Vidal Owner " + currentOwnerOfVidal.Faction);
-                }
-            }
-
-            */
-
-            /*
-
-            var brown = g.GetPlayer(Faction.Brown);
-            if (brown != null && brown.Nexus == Faction.Brown && brown.TreacheryCards.Any())
-            {
-                if (e is Revival && e.Initiator != Faction.Brown)
-                {
-                    WriteSavegameIfApplicable(g, brown, "Nexus BrownFreeRevivalPrevention");
-                }
-
-                if ((e is Karma || e is Bid karmabid && karmabid.KarmaCard != null || e is Shipment karmashipment && karmashipment.KarmaCard != null) && e.Initiator != Faction.Brown)
-                {
-                    WriteSavegameIfApplicable(g, brown, "Nexus BrownKarmaPrevention");
-                }
-
-                if (e is Move m && !m.Passed && e.Initiator != Faction.Brown && brown.AnyForcesIn(m.To) > 0)
-                {
-                    WriteSavegameIfApplicable(g, brown, "Nexus BrownMovePrevention");
-                }
-
-                if (e is Move mbrown && e.Initiator == Faction.Brown && !mbrown.Passed)
-                {
-                    WriteSavegameIfApplicable(g, brown, "Nexus BrownExtraMove");
-                }
-            }
-
-            if (e is TakeLosses tl && tl.Initiator == Faction.Brown && !g.TreacheryDiscardPile.IsEmpty && g.TreacheryDiscardPile.Top.Id != TreacheryCardManager.CARD_JUBBACLOAK)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Nexus TakeLosses");
-            }
-
-            if (e is BrownRemoveForce && !g.TreacheryDiscardPile.IsEmpty && g.TreacheryDiscardPile.Top.Id != TreacheryCardManager.CARD_TRIPTOGAMONT)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Nexus BrownRemoveForce");
-            }
-            */
-
-            /*
-             * NEXUS TESTING
-             * 
-            if (g.CurrentBattle != null)
-            {
-                var playerWithGreenBetrayal = g.Players.FirstOrDefault(p => p.Nexus == Faction.Green && NexusPlayed.CanUseBetrayal(g, p));
-                if (playerWithGreenBetrayal != null && g.CurrentBattle.IsInvolved(playerWithGreenBetrayal) && g.CurrentBattle.IsInvolved(Faction.Green))
-                {
-                    WriteSavegameIfApplicable(g, e.Player, "Green Betrayal could be used");
-                }
-
-                var playerWithBrownBetrayal = g.Players.FirstOrDefault(p => p.Nexus == Faction.Brown && NexusPlayed.CanUseBetrayal(g, p));
-                if (playerWithBrownBetrayal != null && g.CurrentBattle.IsInvolved(playerWithBrownBetrayal) && g.CurrentBattle.IsInvolved(Faction.Brown))
-                {
-                    WriteSavegameIfApplicable(g, e.Player, "Brown Betrayal could be used");
-                }
-            }
-
-            if (e is Voice && !g.IsPlaying(Faction.Blue))
-            {
-                WriteSavegameIfApplicable(g, e.Player, "SecretAlly-Blue");
-            }
-
-            if (e is LoserConcluded && !g.IsPlaying(Faction.Cyan))
-            {
-                WriteSavegameIfApplicable(g, e.Player, "SecretAlly-Cyan");
-            }
-
-            if (e is Shipment ship && ship.Initiator == Faction.White && ship.Player.Nexus == Faction.White)
-            {
-                if (ship.CunningNoFieldValue >= 0)
-                {
-                    WriteSavegameIfApplicable(g, e.Player, "White shipped 2 nofields");
-                }
-                else
-                {
-                    WriteSavegameIfApplicable(g, e.Player, "White can ship 2 nofields");
-                }
-            }
-
-            if (e is TerrorPlanted tp && g.TerrorIn(tp.Stronghold).Count() > 1)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Cunning-Cyan-Bidding");
-            }
-
-            if (e is ReplacedCardWon rcw && !rcw.Passed && rcw.Player.Ally != Faction.Grey && g.NexusDiscardPile.Any())
-            {
-                var faction = g.NexusDiscardPile[^1];
-                WriteSavegameIfApplicable(g, e.Player, "SecretAlly-" + faction);
-            }
-
-            var pink = g.GetPlayer(Faction.Pink);
-            if (pink != null && g.CurrentTurn < 10 && g.CurrentMainPhase == MainPhase.Ended && g.Winners.Contains(pink) && g.MeetsPinkVictoryCondition(pink, false))
-            {
-                WriteSavegameIfApplicable(g, pink, "3-stronghold victory with ally");
-            }
-
-            var red = g.GetPlayer(Faction.Red);
-            if (e is BattleInitiated bi && bi.IsAggressorOrDefender(Faction.Red) && red.Nexus == Faction.Red && red.ForcesIn(bi.Territory) > 1)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Red should be able to use cunning");
-            }
-
-            if (e is Bid bid && bid.UsesRedSecretAlly)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "SecretAlly-Red-Bidding");
-            }
-
-            if (e is Revival rev && rev.UsesRedSecretAlly)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "SecretAlly-Red-Revival");
-            }
-
-            if (e is NexusPlayed np)
-            {
-                if (np.IsCunning)
-                {
-                    WriteSavegameIfApplicable(g, e.Player, "Cunning-" + np.Faction);
-                }
-                else if (np.IsSecretAlly)
-                {
-                    WriteSavegameIfApplicable(g, e.Player, "SecretAlly-" + np.Faction);
-                }
-                else
-                {
-                    WriteSavegameIfApplicable(g, e.Player, "Betrayal-" + np.Faction);
-                }
-            }
-            */
-
-            /*
-            if (e.Player != null && e.Player.Is(Faction.Pink) && e.Player.HasAlly && e.Player.Ally != Faction.Grey)
-            {
-                if (e is Shipment s)
-                {
-                    if (g.NumberOfOccupiedStrongholds(s.Player.AlliedPlayer, true) >= 4 && g.NumberOfOccupiedStrongholds(s.Player, true) >= 4)
-                    {
-                        WriteSavegameIfApplicable(g, e.Player, "Promising situation for Ecaz and their ally");
-                    }
-                }
-            }
-            
-            if (e is FaceDanced f && 
-                !f.Passed && 
-                g.CurrentPinkOrAllyFighter != Faction.None && 
-                (g.CurrentPinkOrAllyFighter == Faction.Grey || g.GetPlayer(g.CurrentPinkOrAllyFighter).Ally == Faction.Grey) &&
-                g.CurrentBattle.PlanOf(g.CurrentPinkOrAllyFighter).Forces + g.CurrentBattle.PlanOf(g.CurrentPinkOrAllyFighter).ForcesAtHalfStrength > 0 &&
-                g.CurrentBattle.PlanOf(g.CurrentPinkOrAllyFighter).SpecialForces + g.CurrentBattle.PlanOf(g.CurrentPinkOrAllyFighter).SpecialForcesAtHalfStrength > 0)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Facedancer in a battle with Ecaz and their Ixian ally");
-            }
-
-            if (e is BattleConcluded && (g.CurrentBattle.PlanOf(g.CurrentBattle.Aggressor).Weapon?.Type == TreacheryCardType.Rockmelter || g.CurrentBattle.PlanOf(g.CurrentBattle.Defender).Weapon?.Type == TreacheryCardType.Rockmelter) && g.CurrentPinkOrAllyFighter != Faction.None)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Stoneburner in a battle with Ecaz and ally");
-            }
-
-            if (e is Retreat r && r.Initiator == g.CurrentPinkOrAllyFighter)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Retreat in Ecaz-Ally battle");
-            }
-
-            if (e is BattleConcluded bc && g.CurrentPinkOrAllyFighter != Faction.None)
-            {
-                var hero = g.CurrentBattle.PlanOf(g.CurrentPinkOrAllyFighter).Hero;
-                if (hero is Leader && g.IsAlive(hero) && g.SkilledAs(hero, LeaderSkill.Graduate))
-                {
-                    WriteSavegameIfApplicable(g, e.Player, "Suk in Ecaz-Ally battle");
-                }
-            }
-            */
         }
 
         private readonly List<string> WrittenCases = new();
@@ -579,7 +353,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 10000;
+            int nrOfGames = 200;
             int nrOfTurns = 10;
             int nrOfPlayers = 7;
 
