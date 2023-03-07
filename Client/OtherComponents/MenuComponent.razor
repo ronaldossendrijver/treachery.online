@@ -213,12 +213,7 @@ else if (IsVisible(RESTART))
 
     [Parameter]
     public object Visible { get; set; } = null;
-    /*
-    private async Task RestartGame()
-        {
-        await Browser.ReloadPage();
-    }
-    */
+
     private void RestartGame()
     {
         SetVisible(RESTART);

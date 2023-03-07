@@ -21,25 +21,6 @@
             <label for="chatVolume" class="form-label">&nbsp;Chat notification volume</label>
             <input id="chatVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredChatVolume" @bind:event="oninput" />
                         
-            <label for="videoVolume" class="form-label">&nbsp;Player cam audio volume</label>
-            <input id="videoVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredVideoVolume" @bind:event="oninput" />
-            
-            <SelectComponent @bind-Value=h.AudioDevice Values=@audioDevices ValueLabels=@audioDevices.Select(d => d.Label)>
-                <Label>Microphone</Label>
-            </SelectComponent>
-
-            <SelectComponent @bind-Value=h.VideoDevice Values=@videoDevices ValueLabels=@videoDevices.Select(d => d.Label)>
-                <Label>Camera</Label>
-            </SelectComponent>
-
-            <div @onclick=@(e => PerformScan(true)) style="cursor:pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
-                    <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
-                    <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
-                </svg>
-                Scan for audio- and videodevices
-            </div>
-
         </div>
     </div>
 
@@ -53,10 +34,11 @@
     private float DesiredMusicVolume = 0;
     private float DesiredEffectVolume = 0;
     private float DesiredChatVolume = 0;
-    private float DesiredVideoVolume = 0;
+    //private float DesiredVideoVolume = 0;
     private string CurrentSoundtrack = "";
     private float CurrentMusicVolume = -1;
 
+    /*
     private List<CaptureDevice> audioDevices = new List<CaptureDevice>();
     private List<CaptureDevice> videoDevices = new List<CaptureDevice>();
 
@@ -66,13 +48,14 @@
         await ScanDevices();
         await LoadSettings();
     }
+    */
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender || !_devicesScanned)
+        /*if (firstRender || !_devicesScanned)
         {
             await ScanDevices();
-        }
+        }*/
 
         if (!firstRender)
         {
@@ -82,13 +65,15 @@
         await SaveSettings();
     }
 
+    /*
     private async Task ScanDevices()
     {
         var requestPermissions = Visible && (!_devicesScanned || !videoDevices.Any());
         await PerformScan(requestPermissions);
         await LoadSettings();
     }
-
+    */
+   /*
     private async Task PerformScan(bool requestPermissions)
     {
         var devices = await Browser.GetCaptureDevices(requestPermissions);
@@ -102,7 +87,7 @@
         audioDevices = devices.Where(d => d.Kind == "audioinput").ToList();
         videoDevices = devices.Where(d => d.Kind == "videoinput").ToList();
     }
-
+    */
     private async Task UpdateMusicAndSound()
     {
         if (h.HostProxy != null)
@@ -132,7 +117,7 @@
 
             h.CurrentEffectVolume = DesiredEffectVolume;
             h.CurrentChatVolume = DesiredChatVolume;
-            h.CurrentVideoVolume = DesiredVideoVolume;
+            //h.CurrentVideoVolume = DesiredVideoVolume;
         }
     }
 
@@ -167,7 +152,7 @@
         await Browser.SaveSetting("treachery.online;setting.music", DesiredMusicVolume);
         await Browser.SaveSetting("treachery.online;setting.effect", DesiredEffectVolume);
         await Browser.SaveSetting("treachery.online;setting.chatvolume", DesiredChatVolume);
-        await Browser.SaveSetting("treachery.online;setting.videovolume", DesiredVideoVolume);
+        //await Browser.SaveSetting("treachery.online;setting.videovolume", DesiredVideoVolume);
 
         if (h.AudioDevice != null)
         {
@@ -190,14 +175,16 @@
             if (DesiredEffectVolume == 0) DesiredEffectVolume = 50;
             DesiredChatVolume = await Browser.LoadSetting<float>("treachery.online;setting.chatvolume");
             if (DesiredChatVolume == 0) DesiredChatVolume = 50;
-            DesiredChatVolume = await Browser.LoadSetting<float>("treachery.online;setting.videovolume");
-            if (DesiredVideoVolume == 0) DesiredVideoVolume = 50;
+            /*DesiredVideoVolume = await Browser.LoadSetting<float>("treachery.online;setting.videovolume");
+            if (DesiredVideoVolume == 0) DesiredVideoVolume = 50;*/
 
+            /*
             var videoDeviceId = await Browser.LoadSetting<string>("treachery.online;setting.videodevice");
             h.VideoDevice = videoDevices.FirstOrDefault(d => d.DeviceId == videoDeviceId);
 
             var audioDeviceId = await Browser.LoadSetting<string>("treachery.online;setting.audiodevice");
             h.AudioDevice = audioDevices.FirstOrDefault(d => d.DeviceId == audioDeviceId);
+            */
         }
         catch (Exception)
         {

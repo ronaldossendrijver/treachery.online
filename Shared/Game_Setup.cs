@@ -403,9 +403,13 @@ namespace Treachery.Shared
             }
 
             var pink = GetPlayer(Faction.Pink);
-            if (pink != null)
+            if (pink != null && Applicable(Rule.PinkLoyalty))
             {
+                PinkLoyalLeader = pink.Leaders.RandomOrDefault(Random);
+                Log(PinkLoyalLeader, " is set aside as the loyal ", Faction.Pink, " leader");
+
                 AssignInitialAmbassadors(pink);
+                Log(Faction.Pink, " get ", Ambassador.Pink, " and draw 4 random ambassadors");
             }
 
             Enter(IsPlaying(Faction.Blue), Phase.BluePredicting, TreacheryCardsBeforeTraitors, DealStartingTreacheryCards, DealTraitors);
@@ -447,11 +451,6 @@ namespace Treachery.Shared
             }
         }
 
-        private void InitializeKnownNonTraitors()
-        {
-
-        }
-
         public IEnumerable<IHero> TraitorsInPlay
         {
             get
@@ -479,22 +478,14 @@ namespace Treachery.Shared
         {
             var result = new Deck<IHero>(TraitorsInPlay, random);
 
-            var generallySafeLeaders = new List<Leader>();
-
-            if (IsPlaying(Faction.Pink) && Applicable(Rule.PinkLoyalty))
+            if (PinkLoyalLeader != null)
             {
-                PinkLoyalLeader = result.Items.Where(t => t.Faction == Faction.Pink).RandomOrDefault(Random) as Leader;
                 result.Items.Remove(PinkLoyalLeader);
-                Log(PinkLoyalLeader, " is set aside as the loyal ", Faction.Pink, " leader");
-                generallySafeLeaders.Add(PinkLoyalLeader);
+                foreach (var p in Players)
+                {
+                    p.KnownNonTraitors.Add(PinkLoyalLeader);
+                }
             }
-
-            foreach (var p in Players)
-            {
-                p.KnownNonTraitors.AddRange(generallySafeLeaders);
-            }
-
-            InitializeKnownNonTraitors();
 
             result.Shuffle();
             return result;
