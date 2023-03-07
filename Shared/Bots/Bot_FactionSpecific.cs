@@ -1357,7 +1357,7 @@ namespace Treachery.Shared
         {
             var toAuction = new Deck<TreacheryCard>(Game.WhiteCache, random);
             toAuction.Shuffle();
-            return new WhiteSpecifiesAuction(Game) { Initiator = Faction, Card = toAuction.Draw(), AuctionType = D(1, 2) > 1 ? AuctionType.WhiteSilent : AuctionType.WhiteOnceAround, Direction = D(1, 2) > 1 ? 1 : -1 };
+            return new WhiteSpecifiesAuction(Game) { Initiator = Faction, Card = !toAuction.IsEmpty ? toAuction.Draw() : null, AuctionType = D(1, 2) > 1 ? AuctionType.WhiteSilent : AuctionType.WhiteOnceAround, Direction = D(1, 2) > 1 ? 1 : -1 };
         }
 
         protected virtual WhiteKeepsUnsoldCard DetermineWhiteKeepsUnsoldCard()

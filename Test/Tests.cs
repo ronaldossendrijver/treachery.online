@@ -28,9 +28,9 @@ namespace Treachery.Test
         private void SaveSpecialCases(Game g, GameEvent e)
         {
             
-            if (e is Battle && g.CurrentBattle.Territory.IsDiscoveredStronghold)
+            if (e is Revival && e.Player.ForcesKilled > 6 && e.Player.Resources > 8 && NexusPlayed.CanUseSecretAlly(g, e.Player) && e.Player.Nexus == Faction.Red)
             {
-                WriteSavegameIfApplicable(g, e.Player, "Battle in discovery");
+                WriteSavegameIfApplicable(g, e.Player, "Red secret ally");
             }
 
             if (e is FlightDiscoveryUsed)
@@ -43,10 +43,6 @@ namespace Treachery.Test
                 WriteSavegameIfApplicable(g, e.Player, "RecruitsPlayed");
             }
 
-            if (e is DiscoveryRevealed)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "DiscoveryRevealed");
-            }
 
             /*
             if (e is NexusCardDrawn && e.Player.Nexus == e.Player.Faction)
@@ -432,7 +428,7 @@ namespace Treachery.Test
                 return "Lost Leader";
             }
 
-            if (g.CurrentMainPhase == MainPhase.Contemplate && g.OccupyingForcesOnPlanet.Any(kvp => kvp.Key is not Homeworld && kvp.Key != g.Map.PolarSink && !g.IsInStorm(kvp.Key.Territory) && kvp.Value.Count(b => b.Faction != Faction.Pink) > 1))
+            if (g.CurrentPhase == Phase.BeginningOfCollection && g.OccupyingForcesOnPlanet.Any(kvp => kvp.Key != g.Map.PolarSink && !g.IsInStorm(kvp.Key.Territory) && kvp.Value.Count(b => b.Faction != Faction.Pink) > 1))
             {
                 return "Territory occupied by more than one faction";
             }
@@ -443,6 +439,16 @@ namespace Treachery.Test
                 var defender = g.CurrentBattle.DefendingPlayer;
                 if (aggressor == null || defender == null) return "Battle without aggressor or defender";
                 if (aggressor.AlliedPlayer == defender) return "Battle between allies";
+            }
+
+            var pink = g.GetPlayer(Faction.Pink);
+            if (pink != null)
+            {
+                int actualAmount = g.AmbassadorsOnPlanet.Count(kvp => kvp.Value != Ambassador.Blue) + g.UnassignedAmbassadors.Items.Count(a => a != Ambassador.Blue) + g.AmbassadorsSetAside.Count(a => a != Ambassador.Blue) + pink.Ambassadors.Count(a => a != Ambassador.Blue);
+                int expectedAmount = EstablishPlayers.AvailableFactions().Count(f => f != Faction.Blue) - 1;
+
+                if (actualAmount != expectedAmount)
+                return $"Invalid number of ambassadors: {actualAmount} != {EstablishPlayers.AvailableFactions().Count() - 1}";
             }
 
             return "";
@@ -573,8 +579,8 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 100;
-            int nrOfTurns = 7;
+            int nrOfGames = 10000;
+            int nrOfTurns = 10;
             int nrOfPlayers = 7;
 
             int timeout = 30;

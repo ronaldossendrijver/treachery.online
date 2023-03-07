@@ -815,7 +815,7 @@ namespace Treachery.Shared
 
         protected virtual RecruitsPlayed DetermineRecruitsPlayed()
         {
-            if (ForcesKilled + SpecialForcesKilled >= 7 && Resources > 14 ||
+            if (ForcesKilled + SpecialForcesKilled >= 6 && Resources >= 14 ||
                 ForcesKilled + SpecialForcesKilled >= 4 && Game.FreeRevivals(this, false) >= 2)
             {
                 return new RecruitsPlayed(Game) { Initiator = Faction };

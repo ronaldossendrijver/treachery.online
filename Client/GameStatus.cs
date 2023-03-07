@@ -262,9 +262,9 @@ namespace Treachery.Client
                     Faction.White),
 
                 Phase.WhiteSpecifyingAuction => Status(game,
-                    Express("Please select a card from your cache to sell and select the type of auction."),
-                    Express(Faction.White, " are putting a card from their cache on auction..."),
-                    Faction.White),
+                    Express("Please select a ", Faction.White, " card to put on auction."),
+                    Express(FactionOrOccupier(game, Faction.White, World.White), " are putting a ", Faction.White, " card on auction..."),
+                    FactionOrOccupier(game, Faction.White, World.White)),
 
                 Phase.WhiteKeepingUnsoldCard => Status(game,
                     Express("Please decide if you wish to keep this unsold card."),

@@ -255,6 +255,7 @@ namespace Treachery.Shared
 
                 case Phase.BeginningOfResurrection:
                     if (faction == Faction.Purple && Players.Count > 1 && (Version < 113 || !Prevented(FactionAdvantage.PurpleIncreasingRevivalLimits))) result.Add(typeof(SetIncreasedRevivalLimits));
+                    if (RecruitsPlayed.IsApplicable(this, player)) result.Add(typeof(RecruitsPlayed));
                     break;
 
                 case Phase.Resurrection:

@@ -24,9 +24,9 @@ namespace Treachery.Shared
             Game.HandleEvent(this);
         }
 
-        public static bool IsApplicable(Game g)
+        public static bool IsApplicable(Game g, Player p)
         {
-            return g.CurrentPhase == Phase.BeginningOfResurrection;
+            return g.CurrentPhase == Phase.BeginningOfResurrection && p.Has(TreacheryCardType.Recruits);
         }
 
         public override Message GetMessage()

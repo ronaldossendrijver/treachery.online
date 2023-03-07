@@ -286,7 +286,6 @@ namespace Treachery.Shared
             if (!WhiteOccupierSpecifiedCard)
             {
                 WhiteAuctionShouldStillHappen = false;
-                Log(e);
                 CardsOnAuction.PutOnTop(e.Card);
                 WhiteCache.Remove(e.Card);
                 RegisterKnown(e.Card);
@@ -294,16 +293,33 @@ namespace Treachery.Shared
                 var occupierOfWhiteHomeworld = OccupierOf(World.White);
                 if (occupierOfWhiteHomeworld == null)
                 {
+                    Log(e);
                     StartBidSequenceAndAuctionType(e.AuctionType, e.Player, e.Direction);
                     StartBiddingRound();
                 }
                 else
                 {
+                    Log(e.Initiator, " put ", e.Card, " on auction");
                     WhiteOccupierSpecifiedCard = true;
                 }
             }
             else
             {
+                string directionText = "";
+                if (e.AuctionType == AuctionType.WhiteOnceAround)
+                {
+                    if (e.Direction == 1)
+                    {
+                        directionText = " (counter-clockwise)";
+                    }
+                    else
+                    {
+                        directionText = " (clockwise)";
+                    }
+                }
+
+                Log(e.Initiator, " put select a ", e.AuctionType, " auction", directionText);
+
                 StartBidSequenceAndAuctionType(e.AuctionType, e.Player, e.Direction);
                 StartBiddingRound();
             }

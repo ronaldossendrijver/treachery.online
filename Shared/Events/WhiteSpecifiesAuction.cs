@@ -39,7 +39,7 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (!ValidCards(Game).Contains(Card)) return Message.Express("Invalid card");
+            if (!Game.WhiteOccupierSpecifiedCard && !ValidCards(Game).Contains(Card)) return Message.Express("Invalid card");
 
             if (AuctionType != AuctionType.WhiteOnceAround && AuctionType != AuctionType.WhiteSilent) return Message.Express("Invalid auction type");
 
@@ -66,7 +66,7 @@ namespace Treachery.Shared
                 }
             }
 
-            return Message.Express(Initiator, " put ", Card, " on ", AuctionType, " auction", directionText);
+            return Message.Express(Initiator, " put a ", Faction.White, " card on ", AuctionType, " auction", directionText);
         }
 
         public static IEnumerable<TreacheryCard> ValidCards(Game g)
