@@ -14,12 +14,14 @@ namespace Treachery.Shared
             Id = id;
         }
 
-        public Territory(bool isHomeworld, bool isStronghold, bool isProtectedFromStorm, bool isProtectedFromWorm, int id) : this(id)
+        public Territory(bool isHomeworld, bool isStronghold, bool hasReducedShippingCost, bool isDiscovery, bool isProtectedFromStorm, bool isProtectedFromWorm, int id) : this(id)
         {
             IsHomeworld = isHomeworld;
             IsStronghold = isStronghold;
             IsProtectedFromStorm = isProtectedFromStorm;
             IsProtectedFromWorm = isProtectedFromWorm;
+            IsDiscovery = isDiscovery;
+            HasReducedShippingCost = hasReducedShippingCost;
         }
 
         public int Id { get; private set; }
@@ -27,6 +29,14 @@ namespace Treachery.Shared
         public int SkinId => Id;
 
         public bool IsHomeworld { get; set; }
+
+        public bool HasReducedShippingCost { get; set; }
+
+        public bool IsDiscovery { get; set; }
+
+        public bool IsDiscoveredStronghold => IsStronghold && IsDiscovery;
+
+        public bool IsVisible => Locations.Any(l => l.Visible);
 
         public bool IsStronghold { get; set; }
 

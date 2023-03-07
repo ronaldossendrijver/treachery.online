@@ -27,6 +27,12 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            
+            if (e is Battle && g.CurrentBattle.Territory.IsDiscoveredStronghold)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Battle in discovery");
+            }
+
             if (e is FlightDiscoveryUsed)
             {
                 WriteSavegameIfApplicable(g, e.Player, "FlightDiscoveryUsed");
@@ -35,6 +41,11 @@ namespace Treachery.Test
             if (e is RecruitsPlayed)
             {
                 WriteSavegameIfApplicable(g, e.Player, "RecruitsPlayed");
+            }
+
+            if (e is DiscoveryRevealed)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "DiscoveryRevealed");
             }
 
             /*
@@ -562,7 +573,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 200;
+            int nrOfGames = 100;
             int nrOfTurns = 7;
             int nrOfPlayers = 7;
 

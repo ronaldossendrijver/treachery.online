@@ -7,7 +7,7 @@
 
 @{
     var pos = Skin.Current.GetCenter(Location);
-    int yOffset = 0;
+    float yOffset = 0;
 
     if (Battalions.TryGetValue(Location, out var battalionInLocation))
     {
@@ -18,17 +18,17 @@
             var player = Game.GetPlayer(battalion.Faction);
             var threatened = Game.ThreatenedByAllyPresence(player, Location.Territory);
 
-            int xOffset = 0;
+            float xOffset = 0;
             if (battalion.AmountOfForces > 0)
             {
                 <MapForce X=@pos.X Y=@(yOffset + pos.Y) Special=@false Amount=@battalion.AmountOfForces Faction=@battalion.Faction Threatened=@threatened ShowPopover="false" Diameter=Diameter/>
-                xOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
+                xOffset += Diameter;
             }
 
             if (battalion.AmountOfSpecialForces > 0)
             {
-                <MapForce X=@(pos.X + xOffset) Y=@(yOffset + pos.Y) Special=@true Amount=@battalion.AmountOfSpecialForces Faction=@battalion.Faction Threatened=@threatened ShowPopover=" false"/>
-                xOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;
+                <MapForce X=@(pos.X + xOffset) Y=@(yOffset + pos.Y) Special=@true Amount=@battalion.AmountOfSpecialForces Faction=@battalion.Faction Threatened=@threatened ShowPopover="false" Diameter=Diameter />
+                xOffset += Diameter;
             }
 
             yOffset += 2 * Skin.Current.FORCETOKEN_RADIUS;

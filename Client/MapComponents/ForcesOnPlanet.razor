@@ -31,11 +31,11 @@
         }
 
         var ambassador = Game.AmbassadorIn(stronghold.Territory);
-        if (ambassador != Faction.None)
+        if (ambassador != Ambassador.None)
         {
-            var popover = $"{Skin.Current.Describe(ambassador)} Ambassador - {@Skin.Current.GetAmbassadorDescription(ambassador)}";
-            <Image X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetAmbassadorImageURL(ambassador)
-        ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover />
+            var popover = $"{Skin.Current.Describe((object)ambassador)} Ambassador - {Skin.Current.Describe(ambassador)}";
+            <Image X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetImageURL(ambassador)
+                ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover />
 
             y += Skin.Current.PlayerTokenRadius;
         }
@@ -78,13 +78,19 @@
                OnClick="OnShowHmsClick"
                Title="@(showHMS ? "Hide HMS" : "Show HMS")" />
         }
-        else if (location is DiscoveryStronghold ds)
+        else if (location is DiscoveredLocation ds)
         {
             forceDiameter = 1.5f * Skin.Current.FORCETOKEN_RADIUS;
 
             <Image X=@(pos.X - 1.5f * Skin.Current.FORCETOKEN_RADIUS) Y=@(pos.Y - 2f * Skin.Current.FORCETOKEN_RADIUS) Diameter=@(3 * Skin.Current.FORCETOKEN_RADIUS) 
                 Src=@Skin.Current.GetImageURL(ds.Discovery) Popover=@Intel(ds)
                 ShadowX=1 ShadowY=1 />
+
+            @if (h.Status.HighlightedTerritories.Contains(location.Territory))
+            {
+                <Circle X="(pos.X)" Y=@(pos.Y - 0.5f * Skin.Current.FORCETOKEN_RADIUS) Radius="(1.5f * Skin.Current.FORCETOKEN_RADIUS)"
+                    FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1" />
+            }
         }
         else if (Game.DiscoveriesOnPlanet.TryGetValue(location, out var discovery))
         {

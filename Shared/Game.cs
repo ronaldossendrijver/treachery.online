@@ -14,7 +14,7 @@ namespace Treachery.Shared
     {
         public const int LowestSupportedVersion = 100;
         public const int LatestVersion = 151;
-        public const int ExpansionLevel = 2;
+        public const int ExpansionLevel = 3;
 
         public bool BotInfologging = true;
 
@@ -53,15 +53,15 @@ namespace Treachery.Shared
         public BrownEconomicsStatus EconomicsStatus { get; private set; } = BrownEconomicsStatus.None;
         public Dictionary<Location, int> ResourcesOnPlanet { get; private set; } = new();
         public Dictionary<TerrorType, Territory> TerrorOnPlanet { get; private set; } = new();
-        public Deck<Faction> UnassignedAmbassadors { get; private set; }
+        public Deck<Ambassador> UnassignedAmbassadors { get; private set; }
 
-        public List<Faction> AmbassadorsSetAside { get; private set; } = new();
+        public List<Ambassador> AmbassadorsSetAside { get; private set; } = new();
 
         public Deck<DiscoveryToken> YellowDiscoveryTokens { get; set; }
         public Deck<DiscoveryToken> OrangeDiscoveryTokens { get; set; }
         public Dictionary<Location, Discovery> DiscoveriesOnPlanet { get; private set; } = new();
 
-        public Dictionary<Territory, Faction> AmbassadorsOnPlanet { get; private set; } = new();
+        public Dictionary<Territory, Ambassador> AmbassadorsOnPlanet { get; private set; } = new();
         public Dictionary<IHero, LeaderState> LeaderState { get; private set; } = new();
         public Deck<LeaderSkill> SkillDeck { get; private set; }
         public Deck<Faction> NexusCardDeck { get; private set; }

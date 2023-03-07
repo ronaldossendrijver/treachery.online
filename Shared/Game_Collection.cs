@@ -90,7 +90,7 @@ namespace Treachery.Shared
         }
 
         public Faction OwnerOfFlightDiscovery { get; private set; }
-        public List<DiscoveryStronghold> JustRevealedDiscoveryStrongholds { get; private set; } = new();
+        public List<DiscoveredLocation> JustRevealedDiscoveryStrongholds { get; private set; } = new();
         public void HandleEvent(DiscoveryRevealed e)
         {
             var discovery = DiscoveriesOnPlanet[e.Location];

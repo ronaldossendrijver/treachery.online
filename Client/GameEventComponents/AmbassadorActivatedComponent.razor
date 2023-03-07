@@ -8,18 +8,18 @@
 
 <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
 
-    <Header>Activate the <FactionComponent Faction=@AmbassadorActivated.GetFaction(Game)/> Ambassador?</Header>
+    <Header>Activate the <Image Shown=@AmbassadorActivated.GetAmbassador(Game) Width="30"/> Ambassador?</Header>
     <Body>
 
         @{
-            var ambassador = AmbassadorActivated.GetFaction(Game);
+            var ambassador = AmbassadorActivated.GetAmbassador(Game);
             var victim = AmbassadorActivated.GetVictim(Game);
 
-            if (ambassador == Faction.Blue)
+            if (ambassador == Ambassador.Blue)
             {
-                <SelectFactionComponent @bind-Value=_actualAmbassador Values=@AmbassadorActivated.GetValidBlueFactions(Game)>
+                <SelectFromImageComponent @bind-Value=_actualAmbassador Values=@AmbassadorActivated.GetValidBlueAmbassadors(Game) ImageURLs=@AmbassadorActivated.GetValidBlueAmbassadors(Game).Select(a => Skin.Current.GetImageURL(a))>
                     <Label>Activate the effect of which ambassador?</Label>
-                </SelectFactionComponent>
+                </SelectFromImageComponent>
                 <br/>
             }
             else
@@ -29,12 +29,12 @@
 
             switch (_actualAmbassador)
             {
-                case Faction.Green:
+                case Ambassador.Green:
 
                     <div>See the <FactionComponent Faction=@victim Diameter=30/> hand?</div>
                     break;
 
-                case Faction.Brown:
+                case Ambassador.Brown:
 
                     <div>Discard cards from your hand for 3 @Name(Concept.Resource) each?</div>
                     <SelectCardComponent Selected="_brownCards" Values=@AmbassadorActivated.GetValidBrownCards(Player) OnChanged="e => StateHasChanged()">
@@ -42,7 +42,7 @@
                     </SelectCardComponent>
                     break;
 
-                case Faction.Pink:
+                case Ambassador.Pink:
                 
                     if (AmbassadorActivated.AllianceCanBeOffered(Game, Player))
                     {
@@ -74,12 +74,12 @@
 
                     break;
 
-                case Faction.Red:
+                case Ambassador.Red:
 
                     <div>Receive 5 @Name(Concept.Resource)?</div>
                     break;
 
-                case Faction.Yellow:
+                case Ambassador.Yellow:
 
                     <div>Move a group of your forces?</div>
 
@@ -109,7 +109,7 @@
                     }
                     break;
 
-                case Faction.Black:
+                case Ambassador.Black:
                     
                     if (victim == Faction.Black)
                     {
@@ -125,7 +125,7 @@
                     }
                     break;
 
-                case Faction.Grey:
+                case Ambassador.Grey:
 
                     <div>Discard a card from your hand to draw a new one?</div>
                     <SelectCardComponent @bind-Value=@_greyCard Values=@AmbassadorActivated.GetValidGreyCards(Player)>
@@ -133,12 +133,12 @@
                     </SelectCardComponent>
                     break;
 
-                case Faction.White:
+                case Ambassador.White:
 
                     <div>Buy a treachery card for 3 @Name(Concept.Resource)?</div>
                     break;
 
-                case Faction.Orange:
+                case Ambassador.Orange:
 
                     <div>Send up to 4 forces to any location?</div>
 
@@ -162,7 +162,7 @@
                     }
                     break;
 
-                case Faction.Purple:
+                case Ambassador.Purple:
 
                     <div>Revive one of your leaders or up to 4 forces for free?</div>
                     @if (AmbassadorActivated.ValidPurpleMaxAmount(Player) > 0)
@@ -209,7 +209,7 @@
     protected override bool IsUrgent => true;
     protected override Faction IsFactionSpecific => Faction.Pink;
 
-    private Faction _actualAmbassador;
+    private Ambassador _actualAmbassador;
     private List<TreacheryCard> _brownCards = new List<TreacheryCard>();
     private bool _pinkOfferAlliance;
     private bool _pinkTakeVidal;
@@ -241,7 +241,7 @@
 
     protected override AmbassadorActivated ConfirmedResult => new AmbassadorActivated(Game) { 
         Initiator = Faction, 
-        BlueSelectedFaction = _actualAmbassador,  
+        BlueSelectedAmbassador = _actualAmbassador,  
         BrownCards = _brownCards,
         PinkOfferAlliance = _pinkOfferAlliance, PinkGiveVidalToAlly = _pinkGiveVidal, PinkTakeVidal = _pinkTakeVidal,
         YellowOrOrangeTo = _yellowOrOrangeToLocation, 
@@ -256,7 +256,7 @@
 
     private void HandleLocationSelected(object sender, Location l)
     {
-        var targets = _actualAmbassador == Faction.Yellow ? AmbassadorActivated.ValidYellowTargets(Game, Player) : AmbassadorActivated.ValidOrangeTargets(Game, Player);
+        var targets = _actualAmbassador == Ambassador.Yellow ? AmbassadorActivated.ValidYellowTargets(Game, Player) : AmbassadorActivated.ValidOrangeTargets(Game, Player);
         SetIfValid(ref _yellowOrOrangeToLocation, targets.OrderByDescending(l => l.IsStronghold).ThenBy(l => Name(l)), l);
     }
 

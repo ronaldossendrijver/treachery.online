@@ -474,12 +474,14 @@ namespace Treachery.Shared
             if (pinkPlayer != null &&
                 e.Initiator != Faction.Pink &&
                 e.Initiator != pinkPlayer.Ally &&
-                AmbassadorIn(e.To.Territory) != e.Initiator &&
-                AmbassadorIn(e.To.Territory) != Faction.None)
+                AmbassadorIn(e.To.Territory) != Ambassador.None &&
+                AmbassadorIn(e.To.Territory) != AmbassadorOf(e.Initiator))
             {
                 QueueIntrusion(e, IntrusionType.Ambassador);
             }
         }
+
+        private Ambassador AmbassadorOf(Faction faction) => (Ambassador)((int)faction);
 
         private void CheckTerrorTriggered(ILocationEvent e)
         {
@@ -712,7 +714,7 @@ namespace Treachery.Shared
         public void HandleEvent(AmbassadorActivated e)
         {
             CurrentAmbassadorActivated = e;
-            var ambassadorFaction = AmbassadorActivated.GetFaction(this);
+            var ambassadorFaction = AmbassadorActivated.GetAmbassador(this);
             var territory = AmbassadorActivated.GetTerritory(this);
             var victim = AmbassadorActivated.GetVictim(this);
             DequeueIntrusion(IntrusionType.Ambassador);
@@ -723,12 +725,12 @@ namespace Treachery.Shared
 
                 var pink = GetPlayer(Faction.Pink);
 
-                if (ambassadorFaction == Faction.Blue)
+                if (ambassadorFaction == Ambassador.Blue)
                 {
-                    ambassadorFaction = e.BlueSelectedFaction;
+                    ambassadorFaction = e.BlueSelectedAmbassador;
                     Log("The ", ambassadorFaction, " Ambassador is removed from the game");
                 }
-                else if (ambassadorFaction == Faction.Pink)
+                else if (ambassadorFaction == Ambassador.Pink)
                 {
                     pink.Ambassadors.Add(ambassadorFaction);
                     Log("The ", ambassadorFaction, " Ambassador returns to supply");
@@ -741,7 +743,7 @@ namespace Treachery.Shared
 
                 HandleAmbassador(e, e.Initiator, ambassadorFaction, victim, territory);
                                 
-                if (!pink.Ambassadors.Union(AmbassadorsOnPlanet.Values).Any(f => f != Faction.Pink))
+                if (!pink.Ambassadors.Union(AmbassadorsOnPlanet.Values).Any(f => f != Ambassador.Pink))
                 {
                     AssignRandomAmbassadors(pink);
                     Log(Faction.Pink, " draw 5 random Ambassadors");
@@ -758,7 +760,7 @@ namespace Treachery.Shared
         public Faction AllianceByAmbassadorOfferedTo { get; private set; }
         private Phase PausedAmbassadorPhase { get; set; }
 
-        private void HandleAmbassador(AmbassadorActivated e, Faction initiator, Faction ambassadorFaction, Faction victim, Territory territory)
+        private void HandleAmbassador(AmbassadorActivated e, Faction initiator, Ambassador ambassadorFaction, Faction victim, Territory territory)
         {
             var victimPlayer = GetPlayer(victim);
             var initiatingPlayer = GetPlayer(initiator);
@@ -767,7 +769,7 @@ namespace Treachery.Shared
 
             switch (ambassadorFaction)
             {
-                case Faction.Green:
+                case Ambassador.Green:
 
                     if (victimPlayer.TreacheryCards.Any())
                     {
@@ -782,7 +784,7 @@ namespace Treachery.Shared
                     DetermineNextShipmentAndMoveSubPhase();
                     break;
 
-                case Faction.Brown:
+                case Ambassador.Brown:
 
                     int totalEarned = 0;
                     foreach (var c in e.BrownCards)
@@ -796,7 +798,7 @@ namespace Treachery.Shared
                     DetermineNextShipmentAndMoveSubPhase();
                     break;
 
-                case Faction.Pink:
+                case Ambassador.Pink:
 
                     if (e.PinkOfferAlliance)
                     {
@@ -812,21 +814,21 @@ namespace Treachery.Shared
                     }
                     break;
 
-                case Faction.Red:
+                case Ambassador.Red:
 
                     initiatingPlayer.Resources += 5;
                     Log(initiator, " get ", Payment(5));
                     DetermineNextShipmentAndMoveSubPhase();
                     break;
 
-                case Faction.Yellow:
+                case Ambassador.Yellow:
 
                     PerformMoveFromLocations(initiatingPlayer, e.YellowForceLocations, e, false, false);
                     CheckIntrusion(e);
                     DetermineNextShipmentAndMoveSubPhase();
                     break;
 
-                case Faction.Black:
+                case Ambassador.Black:
 
                     if (victim == Faction.Black)
                     {
@@ -848,7 +850,7 @@ namespace Treachery.Shared
                     DetermineNextShipmentAndMoveSubPhase();
                     break;
 
-                case Faction.Grey:
+                case Ambassador.Grey:
 
                     Discard(initiatingPlayer, e.GreyCard);
                     Log(initiator, " draw a new card");
@@ -856,7 +858,7 @@ namespace Treachery.Shared
                     DetermineNextShipmentAndMoveSubPhase();
                     break;
 
-                case Faction.White:
+                case Ambassador.White:
 
                     Log(initiator, " buy a card for ", Payment(3));
                     initiatingPlayer.Resources -= 3;
@@ -864,7 +866,7 @@ namespace Treachery.Shared
                     DetermineNextShipmentAndMoveSubPhase();
                     break;
 
-                case Faction.Orange:
+                case Ambassador.Orange:
 
                     Log(initiator, " send ", e.OrangeForceAmount, initiatingPlayer.Force, " to ", e.YellowOrOrangeTo);
                     initiatingPlayer.ShipForces(e.YellowOrOrangeTo, e.OrangeForceAmount);
@@ -873,7 +875,7 @@ namespace Treachery.Shared
                     DetermineNextShipmentAndMoveSubPhase();
                     break;
 
-                case Faction.Purple:
+                case Ambassador.Purple:
 
                     DetermineNextShipmentAndMoveSubPhase();
                     if (e.PurpleHero != null)
@@ -1114,7 +1116,7 @@ namespace Treachery.Shared
         private void KillAmbassadorIn(Territory territory)
         {
             var ambassador = AmbassadorIn(territory);
-            if (ambassador != Faction.None)
+            if (ambassador != Ambassador.None)
             {
                 var pink = GetPlayer(Faction.Pink);
                 AmbassadorsOnPlanet.Remove(territory);
@@ -1239,7 +1241,7 @@ namespace Treachery.Shared
                     {
                         DequeueIntrusion(IntrusionType.Terror);
                     }
-                    else if (LastAmbassadorTrigger != null && AmbassadorIn(LastAmbassadorTrigger.Territory) == Faction.None)
+                    else if (LastAmbassadorTrigger != null && AmbassadorIn(LastAmbassadorTrigger.Territory) == Ambassador.None)
                     {
                         DequeueIntrusion(IntrusionType.Ambassador);
                     }

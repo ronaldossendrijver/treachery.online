@@ -467,15 +467,15 @@ namespace Treachery.Shared
 
         public int AmbassadorsPlacedThisTurn { get; private set; } = 0;
 
-        public Faction AmbassadorIn(Territory t) => AmbassadorsOnPlanet.ContainsKey(t) ? AmbassadorsOnPlanet[t] : Faction.None;
+        public Ambassador AmbassadorIn(Territory t) => AmbassadorsOnPlanet.ContainsKey(t) ? AmbassadorsOnPlanet[t] : Ambassador.None;
 
         public void HandleEvent(AmbassadorPlaced e)
         {
             AmbassadorsPlacedThisTurn++;
             e.Player.Resources -= AmbassadorsPlacedThisTurn;
-            Log(e.Initiator, " station the ", e.Faction, " ambassador in ", e.Stronghold, " for ", Payment(AmbassadorsPlacedThisTurn));
-            AmbassadorsOnPlanet.Add(e.Stronghold, e.Faction);
-            e.Player.Ambassadors.Remove(e.Faction);
+            Log(e.Initiator, " station the ", e.Ambassador, " ambassador in ", e.Stronghold, " for ", Payment(AmbassadorsPlacedThisTurn));
+            AmbassadorsOnPlanet.Add(e.Stronghold, e.Ambassador);
+            e.Player.Ambassadors.Remove(e.Ambassador);
         }
 
         #endregion

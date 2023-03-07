@@ -46,7 +46,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(DiscoveryEntered e)
         {
-            JustRevealedDiscoveryStrongholds.Remove(e.To as DiscoveryStronghold);
+            JustRevealedDiscoveryStrongholds.Remove(e.To as DiscoveredLocation);
             Log(e);
 
             if (!e.Passed)
@@ -381,7 +381,7 @@ namespace Treachery.Shared
             foreach (var t in Strongholds.Where(s => s.Locations.Any(l => l.Sector == SectorInStorm && !IsProtectedFromStorm(l))))
             {
                 var ambassador = AmbassadorIn(t);
-                if (ambassador != Faction.None)
+                if (ambassador != Ambassador.None)
                 {
                     var pink = GetPlayer(Faction.Pink);
                     bool succ = AmbassadorsOnPlanet.Remove(t);

@@ -4,18 +4,18 @@
 @using Treachery.Shared
 @using System.Linq;
 
-@foreach (var f in Ambassadors.Where(f => f != Faction.None))
+@foreach (var ambassador in Ambassadors.Where(f => f != Ambassador.None))
 {
-    <img class="img-fluid" src="@Skin.Current.GetAmbassadorImageURL(f)" width="@Diameter" height="@Diameter" title=@Skin.Current.GetAmbassadorDescription(f) style="@Shadow" />
+    <Image Shown=@ambassador Width=@Diameter/>
 }
 
 @code {
 
     [Parameter]
-    public IEnumerable<Faction> Ambassadors { get; set; } = Array.Empty<Faction>();
+    public IEnumerable<Ambassador> Ambassadors { get; set; } = Array.Empty<Ambassador>();
 
     [Parameter]
-    public Dictionary<Faction, string> Labels { get; set; }
+    public Dictionary<Ambassador, string> Labels { get; set; }
 
     [Parameter]
     public int Diameter { get; set; } = 30;

@@ -74,7 +74,7 @@ namespace Treachery.Shared
             }
 
             CreateTerrorTokens();
-            UnassignedAmbassadors = new Deck<Faction>(EstablishPlayers.AvailableFactions().Where(f => f != Faction.Cyan), Random);
+            UnassignedAmbassadors = new Deck<Ambassador>(EstablishPlayers.AvailableFactions().Where(f => f != Faction.Cyan).Select(f => AmbassadorOf(f)), Random);
 
             AllyMayShipAsOrange = true;
             AllyMayReviveAsPurple = true;
@@ -776,8 +776,8 @@ namespace Treachery.Shared
 
         private void AssignInitialAmbassadors(Player p)
         {
-            p.Ambassadors.Add(Faction.Pink);
-            UnassignedAmbassadors.Items.Remove(Faction.Pink);
+            p.Ambassadors.Add(Ambassador.Pink);
+            UnassignedAmbassadors.Items.Remove(Ambassador.Pink);
             Log(p.Faction, " receive the ", Faction.Pink, " ambassador");
             AssignRandomAmbassadors(p);
         }

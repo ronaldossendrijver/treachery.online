@@ -21,7 +21,7 @@ namespace Treachery.Shared
 
         public bool Passed { get; set; }
 
-        public Faction BlueSelectedFaction { get; set; }
+        public Ambassador BlueSelectedAmbassador { get; set; }
 
         public string _brownCardIds;
 
@@ -108,50 +108,50 @@ namespace Treachery.Shared
             if (!Passed)
             {
                 var player = Player;
-                var ambassador = GetFaction(Game);
+                var ambassador = GetAmbassador(Game);
                 var victim = GetVictim(Game);
                 var victimPlayer = Game.GetPlayer(victim);
 
-                if (ambassador == Faction.Blue)
+                if (ambassador == Ambassador.Blue)
                 {
-                    if (!GetValidBlueFactions(Game).Contains(BlueSelectedFaction)) return Message.Express("Invalid Ambassador selected");
-                    ambassador = BlueSelectedFaction;
+                    if (!GetValidBlueAmbassadors(Game).Contains(BlueSelectedAmbassador)) return Message.Express("Invalid Ambassador selected");
+                    ambassador = BlueSelectedAmbassador;
                 }
 
                 switch (ambassador)
                 {
-                    case Faction.Brown:
+                    case Ambassador.Brown:
                         if (BrownCards.Any(c => !GetValidBrownCards(player).Contains(c))) return Message.Express("Invalid card selected");
                         break;
 
-                    case Faction.Pink:
+                    case Ambassador.Pink:
                         if (PinkOfferAlliance && !AllianceCanBeOffered(Game, player)) return Message.Express("You can't offer an alliance");
                         if (PinkTakeVidal && !VidalCanBeTaken(Game)) return Message.Express("You can't take ", Game.Vidal);
                         break;
 
-                    case Faction.Yellow:
+                    case Ambassador.Yellow:
                         if (YellowForceLocations.Any(kvp => Game.IsInStorm(kvp.Key))) return Message.Express("Can't move from storm");
                         if (YellowForceLocations.Any(kvp => player.ForcesIn(kvp.Key) < kvp.Value.AmountOfForces)) return Message.Express("Invalid amount of ", Player.Force);
                         if (YellowForceLocations.Any(kvp => player.SpecialForcesIn(kvp.Key) < kvp.Value.AmountOfSpecialForces)) return Message.Express("Invalid amount of ", Player.SpecialForce);
                         if (!ValidYellowTargets(Game, player).Contains(YellowOrOrangeTo)) return Message.Express("Invalid target location");
                         break;
 
-                    case Faction.Grey:
+                    case Ambassador.Grey:
                         if (!GetValidGreyCards(player).Any()) return Message.Express("You don't have a card to discard");
                         if (GreyCard != null && !GetValidGreyCards(player).Contains(GreyCard)) return Message.Express("Invalid card selected");
                         break;
 
-                    case Faction.White:
+                    case Ambassador.White:
                         if (player.Resources < 3) return Message.Express("You don't have enough ", Concept.Resource, " to buy a card");
                         if (!player.HasRoomForCards) return Message.Express("You don't have room for an additional card");
                         break;
 
-                    case Faction.Orange:
+                    case Ambassador.Orange:
                         if (!ValidOrangeTargets(Game, player).Contains(YellowOrOrangeTo)) return Message.Express("Invalid target location");
                         if (OrangeForceAmount > ValidOrangeMaxForces(player)) return Message.Express("Invalid amount of forces");
                         break;
 
-                    case Faction.Purple:
+                    case Ambassador.Purple:
                         if (PurpleAmountOfForces < 0) return Message.Express("You can't revive a negative amount of forces");
                         if (PurpleAmountOfForces > ValidPurpleMaxAmount(player)) return Message.Express("You can't revive that many");
                         if (PurpleAmountOfForces > 0 && PurpleHero != null) return Message.Express("You can't revive both forces and a leader");
@@ -181,13 +181,13 @@ namespace Treachery.Shared
 
         public static Player GetVictimPlayer(Game g) => g.LastAmbassadorTrigger != null ? g.GetPlayer(GetVictim(g)) : null;
 
-        public static Faction GetFaction(Game g) => g.LastAmbassadorTrigger != null ? g.AmbassadorIn(GetTerritory(g)) : Faction.None;
+        public static Ambassador GetAmbassador(Game g) => g.LastAmbassadorTrigger != null ? g.AmbassadorIn(GetTerritory(g)) : Ambassador.None;
 
         public static bool AllianceCanBeOffered(Game g, Player p) => !p.HasAlly && !g.GetPlayer(GetVictim(g)).HasAlly;
 
         public static bool VidalCanBeTaken(Game g) => g.VidalIsAlive && !g.VidalIsCapturedOrGhola && g.OccupierOf(World.Pink) == null;
 
-        public static IEnumerable<Faction> GetValidBlueFactions(Game g) => g.UnassignedAmbassadors.Items;
+        public static IEnumerable<Ambassador> GetValidBlueAmbassadors(Game g) => g.UnassignedAmbassadors.Items;
 
         public static IEnumerable<TreacheryCard> GetValidBrownCards(Player p) => p.TreacheryCards;
 

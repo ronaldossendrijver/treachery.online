@@ -18,7 +18,7 @@ namespace Treachery.Shared
         {
         }
 
-        public Faction Faction;
+        public Ambassador Ambassador;
 
         public int _strongholdId;
 
@@ -32,7 +32,7 @@ namespace Treachery.Shared
         public override Message Validate()
         {
             if (!ValidStrongholds(Game, Player).Contains(Stronghold)) return Message.Express("Invalid stronghold");
-            if (!ValidAmbassadors(Player).Contains(Faction)) return Message.Express("Ambassador not available");
+            if (!ValidAmbassadors(Player).Contains(Ambassador)) return Message.Express("Ambassador not available");
 
             return null;
         }
@@ -42,12 +42,13 @@ namespace Treachery.Shared
             var ally = g.GetPlayer(p.Ally);
 
             return g.Map.Territories(false).Where(t =>
+                t.IsVisible &&
                 t.IsStronghold &&
                 !g.IsInStorm(t) &&
-                g.AmbassadorIn(t) == Faction.None);
+                g.AmbassadorIn(t) == Ambassador.None);
         }
 
-        public static IEnumerable<Faction> ValidAmbassadors(Player p) => p.Ambassadors;
+        public static IEnumerable<Ambassador> ValidAmbassadors(Player p) => p.Ambassadors;
 
         protected override void ExecuteConcreteEvent()
         {
@@ -63,7 +64,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express(Initiator, " station the ", Faction, " ambassador in ", Stronghold);
+            return Message.Express(Initiator, " station the ", Ambassador, " ambassador in ", Stronghold);
         }
     }
 }

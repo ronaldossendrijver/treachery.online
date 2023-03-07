@@ -58,6 +58,23 @@ namespace Treachery.Shared
         Cyan = 120
     }
 
+    public enum Ambassador : int
+    {
+        None = 0,
+        Yellow = 10,
+        Green = 20,
+        Black = 30,
+        Red = 40,
+        Orange = 50,
+        Blue = 60,
+        Grey = 70,
+        Purple = 80,
+        Brown = 90,
+        White = 100,
+        Pink = 110,
+        Cyan = 120
+    }
+
     public enum TechToken : int
     {
         None = 0,

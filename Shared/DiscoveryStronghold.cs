@@ -6,13 +6,13 @@ using System.Collections.Generic;
 
 namespace Treachery.Shared
 {
-    public class DiscoveryStronghold : Location
+    public class DiscoveredLocation : Location
     {
         public DiscoveryToken Discovery { get; private set; }
 
         public Location AttachedToLocation { get; private set; } = null;
 
-        public DiscoveryStronghold(Territory t, int id, DiscoveryToken discovery) : base(id)
+        public DiscoveredLocation(Territory t, int id, DiscoveryToken discovery) : base(id)
         {
             Territory = t;
             Discovery = discovery;

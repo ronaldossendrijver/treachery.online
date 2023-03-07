@@ -36,7 +36,7 @@
 
     private Dictionary<Location, Battalion> forces = new Dictionary<Location, Battalion>();
 
-    private DiscoveryStronghold toLocation;
+    private DiscoveredLocation toLocation;
 
     override protected DiscoveryEntered ConfirmedResult => new DiscoveryEntered(Game) { Initiator = Faction, ForceLocations = forces, To = toLocation, Passed = false };
 

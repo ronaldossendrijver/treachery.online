@@ -12,12 +12,16 @@
     <Header>You may now place an Ambassador Token in a Stronghold</Header>
     <Body>
 
-        <SelectFactionComponent @bind-Value=_faction Values=@AmbassadorPlaced.ValidAmbassadors(Player) ValueLabels=@AmbassadorPlaced.ValidAmbassadors(Player).Select(f => Skin.Current.GetAmbassadorDescription(f))>
-            <Label>Of which Faction?</Label>
-        </SelectFactionComponent>
+        <SelectFromImageComponent @bind-Value=_ambassador 
+            Values=@AmbassadorPlaced.ValidAmbassadors(Player) 
+            ImageURLs=@AmbassadorPlaced.ValidAmbassadors(Player).Select(a => Skin.Current.GetImageURL(a))
+            PopupHTMLs=@AmbassadorPlaced.ValidAmbassadors(Player).Select(a => Skin.Current.Describe(a)) 
+            PopupsAsTooltip=true Required=true>
+            <Label>Which ambassador?</Label>
+        </SelectFromImageComponent>
 
         <SelectComponent ButtonHint=ClickHintButton.LMB @bind-Value=_stronghold Values=@AmbassadorPlaced.ValidStrongholds(Game, Player)>
-            <Label>In which Stronghold?</Label>
+            <Label>Where?</Label>
         </SelectComponent>
 
         <div>
@@ -34,7 +38,7 @@
 
     protected override Faction IsFactionSpecific => Faction.Pink;
 
-    private Faction _faction;
+    private Ambassador _ambassador;
     private Territory _stronghold;
 
     protected override void OnAfterRender(bool firstRender)
@@ -45,7 +49,7 @@
         }
     }
 
-    protected override AmbassadorPlaced ConfirmedResult => new AmbassadorPlaced(Game) { Initiator = Faction, Faction = _faction, Stronghold = _stronghold };
+    protected override AmbassadorPlaced ConfirmedResult => new AmbassadorPlaced(Game) { Initiator = Faction, Ambassador = _ambassador, Stronghold = _stronghold };
 
     private void HandleLocationSelected(object sender, Location l)
     {

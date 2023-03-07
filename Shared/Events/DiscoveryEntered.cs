@@ -41,10 +41,10 @@ namespace Treachery.Shared
             return null;
         }
 
-        public static IEnumerable<DiscoveryStronghold> ValidTargets(Game g, Player p) =>
+        public static IEnumerable<DiscoveredLocation> ValidTargets(Game g, Player p) =>
             g.JustRevealedDiscoveryStrongholds.Where(ds => p.AnyForcesIn(ds.AttachedToLocation.Territory) > 0);
 
-        public static IEnumerable<Location> ValidSources(Player p, DiscoveryStronghold ds) => ds.AttachedToLocation.Territory.Locations.Where(l => p.AnyForcesIn(l) > 0);
+        public static IEnumerable<Location> ValidSources(Player p, DiscoveredLocation ds) => ds.AttachedToLocation.Territory.Locations.Where(l => p.AnyForcesIn(l) > 0);
 
         protected override void ExecuteConcreteEvent()
         {

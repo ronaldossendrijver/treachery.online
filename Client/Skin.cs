@@ -51,8 +51,8 @@ namespace Treachery.Client
         public Dictionary<DiscoveryToken, string> DiscoveryTokenImage_URL;
         public Dictionary<DiscoveryTokenType, string> DiscoveryTokenTypeName_STR;
         public Dictionary<DiscoveryTokenType, string> DiscoveryTokenTypeImage_URL;
-        public Dictionary<Faction, string> AmbassadorImage_URL;
-        public Dictionary<Faction, string> AmbassadorDescription_STR;
+        public Dictionary<Ambassador, string> AmbassadorImage_URL;
+        public Dictionary<Ambassador, string> AmbassadorDescription_STR;
 
         public string Map_URL = null;
         public string Eye_URL = null;
@@ -276,7 +276,7 @@ namespace Treachery.Client
                     return new Point(HmsDX, HmsDX);
                 }
             }
-            else if (location is DiscoveryStronghold ds)
+            else if (location is DiscoveredLocation ds)
             {
                 if (ds.AttachedToLocation != null)
                 {
@@ -312,6 +312,7 @@ namespace Treachery.Client
                 Payment payment => Format("{0} {1}", payment.Amount, Concept.Resource),
                 Concept c => Describe(c),
                 Faction faction => Describe(faction),
+                Ambassador ambassador => Describe(ambassador),
                 FactionForce ff => Describe(ff),
                 FactionSpecialForce fsf => Describe(fsf),
                 FactionAdvantage factionadvantage => Describe(factionadvantage),
@@ -477,14 +478,14 @@ namespace Treachery.Client
             return TerrorTokenDescription_STR[terr];
         }
 
-        public string GetAmbassadorDescription(Faction faction)
+        public string Describe(Ambassador ambassador)
         {
-            return AmbassadorDescription_STR[faction];
+            return AmbassadorDescription_STR[ambassador];
         }
 
-        public string GetAmbassadorImageURL(Faction faction)
+        public string GetImageURL(Ambassador ambassador)
         {
-            return AmbassadorImage_URL[faction];
+            return AmbassadorImage_URL[ambassador];
         }
 
         public string Describe(MainPhase p)
@@ -2124,42 +2125,42 @@ namespace Treachery.Client
                 { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10specialforce.svg" }
             },
 
-            AmbassadorImage_URL = new Dictionary<Faction, string>()
+            AmbassadorImage_URL = new Dictionary<Ambassador, string>()
             {
-                [Faction.Green] = DEFAULT_ART_LOCATION + "/art/faction1ambassador.svg",
-                [Faction.Black] = DEFAULT_ART_LOCATION + "/art/faction2ambassador.svg",
-                [Faction.Yellow] = DEFAULT_ART_LOCATION + "/art/faction3ambassador.svg",
-                [Faction.Red] = DEFAULT_ART_LOCATION + "/art/faction4ambassador.svg",
-                [Faction.Orange] = DEFAULT_ART_LOCATION + "/art/faction5ambassador.svg",
-                [Faction.Blue] = DEFAULT_ART_LOCATION + "/art/faction6ambassador.svg",
-                [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7ambassador.svg",
-                [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8ambassador.svg",
+                [Ambassador.Green] = DEFAULT_ART_LOCATION + "/art/faction1ambassador.svg",
+                [Ambassador.Black] = DEFAULT_ART_LOCATION + "/art/faction2ambassador.svg",
+                [Ambassador.Yellow] = DEFAULT_ART_LOCATION + "/art/faction3ambassador.svg",
+                [Ambassador.Red] = DEFAULT_ART_LOCATION + "/art/faction4ambassador.svg",
+                [Ambassador.Orange] = DEFAULT_ART_LOCATION + "/art/faction5ambassador.svg",
+                [Ambassador.Blue] = DEFAULT_ART_LOCATION + "/art/faction6ambassador.svg",
+                [Ambassador.Grey] = DEFAULT_ART_LOCATION + "/art/faction7ambassador.svg",
+                [Ambassador.Purple] = DEFAULT_ART_LOCATION + "/art/faction8ambassador.svg",
 
-                [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9ambassador.svg",
-                [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10ambassador.svg",
+                [Ambassador.Brown] = DEFAULT_ART_LOCATION + "/art/faction9ambassador.svg",
+                [Ambassador.White] = DEFAULT_ART_LOCATION + "/art/faction10ambassador.svg",
 
-                [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11ambassador.svg",
-                [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12ambassador.svg",
+                [Ambassador.Pink] = DEFAULT_ART_LOCATION + "/art/faction11ambassador.svg",
+                [Ambassador.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12ambassador.svg",
             },
 
-            AmbassadorDescription_STR = new Dictionary<Faction, string>()
+            AmbassadorDescription_STR = new Dictionary<Ambassador, string>()
             {
-                [Faction.None] = "None",
+                [Ambassador.None] = "None",
 
-                [Faction.Green] = "See visitor's hand",
-                [Faction.Black] = "Look at a random Traitor Card the visiting faction holds",
-                [Faction.Yellow] = "Move a group of your forces on the board to any territory (subject to storm and occupancy rules)",
-                [Faction.Red] = "Gain 5 spice",
-                [Faction.Orange] = "Send up to 4 of your forces in reserves to any territory not in storm for free",
-                [Faction.Blue] = "Trigger the effect of any Ambassador that was not part of your supply",
+                [Ambassador.Green] = "See visitor's hand",
+                [Ambassador.Black] = "Look at a random Traitor Card the visiting faction holds",
+                [Ambassador.Yellow] = "Move a group of your forces on the board to any territory (subject to storm and occupancy rules)",
+                [Ambassador.Red] = "Gain 5 spice",
+                [Ambassador.Orange] = "Send up to 4 of your forces in reserves to any territory not in storm for free",
+                [Ambassador.Blue] = "Trigger the effect of any Ambassador that was not part of your supply",
 
-                [Faction.Grey] = "Discard a Treachery Card and draw from the deck",
-                [Faction.Purple] = "Revive one of your leaders or up to 4 of your forces for free",
+                [Ambassador.Grey] = "Discard a Treachery Card and draw from the deck",
+                [Ambassador.Purple] = "Revive one of your leaders or up to 4 of your forces for free",
 
-                [Faction.Brown] = "Discard any of your Treachery Cards and gain 3 spice for each one",
-                [Faction.White] = "Pay 3 spice to the Bank for a Treachery Card",
+                [Ambassador.Brown] = "Discard any of your Treachery Cards and gain 3 spice for each one",
+                [Ambassador.White] = "Pay 3 spice to the Bank for a Treachery Card",
 
-                [Faction.Pink] = "Gain Vidal if he is not in the Tanks, captured, or a ghola until used in a battle, or form an alliance with the visiting faction (if neither of you are allied); they may take control of Vidal instead. This token returns to your available supply"
+                [Ambassador.Pink] = "Gain Vidal if he is not in the Tanks, captured, or a ghola until used in a battle, or form an alliance with the visiting faction (if neither of you are allied); they may take control of Vidal instead. This token returns to your available supply"
             },
 
             TechTokenName_STR = new Dictionary<TechToken, string>()

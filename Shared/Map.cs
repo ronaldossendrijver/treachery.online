@@ -80,15 +80,15 @@ namespace Treachery.Shared
 
         public Location TheGreatFlat { get; private set; }
 
-        public DiscoveryStronghold GetDiscoveryStronghold(DiscoveryToken discovery) => Locations(false).FirstOrDefault(l => l is DiscoveryStronghold ds && ds.Discovery == discovery) as DiscoveryStronghold;
+        public DiscoveredLocation GetDiscoveryStronghold(DiscoveryToken discovery) => Locations(false).FirstOrDefault(l => l is DiscoveredLocation ds && ds.Discovery == discovery) as DiscoveredLocation;
 
-        public DiscoveryStronghold Shrine { get; private set; }
+        public DiscoveredLocation Shrine { get; private set; }
 
-        public DiscoveryStronghold Cistern { get; private set; }
+        public DiscoveredLocation Cistern { get; private set; }
 
-        public DiscoveryStronghold TestingStation { get; private set; }
-        public DiscoveryStronghold Jacurutu { get; private set; }
-        public DiscoveryStronghold ProcessingStation { get; private set; }
+        public DiscoveredLocation TestingStation { get; private set; }
+        public DiscoveredLocation Jacurutu { get; private set; }
+        public DiscoveredLocation ProcessingStation { get; private set; }
 
         public HiddenMobileStronghold HiddenMobileStronghold { get; set; }
 
@@ -161,6 +161,7 @@ namespace Treachery.Shared
                 var t = new Territory(0)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
@@ -179,6 +180,7 @@ namespace Treachery.Shared
                 ImperialBasin = new Territory(1)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = false
@@ -211,7 +213,9 @@ namespace Treachery.Shared
                 var t = new Territory(2)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = true,
+                    HasReducedShippingCost = true,
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
                 };
@@ -229,7 +233,9 @@ namespace Treachery.Shared
                 var t = new Territory(3)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = true,
+                    HasReducedShippingCost = true,
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
                 };
@@ -248,7 +254,9 @@ namespace Treachery.Shared
                 var t = new Territory(4)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = true,
+                    HasReducedShippingCost = true,
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
                 };
@@ -266,7 +274,9 @@ namespace Treachery.Shared
                 var t = new Territory(5)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = true,
+                    HasReducedShippingCost = true,
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
                 };
@@ -284,7 +294,9 @@ namespace Treachery.Shared
                 var t = new Territory(6)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = true,
+                    HasReducedShippingCost = true,
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
                 };
@@ -302,6 +314,7 @@ namespace Treachery.Shared
                 var t = new Territory(7)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -333,6 +346,7 @@ namespace Treachery.Shared
                 var t = new Territory(8)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -364,6 +378,7 @@ namespace Treachery.Shared
                 Meridan = new Territory(9)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -389,6 +404,7 @@ namespace Treachery.Shared
                 var t = new Territory(10)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -413,6 +429,7 @@ namespace Treachery.Shared
                 CielagoEast = new Territory(11)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -438,6 +455,7 @@ namespace Treachery.Shared
                 var t = new Territory(12)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -462,6 +480,7 @@ namespace Treachery.Shared
                 FalseWallSouth = new Territory(13)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
@@ -486,6 +505,7 @@ namespace Treachery.Shared
                 FalseWallEast = new Territory(14)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
@@ -531,6 +551,7 @@ namespace Treachery.Shared
                 TheMinorErg = new Territory(15)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -569,6 +590,7 @@ namespace Treachery.Shared
                 PastyMesa = new Territory(16)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
@@ -608,6 +630,7 @@ namespace Treachery.Shared
                 var t = new Territory(17)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -625,6 +648,7 @@ namespace Treachery.Shared
                 var t = new Territory(18)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -656,6 +680,7 @@ namespace Treachery.Shared
                 var t = new Territory(19)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -673,6 +698,7 @@ namespace Treachery.Shared
                 var t = new Territory(20)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
@@ -690,6 +716,7 @@ namespace Treachery.Shared
                 HoleInTheRock = new Territory(21)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -707,6 +734,7 @@ namespace Treachery.Shared
                 SihayaRidge = new Territory(22)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -724,6 +752,7 @@ namespace Treachery.Shared
                 ShieldWall = new Territory(23)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
@@ -748,6 +777,7 @@ namespace Treachery.Shared
                 GaraKulon = new Territory(24)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -766,6 +796,7 @@ namespace Treachery.Shared
                 OldGap = new Territory(25)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -797,6 +828,7 @@ namespace Treachery.Shared
                 BrokenLand = new Territory(26)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -821,6 +853,7 @@ namespace Treachery.Shared
                 Tsimpo = new Territory(27)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -852,6 +885,7 @@ namespace Treachery.Shared
                 var t = new Territory(28)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -876,6 +910,7 @@ namespace Treachery.Shared
                 RockOutcroppings = new Territory(29)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -900,6 +935,7 @@ namespace Treachery.Shared
                 PlasticBasin = new Territory(30)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
@@ -932,6 +968,7 @@ namespace Treachery.Shared
                 HaggaBasin = new Territory(31)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -956,6 +993,7 @@ namespace Treachery.Shared
                 BightOfTheCliff = new Territory(32)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -980,6 +1018,7 @@ namespace Treachery.Shared
                 var t = new Territory(33)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -998,6 +1037,7 @@ namespace Treachery.Shared
                 var t = new Territory(34)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -1016,6 +1056,7 @@ namespace Treachery.Shared
                 WindPass = new Territory(35)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -1054,6 +1095,7 @@ namespace Treachery.Shared
                 var t = new Territory(36)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -1073,6 +1115,7 @@ namespace Treachery.Shared
                 HabbanyaErg = new Territory(37)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -1097,6 +1140,7 @@ namespace Treachery.Shared
                 FalseWallWest = new Territory(38)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
@@ -1129,6 +1173,7 @@ namespace Treachery.Shared
                 WindPassNorth = new Territory(39)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -1153,6 +1198,7 @@ namespace Treachery.Shared
                 var t = new Territory(40)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -1177,6 +1223,7 @@ namespace Treachery.Shared
                 CielagoWest = new Territory(41)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = false,
                     IsProtectedFromStorm = false,
                     IsProtectedFromWorm = false
@@ -1201,7 +1248,9 @@ namespace Treachery.Shared
                 var t = new Territory(42)
                 {
                     IsHomeworld = false,
+                    IsDiscovery = false,
                     IsStronghold = true,
+                    HasReducedShippingCost = true,
                     IsProtectedFromStorm = true,
                     IsProtectedFromWorm = true
                 };
@@ -1224,23 +1273,23 @@ namespace Treachery.Shared
             AddHomeworld(54, id++, World.Pink, Faction.Pink, true, false, 7, 2, 2, 2);
             AddHomeworld(55, id++, World.Cyan, Faction.Cyan, true, false, 8, 2, 2, 2);
 
-            Jacurutu = AddDiscoveryStronghold(56, id++, DiscoveryToken.Jacurutu);
-            Cistern = AddDiscoveryStronghold(57, id++, DiscoveryToken.Cistern);
-            TestingStation = AddDiscoveryStronghold(58, id++, DiscoveryToken.TestingStation);
-            Shrine = AddDiscoveryStronghold(59, id++, DiscoveryToken.Shrine);
-            ProcessingStation = AddDiscoveryStronghold(60, id++, DiscoveryToken.ProcessingStation);
+            Jacurutu = AddDiscoveredLocation(56, id++, DiscoveryToken.Jacurutu, true);
+            Cistern = AddDiscoveredLocation(57, id++, DiscoveryToken.Cistern, false);
+            TestingStation = AddDiscoveredLocation(58, id++, DiscoveryToken.TestingStation, false);
+            Shrine = AddDiscoveredLocation(59, id++, DiscoveryToken.Shrine, false);
+            ProcessingStation = AddDiscoveredLocation(60, id++, DiscoveryToken.ProcessingStation, false);
         }
 
         private Homeworld AddHomeworld(int territoryId, int locationId, World world, Faction faction, bool isHomeOfNormalForces, bool isHomeOfSpecialForces, int threshold, int battleBonusAtHighThreshold, int battleBonusAtLowThreshold, int resourceAmount)
         {
-            var result = new Homeworld(world, faction, new Territory(territoryId) { IsHomeworld = true, IsStronghold = false, IsProtectedFromStorm = true, IsProtectedFromWorm = true }, isHomeOfNormalForces, isHomeOfSpecialForces, threshold, battleBonusAtHighThreshold, battleBonusAtLowThreshold, resourceAmount, locationId);
+            var result = new Homeworld(world, faction, new Territory(territoryId) { IsHomeworld = true, HasReducedShippingCost = true, IsStronghold = false, IsDiscovery = false, IsProtectedFromStorm = true, IsProtectedFromWorm = true }, isHomeOfNormalForces, isHomeOfSpecialForces, threshold, battleBonusAtHighThreshold, battleBonusAtLowThreshold, resourceAmount, locationId);
             _locations.Add(result);
             return result;
         }
 
-        private DiscoveryStronghold AddDiscoveryStronghold(int territoryId, int locationId, DiscoveryToken discovery)
+        private DiscoveredLocation AddDiscoveredLocation(int territoryId, int locationId, DiscoveryToken discovery, bool isStronghold)
         {
-            var result = new DiscoveryStronghold(new Territory(false, true, true, true, territoryId), locationId, discovery);
+            var result = new DiscoveredLocation(new Territory(false, isStronghold, true, true, true, true, territoryId), locationId, discovery);
             _locations.Add(result);
             return result;
         }

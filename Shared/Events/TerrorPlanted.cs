@@ -51,6 +51,7 @@ namespace Treachery.Shared
             var ally = g.GetPlayer(p.Ally);
 
             return g.Map.Territories(false).Where(t =>
+                t.IsVisible && 
                 t.IsStronghold &&
                 t != g.Map.HiddenMobileStronghold.Territory &&
                 (!g.TerrorIn(t).Any() || MayPlaceAtExistingToken(p)));

@@ -19,7 +19,7 @@ namespace Treachery.Shared
             return g.Map.Locations(g.Applicable(Rule.Homeworlds)).Where(l => g.IsNotFull(p, l) && (l == g.Map.TheGreatFlat || l == g.Map.TheGreaterFlat || l == g.Map.FuneralPlain || l.Territory == g.Map.BightOfTheCliff || l == g.Map.SietchTabr ||
                 l.Territory == g.Map.PlasticBasin || l.Territory == g.Map.RockOutcroppings || l.Territory == g.Map.BrokenLand || l.Territory == g.Map.Tsimpo || l.Territory == g.Map.HaggaBasin ||
                 l == g.Map.PolarSink || l.Territory == g.Map.WindPass || l.Territory == g.Map.WindPassNorth || l.Territory == g.Map.CielagoWest || l.Territory == g.Map.FalseWallWest || l.Territory == g.Map.HabbanyaErg ||
-                l is DiscoveryStronghold dsPastyMesa && dsPastyMesa.Visible && dsPastyMesa.AttachedToLocation.Territory == g.Map.PastyMesa || l is DiscoveryStronghold dsFalseWallWest && dsFalseWallWest.Visible && dsFalseWallWest.AttachedToLocation.Territory == g.Map.FalseWallWest))
+                l is DiscoveredLocation dsPastyMesa && dsPastyMesa.Visible && dsPastyMesa.AttachedToLocation.Territory == g.Map.PastyMesa || l is DiscoveredLocation dsFalseWallWest && dsFalseWallWest.Visible && dsFalseWallWest.AttachedToLocation.Territory == g.Map.FalseWallWest))
                 .ToList();
         }
 
@@ -204,7 +204,7 @@ namespace Treachery.Shared
                     return 0;
                 }
 
-                double costOfShipment = Math.Abs(amountToPayFor) * (to.Territory.IsStronghold || to.Territory.IsHomeworld ? 1 : 2);
+                double costOfShipment = Math.Abs(amountToPayFor) * (to.Territory.HasReducedShippingCost ? 1 : 2);
 
                 if (g.MayShipWithDiscount(p) || karamaShipment || siteToSite && g.ShipmentPermissions.TryGetValue(p.Faction, out var permission) && permission == ShipmentPermission.CrossAtOrangeRates)
                 {
@@ -279,7 +279,7 @@ namespace Treachery.Shared
             g.Players.Any(native => native.IsNative(hw)) &&
             (!p.HasAlly || !p.AlliedPlayer.IsNative(hw) && p.AlliedPlayer.AnyForcesIn(hw) == 0);
 
-        private static bool IsEitherValidDiscoveryOrNoDiscovery(Location l) => l is not DiscoveryStronghold ds || ds.Visible;
+        private static bool IsEitherValidDiscoveryOrNoDiscovery(Location l) => l is not DiscoveredLocation ds || ds.Visible;
 
         public static IEnumerable<int> ValidNoFieldValues(Game g, Player p)
         {
