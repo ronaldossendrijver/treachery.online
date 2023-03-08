@@ -7,7 +7,7 @@
 
 @if (h.Game.CurrentPhase >= Phase.MetheorAndStormSpell)
 {
-    float y = 2 * Skin.Current.FORCETOKEN_RADIUS;
+    float y = 1.75f * Skin.Current.FORCETOKEN_RADIUS;
     float x = 1.5f * Skin.Current.FORCETOKEN_RADIUS;
     float leaderDiameter = 3.2f * Skin.Current.FORCETOKEN_RADIUS;
     float leaderPctHeight = .25f * leaderDiameter * Skin.Current.BattleWheelHeroHeight / Skin.Current.BattleWheelHeroWidth;
@@ -91,7 +91,7 @@
     {
         if (y > 14 * Skin.Current.FORCETOKEN_RADIUS - 0.5f * x)
         {
-            y = 2 * Skin.Current.FORCETOKEN_RADIUS;
+            y = 1.75f * Skin.Current.FORCETOKEN_RADIUS;
             x += 4.25f * Skin.Current.FORCETOKEN_RADIUS;
         }
     }

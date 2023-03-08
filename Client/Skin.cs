@@ -1961,7 +1961,7 @@ namespace Treachery.Client
                 [45] = new Point(428, 159), //Sihaya Ridge
                 [46] = new Point(383, 235), //Shield Wall (South Sector)
                 [47] = new Point(355, 235), //Shield Wall (North Sector)
-                [48] = new Point(464, 185), //Gara Kulon
+                [48] = new Point(475, 186), //Gara Kulon
                 [49] = new Point(400, 118), //OH Gap (East Sector)
                 [50] = new Point(357, 93), //OH Gap (Middle Sector)
                 [51] = new Point(312, 80), //OH Gap (West Sector)
@@ -2295,22 +2295,22 @@ namespace Treachery.Client
 
             HomeWorldImage_URL = new Dictionary<World, string>()
             {
-                [World.Green] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
-                [World.Black] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
-                [World.Yellow] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
-                [World.Red] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
-                [World.RedStar] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
-                [World.Orange] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
-                [World.Blue] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
+                [World.Green] = DEFAULT_ART_LOCATION + "/art/faction1planet.svg",
+                [World.Black] = DEFAULT_ART_LOCATION + "/art/faction2planet.svg",
+                [World.Yellow] = DEFAULT_ART_LOCATION + "/art/faction3planet.svg",
+                [World.Red] = DEFAULT_ART_LOCATION + "/art/faction4planet.svg",
+                [World.RedStar] = DEFAULT_ART_LOCATION + "/art/faction4planet2.svg",
+                [World.Orange] = DEFAULT_ART_LOCATION + "/art/faction5planet.svg",
+                [World.Blue] = DEFAULT_ART_LOCATION + "/art/faction6planet.svg",
 
-                [World.Grey] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
-                [World.Purple] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
+                [World.Grey] = DEFAULT_ART_LOCATION + "/art/faction7planet.svg",
+                [World.Purple] = DEFAULT_ART_LOCATION + "/art/faction8planet.svg",
 
-                [World.Brown] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
-                [World.White] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
+                [World.Brown] = DEFAULT_ART_LOCATION + "/art/faction9planet.svg",
+                [World.White] = DEFAULT_ART_LOCATION + "/art/faction10planet.svg",
 
-                [World.Pink] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
-                [World.Cyan] = DEFAULT_ART_LOCATION + "/art/solarsystem.svg",
+                [World.Pink] = DEFAULT_ART_LOCATION + "/art/faction11planet.svg",
+                [World.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12planet.svg",
             },
 
             HomeWorldCardImage_URL = new Dictionary<World, string>()
