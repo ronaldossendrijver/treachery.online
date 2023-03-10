@@ -11,39 +11,22 @@
         <label class="me-1">@Label</label>
     }
 
-    <NumberPickerComponent Disabled="@Disabled" @bind-Value="@Value" OnDown="OnDown" OnUp="OnUp" Min="Min" Max="Max"
-                            SymbolSRC="@ForceSymbolSRC" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="black"
-                            NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
+    <NumberPickerComponent Disabled="@Disabled" @bind-Value="@Value" OnChanged="@Notify" OnDown="OnDown" OnUp="OnUp" Min="Min" Max="Max"
+                           SymbolSRC="@ForceSymbolSRC" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="black"
+                           NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="black" />
 </div>
 
 
 @code {
 
-    private int _value;
-
     [Parameter]
-    public int Value
-    {
-        get
-        {
-            return _value;
-        }
-        set
-        {
-            if (_value != value)
-            {
-                _value = value;
-                ValueChanged.InvokeAsync(value);
-                OnChanged?.Invoke(value);
-            }
-        }
-    }
+    public int Value { get; set; }
 
     [Parameter]
     public EventCallback<int> ValueChanged { get; set; }
 
     [Parameter]
-    public Action<int> OnChanged { get; set; }
+    public EventCallback<int> OnChanged { get; set; }
 
     [Parameter]
     public EventCallback OnUp { get; set; }
@@ -122,4 +105,10 @@
     public string Class { get; set; } = "d-inline-flex align-items-center";
 
     private string ForceSymbolSRC => Special ? Skin.Current.GetFactionSpecialForceImageURL(Faction) : Skin.Current.GetFactionForceImageURL(Faction);
+
+    private async Task Notify() {
+
+        await ValueChanged.InvokeAsync(Value);
+        await OnChanged.InvokeAsync(Value);
+    }
 }

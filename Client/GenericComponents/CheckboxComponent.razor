@@ -17,22 +17,7 @@
     public RenderFragment ChildContent { get; set; }
 
     [Parameter]
-    public bool Value
-    {
-        get
-        {
-            return _value;
-        }
-        set
-        {
-            if (_value != value)
-            {
-                _value = value;
-                ValueChanged.InvokeAsync(value);
-                OnChanged?.Invoke(value);
-            }
-        }
-    }
+    public bool Value { get; set; }
 
     [Parameter]
     public EventCallback<bool> ValueChanged { get; set; }
@@ -42,4 +27,16 @@
 
     [Parameter]
     public string Class { get; set; } = "";
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (_value != Value)
+        {
+            _value = Value;
+            ValueChanged.InvokeAsync(_value);
+            OnChanged?.Invoke(_value);
+        }
+    }
 }

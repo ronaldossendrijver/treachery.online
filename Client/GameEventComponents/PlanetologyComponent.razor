@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<Planetology>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Use @Skin.Current.Describe(LeaderSkill.Planetologist) to move 1 extra territory or move two force groups to the same territory?</Header>
     <Body>
@@ -25,6 +25,8 @@
 
     protected override void OnParametersSet()
     {
+        base.OnParametersSet();
+
         BackgroundImage = Skin.Current.GetImageURL(LeaderSkill.Planetologist);
     }
 }

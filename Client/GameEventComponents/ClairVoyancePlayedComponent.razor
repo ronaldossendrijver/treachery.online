@@ -6,14 +6,14 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<ClairVoyancePlayed>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>@DescribeCard(TreacheryCardType.Clairvoyance)</Header>
     <Body>
 
-        <SelectFactionComponent @bind-Value="target" Values="ClairVoyancePlayed.ValidTargets(Game, Player)">
+        <SelectFromImageComponent @bind-Value="target" Values="ClairVoyancePlayed.ValidTargets(Game, Player)" Required=true ImageWidth="40">
             <Label>Target Faction</Label>
-        </SelectFactionComponent>
+        </SelectFromImageComponent>
 
         <SelectComponent @bind-Value="question" Values="ClairVoyancePlayed.ValidQuestions(Game, target)" ValueLabels="ClairVoyancePlayed.ValidQuestions(Game, target).Select(q => ToLabel(q))" >
             <Label>Question</Label>

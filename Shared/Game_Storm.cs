@@ -47,6 +47,8 @@ namespace Treachery.Shared
         public void HandleEvent(DiscoveryEntered e)
         {
             JustRevealedDiscoveryStrongholds.Remove(e.To as DiscoveredLocation);
+            RecentMilestones.Add(Milestone.Move);
+
             Log(e);
 
             if (!e.Passed)
@@ -305,6 +307,7 @@ namespace Treachery.Shared
         public void HandleEvent(TestingStationUsed e)
         {
             Log(e);
+            RecentMilestones.Add(Milestone.WeatherControlled);
             CurrentTestingStationUsed = true;
             NextStormMoves += e.ValueAdded;
         }
@@ -412,15 +415,15 @@ namespace Treachery.Shared
                 var card = TakeLosses.ValidUselessCardToPreventLosses(this, e.Player);
                 if (card == null && NexusPlayed.CanUseCunning(player))
                 {
-                    DiscardNexusCard(player);
+                    PlayNexusCard(player, "Cunning", " prevent losing forces in ", StormLossesToTake[0].Location);
                     mustDiscard = true;
                 }
                 else
                 {
                     Discard(e.Player, card);
+                    Log(e.Initiator, " prevent losing forces in ", StormLossesToTake[0].Location);
                 }
 
-                Log(e.Initiator, " prevent losing forces in ", StormLossesToTake[0].Location);
                 StormLossesToTake.RemoveAt(0);
                 RecentMilestones.Add(Milestone.SpecialUselessPlayed);
             }

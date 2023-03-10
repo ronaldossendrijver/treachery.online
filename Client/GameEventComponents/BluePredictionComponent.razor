@@ -6,12 +6,12 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<BluePrediction>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Predict which faction will win the game.</Header>
     <Body>
 
-        <SelectFactionComponent @bind-Value="toWin" Values="BluePrediction.ValidTargets(Game, Player)" />
+        <SelectFromImageComponent @bind-Value="toWin" Values="BluePrediction.ValidTargets(Game, Player)" Required=true ImageWidth="40" />
 
         <SelectNumberComponent @bind-Value="turn" Min="1" Max="Game.MaximumNumberOfTurns" />
 

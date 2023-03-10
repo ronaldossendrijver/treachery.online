@@ -12,11 +12,11 @@
         var x = center.X - 2 * Skin.Current.PlayerTokenRadius;
         var y = center.Y - 0.8f * Skin.Current.PlayerTokenRadius;
 
-        if (h.Game.StrongholdOwnership.ContainsKey(stronghold))
+        if (h.Game.StrongholdOwnership.TryGetValue(stronghold, out var owner))
         {
             var opacity = stronghold == Game.Map.HiddenMobileStronghold && !showHMS ? 0.2f : 0.8f;
             <Image X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src="@Skin.Current.GetFactionTableImageURL(h.Game.StrongholdOwnership[stronghold])"
-               Opacity=opacity Popover=@Popup.Get(stronghold, Game.StrongholdOwnership[stronghold]) />
+               Opacity=opacity Popover=@Popup.Get(stronghold.Advantage, owner) />
 
             y += Skin.Current.PlayerTokenRadius;
         }

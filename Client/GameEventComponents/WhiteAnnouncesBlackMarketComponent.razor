@@ -6,12 +6,12 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<WhiteAnnouncesBlackMarket>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Select a card to put on the Black Market, or pass</Header>
     <Body>
 
-        <SelectCardComponent @bind-Value="card" Values="WhiteAnnouncesBlackMarket.ValidCards(Player)" Required="true" />
+        <SelectFromImageComponent @bind-Value="card" Values="WhiteAnnouncesBlackMarket.ValidCards(Player)" Required="true" ImageWidth="80" />
 
         <RadioComponent @bind-Value="auctionType" Values="new AuctionType[] { AuctionType.BlackMarketNormal, AuctionType.BlackMarketOnceAround, AuctionType.BlackMarketSilent }" ValueLabels="@(new string[] { "Normal", "Once Around", "Silent"})">
             <Label>Type of auction</Label>

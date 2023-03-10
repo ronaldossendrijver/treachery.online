@@ -57,8 +57,7 @@ namespace Treachery.Shared
 
             if (r.UsesRedSecretAlly)
             {
-                LogNexusPlayed(r.Initiator, Faction.Red, "Secret Ally", "revive ", 3 , " additional forces beyond revival limits for free");
-                DiscardNexusCard(initiator);
+                PlayNexusCard(r.Player, "Secret Ally", "revive ", 3 , " additional forces beyond revival limits for free");
             }
 
             //Payment
@@ -442,6 +441,7 @@ namespace Treachery.Shared
             if (NexusPlayed.CanUseCunning(e.Player))
             {
                 DiscardNexusCard(e.Player);
+                RecentMilestones.Add(Milestone.NexusPlayed);
                 LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
             }
             else
@@ -476,6 +476,7 @@ namespace Treachery.Shared
             Log(e.Initiator, " station the ", e.Ambassador, " ambassador in ", e.Stronghold, " for ", Payment(AmbassadorsPlacedThisTurn));
             AmbassadorsOnPlanet.Add(e.Stronghold, e.Ambassador);
             e.Player.Ambassadors.Remove(e.Ambassador);
+            RecentMilestones.Add(Milestone.AmbassadorPlaced);
         }
 
         #endregion

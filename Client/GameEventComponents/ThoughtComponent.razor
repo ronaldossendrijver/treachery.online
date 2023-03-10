@@ -6,12 +6,12 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<Thought>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Use your @Skin.Current.Describe(LeaderSkill.Thinker) to ask if your opponent has a specific weapon</Header>
     <Body>
 
-        <SelectCardComponent @bind-Value="card" Values="Thought.ValidCards(Game)" Required="true"/>
+        <SelectFromImageComponent @bind-Value="card" Values="Thought.ValidCards(Game)" Required="true" ImageWidth="80" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Ask about {0}", card)" ConfirmError=@Validation />
 

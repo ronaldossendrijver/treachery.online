@@ -11,39 +11,21 @@
         <label class="me-1">@Label</label>
     }
 
-    <NumberPickerComponent Disabled="@Disabled" @bind-Value="Value" Min="Min" Max="Max"
-                           Title=@Title
-                           SymbolSRC="@Skin.Current.GetImageURL(Faction)" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" 
-                           NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="#FF5400" BehindNumberSRC="@Skin.Current.Harvester_URL"/>
+    <NumberPickerComponent Disabled="@Disabled" @bind-Value="Value" OnChanged="@Notify"
+        Min="Min" Max="Max" Title=@Title SymbolSRC="@Skin.Current.GetImageURL(Faction)" SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="#FF5400" 
+        NumberAlignment="NumberAlignment.BottomRight" NumberBackgroundFillColor="white" NumberBackgroundBorderColor="#FF5400" BehindNumberSRC="@Skin.Current.Harvester_URL"/>
 </div>
 
 @code {
 
-    private int _value;
-
     [Parameter]
-    public int Value
-    {
-        get
-        {
-            return _value;
-        }
-        set
-        {
-            if (_value != value)
-            {
-                _value = value;
-                ValueChanged.InvokeAsync(value);
-                OnChanged?.Invoke(value);
-            }
-        }
-    }
+    public int Value { get; set; }
 
     [Parameter]
     public EventCallback<int> ValueChanged { get; set; }
 
     [Parameter]
-    public Action<int> OnChanged { get; set; }
+    public EventCallback<int> OnChanged { get; set; }
 
     [Parameter]
     public EventCallback OnUp { get; set; }
@@ -71,4 +53,10 @@
 
     [Parameter]
     public string Class { get; set; } = "d-inline-flex align-items-center";
+
+    private async Task Notify() {
+
+        await ValueChanged.InvokeAsync(Value);
+        await OnChanged.InvokeAsync(Value);
+    }
 }

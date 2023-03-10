@@ -6,14 +6,14 @@
     
 <div class="card @Width @Border mb-2" style="@BackgroundStyle">
 
-    <div class="card-header" style="@HeaderStyle" @onclick=@(e => Collapsed = !Collapsed)>
+    <div class="card-header" style="@HeaderStyle;cursor:pointer;" @onclick=@(e => CollapsedInternal = !CollapsedInternal)>
 
-        <CollapseButton Collapsed=@Collapsed />
+        <CollapseButton @bind-Collapsed=@CollapsedInternal />
         @Header
 
     </div>
 
-    @if (!Collapsed)
+    @if (!_collapsedInternal) 
     {
         <div class="card-body" style="@BodyStyle">
             <ErrorBoundary @ref=errorBoundary>
@@ -39,6 +39,8 @@
 
 @code {
 
+    private static Dictionary<Type, bool> SavedCollapsedStateValues = new();
+
     [Parameter]
     public bool IsUrgent { get; set; }
 
@@ -60,38 +62,70 @@
     [Parameter]
     public RenderFragment Body { get; set; }
 
-    private bool _collapsed  = false;
-
     [Parameter]
-    public bool Collapsed
+    public CollapseState Collapsed { get; set; }
+
+    private bool CollapsedInternal
     {
-        get
-        {
-            return _collapsed;
-        }
+        get => _collapsedInternal;
+
         set
         {
-
-            if (_collapsed != value)
-            {
-                _collapsed = value;
-                CollapsedChanged.InvokeAsync(value);
-            }
+            _collapsedInternal = value;
+            SaveCollapsed(value);
         }
     }
 
+    private bool _collapsedInternal;
+
     [Parameter]
-    public EventCallback<bool> CollapsedChanged { get; set; }
+    public Type CollapsedType { get; set; }
 
     [Parameter]
     public GameEvent TimedEvent { get; set; } = null;
 
-    private ErrorBoundary errorBoundary;
-
     private string Border => IsUrgent ? "border-white" : "";
+
+    private ErrorBoundary errorBoundary;
 
     protected override void OnAfterRender(bool firstRender)
     {
         errorBoundary?.Recover();
+    }
+
+    private bool _parametersSet;
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (!_parametersSet) 
+        {
+            _parametersSet = true;
+
+            if (Collapsed == CollapseState.None)
+            {
+                if (CollapsedType != null && SavedCollapsedStateValues.TryGetValue(CollapsedType, out var storedValue))
+                {
+                    _collapsedInternal = storedValue;
+                }
+                else
+                {
+                    _collapsedInternal = false;
+                }
+            }
+            else
+            {
+                _collapsedInternal = (Collapsed == CollapseState.Collapsed);
+            }
+        }
+    }
+
+    protected void SaveCollapsed(bool value) {
+
+        if (CollapsedType != null)
+        {
+            SavedCollapsedStateValues.Remove(CollapsedType);
+            SavedCollapsedStateValues.Add(CollapsedType, CollapsedInternal);
+        }
     }
 }

@@ -6,14 +6,14 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<DealOffered>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType() Collapsed=CollapseState.Collapsed>
 
     <Header>Offer a Deal</Header>
     <Body>
 
-        <SelectFactionComponent Selected="to" Values="Game.PlayersOtherThan(Player)" OnChanged="e => StateHasChanged()">
+        <SelectFromImageComponent Selected="to" Values="Game.PlayersOtherThan(Player)" T=Faction OnChanged=StateHasChanged Required=false ImageWidth="40">
             <Label>Offer to whom (select none to offer to all)</Label>
-        </SelectFactionComponent>
+        </SelectFromImageComponent>
 
         <SelectResourcesComponent @bind-Value="price" Min="0" Max="50" Label="How much will it cost them to accept this deal?"/>
 
@@ -46,11 +46,6 @@
     private DealType type;
     private string text = "";
     private Phase until;
-
-    protected override void OnInitialized()
-    {
-        Collapsed = true;
-    }
 
     private void OnChangeFactions()
     {

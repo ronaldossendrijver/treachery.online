@@ -403,13 +403,16 @@ namespace Treachery.Shared
             }
 
             var pink = GetPlayer(Faction.Pink);
-            if (pink != null && Applicable(Rule.PinkLoyalty))
+            if (pink != null)
             {
-                PinkLoyalLeader = pink.Leaders.RandomOrDefault(Random);
-                Log(PinkLoyalLeader, " is set aside as the loyal ", Faction.Pink, " leader");
-
                 AssignInitialAmbassadors(pink);
                 Log(Faction.Pink, " get ", Ambassador.Pink, " and draw 4 random ambassadors");
+
+                if (Applicable(Rule.PinkLoyalty))
+                {
+                    PinkLoyalLeader = pink.Leaders.RandomOrDefault(Random);
+                    Log(PinkLoyalLeader, " is set aside as the loyal ", Faction.Pink, " leader");
+                }
             }
 
             Enter(IsPlaying(Faction.Blue), Phase.BluePredicting, TreacheryCardsBeforeTraitors, DealStartingTreacheryCards, DealTraitors);

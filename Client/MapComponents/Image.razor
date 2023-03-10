@@ -15,7 +15,6 @@
     <Rectangle X=X Y=Y Width="Width" Height="Height" FillColor=@BackgroundRectangleColor />
 }
 
-
 @if (Popover != null)
 {
     <img @ref=@element @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" style="@Style" src=@Src
@@ -67,21 +66,19 @@ else
     [Parameter]
     public EventCallback<MouseEventArgs> OnMouseExited { get; set; }
 
-    private bool _popoverNeedsUpdate = false;
-    private string _popover = null;
     [Parameter]
-    public string Popover { 
-        get
+    public string Popover { get; set; }
+    private string _popover = null;
+    private bool _popoverNeedsRefresh = false;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (_popover != Popover)
         {
-            return _popover;
-        } 
-        set
-        {
-            if (_popover != value)
-            {
-                _popover = value;
-                _popoverNeedsUpdate = true;
-            }
+            _popover = Popover;
+            _popoverNeedsRefresh = true;
         }
     }
 
@@ -91,9 +88,9 @@ else
         {
             await Browser.EnablePopover(element);
         }
-        else if (_popoverNeedsUpdate)
+        else if (_popoverNeedsRefresh)
         {
-            _popoverNeedsUpdate = false;
+            _popoverNeedsRefresh = false;
             await Browser.RefreshPopover(element);
         }
     }

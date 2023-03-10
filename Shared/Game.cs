@@ -1100,7 +1100,7 @@ namespace Treachery.Shared
             return Players.FirstOrDefault(p => p.Name == name);
         }
 
-        public Player GetPlayer(Faction f)
+        public Player GetPlayer(Faction? f)
         {
             return Players.FirstOrDefault(p => p.Faction == f);
         }
@@ -1402,6 +1402,7 @@ namespace Treachery.Shared
                 TreacheryDiscardPile.PutOnTop(card);
                 RegisterKnown(card);
                 RecentlyDiscarded.Add(card, player.Faction);
+                RecentMilestones.Add(Milestone.Discard);
 
                 if (card.Type == TreacheryCardType.Poison || card.Type == TreacheryCardType.ProjectileAndPoison || card.Type == TreacheryCardType.PoisonTooth)
                 {

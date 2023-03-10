@@ -2,7 +2,7 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
 
-<div style="display:inline-block;position:relative;height:@SymbolSize;width:@TotalWidth;-webkit-touch-callout:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;" title=@Title>
+<div style="display:inline-block;position:relative;height:@SymbolSize;width:@TotalWidth;user-select:none;" title=@Title>
 
     @if (DrawSymbolBackground)
     {
@@ -24,20 +24,20 @@
         <img src="@BehindNumberSRC" style="position: absolute; left: @BehindNumberImageOffsetX; top:@BehindNumberImageOffsetY; width: @BehindNumberImageSize;" />
     }
 
-    <span @onclick="e => Click(e)" style="cursor: pointer; position: absolute; left: @NumberBoxOffsetX; top:@NumberBoxOffsetY; width: @NumberBoxSize; font-size: @NumberFontSize; font-weight: bold; color: @NumberColor; line-height: 1.0; text-align:center; white-space:nowrap;">@Value</span>
+    <span @onclick=@(async e => await Click(e)) style="cursor: pointer; position: absolute; left: @NumberBoxOffsetX; top:@NumberBoxOffsetY; width: @NumberBoxSize; font-size: @NumberFontSize; font-weight: bold; color: @NumberColor; line-height: 1.0; text-align:center; white-space:nowrap;">@Value</span>
 
     <svg 
-         @onclick="e => Increase()" 
-         @onmouseover="e => MouseOver(true)"
-         @onmouseout="e => MouseOut(true)"
+         @onclick=@(async e => await Increase()) 
+         @onmouseover=@(e => MouseOver(true))
+         @onmouseout=@(e => MouseOut(true))
          xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" height="@ArrowSize" fill="@IncreaseArrowColor" viewBox="0 0 16 16" style="position: absolute; left: @ArrowOffsetX; top: 3px; width: @ArrowSize; filter: @UpStyle; pointer-events: bounding-box; cursor:pointer;">
          <path fill-rule="evenodd" d="M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z" />
     </svg>
 
     <svg 
-         @onclick="e => Decrease()" 
-         @onmouseover="e => MouseOver(false)"
-         @onmouseout="e => MouseOut(false)"
+         @onclick=@(async e => await Decrease())
+         @onmouseover=@(e => MouseOver(false))
+         @onmouseout=@(e => MouseOut(false))
          xmlns="http://www.w3.org/2000/svg" width="@ArrowSize" height="@ArrowSize" fill="@DecreaseArrowColor" viewBox="0 0 16 16" style="position: absolute; left: @ArrowOffsetX; bottom: 3px; width: @ArrowSize; filter: @DownStyle; pointer-events: bounding-box; cursor:pointer;">
         <path transform="rotate(180,8,8)" fill-rule="evenodd" d="M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z" />
     </svg>
@@ -46,31 +46,14 @@
 
 @code {
 
-    private int _value;
-
     [Parameter]
-    public int Value
-    {
-        get
-        {
-            return _value;
-        }
-        set
-        {
-            if (_value != value)
-            {
-                _value = value;
-                ValueChanged.InvokeAsync(value);
-                OnChanged?.Invoke();
-            }
-        }
-    }
+    public int Value { get; set; }
 
     [Parameter]
     public EventCallback<int> ValueChanged { get; set; }
 
     [Parameter]
-    public Action OnChanged { get; set; }
+    public EventCallback<int> OnChanged { get; set; }
 
     [Parameter]
     public EventCallback OnUp { get; set; }
@@ -129,39 +112,47 @@
     [Parameter]
     public string Title { get; set; } = "";
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnParametersSetAsync()
     {
-        if (Value < Min) Value = Min;
-        else if (Value > Max) Value = Max;
+        await base.OnParametersSetAsync();
+
+        if (Value < Min)
+        {
+            await SetValue(Min);
+        }
+        else if (Value > Max)
+        {
+            await SetValue(Max);
+        }
     }
 
-    private void Increase()
+    private async Task Increase()
     {
         if (!Disabled && Value < Max)
         {
-            Value += StepUp;
-            OnUp.InvokeAsync();
+            await SetValue(Value + StepUp);
+            await OnUp.InvokeAsync();
         }
     }
 
-    private void Decrease()
-    {
+    private async Task Decrease() {
+
         if (!Disabled && Value > Min)
         {
-            Value -= StepDown;
-            OnDown.InvokeAsync();
+            await SetValue(Value - StepDown);
+            await OnDown.InvokeAsync();
         }
     }
 
-    private void Click(MouseEventArgs e)
+    private async Task Click(MouseEventArgs e)
     {
         if (e.AltKey || e.ShiftKey || e.CtrlKey)
         {
-            Decrease();
+            await Decrease();
         }
         else
         {
-            Increase();
+            await Increase();
         }
     }
 
@@ -345,4 +336,14 @@
     private string UpStyle => _upHovered && MayIncrease ? string.Format("brightness(150%) drop-shadow(1px 1px 1px {0})", ArrowColor) : "";
 
     private string DownStyle => _downHovered && MayDecrease ? string.Format("brightness(150%) drop-shadow(1px 1px 1px {0})", ArrowColor) : "";
+
+    private async Task SetValue(int newValue) {
+
+        if (Value != newValue)
+        {
+            Value = newValue;
+            await ValueChanged.InvokeAsync(newValue);
+            await OnChanged.InvokeAsync(newValue);
+        }
+    }
 }

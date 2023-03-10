@@ -92,10 +92,10 @@
 
         if (Game.HasStrongholdAdvantage(Plan.Initiator, StrongholdAdvantage.FreeResourcesForBattles, Game.CurrentBattle.Territory))
         {
-            <Image X="@(forceX + 8f * Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)" 
-            Src="@Skin.Current.GetImageURL(Game.Map.Arrakeen)" 
-            ShadowColor="@Skin.Current.SHADOW" ShadowX="3" ShadowY="3" ShadowBlur="1" 
-            Popover="@Popup.Get(Game.Map.Arrakeen, Plan.Initiator)"/>
+            <Image X="@(forceX + 8f * Skin.Current.RESOURCETOKEN_RADIUS)" Y="@(forceY)" Width=@(0.4f * Skin.Current.BattleWheelCardWidth) Height="@(0.4f * Skin.Current.BattleWheelCardHeight)"
+                   Src="@Skin.Current.GetImageURL(StrongholdAdvantage.FreeResourcesForBattles)"
+                   ShadowColor="@Skin.Current.SHADOW" ShadowX="3" ShadowY="3" ShadowBlur="1"
+                   Popover="@Popup.Get(StrongholdAdvantage.FreeResourcesForBattles, Plan.Initiator)" />
         }
     }
 

@@ -8,7 +8,7 @@
 @typeparam PlacementEventType
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>@(Title)?</Header>
     <Body>
@@ -26,7 +26,7 @@
             }
             else
             {
-                <SelectComponent OnChanged="StateHasChanged" ButtonHint="ClickHintButton.LMB" ModifierHint="ClickHintModifier.CTRL" @bind-Value="fromTerritory" Values="ValidSources">
+                <SelectComponent T=Territory OnChanged="StateHasChanged" ButtonHint="ClickHintButton.LMB" ModifierHint="ClickHintModifier.CTRL" @bind-Value="fromTerritory" Values="ValidSources">
                     <Label>From</Label>
                 </SelectComponent>
 

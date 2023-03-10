@@ -6,12 +6,12 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<HMSAdvantageChosen>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Select which advantage of another stronghold you control to use for the @Skin.Current.Describe(Game.Map.HiddenMobileStronghold)</Header>
     <Body>
 
-        <SelectFromImageComponent @bind-Value="advantage" Values="HMSAdvantageChosen.ValidAdvantages(Game, Player)" ImageWidth="100" ImageURLs="ImageURLs" PopupHTMLs="PopoverHTMLs" Required="true"/>
+        <SelectFromImageComponent @bind-Value="advantage" Values="HMSAdvantageChosen.ValidAdvantages(Game, Player)" ImageWidth="100" Required="true"/>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Select {0}", advantage)" ConfirmError=@Validation />
 
@@ -24,21 +24,4 @@
     private StrongholdAdvantage advantage;
 
     protected override HMSAdvantageChosen ConfirmedResult => new HMSAdvantageChosen(Game) { Initiator = Faction, Advantage = advantage };
-
-    private IEnumerable<string> ImageURLs => HMSAdvantageChosen.ValidAdvantages(Game, Player).Select(adv => Skin.Current.GetImageURL(StrongholdGranting(adv)));
-
-    private IEnumerable<string> PopoverHTMLs => HMSAdvantageChosen.ValidAdvantages(Game, Player).Select(adv => Popup.Get(StrongholdGranting(adv)));
-
-    private Location StrongholdGranting(StrongholdAdvantage advantage)
-    {
-        return advantage switch
-        {
-            StrongholdAdvantage.FreeResourcesForBattles => Game.Map.Arrakeen,
-            StrongholdAdvantage.CollectResourcesForDial => Game.Map.SietchTabr,
-            StrongholdAdvantage.CollectResourcesForUseless => Game.Map.TueksSietch,
-            StrongholdAdvantage.CountDefensesAsAntidote => Game.Map.Carthag,
-            StrongholdAdvantage.WinTies => Game.Map.HabbanyaSietch,
-            _ => null
-        };
-    }
 }

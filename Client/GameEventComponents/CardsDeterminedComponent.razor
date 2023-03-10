@@ -6,18 +6,18 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<CardsDetermined>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Select cards in play</Header>
     <Body>
 
         <h4>Treachery Cards</h4>
-        <SelectCardComponent Selected="selectedTreacheryCards" Values="Game.TreacheryDeck.Items" OnChanged="e => StateHasChanged()"/>
+        <SelectFromImageComponent Selected="selectedTreacheryCards" Values="Game.TreacheryDeck.Items" T=TreacheryCard OnChanged=StateHasChanged ImageWidth="80" />
 
         @if(Game.WhiteCache.Any())
         {
             <h4>@Skin.Current.Describe(Faction.White) Cards</h4>
-            <SelectCardComponent Selected="selectedWhiteCards" Values="Game.WhiteCache" OnChanged="e => StateHasChanged()"/>
+            <SelectFromImageComponent Selected="selectedWhiteCards" Values="Game.WhiteCache" T=TreacheryCard OnChanged=StateHasChanged/>
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Confirm Cards" ConfirmError=@Validation />
@@ -35,6 +35,8 @@
 
     protected override void OnParametersSet()
     {
+        base.OnParametersSet();
+
         selectedTreacheryCards = new List<TreacheryCard>(Game.TreacheryDeck.Items);
         selectedWhiteCards = new List<TreacheryCard>(Game.WhiteCache);
     }

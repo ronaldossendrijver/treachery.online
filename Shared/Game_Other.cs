@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 
 namespace Treachery.Shared
 {
@@ -352,7 +353,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(KarmaBrownDiscard e)
         {
-            RecentMilestones.Add(Milestone.Discard);
             Discard(e.Player, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
             Log(e);
 
@@ -579,6 +579,7 @@ namespace Treachery.Shared
             if (NexusPlayed.CanUseCunning(e.Player))
             {
                 DiscardNexusCard(e.Player);
+                RecentMilestones.Add(Milestone.NexusPlayed);
                 LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
             }
             else
@@ -650,6 +651,7 @@ namespace Treachery.Shared
             Log(e.GetDynamicMessage());
             if (!e.Passed)
             {
+                RecentMilestones.Add(Milestone.Bureaucracy);
                 BureaucratWasUsedThisPhase = true;
                 GetPlayer(TargetOfBureaucracy).Resources -= 2;
                 WasVictimOfBureaucracy = TargetOfBureaucracy;
@@ -695,8 +697,6 @@ namespace Treachery.Shared
             {
                 HandleBetrayal(e);
             }
-
-            DiscardNexusCard(e.Player);
         }
 
 
@@ -707,7 +707,7 @@ namespace Treachery.Shared
             switch (e.Faction)
             {
                 case Faction.Green:
-                    LogNexusPlayed(e);
+                    PlayNexusCard(e.Player);
                     Prevent(e.Initiator, FactionAdvantage.GreenBattlePlanPrescience);
                     CurrentPrescience = null;
                     break;
@@ -719,13 +719,13 @@ namespace Treachery.Shared
                     TraitorDeck.Shuffle();
                     RecentMilestones.Add(Milestone.Shuffled);
                     BlackTraitorWasCancelled = true;
-                    LogNexusPlayed(e, "cancel the ", Faction.Black, " traitor call");
+                    PlayNexusCard(e.Player, "cancel the ", Faction.Black, " traitor call");
                     Enter(Phase.CallTraitorOrPass);
                     HandleRevealedBattlePlans();
                     break;
 
                 case Faction.Yellow:
-                    LogNexusPlayed(e);
+                    PlayNexusCard(e.Player);
                     if (CurrentMainPhase == MainPhase.Blow)
                     {
                         Prevent(e.Initiator, FactionAdvantage.YellowRidesMonster);
@@ -737,7 +737,7 @@ namespace Treachery.Shared
                     break;
 
                 case Faction.Red:
-                    LogNexusPlayed(e);
+                    PlayNexusCard(e.Player);
                     if (CurrentMainPhase == MainPhase.Bidding)
                     {
                         Prevent(e.Initiator, FactionAdvantage.RedReceiveBid);
@@ -749,10 +749,11 @@ namespace Treachery.Shared
                     break;
 
                 case Faction.Orange:
+                    PlayNexusCard(e.Player);
                     foreach (var p in StoredRecentlyPaid)
                     {
                         object from = p.To == Faction.None ? "the Bank" : p.To;
-                        LogNexusPlayed(e, "get ", p.Amount, " from ", from);
+                        Log(e.Player, "get ", p.Amount, " from ", from);
                         if (p.To != Faction.None)
                         {
                             var getFrom = GetPlayer(p.To);
@@ -773,13 +774,13 @@ namespace Treachery.Shared
                     break;
 
                 case Faction.Blue:
-                    LogNexusPlayed(e);
+                    PlayNexusCard(e.Player);
                     Prevent(e.Initiator, FactionAdvantage.BlueUsingVoice);
                     CurrentVoice = null;
                     break;
 
                 case Faction.Grey:
-                    LogNexusPlayed(e);
+                    PlayNexusCard(e.Player);
                     if (CurrentPhase < Phase.GreySelectingCard)
                     {
                         Prevent(e.Initiator, FactionAdvantage.GreySelectingCardsOnAuction);
@@ -792,12 +793,12 @@ namespace Treachery.Shared
 
                 case Faction.Purple:
                     FacedancerWasCancelled = true;
-                    LogNexusPlayed(e, "cancel the ", Faction.Purple, " face dancer reveal");
+                    PlayNexusCard(e.Player, "cancel the ", Faction.Purple, " face dancer reveal");
                     FinishBattle();
                     break;
 
                 case Faction.Brown:
-                    LogNexusPlayed(e, "force ", Faction.Brown, " to discard one of their treachery cards at random");
+                    PlayNexusCard(e.Player, "force ", Faction.Brown, " to discard one of their treachery cards at random");
                     var victimPlayer = GetPlayer(Faction.Brown);
                     if (victimPlayer.TreacheryCards.Any())
                     {
@@ -816,12 +817,12 @@ namespace Treachery.Shared
                     if (paymentToWhite != null)
                     {
                         var amountReceived = paymentToWhite.Amount - (WasVictimOfBureaucracy == Faction.White ? 2 : 0);
-                        LogNexusPlayed(e, "let ", Faction.White, " lose the payment of ", Payment(amountReceived), " they just received");
+                        PlayNexusCard(e.Player, "let ", Faction.White, " lose the payment of ", Payment(amountReceived), " they just received");
                         white.Resources -= amountReceived;
                     }
                     else if (white.TreacheryCards.Contains(CardJustWon))
                     {
-                        LogNexusPlayed(e, "force ", Faction.White, " to discard the card they just won");
+                        PlayNexusCard(e.Player, "force ", Faction.White, " to discard the card they just won");
                         Discard(white, CardJustWon);
                     }
                     break;
@@ -829,27 +830,29 @@ namespace Treachery.Shared
                 case Faction.Pink:
                     var pinksAlly = GetAlliedPlayer(Faction.Pink);
                     pinksAlly.ForcesToReserves(e.PinkTerritory);
-                    LogNexusPlayed(e, "return all ", pinksAlly.Faction, " forces in ", e.PinkTerritory, " to reserves");
+                    PlayNexusCard(e.Player, "return all ", pinksAlly.Faction, " forces in ", e.PinkTerritory, " to reserves");
                     FlipBeneGesseritWhenAloneOrWithPinkAlly();
                     break;
 
                 case Faction.Cyan:
                     var terrorToRemove = TerrorIn(e.CyanTerritory).RandomOrDefault(Random);
                     TerrorOnPlanet.Remove(terrorToRemove);
-                    LogNexusPlayed(e, "remove a terror token from ", e.CyanTerritory);
+                    PlayNexusCard(e.Player, "remove a terror token from ", e.CyanTerritory);
                     break;
 
             }
         }
 
-        private void LogNexusPlayed(NexusPlayed e, params object[] messageElements)
+        private void PlayNexusCard(Player initiator, params object[] messageElements)
         {
-            var typeOfNexus = "";
-            if (e.IsCunning)
+            RecentMilestones.Add(Milestone.NexusPlayed);
+
+            string typeOfNexus;
+            if (NexusPlayed.CanUseCunning(initiator))
             {
                 typeOfNexus = "Cunning";
             }
-            else if (e.IsBetrayal)
+            else if (NexusPlayed.CanUseBetrayal(this, initiator))
             {
                 typeOfNexus = "Betrayal";
             }
@@ -858,19 +861,16 @@ namespace Treachery.Shared
                 typeOfNexus = "Secret Ally";
             }
 
-            LogNexusPlayed(e.Initiator, e.Faction, typeOfNexus, messageElements);
-        }
-
-        private void LogNexusPlayed(Faction initiator, Faction nexusFaction, string nexusType, params object[] messageElements)
-        {
             if (messageElements != null && messageElements.Length > 0)
             {
-                Log(initiator, " play ", nexusFaction, $" Nexus {nexusType} to ", MessagePart.Express(messageElements));
+                Log(initiator.Faction, " play ", initiator.Nexus, $" Nexus {typeOfNexus} to ", MessagePart.Express(messageElements));
             }
             else
             {
-                Log(initiator, " play ", nexusFaction, $" Nexus {nexusType}");
+                Log(initiator.Faction, " play ", initiator.Nexus, $" Nexus {typeOfNexus}");
             }
+
+            DiscardNexusCard(initiator);
         }
 
         public NexusPlayed CurrentGreenNexus { get; private set; }
@@ -885,41 +885,41 @@ namespace Treachery.Shared
             {
                 case Faction.Green:
                     CurrentGreenNexus = e;
-                    LogNexusPlayed(e, "see their opponent's ", e.GreenPrescienceAspect);
+                    PlayNexusCard(e.Player, "see their opponent's ", e.GreenPrescienceAspect);
                     break;
 
                 case Faction.Black:
                     PhaseBeforeDiscardingTraitor = CurrentPhase;
                     FactionThatMustDiscardTraitor = e.Initiator;
                     NumberOfTraitorsToDiscard = 1;
-                    LogNexusPlayed(e, "draw a new traitor");
+                    PlayNexusCard(e.Player, "draw a new traitor");
                     e.Player.Traitors.Add(TraitorDeck.Draw());
                     Enter(Phase.DiscardingTraitor);
                     break;
 
                 case Faction.Red:
                     CurrentRedNexus = e;
-                    LogNexusPlayed(e, "let 5 ", FactionForce.Red, " count as ", FactionSpecialForce.Red, " during this battle");
+                    PlayNexusCard(e.Player, "let 5 ", FactionForce.Red, " count as ", FactionSpecialForce.Red, " during this battle");
                     break;
 
                 case Faction.Orange:
                     CurrentOrangeNexus = e;
-                    LogNexusPlayed(e, "perform an extra shipment after their move");
+                    PlayNexusCard(e.Player, "perform an extra shipment after their move");
                     break;
 
                 case Faction.Blue:
                     CurrentBlueNexus = e;
-                    LogNexusPlayed(e, "be able to flip advisor to fighters during ", MainPhase.ShipmentAndMove);
+                    PlayNexusCard(e.Player, "be able to flip advisor to fighters during ", MainPhase.ShipmentAndMove);
                     break;
 
                 case Faction.Grey:
                     CurrentGreyNexus = e;
-                    LogNexusPlayed(e, "let ", FactionForce.Grey, " be full strength during this battle");
+                    PlayNexusCard(e.Player, "let ", FactionForce.Grey, " be full strength during this battle");
                     break;
 
                 case Faction.Purple:
                     var purple = GetPlayer(Faction.Purple);
-                    LogNexusPlayed(e, "replace their ", purple.RevealedDancers.Count, " revealed face dancers");
+                    PlayNexusCard(e.Player, "replace their ", purple.RevealedDancers.Count, " revealed face dancers");
                     if (purple.RevealedDancers.Count > 0)
                     {
                         for (int i = 0; i < purple.RevealedDancers.Count; i++)
@@ -951,7 +951,7 @@ namespace Treachery.Shared
                         }
                     }
                     TakeVidal(e.Player, VidalMoment.EndOfTurn);
-                    LogNexusPlayed(e, "take ", Vidal, " this turn");
+                    PlayNexusCard(e.Player, "take ", Vidal, " this turn");
                     break;
             }
         }
@@ -962,14 +962,14 @@ namespace Treachery.Shared
             {
                 case Faction.Green:
                     CurrentGreenNexus = e;
-                    LogNexusPlayed(e, "see their opponent's ", e.GreenPrescienceAspect);
+                    PlayNexusCard(e.Player, "see their opponent's ", e.GreenPrescienceAspect);
                     break;
 
                 case Faction.Black:
                     PhaseBeforeDiscardingTraitor = CurrentPhase;
                     FactionThatMustDiscardTraitor = e.Initiator;
                     NumberOfTraitorsToDiscard = 2;
-                    LogNexusPlayed(e, "draw two new traitors");
+                    PlayNexusCard(e.Player, "draw two new traitors");
                     e.Player.Traitors.Add(TraitorDeck.Draw());
                     e.Player.Traitors.Add(TraitorDeck.Draw());
                     Enter(Phase.DiscardingTraitor);
@@ -979,22 +979,22 @@ namespace Treachery.Shared
                     CurrentYellowNexus = e;
                     if (CurrentMainPhase == MainPhase.Blow)
                     {
-                        LogNexusPlayed(e, "prevent their forces from being devoured by ", Concept.Monster);
+                        PlayNexusCard(e.Player, "prevent their forces from being devoured by ", Concept.Monster);
                     }
                     else if (CurrentMainPhase == MainPhase.Resurrection)
                     {
-                        LogNexusPlayed(e, "increase their free revival to 3");
+                        PlayNexusCard(e.Player, "increase their free revival to 3");
                     }
                     break;
 
                 case Faction.Orange:
                     CurrentOrangeNexus = e;
-                    LogNexusPlayed(e, "be able to ship as ", Faction.Orange);
+                    PlayNexusCard(e.Player, "be able to ship as ", Faction.Orange);
                     break;
 
                 case Faction.Grey:
                     CurrentGreyNexus = e;
-                    LogNexusPlayed(e, "discard a card you buy and draw a new card from the treachery deck");
+                    PlayNexusCard(e.Player, "discard a card you buy and draw a new card from the treachery deck");
                     break;
 
                 case Faction.Purple:
@@ -1020,7 +1020,7 @@ namespace Treachery.Shared
 
                     }
 
-                    LogNexusPlayed(e, "revive ",
+                    PlayNexusCard(e.Player, "revive ",
                         MessagePart.ExpressIf(e.PurpleHero != null, e.PurpleHero),
                         MessagePart.ExpressIf(e.PurpleHero != null && e.PurpleForces + e.PurpleSpecialForces > 0, " and "),
                         MessagePart.ExpressIf(e.PurpleForces > 0, e.PurpleForces, " ", player.Force),
@@ -1038,7 +1038,7 @@ namespace Treachery.Shared
                 case Faction.Brown:
                     if (CurrentMainPhase == MainPhase.Collection)
                     {
-                        LogNexusPlayed(e, "discard a ", TreacheryCardType.Useless, " card to get ", Payment(2));
+                        PlayNexusCard(e.Player, "discard a ", TreacheryCardType.Useless, " card to get ", Payment(2));
                         Discard(e.Player, e.BrownCard);
                         e.Player.Resources += 2;
                     }
@@ -1048,7 +1048,7 @@ namespace Treachery.Shared
                         var recentBattlePlan = CurrentBattle.PlanOf(auditee);
                         var auditableCards = auditee.TreacheryCards.Where(c => c != recentBattlePlan.Weapon && c != recentBattlePlan.Defense && c != recentBattlePlan.Hero);
                         
-                        LogNexusPlayed(e, "see a random treachery card in the ", auditee.Faction, " hand");
+                        PlayNexusCard(e.Player, "see a random treachery card in the ", auditee.Faction, " hand");
 
                         if (auditableCards.Any())
                         {
@@ -1065,7 +1065,7 @@ namespace Treachery.Shared
                     break;
 
                 case Faction.Pink:
-                    LogNexusPlayed(e, "force ", e.PinkFaction, " to reveal if they have an ", Faction.Pink, " traitor");
+                    PlayNexusCard(e.Player, "force ", e.PinkFaction, " to reveal if they have an ", Faction.Pink, " traitor");
                     Log(e.PinkFaction, " reveal to ", e.Initiator, " if they have a ", e.Initiator, " traitor");
                     var hasTraitor = GetPlayer(e.PinkFaction).Traitors.Any(t => t.Faction == e.Initiator);
                     LogTo(e.Initiator, e.PinkFaction, " reveal that they ", hasTraitor ? "DO" : "DON'T", " have a ", e.Initiator, " traitor ");

@@ -40,7 +40,7 @@ namespace Treachery.Client
         public Dictionary<LeaderSkill, string> LeaderSkillCardName_STR;
         public Dictionary<LeaderSkill, string> LeaderSkillCardImage_URL;
         public Dictionary<int, string> StrongholdCardName_STR;
-        public Dictionary<int, string> StrongholdCardImage_URL;
+        public Dictionary<StrongholdAdvantage, string> StrongholdCardImage_URL;
         public Dictionary<World, string> HomeWorldImage_URL;
         public Dictionary<World, string> HomeWorldCardImage_URL;
         public Dictionary<Faction, string> NexusCardImage_URL;
@@ -52,6 +52,7 @@ namespace Treachery.Client
         public Dictionary<DiscoveryTokenType, string> DiscoveryTokenTypeName_STR;
         public Dictionary<DiscoveryTokenType, string> DiscoveryTokenTypeImage_URL;
         public Dictionary<Ambassador, string> AmbassadorImage_URL;
+        public Dictionary<Ambassador, string> AmbassadorName_STR;
         public Dictionary<Ambassador, string> AmbassadorDescription_STR;
 
         public string Map_URL = null;
@@ -480,6 +481,11 @@ namespace Treachery.Client
 
         public string Describe(Ambassador ambassador)
         {
+            return AmbassadorName_STR[ambassador];
+        }
+
+        public string GetAmbassadorDescription(Ambassador ambassador)
+        {
             return AmbassadorDescription_STR[ambassador];
         }
 
@@ -873,9 +879,9 @@ namespace Treachery.Client
             return GetURL(HomeWorldImage_URL, w);
         }
 
-        public string GetImageURL(Location l)
+        public string GetImageURL(StrongholdAdvantage a)
         {
-            return l != null ? GetURL(StrongholdCardImage_URL, l.Territory.SkinId) : "";
+            return GetURL(StrongholdCardImage_URL, a);
         }
 
         public string GetImageURL(ResourceCard c)
@@ -2125,6 +2131,23 @@ namespace Treachery.Client
                 { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10specialforce.svg" }
             },
 
+            AmbassadorName_STR = new Dictionary<Ambassador, string>()
+            {
+                [Ambassador.None] = "None",
+                [Ambassador.Green] = "Atreides",
+                [Ambassador.Black] = "Harkonnen",
+                [Ambassador.Yellow] = "Fremen",
+                [Ambassador.Red] = "Emperor",
+                [Ambassador.Orange] = "Guild",
+                [Ambassador.Blue] = "Bene Gesserit",
+                [Ambassador.Grey] = "Ixian",
+                [Ambassador.Purple] = "Tleilaxu",
+                [Ambassador.Brown] = "CHOAM",
+                [Ambassador.White] = "Richese",
+                [Ambassador.Pink] = "Ecaz",
+                [Ambassador.Cyan] = "Moritani"
+            },
+
             AmbassadorImage_URL = new Dictionary<Ambassador, string>()
             {
                 [Ambassador.Green] = DEFAULT_ART_LOCATION + "/art/faction1ambassador.svg",
@@ -2429,14 +2452,14 @@ namespace Treachery.Client
                 [42] = "Hidden Mobile Stronghold"
             },
 
-            StrongholdCardImage_URL = new Dictionary<int, string>()
+            StrongholdCardImage_URL = new Dictionary<StrongholdAdvantage, string>()
             {
-                [2] = DEFAULT_ART_LOCATION + "/art/Carthag.gif",
-                [3] = DEFAULT_ART_LOCATION + "/art/Arrakeen.gif",
-                [4] = DEFAULT_ART_LOCATION + "/art/TueksSietch.gif",
-                [5] = DEFAULT_ART_LOCATION + "/art/SietchTabr.gif",
-                [6] = DEFAULT_ART_LOCATION + "/art/HabbanyaSietch.gif",
-                [42] = DEFAULT_ART_LOCATION + "/art/HMS.gif"
+                [StrongholdAdvantage.CountDefensesAsAntidote] = DEFAULT_ART_LOCATION + "/art/Carthag.gif",
+                [StrongholdAdvantage.FreeResourcesForBattles] = DEFAULT_ART_LOCATION + "/art/Arrakeen.gif",
+                [StrongholdAdvantage.CollectResourcesForUseless] = DEFAULT_ART_LOCATION + "/art/TueksSietch.gif",
+                [StrongholdAdvantage.CollectResourcesForDial] = DEFAULT_ART_LOCATION + "/art/SietchTabr.gif",
+                [StrongholdAdvantage.WinTies] = DEFAULT_ART_LOCATION + "/art/HabbanyaSietch.gif",
+                [StrongholdAdvantage.AnyOtherAdvantage] = DEFAULT_ART_LOCATION + "/art/HMS.gif"
             },
 
             MusicGeneral_URL = DEFAULT_ART_LOCATION + "/art/101_-_Dune_-_DOS_-_Arrakis.mp3",
@@ -2486,12 +2509,21 @@ namespace Treachery.Client
                 [Milestone.Storm] = DEFAULT_ART_LOCATION + "/art/thunder.mp3",
                 [Milestone.Voice] = DEFAULT_ART_LOCATION + "/art/voice.mp3",
                 [Milestone.Prescience] = DEFAULT_ART_LOCATION + "/art/clairvoyance.mp3",
-
                 [Milestone.ResourcesReceived] = DEFAULT_ART_LOCATION + "/art/bid.mp3",
                 [Milestone.Economics] = DEFAULT_ART_LOCATION + "/art/bribe.mp3",
                 [Milestone.CardTraded] = DEFAULT_ART_LOCATION + "/art/cardflip.mp3",
-                [Milestone.Discard] = DEFAULT_ART_LOCATION + "/art/cardflip.mp3",
+                [Milestone.Discard] = DEFAULT_ART_LOCATION + "/art/crumple.mp3",
                 [Milestone.SpecialUselessPlayed] = DEFAULT_ART_LOCATION + "/art/karma.mp3",
+                [Milestone.TerrorPlanted] = DEFAULT_ART_LOCATION + "/art/terror.mp3",
+                [Milestone.TerrorRevealed] = DEFAULT_ART_LOCATION + "/art/terror.mp3",
+                [Milestone.AmbassadorPlaced] = DEFAULT_ART_LOCATION + "/art/ambassador.mp3",
+                [Milestone.AmbassadorActivated] = DEFAULT_ART_LOCATION + "/art/ambassador.mp3",
+                [Milestone.NexusPlayed] = DEFAULT_ART_LOCATION + "/art/fairybell.mp3",
+                [Milestone.DiscoveryAppeared] = DEFAULT_ART_LOCATION + "/art/discoveryhorn.mp3",
+                [Milestone.DiscoveryRevealed] = DEFAULT_ART_LOCATION + "/art/discoveryhorn.mp3",
+                [Milestone.Assassination] = DEFAULT_ART_LOCATION + "/art/scream.mp3",
+                [Milestone.Bureaucracy] = DEFAULT_ART_LOCATION + "/art/typewriter.mp3",
+                [Milestone.Audited] = DEFAULT_ART_LOCATION + "/art/typewriter.mp3",
             },
 
             MapDimensions = new Point(563, 626),

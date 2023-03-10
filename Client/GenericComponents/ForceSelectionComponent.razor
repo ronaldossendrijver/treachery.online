@@ -16,36 +16,27 @@
                     <td class="ps-0">@Skin.Current.Describe(l)</td>
                 }
 
-                @if (Max(l) > 0)
-                {
-                    @if (MaySelectFromStorm || l.Sector != Game.SectorInStorm)
-                    {
-                        <td class="ps-0"><SelectForcesComponent Value="@ForceAmount(l, false)" OnDown="(e => ChangeForceAmount(l, -1, false))" OnUp="(e => ChangeForceAmount(l, 1, false))" Min="Min" Max="Max(l)" Faction="Player.Faction" Special="false"/></td>
-                    }
-                    else
-                    {
-                        <td class="font-italic text-danger ps-0">cannot move from storm</td>
-                    }
-                }
-                else
-                {
-                    SetForceAmount(l, 0, false);
-                }
-
-                @if (MaxSpecial(l) > 0)
+                @if (Max(l) > 0) 
                 {
                     if (MaySelectFromStorm || l.Sector != Game.SectorInStorm)
                     {
-                        <td class="ps-0"><SelectForcesComponent Value="@ForceAmount(l, true)" OnDown="(e => ChangeForceAmount(l, -1, true))" OnUp="(e => ChangeForceAmount(l, 1, true))" Min="Min" Max="MaxSpecial(l)" Faction="Player.Faction" Special="true" /></td>
+                        <td class="ps-0"><SelectForcesComponent Value=@Forces[l].AmountOfForces OnDown="(e => ChangeForceAmount(l, -1, false))" OnUp="(e => ChangeForceAmount(l, 1, false))" Min="Min" Max="Max(l)" Faction="Player.Faction" Special="false"/></td>
                     }
                     else
                     {
                         <td class="font-italic text-danger ps-0">cannot move from storm</td>
                     }
                 }
-                else
+                @if (MaxSpecial(l) > 0) 
                 {
-                    SetForceAmount(l, 0, true);
+                    if (MaySelectFromStorm || l.Sector != Game.SectorInStorm)
+                    {
+                        <td class="ps-0"><SelectForcesComponent Value=@Forces[l].AmountOfSpecialForces OnDown="(e => ChangeForceAmount(l, -1, true))" OnUp="(e => ChangeForceAmount(l, 1, true))" Min="Min" Max="MaxSpecial(l)" Faction="Player.Faction" Special="true" /></td>
+                    }
+                    else
+                    {
+                        <td class="font-italic text-danger ps-0">cannot move from storm</td>
+                    }
                 }
 
             </tr>
@@ -62,34 +53,11 @@
     [Parameter]
     public Player Player { get; set; }
 
-    private Dictionary<Location, Battalion> _forces = new();
+    [Parameter]
+    public Dictionary<Location, Battalion> Forces { get; set; }
 
     [Parameter]
-    public Dictionary<Location, Battalion> Forces {
-
-        get => _forces;
-
-        set
-        {
-            _forces = value;
-            RemoveIllegalForceLocations();
-        }
-    }
-
-    private IEnumerable<Location> _locations = new List<Location>();
-
-    [Parameter]
-    public IEnumerable<Location> Locations
-    {
-
-        get => _locations;
-
-        set
-        {
-            _locations = value;
-            RemoveIllegalForceLocations();
-        }
-    }
+    public IEnumerable<Location> Locations { get; set; }
 
     [Parameter]
     public bool MaySelectFromStorm { get; set; } = false;
@@ -107,7 +75,7 @@
     public int FixedMaxSpecialForces { get; set; } = -1;
 
     [Parameter]
-    public Action OnChanged { get; set; }
+    public EventCallback OnChanged { get; set; }
 
     [Parameter]
     public bool AllowMultipleTerritories { get; set; } = false;
@@ -115,24 +83,27 @@
     [Parameter]
     public bool InitializeToMaximum { get; set; } = false;
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
+        await base.OnParametersSetAsync();
+
         RemoveForcesFromOtherTerritororiesThanAvailableLocations();
 
-        if (InitializeToMaximum)
+        if (Forces.Count == 0)
         {
-            if (Forces.Count == 0) {
+            foreach (var l in Locations)
+            {
+                var toAdd = new Battalion() { AmountOfForces = InitializeToMaximum ? Max(l) : 0, AmountOfSpecialForces = InitializeToMaximum ? MaxSpecial(l) : 0 };
+                Forces.Add(l, toAdd);
+            }
 
-                foreach (var l in Locations)
-                {
-                    var toAdd = new Battalion() { AmountOfForces = Max(l), AmountOfSpecialForces = MaxSpecial(l) };
-                    if (toAdd.TotalAmountOfForces > 0)
-                    {
-                        Forces.Add(l, toAdd);
-                    }
-                }
-
-                OnChanged?.Invoke();
+            await OnChanged.InvokeAsync();
+        }
+        else
+        {
+            if (RemoveIllegalForceLocations())
+            {
+                await OnChanged.InvokeAsync();
             }
         }
     }
@@ -141,31 +112,16 @@
     private int Max(Location l) => FixedMaxForces > 0 ? FixedMaxForces : Player.ForcesIn(l);
     private int MaxSpecial(Location l) => FixedMaxSpecialForces > 0 ? FixedMaxSpecialForces : Player.SpecialForcesIn(l);
 
-    private int ForceAmount(Location l, bool special)
+    private bool RemoveIllegalForceLocations()
     {
-        if (Forces.ContainsKey(l))
-        {
-            if (special)
-            {
-                return Forces[l].AmountOfSpecialForces;
-            }
-            else
-            {
-                return Forces[l].AmountOfForces;
-            }
-        }
-        else
-        {
-            return 0;
-        }
-    }
-
-    private void RemoveIllegalForceLocations()
-    {
+        bool result = false;
         foreach (var bat in Forces.Where(kvp => !Locations.Contains(kvp.Key)).Select(kvp => kvp.Value))
         {
             bat.Clear();
+            result = true;
         }
+
+        return result;
     }
 
     private void RemoveForcesFromOtherTerritororiesThanAvailableLocations()
@@ -188,22 +144,22 @@
         }
     }
 
-    private void ChangeForceAmount(Location location, int amount, bool specialForces)
+    private async Task ChangeForceAmount(Location location, int amount, bool specialForces)
     {
         if (!AllowMultipleTerritories)
         {
             RemoveForcesFromOtherTerritoriesThan(location.Territory);
         }
 
-        if (Forces.ContainsKey(location))
+        if (Forces.TryGetValue(location, out var battalion))
         {
             if (specialForces)
             {
-                Forces[location].ChangeSpecialForces(amount);
+                battalion.ChangeSpecialForces(amount);
             }
             else
             {
-                Forces[location].ChangeForces(amount);
+                battalion.ChangeForces(amount);
             }
         }
         else if (amount > 0)
@@ -218,36 +174,6 @@
             }
         }
 
-        OnChanged?.Invoke();
-    }
-
-    private void SetForceAmount(Location location, int amount, bool specialForces)
-    {
-        if (Forces.ContainsKey(location))
-        {
-            if (specialForces && Forces[location].AmountOfSpecialForces != amount)
-            {
-                Forces[location].AmountOfSpecialForces = amount;
-                OnChanged?.Invoke();
-            }
-            else if (!specialForces && Forces[location].AmountOfForces != amount)
-            {
-                Forces[location].AmountOfForces = amount;
-                OnChanged?.Invoke();
-            }
-        }
-        else
-        {
-            if (specialForces)
-            {
-                Forces.Add(location, new Battalion() { AmountOfSpecialForces = amount, AmountOfForces = 0 });
-            }
-            else
-            {
-                Forces.Add(location, new Battalion() { AmountOfSpecialForces = 0, AmountOfForces = amount });
-            }
-
-            OnChanged?.Invoke();
-        }
+        await OnChanged.InvokeAsync();
     }
 }

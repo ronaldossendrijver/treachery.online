@@ -23,4 +23,9 @@
 
     [Parameter]
     public bool Collapsed { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> CollapsedChanged { get; set; }
 }
+
+

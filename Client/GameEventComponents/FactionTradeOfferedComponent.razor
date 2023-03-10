@@ -6,12 +6,12 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<FactionTradeOffered>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Offer to trade factions</Header>
     <Body>
 
-        <SelectFactionComponent @bind-Value="target" Values="FactionTradeOffered.ValidTargets(Game, Player)"/>
+        <SelectFromImageComponent @bind-Value="target" Values="FactionTradeOffered.ValidTargets(Game, Player)" Required=true ImageWidth="40"/>
         
         <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmText" ConfirmError=@Validation />
 

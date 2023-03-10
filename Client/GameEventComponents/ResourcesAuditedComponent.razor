@@ -6,12 +6,12 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<ResourcesAudited>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Force a faction to reveal the amount of @Name(Concept.Resource), weapons and defenses?</Header>
 
     <Body>
-        <SelectFactionComponent @bind-Value="target" Values=@ResourcesAudited.ValidFactions(Game, Player) />
+        <SelectFromImageComponent @bind-Value="target" Values=@ResourcesAudited.ValidFactions(Game, Player) Required=true ImageWidth="40" />
         <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation />
     </Body>
 

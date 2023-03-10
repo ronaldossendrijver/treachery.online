@@ -44,9 +44,9 @@
                 string cardbg = isCardJustWon? "bg-light" : "";
 
                 <div class="card p-1 m-0 @border @cardbg">
-                    <Hoverable Class="card-img-top" Popover=@Tracker.DeterminePopup(v.Id)>
-                        <img src="@Skin.Current.GetImageURL(v)" class="card-img" alt="@cardName" @onclick="e => Pick(v.Id)" style="cursor:pointer;">
-                    </Hoverable>
+                    <div class="card-img-top">
+                        <Image Class="card-img" Shown=@v OnClick="e => Pick(v.Id)" Style="cursor:pointer;" />
+                    </div>
                 </div>
             }
         }

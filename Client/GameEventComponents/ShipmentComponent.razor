@@ -7,7 +7,7 @@
 @inherits GameEventComponent<Shipment>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>
 
@@ -185,9 +185,10 @@
         @if (Shipment.CanKarma(Game, Player) && (Faction != Faction.Yellow || shipmentType == SHIPMENT_SITETOSITE) && !Game.MayShipCrossPlanet(Player))
         {
             <div class="mt-1">
-                <SelectCardComponent @bind-Value="karmaCard" Values="Shipment.ValidKarmaCards(Game, Player)" Required="false">
+
+                <SelectFromImageComponent @bind-Value="karmaCard" Values="Shipment.ValidKarmaCards(Game, Player)" Required="false" ImageWidth="80">
                     <Label>Use @Skin.Current.Describe(TreacheryCardType.Karma) to ship at @Skin.Current.Describe(Faction.Orange) rate?</Label>
-                </SelectCardComponent>
+                </SelectFromImageComponent>
             
                 @if (karmaCard != null && !Player.TreacheryCards.Contains(karmaCard))
                 {

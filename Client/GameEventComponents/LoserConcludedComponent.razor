@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<LoserConcluded>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Please conclude the battle you lost</Header>
 
@@ -14,9 +14,9 @@
 
         @if (LoserConcluded.CardsLoserMayKeep(Game).Any())
         {
-            <SelectCardComponent @bind-Value="_cardToKeep" Values=@LoserConcluded.CardsLoserMayKeep(Game) Required=false>
+            <SelectFromImageComponent @bind-Value="_cardToKeep" Values=@LoserConcluded.CardsLoserMayKeep(Game) Required=false ImageWidth="80">
                 <Label>You may select one card to keep:</Label>
-            </SelectCardComponent>
+            </SelectFromImageComponent>
         }
         else
         {
@@ -50,7 +50,7 @@
 
             @if (_karmaDecision == LoserConcluded.KARMA_KEEP || _karmaDecision == LoserConcluded.KARMA_DISCARD)
             {
-                <SelectCardComponent Selected="_cardsToForceKeepOrDiscard" Values=@LoserConcluded.CardsThatMayBeKeptOrDiscarded(Game) OnChanged="e => StateHasChanged()" />
+                <SelectFromImageComponent Selected="_cardsToForceKeepOrDiscard" Values=@LoserConcluded.CardsThatMayBeKeptOrDiscarded(Game) T=TreacheryCard OnChanged=StateHasChanged ImageWidth="80" />
             }
             else
             {

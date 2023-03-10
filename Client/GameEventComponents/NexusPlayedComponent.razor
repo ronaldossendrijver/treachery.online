@@ -7,7 +7,7 @@
 @inherits GameEventComponent<NexusPlayed>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Nexus: Play <FactionComponent Faction=@Player.Nexus/> @NexusTypeText</Header>
     <Body>
@@ -133,7 +133,7 @@
                         purpleAmountOfSpecialForces = 0;
                     }
 
-                    <SelectHeroComponent Game="Game" @bind-Value="purpleHero" Values="NexusPlayed.ValidPurpleHeroes(Game, Player)" Required="false" />
+                    <SelectFromImageComponent Game="Game" @bind-Value="purpleHero" Values="NexusPlayed.ValidPurpleHeroes(Game, Player)" Required="false" ImageWidth="80"/>
 
                     @if (purpleHero != null && Revival.MayAssignSkill(Game, Player, purpleHero))
                     {
@@ -174,7 +174,7 @@
 
                 case Faction.Brown when secretAlly && Game.CurrentMainPhase == MainPhase.Collection:
                     <div>Discard a @Skin.Current.Describe(TreacheryCardType.Useless) card for 2 @Skin.Current.Describe(Concept.Resource)?</div>
-                    <SelectCardComponent @bind-Value=brownCard Values="NexusPlayed.ValidBrownCards(Player)" Required="true" />
+                    <SelectFromImageComponent @bind-Value=brownCard Values="NexusPlayed.ValidBrownCards(Player)" Required="true" ImageWidth="80" />
                     break;
 
                 case Faction.Brown when secretAlly && Game.CurrentMainPhase == MainPhase.Battle:
@@ -205,7 +205,7 @@
 
                 case Faction.Pink when secretAlly:
                     <div>Force a faction to reveal whether or not they have any of your leaders as traitor?</div>
-                    <SelectFactionComponent @bind-Value=pinkFaction Values=@NexusPlayed.ValidPinkFactions(Game) />
+                    <SelectFromImageComponent @bind-Value=pinkFaction Values=@NexusPlayed.ValidPinkFactions(Game) ImageWidth="40" Required=true/>
                     break;
 
                 case Faction.Cyan when betrayal:

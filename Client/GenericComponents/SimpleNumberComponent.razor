@@ -20,6 +20,8 @@
 
     protected override void OnParametersSet()
     {
+        base.OnParametersSet();
+
         Radius = Support.Round(0.5f * Size);
     }
 }

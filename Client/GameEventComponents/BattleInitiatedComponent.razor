@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<BattleInitiated>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Select whom and where to battle</Header>
     <Body>
@@ -28,6 +28,8 @@
 
     protected override void OnParametersSet()
     {
+        base.OnParametersSet();
+
         battles = Battle.BattlesToBeFought(Game, Player);
 
         if (battles.Count() == 1)

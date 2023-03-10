@@ -9,34 +9,18 @@
         <label class="me-1">@Label</label>
     }
     
-    <NumberPickerComponent Disabled="@Disabled" @bind-Value="Value" Min="Min" Max="Max" StepUp=StepUp StepDown=StepDown SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="black" Size=Size/>
+    <NumberPickerComponent Disabled="@Disabled" @bind-Value=@Value OnChanged=Notify Min="Min" Max="Max" StepUp=StepUp StepDown=StepDown 
+        SymbolBackgroundFillColor="white" SymbolBackgroundBorderColor="black" Size=Size />
 
 </div>
 
 @code {
 
-    private int _value;
+    [Parameter]
+    public int Value { get; set; }
 
     [Parameter]
-    public int Value
-    {
-        get
-        {
-            return _value;
-        }
-        set
-        {
-            if (_value != value)
-            {
-                _value = value;
-                ValueChanged.InvokeAsync(value);
-                OnChanged?.Invoke(value);
-            }
-        }
-    }
-
-    [Parameter]
-    public Action<int> OnChanged { get; set; }
+    public EventCallback<int> OnChanged { get; set; }
 
     [Parameter]
     public EventCallback<int> ValueChanged { get; set; }
@@ -61,4 +45,10 @@
 
     [Parameter]
     public int Size { get; set; } = 36;
+
+    private async Task Notify() {
+
+        await ValueChanged.InvokeAsync(Value);
+        await OnChanged.InvokeAsync(Value);
+    }
 }

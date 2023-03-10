@@ -5,44 +5,24 @@
 @using Treachery.Shared;
 @implements IDisposable;
 
-@{
-    var popover = TextPop;
-
-    if (popover != null && popover.Length > 0)
-    {
-        <span @ref=@element class=@Class style=@Style data-bs-animation="true" data-bs-content="@TextPop" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-toggle="popover">
-            @Skin.Current.Describe(Shown)
-        </span>
-    }
-    else
-    {
-        <span @ref=@element class=@Class style=@Style>
-            @Skin.Current.Describe(Shown)
-        </span>
-    }
+@if (!PopoverAsTooltip && Popover != null)
+{
+    <span @ref=@element class=@Class style=@Style data-bs-animation="true" data-bs-content="@Popover" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-toggle="popover">
+        @Skin.Current.Describe(Shown)
+    </span>
+}
+else
+{
+    <span @ref=@element class=@Class style=@Style>
+        @Skin.Current.Describe(Shown)
+    </span>
 }
 
 @code {
 
-    private object _shown;
-
     [Parameter]
-    public object Shown { 
-
-        get
-        {
-            return _shown;
-        }
-
-        set
-        {
-            if (value != _shown)
-            {
-                _shown = value;
-                _popoverNeedsRefresh = true;
-            }
-        }
-    }
+    public object Shown { get; set; }
+    private object _shown;
 
     [Parameter]
     public string Class { get; set; } = "fw-bold";
@@ -50,33 +30,46 @@
     [Parameter]
     public string Style { get; set; }
 
+    [Parameter]
+    public string Popover { get; set; }
     private string _popover;
     private bool _popoverNeedsRefresh = false;
 
     [Parameter]
-    public string Popover { 
+    public bool PopoverAsTooltip { get; set; } = false;
 
-        get
-        {
-            return _popover;
-        } 
+    [Parameter]
+    public Game Game { get; set; }
 
-        set
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (_shown != Shown)
         {
-            if (value != _popover)
+            _shown = Shown;
+
+            if (Shown != null)
             {
-                _popover = value;
-                _popoverNeedsRefresh = true;
+                PopoverAsTooltip = !ShownHasRichPopover;
+                Popover = GetShownPopover();
             }
+            else
+            {
+                Popover = "";
+            }
+        }
+
+        if (_popover != Popover)
+        {
+            _popover = Popover;
+            _popoverNeedsRefresh = !PopoverAsTooltip;
         }
     }
 
-    [Parameter]
-    public bool ShowPopover { get; set; } = true;
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && TextPop != null)
+        if (firstRender && Popover != null && !PopoverAsTooltip)
         {
             await Browser.EnablePopover(element);
         }
@@ -87,39 +80,32 @@
         }
     }
 
-    private string TextPop
-    {
-        get
-        {
-            if (!ShowPopover) return null;
-
-            return Popover != null ? Popover : GetHoverHTML(Shown);
-        }
-    }
-
     private ElementReference element;
 
     public void Dispose()
     {
-        if (TextPop != null)
+        if (Popover != null && !PopoverAsTooltip)
         {
             _ = Browser.RemovePopover(element);
         }
     }
 
-    private static string GetHoverHTML(object value)
+    private string GetShownPopover()
     {
-        string result;
+        return (Shown) switch
+        {
+            null => "",
+            TreacheryCard tc => Popup.Get(tc),
+            ResourceCard rc => Popup.Get(rc),
+            IHero h => Game != null ? Popup.Get(h, Game) : Popup.Get(h),
+            LeaderSkill ls => Popup.Get(ls),
+            TechToken tt => Popup.Get(tt),
+            StrongholdAdvantage loc => Popup.Get(loc),
 
-        if (value == null) result = "";
-        else if (value is TreacheryCard tc) result = Popup.Get(tc);
-        else if (value is ResourceCard rc) result = Popup.Get(rc);
-        else if (value is Location loc) result = Popup.Get(loc);
-        else if (value is IHero h) result = Popup.Get(h);
-        else if (value is LeaderSkill ls) result = Popup.Get(ls);
-        else if (value is TechToken tt) result = Popup.Get(tt);
-        else result = Popup.Get(Skin.Current.Describe(value));
-
-        return result;
+            TerrorType terr => Skin.Current.GetTerrorTypeDescription(terr),
+            _ => Skin.Current.Describe(Shown)
+        };
     }
+
+    private bool ShownHasRichPopover => Shown is TreacheryCard || Shown is ResourceCard || Shown is IHero || Shown is LeaderSkill || Shown is TechToken || Shown is StrongholdAdvantage;
 }

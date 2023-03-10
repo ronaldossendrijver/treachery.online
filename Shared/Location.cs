@@ -49,6 +49,8 @@ namespace Treachery.Shared
 
         public bool IsProtectedFromStorm => Territory.IsProtectedFromStorm;
 
+        public StrongholdAdvantage Advantage => Territory.Advantage;
+
         public override bool Equals(object obj)
         {
             return obj is Location l && l.Id == Id;

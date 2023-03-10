@@ -6,12 +6,12 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<WhiteGaveCard>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Give your ally a card?</Header>
     <Body>
 
-        <SelectCardComponent @bind-Value="card" Values="WhiteGaveCard.ValidCards(Player)" Required="true" />
+        <SelectFromImageComponent @bind-Value="card" Values="WhiteGaveCard.ValidCards(Player)" Required="true" ImageWidth="80" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Give {0}", card)" ConfirmError=@Validation />
 

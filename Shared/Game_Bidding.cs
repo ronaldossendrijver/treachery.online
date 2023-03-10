@@ -661,8 +661,7 @@ namespace Treachery.Shared
             }
             else
             {
-                LogNexusPlayed(winner.Faction, Faction.Red, "Secret Ally", "get this card for free");
-                DiscardNexusCard(winner);
+                PlayNexusCard(winner, "Secret Ally", "get this card for free");
                 LogBid(winner, 0, 0, 0, receiverIncomeMessage);
             }
             
@@ -721,8 +720,7 @@ namespace Treachery.Shared
             }
             else
             {
-                LogNexusPlayed(winner.Faction, Faction.Red, "Secret Ally", "get this card for free");
-                DiscardNexusCard(winner);
+                PlayNexusCard(winner, "Secret Ally", "get this card for free");
                 LogBid(winner, 0, 0, 0, receiverIncomeMessage);
             }
                         
@@ -994,12 +992,15 @@ namespace Treachery.Shared
 
                 if (ReplacingBoughtCardUsingNexus)
                 {
-                    DiscardNexusCard(e.Player);
+                    PlayNexusCard(e.Player, "Secret Ally", "to replace the card they just bought");
                     ReplacingBoughtCardUsingNexus = false;
+                }
+                else
+                {
+                    Log(e);
                 }
 
                 LogTo(initiator.Faction, "You replaced your ", CardJustWon, " with a ", newCard);
-                Log(e);
             }
 
             if (CardJustWon == CardSoldOnBlackMarket)

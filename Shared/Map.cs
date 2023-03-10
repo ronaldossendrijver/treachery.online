@@ -217,7 +217,8 @@ namespace Treachery.Shared
                     IsStronghold = true,
                     HasReducedShippingCost = true,
                     IsProtectedFromStorm = true,
-                    IsProtectedFromWorm = true
+                    IsProtectedFromWorm = true,
+                    Advantage = StrongholdAdvantage.CountDefensesAsAntidote
                 };
                 Carthag = new Location(id++)
                 {//4
@@ -237,7 +238,8 @@ namespace Treachery.Shared
                     IsStronghold = true,
                     HasReducedShippingCost = true,
                     IsProtectedFromStorm = true,
-                    IsProtectedFromWorm = true
+                    IsProtectedFromWorm = true,
+                    Advantage = StrongholdAdvantage.FreeResourcesForBattles
                 };
                 Arrakeen = new Location(id++)
                 {//5
@@ -258,7 +260,8 @@ namespace Treachery.Shared
                     IsStronghold = true,
                     HasReducedShippingCost = true,
                     IsProtectedFromStorm = true,
-                    IsProtectedFromWorm = true
+                    IsProtectedFromWorm = true,
+                    Advantage = StrongholdAdvantage.CollectResourcesForUseless
                 };
                 TueksSietch = new Location(id++)
                 {//6
@@ -278,7 +281,8 @@ namespace Treachery.Shared
                     IsStronghold = true,
                     HasReducedShippingCost = true,
                     IsProtectedFromStorm = true,
-                    IsProtectedFromWorm = true
+                    IsProtectedFromWorm = true,
+                    Advantage = StrongholdAdvantage.CollectResourcesForDial
                 };
                 SietchTabr = new Location(id++)
                 {//7
@@ -298,7 +302,8 @@ namespace Treachery.Shared
                     IsStronghold = true,
                     HasReducedShippingCost = true,
                     IsProtectedFromStorm = true,
-                    IsProtectedFromWorm = true
+                    IsProtectedFromWorm = true,
+                    Advantage = StrongholdAdvantage.WinTies
                 };
                 HabbanyaSietch = new Location(id++)
                 {//8
@@ -1252,7 +1257,8 @@ namespace Treachery.Shared
                     IsStronghold = true,
                     HasReducedShippingCost = true,
                     IsProtectedFromStorm = true,
-                    IsProtectedFromWorm = true
+                    IsProtectedFromWorm = true,
+                    Advantage = StrongholdAdvantage.AnyOtherAdvantage
                 };
 
                 HiddenMobileStronghold = new HiddenMobileStronghold(t, id++) { SpiceBlowAmount = 0 };

@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<AuditCancelled>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Do you wish to pay @Skin.Current.Describe(Faction.Brown) @AuditCancelled.Cost(Game) @Skin.Current.Describe(Concept.Resource) to cancel a scheduled audit of @AuditCancelled.GetNumberOfCardsThatMayBeAudited(Game) of your treachery cards?</Header>
     <Body>

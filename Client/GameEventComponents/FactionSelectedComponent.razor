@@ -6,12 +6,12 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<FactionSelected>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Choose your faction. If you don't, it will be assigned at random.</Header>
     <Body>
 
-        <SelectFactionComponent @bind-Value="faction" Values="FactionSelected.ValidFactions(Game)" />
+        <SelectFromImageComponent @bind-Value="faction" Values="FactionSelected.ValidFactions(Game)" Required=true ImageWidth="40" />
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Choose Faction" ConfirmError=@Validation />
 
     </Body>

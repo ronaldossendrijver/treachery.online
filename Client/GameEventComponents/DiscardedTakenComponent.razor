@@ -6,12 +6,12 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<DiscardedTaken>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Use @Skin.Current.Describe(TreacheryCardType.TakeDiscarded)?</Header>
     <Body>
 
-        <SelectCardComponent @bind-Value="card" Values="DiscardedTaken.ValidCards(Game, Player)" Required="true" />
+        <SelectFromImageComponent @bind-Value="card" Values="DiscardedTaken.ValidCards(Game, Player)" Required="true" ImageWidth="80" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.TakeDiscarded)" ConfirmError=@Validation />
 

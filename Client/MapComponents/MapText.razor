@@ -53,23 +53,10 @@ else
     [Parameter]
     public float MaxWidth { get; set; } = 4096;
 
-    private bool _popoverNeedsUpdate = false;
-    private string _popover = null;
     [Parameter]
-    public string Popover { 
-        get
-        {
-            return _popover;
-        } 
-        set
-        {
-            if (_popover != value)
-            {
-                _popover = value;
-                _popoverNeedsUpdate = true;
-            }
-        }
-    }
+    public string Popover { get; set; }
+    private string _popover = null;
+    private bool _popoverNeedsUpdate = false;
 
     [Parameter]
     public string Title { get; set; } = "";
@@ -80,6 +67,8 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
+        await base.OnParametersSetAsync();
+
         var textDimensions = await Browser.MeasureText(ToShow, Font);
 
         TextWidth = textDimensions.Width;
@@ -91,6 +80,12 @@ else
             TextAlignment.Right => X - TextWidth,
             _ => X
         };
+
+        if (_popover != Popover)
+        {
+            _popover = Popover;
+            _popoverNeedsUpdate = true;
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

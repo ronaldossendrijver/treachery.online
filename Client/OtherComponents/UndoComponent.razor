@@ -36,6 +36,8 @@
 
     protected override void OnParametersSet()
     {
+        base.OnParametersSet();
+
         undoEventId = h.Game.History.Count - 1;
     }
 

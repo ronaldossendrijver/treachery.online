@@ -46,25 +46,9 @@
 
     private string _valueAsString;
 
-    private T _value;
-
     [Parameter]
-    public T Value
-    {
-        get
-        {
-            return _value;
-        }
-        set
-        {
-            if (_value == null && value != null || _value != null && !_value.Equals(value))
-            {
-                _value = value;
-                _valueAsString = GetValueAsString(value);
-                ValueChanged.InvokeAsync(value);
-            }
-        }
-    }
+    public T Value { get; set; }
+    private T _value;
 
     [Parameter]
     public EventCallback<T> ValueChanged { get; set; }
@@ -77,9 +61,18 @@
 
     protected override void OnParametersSet()
     {
-        if (!Values.Contains(Value))
+        base.OnParametersSet();
+
+        if (Value == null && _value != null || Value != null && !Value.Equals(_value))
         {
-            Value = Required ? Values.FirstOrDefault() : default;
+            if (!Values.Contains(Value))
+            {
+                Value = Required ? Values.FirstOrDefault() : default;
+            }
+
+            _value = Value;
+            _valueAsString = GetValueAsString(_value);
+            ValueChanged.InvokeAsync(_value);
         }
     }
 

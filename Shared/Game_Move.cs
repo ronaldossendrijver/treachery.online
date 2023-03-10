@@ -118,8 +118,7 @@ namespace Treachery.Shared
                         RevealCurrentNoField(GetPlayer(Faction.White));
                         initiator.ShipSpecialForces(s.To, 1);
                         CurrentNoFieldValue = s.CunningNoFieldValue;
-                        LogNexusPlayed(s.Initiator, Faction.White, "Cunning", "ship and reveal a second ", FactionSpecialForce.White);
-                        DiscardNexusCard(s.Player);
+                        PlayNexusCard(s.Player, "Cunning", "ship and reveal a second ", FactionSpecialForce.White);
                     }
 
                     RevealCurrentNoField(GetPlayer(Faction.White));
@@ -722,6 +721,7 @@ namespace Treachery.Shared
             if (!e.Passed)
             {
                 AmbassadorsOnPlanet.Remove(territory);
+                RecentMilestones.Add(Milestone.AmbassadorActivated);
 
                 var pink = GetPlayer(Faction.Pink);
 
@@ -956,7 +956,7 @@ namespace Treachery.Shared
 
                 if (IsAlive(vidal))
                 {
-                    Log(currentOwner, " lose ", vidal);
+                    Log(currentOwner.Faction, " lose ", vidal);
                 }
 
                 CapturedLeaders.Remove(vidal);
@@ -998,6 +998,8 @@ namespace Treachery.Shared
             }
             else
             {
+                RecentMilestones.Add(Milestone.TerrorRevealed);
+
                 TerrorOnPlanet.Remove(e.Type);
 
                 if (e.Passed || !TerrorIn(territory).Any())
@@ -1679,6 +1681,7 @@ namespace Treachery.Shared
             if (NexusPlayed.CanUseCunning(e.Player))
             {
                 DiscardNexusCard(e.Player);
+                RecentMilestones.Add(Milestone.NexusPlayed);
                 LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
             }
             else
@@ -1698,6 +1701,7 @@ namespace Treachery.Shared
             if (NexusPlayed.CanUseCunning(e.Player))
             {
                 DiscardNexusCard(e.Player);
+                RecentMilestones.Add(Milestone.NexusPlayed);
                 LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
             }
             else

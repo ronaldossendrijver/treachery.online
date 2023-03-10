@@ -6,12 +6,13 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<PlayerReplaced>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType() Collapsed=CollapseState.Collapsed>
 
     <Header>Replace a player with a Bot (or vice versa)</Header>
     <Body>
 
-        <SelectFactionComponent @bind-Value="toReplace" Values="PlayerReplaced.ValidTargets(Game)" />
+        <SelectFromImageComponent @bind-Value="toReplace" Values="PlayerReplaced.ValidTargets(Game)" Required=true ImageWidth="40" />
+
         <ButtonRowComponent Confirm="Confirm" ConfirmText="@ConfirmLabel" ConfirmError=@Validation />
 
     </Body>
@@ -21,14 +22,6 @@
 @code {
 
     private Faction toReplace;
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            Collapsed = true;
-        }
-    }
 
     protected override PlayerReplaced ConfirmedResult => new PlayerReplaced(Game) { Initiator = Faction, ToReplace = toReplace };
 

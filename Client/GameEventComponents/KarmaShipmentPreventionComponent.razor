@@ -6,14 +6,14 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<KarmaShipmentPrevention>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to prevent shipment</Header>
     <Body>
 
-        <SelectFactionComponent @bind-Value="target" Values="KarmaShipmentPrevention.GetValidTargets(Game, Player)">
+        <SelectFromImageComponent @bind-Value="target" Values="KarmaShipmentPrevention.GetValidTargets(Game, Player)" Required=true ImageWidth="40">
             <Label>Target</Label>
-        </SelectFactionComponent>
+        </SelectFromImageComponent>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Prevent Shipment" ConfirmError=@Validation />
 

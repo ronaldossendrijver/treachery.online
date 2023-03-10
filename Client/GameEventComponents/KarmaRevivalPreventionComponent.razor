@@ -6,14 +6,14 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<KarmaRevivalPrevention>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to prevent revival</Header>
     <Body>
 
-        <SelectFactionComponent @bind-Value="target" Values="KarmaRevivalPrevention.GetValidTargets(Game, Player)">
+        <SelectFromImageComponent @bind-Value="target" Values="KarmaRevivalPrevention.GetValidTargets(Game, Player)" Required=true ImageWidth="40">
             <Label>Target</Label>
-        </SelectFactionComponent>
+        </SelectFromImageComponent>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Prevent Revival" ConfirmError=@Validation />
 

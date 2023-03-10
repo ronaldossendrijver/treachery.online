@@ -6,17 +6,17 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<CardTraded>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Trade one of your cards with your ally?</Header>
     <Body>
 
-        <SelectCardComponent @bind-Value="card" Values="CardTraded.ValidCards(Player)" Required="true" />
+        <SelectFromImageComponent @bind-Value="card" Values="CardTraded.ValidCards(Player)" Required="true" ImageWidth="80" />
 
         @if (Player.AlliedPlayer.IsBot)
         {
             <div class="mt-1">Because you're playing with a Bot, you may select one of their cards to receive in return:</div>
-            <SelectCardComponent @bind-Value="returnCard" Values="CardTraded.ValidCards(Player.AlliedPlayer)" Required="false" />
+            <SelectFromImageComponent @bind-Value="returnCard" Values="CardTraded.ValidCards(Player.AlliedPlayer)" Required="false" ImageWidth="80" />
         }
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Trade Card" ConfirmError=@Validation />

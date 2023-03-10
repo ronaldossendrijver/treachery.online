@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<AllyPermission>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Manage your Alliance with &nbsp;<img width="32" src="@Skin.Current.GetImageURL(Player.Ally)" /></Header>
 
@@ -64,9 +64,9 @@
         {
             var permittedKarma = Game.GetPermittedUseOfAllyKarma(Player.Ally);
 
-            <SelectCardComponent @bind-Value="karmaCard" Values="Karma.ValidKarmaCards(Game, Player)" Required="false" OnChanged=SetEdited>
+            <SelectFromImageComponent @bind-Value="karmaCard" Values="Karma.ValidKarmaCards(Game, Player)" Required="false" T=TreacheryCard OnChanged=SetEdited ImageWidth="80">
                 <Label>Select a @Skin.Current.Describe(TreacheryCardType.Karma) card they may use to ship at @Skin.Current.Describe(Faction.Orange) rates (currently: <strong>@(permittedKarma == null ? "none" : Name(permittedKarma))</strong>)?</Label>
-            </SelectCardComponent>
+            </SelectFromImageComponent>
         }
         else
         {
@@ -185,6 +185,8 @@
 
     protected override void OnParametersSet()
     {
+        base.OnParametersSet();
+
         if (!edited)
         {
             spice = Game.GetPermittedUseOfAllySpice(Player.Ally);

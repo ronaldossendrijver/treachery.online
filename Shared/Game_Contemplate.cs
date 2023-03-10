@@ -190,20 +190,12 @@ namespace Treachery.Shared
                 return true;
             }
 
-            return advantage switch
-            {
-                StrongholdAdvantage.FreeResourcesForBattles => battleTerritory == Map.Arrakeen.Territory && OwnsStronghold(f, Map.Arrakeen),
-                StrongholdAdvantage.CollectResourcesForDial => battleTerritory == Map.SietchTabr.Territory && OwnsStronghold(f, Map.SietchTabr),
-                StrongholdAdvantage.CollectResourcesForUseless => battleTerritory == Map.TueksSietch.Territory && OwnsStronghold(f, Map.TueksSietch),
-                StrongholdAdvantage.CountDefensesAsAntidote => battleTerritory == Map.Carthag.Territory && OwnsStronghold(f, Map.Carthag),
-                StrongholdAdvantage.WinTies => battleTerritory == Map.HabbanyaSietch.Territory && OwnsStronghold(f, Map.HabbanyaSietch),
-                _ => false
-            };
+            return battleTerritory.Advantage == advantage && battleTerritory.Locations.Any(l => OwnsStronghold(f, l));
         }
 
         public bool OwnsStronghold(Faction f, Location stronghold)
         {
-            return StrongholdOwnership.ContainsKey(stronghold) && StrongholdOwnership[stronghold] == f;
+            return StrongholdOwnership.TryGetValue(stronghold, out Faction owner) && owner == f;
         }
 
         private void DetermineStrongholdOwnership(Location location)
@@ -473,8 +465,7 @@ namespace Treachery.Shared
 
             if (e.CardUsed() == null && NexusPlayed.CanUseCunning(e.Player))
             {
-                LogNexusPlayed(e.Initiator, Faction.Brown, "Cunning", "send a force back to reserves");
-                DiscardNexusCard(e.Player);
+                PlayNexusCard(e.Player, "Cunning", "send a force back to reserves");
                 LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
             }
             else
@@ -556,6 +547,7 @@ namespace Treachery.Shared
 
             if (!e.Passed)
             {
+                RecentMilestones.Add(Milestone.TerrorPlanted);
                 CyanHasPlantedTerror = true;
 
                 if (e.Stronghold == null)
@@ -568,8 +560,7 @@ namespace Treachery.Shared
                 {
                     if (TerrorIn(e.Stronghold).Any() && !e.Player.HasHighThreshold(World.Cyan))
                     {
-                        Log(e.Initiator, " use Nexus Cunning to plant additional Terror in ", e.Stronghold);
-                        DiscardNexusCard(e.Player);
+                        PlayNexusCard(e.Player, "Cunning", "to plant additional Terror in ", e.Stronghold);
                     }
 
                     if (UnplacedTerrorTokens.Contains(e.Type))

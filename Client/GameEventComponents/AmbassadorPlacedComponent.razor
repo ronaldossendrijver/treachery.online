@@ -7,16 +7,12 @@
 @inherits GameEventComponent<AmbassadorPlaced>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>You may now place an Ambassador Token in a Stronghold</Header>
     <Body>
 
-        <SelectFromImageComponent @bind-Value=_ambassador 
-            Values=@AmbassadorPlaced.ValidAmbassadors(Player) 
-            ImageURLs=@AmbassadorPlaced.ValidAmbassadors(Player).Select(a => Skin.Current.GetImageURL(a))
-            PopupHTMLs=@AmbassadorPlaced.ValidAmbassadors(Player).Select(a => Skin.Current.Describe(a)) 
-            PopupsAsTooltip=true Required=true>
+        <SelectFromImageComponent @bind-Value=_ambassador Values=@AmbassadorPlaced.ValidAmbassadors(Player) PopupsAsTooltip=true Required=true>
             <Label>Which ambassador?</Label>
         </SelectFromImageComponent>
 

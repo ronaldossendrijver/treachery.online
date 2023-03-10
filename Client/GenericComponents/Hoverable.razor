@@ -29,24 +29,19 @@ else
     [Parameter]
     public string Style { get; set; }
 
+    [Parameter]
+    public string Popover { get; set; }
     private string _popover;
     private bool _popoverNeedsRefresh = false;
 
-    [Parameter]
-    public string Popover { 
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
 
-        get
+        if (_popover != Popover)
         {
-            return _popover;
-        } 
-
-        set
-        {
-            if (value != _popover)
-            {
-                _popover = value;
-                _popoverNeedsRefresh = true;
-            }
+            _popover = Popover;
+            _popoverNeedsRefresh = true;
         }
     }
 

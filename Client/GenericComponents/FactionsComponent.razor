@@ -27,6 +27,8 @@
 
     protected override void OnParametersSet()
     {
+        base.OnParametersSet();
+
         if (Labels == null)
         {
             Labels = Factions.ToDictionary(f => f, f => Skin.Current.Describe(f));

@@ -75,7 +75,7 @@
         <h5 class="mt-2">Stronghold Cards</h5>
         <div class="row row-cols-3 row-cols-md-6 ms-0 me-0">
 
-            @foreach (var v in h.Game.Map.Strongholds)
+            @foreach (var v in Enumerations.GetValuesExceptDefault(typeof(StrongholdAdvantage), StrongholdAdvantage.None))
             {
                 <div class="card">
                     <Hoverable Class="card-img-top" Popover=@Popup.Get(v)>

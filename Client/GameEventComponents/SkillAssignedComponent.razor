@@ -6,14 +6,14 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<SkillAssigned>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Assign a skill to a one of your leaders</Header>
     <Body>
 
-        <SelectFromImageComponent @bind-Value="skill" Values="SkillAssigned.ValidSkills(Player)" ImageWidth="80" ImageURLs="SkillAssigned.ValidSkills(Player).Select(t => Skin.Current.GetImageURL(t))" PopupHTMLs="SkillAssigned.ValidSkills(Player).Select(t => Popup.Get(t))" />
+        <SelectFromImageComponent @bind-Value="skill" Values="SkillAssigned.ValidSkills(Player)" ImageWidth="80" />
 
-        <SelectHeroComponent Game="Game" @bind-Value="leader" Values="SkillAssigned.ValidLeaders(Game, Player)" />
+        <SelectFromImageComponent Game="Game" @bind-Value="leader" Values="SkillAssigned.ValidLeaders(Game, Player)" ImageWidth="80"/>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Assign Skill" ConfirmError=@Validation />
 

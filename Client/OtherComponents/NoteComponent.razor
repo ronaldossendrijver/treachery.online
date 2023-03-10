@@ -9,13 +9,12 @@
 
 <div @ref=@element class="card mb-2">
 
-    <div class="card-header" @onclick=@(e => Collapsed = !Collapsed)>
+    <div class="card-header" @onclick=@(e => _collapsed = !_collapsed)>
         Mentat: Notekeeping Assistant
-        <CollapseButton Collapsed=@Collapsed />
+        <CollapseButton Collapsed=@_collapsed />
     </div>
 
-    @if (!Collapsed)
-    {
+    @if (!_collapsed) {
         <div class="card-body">
 
             <div class="mb-1">
@@ -142,6 +141,7 @@
     private object Shown = null;
     protected ElementReference element;
     private bool popoversNeedUpdate = true;
+    private bool _collapsed = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

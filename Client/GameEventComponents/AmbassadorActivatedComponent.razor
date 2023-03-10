@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<AmbassadorActivated>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Activate the <Image Shown=@AmbassadorActivated.GetAmbassador(Game) Width="30"/> Ambassador?</Header>
     <Body>
@@ -17,7 +17,7 @@
 
             if (ambassador == Ambassador.Blue)
             {
-                <SelectFromImageComponent @bind-Value=_actualAmbassador Values=@AmbassadorActivated.GetValidBlueAmbassadors(Game) ImageURLs=@AmbassadorActivated.GetValidBlueAmbassadors(Game).Select(a => Skin.Current.GetImageURL(a))>
+                <SelectFromImageComponent @bind-Value=_actualAmbassador Values=@AmbassadorActivated.GetValidBlueAmbassadors(Game)>
                     <Label>Activate the effect of which ambassador?</Label>
                 </SelectFromImageComponent>
                 <br/>
@@ -37,9 +37,9 @@
                 case Ambassador.Brown:
 
                     <div>Discard cards from your hand for 3 @Name(Concept.Resource) each?</div>
-                    <SelectCardComponent Selected="_brownCards" Values=@AmbassadorActivated.GetValidBrownCards(Player) OnChanged="e => StateHasChanged()">
+                    <SelectFromImageComponent Selected="_brownCards" Values=@AmbassadorActivated.GetValidBrownCards(Player) T=TreacheryCard OnChanged=StateHasChanged ImageWidth="80">
                         <Label>Select the cards you wish to discard for 3 @Skin.Current.Describe(Concept.Resource) each</Label>
-                    </SelectCardComponent>
+                    </SelectFromImageComponent>
                     break;
 
                 case Ambassador.Pink:
@@ -88,7 +88,7 @@
                     if (validSources.Any())
                     {
                         <div class="mt-1 mb-1">
-                            <SelectComponent OnChanged="StateHasChanged" ButtonHint="ClickHintButton.LMB" ModifierHint="ClickHintModifier.CTRL" @bind-Value="_yellowFromTerritory" Values="validSources">
+                            <SelectComponent T=Territory OnChanged="StateHasChanged" ButtonHint="ClickHintButton.LMB" ModifierHint="ClickHintModifier.CTRL" @bind-Value="_yellowFromTerritory" Values="validSources">
                                 <Label>From</Label>
                             </SelectComponent>
 
@@ -128,9 +128,9 @@
                 case Ambassador.Grey:
 
                     <div>Discard a card from your hand to draw a new one?</div>
-                    <SelectCardComponent @bind-Value=@_greyCard Values=@AmbassadorActivated.GetValidGreyCards(Player)>
+                    <SelectFromImageComponent @bind-Value=@_greyCard Values=@AmbassadorActivated.GetValidGreyCards(Player) ImageWidth="80">
                         <Label>Select the card you wish to discard</Label>
-                    </SelectCardComponent>
+                    </SelectFromImageComponent>
                     break;
 
                 case Ambassador.White:
@@ -174,7 +174,7 @@
                         _purpleAmountOfForces = 0;
                     }
 
-                    <SelectHeroComponent Game="Game" @bind-Value=@_purpleHero Values="AmbassadorActivated.ValidPurpleHeroes(Game, Player)" Required="false" />
+                    <SelectFromImageComponent Game="Game" @bind-Value=@_purpleHero Values="AmbassadorActivated.ValidPurpleHeroes(Game, Player)" Required="false" ImageWidth="80"/>
 
                     @if (_purpleHero != null && Revival.MayAssignSkill(Game, Player, _purpleHero))
                     {

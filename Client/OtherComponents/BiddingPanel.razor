@@ -74,9 +74,9 @@
                     if (CanUseKarma)
                     {
                         <div class="mt-1">
-                            <SelectCardComponent @bind-Value="karmaCard" Values="Bid.ValidKarmaCards(Game, Player)" Required="false">
+                            <SelectFromImageComponent @bind-Value="karmaCard" Values="Bid.ValidKarmaCards(Game, Player)" Required="false" ImageWidth="80">
                                 <Label>Use @Skin.Current.Describe(TreacheryCardType.Karma) to bid without limit or win immediately? <InfoComponent Contents="@KarmaInfoMessage" /></Label>
-                            </SelectCardComponent>
+                            </SelectFromImageComponent>
                         </div>
                     }
                     else
@@ -150,26 +150,7 @@
     private bool _canBid = false;
 
     [Parameter]
-    public bool CanBid
-    {
-        get
-        {
-            return _canBid;
-        }
-        set
-        {
-            if (!_canBid && value)
-            {
-                if (Game.CurrentBid != null && h.Autopass && Game.CurrentBid.TotalAmount + 1 > h.BidAutoPassThreshold ||
-                    Game.CurrentBid == null && h.Autopass && h.BidAutoPassThreshold == 0)
-                {
-                    _ = Task.Delay(800 + Random.Shared.Next(1600)).ContinueWith(e => AutoPass());
-                }
-            }
-
-            _canBid = value;
-        }
-    }
+    public bool CanBid { get; set; }
 
     private string BidLabel => "Bid " + (amount + allyContributionAmount + redContributionAmount);
 
@@ -184,6 +165,19 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        await base.OnParametersSetAsync();
+
+        if (!_canBid && CanBid)
+        {
+            if (Game.CurrentBid != null && h.Autopass && Game.CurrentBid.TotalAmount + 1 > h.BidAutoPassThreshold ||
+                Game.CurrentBid == null && h.Autopass && h.BidAutoPassThreshold == 0)
+                {
+                _ = Task.Delay(800 + Random.Shared.Next(1600)).ContinueWith(e => AutoPass());
+            }
+        }
+
+        _canBid = CanBid;
+
         if (!IsSilentAuction)
         {
             int allyResources = Player.Ally == Faction.None ? 0 : Game.GetPermittedUseOfAllySpice(Faction);

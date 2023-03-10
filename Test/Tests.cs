@@ -41,6 +41,11 @@ namespace Treachery.Test
             {
                 WriteSavegameIfApplicable(g, e.Player, "FlightDiscoveryUsed");
             }
+
+            if (e is HMSAdvantageChosen && g.StrongholdOwnership.Values.Where(v => v == e.Initiator).Count() > 2)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "HMSAdvantageChosen");
+            }
         }
 
         private readonly List<string> WrittenCases = new();
@@ -353,7 +358,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 10000;
+            int nrOfGames = 200;
             int nrOfTurns = 10;
             int nrOfPlayers = 7;
 

@@ -98,6 +98,7 @@ namespace Treachery.Shared
 
             if (!e.Passed)
             {
+                RecentMilestones.Add(Milestone.DiscoveryRevealed);
                 DiscoveriesOnPlanet.Remove(discovery.Location);
 
                 Log(e.Initiator, " reveal ", discovery.Token, " in ", discovery.Location.Territory);

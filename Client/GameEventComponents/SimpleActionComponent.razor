@@ -9,7 +9,7 @@
 
 @if (!dismissed)
 {
-    <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+    <GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
         <Header>@Title</Header>
         <Body>
@@ -60,12 +60,14 @@
     [Parameter]
     public bool AllowAutoConfirm { get; set; } = false;
 
+    /*
     [Parameter]
     public new Faction IsFactionSpecific
     {
         get { return base.IsFactionSpecific; }
         set { base.IsFactionSpecific = value; }
     }
+    */
 
     protected override GameEventType ConfirmedResult => new GameEventType() { Game = Game, Initiator = Faction };
 

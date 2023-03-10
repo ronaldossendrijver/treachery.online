@@ -80,6 +80,8 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        await base.OnParametersSetAsync();
+
         var dimensions = await Browser.GetWindowDimensions();
         var nrOfItems = h.Status != null ? h.Status.FlashInfo.Count() : 0;
 

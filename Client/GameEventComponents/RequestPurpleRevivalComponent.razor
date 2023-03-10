@@ -6,12 +6,12 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<RequestPurpleRevival>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Request @Skin.Current.Describe(Faction.Purple) Revival of one of your leaders?</Header>
     <Body>
 
-        <SelectHeroComponent Game="Game" @bind-Value="hero" Values="RequestPurpleRevival.ValidTargets(Game, Player)" />
+        <SelectFromImageComponent Game="Game" @bind-Value="hero" Values="RequestPurpleRevival.ValidTargets(Game, Player)" ImageWidth="80"/>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Request" ConfirmError=@Validation />
 

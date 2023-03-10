@@ -6,12 +6,12 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<KarmaBrownDiscard>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to discard any cards from your hand to gain 3 @Skin.Current.Describe(Concept.Resource) each</Header>
     <Body>
 
-        <SelectCardComponent Selected="selectedCards" Values="KarmaBrownDiscard.ValidCards(Player)" OnChanged="e => StateHasChanged()" />
+        <SelectFromImageComponent Selected="selectedCards" Values="KarmaBrownDiscard.ValidCards(Player)" T=TreacheryCard OnChanged=StateHasChanged ImageWidth="80" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Discard" ConfirmError=@Validation />
 

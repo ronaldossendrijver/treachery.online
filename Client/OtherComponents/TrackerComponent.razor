@@ -11,14 +11,13 @@
 
 <div class="card mb-2">
 
-    <div class="card-header" @onclick=@(e => Collapsed = !Collapsed)>
+    <div class="card-header" @onclick=@(e => _collapsed = !_collapsed)>
         Card Tracker
         <InfoComponent Contents="@InfoMessage" />
-        <CollapseButton Collapsed=@Collapsed />
+        <CollapseButton Collapsed=@_collapsed />
     </div>
 
-    @if (!Collapsed)
-    {
+    @if (!_collapsed) {
         <div @ref=@element class="card-body">
 
             <div class="mb-1">
@@ -52,27 +51,23 @@
                         int selIndex = i;
                         int cardId = Info.TrackedTreacheryCards[p.Faction][selIndex];
 
-                        <Hoverable Class="card border-0 p-1" Popover=@DeterminePopup(Info.TrackedTreacheryCards[p.Faction][selIndex])>
-
-                            <a class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#picker" @onmousedown="e => InitiatePick(p.Faction, selIndex)">
-                                @if (cardId == TreacheryCard.NONE)
-                                {
-                                    <svg class="img-fluid w-100" viewBox="0 0 268 372" xmlns="http://www.w3.org/2000/svg">
-                                        <rect width="268" height="372" rx="20" style="fill:rgb(64,64,64);stroke-width:3;stroke:rgb(200,200,200)" />
-                                    </svg>
-                                }
-                                else if (cardId == TreacheryCard.UNKNOWN)
-                                {
-                                    <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="img-fluid" />
-                                }
-                                else
-                                {
-                                    <img src="@DetermineImageSrc(cardId)" class="img-fluid" />
-                                
-                                }
-                            </a>
-
-                        </Hoverable>
+                        <a class="btn btn-link p-1" data-bs-toggle="modal" data-bs-target="#picker" @onmousedown="e => InitiatePick(p.Faction, selIndex)" title=@DeterminePopup(Info.TrackedTreacheryCards[p.Faction][selIndex])>
+                            @if (cardId == TreacheryCard.NONE)
+                            {
+                                <svg class="img-fluid w-100" viewBox="0 0 268 372" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="268" height="372" rx="20" style="fill:rgb(64,64,64);stroke-width:3;stroke:rgb(200,200,200)" />
+                                </svg>
+                            }
+                            else if (cardId == TreacheryCard.UNKNOWN)
+                            {
+                                <img src="@Skin.Current.CardBack_TreacheryCard_URL" class="img-fluid" />
+                            }
+                            else
+                            {
+                                var card = TreacheryCardManager.Lookup.Find(cardId);
+                                <Image Shown=card Class="img-fluid" Style="cursor:pointer"/>
+                            }
+                        </a>
                     }
 
                 </div>
@@ -80,9 +75,9 @@
                 @if (p.Faction == Faction.Green)
                 {
                     <div>Traitors discarded at start</div>
-                    <PickFromImageComponent Value=@GetDiscardedTraitor(0) OnChanged=@(hero => SetDiscardedTraitor(0, hero)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
-                    <PickFromImageComponent Value=@GetDiscardedTraitor(1) OnChanged=@(hero => SetDiscardedTraitor(1, hero)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
-                    <PickFromImageComponent Value=@GetDiscardedTraitor(2) OnChanged=@(hero => SetDiscardedTraitor(2, hero)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
+                    <PickFromImageComponent Value=@GetDiscardedTraitor(0) T=IHero OnChanged=@(hero => SetDiscardedTraitor(0, hero)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors"/>
+                    <PickFromImageComponent Value=@GetDiscardedTraitor(1) T=IHero OnChanged=@(hero => SetDiscardedTraitor(1, hero)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors"/>
+                    <PickFromImageComponent Value=@GetDiscardedTraitor(2) T=IHero OnChanged=@(hero => SetDiscardedTraitor(2, hero)) Title="Select Discarded Traitor" Required=false ImageWidth=60 Values="AllTraitors"/>
                 }
                 else if (p.Faction != Faction.Purple)
                 {
@@ -91,7 +86,7 @@
                     {
                         var selIndex = i;
                         var faction = p.Faction;
-                        <PickFromImageComponent Value=@GetSelectedTraitor(faction, selIndex) OnChanged=@(hero => SetSelectedTraitor(faction, selIndex, hero)) Title="Select Revealed Traitor" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups"/>
+                        <PickFromImageComponent Value=@GetSelectedTraitor(faction, selIndex) T=IHero OnChanged=@(hero => SetSelectedTraitor(faction, selIndex, hero)) Title="Select Revealed Traitor" Required=false ImageWidth=60 Values="AllTraitors"/>
                     }
                 }
                 else
@@ -101,7 +96,7 @@
                     {
                         var selIndex = i;
                         var faction = p.Faction;
-                        <PickFromImageComponent Value=@GetSelectedTraitor(faction, selIndex) OnChanged=@(hero => SetSelectedTraitor(faction, selIndex, hero)) Title="Select Revealed Face Dancer" Required=false ImageWidth=60 Values="AllTraitors" ImageURLs="AllTraitors_ImageURLs" PopupHTMLs="AllTraitors_Popups" />
+                        <PickFromImageComponent Value=@GetSelectedTraitor(faction, selIndex) T=IHero OnChanged=@(hero => SetSelectedTraitor(faction, selIndex, hero)) Title="Select Revealed Face Dancer" Required=false ImageWidth=60 Values="AllTraitors" />
                     }
                 }
             }
@@ -135,7 +130,7 @@
             else if (Shown == h.Game.ResourceCardDeck)
             {
                 <div>Top @Skin.Current.Describe(Concept.Resource) Card</div>
-                <PickFromImageComponent Value=SpiceCard(Info.TrackedSpiceCard) OnChanged=@(card => Info.TrackedSpiceCard = Skin.Current.Describe(card)) Title="Select Card" Required=false ImageWidth=60 Values="AllSpiceCards" ImageURLs="AllSpiceCards_ImageURLs" PopupHTMLs="AllSpiceCards_Popups"/>
+                <PickFromImageComponent Value=SpiceCard(Info.TrackedSpiceCard) T=ResourceCard OnChanged=@(card => Info.TrackedSpiceCard = Skin.Current.Describe(card)) Title="Select Card" Required=false ImageWidth=60 Values="AllSpiceCards"/>
 
                 if (h.Game.Applicable(Rule.IncreasedResourceFlow))
                 {
@@ -167,6 +162,7 @@
     private GreenIntelligence Info = null;
     private bool popoversNeedUpdate = true;
     protected ElementReference element;
+    private bool _collapsed = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -295,16 +291,15 @@
     {
         if (cardID == -1)
         {
-            return "<div class='p-1 small' style='color:black;background-color:white;border: 1px solid black;'>Unknown</div>";
+            return "Unknown";
         }
         else if (cardID == -2)
         {
-            return "<div class='p-1 small' style='color:black;background-color:white;border: 1px solid black;'>None</div>";
+            return "None";
         }
         else
         {
-            var card = TreacheryCardManager.Lookup.Find(cardID);
-            return Popup.Get(card);
+            return "";
         }
     }
 
@@ -338,15 +333,7 @@
 
     private IList<IHero> AllTraitors { get; set; }
 
-    private IEnumerable<string> AllTraitors_ImageURLs => AllTraitors.Select(c => Skin.Current.GetImageURL(c));
-
-    private IEnumerable<string> AllTraitors_Popups => AllTraitors.Select(c => Popup.Get(c, Game));
-
     private IList<ResourceCard> AllSpiceCards { get; set; }
-
-    private IEnumerable<string> AllSpiceCards_ImageURLs => AllSpiceCards.Select(c => Skin.Current.GetImageURL(c));
-
-    private IEnumerable<string> AllSpiceCards_Popups => AllSpiceCards.Select(c => Popup.Get(c));
 
     private ResourceCard SpiceCard(string name) => AllSpiceCards.FirstOrDefault(c => Skin.Current.Describe(c) == name);
 

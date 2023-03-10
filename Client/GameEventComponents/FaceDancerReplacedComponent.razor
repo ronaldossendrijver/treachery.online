@@ -6,12 +6,12 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<FaceDancerReplaced>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Replace a Face Dancer?</Header>
     <Body>
 
-        <SelectHeroComponent Game="Game" @bind-Value="dancer" Values="FaceDancerReplaced.ValidFaceDancers(Player)"/>
+        <SelectFromImageComponent Game="Game" @bind-Value="dancer" Values="FaceDancerReplaced.ValidFaceDancers(Player)" ImageWidth="80"/>
         <ButtonRowComponent Confirm="Confirm" ConfirmText=@ConfirmLabel ConfirmError=@Validation Pass="Pass" PassText="Pass" />
 
     </Body>

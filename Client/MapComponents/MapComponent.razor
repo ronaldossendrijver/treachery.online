@@ -43,6 +43,8 @@
 
     protected override void OnParametersSet()
     {
+        base.OnParametersSet();
+
         if (Diameter != _diameter)
         {
             _diameter = Diameter;
@@ -159,10 +161,9 @@
     {
         string result = "<div style='width:300px'>";
 
-        var owner = Game.StrongholdOwnership.ContainsKey(intelligenceLocation) ? Game.StrongholdOwnership[intelligenceLocation] : Faction.None;
-        if (owner != Faction.None)
+        if (Game.StrongholdOwnership.TryGetValue(intelligenceLocation, out var owner))
         {
-            result += Popup.Get(intelligenceLocation, owner);
+            result += Popup.Get(intelligenceLocation.Advantage, owner);
         }
         else
         {

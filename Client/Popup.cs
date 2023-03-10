@@ -93,21 +93,12 @@ namespace Treachery.Client
             }
         }
 
-        public static string Get(Location l) => GetImageHoverHTML(Skin.Current.GetImageURL(l));
+        public static string Get(StrongholdAdvantage adv) => GetImageHoverHTML(Skin.Current.GetImageURL(adv));
 
-        public static string Get(Location l, Faction f)
+        public static string Get(StrongholdAdvantage adv, Faction f)
         {
-            if (l == null)
-            {
-                return "";
-            }
-            else
-            {
-                return string.Format("<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{0}' width=300/><img src='{1}' width=100 style='position:absolute;left:220px;top:40px;filter:drop-shadow(-3px 3px 2px black);'/></div>", Skin.Current.GetImageURL(l), Skin.Current.GetImageURL(f));
-            }
+            return string.Format("<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{0}' width=300/><img src='{1}' width=100 style='position:absolute;left:220px;top:40px;filter:drop-shadow(-3px 3px 2px black);'/></div>", Skin.Current.GetImageURL(adv), Skin.Current.GetImageURL(f));
         }
-
-
 
         private static string GetImageHoverHTML(string imageURL) => string.Format("<img src='{0}' width=300 class='img-fluid' style='filter:drop-shadow(-3px 3px 2px black);'/>", imageURL);
 

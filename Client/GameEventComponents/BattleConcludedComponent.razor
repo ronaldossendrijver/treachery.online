@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<BattleConcluded>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Conclude the battle you just won</Header>
 
@@ -19,7 +19,7 @@
             var maxReplacementForces = BattleConcluded.ValidMaxReplacementForceAmount(Game, forceSupplier);
             if (maxReplacementForces > 0)
             {
-                <label>How many <Image Shown=@forceSupplier.SpecialForce Width=20 ShowPopover=false /> losses should be exchanged with <Image Shown=@forceSupplier.Force Width=20 ShowPopover=false />?</label>
+                <label>How many <Image Shown=@forceSupplier.SpecialForce Width=20/> losses should be exchanged with <Image Shown=@forceSupplier.Force Width=20 />?</label>
                 <SelectForcesComponent @bind-Value="replacementAmount" Min="0" Max="maxReplacementForces" Faction=@forceSupplier.Faction Special="true" />
             }
             else
@@ -66,7 +66,7 @@
 
             if (Loser.TechTokens.Count > 0)
             {
-                <SelectFromImageComponent @bind-Value="stolenToken" Values="Loser.TechTokens" ImageURLs="Loser.TechTokens.Select(t => Skin.Current.GetImageURL(t))" PopupHTMLs="Loser.TechTokens.Select(t => Popup.Get(t))">
+                <SelectFromImageComponent @bind-Value="stolenToken" Values="Loser.TechTokens" Required=true>
 
                     <Label>
                         @if (Loser.TechTokens.Count == 1) 
@@ -88,17 +88,17 @@
 
             if (Game.TraitorsDeciphererCanLookAt.Any())
             {
-                <SelectHeroComponent Game="Game" @bind-Value="selectedNewTraitor" Values="Game.TraitorsDeciphererCanLookAt" Required="false">
+                <SelectFromImageComponent Game="Game" @bind-Value="selectedNewTraitor" Values="Game.TraitorsDeciphererCanLookAt" Required="false" ImageWidth="80">
                     <Label>@Skin.Current.Describe(LeaderSkill.Decipherer) shows you the following leaders from the traitor deck:</Label>
-                </SelectHeroComponent>
+                </SelectFromImageComponent>
 
                 @if (Game.DeciphererMayReplaceTraitor)
                 {
                     var toReplace = Faction == Faction.Purple ? "facedancers" : "traitors";
 
-                    <SelectHeroComponent Game="Game" @bind-Value="traitorToReplace" Values="BattleConcluded.ValidTraitorsToReplace(Player)" Required="false">
+                    <SelectFromImageComponent Game="Game" @bind-Value="traitorToReplace" Values="BattleConcluded.ValidTraitorsToReplace(Player)" Required="false" ImageWidth="80">
                         <Label>If you wish, you may select one of the above leaders to reveal and replace one of your current @toReplace:</Label>
-                    </SelectHeroComponent>
+                    </SelectFromImageComponent>
                 }
                 else
                 {

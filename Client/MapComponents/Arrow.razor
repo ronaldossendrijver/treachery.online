@@ -77,6 +77,8 @@
 
     protected override void OnParametersSet()
     {
+        base.OnParametersSet();
+
         var fromX = From.X - MarginX - Radius;
         var fromY = From.Y - MarginY - Radius;
         var fromZ = (int)Math.Pow(Radius * Radius - fromX * fromX - fromY * fromY, 0.5);

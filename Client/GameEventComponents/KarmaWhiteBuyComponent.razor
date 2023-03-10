@@ -6,12 +6,12 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<KarmaWhiteBuy>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Use @Skin.Current.Describe(TreacheryCardType.Karma) to buy one of your special Treachery cards for 3 @Skin.Current.Describe(Concept.Resource)</Header>
     <Body>
 
-        <SelectCardComponent @bind-Value="card" Values="Game.WhiteCache" />
+        <SelectFromImageComponent @bind-Value="card" Values="Game.WhiteCache" ImageWidth="80" />
         <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Use {0}", TreacheryCardType.Karma)" ConfirmError=@Validation />
 
     </Body>

@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<Battle>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed" TimedEvent=Game.LatestEvent(typeof(BattleInitiated))>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType() TimedEvent=Game.LatestEvent(typeof(BattleInitiated))>
 
     <Header>
         Fighting <FactionComponent Faction=Opponent.Faction Diameter=30 /> in @Name(Game.CurrentBattle.Territory).
@@ -172,7 +172,7 @@
 
         @if (Battle.ValidBattleHeroes(Game, Player).Any())
         {
-            <SelectHeroComponent Game="Game" @bind-Value="hero" Values="Battle.ValidBattleHeroes(Game, Player)" Required="!Game.Applicable(Rule.BattleWithoutLeader)"/>
+            <SelectFromImageComponent Game="Game" @bind-Value="hero" Values="Battle.ValidBattleHeroes(Game, Player)" Required="!Game.Applicable(Rule.BattleWithoutLeader)" ImageWidth="80"/>
         }
         else
         {
@@ -181,9 +181,9 @@
 
         @if (Weapons.Any())
         {
-            <SelectCardComponent @bind-Value="weapon" Values="Weapons" Required="false">
+            <SelectFromImageComponent @bind-Value="weapon" Values="Weapons" Required="false" ImageWidth="80">
                 <Label>Weapon</Label>
-            </SelectCardComponent>
+            </SelectFromImageComponent>
         }
         else
         {
@@ -192,9 +192,9 @@
 
         @if (Defenses.Any())
         {
-            <SelectCardComponent @bind-Value="defense" Values="Defenses" Required="false">
+            <SelectFromImageComponent @bind-Value="defense" Values="Defenses" Required="false" ImageWidth="80">
                 <Label>Defense</Label>
-            </SelectCardComponent>
+            </SelectFromImageComponent>
         }
         else
         {

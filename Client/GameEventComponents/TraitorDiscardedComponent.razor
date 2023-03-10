@@ -6,12 +6,12 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<TraitorDiscarded>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Select a traitor to discard</Header>
     <Body>
 
-        <SelectHeroComponent Game="Game" @bind-Value="hero" Values=Player.Traitors Required="true" />
+        <SelectFromImageComponent Game="Game" @bind-Value="hero" Values=Player.Traitors Required="true" ImageWidth="80"/>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="@Skin.Current.Format("Discard {0}", hero)" ConfirmError=@Validation />
 

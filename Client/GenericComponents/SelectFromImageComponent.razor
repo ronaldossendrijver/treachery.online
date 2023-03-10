@@ -3,6 +3,7 @@
 --->
 
 @using System.Collections.Generic;
+@using Treachery.Shared;
 @typeparam T
 
 @if (Label != null)
@@ -12,76 +13,39 @@
 
 <div>
 
-    @foreach (var item in Values.Zip(ImageURLs, (v, i) => new { Value = v, Image = i }).Zip(PopupHTMLs, (v, h) => new { Value = v.Value, Image = v.Image, Popup = h }))
+    @foreach (var valueToShow in Values)
     {
-        if (PopupsAsTooltip)
-        {
-            <img src="@item.Image"
-                 @onclick="e => Click(item.Value)"
-                 @onmouseover="e => MouseOver(item.Value)"
-                 @onmouseout="e => MouseOut(item.Value)"
-                 style="@DetermineFilter(item.Value);cursor:pointer;"
-                 class="img-fluid pe-1" 
-                 width=@ImageWidth 
-                 title=@item.Popup/>
-        }
-        else
-        {
-            <Image 
-                 Src="@item.Image"
-                 OnClick="e => Click(item.Value)"
-                 OnMouseOver="e => MouseOver(item.Value)"
-                 OnMouseOut="e => MouseOut(item.Value)"
-                 Filter=@DetermineFilter(item.Value)
-                 Style="cursor:pointer;padding-right:4px"
-                 Width=@ImageWidth 
-                 Popover=@item.Popup/>
-        }
+        <Image Shown=@valueToShow Game=Game
+               OnClick="e => Click(valueToShow)"
+               OnMouseOver="e => MouseOver(valueToShow)"
+               OnMouseOut="e => MouseOut(valueToShow)"
+               Filter=@DetermineFilter(valueToShow)
+               Style="cursor:pointer;padding-right:4px"
+               Width=@ImageWidth 
+               PopoverAsTooltip=@PopupsAsTooltip/>
     }
 
 </div>
 
 @code {
 
-    private T _value;
-
-    [Parameter]
-    public T Value
-    {
-        get
-        {
-            return _value;
-        }
-        set
-        {
-            if (!Equals(_value, value))
-            {
-                _value = value;
-
-                ValueChanged.InvokeAsync(value);
-                OnChanged?.Invoke(value);
-            }
-        }
-    }
-
-    [Parameter]
-    public List<T> Selected { get; set; } = null;
-
-    [Parameter]
-    public EventCallback<T> ValueChanged { get; set; }
-
-
     [Parameter]
     public IEnumerable<T> Values { get; set; }
 
     [Parameter]
-    public IEnumerable<string> ImageURLs { get; set; } = null;
+    public T Value { get; set; }
+
+    [Parameter]
+    public EventCallback<T> ValueChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<T> OnChanged { get; set; }    
+    
+    [Parameter]
+    public List<T> Selected { get; set; } = null;
 
     [Parameter]
     public int ImageWidth { get; set; } = 60;
-
-    [Parameter]
-    public IEnumerable<string> PopupHTMLs { get; set; } = null;
 
     [Parameter]
     public string UnselectedFilter { get; set; } = "grayscale(50%) brightness(50%) contrast(80%)";
@@ -99,27 +63,23 @@
     public bool Disabled { get; set; } = false;
 
     [Parameter]
-    public Action<T> OnChanged { get; set; }
-
-    [Parameter]
     public bool PopupsAsTooltip { get; set; } = false;
 
-    protected override void OnParametersSet()
-    {
-        var nrOfValues = Values.Count();
-        if (ImageURLs == null || ImageURLs.Count() != nrOfValues) ImageURLs = new string[nrOfValues];
-        if (PopupHTMLs == null || PopupHTMLs.Count() != nrOfValues) PopupHTMLs = new string[nrOfValues];
-    }
+    [Parameter]
+    public Game Game { get; set; }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnParametersSetAsync()
     {
-        if (Selected == null && !Values.Contains(Value))
+        await base.OnParametersSetAsync();
+
+        if (Selected == null && !Values.Contains(Value) && Required)
         {
-            Value = Required ? Values.FirstOrDefault() : default;
+            Value = Values.FirstOrDefault();
+            await Notify();
         }
     }
 
-    private void SwapSelection(T value)
+    private async Task SwapSelection(T value)
     {
         if (Selected.Contains(value))
         {
@@ -130,31 +90,32 @@
             Selected.Add(value);
         }
 
-        ValueChanged.InvokeAsync(value);
-        OnChanged?.Invoke(value);
+        await Notify();
     }
 
-    private void Click(T item)
+    private async Task Click(T item)
     {
         if (!Disabled)
         {
             if (Selected == null)
             {
-                if (Equal(_value, item))
+                if (Equals(Value, item))
                 {
                     if (!Required)
                     {
                         Value = default;
+                        await Notify();
                     }
                 }
                 else
                 {
                     Value = item;
+                    await Notify();
                 }
             }
             else
             {
-                SwapSelection(item);
+                await SwapSelection(item);
             }
         }
     }
@@ -177,19 +138,20 @@
 
         if (Selected == null)
         {
-            if (!Equal(_value, item)) result += UnselectedFilter + " ";
+            if (!Equals(Value, item)) result += UnselectedFilter + " ";
         }
         else
         {
             if (!Selected.Contains(item)) result += UnselectedFilter + " ";
         }
 
-        if (Equal(_hovered, item)) result += HoverFilter;
+        if (Equals(_hovered, item)) result += HoverFilter;
         return result;
     }
 
-    private bool Equal(T a, T b)
-    {
-        return a == null && b == null || a != null && a.Equals(b);
+    private async Task Notify() {
+
+        await ValueChanged.InvokeAsync(Value);
+        await OnChanged.InvokeAsync(Value);
     }
 }

@@ -149,8 +149,7 @@ namespace Treachery.Shared
 
             if (!IsPlaying(Faction.Blue))
             {
-                Log(e.Initiator, " play ", e.Initiator, " Nexus Secret Ally to use Voice");
-                DiscardNexusCard(e.Player);
+                PlayNexusCard(e.Player, "Secret Ally", " to use Voice");
             }
 
             if (CurrentBattle != null)
@@ -181,6 +180,7 @@ namespace Treachery.Shared
             CurrentThought = e;
             var opponent = CurrentBattle.OpponentOf(e.Initiator).Faction;
             Log(e.Initiator, " use their ", LeaderSkill.Thinker, " skill to ask ", opponent, " if they have a ", e.Card);
+            RecentMilestones.Add(Milestone.Prescience);
             Enter(Phase.Thought);
         }
 
@@ -1453,12 +1453,14 @@ namespace Treachery.Shared
         {
             if (e.KeptCard != null)
             {
-                Log(e.Initiator, " keep ", e.KeptCard);
-
                 if (SecretAllyAllowsKeepingCardsAfterLosingBattle)
                 {
                     SecretAllyAllowsKeepingCardsAfterLosingBattle = false;
-                    DiscardNexusCard(e.Player);
+                    PlayNexusCard(e.Player, "Secret Ally", " to keep ", e.KeptCard);
+                }
+                else
+                {
+                    Log(e.Initiator, " keep ", e.KeptCard);
                 }
             }
 
@@ -1500,6 +1502,8 @@ namespace Treachery.Shared
 
             if (e.Assassinate)
             {
+                RecentMilestones.Add(Milestone.Assassination);
+
                 var assassinated = LoserConcluded.TargetOfAssassination(this, e.Player);
 
                 Assassinated.Add(assassinated);
@@ -1984,6 +1988,7 @@ namespace Treachery.Shared
         public void HandleEvent(Audited e)
         {
             Log(e);
+            RecentMilestones.Add(Milestone.Audited);
 
             foreach (var card in AuditedCards)
             {

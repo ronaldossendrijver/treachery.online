@@ -326,7 +326,17 @@ namespace Treachery.Shared
         Economics = 2800,
         CardTraded = 2900,
         Discard = 3000,
-        SpecialUselessPlayed = 3100
+        SpecialUselessPlayed = 3100,
+        TerrorPlanted = 3200,
+        TerrorRevealed = 3300,
+        AmbassadorPlaced = 3400,
+        AmbassadorActivated = 3500,
+        NexusPlayed = 3600,
+        DiscoveryAppeared = 3700,
+        DiscoveryRevealed = 3800,
+        Assassination = 3900,
+        Bureaucracy = 4000,
+        Audited = 4100,
     }
 
     public enum FactionAdvantage : int
@@ -746,7 +756,8 @@ namespace Treachery.Shared
         CollectResourcesForUseless = 20,
         CountDefensesAsAntidote = 30,
         WinTies = 40,
-        CollectResourcesForDial = 50
+        CollectResourcesForDial = 50,
+        AnyOtherAdvantage = 60
     }
 
     public enum World : int

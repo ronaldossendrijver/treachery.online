@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents; 
 @inherits GameEventComponent<AcceptOrCancelPurpleRevival>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Manage Revival Requests</Header>
 
@@ -15,7 +15,7 @@
         @if (Game.CurrentRevivalRequests.Any())
         {
             <div>Early revival requests:</div>
-            <SelectHeroComponent Game=Game Required=true @bind-Value=offerHero Values=@Game.CurrentRevivalRequests.Select(req => req.Hero) />
+            <SelectFromImageComponent Game=Game Required=true @bind-Value=offerHero Values=@Game.CurrentRevivalRequests.Select(req => req.Hero) ImageWidth="80"/>
             <SelectResourcesComponent @bind-Value="price" Min="AcceptOrCancelPurpleRevival.MinAmount()" Max="AcceptOrCancelPurpleRevival.MaxAmount()" Label="Price" />
             <ButtonRowComponent Alignment="" Pass="Pass" PassText="Deny all" Confirm="Confirm" ConfirmText=@OfferLabel Other=Other OtherText=@DenyLabel ConfirmError=@Validation />
         }

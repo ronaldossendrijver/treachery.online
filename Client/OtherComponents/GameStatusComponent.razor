@@ -10,14 +10,18 @@
 
     <div class="card-body bg-transparent border-bottom-0">
 
-        @if (h.Status != null) {
+    @if (h.Status != null) {
 
-            if (h.Status.TimedEvent != null)
-            {
-                <div style="position:absolute;left:5px;top:0px;color:@TimerColor(h.Status.WaitingForMe(Player, h.IsHost));font-weight:bolder;">@TimerText(h.Status.TimedEvent)</div>
-            }
+        if (h.Status.TimedEvent != null)
+        {
+            <div style="position:absolute;left:5px;top:0px;color:@TimerColor(h.Status.WaitingForMe(Player, h.IsHost));font-weight:bolder;">@TimerText(h.Status.TimedEvent)</div>
+        }
 
-            if (IsBiddingPhase || OneOrMorePlayersNeedToAct || PlayersAreInSequence) {
+        if (IsBiddingPhase || OneOrMorePlayersNeedToAct || PlayersAreInSequence) {
+
+            <ErrorBoundary @ref=errorBoundary>
+
+                <ChildContent>
 
                 <div class="row row-cols-6 d-flex justify-content-center mt-2 mb-3">
 
@@ -77,35 +81,45 @@
                     }
 
                 </div>
-            }
 
-            <div class="text-dark fw-bold text-center" style="@StatusStyle">
-                <ExpressionComponent Game=Game Expression=@h.Status.GetMessage(h.Player, h.IsHost).Expression Size=20/>
-            </div>
+                </ChildContent>
 
-            @if (!autoConfirm && CanEndPhase)
-            {
-                <ButtonRowComponent Confirm="Confirm" ConfirmText="Continue" ConfirmError=@Validation/>
-            }
+                <ErrorContent>
+                    <div class="alert alert-warning">
+                        An error has occured displaying the status of the game (Phase: @Game.CurrentPhase)
+                    </div>
+                </ErrorContent>
 
-            @if (autoConfirm || CanEndPhase)
-            {
-                <div class="mt-1 mb-n3 float-end" style="color:black;">
-                    <CheckboxComponent @bind-Value=autoConfirm>Continue automatically</CheckboxComponent>
-                </div>
-            }
-
-            @if (h.IsHost && Game.CurrentMainPhase == MainPhase.Bidding && Game.Players.Count(p => !p.IsBot) > 1)
-            {
-                <div class="mt-1" style="color:black;">
-                    <CheckboxComponent @bind-Value="@timeLimitSet" OnChanged=EnableOrDisableTimer>Time limit (seconds)</CheckboxComponent>
-                    @if (timeLimitSet)
-                    {
-                        <SelectNumberComponent Disabled=@(!timeLimitSet) @bind-Value=@timeLimit OnChanged=@UpdateTimer Min="10" Max="600" StepUp="TimerStepUp" StepDown="TimerStepDown" Size="30"/>
-                    }
-                </div>
-            }
+            </ErrorBoundary>
         }
+
+        <div class="text-dark fw-bold text-center" style="@StatusStyle">
+            <ExpressionComponent Game=Game Expression=@h.Status.GetMessage(h.Player, h.IsHost).Expression Size=20/>
+        </div>
+
+        @if (!autoConfirm && CanEndPhase)
+        {
+            <ButtonRowComponent Confirm="Confirm" ConfirmText="Continue" ConfirmError=@Validation/>
+        }
+
+        @if (autoConfirm || CanEndPhase)
+        {
+            <div class="mt-1 mb-n3 float-end" style="color:black;">
+                <CheckboxComponent @bind-Value=autoConfirm>Continue automatically</CheckboxComponent>
+            </div>
+        }
+
+        @if (h.IsHost && Game.CurrentMainPhase == MainPhase.Bidding && Game.Players.Count(p => !p.IsBot) > 1)
+        {
+            <div class="mt-1" style="color:black;">
+                <CheckboxComponent @bind-Value="@timeLimitSet" OnChanged=EnableOrDisableTimer>Time limit (seconds)</CheckboxComponent>
+                @if (timeLimitSet)
+                {
+                    <SelectNumberComponent Disabled=@(!timeLimitSet) @bind-Value=@timeLimit OnChanged=@UpdateTimer Min="10" Max="600" StepUp="TimerStepUp" StepDown="TimerStepDown" Size="30"/>
+                }
+            </div>
+        }
+    }
 
     </div>
 
@@ -124,6 +138,13 @@
     protected override async Task OnInitializedAsync()
     {
         await StartRedrawCycleAsync(1000);
+    }
+    
+    private ErrorBoundary errorBoundary;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        errorBoundary?.Recover();
     }
 
     private Phase _previousPhase;
@@ -197,7 +218,7 @@
 
     private bool PlayersAreInSequence => h.Status.WaitingInSequence.Any();
 
-    private string StatusStyle => h.Status.WaitingForMe(Player, h.IsHost) ? Support.TextBorder(1, 8, "#FF000016") : "";
+    private string StatusStyle => h.Status.WaitingForMe(Player, h.IsHost) ? Support.TextBorder(1, "#FF000016") : "";
 
     private string PlayerWithCardsTitle(Player player) => player.Name;
 

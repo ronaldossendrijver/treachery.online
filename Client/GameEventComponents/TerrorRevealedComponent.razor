@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<TerrorRevealed>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Resort to Terror against @Name(TerrorRevealed.GetVictim(Game)) in @Name(TerrorRevealed.GetTerritory(Game))?</Header>
     <Body>
@@ -36,9 +36,9 @@
 
         @if (_type == TerrorType.Sabotage)
         {
-            <SelectCardComponent @bind-Value="_toGiveInSabotage" Values="Player.TreacheryCards" Required="false">
+            <SelectFromImageComponent @bind-Value="_toGiveInSabotage" Values="Player.TreacheryCards" Required="false" ImageWidth="80">
                 <Label>You may select one of your treachery cards to give to them:</Label>
-            </SelectCardComponent>
+            </SelectFromImageComponent>
         }
         else
         {

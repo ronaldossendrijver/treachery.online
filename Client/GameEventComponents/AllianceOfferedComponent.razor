@@ -6,12 +6,12 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<AllianceOffered>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Offer a faction to form an Alliance</Header>
 
     <Body>
-        <SelectFactionComponent @bind-Value="target" Values="Game.PlayersOtherThan(Player)" />
+        <SelectFromImageComponent @bind-Value="target" Values="Game.PlayersOtherThan(Player)" Required=true ImageWidth="40"/>
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Offer Alliance" ConfirmError=@Validation />
     </Body>
 

@@ -1,5 +1,5 @@
 ﻿<!--
- * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
+* Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
 
 @using Treachery.Shared
@@ -8,83 +8,87 @@
 
 <div class="card mb-2">
 
-    <div class="card-header" @onclick=@(e => Collapsed = !Collapsed)>
-        Deals
-        <CollapseButton Collapsed=@Collapsed />
-    </div>
+    @{
+        var acceptableDeals = DealAccepted.AcceptableDeals(Game, Player).ToArray();
 
-    @if (!Collapsed)
-    {
-        <div class="card-body">
-
-            @if (h.IsPlayer && (DealAccepted.AcceptableDeals(Game, Player).Any() || DealAccepted.CancellableDeals(Game, Player).Any()))
-            {
-                <label>Deal offers</label>
-                <table class="table table-striped table-sm">
-
-                    <tbody>
-
-                        @foreach (var offer in DealAccepted.AcceptableDeals(Game, Player))
-                        {
-                            var offerToShow = offer;
-                            var validity = offer.Acceptance(Faction).Validate();
-
-                            <tr>
-                                <td><img width=24 src="@Skin.Current.GetImageURL(offer.Initiator)" /></td>
-                                <td>@offer.Price</td>
-                                <td class="text-break">@offer.GetDealDescription().ToString(Skin.Current)</td>
-                                <td>
-                                    <button class="btn btn-primary btn-sm" @onclick="e => Accept(offerToShow)" disabled=@(validity != null)>Accept</button>
-                                </td>
-                            </tr>
-
-                        }
-
-                        @foreach (var offer in DealAccepted.CancellableDeals(Game, Player))
-                        {
-                            var offerToShow = offer;
-
-                            <tr>
-                                <td><img width=24 src="@Skin.Current.GetImageURL(offer.Initiator)" /></td>
-                                <td>@offer.Price</td>
-                                <td class="text-break">@offer.GetDealDescription().ToString(Skin.Current)</td>
-                                <td>
-                                    <button class="btn btn-primary btn-sm" @onclick="e => Cancel(offerToShow)">Withdraw</button>
-                                </td>
-                            </tr>
-
-                        }
-
-                    </tbody>
-
-                </table>
-            }
-
-            @if (DealAccepted.CurrentDeals(Game).Any())
-            {
-                <label>Current deals</label>
-                <table class="table table-striped table-sm">
-                    <tbody>
-                        @foreach (var deal in DealAccepted.CurrentDeals(Game))
-                        {
-                            <tr>
-                                <td class="p-0">
-                                    <img width=24 src="@Skin.Current.GetImageURL(deal.BoundFaction)" />
-                                    ⇒
-                                    <img width=24 src="@Skin.Current.GetImageURL(deal.ConsumingFaction)" />
-                                </td>
-                                <td class="text-break">@deal.DealContentsDescription(Game).ToString(Skin.Current)</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
+        <div class="card-header" @onclick=@(e => _collapsed = !_collapsed)>
+            Deals <span class="badge bg-primary">@acceptableDeals.Length</span>
+            <CollapseButton Collapsed=@_collapsed />
         </div>
-    }
 
+        @if (!_collapsed)
+        {
+            <div class="card-body">
+
+                @if (h.IsPlayer && (acceptableDeals.Length > 0 || DealAccepted.CancellableDeals(Game, Player).Any())) 
+                {
+                    <label>Deal offers</label>
+                    <table class="table table-striped table-sm">
+
+                        <tbody>
+
+                            @foreach (var offer in acceptableDeals) 
+                            {
+                                var offerToShow = offer;
+                                var validity = offer.Acceptance(Faction).Validate();
+
+                                <tr>
+                                    <td><img width=24 src="@Skin.Current.GetImageURL(offer.Initiator)" /></td>
+                                    <td>@offer.Price</td>
+                                    <td class="text-break">@offer.GetDealDescription().ToString(Skin.Current)</td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm" @onclick="e => Accept(offerToShow)" disabled=@(validity != null)>Accept</button>
+                                    </td>
+                                </tr>
+                            }
+
+                            @foreach (var offer in DealAccepted.CancellableDeals(Game, Player))
+                            {
+                                var offerToShow = offer;
+
+                                <tr>
+                                    <td><img width=24 src="@Skin.Current.GetImageURL(offer.Initiator)" /></td>
+                                    <td>@offer.Price</td>
+                                    <td class="text-break">@offer.GetDealDescription().ToString(Skin.Current)</td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm" @onclick="e => Cancel(offerToShow)">Withdraw</button>
+                                    </td>
+                                </tr>
+
+                            }
+
+                        </tbody>
+
+                    </table>
+                }
+
+                @if (DealAccepted.CurrentDeals(Game).Any())
+                {
+                    <label>Current deals</label>
+                    <table class="table table-striped table-sm">
+                        <tbody>
+                            @foreach (var deal in DealAccepted.CurrentDeals(Game))
+                            {
+                                <tr>
+                                    <td class="p-0">
+                                        <img width=24 src="@Skin.Current.GetImageURL(deal.BoundFaction)" />
+                                        ⇒
+                                        <img width=24 src="@Skin.Current.GetImageURL(deal.ConsumingFaction)" />
+                                    </td>
+                                    <td class="text-break">@deal.DealContentsDescription(Game).ToString(Skin.Current)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        }
+    }
 </div>
 
 @code {
+    
+    private bool _collapsed = true;
 
     private async Task Accept(DealOffered offered)
     {

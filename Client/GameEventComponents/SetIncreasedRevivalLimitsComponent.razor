@@ -6,12 +6,12 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<SetIncreasedRevivalLimits>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Which factions may have their revival limit increased to 5?</Header>
     <Body>
 
-        <SelectFactionComponent Selected="factions" Values="SetIncreasedRevivalLimits.ValidTargets(Game, Player)" OnChanged="e => StateHasChanged()" />
+        <SelectFromImageComponent Selected="factions" Values="SetIncreasedRevivalLimits.ValidTargets(Game, Player)" T=Faction OnChanged=StateHasChanged Required=true ImageWidth="40" />
 
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Set increased limits" ConfirmError=@Validation />
 

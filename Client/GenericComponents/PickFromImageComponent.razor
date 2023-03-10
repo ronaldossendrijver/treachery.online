@@ -20,25 +20,24 @@
                 {
                     <svg width=@ImageWidth height=@ImageWidth>
                         <circle cx=@Support.Round(ImageWidth/2) cy=@Support.Round(ImageWidth/2) r=@Support.Round(ImageWidth/2) fill="white"/>
-                        <text text-anchor="middle" alignment-baseline="middle" font-size=@Support.Px(ImageWidth/2) font-weight="bold" x="@Support.Round(ImageWidth/2)" y="@Support.Round(ImageWidth/2)" font-style="italic">?</text>
+                        <text text-anchor="middle" alignment-baseline="middle" font-size=@Support.Px(ImageWidth/2) font-weight="bold" x="@Support.Round(ImageWidth/2)" y="@Support.Round(ImageWidth/1.5)" font-style="italic">?</text>
                     </svg>
                 }
             </div>
         </div>
 
-        @foreach (var item in Values.Zip(ImageURLs, (v, i) => new { Value = v, Image = i }).Zip(PopupHTMLs, (v, h) => new { Value = v.Value, Image = v.Image, Popup = h }))
+        @foreach (var valueToShow in Values)
         {
             <div class="card p-1 m-0 border-0">
                 <div class="card-img-top">
-                    <img 
-                        src=@item.Image
-                        @onclick="e => Click(item.Value)"
-                        @onmouseover="e => MouseOver(item.Value)"
-                        @onmouseout="e => MouseOut(item.Value)"
-                        style="@DetermineFilter(item.Value);cursor:pointer;"
-                        class="img-fluid pe-1"
-                        data-bs-animation="true" data-bs-content=@item.Popup data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-toggle="popover"
-                        />
+
+                    <Image Class="card-img"
+                           Shown=@valueToShow
+                           OnClick="e => Click(valueToShow)"
+                           OnMouseOver="e => MouseOver(valueToShow)"
+                           OnMouseOut="e => MouseOut(valueToShow)"
+                           Filter=@DetermineFilter(valueToShow)
+                           Style="cursor:pointer;" />
                 </div>
             </div>
         }
@@ -51,9 +50,7 @@
     
     @if (Value != null && !Value.Equals(default))
     {
-        var selected = Values.Zip(ImageURLs, (v, i) => new { Value = v, Image = i }).Zip(PopupHTMLs, (v, h) => new { Value = v.Value, Image = v.Image, Popup = h }).FirstOrDefault(v => v.Value.Equals(Value));
-
-        <UntypedImage Src=@selected?.Image Popover=@selected?.Popup Width=@ImageWidth/>
+        <Image Shown=@Value Width=@ImageWidth Style="cursor:pointer;" />
     }
     else
     {
@@ -65,7 +62,7 @@
         {
             <svg width=@ImageWidth height=@ImageWidth>
                 <circle cx=@Support.Round(ImageWidth/2) cy=@Support.Round(ImageWidth/2) r=@Support.Round(ImageWidth/2) fill="white"/>
-                <text text-anchor="middle" alignment-baseline="middle" font-size=@Support.Px(ImageWidth/2) font-weight="bold" x="@Support.Round(ImageWidth/2)" y="@Support.Round(ImageWidth/2)" font-style="italic">?</text>
+                <text text-anchor="middle" alignment-baseline="middle" font-size=@Support.Px(ImageWidth/2) font-weight="bold" x="@Support.Round(ImageWidth/2)" y="@Support.Round(ImageWidth/1.5)" font-style="italic">?</text>
             </svg>
         }
     }
@@ -74,51 +71,28 @@
 
 @code {
 
-    private bool _popoverNeedsRefresh = false;
-    private T _value;
+    [Parameter]
+    public IEnumerable<T> Values { get; set; }
 
     [Parameter]
-    public T Value
-    {
-        get
-        {
-            return _value;
-        }
-        set
-        {
-            if (!Equals(_value, value))
-            {
-                _value = value;
-                _popoverNeedsRefresh = true;
-                ValueChanged.InvokeAsync(value);
-                OnChanged?.Invoke(value);
-                _ = Browser.HideModal(Id);
-            }
-        }
-    }
+    public T Value { get; set; }
 
     private string Id { get; } = "picker" + new Random().Next();
-
-    [Parameter]
-    public T Highlighted { get; set; } = default;
 
     [Parameter]
     public EventCallback<T> ValueChanged { get; set; }
 
     [Parameter]
-    public IEnumerable<T> Values { get; set; }
+    public EventCallback<T> OnChanged { get; set; }
 
     [Parameter]
-    public IEnumerable<string> ImageURLs { get; set; } = null;
+    public T Highlighted { get; set; } = default;
 
     [Parameter]
     public int ImageWidth { get; set; } = 60;
 
     [Parameter]
     public RenderFragment Placeholder { get; set; }
-
-    [Parameter]
-    public IEnumerable<string> PopupHTMLs { get; set; } = null;
 
     [Parameter]
     public string UnselectedFilter { get; set; } = "grayscale(50%) brightness(50%) contrast(80%)";
@@ -139,52 +113,38 @@
     public bool Disabled { get; set; } = false;
 
     [Parameter]
-    public Action<T> OnChanged { get; set; }
-
-    [Parameter]
     public RenderFragment ChildComponent { get; set; }
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-        var nrOfValues = Values.Count();
-        if (ImageURLs == null || ImageURLs.Count() != nrOfValues) ImageURLs = new string[nrOfValues];
-        if (PopupHTMLs == null || PopupHTMLs.Count() != nrOfValues) PopupHTMLs = new string[nrOfValues];
-    }
+        await base.OnParametersSetAsync();
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!Values.Contains(Value))
+        if (!Values.Contains(Value) && Required)
         {
-            Value = Required ? Values.FirstOrDefault() : default;
-        }
-
-        if (firstRender)
-        {
-            await Browser.EnablePopovers(valueElement);
-            await Browser.EnablePopovers(modalElement);
-        }
-        else if (_popoverNeedsRefresh)
-        {
-            _popoverNeedsRefresh = false;
-            await Browser.RefreshPopovers(valueElement);
+            Value = Values.FirstOrDefault();
+            await Notify();
         }
     }
 
-    private void Click(T item)
+    private async Task Click(T item)
     {
         if (!Disabled)
         {
-            if (Equal(_value, item))
+            if (Equal(Value, item))
             {
                 if (!Required)
                 {
                     Value = default;
+                    await Notify();
                 }
             }
             else
             {
                 Value = item;
+                await Notify();
             }
+
+            await Browser.HideModal(Id);
         }
     }
 
@@ -204,7 +164,7 @@
     {
         string result = "filter:";
 
-        if (!Equal(_value, item)) result += UnselectedFilter + " ";
+        if (!Equal(Value, item)) result += UnselectedFilter + " ";
 
         if (!Equal(_hovered, default(T)) && Equal(_hovered, item)) result += HoverFilter;
 
@@ -225,5 +185,11 @@
     {
         _ = Browser.RemovePopovers(valueElement);
         _ = Browser.RemovePopovers(modalElement);
+    }
+
+    private async Task Notify()
+    {
+        await ValueChanged.InvokeAsync(Value);
+        await OnChanged.InvokeAsync(Value);
     }
 }

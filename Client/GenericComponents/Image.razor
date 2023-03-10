@@ -5,21 +5,24 @@
 @using Treachery.Shared;
 @implements IDisposable;
 
-@{
-    var popover = Popover;
-
-    if (popover != null && popover.Length > 0)
+@if (!PopoverAsTooltip && Popover != null)
+{
+    if (OnClick.HasDelegate || OnMouseOver.HasDelegate || OnMouseOut.HasDelegate)
     {
-        <img class=@Class style="@Shadow; @Style; @Filter" width=@ImgWidth src=@Src @onclick="e => Click()" @onmouseover="e => MouseOver()" @onmouseout="e => MouseOut()" @ref=@element data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@popover/>
-    }
-    else if (Shown != null)
-    {
-        <img class=@Class style="@Shadow; @Style; @Filter" width=@ImgWidth src=@Src @onclick="e => Click()" @onmouseover="e => MouseOver()" @onmouseout="e => MouseOut()" title=@Skin.Current.Describe(Shown)/>
+        <img class=@Class style="@Shadow; @Style; @Filter" width=@ImgWidth src=@Src @onclick="e => OnClick.InvokeAsync()" @onmouseenter="e => OnMouseOver.InvokeAsync()" @onmouseout="e => OnMouseOut.InvokeAsync()" @ref=@element data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@Popover />
     }
     else
     {
-        <img class=@Class style="@Shadow; @Style; @Filter" width=@ImgWidth src=@Src @onclick="e => Click()" @onmouseover="e => MouseOver()" @onmouseout="e => MouseOut()"/>
+        <img class=@Class style="@Shadow; @Style; @Filter" width=@ImgWidth src=@Src @ref=@element data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@Popover />
     }
+}
+else if (Popover != null)
+{
+    <img class=@Class style="@Shadow; @Style; @Filter" width=@ImgWidth src=@Src @onclick="e => OnClick.InvokeAsync()" @onmouseenter="e => OnMouseOver.InvokeAsync()" @onmouseout="e => OnMouseOut.InvokeAsync()" title=@Popover />
+}
+else
+{
+    <img class=@Class style="@Shadow; @Style; @Filter" width=@ImgWidth src=@Src @onclick="e => OnClick.InvokeAsync()" @onmouseenter="e => OnMouseOver.InvokeAsync()" @onmouseout="e => OnMouseOut.InvokeAsync()" />
 }
 
 @code {
@@ -38,7 +41,7 @@
     private bool _popoverNeedsRefresh = false;
 
     [Parameter]
-    public bool ShowPopover { get; set; } = true;
+    public bool PopoverAsTooltip { get; set; } = false;
 
     [Parameter]
     public float Width { get; set; } = 0;
@@ -55,23 +58,22 @@
     [Parameter]
     public EventCallback OnClick { get; set; }
 
-    private async Task Click() => await OnClick.InvokeAsync();
-
     [Parameter]
     public EventCallback OnMouseOver { get; set; }
-
-    private async Task MouseOver() => await OnMouseOver.InvokeAsync();
 
     [Parameter]
     public EventCallback OnMouseOut { get; set; }
 
-    private async Task MouseOut() => await OnMouseOut.InvokeAsync();
+    [Parameter]
+    public Game Game { get; set; }
 
     private ElementReference element;
     private string ImgWidth;
 
     protected override void OnParametersSet()
     {
+        base.OnParametersSet();
+
         ImgWidth = Width > 0 ? Support.Round(Width) : "";
 
         if (_shown != Shown)
@@ -80,8 +82,9 @@
 
             if (Shown != null)
             {
-                Src = GetImageURL(Shown);
-                if (ShowPopover) Popover = GetHoverHTML(Shown);
+                Src = GetShownImageURL();
+                PopoverAsTooltip = !ShownHasRichPopover;
+                Popover = GetShownPopover();
             }
             else
             {
@@ -93,7 +96,7 @@
         if (_popover != Popover)
         {
             _popover = Popover;
-            _popoverNeedsRefresh = true;
+            _popoverNeedsRefresh = !PopoverAsTooltip;
         }
 
         if (_src != Src)
@@ -104,7 +107,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && Popover != null)
+        if (firstRender && Popover != null && !PopoverAsTooltip)
         {
             await Browser.EnablePopover(element);
         }
@@ -117,7 +120,7 @@
 
     public void Dispose()
     {
-        if (Popover != null)
+        if (Popover != null && !PopoverAsTooltip)
         {
             _ = Browser.RemovePopover(element);
         }
@@ -125,37 +128,42 @@
 
     private string Shadow => "filter: drop-shadow(1px 1px 1px black);";
 
-    private string GetImageURL(object value)
+    private string GetShownImageURL()
     {
-        return (value) switch
+        return (Shown) switch
         {
             null => "",
             TreacheryCard tc => Skin.Current.GetImageURL(tc),
             ResourceCard rc => Skin.Current.GetImageURL(rc),
             IHero h => Skin.Current.GetImageURL(h),
-            Location loc => Skin.Current.GetImageURL(loc),
             LeaderSkill ls => Skin.Current.GetImageURL(ls),
             TechToken tt => Skin.Current.GetImageURL(tt),
             Faction f => Skin.Current.GetImageURL(f),
             Ambassador a => Skin.Current.GetImageURL(a),
             FactionForce ff => Skin.Current.GetImageURL(ff),
             FactionSpecialForce fsf => Skin.Current.GetImageURL(fsf),
+            StrongholdAdvantage adv => Skin.Current.GetImageURL(adv),
             _ => ""
         };
     }
 
-    private static string GetHoverHTML(object value)
+    private string GetShownPopover()
     {
-        return (value) switch {
-
+        return (Shown) switch
+        {
             null => "",
             TreacheryCard tc => Popup.Get(tc),
             ResourceCard rc => Popup.Get(rc),
-            Location loc => Popup.Get(loc),
-            IHero h => Popup.Get(h),
+            IHero h => Game != null ? Popup.Get(h, Game) : Popup.Get(h),
             LeaderSkill ls => Popup.Get(ls),
             TechToken tt => Popup.Get(tt),
-            _ => Popup.Get(Skin.Current.Describe(value))
+            StrongholdAdvantage loc => Popup.Get(loc),
+
+            TerrorType terr => Skin.Current.GetTerrorTypeDescription(terr),
+            _ => Skin.Current.Describe(Shown)
         };
     }
+
+    private bool ShownHasRichPopover => Shown is TreacheryCard || Shown is ResourceCard || Shown is IHero || Shown is LeaderSkill || Shown is TechToken || Shown is StrongholdAdvantage;
+
 }

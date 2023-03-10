@@ -44,6 +44,8 @@ namespace Treachery.Shared
 
         public bool IsProtectedFromWorm { get; set; }
 
+        public StrongholdAdvantage Advantage { get; set; }
+
         public List<Location> Locations { get; private set; } = new List<Location>();
 
         public void AddLocation(Location l)

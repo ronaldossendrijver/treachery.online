@@ -13,46 +13,8 @@
     protected Game Game => h.Game;
 
     protected Player Player => h.Player;
-    
+
     protected Faction Faction => h.Faction;
-
-    private static Dictionary<Type, bool> SavedCollapsedStateValues = new Dictionary<Type, bool>();
-    private bool? _collapsed = null;
-
-    [Parameter]
-    public bool Collapsed
-    {
-        get
-        {
-            if (_collapsed == null)
-            {
-                if (SavedCollapsedStateValues.ContainsKey(GetType()))
-                {
-                    _collapsed = SavedCollapsedStateValues[GetType()];
-                }
-                else
-                {
-                    _collapsed = false;
-                }
-            }
-
-            return (bool)_collapsed;
-        }
-        set
-        {
-            if (_collapsed != value)
-            {
-                if (SavedCollapsedStateValues.ContainsKey(GetType()))
-                {
-                    SavedCollapsedStateValues.Remove(GetType());
-                }
-
-                SavedCollapsedStateValues.Add(GetType(), value);
-                _collapsed = value;
-                StateHasChanged();
-            }
-        }
-    }
 
     private string _id = null;
     protected string Id
@@ -164,7 +126,7 @@
 
     protected virtual void Cycle()
     {
-        
+
     }
 
     protected virtual async Task CycleAsync()
@@ -181,8 +143,7 @@
 
     protected static string GetImage(TreacheryCardType type)
     {
-        return Skin.Current.GetImageURL(
-            TreacheryCardManager.GetCardsInAndOutsidePlay().FirstOrDefault(c => c.Type == type));
+        return Skin.Current.GetImageURL(TreacheryCardManager.GetCardsInAndOutsidePlay().FirstOrDefault(c => c.Type == type));
     }
 
     protected static string DescribeCard(TreacheryCardType t)
@@ -190,3 +151,4 @@
         return Skin.Current.Format("Use {0}?", t);
     }
 }
+

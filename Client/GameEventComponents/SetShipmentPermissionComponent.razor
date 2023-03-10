@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<SetShipmentPermission>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>Manage shipment permissions</Header>
     <Body>
@@ -42,9 +42,9 @@
             </RadioComponent>
         </div>
         
-        <SelectFactionComponent @bind-Value="target" Values=@SetShipmentPermission.ValidTargets(Game, Player).Where(f => !Game.MayShipCrossPlanet(Game.GetPlayer(f)))>
+        <SelectFromImageComponent @bind-Value="target" Values=@SetShipmentPermission.ValidTargets(Game, Player).Where(f => !Game.MayShipCrossPlanet(Game.GetPlayer(f))) Required=true ImageWidth="40">
             <Label>For which faction?</Label>
-        </SelectFactionComponent>
+        </SelectFromImageComponent>
 
         <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation />
 

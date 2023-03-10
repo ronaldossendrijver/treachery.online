@@ -7,7 +7,7 @@
 @inherits GameEventComponent<Retreat>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" @bind-Collapsed="@Collapsed">
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
 
     <Header>You may retreat from the battle any number of undialed forces to an adjacent empty non-stronghold territory</Header>
     <Body>
@@ -50,6 +50,8 @@
 
     protected override void OnParametersSet()
     {
+        base.OnParametersSet();
+
         BackgroundImage = Skin.Current.GetImageURL(LeaderSkill.Diplomat);
     }
 

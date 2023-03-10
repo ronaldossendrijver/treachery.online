@@ -12,7 +12,6 @@ namespace Treachery.Shared
     {
         public List<DealOffered> DealOffers { get; private set; } = new List<DealOffered>();
 
-
         public void HandleEvent(DealOffered e)
         {
             if (e.Cancel)
@@ -28,7 +27,6 @@ namespace Treachery.Shared
             }
             else
             {
-                Log(e);
                 DealOffers.Add(e);
             }
         }

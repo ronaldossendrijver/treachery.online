@@ -253,6 +253,7 @@ namespace Treachery.Shared
 
                 if (drawnToken != DiscoveryToken.None)
                 {
+                    RecentMilestones.Add(Milestone.DiscoveryAppeared);
                     Log("A ", blowCard.DiscoveryLocation.DiscoveryTokenType, " discovery awaits in ", blowCard.DiscoveryLocation.Territory, "...");
                 }
             }
@@ -483,8 +484,7 @@ namespace Treachery.Shared
             {
                 if (e.ForceLocations.Keys.Any(l => l.Territory != toRide.Territory))
                 {
-                    LogNexusPlayed(e.Initiator, e.Initiator, "cunning", "to ride from any territory on the planet");
-                    DiscardNexusCard(e.Player);
+                    PlayNexusCard(e.Player, "cunning", "to ride from any territory on the planet");
                 }
 
                 var initiator = GetPlayer(e.Initiator);
@@ -619,6 +619,7 @@ namespace Treachery.Shared
             if (p.Nexus != Faction.None)
             {
                 Log(p.Faction, " discard the ", p.Nexus, " Nexus Card");
+                RecentMilestones.Add(Milestone.NexusPlayed);
                 NexusDiscardPile.Add(p.Nexus);
                 p.Nexus = Faction.None;
             }
