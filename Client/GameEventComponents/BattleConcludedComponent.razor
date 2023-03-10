@@ -57,9 +57,7 @@
             if (BattleConcluded.MayCaptureOrKill(Game, Player))
             {
                 <div>Our troops captured <Image Shown=@Game.BlackVictim Popover=@Popup.Get(Game.BlackVictim, Game) Class="img-float" Width=50/></div>
-                <RadioComponent @bind-Value="captureDecision"
-                        Values="@BattleConcluded.ValidCaptureDecisions(Game)"
-                        ValueLabels="@BattleConcluded.ValidCaptureDecisions(Game).Select(c => Skin.Current.Describe(c))">
+                <RadioComponent @bind-Value="captureDecision" Values="@BattleConcluded.ValidCaptureDecisions(Game)">
                         <Label>What are your orders, keep or kill?</Label>
                  </RadioComponent>
             }

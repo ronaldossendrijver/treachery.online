@@ -27,6 +27,11 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            if (e is BattleConcluded && g.CurrentBattle.PlanOf(e.Initiator).Weapon != null && g.CurrentBattle.PlanOf(e.Initiator).Defense != null)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Battle Concluded");
+            }
+
             if (g.CurrentPhase == Phase.BeginningOfResurrection && g.Players.Any(p => p.ForcesKilled >= 6 && p.Resources >= 8 && NexusPlayed.CanUseSecretAlly(g, p) && p.Nexus == Faction.Red))
             {
                 WriteSavegameIfApplicable(g, e.Player, "Red secret ally");

@@ -23,8 +23,8 @@
     bool AggressorCallsTraitor = Game.AggressorTraitorAction != null && Game.AggressorTraitorAction.TreacherySucceeded(Game);
     bool DefenderCallsTraitor = Game.DefenderTraitorAction != null && Game.DefenderTraitorAction.TreacherySucceeded(Game);
 
-    bool AggressorWasFacedanced = Game.CurrentPhase == Phase.Facedancing && Game.CurrentBattle.Aggressor == Game.BattleWinner;
-    bool DefenderWasFacedanced = Game.CurrentPhase == Phase.Facedancing && Game.CurrentBattle.Defender == Game.BattleWinner;
+    bool AggressorWasFacedanced = Game.Version > 150 && Game.CurrentPhase == Phase.Facedancing && Game.CurrentBattle.Aggressor == Game.BattleWinner;
+    bool DefenderWasFacedanced = Game.Version > 150 && Game.CurrentPhase == Phase.Facedancing && Game.CurrentBattle.Defender == Game.BattleWinner;
 
     var x = 0.1f * Skin.Current.MapDimensions.X;
     var y = 0.1f * Skin.Current.MapDimensions.Y;

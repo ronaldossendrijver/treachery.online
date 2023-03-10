@@ -62,16 +62,8 @@
             <FactionComponent Faction=faction Diameter=@Size HasShadow=false/>
             break;
 
-        case TreacheryCard or ResourceCard or LeaderSkill or TechToken or DiscoveryToken:
-            <RichText Shown=@part Style=@TextBorder/>
-            break;
-    
-        case IHero hero:
-            <RichText Shown=@Skin.Current.Describe(hero) Popover=@Popup.Get(hero, Game) Class="fw-bold" Style=@TextBorder />
-            break;
-
-        case TerrorType terror:
-            <RichText Shown=@Skin.Current.Describe(terror) Popover=@Popup.Get(terror) Class="fw-bold" Style=@TextBorder />
+        case TreacheryCard or ResourceCard or LeaderSkill or TechToken or DiscoveryToken or IHero or TerrorType:
+            <RichText Shown=@part Game=Game Style=@TextBorder/>
             break;
 
         case Concept monster when monster == Concept.Monster:

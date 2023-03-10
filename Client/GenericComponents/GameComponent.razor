@@ -150,5 +150,26 @@
     {
         return Skin.Current.Format("Use {0}?", t);
     }
+
+    protected string GetId(object value)
+    {
+        if (value == null)
+        {
+            return "";
+        }
+        else 
+        {
+            var valueAsIdentifiable = value as IIdentifiable;
+
+            if (valueAsIdentifiable != null)
+            {
+                return valueAsIdentifiable.Id.ToString();
+            }
+            else
+            {
+                return Skin.Current.Describe(value);
+            }
+        }
+    }
 }
 

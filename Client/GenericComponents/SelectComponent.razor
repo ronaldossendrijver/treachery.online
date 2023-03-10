@@ -45,7 +45,7 @@
     [Parameter]
     public T Value { get; set; }
 
-    private Dictionary<string,ValuesToShow> _shown { get; set; }
+    private Dictionary<string,ValueToShow> _shown { get; set; }
 
     [Parameter]
     public IEnumerable<string> ValueLabels { get; set; }
@@ -80,20 +80,12 @@
     [Parameter]
     public bool Required { get; set; } = true;
 
-    private bool _isIdentifiable = false;
-
-    protected override void OnInitialized() {
-        bool _isIdentifiable = typeof(IIdentifiable).IsAssignableFrom(typeof(T));
-    }
-
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
 
         if (!Values.Contains(Value))
         {
-            //_value = Value;
-            //ValueAsString = GetValueAsString(_value);
             await SetValue(Required ? Values.FirstOrDefault() : default);
         }
 
@@ -102,23 +94,7 @@
             ValueLabels = Values.Select(v => v != null ? Skin.Current.Describe(v) : EmptyLabel);
         }
 
-        _shown = Values.Zip(ValueLabels, (v, l) => new ValuesToShow { Value = v, Id = GetId(v), Label = l }).ToDictionary(triple => triple.Id, triple => triple);
-    }
-
-    private string GetId(T value)
-    {
-        if (value == null)
-        {
-            return "";
-        }
-        else if (_isIdentifiable)
-        {
-            return (value as IIdentifiable).Id.ToString();
-        }
-        else
-        {
-            return Skin.Current.Describe(value);
-        }
+        _shown = Values.Zip(ValueLabels, (v, l) => new ValueToShow { Value = v, Id = GetId(v), Label = l }).ToDictionary(triple => triple.Id, triple => triple);
     }
 
     private async Task ChangeValue(ChangeEventArgs e)
@@ -136,7 +112,7 @@
         }
     }
 
-    private struct ValuesToShow {
+    private struct ValueToShow {
 
         internal T Value;
         internal string Id;

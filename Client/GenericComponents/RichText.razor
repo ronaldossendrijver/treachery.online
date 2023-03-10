@@ -103,6 +103,8 @@ else
             StrongholdAdvantage loc => Popup.Get(loc),
 
             TerrorType terr => Skin.Current.GetTerrorTypeDescription(terr),
+            Ambassador amb => Skin.Current.GetAmbassadorDescription(amb),
+
             _ => Skin.Current.Describe(Shown)
         };
     }
