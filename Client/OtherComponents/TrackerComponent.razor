@@ -11,7 +11,7 @@
 
 <div class="card mb-2">
 
-    <div class="card-header" @onclick=@(e => _collapsed = !_collapsed)>
+    <div class="card-header" @onclick=@(e => _collapsed = !_collapsed) style="cursor:pointer">
         Card Tracker
         <InfoComponent Contents="@InfoMessage" />
         <CollapseButton Collapsed=@_collapsed />

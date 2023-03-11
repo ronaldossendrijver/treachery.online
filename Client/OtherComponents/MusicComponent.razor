@@ -13,13 +13,13 @@
         <div class="card-body">
             
             <label for="musicVolume" class="form-label">&nbsp;Music volume</label>
-            <input id="musicVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredMusicVolume" @bind:event="oninput" />
+            <input id="musicVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredMusicVolume" @bind:event="oninput" @onchange=@(e => SetMusicVolume(e))/>
 
             <label for="effectVolume" class="form-label">&nbsp;Sound effects volume</label>
-            <input id="effectVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredEffectVolume" @bind:event="oninput" />
+            <input id="effectVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredEffectVolume" @bind:event="oninput" @onchange=@(e => SetEffectVolume(e)) />
                         
             <label for="chatVolume" class="form-label">&nbsp;Chat notification volume</label>
-            <input id="chatVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredChatVolume" @bind:event="oninput" />
+            <input id="chatVolume" class="form-range" type="range" min="0" max="100" step="1" @bind="@DesiredChatVolume" @bind:event="oninput" @onchange=@(e => SetChatVolume(e)) />
                         
         </div>
     </div>
@@ -34,60 +34,22 @@
     private float DesiredMusicVolume = 0;
     private float DesiredEffectVolume = 0;
     private float DesiredChatVolume = 0;
-    //private float DesiredVideoVolume = 0;
     private string CurrentSoundtrack = "";
     private float CurrentMusicVolume = -1;
 
-    /*
-    private List<CaptureDevice> audioDevices = new List<CaptureDevice>();
-    private List<CaptureDevice> videoDevices = new List<CaptureDevice>();
-
-    private bool _devicesScanned = false;
     protected override async Task OnInitializedAsync()
     {
-        await ScanDevices();
         await LoadSettings();
     }
-    */
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        /*if (firstRender || !_devicesScanned)
-        {
-            await ScanDevices();
-        }*/
-
         if (!firstRender)
         {
             await UpdateMusicAndSound();
         }
-
-        await SaveSettings();
     }
 
-    /*
-    private async Task ScanDevices()
-    {
-        var requestPermissions = Visible && (!_devicesScanned || !videoDevices.Any());
-        await PerformScan(requestPermissions);
-        await LoadSettings();
-    }
-    */
-   /*
-    private async Task PerformScan(bool requestPermissions)
-    {
-        var devices = await Browser.GetCaptureDevices(requestPermissions);
-
-        if (requestPermissions)
-        {
-            _devicesScanned = true;
-            _ = Task.Delay(1000).ContinueWith(e => StateHasChanged());
-        }
-
-        audioDevices = devices.Where(d => d.Kind == "audioinput").ToList();
-        videoDevices = devices.Where(d => d.Kind == "videoinput").ToList();
-    }
-    */
     private async Task UpdateMusicAndSound()
     {
         if (h.HostProxy != null)
@@ -117,7 +79,6 @@
 
             h.CurrentEffectVolume = DesiredEffectVolume;
             h.CurrentChatVolume = DesiredChatVolume;
-            //h.CurrentVideoVolume = DesiredVideoVolume;
         }
     }
 
@@ -139,7 +100,7 @@
                 MainPhase.Blow or MainPhase.Charity => Skin.Current.MusicResourceBlow_URL,
                 MainPhase.Bidding => Skin.Current.MusicBidding_URL,
                 MainPhase.ShipmentAndMove => Skin.Current.MusicShipmentAndMove_URL,
-                
+
                 MainPhase.Battle => Skin.Current.MusicBattleClimax_URL,
                 MainPhase.Collection or MainPhase.Contemplate or MainPhase.Ended => Skin.Current.MusicMentat_URL,
                 _ => Skin.Current.MusicGeneral_URL
@@ -152,7 +113,6 @@
         await Browser.SaveSetting("treachery.online;setting.music", DesiredMusicVolume);
         await Browser.SaveSetting("treachery.online;setting.effect", DesiredEffectVolume);
         await Browser.SaveSetting("treachery.online;setting.chatvolume", DesiredChatVolume);
-        //await Browser.SaveSetting("treachery.online;setting.videovolume", DesiredVideoVolume);
 
         if (h.AudioDevice != null)
         {
@@ -175,21 +135,25 @@
             if (DesiredEffectVolume == 0) DesiredEffectVolume = 50;
             DesiredChatVolume = await Browser.LoadSetting<float>("treachery.online;setting.chatvolume");
             if (DesiredChatVolume == 0) DesiredChatVolume = 50;
-            /*DesiredVideoVolume = await Browser.LoadSetting<float>("treachery.online;setting.videovolume");
-            if (DesiredVideoVolume == 0) DesiredVideoVolume = 50;*/
-
-            /*
-            var videoDeviceId = await Browser.LoadSetting<string>("treachery.online;setting.videodevice");
-            h.VideoDevice = videoDevices.FirstOrDefault(d => d.DeviceId == videoDeviceId);
-
-            var audioDeviceId = await Browser.LoadSetting<string>("treachery.online;setting.audiodevice");
-            h.AudioDevice = audioDevices.FirstOrDefault(d => d.DeviceId == audioDeviceId);
-            */
         }
         catch (Exception)
         {
-
+            //Do nothing
         }
     }
 
+    private async Task SetMusicVolume(ChangeEventArgs e)
+    {
+        await SaveSettings();
+    }
+
+    private async Task SetEffectVolume(ChangeEventArgs e)
+    {
+        await SaveSettings();
+    }
+
+    private async Task SetChatVolume(ChangeEventArgs e)
+    {
+        await SaveSettings();
+    }
 }

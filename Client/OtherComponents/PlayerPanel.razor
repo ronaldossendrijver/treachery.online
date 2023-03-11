@@ -12,7 +12,7 @@
 
         @if (ShowHeader)
         {
-            <div class="card-header" @onclick=@(e => _collapsed = !_collapsed)>
+            <div class="card-header" @onclick=@(e => _collapsed = !_collapsed) style="cursor:pointer">
                 @Name(ShownPlayer.Faction)
                 <CollapseButton Collapsed=@_collapsed />
             </div>

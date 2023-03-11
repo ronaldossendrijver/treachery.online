@@ -133,7 +133,9 @@
 
     @if (!h.IsObserver && h.CurrentPhase > Phase.AwaitingPlayers)
     {
-        <ChatPanel h="@h" />
+        <HoverPanel Width=400 HandleWidth=12 BackgroundColor="#e8dba6dd">
+            <ChatComponent h="@h" />
+        </HoverPanel>
     }
 
     @if (h.JoinableAdvertisedGames.Any() && (h.IsObserver || h.Game != null && h.Game.NumberOfHumanPlayers <= 1))

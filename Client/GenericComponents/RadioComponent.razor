@@ -17,7 +17,7 @@
 @foreach (var item in _shown.Values)
 {
     <div class="form-check mb-0">
-        <input class="form-check-input" style="cursor:pointer" type="radio" name="@Id-@item.Id" id="@Id-@item.Id" value=@item.Id @onclick=@(e => ChangeValue(item.Value)) checked=@Equals(item.Value, Value)>
+        <input class="form-check-input" style="cursor:pointer" type="radio" id="@Id-@item.Id" value=@item.Id @onclick=@(e => ChangeValue(item.Value)) checked=@Equals(item.Value, Value)>
         <label class="form-check-label" style="cursor:pointer" for="@Id-@item.Id">@item.Label</label>
     </div>
 }

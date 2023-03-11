@@ -11,7 +11,7 @@
     @{
         var acceptableDeals = DealAccepted.AcceptableDeals(Game, Player).ToArray();
 
-        <div class="card-header" @onclick=@(e => _collapsed = !_collapsed)>
+        <div class="card-header" @onclick=@(e => _collapsed = !_collapsed) style="cursor:pointer">
             Deals <span class="badge bg-primary">@acceptableDeals.Length</span>
             <CollapseButton Collapsed=@_collapsed />
         </div>
