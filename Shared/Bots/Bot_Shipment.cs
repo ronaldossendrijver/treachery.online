@@ -73,7 +73,7 @@ namespace Treachery.Shared
             if (Game.Applicable(Rule.Homeworlds))
             {
                 if (Faction != Faction.Red && ForcesInReserve + SpecialForcesInReserve - shippedAmountOfForces - shippedAmountOfSpecialForces <= 3 ||
-                    Faction == Faction.Red && (ForcesInReserve - shippedAmountOfForces <= 3 || SpecialForcesInReserve - shippedAmountOfSpecialForces <= 2)) 
+                    Faction == Faction.Red && (ForcesInReserve - shippedAmountOfForces <= 3 || SpecialForcesInReserve - shippedAmountOfSpecialForces <= 2))
                 {
                     return true;
                 }
@@ -574,8 +574,8 @@ namespace Treachery.Shared
             return shortage;
         }
 
-        private float DetermineForcesInShipment(float dialNeeded, Location location, 
-            int forcesAvailable, int specialForcesAvailable, ref int forces, ref int specialForces, 
+        private float DetermineForcesInShipment(float dialNeeded, Location location,
+            int forcesAvailable, int specialForcesAvailable, ref int forces, ref int specialForces,
             int maxUnsupportedForces, bool preferSpecialForces, float normalStrength, float specialStrength, int spiceAvailable, float noSpiceForForceModifier, int costPerForceInBattle)
         {
             specialForces = 0;

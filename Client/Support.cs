@@ -59,9 +59,9 @@ namespace Treachery.Client
             return serializer.Deserialize<Skin>(jsonReader);
         }
 
-        public static string TextBorder(int borderwidth, string bordercolor) => 
+        public static string TextBorder(int borderwidth, string bordercolor) =>
             string.Format("text-shadow: {0}px {0}px {0}px {1}, 0px {0}px {0}px {1}, -{0}px {0}px {0}px {1}, -{0}px 0px {0}px {1}, -{0}px -{0}px {0}px {1}, 0px -{0}px {0}px {1}, {0}px -{0}px {0}px {1}, {0}px 0px {0}px {1}, 0px 0px {0}px {1};", Round(0.5f * borderwidth), bordercolor);
-            //$"-webkit-text-stroke: {Px(0.4f * borderwidth)} {bordercolor}";
+        //$"-webkit-text-stroke: {Px(0.4f * borderwidth)} {bordercolor}";
 
         public static string Round(double x) => Math.Round(x, 3).ToString(CultureInfo.InvariantCulture);
 

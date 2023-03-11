@@ -5,8 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-using System.Reflection;
 
 namespace Treachery.Shared
 {
@@ -1047,7 +1045,7 @@ namespace Treachery.Shared
                         var auditee = CurrentBattle.OpponentOf(e.Initiator);
                         var recentBattlePlan = CurrentBattle.PlanOf(auditee);
                         var auditableCards = auditee.TreacheryCards.Where(c => c != recentBattlePlan.Weapon && c != recentBattlePlan.Defense && c != recentBattlePlan.Hero);
-                        
+
                         PlayNexusCard(e.Player, "see a random treachery card in the ", auditee.Faction, " hand");
 
                         if (auditableCards.Any())

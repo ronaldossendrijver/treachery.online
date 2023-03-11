@@ -2,17 +2,13 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
-using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.NetworkInformation;
-using Treachery.Client.OtherComponents;
 using Treachery.Shared;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Treachery.Client
 {
@@ -1119,7 +1115,7 @@ namespace Treachery.Client
         private static string GetGreenTemplate(Game g) =>
               SheetHeader("10 tokens in {6} and 10 in reserve (off-planet)", 10, 2, "You have limited prescience") +
               Advantage("Bidding Prescience", "you see the treachery card on bid.") +
-              Advantage("Spice Blow Prescience", "you see the top card of the {16} deck.") + 
+              Advantage("Spice Blow Prescience", "you see the top card of the {16} deck.") +
               Advantage("Battle Prescience", "you may force your opponent to tell you your choice of one of the four elements he will use in his battle plan against you; the leader, the weapon, the defense or the number dialed. If your opponent tells you that he is not playing a weapon or defense, you may not ask something else.") +
               AdvancedHeader(g, Rule.GreenMessiah, Rule.AdvancedKarama) +
               Advantage(g, Rule.GreenMessiah, Concept.Messiah, "after losing a total of at least 7 forces in battle, you may use the {20}. It cannot be used alone in battle but may add its +2 strength to any one leader or {13} per turn. If the leader or {13} is killed, the {20} has no effect in the battle. {20} can only be killed if blown up by a {18}/{17} explosion. A leader accompanied by {20} cannot turn traitor. If killed, the {20} must be revived like any other leader. The {20} has no effect on {0} leader revival.") +
@@ -1129,7 +1125,7 @@ namespace Treachery.Client
                 <h5>Strategy</h5>
                 <p>You are handicapped by the fact that you must both purchase cards and ship onto the planet, and you have no source of income other than {16}. This will keep you in constant battles. Since you start from {6} you have the movement advantage of 3 from the outset, and it is wise to protect this. Your prescience allows you to avoid being devoured by {15} and helps you to get some slight head start on the {16} blow. In addition, you can gain some slight advantage over those who would do battle with you by your foreknowledge of one element of their battle plan.</p>
                 </div>";
-        
+
 
         private static string GetBlackTemplate(Game g) =>
               SheetHeader("10 tokens in {7} and 10 tokens in reserve (off-planet)", 10, 2, "You excel in treachery") +
@@ -1215,7 +1211,7 @@ namespace Treachery.Client
 
         private static string GetPurpleTemplate(Game g) =>
               SheetHeader("20 tokens in reserve (off-planet)", 5, 2, "You have superior genetic engineering technology") +
-              Advantage("Face dancers", 
+              Advantage("Face dancers",
                 @"At the start of the game you are not dealt Traitor Cards. After traitors are selected, unused traitor cards are shuffled and you get the top 3 cards. These are your Face Dancers. After a faction has won a battle you may reveal the leader they used to be a Face Dancer, and the following occurs:
                   <ol>
                   <li>The battle is fully resolved a normal.</li>
@@ -1262,7 +1258,7 @@ namespace Treachery.Client
               <li><i>Once Around:</i> pick clockwise or counter-clockwise. Starting with the faction on one side of you, each player able to bid may pass or bid higher. You bid last and the highest bidder gets the card. If everyone else passes, you may either get the card for free or remove it from the game.</li>
               <li><i>Silent:</i> all factions able to bid secretly choose an amount to bid. Choices are revealed simultaneously. The faction that bid to most wins the card (ties break according to Storm order). If all factions bid zero {16}, you may either get the card for free or remove it from the game.</li>
               </ul>") +
-              Advantage(MainPhase.ShipmentAndMove, 
+              Advantage(MainPhase.ShipmentAndMove,
             @"Instead of normal shipping, you may ship one of your No-Field tokens (0, 3 or 5) face-down, paying for one force. Other factions do not know how many of your forces are located there and proceed as if at least one is there. You may reveal a No-Field token at any time before the Battle phase, placing the indicated number of forces from your reserves (or up to that amount if you have fewer forces left). You may move a No-Field token like a force.<br>
               You may not have two No-Field tokens on the planet at the same time. The last revealed token stays face-up in front of your shield until another one is revealed.<br>
               When you are in a battle, you must reveal the value of a No-Field token in that territory and place the indicated number of forces from your reserves (or up to that amount if you have fewer forces left). When you are in a Battle with a No-Field token, {0} may not see your force dial.") +
@@ -1280,7 +1276,7 @@ namespace Treachery.Client
               SheetHeader("20 tokens in reserve (off-planet)", 2, 0, "You control economic affairs across the Imperium") +
               Advantage(MainPhase.Charity, "Each turn, you collect 2 {16} for each faction in the game during Charity before any factions collect. If another faction collects Charity, it is paid to them from your {16}.") +
               Advantage(MainPhase.Resurrection, "You have no limit to the number of forces you may pay to revive and it only costs you 1 for each force.") +
-              Advantage("Treachery", 
+              Advantage("Treachery",
               @"You may hold up to 5 Treachery Cards. At the end of any phase, you may reveal duplicates of the same card from your hand for 3 {16} each. You may also discard {14} cards for 2 {16} each. Alternatively, you may use {14} cards as follows:
                 <ul>
                 <li><i>{37}</i>: Prevent a player from moving forces into a territory you occupy during {21}. They may ship in normally.</li>
@@ -2408,7 +2404,7 @@ namespace Treachery.Client
                 [DiscoveryToken.ResourceStash] = "Spice Stash",
                 [DiscoveryToken.Flight] = "Ornithopter"
             },
-            
+
             DiscoveryTokenDescription_STR = new Dictionary<DiscoveryToken, string>()
             {
                 [DiscoveryToken.Jacurutu] = "Counts as a normal stronghold.  If you win a battle here, gain 1 spice for each of your opponent’s undialed forces that go to the Tanks",
@@ -2420,13 +2416,13 @@ namespace Treachery.Client
                 [DiscoveryToken.ResourceStash] = "Gain 7 spice from the bank and remove this token from the game",
                 [DiscoveryToken.Flight] = "Gain the token and remove it from the game to gain 3 movement for one movement action."
             },
-            
+
             DiscoveryTokenTypeName_STR = new Dictionary<DiscoveryTokenType, string>()
             {
                 [DiscoveryTokenType.Yellow] = "Hiereg",
                 [DiscoveryTokenType.Orange] = "Smuggler",
             },
-            
+
             DiscoveryTokenTypeImage_URL = new Dictionary<DiscoveryTokenType, string>()
             {
                 [DiscoveryTokenType.Yellow] = "/art/discoverytype1.png",

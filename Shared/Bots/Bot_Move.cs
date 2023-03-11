@@ -301,7 +301,7 @@ namespace Treachery.Shared
             LogInfo("DetermineFlightDiscoveryUsed()");
 
             if (!Game.HasOrnithopters(this) && (
-                BiggestBattalionInSpicelessNonStrongholdLocationInSandOrNotNearStronghold.Key != null || 
+                BiggestBattalionInSpicelessNonStrongholdLocationInSandOrNotNearStronghold.Key != null ||
                 BiggestBattalionInSpicelessNonStrongholdLocationNotNearStrongholdAndSpice.Key != null ||
                 BiggestBattalionThreatenedByStormWithoutSpice.Key != null ||
                 BiggestBattalionInSpicelessNonStrongholdLocationOnRock.Key != null

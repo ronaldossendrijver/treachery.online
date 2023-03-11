@@ -790,7 +790,7 @@ namespace Treachery.Shared
 
         public Homeworld PrimaryHomeworld => Homeworlds.First();
 
-        
+
 
         protected float ChanceOfEnemyLeaderDying(Player opponent, VoicePlan voicePlan, PrescienceAspect prescience, out TreacheryCard mostEffectiveWeapon, out bool enemyCanDefendPoisonTooth)
         {
@@ -1109,7 +1109,7 @@ namespace Treachery.Shared
 
             var result =
                 opponentDial +
-                opponentHomeworldBonus + 
+                opponentHomeworldBonus +
                 maxReinforcements +
                 (iAssumeEnemyLeaderWillDie ? 0 : 1) * (opponentLeaderValue + opponentMessiahBonus) +
                 (iAmAggressor ? 0 : 0.5f) -

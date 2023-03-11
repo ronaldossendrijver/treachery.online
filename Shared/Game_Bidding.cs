@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace Treachery.Shared
 {
@@ -664,7 +663,7 @@ namespace Treachery.Shared
                 PlayNexusCard(winner, "Secret Ally", "get this card for free");
                 LogBid(winner, 0, 0, 0, receiverIncomeMessage);
             }
-            
+
             RecentMilestones.Add(Milestone.AuctionWon);
             var card = toDrawFrom.Draw();
             RegisterWonCardAsKnown(card);
@@ -723,7 +722,7 @@ namespace Treachery.Shared
                 PlayNexusCard(winner, "Secret Ally", "get this card for free");
                 LogBid(winner, 0, 0, 0, receiverIncomeMessage);
             }
-                        
+
             RecentMilestones.Add(Milestone.AuctionWon);
             var card = toDrawFrom.Draw();
             RegisterWonCardAsKnown(card);
@@ -811,7 +810,7 @@ namespace Treachery.Shared
                     ModifyIncomeBasedOnThresholdOrOccupation(receiver, ref receiverProfit);
                     receiver.Resources += receiverProfit;
                     receiver.ResourcesAfterBidding += bidRedContributionAmount;
-                    message = MessagePart.Express(" → ", receiver.Faction, " get ", Payment(receiverProfit), 
+                    message = MessagePart.Express(" → ", receiver.Faction, " get ", Payment(receiverProfit),
                         MessagePart.ExpressIf(bidRedContributionAmount > 0, " immediately and ", Payment(bidRedContributionAmount), " at the end of the bidding phase"));
 
                     if (receiverProfit >= 5)
@@ -820,7 +819,7 @@ namespace Treachery.Shared
                         BiddingTriggeredBureaucracy = new TriggeredBureaucracy() { PaymentFrom = initiator.Faction, PaymentTo = paymentReceiver };
                     }
 
-                    
+
                     SetRecentPayment(receiverProfit, initiator.Faction, receiver.Faction, (GameEvent)bid);
                 }
             }

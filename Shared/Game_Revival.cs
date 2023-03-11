@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 
 namespace Treachery.Shared
 {
@@ -57,7 +56,7 @@ namespace Treachery.Shared
 
             if (r.UsesRedSecretAlly)
             {
-                PlayNexusCard(r.Player, "Secret Ally", "revive ", 3 , " additional forces beyond revival limits for free");
+                PlayNexusCard(r.Player, "Secret Ally", "revive ", 3, " additional forces beyond revival limits for free");
             }
 
             //Payment
@@ -168,7 +167,7 @@ namespace Treachery.Shared
                     initiator.ShipSpecialForces(r.Location, 1);
                     Log(r.Initiator, " place ", FactionSpecialForce.Yellow, " in ", r.Location);
                 }
-                else if (r.Initiator == Faction.Purple) 
+                else if (r.Initiator == Faction.Purple)
                 {
                     initiator.ShipForces(r.Location, r.AmountOfForces + r.ExtraForcesPaidByRed);
                     Log(r.Initiator, " place ", r.AmountOfForces + r.ExtraForcesPaidByRed, FactionForce.Purple, " in ", r.Location);

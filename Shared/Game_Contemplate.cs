@@ -128,12 +128,12 @@ namespace Treachery.Shared
             }
 
             DetermineStrongholdOwnership();
-            
+
             if (WhenToSetAsideVidal == VidalMoment.EndOfTurn)
             {
                 SetAsideVidal();
             }
-            
+
             MainPhaseEnd();
         }
 
@@ -322,7 +322,7 @@ namespace Treachery.Shared
 
         public bool MeetsNormalVictoryCondition(Player p, bool contestedStongholdsCountAsOccupied)
         {
-            return 
+            return
                 MeetsBasicPinkVictoryCondition(p, contestedStongholdsCountAsOccupied) ||
                 MeetsHighThresholdPinkVictoryCondition(p, contestedStongholdsCountAsOccupied) ||
                 NumberOfVictoryPoints(p, contestedStongholdsCountAsOccupied) >= TresholdForWin(p);

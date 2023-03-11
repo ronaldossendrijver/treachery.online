@@ -13,11 +13,11 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
 using Treachery.Client;
 using Treachery.Shared;
-using System.Reflection;
 
 namespace Treachery.Test
 {
@@ -232,7 +232,7 @@ namespace Treachery.Test
                 int expectedAmount = EstablishPlayers.AvailableFactions().Count(f => f != Faction.Blue) - 1;
 
                 if (actualAmount != expectedAmount)
-                return $"Invalid number of ambassadors: {actualAmount} != {EstablishPlayers.AvailableFactions().Count() - 1}";
+                    return $"Invalid number of ambassadors: {actualAmount} != {EstablishPlayers.AvailableFactions().Count() - 1}";
             }
 
             return "";
@@ -377,7 +377,7 @@ namespace Treachery.Test
             rules.Add(Rule.FillWithBots);
             rules.Add(Rule.AssistedNotekeeping);
             rules.Add(Rule.DisableOrangeSpecialVictory);
-           
+
             var rulesAsArray = rules.ToArray();
             var wincounter = new ObjectCounter<Faction>();
 
@@ -460,7 +460,7 @@ namespace Treachery.Test
                         game.Players.Single(p => p.Faction == kvp.Key).Param = kvp.Value;
                     }
                 }
-                
+
                 int maxNumberOfEvents = game.CurrentTurn * game.Players.Count * 60;
 
                 while (game.CurrentPhase != Phase.GameEnded)
@@ -475,7 +475,7 @@ namespace Treachery.Test
 
                     evt.Time = DateTime.Now;
 
-                    
+
                     if (game.History.Count == maxNumberOfEvents)
                     {
                         File.WriteAllText("stuck" + game.Seed + ".json", GameState.GetStateAsString(game));

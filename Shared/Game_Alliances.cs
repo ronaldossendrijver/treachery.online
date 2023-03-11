@@ -127,7 +127,7 @@ namespace Treachery.Shared
                 case Faction.Blue: BlueAllowsUseOfVoice = enabled; break;
                 case Faction.Red: RedWillPayForExtraRevival = enabled ? 3 : 0; break;
                 case Faction.White: WhiteAllowsUseOfNoField = enabled; break;
-                case Faction.Yellow: 
+                case Faction.Yellow:
                     YellowWillProtectFromMonster = enabled;
                     YellowAllowsThreeFreeRevivals = enabled;
                     YellowSharesPrescience = enabled;

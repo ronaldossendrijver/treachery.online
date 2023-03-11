@@ -59,7 +59,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<TreacheryCard> ValidCards(Player p)
         {
-            return p.TreacheryCards.Where(c => 
+            return p.TreacheryCards.Where(c =>
                  c.Type == TreacheryCardType.Useless && !p.HasHighThreshold() ||
                 (c.Type != TreacheryCardType.Projectile && c.Type != TreacheryCardType.Poison) && p.TreacheryCards.Count(toCount => toCount.Type == c.Type) > 1);
         }

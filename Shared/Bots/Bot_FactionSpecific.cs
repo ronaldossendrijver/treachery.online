@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security;
 
 namespace Treachery.Shared
 {
@@ -1060,7 +1059,7 @@ namespace Treachery.Shared
         {
             Location target;
 
-            if (PerformCyanSetup.ValidLocations(Game).Contains(Game.Map.Carthag)) 
+            if (PerformCyanSetup.ValidLocations(Game).Contains(Game.Map.Carthag))
             {
                 target = Game.Map.Carthag;
             }
@@ -1243,7 +1242,7 @@ namespace Treachery.Shared
                             return new AmbassadorActivated(Game) { Initiator = Faction, BlueSelectedAmbassador = blueSelectedAmbassador, YellowOrOrangeTo = target, YellowForceLocations = forcesToMove };
                         }
                     }
-                    
+
                     return PassAmbassadorActivated();
 
                 case Ambassador.Grey:

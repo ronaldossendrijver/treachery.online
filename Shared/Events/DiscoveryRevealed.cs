@@ -2,10 +2,9 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
-using System.Collections;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 
 namespace Treachery.Shared
 {
@@ -26,7 +25,7 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            
+
 
             return null;
         }
@@ -42,7 +41,7 @@ namespace Treachery.Shared
             {
                 return Message.Express(Initiator, " don't reveal a discovery");
             }
-            else 
+            else
             {
                 return Message.Express(Initiator, " reveal a discovery in ", Location.Territory);
             }

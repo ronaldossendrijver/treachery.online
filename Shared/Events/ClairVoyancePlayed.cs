@@ -236,7 +236,7 @@ namespace Treachery.Shared
             }
             else if (p.Occupies(g.Map.Cistern))
             {
-                return Karma.ValidKarmaCards(g,p).FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
+                return Karma.ValidKarmaCards(g, p).FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
             }
 
             return null;

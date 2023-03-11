@@ -4,9 +4,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Net.NetworkInformation;
 
 namespace Treachery.Shared
 {
@@ -60,7 +58,7 @@ namespace Treachery.Shared
 
             int scoreIfMinus1 = enemyForcesKilledInSectorMinus1 + myStrongholdsInSectorMinus1 * 3 - myForcesKilledInSectorMinus1 - enemyStrongholdsInSectorMinus1 * 3;
             int scoreIfPassed = scoreIfMinus1 + enemyForcesKilledInSector + myStrongholdsInSector * 3 - myForcesKilledInSector - enemyStrongholdsInSector * 3;
-            int scoreIfPlus1  = scoreIfPassed + enemyForcesKilledInSectorPlus1 + myStrongholdsInSectorPlus1 * 3 - myForcesKilledInSectorPlus1 - enemyStrongholdsInSectorPlus1 * 3;
+            int scoreIfPlus1 = scoreIfPassed + enemyForcesKilledInSectorPlus1 + myStrongholdsInSectorPlus1 * 3 - myForcesKilledInSectorPlus1 - enemyStrongholdsInSectorPlus1 * 3;
 
             if (scoreIfMinus1 > scoreIfPassed && scoreIfMinus1 > scoreIfPlus1)
             {
@@ -84,8 +82,12 @@ namespace Treachery.Shared
 
         private CardGiven DetermineCardGiven()
         {
-            return new CardGiven(Game) { Initiator = Faction, Passed = 
-                !(CardQuality(Game.CardThatMustBeKeptOrGivenToAlly, this) <= 2 && (Ally == Faction.Blue || Ally == Faction.Brown || CardQuality(Game.CardThatMustBeKeptOrGivenToAlly, AlliedPlayer) > 0)) };
+            return new CardGiven(Game)
+            {
+                Initiator = Faction,
+                Passed =
+                !(CardQuality(Game.CardThatMustBeKeptOrGivenToAlly, this) <= 2 && (Ally == Faction.Blue || Ally == Faction.Brown || CardQuality(Game.CardThatMustBeKeptOrGivenToAlly, AlliedPlayer) > 0))
+            };
         }
 
         private DivideResourcesAccepted DetermineDivideResourcesAccepted()
@@ -219,7 +221,7 @@ namespace Treachery.Shared
                         break;
 
                     case Faction.Cyan:
-                        if (Faction == Faction.Orange && Game.CurrentPhase == Phase.OrangeShip && !Game.OrangeMayDelay || 
+                        if (Faction == Faction.Orange && Game.CurrentPhase == Phase.OrangeShip && !Game.OrangeMayDelay ||
                             Faction != Faction.Orange && Game.CurrentPhase == Phase.NonOrangeShip && Game.ShipmentAndMoveSequence.CurrentPlayer == this)
                         {
                             var shipment = DetermineShipment();
@@ -229,7 +231,7 @@ namespace Treachery.Shared
                                 return result;
                             }
                         }
-                            
+
                         break;
                 }
             }

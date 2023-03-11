@@ -15,8 +15,8 @@ namespace Treachery.Shared
         public LeaderSkill AggActivatedPenaltySkill;
         public int DefBattlePenalty;
         public LeaderSkill DefActivatedPenaltySkill;
-        
-        public int AggMessiahContribution; 
+
+        public int AggMessiahContribution;
         public int DefMessiahContribution;
 
         public int AggHomeworldContribution;
@@ -33,10 +33,10 @@ namespace Treachery.Shared
 
         public TreacheryCardType AggHeroCauseOfDeath;
         public int AggHeroEffectiveStrength;
-        
+
         public bool DefHeroKilled;
         public bool WinnerHeroKilled => Winner == Aggressor ? AggHeroKilled : DefHeroKilled;
-                
+
         public TreacheryCardType DefHeroCauseOfDeath;
         public int DefHeroEffectiveStrength;
 
@@ -45,7 +45,7 @@ namespace Treachery.Shared
 
         public float AggTotal;
         public float DefTotal;
-        
+
         public Battle WinnerBattlePlan;
         public Battle LoserBattlePlan;
 

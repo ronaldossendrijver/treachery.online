@@ -2,10 +2,6 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Treachery.Shared
 {
     public class MonsterAppearence

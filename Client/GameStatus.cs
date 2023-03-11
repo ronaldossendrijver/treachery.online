@@ -78,7 +78,7 @@ namespace Treachery.Client
             {
                 /* Phase Beginnings */
 
-                Phase.BeginningOfStorm or 
+                Phase.BeginningOfStorm or
                 Phase.Thumper or
                 Phase.BeginningOfCharity or
                 Phase.BeginningOfBidding or
@@ -338,10 +338,10 @@ namespace Treachery.Client
                     Express(Faction.Blue, " are thinking about accompanying the latest shipment..."),
                     Faction.Blue),
 
-                Phase.TerrorTriggeredByBlueAccompaniesNonOrangeShip or 
-                Phase.TerrorTriggeredByBlueAccompaniesOrangeShip or 
-                Phase.TerrorTriggeredByOrangeShip or 
-                Phase.TerrorTriggeredByNonOrangeShip or 
+                Phase.TerrorTriggeredByBlueAccompaniesNonOrangeShip or
+                Phase.TerrorTriggeredByBlueAccompaniesOrangeShip or
+                Phase.TerrorTriggeredByOrangeShip or
+                Phase.TerrorTriggeredByNonOrangeShip or
                 Phase.TerrorTriggeredByNonOrangeShip or
                 Phase.TerrorTriggeredByOrangeShip or
                 Phase.TerrorTriggeredByNonOrangeMove or
@@ -713,7 +713,7 @@ namespace Treachery.Client
                     //Show Nexus card played
                     case NexusPlayed np: Flash(result, Message.Express(np.Initiator, " play a Nexus card"), Skin.Current.GetNexusCardImageURL(np.Faction)); break;
                     case Revival nexusrev when nexusrev.UsesRedSecretAlly: Flash(result, Message.Express(nexusrev.Initiator, " play a Nexus card"), Skin.Current.GetNexusCardImageURL(Faction.Red)); break;
-                    //case Bid nexusbid when nexusbid.UsesRedSecretAlly: Flash(result, Message.Express(nexusbid.Initiator, " play a Nexus card"), Skin.Current.GetNexusCardImageURL(Faction.Red)); break;
+                        //case Bid nexusbid when nexusbid.UsesRedSecretAlly: Flash(result, Message.Express(nexusbid.Initiator, " play a Nexus card"), Skin.Current.GetNexusCardImageURL(Faction.Red)); break;
                 }
             }
 

@@ -451,7 +451,7 @@ namespace Treachery.Shared
 
         #endregion
 
-        
+
 
 
         #region WormSendingAndRiding
@@ -479,7 +479,7 @@ namespace Treachery.Shared
             {
                 Monsters.Remove(toRide);
             }
-            
+
             if (!e.Passed)
             {
                 if (e.ForceLocations.Keys.Any(l => l.Territory != toRide.Territory))
@@ -525,7 +525,7 @@ namespace Treachery.Shared
             {
                 Log(e.Initiator, " pass a ride on ", Concept.Monster);
             }
-                        
+
             DetermineNextShipmentAndMoveSubPhase();
         }
 

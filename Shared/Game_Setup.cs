@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Treachery.Shared
 {
@@ -56,7 +55,7 @@ namespace Treachery.Shared
             TreacheryDeck = TreacheryCardManager.CreateTreacheryDeck(this, Random);
 
             CreateDiscoveryTokens();
-            
+
 
             if (!Applicable(Rule.CustomDecks))
             {
@@ -179,7 +178,7 @@ namespace Treachery.Shared
             return result;
         }
 
-        
+
 
         private void AddPlayersToGame(EstablishPlayers e)
         {

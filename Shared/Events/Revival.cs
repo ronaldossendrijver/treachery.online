@@ -355,14 +355,14 @@ namespace Treachery.Shared
 
         public static bool MayUseRedSecretAlly(Game game, Player player) => player.Nexus == Faction.Red && NexusPlayed.CanUseSecretAlly(game, player);
 
-        public static bool MaySelectLocationForRevivedForces(Game game, Player player, int forces, int specialForces, bool usesRedSecretAlly) => 
-            (player.Is(Faction.Yellow) && specialForces >= 1 || player.Is(Faction.Purple) && forces >= 1 && game.FreeRevivals(player, usesRedSecretAlly) > 0) && 
+        public static bool MaySelectLocationForRevivedForces(Game game, Player player, int forces, int specialForces, bool usesRedSecretAlly) =>
+            (player.Is(Faction.Yellow) && specialForces >= 1 || player.Is(Faction.Purple) && forces >= 1 && game.FreeRevivals(player, usesRedSecretAlly) > 0) &&
             player.HasHighThreshold() && ValidRevivedForceLocations(game, player).Any();
 
         public static IEnumerable<Location> ValidRevivedForceLocations(Game g, Player p)
         {
-            return g.Map.Locations(false).Where(l => 
-                    (p.Faction == Faction.Yellow || l.Sector != g.SectorInStorm) && 
+            return g.Map.Locations(false).Where(l =>
+                    (p.Faction == Faction.Yellow || l.Sector != g.SectorInStorm) &&
                     (!l.Territory.IsStronghold || g.NrOfOccupantsExcludingPlayer(l, p) < 2) &&
                     (!p.HasAlly || l == g.Map.PolarSink || !p.AlliedPlayer.Occupies(l)) &&
                     (p.Faction == Faction.Purple || p.Faction == Faction.Yellow && p.AnyForcesIn(l.Territory) >= 1));

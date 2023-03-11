@@ -3,7 +3,6 @@
  */
 
 using System.Linq;
-using System.Numerics;
 
 namespace Treachery.Shared
 {
@@ -117,7 +116,7 @@ namespace Treachery.Shared
             {
                 homeworldBonus = 1;
             }
-            
+
             var brown = GetPlayer(Faction.Brown);
 
             to.Resources += basicAmount + homeworldBonus;

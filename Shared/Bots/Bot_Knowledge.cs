@@ -99,7 +99,7 @@ namespace Treachery.Shared
                 var myKnownCards = Game.KnownCards(this).ToList();
                 cardsToTakeIntoAccount = forWhom.TreacheryCards.Where(c => myKnownCards.Contains(c)).ToList();
             }
-            
+
             cardsToTakeIntoAccount.Remove(cardToRate);
 
             if (cardToRate.Type == TreacheryCardType.Useless) return 0;

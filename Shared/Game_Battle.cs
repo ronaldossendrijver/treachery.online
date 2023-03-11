@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 
 namespace Treachery.Shared
 {
@@ -841,7 +840,7 @@ namespace Treachery.Shared
                         " withdraw ",
                         MessagePart.ExpressIf(undialledNormalForces > 0, undialledNormalForces, forceSupplier.Force),
                         MessagePart.ExpressIf(undialledNormalForces > 0 && undialledSpecialForces > 0, " and "),
-                        MessagePart.ExpressIf(undialledSpecialForces > 0, undialledSpecialForces, forceSupplier.SpecialForce), 
+                        MessagePart.ExpressIf(undialledSpecialForces > 0, undialledSpecialForces, forceSupplier.SpecialForce),
                         " to reserves");
                 }
             }

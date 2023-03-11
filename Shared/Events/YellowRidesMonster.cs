@@ -2,10 +2,10 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 
 namespace Treachery.Shared
 {
@@ -134,7 +134,7 @@ namespace Treachery.Shared
             }
 
             return 0;
-        } 
+        }
 
         public static IEnumerable<Location> ValidTargets(Game g, Player p)
         {

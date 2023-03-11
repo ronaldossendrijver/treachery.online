@@ -274,7 +274,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<TreacheryCard> ValidBrownCards(Player player) => player.TreacheryCards.Where(c => c.Type == TreacheryCardType.Useless);
 
-        public static IEnumerable<Territory> ValidPinkTerritories(Game g) 
+        public static IEnumerable<Territory> ValidPinkTerritories(Game g)
         {
             var pink = g.GetPlayer(Faction.Pink);
 

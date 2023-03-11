@@ -2,9 +2,6 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
-using Newtonsoft.Json;
-using System.Linq;
-
 namespace Treachery.Shared
 {
     public class FlightDiscoveryUsed : GameEvent

@@ -18,7 +18,7 @@ namespace Treachery.Shared
                 RecentMilestones.Add(Milestone.LeaderKilled);
                 DetermineIfCapturedLeadersMustBeReleased();
                 DetermineIfKilledGholaReturnsToOriginalFaction(h);
-                
+
                 if (h.HeroType == HeroType.Vidal)
                 {
                     var currentOwner = OwnerOf(h);

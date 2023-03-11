@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Collections;
 
 namespace Treachery.Shared
 {
@@ -209,7 +208,7 @@ namespace Treachery.Shared
 
         private void GetResourcesFromStronghold(Location stronghold, Player player, int amount)
         {
-            if (player.Controls(this, stronghold, Applicable(Rule.ContestedStongholdsCountAsOccupied)) && 
+            if (player.Controls(this, stronghold, Applicable(Rule.ContestedStongholdsCountAsOccupied)) &&
                 !(player.Is(Faction.Pink) && Prevented(FactionAdvantage.PinkCollection) && player.HasAlly && !player.AlliedPlayer.Controls(this, stronghold, Applicable(Rule.ContestedStongholdsCountAsOccupied))))
             {
                 Collect(player.Faction, stronghold.Territory, amount);
@@ -226,7 +225,7 @@ namespace Treachery.Shared
                 var playersToCollect = Players.Where(y => y.Occupies(l.Key)).ToArray();
                 int totalCollectedAmount = 0;
                 var spiceLeft = l.Value;
-                
+
                 foreach (var p in playersToCollect)
                 {
                     int collectionRate = ResourceCollectionRate(p);

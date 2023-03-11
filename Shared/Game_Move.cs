@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 
 namespace Treachery.Shared
 {
@@ -742,7 +741,7 @@ namespace Treachery.Shared
                 }
 
                 HandleAmbassador(e, e.Initiator, ambassadorFaction, victim, territory);
-                                
+
                 if (!pink.Ambassadors.Union(AmbassadorsOnPlanet.Values).Any(f => f != Ambassador.Pink))
                 {
                     AssignRandomAmbassadors(pink);
@@ -943,7 +942,7 @@ namespace Treachery.Shared
             DetermineNextShipmentAndMoveSubPhase();
         }
 
-        private Player PlayerToSetAsideVidal {  get; set; }
+        private Player PlayerToSetAsideVidal { get; set; }
         private VidalMoment WhenToSetAsideVidal { get; set; }
         private void TakeVidal(Player p, VidalMoment whenToSetAside)
         {
