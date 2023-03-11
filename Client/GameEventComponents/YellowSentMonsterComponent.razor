@@ -7,7 +7,7 @@
 @inherits GameEventComponent<YellowSentMonster>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
 
     <Header>Select where to make @Skin.Current.Describe(Concept.Monster) appear</Header>
     <Body>

@@ -411,7 +411,7 @@ namespace Treachery.Shared
                 if (Applicable(Rule.PinkLoyalty))
                 {
                     PinkLoyalLeader = pink.Leaders.RandomOrDefault(Random);
-                    Log(PinkLoyalLeader, " is set aside as the loyal ", Faction.Pink, " leader");
+                    Log(PinkLoyalLeader, " is forever loyal to ", Faction.Pink);
                 }
             }
 

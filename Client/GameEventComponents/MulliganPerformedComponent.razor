@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<MulliganPerformed>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
 
     <Header>Draw a new selection of four traitors?</Header>
     <Body>

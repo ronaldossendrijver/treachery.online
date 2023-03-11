@@ -7,7 +7,7 @@
 @inherits GameEventComponent<NexusPlayed>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle="@BodyStyle" CollapsedType=GetType()>
 
     <Header>Nexus: Play <FactionComponent Faction=@Player.Nexus/> @NexusTypeText</Header>
     <Body>

@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<RedDiscarded>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
 
     <Header>You may discard cards for 2 @Name(Concept.Resource) each</Header>
     <Body>

@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<EstablishPlayers>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
 
     <Header>You may now configure your game below.</Header>
     <Body>

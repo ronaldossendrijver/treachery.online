@@ -7,7 +7,7 @@
 @inherits GameEventComponent<AmbassadorPlaced>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
 
     <Header>You may now place an Ambassador Token in a Stronghold</Header>
     <Body>

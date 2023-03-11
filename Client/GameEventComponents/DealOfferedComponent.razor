@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<DealOffered>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType() Collapsed=CollapseState.Collapsed>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType() Collapsed=CollapseState.Collapsed>
 
     <Header>Offer a Deal</Header>
     <Body>

@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<GreySelectedStartingCard>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
 
     <Header>Select your starting Treachery Card. The remaining cards will be shuffled and dealt to the other factions.</Header>
     <Body>

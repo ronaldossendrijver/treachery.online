@@ -82,11 +82,13 @@
                             {
                                 var factions = av.FactionsInPlay != null ? av.FactionsInPlay : new List<Faction>();
                                 <td>
-                                    @Name(Game.DetermineApproximateRuleset(factions, av.Rules, Game.ExpansionLevel)),
-                                        Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
-                                        <br>
-                                        <FactionsComponent Factions=@factions Diameter=20 HasShadow=false/>
-                                        @NumberOfBotsMessage(av)
+                                    @Name(Game.DetermineApproximateRuleset(factions, av.Rules, Game.ExpansionLevel)), Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
+                                    <br>
+                                    @foreach (var f in @factions.Where(f => f != Faction.None))
+                                    {
+                                        <Image Shown="f" Width="30"/>
+                                    }
+                                    @NumberOfBotsMessage(av)
 
                                 </td>
                                 <td>

@@ -7,7 +7,7 @@
 @inherits GameEventComponent<PerformSetup>
 @implements IDisposable
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
 
     <Header>
         Set <FactionComponent Faction=CurrentFaction/> initial @Skin.Current.Describe(Concept.Resource) and forces.

@@ -5,13 +5,11 @@
 @inherits GameComponent
 
 <div class="form-check @Class">
-    <input class="form-check-input" style="cursor:pointer" type="checkbox" id="@Id" @bind="Value">
+    <input class="form-check-input" style="cursor:pointer" type="checkbox" id="@Id" @onchange=@(e => ChangeValue(e)) checked=@Value>
     <label class="form-check-label" style="cursor:pointer" for="@Id">@ChildContent</label>
 </div>
 
 @code {
-
-    private bool _value;
 
     [Parameter]
     public RenderFragment ChildContent { get; set; }
@@ -23,20 +21,15 @@
     public EventCallback<bool> ValueChanged { get; set; }
 
     [Parameter]
-    public Action<bool> OnChanged { get; set; }
+    public EventCallback<bool> OnChanged { get; set; }
 
     [Parameter]
     public string Class { get; set; } = "";
 
-    protected override void OnParametersSet()
+    private async Task ChangeValue(ChangeEventArgs e)
     {
-        base.OnParametersSet();
-
-        if (_value != Value)
-        {
-            _value = Value;
-            ValueChanged.InvokeAsync(_value);
-            OnChanged?.Invoke(_value);
-        }
+        Value = !Value;
+        await ValueChanged.InvokeAsync(Value);
+        await OnChanged.InvokeAsync(Value);
     }
 }

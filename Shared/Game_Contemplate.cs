@@ -66,7 +66,7 @@ namespace Treachery.Shared
                 foreach (var l in Assassinated.Where(l => cyan.RevealedTraitors.Contains(l)).ToList())
                 {
 
-                    Log(Faction.Cyan, " set aside ", l, " and draw a new traitor card");
+                    Log(Faction.Cyan, " draw a new traitor to replace ", l);
                     cyan.Traitors.Remove(l);
                     cyan.RevealedTraitors.Remove(l);
                     cyan.Traitors.Add(TraitorDeck.Draw());

@@ -130,7 +130,13 @@
 
                         @if (ShownPlayer.Faction == Faction.Pink && h.CurrentPhase > Phase.BluePredicting)
                         {
-                            <div>Ambassadors: <AmbassadorsComponent Diameter=30 Ambassadors=@ShownPlayer.Ambassadors Labels=@ShownPlayer.Ambassadors.ToDictionary(f => f, f => Skin.Current.Describe(f)) /></div>
+                            <div>
+                                Ambassadors:
+                                @foreach (var ambassador in ShownPlayer.Ambassadors)
+                                {
+                                    <Image Shown=@ambassador Width=30 />
+                                }
+                            </div>
                         }
 
                         @if (ShownPlayer.Faction == Faction.Cyan && h.CurrentPhase > Phase.BluePredicting)

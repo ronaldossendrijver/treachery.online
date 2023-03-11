@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<AmbassadorActivated>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
 
     <Header>Activate the <Image Shown=@AmbassadorActivated.GetAmbassador(Game) Width="30"/> Ambassador?</Header>
     <Body>
@@ -31,7 +31,7 @@
             {
                 case Ambassador.Green:
 
-                    <div>See the <FactionComponent Faction=@victim Diameter=30/> hand?</div>
+                    <div>See the <Image Shown=@victim Width=30/> hand?</div>
                     break;
 
                 case Ambassador.Brown:
@@ -113,15 +113,15 @@
                     
                     if (victim == Faction.Black)
                     {
-                        <div>See one of the <FactionComponent Faction=@victim Diameter=30 /> traitors?</div>
+                        <div>See one of the <Image Shown=@victim Width=30 /> traitors?</div>
                     }
                     else if (victim == Faction.Purple)
                     {
-                        <div>See one of the <FactionComponent Faction=@victim Diameter=30 /> unrevealed Face Dancers?</div>
+                        <div>See one of the <Image Shown=@victim Width=30 /> unrevealed Face Dancers?</div>
                     }
                     else {
 
-                        <div>See the <FactionComponent Faction=@victim Diameter=30 /> traitor?</div>
+                        <div>See the <Image Shown=@victim Width=30 /> traitor?</div>
                     }
                     break;
 

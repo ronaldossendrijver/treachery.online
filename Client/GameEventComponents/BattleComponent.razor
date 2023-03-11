@@ -6,10 +6,10 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<Battle>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType() TimedEvent=Game.LatestEvent(typeof(BattleInitiated))>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType() TimedEvent=Game.LatestEvent(typeof(BattleInitiated))>
 
     <Header>
-        Fighting <FactionComponent Faction=Opponent.Faction Diameter=30 /> in @Name(Game.CurrentBattle.Territory).
+        Fighting <Image Shown=Opponent.Faction Width=30 /> in @Name(Game.CurrentBattle.Territory).
     </Header>
 
     <Body>
@@ -34,7 +34,7 @@
 
         @if (Game.CurrentPinkBattleContribution > 0 && Opponent.Ally == Faction.Pink)
         {
-            <div class="text-success mt-1"><FactionComponent Faction=Faction.Pink Diameter=20 /> forces contribute <strong>@Game.CurrentPinkBattleContribution</strong> to your opponents dial.</div>
+            <div class="text-success mt-1"><Image Shown=Faction.Pink Width=30 /> forces contribute <strong>@Game.CurrentPinkBattleContribution</strong> to your opponents dial.</div>
         }
 
         @if (!Battle.ValidBattleHeroes(Game, Opponent).Any())

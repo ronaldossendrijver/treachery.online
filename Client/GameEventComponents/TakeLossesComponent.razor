@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<TakeLosses>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
 
     <Header>Please choose how to distribute a storm loss total of at least <strong>@TakeLosses.LossesToTake(Game).Amount</strong> over your forces in <strong>@Name(TakeLosses.LossesToTake(Game).Location)</strong></Header>
     <Body>
