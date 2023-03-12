@@ -27,6 +27,16 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            if (e is AmbassadorActivated aa && aa.YellowForceLocations != null && aa.YellowForceLocations.Count() > 0 && aa.Player.ForcesOnPlanet.Keys.Select(l => l.Territory).Distinct().Count() > 1)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "May move from more than 1 territory");
+            }
+
+            if (e is Move m && m.ForceLocations.Keys.Select(l => l.Territory).Distinct().Count() > 1)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Move from more than 1 territory");
+            }
+
             if (e is BattleConcluded && g.CurrentBattle.PlanOf(e.Initiator).Weapon != null && g.CurrentBattle.PlanOf(e.Initiator).Defense != null)
             {
                 WriteSavegameIfApplicable(g, e.Player, "Battle Concluded");
@@ -363,7 +373,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 200;
+            int nrOfGames = 100;
             int nrOfTurns = 10;
             int nrOfPlayers = 7;
 

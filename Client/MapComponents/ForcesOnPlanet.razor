@@ -33,7 +33,7 @@
         var ambassador = Game.AmbassadorIn(stronghold.Territory);
         if (ambassador != Ambassador.None)
         {
-            var popover = $"{Skin.Current.Describe((object)ambassador)} Ambassador - {Skin.Current.Describe(ambassador)}";
+            var popover = $"{Skin.Current.Describe(ambassador)} Ambassador - {Skin.Current.GetAmbassadorDescription(ambassador)}";
             <Image X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetImageURL(ambassador)
                 ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover />
 

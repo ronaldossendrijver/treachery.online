@@ -71,7 +71,7 @@
 
     protected Territory fromTerritory;
     protected Location toLocation;
-    protected Dictionary<Location, Battalion> forces = new Dictionary<Location, Battalion>();
+    protected Dictionary<Location, Battalion> forces = new();
     protected bool asAdvisors = false;
 
     protected override void OnAfterRender(bool firstRender)

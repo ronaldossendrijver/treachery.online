@@ -87,62 +87,30 @@
     {
         await base.OnParametersSetAsync();
 
-        RemoveForcesFromOtherTerritororiesThanAvailableLocations();
+        bool changed = false;
 
-        if (Forces.Count == 0)
+        foreach (var l in Forces.Keys.Where(l => !Locations.Contains(l)).ToArray())
         {
-            foreach (var l in Locations)
-            {
-                var toAdd = new Battalion() { AmountOfForces = InitializeToMaximum ? Max(l) : 0, AmountOfSpecialForces = InitializeToMaximum ? MaxSpecial(l) : 0 };
-                Forces.Add(l, toAdd);
-            }
-
-            await OnChanged.InvokeAsync();
+            Forces.Remove(l);
+            changed = true;
         }
-        else
+
+        foreach (var l in Locations.Where(l => !Forces.ContainsKey(l)).ToArray())
         {
-            if (RemoveIllegalForceLocations())
-            {
-                await OnChanged.InvokeAsync();
-            }
+            var toAdd = new Battalion() { AmountOfForces = InitializeToMaximum ? Max(l) : 0, AmountOfSpecialForces = InitializeToMaximum ? MaxSpecial(l) : 0 };
+            Forces.Add(l, toAdd);
+            changed = true;
+        }
+
+        if (changed)
+        {
+            await OnChanged.InvokeAsync();
         }
     }
 
     private int Min => 0;
     private int Max(Location l) => FixedMaxForces > 0 ? FixedMaxForces : Player.ForcesIn(l);
     private int MaxSpecial(Location l) => FixedMaxSpecialForces > 0 ? FixedMaxSpecialForces : Player.SpecialForcesIn(l);
-
-    private bool RemoveIllegalForceLocations()
-    {
-        bool result = false;
-        foreach (var bat in Forces.Where(kvp => !Locations.Contains(kvp.Key)).Select(kvp => kvp.Value))
-        {
-            bat.Clear();
-            result = true;
-        }
-
-        return result;
-    }
-
-    private void RemoveForcesFromOtherTerritororiesThanAvailableLocations()
-    {
-        if (!AllowMultipleTerritories)
-        {
-            var locationWithForces = Forces.Where(kvp => kvp.Value.TotalAmountOfForces > 0).Select(kvp => kvp.Key).FirstOrDefault();
-            if (locationWithForces != null)
-            {
-                RemoveForcesFromOtherTerritoriesThan(locationWithForces.Territory);
-            }
-        }
-    }
-
-    private void RemoveForcesFromOtherTerritoriesThan(Territory toCheck)
-    {
-        foreach (var bat in Forces.Where(kvp => kvp.Key.Territory != toCheck && kvp.Value.TotalAmountOfForces != 0).Select(kvp => kvp.Value).ToArray()) {
-
-            bat.Clear();
-        }
-    }
 
     private async Task ChangeForceAmount(Location location, int amount, bool specialForces)
     {
@@ -176,4 +144,13 @@
 
         await OnChanged.InvokeAsync();
     }
+
+    private void RemoveForcesFromOtherTerritoriesThan(Territory toCheck)
+    {
+        foreach (var bat in Forces.Where(kvp => kvp.Key.Territory != toCheck && kvp.Value.TotalAmountOfForces != 0).Select(kvp => kvp.Value).ToArray())
+        {
+            bat.Clear();
+        }
+    }
+
 }
