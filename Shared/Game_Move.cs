@@ -20,7 +20,7 @@ namespace Treachery.Shared
 
         public PlayerSequence ShipmentAndMoveSequence { get; private set; }
         public bool ShipsTechTokenIncome { get; private set; }
-        public List<PlacementEvent> RecentMoves { get; private set; } = new List<PlacementEvent>();
+        public List<IPlacement> RecentMoves { get; private set; } = new();
         public int CurrentNoFieldValue { get; private set; } = -1;
         public int LatestRevealedNoFieldValue { get; private set; } = -1;
 
@@ -367,8 +367,6 @@ namespace Treachery.Shared
         private bool MayPerformExtraMove { get; set; }
         public void HandleEvent(Move m)
         {
-            RecentMoves.Add(m);
-
             StormLossesToTake.Clear();
             var initiator = GetPlayer(m.Initiator);
 
@@ -397,6 +395,8 @@ namespace Treachery.Shared
 
             if (!m.Passed)
             {
+                RecentMoves.Add(m);
+
                 if (ContainsConflictingAlly(initiator, m.To))
                 {
                     ChosenDestinationsWithAllies.Add(m.To.Territory);
@@ -740,7 +740,7 @@ namespace Treachery.Shared
                     Log("The ", ambassadorFaction, " Ambassador is set aside");
                 }
 
-                HandleAmbassador(e, e.Initiator, ambassadorFaction, victim, territory);
+                HandleAmbassador(e, e.Initiator, ambassadorFaction, victim);
 
                 if (!pink.Ambassadors.Union(AmbassadorsOnPlanet.Values).Any(f => f != Ambassador.Pink))
                 {
@@ -759,7 +759,7 @@ namespace Treachery.Shared
         public Faction AllianceByAmbassadorOfferedTo { get; private set; }
         private Phase PausedAmbassadorPhase { get; set; }
 
-        private void HandleAmbassador(AmbassadorActivated e, Faction initiator, Ambassador ambassadorFaction, Faction victim, Territory territory)
+        private void HandleAmbassador(AmbassadorActivated e, Faction initiator, Ambassador ambassadorFaction, Faction victim)
         {
             var victimPlayer = GetPlayer(victim);
             var initiatingPlayer = GetPlayer(initiator);
@@ -823,6 +823,7 @@ namespace Treachery.Shared
                 case Ambassador.Yellow:
 
                     PerformMoveFromLocations(initiatingPlayer, e.YellowForceLocations, e, false, false);
+                    RecentMoves.Add(e);
                     CheckIntrusion(e);
                     DetermineNextShipmentAndMoveSubPhase();
                     break;

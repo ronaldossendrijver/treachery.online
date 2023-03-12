@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Treachery.Shared
 {
-    public class AmbassadorActivated : GameEvent, ILocationEvent
+    public class AmbassadorActivated : GameEvent, ILocationEvent, IPlacement
     {
         public AmbassadorActivated(Game game) : base(game)
         {
@@ -209,6 +209,9 @@ namespace Treachery.Shared
 
         [JsonIgnore]
         public int TotalAmountOfForces => YellowForceLocations != null ? YellowForceLocations.Values.Sum(b => b.TotalAmountOfForces) : 0;
+
+        [JsonIgnore]
+        public Dictionary<Location, Battalion> ForceLocations => YellowForceLocations;
     }
 
 }
