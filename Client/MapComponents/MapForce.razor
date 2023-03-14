@@ -12,12 +12,12 @@
 
     <Image X=@(X - movedX * Skin.Current.FORCETOKEN_RADIUS) Y=@(Y - movedY * Skin.Current.FORCETOKEN_RADIUS) Diameter=@Diameter Src="@ForceURL" 
             ShadowColor="@ShadowColor" ShadowX=@ShadowSize ShadowY=@ShadowSize ShadowBlur=@ShadowBlur
-            Popover="@Popover"/>
+            Popover="@Popover" PopoverAsTooltip=false/>
 }
 
 @if (!(Faction == Faction.White && Special || Amount == 0))
 {
-    <MapText ToShow="@Amount.ToString()" X=@X Y=@Y Font=@Font BorderWidth=@BorderWidth BorderColor=@BorderColor Popover="@Popover"/>
+    <MapText ToShow="@Amount.ToString()" X=@X Y=@Y Font=@Font BorderWidth=@BorderWidth BorderColor=@BorderColor Popover="@Popover" PopoverAsTooltip=true />
 }
 
 @code {

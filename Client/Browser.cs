@@ -141,6 +141,24 @@ namespace Treachery.Client
             return await JsInvoke<Dimensions>("GetWindowDimensions");
         }
 
+        private static readonly Dictionary<string, Dimensions> _cachedDimensions = new();
+        public static async Task<Dimensions> GetImageDimensions(string imgUrl)
+        {
+            if (_cachedDimensions.TryGetValue(imgUrl, out var dimensions))
+            {
+                return dimensions;
+            }
+            else
+            {
+                var result = await JsInvoke<Dimensions>("GetImageDimensions", imgUrl);
+                if (result.Width != 0 || result.Height != 0)
+                {
+                    _cachedDimensions.Add(imgUrl, result);
+                }
+                return result;
+            }
+        }
+
         public static async Task PlaySound(string sound, float volume = 100f, bool loop = false)
         {
             if (sound != null && sound != "" && sound != "?")
@@ -362,13 +380,6 @@ namespace Treachery.Client
             try
             {
                 var task = JsInvoke<T>(method, args);
-
-                /*[]
-                {
-                    _runtime.InvokeAsync<T>(method, args),
-                    Task.Delay(1000) 
-                };*/
-
 
                 return await await Task.WhenAny<T>(task, ValueTimeout<T>(timeout));
             }

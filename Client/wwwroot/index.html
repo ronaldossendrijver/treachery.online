@@ -99,6 +99,20 @@
             return { Width: determinedWidth, Height: determinedHeight };
         }
 
+        function GetImageDimensions(imgUrl) {
+
+            return new Promise((resolve) => {
+                let img = document.createElement('img');
+                img.onload = () => {
+                    resolve({ Width: img.naturalWidth, Height: img.naturalHeight });
+                }
+                img.onerror = () => {
+                    resolve({ Width: 0, Height: 0 });
+                }
+                img.src = imgUrl;
+            });
+        }
+
         function RemoveFocusFromButtons() {
 
             document.querySelectorAll("button").forEach(item => item.blur());

@@ -99,7 +99,7 @@
                 <Image XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(Game.PinkLoyalLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
-                       Popover=@Popup.Get(@Skin.Current.Format("{0} is Loyal to {1}", Game.PinkLoyalLeader, Faction.Pink)) />
+                       Popover=@Skin.Current.Format("{0} is Loyal to {1}", Game.PinkLoyalLeader, Faction.Pink) PopoverAsTooltip=true/>
             }
 
             foreach (var skilledLeader in Game.GetSkilledLeaders(p).Where(l => Game.IsInFrontOfShield(l))) {
@@ -125,7 +125,7 @@
 
                 <Image XY=@Pos(positionOnCircle, Skin.Current.FORCETOKEN_RADIUS) Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS) Src="@Skin.Current.FactionSpecialForceImage_URL[Faction.White]"
                        ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
-                       Popover="@Skin.Current.Format("Latest revealed No-Field: {0}", Game.LatestRevealedNoFieldValue)"/>
+                       Popover="@Skin.Current.Format("Latest revealed No-Field: {0}", Game.LatestRevealedNoFieldValue)" PopoverAsTooltip=true/>
 
                 <MapText ToShow="@Game.LatestRevealedNoFieldValue.ToString()"
                          XY=@Pos(positionOnCircle)
@@ -145,7 +145,7 @@
                     XY=@Pos(positionOnCircle, Skin.Current.FORCETOKEN_RADIUS) 
                     Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS)
                     Src="@Skin.Current.Harvester_URL"
-                    Title=@tooltip
+                    Popover=@tooltip PopoverAsTooltip=true
                     BackgroundCircleColor="#black"
                     BackgroundCircleDiameter=@(1.5f * Skin.Current.FORCETOKEN_RADIUS)
                     ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" />
@@ -154,7 +154,7 @@
                     ToShow=@totalSpiceToReceiveLater.ToString()
                     XY=@Pos(positionOnCircle)
                     Font="@Skin.Current.RESOURCETOKEN_FONT" FontColor="@Skin.Current.RESOURCETOKEN_FONTCOLOR"
-                    Title=@tooltip
+                    Popover=@tooltip PopoverAsTooltip=true
                     BorderWidth="@Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
                     Align="@TextAlignment.Center"/>
             }
@@ -167,9 +167,8 @@
                 <Image 
                     XY=@Pos(positionOnCircle, Skin.Current.FORCETOKEN_RADIUS) 
                     Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS) 
-                    Popover=@tooltip
                     Src="@Skin.Current.Harvester_URL"
-                    Title=@tooltip
+                    Popover=@tooltip PopoverAsTooltip=true
                     BackgroundCircleColor="black"
                     BackgroundCircleDiameter=@(1.5f * Skin.Current.FORCETOKEN_RADIUS)
                     ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" />
@@ -177,7 +176,7 @@
                 <MapText ToShow=@tooltip
                     XY=@Pos(positionOnCircle)
                     Font="@Skin.Current.RESOURCETOKEN_FONT" FontColor="@Skin.Current.RESOURCETOKEN_FONTCOLOR"
-                    Title=@tooltip
+                    Popover=@tooltip PopoverAsTooltip=true
                     BorderWidth="@Skin.Current.RESOURCETOKEN_FONT_BORDERWIDTH" BorderColor="@Skin.Current.RESOURCETOKEN_FONT_BORDERCOLOR"
                     Align="@TextAlignment.Center"/>
             }

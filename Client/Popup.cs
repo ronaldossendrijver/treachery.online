@@ -35,7 +35,7 @@ namespace Treachery.Client
 
         public static string Get(Homeworld w)
         {
-            return string.Format("<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{0}' width=300/></div>",
+            return string.Format("<div style='position:relative'><img style='position:relative;filter:drop-shadow(-3px 3px 2px black);' src='{0}'/></div>",
                         Skin.Current.GetHomeworldCardImageURL(w.World));
         }
 

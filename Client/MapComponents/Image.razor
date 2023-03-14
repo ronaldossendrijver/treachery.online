@@ -15,14 +15,29 @@
     <Rectangle X=X Y=Y Width="Width" Height="Height" FillColor=@BackgroundRectangleColor />
 }
 
-@if (Popover != null)
+@if (OnClick.HasDelegate || OnMouseOver.HasDelegate || OnMouseExited.HasDelegate) 
 {
-    <img @ref=@element @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" style="@Style" src=@Src
-     data-bs-trigger="hover" data-bs-toggle="popover" data-bs-html="true" data-bs-animation="false" data-bs-delay="50" data-container="body" data-bs-content="@Popover" data-bs-template="@PopoverTemplate" />
+    if (Popover != null && !PopoverAsTooltip)
+    {
+        <img @ref=@element @onclick="@OnClick" @onmouseenter="@OnMouseOver" @onmouseout="@OnMouseExited" style="@Style" src=@Src
+         data-bs-trigger="hover" data-bs-toggle="popover" data-bs-html="true" data-bs-animation="false" data-bs-delay="50" data-container="body" data-bs-content="@Popover" data-bs-template="@PopoverTemplate" />
+    }
+    else
+    {
+        <img @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Popover" style="@Style" src=@Src />
+    }
 }
 else
 {
-    <img @ref=@element @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Title" style="@Style" src=@Src />
+    if (Popover != null && !PopoverAsTooltip)
+    {
+        <img @ref=@element style="@Style" src=@Src
+        data-bs-trigger="hover" data-bs-toggle="popover" data-bs-html="true" data-bs-animation="false" data-bs-delay="50" data-container="body" data-bs-content="@Popover" data-bs-template="@PopoverTemplate" />
+    }
+    else
+    {
+        <img title="@Popover" style="@Style" src=@Src />
+    }
 }
 
 @code {
@@ -41,9 +56,6 @@ else
 
     [Parameter]
     public string ShadowColor { get; set; } = "black";
-
-    [Parameter]
-    public string Title { get; set; } = "";
 
     [Parameter]
     public string Filter { get; set; } = "";
@@ -71,6 +83,9 @@ else
     private string _popover = null;
     private bool _popoverNeedsRefresh = false;
 
+    [Parameter]
+    public bool PopoverAsTooltip { get; set; }
+
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -84,14 +99,17 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && Popover != null)
+        if (!PopoverAsTooltip)
         {
-            await Browser.EnablePopover(element);
-        }
-        else if (_popoverNeedsRefresh)
-        {
-            _popoverNeedsRefresh = false;
-            await Browser.RefreshPopover(element);
+            if (firstRender && Popover != null)
+            {
+                await Browser.EnablePopover(element);
+            }
+            else if (_popoverNeedsRefresh)
+            {
+                _popoverNeedsRefresh = false;
+                await Browser.RefreshPopover(element);
+            }
         }
     }
 
@@ -105,7 +123,7 @@ else
         {
             var result = string.Format("position:absolute;left:{0};top:{1};width:{2};height:{3};opacity:{4};", Px(X), Px(Y), Px(Width), Px(Height), Round(Opacity));
 
-            if (OnClick.HasDelegate || OnMouseOver.HasDelegate || Popover != null || Title != "")
+            if (OnClick.HasDelegate || OnMouseOver.HasDelegate || Popover != null)
             {
                 result += "cursor:pointer;pointer-events:all;";
             }
@@ -128,7 +146,7 @@ else
 
     public void Dispose()
     {
-        if (Popover != null)
+        if (Popover != null && !PopoverAsTooltip)
         {
             _ = Browser.RemovePopover(element);
         }

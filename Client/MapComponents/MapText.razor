@@ -6,7 +6,7 @@
 @inherits MapComponent
 @implements IDisposable;
 
-@if (Popover != null) {
+@if (Popover != null && !PopoverAsTooltip) {
 
     <span 
         @ref=@element
@@ -20,7 +20,7 @@ else
 {
     <span 
         @ref=@element
-        title="@Title"
+        title="@Popover"
         style="@Style;user-select:none;">
         @ToShow
         @ChildContent
@@ -59,7 +59,7 @@ else
     private bool _popoverNeedsUpdate = false;
 
     [Parameter]
-    public string Title { get; set; } = "";
+    public bool PopoverAsTooltip { get; set; }
 
     private float TextWidth;
     private float TextHeight;
@@ -90,14 +90,17 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && Popover != null)
+        if (!PopoverAsTooltip)
         {
-            await Browser.EnablePopover(element);
-        }
-        else if (_popoverNeedsUpdate)
-        {
-            _popoverNeedsUpdate = false;
-            await Browser.RefreshPopover(element);
+            if (firstRender && Popover != null)
+            {
+                await Browser.EnablePopover(element);
+            }
+            else if (_popoverNeedsUpdate)
+            {
+                _popoverNeedsUpdate = false;
+                await Browser.RefreshPopover(element);
+            }
         }
     }
 
@@ -108,12 +111,12 @@ else
         Font, FontColor, 
         Px(MaxWidth), 
         Support.TextBorder(BorderWidth, BorderColor),
-        Popover != null || Title != "" ? "cursor:pointer;pointer-events:all" : "pointer-events:none");
+        Popover != null ? "cursor:pointer;pointer-events:all" : "pointer-events:none");
     
 
     public void Dispose()
     {
-        if (Popover != null)
+        if (Popover != null && !PopoverAsTooltip)
         {
             _ = Browser.RemovePopover(element);
         }
