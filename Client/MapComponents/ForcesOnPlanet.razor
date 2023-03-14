@@ -9,14 +9,14 @@
     foreach (var stronghold in h.Game.Map.Strongholds)
     {
         var center = Skin.Current.GetCenter(stronghold);
-        var x = center.X - 2 * Skin.Current.PlayerTokenRadius;
-        var y = center.Y - 0.8f * Skin.Current.PlayerTokenRadius;
+        var x = stronghold == Game.Map.HiddenMobileStronghold ? center.X - 1.6f * Skin.Current.PlayerTokenRadius : center.X - 2.2f * Skin.Current.PlayerTokenRadius;
+        var y = center.Y - Skin.Current.PlayerTokenRadius;
 
         if (h.Game.StrongholdOwnership.TryGetValue(stronghold, out var owner))
         {
-            var opacity = stronghold == Game.Map.HiddenMobileStronghold && !showHMS ? 0.2f : 0.8f;
+            var opacity = stronghold == Game.Map.HiddenMobileStronghold && !showHMS ? 0.2f : 1f;
             <Image X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src="@Skin.Current.GetFactionTableImageURL(h.Game.StrongholdOwnership[stronghold])"
-               Opacity=opacity Popover=@Popup.Get(stronghold.Advantage, owner) />
+               Opacity=opacity Popover=@Popup.Get(stronghold.Advantage, owner) PopoverStyle=""/>
 
             y += Skin.Current.PlayerTokenRadius;
         }
@@ -25,7 +25,7 @@
         {
             var popover = Player.Faction == Faction.Cyan ? Skin.Current.Format("{0} - {1}", terr, Skin.Current.GetTerrorTypeDescription(terr)) : "Terror";
             <Image X=x Y=y Filter="hue-rotate(180deg);" Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetFactionTableImageURL(Faction.Cyan)
-                ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover />
+                ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover PopoverAsTooltip=true />
 
             y += Skin.Current.PlayerTokenRadius;
         }
@@ -35,7 +35,7 @@
         {
             var popover = $"{Skin.Current.Describe(ambassador)} Ambassador - {Skin.Current.GetAmbassadorDescription(ambassador)}";
             <Image X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetImageURL(ambassador)
-                ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover />
+            ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover PopoverAsTooltip=true />
 
             y += Skin.Current.PlayerTokenRadius;
         }
@@ -76,14 +76,14 @@
                Src="@(showHMS ? Skin.Current.Eye_URL : Skin.Current.EyeSlash_URL)"
                ShadowColor="black" ShadowX="1" ShadowY="1" ShadowBlur="0"
                OnClick="OnShowHmsClick"
-               Title="@(showHMS ? "Hide HMS" : "Show HMS")" />
+               Popover="@(showHMS ? "Hide HMS" : "Show HMS")" PopoverAsTooltip=true/>
         }
         else if (location is DiscoveredLocation ds)
         {
             forceDiameter = 1.5f * Skin.Current.FORCETOKEN_RADIUS;
 
             <Image X=@(pos.X - 1.5f * Skin.Current.FORCETOKEN_RADIUS) Y=@(pos.Y - 2f * Skin.Current.FORCETOKEN_RADIUS) Diameter=@(3 * Skin.Current.FORCETOKEN_RADIUS) 
-                Src=@Skin.Current.GetImageURL(ds.Discovery) Popover=@Intel(ds)
+                Src=@Skin.Current.GetImageURL(ds.Discovery) Popover=@Intel(ds) 
                 ShadowX=1 ShadowY=1 />
 
             @if (h.Status.HighlightedTerritories.Contains(location.Territory))
@@ -99,7 +99,7 @@
                 $"{Skin.Current.Describe(discovery.Token)} - {Skin.Current.GetDiscoveryTokenDescription(discovery.Token)}" : Skin.Current.Describe(discovery.TokenType);
 
             <Image X=@(pos.X - 3 * Skin.Current.FORCETOKEN_RADIUS) Y=@(pos.Y - 3 * Skin.Current.FORCETOKEN_RADIUS) Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS)
-               Src=@Skin.Current.GetImageURL(discovery.TokenType) Popover=@popoverToShow
+                Src=@Skin.Current.GetImageURL(discovery.TokenType) Popover=@popoverToShow PopoverAsTooltip=true
                 Opacity="0.9f" ShadowX=1 ShadowY=1 />
         }
 

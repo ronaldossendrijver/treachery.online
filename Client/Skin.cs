@@ -266,11 +266,11 @@ namespace Treachery.Client
                 if (hms.AttachedToLocation != null)
                 {
                     var attachedToCenter = GetCenter(hms.AttachedToLocation);
-                    return new Point(attachedToCenter.X + HmsDX, attachedToCenter.Y);
+                    return new Point(attachedToCenter.X + (int)HmsDX, attachedToCenter.Y);
                 }
                 else
                 {
-                    return new Point(HmsDX, HmsDX);
+                    return new Point((int)HmsDX, (int)HmsDX);
                 }
             }
             else if (location is DiscoveredLocation ds)
@@ -291,9 +291,9 @@ namespace Treachery.Client
             }
         }
 
-        public int HmsDX => -4 * PlayerTokenRadius;
+        public float HmsDX => -3 * PlayerTokenRadius;
 
-        public int HmsRadius => 2 * PlayerTokenRadius;
+        public float HmsRadius => 1.5f * PlayerTokenRadius;
 
         public Point GetSpiceLocation(Location location) => location.SpiceBlowAmount != 0 ? LocationSpice_Point[location.Id] : new Point(0, 0);
 

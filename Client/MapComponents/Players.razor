@@ -51,7 +51,7 @@
                 <Image X=homeworldXY.X Y=@homeworldXY.Y
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
-                       Popover="@HomeworldIntel(homeworld)" OnClick="e => OnClick(e, homeworld)"/>
+                       Popover="@HomeworldIntel(homeworld)" OnClick="e => OnClick(e, homeworld)" PopoverStyle=""/>
 
                 if (h.Status.HighlightedTerritories.Contains(homeworld.Territory))
                 {

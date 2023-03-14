@@ -4,20 +4,23 @@
 
 @using Treachery.Shared;
 @inherits MapComponent;
+@implements IDisposable;
 
-@for (int i = 0; i < Amount; i++)
-{
-    float movedX = 0.15f * (5 + i);
-    float movedY = 0.15f * (7 + i);
+<div @ref=@element @attributes=_attributes style=@($"position:absolute;left:{Px(X)};top:{Px(Y)};")>
 
-    <Image X=@(X - movedX * Skin.Current.FORCETOKEN_RADIUS) Y=@(Y - movedY * Skin.Current.FORCETOKEN_RADIUS) Diameter=@Diameter Src="@ForceURL" 
-            ShadowColor="@ShadowColor" ShadowX=@ShadowSize ShadowY=@ShadowSize ShadowBlur=@ShadowBlur
-            Popover="@Popover" PopoverAsTooltip=false/>
-}
+    @for (int i = 0; i < Amount; i++)
+    {
+        float movedX = 0.15f * (5 + i);
+        float movedY = 0.15f * (7 + i);
+
+        <img style=@($"position:absolute;left:{Px(- movedX * Skin.Current.FORCETOKEN_RADIUS)};top:{Px(- movedY * Skin.Current.FORCETOKEN_RADIUS)};width:{Diameter}px;opacity:{Opacity};drop-shadow({ShadowSize}px {ShadowSize}px {ShadowBlur}px {ShadowColor})") src=@ForceURL />
+    }
+
+</div>
 
 @if (!(Faction == Faction.White && Special || Amount == 0))
 {
-    <MapText ToShow="@Amount.ToString()" X=@X Y=@Y Font=@Font BorderWidth=@BorderWidth BorderColor=@BorderColor Popover="@Popover" PopoverAsTooltip=true />
+    <MapText ToShow="@Amount.ToString()" X=@X Y=@Y Font=@Font BorderWidth=@BorderWidth BorderColor=@BorderColor />
 }
 
 @code {
@@ -37,18 +40,49 @@
     [Parameter]
     public bool ShowPopover { get; set; } = true;
 
+    private bool _popoverNeedsRefresh = false;
+
     [Parameter]
     public string Font { get; set; } = "";
 
-    protected override void OnInitialized()
+    private Dictionary<string, object> _attributes;
+
+    protected override void OnParametersSet()
     {
+        base.OnParametersSet();
+
         if (Diameter == 0) Diameter = 2 * Skin.Current.FORCETOKEN_RADIUS;
         if (Font == "") Font = Skin.Current.FORCETOKEN_FONT;
+
+        _attributes = new();
+
+        if (ShowPopover) 
+        {
+            _attributes.Add("data-bs-trigger", "hover");
+            _attributes.Add("data-bs-toggle", "popover");
+            _attributes.Add("data-bs-html", "true");
+            _attributes.Add("data-bs-animation", "false");
+            _attributes.Add("data-bs-delay", "100");
+            _attributes.Add("data-container", "body");
+            _attributes.Add("data-bs-content", $"<div style='position:relative'><img style='position:relative;filter:drop-shadow(-2px 2px 1px black);' src='{ForceURL}' width=80/><span style='color:white;font-size:32px;font-weight:900;position:absolute;left:55px;top:-10px;-webkit-text-stroke:1px black'>{Amount}</span></div>");
+            _popoverNeedsRefresh = true;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Browser.EnablePopover(element);
+        }
+        else if (_popoverNeedsRefresh)
+        {
+            _popoverNeedsRefresh = false;
+            await Browser.RefreshPopover(element);
+        }
     }
 
     private string ForceURL => Special ? Skin.Current.GetFactionSpecialForceImageURL(Faction) : Skin.Current.GetFactionForceImageURL(Faction);
-
-    private string Popover => ShowPopover ? string.Format("<img style='float:left' src='{0}' width=100/><h3 style='float:right'>{1}</h3>", ForceURL, Amount) : null;
 
     private string ShadowColor => Threatened ? "red" : Skin.Current.SHADOW;
 
@@ -59,4 +93,9 @@
     private string BorderColor => Threatened ? "red" : Skin.Current.FORCETOKEN_FONT_BORDERCOLOR;
 
     private int BorderWidth => Threatened ? 2 * Skin.Current.FORCETOKEN_FONT_BORDERWIDTH : Skin.Current.FORCETOKEN_FONT_BORDERWIDTH;
+
+    public void Dispose()
+    {
+        _ = Browser.RemovePopover(element);
+    }
 }
