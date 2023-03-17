@@ -13,8 +13,16 @@
 
         @if (Game.ShipmentPermissions.Any())
         {
-            <div>Current ship cross/from planet shipping permissions:</div>
             <table class="table table-striped table-sm">
+
+                <thead>
+                    <tr>
+                        <th scope="col">Faction</th>
+                        <th scope="col">Cross planet</th>
+                        <th scope="col">To (own) homeworld</th>
+                        <th scope="col">At half price</th>
+                    </tr>
+                </thead>
 
                 <tbody>
 
@@ -22,7 +30,9 @@
                     {
                         <tr>
                             <td><img width=24 src="@Skin.Current.GetImageURL(kvp.Key)" /></td>
-                            <td>@DescribePermission(kvp.Value)</td>
+                            <td>@((kvp.Value & ShipmentPermission.Cross) == ShipmentPermission.Cross ? "Yes" : "No")</td>
+                            <td>@((kvp.Value & ShipmentPermission.ToHomeworld) == ShipmentPermission.ToHomeworld ? "Yes" : "No")</td>
+                            <td>@((kvp.Value & ShipmentPermission.OrangeRate) == ShipmentPermission.OrangeRate ? "Yes" : "No")</td>
                             <td>
                                 <button class="btn btn-primary btn-sm" @onclick="e => Revoke(kvp.Key)">Revoke</button>
                             </td>
@@ -35,17 +45,15 @@
         }
 
         <div class="mt-2">
-            <RadioComponent @bind-Value="permission" 
-                Values="@(new ShipmentPermission[] {ShipmentPermission.CrossAtNormalRates, ShipmentPermission.CrossAtOrangeRates})"
-                ValueLabels="@(new string[] { DescribePermission(ShipmentPermission.CrossAtNormalRates), DescribePermission(ShipmentPermission.CrossAtOrangeRates) })">
-                <Label>Allow shipping cross/from planet?</Label>
-            </RadioComponent>
+            <SelectFromImageComponent Values=@SetShipmentPermission.ValidTargets(Game, Player) Selected=@targets Required=true ImageWidth="40" T=Faction OnChanged=StateHasChanged>
+                <Label>Set permissions for:</Label>
+            </SelectFromImageComponent>
+
+            <CheckboxComponent @bind-Value=@_crossPermission>Allow cross planet shipments</CheckboxComponent>
+            <CheckboxComponent @bind-Value=@_homeworldPermission>Allow shipment to (own) homeworld</CheckboxComponent>
+            <CheckboxComponent @bind-Value=@_discountPermission>May ship at half price</CheckboxComponent>
         </div>
         
-        <SelectFromImageComponent @bind-Value="target" Values=@SetShipmentPermission.ValidTargets(Game, Player).Where(f => !Game.MayShipCrossPlanet(Game.GetPlayer(f))) Required=true ImageWidth="40">
-            <Label>For which faction?</Label>
-        </SelectFromImageComponent>
-
         <ButtonRowComponent Confirm="Confirm" ConfirmError=@Validation />
 
     </Body>
@@ -54,22 +62,23 @@
 
 @code {
 
-    private Faction target;
-    private ShipmentPermission permission;
+    private List<Faction> targets = new();
+    private bool _crossPermission;
+    private bool _homeworldPermission;
+    private bool _discountPermission;
 
     protected override Faction IsFactionSpecific => Faction.Orange;
 
-    protected override SetShipmentPermission ConfirmedResult => new SetShipmentPermission(Game) { Initiator = Faction, Target = target, Permission = permission };
+    protected override SetShipmentPermission ConfirmedResult => new SetShipmentPermission(Game) { Initiator = Faction, Factions = targets.ToArray(), Permission = GetPermissions() };
 
-    private async Task Revoke(Faction f) => await Request(new SetShipmentPermission(Game) { Initiator = Faction, Target = target, Permission = ShipmentPermission.None });
+    private async Task Revoke(Faction f) => await Request(new SetShipmentPermission(Game) { Initiator = Faction, Factions = new Faction[] {f}, Permission = ShipmentPermission.None });
 
-    private string DescribePermission(ShipmentPermission p)
+    private ShipmentPermission GetPermissions()
     {
-        return p switch
-        {
-            ShipmentPermission.CrossAtNormalRates => "Full price",
-            ShipmentPermission.CrossAtOrangeRates => "Half price",
-            _ => "unknown"
-        };
+        var result = ShipmentPermission.None;
+        if (_crossPermission) result |= ShipmentPermission.Cross;
+        if (_homeworldPermission) result |= ShipmentPermission.ToHomeworld;
+        if (_discountPermission) result |= ShipmentPermission.OrangeRate;
+        return result;
     }
 }

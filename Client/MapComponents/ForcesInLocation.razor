@@ -18,7 +18,7 @@
             var player = Game.GetPlayer(battalion.Faction);
             var threatened = Game.ThreatenedByAllyPresence(player, Location.Territory);
 
-            float xOffset = 0;
+            double xOffset = 0;
             if (battalion.AmountOfForces > 0)
             {
                 <MapForce X=@pos.X Y=@(yOffset + pos.Y) Special=@false Amount=@battalion.AmountOfForces Faction=@battalion.Faction Threatened=@threatened ShowPopover="false" Diameter=Diameter/>

@@ -197,7 +197,7 @@ namespace Treachery.Shared
 
         public static IEnumerable<Location> ValidYellowTargets(Game g, Player p) => g.Map.Locations(false).Where(l => l.Sector != g.SectorInStorm && l != g.Map.HiddenMobileStronghold && g.IsNotFull(p, l));
 
-        public static IEnumerable<Location> ValidOrangeTargets(Game g, Player p) => Shipment.ValidShipmentLocations(g, p).Where(l => !g.ContainsConflictingAlly(p, l));
+        public static IEnumerable<Location> ValidOrangeTargets(Game g, Player p) => Shipment.ValidShipmentLocations(g, p, false).Where(l => !g.ContainsConflictingAlly(p, l));
 
         public static int ValidOrangeMaxForces(Player p) => Math.Min(p.ForcesInReserve, 4);
 

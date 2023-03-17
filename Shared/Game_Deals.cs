@@ -106,6 +106,6 @@ namespace Treachery.Shared
             Discard(e.Player, TreacheryCardType.Recruits);
         }
 
-
+        
     }
 }

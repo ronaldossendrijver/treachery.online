@@ -130,7 +130,7 @@ namespace Treachery.Shared
             var cost = DetermineCost(Game, p, this);
             if (cost > p.Resources + AllyContributionAmount) return Message.Express("You can't pay that much");
             if (cost < AllyContributionAmount) return Message.Express("Your ally is paying more than needed");
-            if (!ValidShipmentLocations(Game, p).Contains(To)) return Message.Express("Cannot ship there");
+            if (!ValidShipmentLocations(Game, p, IsBackToReserves || IsSiteToSite && From is not Homeworld).Contains(To)) return Message.Express("Cannot ship there");
 
             //no field checks, requires refactoring
             if (NoFieldValue >= 0 && !MayUseNoField(Game, Player)) return Message.Express("You can't use a No-Field");
@@ -206,7 +206,7 @@ namespace Treachery.Shared
 
                 double costOfShipment = Math.Abs(amountToPayFor) * (to.Territory.HasReducedShippingCost ? 1 : 2);
 
-                if (g.MayShipWithDiscount(p) || karamaShipment || siteToSite && g.ShipmentPermissions.TryGetValue(p.Faction, out var permission) && permission == ShipmentPermission.CrossAtOrangeRates)
+                if (g.MayShipWithDiscount(p) || karamaShipment || siteToSite && g.HasShipmentPermission(p, ShipmentPermission.OrangeRate) || backToReserves && g.HasShipmentPermission(p, ShipmentPermission.OrangeRate))
                 {
                     costOfShipment /= 2;
                 }
@@ -234,14 +234,14 @@ namespace Treachery.Shared
             return specialForces ? p.SpecialForcesIn(source) : p.ForcesIn(source);
         }
 
-        public static IEnumerable<Location> ValidShipmentLocations(Game g, Player p)
+        public static IEnumerable<Location> ValidShipmentLocations(Game g, Player p, bool fromPlanet)
         {
             IEnumerable<Location> potentialLocations;
             if (p.Is(Faction.Yellow))
             {
                 if (g.MayShipCrossPlanet(p))
                 {
-                    potentialLocations = YellowSpawnLocations(g, p).Union(NormalShipmentLocations(g, p)).Distinct();
+                    potentialLocations = YellowSpawnLocations(g, p).Union(NormalShipmentLocations(g, p, fromPlanet)).Distinct();
                 }
                 else
                 {
@@ -250,7 +250,7 @@ namespace Treachery.Shared
             }
             else
             {
-                potentialLocations = NormalShipmentLocations(g, p);
+                potentialLocations = NormalShipmentLocations(g, p, fromPlanet);
             }
 
             if (g.AtomicsAftermath == null)
@@ -263,18 +263,19 @@ namespace Treachery.Shared
             }
         }
 
-        private static IEnumerable<Location> NormalShipmentLocations(Game g, Player p)
+        private static IEnumerable<Location> NormalShipmentLocations(Game g, Player p, bool fromPlanet)
         {
             return g.Map.Locations(g.Applicable(Rule.Homeworlds)).Where(l =>
                 l.Sector != g.SectorInStorm &&
                 (l != g.Map.HiddenMobileStronghold || p.Is(Faction.Grey)) &&
-                IsEitherValidHomeworldOrNoHomeworld(g, p, l) &&
+                IsEitherValidHomeworldOrNoHomeworld(g, p, l, fromPlanet) &&
                 IsEitherValidDiscoveryOrNoDiscovery(l) &&
                 g.IsNotFull(p, l));
         }
 
-        private static bool IsEitherValidHomeworldOrNoHomeworld(Game g, Player p, Location l) =>
+        private static bool IsEitherValidHomeworldOrNoHomeworld(Game g, Player p, Location l, bool fromPlanet) =>
             l is not Homeworld hw ||
+            (!fromPlanet || p.Is(Faction.Orange) || p.IsNative(hw) && g.MayShipToReserves(p)) &&
             g.Applicable(Rule.Homeworlds) &&
             g.Players.Any(native => native.IsNative(hw)) &&
             (!p.HasAlly || !p.AlliedPlayer.IsNative(hw) && p.AlliedPlayer.AnyForcesIn(hw) == 0);

@@ -4,39 +4,38 @@
 
 @using Treachery.Shared
 @using System.Globalization;
-@using System.Drawing;
 
 @code {
 
     [Parameter]
     public Handler h { get; set; }
 
-    private float _x;
+    private double _x;
     [Parameter]
-    public float X { get; set; }
+    public double X { get; set; }
 
-    private float _y;
+    private double _y;
     [Parameter]
-    public float Y { get; set; }
+    public double Y { get; set; }
 
-    private PointF _xy;
+    private PointD _xy;
     [Parameter]
-    public PointF XY { get; set; }
+    public PointD XY { get; set; }
 
-    private float _diameter;
+    private double _diameter;
     [Parameter]
-    public float Diameter { get; set; }
+    public double Diameter { get; set; }
 
-    private float _width;
+    private double _width;
     [Parameter]
-    public float Width { get; set; }
+    public double Width { get; set; }
 
-    private float _height;
+    private double _height;
     [Parameter]
-    public float Height { get; set; }
+    public double Height { get; set; }
 
     [Parameter]
-    public float Opacity { get; set; } = 1.0f;
+    public double Opacity { get; set; } = 1.0f;
 
     [Parameter]
     public string PopoverStyle { get; set; } = "background-color:black;text-align:center;border:1px solid white;padding:3px 3px 3px 3px;filter:drop-shadow(-5px 5px 2px #000000AA);";
@@ -73,7 +72,7 @@
         {
             _x = X;
             _y = Y;
-            _xy = new PointF(_x, _y);
+            _xy = new PointD(_x, _y);
             XY = _xy;
         }
     }
@@ -108,23 +107,23 @@
         return (nextId++).ToString();
     }
 
-    protected static bool Near(PointF p, int x, int y, int distance)
+    protected static bool Near(PointD p, int x, int y, int distance)
     {
         return Math.Abs(p.X - x) < distance && Math.Abs(p.Y - y) < distance;
     }
 
-    protected static bool Near(PointF p, PointF p2, int distance)
+    protected static bool Near(PointD p, PointD p2, int distance)
     {
         return Math.Abs(p.X - p2.X) < distance && Math.Abs(p.Y - p2.Y) < distance;
     }
 
-    protected static PointF PlayerTokenPosition(Game game, int positionAtTable)
+    protected static PointD PlayerTokenPosition(Game game, int positionAtTable)
     {
         var positionSector = Math.Floor((float)positionAtTable * Map.NUMBER_OF_SECTORS / game.MaximumNumberOfPlayers);
         double angle = (4.5 - positionSector) * TWOPI / Map.NUMBER_OF_SECTORS;
         var x = Skin.Current.PlanetCenter.X + (float)(Skin.Current.MapRadius * Math.Cos(angle));
         var y = Skin.Current.PlanetCenter.Y + (float)(Skin.Current.MapRadius * Math.Sin(angle));
-        return new PointF(x, y);
+        return new PointD(x, y);
     }
 
     protected string PopoverTemplate => string.Format("<div class=\"popover\" role=\"tooltip\" style=\"{0}\"><div class=\"arrow\"></div><h3 class=\"popover-header p-0\"></h3><div class=\"popover-body p-0\"></div></div>", PopoverStyle);

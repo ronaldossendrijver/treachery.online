@@ -219,40 +219,40 @@
         {
             if (ShownPlayer.BankedResources > 0)
             {
-                if (ShownPlayer.Bribes > 0)
+                if (ShownPlayer.Bribes + ShownPlayer.Extortion > 0)
                 {
                     if (ShownPlayer.ResourcesAfterBidding > 0)
                     {
-                        return Skin.Current.Format("{0}, {1} at end of turn, {2} at end of bidding, {3} at {4}", ShownPlayer.Resources, ShownPlayer.Bribes, ShownPlayer.ResourcesAfterBidding, ShownPlayer.BankedResources, MainPhase.Collection);
+                        return Skin.Current.Format("{0}, {1} at end of turn, {2} at end of bidding, {3} at {4}", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, ShownPlayer.ResourcesAfterBidding, ShownPlayer.BankedResources, MainPhase.Contemplate);
                     }
                     else
                     {
-                        return Skin.Current.Format("{0}, {1} at {2}, {3} at {4}", ShownPlayer.Resources, ShownPlayer.Bribes, MainPhase.Contemplate, ShownPlayer.BankedResources, MainPhase.Collection);
+                        return Skin.Current.Format("{0}, {1} at {2}, {3} at {4}", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, MainPhase.Contemplate, ShownPlayer.BankedResources, MainPhase.Contemplate);
                     }
                 }
                 else
                 {
                     if (ShownPlayer.ResourcesAfterBidding > 0)
                     {
-                        return Skin.Current.Format("{0}, {1} at end of {2}, {3} at {4}", ShownPlayer.Resources, ShownPlayer.ResourcesAfterBidding, MainPhase.Bidding, ShownPlayer.BankedResources, MainPhase.Collection);
+                        return Skin.Current.Format("{0}, {1} at end of {2}, {3} at {4}", ShownPlayer.Resources, ShownPlayer.ResourcesAfterBidding, MainPhase.Bidding, ShownPlayer.BankedResources, MainPhase.Contemplate);
                     }
                     else
                     {
-                        return Skin.Current.Format("{0}, {1} at {2}", ShownPlayer.Resources, ShownPlayer.BankedResources, MainPhase.Collection);
+                        return Skin.Current.Format("{0}, {1} at {2}", ShownPlayer.Resources, ShownPlayer.BankedResources, MainPhase.Contemplate);
                     }
                 }
             }
             else
             {
-                if (ShownPlayer.Bribes > 0)
+                if (ShownPlayer.Bribes + ShownPlayer.Extortion > 0)
                 {
                     if (ShownPlayer.ResourcesAfterBidding > 0)
                     {
-                        return Skin.Current.Format("{0}, {1} at end of turn, {2} at end of bidding", ShownPlayer.Resources, ShownPlayer.Bribes, ShownPlayer.ResourcesAfterBidding);
+                        return Skin.Current.Format("{0}, {1} at end of turn, {2} at end of bidding", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, ShownPlayer.ResourcesAfterBidding);
                     }
                     else
                     {
-                        return Skin.Current.Format("{0}, {1} at {2}", ShownPlayer.Resources, ShownPlayer.Bribes, MainPhase.Contemplate);
+                        return Skin.Current.Format("{0}, {1} at {2}", ShownPlayer.Resources, ShownPlayer.Bribes + ShownPlayer.Extortion, MainPhase.Contemplate);
                     }
                 }
                 else

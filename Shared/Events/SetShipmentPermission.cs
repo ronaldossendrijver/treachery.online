@@ -17,13 +17,14 @@ namespace Treachery.Shared
         {
         }
 
-        public Faction Target { get; set; }
+        public Faction[] Factions { get; set; }
 
         public ShipmentPermission Permission { get; set; }
 
         public override Message Validate()
         {
-            if (!ValidTargets(Game, Player).Contains(Target)) return Message.Express("Invalid faction");
+            if (!Factions.Any()) return Message.Express("Select one or more factions");
+            if (Factions.Any(f => !ValidTargets(Game, Player).Contains(f))) return Message.Express("Invalid faction");
 
             return null;
         }
@@ -42,13 +43,17 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Permission switch
+            if (Permission == ShipmentPermission.None)
             {
-                ShipmentPermission.None => Message.Express(Initiator, " deny ", Target, " shipping cross/from planet"),
-                ShipmentPermission.CrossAtNormalRates => Message.Express(Initiator, " allow ", Target, " to ship cross/from planet"),
-                ShipmentPermission.CrossAtOrangeRates => Message.Express(Initiator, " allow ", Target, " to ship cross/from planet at half price"),
-                _ => Message.Express("unknown"),
-            };
+                return Message.Express(Initiator, " → ", Factions, ": all permissions revoked");
+            }
+            else
+            {
+                return Message.Express(Initiator, " → ", Factions, ": ",
+                    "cross shipping: ", (Permission & ShipmentPermission.Cross) == ShipmentPermission.Cross ? "yes" : "no",
+                    ", to (own) world: ", (Permission & ShipmentPermission.ToHomeworld) == ShipmentPermission.ToHomeworld ? "yes" : "no",
+                    ", discount: ", (Permission & ShipmentPermission.OrangeRate) == ShipmentPermission.OrangeRate ? "yes" : "no");
+            }
         }
     }
 }

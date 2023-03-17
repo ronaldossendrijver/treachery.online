@@ -4,7 +4,7 @@
 
 namespace Treachery.Shared
 {
-    public class Point
+    public struct Point
     {
         public int X;
         public int Y;
@@ -14,10 +14,27 @@ namespace Treachery.Shared
             X = x;
             Y = y;
         }
+    }
 
-        public Point()
+    public struct PointD
+    {
+        public double X;
+        public double Y;
+
+        public PointD(double x, double y)
         {
-
+            X = x;
+            Y = y;
         }
+
+        public override bool Equals(object obj) => obj is PointD other && Equals(other);
+
+        public bool Equals(PointD p) => X == p.X && Y == p.Y;
+
+        public override int GetHashCode() => (X, Y).GetHashCode();
+
+        public static bool operator ==(PointD lhs, PointD rhs) => lhs.Equals(rhs);
+
+        public static bool operator !=(PointD lhs, PointD rhs) => !(lhs == rhs);
     }
 }

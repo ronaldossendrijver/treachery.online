@@ -12,7 +12,7 @@
 
         if (Game.ResourcesOnPlanet.ContainsKey(l))
         {
-            <Image 
+            <MapImage 
                 X="@(spiceLocation.X - Skin.Current.RESOURCETOKEN_RADIUS)" 
                 Y="@(spiceLocation.Y - Skin.Current.RESOURCETOKEN_RADIUS)" 
                 Width=@(Skin.Current.RESOURCETOKEN_RADIUS * 2) 
@@ -28,7 +28,7 @@
         }
         else if (Skin.Current.DrawResourceIconsOnMap)
         {
-            <Image 
+            <MapImage 
                 X="@(spiceLocation.X - Skin.Current.RESOURCETOKEN_RADIUS)" 
                 Y="@(spiceLocation.Y - Skin.Current.RESOURCETOKEN_RADIUS)" 
                 Width=@(Skin.Current.RESOURCETOKEN_RADIUS * 2) 

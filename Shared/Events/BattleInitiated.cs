@@ -132,7 +132,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express(Initiator, " initiate a battle in ", Territory);
+            return Message.Express(Initiator, " initiate a battle ", Territory.IsHomeworld ? " on " : " in ", Territory);
         }
 
         public Player OpponentOf(Player p)

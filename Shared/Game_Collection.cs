@@ -53,7 +53,7 @@ namespace Treachery.Shared
             else
             {
                 var toBeDivided = DivideResources.GetResourcesToBeDivided(this);
-                int gainedByOtherFaction = DivideResources.GainedByOtherFaction(this, true, e.PortionToFirstPlayer);
+                int gainedByOtherFaction = DivideResources.GainedByOtherFaction(toBeDivided, true, e.PortionToFirstPlayer);
                 Log(e.Initiator, " propose that they take ", Payment(e.PortionToFirstPlayer), " and ", toBeDivided.OtherFaction, " take ", Payment(gainedByOtherFaction));
                 Enter(Phase.AcceptingResourceDivision);
             }
@@ -69,8 +69,8 @@ namespace Treachery.Shared
         {
             var toBeDivided = DivideResources.GetResourcesToBeDivided(this);
 
-            int gainedByFirstFaction = DivideResources.GainedByFirstFaction(this, !divisionWasAgreed, CurrentDivideResources.PortionToFirstPlayer);
-            int gainedByOtherFaction = DivideResources.GainedByOtherFaction(this, !divisionWasAgreed, CurrentDivideResources.PortionToFirstPlayer);
+            int gainedByFirstFaction = DivideResources.GainedByFirstFaction(toBeDivided, divisionWasAgreed, CurrentDivideResources.PortionToFirstPlayer);
+            int gainedByOtherFaction = DivideResources.GainedByOtherFaction(toBeDivided, divisionWasAgreed, CurrentDivideResources.PortionToFirstPlayer);
 
             Collect(toBeDivided.FirstFaction, toBeDivided.Territory, gainedByFirstFaction);
             Collect(toBeDivided.OtherFaction, toBeDivided.Territory, gainedByOtherFaction);
@@ -85,7 +85,7 @@ namespace Treachery.Shared
             Log(faction, " collect ", Payment(amount), " from ", from);
             GetPlayer(faction).Resources += amount;
             if (faction == Faction.Yellow) ResourcesCollectedByYellow += amount;
-            if (faction == Faction.Black && !from.IsStronghold && !from.IsHomeworld && !from.IsProtectedFromWorm) ResourcesCollectedByBlackFromDesertOrHomeworld += amount;
+            if (faction == Faction.Black && !from.IsStronghold && !from.IsProtectedFromWorm) ResourcesCollectedByBlackFromDesertOrHomeworld += amount;
         }
 
         public Faction OwnerOfFlightDiscovery { get; private set; }
@@ -144,35 +144,28 @@ namespace Treachery.Shared
         private void EndCollectionMainPhase()
         {
             int receivedAmountByYellow = ResourcesCollectedByYellow;
-            ModifyIncomeBasedOnThresholdOrOccupation(GetPlayer(Faction.Yellow), ref receivedAmountByYellow, out Player occupier, out int amountToOccupier);
-            if (occupier != null && occupier.Is(Faction.Black)) ResourcesCollectedByBlackFromDesertOrHomeworld += amountToOccupier;
+            ModifyIncomeBasedOnThresholdOrOccupation(GetPlayer(Faction.Yellow), ref receivedAmountByYellow);
 
             var black = GetPlayer(Faction.Black);
             if (ResourcesCollectedByBlackFromDesertOrHomeworld != 0 && black.HasHighThreshold())
             {
                 black.Resources += 2;
-                Log(Faction.Black, " get ", Payment(2), " from ", black.PrimaryHomeworld);
+                Log(Faction.Black, " get ", Payment(2), " extra as they collected from desert or homeworld");
             }
 
             MainPhaseEnd();
             Enter(Version >= 103, Phase.CollectionReport, EnterMentatPhase);
         }
 
-        private void ModifyIncomeBasedOnThresholdOrOccupation(Player from, ref int receivedAmount) => ModifyIncomeBasedOnThresholdOrOccupation(from, ref receivedAmount, out _, out _);
-
-
-        private void ModifyIncomeBasedOnThresholdOrOccupation(Player from, ref int receivedAmount, out Player occupier, out int amountToOccupier)
+        private void ModifyIncomeBasedOnThresholdOrOccupation(Player from, ref int receivedAmount)
         {
-            occupier = null;
-            amountToOccupier = 0;
-
             if (receivedAmount > 1 && Applicable(Rule.Homeworlds))
             {
-                amountToOccupier = from.HasLowThreshold() ? (int)(0.5f * receivedAmount) : 0;
+                int amountToOccupier = from.HasLowThreshold() ? (int)(0.5f * receivedAmount) : 0;
                 receivedAmount -= amountToOccupier;
 
                 var homeworld = from.Homeworlds.First();
-                occupier = OccupierOf(homeworld.World);
+                var occupier = OccupierOf(homeworld.World);
 
                 if (occupier != null)
                 {
@@ -274,7 +267,7 @@ namespace Treachery.Shared
                     toBeDivided.Amount = totalCollectedAmount;
                     toBeDivided.Territory = l.Key.Territory;
                     CollectedResourcesToBeDivided.Add(toBeDivided);
-                    Log(toBeDivided.FirstFaction, " and ", toBeDivided.OtherFaction, " will have to share ", Payment(totalCollectedAmount), " from ", l.Key.Territory);
+                    Log(toBeDivided.FirstFaction, " and ", toBeDivided.OtherFaction, " will have to share ", Payment(totalCollectedAmount), " collected from ", l.Key.Territory);
                 }
             }
         }

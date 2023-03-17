@@ -312,13 +312,14 @@ namespace Treachery.Shared
             return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeSpecialShipments) ||
                    p.Ally == Faction.Orange && AllyMayShipAsOrange ||
                    p.Initiated(CurrentOrangeNexus) ||
-                   ShipmentPermissions.TryGetValue(p.Faction, out var permission) && (permission == ShipmentPermission.CrossAtNormalRates || permission == ShipmentPermission.CrossAtOrangeRates);
+                   HasShipmentPermission(p, ShipmentPermission.Cross);
         }
 
         public bool MayShipToReserves(Player p)
         {
             return p.Is(Faction.Orange) && !Prevented(FactionAdvantage.OrangeSpecialShipments) ||
-                   p.Initiated(CurrentOrangeNexus);
+                   p.Initiated(CurrentOrangeNexus) ||
+                   HasShipmentPermission(p, ShipmentPermission.ToHomeworld);
         }
 
         public bool MayShipWithDiscount(Player p)
@@ -1743,12 +1744,23 @@ namespace Treachery.Shared
         {
             Log(e);
 
-            ShipmentPermissions.Remove(e.Target);
+            foreach (var f in e.Factions)
+            {
+                ShipmentPermissions.Remove(f);
+            }
 
             if (e.Permission != ShipmentPermission.None)
             {
-                ShipmentPermissions.Add(e.Target, e.Permission);
+                foreach (var f in e.Factions)
+                {
+                    ShipmentPermissions.Add(f, e.Permission);
+                }
             }
+        }
+
+        public bool HasShipmentPermission(Player p, ShipmentPermission permission)
+        {
+            return ShipmentPermissions.TryGetValue(p.Faction, out var permissions) && (permissions & permission) == permission;
         }
     }
 }

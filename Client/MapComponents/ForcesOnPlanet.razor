@@ -15,7 +15,7 @@
         if (h.Game.StrongholdOwnership.TryGetValue(stronghold, out var owner))
         {
             var opacity = stronghold == Game.Map.HiddenMobileStronghold && !showHMS ? 0.2f : 1f;
-            <Image X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src="@Skin.Current.GetFactionTableImageURL(h.Game.StrongholdOwnership[stronghold])"
+            <MapImage X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src="@Skin.Current.GetFactionTableImageURL(h.Game.StrongholdOwnership[stronghold])"
                Opacity=opacity Popover=@Popup.Get(stronghold.Advantage, owner) PopoverStyle=""/>
 
             y += Skin.Current.PlayerTokenRadius;
@@ -24,7 +24,7 @@
         foreach (var terr in Game.TerrorIn(stronghold.Territory))
         {
             var popover = Player.Faction == Faction.Cyan ? Skin.Current.Format("{0} - {1}", terr, Skin.Current.GetTerrorTypeDescription(terr)) : "Terror";
-            <Image X=x Y=y Filter="hue-rotate(180deg);" Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetFactionTableImageURL(Faction.Cyan)
+            <MapImage X=x Y=y Filter="hue-rotate(180deg);" Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetFactionTableImageURL(Faction.Cyan)
                 ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover PopoverAsTooltip=true />
 
             y += Skin.Current.PlayerTokenRadius;
@@ -34,7 +34,7 @@
         if (ambassador != Ambassador.None)
         {
             var popover = $"{Skin.Current.Describe(ambassador)} Ambassador - {Skin.Current.GetAmbassadorDescription(ambassador)}";
-            <Image X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetImageURL(ambassador)
+            <MapImage X=x Y=y Diameter=@Skin.Current.PlayerTokenRadius Src=@Skin.Current.GetImageURL(ambassador)
             ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" Popover=@popover PopoverAsTooltip=true />
 
             y += Skin.Current.PlayerTokenRadius;
@@ -55,7 +55,7 @@
             if (!showHMS) showForces = false;
             forceDiameter = 1.5f * Skin.Current.FORCETOKEN_RADIUS;
 
-            <Image X="@(pos.X - 0.7f * Skin.Current.HmsRadius)"
+            <MapImage X="@(pos.X - 0.7f * Skin.Current.HmsRadius)"
                Y="@(pos.Y - Skin.Current.HmsRadius)"
                Width=@(Skin.Current.HmsRadius + Math.Abs(Skin.Current.HmsDX)) Height="@(2 * Skin.Current.HmsRadius)"
                Src="@Skin.Current.HMS_URL"
@@ -70,7 +70,7 @@
                     FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1" />
             }
 
-            <Image X="@(pos.X - 0.4f * Skin.Current.HmsRadius + Math.Abs(Skin.Current.HmsDX))"
+            <MapImage X="@(pos.X - 0.4f * Skin.Current.HmsRadius + Math.Abs(Skin.Current.HmsDX))"
                Y="@(pos.Y - 0.18f * Skin.Current.HmsRadius)"
                Diameter="@(Skin.Current.FORCETOKEN_RADIUS)"
                Src="@(showHMS ? Skin.Current.Eye_URL : Skin.Current.EyeSlash_URL)"
@@ -82,7 +82,7 @@
         {
             forceDiameter = 1.5f * Skin.Current.FORCETOKEN_RADIUS;
 
-            <Image X=@(pos.X - 1.5f * Skin.Current.FORCETOKEN_RADIUS) Y=@(pos.Y - 2f * Skin.Current.FORCETOKEN_RADIUS) Diameter=@(3 * Skin.Current.FORCETOKEN_RADIUS) 
+            <MapImage X=@(pos.X - 1.5f * Skin.Current.FORCETOKEN_RADIUS) Y=@(pos.Y - 2f * Skin.Current.FORCETOKEN_RADIUS) Diameter=@(3 * Skin.Current.FORCETOKEN_RADIUS) 
                 Src=@Skin.Current.GetImageURL(ds.Discovery) Popover=@Intel(ds) 
                 ShadowX=1 ShadowY=1 />
 
@@ -98,7 +98,7 @@
                 (Player.Faction == Faction.Yellow && discovery.TokenType == DiscoveryTokenType.Yellow || Player.Faction == Faction.Orange && discovery.TokenType == DiscoveryTokenType.Orange) ?
                 $"{Skin.Current.Describe(discovery.Token)} - {Skin.Current.GetDiscoveryTokenDescription(discovery.Token)}" : Skin.Current.Describe(discovery.TokenType);
 
-            <Image X=@(pos.X - 3 * Skin.Current.FORCETOKEN_RADIUS) Y=@(pos.Y - 3 * Skin.Current.FORCETOKEN_RADIUS) Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS)
+            <MapImage X=@(pos.X - 3 * Skin.Current.FORCETOKEN_RADIUS) Y=@(pos.Y - 3 * Skin.Current.FORCETOKEN_RADIUS) Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS)
                 Src=@Skin.Current.GetImageURL(discovery.TokenType) Popover=@popoverToShow PopoverAsTooltip=true
                 Opacity="0.9f" ShadowX=1 ShadowY=1 />
         }

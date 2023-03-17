@@ -67,6 +67,9 @@ else
     [Parameter]
     public Game Game { get; set; }
 
+    [Parameter]
+    public string Shadow { get; set; } = "filter: drop-shadow(1px 1px 1px black);";
+
     private ElementReference element;
     private string ImgWidth;
 
@@ -125,8 +128,6 @@ else
             _ = Browser.RemovePopover(element);
         }
     }
-
-    private string Shadow => "filter: drop-shadow(1px 1px 1px black);";
 
     private string GetShownImageURL()
     {

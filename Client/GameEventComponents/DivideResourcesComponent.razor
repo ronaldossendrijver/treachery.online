@@ -27,7 +27,7 @@
             </div>
 
             <div class="mt-1">
-                If you pass, you get @DivideResources.GainedByFirstFaction(Game, true, amountToFirstFaction) and <FactionComponent Faction=@toBeDivided.OtherFaction Diameter=30 /> get @DivideResources.GainedByOtherFaction(Game, true, amountToFirstFaction)
+                If you pass, you get @DivideResources.GainedByFirstFaction(toBeDivided, false, amountToFirstFaction) and <FactionComponent Faction=@toBeDivided.OtherFaction Diameter=30 /> get @DivideResources.GainedByOtherFaction(toBeDivided, false, amountToFirstFaction)
             </div>
 
             <ButtonRowComponent Pass="Pass" Confirm="Confirm" ConfirmError=@Validation />

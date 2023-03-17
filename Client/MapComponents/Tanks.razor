@@ -50,7 +50,7 @@
 
                 if (h.Game.LeaderState[leader].IsFaceDownDead)
                 {
-                    <Image X="@(l.X + displaceX)" Y="@(l.Y)" Diameter="@(leaderDiameter)"
+                    <MapImage X="@(l.X + displaceX)" Y="@(l.Y)" Diameter="@(leaderDiameter)"
                            Src="@Skin.Current.GetFactionFacedownImageURL(p.Faction)"
                            Popover="@Popover(leader)" PopoverStyle=""
                            ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" />
@@ -71,7 +71,7 @@
         if (p.Faction == Faction.Green && !h.Game.MessiahIsAlive)
         {
             var l = new Point((int)x, (int)y);
-            <Image X="@(x)" Y="@(y)" Diameter="@(0.5f * leaderDiameter)"
+            <MapImage X="@(x)" Y="@(y)" Diameter="@(0.5f * leaderDiameter)"
                    Src="@Skin.Current.Messiah_URL"
                    ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" Popover="@Skin.Current.Describe(Concept.Messiah)"/>
             

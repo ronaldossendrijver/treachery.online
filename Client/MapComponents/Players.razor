@@ -3,7 +3,6 @@
 --->
 
 @using Treachery.Shared
-@using System.Drawing
 @inherits MapComponent
 
 <div @ref=@element>
@@ -28,13 +27,13 @@
 
             <Circle X="@position.X" Y="@position.Y" Radius="@(1.35f * Skin.Current.PlayerTokenRadius)" FillColor="@Skin.Current.TABLEPOSITION_BACKGROUNDCOLOR" />
 
-            <Image X="@(x)" Y="@(y)" Diameter=@factionTokenDiameter Src="@Skin.Current.GetFactionTableImageURL(p.Faction)" 
+            <MapImage X="@(x)" Y="@(y)" Diameter=@factionTokenDiameter Src="@Skin.Current.GetFactionTableImageURL(p.Faction)" 
                    ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                    Popover="@Intel(p)"/>
 
             if (p.Ally != Faction.None)
             {
-                <Image X="@(position.X)" Y="@(position.Y + 0.25f * Skin.Current.PlayerTokenRadius)" Diameter=@(1.2f * Skin.Current.PlayerTokenRadius) Src="@Skin.Current.GetFactionTableImageURL(p.Ally)" 
+                <MapImage X="@(position.X)" Y="@(position.Y + 0.25f * Skin.Current.PlayerTokenRadius)" Diameter=@(1.2f * Skin.Current.PlayerTokenRadius) Src="@Skin.Current.GetFactionTableImageURL(p.Ally)" 
                        ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                        Popover="@Intel(p.AlliedPlayer)"/>
             }
@@ -48,7 +47,7 @@
 
                 var homeworldXY = Pos(positionOnCircle, Skin.Current.PlayerTokenRadius);
 
-                <Image X=homeworldXY.X Y=@homeworldXY.Y
+                <MapImage X=homeworldXY.X Y=@homeworldXY.Y
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
                        Popover="@HomeworldIntel(homeworld)" OnClick="e => OnClick(e, homeworld)" PopoverStyle=""/>
@@ -86,7 +85,7 @@
             foreach (var tt in p.TechTokens)
             {
                 positionOnCircle += (TWOPI / 90);
-                <Image XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
+                <MapImage XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(tt)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                        Popover="@Popup.Get(tt)" PopoverStyle=""/>
@@ -96,7 +95,7 @@
             {
                 positionOnCircle += (TWOPI / 90);
 
-                <Image XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
+                <MapImage XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(Game.PinkLoyalLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
                        Popover=@Skin.Current.Format("{0} is Loyal to {1}", Game.PinkLoyalLeader, Faction.Pink) PopoverAsTooltip=true/>
@@ -106,7 +105,7 @@
 
                 positionOnCircle += (TWOPI / 90);
 
-                <Image XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
+                <MapImage XY=@Pos(positionOnCircle, Skin.Current.PlayerTokenRadius)
                         Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                         Src="@Skin.Current.GetImageURL(skilledLeader)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1" 
                         Popover="@Popup.Get(skilledLeader, h.Game.Skill(skilledLeader))" PopoverStyle=""/>
@@ -123,7 +122,7 @@
             {
                 positionOnCircle += (TWOPI / 90);
 
-                <Image XY=@Pos(positionOnCircle, Skin.Current.FORCETOKEN_RADIUS) Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS) Src="@Skin.Current.FactionSpecialForceImage_URL[Faction.White]"
+                <MapImage XY=@Pos(positionOnCircle, Skin.Current.FORCETOKEN_RADIUS) Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS) Src="@Skin.Current.FactionSpecialForceImage_URL[Faction.White]"
                        ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"
                        Popover="@Skin.Current.Format("Latest revealed No-Field: {0}", Game.LatestRevealedNoFieldValue)" PopoverAsTooltip=true/>
 
@@ -141,7 +140,7 @@
                 positionOnCircle += (TWOPI / 90);
                 string tooltip = Skin.Current.Format("To be collected during {0}", MainPhase.Contemplate);
 
-                <Image 
+                <MapImage 
                     XY=@Pos(positionOnCircle, Skin.Current.FORCETOKEN_RADIUS) 
                     Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS)
                     Src="@Skin.Current.Harvester_URL"
@@ -164,7 +163,7 @@
                 positionOnCircle += (TWOPI / 90);
                 string tooltip = Skin.Current.Format("Subbed {0}", Concept.Resource);
 
-                <Image 
+                <MapImage 
                     XY=@Pos(positionOnCircle, Skin.Current.FORCETOKEN_RADIUS) 
                     Diameter=@(2 * Skin.Current.FORCETOKEN_RADIUS) 
                     Src="@Skin.Current.Harvester_URL"
@@ -256,17 +255,17 @@
 
     internal class MapForce
     {
-        internal float X;
-        internal float Y;
+        internal double X;
+        internal double Y;
         internal bool Special;
         internal int Amount;
         internal Faction Faction;
     }
 
-    private PointF Pos(float positionOnCircle, float radiusOfToken = 0) {
+    private PointD Pos(float positionOnCircle, float radiusOfToken = 0) {
 
         var mapradius = 1.05f * Skin.Current.MapRadius;
-        return new PointF(
+        return new PointD(
             X = Skin.Current.PlanetCenter.X + (float)(Math.Cos(positionOnCircle) * mapradius) - radiusOfToken, 
             Y = Skin.Current.PlanetCenter.Y + (float)(Math.Sin(positionOnCircle) * mapradius) - radiusOfToken);
     }

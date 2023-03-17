@@ -307,8 +307,10 @@
             switch (shipmentType)
             {
                 case SHIPMENT_NORMAL:
+                    return Shipment.ValidShipmentLocations(Game, Player, false);
+
                 case SHIPMENT_SITETOSITE:
-                    return Shipment.ValidShipmentLocations(Game, Player);
+                    return Shipment.ValidShipmentLocations(Game, Player, true);
 
                 case SHIPMENT_BACK:
                     return Player.LocationsWithAnyForces;

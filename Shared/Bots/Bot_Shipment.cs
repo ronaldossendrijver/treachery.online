@@ -87,7 +87,7 @@ namespace Treachery.Shared
             LogInfo("DetermineShipment_ShipDirectlyToSpiceOrDiscoveryAsOrangeOrOrangeAlly()");
 
             var bestLocation = Game.ResourcesOnPlanet.Where(kvp =>
-                ValidShipmentLocations.Contains(kvp.Key) &&
+                ValidShipmentLocations(false).Contains(kvp.Key) &&
                 IDontHaveAdvisorsIn(kvp.Key) &&
                 TotalMaxDialOfOpponents(kvp.Key.Territory) <= Param.Shipment_MaxEnemyForceStrengthFightingForSpice &&
                 AllyDoesntBlock(kvp.Key.Territory) &&
@@ -108,7 +108,7 @@ namespace Treachery.Shared
             }
 
             bestLocation = Game.DiscoveriesOnPlanet.Where(kvp =>
-                ValidShipmentLocations.Contains(kvp.Key) &&
+                ValidShipmentLocations(false).Contains(kvp.Key) &&
                 IDontHaveAdvisorsIn(kvp.Key) &&
                 TotalMaxDialOfOpponents(kvp.Key.Territory) <= Param.Shipment_MaxEnemyForceStrengthFightingForSpice &&
                 AllyDoesntBlock(kvp.Key.Territory) &&
@@ -146,7 +146,7 @@ namespace Treachery.Shared
 
             var opponent = GetOpponentThatOccupies(Game.Map.HiddenMobileStronghold.Territory);
 
-            if (opponent != null && ValidShipmentLocations.Contains(Game.Map.HiddenMobileStronghold) && IDontHaveAdvisorsIn(Game.Map.HiddenMobileStronghold))
+            if (opponent != null && ValidShipmentLocations(false).Contains(Game.Map.HiddenMobileStronghold) && IDontHaveAdvisorsIn(Game.Map.HiddenMobileStronghold))
             {
                 var attack = ConstructAttack(Game.Map.HiddenMobileStronghold, extraForces, minResourcesToKeep, maxUnsupportedForces);
                 if (attack.HasForces)
@@ -182,7 +182,7 @@ namespace Treachery.Shared
             LogInfo("DetermineShipment_ShipDirectlyToSpiceOrDiscoveryAsYellow()");
 
             var bestLocation = Game.ResourcesOnPlanet.Where(kvp =>
-                ValidShipmentLocations.Contains(kvp.Key) &&
+                ValidShipmentLocations(false).Contains(kvp.Key) &&
                 AnyForcesIn(kvp.Key) == 0 &&
                 TotalMaxDialOfOpponents(kvp.Key.Territory) <= Param.Shipment_MaxEnemyForceStrengthFightingForSpice &&
                 AllyDoesntBlock(kvp.Key.Territory) &&
@@ -201,7 +201,7 @@ namespace Treachery.Shared
             }
 
             bestLocation = Game.DiscoveriesOnPlanet.Where(kvp =>
-                ValidShipmentLocations.Contains(kvp.Key) &&
+                ValidShipmentLocations(false).Contains(kvp.Key) &&
                 AnyForcesIn(kvp.Key) == 0 &&
                 TotalMaxDialOfOpponents(kvp.Key.Territory) <= Param.Shipment_MaxEnemyForceStrengthFightingForSpice &&
                 AllyDoesntBlock(kvp.Key.Territory) &&
@@ -233,7 +233,7 @@ namespace Treachery.Shared
 
             if (richestLocation != null)
             {
-                var locationToShipTo = ValidShipmentLocations.FirstOrDefault(sh =>
+                var locationToShipTo = ValidShipmentLocations(false).FirstOrDefault(sh =>
                     !InStorm(sh) &&
                     AnyForcesIn(sh) <= 8 &&
                     sh.IsStronghold &&
@@ -254,7 +254,7 @@ namespace Treachery.Shared
         {
             LogInfo("DetermineShipment_StrengthenWeakStronghold()");
 
-            var myWeakStrongholds = ValidShipmentLocations
+            var myWeakStrongholds = ValidShipmentLocations(false)
                 .Where(s => s.IsStronghold && IDontHaveAdvisorsIn(s) && OccupyingForces(s) > 0 && AllyDoesntBlock(s.Territory) && (!onlyIfThreatened || OccupyingOpponentIn(s.Territory) != null) && !InStorm(s))
                 .Select(s => new { Location = s, Difference = MaxPotentialForceShortage(takeReinforcementsIntoAccount, s) });
 
@@ -281,14 +281,14 @@ namespace Treachery.Shared
         {
             LogInfo("DetermineShipment_DummyAttack()");
 
-            var targetOfDummyAttack = ValidShipmentLocations
+            var targetOfDummyAttack = ValidShipmentLocations(false)
                 .FirstOrDefault(l => AnyForcesIn(l.Territory) == 0 && AllyDoesntBlock(l.Territory) && !InStorm(l) && l.Territory.IsStronghold && OpponentIsSuitableForTraitorLure(OccupyingOpponentIn(l.Territory)));
 
             LogInfo("OpponentIsSuitableForTraitorLure: " + targetOfDummyAttack);
 
             if (targetOfDummyAttack == null && !MayUseUselessAsKarma && TreacheryCards.Any(c => c.Type == TreacheryCardType.Useless) && !TechTokens.Any())
             {
-                targetOfDummyAttack = ValidShipmentLocations
+                targetOfDummyAttack = ValidShipmentLocations(false)
                 .FirstOrDefault(l => AnyForcesIn(l.Territory) == 0 && AllyDoesntBlock(l.Territory) && !InStorm(l) && l.Territory.IsStronghold && OpponentIsSuitableForUselessCardDumpAttack(OccupyingOpponentIn(l.Territory)));
                 LogInfo("OpponentIsSuitableForDummyAttack: " + targetOfDummyAttack);
             }
@@ -312,7 +312,7 @@ namespace Treachery.Shared
             {
                 LogInfo("DetermineShipment_UnlockMoveBonus()");
 
-                var target = ValidShipmentLocations.Where(l => IDontHaveAdvisorsIn(l))
+                var target = ValidShipmentLocations(false).Where(l => IDontHaveAdvisorsIn(l))
                     .Where(l =>
                         l == Game.Map.Arrakeen && AllyDoesntBlock(Game.Map.Arrakeen) ||
                         l == Game.Map.Carthag && AllyDoesntBlock(Game.Map.Carthag))
@@ -356,7 +356,7 @@ namespace Treachery.Shared
                 else if (VacantAndValid(Game.Map.ShieldWall.Locations.Last())) target = Game.Map.ShieldWall.Locations.Last();
             }
 
-            if (target == null) target = ValidShipmentLocations.Where(l => l.IsStronghold).FirstOrDefault(s => VacantAndValid(s));
+            if (target == null) target = ValidShipmentLocations(false).Where(l => l.IsStronghold).FirstOrDefault(s => VacantAndValid(s));
 
             if (target != null)
             {
@@ -372,7 +372,7 @@ namespace Treachery.Shared
         {
             LogInfo("DetermineShipment_AttackHomeworld()");
 
-            var validHomeworlds = ValidShipmentLocations.Where(l => l is Homeworld hw).Cast<Homeworld>();
+            var validHomeworlds = ValidShipmentLocations(false).Where(l => l is Homeworld hw).Cast<Homeworld>();
 
             var target = WinningOpponentsIWishToAttack(99, false).SelectMany(p => p.Homeworlds).FirstOrDefault(w => validHomeworlds.Contains(w));
             if (target == null) target = WinningOpponentsIWishToAttack(99, true).SelectMany(p => p.Homeworlds).FirstOrDefault(w => validHomeworlds.Contains(w));
@@ -389,7 +389,7 @@ namespace Treachery.Shared
             }
         }
 
-        private bool VacantAndValid(Location location) => VacantAndSafeFromStorm(location) && ValidShipmentLocations.Where(l => l.IsStronghold).Contains(location);
+        private bool VacantAndValid(Location location) => VacantAndSafeFromStorm(location) && ValidShipmentLocations(false).Where(l => l.IsStronghold).Contains(location);
 
         protected virtual void DetermineShipment_PreventFremenWin()
         {
@@ -397,12 +397,12 @@ namespace Treachery.Shared
 
             if (Game.IsPlaying(Faction.Yellow) && Game.YellowVictoryConditionMet)
             {
-                if (ValidShipmentLocations.Where(l => AllyDoesntBlock(l.Territory) && IDontHaveAdvisorsIn(l)).Contains(Game.Map.HabbanyaSietch))
+                if (ValidShipmentLocations(false).Where(l => AllyDoesntBlock(l.Territory) && IDontHaveAdvisorsIn(l)).Contains(Game.Map.HabbanyaSietch))
                 {
                     DetermineShortageForShipment(99, true, Game.Map.HabbanyaSietch, Faction.Black, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, out int cunningNoFieldValue, 0, 99, true);
                     DoShipment(ShipmentDecision.PreventFremenWin, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, Game.Map.HabbanyaSietch, true, true);
                 }
-                else if (ValidShipmentLocations.Where(l => AllyDoesntBlock(l.Territory) && IDontHaveAdvisorsIn(l)).Contains(Game.Map.SietchTabr))
+                else if (ValidShipmentLocations(false).Where(l => AllyDoesntBlock(l.Territory) && IDontHaveAdvisorsIn(l)).Contains(Game.Map.SietchTabr))
                 {
                     DetermineShortageForShipment(99, true, Game.Map.SietchTabr, Faction.Black, ForcesInReserve, SpecialForcesInReserve, out int nrOfForces, out int nrOfSpecialForces, out int noFieldValue, out int cunningNoFieldValue, 0, 99, true);
                     DoShipment(ShipmentDecision.PreventFremenWin, nrOfForces, nrOfSpecialForces, noFieldValue, cunningNoFieldValue, Game.Map.SietchTabr, true, true);
@@ -421,7 +421,7 @@ namespace Treachery.Shared
 
             LogInfo("potentialWinningOpponents with too many unchallenged strongholds:" + string.Join(",", potentialWinningOpponents));
 
-            var shippableStrongholdsOfWinningOpponents = ValidShipmentLocations.Where(l =>
+            var shippableStrongholdsOfWinningOpponents = ValidShipmentLocations(false).Where(l =>
                 (l.Territory.IsStronghold || Game.IsSpecialStronghold(l.Territory)) &&
                 !InStorm(l) &&
                 AllyDoesntBlock(l.Territory) &&
@@ -450,7 +450,7 @@ namespace Treachery.Shared
 
             LogInfo("DetermineShipment_AttackWeakStronghold()");
 
-            var possibleAttacks = ValidShipmentLocations
+            var possibleAttacks = ValidShipmentLocations(false)
                 .Where(l => !dangerousOpponents.Any() || dangerousOpponents.Any(p => p.Occupies(l)))
                 .Where(l => l.Territory.IsStronghold && AnyForcesIn(l) == 0 && AllyDoesntBlock(l.Territory) && !StormWillProbablyHit(l) && !InStorm(l) && IDontHaveAdvisorsIn(l))
                 .Select(l => ConstructAttack(l, extraForces, minResourcesToKeep, maxUnsupportedForces))
@@ -761,20 +761,17 @@ namespace Treachery.Shared
             }
         }
 
-        protected IEnumerable<Location> ValidShipmentLocations
+        protected IEnumerable<Location> ValidShipmentLocations(bool fromPlanet)
         {
-            get
-            {
-                var forbidden = Game.Deals.Where(deal => deal.BoundFaction == Faction && deal.Type == DealType.DontShipOrMoveTo).Select(deal => deal.GetParameter1<Territory>(Game));
-                return Shipment.ValidShipmentLocations(Game, this).Where(l => !forbidden.Contains(l.Territory));
-            }
+            var forbidden = Game.Deals.Where(deal => deal.BoundFaction == Faction && deal.Type == DealType.DontShipOrMoveTo).Select(deal => deal.GetParameter1<Territory>(Game));
+            return Shipment.ValidShipmentLocations(Game, this, fromPlanet).Where(l => !forbidden.Contains(l.Territory));
         }
 
         protected IEnumerable<KeyValuePair<Location, Battalion>> ForceLocationsOutsideStrongholds => ForcesOnPlanet.Where(f => !f.Key.IsStronghold);
 
         protected Location RichestLocationNearShippableStrongholdFarFromExistingForces => Game.ResourcesOnPlanet.Where(kvp =>
                  !ForceLocationsOutsideStrongholds.Any(looseForce => WithinRange(looseForce.Key, kvp.Key, looseForce.Value)) &&
-                 ValidShipmentLocations.Any(sh => sh.IsStronghold && WithinRange(sh, kvp.Key, SampleBattalion(sh))) &&
+                 ValidShipmentLocations(false).Any(sh => sh.IsStronghold && WithinRange(sh, kvp.Key, SampleBattalion(sh))) &&
                  AnyForcesIn(kvp.Key) == 0 &&
                  AllyDoesntBlock(kvp.Key.Territory) &&
                  TotalMaxDialOfOpponents(kvp.Key.Territory) <= Param.Shipment_MaxEnemyForceStrengthFightingForSpice &&

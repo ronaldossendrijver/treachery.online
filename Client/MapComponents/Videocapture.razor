@@ -47,9 +47,9 @@
         _symbolHovered = false;
     }
 
-    private float EffectiveX => _videoHovered ? X - 0.5f * Height : X;
-    private float EffectiveY => _videoHovered ? Y - 0.5f * Height : Y;
-    private float EffectiveHeight => _videoHovered ? 2 * Height : Height;
+    private double EffectiveX => _videoHovered ? X - 0.5f * Height : X;
+    private double EffectiveY => _videoHovered ? Y - 0.5f * Height : Y;
+    private double EffectiveHeight => _videoHovered ? 2 * Height : Height;
 
     private string SymbolFill => _symbolHovered ? "white" : "#FFFFFFBB";
     private string SymbolStyle

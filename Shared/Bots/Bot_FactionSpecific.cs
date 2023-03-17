@@ -16,12 +16,13 @@ namespace Treachery.Shared
         {
             if (Game.CurrentPhase == Phase.BeginningOfShipAndMove)
             {
-                var toDeny = Game.ShipmentPermissions.Keys.FirstOrDefault(f => IsWinningOpponent(f));
-                if (toDeny != Faction.None) return new SetShipmentPermission(Game) { Initiator = Faction, Target = toDeny, Permission = ShipmentPermission.None };
+                var toDeny = Game.ShipmentPermissions.Keys.Where(f => IsWinningOpponent(f));
+                if (toDeny.Any()) return new SetShipmentPermission(Game) { Initiator = Faction, Factions = toDeny.ToArray(), Permission = ShipmentPermission.None };
 
-                var intendedPermission = Resources > 10 || WinningOpponentsIWishToAttack(99, true).Any() ? ShipmentPermission.CrossAtOrangeRates : ShipmentPermission.CrossAtNormalRates;
-                var toAllow = SetShipmentPermission.ValidTargets(Game, this).FirstOrDefault(f => f != Ally && !IsWinningOpponent(f) && (!Game.ShipmentPermissions.TryGetValue(f, out var currentpermission) || currentpermission != intendedPermission));
-                if (toAllow != Faction.None) return new SetShipmentPermission(Game) { Initiator = Faction, Target = toAllow, Permission = intendedPermission };
+                var discountPermission = Resources > 10 || WinningOpponentsIWishToAttack(99, true).Any() ? ShipmentPermission.OrangeRate : ShipmentPermission.None;
+                var permission = ShipmentPermission.Cross | ShipmentPermission.ToHomeworld | discountPermission;
+                var toAllow = SetShipmentPermission.ValidTargets(Game, this).Where(f => !IsWinningOpponent(f) && (!Game.ShipmentPermissions.TryGetValue(f, out var currentpermission) || currentpermission != permission));
+                if (toAllow.Any()) return new SetShipmentPermission(Game) { Initiator = Faction, Factions = toAllow.ToArray(), Permission = permission };
             }
 
             return null;
@@ -1144,12 +1145,12 @@ namespace Treachery.Shared
         {
             if (Resources > 1 && Game.AmbassadorsPlacedThisTurn == 0 || Resources > 6 + Game.AmbassadorsPlacedThisTurn)
             {
-                var stronghold = TerrorPlanted.ValidStrongholds(Game, this).Where(s => AnyForcesIn(s) > 0).RandomOrDefault();
-                if (stronghold == null && HasAlly) stronghold = TerrorPlanted.ValidStrongholds(Game, this).Where(s => AlliedPlayer.AnyForcesIn(s) > 0).RandomOrDefault();
+                var stronghold = AmbassadorPlaced.ValidStrongholds(Game, this).Where(s => AnyForcesIn(s) > 0).RandomOrDefault();
+                if (stronghold == null && HasAlly) stronghold = AmbassadorPlaced.ValidStrongholds(Game, this).Where(s => AlliedPlayer.AnyForcesIn(s) > 0).RandomOrDefault();
                 bool avoidEntering = stronghold != null;
 
-                if (stronghold == null) stronghold = TerrorPlanted.ValidStrongholds(Game, this).Where(s => Vacant(s)).RandomOrDefault();
-                if (stronghold == null) stronghold = TerrorPlanted.ValidStrongholds(Game, this).RandomOrDefault();
+                if (stronghold == null) stronghold = AmbassadorPlaced.ValidStrongholds(Game, this).Where(s => Vacant(s)).RandomOrDefault();
+                if (stronghold == null) stronghold = AmbassadorPlaced.ValidStrongholds(Game, this).RandomOrDefault();
 
                 Ambassador ambassador = Ambassador.None;
                 var availableAmbassadors = AmbassadorPlaced.ValidAmbassadors(this).ToList();

@@ -13,7 +13,7 @@
         float movedX = 0.15f * (5 + i);
         float movedY = 0.15f * (7 + i);
 
-        <img style=@($"position:absolute;left:{Px(- movedX * Skin.Current.FORCETOKEN_RADIUS)};top:{Px(- movedY * Skin.Current.FORCETOKEN_RADIUS)};width:{Diameter}px;opacity:{Opacity};drop-shadow({ShadowSize}px {ShadowSize}px {ShadowBlur}px {ShadowColor})") src=@ForceURL />
+        <img style=@($"pointer-events:none;position:absolute;left:{Px(- movedX * Skin.Current.FORCETOKEN_RADIUS)};top:{Px(- movedY * Skin.Current.FORCETOKEN_RADIUS)};width:{Diameter}px;opacity:{Opacity};drop-shadow({ShadowSize}px {ShadowSize}px {ShadowBlur}px {ShadowColor})") src=@ForceURL />
     }
 
 </div>

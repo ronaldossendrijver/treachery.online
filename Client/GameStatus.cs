@@ -294,7 +294,7 @@ namespace Treachery.Client
                 Phase.ReplacingCardJustWon => Status(
                     Express("You may now discard the card you just won and draw a new card instead."),
                     Express(game.WinningBid?.Initiator, " might replace the card they just won with a card from the deck..."),
-                    game.GetPlayer(game.WinningBid?.Initiator)),
+                    game.GetPlayer(game.WinningBid.Initiator)),
 
                 Phase.WaitingForNextBiddingRound => Status("Factions are waiting for the next card to be put on auction..."),
 
@@ -366,7 +366,7 @@ namespace Treachery.Client
                 Phase.AmbassadorTriggeredByOrangeMove or
                 Phase.AmbassadorTriggeredByCaravan => Status(game,
                     Express("Do you wish to activate your ambassador?"),
-                    Express(Faction.Cyan, Ally(game, Faction.Pink), " are thinking about activating their ambassador..."),
+                    Express(Faction.Pink, Ally(game, Faction.Pink), " are thinking about activating their ambassador..."),
                     PlayerAndAlly(game, Faction.Pink)),
 
                 Phase.AllianceByAmbassador => Status(game,
@@ -467,7 +467,7 @@ namespace Treachery.Client
 
                 Phase.DividingCollectedResources => Status(game,
                     Express("Please make a proposal about how to divide collected ", Concept.Resource, "."),
-                    Express("Waiting for ", game.CollectedResourcesToBeDivided.FirstOrDefault()?.FirstFaction, " to propose how to divide collected", Concept.Resource),
+                    Express("Waiting for ", game.CollectedResourcesToBeDivided.FirstOrDefault()?.FirstFaction, " to propose how to divide collected ", Concept.Resource),
                     game.CollectedResourcesToBeDivided.FirstOrDefault().FirstFaction),
 
                 Phase.AcceptingResourceDivision => Status(game,

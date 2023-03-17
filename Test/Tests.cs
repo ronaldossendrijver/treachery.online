@@ -27,6 +27,11 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
+            if (e is DivideResources dr && DivideResources.GetResourcesToBeDivided(g).Amount == 6)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "DivideResources");
+            }
+
             if (e is AmbassadorActivated aa && aa.YellowForceLocations != null && aa.YellowForceLocations.Count() > 0 && aa.Player.ForcesOnPlanet.Keys.Select(l => l.Territory).Distinct().Count() > 1)
             {
                 WriteSavegameIfApplicable(g, e.Player, "May move from more than 1 territory");

@@ -19,7 +19,7 @@
     @if (!Game.ResourceCardDeck.IsEmpty)
     {
         string cardImageToShow = Game.CurrentMainPhase == MainPhase.ShipmentAndMove && Game.HasResourceDeckPrescience(h.Player) ? Skin.Current.GetImageURL(Game.ResourceCardDeck.Top) : Skin.Current.CardBack_ResourceCard_URL;
-        <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@cardImageToShow" 
+        <MapImage X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@cardImageToShow" 
            ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="2" 
            Popover="@IntelOfResourceCardPile()"/>
 
@@ -33,7 +33,7 @@
     x += cardWidth + cardspacing;
     if (Game.LatestSpiceCardA != null)
     {
-        <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.LatestSpiceCardA)" 
+        <MapImage X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.LatestSpiceCardA)" 
                ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
                Popover="@IntelOfResourceDiscardPileA()"/>
     }
@@ -49,7 +49,7 @@
         x += cardWidth + cardspacing;
         if (Game.LatestSpiceCardB != null)
         {
-            <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.LatestSpiceCardB)" 
+            <MapImage X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.LatestSpiceCardB)" 
                    ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
                    Popover="@IntelOfResourceDiscardPileB()"/>
         }
@@ -64,7 +64,7 @@
     if (Game.SandTroutOccured)
     {
         x += cardWidth + cardspacing;
-        <Image X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.SandTrout)"
+        <MapImage X="@(x)" Y="@(y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.SandTrout)"
             ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" Popover=@Popup.Get(Game.SandTrout)/>
     }
 
@@ -73,7 +73,7 @@
 
     if (Game.TreacheryDeck.Items.Count > 0)
     {
-        <Image X="@(x)" Y="@(Skin.Current.TreacheryDeckLocation.Y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.CardBack_TreacheryCard_URL" 
+        <MapImage X="@(x)" Y="@(Skin.Current.TreacheryDeckLocation.Y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.CardBack_TreacheryCard_URL" 
                ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
                Popover="@IntelOfTreacheryCardPile()"/>
     }
@@ -87,7 +87,7 @@
     if (!Game.TreacheryDiscardPile.IsEmpty)
     {
         x += cardWidth + cardspacing;
-        <Image X="@(x)" Y="@(Skin.Current.TreacheryDeckLocation.Y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.TreacheryDiscardPile.Top)" 
+        <MapImage X="@(x)" Y="@(Skin.Current.TreacheryDeckLocation.Y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.TreacheryDiscardPile.Top)" 
                ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
                Popover="@IntelOfTreacheryDiscardPile()"/>
 
@@ -102,11 +102,11 @@
     {
         x = Skin.Current.TreacheryDeckLocation.X - cardWidth - cardspacing;
 
-        <Image X="@(x)" Y="@(Skin.Current.TreacheryDeckLocation.Y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.CardBack_TreacheryCard_URL" 
+        <MapImage X="@(x)" Y="@(Skin.Current.TreacheryDeckLocation.Y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.CardBack_TreacheryCard_URL" 
                ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
                Popover="@IntelOfWhiteCardPile()"/>
 
-        <Image X="@(x + cardWidth / 3)" Y="@(Skin.Current.TreacheryDeckLocation.Y + cardHeight / 8)" Diameter="@(cardWidth / 3)" Src="@Skin.Current.GetImageURL(Faction.White)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
+        <MapImage X="@(x + cardWidth / 3)" Y="@(Skin.Current.TreacheryDeckLocation.Y + cardHeight / 8)" Diameter="@(cardWidth / 3)" Src="@Skin.Current.GetImageURL(Faction.White)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
 
         <MapText ToShow="@Game.WhiteCache.Count.ToString()"
                  X="@(x + cardWidth / 2)" Y="@(Skin.Current.TreacheryDeckLocation.Y + cardHeight / 1.5f)"

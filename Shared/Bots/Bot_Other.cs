@@ -92,9 +92,14 @@ namespace Treachery.Shared
 
         private DivideResourcesAccepted DetermineDivideResourcesAccepted()
         {
-            var spiceIWant = Math.Max(0, DivideResources.GetResourcesToBeDivided(Game).Amount - Resources);
-            var iWouldGet = DivideResources.GainedByOtherFaction(Game, true, Game.CurrentDivideResources.PortionToFirstPlayer);
-            return new DivideResourcesAccepted(Game) { Initiator = Faction, Passed = (spiceIWant > iWouldGet + 1) };
+            var tbd = DivideResources.GetResourcesToBeDivided(Game);
+
+            var iGetWhenAgreed = DivideResources.GainedByOtherFaction(tbd, true, Game.CurrentDivideResources.PortionToFirstPlayer);
+            var iGetWhenDenied = DivideResources.GainedByOtherFaction(tbd, false, Game.CurrentDivideResources.PortionToFirstPlayer);
+
+            var accepted = iGetWhenAgreed >= iGetWhenDenied || Resources >= AlliedPlayer.Resources;
+
+            return new DivideResourcesAccepted(Game) { Initiator = Faction, Passed = !accepted };
         }
 
         private Discarded DetermineDiscarded()
