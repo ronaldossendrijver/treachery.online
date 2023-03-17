@@ -106,7 +106,7 @@
 
     private async Task StartNewOrLoadedGame()
     {
-        var skinData = Skin.Current == Skin.Dune1979 ? "" : Skin.Current.SkinToString();
+        var skinData = Skin.Current == Skin.Default ? "" : Skin.Current.SkinToString();
         if (h.Host.LoadedGame != null)
         {
             await h.Host.LoadGameAndSkin(h.Host.LoadedGameData, h.Host.LoadedGame, skinData);

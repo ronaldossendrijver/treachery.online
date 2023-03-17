@@ -9,20 +9,20 @@
 {
     if (OnClick.HasDelegate || OnMouseOver.HasDelegate || OnMouseOut.HasDelegate)
     {
-        <img class=@Class style="@Shadow; @Style; @Filter" width=@ImgWidth src=@Src @onclick="e => OnClick.InvokeAsync()" @onmouseenter="e => OnMouseOver.InvokeAsync()" @onmouseout="e => OnMouseOut.InvokeAsync()" @ref=@element data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@Popover />
+        <img class=@Class style="@Shadow; @Style; @Pointer; @Filter" width=@ImgWidth src=@Src @onclick="e => OnClick.InvokeAsync()" @onmouseenter="e => OnMouseOver.InvokeAsync()" @onmouseout="e => OnMouseOut.InvokeAsync()" @ref=@element data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@Popover />
     }
     else
     {
-        <img class=@Class style="@Shadow; @Style; @Filter" width=@ImgWidth src=@Src @ref=@element data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@Popover />
+        <img class=@Class style="@Shadow; @Style; @Pointer; @Filter" width=@ImgWidth src=@Src @ref=@element data-bs-toggle="popover" data-bs-animation="true" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-content=@Popover />
     }
 }
 else if (Popover != null)
 {
-    <img class=@Class style="@Shadow; @Style; @Filter" width=@ImgWidth src=@Src @onclick="e => OnClick.InvokeAsync()" @onmouseenter="e => OnMouseOver.InvokeAsync()" @onmouseout="e => OnMouseOut.InvokeAsync()" title=@Popover />
+    <img class=@Class style="@Shadow; @Style; @Pointer; @Filter" width=@ImgWidth src=@Src @onclick="e => OnClick.InvokeAsync()" @onmouseenter="e => OnMouseOver.InvokeAsync()" @onmouseout="e => OnMouseOut.InvokeAsync()" title=@Popover />
 }
 else
 {
-    <img class=@Class style="@Shadow; @Style; @Filter" width=@ImgWidth src=@Src @onclick="e => OnClick.InvokeAsync()" @onmouseenter="e => OnMouseOver.InvokeAsync()" @onmouseout="e => OnMouseOut.InvokeAsync()" />
+    <img class=@Class style="@Shadow; @Style; @Pointer; @Filter" width=@ImgWidth src=@Src @onclick="e => OnClick.InvokeAsync()" @onmouseenter="e => OnMouseOver.InvokeAsync()" @onmouseout="e => OnMouseOut.InvokeAsync()" />
 }
 
 @code {
@@ -169,4 +169,5 @@ else
 
     private bool ShownHasRichPopover => Shown is TreacheryCard || Shown is ResourceCard || Shown is IHero || Shown is LeaderSkill || Shown is TechToken || Shown is StrongholdAdvantage;
 
+    private string Pointer => Popover != null ? "cursor:pointer" : "";
 }

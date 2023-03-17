@@ -5,20 +5,13 @@
 @using Treachery.Shared;
 @implements IDisposable;
 
-@if (!PopoverAsTooltip && Popover != null)
-{
-    <span @ref=@element class=@Class style=@Style data-bs-animation="true" data-bs-content="@Popover" data-bs-html="true" data-bs-placement="auto" data-bs-trigger="hover" data-bs-toggle="popover">
-        @Skin.Current.Describe(Shown)
-    </span>
-}
-else
-{
-    <span @ref=@element class=@Class style=@Style>
-        @Skin.Current.Describe(Shown)
-    </span>
-}
+<span @ref=@element @attributes=_attributes class=@Class style=@SpanStyle>
+    @Skin.Current.Describe(Shown)
+</span>
 
 @code {
+
+    private Dictionary<string, object> _attributes;
 
     [Parameter]
     public object Shown { get; set; }
@@ -45,7 +38,7 @@ else
     {
         base.OnParametersSet();
 
-        if (_shown != Shown)
+        if (!Equals(_shown, Shown))
         {
             _shown = Shown;
 
@@ -62,8 +55,24 @@ else
 
         if (_popover != Popover)
         {
+            _attributes = new();
             _popover = Popover;
-            _popoverNeedsRefresh = !PopoverAsTooltip;
+
+            if (PopoverAsTooltip) 
+            {
+                _attributes.Add("title", Popover);
+            }
+            else
+            {
+                _attributes.Add("data-bs-trigger", "hover");
+                _attributes.Add("data-bs-toggle", "popover");
+                _attributes.Add("data-bs-html", "true");
+                _attributes.Add("data-bs-animation", "false");
+                _attributes.Add("data-bs-delay", "100");
+                _attributes.Add("data-container", "body");
+                _attributes.Add("data-bs-content", Popover);
+                _popoverNeedsRefresh = true;
+            }
         }
     }
 
@@ -110,4 +119,6 @@ else
     }
 
     private bool ShownHasRichPopover => Shown is TreacheryCard || Shown is ResourceCard || Shown is IHero || Shown is LeaderSkill || Shown is TechToken || Shown is StrongholdAdvantage;
+
+    private string SpanStyle => Popover != null ? "cursor:pointer;" + Style : Style;
 }

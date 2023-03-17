@@ -47,10 +47,20 @@
 
                 var homeworldXY = Pos(positionOnCircle, Skin.Current.PlayerTokenRadius);
 
-                <MapImage X=homeworldXY.X Y=@homeworldXY.Y
+                @if (Game.Applicable(Rule.Homeworlds)) 
+                {
+                    <MapImage X=homeworldXY.X Y=@homeworldXY.Y
                        Diameter=@(2 * Skin.Current.PlayerTokenRadius)
                        Src="@Skin.Current.GetImageURL(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
-                       Popover="@HomeworldIntel(homeworld)" OnClick="e => OnClick(e, homeworld)" PopoverStyle=""/>
+                       Popover=@Popup.Get(homeworld, Game.GetStatusOf(homeworld)) OnClick="e => OnClick(e, homeworld)" PopoverStyle="" />
+                }
+                else
+                {
+                    <MapImage X=homeworldXY.X Y=@homeworldXY.Y
+                       Diameter=@(2 * Skin.Current.PlayerTokenRadius)
+                       Src="@Skin.Current.GetImageURL(homeworld.World)" ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1"
+                       Popover=@Skin.Current.Format("{0} Reserves", homeworld.Faction) PopoverAsTooltip=true />
+                }
 
                 if (h.Status.HighlightedTerritories.Contains(homeworld.Territory))
                 {
@@ -235,18 +245,6 @@
     }
 
     private string DetermineVideoStreamId(Player p) => "video" + p.PositionAtTable;
-
-    private string HomeworldIntel(Homeworld w)
-    {
-        if (Game.Applicable(Rule.Homeworlds))
-        {
-            return Popup.Get(w, Game.GetStatusOf(w));
-        }
-        else
-        {
-            return Skin.Current.Format("{0} Reserves", w.Faction);
-        }
-    }
 
     private async Task OnClick(MouseEventArgs e, Location l)
     {

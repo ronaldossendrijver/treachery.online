@@ -13,7 +13,7 @@
         float movedX = 0.15f * (5 + i);
         float movedY = 0.15f * (7 + i);
 
-        <img style=@($"pointer-events:none;position:absolute;left:{Px(- movedX * Skin.Current.FORCETOKEN_RADIUS)};top:{Px(- movedY * Skin.Current.FORCETOKEN_RADIUS)};width:{Diameter}px;opacity:{Opacity};drop-shadow({ShadowSize}px {ShadowSize}px {ShadowBlur}px {ShadowColor})") src=@ForceURL />
+        <img style=@($"{PointerType};position:absolute;left:{Px(- movedX * Skin.Current.FORCETOKEN_RADIUS)};top:{Px(- movedY * Skin.Current.FORCETOKEN_RADIUS)};width:{Diameter}px;opacity:{Opacity};drop-shadow({ShadowSize}px {ShadowSize}px {ShadowBlur}px {ShadowColor})") src=@ForceURL />
     }
 
 </div>
@@ -93,6 +93,8 @@
     private string BorderColor => Threatened ? "red" : Skin.Current.FORCETOKEN_FONT_BORDERCOLOR;
 
     private int BorderWidth => Threatened ? 2 * Skin.Current.FORCETOKEN_FONT_BORDERWIDTH : Skin.Current.FORCETOKEN_FONT_BORDERWIDTH;
+
+    private string PointerType => ShowPopover ? "" : "pointer-events:none";
 
     public void Dispose()
     {

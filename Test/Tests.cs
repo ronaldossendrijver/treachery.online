@@ -882,7 +882,7 @@ namespace Treachery.Test
             var serializer = JsonSerializer.CreateDefault();
             serializer.Formatting = Formatting.Indented;
             var writer = new StringWriter();
-            serializer.Serialize(writer, Skin.Dune1979);
+            serializer.Serialize(writer, Skin.Default);
             writer.Close();
             var skinData = writer.ToString();
             File.WriteAllText("skin.json", skinData);
