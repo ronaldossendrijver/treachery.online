@@ -18,84 +18,83 @@ namespace Treachery.Client
 
         public const int CurrentVersion = 151;
         public const int MINIMUM_SUPPORTED_VERSION = 23;
-        public const string  DEFAULT_ART_LOCATION = ".";
+        public const string DEFAULT_ART_LOCATION = ".";
 
-        public string  Description;
+        public string Description;
         public int Version;
 
-        public Dictionary<Concept, string > Concept_STR;
-        public Dictionary<MainPhase, string > MainPhase_STR;
-        public Dictionary<int, string > PersonName_STR;
-        public Dictionary<int, string > PersonImage_URL;
-        public Dictionary<int, string > TerritoryName_STR;
-        public Dictionary<int, string > TerritoryBorder_SVG;
+        public Dictionary<Concept, string> Concept_STR;
+        public Dictionary<MainPhase, string> MainPhase_STR;
+        public Dictionary<int, string> PersonName_STR;
+        public Dictionary<int, string> PersonImage_URL;
+        public Dictionary<int, string> TerritoryName_STR;
+        public Dictionary<int, string> TerritoryBorder_SVG;
         public Dictionary<int, Point> LocationCenter_Point;
         public Dictionary<int, Point> LocationSpice_Point;
-        public Dictionary<Faction, string > FactionName_STR;
-        public Dictionary<Faction, string > FactionImage_URL;
-        public Dictionary<Faction, string > FactionTableImage_URL;
-        public Dictionary<Faction, string > FactionFacedownImage_URL;
-        public Dictionary<Faction, string > FactionForceImage_URL;
-        public Dictionary<Faction, string > FactionSpecialForceImage_URL;
-        public Dictionary<Faction, string > FactionColorTransparant;
-        public Dictionary<Faction, string > FactionColor;
-        public Dictionary<Faction, string > ForceName_STR;
-        public Dictionary<Faction, string > SpecialForceName_STR;
-        public Dictionary<TechToken, string > TechTokenName_STR;
-        public Dictionary<TechToken, string > TechTokenImage_URL;
-        public Dictionary<Milestone, string > Sound;
-        public Dictionary<TreacheryCardType, string > TreacheryCardType_STR;
-        public Dictionary<int, string > TreacheryCardName_STR;
-        public Dictionary<int, string > TreacheryCardDescription_STR;
-        public Dictionary<int, string > TreacheryCardImage_URL;
-        public Dictionary<TechToken, string > TechTokenDescription_STR;
-        public Dictionary<int, string > ResourceCardImage_URL;
-        public Dictionary<LeaderSkill, string > LeaderSkillCardName_STR;
-        public Dictionary<LeaderSkill, string > LeaderSkillCardImage_URL;
-        public Dictionary<int, string > StrongholdCardName_STR;
-        public Dictionary<StrongholdAdvantage, string > StrongholdCardImage_URL;
-        public Dictionary<World, string > HomeWorldImage_URL;
-        public Dictionary<World, string > HomeWorldCardImage_URL;
-        public Dictionary<Faction, string > NexusCardImage_URL;
-        public Dictionary<TerrorType, string > TerrorTokenName_STR;
-        public Dictionary<TerrorType, string > TerrorTokenDescription_STR;
-        public Dictionary<DiscoveryToken, string > DiscoveryTokenName_STR;
-        public Dictionary<DiscoveryToken, string > DiscoveryTokenDescription_STR;
-        public Dictionary<DiscoveryToken, string > DiscoveryTokenImage_URL;
-        public Dictionary<DiscoveryTokenType, string > DiscoveryTokenTypeName_STR;
-        public Dictionary<DiscoveryTokenType, string > DiscoveryTokenTypeImage_URL;
-        public Dictionary<Ambassador, string > AmbassadorImage_URL;
-        public Dictionary<Ambassador, string > AmbassadorName_STR;
-        public Dictionary<Ambassador, string > AmbassadorDescription_STR;
+        public Dictionary<Faction, string> FactionName_STR;
+        public Dictionary<Faction, string> FactionImage_URL;
+        public Dictionary<Faction, string> FactionTableImage_URL;
+        public Dictionary<Faction, string> FactionFacedownImage_URL;
+        public Dictionary<Faction, string> FactionForceImage_URL;
+        public Dictionary<Faction, string> FactionSpecialForceImage_URL;
+        public Dictionary<Faction, string> FactionColor;
+        public Dictionary<Faction, string> ForceName_STR;
+        public Dictionary<Faction, string> SpecialForceName_STR;
+        public Dictionary<TechToken, string> TechTokenName_STR;
+        public Dictionary<TechToken, string> TechTokenImage_URL;
+        public Dictionary<Milestone, string> Sound;
+        public Dictionary<TreacheryCardType, string> TreacheryCardType_STR;
+        public Dictionary<int, string> TreacheryCardName_STR;
+        public Dictionary<int, string> TreacheryCardDescription_STR;
+        public Dictionary<int, string> TreacheryCardImage_URL;
+        public Dictionary<TechToken, string> TechTokenDescription_STR;
+        public Dictionary<int, string> ResourceCardImage_URL;
+        public Dictionary<LeaderSkill, string> LeaderSkillCardName_STR;
+        public Dictionary<LeaderSkill, string> LeaderSkillCardImage_URL;
+        public Dictionary<int, string> StrongholdCardName_STR;
+        public Dictionary<StrongholdAdvantage, string> StrongholdCardImage_URL;
+        public Dictionary<World, string> HomeWorldImage_URL;
+        public Dictionary<World, string> HomeWorldCardImage_URL;
+        public Dictionary<Faction, string> NexusCardImage_URL;
+        public Dictionary<TerrorType, string> TerrorTokenName_STR;
+        public Dictionary<TerrorType, string> TerrorTokenDescription_STR;
+        public Dictionary<DiscoveryToken, string> DiscoveryTokenName_STR;
+        public Dictionary<DiscoveryToken, string> DiscoveryTokenDescription_STR;
+        public Dictionary<DiscoveryToken, string> DiscoveryTokenImage_URL;
+        public Dictionary<DiscoveryTokenType, string> DiscoveryTokenTypeName_STR;
+        public Dictionary<DiscoveryTokenType, string> DiscoveryTokenTypeImage_URL;
+        public Dictionary<Ambassador, string> AmbassadorImage_URL;
+        public Dictionary<Ambassador, string> AmbassadorName_STR;
+        public Dictionary<Ambassador, string> AmbassadorDescription_STR;
 
         public bool DrawResourceIconsOnMap;
         public bool ShowVerboseToolipsOnMap;
         public bool ShowArrowsForRecentMoves;
 
-        public string  MusicGeneral_URL;
-        public string  MusicResourceBlow_URL;
-        public string  MusicSetup_URL;
-        public string  MusicBidding_URL;
-        public string  MusicShipmentAndMove_URL;
-        public string  MusicBattle_URL;
-        public string  MusicBattleClimax_URL;
-        public string  MusicMentat_URL;
+        public string MusicGeneral_URL;
+        public string MusicResourceBlow_URL;
+        public string MusicSetup_URL;
+        public string MusicBidding_URL;
+        public string MusicShipmentAndMove_URL;
+        public string MusicBattle_URL;
+        public string MusicBattleClimax_URL;
+        public string MusicMentat_URL;
 
-        public string  Sound_YourTurn_URL;
-        public string  Sound_Chatmessage_URL;
+        public string Sound_YourTurn_URL;
+        public string Sound_Chatmessage_URL;
 
-        public string  Map_URL;
-        public string  Eye_URL;
-        public string  EyeSlash_URL;
-        public string  Planet_URL;
-        public string  CardBack_ResourceCard_URL;
-        public string  CardBack_TreacheryCard_URL;
-        public string  BattleScreen_URL;
-        public string  Messiah_URL;
-        public string  Monster_URL;
-        public string  Harvester_URL;
-        public string  Resource_URL;
-        public string  HMS_URL;
+        public string Map_URL;
+        public string Eye_URL;
+        public string EyeSlash_URL;
+        public string Planet_URL;
+        public string CardBack_ResourceCard_URL;
+        public string CardBack_TreacheryCard_URL;
+        public string BattleScreen_URL;
+        public string Messiah_URL;
+        public string Monster_URL;
+        public string Harvester_URL;
+        public string Resource_URL;
+        public string HMS_URL;
 
         public Point MapDimensions;
         public Point PlanetCenter;
@@ -124,94 +123,94 @@ namespace Treachery.Client
         public int MONSTERTOKEN_RADIUS;
 
         //Force tokens
-        public string  FORCETOKEN_FONT;
-        public string  FORCETOKEN_FONTCOLOR;
-        public string  FORCETOKEN_SPECIAL_FONTCOLOR;
-        public string  FORCETOKEN_FONT_BORDERCOLOR;
+        public string FORCETOKEN_FONT;
+        public string FORCETOKEN_FONTCOLOR;
+        public string FORCETOKEN_SPECIAL_FONTCOLOR;
+        public string FORCETOKEN_FONT_BORDERCOLOR;
         public int FORCETOKEN_FONT_BORDERWIDTH;
-        public string  FORCETOKEN_SPECIAL_BORDERCOLOR;
-        public string  FORCETOKEN_BORDERCOLOR;
+        public string FORCETOKEN_SPECIAL_BORDERCOLOR;
+        public string FORCETOKEN_BORDERCOLOR;
         public int FORCETOKEN_BORDERWIDTH;
         public int FORCETOKEN_SPECIAL_BORDERWIDTH;
         public int FORCETOKEN_RADIUS;
 
         //Spice tokens
-        public string  RESOURCETOKEN_FONT;
-        public string  RESOURCETOKEN_FONTCOLOR;
-        public string  RESOURCETOKEN_FONT_BORDERCOLOR;
+        public string RESOURCETOKEN_FONT;
+        public string RESOURCETOKEN_FONTCOLOR;
+        public string RESOURCETOKEN_FONT_BORDERCOLOR;
         public int RESOURCETOKEN_FONT_BORDERWIDTH;
-        public string  RESOURCETOKEN_COLOR;
-        public string  RESOURCETOKEN_BORDERCOLOR;
+        public string RESOURCETOKEN_COLOR;
+        public string RESOURCETOKEN_BORDERCOLOR;
         public int RESOURCETOKEN_RADIUS;
 
         //Other highlights
-        public string  HIGHLIGHT_OVERLAY_COLOR;
-        public string  METHEOR_OVERLAY_COLOR;
-        public string  BLOWNSHIELDWALL_OVERLAY_COLOR;
-        public string  STORM_OVERLAY_COLOR;
-        public string  STORM_PRESCIENCE_OVERLAY_COLOR;
+        public string HIGHLIGHT_OVERLAY_COLOR;
+        public string METHEOR_OVERLAY_COLOR;
+        public string BLOWNSHIELDWALL_OVERLAY_COLOR;
+        public string STORM_OVERLAY_COLOR;
+        public string STORM_PRESCIENCE_OVERLAY_COLOR;
 
         //Card piles
-        public string  CARDPILE_FONT;
-        public string  CARDPILE_FONTCOLOR;
-        public string  CARDPILE_FONT_BORDERCOLOR;
+        public string CARDPILE_FONT;
+        public string CARDPILE_FONTCOLOR;
+        public string CARDPILE_FONT_BORDERCOLOR;
         public int CARDPILE_FONT_BORDERWIDTH;
 
         //Phases
-        public string  PHASE_FONT;
-        public string  PHASE_ACTIVE_FONT;
-        public string  PHASE_FONTCOLOR;
-        public string  PHASE_ACTIVE_FONTCOLOR;
-        public string  PHASE_FONT_BORDERCOLOR;
+        public string PHASE_FONT;
+        public string PHASE_ACTIVE_FONT;
+        public string PHASE_FONTCOLOR;
+        public string PHASE_ACTIVE_FONTCOLOR;
+        public string PHASE_FONT_BORDERCOLOR;
         public int PHASE_FONT_BORDERWIDTH;
         public int PHASE_ACTIVE_FONT_BORDERWIDTH;
 
         //Player names
-        public string  PLAYERNAME_FONT;
-        public string  PLAYERNAME_FONTCOLOR;
-        public string  PLAYERNAME_FONT_BORDERCOLOR;
+        public string PLAYERNAME_FONT;
+        public string PLAYERNAME_FONTCOLOR;
+        public string PLAYERNAME_FONT_BORDERCOLOR;
         public int PLAYERNAME_FONT_BORDERWIDTH;
 
         //Skill names
-        public string  SKILL_FONT;
-        public string  SKILL_FONTCOLOR;
-        public string  SKILL_FONT_BORDERCOLOR;
+        public string SKILL_FONT;
+        public string SKILL_FONTCOLOR;
+        public string SKILL_FONT_BORDERCOLOR;
         public int SKILL_FONT_BORDERWIDTH;
 
         //Player positions
-        public string  TABLEPOSITION_BACKGROUNDCOLOR;
+        public string TABLEPOSITION_BACKGROUNDCOLOR;
 
         //Turns
-        public string  TURN_FONT;
-        public string  TURN_FONT_COLOR;
-        public string  TURN_FONT_BORDERCOLOR;
+        public string TURN_FONT;
+        public string TURN_FONT_COLOR;
+        public string TURN_FONT_BORDERCOLOR;
         public int TURN_FONT_BORDERWIDTH;
 
         //Wheel
-        public string  WHEEL_FONT;
-        public string  WHEEL_FONTCOLOR;
-        public string  WHEEL_FONT_AGGRESSOR_BORDERCOLOR;
-        public string  WHEEL_FONT_DEFENDER_BORDERCOLOR;
+        public string WHEEL_FONT;
+        public string WHEEL_FONTCOLOR;
+        public string WHEEL_FONT_AGGRESSOR_BORDERCOLOR;
+        public string WHEEL_FONT_DEFENDER_BORDERCOLOR;
         public int WHEEL_FONT_BORDERWIDTH;
 
         //Shadows
-        public string  SHADOW;
+        public string SHADOW;
 
         //General
-        public string  GAMEVERSION_FONT;
-        public string  PLAYEDCARD_MESSAGE_FONT;
-        public string  FACTION_INFORMATIONCARDSTYLE;
-        public string  TRACKER_FONT;
+        public string GAMEVERSION_FONT;
+        public string PLAYEDCARD_MESSAGE_FONT;
+        public string FACTION_INFORMATIONCARDSTYLE;
+        public string TRACKER_FONT;
 
         #endregion Attributes
 
         #region Descriptions
 
-        public string  Format(string  m, params object[] list)
+        public string Format(string m, params object[] list)
         {
             try
             {
-                return string .Format(m, Describe(list));
+                return string.Format(m, Describe(list));
             }
             catch (Exception)
             {
@@ -219,11 +218,11 @@ namespace Treachery.Client
             }
         }
 
-        public string  FormatCapitalized(string  m, params object[] list)
+        public string FormatCapitalized(string m, params object[] list)
         {
             try
             {
-                return FirstCharToUpper(string .Format(m, Describe(list)));
+                return FirstCharToUpper(string.Format(m, Describe(list)));
             }
             catch (Exception)
             {
@@ -231,11 +230,11 @@ namespace Treachery.Client
             }
         }
 
-        public string  Join<T>(IEnumerable<T> items)
+        public string Join<T>(IEnumerable<T> items)
         {
             if (items == null) return "";
 
-            var result = string .Join(", ", items.Select(i => Describe(i)));
+            var result = string.Join(", ", items.Select(i => Describe(i)));
 
             if (result.Length == 0)
             {
@@ -247,7 +246,7 @@ namespace Treachery.Client
             }
         }
 
-        public string  Join(IEnumerable items)
+        public string Join(IEnumerable items)
         {
             var itemsAsObjects = new List<object>();
             foreach (var item in items)
@@ -296,15 +295,15 @@ namespace Treachery.Client
 
         public Point GetSpiceLocation(Location location) => location.SpiceBlowAmount != 0 ? LocationSpice_Point[location.Id] : new Point(0, 0);
 
-        public string  Describe(object value)
+        public string Describe(object value)
         {
             return (value) switch
             {
                 null => "",
-                string  str => str,
+                string str => str,
                 bool b => b ? "Yes" : "No",
-                Message msg => Describe(msg),
-                MessagePart part => Describe(part),
+                Message msg => msg.ToString(this),
+                MessagePart part => part.ToString(this),
                 Payment payment => Format("{0} {1}", payment.Amount, Concept.Resource),
                 Concept c => Describe(c),
                 Faction faction => Describe(faction),
@@ -349,7 +348,7 @@ namespace Treachery.Client
             return result;
         }
 
-        private static string  FirstCharToUpper(string  input)
+        private static string FirstCharToUpper(string input)
         {
             if (input == null || input == "")
             {
@@ -361,12 +360,12 @@ namespace Treachery.Client
             }
         }
 
-        public string  Describe(Territory t)
+        public string Describe(Territory t)
         {
             return GetLabel(TerritoryName_STR, t.SkinId);
         }
 
-        public string  Describe(IHero hero)
+        public string Describe(IHero hero)
         {
             return (hero) switch
             {
@@ -378,7 +377,7 @@ namespace Treachery.Client
             };
         }
 
-        public string  Describe(Location l)
+        public string Describe(Location l)
         {
             if (l.Orientation != "")
             {
@@ -390,22 +389,13 @@ namespace Treachery.Client
             }
         }
 
-        public string  Describe(Faction f)
-        {
-            return FactionName_STR[f];
-        }
+        public string Describe(Faction f) => GetLabel(FactionName_STR, f);
 
-        public string  Describe(Concept c)
-        {
-            return Concept_STR[c];
-        }
+        public string Describe(Concept c) => GetLabel(Concept_STR, c);
 
-        public string  Describe(TreacheryCardType t)
-        {
-            return TreacheryCardType_STR[t];
-        }
+        public string Describe(TreacheryCardType t) => GetLabel(TreacheryCardType_STR, t);
 
-        public string  Describe(ResourceCard c)
+        public string Describe(ResourceCard c)
         {
             if (c == null)
             {
@@ -429,75 +419,33 @@ namespace Treachery.Client
             }
         }
 
-        public string  Describe(TreacheryCard c)
-        {
-            return GetLabel(TreacheryCardName_STR, c.SkinId);
-        }
+        public string Describe(TreacheryCard c) => GetLabel(TreacheryCardName_STR, c.SkinId);
 
-        public string  Describe(LeaderSkill l)
-        {
-            return LeaderSkillCardName_STR[l];
-        }
+        public string Describe(LeaderSkill l) => GetLabel(LeaderSkillCardName_STR, l);
 
-        public string  Describe(DiscoveryToken dt)
-        {
-            return DiscoveryTokenName_STR[dt];
-        }
+        public string Describe(DiscoveryToken dt) => GetLabel(DiscoveryTokenName_STR, dt);
 
-        public string  GetDiscoveryTokenDescription(DiscoveryToken dt)
-        {
-            return DiscoveryTokenDescription_STR[dt];
-        }
+        public string GetDiscoveryTokenDescription(DiscoveryToken dt) => GetLabel(DiscoveryTokenDescription_STR, dt);
 
-        public string  GetImageURL(DiscoveryTokenType dtt)
-        {
-            return DiscoveryTokenTypeImage_URL[dtt];
-        }
+        public string GetImageURL(DiscoveryTokenType dtt) => GetLabel(DiscoveryTokenTypeImage_URL, dtt);
 
-        public string  GetImageURL(DiscoveryToken dt)
-        {
-            return DiscoveryTokenImage_URL[dt];
-        }
+        public string GetImageURL(DiscoveryToken dt) => GetLabel(DiscoveryTokenImage_URL, dt);
 
-        public string  Describe(DiscoveryTokenType dtt)
-        {
-            return DiscoveryTokenTypeName_STR[dtt];
-        }
+        public string Describe(DiscoveryTokenType dtt) => GetLabel(DiscoveryTokenTypeName_STR, dtt);
 
-        public string  Describe(TerrorType terr)
-        {
-            return TerrorTokenName_STR[terr];
-        }
+        public string Describe(TerrorType terr) => GetLabel(TerrorTokenName_STR, terr);
 
-        public string  GetTerrorTypeDescription(TerrorType terr)
-        {
-            return TerrorTokenDescription_STR[terr];
-        }
+        public string GetTerrorTypeDescription(TerrorType terr) => GetLabel(TerrorTokenDescription_STR, terr);
 
-        public string  Describe(Ambassador ambassador)
-        {
-            return AmbassadorName_STR[ambassador];
-        }
+        public string Describe(Ambassador ambassador) => GetLabel(AmbassadorName_STR,ambassador);
 
-        public string  GetAmbassadorDescription(Ambassador ambassador)
-        {
-            return AmbassadorDescription_STR[ambassador];
-        }
+        public string GetAmbassadorDescription(Ambassador ambassador) => GetLabel(AmbassadorDescription_STR,ambassador);
 
-        public string  GetImageURL(Ambassador ambassador)
-        {
-            return AmbassadorImage_URL[ambassador];
-        }
+        public string GetImageURL(Ambassador ambassador) => GetLabel(AmbassadorImage_URL,ambassador);
 
-        public string  Describe(MainPhase p)
-        {
-            return MainPhase_STR[p];
-        }
+        public string Describe(MainPhase p) => GetLabel(MainPhase_STR, p);
 
-        public string  Describe(TechToken tt)
-        {
-            return TechTokenName_STR[tt];
-        }
+        public string Describe(TechToken tt) => GetLabel(TechTokenName_STR, tt);
 
         private static Faction GetFaction(FactionForce f)
         {
@@ -519,7 +467,7 @@ namespace Treachery.Client
             };
         }
 
-        public string  Describe(FactionForce f) => ForceName_STR[GetFaction(f)];
+        public string Describe(FactionForce f) => GetLabel(ForceName_STR, GetFaction(f));
 
         private static Faction GetFaction(FactionSpecialForce f)
         {
@@ -534,19 +482,9 @@ namespace Treachery.Client
             };
         }
 
-        public string  Describe(FactionSpecialForce f) => SpecialForceName_STR[GetFaction(f)];
+        public string Describe(FactionSpecialForce f) => GetLabel(SpecialForceName_STR,GetFaction(f));
 
-        public string  Describe(Message msg)
-        {
-            return msg.ToString(this);
-        }
-
-        public string  Describe(MessagePart part)
-        {
-            return part.ToString(this);
-        }
-
-        public string  Describe(FactionAdvantage advantage)
+        public string Describe(FactionAdvantage advantage)
         {
             return advantage switch
             {
@@ -611,7 +549,7 @@ namespace Treachery.Client
         }
 
 
-        public static string  Describe(Ruleset s)
+        public static string Describe(Ruleset s)
         {
             return s switch
             {
@@ -632,7 +570,7 @@ namespace Treachery.Client
             };
         }
 
-        public static string  Describe(RuleGroup s)
+        public static string Describe(RuleGroup s)
         {
             return s switch
             {
@@ -655,7 +593,7 @@ namespace Treachery.Client
             };
         }
 
-        public string  Describe(WinMethod m)
+        public string Describe(WinMethod m)
         {
             return m switch
             {
@@ -669,7 +607,7 @@ namespace Treachery.Client
             };
         }
 
-        public static string  Describe(Phase p)
+        public static string Describe(Phase p)
         {
             return p switch
             {
@@ -683,7 +621,7 @@ namespace Treachery.Client
             };
         }
 
-        public static string  Describe(BrownEconomicsStatus p)
+        public static string Describe(BrownEconomicsStatus p)
         {
             return p switch
             {
@@ -696,7 +634,7 @@ namespace Treachery.Client
             };
         }
 
-        public static string  Describe(AuctionType t)
+        public static string Describe(AuctionType t)
         {
             return t switch
             {
@@ -710,7 +648,7 @@ namespace Treachery.Client
             };
         }
 
-        public string  DescribeDetailed(AuctionType t)
+        public string DescribeDetailed(AuctionType t)
         {
             return t switch
             {
@@ -724,7 +662,7 @@ namespace Treachery.Client
             };
         }
 
-        public static string  Describe(JuiceType jt)
+        public static string Describe(JuiceType jt)
         {
             return jt switch
             {
@@ -735,7 +673,7 @@ namespace Treachery.Client
             };
         }
 
-        public static string  Describe(CaptureDecision c)
+        public static string Describe(CaptureDecision c)
         {
             return c switch
             {
@@ -746,7 +684,7 @@ namespace Treachery.Client
             };
         }
 
-        public string  Describe(StrongholdAdvantage sa)
+        public string Describe(StrongholdAdvantage sa)
         {
             return sa switch
             {
@@ -759,14 +697,12 @@ namespace Treachery.Client
             };
         }
 
-        public string  Describe(Rule r)
+        public string Describe(Rule r)
         {
             return r switch
             {
                 Rule.BasicTreacheryCards => "Basic Treachery Cards",
                 Rule.HasCharityPhase => "Charity Phase",
-
-
 
                 Rule.AdvancedCombat => "Advanced Combat",
                 Rule.IncreasedResourceFlow => "Increased Spice Flow",
@@ -859,58 +795,26 @@ namespace Treachery.Client
 
         #region NamesAndImages
 
-        public string  GetTerritoryBorder(Territory t)
+        public string GetTerritoryBorder(Territory t)
         {
             return t != null ? GetLabel(TerritoryBorder_SVG, t.SkinId) : ""; ;
         }
 
-        public string  GetImageURL(TreacheryCard c)
-        {
-            return c != null ? GetURL(TreacheryCardImage_URL, c.SkinId) : ""; ;
-        }
+        public string GetImageURL(TreacheryCard c) => c != null ? GetLabel(TreacheryCardImage_URL, c.SkinId) : ""; 
 
-        public string  GetImageURL(World w)
-        {
-            return GetURL(HomeWorldImage_URL, w);
-        }
+        public string GetImageURL(World w) => GetLabel(HomeWorldImage_URL, w);
 
-        public string  GetImageURL(StrongholdAdvantage a)
-        {
-            return GetURL(StrongholdCardImage_URL, a);
-        }
+        public string GetImageURL(StrongholdAdvantage a) => GetLabel(StrongholdCardImage_URL, a);
 
-        public string  GetImageURL(ResourceCard c)
-        {
-            return c != null ? GetURL(ResourceCardImage_URL, c.SkinId) : ""; ;
-        }
+        public string GetImageURL(ResourceCard c) => c != null ? GetLabel(ResourceCardImage_URL, c.SkinId) : "";
 
-        public string  GetImageURL(FactionForce ff)
-        {
-            return GetFactionForceImageURL(GetFaction(ff));
-        }
+        public string GetImageURL(LeaderSkill s) => GetLabel(LeaderSkillCardImage_URL, s);
 
-        public string  GetImageURL(FactionSpecialForce fsf)
-        {
-            return GetFactionSpecialForceImageURL(GetFaction(fsf));
-        }
+        public string GetTreacheryCardDescription(TreacheryCard c) => c != null ? GetLabel(TreacheryCardDescription_STR, c.SkinId) : "";
 
+        public object GetTechTokenDescription(TechToken t) => GetLabel(TechTokenDescription_STR, t);
 
-        public string  GetImageURL(LeaderSkill s)
-        {
-            return GetURL(LeaderSkillCardImage_URL, s);
-        }
-
-        public string  GetTreacheryCardDescription(TreacheryCard c)
-        {
-            return c != null ? GetLabel(TreacheryCardDescription_STR, c.SkinId) : ""; ;
-        }
-
-        public object GetTechTokenDescription(TechToken t)
-        {
-            return GetLabel(TechTokenDescription_STR, t);
-        }
-
-        public string  GetImageURL(IHero h)
+        public string GetImageURL(IHero h)
         {
             if (h == null)
             {
@@ -918,7 +822,7 @@ namespace Treachery.Client
             }
             else if (h is TreacheryCard)
             {
-                return GetURL(TreacheryCardImage_URL, h.SkinId);
+                return GetLabel(TreacheryCardImage_URL, h.SkinId);
             }
             else if (h is Messiah)
             {
@@ -926,98 +830,53 @@ namespace Treachery.Client
             }
             else
             {
-                return GetURL(PersonImage_URL, h.SkinId);
+                return GetLabel(PersonImage_URL, h.SkinId);
             }
         }
-        public string  GetImageURL(Faction faction)
+        public string GetImageURL(Faction faction) => GetLabel(FactionImage_URL, faction);
+
+        public string GetFactionTableImageURL(Faction faction) => GetLabel(FactionTableImage_URL, faction);
+
+        public string GetFactionFacedownImageURL(Faction faction) => GetLabel(FactionFacedownImage_URL, faction);
+
+        public string GetFactionForceImageURL(Faction f) => GetLabel(FactionForceImage_URL, f);
+
+        public string GetFactionSpecialForceImageURL(Faction f) => GetLabel(FactionSpecialForceImage_URL, f);
+
+        public string GetImageURL(FactionForce ff)
         {
-            return GetURL(FactionImage_URL, faction);
+            return GetFactionForceImageURL(GetFaction(ff));
         }
 
-        public string  GetFactionTableImageURL(Faction faction)
+        public string GetImageURL(FactionSpecialForce fsf)
         {
-            return GetURL(FactionTableImage_URL, faction);
+            return GetFactionSpecialForceImageURL(GetFaction(fsf));
         }
 
-        public string  GetFactionFacedownImageURL(Faction faction)
+        public string GetHomeworldCardImageURL(World w) => GetLabel(HomeWorldCardImage_URL, w);
+
+        public string GetNexusCardImageURL(Faction f) => GetLabel(NexusCardImage_URL, f);
+
+        public string GetImageURL(TechToken tech) => GetLabel(TechTokenImage_URL, tech);
+
+        private static string GetLabel<T>(Dictionary<T, string> labels, T key)
         {
-            return GetURL(FactionFacedownImage_URL, faction);
+            if (labels.TryGetValue(key, out var result)) return result;
+
+            return "";
         }
 
-        public string  GetFactionForceImageURL(Faction faction)
-        {
-            return GetURL(FactionForceImage_URL, faction);
-        }
+        public string GetSound(Milestone m) => GetLabel(Sound, m);
 
-        public string  GetFactionSpecialForceImageURL(Faction faction)
-        {
-            return GetURL(FactionSpecialForceImage_URL, faction);
-        }
+        public string GetFactionColor(Faction faction) => GetLabel(FactionColor, faction);
 
-        public string  GetHomeworldCardImageURL(World w)
-        {
-            return GetURL(HomeWorldCardImage_URL, w);
-        }
-
-        public string  GetNexusCardImageURL(Faction f)
-        {
-            return GetURL(NexusCardImage_URL, f);
-        }
-
-        public string  GetImageURL(TechToken tech)
-        {
-            return GetURL(TechTokenImage_URL, tech);
-        }
-
-        private static string  GetLabel<T>(Dictionary<T, string > labels, T key)
-        {
-            if (labels == null || !labels.ContainsKey(key))
-            {
-                return "?";
-            }
-            else
-            {
-                return labels[key];
-            }
-        }
-
-        private static string  GetURL<T>(Dictionary<T, string > labels, T key)
-        {
-            if (labels.ContainsKey(key))
-            {
-                return labels[key];
-            }
-            else
-            {
-                return "";
-            }
-        }
-
-        public string  GetSound(Milestone m)
-        {
-            return GetLabel(Sound, m);
-        }
-
-        public string  GetFactionColor(Faction faction)
-        {
-            return FactionColor[faction];
-        }
-
-        public string  GetFactionColorTransparant(Faction faction)
-        {
-            return FactionColorTransparant[faction];
-        }
-
-        public string  GetFactionColorTransparant(Faction faction, string  transparancy)
-        {
-            return FactionColor[faction] + transparancy;
-        }
+        public string GetFactionColorTransparant(Faction faction, string transparancy) => GetLabel(FactionColor, faction) + transparancy;
 
         #endregion NamesAndImages
 
         #region FactionManual
 
-        public string  GetFactionInfo_HTML(Game g, Faction f)
+        public string GetFactionInfo_HTML(Game g, Faction f)
         {
             object[] parameters = new object[]
             {
@@ -1093,25 +952,25 @@ namespace Treachery.Client
             };
         }
 
-        private static string  SheetHeader(string  atStart, int resources, int freeRevival, string  theme) =>
+        private static string SheetHeader(string atStart, int resources, int freeRevival, string theme) =>
             $"<div style='{{25}}'><p><strong>AT START:</strong> {atStart}. Start with {resources} {{16}}.</p><p><strong>FREE REVIVAL:</strong> {freeRevival}</p><h5>Advantages</h5><p>{theme}:</p>";
 
-        private static string  Advantage(string  advantageName, string  advantageDescription, bool condition = true) =>
+        private static string Advantage(string advantageName, string advantageDescription, bool condition = true) =>
             condition ? $"<p><strong>{advantageName.ToUpper()}</strong> - {advantageDescription}" : "";
 
-        private static string  Advantage(object title, string  advantageDescription, bool condition = true) =>
+        private static string Advantage(object title, string advantageDescription, bool condition = true) =>
             Advantage(Current.Describe(title), advantageDescription, condition);
 
-        private static string  Advantage(Game g, Rule rule, string  advantageName, string  advantageDescription) =>
+        private static string Advantage(Game g, Rule rule, string advantageName, string advantageDescription) =>
             g.Applicable(rule) ? $"<p><strong>{advantageName.ToUpper()}</strong> - {advantageDescription}" : "";
 
-        private static string  Advantage(Game g, Rule rule, object title, string  advantageDescription) =>
+        private static string Advantage(Game g, Rule rule, object title, string advantageDescription) =>
             Advantage(g, rule, Current.Describe(title), advantageDescription);
 
-        private static string  AdvancedHeader(Game g, params Rule[] rules) =>
+        private static string AdvancedHeader(Game g, params Rule[] rules) =>
             rules.Any(r => g.Applicable(r)) ? $"<h5>Advanced Game Advantages</h5>" : "";
 
-        private static string  GetGreenTemplate(Game g) =>
+        private static string GetGreenTemplate(Game g) =>
               SheetHeader("10 tokens in {6} and 10 in reserve (off-planet)", 10, 2, "You have limited prescience") +
               Advantage("Bidding Prescience", "you see the treachery card on bid.") +
               Advantage("Spice Blow Prescience", "you see the top card of the {16} deck.") +
@@ -1126,7 +985,7 @@ namespace Treachery.Client
                 </div>";
 
 
-        private static string  GetBlackTemplate(Game g) =>
+        private static string GetBlackTemplate(Game g) =>
               SheetHeader("10 tokens in {7} and 10 tokens in reserve (off-planet)", 10, 2, "You excel in treachery") +
               Advantage("Traitors", "you keep all traitors you draw at the start of the game.") +
               Advantage("Treachery", "you may hold up to 8 treachery cards. At start of game, you are dealt 2 cards instead of 1, and every time you buy a card you get an extra card free from the deck (if you have less than 8 total).") +
@@ -1140,7 +999,7 @@ namespace Treachery.Client
                 <p>Your major handicap is your difficulty in obtaining {16}. You are at your greatest relative strength at the beginning of the game and should capitalize on this fact by quickly buying as many treachery cards as you can, and then surging into battle. Since you get 2 cards for every one you bid for, you can afford to bid a little higher than most, but if you spend too lavishly at first you will not have enough {16} to ship in forces or buy more cards later. The large number of cards you may hold will increase your chances of holding worthless cards. To counteract this you should pick your battles, both to unload cards and to flush out the traitors in your pay.</p>
                 </div>";
 
-        private static string  GetYellowTemplate(Game g) =>
+        private static string GetYellowTemplate(Game g) =>
               SheetHeader("10 tokens distributed as you like on {9}, {10}, and {11}; and 10 tokens in on-planet reserves", 3, 3, "You are native to this planet and know its ways") +
               Advantage("Shipment", "instead of shipping like other factions, you may bring any number of forces from your reserves onto any territory within two territories of and including {12} (subject to storm and occupancy rules).") +
               Advantage("Movement", "you may move two territories instead of one.") +
@@ -1160,7 +1019,7 @@ namespace Treachery.Client
                 <p>Your major handicap is poverty. You won't be available to buy cards early game. You must be patient and move your forces into any vacant strongholds, avoiding battles until you are prepared. In battles you can afford to dial high and sacrifice your troops since they have a high revival rate and you can bring them back into play at no cost. You have better mobility than those without a city, and good fighting leaders. Bide your time and wait for an accessible {16} blow that no one else wants in order to build up your resources.</p>
                 </div>";
 
-        private static string  GetRedTemplate(Game g) =>
+        private static string GetRedTemplate(Game g) =>
               SheetHeader("20 tokens in reserve (off-planet)", 10, 1, "You have access to great wealth") +
               Advantage(MainPhase.Bidding, "Payments for treachery cards go to you.") +
               Advantage(g, Rule.RedSupportingNonAllyBids, "Support", "you may support bids of non-allied players. Any {16} paid this way flows back to you at the end of the bidding phase.") +
@@ -1173,7 +1032,7 @@ namespace Treachery.Client
                 <p>Your major handicap is that you must ship in all of your tokens at the start of the game and often this requires a battle before you are prepared. Even though you do not need to forage for {16} on the surface of the planet often, you still are quite subject to attack since you are likely to concentrate on the cities for the mobility they give you. On the plus side you will never need {16} badly, since the bidding will keep you supplied.</p>
                 </div>";
 
-        private static string  GetOrangeTemplate(Game g) =>
+        private static string GetOrangeTemplate(Game g) =>
               SheetHeader("5 tokens in {8} and 15 tokens in reserve (off-planet)", 5, 1, "You control all shipments onto the planet") +
               Advantage("Payment for shipment", "Payments by other players for shipments onto the planet from off-planet reserves go to you.") +
               Advantage("Types of shipment", "You can make one of three possible types of shipments; you may ship normally from reserves onto the planet; or you may site-to-site ship any number of tokens from any one territory to any other territory on the board; or you may ship any number of tokens from any one territory back to your reserves.") +
@@ -1188,7 +1047,7 @@ namespace Treachery.Client
                 <p>Your major handicap is your weak array of leaders and your inability to revive quickly. In addition, you usually cannot buy treachery cards at the beginning of the game. You are vulnerable at this point and should make your stronger moves after building up your resources. If players do not ship on at a steady rate you will have to fight for {16} on the planet or collect only the isolated blows. Your major advantage is that you can ship onto the planet inexpensively and can ship from any one territory to any other. This mobility allows you to make surprise moves and is particularly useful when you are the last player in the movement round. If the game is out of reach and well along, try suicide battles against the strongest players to weaken them and prevent a win until the last turn: the victory is then yours.</p>
                 </div>";
 
-        private static string  GetBlueTemplate(Game g) =>
+        private static string GetBlueTemplate(Game g) =>
               SheetHeader("1 token in {26} and 19 tokens in reserve (off-planet)", 5, 1, "You are adept in the ways of mind control") +
               Advantage("Prediction", "At start of game you secretly predict which faction will win in which turn (you can't predict the special victory condition of {4} or {3} at the end of play). If that factions wins (alone or as an ally, even your own) when you have predicted, you alone win instead. You can also win normally.") +
               Advantage("Shipment", "Whenever any other player ships, you may ship for free one force to {26}.") +
@@ -1208,7 +1067,7 @@ namespace Treachery.Client
                 <p>Your major handicap is your low revival rate. Don't allow large numbers of your tokens to be killed or you may find yourself without sufficient reserves to bring onto the planet. Your strengths are that you have the ability to win by correctly predicting another winner and the secretly working for that player. In addition, you can be quite effective in battles by voicing your opponent and leaving him weaponless or defenseless. You can afford to bide your time while casting subtle innuendoes about which player you have picked to win.</p>
                 </div>";
 
-        private static string  GetPurpleTemplate(Game g) =>
+        private static string GetPurpleTemplate(Game g) =>
               SheetHeader("20 tokens in reserve (off-planet)", 5, 2, "You have superior genetic engineering technology") +
               Advantage("Face dancers",
                 @"At the start of the game you are not dealt Traitor Cards. After traitors are selected, unused traitor cards are shuffled and you get the top 3 cards. These are your Face Dancers. After a faction has won a battle you may reveal the leader they used to be a Face Dancer, and the following occurs:
@@ -1232,7 +1091,7 @@ namespace Treachery.Client
                 <p>You are handicapped by having no forces on the planet to start and only a small amount of {16} until you begin receiving {16} for revivals. You will have to bide your time as other factions battle, waiting until you start gaining {16} and giving your Face Dancers a chance to suddenly strike, or get into minor battles early to drive forces to the tanks, and possibly get a Face Dancer reveal. Use your ability to cycle through Face Dancers during the Mentat Pause to position yourself with a potentially more useful Face Dancer.</p>
                 </div>";
 
-        private static string  GetGreyTemplate(Game g) =>
+        private static string GetGreyTemplate(Game g) =>
               SheetHeader("3 {32} and 3 {33} in the {34}. 10 {32} and 4 {33} in reserve (off-planet)", 10, 1, "You are skilled in technology and production") +
               Advantage("Start of game", "During Setup you see all initially dealt Treachery Cards and choose your starting card from them.") +
               Advantage("Bidding", "Before Bidding, one extra card is drawn and you see them all and put one of those cards on top or on the bottom of the Treachery Card deck. The remaining cards are shuffled for the bidding round.") +
@@ -1249,7 +1108,7 @@ namespace Treachery.Client
                 <p>You are handicapped by having weaker forces in the half strength {32}, which make up the bulk of your forces. You have no regular source of {16} income. However, tactical placement of your {34} can position you to acquire {16} left behind on the planet. You also have an advantage over other factions because you know what Treachery cards are in play and you can mix in or suppress certain cards during the bidding phase.</p>
                 </div>";
 
-        private static string  GetWhiteTemplate(Game g) =>
+        private static string GetWhiteTemplate(Game g) =>
               SheetHeader("20 tokens in reserve (off-planet). Start with 5 {16}. You have a separate deck of 10 {35} cards that are not part of your hand", 5, 2, "You have alternative technology") +
               Advantage(MainPhase.Bidding,
             @"When drawing Treachery cards up for bid, one less card is drawn and instead you choose to auction a card from your {35} cards first or last. When it is time to auction that card, you choose and reveal the card and the type of auction (Once Around or Silent). Payments for your cards by other players go to you. If you buy any, the {16} goes to the {2} or the {16} Bank normally. Whenever discarded, these cards go to the normal discard pile. They can’t be bought with {19}.
@@ -1271,7 +1130,7 @@ namespace Treachery.Client
                 <p>You are at a disadvantage by having no forces on the planet, and not much spice to operate. Try to be aware if factions would be inclined to buy one of your special Cards either for their use or to keep it out of the hands of another faction. Selling your cards will be your one regular form of income until you have gained enough spice. Use your No-Field tokens to get forces on the planet cheaply and confuse your opponents.</p>
                 </div>";
 
-        private static string  GetBrownTemplate(Game g) =>
+        private static string GetBrownTemplate(Game g) =>
               SheetHeader("20 tokens in reserve (off-planet)", 2, 0, "You control economic affairs across the Imperium") +
               Advantage(MainPhase.Charity, "Each turn, you collect 2 {16} for each faction in the game during Charity before any factions collect. If another faction collects Charity, it is paid to them from your {16}.") +
               Advantage(MainPhase.Resurrection, "You have no limit to the number of forces you may pay to revive and it only costs you 1 for each force.") +
@@ -1297,7 +1156,7 @@ namespace Treachery.Client
                 <p>Your leaders are weak, but you have a steady income. Stockpile Treachery Cards. You start with no forces on the planet and must ship them all in. For this reason, you may want to wait until you can attack with a large force. Use your Inflation token at a key moment, especially at a time when others aren’t collecting Charity.</p>
                 </div>";
 
-        private static string  GetPinkTemplate(Game g) =>
+        private static string GetPinkTemplate(Game g) =>
               SheetHeader("6 tokens in {50} and 14 in reserve (off-planet)", 12, 2, "You forge strong alliances") +
               Advantage("Ambassadors", "At start you get the {48} Ambassador token and 5 random Ambassadors for other factions. At the end of Revival you may place Ambassadors in any stronghold not in storm that does not have one for 1 spice (cost increases by 1 spice for each subsequent Ambassador that turn). When another faction (other than your ally or the faction matching the marker) enters a stronghold with an Ambassador, you may trigger its effect, setting it aside. After triggering all non-{48} Ambassadors, you get 5 random new ones. Ambassadors are vulnerable to game effects like storm or explosions, returning to your supply.") +
               Advantage("Occupy", "When you are in an alliance, you and your ally’s forces are considered the same faction, and may enter and occupy the same territory. If you both collect spice from a desert territory, you split the it however you both agree (as evenly as possible if you can’t agree). If both in a battle, you decide which of you is considered the faction that fights. Regardless of who fights, your ally's forces are the ones dialed, and half of your forces in the territory (rounded down) are added to the number dialed. After the battle, half of your forces rounded up remain in the territory if your side wins, and the rest go to the Tanks. If you and your ally both occupy a stronghold at the end of a turn, it only counts as one stronghold for both of you, and you control it. It only takes three strongholds for you and your ally to win, if you both are co-occupied in all three.") +
@@ -1312,7 +1171,7 @@ namespace Treachery.Client
                 <p>Much of your strength comes from being in an alliance as soon as possible.  Your Occupy advantage can provide a significant boost when you send several forces into a stronghold your ally occupies.  Your Ambassadors can provide you with useful perks, and placing them requires careful consideration, not only with the order you select them, but in how their presence on the map can influence the other factions.</p>
                 </div>";
 
-        private static string  GetCyanTemplate(Game g) =>
+        private static string GetCyanTemplate(Game g) =>
               SheetHeader("6 tokens in any unoccupied territory when all other factions set up and 14 in reserve (off-planet)", 12, 2, "You resort to terrorism") +
               Advantage("Terrorize", "During the Mentat Pause, you may place a Terror token face down in any stronghold that doesn't have one (other than the Ixian Hidden Mobile Stronghold), even one under storm, or else move one to a stronghold that doesn't have one.  You may reveal and activate a Terror token when another faction (other than your ally) enters a stronghold containing one (either moving or shipping in, including advisors), applying effects to that faction. Revealed tokens are removed from the game.") +
               Advantage("Duke Vidal", "You gain Duke Vidal at the end of Shipping and Movement if you are in at least two battles in strongholds (not counting battles involving Ecaz) if he is not captured, a ghola, or in the Tanks, taking him from any faction currently controlling him.  Set him aside at the end of the turn if he’s not in the Tanks or captured.") +
@@ -1330,7 +1189,7 @@ namespace Treachery.Client
 
         #region LoadingAndSaving
 
-        public static Skin Load(string  data)
+        public static Skin Load(string data)
         {
             var serializer = JsonSerializer.CreateDefault();
             serializer.Formatting = Formatting.Indented;
@@ -1357,7 +1216,6 @@ namespace Treachery.Client
             FixDictionary(ref toFix.FactionFacedownImage_URL, donor.FactionFacedownImage_URL);
             FixDictionary(ref toFix.FactionForceImage_URL, donor.FactionForceImage_URL);
             FixDictionary(ref toFix.FactionSpecialForceImage_URL, donor.FactionSpecialForceImage_URL);
-            FixDictionary(ref toFix.FactionColorTransparant, donor.FactionColorTransparant);
             FixDictionary(ref toFix.FactionColor, donor.FactionColor);
             FixDictionary(ref toFix.ForceName_STR, donor.ForceName_STR);
             FixDictionary(ref toFix.SpecialForceName_STR, donor.SpecialForceName_STR);
@@ -1495,10 +1353,13 @@ namespace Treachery.Client
             if (toFix == null || donor.Keys.Any(k => !toCheck.ContainsKey(k)))
             {
                 toFix = donor;
+                /*
                 if (donor.Any())
                 {
                     var firstKey = donor.Keys.First();
+                    Console.WriteLine($"Fixed dictionary of type <{firstKey.GetType()},{donor[firstKey].GetType()}>, first value: <{firstKey},{donor[firstKey]}>");
                 }
+                */
             }
         }
 
@@ -1544,18 +1405,22 @@ namespace Treachery.Client
             Harvester_URL = DEFAULT_ART_LOCATION + "/art/ActiveSpice.svg",
             HMS_URL = DEFAULT_ART_LOCATION + "/art/hms.svg",
 
-            Concept_STR = new Dictionary<Concept, string >()
+            Concept_STR = new Dictionary<Concept, string>()
             {
-
                 [Concept.Messiah] = "Kwisatz Haderach",
                 [Concept.Monster] = "Shai Hulud",
-                [Concept.GreatMonster] = "Great Maker",
                 [Concept.Resource] = "Spice",
                 [Concept.Graveyard] = "Tleilaxu Tanks",
-                [Concept.BabyMonster] = "Sandtrout"
-            },
 
-            MainPhase_STR = new Dictionary<MainPhase, string >
+            }.Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<Concept, string>>() : new Dictionary<Concept, string> {
+                [Concept.BabyMonster] = "Sandtrout",
+
+            }).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<Concept, string>>() : new Dictionary<Concept, string> {
+                [Concept.GreatMonster] = "Great Maker",          
+
+            }).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
+
+            MainPhase_STR = new Dictionary<MainPhase, string>
             {
                 [MainPhase.None] = "None",
                 [MainPhase.Started] = "Awaiting Players",
@@ -1572,25 +1437,21 @@ namespace Treachery.Client
                 [MainPhase.Ended] = "Game Ended"
             },
 
-            TreacheryCardType_STR = new Dictionary<TreacheryCardType, string >
+            TreacheryCardType_STR = new Dictionary<TreacheryCardType, string>
             {
                 [TreacheryCardType.None] = "None",
                 [TreacheryCardType.Laser] = "Lasegun",
-
                 [TreacheryCardType.ProjectileDefense] = "Projectile Defense",
                 [TreacheryCardType.Projectile] = "Projectile Weapon",
                 [TreacheryCardType.WeirdingWay] = "Weirding Way",
                 [TreacheryCardType.ProjectileAndPoison] = "Poison Blade",
-
                 [TreacheryCardType.PoisonDefense] = "Poison Defense",
                 [TreacheryCardType.Poison] = "Poison Weapon",
                 [TreacheryCardType.Chemistry] = "Chemistry",
                 [TreacheryCardType.PoisonTooth] = "Poison Tooth",
-
                 [TreacheryCardType.Shield] = "Shield",
                 [TreacheryCardType.Antidote] = "Snooper",
                 [TreacheryCardType.ShieldAndAntidote] = "Shield Snooper",
-
                 [TreacheryCardType.Mercenary] = "Cheap Hero",
                 [TreacheryCardType.Karma] = "Karama",
                 [TreacheryCardType.Useless] = "Worthless",
@@ -1600,11 +1461,13 @@ namespace Treachery.Client
                 [TreacheryCardType.Caravan] = "Hajr",
                 [TreacheryCardType.Clairvoyance] = "Truthtrance",
 
+            }.Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<TreacheryCardType, string>>() : new Dictionary<TreacheryCardType, string> {
                 [TreacheryCardType.ArtilleryStrike] = "Artillery Strike",
                 [TreacheryCardType.Harvester] = "Harvester",
                 [TreacheryCardType.Thumper] = "Thumper",
                 [TreacheryCardType.Amal] = "Amal",
 
+            }).Concat(Game.ExpansionLevel < 2 ? Array.Empty<KeyValuePair<TreacheryCardType, string>>() : new Dictionary<TreacheryCardType, string> {
                 [TreacheryCardType.Distrans] = "Distrans",
                 [TreacheryCardType.Juice] = "Juice Of Sapho",
                 [TreacheryCardType.MirrorWeapon] = "Mirror Weapon",
@@ -1615,12 +1478,14 @@ namespace Treachery.Client
                 [TreacheryCardType.Residual] = "Residual Poison",
                 [TreacheryCardType.Rockmelter] = "Stone Burner",
 
+            }).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<TreacheryCardType, string>>() : new Dictionary<TreacheryCardType, string> { 
                 [TreacheryCardType.Recruits] = "Recruits",
                 [TreacheryCardType.Reinforcements] = "Reinforcements",
                 [TreacheryCardType.HarassAndWithdraw] = "Harass and Withdraw"
-            },
 
-            TreacheryCardName_STR = new Dictionary<int, string >
+            }).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
+
+            TreacheryCardName_STR = new Dictionary<int, string>
             {
                 [0] = "Lasegun",
                 [1] = "Crysknife",
@@ -1647,7 +1512,9 @@ namespace Treachery.Client
                 [30] = "Kulon",
                 [31] = "La La La",
                 [32] = "Trip to Gamont",
-
+            }
+            .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
+            {
                 [33] = "Poison Blade",
                 [34] = "Hunter-Seeker",
                 [35] = "Basilia Weapon",
@@ -1660,7 +1527,9 @@ namespace Treachery.Client
                 [42] = "Thumper",
                 [43] = "Amal",
                 [44] = "Kull Wahad",
-
+            }
+            ).Concat(Game.ExpansionLevel < 2 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string> 
+            {
                 [45] = "Distrans",
                 [46] = "Juice Of Sapho",
                 [47] = "Mirror Weapon",
@@ -1671,13 +1540,16 @@ namespace Treachery.Client
                 [52] = "Residual Poison",
                 [53] = "Stone Burner",
                 [54] = "Karama",
-
+            }
+            ).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string> 
+            {
                 [55] = "Recruits",
                 [56] = "Reinforcements",
                 [57] = "Harass and Withdraw"
-            },
+            }
+            ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
 
-            TreacheryCardDescription_STR = new Dictionary<int, string >
+            TreacheryCardDescription_STR = new Dictionary<int, string>
             {
                 [0] = "Weapon - Special - Play as part of your Battle Plan. Automatically kills your opponent's leader. Causes an explosion when a Shield is used in the same battle, killing both leaders and all forces in the territory, cause both factions to loose the battle.",
                 [1] = "Weapon - Projectile - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Shield. You may keep this card if you win the battle.",
@@ -1704,7 +1576,9 @@ namespace Treachery.Client
                 [30] = "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
                 [31] = "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
                 [32] = "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
-
+            }
+            .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
+            { 
                 [33] = "Weapon - Special - Play as part of your Battle Plan. This weapon counts as both projectile and poison. You may keep this card if you win this battle.",
                 [34] = "Weapon - Projectile - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Shield. You may keep this card if you win the battle.",
                 [35] = "Weapon - Poison - Play as part of your Battle Plan. Kills opponent's leader before battle is resolved. Opponent may protect leader with a Snooper. You may keep this card if you win the battle.",
@@ -1717,7 +1591,9 @@ namespace Treachery.Client
                 [42] = "Play at beginning of Spice Blow Phase instead of revealing the Spice Blow card. Causes a Shai-Hulud to appear. Play proceeds as though Shai-Hulud has been revealed.",
                 [43] = "At the beginning of any phase, cause all players to discard half of the spice behind their shields, rounded up, to the Spice Bank.",
                 [44] = "Worthless Card - Play as part of your Battle Plan, in place of a weapon, defense, or both. This card has no value in play, and you can discard it only by playing it in your Battle plan.",
-
+            }
+            ).Concat(Game.ExpansionLevel < 2 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
+            { 
                 [45] = "Distrans - Give another player a treachery card from your hand at any time except during a bid and if their hand size permits. Discard after use.",
                 [46] = "Choose one: (1) be considered aggressor in a battle or (2) play at the beginning of a phase or action that requires turn order to go first or (3) go last in a phase or action that requires turn order. Discard after use.",
                 [47] = "Weapon - Special - Play as part of your Battle Plan. Becomes a copy of your opponent's weapon. Discard after use.",
@@ -1728,20 +1604,23 @@ namespace Treachery.Client
                 [52] = "Residual Poison - Play against your opponent in battle before making battle plans. Kills one of their available leaders at random. No spice is collected for it. Discard after use.",
                 [53] = "Weapon - Special - Play as part of your Battle Plan. You choose after pland are revealed to either kill both leaders or reduce the strength of both leaders to 0. The player with the highest number of undialed forces wins the battle. Dialed forces are lost normally. Discard after use.",
                 [54] = "Allows you to prevent use of a Faction Advantage. Allows you to bid any amount of spice on a card or immediately win a card on bid. Allows you to ship at half price. In the advanced game, allows use of your Special Karama Power once during the game. Discard after use.",
-
+            }
+            ).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
+            { 
                 [55] = "Play during Revival. All factions double their Free Revival rates. The revival limits is increased to 7. Discard after use.",
                 [56] = "Play as part of your battle plan in place of a weapon or defense if you have at least 3 forces in reserves. Add 2 to your dialed number, then send 3 forces from reserves to the Tanks. Discard after use.",
                 [57] = "Play as part of your battle plan in place of a weapon or defense when not on your own Home World. Your undialed forces return to your reserves. Your leader may be killed as normal. If your opponent calls traitor, this effect is cancelled. Discard after use."
-            },
+            }
+            ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
 
-            TechTokenDescription_STR = new Dictionary<TechToken, string >
+            TechTokenDescription_STR = new Dictionary<TechToken, string>
             {
                 [TechToken.Graveyard] = "At the end of the Revival phase, yields 1 spice per tech token you own if any player except Tleilaxu used free revival.",
                 [TechToken.Resources] = "At the end of the Charity phase, yields 1 spice per tech token you own if any player except Bene Gesserit claimed charity.",
                 [TechToken.Ships] = "At the end of the Shipment & Move phase, yields 1 spice per tech token you own if any player except Guild shipped forces from off-planet.",
             },
 
-            TreacheryCardImage_URL = new Dictionary<int, string >()
+            TreacheryCardImage_URL = new Dictionary<int, string>()
             {
                 [0] = DEFAULT_ART_LOCATION + "/art/Lasegun.gif",
                 [1] = DEFAULT_ART_LOCATION + "/art/Chrysknife.gif",
@@ -1753,30 +1632,23 @@ namespace Treachery.Client
                 [7] = DEFAULT_ART_LOCATION + "/art/EllacaDrug.gif",
                 [8] = DEFAULT_ART_LOCATION + "/art/GomJabbar.gif",
                 [9] = DEFAULT_ART_LOCATION + "/art/Shield.gif",
-                [10] = DEFAULT_ART_LOCATION + "/art/Shield.gif",
-                [11] = DEFAULT_ART_LOCATION + "/art/Shield.gif",
-                [12] = DEFAULT_ART_LOCATION + "/art/Shield.gif",
                 [13] = DEFAULT_ART_LOCATION + "/art/Snooper.gif",
-                [14] = DEFAULT_ART_LOCATION + "/art/Snooper.gif",
-                [15] = DEFAULT_ART_LOCATION + "/art/Snooper.gif",
-                [16] = DEFAULT_ART_LOCATION + "/art/Snooper.gif",
                 [17] = DEFAULT_ART_LOCATION + "/art/CheapHero.gif",
-                [18] = DEFAULT_ART_LOCATION + "/art/CheapHero.gif",
                 [19] = DEFAULT_ART_LOCATION + "/art/CheapHeroine.gif",
                 [20] = DEFAULT_ART_LOCATION + "/art/TleilaxuGhola.gif",
                 [21] = DEFAULT_ART_LOCATION + "/art/FamilyAtomics.gif",
                 [22] = DEFAULT_ART_LOCATION + "/art/Hajr.gif",
                 [23] = DEFAULT_ART_LOCATION + "/art/Karama.gif",
-                [24] = DEFAULT_ART_LOCATION + "/art/Karama.gif",
                 [25] = DEFAULT_ART_LOCATION + "/art/Truthtrance.gif",
-                [26] = DEFAULT_ART_LOCATION + "/art/Truthtrance.gif",
                 [27] = DEFAULT_ART_LOCATION + "/art/WeatherControl.gif",
                 [28] = DEFAULT_ART_LOCATION + "/art/Baliset.gif",
                 [29] = DEFAULT_ART_LOCATION + "/art/JubbaCloak.gif",
                 [30] = DEFAULT_ART_LOCATION + "/art/Kulon.gif",
                 [31] = DEFAULT_ART_LOCATION + "/art/LaLaLa.gif",
                 [32] = DEFAULT_ART_LOCATION + "/art/TripToGamont.gif",
-
+            }
+            .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
+            {
                 [33] = DEFAULT_ART_LOCATION + "/art/PoisonBlade.gif",
                 [34] = DEFAULT_ART_LOCATION + "/art/Hunter-Seeker.gif",
                 [35] = DEFAULT_ART_LOCATION + "/art/BasiliaWeapon.gif",
@@ -1789,7 +1661,9 @@ namespace Treachery.Client
                 [42] = DEFAULT_ART_LOCATION + "/art/Thumper.gif",
                 [43] = DEFAULT_ART_LOCATION + "/art/Amal.gif",
                 [44] = DEFAULT_ART_LOCATION + "/art/KullWahad.gif",
-
+            }
+            ).Concat(Game.ExpansionLevel < 2 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
+            {
                 [45] = DEFAULT_ART_LOCATION + "/art/Distrans.gif",
                 [46] = DEFAULT_ART_LOCATION + "/art/JuiceOfSapho.gif",
                 [47] = DEFAULT_ART_LOCATION + "/art/MirrorWeapon.gif",
@@ -1800,14 +1674,16 @@ namespace Treachery.Client
                 [52] = DEFAULT_ART_LOCATION + "/art/ResidualPoison.gif",
                 [53] = DEFAULT_ART_LOCATION + "/art/StoneBurner.gif",
                 [54] = DEFAULT_ART_LOCATION + "/art/WhiteKarama.gif",
-
+            }
+            ).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
+            {
                 [55] = DEFAULT_ART_LOCATION + "/art/Recruits.gif",
                 [56] = DEFAULT_ART_LOCATION + "/art/Reinforcements.gif",
                 [57] = DEFAULT_ART_LOCATION + "/art/HarassAndWithdraw.gif",
+            }
+            ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
 
-            },
-
-            ResourceCardImage_URL = new Dictionary<int, string >()
+            ResourceCardImage_URL = new Dictionary<int, string>()
             {
                 [7] = DEFAULT_ART_LOCATION + "/art/CielagoNorth.gif",
                 [10] = DEFAULT_ART_LOCATION + "/art/CielagoSouth.gif",
@@ -1824,20 +1700,25 @@ namespace Treachery.Client
                 [37] = DEFAULT_ART_LOCATION + "/art/HabbanyaErg.gif",
                 [39] = DEFAULT_ART_LOCATION + "/art/WindPassNorth.gif",
                 [40] = DEFAULT_ART_LOCATION + "/art/HabbanyaRidgeFlat.gif",
-
+                [98] = DEFAULT_ART_LOCATION + "/art/Shai-Hulud.gif",
+            }
+            .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
+            {
+                [99] = DEFAULT_ART_LOCATION + "/art/Sandtrout.gif",
+            }
+            ).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
+            {
                 [41] = DEFAULT_ART_LOCATION + "/art/SihayaRidgeDiscovery.gif",
                 [42] = DEFAULT_ART_LOCATION + "/art/RockOutcroppingsDiscovery.gif",
                 [43] = DEFAULT_ART_LOCATION + "/art/HaggaBasinDiscovery.gif",
                 [44] = DEFAULT_ART_LOCATION + "/art/FuneralPlainDiscovery.gif",
                 [45] = DEFAULT_ART_LOCATION + "/art/WindPassNorthDiscovery.gif",
                 [46] = DEFAULT_ART_LOCATION + "/art/OHGapDiscovery.gif",
-
-                [98] = DEFAULT_ART_LOCATION + "/art/Shai-Hulud.gif",
-                [99] = DEFAULT_ART_LOCATION + "/art/Sandtrout.gif",
                 [100] = DEFAULT_ART_LOCATION + "/art/GreatMaker.gif"
-            },
+            }
+            ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
 
-            PersonName_STR = new Dictionary<int, string >()
+            PersonName_STR = new Dictionary<int, string>()
             {
                 [1001] = "Thufir Hawat",
                 [1002] = "Lady Jessica",
@@ -1869,7 +1750,9 @@ namespace Treachery.Client
                 [1028] = "Piter de Vries",
                 [1029] = "Captain Iakin Nefud",
                 [1030] = "Umman Kudu",
-
+            }
+            .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
+            {
                 [1031] = "Dominic Vernius",
                 [1032] = "C'Tair Pilru",
                 [1033] = "Tessia Vernius",
@@ -1880,7 +1763,9 @@ namespace Treachery.Client
                 [1038] = "Master Zaaf",
                 [1039] = "Wykk",
                 [1040] = "Blin",
-
+            }
+            ).Concat(Game.ExpansionLevel < 2 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
+            {
                 [1041] = "Viscount Tull",
                 [1042] = "Duke Verdun",
                 [1043] = "Rajiv Londine",
@@ -1892,7 +1777,9 @@ namespace Treachery.Client
                 [1049] = "Flinto Kinnis",
                 [1050] = "Lady Helena",
                 [1051] = "Premier Ein Calimar",
-
+            }
+            ).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
+            {
                 [1052] = "Sanya Ecaz",
                 [1053] = "Rivvy Dinari",
                 [1054] = "Ilesa Ecaz",
@@ -1904,9 +1791,10 @@ namespace Treachery.Client
                 [1060] = "Trin Kronos",
                 [1061] = "Grieu Kronos",
                 [1062] = "Vando Terboli",
-            },
+            }
+            ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
 
-            PersonImage_URL = new Dictionary<int, string >()
+            PersonImage_URL = new Dictionary<int, string>()
             {
                 [1001] = DEFAULT_ART_LOCATION + "/art/person0.png",
                 [1002] = DEFAULT_ART_LOCATION + "/art/person1.png",
@@ -1938,6 +1826,9 @@ namespace Treachery.Client
                 [1028] = DEFAULT_ART_LOCATION + "/art/person7.png",
                 [1029] = DEFAULT_ART_LOCATION + "/art/person8.png",
                 [1030] = DEFAULT_ART_LOCATION + "/art/person9.png",
+            }
+            .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
+            {
                 [1031] = DEFAULT_ART_LOCATION + "/art/person30.png",
                 [1032] = DEFAULT_ART_LOCATION + "/art/person31.png",
                 [1033] = DEFAULT_ART_LOCATION + "/art/person32.png",
@@ -1948,7 +1839,9 @@ namespace Treachery.Client
                 [1038] = DEFAULT_ART_LOCATION + "/art/person37.png",
                 [1039] = DEFAULT_ART_LOCATION + "/art/person38.png",
                 [1040] = DEFAULT_ART_LOCATION + "/art/person39.png",
-
+            }
+            ).Concat(Game.ExpansionLevel < 2 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
+            {
                 [1041] = DEFAULT_ART_LOCATION + "/art/person1041.gif",
                 [1042] = DEFAULT_ART_LOCATION + "/art/person1042.gif",
                 [1043] = DEFAULT_ART_LOCATION + "/art/person1043.gif",
@@ -1960,7 +1853,9 @@ namespace Treachery.Client
                 [1049] = DEFAULT_ART_LOCATION + "/art/person1049.gif",
                 [1050] = DEFAULT_ART_LOCATION + "/art/person1050.gif",
                 [1051] = DEFAULT_ART_LOCATION + "/art/person1051.gif",
-
+            }
+            ).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
+            {
                 [1052] = DEFAULT_ART_LOCATION + "/art/person1052.png",
                 [1053] = DEFAULT_ART_LOCATION + "/art/person1053.png",
                 [1054] = DEFAULT_ART_LOCATION + "/art/person1054.png",
@@ -1972,9 +1867,10 @@ namespace Treachery.Client
                 [1060] = DEFAULT_ART_LOCATION + "/art/person1060.png",
                 [1061] = DEFAULT_ART_LOCATION + "/art/person1061.png",
                 [1062] = DEFAULT_ART_LOCATION + "/art/person1062.png",
-            },
+            }
+            ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
 
-            TerritoryName_STR = new Dictionary<int, string >()
+            TerritoryName_STR = new Dictionary<int, string>()
             {
                 [0] = "Polar Sink",
                 [1] = "Imperial Basin",
@@ -2018,7 +1914,13 @@ namespace Treachery.Client
                 [39] = "Wind Pass North",
                 [40] = "Habbanya Ridge Flat",
                 [41] = "Cielago West",
+            }
+            .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
+            {
                 [42] = "Hidden Mobile Stronghold",
+            }
+            ).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<int, string>>() : new Dictionary<int, string>
+            {
                 [43] = "Caladan",
                 [44] = "Giedi Prime",
                 [45] = "Southern Hemisphere",
@@ -2037,9 +1939,10 @@ namespace Treachery.Client
                 [58] = "Ecological Testing Station",
                 [59] = "Shrine",
                 [60] = "Orgiz Processing Station",
-            },
 
-            TerritoryBorder_SVG = new Dictionary<int, string >()
+            }).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
+
+            TerritoryBorder_SVG = new Dictionary<int, string>()
             {
                 [0] = "M243.4 297.6 L236.2 311.3 L233.7 326.2 L238.9 332 L242.4 332.3 L248.8 338.5 L256.8 341.8 L264.1 340.8 L268.6 348.9 L273.6 353.9 L288.7 354.5 L301 345.8 L301.4 337.3 L305.7 332 L310.1 321.9 L317.7 311.3 L320.2 297.1 L312 285.4 L302.7 285.5 L298.3 287.3 L291.4 287.1 L286.2 281.9 L281 281.9 L276.5 285.3 L267.7 288.3 L254.9 289.4 L243.4 297.6 z",
                 [1] = "M345.8 221.8 L355.3 195.8 L353.8 193.3 L355.8 190.1 L354.6 183.9 L361.1 172.7 L354.7 170.7 L347.7 171.9 L343.9 162.8 L330.4 152.6 L329.5 145 L336.4 137.1 L342.3 126.1 L343.4 121 L340.8 110.7 L341.9 106.9 L336.6 99.3 L330.8 98.6 L320 90.4 L306.4 107.4 L297.6 127.7 L292.9 132.2 L297.6 140.5 L297.5 159 L287.6 182.5 L283.8 207.7 L286.4 217 L286.2 235.3 L288.3 237.8 L287.8 241.9 L287.9 260.2 L289.3 264.5 L286.2 281.9 L291.4 287.1 L298.3 287.3 L302.7 285.5 L302.7 280.5 L312.5 271.2 L317.2 262 L333.1 243.9 L331.6 240.5 L342.5 222.4 L345.8 221.8 z",
@@ -2194,7 +2097,7 @@ namespace Treachery.Client
                 [83] = new Point(133, 483), //Habbanya Ridge Flat (East Sector)
             },
 
-            FactionName_STR = new Dictionary<Faction, string >()
+            FactionName_STR = new Dictionary<Faction, string>()
             {
                 [Faction.None] = "None",
                 [Faction.Green] = "Atreides",
@@ -2203,18 +2106,25 @@ namespace Treachery.Client
                 [Faction.Red] = "Emperor",
                 [Faction.Orange] = "Guild",
                 [Faction.Blue] = "Bene Gesserit",
-
+            }
+            .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
                 [Faction.Grey] = "Ixian",
                 [Faction.Purple] = "Tleilaxu",
-
+            }
+            ).Concat(Game.ExpansionLevel < 2 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
                 [Faction.Brown] = "CHOAM",
                 [Faction.White] = "Richese",
-
+            }
+            ).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
                 [Faction.Pink] = "Ecaz",
                 [Faction.Cyan] = "Moritani"
-            },
+            }
+            ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
 
-            FactionImage_URL = new Dictionary<Faction, string >()
+            FactionImage_URL = new Dictionary<Faction, string>()
             {
                 [Faction.Green] = DEFAULT_ART_LOCATION + "/art/faction1.svg",
                 [Faction.Black] = DEFAULT_ART_LOCATION + "/art/faction2.svg",
@@ -2222,18 +2132,25 @@ namespace Treachery.Client
                 [Faction.Red] = DEFAULT_ART_LOCATION + "/art/faction4.svg",
                 [Faction.Orange] = DEFAULT_ART_LOCATION + "/art/faction5.svg",
                 [Faction.Blue] = DEFAULT_ART_LOCATION + "/art/faction6.svg",
-
+            }
+            .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
                 [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7.svg",
                 [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8.svg",
-
+            }
+            ).Concat(Game.ExpansionLevel < 2 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
                 [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.svg",
                 [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.svg",
-
+            }
+            ).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
                 [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11.svg",
                 [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12.svg",
-            },
+            }
+            ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
 
-            FactionTableImage_URL = new Dictionary<Faction, string >()
+            FactionTableImage_URL = new Dictionary<Faction, string>()
             {
                 [Faction.Green] = DEFAULT_ART_LOCATION + "/art/faction1.svg",
                 [Faction.Black] = DEFAULT_ART_LOCATION + "/art/faction2.svg",
@@ -2241,18 +2158,25 @@ namespace Treachery.Client
                 [Faction.Red] = DEFAULT_ART_LOCATION + "/art/faction4.svg",
                 [Faction.Orange] = DEFAULT_ART_LOCATION + "/art/faction5.svg",
                 [Faction.Blue] = DEFAULT_ART_LOCATION + "/art/faction6.svg",
-
+            }
+            .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
                 [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7.svg",
                 [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8.svg",
-
+            }
+            ).Concat(Game.ExpansionLevel < 2 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
                 [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.svg",
                 [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.svg",
-
+            }
+            ).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
                 [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11.svg",
                 [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12.svg",
-            },
+            }
+            ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
 
-            FactionFacedownImage_URL = new Dictionary<Faction, string >()
+            FactionFacedownImage_URL = new Dictionary<Faction, string>()
             {
                 [Faction.Green] = DEFAULT_ART_LOCATION + "/art/faction1.svg",
                 [Faction.Black] = DEFAULT_ART_LOCATION + "/art/faction2.svg",
@@ -2260,17 +2184,25 @@ namespace Treachery.Client
                 [Faction.Red] = DEFAULT_ART_LOCATION + "/art/faction4.svg",
                 [Faction.Orange] = DEFAULT_ART_LOCATION + "/art/faction5.svg",
                 [Faction.Blue] = DEFAULT_ART_LOCATION + "/art/faction6.svg",
+            }
+            .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
                 [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7.svg",
                 [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8.svg",
-
+            }
+            ).Concat(Game.ExpansionLevel < 2 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
                 [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9.svg",
                 [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10.svg",
-
+            }
+            ).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
                 [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11.svg",
                 [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12.svg",
-            },
+            }
+            ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
 
-            FactionForceImage_URL = new Dictionary<Faction, string >()
+            FactionForceImage_URL = new Dictionary<Faction, string>()
             {
                 [Faction.Green] = DEFAULT_ART_LOCATION + "/art/faction1force.svg",
                 [Faction.Black] = DEFAULT_ART_LOCATION + "/art/faction2force.svg",
@@ -2278,28 +2210,122 @@ namespace Treachery.Client
                 [Faction.Red] = DEFAULT_ART_LOCATION + "/art/faction4force.svg",
                 [Faction.Orange] = DEFAULT_ART_LOCATION + "/art/faction5force.svg",
                 [Faction.Blue] = DEFAULT_ART_LOCATION + "/art/faction6force.svg",
+            }
+            .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
                 [Faction.Grey] = DEFAULT_ART_LOCATION + "/art/faction7force.svg",
                 [Faction.Purple] = DEFAULT_ART_LOCATION + "/art/faction8force.svg",
-
+            }
+            ).Concat(Game.ExpansionLevel < 2 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
                 [Faction.Brown] = DEFAULT_ART_LOCATION + "/art/faction9force.svg",
                 [Faction.White] = DEFAULT_ART_LOCATION + "/art/faction10force.svg",
-
+            }
+            ).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
                 [Faction.Pink] = DEFAULT_ART_LOCATION + "/art/faction11force.svg",
                 [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12force.svg",
-            },
+            }
+            ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
 
-            FactionSpecialForceImage_URL = new Dictionary<Faction, string >()
+            FactionSpecialForceImage_URL = new Dictionary<Faction, string>()
             {
                 { Faction.Yellow, DEFAULT_ART_LOCATION + "/art/faction3specialforce.svg" },
                 { Faction.Red, DEFAULT_ART_LOCATION + "/art/faction4specialforce.svg" },
                 { Faction.Blue, DEFAULT_ART_LOCATION + "/art/faction6specialforce.svg" },
-
+            }
+            .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
                 { Faction.Grey, DEFAULT_ART_LOCATION + "/art/faction7specialforce.svg" },
-
+            }
+            ).Concat(Game.ExpansionLevel < 2 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
                 { Faction.White, DEFAULT_ART_LOCATION + "/art/faction10specialforce.svg" }
-            },
+            }
+            ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
 
-            AmbassadorName_STR = new Dictionary<Ambassador, string >()
+            FactionColor = new Dictionary<Faction, string>()
+            {
+                [Faction.None] = "#646464",
+                [Faction.Green] = "#63842e",
+                [Faction.Black] = "#2c2c2c",
+                [Faction.Yellow] = "#d29422",
+                [Faction.Red] = "#b33715",
+                [Faction.Orange] = "#c85b20",
+                [Faction.Blue] = "#385884",
+            }
+            .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
+                [Faction.Grey] = "#b0b079",
+                [Faction.Purple] = "#602d8b",
+            }
+            ).Concat(Game.ExpansionLevel < 2 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
+                [Faction.Brown] = "#582d1b",
+                [Faction.White] = "#b3afa4",
+            }
+            ).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
+                [Faction.Pink] = "#a85f9c",
+                [Faction.Cyan] = "#289caa"
+            }
+            ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
+
+            ForceName_STR = new Dictionary<Faction, string>()
+            {
+                [Faction.None] = "-",
+                [Faction.Green] = "forces",
+                [Faction.Black] = "forces",
+                [Faction.Yellow] = "forces",
+                [Faction.Red] = "forces",
+                [Faction.Orange] = "forces",
+                [Faction.Blue] = "fighters",
+            }
+            .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
+                [Faction.Grey] = "suboids",
+                [Faction.Purple] = "forces",
+            }
+            ).Concat(Game.ExpansionLevel < 2 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
+                [Faction.Brown] = "forces",
+                [Faction.White] = "forces",
+            }
+            ).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
+                [Faction.Pink] = "forces",
+                [Faction.Cyan] = "forces"
+            }
+            ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
+
+            SpecialForceName_STR = new Dictionary<Faction, string>()
+            {
+                [Faction.None] = "-",
+                [Faction.Green] = "-",
+                [Faction.Black] = "-",
+                [Faction.Yellow] = "Fedaykin",
+                [Faction.Red] = "Sardaukar",
+                [Faction.Orange] = "-",
+                [Faction.Blue] = "advisors",
+            }
+            .Concat(Game.ExpansionLevel < 1 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
+                [Faction.Grey] = "cyborgs",
+                [Faction.Purple] = "-",
+            }
+            ).Concat(Game.ExpansionLevel < 2 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
+                [Faction.Brown] = "-",
+                [Faction.White] = "No-Field",
+            }
+            ).Concat(Game.ExpansionLevel < 3 ? Array.Empty<KeyValuePair<Faction, string>>() : new Dictionary<Faction, string>
+            {
+                [Faction.Pink] = "-",
+                [Faction.Cyan] = "-"
+            }
+            ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
+
+            AmbassadorName_STR = Game.ExpansionLevel < 3 ? new() : new Dictionary<Ambassador, string>()
             {
                 [Ambassador.None] = "None",
                 [Ambassador.Green] = "Atreides",
@@ -2316,7 +2342,7 @@ namespace Treachery.Client
                 [Ambassador.Cyan] = "Moritani"
             },
 
-            AmbassadorImage_URL = new Dictionary<Ambassador, string >()
+            AmbassadorImage_URL = Game.ExpansionLevel < 3 ? new() : new Dictionary<Ambassador, string>()
             {
                 [Ambassador.Green] = DEFAULT_ART_LOCATION + "/art/faction1ambassador.svg",
                 [Ambassador.Black] = DEFAULT_ART_LOCATION + "/art/faction2ambassador.svg",
@@ -2334,7 +2360,7 @@ namespace Treachery.Client
                 [Ambassador.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12ambassador.svg",
             },
 
-            AmbassadorDescription_STR = new Dictionary<Ambassador, string >()
+            AmbassadorDescription_STR = Game.ExpansionLevel < 3 ? new() : new Dictionary<Ambassador, string>()
             {
                 [Ambassador.None] = "None",
 
@@ -2354,101 +2380,21 @@ namespace Treachery.Client
                 [Ambassador.Pink] = "Gain Vidal if he is not in the Tanks, captured, or a ghola until used in a battle, or form an alliance with the visiting faction (if neither of you are allied); they may take control of Vidal instead. This token returns to your available supply"
             },
 
-            TechTokenName_STR = new Dictionary<TechToken, string >()
+            TechTokenName_STR = Game.ExpansionLevel < 1 ? new() : new Dictionary<TechToken, string>()
             {
                 { TechToken.Graveyard, "Axlotl Tanks" },
                 { TechToken.Ships, "Heighliners" },
                 { TechToken.Resources, "Spice Production" }
             },
 
-            TechTokenImage_URL = new Dictionary<TechToken, string >()
+            TechTokenImage_URL = Game.ExpansionLevel < 1 ? new() : new Dictionary<TechToken, string>()
             {
                 { TechToken.Graveyard, DEFAULT_ART_LOCATION + "/art/techtoken0.svg" },
                 { TechToken.Ships, DEFAULT_ART_LOCATION + "/art/techtoken1.svg" },
                 { TechToken.Resources, DEFAULT_ART_LOCATION + "/art/techtoken2.svg" }
             },
 
-            FactionColorTransparant = new Dictionary<Faction, string >()
-            {
-                [Faction.None] = "#646464bb",
-                [Faction.Green] = "#63842ebb",
-                [Faction.Black] = "#2c2c2cbb",
-                [Faction.Yellow] = "#d29422bb",
-                [Faction.Red] = "#b33715bb",
-                [Faction.Orange] = "#c85b20bb",
-                [Faction.Blue] = "#385884bb",
-
-                [Faction.Grey] = "#b0b079bb",
-                [Faction.Purple] = "#602d8bbb",
-
-                [Faction.Brown] = "#582d1bbb",
-                [Faction.White] = "#b3afa4bb",
-
-                [Faction.Pink] = "#a85f9cbb",
-                [Faction.Cyan] = "#289caabb"
-            },
-
-            FactionColor = new Dictionary<Faction, string >()
-            {
-                [Faction.None] = "#646464",
-                [Faction.Green] = "#63842e",
-                [Faction.Black] = "#2c2c2c",
-                [Faction.Yellow] = "#d29422",
-                [Faction.Red] = "#b33715",
-                [Faction.Orange] = "#c85b20",
-                [Faction.Blue] = "#385884",
-
-                [Faction.Grey] = "#b0b079",
-                [Faction.Purple] = "#602d8b",
-
-                [Faction.Brown] = "#582d1b",
-                [Faction.White] = "#b3afa4",
-
-                [Faction.Pink] = "#a85f9c",
-                [Faction.Cyan] = "#289caa"
-            },
-
-            ForceName_STR = new Dictionary<Faction, string >()
-            {
-                [Faction.None] = "-",
-                [Faction.Green] = "forces",
-                [Faction.Black] = "forces",
-                [Faction.Yellow] = "forces",
-                [Faction.Red] = "forces",
-                [Faction.Orange] = "forces",
-                [Faction.Blue] = "fighters",
-
-                [Faction.Grey] = "suboids",
-                [Faction.Purple] = "forces",
-
-                [Faction.Brown] = "forces",
-                [Faction.White] = "forces",
-
-                [Faction.Pink] = "forces",
-                [Faction.Cyan] = "forces"
-            },
-
-            SpecialForceName_STR = new Dictionary<Faction, string >()
-            {
-                [Faction.None] = "-",
-                [Faction.Green] = "-",
-                [Faction.Black] = "-",
-                [Faction.Yellow] = "Fedaykin",
-                [Faction.Red] = "Sardaukar",
-                [Faction.Orange] = "-",
-                [Faction.Blue] = "advisors",
-
-                [Faction.Grey] = "cyborgs",
-                [Faction.Purple] = "-",
-
-                [Faction.Brown] = "-",
-                [Faction.White] = "No-Field",
-
-                [Faction.Pink] = "-",
-                [Faction.Cyan] = "-"
-            },
-
-            LeaderSkillCardName_STR = new Dictionary<LeaderSkill, string >()
+            LeaderSkillCardName_STR = Game.ExpansionLevel < 2 ? new() : new Dictionary<LeaderSkill, string>()
             {
                 [LeaderSkill.Bureaucrat] = "Bureaucrat",
                 [LeaderSkill.Diplomat] = "Diplomat",
@@ -2466,7 +2412,7 @@ namespace Treachery.Client
                 [LeaderSkill.Banker] = "Spice Banker"
             },
 
-            LeaderSkillCardImage_URL = new Dictionary<LeaderSkill, string >()
+            LeaderSkillCardImage_URL = Game.ExpansionLevel < 2 ? new() : new Dictionary<LeaderSkill, string>()
             {
                 [LeaderSkill.Bureaucrat] = DEFAULT_ART_LOCATION + "/art/Bureaucrat.gif",
                 [LeaderSkill.Diplomat] = DEFAULT_ART_LOCATION + "/art/Diplomat.gif",
@@ -2484,7 +2430,7 @@ namespace Treachery.Client
                 [LeaderSkill.Banker] = DEFAULT_ART_LOCATION + "/art/Banker.gif"
             },
 
-            HomeWorldImage_URL = new Dictionary<World, string >()
+            HomeWorldImage_URL = new Dictionary<World, string>()
             {
                 [World.Green] = DEFAULT_ART_LOCATION + "/art/faction1planet.svg",
                 [World.Black] = DEFAULT_ART_LOCATION + "/art/faction2planet.svg",
@@ -2504,7 +2450,7 @@ namespace Treachery.Client
                 [World.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12planet.svg",
             },
 
-            HomeWorldCardImage_URL = new Dictionary<World, string >()
+            HomeWorldCardImage_URL = Game.ExpansionLevel < 3 ? new() : new Dictionary<World, string>()
             {
                 [World.Green] = DEFAULT_ART_LOCATION + "/art/CaladanCard.gif",
                 [World.Black] = DEFAULT_ART_LOCATION + "/art/GiediPrimeCard.gif",
@@ -2524,7 +2470,7 @@ namespace Treachery.Client
                 [World.Cyan] = DEFAULT_ART_LOCATION + "/art/GrummanCard.gif",
             },
 
-            NexusCardImage_URL = new Dictionary<Faction, string >()
+            NexusCardImage_URL = Game.ExpansionLevel < 3 ? new() : new Dictionary<Faction, string>()
             {
                 [Faction.Green] = DEFAULT_ART_LOCATION + "/art/faction1nexus.gif",
                 [Faction.Black] = DEFAULT_ART_LOCATION + "/art/faction2nexus.gif",
@@ -2543,7 +2489,7 @@ namespace Treachery.Client
                 [Faction.Cyan] = DEFAULT_ART_LOCATION + "/art/faction12nexus.gif",
             },
 
-            TerrorTokenName_STR = new Dictionary<TerrorType, string >()
+            TerrorTokenName_STR = Game.ExpansionLevel < 3 ? new() : new Dictionary<TerrorType, string>()
             {
                 [TerrorType.None] = "None",
                 [TerrorType.Assassination] = "Assassination",
@@ -2554,7 +2500,7 @@ namespace Treachery.Client
                 [TerrorType.SneakAttack] = "Sneak Attack",
             },
 
-            TerrorTokenDescription_STR = new Dictionary<TerrorType, string >()
+            TerrorTokenDescription_STR = Game.ExpansionLevel < 3 ? new() : new Dictionary<TerrorType, string>()
             {
                 [TerrorType.None] = "None",
                 [TerrorType.Assassination] = "Choose a random leader from that player, send it to the Tanks and collect spice for it",
@@ -2565,7 +2511,7 @@ namespace Treachery.Client
                 [TerrorType.SneakAttack] = "Send up to 5 of your forces in reserves into that territory at no cost (subject to storm and occupancy rules), even if the Atomics Aftermath token is there",
             },
 
-            DiscoveryTokenName_STR = new Dictionary<DiscoveryToken, string >()
+            DiscoveryTokenName_STR = Game.ExpansionLevel < 3 ? new() : new Dictionary<DiscoveryToken, string>()
             {
                 [DiscoveryToken.Jacurutu] = "Jacurutu Sietch",
                 [DiscoveryToken.Shrine] = "Shrine",
@@ -2577,7 +2523,7 @@ namespace Treachery.Client
                 [DiscoveryToken.Flight] = "Ornithopter"
             },
 
-            DiscoveryTokenDescription_STR = new Dictionary<DiscoveryToken, string >()
+            DiscoveryTokenDescription_STR = Game.ExpansionLevel < 3 ? new() : new Dictionary<DiscoveryToken, string>()
             {
                 [DiscoveryToken.Jacurutu] = "Counts as a normal stronghold.  If you win a battle here, gain 1 spice for each of your opponent’s undialed forces that go to the Tanks",
                 [DiscoveryToken.Shrine] = "If occupied, you may play Truthtrance as a Karama card, and vice versa",
@@ -2589,19 +2535,19 @@ namespace Treachery.Client
                 [DiscoveryToken.Flight] = "Gain the token and remove it from the game to gain 3 movement for one movement action."
             },
 
-            DiscoveryTokenTypeName_STR = new Dictionary<DiscoveryTokenType, string >()
+            DiscoveryTokenTypeName_STR = Game.ExpansionLevel < 3 ? new() : new Dictionary<DiscoveryTokenType, string>()
             {
                 [DiscoveryTokenType.Yellow] = "Hiereg",
                 [DiscoveryTokenType.Orange] = "Smuggler",
             },
 
-            DiscoveryTokenTypeImage_URL = new Dictionary<DiscoveryTokenType, string >()
+            DiscoveryTokenTypeImage_URL = Game.ExpansionLevel < 3 ? new() : new Dictionary<DiscoveryTokenType, string>()
             {
                 [DiscoveryTokenType.Yellow] = "/art/discoverytype1.png",
                 [DiscoveryTokenType.Orange] = "/art/discoverytype2.png",
             },
 
-            DiscoveryTokenImage_URL = new Dictionary<DiscoveryToken, string >()
+            DiscoveryTokenImage_URL = Game.ExpansionLevel < 3 ? new() : new Dictionary<DiscoveryToken, string>()
             {
                 [DiscoveryToken.Jacurutu] = "/art/discovery1.png",
                 [DiscoveryToken.Cistern] = "/art/discovery2.png",
@@ -2610,7 +2556,7 @@ namespace Treachery.Client
                 [DiscoveryToken.ProcessingStation] = "/art/discovery5.png",
             },
 
-            StrongholdCardName_STR = new Dictionary<int, string >()
+            StrongholdCardName_STR = Game.ExpansionLevel < 2 ? new() : new Dictionary<int, string>()
             {
                 [2] = "Carthag",
                 [3] = "Arrakeen",
@@ -2620,7 +2566,7 @@ namespace Treachery.Client
                 [42] = "Hidden Mobile Stronghold"
             },
 
-            StrongholdCardImage_URL = new Dictionary<StrongholdAdvantage, string >()
+            StrongholdCardImage_URL = Game.ExpansionLevel < 2 ? new() : new Dictionary<StrongholdAdvantage, string>()
             {
                 [StrongholdAdvantage.CountDefensesAsAntidote] = DEFAULT_ART_LOCATION + "/art/Carthag.gif",
                 [StrongholdAdvantage.FreeResourcesForBattles] = DEFAULT_ART_LOCATION + "/art/Arrakeen.gif",
@@ -2642,7 +2588,7 @@ namespace Treachery.Client
             Sound_YourTurn_URL = DEFAULT_ART_LOCATION + "/art/yourturn.mp3",
             Sound_Chatmessage_URL = DEFAULT_ART_LOCATION + "/art/whisper.mp3",
 
-            Sound = new Dictionary<Milestone, string >()
+            Sound = new Dictionary<Milestone, string>()
             {
                 [Milestone.GameStarted] = DEFAULT_ART_LOCATION + "/art/intro.mp3",
                 [Milestone.Shuffled] = DEFAULT_ART_LOCATION + "/art/shuffleanddeal.mp3",
@@ -2682,6 +2628,8 @@ namespace Treachery.Client
                 [Milestone.CardTraded] = DEFAULT_ART_LOCATION + "/art/cardflip.mp3",
                 [Milestone.Discard] = DEFAULT_ART_LOCATION + "/art/crumple.mp3",
                 [Milestone.SpecialUselessPlayed] = DEFAULT_ART_LOCATION + "/art/karma.mp3",
+                [Milestone.Bureaucracy] = DEFAULT_ART_LOCATION + "/art/typewriter.mp3",
+                [Milestone.Audited] = DEFAULT_ART_LOCATION + "/art/typewriter.mp3",
                 [Milestone.TerrorPlanted] = DEFAULT_ART_LOCATION + "/art/terror.mp3",
                 [Milestone.TerrorRevealed] = DEFAULT_ART_LOCATION + "/art/terror.mp3",
                 [Milestone.AmbassadorPlaced] = DEFAULT_ART_LOCATION + "/art/ambassador.mp3",
@@ -2690,8 +2638,6 @@ namespace Treachery.Client
                 [Milestone.DiscoveryAppeared] = DEFAULT_ART_LOCATION + "/art/discoveryhorn.mp3",
                 [Milestone.DiscoveryRevealed] = DEFAULT_ART_LOCATION + "/art/discoveryhorn.mp3",
                 [Milestone.Assassination] = DEFAULT_ART_LOCATION + "/art/scream.mp3",
-                [Milestone.Bureaucracy] = DEFAULT_ART_LOCATION + "/art/typewriter.mp3",
-                [Milestone.Audited] = DEFAULT_ART_LOCATION + "/art/typewriter.mp3",
             },
 
             MapDimensions = new Point(563, 626),

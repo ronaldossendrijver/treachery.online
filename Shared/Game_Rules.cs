@@ -2,6 +2,7 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -90,7 +91,7 @@ namespace Treachery.Shared
                 rules.Contains(Rule.StrongholdBonus);
         }
 
-        public static Dictionary<Ruleset, Rule[]> RulesetDefinition = new Dictionary<Ruleset, Rule[]>
+        public static Dictionary<Ruleset, Rule[]> RulesetDefinition = new()
         {
 
             [Ruleset.BasicGame] = new Rule[] {
@@ -113,27 +114,33 @@ namespace Treachery.Shared
                 Rule.BlueAdvisors,
                 Rule.OrangeDetermineShipment,
                 Rule.RedSpecialForces,
+            }.Concat(ExpansionLevel < 1 ? Array.Empty<Rule>() : new Rule[] {
                 Rule.GreySwappingCardOnBid,
-                Rule.PurpleGholas,
+                Rule.PurpleGholas
+            }).Concat(ExpansionLevel < 2 ? Array.Empty<Rule>() : new Rule[] {
                 Rule.BrownAuditor,
                 Rule.WhiteBlackMarket,
+            }).Concat(ExpansionLevel < 3 ? Array.Empty<Rule>() : new Rule[] {
                 Rule.CyanAssassinate,
-                Rule.PinkLoyalty,
-            },
+                Rule.PinkLoyalty
+            }).ToArray(),
 
-            [Ruleset.AllExpansionsBasicGame] = new Rule[] {
+            [Ruleset.AllExpansionsBasicGame] = Array.Empty<Rule>()
+            .Concat(ExpansionLevel < 1 ? Array.Empty<Rule>() : new Rule[] {
                 Rule.TechTokens,
                 Rule.CheapHeroTraitor,
                 Rule.ExpansionTreacheryCards,
                 Rule.SandTrout,
+            }).Concat(ExpansionLevel < 2 ? Array.Empty<Rule>() : new Rule[] {
                 Rule.LeaderSkills,
                 Rule.Expansion2TreacheryCards,
+            }).Concat(ExpansionLevel < 3 ? Array.Empty<Rule>() : new Rule[] {
                 Rule.Expansion3TreacheryCards,
                 Rule.DiscoveryTokens,
                 Rule.Homeworlds,
                 Rule.NexusCards,
                 Rule.GreatMaker
-            },
+            }).ToArray(),
 
             [Ruleset.ExpansionBasicGame] = new Rule[] {
                 Rule.TechTokens,
@@ -170,25 +177,28 @@ namespace Treachery.Shared
                 Rule.BlueAdvisors,
                 Rule.OrangeDetermineShipment,
                 Rule.RedSpecialForces,
+            }.Concat(ExpansionLevel < 1 ? Array.Empty<Rule>() : new Rule[] {
                 Rule.TechTokens,
                 Rule.CheapHeroTraitor,
                 Rule.ExpansionTreacheryCards,
                 Rule.SandTrout,
                 Rule.GreySwappingCardOnBid,
-                Rule.PurpleGholas,
+                Rule.PurpleGholas
+            }).Concat(ExpansionLevel < 2 ? Array.Empty<Rule>() : new Rule[] {
                 Rule.LeaderSkills,
                 Rule.Expansion2TreacheryCards,
                 Rule.StrongholdBonus,
                 Rule.BrownAuditor,
                 Rule.WhiteBlackMarket,
+            }).Concat(ExpansionLevel < 3 ? Array.Empty<Rule>() : new Rule[] {
                 Rule.Expansion3TreacheryCards,
                 Rule.DiscoveryTokens,
                 Rule.Homeworlds,
                 Rule.NexusCards,
                 Rule.GreatMaker,
                 Rule.CyanAssassinate,
-                Rule.PinkLoyalty,
-            },
+                Rule.PinkLoyalty
+            }).ToArray(),
 
             [Ruleset.ExpansionAdvancedGame] = new Rule[] {
                 Rule.AdvancedCombat,
@@ -205,6 +215,7 @@ namespace Treachery.Shared
                 Rule.BlueAdvisors,
                 Rule.OrangeDetermineShipment,
                 Rule.RedSpecialForces,
+            }.Concat(ExpansionLevel < 1 ? Array.Empty<Rule>() : new Rule[] {
                 Rule.TechTokens,
                 Rule.CheapHeroTraitor,
                 Rule.ExpansionTreacheryCards,
@@ -215,7 +226,7 @@ namespace Treachery.Shared
                 Rule.WhiteBlackMarket,
                 Rule.CyanAssassinate,
                 Rule.PinkLoyalty,
-            },
+            }).ToArray(),
 
             [Ruleset.Expansion2AdvancedGame] = new Rule[] {
                 Rule.AdvancedCombat,
@@ -232,6 +243,7 @@ namespace Treachery.Shared
                 Rule.BlueAdvisors,
                 Rule.OrangeDetermineShipment,
                 Rule.RedSpecialForces,
+            }.Concat(ExpansionLevel < 2 ? Array.Empty<Rule>() : new Rule[] {
                 Rule.LeaderSkills,
                 Rule.Expansion2TreacheryCards,
                 Rule.StrongholdBonus,
@@ -242,7 +254,7 @@ namespace Treachery.Shared
                 Rule.StrongholdBonus,
                 Rule.CyanAssassinate,
                 Rule.PinkLoyalty,
-            },
+            }).ToArray(),
 
             [Ruleset.Expansion3AdvancedGame] = new Rule[] {
                 Rule.AdvancedCombat,
@@ -259,6 +271,7 @@ namespace Treachery.Shared
                 Rule.BlueAdvisors,
                 Rule.OrangeDetermineShipment,
                 Rule.RedSpecialForces,
+            }.Concat(ExpansionLevel < 3 ? Array.Empty<Rule>() : new Rule[] {
                 Rule.DiscoveryTokens,
                 Rule.GreatMaker,
                 Rule.NexusCards,
@@ -270,7 +283,7 @@ namespace Treachery.Shared
                 Rule.WhiteBlackMarket,
                 Rule.CyanAssassinate,
                 Rule.PinkLoyalty,
-            },
+            }).ToArray(),
 
             [Ruleset.ServerClassic] = new Rule[] {
                 Rule.AdvancedCombat,

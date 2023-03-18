@@ -205,13 +205,7 @@
 
     private bool _collapsed = true;
 
-    private string PlayerColor
-    {
-        get
-        {
-            return string.Format("background-color:{0}", Skin.Current.GetFactionColorTransparant(ShownPlayer.Faction));
-        }
-    }
+    private string PlayerColor => string.Format("background-color:{0}", Skin.Current.GetFactionColorTransparant(ShownPlayer.Faction, "bb"));
 
     private string ResourcesText
     {

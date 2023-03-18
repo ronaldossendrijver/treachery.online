@@ -70,16 +70,17 @@
 
     //Treachery cards
     x = Skin.Current.TreacheryDeckLocation.X;
+    y = 1.02f * Skin.Current.TreacheryDeckLocation.Y;
 
     if (Game.TreacheryDeck.Items.Count > 0)
     {
-        <MapImage X="@(x)" Y="@(Skin.Current.TreacheryDeckLocation.Y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.CardBack_TreacheryCard_URL" 
+        <MapImage X="@(x)" Y=@y Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.CardBack_TreacheryCard_URL" 
                ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
                Popover="@IntelOfTreacheryCardPile()"/>
     }
 
     <MapText ToShow="@Game.TreacheryDeck.Items.Count.ToString()"
-             X="@(x + cardWidth / 2)" Y="@(Skin.Current.TreacheryDeckLocation.Y + cardHeight / 1.5f)"
+             X="@(x + cardWidth / 2)" Y="@(y + cardHeight / 1.5f)"
              Font="@Skin.Current.CARDPILE_FONT" FontColor="@Skin.Current.CARDPILE_FONTCOLOR"
              BorderWidth="@Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.CARDPILE_FONT_BORDERCOLOR"
              Align="@TextAlignment.Center" />
@@ -87,12 +88,12 @@
     if (!Game.TreacheryDiscardPile.IsEmpty)
     {
         x += cardWidth + cardspacing;
-        <MapImage X="@(x)" Y="@(Skin.Current.TreacheryDeckLocation.Y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.TreacheryDiscardPile.Top)" 
+        <MapImage X="@(x)" Y=@y Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.GetImageURL(Game.TreacheryDiscardPile.Top)" 
                ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
                Popover="@IntelOfTreacheryDiscardPile()"/>
 
         <MapText ToShow="@Game.TreacheryDiscardPile.Items.Count.ToString()"
-                 X="@(x + cardWidth / 2)" Y="@(Skin.Current.TreacheryDeckLocation.Y + cardHeight / 1.5f)"
+                 X="@(x + cardWidth / 2)" Y="@(y + cardHeight / 1.5f)"
                  Font="@Skin.Current.CARDPILE_FONT" FontColor="@Skin.Current.CARDPILE_FONTCOLOR"
                  BorderWidth="@Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.CARDPILE_FONT_BORDERCOLOR"
                  Align="@TextAlignment.Center" />
@@ -102,14 +103,14 @@
     {
         x = Skin.Current.TreacheryDeckLocation.X - cardWidth - cardspacing;
 
-        <MapImage X="@(x)" Y="@(Skin.Current.TreacheryDeckLocation.Y)" Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.CardBack_TreacheryCard_URL" 
+        <MapImage X="@(x)" Y=@y Width=@(cardWidth) Height="@(cardHeight)" Src="@Skin.Current.CardBack_TreacheryCard_URL" 
                ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" 
                Popover="@IntelOfWhiteCardPile()"/>
 
-        <MapImage X="@(x + cardWidth / 3)" Y="@(Skin.Current.TreacheryDeckLocation.Y + cardHeight / 8)" Diameter="@(cardWidth / 3)" Src="@Skin.Current.GetImageURL(Faction.White)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
+        <MapImage X="@(x + cardWidth / 3)" Y="@(y + cardHeight / 8)" Diameter="@(cardWidth / 3)" Src="@Skin.Current.GetImageURL(Faction.White)" ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="0" />
 
         <MapText ToShow="@Game.WhiteCache.Count.ToString()"
-                 X="@(x + cardWidth / 2)" Y="@(Skin.Current.TreacheryDeckLocation.Y + cardHeight / 1.5f)"
+                 X="@(x + cardWidth / 2)" Y="@(y + cardHeight / 1.5f)"
                  Font="@Skin.Current.CARDPILE_FONT" FontColor="@Skin.Current.CARDPILE_FONTCOLOR"
                  BorderWidth="@Skin.Current.CARDPILE_FONT_BORDERWIDTH" BorderColor="@Skin.Current.CARDPILE_FONT_BORDERCOLOR"
                  Align="@TextAlignment.Center" />

@@ -154,7 +154,7 @@
 
     private IEnumerable<string> Players => h.Host.JoinedPlayers.Where(p => info.HostParticipates || p != h.PlayerName);
 
-    private string StyleDef(Faction f) => string.Format("background-color:{0}", Skin.Current.GetFactionColorTransparant(f));
+    private string StyleDef(Faction f) => string.Format("background-color:{0}", Skin.Current.GetFactionColorTransparant(f, "bb"));
 
     private bool Readonly => h.Host.LoadedGame != null;
 

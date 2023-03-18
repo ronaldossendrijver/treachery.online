@@ -12,7 +12,7 @@ namespace Treachery.Shared
     {
         public const int LowestSupportedVersion = 100;
         public const int LatestVersion = 151;
-        public const int ExpansionLevel = 3;
+        public const int ExpansionLevel = 2;
 
         public bool BotInfologging = true;
 
