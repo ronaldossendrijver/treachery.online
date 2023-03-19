@@ -148,6 +148,7 @@ namespace Treachery.Client
                 result.CurrentPhase = gameAtHost.CurrentPhase;
                 result.CurrentMainPhase = gameAtHost.CurrentMainPhase;
                 result.CurrentTurn = gameAtHost.CurrentTurn;
+                result.LastAction = gameAtHost.History.LastOrDefault()?.Time;
 
                 return result;
             }

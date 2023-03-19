@@ -197,7 +197,7 @@
         var existingSkinData = await Browser.LoadStringSetting("treachery.online;setting.skin");
         if (existingSkinData != null && existingSkinData.Length > 0)
         {
-            var existingSkin = Support.LoadSkin(existingSkinData);
+            var existingSkin = Skin.Load(existingSkinData);
             if (existingSkin.Version >= Skin.CurrentVersion)
             {
                 Skin.Current = existingSkin;

@@ -861,7 +861,7 @@ namespace Treachery.Client
 
         private static string GetLabel<T>(Dictionary<T, string> labels, T key)
         {
-            if (labels.TryGetValue(key, out var result)) return result;
+            if (labels != null && labels.TryGetValue(key, out var result)) return result;
 
             return "";
         }
@@ -1202,49 +1202,49 @@ namespace Treachery.Client
 
         public static void Fix(Skin toFix, Skin donor)
         {
-            FixDictionary(ref toFix.Concept_STR, donor.Concept_STR);
-            FixDictionary(ref toFix.MainPhase_STR, donor.MainPhase_STR);
-            FixDictionary(ref toFix.PersonName_STR, donor.PersonName_STR);
-            FixDictionary(ref toFix.PersonImage_URL, donor.PersonImage_URL);
-            FixDictionary(ref toFix.TerritoryName_STR, donor.TerritoryName_STR);
-            FixDictionary(ref toFix.TerritoryBorder_SVG, donor.TerritoryBorder_SVG);
-            FixDictionary(ref toFix.LocationCenter_Point, donor.LocationCenter_Point);
-            FixDictionary(ref toFix.LocationSpice_Point, donor.LocationSpice_Point);
-            FixDictionary(ref toFix.FactionName_STR, donor.FactionName_STR);
-            FixDictionary(ref toFix.FactionImage_URL, donor.FactionImage_URL);
-            FixDictionary(ref toFix.FactionTableImage_URL, donor.FactionTableImage_URL);
-            FixDictionary(ref toFix.FactionFacedownImage_URL, donor.FactionFacedownImage_URL);
-            FixDictionary(ref toFix.FactionForceImage_URL, donor.FactionForceImage_URL);
-            FixDictionary(ref toFix.FactionSpecialForceImage_URL, donor.FactionSpecialForceImage_URL);
-            FixDictionary(ref toFix.FactionColor, donor.FactionColor);
-            FixDictionary(ref toFix.ForceName_STR, donor.ForceName_STR);
-            FixDictionary(ref toFix.SpecialForceName_STR, donor.SpecialForceName_STR);
-            FixDictionary(ref toFix.TechTokenName_STR, donor.TechTokenName_STR);
-            FixDictionary(ref toFix.TechTokenImage_URL, donor.TechTokenImage_URL);
-            FixDictionary(ref toFix.Sound, donor.Sound);
-            FixDictionary(ref toFix.TreacheryCardType_STR, donor.TreacheryCardType_STR);
-            FixDictionary(ref toFix.TreacheryCardName_STR, donor.TreacheryCardName_STR);
-            FixDictionary(ref toFix.TreacheryCardDescription_STR, donor.TreacheryCardDescription_STR);
-            FixDictionary(ref toFix.TreacheryCardImage_URL, donor.TreacheryCardImage_URL);
-            FixDictionary(ref toFix.TechTokenDescription_STR, donor.TechTokenDescription_STR);
-            FixDictionary(ref toFix.ResourceCardImage_URL, donor.ResourceCardImage_URL);
-            FixDictionary(ref toFix.LeaderSkillCardName_STR, donor.LeaderSkillCardName_STR);
-            FixDictionary(ref toFix.LeaderSkillCardImage_URL, donor.LeaderSkillCardImage_URL);
-            FixDictionary(ref toFix.StrongholdCardName_STR, donor.StrongholdCardName_STR);
-            FixDictionary(ref toFix.StrongholdCardImage_URL, donor.StrongholdCardImage_URL);
-            FixDictionary(ref toFix.HomeWorldImage_URL, donor.HomeWorldImage_URL);
-            FixDictionary(ref toFix.HomeWorldCardImage_URL, donor.HomeWorldCardImage_URL);
-            FixDictionary(ref toFix.NexusCardImage_URL, donor.NexusCardImage_URL);
-            FixDictionary(ref toFix.TerrorTokenName_STR, donor.TerrorTokenName_STR);
-            FixDictionary(ref toFix.TerrorTokenDescription_STR, donor.TerrorTokenDescription_STR);
-            FixDictionary(ref toFix.DiscoveryTokenName_STR, donor.DiscoveryTokenName_STR);
-            FixDictionary(ref toFix.DiscoveryTokenDescription_STR, donor.DiscoveryTokenDescription_STR);
-            FixDictionary(ref toFix.DiscoveryTokenImage_URL, donor.DiscoveryTokenImage_URL);
-            FixDictionary(ref toFix.DiscoveryTokenTypeName_STR, donor.DiscoveryTokenTypeName_STR);
-            FixDictionary(ref toFix.DiscoveryTokenTypeImage_URL, donor.DiscoveryTokenTypeImage_URL);
-            FixDictionary(ref toFix.AmbassadorImage_URL, donor.AmbassadorImage_URL);
-            FixDictionary(ref toFix.AmbassadorName_STR, donor.AmbassadorName_STR);
-            FixDictionary(ref toFix.AmbassadorDescription_STR, donor.AmbassadorDescription_STR);
+            toFix.Concept_STR = FixDictionary(toFix.Concept_STR, donor.Concept_STR);
+            toFix.MainPhase_STR = FixDictionary(toFix.MainPhase_STR, donor.MainPhase_STR);
+            toFix.PersonName_STR = FixDictionary(toFix.PersonName_STR, donor.PersonName_STR);
+            toFix.PersonImage_URL = FixDictionary(toFix.PersonImage_URL, donor.PersonImage_URL);
+            toFix.TerritoryName_STR = FixDictionary(toFix.TerritoryName_STR, donor.TerritoryName_STR);
+            toFix.TerritoryBorder_SVG = FixDictionary(toFix.TerritoryBorder_SVG, donor.TerritoryBorder_SVG);
+            toFix.LocationCenter_Point = FixDictionary(toFix.LocationCenter_Point, donor.LocationCenter_Point);
+            toFix.LocationSpice_Point = FixDictionary(toFix.LocationSpice_Point, donor.LocationSpice_Point);
+            toFix.FactionName_STR = FixDictionary(toFix.FactionName_STR, donor.FactionName_STR);
+            toFix.FactionImage_URL = FixDictionary(toFix.FactionImage_URL, donor.FactionImage_URL);
+            toFix.FactionTableImage_URL = FixDictionary(toFix.FactionTableImage_URL, donor.FactionTableImage_URL);
+            toFix.FactionFacedownImage_URL = FixDictionary(toFix.FactionFacedownImage_URL, donor.FactionFacedownImage_URL);
+            toFix.FactionForceImage_URL = FixDictionary(toFix.FactionForceImage_URL, donor.FactionForceImage_URL);
+            toFix.FactionSpecialForceImage_URL = FixDictionary(toFix.FactionSpecialForceImage_URL, donor.FactionSpecialForceImage_URL);
+            toFix.FactionColor = FixDictionary(toFix.FactionColor, donor.FactionColor);
+            toFix.ForceName_STR = FixDictionary(toFix.ForceName_STR, donor.ForceName_STR);
+            toFix.SpecialForceName_STR = FixDictionary(toFix.SpecialForceName_STR, donor.SpecialForceName_STR);
+            toFix.TechTokenName_STR = FixDictionary(toFix.TechTokenName_STR, donor.TechTokenName_STR);
+            toFix.TechTokenImage_URL = FixDictionary(toFix.TechTokenImage_URL, donor.TechTokenImage_URL);
+            toFix.Sound = FixDictionary(toFix.Sound, donor.Sound);
+            toFix.TreacheryCardType_STR= FixDictionary(toFix.TreacheryCardType_STR, donor.TreacheryCardType_STR);
+            toFix.TreacheryCardName_STR = FixDictionary(toFix.TreacheryCardName_STR, donor.TreacheryCardName_STR);
+            toFix.TreacheryCardDescription_STR = FixDictionary(toFix.TreacheryCardDescription_STR, donor.TreacheryCardDescription_STR);
+            toFix.TreacheryCardImage_URL = FixDictionary(toFix.TreacheryCardImage_URL, donor.TreacheryCardImage_URL);
+            toFix.TechTokenDescription_STR = FixDictionary(toFix.TechTokenDescription_STR, donor.TechTokenDescription_STR);
+            toFix.ResourceCardImage_URL = FixDictionary(toFix.ResourceCardImage_URL, donor.ResourceCardImage_URL);
+            toFix.LeaderSkillCardName_STR = FixDictionary(toFix.LeaderSkillCardName_STR, donor.LeaderSkillCardName_STR);
+            toFix.LeaderSkillCardImage_URL = FixDictionary(toFix.LeaderSkillCardImage_URL, donor.LeaderSkillCardImage_URL);
+            toFix.StrongholdCardName_STR = FixDictionary(toFix.StrongholdCardName_STR, donor.StrongholdCardName_STR);
+            toFix.StrongholdCardImage_URL = FixDictionary(toFix.StrongholdCardImage_URL, donor.StrongholdCardImage_URL);
+            toFix.HomeWorldImage_URL = FixDictionary(toFix.HomeWorldImage_URL, donor.HomeWorldImage_URL);
+            toFix.HomeWorldCardImage_URL = FixDictionary(toFix.HomeWorldCardImage_URL, donor.HomeWorldCardImage_URL);
+            toFix.NexusCardImage_URL = FixDictionary(toFix.NexusCardImage_URL, donor.NexusCardImage_URL);
+            toFix.TerrorTokenName_STR = FixDictionary(toFix.TerrorTokenName_STR, donor.TerrorTokenName_STR);
+            toFix.TerrorTokenDescription_STR  = FixDictionary(toFix.TerrorTokenDescription_STR, donor.TerrorTokenDescription_STR);
+            toFix.DiscoveryTokenName_STR = FixDictionary(toFix.DiscoveryTokenName_STR, donor.DiscoveryTokenName_STR);
+            toFix.DiscoveryTokenDescription_STR = FixDictionary(toFix.DiscoveryTokenDescription_STR, donor.DiscoveryTokenDescription_STR);
+            toFix.DiscoveryTokenImage_URL = FixDictionary(toFix.DiscoveryTokenImage_URL, donor.DiscoveryTokenImage_URL);
+            toFix.DiscoveryTokenTypeName_STR = FixDictionary(toFix.DiscoveryTokenTypeName_STR, donor.DiscoveryTokenTypeName_STR);
+            toFix.DiscoveryTokenTypeImage_URL = FixDictionary(toFix.DiscoveryTokenTypeImage_URL, donor.DiscoveryTokenTypeImage_URL);
+            toFix.AmbassadorImage_URL = FixDictionary(toFix.AmbassadorImage_URL, donor.AmbassadorImage_URL);
+            toFix.AmbassadorName_STR = FixDictionary(toFix.AmbassadorName_STR, donor.AmbassadorName_STR);
+            toFix.AmbassadorDescription_STR = FixDictionary(toFix.AmbassadorDescription_STR, donor.AmbassadorDescription_STR);
 
             FixValue(ref toFix.MusicGeneral_URL, donor.MusicGeneral_URL);
             FixValue(ref toFix.MusicResourceBlow_URL, donor.MusicResourceBlow_URL);
@@ -1347,19 +1347,15 @@ namespace Treachery.Client
             FixValue(ref toFix.TRACKER_FONT, donor.TRACKER_FONT);
         }
 
-        private static void FixDictionary<TKey, TValue>(ref Dictionary<TKey, TValue> toFix, Dictionary<TKey, TValue> donor)
+        private static Dictionary<TKey, TValue> FixDictionary<TKey, TValue>(Dictionary<TKey, TValue> toFix, Dictionary<TKey, TValue> donor)
         {
-            var toCheck = toFix;
-            if (toFix == null || donor.Keys.Any(k => !toCheck.ContainsKey(k)))
+            if (toFix == null || donor.Keys.Any(k => !toFix.ContainsKey(k)))
             {
-                toFix = donor;
-                /*
-                if (donor.Any())
-                {
-                    var firstKey = donor.Keys.First();
-                    Console.WriteLine($"Fixed dictionary of type <{firstKey.GetType()},{donor[firstKey].GetType()}>, first value: <{firstKey},{donor[firstKey]}>");
-                }
-                */
+                return donor;
+            }
+            else
+            {
+                return toFix;
             }
         }
 

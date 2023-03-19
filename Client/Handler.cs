@@ -475,7 +475,7 @@ namespace Treachery.Client
         {
             await Browser.SaveStringSetting("treachery.online;setting.skin", skinData);
 
-            Skin.Current = Support.LoadSkin(skinData);
+            Skin.Current = Skin.Load(skinData);
 
             Message.DefaultDescriber = Skin.Current;
 

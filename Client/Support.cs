@@ -50,15 +50,6 @@ namespace Treachery.Client
             return comparer.Compare(hashOfInput, hash) == 0;
         }
 
-        public static Skin LoadSkin(string skinData)
-        {
-            var serializer = JsonSerializer.CreateDefault();
-            serializer.Formatting = Formatting.Indented;
-            var textReader = new StringReader(skinData);
-            var jsonReader = new JsonTextReader(textReader);
-            return serializer.Deserialize<Skin>(jsonReader);
-        }
-
         public static string TextBorder(int borderwidth, string bordercolor) =>
             string.Format("text-shadow: {0}px {0}px {0}px {1}, 0px {0}px {0}px {1}, -{0}px {0}px {0}px {1}, -{0}px 0px {0}px {1}, -{0}px -{0}px {0}px {1}, 0px -{0}px {0}px {1}, {0}px -{0}px {0}px {1}, {0}px 0px {0}px {1}, 0px 0px {0}px {1};", Round(0.5f * borderwidth), bordercolor);
         //$"-webkit-text-stroke: {Px(0.4f * borderwidth)} {bordercolor}";

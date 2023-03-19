@@ -2,6 +2,7 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
+using System;
 using System.Collections.Generic;
 
 namespace Treachery.Shared
@@ -23,6 +24,7 @@ namespace Treachery.Shared
         public int NumberOfBots;
         public List<Rule> Rules;
         public bool InviteOthers;
+        public DateTime? LastAction;
 
         public override bool Equals(object obj)
         {
