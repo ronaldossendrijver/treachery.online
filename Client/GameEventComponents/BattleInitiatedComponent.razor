@@ -10,8 +10,11 @@
 
     <Header>Select whom and where to battle</Header>
     <Body>
+        
+        <SelectFromImageComponent Game=Game @bind-Value=@faction Values=@battles.Select(b => b.Faction).Distinct() Required=true/>
 
-        <SelectComponent @bind-Value="battle" Values=@battles ValueLabels=@battles.Select(b => Label(b))/>
+        <SelectComponent @bind-Value=@territory Values=@battles.Where(b => b.Faction == @faction).Select(b => b.Territory) />
+                    
         <ButtonRowComponent Confirm="Confirm" ConfirmText="Initiate Battle" ConfirmError=@Validation />
 
     </Body>
@@ -24,7 +27,8 @@
 
     private IEnumerable<Fight> battles;
 
-    private Fight battle;
+    private Faction faction;
+    private Territory territory;
 
     protected override void OnParametersSet()
     {
@@ -38,7 +42,5 @@
         }
     }
 
-    protected override BattleInitiated ConfirmedResult => new BattleInitiated(Game) { Initiator = Faction, Territory = battle.Territory, Target = battle.Faction };
-
-    private string Label(Fight b) => Skin.Current.Format("{0} {1} {2}", b.Faction, b.Territory.IsHomeworld ? "on" : "in", b.Territory);
+    protected override BattleInitiated ConfirmedResult => new BattleInitiated(Game) { Initiator = Faction, Territory = territory, Target = faction };
 }

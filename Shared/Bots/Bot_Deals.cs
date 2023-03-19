@@ -37,7 +37,7 @@ namespace Treachery.Shared
 
                     biddingPrescienceDeal = DealAccepted.AcceptableDeals(Game, this).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.BiddingReport && d.Price <= Resources);
                     LogInfo("biddingPrescienceOfferEntirePhase: {0}", biddingPrescienceDeal);
-                    if (biddingPrescienceDeal != null && Game.CurrentMainPhase == MainPhase.Bidding && Game.CardNumber == 1 && biddingPrescienceDeal.Price < 1.5f * Game.CardsOnAuction.Items.Count() && ResourcesIncludingAllyContribution - biddingPrescienceDeal.Price > 14)
+                    if (biddingPrescienceDeal != null && Game.CurrentMainPhase == MainPhase.Bidding && Game.CardNumber == 1 && biddingPrescienceDeal.Price < 1.4f * Game.CardsOnAuction.Items.Count() && ResourcesIncludingAllyContribution - biddingPrescienceDeal.Price > 16)
                     {
                         return biddingPrescienceDeal.Acceptance(Faction);
                     }
@@ -45,11 +45,11 @@ namespace Treachery.Shared
                     biddingPrescienceDeal = DealAccepted.AcceptableDeals(Game, this).FirstOrDefault(d => d.Type == DealType.ShareBiddingPrescience && d.EndPhase == Phase.Bidding && d.Price <= Resources);
                     LogInfo("biddingPrescienceOfferOneCard: {0}", biddingPrescienceDeal);
                     int maxPriceToPay = 0;
-                    if (Faction == Faction.Red && HasRoomForCards && ResourcesIncludingAllyContribution > 22)
+                    if (Faction == Faction.Red && HasRoomForCards && ResourcesIncludingAllyContribution > 24)
                     {
-                        maxPriceToPay = 2;
+                        maxPriceToPay = 1;
                     }
-                    else if ((Faction == Faction.Red || ResourcesIncludingAllyContribution > 14) && HasRoomForCards)
+                    else if ((Faction == Faction.Red && ResourcesIncludingAllyContribution > 6 || ResourcesIncludingAllyContribution > 16) && HasRoomForCards)
                     {
                         maxPriceToPay = 1;
                     }

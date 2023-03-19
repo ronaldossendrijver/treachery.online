@@ -4,11 +4,13 @@
 
 namespace Treachery.Shared
 {
-    public class Fight
+    public class Fight : IIdentifiable
     {
         public Territory Territory { get; private set; }
 
         public Faction Faction { get; private set; }
+
+        public int Id => Territory.Id + 1000 * (int)Faction;
 
         public Fight(Territory territory, Faction faction)
         {
@@ -16,5 +18,7 @@ namespace Treachery.Shared
             Territory = territory;
             Faction = faction;
         }
+
+        
     }
 }

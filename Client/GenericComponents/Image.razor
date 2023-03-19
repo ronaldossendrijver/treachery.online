@@ -29,11 +29,9 @@ else
 
     [Parameter]
     public object Shown { get; set; }
-    private object _shown;
 
     [Parameter]
     public string Src { get; set; }
-    private string _src;
 
     [Parameter]
     public string Popover { get; set; }
@@ -79,32 +77,17 @@ else
 
         ImgWidth = Width > 0 ? Support.Round(Width) : "";
 
-        if (_shown != Shown)
+        if (Shown != null)
         {
-            _shown = Shown;
-
-            if (Shown != null)
-            {
-                Src = GetShownImageURL();
-                PopoverAsTooltip = !ShownHasRichPopover;
-                Popover = GetShownPopover();
-            }
-            else
-            {
-                Src = "";
-                Popover = "";
-            }
+            Src = GetShownImageURL();
+            PopoverAsTooltip = !ShownHasRichPopover;
+            Popover = GetShownPopover();
         }
 
         if (_popover != Popover)
         {
             _popover = Popover;
             _popoverNeedsRefresh = !PopoverAsTooltip;
-        }
-
-        if (_src != Src)
-        {
-            _src = Src;
         }
     }
 
