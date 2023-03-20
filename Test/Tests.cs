@@ -27,45 +27,12 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (e is DivideResources dr && DivideResources.GetResourcesToBeDivided(g).Amount == 6)
+            /*
+            if ()
             {
-                WriteSavegameIfApplicable(g, e.Player, "DivideResources");
+                WriteSavegameIfApplicable(g, e.Player, "");
             }
-
-            if (e is AmbassadorActivated aa && aa.YellowForceLocations != null && aa.YellowForceLocations.Count() > 0 && aa.Player.ForcesOnPlanet.Keys.Select(l => l.Territory).Distinct().Count() > 1)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "May move from more than 1 territory");
-            }
-
-            if (e is Move m && m.ForceLocations.Keys.Select(l => l.Territory).Distinct().Count() > 1)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Move from more than 1 territory");
-            }
-
-            if (e is BattleConcluded && g.CurrentBattle.PlanOf(e.Initiator).Weapon != null && g.CurrentBattle.PlanOf(e.Initiator).Defense != null)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Battle Concluded");
-            }
-
-            if (g.CurrentPhase == Phase.BeginningOfResurrection && g.Players.Any(p => p.ForcesKilled >= 6 && p.Resources >= 8 && NexusPlayed.CanUseSecretAlly(g, p) && p.Nexus == Faction.Red))
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Red secret ally");
-            }
-
-            if (g.CurrentPhase == Phase.NonOrangeMove && g.ShipmentAndMoveSequence.CurrentFaction == g.OwnerOfFlightDiscovery)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "FlightMayBeUsed");
-            }
-
-            if (e is FlightDiscoveryUsed)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "FlightDiscoveryUsed");
-            }
-
-            if (e is HMSAdvantageChosen && g.StrongholdOwnership.Values.Where(v => v == e.Initiator).Count() > 2)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "HMSAdvantageChosen");
-            }
+            */
         }
 
         private readonly List<string> WrittenCases = new();
@@ -378,7 +345,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 100;
+            int nrOfGames = 500;
             int nrOfTurns = 10;
             int nrOfPlayers = 7;
 
