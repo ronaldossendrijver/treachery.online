@@ -186,7 +186,7 @@ namespace Treachery.Shared
             WinningBid = CurrentBid;
             CardSoldOnBlackMarket = card;
             FactionThatMayReplaceBoughtCard = Faction.None;
-            bool enterReplacingCardJustWon = Version > 150 && Players.Any(p => p.Nexus != Faction.None);
+            bool enterReplacingCardJustWon = winner != null && Version > 150 && Players.Any(p => p.Nexus != Faction.None);
 
             if (winner != null)
             {
@@ -334,12 +334,12 @@ namespace Treachery.Shared
             {
                 e.Player.TreacheryCards.Add(card);
                 LogTo(e.Initiator, "You get: ", card);
-                FinishBid(e.Player, card);
+                FinishBid(e.Player, card, false);
             }
             else
             {
                 RemovedTreacheryCards.Add(card);
-                FinishBid(null, card);
+                FinishBid(null, card, false);
             }
         }
 
@@ -368,7 +368,7 @@ namespace Treachery.Shared
                         highestBid.Initiator != Faction.White ? Faction.White : Faction.Red,
                         CardsOnAuction, false);
 
-                    FinishBid(highestBid.Player, card);
+                    FinishBid(highestBid.Player, card, true);
                 }
                 else
                 {
@@ -384,7 +384,7 @@ namespace Treachery.Shared
                         RemovedTreacheryCards.Add(card);
                         RegisterWonCardAsKnown(card);
                         Log(card, " was removed from the game");
-                        FinishBid(null, card);
+                        FinishBid(null, card, false);
                     }
                 }
             }
@@ -591,7 +591,7 @@ namespace Treachery.Shared
                 {
                     //Immediate Karma
                     var card = WinWithKarma(bid, CardsOnAuction);
-                    FinishBid(bid.Player, card);
+                    FinishBid(bid.Player, card, true);
                 }
                 else if (CurrentBid != null && BidSequence.CurrentFaction == CurrentBid.Initiator)
                 {
@@ -600,7 +600,7 @@ namespace Treachery.Shared
                         //Karma was used to bid any amount
                         ReturnKarmaCardUsedForBid();
                         var card = WinWithKarma((Bid)CurrentBid, CardsOnAuction);
-                        FinishBid(CurrentBid.Player, card);
+                        FinishBid(CurrentBid.Player, card, true);
                     }
                     else
                     {
@@ -615,7 +615,7 @@ namespace Treachery.Shared
                             CardsOnAuction,
                             CurrentBid.UsesRedSecretAlly);
 
-                        FinishBid(CurrentBid.Player, card);
+                        FinishBid(CurrentBid.Player, card, true);
                     }
                 }
                 else if (CurrentBid == null && Bids.Count >= PlayersThatCanBid.Count())
@@ -626,7 +626,7 @@ namespace Treachery.Shared
             else if (BidSequence.CurrentFaction == bid.Initiator)
             {
                 var card = BidByOnlyPlayer(bid, Faction.Red, CardsOnAuction);
-                FinishBid(CurrentBid.Player, card);
+                FinishBid(CurrentBid.Player, card, true);
             }
         }
 
@@ -928,7 +928,7 @@ namespace Treachery.Shared
 
         public IBid WinningBid { get; private set; }
 
-        private void FinishBid(Player winner, TreacheryCard card)
+        private void FinishBid(Player winner, TreacheryCard card, bool mightReplace)
         {
             CardJustWon = card;
             WinningBid = CurrentBid;
@@ -939,9 +939,9 @@ namespace Treachery.Shared
 
             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreenBiddingPrescience);
 
-            bool enterReplacingCardJustWon = Version > 150 && Players.Any(p => p.Nexus != Faction.None);
+            bool enterReplacingCardJustWon = mightReplace && Version > 150 && Players.Any(p => p.Nexus != Faction.None);
 
-            if (winner != null)
+            if (mightReplace && winner != null)
             {
                 if (winner.Ally == Faction.Grey && AllyMayReplaceCards)
                 {
