@@ -695,7 +695,7 @@ namespace Treachery.Shared
                     !player.SpecialKarmaPowerUsed &&
                     player.HasKarma(this) &&
                     Applicable(Rule.AdvancedKarama) &&
-                    !HasBidToPay(player))
+                    (Version <= 150 || !HasBidToPay(player)))
                 {
                     result.Add(typeof(KarmaWhiteBuy));
                 }

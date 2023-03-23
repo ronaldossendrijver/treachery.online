@@ -59,9 +59,11 @@
                             h.JoinErrors.Add(av.HostID, "");
                         }
 
-                        <tr class="small">
-                            <td class="w-25">@av.GameName</td>
+                        var fontColorStyle = av.LastAction != null && DateTime.Now.Subtract((DateTime)av.LastAction).TotalSeconds > 10 ? "color:grey" : "";
 
+                        <tr class="small">
+                            <td class="w-25" style=@fontColorStyle>@av.GameName</td>
+                            
                             @if (av.CurrentPhase == Phase.AwaitingPlayers)
                             {
                                 <td class="w-50">
@@ -81,7 +83,7 @@
                             else
                             {
                                 var factions = av.FactionsInPlay != null ? av.FactionsInPlay : new List<Faction>();
-                                <td>
+                                <td style=@fontColorStyle>
                                     @Name(Game.DetermineApproximateRuleset(factions, av.Rules, Game.ExpansionLevel)), Turn @av.CurrentTurn: @Name(av.CurrentMainPhase)
                                     <br>
                                     @foreach (var f in @factions.Where(f => f != Faction.None))

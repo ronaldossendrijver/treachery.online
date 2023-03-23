@@ -60,14 +60,8 @@
     [Parameter]
     public bool AllowAutoConfirm { get; set; } = false;
 
-    /*
     [Parameter]
-    public new Faction IsFactionSpecific
-    {
-        get { return base.IsFactionSpecific; }
-        set { base.IsFactionSpecific = value; }
-    }
-    */
+    public new Faction IsFactionSpecific { get; set; }
 
     protected override GameEventType ConfirmedResult => new GameEventType() { Game = Game, Initiator = Faction };
 
@@ -79,6 +73,11 @@
         {
             _ = Task.Delay(3000).ContinueWith(e => AutoPass());
         }
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.IsFactionSpecific = IsFactionSpecific;
     }
 
     private async Task AutoPass()

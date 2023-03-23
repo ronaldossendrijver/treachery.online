@@ -138,7 +138,8 @@ namespace Treachery.Client
                         Players = gameAtHost.Players.Select(p => p.Name).ToArray(),
                         FactionsInPlay = gameAtHost.Players.Select(p => p.Faction).ToList(),
                         NumberOfBots = gameAtHost.Players.Count(p => p.IsBot),
-                        Rules = gameAtHost.Rules.ToList()
+                        Rules = gameAtHost.Rules.ToList(),
+                        LastAction = gameAtHost.History.Last().Time
                     };
                 }
 
@@ -148,7 +149,6 @@ namespace Treachery.Client
                 result.CurrentPhase = gameAtHost.CurrentPhase;
                 result.CurrentMainPhase = gameAtHost.CurrentMainPhase;
                 result.CurrentTurn = gameAtHost.CurrentTurn;
-                result.LastAction = gameAtHost.History.LastOrDefault()?.Time;
 
                 return result;
             }
@@ -331,6 +331,7 @@ namespace Treachery.Client
             try
             {
                 e.Game = gameAtHost;
+                e.Time = DateTime.Now;
                 var result = e.Execute(true, true);
                 if (result == null)
                 {
@@ -449,9 +450,6 @@ namespace Treachery.Client
             }
         }
 
-        public void Dispose()
-        {
-            Stop();
-        }
+        public void Dispose() => Stop();
     }
 }

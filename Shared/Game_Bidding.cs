@@ -334,12 +334,12 @@ namespace Treachery.Shared
             {
                 e.Player.TreacheryCards.Add(card);
                 LogTo(e.Initiator, "You get: ", card);
-                FinishBid(e.Player, card, false);
+                FinishBid(e.Player, card, Version < 152);
             }
             else
             {
                 RemovedTreacheryCards.Add(card);
-                FinishBid(null, card, false);
+                FinishBid(null, card, Version < 152);
             }
         }
 
@@ -384,7 +384,7 @@ namespace Treachery.Shared
                         RemovedTreacheryCards.Add(card);
                         RegisterWonCardAsKnown(card);
                         Log(card, " was removed from the game");
-                        FinishBid(null, card, false);
+                        FinishBid(null, card, Version < 152);
                     }
                 }
             }
