@@ -23,7 +23,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(EstablishPlayers e)
         {
-            RecentMilestones.Add(Milestone.GameStarted);
+            Stone(Milestone.GameStarted);
 
             CurrentMainPhase = MainPhase.Setup;
             CurrentReport = new Report(MainPhase.Setup);
@@ -60,7 +60,7 @@ namespace Treachery.Shared
             if (!Applicable(Rule.CustomDecks))
             {
                 TreacheryDeck.Shuffle();
-                RecentMilestones.Add(Milestone.Shuffled);
+                Stone(Milestone.Shuffled);
             }
 
             TreacheryDiscardPile = new Deck<TreacheryCard>(Random);
@@ -173,7 +173,7 @@ namespace Treachery.Shared
                 result.PutOnTop(c);
             }
 
-            RecentMilestones.Add(Milestone.Shuffled);
+            Stone(Milestone.Shuffled);
             result.Shuffle();
             return result;
         }
@@ -283,7 +283,7 @@ namespace Treachery.Shared
         private void AssignFactionsAndEnterFactionTrade()
         {
             var inPlay = new Deck<Faction>(FactionsInPlay, Random);
-            RecentMilestones.Add(Milestone.Shuffled);
+            Stone(Milestone.Shuffled);
             inPlay.Shuffle();
 
             foreach (var p in Players.Where(p => p.Faction == Faction.None))
@@ -380,7 +380,7 @@ namespace Treachery.Shared
         {
             TreacheryDeck = new Deck<TreacheryCard>(e.TreacheryCards, Random);
             TreacheryDeck.Shuffle();
-            RecentMilestones.Add(Milestone.Shuffled);
+            Stone(Milestone.Shuffled);
             WhiteCache = new List<TreacheryCard>(e.WhiteCards);
             Log(e.GetVerboseMessage());
 
@@ -431,7 +431,7 @@ namespace Treachery.Shared
 
         private void DealTraitors()
         {
-            RecentMilestones.Add(Milestone.Shuffled);
+            Stone(Milestone.Shuffled);
             TraitorDeck = CreateAndShuffleTraitorDeck(Random);
 
             if (Applicable(Rule.BlackMulligan) && IsPlaying(Faction.Black))
@@ -521,7 +521,7 @@ namespace Treachery.Shared
                 TraitorDeck.Items.AddRange(initiator.Traitors);
                 initiator.Traitors.Clear();
                 TraitorDeck.Shuffle();
-                RecentMilestones.Add(Milestone.Shuffled);
+                Stone(Milestone.Shuffled);
                 DealBlackTraitorCards();
                 Enter(Phase.BlackMulligan);
             }
@@ -596,7 +596,7 @@ namespace Treachery.Shared
             {
                 SkillDeck = new Deck<LeaderSkill>(Enumerations.GetValuesExceptDefault(typeof(LeaderSkill), LeaderSkill.None), Random);
                 SkillDeck.Shuffle();
-                RecentMilestones.Add(Milestone.Shuffled);
+                Stone(Milestone.Shuffled);
 
                 int nrOfSkillsToAssign = Players.Count <= 7 ? 2 : 1;
                 for (int i = 0; i < nrOfSkillsToAssign; i++)
@@ -775,7 +775,7 @@ namespace Treachery.Shared
             AssignRandomAmbassadors(p);
         }
 
-        private void AssignRandomAmbassadors(Player p)
+        internal void AssignRandomAmbassadors(Player p)
         {
             foreach (var item in AmbassadorsSetAside)
             {
@@ -784,7 +784,7 @@ namespace Treachery.Shared
             AmbassadorsSetAside.Clear();
 
             UnassignedAmbassadors.Shuffle();
-            RecentMilestones.Add(Milestone.Shuffled);
+            Stone(Milestone.Shuffled);
             Log(p.Faction, " draw 5 random Ambassadors");
             for (int i = 0; i < 5; i++)
             {
@@ -808,7 +808,7 @@ namespace Treachery.Shared
 
             player.Resources = e.Resources;
 
-            Log(faction, " initial positions set, starting with ", Payment(e.Resources));
+            Log(faction, " initial positions set, starting with ", Payment.Of(e.Resources));
             HasActedOrPassed.Add(faction);
 
             if (Players.Count == HasActedOrPassed.Count)
@@ -884,7 +884,7 @@ namespace Treachery.Shared
             StartingTreacheryCards.Items.Remove(e.Card);
             Log(e);
             StartingTreacheryCards.Shuffle();
-            RecentMilestones.Add(Milestone.Shuffled);
+            Stone(Milestone.Shuffled);
             DealRemainingStartingTreacheryCardsToNonGrey();
         }
 

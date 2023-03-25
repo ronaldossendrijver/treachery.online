@@ -65,7 +65,7 @@ namespace Treachery.Shared
         public Deck<Faction> NexusCardDeck { get; private set; }
         public List<Faction> NexusDiscardPile { get; private set; } = new();
         public Dictionary<Player, Dictionary<MainPhase, TimeSpan>> Timers { get; private set; } = new();
-        private Random Random { get; set; }
+        internal Random Random { get; set; }
 
         #endregion GameState
 
@@ -398,7 +398,7 @@ namespace Treachery.Shared
 
         private GameEvent FindMostRecentEvent(params Type[] types)
         {
-            if (types.Length == 0) return History[History.Count - 1];
+            if (types.Length == 0) return History[^1];
 
             for (int i = History.Count - 1; i >= 0; i--)
             {
@@ -415,9 +415,9 @@ namespace Treachery.Shared
 
         public TimeSpan TimeSpent(Player player, MainPhase phase)
         {
-            if (Timers.ContainsKey(player) && Timers[player].ContainsKey(phase))
+            if (Timers.TryGetValue(player, out Dictionary<MainPhase, TimeSpan> timersIfPlayer) && timersIfPlayer.TryGetValue(phase, out TimeSpan value))
             {
-                return Timers[player][phase];
+                return value;
             }
             else
             {
@@ -489,13 +489,13 @@ namespace Treachery.Shared
             if (Version >= 103) AllowAllPreventedFactionAdvantages(exceptionsToAllowing);
         }
 
-        private void Enter(Phase phase)
+        internal void Enter(Phase phase)
         {
             CurrentPhase = phase;
             RemoveEndedDeals(phase);
         }
 
-        private void Enter(bool condition, Phase phaseIfTrue, Phase phaseIfFalse)
+        internal void Enter(bool condition, Phase phaseIfTrue, Phase phaseIfFalse)
         {
             if (condition)
             {
@@ -507,7 +507,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void Enter(bool condition, Phase phaseIfTrue, Action methodOtherwise)
+        internal void Enter(bool condition, Phase phaseIfTrue, Action methodOtherwise)
         {
             if (condition)
             {
@@ -519,7 +519,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void Enter(bool condition, Action methodIfTrue, Action methodOtherwise)
+        internal void Enter(bool condition, Action methodIfTrue, Action methodOtherwise)
         {
             if (condition)
             {
@@ -531,7 +531,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void Enter(bool condition1, Action actionIf1True, bool condition2, Phase phaseIf2True, Action methodOtherwise)
+        internal void Enter(bool condition1, Action actionIf1True, bool condition2, Phase phaseIf2True, Action methodOtherwise)
         {
             if (condition1)
             {
@@ -547,7 +547,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, bool condition3, Phase phaseIf3True, Action methodOtherwise)
+        internal void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, bool condition3, Phase phaseIf3True, Action methodOtherwise)
         {
             if (condition1)
             {
@@ -567,7 +567,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, bool condition3, Phase phaseIf3True)
+        internal void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, bool condition3, Phase phaseIf3True)
         {
             if (condition1)
             {
@@ -583,7 +583,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, bool condition3, Action methodIf3True, Action methodOtherwise)
+        internal void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, bool condition3, Action methodIf3True, Action methodOtherwise)
         {
             if (condition1)
             {
@@ -603,7 +603,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, Action methodOtherwise)
+        internal void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, Action methodOtherwise)
         {
             if (condition1)
             {
@@ -619,7 +619,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void Enter(bool condition1, Phase phaseIf1True, bool condition2, Action methodIf2True, Action methodOtherwise)
+        internal void Enter(bool condition1, Phase phaseIf1True, bool condition2, Action methodIf2True, Action methodOtherwise)
         {
             if (condition1)
             {
@@ -635,7 +635,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, Phase phaseOtherwise)
+        internal void Enter(bool condition1, Phase phaseIf1True, bool condition2, Phase phaseIf2True, Phase phaseOtherwise)
         {
             if (condition1)
             {
@@ -651,7 +651,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void Enter(bool condition1, Action methodIf1True, bool condition2, Phase phaseIf2True, Phase phaseOtherwise)
+        internal void Enter(bool condition1, Action methodIf1True, bool condition2, Phase phaseIf2True, Phase phaseOtherwise)
         {
             if (condition1)
             {
@@ -906,9 +906,9 @@ namespace Treachery.Shared
 
             foreach (Location l in t.Locations)
             {
-                if (OccupyingForcesOnPlanet.ContainsKey(l))
+                if (OccupyingForcesOnPlanet.TryGetValue(l, out List<Battalion> batallionsInLocation))
                 {
-                    foreach (var b in OccupyingForcesOnPlanet[l])
+                    foreach (var b in batallionsInLocation)
                     {
                         if (b.Faction != p.Faction && !counted.Contains(b.Faction) && b.Faction != pinkOrPinkAllyToExclude)
                         {
@@ -956,7 +956,7 @@ namespace Treachery.Shared
             return Map.Locations(true).Where(l => l.Sector != SectorInStorm && p.AnyForcesIn(l) > 0);
         }
 
-        private void FlipBeneGesseritWhenAloneOrWithPinkAlly()
+        internal void FlipBeneGesseritWhenAloneOrWithPinkAlly()
         {
             var bg = GetPlayer(Faction.Blue);
             if (bg != null)
@@ -1065,15 +1065,7 @@ namespace Treachery.Shared
                 NrOfOccupantsExcludingPlayer(l, p) < 2;
         }
 
-        public static Payment Payment(int amount)
-        {
-            return new Payment() { Amount = amount };
-        }
 
-        public static Payment Payment(int amount, Faction by)
-        {
-            return new Payment() { Amount = amount, By = by };
-        }
 
         private void AllowAllPreventedFactionAdvantages(IEnumerable<FactionAdvantage> exceptions)
         {
@@ -1221,7 +1213,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void LetFactionsDiscardSurplusCards()
+        internal void LetFactionsDiscardSurplusCards()
         {
             FactionsThatMustDiscard.AddRange(Players.Where(p => p.HandSizeExceeded).Select(p => p.Faction));
             if (FactionsThatMustDiscard.Any())
@@ -1291,7 +1283,9 @@ namespace Treachery.Shared
 
         public int NumberOfHumanPlayers => Players.Count(p => !p.IsBot);
 
-        private TreacheryCard Discard(Player player, TreacheryCardType cardType)
+        internal TreacheryCard Discard(Faction faction, TreacheryCardType cardType) => Discard(GetPlayer(faction), cardType);
+
+        internal TreacheryCard Discard(Player player, TreacheryCardType cardType)
         {
             TreacheryCard card = null;
             if (cardType == TreacheryCardType.Karma && player.Is(Faction.Blue))
@@ -1315,7 +1309,7 @@ namespace Treachery.Shared
             return card;
         }
 
-        private void Discard(TreacheryCard card)
+        internal void Discard(TreacheryCard card)
         {
             var player = Players.SingleOrDefault(p => p.TreacheryCards.Contains(card));
             Discard(player, card);
@@ -1323,7 +1317,7 @@ namespace Treachery.Shared
         }
 
         public Dictionary<TreacheryCard, Faction> RecentlyDiscarded { get; private set; } = new Dictionary<TreacheryCard, Faction>();
-        private void Discard(Player player, TreacheryCard card)
+        internal void Discard(Player player, TreacheryCard card)
         {
             if (player != null && card != null)
             {
@@ -1332,14 +1326,14 @@ namespace Treachery.Shared
                 TreacheryDiscardPile.PutOnTop(card);
                 RegisterKnown(card);
                 RecentlyDiscarded.Add(card, player.Faction);
-                RecentMilestones.Add(Milestone.Discard);
+                Stone(Milestone.Discard);
 
                 if (card.Type == TreacheryCardType.Poison || card.Type == TreacheryCardType.ProjectileAndPoison || card.Type == TreacheryCardType.PoisonTooth)
                 {
                     var pink = GetPlayer(Faction.Pink);
                     if (pink != null && pink.HasHighThreshold())
                     {
-                        Log(Faction.Pink, " get ", Payment(3), " from the discarded ", card);
+                        Log(Faction.Pink, " get ", Payment.Of(3), " from the discarded ", card);
                         pink.Resources += 3;
                     }
                 }
@@ -1402,6 +1396,11 @@ namespace Treachery.Shared
         private void LogTo(Faction faction, params object[] expression)
         {
             CurrentReport.ExpressTo(faction, expression);
+        }
+
+        internal void Stone(Milestone m)
+        {
+            RecentMilestones.Add(m);
         }
 
         #endregion SupportMethods

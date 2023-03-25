@@ -16,7 +16,7 @@
         {
             <div>Early revival requests:</div>
             <SelectFromImageComponent Game=Game Required=true @bind-Value=offerHero Values=@Game.CurrentRevivalRequests.Select(req => req.Hero) ImageWidth="80"/>
-            <SelectResourcesComponent @bind-Value="price" Min="AcceptOrCancelPurpleRevival.MinAmount()" Max="AcceptOrCancelPurpleRevival.MaxAmount()" Label="Price" />
+            <SelectResourcesComponent @bind-Value="price" Min=0 Max=50 Label="Price" />
             <ButtonRowComponent Alignment="" Pass="Pass" PassText="Deny all" Confirm="Confirm" ConfirmText=@OfferLabel Other=Other OtherText=@DenyLabel ConfirmError=@Validation />
         }
 

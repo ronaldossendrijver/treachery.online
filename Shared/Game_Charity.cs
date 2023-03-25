@@ -48,7 +48,7 @@ namespace Treachery.Shared
                 {
                     int toCollect = Players.Count * 2 * CurrentCharityMultiplier;
                     brown.Resources += toCollect;
-                    Log(Faction.Brown, " collect ", Payment(toCollect));
+                    Log(Faction.Brown, " collect ", Payment.Of(toCollect));
                 }
             }
             else
@@ -63,7 +63,7 @@ namespace Treachery.Shared
                 {
                     HasActedOrPassed.Add(Faction.Blue);
                     GiveCharity(blue, 2 * CurrentCharityMultiplier);
-                    RecentMilestones.Add(Milestone.CharityClaimed);
+                    Stone(Milestone.CharityClaimed);
                 }
                 else
                 {
@@ -85,7 +85,7 @@ namespace Treachery.Shared
                 {
                     var amount = techTokenOwner.TechTokens.Count;
                     techTokenOwner.Resources += amount;
-                    Log(techTokenOwner.Faction, " receive ", Payment(amount), " from ", TechToken.Resources);
+                    Log(techTokenOwner.Faction, " receive ", Payment.Of(amount), " from ", TechToken.Resources);
                 }
             }
         }
@@ -125,16 +125,16 @@ namespace Treachery.Shared
                 if (brown.Resources >= basicAmount)
                 {
                     brown.Resources -= basicAmount;
-                    Log(to.Faction, " get ", Payment(basicAmount), " from ", Faction.Brown, MessagePart.ExpressIf(homeworldBonus > 0, " and ", Payment(homeworldBonus), " from the bank"));
+                    Log(to.Faction, " get ", Payment.Of(basicAmount), " from ", Faction.Brown, MessagePart.ExpressIf(homeworldBonus > 0, " and ", Payment.Of(homeworldBonus), " from the bank"));
                 }
                 else
                 {
-                    Log(to.Faction, " are unable to claim ", Payment(basicAmount), " from ", Faction.Brown, MessagePart.ExpressIf(homeworldBonus > 0, " but get ", Payment(homeworldBonus), " from the bank"));
+                    Log(to.Faction, " are unable to claim ", Payment.Of(basicAmount), " from ", Faction.Brown, MessagePart.ExpressIf(homeworldBonus > 0, " but get ", Payment.Of(homeworldBonus), " from the bank"));
                 }
             }
             else
             {
-                Log(to.Faction, " claim ", Payment(basicAmount + homeworldBonus));
+                Log(to.Faction, " claim ", Payment.Of(basicAmount + homeworldBonus));
             }
         }
 
@@ -149,7 +149,7 @@ namespace Treachery.Shared
                 ResourceTechTokenIncome = true;
             }
 
-            RecentMilestones.Add(Milestone.CharityClaimed);
+            Stone(Milestone.CharityClaimed);
         }
 
         #endregion

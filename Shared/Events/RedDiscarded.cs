@@ -46,7 +46,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express(Initiator, " pay ", Game.Payment(2), " to discard ", Card);
+            return Message.Express(Initiator, " pay ", Payment.Of(2), " to discard ", Card);
         }
     }
 }

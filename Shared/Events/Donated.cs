@@ -70,7 +70,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express(Initiator, " give ", new Payment(Resources), MessagePart.ExpressIf(Card != null, " and a card"), " to ", Target);
+            return Message.Express(Initiator, " give ", Payment.Of(Resources), MessagePart.ExpressIf(Card != null, " and a card"), " to ", Target);
         }
 
         public static bool MayDonate(Game g, Player p)

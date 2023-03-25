@@ -152,6 +152,31 @@ namespace Treachery.Shared
         {
             return (GameEvent)MemberwiseClone();
         }
+
+        protected void Log()
+        {
+            Game.CurrentReport.Express(this);
+        }
+
+        protected void Log(params object[] expression)
+        {
+            Game.CurrentReport.Express(expression);
+        }
+
+        protected void LogIf(bool condition, params object[] expression)
+        {
+            if (condition)
+            {
+                Game.CurrentReport.Express(expression);
+            }
+        }
+
+        protected void LogTo(Faction faction, params object[] expression)
+        {
+            Game.CurrentReport.ExpressTo(faction, expression);
+        }
+
+        protected Player GetPlayer(Faction f) => Game.GetPlayer(f);
     }
 }
 

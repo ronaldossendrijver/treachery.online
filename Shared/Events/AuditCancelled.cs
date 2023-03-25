@@ -48,7 +48,7 @@ namespace Treachery.Shared
         {
             if (Cancelled)
             {
-                return Message.Express(Initiator, " pay ", Faction.Brown, new Payment(Cost(Game)), " to cancel an audit of ", GetNumberOfCardsThatMayBeAudited(Game), " cards");
+                return Message.Express(Initiator, " pay ", Faction.Brown, Payment.Of(Cost(Game)), " to cancel an audit of ", GetNumberOfCardsThatMayBeAudited(Game), " cards");
             }
             else
             {

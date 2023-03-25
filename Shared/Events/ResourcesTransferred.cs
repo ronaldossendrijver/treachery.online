@@ -20,7 +20,7 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (Resources > MaxAmount(Player)) return Message.Express("You can't transfer more than ", Game.Payment(MaxAmount(Player)));
+            if (Resources > MaxAmount(Player)) return Message.Express("You can't transfer more than ", Payment.Of(MaxAmount(Player)));
             if (!MayTransfer(Game, Player)) return Message.Express("You currently can't transfer ", Concept.Resource);
 
             return null;
@@ -33,7 +33,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express(Initiator, " transfer ", new Payment(Resources), " to their ally");
+            return Message.Express(Initiator, " transfer ", Payment.Of(Resources), " to their ally");
         }
 
         public static bool CanBePlayed(Game g, Player p) => p.HasAlly && MaxAmount(p) > 0 && MayTransfer(g, p);

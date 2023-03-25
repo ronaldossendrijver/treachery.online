@@ -2,6 +2,8 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
+using System;
+
 namespace Treachery.Shared
 {
     public class AmalPlayed : GameEvent
@@ -21,7 +23,17 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Game.Discard(Initiator, TreacheryCardType.Amal);
+            Log();
+
+            foreach (var p in Game.Players)
+            {
+                int resourcesPaid = (int)Math.Ceiling(0.5 * p.Resources);
+                p.Resources -= resourcesPaid;
+                Log(p.Faction, " lose ", Payment.Of(resourcesPaid));
+            }
+
+            Game.Stone(Milestone.Amal);
         }
 
         public override Message GetMessage()

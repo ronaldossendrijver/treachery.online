@@ -3,6 +3,7 @@
  */
 
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace Treachery.Shared
 {
@@ -43,7 +44,32 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Log();
+
+            if (Hero == null)
+            {
+                foreach (var r in Game.CurrentRevivalRequests)
+                {
+                    Game.EarlyRevivalsOffers.Add(r.Hero, int.MaxValue);
+                }
+
+                Game.CurrentRevivalRequests.Clear();
+            }
+            else
+            {
+                Game.EarlyRevivalsOffers.Remove(Hero);
+
+                if (!Cancel)
+                {
+                    Game.EarlyRevivalsOffers.Add(Hero, Price);
+                }
+
+                var requestToRemove = Game.CurrentRevivalRequests.FirstOrDefault(r => r.Hero == Hero);
+                if (requestToRemove != null)
+                {
+                    Game.CurrentRevivalRequests.Remove(requestToRemove);
+                }
+            }
         }
 
         public override Message GetMessage()
@@ -62,7 +88,7 @@ namespace Treachery.Shared
                     }
                     else
                     {
-                        return Message.Express(Initiator, " offer ", Hero.Faction, " revival of a leader for ", new Payment(Price));
+                        return Message.Express(Initiator, " offer ", Hero.Faction, " revival of a leader for ", Payment.Of(Price));
                     }
                 }
                 else
@@ -70,16 +96,6 @@ namespace Treachery.Shared
                     return Message.Express(Initiator, " cancel their revival offer to ", Hero.Faction);
                 }
             }
-        }
-
-        public static int MinAmount()
-        {
-            return 0;
-        }
-
-        public static int MaxAmount()
-        {
-            return 100;
         }
     }
 }

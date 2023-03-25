@@ -54,7 +54,7 @@ namespace Treachery.Shared
             {
                 var toBeDivided = DivideResources.GetResourcesToBeDivided(this);
                 int gainedByOtherFaction = DivideResources.GainedByOtherFaction(toBeDivided, true, e.PortionToFirstPlayer);
-                Log(e.Initiator, " propose that they take ", Payment(e.PortionToFirstPlayer), " and ", toBeDivided.OtherFaction, " take ", Payment(gainedByOtherFaction));
+                Log(e.Initiator, " propose that they take ", Payment.Of(e.PortionToFirstPlayer), " and ", toBeDivided.OtherFaction, " take ", Payment.Of(gainedByOtherFaction));
                 Enter(Phase.AcceptingResourceDivision);
             }
         }
@@ -82,7 +82,7 @@ namespace Treachery.Shared
 
         private void Collect(Faction faction, Territory from, int amount)
         {
-            Log(faction, " collect ", Payment(amount), " from ", from);
+            Log(faction, " collect ", Payment.Of(amount), " from ", from);
             GetPlayer(faction).Resources += amount;
             if (faction == Faction.Yellow) ResourcesCollectedByYellow += amount;
             if (faction == Faction.Black && !from.IsStronghold && !from.IsProtectedFromWorm) ResourcesCollectedByBlackFromDesertOrHomeworld += amount;
@@ -97,7 +97,7 @@ namespace Treachery.Shared
 
             if (!e.Passed)
             {
-                RecentMilestones.Add(Milestone.DiscoveryRevealed);
+                Stone(Milestone.DiscoveryRevealed);
                 DiscoveriesOnPlanet.Remove(discovery.Location);
 
                 Log(e.Initiator, " reveal ", discovery.Token, " in ", discovery.Location.Territory);
@@ -127,7 +127,7 @@ namespace Treachery.Shared
 
                     case DiscoveryToken.ResourceStash:
                         e.Player.Resources += 7;
-                        Log(e.Initiator, " get ", Payment(7));
+                        Log(e.Initiator, " get ", Payment.Of(7));
                         break;
 
                     case DiscoveryToken.Flight:
@@ -150,7 +150,7 @@ namespace Treachery.Shared
             if (ResourcesCollectedByBlackFromDesertOrHomeworld != 0 && black.HasHighThreshold())
             {
                 black.Resources += 2;
-                Log(Faction.Black, " get ", Payment(2), " extra as they collected from desert or homeworld");
+                Log(Faction.Black, " get ", Payment.Of(2), " extra as they collected from desert or homeworld");
             }
 
             MainPhaseEnd();
@@ -170,7 +170,7 @@ namespace Treachery.Shared
                 if (occupier != null)
                 {
                     occupier.Resources += amountToOccupier;
-                    Log(Payment(amountToOccupier), " received by ", from, " goes to ", occupier.Faction);
+                    Log(Payment.Of(amountToOccupier), " received by ", from, " goes to ", occupier.Faction);
                 }
             }
         }
@@ -233,7 +233,7 @@ namespace Treachery.Shared
                     {
                         collectedAmountByThisPlayer -= 1;
                         thief.Resources += 1;
-                        Log(thief.Faction, " steal ", Payment(1), " from the ", Concept.Resource, " collected by ", p.Faction);
+                        Log(thief.Faction, " steal ", Payment.Of(1), " from the ", Concept.Resource, " collected by ", p.Faction);
                         thief = null;
                     }
 
@@ -267,7 +267,7 @@ namespace Treachery.Shared
                     toBeDivided.Amount = totalCollectedAmount;
                     toBeDivided.Territory = l.Key.Territory;
                     CollectedResourcesToBeDivided.Add(toBeDivided);
-                    Log(toBeDivided.FirstFaction, " and ", toBeDivided.OtherFaction, " will have to share ", Payment(totalCollectedAmount), " collected from ", l.Key.Territory);
+                    Log(toBeDivided.FirstFaction, " and ", toBeDivided.OtherFaction, " will have to share ", Payment.Of(totalCollectedAmount), " collected from ", l.Key.Territory);
                 }
             }
         }

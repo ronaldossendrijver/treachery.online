@@ -97,7 +97,7 @@ namespace Treachery.Shared
             }
             else
             {
-                return Message.Express(Initiator, " remove a terror token to get ", Game.Payment(4));
+                return Message.Express(Initiator, " remove a terror token to get ", Payment.Of(4));
             }
         }
     }

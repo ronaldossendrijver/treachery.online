@@ -33,7 +33,7 @@ namespace Treachery.Shared
         {
             if (Amounts.Sum(kvp => kvp.Value) > 0)
             {
-                return Message.Express(Initiator, " supports ", Amounts.Where(kvp => kvp.Value > 0).Select(f => MessagePart.Express(f.Key, ":", new Payment(f.Value), " ")));
+                return Message.Express(Initiator, " supports ", Amounts.Where(kvp => kvp.Value > 0).Select(f => MessagePart.Express(f.Key, ":", Payment.Of(f.Value), " ")));
             }
             else
             {

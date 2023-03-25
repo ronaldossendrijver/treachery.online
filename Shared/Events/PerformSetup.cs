@@ -38,7 +38,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express(Initiator, " initial positions and ", Concept.Resource, " (", new Payment(Resources), ") determined");
+            return Message.Express(Initiator, " initial positions and ", Concept.Resource, " (", Payment.Of(Resources), ") determined");
         }
     }
 }

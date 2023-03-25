@@ -167,7 +167,194 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Game.CurrentAmbassadorActivated = this;
+            var ambassadorFaction = GetAmbassador(Game);
+            var territory = GetTerritory(Game);
+            var victim = GetVictim(Game);
+            Game.DequeueIntrusion(IntrusionType.Ambassador);
+
+            if (!Passed)
+            {
+                Game.AmbassadorsOnPlanet.Remove(territory);
+                Game.Stone(Milestone.AmbassadorActivated);
+
+                var pink = GetPlayer(Faction.Pink);
+
+                if (ambassadorFaction == Ambassador.Blue)
+                {
+                    ambassadorFaction = BlueSelectedAmbassador;
+                    Log("The ", ambassadorFaction, " Ambassador is removed from the game");
+                }
+                else if (ambassadorFaction == Ambassador.Pink)
+                {
+                    pink.Ambassadors.Add(ambassadorFaction);
+                    Log("The ", ambassadorFaction, " Ambassador returns to supply");
+                }
+                else
+                {
+                    Game.AmbassadorsSetAside.Add(ambassadorFaction);
+                    Log("The ", ambassadorFaction, " Ambassador is set aside");
+                }
+
+                HandleAmbassador(ambassadorFaction, victim);
+
+                if (!pink.Ambassadors.Union(Game.AmbassadorsOnPlanet.Values).Any(f => f != Ambassador.Pink))
+                {
+                    Game.AssignRandomAmbassadors(pink);
+                    Log(Faction.Pink, " draw 5 random Ambassadors");
+                }
+            }
+            else
+            {
+                Log(Initiator, " don't activate an Ambassador");
+                Game.DetermineNextShipmentAndMoveSubPhase();
+            }
+        }
+
+        private void HandleAmbassador(Ambassador ambassadorFaction, Faction victim)
+        {
+            var victimPlayer = Game.GetPlayer(victim);
+
+            Log(Initiator, " activate the ", ambassadorFaction, " ambassador");
+
+            switch (ambassadorFaction)
+            {
+                case Ambassador.Green:
+
+                    if (victimPlayer.TreacheryCards.Any())
+                    {
+                        Log(Initiator, " see all treachery cards owned by ", victim);
+                        LogTo(Initiator, victim, " own: ", victimPlayer.TreacheryCards);
+                    }
+                    else
+                    {
+                        Log(victim, " don't own any cards");
+                    }
+
+                    Game.DetermineNextShipmentAndMoveSubPhase();
+                    break;
+
+                case Ambassador.Brown:
+
+                    int totalEarned = 0;
+                    foreach (var c in BrownCards)
+                    {
+                        totalEarned += 3;
+                        Game.Discard(Player, c);
+                    }
+
+                    Log(Initiator, " get ", Payment.Of(totalEarned));
+                    Player.Resources += totalEarned;
+                    Game.DetermineNextShipmentAndMoveSubPhase();
+                    break;
+
+                case Ambassador.Pink:
+
+                    if (PinkOfferAlliance)
+                    {
+                        Game.AllianceByAmbassadorOfferedTo = victim;
+                        Log(Initiator, " offer an alliance to ", victim, MessagePart.ExpressIf(PinkGiveVidalToAlly, " offering ", Game.Vidal, " if they accept"));
+                        Game.PausedAmbassadorPhase = Game.CurrentPhase;
+                        Game.Enter(Phase.AllianceByAmbassador);
+                    }
+                    else if (Game.CurrentAmbassadorActivated.PinkTakeVidal)
+                    {
+                        Game.TakeVidal(Player, VidalMoment.AfterUsedInBattle);
+                        Game.DetermineNextShipmentAndMoveSubPhase();
+                    }
+                    break;
+
+                case Ambassador.Red:
+
+                    Player.Resources += 5;
+                    Log(Initiator, " get ", Payment.Of(5));
+                    Game.DetermineNextShipmentAndMoveSubPhase();
+                    break;
+
+                case Ambassador.Yellow:
+
+                    Game.PerformMoveFromLocations(Player, YellowForceLocations, this, false, false);
+                    Game.RecentMoves.Add(this);
+                    Game.CheckIntrusion(this);
+                    Game.DetermineNextShipmentAndMoveSubPhase();
+                    break;
+
+                case Ambassador.Black:
+
+                    if (victim == Faction.Black)
+                    {
+                        Log(Initiator, " see one of the ", Faction.Black, " traitors");
+                    }
+                    else if (victim == Faction.Purple)
+                    {
+                        Log(Initiator, " see one of the ", Faction.Purple, " unrevealed Face Dancers");
+                    }
+                    else
+                    {
+                        Log(Initiator, " see the ", victim, " traitor");
+                    }
+
+                    var toSelectFrom = victim == Faction.Purple ? victimPlayer.FaceDancers.Where(t => !victimPlayer.RevealedDancers.Contains(t)) : victimPlayer.Traitors;
+                    var revealed = toSelectFrom.RandomOrDefault(Game.Random);
+                    LogTo(Initiator, victim, " reveal ", revealed);
+                    LogTo(victim, Initiator, " get to see ", revealed);
+                    Game.DetermineNextShipmentAndMoveSubPhase();
+                    break;
+
+                case Ambassador.Grey:
+
+                    Game.Discard(Player, GreyCard);
+                    Log(Initiator, " draw a new card");
+                    Player.TreacheryCards.Add(Game.DrawTreacheryCard());
+                    Game.DetermineNextShipmentAndMoveSubPhase();
+                    break;
+
+                case Ambassador.White:
+
+                    Log(Initiator, " buy a card for ", Payment.Of(3));
+                    Player.Resources -= 3;
+                    Player.TreacheryCards.Add(Game.DrawTreacheryCard());
+                    Game.DetermineNextShipmentAndMoveSubPhase();
+                    break;
+
+                case Ambassador.Orange:
+
+                    Log(Initiator, " send ", OrangeForceAmount, Player.Force, " to ", YellowOrOrangeTo);
+                    Player.ShipForces(YellowOrOrangeTo, OrangeForceAmount);
+                    Game.LastShipmentOrMovement = this;
+                    Game.CheckIntrusion(this);
+                    Game.DetermineNextShipmentAndMoveSubPhase();
+                    break;
+
+                case Ambassador.Purple:
+
+                    Game.DetermineNextShipmentAndMoveSubPhase();
+                    if (PurpleHero != null)
+                    {
+                        if (!Game.IsFaceDownDead(PurpleHero))
+                        {
+                            Log(Initiator, " revive ", PurpleHero);
+                        }
+                        else
+                        {
+                            Log(Initiator, " revive a face down leader");
+                        }
+
+                        Game.ReviveHero(PurpleHero);
+
+                        if (PurpleAssignSkill)
+                        {
+                            Game.PrepareSkillAssignmentToRevivedLeader(Player, PurpleHero as Leader);
+                        }
+                    }
+                    else
+                    {
+                        Log(Initiator, " revive ", PurpleAmountOfForces, " ", Player.Force);
+                        Player.ReviveForces(PurpleAmountOfForces);
+                    }
+
+                    break;
+            }
         }
 
         public override Message GetMessage()

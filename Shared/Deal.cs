@@ -40,7 +40,7 @@ namespace Treachery.Shared
             if (Text != null && Text.Length > 0)
             {
                 return Message.Express(
-                    MessagePart.ExpressIf(benefit > 0, "Receive ", new Payment(benefit), " and "),
+                    MessagePart.ExpressIf(benefit > 0, "Receive ", Payment.Of(benefit), " and "),
                     Text,
                     " until ",
                     End);
@@ -48,7 +48,7 @@ namespace Treachery.Shared
             else
             {
                 return Message.Express(
-                    MessagePart.ExpressIf(benefit > 0, "Receive ", new Payment(benefit), " and "),
+                    MessagePart.ExpressIf(benefit > 0, "Receive ", Payment.Of(benefit), " and "),
                     Express(Type, GetParameter1<object>(g, Type, Parameter1)),
                     " until ",
                     End);

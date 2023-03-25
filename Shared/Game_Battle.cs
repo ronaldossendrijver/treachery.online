@@ -162,7 +162,7 @@ namespace Treachery.Shared
             }
 
             Log(e);
-            RecentMilestones.Add(Milestone.Voice);
+            Stone(Milestone.Voice);
         }
 
         public Prescience CurrentPrescience { get; private set; } = null;
@@ -170,7 +170,7 @@ namespace Treachery.Shared
         {
             CurrentPrescience = e;
             Log(e);
-            RecentMilestones.Add(Milestone.Prescience);
+            Stone(Milestone.Prescience);
         }
 
         public Thought CurrentThought { get; private set; }
@@ -179,7 +179,7 @@ namespace Treachery.Shared
             CurrentThought = e;
             var opponent = CurrentBattle.OpponentOf(e.Initiator).Faction;
             Log(e.Initiator, " use their ", LeaderSkill.Thinker, " skill to ask ", opponent, " if they have a ", e.Card);
-            RecentMilestones.Add(Milestone.Prescience);
+            Stone(Milestone.Prescience);
             Enter(Phase.Thought);
         }
 
@@ -337,7 +337,7 @@ namespace Treachery.Shared
                 if (e.TraitorCalled)
                 {
                     Log(e);
-                    RecentMilestones.Add(Milestone.TreacheryCalled);
+                    Stone(Milestone.TreacheryCalled);
                     e.Player.RevealedTraitors.Add(DefenderBattleAction.Hero);
                 }
             }
@@ -348,7 +348,7 @@ namespace Treachery.Shared
                 if (e.TraitorCalled)
                 {
                     Log(e);
-                    RecentMilestones.Add(Milestone.TreacheryCalled);
+                    Stone(Milestone.TreacheryCalled);
                     e.Player.RevealedTraitors.Add(AggressorBattleAction.Hero);
                 }
             }
@@ -548,7 +548,7 @@ namespace Treachery.Shared
 
             if (locationWithResources != null && SkilledAs(plan.Hero, LeaderSkill.Sandmaster) && plan.Player.AnyForcesIn(CurrentBattle.Territory) > 0)
             {
-                Log(LeaderSkill.Sandmaster, " adds ", Payment(3), " to ", CurrentBattle.Territory);
+                Log(LeaderSkill.Sandmaster, " adds ", Payment.Of(3), " to ", CurrentBattle.Territory);
                 ChangeResourcesOnPlanet(locationWithResources, 3);
             }
         }
@@ -563,7 +563,7 @@ namespace Treachery.Shared
                     int collected = Math.Min(ResourcesOnPlanet[locationWithResources], hero.ValueInCombatAgainst(opponentHero));
                     if (collected > 0)
                     {
-                        Log(player.Faction, LeaderSkill.Smuggler, " collects ", Payment(collected), " from ", territory);
+                        Log(player.Faction, LeaderSkill.Smuggler, " collects ", Payment.Of(collected), " from ", territory);
                         ChangeResourcesOnPlanet(locationWithResources, -collected);
                         player.Resources += collected;
                     }
@@ -603,7 +603,7 @@ namespace Treachery.Shared
                 }
 
                 TraitorDeck.Shuffle();
-                RecentMilestones.Add(Milestone.Shuffled);
+                Stone(Milestone.Shuffled);
                 TraitorsDeciphererCanLookAt.Clear();
             }
         }
@@ -621,7 +621,7 @@ namespace Treachery.Shared
         {
             if (card != null && card.Type == TreacheryCardType.Useless)
             {
-                Log(Map.TueksSietch, " stronghold advantage: ", player.Faction, " collect ", Payment(2), " for playing ", card);
+                Log(Map.TueksSietch, " stronghold advantage: ", player.Faction, " collect ", Payment.Of(2), " for playing ", card);
                 player.Resources += 2;
             }
         }
@@ -633,7 +633,7 @@ namespace Treachery.Shared
                 int collected = (int)Math.Floor(opponentPlan.Dial(this, winnerPlan.Initiator));
                 if (collected > 0)
                 {
-                    Log(Map.SietchTabr, " stronghold advantage: ", winnerPlan.Initiator, " collect ", Payment(collected), " from enemy force dial");
+                    Log(Map.SietchTabr, " stronghold advantage: ", winnerPlan.Initiator, " collect ", Payment.Of(collected), " from enemy force dial");
                     winnerPlan.Player.Resources += collected;
                 }
             }
@@ -645,7 +645,7 @@ namespace Treachery.Shared
             {
                 if (opponentUndialedForces > 0)
                 {
-                    Log(winnerPlan.Initiator, " get ", Payment(opponentUndialedForces), " from winning a fight in ", Map.Jacurutu);
+                    Log(winnerPlan.Initiator, " get ", Payment.Of(opponentUndialedForces), " from winning a fight in ", Map.Jacurutu);
                     winnerPlan.Player.Resources += opponentUndialedForces;
                 }
             }
@@ -1008,7 +1008,7 @@ namespace Treachery.Shared
 
             if (loser.MessiahAvailable && !hadMessiahBeforeLosses)
             {
-                RecentMilestones.Add(Milestone.Messiah);
+                Stone(Milestone.Messiah);
             }
         }
 
@@ -1032,13 +1032,13 @@ namespace Treachery.Shared
 
                     if (DialledResourcesAreRefunded(p))
                     {
-                        Log(Payment(costForPlayer), " dialled in battle will be refunded in the ", MainPhase.Contemplate, " phase");
+                        Log(Payment.Of(costForPlayer), " dialled in battle will be refunded in the ", MainPhase.Contemplate, " phase");
                         refundedResources = costForPlayer;
                         p.Bribes += costForPlayer;
                     }
 
                     LogIf(HasStrongholdAdvantage(p.Faction, StrongholdAdvantage.FreeResourcesForBattles, CurrentBattle.Territory),
-                        Map.Arrakeen, " stronghold advantage: supporting forces costs ", Payment(2), " less");
+                        Map.Arrakeen, " stronghold advantage: supporting forces costs ", Payment.Of(2), " less");
                 }
 
                 if (plan.AllyContributionAmount > 0)
@@ -1058,7 +1058,7 @@ namespace Treachery.Shared
             if (plan.BankerBonus > 0)
             {
                 p.Resources -= plan.BankerBonus;
-                Log(p.Faction, " paid ", Payment(plan.BankerBonus), " as ", LeaderSkill.Banker);
+                Log(p.Faction, " paid ", Payment.Of(plan.BankerBonus), " as ", LeaderSkill.Banker);
             }
         }
 
@@ -1076,7 +1076,7 @@ namespace Treachery.Shared
                     if (!Prevented(FactionAdvantage.BrownReceiveForcePayment))
                     {
                         brown.Resources += result;
-                        Log(Faction.Brown, " get ", Payment(result), " from supported forces");
+                        Log(Faction.Brown, " get ", Payment.Of(result), " from supported forces");
 
                         if (result >= 5)
                         {
@@ -1180,13 +1180,13 @@ namespace Treachery.Shared
 
             if (player.MessiahAvailable && !hadMessiahBeforeLosses)
             {
-                RecentMilestones.Add(Milestone.Messiah);
+                Stone(Milestone.Messiah);
             }
         }
 
         private void KillLeaderInBattle(IHero killedHero, TreacheryCardType causeOfDeath, Player winner, int heroValue)
         {
-            Log(causeOfDeath, " kills ", killedHero, " → ", winner.Faction, " get ", Payment(heroValue));
+            Log(causeOfDeath, " kills ", killedHero, " → ", winner.Faction, " get ", Payment.Of(heroValue));
             if (killedHero is Leader) KillHero(killedHero);
             winner.Resources += heroValue;
         }
@@ -1249,7 +1249,7 @@ namespace Treachery.Shared
 
             if (traitor is Leader)
             {
-                Log("Treachery kills ", traitor, " → ", winner.Faction, " get ", Payment(traitorValue));
+                Log("Treachery kills ", traitor, " → ", winner.Faction, " get ", Payment.Of(traitorValue));
                 KillHero(traitor);
                 winner.Resources += traitorValue;
             }
@@ -1271,7 +1271,7 @@ namespace Treachery.Shared
 
             if (loser.MessiahAvailable && !hadMessiahBeforeLosses)
             {
-                RecentMilestones.Add(Milestone.Messiah);
+                Stone(Milestone.Messiah);
             }
         }
 
@@ -1311,7 +1311,7 @@ namespace Treachery.Shared
 
             if ((aggressor.MessiahAvailable || defender.MessiahAvailable) && !hadMessiahBeforeLosses)
             {
-                RecentMilestones.Add(Milestone.Messiah);
+                Stone(Milestone.Messiah);
             }
         }
 
@@ -1320,7 +1320,7 @@ namespace Treachery.Shared
             bool hadMessiahBeforeLosses = aggressor.MessiahAvailable || defender.MessiahAvailable;
 
             Log("A ", TreacheryCardType.Laser, "/", TreacheryCardType.Shield, " explosion occurs!");
-            RecentMilestones.Add(Milestone.Explosion);
+            Stone(Milestone.Explosion);
 
             if (aggLeader != null)
             {
@@ -1349,7 +1349,7 @@ namespace Treachery.Shared
             int removed = RemoveResources(territory);
             if (removed > 0)
             {
-                Log("The explosion destroys ", Payment(removed), " in ", territory);
+                Log("The explosion destroys ", Payment.Of(removed), " in ", territory);
             }
 
             KillAllForcesIn(territory, true);
@@ -1357,7 +1357,7 @@ namespace Treachery.Shared
 
             if ((aggressor.MessiahAvailable || defender.MessiahAvailable) && !hadMessiahBeforeLosses)
             {
-                RecentMilestones.Add(Milestone.Messiah);
+                Stone(Milestone.Messiah);
             }
         }
 
@@ -1478,7 +1478,7 @@ namespace Treachery.Shared
             {
                 BattleWinnerMayChooseToDiscard = false;
                 Discard(e.Player, TreacheryCardType.Karma);
-                RecentMilestones.Add(Milestone.Karma);
+                Stone(Milestone.Karma);
 
                 foreach (var c in e.ForcedKeptOrDiscardedCards)
                 {
@@ -1501,7 +1501,7 @@ namespace Treachery.Shared
 
             if (e.Assassinate)
             {
-                RecentMilestones.Add(Milestone.Assassination);
+                Stone(Milestone.Assassination);
 
                 var assassinated = LoserConcluded.TargetOfAssassination(this, e.Player);
 
@@ -1514,7 +1514,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    Log(e.Initiator, " get ", Payment(assassinated.CostToRevive), " by ASSASSINATING ", assassinated, "!");
+                    Log(e.Initiator, " get ", Payment.Of(assassinated.CostToRevive), " by ASSASSINATING ", assassinated, "!");
                     e.Player.Resources += assassinated.CostToRevive;
                     KillHero(assassinated);
                 }
@@ -1589,7 +1589,7 @@ namespace Treachery.Shared
             }
             else if (decision == CaptureDecision.Kill)
             {
-                Log(Faction.Black, " kill a leader for ", Payment(2));
+                Log(Faction.Black, " kill a leader for ", Payment.Of(2));
                 AssassinateLeader(BlackVictim);
                 harkonnen.Resources += 2;
             }
@@ -1613,7 +1613,7 @@ namespace Treachery.Shared
             currentlyHeld.Remove(e.ReplacedTraitor);
             TraitorDeck.PutOnTop(e.ReplacedTraitor);
 
-            RecentMilestones.Add(Milestone.Shuffled);
+            Stone(Milestone.Shuffled);
             TraitorDeck.Shuffle();
         }
 
@@ -1760,7 +1760,7 @@ namespace Treachery.Shared
                 var facedancer = initiator.FaceDancers.FirstOrDefault(f => WinnerHero.IsFaceDancer(f));
                 Log(f.Initiator, " reveal ", facedancer, " as one of their Face Dancers!");
 
-                RecentMilestones.Add(Milestone.FaceDanced);
+                Stone(Milestone.FaceDanced);
 
                 Enter(Phase.Facedancing);
             }
@@ -1781,7 +1781,7 @@ namespace Treachery.Shared
                 if (Version <= 150)
                 {
                     Log(f.Initiator, " reveal ", facedancer, " as one of their Face Dancers!");
-                    RecentMilestones.Add(Milestone.FaceDanced);
+                    Stone(Milestone.FaceDanced);
                 }
 
                 if (facedancer is Leader && IsAlive(facedancer))
@@ -1859,7 +1859,7 @@ namespace Treachery.Shared
             purple.FaceDancers.Clear();
             purple.RevealedDancers.Clear();
             TraitorDeck.Shuffle();
-            RecentMilestones.Add(Milestone.Shuffled);
+            Stone(Milestone.Shuffled);
             for (int i = 0; i < 3; i++)
             {
                 purple.FaceDancers.Add(TraitorDeck.Draw());
@@ -1987,7 +1987,7 @@ namespace Treachery.Shared
         public void HandleEvent(Audited e)
         {
             Log(e);
-            RecentMilestones.Add(Milestone.Audited);
+            Stone(Milestone.Audited);
 
             foreach (var card in AuditedCards)
             {

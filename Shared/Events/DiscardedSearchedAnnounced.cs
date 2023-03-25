@@ -28,7 +28,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express(Initiator, " use ", TreacheryCardType.SearchDiscarded, " and pay ", new Payment(2), " to search a card in the Treachery Discard Pile");
+            return Message.Express(Initiator, " use ", TreacheryCardType.SearchDiscarded, " and pay ", Payment.Of(2), " to search a card in the Treachery Discard Pile");
         }
 
         public static bool CanBePlayed(Game g, Player p)

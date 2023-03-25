@@ -65,7 +65,7 @@ namespace Treachery.Shared
                 " accept ",
                 BoundFaction,
                 " offer for ",
-                new Payment(Price),
+                Payment.Of(Price),
                 ": ",
                 GetDealDescription());
         }

@@ -14,6 +14,8 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
+            if (!Player.HasAlly) return Message.Express("You currently have no ally");
+
             return null;
         }
 
@@ -24,7 +26,9 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Log();
+            Game.BreakAlliance(Initiator);
+            Game.LetFactionsDiscardSurplusCards();
         }
     }
 }

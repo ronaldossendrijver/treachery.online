@@ -46,7 +46,7 @@ namespace Treachery.Shared
         {
             Discard(GetPlayer(e.Initiator), TreacheryCardType.Thumper);
             Log(e);
-            RecentMilestones.Add(Milestone.Thumper);
+            Stone(Milestone.Thumper);
             ThumperUsed = true;
             EnterBlowA();
         }
@@ -100,11 +100,11 @@ namespace Treachery.Shared
                     {
                         if (drawn.IsShaiHulud)
                         {
-                            RecentMilestones.Add(Milestone.Monster);
+                            Stone(Milestone.Monster);
                         }
                         else
                         {
-                            RecentMilestones.Add(Milestone.GreatMonster);
+                            Stone(Milestone.GreatMonster);
                         }
                     }
 
@@ -137,7 +137,7 @@ namespace Treachery.Shared
                 {
                     if (Version < 150 || CurrentTurn > 1)
                     {
-                        RecentMilestones.Add(Milestone.BabyMonster);
+                        Stone(Milestone.BabyMonster);
                         Log(Concept.BabyMonster, " detected! All alliances are cancelled.");
                         CancelAllAlliances();
                         CurrentDiscardPile.Items.Remove(drawn);
@@ -207,13 +207,13 @@ namespace Treachery.Shared
             ResourceCardDiscardPileB.Clear();
 
             ResourceCardDeck.Shuffle();
-            RecentMilestones.Add(Milestone.Shuffled);
+            Stone(Milestone.Shuffled);
         }
 
 
         private void ProcessBlowCard(ResourceCard blowCard)
         {
-            RecentMilestones.Add(Milestone.Resource);
+            Stone(Milestone.Resource);
 
             if (blowCard.IsDiscovery)
             {
@@ -223,7 +223,7 @@ namespace Treachery.Shared
                 }
 
                 var devouredResources = RemoveResources(blowCard.Territory);
-                LogIf(devouredResources > 0, Payment(devouredResources), " in ", blowCard.Territory, " is destroyed");
+                LogIf(devouredResources > 0, Payment.Of(devouredResources), " in ", blowCard.Territory, " is destroyed");
 
                 DiscoveryToken drawnToken = DiscoveryToken.None;
                 if (blowCard.DiscoveryLocation.DiscoveryTokenType == DiscoveryTokenType.Orange)
@@ -253,7 +253,7 @@ namespace Treachery.Shared
 
                 if (drawnToken != DiscoveryToken.None)
                 {
-                    RecentMilestones.Add(Milestone.DiscoveryAppeared);
+                    Stone(Milestone.DiscoveryAppeared);
                     Log("A ", blowCard.DiscoveryLocation.DiscoveryTokenType, " discovery awaits in ", blowCard.DiscoveryLocation.Territory, "...");
                 }
             }
@@ -263,13 +263,13 @@ namespace Treachery.Shared
 
             if (blowCard.Location.Sector != SectorInStorm)
             {
-                Log(Payment(spiceAmount), " detected in ", blowCard, SandtroutMessage(SandTroutDoublesResources));
+                Log(Payment.Of(spiceAmount), " detected in ", blowCard, SandtroutMessage(SandTroutDoublesResources));
                 SandTroutDoublesResources = false;
                 ChangeResourcesOnPlanet(blowCard.Location, spiceAmount);
             }
             else
             {
-                Log(Payment(spiceAmount), " in ", blowCard, " is lost in the storm");
+                Log(Payment.Of(spiceAmount), " in ", blowCard, " is lost in the storm");
             }
 
             Enter(Applicable(Rule.ExpansionTreacheryCardsExceptPBandSSandAmal), CurrentPhase == Phase.BlowA ? Phase.HarvesterA : Phase.HarvesterB, MoveToNextPhaseAfterResourceBlow);
@@ -290,7 +290,7 @@ namespace Treachery.Shared
 
             Log(e);
             MoveToNextPhaseAfterResourceBlow();
-            RecentMilestones.Add(Milestone.Harvester);
+            Stone(Milestone.Harvester);
         }
 
         private void MoveToNextPhaseAfterResourceBlow()
@@ -424,7 +424,7 @@ namespace Treachery.Shared
             }
 
             var devouredResources = RemoveResources(m.Territory);
-            LogIf(devouredResources > 0, m.DescribingConcept, " devours ", Payment(devouredResources), " in ", m.Territory);
+            LogIf(devouredResources > 0, m.DescribingConcept, " devours ", Payment.Of(devouredResources), " in ", m.Territory);
 
             FlipBeneGesseritWhenAloneOrWithPinkAlly();
         }
@@ -606,7 +606,7 @@ namespace Treachery.Shared
                 NexusCardDeck.Items.AddRange(NexusDiscardPile);
                 NexusDiscardPile.Clear();
                 NexusCardDeck.Shuffle();
-                RecentMilestones.Add(Milestone.Shuffled);
+                Stone(Milestone.Shuffled);
                 Log("The Nexus Card discard pile was shuffled into a new Nexus Card deck");
             }
 
@@ -619,7 +619,7 @@ namespace Treachery.Shared
             if (p.Nexus != Faction.None)
             {
                 Log(p.Faction, " discard the ", p.Nexus, " Nexus Card");
-                RecentMilestones.Add(Milestone.NexusPlayed);
+                Stone(Milestone.NexusPlayed);
                 NexusDiscardPile.Add(p.Nexus);
                 p.Nexus = Faction.None;
             }
@@ -654,7 +654,7 @@ namespace Treachery.Shared
                 }
 
                 ResourceCardDeck.Shuffle();
-                RecentMilestones.Add(Milestone.Shuffled);
+                Stone(Milestone.Shuffled);
             }
         }
 

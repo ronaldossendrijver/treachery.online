@@ -37,6 +37,16 @@ namespace Treachery.Shared
             To = to;
             Reason = reason;
         }
+
+        public static Payment Of(int amount)
+        {
+            return new Payment() { Amount = amount };
+        }
+
+        public static Payment Of(int amount, Faction by)
+        {
+            return new Payment() { Amount = amount, By = by };
+        }
     }
 
 }

@@ -26,7 +26,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express(Initiator, " pay ", Game.Payment(3), " to prevent ", Faction.Cyan, " from regaining ", TerrorType.Extortion);
+            return Message.Express(Initiator, " pay ", Payment.Of(3), " to prevent ", Faction.Cyan, " from regaining ", TerrorType.Extortion);
         }
 
         public static bool CanBePlayed(Game g, Player p)

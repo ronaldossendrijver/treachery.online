@@ -22,7 +22,7 @@
 <div @ref=@element class="row">
 
     <!--Map Column-->
-    <div id="mapdiv" class="col-sm-12 col-lg-6">
+    <div id="mapdiv" class="@MapGrid">
         @if (h.HostProxy != null)
         {
             <Board h="h" OnLocationClick="@h.LocationClick"/>
@@ -39,7 +39,7 @@
     <!--Action Column-->
     @if (!h.IsObserver)
     {
-        <div class="col-sm-12 col-lg-3 @Scrollbars">
+        <div class="@ActionGrid @Scrollbars">
 
             <MenuComponent h="@h" />
 
@@ -217,4 +217,8 @@
     }
 
     private string Scrollbars => isFullscreen? "vh-100 overflow-auto" : "";
+
+    private string MapGrid => !h.IsConnected || h.PlayerName == "" || h.HostProxy == null && h.Host == null ? "col-sm-12 col-lg-5" : "col-sm-12 col-lg-6";
+    
+    private string ActionGrid => !h.IsConnected || h.PlayerName == "" || h.HostProxy == null && h.Host == null ? "col-sm-12 col-lg-4" : "col-sm-12 col-lg-3";
 }

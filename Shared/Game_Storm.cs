@@ -47,7 +47,7 @@ namespace Treachery.Shared
         public void HandleEvent(DiscoveryEntered e)
         {
             JustRevealedDiscoveryStrongholds.Remove(e.To as DiscoveredLocation);
-            RecentMilestones.Add(Milestone.Move);
+            Stone(Milestone.Move);
 
             Log(e);
 
@@ -180,7 +180,7 @@ namespace Treachery.Shared
             Map.HiddenMobileStronghold.PointAt(e.Target);
             Log(e);
             EndStormPhase();
-            RecentMilestones.Add(Milestone.HmsMovement);
+            Stone(Milestone.HmsMovement);
         }
 
         public void HandleEvent(PerformHmsMovement e)
@@ -197,7 +197,7 @@ namespace Treachery.Shared
                 Map.HiddenMobileStronghold.PointAt(e.Target);
                 CollectSpiceFrom(e.Initiator, e.Target, collectionRate);
                 HmsMovesLeft--;
-                RecentMilestones.Add(Milestone.HmsMovement);
+                Stone(Milestone.HmsMovement);
             }
 
             if (e.Passed || HmsMovesLeft == 0)
@@ -214,7 +214,7 @@ namespace Treachery.Shared
                 ChangeResourcesOnPlanet(l, -collected);
                 var collector = GetPlayer(faction);
                 collector.Resources += collected;
-                Log(faction, " collect ", Payment(collected), " from ", l);
+                Log(faction, " collect ", Payment.Of(collected), " from ", l);
             }
         }
 
@@ -257,7 +257,7 @@ namespace Treachery.Shared
 
             var remainingTechTokens = new Deck<TechToken>(techTokensToBeDealt, Random);
             remainingTechTokens.Shuffle();
-            RecentMilestones.Add(Milestone.Shuffled);
+            Stone(Milestone.Shuffled);
 
             var techTokenSequence = new PlayerSequence(this);
 
@@ -279,7 +279,7 @@ namespace Treachery.Shared
             var player = GetPlayer(e.Initiator);
             var card = player.Card(TreacheryCardType.Metheor);
 
-            RecentMilestones.Add(Milestone.MetheorUsed);
+            Stone(Milestone.MetheorUsed);
             ShieldWallDestroyed = true;
             player.TreacheryCards.Remove(card);
             RemovedTreacheryCards.Add(card);
@@ -307,7 +307,7 @@ namespace Treachery.Shared
         public void HandleEvent(TestingStationUsed e)
         {
             Log(e);
-            RecentMilestones.Add(Milestone.WeatherControlled);
+            Stone(Milestone.WeatherControlled);
             CurrentTestingStationUsed = true;
             NextStormMoves += e.ValueAdded;
         }
@@ -337,7 +337,7 @@ namespace Treachery.Shared
                 NextStormMoves = DetermineLaterStormWithStormDeck();
             }
 
-            RecentMilestones.Add(Milestone.Storm);
+            Stone(Milestone.Storm);
         }
 
         private void PerformStorm()
@@ -398,7 +398,7 @@ namespace Treachery.Shared
                 int removed = RemoveResources(l);
                 if (removed > 0)
                 {
-                    Log("The storm destroys ", Payment(removed), " in ", l);
+                    Log("The storm destroys ", Payment.Of(removed), " in ", l);
                 }
             }
         }
@@ -425,7 +425,7 @@ namespace Treachery.Shared
                 }
 
                 StormLossesToTake.RemoveAt(0);
-                RecentMilestones.Add(Milestone.SpecialUselessPlayed);
+                Stone(Milestone.SpecialUselessPlayed);
             }
             else
             {

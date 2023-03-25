@@ -61,7 +61,57 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            var ally = Player.Ally;
+
+            switch (Initiator)
+            {
+                case Faction.Orange:
+                    Game.AllyMayShipAsOrange = AllyMayShipAsOrange;
+                    break;
+
+                case Faction.Purple:
+                    Game.AllyMayReviveAsPurple = AllyMayReviveAsPurple;
+                    break;
+
+                case Faction.Grey:
+                    Game.AllyMayReplaceCards = AllyMayReplaceCards;
+                    break;
+
+                case Faction.Red:
+                    Game.RedWillPayForExtraRevival = RedWillPayForExtraRevival;
+                    break;
+
+                case Faction.Yellow:
+                    Game.YellowWillProtectFromMonster = YellowWillProtectFromMonster;
+                    Game.YellowAllowsThreeFreeRevivals = YellowAllowsThreeFreeRevivals;
+                    Game.YellowSharesPrescience = YellowSharesPrescience;
+                    Game.YellowRefundsBattleDial = YellowRefundsBattleDial;
+                    break;
+
+                case Faction.Green:
+                    Game.GreenSharesPrescience = GreenSharesPrescience;
+                    break;
+
+                case Faction.Blue:
+                    Game.BlueAllowsUseOfVoice = BlueAllowsUseOfVoice;
+                    break;
+
+                case Faction.White:
+                    Game.WhiteAllowsUseOfNoField = WhiteAllowsUseOfNoField;
+                    break;
+
+                case Faction.Cyan:
+                    Game.CyanAllowsKeepingCards = CyanAllowsKeepingCards;
+                    break;
+
+                case Faction.Pink:
+                    Game.PinkSharesAmbassadors = PinkSharesAmbassadors;
+                    break;
+
+            }
+
+            Game.Set(Game.PermittedUseOfAllySpice, ally, PermittedResources);
+            Game.Set(Game.PermittedUseOfAllyKarma, ally, PermittedKarmaCard);
         }
 
         public override Message GetMessage()

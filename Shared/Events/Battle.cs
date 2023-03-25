@@ -318,7 +318,7 @@ namespace Treachery.Shared
             int cost = Cost(Game, p, Forces, SpecialForces);
             if (AllyContributionAmount > cost) return Message.Express("Your ally is paying more than needed");
             if (AllyContributionAmount > MaxAllyResources(Game, p, Forces, SpecialForces)) return Message.Express("Your ally won't pay that much");
-            if (cost > p.Resources + AllyContributionAmount) return Message.Express("You can't pay ", new Payment(cost), " to fight with ", Forces + SpecialForces, " forces at full strength");
+            if (cost > p.Resources + AllyContributionAmount) return Message.Express("You can't pay ", Payment.Of(cost), " to fight with ", Forces + SpecialForces, " forces at full strength");
             if (Hero == null && ValidBattleHeroes(Game, p).Any() && !Game.Applicable(Rule.BattleWithoutLeader)) return Message.Express("You must select a leader");
             if (Hero != null && !ValidBattleHeroes(Game, p).Contains(Hero)) return Message.Express("Invalid leader");
             if (Weapon != null && Weapon == Defense) return Message.Express("Can't use the same card as weapon and defense");
@@ -366,8 +366,8 @@ namespace Treachery.Shared
                 Hero,
                 ", dial: ",
                 Dial(Game, Game.CurrentBattle.OpponentOf(Initiator).Faction),
-                MessagePart.ExpressIf(Game.Applicable(Rule.AdvancedCombat), new Payment(Cost(Game))),
-                MessagePart.ExpressIf(AllyContributionAmount > 0, " (", new Payment(AllyContributionAmount, Player.Ally), ")"),
+                MessagePart.ExpressIf(Game.Applicable(Rule.AdvancedCombat), Payment.Of(Cost(Game))),
+                MessagePart.ExpressIf(AllyContributionAmount > 0, " (", Payment.Of(AllyContributionAmount, Player.Ally), ")"),
                 ", weapon: ",
                 Weapon,
                 ", defense: ",

@@ -44,13 +44,13 @@ namespace Treachery.Shared
                 if (e.Price > 0)
                 {
                     ExchangeResourcesInBribe(GetPlayer(e.Initiator), GetPlayer(offer.Initiator), e.Price);
-                    RecentMilestones.Add(Milestone.Bribe);
+                    Stone(Milestone.Bribe);
                 }
 
                 if (e.Benefit > 0)
                 {
                     ExchangeResourcesInBribe(GetPlayer(offer.Initiator), GetPlayer(e.Initiator), e.Benefit);
-                    RecentMilestones.Add(Milestone.Bribe);
+                    Stone(Milestone.Bribe);
                 }
 
                 if (offer.Player.IsBot)

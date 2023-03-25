@@ -31,7 +31,7 @@ namespace Treachery.Shared
                 if (p.BankedResources > 0)
                 {
                     p.Resources += p.BankedResources;
-                    Log(p.Faction, " add ", Payment(p.BankedResources), " received as ", LeaderSkill.Banker, " to their reserves");
+                    Log(p.Faction, " add ", Payment.Of(p.BankedResources), " received as ", LeaderSkill.Banker, " to their reserves");
                     p.BankedResources = 0;
                 }
             }
@@ -99,7 +99,7 @@ namespace Treachery.Shared
             foreach (var p in Players.Where(p => p.Extortion > 0).ToList())
             {
                 p.Resources += p.Extortion;
-                Log(p.Faction, " add ", Payment(p.Extortion), " gained from ", TerrorType.Extortion, " to their reserves");
+                Log(p.Faction, " add ", Payment.Of(p.Extortion), " gained from ", TerrorType.Extortion, " to their reserves");
                 p.Extortion = 0;
             }
         }
@@ -114,7 +114,7 @@ namespace Treachery.Shared
             {
                 CurrentMainPhase = MainPhase.Ended;
                 Enter(Phase.GameEnded);
-                RecentMilestones.Add(Milestone.GameWon);
+                Stone(Milestone.GameWon);
                 Log("The game has ended.");
 
                 foreach (var w in Winners)
@@ -156,7 +156,7 @@ namespace Treachery.Shared
                 if (p.Bribes > 0)
                 {
                     p.Resources += p.Bribes;
-                    Log(p.Faction, " add ", Payment(p.Bribes), " from bribes to their reserves");
+                    Log(p.Faction, " add ", Payment.Of(p.Bribes), " from bribes to their reserves");
                     p.Bribes = 0;
                 }
             }
@@ -456,7 +456,7 @@ namespace Treachery.Shared
         {
             EconomicsStatus = e.Status;
             Log(e);
-            RecentMilestones.Add(Milestone.Economics);
+            Stone(Milestone.Economics);
         }
 
         public void HandleEvent(BrownRemoveForce e)
@@ -485,7 +485,7 @@ namespace Treachery.Shared
             }
 
             FlipBeneGesseritWhenAloneOrWithPinkAlly();
-            RecentMilestones.Add(Milestone.SpecialUselessPlayed);
+            Stone(Milestone.SpecialUselessPlayed);
         }
 
         private void HandleEconomics()
@@ -495,20 +495,20 @@ namespace Treachery.Shared
                 case BrownEconomicsStatus.Double:
                     EconomicsStatus = BrownEconomicsStatus.CancelFlipped;
                     Log(Faction.Brown, " The Economics Token flips to Cancel.");
-                    RecentMilestones.Add(Milestone.Economics);
+                    Stone(Milestone.Economics);
                     break;
 
                 case BrownEconomicsStatus.Cancel:
                     EconomicsStatus = BrownEconomicsStatus.DoubleFlipped;
                     Log(Faction.Brown, " The Economics Token flips to Double.");
-                    RecentMilestones.Add(Milestone.Economics);
+                    Stone(Milestone.Economics);
                     break;
 
                 case BrownEconomicsStatus.DoubleFlipped:
                 case BrownEconomicsStatus.CancelFlipped:
                     EconomicsStatus = BrownEconomicsStatus.RemovedFromGame;
                     Log(Faction.Brown, " The Economics Token has been removed from the game.");
-                    RecentMilestones.Add(Milestone.Economics);
+                    Stone(Milestone.Economics);
                     break;
             }
 
@@ -523,7 +523,7 @@ namespace Treachery.Shared
                 player.FaceDancers.Remove(e.SelectedDancer);
                 TraitorDeck.PutOnTop(e.SelectedDancer);
                 TraitorDeck.Shuffle();
-                RecentMilestones.Add(Milestone.Shuffled);
+                Stone(Milestone.Shuffled);
                 var leader = TraitorDeck.Draw();
                 player.FaceDancers.Add(leader);
                 if (!player.KnownNonTraitors.Contains(leader)) player.KnownNonTraitors.Add(leader);
@@ -547,7 +547,7 @@ namespace Treachery.Shared
 
             if (!e.Passed)
             {
-                RecentMilestones.Add(Milestone.TerrorPlanted);
+                Stone(Milestone.TerrorPlanted);
                 CyanHasPlantedTerror = true;
 
                 if (e.Stronghold == null)

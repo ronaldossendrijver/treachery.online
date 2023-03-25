@@ -88,7 +88,7 @@ namespace Treachery.Shared
         {
             BidSequence.NextPlayer();
             SkipPlayersThatCantBid(BidSequence);
-            RecentMilestones.Add(Milestone.Bid);
+            Stone(Milestone.Bid);
 
             if (Bids.ContainsKey(bid.Initiator))
             {
@@ -125,7 +125,7 @@ namespace Treachery.Shared
             {
                 if (CurrentAuctionType == AuctionType.BlackMarketSilent)
                 {
-                    Log(Bids.Select(b => MessagePart.Express(b.Key, Payment(b.Value.TotalAmount), " ")).ToList());
+                    Log(Bids.Select(b => MessagePart.Express(b.Key, Payment.Of(b.Value.TotalAmount), " ")).ToList());
                 }
 
                 var highestBid = DetermineHighestBid(Bids);
@@ -353,7 +353,7 @@ namespace Treachery.Shared
             {
                 if (CurrentAuctionType == AuctionType.WhiteSilent)
                 {
-                    Log("Bids: ", Bids.Select(b => MessagePart.Express(b.Key, Payment(b.Value.TotalAmount), " ")).ToList());
+                    Log("Bids: ", Bids.Select(b => MessagePart.Express(b.Key, Payment.Of(b.Value.TotalAmount), " ")).ToList());
                 }
 
                 var highestBid = DetermineHighestBid(Bids);
@@ -443,7 +443,7 @@ namespace Treachery.Shared
 
             RegisterKnown(Faction.Grey, e.Card);
             CardsOnAuction.Shuffle();
-            RecentMilestones.Add(Milestone.Shuffled);
+            Stone(Milestone.Shuffled);
             Log(e);
 
             if (GreyMaySwapCardOnBid)
@@ -490,7 +490,7 @@ namespace Treachery.Shared
 
                 CardsOnAuction.PutOnTop(e.Card);
                 RegisterKnown(Faction.Grey, e.Card);
-                RecentMilestones.Add(Milestone.CardOnBidSwapped);
+                Stone(Milestone.CardOnBidSwapped);
                 Log(e);
             }
 
@@ -555,7 +555,7 @@ namespace Treachery.Shared
                 }
 
                 CurrentBid = bid;
-                RecentMilestones.Add(Milestone.Bid);
+                Stone(Milestone.Bid);
             }
 
             BidSequence.NextPlayer();
@@ -664,7 +664,7 @@ namespace Treachery.Shared
                 LogBid(winner, 0, 0, 0, receiverIncomeMessage);
             }
 
-            RecentMilestones.Add(Milestone.AuctionWon);
+            Stone(Milestone.AuctionWon);
             var card = toDrawFrom.Draw();
             RegisterWonCardAsKnown(card);
             winner.TreacheryCards.Add(card);
@@ -683,17 +683,17 @@ namespace Treachery.Shared
                 " get card ",
                 cardNumber,
                 " for ",
-                Payment(bidTotalAmount),
+                Payment.Of(bidTotalAmount),
                 MessagePart.ExpressIf(
                     bidAllyContributionAmount > 0 || bidRedContributionAmount > 0,
-                    "(", Payment(bidAllyContributionAmount, initiator.Ally), MessagePart.ExpressIf(bidRedContributionAmount > 0, " and ", Payment(bidRedContributionAmount, Faction.Red)), ") "),
+                    "(", Payment.Of(bidAllyContributionAmount, initiator.Ally), MessagePart.ExpressIf(bidRedContributionAmount > 0, " and ", Payment.Of(bidRedContributionAmount, Faction.Red)), ") "),
                 receiverIncome);
         }
 
         private void EveryonePassed()
         {
             Log("Bid is passed by everyone; bidding ends and remaining cards are returned to the Treachery Deck");
-            RecentMilestones.Add(Milestone.AuctionWon);
+            Stone(Milestone.AuctionWon);
 
             while (!CardsOnAuction.IsEmpty)
             {
@@ -723,7 +723,7 @@ namespace Treachery.Shared
                 LogBid(winner, 0, 0, 0, receiverIncomeMessage);
             }
 
-            RecentMilestones.Add(Milestone.AuctionWon);
+            Stone(Milestone.AuctionWon);
             var card = toDrawFrom.Draw();
             RegisterWonCardAsKnown(card);
             winner.TreacheryCards.Add(card);
@@ -756,8 +756,8 @@ namespace Treachery.Shared
                 Log(bid.Initiator, " get card ", CardNumber, " using ", karmaCard, " for ", TreacheryCardType.Karma);
             }
 
-            RecentMilestones.Add(Milestone.AuctionWon);
-            RecentMilestones.Add(Milestone.Karma);
+            Stone(Milestone.AuctionWon);
+            Stone(Milestone.Karma);
 
             var card = toDrawFrom.Draw();
             winner.TreacheryCards.Add(card);
@@ -810,8 +810,8 @@ namespace Treachery.Shared
                     ModifyIncomeBasedOnThresholdOrOccupation(receiver, ref receiverProfit);
                     receiver.Resources += receiverProfit;
                     receiver.ResourcesAfterBidding += bidRedContributionAmount;
-                    message = MessagePart.Express(" → ", receiver.Faction, " get ", Payment(receiverProfit),
-                        MessagePart.ExpressIf(bidRedContributionAmount > 0, " immediately and ", Payment(bidRedContributionAmount), " at the end of the bidding phase"));
+                    message = MessagePart.Express(" → ", receiver.Faction, " get ", Payment.Of(receiverProfit),
+                        MessagePart.ExpressIf(bidRedContributionAmount > 0, " immediately and ", Payment.Of(bidRedContributionAmount), " at the end of the bidding phase"));
 
                     if (receiverProfit >= 5)
                     {
@@ -897,7 +897,7 @@ namespace Treachery.Shared
             CardThatMustBeKeptOrGivenToAlly = null;
         }
 
-        private TreacheryCard DrawTreacheryCard()
+        internal TreacheryCard DrawTreacheryCard()
         {
             if (TreacheryDeck.IsEmpty)
             {
@@ -911,7 +911,7 @@ namespace Treachery.Shared
 
                 TreacheryDiscardPile.Clear();
                 TreacheryDeck.Shuffle();
-                RecentMilestones.Add(Milestone.Shuffled);
+                Stone(Milestone.Shuffled);
             }
 
             if (TreacheryDeck.Items.Count > 0)
@@ -987,7 +987,7 @@ namespace Treachery.Shared
                 var initiator = GetPlayer(e.Initiator);
                 var newCard = DrawTreacheryCard();
                 initiator.TreacheryCards.Add(newCard);
-                RecentMilestones.Add(Milestone.CardWonSwapped);
+                Stone(Milestone.CardWonSwapped);
 
                 if (ReplacingBoughtCardUsingNexus)
                 {
@@ -1165,7 +1165,7 @@ namespace Treachery.Shared
             KarmaHandSwapTarget = e.Target;
 
             var cardsToDrawFrom = new Deck<TreacheryCard>(victim.TreacheryCards, Random);
-            RecentMilestones.Add(Milestone.Shuffled);
+            Stone(Milestone.Shuffled);
             cardsToDrawFrom.Shuffle();
             for (int i = 0; i < KarmaHandSwapNumberOfCards; i++)
             {
@@ -1176,7 +1176,7 @@ namespace Treachery.Shared
             }
 
             Log(e);
-            RecentMilestones.Add(Milestone.Karma);
+            Stone(Milestone.Karma);
         }
 
         public void HandleEvent(KarmaHandSwap e)

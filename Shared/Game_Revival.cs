@@ -154,10 +154,7 @@ namespace Treachery.Shared
                     PrepareSkillAssignmentToRevivedLeader(r.Player, r.Hero as Leader);
                 }
 
-                if (EarlyRevivalsOffers.ContainsKey(r.Hero))
-                {
-                    EarlyRevivalsOffers.Remove(r.Hero);
-                }
+                EarlyRevivalsOffers.Remove(r.Hero);
             }
 
             if (r.Location != null)
@@ -175,7 +172,7 @@ namespace Treachery.Shared
             }
 
             //Logging
-            RecentMilestones.Add(Milestone.Revival);
+            Stone(Milestone.Revival);
             LogRevival(r, initiator, cost, totalProfitsForPurple, asGhola, highThresholdBonus);
 
             if (r.Initiator != Faction.Purple)
@@ -184,7 +181,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void PrepareSkillAssignmentToRevivedLeader(Player player, Leader leader)
+        internal void PrepareSkillAssignmentToRevivedLeader(Player player, Leader leader)
         {
             if (CurrentPhase != Phase.AssigningSkill)
             {
@@ -193,13 +190,13 @@ namespace Treachery.Shared
 
             player.MostRecentlyRevivedLeader = leader;
             SkillDeck.Shuffle();
-            RecentMilestones.Add(Milestone.Shuffled);
+            Stone(Milestone.Shuffled);
             player.SkillsToChooseFrom.Add(SkillDeck.Draw());
             player.SkillsToChooseFrom.Add(SkillDeck.Draw());
             Enter(Phase.AssigningSkill);
         }
 
-        private void ReviveHero(IHero h)
+        internal void ReviveHero(IHero h)
         {
             LeaderState[h].Revive();
             LeaderState[h].CurrentTerritory = null;
@@ -292,16 +289,16 @@ namespace Treachery.Shared
                 MessagePart.ExpressIf(totalAmountOfForces > 0, totalAmountOfForces, initiator.Force),
                 MessagePart.ExpressIf(r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed > 0, r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed, initiator.SpecialForce),
                 " for ",
-                Payment(cost.TotalCostForPlayer + cost.CostForEmperor),
-                MessagePart.ExpressIf(r.ExtraForcesPaidByRed > 0 || r.ExtraSpecialForcesPaidByRed > 0, " (", Payment(cost.CostForEmperor, Faction.Red), ")"),
-                MessagePart.ExpressIf(purpleReceivedResources > 0, " → ", Faction.Purple, " get ", Payment(purpleReceivedResources)));
+                Payment.Of(cost.TotalCostForPlayer + cost.CostForEmperor),
+                MessagePart.ExpressIf(r.ExtraForcesPaidByRed > 0 || r.ExtraSpecialForcesPaidByRed > 0, " (", Payment.Of(cost.CostForEmperor, Faction.Red), ")"),
+                MessagePart.ExpressIf(purpleReceivedResources > 0, " → ", Faction.Purple, " get ", Payment.Of(purpleReceivedResources)));
         }
 
         #endregion
 
         #region RevivalEvents
 
-        public Faction[] FactionsWithIncreasedRevivalLimits { get; private set; } = new Faction[] { };
+        public Faction[] FactionsWithIncreasedRevivalLimits { get; private set; } = Array.Empty<Faction>();
 
         public void HandleEvent(SetIncreasedRevivalLimits e)
         {
@@ -331,7 +328,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(RaiseDeadPlayed r)
         {
-            RecentMilestones.Add(Milestone.RaiseDead);
+            Stone(Milestone.RaiseDead);
             Log(r);
             var player = GetPlayer(r.Initiator);
             Discard(player, TreacheryCardType.RaiseDead);
@@ -340,7 +337,7 @@ namespace Treachery.Shared
             if (purple != null)
             {
                 purple.Resources += 1;
-                Log(Faction.Purple, " get ", Payment(1), " for revival by ", TreacheryCardType.RaiseDead);
+                Log(Faction.Purple, " get ", Payment.Of(1), " for revival by ", TreacheryCardType.RaiseDead);
             }
 
             if (r.Hero != null)
@@ -377,7 +374,7 @@ namespace Treachery.Shared
             }
         }
 
-        public List<RequestPurpleRevival> CurrentRevivalRequests { get; private set; } = new List<RequestPurpleRevival>();
+        public List<RequestPurpleRevival> CurrentRevivalRequests { get; private set; } = new();
         public void HandleEvent(RequestPurpleRevival e)
         {
             var existingRequest = CurrentRevivalRequests.FirstOrDefault(r => r.Hero == e.Hero);
@@ -390,39 +387,7 @@ namespace Treachery.Shared
             CurrentRevivalRequests.Add(e);
         }
 
-        public Dictionary<IHero, int> EarlyRevivalsOffers { get; private set; } = new Dictionary<IHero, int>();
-        public void HandleEvent(AcceptOrCancelPurpleRevival e)
-        {
-            Log(e);
-
-            if (e.Hero == null)
-            {
-                foreach (var r in CurrentRevivalRequests)
-                {
-                    EarlyRevivalsOffers.Add(r.Hero, int.MaxValue);
-                }
-
-                CurrentRevivalRequests.Clear();
-            }
-            else
-            {
-                if (EarlyRevivalsOffers.ContainsKey(e.Hero))
-                {
-                    EarlyRevivalsOffers.Remove(e.Hero);
-                }
-
-                if (!e.Cancel)
-                {
-                    EarlyRevivalsOffers.Add(e.Hero, e.Price);
-                }
-
-                var requestToRemove = CurrentRevivalRequests.FirstOrDefault(r => r.Hero == e.Hero);
-                if (requestToRemove != null)
-                {
-                    CurrentRevivalRequests.Remove(requestToRemove);
-                }
-            }
-        }
+        public Dictionary<IHero, int> EarlyRevivalsOffers { get; private set; } = new();
 
         public bool IsAllowedEarlyRevival(IHero h) => EarlyRevivalsOffers.ContainsKey(h) && EarlyRevivalsOffers[h] < int.MaxValue;
 
@@ -440,7 +405,7 @@ namespace Treachery.Shared
             if (NexusPlayed.CanUseCunning(e.Player))
             {
                 DiscardNexusCard(e.Player);
-                RecentMilestones.Add(Milestone.NexusPlayed);
+                Stone(Milestone.NexusPlayed);
                 LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
             }
             else
@@ -449,7 +414,7 @@ namespace Treachery.Shared
             }
 
             CurrentFreeRevivalPrevention = e;
-            RecentMilestones.Add(Milestone.SpecialUselessPlayed);
+            Stone(Milestone.SpecialUselessPlayed);
         }
 
         public bool PreventedFromReviving(Faction f) => CurrentKarmaRevivalPrevention != null && CurrentKarmaRevivalPrevention.Target == f;
@@ -461,21 +426,21 @@ namespace Treachery.Shared
             Discard(e.Player, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
             e.Player.SpecialKarmaPowerUsed = true;
             Log(e);
-            RecentMilestones.Add(Milestone.Karma);
+            Stone(Milestone.Karma);
         }
 
         public int AmbassadorsPlacedThisTurn { get; private set; } = 0;
 
-        public Ambassador AmbassadorIn(Territory t) => AmbassadorsOnPlanet.ContainsKey(t) ? AmbassadorsOnPlanet[t] : Ambassador.None;
+        public Ambassador AmbassadorIn(Territory t) => AmbassadorsOnPlanet.TryGetValue(t, out Ambassador value) ? value : Ambassador.None;
 
         public void HandleEvent(AmbassadorPlaced e)
         {
             AmbassadorsPlacedThisTurn++;
             e.Player.Resources -= AmbassadorsPlacedThisTurn;
-            Log(e.Initiator, " station the ", e.Ambassador, " ambassador in ", e.Stronghold, " for ", Payment(AmbassadorsPlacedThisTurn));
+            Log(e.Initiator, " station the ", e.Ambassador, " ambassador in ", e.Stronghold, " for ", Payment.Of(AmbassadorsPlacedThisTurn));
             AmbassadorsOnPlanet.Add(e.Stronghold, e.Ambassador);
             e.Player.Ambassadors.Remove(e.Ambassador);
-            RecentMilestones.Add(Milestone.AmbassadorPlaced);
+            Stone(Milestone.AmbassadorPlaced);
         }
 
         #endregion

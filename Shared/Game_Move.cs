@@ -10,7 +10,7 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public ILocationEvent LastShipmentOrMovement { get; private set; }
+        public ILocationEvent LastShipmentOrMovement { get; internal set; }
 
         private Queue<Intrusion> Intrusions { get; } = new();
 
@@ -77,7 +77,7 @@ namespace Treachery.Shared
                 {
                     var amount = techTokenOwner.TechTokens.Count;
                     techTokenOwner.Resources += amount;
-                    Log(techTokenOwner.Faction, " receive ", Payment(amount), " from ", TechToken.Graveyard);
+                    Log(techTokenOwner.Faction, " receive ", Payment.Of(amount), " from ", TechToken.Graveyard);
                 }
             }
         }
@@ -158,7 +158,7 @@ namespace Treachery.Shared
 
                 if (s.Initiator != Faction.Yellow)
                 {
-                    RecentMilestones.Add(Milestone.Shipment);
+                    Stone(Milestone.Shipment);
                 }
 
                 initiator.FlipForces(s.To, mustBeAdvisors);
@@ -210,7 +210,7 @@ namespace Treachery.Shared
             {
                 var karmaCard = s.KarmaCard;
                 Discard(karmaCard);
-                RecentMilestones.Add(Milestone.Karma);
+                Stone(Milestone.Karma);
             }
 
             if (s.AllyContributionAmount > 0)
@@ -242,7 +242,7 @@ namespace Treachery.Shared
 
                         if (receiverProfit > 0)
                         {
-                            profitMessage = MessagePart.Express(" → ", Faction.Orange, " get ", Payment(receiverProfit));
+                            profitMessage = MessagePart.Express(" → ", Faction.Orange, " get ", Payment.Of(receiverProfit));
 
                             if (receiverProfit >= 5)
                             {
@@ -252,7 +252,7 @@ namespace Treachery.Shared
                     }
                     else
                     {
-                        profitMessage = MessagePart.Express(" → ", TreacheryCardType.Karma, " prevents ", Faction.Orange, " from receiving", new Payment(receiverProfit));
+                        profitMessage = MessagePart.Express(" → ", TreacheryCardType.Karma, " prevents ", Faction.Orange, " from receiving", Payment.Of(receiverProfit));
                         if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.OrangeReceiveShipment);
                     }
                 }
@@ -425,7 +425,7 @@ namespace Treachery.Shared
 
         private bool BlueMayAccompany { get; set; } = false;
 
-        private void CheckIntrusion(ILocationEvent e)
+        internal void CheckIntrusion(ILocationEvent e)
         {
             CheckBlueIntrusion(e, e.Initiator, e.To.Territory);
             CheckAmbassadorTriggered(e);
@@ -503,7 +503,7 @@ namespace Treachery.Shared
 
         public Intrusion LatestIntrusion { get; private set; }
 
-        private void DequeueIntrusion(IntrusionType type)
+        internal void DequeueIntrusion(IntrusionType type)
         {
             if (Intrusions.Count == 0)
             {
@@ -549,7 +549,7 @@ namespace Treachery.Shared
             if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyCyborgExtraMove);
         }
 
-        private void PerformMoveFromLocations(Player initiator, Dictionary<Location, Battalion> forceLocations, ILocationEvent evt, bool asAdvisors, bool byCaravan)
+        internal void PerformMoveFromLocations(Player initiator, Dictionary<Location, Battalion> forceLocations, ILocationEvent evt, bool asAdvisors, bool byCaravan)
         {
             LastShipmentOrMovement = evt;
             bool wasOccupiedBeforeMove = IsOccupied(evt.To.Territory);
@@ -580,7 +580,7 @@ namespace Treachery.Shared
                 }
             }
 
-            RecentMilestones.Add(Milestone.Move);
+            Stone(Milestone.Move);
             FlipBeneGesseritWhenAloneOrWithPinkAlly();
         }
 
@@ -612,7 +612,7 @@ namespace Treachery.Shared
                     }
 
                     initiator.Resources += mostSpice;
-                    Log(initiator.Faction, " ", LeaderSkill.Sandmaster, " collects ", Payment(mostSpice), " along the way");
+                    Log(initiator.Faction, " ", LeaderSkill.Sandmaster, " collects ", Payment.Of(mostSpice), " along the way");
                 }
             }
         }
@@ -710,243 +710,15 @@ namespace Treachery.Shared
             DetermineNextShipmentAndMoveSubPhase();
         }
 
-        public void HandleEvent(AmbassadorActivated e)
-        {
-            CurrentAmbassadorActivated = e;
-            var ambassadorFaction = AmbassadorActivated.GetAmbassador(this);
-            var territory = AmbassadorActivated.GetTerritory(this);
-            var victim = AmbassadorActivated.GetVictim(this);
-            DequeueIntrusion(IntrusionType.Ambassador);
+        internal AmbassadorActivated CurrentAmbassadorActivated { get; set; }
+        public Faction AllianceByAmbassadorOfferedTo { get; internal set; }
+        internal Phase PausedAmbassadorPhase { get; set; }
 
-            if (!e.Passed)
-            {
-                AmbassadorsOnPlanet.Remove(territory);
-                RecentMilestones.Add(Milestone.AmbassadorActivated);
-
-                var pink = GetPlayer(Faction.Pink);
-
-                if (ambassadorFaction == Ambassador.Blue)
-                {
-                    ambassadorFaction = e.BlueSelectedAmbassador;
-                    Log("The ", ambassadorFaction, " Ambassador is removed from the game");
-                }
-                else if (ambassadorFaction == Ambassador.Pink)
-                {
-                    pink.Ambassadors.Add(ambassadorFaction);
-                    Log("The ", ambassadorFaction, " Ambassador returns to supply");
-                }
-                else
-                {
-                    AmbassadorsSetAside.Add(ambassadorFaction);
-                    Log("The ", ambassadorFaction, " Ambassador is set aside");
-                }
-
-                HandleAmbassador(e, e.Initiator, ambassadorFaction, victim);
-
-                if (!pink.Ambassadors.Union(AmbassadorsOnPlanet.Values).Any(f => f != Ambassador.Pink))
-                {
-                    AssignRandomAmbassadors(pink);
-                    Log(Faction.Pink, " draw 5 random Ambassadors");
-                }
-            }
-            else
-            {
-                Log(e.Initiator, " don't activate an Ambassador");
-                DetermineNextShipmentAndMoveSubPhase();
-            }
-        }
-
-        private AmbassadorActivated CurrentAmbassadorActivated { get; set; }
-        public Faction AllianceByAmbassadorOfferedTo { get; private set; }
-        private Phase PausedAmbassadorPhase { get; set; }
-
-        private void HandleAmbassador(AmbassadorActivated e, Faction initiator, Ambassador ambassadorFaction, Faction victim)
-        {
-            var victimPlayer = GetPlayer(victim);
-            var initiatingPlayer = GetPlayer(initiator);
-
-            Log(initiator, " activate the ", ambassadorFaction, " ambassador");
-
-            switch (ambassadorFaction)
-            {
-                case Ambassador.Green:
-
-                    if (victimPlayer.TreacheryCards.Any())
-                    {
-                        Log(initiator, " see all treachery cards owned by ", victim);
-                        LogTo(initiator, victim, " own: ", victimPlayer.TreacheryCards);
-                    }
-                    else
-                    {
-                        Log(victim, " don't own any cards");
-                    }
-
-                    DetermineNextShipmentAndMoveSubPhase();
-                    break;
-
-                case Ambassador.Brown:
-
-                    int totalEarned = 0;
-                    foreach (var c in e.BrownCards)
-                    {
-                        totalEarned += 3;
-                        Discard(initiatingPlayer, c);
-                    }
-
-                    Log(initiator, " get ", Payment(totalEarned));
-                    initiatingPlayer.Resources += totalEarned;
-                    DetermineNextShipmentAndMoveSubPhase();
-                    break;
-
-                case Ambassador.Pink:
-
-                    if (e.PinkOfferAlliance)
-                    {
-                        AllianceByAmbassadorOfferedTo = victim;
-                        Log(initiator, " offer an alliance to ", victim, MessagePart.ExpressIf(e.PinkGiveVidalToAlly, " offering ", Vidal, " if they accept"));
-                        PausedAmbassadorPhase = CurrentPhase;
-                        Enter(Phase.AllianceByAmbassador);
-                    }
-                    else if (CurrentAmbassadorActivated.PinkTakeVidal)
-                    {
-                        TakeVidal(initiatingPlayer, VidalMoment.AfterUsedInBattle);
-                        DetermineNextShipmentAndMoveSubPhase();
-                    }
-                    break;
-
-                case Ambassador.Red:
-
-                    initiatingPlayer.Resources += 5;
-                    Log(initiator, " get ", Payment(5));
-                    DetermineNextShipmentAndMoveSubPhase();
-                    break;
-
-                case Ambassador.Yellow:
-
-                    PerformMoveFromLocations(initiatingPlayer, e.YellowForceLocations, e, false, false);
-                    RecentMoves.Add(e);
-                    CheckIntrusion(e);
-                    DetermineNextShipmentAndMoveSubPhase();
-                    break;
-
-                case Ambassador.Black:
-
-                    if (victim == Faction.Black)
-                    {
-                        Log(initiator, " see one of the ", Faction.Black, " traitors");
-                    }
-                    else if (victim == Faction.Purple)
-                    {
-                        Log(initiator, " see one of the ", Faction.Purple, " unrevealed Face Dancers");
-                    }
-                    else
-                    {
-                        Log(initiator, " see the ", victim, " traitor");
-                    }
-
-                    var toSelectFrom = victim == Faction.Purple ? victimPlayer.FaceDancers.Where(t => !victimPlayer.RevealedDancers.Contains(t)) : victimPlayer.Traitors;
-                    var revealed = toSelectFrom.RandomOrDefault(Random);
-                    LogTo(initiator, victim, " reveal ", revealed);
-                    LogTo(victim, initiator, " get to see ", revealed);
-                    DetermineNextShipmentAndMoveSubPhase();
-                    break;
-
-                case Ambassador.Grey:
-
-                    Discard(initiatingPlayer, e.GreyCard);
-                    Log(initiator, " draw a new card");
-                    initiatingPlayer.TreacheryCards.Add(DrawTreacheryCard());
-                    DetermineNextShipmentAndMoveSubPhase();
-                    break;
-
-                case Ambassador.White:
-
-                    Log(initiator, " buy a card for ", Payment(3));
-                    initiatingPlayer.Resources -= 3;
-                    initiatingPlayer.TreacheryCards.Add(DrawTreacheryCard());
-                    DetermineNextShipmentAndMoveSubPhase();
-                    break;
-
-                case Ambassador.Orange:
-
-                    Log(initiator, " send ", e.OrangeForceAmount, initiatingPlayer.Force, " to ", e.YellowOrOrangeTo);
-                    initiatingPlayer.ShipForces(e.YellowOrOrangeTo, e.OrangeForceAmount);
-                    LastShipmentOrMovement = e;
-                    CheckIntrusion(e);
-                    DetermineNextShipmentAndMoveSubPhase();
-                    break;
-
-                case Ambassador.Purple:
-
-                    DetermineNextShipmentAndMoveSubPhase();
-                    if (e.PurpleHero != null)
-                    {
-                        if (!LeaderState[e.PurpleHero].IsFaceDownDead)
-                        {
-                            Log(initiator, " revive ", e.PurpleHero);
-                        }
-                        else
-                        {
-                            Log(initiator, " revive a face down leader");
-                        }
-
-                        ReviveHero(e.PurpleHero);
-
-                        if (e.PurpleAssignSkill)
-                        {
-                            PrepareSkillAssignmentToRevivedLeader(initiatingPlayer, e.PurpleHero as Leader);
-                        }
-                    }
-                    else
-                    {
-                        Log(initiator, " revive ", e.PurpleAmountOfForces, " ", initiatingPlayer.Force);
-                        initiatingPlayer.ReviveForces(e.PurpleAmountOfForces);
-                    }
-
-                    break;
-            }
-        }
-
-        public void HandleEvent(AllianceByAmbassador e)
-        {
-            Enter(PausedAmbassadorPhase);
-
-            if (!e.Passed)
-            {
-                MakeAlliance(e.Initiator, CurrentAmbassadorActivated.Initiator);
-
-                if (CurrentAmbassadorActivated.PinkGiveVidalToAlly)
-                {
-                    TakeVidal(e.Player, VidalMoment.EndOfTurn);
-                }
-                else if (CurrentAmbassadorActivated.PinkTakeVidal)
-                {
-                    TakeVidal(CurrentAmbassadorActivated.Player, VidalMoment.AfterUsedInBattle);
-                }
-
-                if (HasActedOrPassed.Contains(e.Initiator) && HasActedOrPassed.Contains(CurrentAmbassadorActivated.Initiator))
-                {
-                    CheckIfForcesShouldBeDestroyedByAllyPresence(e.Player);
-                }
-
-                FlipBeneGesseritWhenAloneOrWithPinkAlly();
-            }
-            else
-            {
-                Log(e.Initiator, " don't ally with ", CurrentAmbassadorActivated.Initiator);
-
-                if (CurrentAmbassadorActivated.PinkTakeVidal)
-                {
-                    TakeVidal(CurrentAmbassadorActivated.Player, VidalMoment.AfterUsedInBattle);
-                }
-            }
-
-            DetermineNextShipmentAndMoveSubPhase();
-        }
+        
 
         private Player PlayerToSetAsideVidal { get; set; }
         private VidalMoment WhenToSetAsideVidal { get; set; }
-        private void TakeVidal(Player p, VidalMoment whenToSetAside)
+        internal void TakeVidal(Player p, VidalMoment whenToSetAside)
         {
             var vidal = Vidal;
 
@@ -972,9 +744,9 @@ namespace Treachery.Shared
             SetInFrontOfShield(vidal, false);
         }
 
-        private Phase PausedTerrorPhase { get; set; }
-        public bool AllianceByTerrorWasOffered { get; private set; } = false;
-        public Faction AllianceByTerrorOfferedTo { get; private set; }
+        internal Phase PausedTerrorPhase { get; set; }
+        public bool AllianceByTerrorWasOffered { get; internal set; } = false;
+        public Faction AllianceByTerrorOfferedTo { get; internal set; }
         public void HandleEvent(TerrorRevealed e)
         {
             var initiator = GetPlayer(e.Initiator);
@@ -999,7 +771,7 @@ namespace Treachery.Shared
             }
             else
             {
-                RecentMilestones.Add(Milestone.TerrorRevealed);
+                Stone(Milestone.TerrorRevealed);
 
                 TerrorOnPlanet.Remove(e.Type);
 
@@ -1017,7 +789,7 @@ namespace Treachery.Shared
                         var randomLeader = victimPlayer.Leaders.RandomOrDefault(Random);
                         if (randomLeader != null)
                         {
-                            Log(e.Initiator, " gain ", Payment(randomLeader.CostToRevive), " from assassinating ", randomLeader, " in ", territory);
+                            Log(e.Initiator, " gain ", Payment.Of(randomLeader.CostToRevive), " from assassinating ", randomLeader, " in ", territory);
                             initiator.Resources += randomLeader.CostToRevive;
                             KillHero(randomLeader);
                         }
@@ -1040,13 +812,13 @@ namespace Treachery.Shared
                             Discard(initiator, initiator.TreacheryCards.RandomOrDefault(Random));
                         }
 
-                        RecentMilestones.Add(Milestone.MetheorUsed);
+                        Stone(Milestone.MetheorUsed);
                         Log(e.Initiator, " DETONATE ATOMICS in ", territory);
                         break;
 
                     case TerrorType.Extortion:
 
-                        Log(e.Initiator, " will get ", Payment(5), " from ", e.Type, " during ", MainPhase.Contemplate);
+                        Log(e.Initiator, " will get ", Payment.Of(5), " from ", e.Type, " during ", MainPhase.Contemplate);
                         initiator.Extortion += 5;
                         break;
 
@@ -1062,7 +834,7 @@ namespace Treachery.Shared
                             var amountStolen = (int)Math.Ceiling(0.5f * victimPlayer.Resources);
                             initiator.Resources += amountStolen;
                             victimPlayer.Resources -= amountStolen;
-                            Log(e.Initiator, " steal ", Payment(amountStolen), " by ", e.Type, " in ", territory);
+                            Log(e.Initiator, " steal ", Payment.Of(amountStolen), " by ", e.Type, " in ", territory);
                         }
                         break;
 
@@ -1128,54 +900,7 @@ namespace Treachery.Shared
             }
         }
 
-        public void HandleEvent(AllianceByTerror e)
-        {
-            Enter(PausedTerrorPhase);
-
-            if (!e.Passed)
-            {
-                if (e.Player.HasAlly)
-                {
-                    Log(e.Initiator, " and ", e.Player.Ally, " end their alliance");
-                    BreakAlliance(e.Initiator);
-                }
-
-                var cyan = GetPlayer(Faction.Cyan);
-                if (cyan.HasAlly)
-                {
-                    Log(Faction.Cyan, " and ", cyan.Ally, " end their alliance");
-                    BreakAlliance(Faction.Cyan);
-                }
-
-                MakeAlliance(e.Initiator, Faction.Cyan);
-
-                if (HasActedOrPassed.Contains(e.Initiator) && HasActedOrPassed.Contains(Faction.Cyan))
-                {
-                    CheckIfForcesShouldBeDestroyedByAllyPresence(e.Player);
-                }
-
-                var territory = LastTerrorTrigger.Territory;
-                Log("Terror in ", territory, " is returned to supplies");
-                foreach (var t in TerrorIn(territory).ToList())
-                {
-                    TerrorOnPlanet.Remove(t);
-                    UnplacedTerrorTokens.Add(t);
-                }
-
-                AllianceByTerrorWasOffered = false;
-                DequeueIntrusion(IntrusionType.Terror);
-                DetermineNextShipmentAndMoveSubPhase();
-            }
-            else
-            {
-                Log(e.Initiator, " don't ally with ", Faction.Cyan);
-            }
-
-            LetFactionsDiscardSurplusCards();
-        }
-
-
-        private void DetermineNextShipmentAndMoveSubPhase()
+        internal void DetermineNextShipmentAndMoveSubPhase()
         {
             CleanupObsoleteIntrusions();
 
@@ -1521,9 +1246,9 @@ namespace Treachery.Shared
             }
         }
 
-        private bool IsFirst(Faction a, Faction b) => !PlayerSequence.IsAfter(this, GetPlayer(a), GetPlayer(b));
+        //private bool IsFirst(Faction a, Faction b) => !PlayerSequence.IsAfter(this, GetPlayer(a), GetPlayer(b));
 
-        private void CheckIfForcesShouldBeDestroyedByAllyPresence(Player p)
+        internal void CheckIfForcesShouldBeDestroyedByAllyPresence(Player p)
         {
             if (p.Ally != Faction.None && p.Faction != Faction.Pink && p.Ally != Faction.Pink)
             {
@@ -1682,7 +1407,7 @@ namespace Treachery.Shared
             if (NexusPlayed.CanUseCunning(e.Player))
             {
                 DiscardNexusCard(e.Player);
-                RecentMilestones.Add(Milestone.NexusPlayed);
+                Stone(Milestone.NexusPlayed);
                 LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
             }
             else
@@ -1691,7 +1416,7 @@ namespace Treachery.Shared
             }
 
             CurrentBlockedTerritories.Add(e.Territory);
-            RecentMilestones.Add(Milestone.SpecialUselessPlayed);
+            Stone(Milestone.SpecialUselessPlayed);
         }
 
         private bool BrownHasExtraMove { get; set; } = false;
@@ -1702,7 +1427,7 @@ namespace Treachery.Shared
             if (NexusPlayed.CanUseCunning(e.Player))
             {
                 DiscardNexusCard(e.Player);
-                RecentMilestones.Add(Milestone.NexusPlayed);
+                Stone(Milestone.NexusPlayed);
                 LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
             }
             else
@@ -1711,7 +1436,7 @@ namespace Treachery.Shared
             }
 
             BrownHasExtraMove = true;
-            RecentMilestones.Add(Milestone.SpecialUselessPlayed);
+            Stone(Milestone.SpecialUselessPlayed);
         }
 
         private void ReceiveShipsTechIncome()
@@ -1723,7 +1448,7 @@ namespace Treachery.Shared
                 {
                     var amount = techTokenOwner.TechTokens.Count;
                     techTokenOwner.Resources += amount;
-                    Log(techTokenOwner.Faction, " receive ", Payment(amount), " from ", TechToken.Ships);
+                    Log(techTokenOwner.Faction, " receive ", Payment.Of(amount), " from ", TechToken.Ships);
                 }
             }
         }
@@ -1737,7 +1462,7 @@ namespace Treachery.Shared
             Discard(e.Player, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
             e.Player.SpecialKarmaPowerUsed = true;
             Log(e);
-            RecentMilestones.Add(Milestone.Karma);
+            Stone(Milestone.Karma);
         }
 
         public void HandleEvent(SetShipmentPermission e)

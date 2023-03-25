@@ -45,7 +45,7 @@ namespace Treachery.Shared
         {
             if (!Cancel)
             {
-                return Message.Express(Initiator, " offer ", MessagePart.ExpressIf(To.Any(), ToObjects(To)), " for ", new Payment(Price), ": ", Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1));
+                return Message.Express(Initiator, " offer ", MessagePart.ExpressIf(To.Any(), ToObjects(To)), " for ", Payment.Of(Price), ": ", Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1));
             }
             else
             {

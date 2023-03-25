@@ -33,7 +33,7 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (Player.Resources < 3) return Message.Express("You can't pay ", new Payment(3));
+            if (Player.Resources < 3) return Message.Express("You can't pay ", Payment.Of(3));
             if (!Game.WhiteCache.Contains(Card)) return Message.Express("Invalid card");
 
             return null;
@@ -46,7 +46,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express(Initiator, " use ", TreacheryCardType.Karma, " to buy a card from their cache for ", new Payment(3));
+            return Message.Express(Initiator, " use ", TreacheryCardType.Karma, " to buy a card from their cache for ", Payment.Of(3));
         }
     }
 }

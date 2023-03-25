@@ -18,7 +18,7 @@ namespace Treachery.Shared
             var target = GetPlayer(e.Target);
 
             Log(e);
-            LogTo(e.Initiator, e.Target, " own ", Payment(target.Resources), ", ", target.TreacheryCards.Count(tc => tc.IsWeapon), " weapons and ", target.TreacheryCards.Count(tc => tc.IsDefense), " defenses");
+            LogTo(e.Initiator, e.Target, " own ", Payment.Of(target.Resources), ", ", target.TreacheryCards.Count(tc => tc.IsWeapon), " weapons and ", target.TreacheryCards.Count(tc => tc.IsDefense), " defenses");
         }
 
         public void HandleEvent(WhiteRevealedNoField e)
@@ -95,19 +95,19 @@ namespace Treachery.Shared
                 }
 
                 Log(e);
-                RecentMilestones.Add(Milestone.Bribe);
+                Stone(Milestone.Bribe);
             }
             else
             {
                 if (e.Resources < 0)
                 {
                     int resourcesToTake = Math.Min(Math.Abs(e.Resources), target.Resources);
-                    Log("Host puts ", Payment(resourcesToTake), " from ", e.Target, " into the ", Concept.Resource, " Bank");
+                    Log("Host puts ", Payment.Of(resourcesToTake), " from ", e.Target, " into the ", Concept.Resource, " Bank");
                     target.Resources -= resourcesToTake;
                 }
                 else
                 {
-                    Log("Host gives ", e.Target, Payment(e.Resources), " from the ", Concept.Resource, " Bank");
+                    Log("Host gives ", e.Target, Payment.Of(e.Resources), " from the ", Concept.Resource, " Bank");
                     target.Resources += e.Resources;
                 }
             }
@@ -159,7 +159,7 @@ namespace Treachery.Shared
             TreacheryDiscardPile.Items.Remove(e.Card);
             e.Player.TreacheryCards.Add(e.Card);
             Discard(e.Player, TreacheryCardType.TakeDiscarded);
-            RecentMilestones.Add(Milestone.CardWonSwapped);
+            Stone(Milestone.CardWonSwapped);
         }
 
         private Phase PhaseBeforeSearchingDiscarded { get; set; }
@@ -169,7 +169,7 @@ namespace Treachery.Shared
             PhaseBeforeSearchingDiscarded = CurrentPhase;
             e.Player.Resources -= 2;
             Enter(Phase.SearchingDiscarded);
-            RecentMilestones.Add(Milestone.CardWonSwapped);
+            Stone(Milestone.CardWonSwapped);
         }
 
         public void HandleEvent(DiscardedSearched e)
@@ -184,7 +184,7 @@ namespace Treachery.Shared
             TreacheryDiscardPile.Shuffle();
             Discard(e.Player, TreacheryCardType.SearchDiscarded);
             Enter(PhaseBeforeSearchingDiscarded);
-            RecentMilestones.Add(Milestone.Shuffled);
+            Stone(Milestone.Shuffled);
         }
 
         private void ExchangeResourcesInBribe(Player from, Player target, int amount)
@@ -222,7 +222,7 @@ namespace Treachery.Shared
             {
                 Discard(card);
                 Log(e);
-                RecentMilestones.Add(Milestone.Clairvoyance);
+                Stone(Milestone.Clairvoyance);
             }
 
             if (e.Target != Faction.None)
@@ -289,19 +289,6 @@ namespace Treachery.Shared
             Enter(phasePausedByClairvoyance);
         }
 
-        public void HandleEvent(AmalPlayed e)
-        {
-            Discard(GetPlayer(e.Initiator), TreacheryCardType.Amal);
-            Log(e);
-            foreach (var p in Players)
-            {
-                int resourcesPaid = (int)Math.Ceiling(0.5 * p.Resources);
-                p.Resources -= resourcesPaid;
-                Log(p.Faction, " lose ", Payment(resourcesPaid));
-            }
-            RecentMilestones.Add(Milestone.Amal);
-        }
-
         public void HandleEvent(BrownDiscarded e)
         {
             Discard(e.Card);
@@ -315,7 +302,7 @@ namespace Treachery.Shared
                 e.Player.Resources += 3;
             }
 
-            RecentMilestones.Add(Milestone.ResourcesReceived);
+            Stone(Milestone.ResourcesReceived);
         }
 
 
@@ -340,7 +327,7 @@ namespace Treachery.Shared
                 Map.HiddenMobileStronghold.PointAt(e.Target);
                 CollectSpiceFrom(e.Initiator, e.Target, collectionRate);
                 KarmaHmsMovesLeft--;
-                RecentMilestones.Add(Milestone.HmsMovement);
+                Stone(Milestone.HmsMovement);
             }
 
             if (e.Passed)
@@ -375,7 +362,7 @@ namespace Treachery.Shared
 
         public void HandleEvent(KarmaFreeRevival e)
         {
-            RecentMilestones.Add(Milestone.Revival);
+            Stone(Milestone.Revival);
             Log(e);
             var initiator = GetPlayer(e.Initiator);
 
@@ -410,7 +397,7 @@ namespace Treachery.Shared
             Discard(initiator, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
             initiator.SpecialKarmaPowerUsed = true;
             Log(e);
-            RecentMilestones.Add(Milestone.Karma);
+            Stone(Milestone.Karma);
             NumberOfMonsters++;
             LetMonsterAppear(e.Territory, false);
 
@@ -427,7 +414,7 @@ namespace Treachery.Shared
             Discard(initiator, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
             initiator.SpecialKarmaPowerUsed = true;
             Log(e);
-            RecentMilestones.Add(Milestone.Karma);
+            Stone(Milestone.Karma);
             GreenKarma = true;
         }
 
@@ -437,7 +424,7 @@ namespace Treachery.Shared
             var initiator = GetPlayer(e.Initiator);
             Discard(initiator, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
             initiator.SpecialKarmaPowerUsed = true;
-            RecentMilestones.Add(Milestone.Karma);
+            Stone(Milestone.Karma);
             var myLeader = CurrentBattle.PlanOf(e.Initiator).Hero;
             var opponentLeader = CurrentBattle.PlanOfOpponent(initiator).Hero;
 
@@ -453,7 +440,7 @@ namespace Treachery.Shared
         {
             Discard(e.Card);
             Log(e);
-            RecentMilestones.Add(Milestone.Karma);
+            Stone(Milestone.Karma);
 
             if (e.Prevented != FactionAdvantage.None)
             {
@@ -577,7 +564,7 @@ namespace Treachery.Shared
             if (NexusPlayed.CanUseCunning(e.Player))
             {
                 DiscardNexusCard(e.Player);
-                RecentMilestones.Add(Milestone.NexusPlayed);
+                Stone(Milestone.NexusPlayed);
                 LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
             }
             else
@@ -586,7 +573,7 @@ namespace Treachery.Shared
             }
 
             CurrentKarmaPrevention = e;
-            RecentMilestones.Add(Milestone.SpecialUselessPlayed);
+            Stone(Milestone.SpecialUselessPlayed);
         }
 
         public bool JuiceForcesFirstPlayer => CurrentJuice != null && CurrentJuice.Type == JuiceType.GoFirst;
@@ -649,7 +636,7 @@ namespace Treachery.Shared
             Log(e.GetDynamicMessage());
             if (!e.Passed)
             {
-                RecentMilestones.Add(Milestone.Bureaucracy);
+                Stone(Milestone.Bureaucracy);
                 BureaucratWasUsedThisPhase = true;
                 GetPlayer(TargetOfBureaucracy).Resources -= 2;
                 WasVictimOfBureaucracy = TargetOfBureaucracy;
@@ -668,7 +655,7 @@ namespace Treachery.Shared
                 if (banker != null && banker != playerWhoPaid)
                 {
                     BankerWasUsedThisPhase = true;
-                    Log(banker.Faction, " will receive ", Payment(1), " from ", LeaderSkill.Banker, " at ", MainPhase.Collection);
+                    Log(banker.Faction, " will receive ", Payment.Of(1), " from ", LeaderSkill.Banker, " at ", MainPhase.Collection);
                     banker.BankedResources += 1;
                 }
             }
@@ -715,7 +702,7 @@ namespace Treachery.Shared
                     GetPlayer(Faction.Black).Traitors.Remove(traitor);
                     TraitorDeck.Items.Add(traitor);
                     TraitorDeck.Shuffle();
-                    RecentMilestones.Add(Milestone.Shuffled);
+                    Stone(Milestone.Shuffled);
                     BlackTraitorWasCancelled = true;
                     PlayNexusCard(e.Player, "cancel the ", Faction.Black, " traitor call");
                     Enter(Phase.CallTraitorOrPass);
@@ -815,7 +802,7 @@ namespace Treachery.Shared
                     if (paymentToWhite != null)
                     {
                         var amountReceived = paymentToWhite.Amount - (WasVictimOfBureaucracy == Faction.White ? 2 : 0);
-                        PlayNexusCard(e.Player, "let ", Faction.White, " lose the payment of ", Payment(amountReceived), " they just received");
+                        PlayNexusCard(e.Player, "let ", Faction.White, " lose the payment of ", Payment.Of(amountReceived), " they just received");
                         white.Resources -= amountReceived;
                     }
                     else if (white.TreacheryCards.Contains(CardJustWon))
@@ -843,7 +830,7 @@ namespace Treachery.Shared
 
         private void PlayNexusCard(Player initiator, params object[] messageElements)
         {
-            RecentMilestones.Add(Milestone.NexusPlayed);
+            Stone(Milestone.NexusPlayed);
 
             string typeOfNexus;
             if (NexusPlayed.CanUseCunning(initiator))
@@ -934,7 +921,7 @@ namespace Treachery.Shared
                         }
                         purple.RevealedDancers.Clear();
 
-                        RecentMilestones.Add(Milestone.Shuffled);
+                        Stone(Milestone.Shuffled);
                     }
                     break;
 
@@ -996,7 +983,7 @@ namespace Treachery.Shared
                     break;
 
                 case Faction.Purple:
-                    RecentMilestones.Add(Milestone.RaiseDead);
+                    Stone(Milestone.RaiseDead);
                     var player = GetPlayer(e.Initiator);
 
                     player.ReviveForces(e.PurpleForces);
@@ -1036,7 +1023,7 @@ namespace Treachery.Shared
                 case Faction.Brown:
                     if (CurrentMainPhase == MainPhase.Collection)
                     {
-                        PlayNexusCard(e.Player, "discard a ", TreacheryCardType.Useless, " card to get ", Payment(2));
+                        PlayNexusCard(e.Player, "discard a ", TreacheryCardType.Useless, " card to get ", Payment.Of(2));
                         Discard(e.Player, e.BrownCard);
                         e.Player.Resources += 2;
                     }

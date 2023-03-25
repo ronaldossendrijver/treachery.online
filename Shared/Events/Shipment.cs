@@ -369,8 +369,8 @@ namespace Treachery.Shared
         {
             return MessagePart.Express(
                 " for ",
-                new Payment(cost),
-                MessagePart.ExpressIf(AllyContributionAmount > 0, " (", new Payment(AllyContributionAmount, Player.Ally), ")"));
+                Payment.Of(cost),
+                MessagePart.ExpressIf(AllyContributionAmount > 0, " (", Payment.Of(AllyContributionAmount, Player.Ally), ")"));
         }
 
         private MessagePart KaramaMessage(Player ownerOfKarma)
