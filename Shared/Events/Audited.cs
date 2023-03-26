@@ -21,7 +21,15 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Log();
+            Game.Stone(Milestone.Audited);
+
+            foreach (var card in Game.AuditedCards)
+            {
+                Game.RegisterKnown(Player, card);
+            }
+
+            Game.Enter(Game.BattleWinner == Faction.None, Game.FinishBattle, Game.BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
         }
 
         public override Message GetMessage()

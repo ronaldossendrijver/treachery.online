@@ -21,7 +21,26 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Log();
+            Game.CurrentPinkOrAllyFighter = Passed ? Game.GetAlly(Faction.Pink) : Faction.Pink;
+            Game.Enter(Phase.BattlePhase);
+            Game.InitiateBattle();
+            DeterminePinkContribution();
+        }
+
+        private void DeterminePinkContribution()
+        {
+            var fighter = Game.GetPlayer(Game.CurrentPinkOrAllyFighter);
+
+            if (Game.CurrentBattle != null && (fighter.Is(Faction.Pink) || fighter.Ally == Faction.Pink))
+            {
+                var pink = GetPlayer(Faction.Pink);
+                Game.CurrentPinkBattleContribution = (int)(0.5f * pink.AnyForcesIn(Game.CurrentBattle.Territory));
+            }
+            else
+            {
+                Game.CurrentPinkBattleContribution = 0;
+            }
         }
 
         public override Message GetMessage()

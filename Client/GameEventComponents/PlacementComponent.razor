@@ -42,12 +42,26 @@
                 <div class="text-danger bg-dark">Note: any of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
             }
 
-            @if (Faction == Faction.Blue)
+            @if (Faction == Faction.Blue && toLocation != null)
             {
-                <RadioComponent @bind-Value="asAdvisors" Values="new bool[] { false, true }" ValueLabels="@(new string[] {"Fighters", "Advisors"})">
-                    <Label>Move as fighters or advisors?</Label>
-                </RadioComponent>
+                bool mayMoveAsAdvisors = PlacementEvent.MayMoveAsAdvisors(Game, Player, toLocation.Territory);
+
+                if (mayMoveAsAdvisors && PlacementEvent.MayMoveAsBlueFighters(Player, toLocation.Territory))
+                {
+                    <RadioComponent @bind-Value="asAdvisors" Values="new bool[] { false, true }" ValueLabels="@(new string[] {"Fighters", "Advisors"})">
+                        <Label>Become fighters or advisors?</Label>
+                    </RadioComponent>
+                }
+                else
+                {
+                    asAdvisors = mayMoveAsAdvisors;
+                }
             }
+            else
+            {
+                asAdvisors = false;
+            }
+
 
             @if (MayPass)
             {

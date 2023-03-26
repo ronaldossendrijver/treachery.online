@@ -111,9 +111,6 @@ namespace Treachery.Shared
         public bool HasReinforcements => Weapon != null && Weapon.Type == TreacheryCardType.Reinforcements || Defense != null && Defense.Type == TreacheryCardType.Reinforcements;
 
         [JsonIgnore]
-        public bool HasHarassAndWithdraw => Weapon != null && Weapon.Type == TreacheryCardType.HarassAndWithdraw || Defense != null && Defense.Type == TreacheryCardType.HarassAndWithdraw;
-
-        [JsonIgnore]
         public TreacheryCard OriginalWeapon { get; set; } = null;
 
         [JsonIgnore]
@@ -350,7 +347,42 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            if (Initiator == Game.CurrentBattle.Aggressor)
+            {
+                Game.AggressorBattleAction = this;
+            }
+            else if (Initiator == Game.CurrentBattle.Defender)
+            {
+                Game.DefenderBattleAction = this;
+            }
+
+            if (Game.AggressorBattleAction != null && Game.DefenderBattleAction != null)
+            {
+                Game.RevealCurrentNoField(DetermineForceSupplier(Game, Game.AggressorBattleAction.Player), Game.CurrentBattle.Territory);
+                Game.RevealCurrentNoField(DetermineForceSupplier(Game, Game.DefenderBattleAction.Player), Game.CurrentBattle.Territory);
+
+                Log(Game.AggressorBattleAction.GetBattlePlanMessage());
+                Log(Game.DefenderBattleAction.GetBattlePlanMessage());
+
+                Game.RegisterKnownCards(Game.AggressorBattleAction);
+                Game.RegisterKnownCards(Game.DefenderBattleAction);
+
+                PassPurpleTraitorAction();
+
+                Game.Enter(Game.AggressorBattleAction.HasRockMelter || Game.DefenderBattleAction.HasRockMelter, Phase.MeltingRock, Phase.CallTraitorOrPass);
+            }
+        }
+
+        private void PassPurpleTraitorAction()
+        {
+            if (Game.CurrentBattle.Aggressor == Faction.Purple && (GetPlayer(Faction.Purple).Ally != Faction.Black || Game.Prevented(FactionAdvantage.BlackCallTraitorForAlly)))
+            {
+                Game.AggressorTraitorAction = new TreacheryCalled(Game) { Initiator = Faction.Purple, TraitorCalled = false };
+            }
+            else if (Game.CurrentBattle.Defender == Faction.Purple && (GetPlayer(Faction.Purple).Ally != Faction.Black || Game.Prevented(FactionAdvantage.BlackCallTraitorForAlly)))
+            {
+                Game.DefenderTraitorAction = new TreacheryCalled(Game) { Initiator = Faction.Purple, TraitorCalled = false };
+            }
         }
 
         public override Message GetMessage()

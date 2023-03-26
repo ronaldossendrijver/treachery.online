@@ -37,6 +37,16 @@ namespace Treachery.Shared
             return null;
         }
 
+        protected override void ExecuteConcreteEvent()
+        {
+            Game.AmbassadorsPlacedThisTurn++;
+            Player.Resources -= Game.AmbassadorsPlacedThisTurn;
+            Log(Initiator, " station the ", Ambassador, " ambassador in ", Stronghold, " for ", Payment.Of(Game.AmbassadorsPlacedThisTurn));
+            Game.AmbassadorsOnPlanet.Add(Stronghold, Ambassador);
+            Player.Ambassadors.Remove(Ambassador);
+            Game.Stone(Milestone.AmbassadorPlaced);
+        }
+
         public static IEnumerable<Territory> ValidStrongholds(Game g, Player p)
         {
             var ally = g.GetPlayer(p.Ally);
@@ -49,11 +59,6 @@ namespace Treachery.Shared
         }
 
         public static IEnumerable<Ambassador> ValidAmbassadors(Player p) => p.Ambassadors;
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
 
         public static bool IsApplicable(Game g, Player p) =>
             g.CurrentPhase == Phase.ResurrectionReport &&

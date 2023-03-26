@@ -202,7 +202,7 @@ namespace Treachery.Shared
 
         #region Support
 
-        internal void Set<KeyType, ValueType>(IDictionary<KeyType, ValueType> dict, KeyType key, ValueType value)
+        internal static void Set<KeyType, ValueType>(IDictionary<KeyType, ValueType> dict, KeyType key, ValueType value)
         {
             dict.Remove(key);
             dict.Add(key, value);
@@ -223,10 +223,10 @@ namespace Treachery.Shared
 
         public int SpiceYourAllyCanPay(Player p)
         {
-            if (PermittedUseOfAllySpice.ContainsKey(p.Faction))
+            if (PermittedUseOfAllySpice.TryGetValue(p.Faction, out int value))
             {
                 var ally = GetPlayer(p.Ally);
-                return Math.Min(PermittedUseOfAllySpice[p.Faction], ally.Resources);
+                return Math.Min(value, ally.Resources);
             }
             else
             {
@@ -236,10 +236,10 @@ namespace Treachery.Shared
 
         public int SpiceForBidsRedCanPay(Faction f)
         {
-            if (PermittedUseOfRedSpice.ContainsKey(f))
+            if (PermittedUseOfRedSpice.TryGetValue(f, out int value))
             {
                 var red = GetPlayer(Faction.Red);
-                return Math.Min(PermittedUseOfRedSpice[f], red.Resources);
+                return Math.Min(value, red.Resources);
             }
             else
             {
@@ -251,7 +251,7 @@ namespace Treachery.Shared
         {
             var ally = Players.SingleOrDefault(p => p.Ally == f);
 
-            if (PermittedUseOfAllyKarma.ContainsKey(f) && ally != null && ally.TreacheryCards.Contains(PermittedUseOfAllyKarma[f]))
+            if (PermittedUseOfAllyKarma.TryGetValue(f, out TreacheryCard value) && ally != null && ally.TreacheryCards.Contains(value))
             {
                 return PermittedUseOfAllyKarma[f];
             }

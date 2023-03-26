@@ -1304,5 +1304,25 @@ namespace Treachery.Test
                 }
             }
         }
+
+        [TestMethod]
+        public void ScanForMapErrors()
+        {
+            var map = new Map();
+            map.Initialize();
+            bool issueFound = false;
+
+            foreach (var l in map.Locations(false))
+            {
+                var asymNeighbour = l.Neighbours.FirstOrDefault(neighbour => !neighbour.Neighbours.Contains(l));
+                if (asymNeighbour != null)
+                {
+                    issueFound = true;
+                    Console.WriteLine($"Asymmetrical: {Skin.Current.Describe(l)}[{l.Id}] <-> {Skin.Current.Describe(asymNeighbour)}[{asymNeighbour.Id}]");
+                }
+            }
+            
+            Assert.IsFalse( issueFound, "Asymmetrical neighbour relationship detected");
+        }
     }
 }

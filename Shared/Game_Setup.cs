@@ -427,7 +427,7 @@ namespace Treachery.Shared
             Enter(TreacheryCardsBeforeTraitors, DealStartingTreacheryCards, DealTraitors);
         }
 
-        private Deck<IHero> TraitorDeck { get; set; }
+        internal Deck<IHero> TraitorDeck { get; set; }
 
         private void DealTraitors()
         {

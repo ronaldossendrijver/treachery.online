@@ -40,23 +40,11 @@ namespace Treachery.Shared
 
         public static IEnumerable<Territory> ValidTerritories(Game g, Player p)
         {
-            var ally = g.GetPlayer(p.Ally);
-
-            if (ally == null)
-            {
-                return g.Map.Territories(g.Applicable(Rule.Homeworlds)).Where(t =>
+            return g.Map.Territories(g.Applicable(Rule.Homeworlds)).Where(t =>
+                (!p.HasAlly || p.AlliedPlayer.AnyForcesIn(t) == 0) &&
                 p.SpecialForcesIn(t) > 0 &&
                 (!t.IsStronghold || g.NrOfOccupantsExcludingPlayer(t, p) <= 1) &&
                 !t.Locations.Any(l => l.Sector == g.SectorInStorm && p.SpecialForcesIn(l) > 0));
-            }
-            else
-            {
-                return g.Map.Territories(g.Applicable(Rule.Homeworlds)).Where(t =>
-                ally.AnyForcesIn(t) == 0 &&
-                p.SpecialForcesIn(t) > 0 &&
-                (!t.IsStronghold || g.NrOfOccupantsExcludingPlayer(t, p) <= 1) &&
-                !t.Locations.Any(l => l.Sector == g.SectorInStorm && p.SpecialForcesIn(l) > 0));
-            }
         }
 
         public static bool IsStrongholdInStorm(Game g, Territory t)

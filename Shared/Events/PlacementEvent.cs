@@ -48,8 +48,16 @@ namespace Treachery.Shared
 
             if (Initiator == Faction.Blue)
             {
-                if (AsAdvisors && p.ForcesIn(To.Territory) > 0) return Message.Express("You have fighters there, so you can't move as advisors");
-                if (!AsAdvisors && p.SpecialForcesIn(To.Territory) > 0) return Message.Express("You have advisors there, so you can't move as fighters");
+                if (Game.Version < 153)
+                {
+                    if (AsAdvisors && p.ForcesIn(To.Territory) > 0) return Message.Express("You have fighters there, so you can't move as advisors");
+                    if (!AsAdvisors && p.SpecialForcesIn(To.Territory) > 0) return Message.Express("You have advisors there, so you can't move as fighters");
+                }
+                else
+                {
+                    if (AsAdvisors && !MayMoveAsAdvisors(Game, Player, To.Territory)) return Message.Express("You can't be advisors there");
+                    if (!AsAdvisors && !MayMoveAsBlueFighters(Player, To.Territory)) return Message.Express("You can't be fighters there");
+                }
             }
 
             bool canMoveFromTwoTerritories = Game.CurrentPlanetology != null && Game.CurrentPlanetology.MoveFromTwoTerritories && Game.CurrentPlanetology.Initiator == Initiator;
@@ -61,6 +69,10 @@ namespace Treachery.Shared
 
             return null;
         }
+
+        public static bool MayMoveAsAdvisors(Game g, Player p, Territory to) => p.Is(Faction.Blue) && g.Applicable(Rule.BlueAdvisors) && (p.SpecialForcesIn(to) > 0 || p.ForcesIn(to) == 0 && g.AnyForcesIn(to));
+
+        public static bool MayMoveAsBlueFighters(Player p, Territory to) => p.Is(Faction.Blue) && p.SpecialForcesIn(to) == 0;
 
         [JsonIgnore]
         public Dictionary<Location, Battalion> ForceLocations

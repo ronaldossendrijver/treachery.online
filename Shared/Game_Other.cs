@@ -26,7 +26,7 @@ namespace Treachery.Shared
             RevealCurrentNoField(e.Player);
         }
 
-        private void RevealCurrentNoField(Player player, Location inLocation = null)
+        internal void RevealCurrentNoField(Player player, Location inLocation = null)
         {
             if (player != null && player.Faction == Faction.White)
             {
@@ -53,7 +53,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void RevealCurrentNoField(Player player, Territory inTerritory)
+        internal void RevealCurrentNoField(Player player, Territory inTerritory)
         {
             if (player != null && player.Faction == Faction.White)
             {
@@ -215,7 +215,6 @@ namespace Treachery.Shared
 
         public void HandleEvent(ClairVoyancePlayed e)
         {
-            var initiator = GetPlayer(e.Initiator);
             var card = ClairVoyancePlayed.Card(this, e.Player);
 
             if (card != null)
@@ -1068,17 +1067,12 @@ namespace Treachery.Shared
             e.Player.AlliedPlayer.Resources += e.Resources;
         }
 
-        private void LogPreventionByKarma(FactionAdvantage prevented)
+        internal void LogPreventionByKarma(FactionAdvantage prevented)
         {
             Log(TreacheryCardType.Karma, " prevents ", prevented);
         }
 
-        private void LogPreventionByLowThreshold(FactionAdvantage prevented)
-        {
-            Log("Low Threshold prevents ", prevented);
-        }
-
-        private void LogPreventionByHighThreshold(FactionAdvantage prevented)
+        internal void LogPreventionByLowThreshold(FactionAdvantage prevented)
         {
             Log("Low Threshold prevents ", prevented);
         }

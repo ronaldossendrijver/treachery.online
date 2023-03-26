@@ -11,7 +11,7 @@ namespace Treachery.Shared
     public partial class Game
     {
         public const int LowestSupportedVersion = 100;
-        public const int LatestVersion = 152;
+        public const int LatestVersion = 153;
         public const int ExpansionLevel = 3;
 
         public bool BotInfologging = true;
@@ -411,7 +411,7 @@ namespace Treachery.Shared
             return null;
         }
 
-        public TimeSpan Duration => History.Count > 0 ? History[History.Count - 1].Time.Subtract(History[0].Time) : TimeSpan.Zero;
+        public TimeSpan Duration => History.Count > 0 ? History[^1].Time.Subtract(History[0].Time) : TimeSpan.Zero;
 
         public TimeSpan TimeSpent(Player player, MainPhase phase)
         {
@@ -519,7 +519,7 @@ namespace Treachery.Shared
             }
         }
 
-        internal void Enter(bool condition, Action methodIfTrue, Action methodOtherwise)
+        internal static void Enter(bool condition, Action methodIfTrue, Action methodOtherwise)
         {
             if (condition)
             {
@@ -691,7 +691,7 @@ namespace Treachery.Shared
             return result.Distinct();
         }
 
-        private void RegisterKnown(TreacheryCard c)
+        internal void RegisterKnown(TreacheryCard c)
         {
             foreach (var p in Players)
             {
@@ -699,7 +699,7 @@ namespace Treachery.Shared
             }
         }
 
-        private static void RegisterKnown(Player p, TreacheryCard c)
+        internal static void RegisterKnown(Player p, TreacheryCard c)
         {
             if (c != null && !p.KnownCards.Contains(c))
             {
@@ -707,7 +707,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void RegisterKnown(Faction f, TreacheryCard c)
+        internal void RegisterKnown(Faction f, TreacheryCard c)
         {
             var p = GetPlayer(f);
             if (p != null)
@@ -716,7 +716,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void UnregisterKnown(TreacheryCard c)
+        internal void UnregisterKnown(TreacheryCard c)
         {
             foreach (var p in Players)
             {
@@ -724,12 +724,12 @@ namespace Treachery.Shared
             }
         }
 
-        private static void UnregisterKnown(Player p, TreacheryCard c)
+        internal static void UnregisterKnown(Player p, TreacheryCard c)
         {
             p.KnownCards.Remove(c);
         }
 
-        private static void UnregisterKnown(Player p, IEnumerable<TreacheryCard> cards)
+        internal static void UnregisterKnown(Player p, IEnumerable<TreacheryCard> cards)
         {
             foreach (var c in cards)
             {
@@ -878,9 +878,9 @@ namespace Treachery.Shared
                 pinkOrPinkAllyToExclude = p.Faction;
             }
 
-            if (OccupyingForcesOnPlanet.ContainsKey(l))
+            if (OccupyingForcesOnPlanet.TryGetValue(l, out List<Battalion> value))
             {
-                return OccupyingForcesOnPlanet[l].Where(of => of.Faction != p.Faction && of.Faction != pinkOrPinkAllyToExclude).Count();
+                return value.Where(of => of.Faction != p.Faction && of.Faction != pinkOrPinkAllyToExclude).Count();
             }
             else
             {
@@ -1233,9 +1233,9 @@ namespace Treachery.Shared
                     TakeVidal(occupierOfPinkHomeworld, VidalMoment.WhilePinkWorldIsOccupied);
                 }
             }
-            else if (previousOccupierOfPinkHomeworld != null)
+            else
             {
-                previousOccupierOfPinkHomeworld.Leaders.Remove(Vidal);
+                previousOccupierOfPinkHomeworld?.Leaders.Remove(Vidal);
             }
         }
 
@@ -1346,7 +1346,7 @@ namespace Treachery.Shared
 
         public Player OwnerOf(TreacheryCardType cardType) => Players.FirstOrDefault(p => p.TreacheryCards.Any(c => c.Type == cardType));
 
-        public Player OwnerOf(Location stronghold) => StrongholdOwnership.ContainsKey(stronghold) ? GetPlayer(StrongholdOwnership[stronghold]) : null;
+        public Player OwnerOf(Location stronghold) => StrongholdOwnership.TryGetValue(stronghold, out Faction value) ? GetPlayer(value) : null;
 
         public static Message TryLoad(GameState state, bool performValidation, bool isHost, out Game result, bool trackStatesForReplay)
         {

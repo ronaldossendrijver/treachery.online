@@ -29,7 +29,30 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            if (Cancelled)
+            {
+                Log(Initiator, " pay ", Faction.Brown, Payment.Of(Cost(Game)), " to cancel an audit of ", GetNumberOfCardsThatMayBeAudited(Game), " cards");
+            }
+            else
+            {
+                Log(Initiator, " don't cancel an audit targeting ", GetNumberOfCardsThatMayBeAudited(Game), " of their cards");
+            }
+
+            if (Cancelled)
+            {
+                Player.Resources -= Cost();
+                GetPlayer(Faction.Brown).Resources += Cost();
+            }
+
+            if (!Cancelled)
+            {
+                Game.Enter(Phase.Auditing);
+                LogTo(Initiator, Faction.Brown, " see: ", Game.AuditedCards);
+            }
+            else
+            {
+                Game.Enter(Game.BattleWinner == Faction.None, Game.FinishBattle, Game.BlackMustDecideToCapture, Phase.CaptureDecision, Phase.BattleConclusion);
+            }
         }
 
         public override Message GetMessage()
@@ -41,18 +64,6 @@ namespace Treachery.Shared
             else
             {
                 return Message.Express(Initiator, " don't pay to cancel an audit");
-            }
-        }
-
-        public Message GetDynamicMessage()
-        {
-            if (Cancelled)
-            {
-                return Message.Express(Initiator, " pay ", Faction.Brown, Payment.Of(Cost(Game)), " to cancel an audit of ", GetNumberOfCardsThatMayBeAudited(Game), " cards");
-            }
-            else
-            {
-                return Message.Express(Initiator, " don't cancel an audit targeting ", GetNumberOfCardsThatMayBeAudited(Game), " of their cards");
             }
         }
 

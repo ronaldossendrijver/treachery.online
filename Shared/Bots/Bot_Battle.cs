@@ -171,7 +171,7 @@ namespace Treachery.Shared
                 Kill = kill,
                 SpecialForceLossesReplaced = replacedSpecialForces,
                 NewTraitor = newTraitor,
-                ReplacedTraitor = toReplace,
+                TraitorToReplace = toReplace,
                 AddExtraForce = BattleConcluded.MayAddExtraForce(Game, this)
             };
         }

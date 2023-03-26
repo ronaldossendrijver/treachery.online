@@ -429,19 +429,9 @@ namespace Treachery.Shared
             Stone(Milestone.Karma);
         }
 
-        public int AmbassadorsPlacedThisTurn { get; private set; } = 0;
+        public int AmbassadorsPlacedThisTurn { get; internal set; } = 0;
 
         public Ambassador AmbassadorIn(Territory t) => AmbassadorsOnPlanet.TryGetValue(t, out Ambassador value) ? value : Ambassador.None;
-
-        public void HandleEvent(AmbassadorPlaced e)
-        {
-            AmbassadorsPlacedThisTurn++;
-            e.Player.Resources -= AmbassadorsPlacedThisTurn;
-            Log(e.Initiator, " station the ", e.Ambassador, " ambassador in ", e.Stronghold, " for ", Payment.Of(AmbassadorsPlacedThisTurn));
-            AmbassadorsOnPlanet.Add(e.Stronghold, e.Ambassador);
-            e.Player.Ambassadors.Remove(e.Ambassador);
-            Stone(Milestone.AmbassadorPlaced);
-        }
 
         #endregion
 

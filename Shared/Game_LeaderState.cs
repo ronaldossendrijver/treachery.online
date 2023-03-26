@@ -24,10 +24,7 @@ namespace Treachery.Shared
                     var currentOwner = OwnerOf(h);
                     currentOwner.Leaders.Remove(h as Leader);
                     var pink = GetPlayer(Faction.Pink);
-                    if (pink != null)
-                    {
-                        pink.Leaders.Add(h as Leader);
-                    }
+                    pink?.Leaders.Add(h as Leader);
                 }
             }
         }
@@ -39,15 +36,11 @@ namespace Treachery.Shared
             {
                 purple.Leaders.Remove(l as Leader);
 
-                var originalOwner = GetPlayer(l.Faction);
-                if (originalOwner != null)
-                {
-                    originalOwner.Leaders.Add(l as Leader);
-                }
+                GetPlayer(l.Faction)?.Leaders.Add(l as Leader);
             }
         }
 
-        private void AssassinateLeader(Leader l)
+        internal void AssassinateLeader(Leader l)
         {
             LeaderState[l].Assassinate(this);
             Stone(Milestone.LeaderKilled);
@@ -116,7 +109,7 @@ namespace Treachery.Shared
             LeaderState[l].Skill = skill;
         }
 
-        private void SetInFrontOfShield(Leader l, bool value)
+        internal void SetInFrontOfShield(Leader l, bool value)
         {
             if (l != null && LeaderState.TryGetValue(l, out LeaderState ls))
             {

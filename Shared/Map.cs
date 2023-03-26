@@ -1300,7 +1300,7 @@ namespace Treachery.Shared
             return result;
         }
 
-        public void InitializeLocationNeighbours()
+        private void InitializeLocationNeighbours()
         {
             _locations[5].Neighbours.Add(_locations[2]);
             _locations[5].Neighbours.Add(_locations[50]);
@@ -1346,7 +1346,6 @@ namespace Treachery.Shared
             _locations[18].Neighbours.Add(_locations[14]);
             _locations[18].Neighbours.Add(_locations[19]);
             _locations[18].Neighbours.Add(_locations[17]);
-            _locations[18].Neighbours.Add(_locations[13]);
             _locations[17].Neighbours.Add(_locations[18]);
             _locations[17].Neighbours.Add(_locations[16]);
             _locations[17].Neighbours.Add(_locations[13]);
@@ -1368,7 +1367,6 @@ namespace Treachery.Shared
             _locations[29].Neighbours.Add(_locations[1]);
             _locations[29].Neighbours.Add(_locations[0]);
             _locations[29].Neighbours.Add(_locations[47]);
-            _locations[29].Neighbours.Add(_locations[46]);
             _locations[25].Neighbours.Add(_locations[26]);
             _locations[25].Neighbours.Add(_locations[22]);
             _locations[25].Neighbours.Add(_locations[21]);
@@ -1428,6 +1426,7 @@ namespace Treachery.Shared
             _locations[75].Neighbours.Add(_locations[74]);
             _locations[83].Neighbours.Add(_locations[84]);
             _locations[83].Neighbours.Add(_locations[82]);
+            _locations[83].Neighbours.Add(_locations[79]);
             _locations[83].Neighbours.Add(_locations[8]);
             _locations[83].Neighbours.Add(_locations[15]);
             _locations[82].Neighbours.Add(_locations[78]);
