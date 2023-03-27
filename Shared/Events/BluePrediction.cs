@@ -9,6 +9,8 @@ namespace Treachery.Shared
 {
     public class BluePrediction : GameEvent
     {
+        #region Construction
+
         public BluePrediction(Game game) : base(game)
         {
         }
@@ -17,8 +19,17 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
         public Faction ToWin { get; set; }
+
         public int Turn { get; set; }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -28,9 +39,23 @@ namespace Treachery.Shared
             return null;
         }
 
+        public static IEnumerable<Faction> ValidTargets(Game g, Player p) => g.PlayersOtherThan(p);
+
+        public static IEnumerable<int> ValidTurns(Game g)
+        {
+            return Enumerable.Range(1, g.MaximumNumberOfTurns);
+        }
+
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Player.PredictedFaction = ToWin;
+            Player.PredictedTurn = Turn;
+            Log();
+            Game.Enter(Game.TreacheryCardsBeforeTraitors, Game.DealStartingTreacheryCards, Game.DealTraitors);
         }
 
         public override Message GetMessage()
@@ -38,11 +63,6 @@ namespace Treachery.Shared
             return Message.Express(Initiator, " predict who will win and when");
         }
 
-        public static IEnumerable<Faction> ValidTargets(Game g, Player p) => g.PlayersOtherThan(p);
-
-        public static IEnumerable<int> ValidTurns(Game g)
-        {
-            return Enumerable.Range(1, g.MaximumNumberOfTurns);
-        }
+        #endregion Execution
     }
 }

@@ -10,7 +10,7 @@ namespace Treachery.Shared
 {
     public class BrownDiscarded : GameEvent
     {
-        public int _cardId;
+        #region Construction
 
         public BrownDiscarded(Game game) : base(game)
         {
@@ -20,18 +20,22 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public int _cardId;
+
         [JsonIgnore]
         public TreacheryCard Card
         {
-            get
-            {
-                return TreacheryCardManager.Get(_cardId);
-            }
-            set
-            {
-                _cardId = TreacheryCardManager.GetId(value);
-            }
+            get => TreacheryCardManager.Get(_cardId);
+            set => _cardId = TreacheryCardManager.GetId(value);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -40,9 +44,32 @@ namespace Treachery.Shared
             return null;
         }
 
+        public static IEnumerable<TreacheryCard> ValidCards(Player p)
+        {
+            return p.TreacheryCards.Where(c =>
+                 c.Type == TreacheryCardType.Useless && !p.HasHighThreshold() ||
+                (c.Type != TreacheryCardType.Projectile && c.Type != TreacheryCardType.Poison) && p.TreacheryCards.Count(toCount => toCount.Type == c.Type) > 1);
+        }
+
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Game.Discard(Card);
+            Log();
+
+            if (Card.Type == TreacheryCardType.Useless)
+            {
+                Player.Resources += 2;
+            }
+            else
+            {
+                Player.Resources += 3;
+            }
+
+            Game.Stone(Milestone.ResourcesReceived);
         }
 
         public override Message GetMessage()
@@ -57,11 +84,6 @@ namespace Treachery.Shared
             }
         }
 
-        public static IEnumerable<TreacheryCard> ValidCards(Player p)
-        {
-            return p.TreacheryCards.Where(c =>
-                 c.Type == TreacheryCardType.Useless && !p.HasHighThreshold() ||
-                (c.Type != TreacheryCardType.Projectile && c.Type != TreacheryCardType.Poison) && p.TreacheryCards.Count(toCount => toCount.Type == c.Type) > 1);
-        }
+        #endregion Execution
     }
 }

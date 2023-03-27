@@ -417,19 +417,11 @@ namespace Treachery.Shared
             Enter(IsPlaying(Faction.Blue), Phase.BluePredicting, TreacheryCardsBeforeTraitors, DealStartingTreacheryCards, DealTraitors);
         }
 
-        private bool TreacheryCardsBeforeTraitors => Version >= 121 && Applicable(Rule.LeaderSkills);
-
-        public void HandleEvent(BluePrediction e)
-        {
-            GetPlayer(e.Initiator).PredictedFaction = e.ToWin;
-            GetPlayer(e.Initiator).PredictedTurn = e.Turn;
-            Log(e);
-            Enter(TreacheryCardsBeforeTraitors, DealStartingTreacheryCards, DealTraitors);
-        }
+        internal bool TreacheryCardsBeforeTraitors => Version >= 121 && Applicable(Rule.LeaderSkills);
 
         internal Deck<IHero> TraitorDeck { get; set; }
 
-        private void DealTraitors()
+        internal void DealTraitors()
         {
             Stone(Milestone.Shuffled);
             TraitorDeck = CreateAndShuffleTraitorDeck(Random);
@@ -862,7 +854,7 @@ namespace Treachery.Shared
 
         private TreacheryCard ExtraStartingCardForBlack = null;
 
-        private void DealStartingTreacheryCards()
+        internal void DealStartingTreacheryCards()
         {
             StartingTreacheryCards = new Deck<TreacheryCard>(Random);
             foreach (var p in Players)

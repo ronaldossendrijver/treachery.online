@@ -10,7 +10,7 @@ namespace Treachery.Shared
 {
     public class BrownMovePrevention : GameEvent
     {
-        public int _territoryId;
+        #region Construction
 
         public BrownMovePrevention(Game game) : base(game)
         {
@@ -20,12 +20,22 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public int _territoryId;
+
         [JsonIgnore]
         public Territory Territory
         {
-            get { return Game.Map.TerritoryLookup.Find(_territoryId); }
-            set { _territoryId = Game.Map.TerritoryLookup.GetId(value); }
+            get =>  Game.Map.TerritoryLookup.Find(_territoryId);
+            set => _territoryId = Game.Map.TerritoryLookup.GetId(value);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -48,9 +58,27 @@ namespace Treachery.Shared
             return p.TreacheryCards.FirstOrDefault(c => c.Id == TreacheryCardManager.CARD_BALISET);
         }
 
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Log();
+
+            if (NexusPlayed.CanUseCunning(Player))
+            {
+                Game.DiscardNexusCard(Player);
+                Game.Stone(Milestone.NexusPlayed);
+                Game.LetPlayerDiscardTreacheryCardOfChoice(Initiator);
+            }
+            else
+            {
+                Game.Discard(CardToUse(Player));
+            }
+
+            Game.CurrentBlockedTerritories.Add(Territory);
+            Game.Stone(Milestone.SpecialUselessPlayed);
         }
 
         public override Message GetMessage()
@@ -58,6 +86,6 @@ namespace Treachery.Shared
             return Message.Express(Initiator, " prevent forces moving into ", Territory);
         }
 
-        public TreacheryCard CardUsed() => CardToUse(Player);
+        #endregion Execution
     }
 }

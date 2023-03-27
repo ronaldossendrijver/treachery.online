@@ -831,7 +831,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void LetPlayerDiscardTreacheryCardOfChoice(Faction f)
+        internal void LetPlayerDiscardTreacheryCardOfChoice(Faction f)
         {
             PhaseBeforeDiscarding = CurrentPhase;
             FactionsThatMustDiscard.Add(f);
@@ -1350,44 +1350,8 @@ namespace Treachery.Shared
         }
 
         public List<Territory> CurrentBlockedTerritories { get; private set; } = new List<Territory>();
-        public void HandleEvent(BrownMovePrevention e)
-        {
-            Log(e);
 
-            if (NexusPlayed.CanUseCunning(e.Player))
-            {
-                DiscardNexusCard(e.Player);
-                Stone(Milestone.NexusPlayed);
-                LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
-            }
-            else
-            {
-                Discard(e.CardUsed());
-            }
-
-            CurrentBlockedTerritories.Add(e.Territory);
-            Stone(Milestone.SpecialUselessPlayed);
-        }
-
-        private bool BrownHasExtraMove { get; set; } = false;
-        public void HandleEvent(BrownExtraMove e)
-        {
-            Log(e);
-
-            if (NexusPlayed.CanUseCunning(e.Player))
-            {
-                DiscardNexusCard(e.Player);
-                Stone(Milestone.NexusPlayed);
-                LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
-            }
-            else
-            {
-                Discard(e.CardUsed());
-            }
-
-            BrownHasExtraMove = true;
-            Stone(Milestone.SpecialUselessPlayed);
-        }
+        internal bool BrownHasExtraMove { get; set; } = false;
 
         private void ReceiveShipsTechIncome()
         {

@@ -6,7 +6,7 @@ namespace Treachery.Shared
 {
     public class BrownEconomics : GameEvent
     {
-        public BrownEconomicsStatus Status;
+        #region Construction
 
         public BrownEconomics(Game game) : base(game)
         {
@@ -16,19 +16,37 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public BrownEconomicsStatus Status;
+
+        #endregion Properties
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
         }
 
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Game.EconomicsStatus = Status;
+            Game.Stone(Milestone.Economics);
+            Log();
         }
 
         public override Message GetMessage()
         {
             return Message.Express(Initiator, " play Inflation: ", Status);
         }
+
+        #endregion Execution
     }
 }

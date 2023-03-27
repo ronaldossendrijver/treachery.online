@@ -48,7 +48,7 @@ namespace Treachery.Shared
         public int NextStormMoves { get; private set; } = -1;
         public bool ShieldWallDestroyed { get; private set; } = false;
         public Territory AtomicsAftermath { get; private set; } = null;
-        public BrownEconomicsStatus EconomicsStatus { get; private set; } = BrownEconomicsStatus.None;
+        public BrownEconomicsStatus EconomicsStatus { get; internal set; } = BrownEconomicsStatus.None;
         public Dictionary<Location, int> ResourcesOnPlanet { get; private set; } = new();
         public Dictionary<TerrorType, Territory> TerrorOnPlanet { get; private set; } = new();
         public Deck<Ambassador> UnassignedAmbassadors { get; private set; }

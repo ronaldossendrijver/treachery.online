@@ -8,7 +8,7 @@ namespace Treachery.Shared
 {
     public class BrownKarmaPrevention : GameEvent
     {
-        public Faction Target { get; set; }
+        #region Construction
 
         public BrownKarmaPrevention(Game game) : base(game)
         {
@@ -18,19 +18,19 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public Faction Target { get; set; }
+
+        #endregion Properties
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " prevent ", Target, " from using ", TreacheryCardType.Karma, " this phase");
         }
 
         public static bool CanBePlayedBy(Game g, Player p)
@@ -43,6 +43,34 @@ namespace Treachery.Shared
             return p.TreacheryCards.FirstOrDefault(c => c.Id == TreacheryCardManager.CARD_KULLWAHAD);
         }
 
-        public TreacheryCard CardUsed() => CardToUse(Player);
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            Log();
+
+            if (NexusPlayed.CanUseCunning(Player))
+            {
+                Game.DiscardNexusCard(Player);
+                Game.Stone(Milestone.NexusPlayed);
+                Game.LetPlayerDiscardTreacheryCardOfChoice(Initiator);
+            }
+            else
+            {
+                Game.Discard(CardToUse(Player));
+            }
+
+            Game.CurrentKarmaPrevention = this;
+            Game.Stone(Milestone.SpecialUselessPlayed);
+        }
+
+        public override Message GetMessage()
+        {
+            return Message.Express(Initiator, " prevent ", Target, " from using ", TreacheryCardType.Karma, " this phase");
+        }
+
+        #endregion Execution
     }
 }

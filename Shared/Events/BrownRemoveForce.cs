@@ -10,11 +10,7 @@ namespace Treachery.Shared
 {
     public class BrownRemoveForce : GameEvent
     {
-        public int _locationId;
-
-        public Faction Target;
-
-        public bool SpecialForce;
+        #region Construction
 
         public BrownRemoveForce(Game game) : base(game)
         {
@@ -24,12 +20,26 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public Faction Target;
+
+        public bool SpecialForce;
+
+        public int _locationId;
+
         [JsonIgnore]
         public Location Location
         {
-            get { return Game.Map.LocationLookup.Find(_locationId); }
-            set { _locationId = Game.Map.LocationLookup.GetId(value); }
+            get => Game.Map.LocationLookup.Find(_locationId);
+            set => _locationId = Game.Map.LocationLookup.GetId(value);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -93,17 +103,46 @@ namespace Treachery.Shared
             return p.TreacheryCards.FirstOrDefault(c => c.Id == TreacheryCardManager.CARD_TRIPTOGAMONT);
         }
 
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Log();
+
+            var card = CardToUse(Player);
+            if (card == null && NexusPlayed.CanUseCunning(Player))
+            {
+                Game.PlayNexusCard(Player, "Cunning", "send a force back to reserves");
+                Game.LetPlayerDiscardTreacheryCardOfChoice(Initiator);
+            }
+            else
+            {
+                Game.Discard(card);
+            }
+
+            var target = GetPlayer(Target);
+
+            if (SpecialForce)
+            {
+                target.SpecialForcesToReserves(Location, 1);
+            }
+            else
+            {
+                target.ForcesToReserves(Location, 1);
+            }
+
+            Game.FlipBeneGesseritWhenAloneOrWithPinkAlly();
+            Game.Stone(Milestone.SpecialUselessPlayed);
         }
 
         public override Message GetMessage()
         {
             var targetPlayer = Game.GetPlayer(Target);
-            return Message.Express(Initiator, " remove ", 1, SpecialForce ? (object)targetPlayer.SpecialForce : targetPlayer.Force, " from ", Location);
+            return Message.Express(Initiator, " remove ", 1, SpecialForce ? targetPlayer.SpecialForce : targetPlayer.Force, " from ", Location);
         }
 
-        public TreacheryCard CardUsed() => CardToUse(Player);
+        #endregion Execution
     }
 }

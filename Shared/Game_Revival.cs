@@ -397,25 +397,7 @@ namespace Treachery.Shared
             return CurrentFreeRevivalPrevention != null && CurrentFreeRevivalPrevention.Target == f;
         }
 
-        public BrownFreeRevivalPrevention CurrentFreeRevivalPrevention { get; set; } = null;
-        public void HandleEvent(BrownFreeRevivalPrevention e)
-        {
-            Log(e);
-
-            if (NexusPlayed.CanUseCunning(e.Player))
-            {
-                DiscardNexusCard(e.Player);
-                Stone(Milestone.NexusPlayed);
-                LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
-            }
-            else
-            {
-                Discard(e.CardUsed());
-            }
-
-            CurrentFreeRevivalPrevention = e;
-            Stone(Milestone.SpecialUselessPlayed);
-        }
+        public BrownFreeRevivalPrevention CurrentFreeRevivalPrevention { get; internal set; } = null;
 
         public bool PreventedFromReviving(Faction f) => CurrentKarmaRevivalPrevention != null && CurrentKarmaRevivalPrevention.Target == f;
 

@@ -614,7 +614,7 @@ namespace Treachery.Shared
             p.Nexus = NexusCardDeck.Draw();
         }
 
-        private void DiscardNexusCard(Player p)
+        internal void DiscardNexusCard(Player p)
         {
             if (p.Nexus != Faction.None)
             {

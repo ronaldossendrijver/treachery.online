@@ -452,42 +452,6 @@ namespace Treachery.Shared
 
         #region MentatEvents
 
-        public void HandleEvent(BrownEconomics e)
-        {
-            EconomicsStatus = e.Status;
-            Log(e);
-            Stone(Milestone.Economics);
-        }
-
-        public void HandleEvent(BrownRemoveForce e)
-        {
-            Log(e);
-
-            if (e.CardUsed() == null && NexusPlayed.CanUseCunning(e.Player))
-            {
-                PlayNexusCard(e.Player, "Cunning", "send a force back to reserves");
-                LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
-            }
-            else
-            {
-                Discard(e.CardUsed());
-            }
-
-            var target = GetPlayer(e.Target);
-
-            if (e.SpecialForce)
-            {
-                target.SpecialForcesToReserves(e.Location, 1);
-            }
-            else
-            {
-                target.ForcesToReserves(e.Location, 1);
-            }
-
-            FlipBeneGesseritWhenAloneOrWithPinkAlly();
-            Stone(Milestone.SpecialUselessPlayed);
-        }
-
         private void HandleEconomics()
         {
             switch (EconomicsStatus)

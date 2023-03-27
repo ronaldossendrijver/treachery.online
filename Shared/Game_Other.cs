@@ -281,23 +281,6 @@ namespace Treachery.Shared
             Enter(phasePausedByClairvoyance);
         }
 
-        public void HandleEvent(BrownDiscarded e)
-        {
-            Discard(e.Card);
-            Log(e);
-            if (e.Card.Type == TreacheryCardType.Useless)
-            {
-                e.Player.Resources += 2;
-            }
-            else
-            {
-                e.Player.Resources += 3;
-            }
-
-            Stone(Milestone.ResourcesReceived);
-        }
-
-
         public int KarmaHmsMovesLeft { get; private set; } = 2;
         public void HandleEvent(KarmaHmsMovement e)
         {
@@ -548,25 +531,7 @@ namespace Treachery.Shared
             return CurrentKarmaPrevention != null && CurrentKarmaPrevention.Target == f;
         }
 
-        public BrownKarmaPrevention CurrentKarmaPrevention { get; set; } = null;
-        public void HandleEvent(BrownKarmaPrevention e)
-        {
-            Log(e);
-
-            if (NexusPlayed.CanUseCunning(e.Player))
-            {
-                DiscardNexusCard(e.Player);
-                Stone(Milestone.NexusPlayed);
-                LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
-            }
-            else
-            {
-                Discard(e.CardUsed());
-            }
-
-            CurrentKarmaPrevention = e;
-            Stone(Milestone.SpecialUselessPlayed);
-        }
+        public BrownKarmaPrevention CurrentKarmaPrevention { get; internal set; } = null;
 
         public bool JuiceForcesFirstPlayer => CurrentJuice != null && CurrentJuice.Type == JuiceType.GoFirst;
 
