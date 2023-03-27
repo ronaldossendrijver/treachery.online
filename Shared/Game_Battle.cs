@@ -44,29 +44,14 @@ namespace Treachery.Shared
 
         #region BattleInitiation
 
-        public BattleInitiated BattleAboutToStart { get; private set; }
-
-        public void HandleEvent(BattleInitiated b)
-        {
-            BattleAboutToStart = b;
-            Enter(PinkAndTheirAllyAreBothInvolvedIn(b), Phase.ClaimingBattle, InitiateBattle);
-        }
+        public BattleInitiated BattleAboutToStart { get; internal set; }
 
         public Faction CurrentPinkOrAllyFighter { get; internal set; }
         public int CurrentPinkBattleContribution { get; internal set; }
 
         
 
-        private bool PinkAndTheirAllyAreBothInvolvedIn(BattleInitiated b)
-        {
-            var pink = GetPlayer(Faction.Pink);
-            if (pink != null && pink.HasAlly)
-            {
-                return b.IsInvolved(Faction.Pink) && pink.Occupies(b.Territory) && pink.AlliedPlayer.Occupies(b.Territory);
-            }
-
-            return false;
-        }
+        
 
         internal void InitiateBattle()
         {
@@ -218,21 +203,6 @@ namespace Treachery.Shared
             else
             {
                 Log(opponent.Faction, " have no available leaders to kill");
-            }
-        }
-
-        public void HandleEvent(BattleRevision e)
-        {
-            if (CurrentBattle != null)
-            {
-                if (e.By(CurrentBattle.Aggressor))
-                {
-                    AggressorBattleAction = null;
-                }
-                else if (e.By(CurrentBattle.Defender))
-                {
-                    DefenderBattleAction = null;
-                }
             }
         }
 
@@ -1804,7 +1774,7 @@ namespace Treachery.Shared
                 for (int i = 0; i < Players.Count; i++)
                 {
                     var playerToCheck = BattleSequence.CurrentPlayer;
-                    if (Battle.MustFight(this, playerToCheck))
+                    if (Battle.BattlesToBeFought(this, playerToCheck).Any())
                     {
                         return playerToCheck;
                     }

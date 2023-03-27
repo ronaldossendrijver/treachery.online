@@ -226,7 +226,7 @@
             case "BattleClaimed":
                 {
                     string title = Faction == Faction.Pink ? 
-                        Skin.Current.Format("Do you wish to fight the battle in {0}?", Game.BattleAboutToStart.Territory) : 
+                        Skin.Current.Format("Do you wish to fight in {0}? Otherwise, your ally will.", Game.BattleAboutToStart.Territory) : 
                         Skin.Current.Format("Should {0} fight the battle in {1}?", Faction.Pink, Game.BattleAboutToStart.Territory);
 
                     <YesNoActionComponent GameEventType="BattleClaimed" h="@h" Title=@title Alert="true" />

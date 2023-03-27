@@ -11,6 +11,8 @@ namespace Treachery.Shared
 {
     public class Battle : GameEvent
     {
+        #region Properties
+
         public int _heroId;
 
         [JsonIgnore]
@@ -30,13 +32,12 @@ namespace Treachery.Shared
         public bool Messiah { get; set; }
 
         public int Forces { get; set; }
+
         public int ForcesAtHalfStrength { get; set; }
 
         public int SpecialForces { get; set; }
-        public int SpecialForcesAtHalfStrength { get; set; }
 
-        [JsonIgnore]
-        public int TotalForces => Forces + ForcesAtHalfStrength + SpecialForces + SpecialForcesAtHalfStrength;
+        public int SpecialForcesAtHalfStrength { get; set; }
 
         public int AllyContributionAmount { get; set; }
 
@@ -57,14 +58,6 @@ namespace Treachery.Shared
 
         public int _defenseCardId;
 
-        public Battle(Game game) : base(game)
-        {
-        }
-
-        public Battle()
-        {
-        }
-
         [JsonIgnore]
         public TreacheryCard Defense
         {
@@ -79,6 +72,9 @@ namespace Treachery.Shared
         }
 
         public int BankerBonus { get; set; }
+
+        [JsonIgnore]
+        public int TotalForces => Forces + ForcesAtHalfStrength + SpecialForces + SpecialForcesAtHalfStrength;
 
         [JsonIgnore]
         public bool HasPoison => Weapon != null && Weapon.IsPoisonWeapon;
@@ -116,234 +112,27 @@ namespace Treachery.Shared
         [JsonIgnore]
         public TreacheryCard OriginalDefense { get; set; } = null;
 
-        public static bool IsUsingPortableAntidote(Game g, Faction faction) => g.CurrentPortableAntidoteUsed?.Initiator == faction;
-
-        public void ActivateDynamicWeapons(TreacheryCard mirroredWeapon, TreacheryCard mirroredDefense)
-        {
-            if (Weapon != null && Weapon.Type == TreacheryCardType.MirrorWeapon)
-            {
-                OriginalWeapon = Weapon;
-                Weapon = mirroredWeapon;
-            }
-
-            if (Game.CurrentDiplomacy?.Initiator == Initiator)
-            {
-                OriginalDefense = Defense;
-                Defense = mirroredDefense;
-            }
-
-            if (IsUsingPortableAntidote(Game, Initiator))
-            {
-                OriginalDefense = Defense;
-                Defense = Game.TreacheryDiscardPile.Items.FirstOrDefault(c => c.IsPortableAntidote);
-            }
-        }
-
-        public void DeactivateDynamicWeapons()
-        {
-            if (OriginalWeapon != null)
-            {
-                Weapon = OriginalWeapon;
-                OriginalWeapon = null;
-            }
-
-            if (Game.CurrentDiplomacy?.Initiator == Initiator)
-            {
-                Defense = OriginalDefense;
-                OriginalDefense = null;
-            }
-
-            if (Game.CurrentPortableAntidoteUsed?.Initiator == Initiator)
-            {
-                Defense = OriginalDefense;
-                OriginalDefense = null;
-            }
-        }
-
         [JsonIgnore]
         public bool HasRockMelter => Weapon != null && Weapon.IsRockmelter;
 
         [JsonIgnore]
         public bool HasUseless => Weapon != null && Weapon.IsUseless || Defense != null && Defense.IsUseless;
 
-        public static float DetermineSpecialForceStrength(Game g, Faction player, Faction opponent)
-        {
-            if (player == Faction.Yellow && g.Prevented(FactionAdvantage.YellowSpecialForceBonus))
-            {
-                return 1;
-            }
-            else if (player == Faction.Red && (g.Prevented(FactionAdvantage.RedSpecialForceBonus) || opponent == Faction.Yellow || g.OccupierOf(World.RedStar) != null))
-            {
-                return 1;
-            }
-            else if (player == Faction.Grey && g.Prevented(FactionAdvantage.GreySpecialForceBonus))
-            {
-                return 1;
-            }
-            else if (player == Faction.Blue)
-            {
-                return 0;
-            }
+        #endregion Properties
 
-            return 2;
+        #region Construction
+
+        public Battle(Game game) : base(game)
+        {
         }
 
-        public static float DetermineSpecialForceNoSpiceFactor(Game g, Faction player)
+        public Battle()
         {
-            if (player == Faction.Red && g.HasHighThreshold(player, World.RedStar))
-            {
-                return 1;
-            }
-            else
-            {
-                return 0.5f;
-            }
         }
 
-        public static float DetermineNormalForceStrength(Game g, Faction player)
-        {
-            if (player == Faction.Grey && g.CurrentGreyNexus == null)
-            {
-                return 0.5f;
-            }
+        #endregion Construction
 
-            return 1;
-        }
-
-        public static float DetermineNormalForceNoSpiceFactor(Faction player)
-        {
-            if (player == Faction.Grey)
-            {
-                return 1;
-            }
-
-            return 0.5f;
-        }
-
-        public float Dial(Game g, Faction opponent)
-        {
-            var pinkBattleContribution = !g.Prevented(FactionAdvantage.PinkOccupation) ? g.CurrentPinkBattleContribution : 0;
-            if (Initiator != Faction.Pink || Game.CurrentPinkOrAllyFighter == Faction.None)
-            {
-                return ForceValue(g, Initiator, opponent, Forces, SpecialForces, ForcesAtHalfStrength, SpecialForcesAtHalfStrength) + pinkBattleContribution;
-            }
-            else
-            {
-                return ForceValue(g, Player.Ally, opponent, Forces, SpecialForces, ForcesAtHalfStrength, SpecialForcesAtHalfStrength) + pinkBattleContribution;
-            }
-        }
-
-        public static Player DetermineForceSupplier(Game g, Player playerThatFights) =>
-            playerThatFights.Is(Faction.Pink) && g.CurrentPinkOrAllyFighter != Faction.None && !g.Prevented(FactionAdvantage.PinkOccupation) ? playerThatFights.AlliedPlayer : playerThatFights;
-
-        public static float ForceValue(Game g, Faction player, Faction opponent, int Forces, int SpecialForces, int ForcesAtHalfStrength, int SpecialForcesAtHalfStrength)
-        {
-            int nrOfForcesToCountAsSpecialDueToRedCunning = g.CurrentRedNexus != null && g.CurrentRedNexus.Initiator == player ? Math.Min(5, Forces) : 0;
-            int ForcesAdjustedForCunning = Forces - nrOfForcesToCountAsSpecialDueToRedCunning;
-            int SpecialForcesAdjustedForCunning = SpecialForces + nrOfForcesToCountAsSpecialDueToRedCunning;
-
-            int nrOfForcesAtHalfStrengthToCountAsSpecialDueToRedCunning = g.CurrentRedNexus != null && g.CurrentRedNexus.Initiator == player ? Math.Max(0, Math.Min(5, ForcesAtHalfStrength) - nrOfForcesToCountAsSpecialDueToRedCunning) : 0;
-            int ForcesAtHalfStrengthAdjustedForCunning = ForcesAtHalfStrength - nrOfForcesAtHalfStrengthToCountAsSpecialDueToRedCunning;
-            int SpecialForcesAtHalfStrengthAdjustedForCunning = SpecialForcesAtHalfStrength + nrOfForcesAtHalfStrengthToCountAsSpecialDueToRedCunning;
-
-            float specialForceStrength = DetermineSpecialForceStrength(g, player, opponent);
-            float specialForceNoSpiceFactor = DetermineSpecialForceNoSpiceFactor(g, player);
-            float normalForceStrength = DetermineNormalForceStrength(g, player);
-            float normalForceNoSpiceFactor = DetermineNormalForceNoSpiceFactor(player);
-
-            return
-                normalForceStrength * ForcesAdjustedForCunning +
-                specialForceStrength * SpecialForcesAdjustedForCunning +
-                normalForceNoSpiceFactor * normalForceStrength * ForcesAtHalfStrengthAdjustedForCunning +
-                specialForceNoSpiceFactor * specialForceStrength * SpecialForcesAtHalfStrengthAdjustedForCunning;
-        }
-
-        public static bool MustPayForForcesInBattle(Game g, Player p) =>
-            g.Applicable(Rule.AdvancedCombat) && (g.Prevented(FactionAdvantage.YellowNotPayingForBattles) || p.Faction != Faction.Yellow);
-
-        public static bool MessiahMayBeUsedInBattle(Game g, Player p) => MessiahAvailableForBattle(g, p);
-
-        public int Cost(Game g) => Cost(g, Player, Forces, SpecialForces);
-
-        public static int Cost(Game g, Player p, int AmountOfForcesAtFullStrength, int AmountOfSpecialForcesAtFullStrength)
-        {
-            int cost = AmountOfForcesAtFullStrength * NormalForceCost(g, p) + AmountOfSpecialForcesAtFullStrength * SpecialForceCost(g, p);
-            return cost - Math.Min(CostReduction(g, p), cost);
-        }
-
-        public static int CostReduction(Game g, Player p)
-        {
-            return g.HasStrongholdAdvantage(p.Faction, StrongholdAdvantage.FreeResourcesForBattles, g.CurrentBattle?.Territory) ? 2 : 0;
-        }
-
-        public static int NormalForceCost(Game g, Player p)
-        {
-            if (MustPayForForcesInBattle(g, p))
-            {
-                if (p.Faction == Faction.Grey)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return 1;
-                }
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        public static int SpecialForceCost(Game g, Player p)
-        {
-            if (MustPayForForcesInBattle(g, p))
-            {
-                return 1;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        public override Message Validate()
-        {
-            var p = Player;
-            if (Forces + ForcesAtHalfStrength > MaxForces(Game, p, false)) return Message.Express("Too many ", p.Force, " selected");
-            if (SpecialForces + SpecialForcesAtHalfStrength > MaxForces(Game, p, true)) return Message.Express("Too many ", p.SpecialForce, " selected");
-            int cost = Cost(Game, p, Forces, SpecialForces);
-            if (AllyContributionAmount > cost) return Message.Express("Your ally is paying more than needed");
-            if (AllyContributionAmount > MaxAllyResources(Game, p, Forces, SpecialForces)) return Message.Express("Your ally won't pay that much");
-            if (cost > p.Resources + AllyContributionAmount) return Message.Express("You can't pay ", Payment.Of(cost), " to fight with ", Forces + SpecialForces, " forces at full strength");
-            if (Hero == null && ValidBattleHeroes(Game, p).Any() && !Game.Applicable(Rule.BattleWithoutLeader)) return Message.Express("You must select a leader");
-            if (Hero != null && !ValidBattleHeroes(Game, p).Contains(Hero)) return Message.Express("Invalid leader");
-            if (Weapon != null && Weapon == Defense) return Message.Express("Can't use the same card as weapon and defense");
-            if (Hero == null && (Weapon != null || Defense != null)) return Message.Express("Can't use treachery cards without a leader");
-            if (Hero != null && Hero is Leader && Game.LeaderState[Hero as Leader].CurrentTerritory != null && Game.LeaderState[Hero as Leader].CurrentTerritory != Game.CurrentBattle.Territory) return Message.Express("Selected leader already fought in another territory");
-            if (Hero == null && Messiah) return Message.Express("Can't use ", Concept.Messiah, " without a leader");
-            if (Messiah && !MessiahMayBeUsedInBattle(Game, p)) return Message.Express(Concept.Messiah, " is not available");
-            if (Weapon == null && Defense != null && Defense.Type == TreacheryCardType.WeirdingWay) return Message.Express("You can't use ", TreacheryCardType.WeirdingWay, " as defense without using a weapon");
-            if (Defense == null && Weapon != null && Weapon.Type == TreacheryCardType.Chemistry) return Message.Express("You can't use ", TreacheryCardType.Chemistry, " as weapon without using a defense");
-            if (!ValidWeapons(Game, p, Defense, Hero, Game.CurrentBattle.Territory, true).Contains(Weapon)) return Message.Express("Invalid weapon");
-            if (!ValidDefenses(Game, p, Weapon, Game.CurrentBattle.Territory, true).Contains(Defense)) return Message.Express("Invalid defense");
-            if (Game.IsInFrontOfShield(Hero)) return Message.Express(Hero, " is currently in front of your player shield");
-            if (BankerBonus > 0 && !Game.SkilledAs(Hero, LeaderSkill.Banker)) return Message.Express("Only a leader skilled as ", LeaderSkill.Banker, " can be boosted by ", Concept.Resource);
-            if (BankerBonus > MaxBankerBoost(Game, Player, Hero)) return Message.Express("You cannot boost your leader this much");
-            if (cost + BankerBonus > p.Resources + AllyContributionAmount) return Message.Express("You can't pay this ", LeaderSkill.Banker, " bonus");
-
-            if (Hero != null &&
-                AffectedByVoice(Game, Player, Game.CurrentVoice) &&
-                Game.CurrentVoice.Must &&
-                Game.CurrentVoice.Type != TreacheryCardType.Mercenary &&
-                p.TreacheryCards.Any(c => Voice.IsVoicedBy(Game, true, true, c.Type, Game.CurrentVoice.Type) || Voice.IsVoicedBy(Game, false, true, c.Type, Game.CurrentVoice.Type)) &&
-                (Weapon == null || !Voice.IsVoicedBy(Game, true, true, Weapon.Type, Game.CurrentVoice.Type)) && (Defense == null || !Voice.IsVoicedBy(Game, false, true, Defense.Type, Game.CurrentVoice.Type)))
-            {
-                return Message.Express("You must use a ", Game.CurrentVoice.Type);
-            }
-
-            return null;
-        }
+        #region Execution
 
         protected override void ExecuteConcreteEvent()
         {
@@ -406,6 +195,233 @@ namespace Treachery.Shared
                 Defense);
         }
 
+        public void ActivateDynamicWeapons(TreacheryCard mirroredWeapon, TreacheryCard mirroredDefense)
+        {
+            if (Weapon != null && Weapon.Type == TreacheryCardType.MirrorWeapon)
+            {
+                OriginalWeapon = Weapon;
+                Weapon = mirroredWeapon;
+            }
+
+            if (Game.CurrentDiplomacy?.Initiator == Initiator)
+            {
+                OriginalDefense = Defense;
+                Defense = mirroredDefense;
+            }
+
+            if (IsUsingPortableAntidote(Game, Initiator))
+            {
+                OriginalDefense = Defense;
+                Defense = Game.TreacheryDiscardPile.Items.FirstOrDefault(c => c.IsPortableAntidote);
+            }
+        }
+
+        public void DeactivateDynamicWeapons()
+        {
+            if (OriginalWeapon != null)
+            {
+                Weapon = OriginalWeapon;
+                OriginalWeapon = null;
+            }
+
+            if (Game.CurrentDiplomacy?.Initiator == Initiator)
+            {
+                Defense = OriginalDefense;
+                OriginalDefense = null;
+            }
+
+            if (Game.CurrentPortableAntidoteUsed?.Initiator == Initiator)
+            {
+                Defense = OriginalDefense;
+                OriginalDefense = null;
+            }
+        }
+
+        public float Dial(Game g, Faction opponent)
+        {
+            var pinkBattleContribution = !g.Prevented(FactionAdvantage.PinkOccupation) ? g.CurrentPinkBattleContribution : 0;
+            if (Initiator != Faction.Pink || Game.CurrentPinkOrAllyFighter == Faction.None)
+            {
+                return ForceValue(g, Initiator, opponent, Forces, SpecialForces, ForcesAtHalfStrength, SpecialForcesAtHalfStrength) + pinkBattleContribution;
+            }
+            else
+            {
+                return ForceValue(g, Player.Ally, opponent, Forces, SpecialForces, ForcesAtHalfStrength, SpecialForcesAtHalfStrength) + pinkBattleContribution;
+            }
+        }
+
+        public int Cost(Game g) => Cost(g, Player, Forces, SpecialForces);
+
+        #endregion Execution
+
+        #region Validation
+
+        public override Message Validate()
+        {
+            var p = Player;
+            if (Forces + ForcesAtHalfStrength > MaxForces(Game, p, false)) return Message.Express("Too many ", p.Force, " selected");
+            if (SpecialForces + SpecialForcesAtHalfStrength > MaxForces(Game, p, true)) return Message.Express("Too many ", p.SpecialForce, " selected");
+            int cost = Cost(Game, p, Forces, SpecialForces);
+            if (AllyContributionAmount > cost) return Message.Express("Your ally is paying more than needed");
+            if (AllyContributionAmount > MaxAllyResources(Game, p, Forces, SpecialForces)) return Message.Express("Your ally won't pay that much");
+            if (cost > p.Resources + AllyContributionAmount) return Message.Express("You can't pay ", Payment.Of(cost), " to fight with ", Forces + SpecialForces, " forces at full strength");
+            if (Hero == null && ValidBattleHeroes(Game, p).Any() && !Game.Applicable(Rule.BattleWithoutLeader)) return Message.Express("You must select a leader");
+            if (Hero != null && !ValidBattleHeroes(Game, p).Contains(Hero)) return Message.Express("Invalid leader");
+            if (Weapon != null && Weapon == Defense) return Message.Express("Can't use the same card as weapon and defense");
+            if (Hero == null && (Weapon != null || Defense != null)) return Message.Express("Can't use treachery cards without a leader");
+            if (Hero != null && Hero is Leader && Game.LeaderState[Hero as Leader].CurrentTerritory != null && Game.LeaderState[Hero as Leader].CurrentTerritory != Game.CurrentBattle.Territory) return Message.Express("Selected leader already fought in another territory");
+            if (Hero == null && Messiah) return Message.Express("Can't use ", Concept.Messiah, " without a leader");
+            if (Messiah && !MessiahMayBeUsedInBattle(Game, p)) return Message.Express(Concept.Messiah, " is not available");
+            if (Weapon == null && Defense != null && Defense.Type == TreacheryCardType.WeirdingWay) return Message.Express("You can't use ", TreacheryCardType.WeirdingWay, " as defense without using a weapon");
+            if (Defense == null && Weapon != null && Weapon.Type == TreacheryCardType.Chemistry) return Message.Express("You can't use ", TreacheryCardType.Chemistry, " as weapon without using a defense");
+            if (!ValidWeapons(Game, p, Defense, Hero, Game.CurrentBattle.Territory, true).Contains(Weapon)) return Message.Express("Invalid weapon");
+            if (!ValidDefenses(Game, p, Weapon, Game.CurrentBattle.Territory, true).Contains(Defense)) return Message.Express("Invalid defense");
+            if (Game.IsInFrontOfShield(Hero)) return Message.Express(Hero, " is currently in front of your player shield");
+            if (BankerBonus > 0 && !Game.SkilledAs(Hero, LeaderSkill.Banker)) return Message.Express("Only a leader skilled as ", LeaderSkill.Banker, " can be boosted by ", Concept.Resource);
+            if (BankerBonus > MaxBankerBoost(Game, Player, Hero)) return Message.Express("You cannot boost your leader this much");
+            if (cost + BankerBonus > p.Resources + AllyContributionAmount) return Message.Express("You can't pay this ", LeaderSkill.Banker, " bonus");
+
+            if (Hero != null &&
+                AffectedByVoice(Game, Player, Game.CurrentVoice) &&
+                Game.CurrentVoice.Must &&
+                Game.CurrentVoice.Type != TreacheryCardType.Mercenary &&
+                p.TreacheryCards.Any(c => Voice.IsVoicedBy(Game, true, true, c.Type, Game.CurrentVoice.Type) || Voice.IsVoicedBy(Game, false, true, c.Type, Game.CurrentVoice.Type)) &&
+                (Weapon == null || !Voice.IsVoicedBy(Game, true, true, Weapon.Type, Game.CurrentVoice.Type)) && (Defense == null || !Voice.IsVoicedBy(Game, false, true, Defense.Type, Game.CurrentVoice.Type)))
+            {
+                return Message.Express("You must use a ", Game.CurrentVoice.Type);
+            }
+
+            return null;
+        }
+
+        public static Player DetermineForceSupplier(Game g, Player playerThatFights) =>
+            playerThatFights.Is(Faction.Pink) && g.CurrentPinkOrAllyFighter != Faction.None && !g.Prevented(FactionAdvantage.PinkOccupation) ? playerThatFights.AlliedPlayer : playerThatFights;
+
+        public static float ForceValue(Game g, Faction player, Faction opponent, int Forces, int SpecialForces, int ForcesAtHalfStrength, int SpecialForcesAtHalfStrength)
+        {
+            int nrOfForcesToCountAsSpecialDueToRedCunning = g.CurrentRedNexus != null && g.CurrentRedNexus.Initiator == player ? Math.Min(5, Forces) : 0;
+            int ForcesAdjustedForCunning = Forces - nrOfForcesToCountAsSpecialDueToRedCunning;
+            int SpecialForcesAdjustedForCunning = SpecialForces + nrOfForcesToCountAsSpecialDueToRedCunning;
+
+            int nrOfForcesAtHalfStrengthToCountAsSpecialDueToRedCunning = g.CurrentRedNexus != null && g.CurrentRedNexus.Initiator == player ? Math.Max(0, Math.Min(5, ForcesAtHalfStrength) - nrOfForcesToCountAsSpecialDueToRedCunning) : 0;
+            int ForcesAtHalfStrengthAdjustedForCunning = ForcesAtHalfStrength - nrOfForcesAtHalfStrengthToCountAsSpecialDueToRedCunning;
+            int SpecialForcesAtHalfStrengthAdjustedForCunning = SpecialForcesAtHalfStrength + nrOfForcesAtHalfStrengthToCountAsSpecialDueToRedCunning;
+
+            float specialForceStrength = DetermineSpecialForceStrength(g, player, opponent);
+            float specialForceNoSpiceFactor = DetermineSpecialForceNoSpiceFactor(g, player);
+            float normalForceStrength = DetermineNormalForceStrength(g, player);
+            float normalForceNoSpiceFactor = DetermineNormalForceNoSpiceFactor(player);
+
+            return
+                normalForceStrength * ForcesAdjustedForCunning +
+                specialForceStrength * SpecialForcesAdjustedForCunning +
+                normalForceNoSpiceFactor * normalForceStrength * ForcesAtHalfStrengthAdjustedForCunning +
+                specialForceNoSpiceFactor * specialForceStrength * SpecialForcesAtHalfStrengthAdjustedForCunning;
+        }
+
+        public static bool IsUsingPortableAntidote(Game g, Faction faction) => g.CurrentPortableAntidoteUsed?.Initiator == faction;
+
+        public static float DetermineSpecialForceStrength(Game g, Faction player, Faction opponent)
+        {
+            if (player == Faction.Yellow && g.Prevented(FactionAdvantage.YellowSpecialForceBonus))
+            {
+                return 1;
+            }
+            else if (player == Faction.Red && (g.Prevented(FactionAdvantage.RedSpecialForceBonus) || opponent == Faction.Yellow || g.OccupierOf(World.RedStar) != null))
+            {
+                return 1;
+            }
+            else if (player == Faction.Grey && g.Prevented(FactionAdvantage.GreySpecialForceBonus))
+            {
+                return 1;
+            }
+            else if (player == Faction.Blue)
+            {
+                return 0;
+            }
+
+            return 2;
+        }
+
+        private static float DetermineSpecialForceNoSpiceFactor(Game g, Faction player)
+        {
+            if (player == Faction.Red && g.HasHighThreshold(player, World.RedStar))
+            {
+                return 1;
+            }
+            else
+            {
+                return 0.5f;
+            }
+        }
+
+        public static float DetermineNormalForceStrength(Game g, Faction player)
+        {
+            if (player == Faction.Grey && g.CurrentGreyNexus == null)
+            {
+                return 0.5f;
+            }
+
+            return 1;
+        }
+
+        public static float DetermineNormalForceNoSpiceFactor(Faction player)
+        {
+            if (player == Faction.Grey)
+            {
+                return 1;
+            }
+
+            return 0.5f;
+        }
+
+        public static bool MustPayForForcesInBattle(Game g, Player p) =>
+            g.Applicable(Rule.AdvancedCombat) && (g.Prevented(FactionAdvantage.YellowNotPayingForBattles) || p.Faction != Faction.Yellow);
+
+        public static bool MessiahMayBeUsedInBattle(Game g, Player p) => MessiahAvailableForBattle(g, p);
+
+        public static int Cost(Game g, Player p, int AmountOfForcesAtFullStrength, int AmountOfSpecialForcesAtFullStrength)
+        {
+            int cost = AmountOfForcesAtFullStrength * NormalForceCost(g, p) + AmountOfSpecialForcesAtFullStrength * SpecialForceCost(g, p);
+            return cost - Math.Min(CostReduction(g, p), cost);
+        }
+
+        public static int CostReduction(Game g, Player p)
+        {
+            return g.HasStrongholdAdvantage(p.Faction, StrongholdAdvantage.FreeResourcesForBattles, g.CurrentBattle?.Territory) ? 2 : 0;
+        }
+
+        public static int NormalForceCost(Game g, Player p)
+        {
+            if (MustPayForForcesInBattle(g, p))
+            {
+                if (p.Faction == Faction.Grey)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public static int SpecialForceCost(Game g, Player p)
+        {
+            if (MustPayForForcesInBattle(g, p))
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        
         public static int MaxResources(Game g, Player p, int forces, int specialForces) => Math.Min(p.Resources, Math.Max(0, forces + specialForces - CostReduction(g, p)));
 
         public static int MaxAllyResources(Game g, Player p, int forces, int specialForces) => Math.Min(g.SpiceYourAllyCanPay(p), Math.Max(0, forces + specialForces - CostReduction(g, p)));
@@ -474,12 +490,6 @@ namespace Treachery.Shared
             return result;
         }
 
-
-        public static bool MustFight(Game g, Player player)
-        {
-            return BattlesToBeFought(g, player).Any();
-        }
-
         public static bool AffectedByVoice(Game g, Player p, Voice voice)
         {
             if (voice != null)
@@ -514,7 +524,6 @@ namespace Treachery.Shared
 
             return result;
         }
-
 
         public static IEnumerable<TreacheryCard> ValidWeapons(Game g, Player p, TreacheryCard selectedDefense, IHero selectedHero, Territory territoryOfBattle, bool includingNone = false)
         {
@@ -792,5 +801,7 @@ namespace Treachery.Shared
             activatedSkill = LeaderSkill.None;
             return 0;
         }
+
+        #endregion Validation
     }
 }

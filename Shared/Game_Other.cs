@@ -144,11 +144,11 @@ namespace Treachery.Shared
         {
             if (CurrentPhase == Phase.BlackMarketBidding && hadRoomForCards && !player.HasRoomForCards && BlackMarketBid.MayBePlayed(this, player))
             {
-                HandleEvent(new Bid(this) { Initiator = player.Faction, Passed = true });
+                new Bid(this) { Initiator = player.Faction, Passed = true }.Execute(false, false);
             }
             else if (CurrentPhase == Phase.Bidding && hadRoomForCards && !player.HasRoomForCards && Bid.MayBePlayed(this, player))
             {
-                HandleEvent(new Bid(this) { Initiator = player.Faction, Passed = true });
+                new Bid(this) { Initiator = player.Faction, Passed = true }.Execute(false, false);
             }
         }
 
@@ -827,7 +827,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void PlayNexusCard(Player initiator, params object[] messageElements)
+        internal void PlayNexusCard(Player initiator, params object[] messageElements)
         {
             Stone(Milestone.NexusPlayed);
 

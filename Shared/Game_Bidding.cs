@@ -16,7 +16,7 @@ namespace Treachery.Shared
         public Deck<TreacheryCard> CardsOnAuction { get; private set; }
         public AuctionType CurrentAuctionType { get; private set; }
         public int CardNumber { get; private set; }
-        public IBid CurrentBid { get; private set; }
+        public IBid CurrentBid { get; internal set; }
         public Dictionary<Faction, IBid> Bids { get; private set; } = new Dictionary<Faction, IBid>();
 
         private bool GreySwappedCardOnBid { get; set; }
@@ -26,7 +26,7 @@ namespace Treachery.Shared
         private int NumberOfCardsOnAuction { get; set; }
         private TriggeredBureaucracy BiddingTriggeredBureaucracy { get; set; }
         private TreacheryCard CardSoldOnBlackMarket { get; set; }
-        private IEnumerable<Player> PlayersThatCanBid => Players.Where(p => p.HasRoomForCards);
+        internal IEnumerable<Player> PlayersThatCanBid => Players.Where(p => p.HasRoomForCards);
 
         #endregion
 
@@ -343,52 +343,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void HandleWhiteBid(Bid bid)
-        {
-            var isLastBid = Version < 140 ? Players.Count(p => p.HasRoomForCards) == Bids.Count :
-                CurrentAuctionType == AuctionType.WhiteSilent && Players.Count(p => p.HasRoomForCards) == Bids.Count ||
-                CurrentAuctionType == AuctionType.WhiteOnceAround && bid.Initiator == Faction.White || !GetPlayer(Faction.White).HasRoomForCards && BidSequence.HasPassedWhite;
-
-            if (isLastBid)
-            {
-                if (CurrentAuctionType == AuctionType.WhiteSilent)
-                {
-                    Log("Bids: ", Bids.Select(b => MessagePart.Express(b.Key, Payment.Of(b.Value.TotalAmount), " ")).ToList());
-                }
-
-                var highestBid = DetermineHighestBid(Bids);
-                if (highestBid != null && highestBid.TotalAmount > 0)
-                {
-                    var card = WinByHighestBid(
-                        highestBid.Player,
-                        highestBid,
-                        highestBid.Amount,
-                        highestBid.AllyContributionAmount,
-                        highestBid.RedContributionAmount,
-                        highestBid.Initiator != Faction.White ? Faction.White : Faction.Red,
-                        CardsOnAuction, false);
-
-                    FinishBid(highestBid.Player, card, true);
-                }
-                else
-                {
-                    Log("Card not sold as no faction bid on it");
-                    var white = GetPlayer(Faction.White);
-                    if (white.HasRoomForCards)
-                    {
-                        Enter(Phase.WhiteKeepingUnsoldCard);
-                    }
-                    else
-                    {
-                        var card = CardsOnAuction.Draw();
-                        RemovedTreacheryCards.Add(card);
-                        RegisterWonCardAsKnown(card);
-                        Log(card, " was removed from the game");
-                        FinishBid(null, card, Version < 152);
-                    }
-                }
-            }
-        }
+        
 
         #endregion
 
@@ -541,139 +496,10 @@ namespace Treachery.Shared
             }
         }
 
-        private Tuple<Player, TreacheryCard> CardUsedForKarmaBid { get; set; } = null;
+        internal Tuple<Player, TreacheryCard> CardUsedForKarmaBid { get; set; } = null;
+       
 
-        public void HandleEvent(Bid bid)
-        {
-            if (!bid.Passed)
-            {
-                ReturnKarmaCardUsedForBid();
-
-                if (bid.UsingKarmaToRemoveBidLimit)
-                {
-                    SetAsideKarmaCardUsedForBid(bid);
-                }
-
-                CurrentBid = bid;
-                Stone(Milestone.Bid);
-            }
-
-            BidSequence.NextPlayer();
-            SkipPlayersThatCantBid(BidSequence);
-
-            if (Bids.ContainsKey(bid.Initiator))
-            {
-                Bids.Remove(bid.Initiator);
-            }
-
-            Bids.Add(bid.Initiator, bid);
-
-            switch (CurrentAuctionType)
-            {
-                case AuctionType.Normal:
-
-                    HandleNormalBid(bid);
-                    break;
-
-                case AuctionType.WhiteOnceAround:
-                case AuctionType.WhiteSilent:
-
-                    HandleWhiteBid(bid);
-                    break;
-            }
-        }
-
-        private void HandleNormalBid(Bid bid)
-        {
-            if (bid.Passed || bid.KarmaBid)
-            {
-                if (bid.KarmaBid)
-                {
-                    //Immediate Karma
-                    var card = WinWithKarma(bid, CardsOnAuction);
-                    FinishBid(bid.Player, card, true);
-                }
-                else if (CurrentBid != null && BidSequence.CurrentFaction == CurrentBid.Initiator)
-                {
-                    if (((Bid)CurrentBid).UsingKarmaToRemoveBidLimit)
-                    {
-                        //Karma was used to bid any amount
-                        ReturnKarmaCardUsedForBid();
-                        var card = WinWithKarma((Bid)CurrentBid, CardsOnAuction);
-                        FinishBid(CurrentBid.Player, card, true);
-                    }
-                    else
-                    {
-                        var receiver = Faction.Red;
-                        var card = WinByHighestBid(
-                            CurrentBid.Player,
-                            CurrentBid,
-                            CurrentBid.Amount,
-                            CurrentBid.AllyContributionAmount,
-                            CurrentBid.RedContributionAmount,
-                            receiver,
-                            CardsOnAuction,
-                            CurrentBid.UsesRedSecretAlly);
-
-                        FinishBid(CurrentBid.Player, card, true);
-                    }
-                }
-                else if (CurrentBid == null && Bids.Count >= PlayersThatCanBid.Count())
-                {
-                    EveryonePassed();
-                }
-            }
-            else if (BidSequence.CurrentFaction == bid.Initiator)
-            {
-                var card = BidByOnlyPlayer(bid, Faction.Red, CardsOnAuction);
-                FinishBid(CurrentBid.Player, card, true);
-            }
-        }
-
-        private void SetAsideKarmaCardUsedForBid(Bid bid)
-        {
-            var initiator = GetPlayer(bid.Initiator);
-            var karmaCard = bid.GetKarmaCard();
-            CardUsedForKarmaBid = new Tuple<Player, TreacheryCard>(initiator, karmaCard);
-            initiator.TreacheryCards.Remove(karmaCard);
-        }
-
-        private void ReturnKarmaCardUsedForBid()
-        {
-            if (CardUsedForKarmaBid != null)
-            {
-                CardUsedForKarmaBid.Item1.TreacheryCards.Add(CardUsedForKarmaBid.Item2);
-                CardUsedForKarmaBid = null;
-            }
-        }
-
-        private TreacheryCard BidByOnlyPlayer(Bid bid, Faction paymentReceiver, Deck<TreacheryCard> toDrawFrom)
-        {
-            CurrentBid = bid;
-            var winner = GetPlayer(CurrentBid.Initiator);
-            var receiverIncomeMessage = MessagePart.Express();
-
-            if (!bid.UsesRedSecretAlly)
-            {
-                PayForCard(winner, bid, CurrentBid.Amount, CurrentBid.AllyContributionAmount, CurrentBid.RedContributionAmount, paymentReceiver, ref receiverIncomeMessage);
-                LogBid(winner, CurrentBid.Amount, CurrentBid.AllyContributionAmount, CurrentBid.RedContributionAmount, receiverIncomeMessage);
-            }
-            else
-            {
-                PlayNexusCard(winner, "Secret Ally", "get this card for free");
-                LogBid(winner, 0, 0, 0, receiverIncomeMessage);
-            }
-
-            Stone(Milestone.AuctionWon);
-            var card = toDrawFrom.Draw();
-            RegisterWonCardAsKnown(card);
-            winner.TreacheryCards.Add(card);
-            LogTo(winner.Faction, "You won: ", card);
-            GivePlayerExtraCardIfApplicable(winner);
-            return card;
-        }
-
-        private void LogBid(Player initiator, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, MessagePart receiverIncome)
+        internal void LogBid(Player initiator, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, MessagePart receiverIncome)
         {
             int bidTotalAmount = bidAmount + bidAllyContributionAmount + bidRedContributionAmount;
             var cardNumber = MessagePart.ExpressIf(CurrentAuctionType == AuctionType.Normal, CardNumber);
@@ -690,25 +516,9 @@ namespace Treachery.Shared
                 receiverIncome);
         }
 
-        private void EveryonePassed()
-        {
-            Log("Bid is passed by everyone; bidding ends and remaining cards are returned to the Treachery Deck");
-            Stone(Milestone.AuctionWon);
+        
 
-            while (!CardsOnAuction.IsEmpty)
-            {
-                if (Version >= 131)
-                {
-                    CardsOnAuction.Shuffle();
-                }
-
-                TreacheryDeck.PutOnTop(CardsOnAuction.Draw());
-            }
-
-            EndBiddingPhase();
-        }
-
-        private TreacheryCard WinByHighestBid(Player winner, IBid bid, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, Faction paymentReceiver, Deck<TreacheryCard> toDrawFrom, bool usesRedSecretAlly)
+        internal TreacheryCard WinByHighestBid(Player winner, IBid bid, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, Faction paymentReceiver, Deck<TreacheryCard> toDrawFrom, bool usesRedSecretAlly)
         {
             var receiverIncomeMessage = MessagePart.Express();
 
@@ -732,7 +542,7 @@ namespace Treachery.Shared
             return card;
         }
 
-        private void RegisterWonCardAsKnown(TreacheryCard card)
+        internal void RegisterWonCardAsKnown(TreacheryCard card)
         {
             foreach (var p in Players.Where(p => HasBiddingPrescience(p)))
             {
@@ -740,34 +550,9 @@ namespace Treachery.Shared
             }
         }
 
-        private TreacheryCard WinWithKarma(Bid bid, Deck<TreacheryCard> toDrawFrom)
-        {
-            var winner = GetPlayer(bid.Initiator);
-            var karmaCard = bid.GetKarmaCard();
+        
 
-            Discard(karmaCard);
-
-            if (karmaCard.Type == TreacheryCardType.Karma)
-            {
-                Log(bid.Initiator, " get card ", CardNumber, " using ", TreacheryCardType.Karma);
-            }
-            else
-            {
-                Log(bid.Initiator, " get card ", CardNumber, " using ", karmaCard, " for ", TreacheryCardType.Karma);
-            }
-
-            Stone(Milestone.AuctionWon);
-            Stone(Milestone.Karma);
-
-            var card = toDrawFrom.Draw();
-            winner.TreacheryCards.Add(card);
-            RegisterWonCardAsKnown(card);
-            LogTo(winner.Faction, "You won: ", card);
-            GivePlayerExtraCardIfApplicable(winner);
-            return card;
-        }
-
-        private void SkipPlayersThatCantBid(PlayerSequence sequence)
+        internal void SkipPlayersThatCantBid(PlayerSequence sequence)
         {
             for (int i = 0; i < Players.Count; i++)
             {
@@ -776,7 +561,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void PayForCard(Player initiator, IBid bid, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, Faction paymentReceiver, ref MessagePart message)
+        internal void PayForCard(Player initiator, IBid bid, int bidAmount, int bidAllyContributionAmount, int bidRedContributionAmount, Faction paymentReceiver, ref MessagePart message)
         {
             initiator.Resources -= bidAmount;
 
@@ -831,7 +616,7 @@ namespace Treachery.Shared
         }
 
         public TreacheryCard CardThatMustBeKeptOrGivenToAlly { get; private set; }
-        private void GivePlayerExtraCardIfApplicable(Player winner)
+        internal void GivePlayerExtraCardIfApplicable(Player winner)
         {
             if (winner.Is(Faction.Black))
             {
@@ -928,7 +713,7 @@ namespace Treachery.Shared
 
         public IBid WinningBid { get; private set; }
 
-        private void FinishBid(Player winner, TreacheryCard card, bool mightReplace)
+        internal void FinishBid(Player winner, TreacheryCard card, bool mightReplace)
         {
             CardJustWon = card;
             WinningBid = CurrentBid;
@@ -1123,7 +908,7 @@ namespace Treachery.Shared
             CurrentAuctionType = auctionType;
         }
 
-        private IBid DetermineHighestBid(Dictionary<Faction, IBid> bids)
+        internal IBid DetermineHighestBid(Dictionary<Faction, IBid> bids)
         {
             int highestBidValue = bids.Values.Max(b => b.TotalAmount);
             var determineBidWinnerSequence = new PlayerSequence(this, false, 1);
@@ -1131,7 +916,7 @@ namespace Treachery.Shared
             for (int i = 0; i < MaximumNumberOfPlayers; i++)
             {
                 var f = determineBidWinnerSequence.CurrentFaction;
-                if (bids.ContainsKey(f) && bids[f].TotalAmount == highestBidValue)
+                if (bids.TryGetValue(f, out IBid value) && value.TotalAmount == highestBidValue)
                 {
                     return bids[f];
                 }
@@ -1220,7 +1005,7 @@ namespace Treachery.Shared
 
         #region EndOfBidding
 
-        private void EndBiddingPhase()
+        internal void EndBiddingPhase()
         {
             CardThatMustBeKeptOrGivenToAlly = null;
             CurrentGreyNexus = null;

@@ -177,6 +177,18 @@ namespace Treachery.Shared
         }
 
         protected Player GetPlayer(Faction f) => Game.GetPlayer(f);
+
+        protected void SetValue(IIdentifiable value, ref int idField)
+        {
+            if (value == null)
+            {
+                idField = -1;
+            }
+            else
+            {
+                idField = value.Id;
+            }
+        }
     }
 }
 

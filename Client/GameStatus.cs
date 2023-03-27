@@ -400,9 +400,9 @@ namespace Treachery.Client
                     "Waiting for the host to proceed to the first battle..."),
 
                 Phase.ClaimingBattle => Status(
-                    Express("You may now decide who will fight this battle",
-                    Express(FactionOrOccupier(game, Faction.Pink, World.Pink), " are deciding who will fight this battle..."),
-                    FactionOrOccupier(game, Faction.Pink, World.Pink))),
+                    Express("You may now decide who will fight in ", game.BattleAboutToStart.Territory),
+                    Express(Faction.Pink , " are deciding who will fight in ", game.BattleAboutToStart.Territory, "..."),
+                    game.GetPlayer(Faction.Pink)),
 
                 Phase.Thought => Status(
                     Express(game.CurrentThought.Initiator, " asked you a question and are waiting for your answer."),
@@ -511,6 +511,8 @@ namespace Treachery.Client
                 return f;
             }
         }
+
+        private static Player PlayerOrOccupier(Game g, Faction f, World w) => g.GetPlayer(FactionOrOccupier(g, f, w));
 
         private static IEnumerable<Player> PlayerAndAlly(Game g, Faction f)
         {

@@ -558,6 +558,7 @@ namespace Treachery.Shared
 
         protected virtual float MaxDial(Player p, Territory t, Player opponent, bool ignoreSpiceDialing = false)
         {
+            Console.WriteLine($"{p} {t} {opponent}");
             int countForcesForWhite = 0;
             if (p.Faction == Faction.White && p.SpecialForcesIn(t) > 0)
             {

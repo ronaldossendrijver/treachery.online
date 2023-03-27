@@ -13,19 +13,9 @@ namespace Treachery.Shared
         protected virtual BattleClaimed DetermineBattleClaimed()
         {
             var territory = Game.BattleAboutToStart.Territory;
-
-            if (Is(Faction.Pink))
-            {
-                var opponent = Game.BattleAboutToStart.OpponentOf(this);
-                bool iWillFight = GetDialNeeded(AlliedPlayer, territory, opponent, false) > GetDialNeeded(this, territory, opponent, false);
-                return new BattleClaimed(Game) { Initiator = Faction, Passed = !iWillFight };
-            }
-            else
-            {
-                var pinkOpponent = Game.GetPlayer(Faction.Pink);
-                bool pinkWillFight = GetDialNeeded(this, territory, pinkOpponent.AlliedPlayer, false) > GetDialNeeded(this, territory, pinkOpponent, false);
-                return new BattleClaimed(Game) { Initiator = Faction, Passed = !pinkWillFight };
-            }
+            var opponent = Game.BattleAboutToStart.OpponentOf(this);
+            bool iWillFight = GetDialNeeded(AlliedPlayer, territory, opponent, false) > GetDialNeeded(this, territory, opponent, false);
+            return new BattleClaimed(Game) { Initiator = Faction, Passed = !iWillFight };
         }
 
         protected virtual SwitchedSkilledLeader DetermineSwitchedSkilledLeader()

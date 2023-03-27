@@ -416,14 +416,7 @@ namespace Treachery.Shared
                     break;
 
                 case Phase.ClaimingBattle:
-                    if (HasLowThreshold(Faction.Pink) && BattleAboutToStart.OpponentOf(Faction.Pink) == player)
-                    {
-                        result.Add(typeof(BattleClaimed));
-                    }
-                    else if (faction == Faction.Pink)
-                    {
-                        result.Add(typeof(BattleClaimed));
-                    }
+                    if (faction == Faction.Pink) result.Add(typeof(BattleClaimed));
                     break;
 
                 case Phase.CallTraitorOrPass:

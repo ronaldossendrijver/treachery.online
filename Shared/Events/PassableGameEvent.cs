@@ -16,6 +16,7 @@ namespace Treachery.Shared
         }
 
         public bool Passed { get; set; }
+
     }
 }
 

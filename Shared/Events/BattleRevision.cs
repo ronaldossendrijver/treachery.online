@@ -21,7 +21,14 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            if (By(Game.CurrentBattle.Aggressor))
+            {
+                Game.AggressorBattleAction = null;
+            }
+            else if (By(Game.CurrentBattle.Defender))
+            {
+                Game.DefenderBattleAction = null;
+            }
         }
 
         public override Message GetMessage()

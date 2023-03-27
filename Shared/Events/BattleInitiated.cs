@@ -8,7 +8,7 @@ namespace Treachery.Shared
 {
     public class BattleInitiated : GameEvent
     {
-        public int _territoryId;
+        #region Construction
 
         public BattleInitiated(Game game) : base(game)
         {
@@ -17,6 +17,16 @@ namespace Treachery.Shared
         public BattleInitiated()
         {
         }
+
+        #endregion Construction
+
+        #region Properties
+
+        public int _territoryId;
+
+        [JsonIgnore]
+        public Territory Territory { get { return Game.Map.TerritoryLookup.Find(_territoryId); } set { _territoryId = Game.Map.TerritoryLookup.GetId(value); } }
+
 
         public Faction Target { get; set; }
 
@@ -74,37 +84,12 @@ namespace Treachery.Shared
         [JsonIgnore]
         public Player AggressivePlayer => Game.GetPlayer(Aggressor);
 
-        public static bool IsAggressorByJuice(Game g, Faction f)
-        {
-            return g.CurrentJuice != null && g.CurrentJuice.Type == JuiceType.Aggressor && g.CurrentJuice.Initiator == f;
-        }
+        public static bool IsAggressorByJuice(Game g, Faction f) => g.CurrentJuice != null && g.CurrentJuice.Type == JuiceType.Aggressor && g.CurrentJuice.Initiator == f;
 
-        public static bool IsInitiatorByJuice(Game g, Player initiator, Player target)
-        {
-            return g.CurrentJuice != null && g.CurrentJuice.Type == JuiceType.GoFirst && g.CurrentJuice.Player == initiator && PlayerSequence.IsAfter(g, initiator, target);
-        }
+        public static bool IsInitiatorByJuice(Game g, Player initiator, Player target) => g.CurrentJuice != null && g.CurrentJuice.Type == JuiceType.GoFirst && g.CurrentJuice.Player == initiator && PlayerSequence.IsAfter(g, initiator, target);
 
-        public static bool IsTargetByJuice(Game g, Player initiator, Player target)
-        {
-            return g.CurrentJuice != null && g.CurrentJuice.Type == JuiceType.GoLast && g.CurrentJuice.Player == initiator && PlayerSequence.IsAfter(g, initiator, target);
-        }
-
-        [JsonIgnore]
-        public Territory Territory { get { return Game.Map.TerritoryLookup.Find(_territoryId); } set { _territoryId = Game.Map.TerritoryLookup.GetId(value); } }
-
-        public override Message Validate()
-        {
-            if (Territory == null) return Message.Express("Territory not selected");
-
-            var p = Player;
-            var target = Game.GetPlayer(Defender);
-            if (!p.Occupies(Territory)) return Message.Express("You have no forces in this territory");
-            if (!target.Occupies(Territory)) return Message.Express("Opponent has no forces in this territory");
-            if (target == null) return Message.Express("Opponent not selected");
-
-            return null;
-        }
-
+        public static bool IsTargetByJuice(Game g, Player initiator, Player target) => g.CurrentJuice != null && g.CurrentJuice.Type == JuiceType.GoLast && g.CurrentJuice.Player == initiator && PlayerSequence.IsAfter(g, initiator, target);
+                
         public bool IsInvolved(Player p)
         {
             return Initiator == p.Faction || Target == p.Faction || Initiator == p.Ally || Target == p.Ally;
@@ -123,11 +108,6 @@ namespace Treachery.Shared
         public bool IsAggressorOrDefender(Faction f)
         {
             return Aggressor == f || Defender == f;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
         }
 
         public override Message GetMessage()
@@ -172,7 +152,6 @@ namespace Treachery.Shared
         public Battle PlanOfOpponent(Player p) => PlanOf(OpponentOf(p));
 
         public Battle PlanOfOpponent(Faction f) => PlanOf(OpponentOf(f));
-
 
         public Battle PlanOf(Faction f)
         {
@@ -220,5 +199,37 @@ namespace Treachery.Shared
 
         [JsonIgnore]
         public Battle DefenderAction => Game.DefenderBattleAction;
+
+        #endregion Properties
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            Game.BattleAboutToStart = this;
+            
+            var pink = GetPlayer(Faction.Pink);
+
+            Game.Enter(pink != null && !Game.HasLowThreshold(Faction.Pink) && pink.HasAlly && pink.Occupies(Territory) && pink.HasAlly && pink.AlliedPlayer.Occupies(Territory), Phase.ClaimingBattle, Game.InitiateBattle);
+        }
+
+        #endregion
+
+        #region Validation
+
+        public override Message Validate()
+        {
+            if (Territory == null) return Message.Express("Territory not selected");
+
+            var p = Player;
+            var target = Game.GetPlayer(Defender);
+            if (!p.Occupies(Territory)) return Message.Express("You have no forces in this territory");
+            if (!target.Occupies(Territory)) return Message.Express("Opponent has no forces in this territory");
+            if (target == null) return Message.Express("Opponent not selected");
+
+            return null;
+        }
+
+        #endregion Validation
     }
 }
