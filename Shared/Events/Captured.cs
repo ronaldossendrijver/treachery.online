@@ -6,6 +6,8 @@ namespace Treachery.Shared
 {
     public class Captured : PassableGameEvent
     {
+        #region Construction
+
         public Captured(Game game) : base(game)
         {
         }
@@ -14,14 +16,36 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
         }
 
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Log();
+
+            if (!Passed)
+            {
+                if (Game.Version > 125 && Game.Prevented(FactionAdvantage.BlackCaptureLeader))
+                {
+                    Game.LogPreventionByKarma(FactionAdvantage.BlackCaptureLeader);
+                }
+                else
+                {
+                    Game.CaptureLeader();
+                }
+            }
+
+            Game.Enter(Phase.BattleConclusion);
         }
 
         public override Message GetMessage()
@@ -35,5 +59,7 @@ namespace Treachery.Shared
                 return Message.Express(Initiator, " will capture or kill a random leader...");
             }
         }
+
+        #endregion Execution
     }
 }

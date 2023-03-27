@@ -6,6 +6,8 @@ namespace Treachery.Shared
 {
     public class Bureaucracy : PassableGameEvent
     {
+        #region Construction
+
         public Bureaucracy(Game game) : base(game)
         {
         }
@@ -14,10 +16,18 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
         }
+
+        #endregion Validation
+
+        #region Execution
 
         protected override void ExecuteConcreteEvent()
         {
@@ -47,5 +57,7 @@ namespace Treachery.Shared
                 return Message.Express(Initiator, " apply Bureaucracy → ", Game.TargetOfBureaucracy, " lose ", Payment.Of(2));
             }
         }
+
+        #endregion Execution
     }
 }

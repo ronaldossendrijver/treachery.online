@@ -1639,24 +1639,6 @@ namespace Treachery.Shared
 
         public IList<TreacheryCard> AuditedCards { get; private set; }
 
-        public void HandleEvent(Captured e)
-        {
-            Log(e);
-            if (!e.Passed)
-            {
-                if (Version > 125 && Prevented(FactionAdvantage.BlackCaptureLeader))
-                {
-                    LogPreventionByKarma(FactionAdvantage.BlackCaptureLeader);
-                }
-                else
-                {
-                    CaptureLeader();
-                }
-            }
-
-            Enter(Phase.BattleConclusion);
-        }
-
         public Player Auditee
         {
             get
@@ -1718,7 +1700,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void CaptureLeader()
+        internal void CaptureLeader()
         {
             if (AggressorBattleAction.By(BattleWinner))
             {

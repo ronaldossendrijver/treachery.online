@@ -11,6 +11,8 @@ namespace Treachery.Shared
 {
     public class AmbassadorActivated : GameEvent, ILocationEvent, IPlacement
     {
+        #region Construction
+
         public AmbassadorActivated(Game game) : base(game)
         {
         }
@@ -18,6 +20,10 @@ namespace Treachery.Shared
         public AmbassadorActivated()
         {
         }
+
+        #endregion Construction
+
+        #region Properties
 
         public bool Passed { get; set; }
 
@@ -28,14 +34,8 @@ namespace Treachery.Shared
         [JsonIgnore]
         public IEnumerable<TreacheryCard> BrownCards
         {
-            get
-            {
-                return IdStringToObjects(_brownCardIds, TreacheryCardManager.Lookup);
-            }
-            set
-            {
-                _brownCardIds = ObjectsToIdString(value, TreacheryCardManager.Lookup);
-            }
+            get => IdStringToObjects(_brownCardIds, TreacheryCardManager.Lookup);
+            set => _brownCardIds = ObjectsToIdString(value, TreacheryCardManager.Lookup);
         }
 
         public bool PinkOfferAlliance { get; set; }
@@ -47,7 +47,11 @@ namespace Treachery.Shared
         public int _yellowOrOrangeToId;
 
         [JsonIgnore]
-        public Location YellowOrOrangeTo { get { return Game.Map.LocationLookup.Find(_yellowOrOrangeToId); } set { _yellowOrOrangeToId = Game.Map.LocationLookup.GetId(value); } }
+        public Location YellowOrOrangeTo 
+        { 
+            get => Game.Map.LocationLookup.Find(_yellowOrOrangeToId); 
+            set => _yellowOrOrangeToId = Game.Map.LocationLookup.GetId(value); 
+        }
 
         [JsonIgnore]
         public Location To => YellowOrOrangeTo;
@@ -57,14 +61,8 @@ namespace Treachery.Shared
         [JsonIgnore]
         public Dictionary<Location, Battalion> YellowForceLocations
         {
-            get
-            {
-                return PlacementEvent.ParseForceLocations(Game, Player.Faction, _yellowForceLocations);
-            }
-            set
-            {
-                _yellowForceLocations = PlacementEvent.ForceLocationsString(Game, value);
-            }
+            get => PlacementEvent.ParseForceLocations(Game, Player.Faction, _yellowForceLocations);
+            set => _yellowForceLocations = PlacementEvent.ForceLocationsString(Game, value);        
         }
 
         public int _greyCardId;
@@ -72,14 +70,8 @@ namespace Treachery.Shared
         [JsonIgnore]
         public TreacheryCard GreyCard
         {
-            get
-            {
-                return TreacheryCardManager.Get(_greyCardId);
-            }
-            set
-            {
-                _greyCardId = TreacheryCardManager.GetId(value);
-            }
+            get => TreacheryCardManager.Get(_greyCardId);
+            set => _greyCardId = TreacheryCardManager.GetId(value);
         }
 
         public int OrangeForceAmount { get; set; }
@@ -91,17 +83,21 @@ namespace Treachery.Shared
         [JsonIgnore]
         public IHero PurpleHero
         {
-            get
-            {
-                return LeaderManager.HeroLookup.Find(_purpleHeroId);
-            }
-            set
-            {
-                _purpleHeroId = LeaderManager.HeroLookup.GetId(value);
-            }
+            get => LeaderManager.HeroLookup.Find(_purpleHeroId);
+            set => _purpleHeroId = LeaderManager.HeroLookup.GetId(value);
         }
 
         public bool PurpleAssignSkill { get; set; }
+
+        [JsonIgnore]
+        public int TotalAmountOfForces => YellowForceLocations != null ? YellowForceLocations.Values.Sum(b => b.TotalAmountOfForces) : 0;
+
+        [JsonIgnore]
+        public Dictionary<Location, Battalion> ForceLocations => YellowForceLocations;
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -164,6 +160,42 @@ namespace Treachery.Shared
 
             return null;
         }
+
+        public static Territory GetTerritory(Game g) => g.LastAmbassadorTrigger?.Territory;
+
+        public static Faction GetVictim(Game g) => g.LastAmbassadorTrigger != null ? g.LastAmbassadorTrigger.Initiator : Faction.None;
+
+        public static Player GetVictimPlayer(Game g) => g.LastAmbassadorTrigger != null ? g.GetPlayer(GetVictim(g)) : null;
+
+        public static Ambassador GetAmbassador(Game g) => g.LastAmbassadorTrigger != null ? g.AmbassadorIn(GetTerritory(g)) : Ambassador.None;
+
+        public static bool AllianceCanBeOffered(Game g, Player p) => !p.HasAlly && !g.GetPlayer(GetVictim(g)).HasAlly;
+
+        public static bool VidalCanBeTaken(Game g) => g.VidalIsAlive && !g.VidalIsCapturedOrGhola && g.OccupierOf(World.Pink) == null;
+
+        public static IEnumerable<Ambassador> GetValidBlueAmbassadors(Game g) => g.UnassignedAmbassadors.Items;
+
+        public static IEnumerable<TreacheryCard> GetValidBrownCards(Player p) => p.TreacheryCards;
+
+        public static IEnumerable<TreacheryCard> GetValidGreyCards(Player p) => p.TreacheryCards;
+
+        public static IEnumerable<Territory> ValidYellowSources(Game g, Player p) => PlacementEvent.TerritoriesWithAnyForcesNotInStorm(g, p);
+
+        public static IEnumerable<Location> ValidYellowTargets(Game g, Player p) => g.Map.Locations(false).Where(l => l.Sector != g.SectorInStorm && l != g.Map.HiddenMobileStronghold && g.IsNotFull(p, l));
+
+        public static IEnumerable<Location> ValidOrangeTargets(Game g, Player p) => Shipment.ValidShipmentLocations(g, p, false).Where(l => !g.ContainsConflictingAlly(p, l));
+
+        public static int ValidOrangeMaxForces(Player p) => Math.Min(p.ForcesInReserve, 4);
+
+        public static int ValidPurpleMaxAmount(Player p) => Math.Min(p.ForcesKilled, 4);
+
+        public static IEnumerable<IHero> ValidPurpleHeroes(Game game, Player player) => game.KilledHeroes(player);
+
+        public static bool MayPass(Player p) => p.Faction == Faction.Pink;
+
+        #endregion Validation
+
+        #region Execution
 
         protected override void ExecuteConcreteEvent()
         {
@@ -362,43 +394,6 @@ namespace Treachery.Shared
             return Message.Express(Initiator, Passed ? " don't" : "", " activate an Ambassador");
         }
 
-        public static Territory GetTerritory(Game g) => g.LastAmbassadorTrigger?.Territory;
-
-        public static Faction GetVictim(Game g) => g.LastAmbassadorTrigger != null ? g.LastAmbassadorTrigger.Initiator : Faction.None;
-
-        public static Player GetVictimPlayer(Game g) => g.LastAmbassadorTrigger != null ? g.GetPlayer(GetVictim(g)) : null;
-
-        public static Ambassador GetAmbassador(Game g) => g.LastAmbassadorTrigger != null ? g.AmbassadorIn(GetTerritory(g)) : Ambassador.None;
-
-        public static bool AllianceCanBeOffered(Game g, Player p) => !p.HasAlly && !g.GetPlayer(GetVictim(g)).HasAlly;
-
-        public static bool VidalCanBeTaken(Game g) => g.VidalIsAlive && !g.VidalIsCapturedOrGhola && g.OccupierOf(World.Pink) == null;
-
-        public static IEnumerable<Ambassador> GetValidBlueAmbassadors(Game g) => g.UnassignedAmbassadors.Items;
-
-        public static IEnumerable<TreacheryCard> GetValidBrownCards(Player p) => p.TreacheryCards;
-
-        public static IEnumerable<TreacheryCard> GetValidGreyCards(Player p) => p.TreacheryCards;
-
-        public static IEnumerable<Territory> ValidYellowSources(Game g, Player p) => PlacementEvent.TerritoriesWithAnyForcesNotInStorm(g, p);
-
-        public static IEnumerable<Location> ValidYellowTargets(Game g, Player p) => g.Map.Locations(false).Where(l => l.Sector != g.SectorInStorm && l != g.Map.HiddenMobileStronghold && g.IsNotFull(p, l));
-
-        public static IEnumerable<Location> ValidOrangeTargets(Game g, Player p) => Shipment.ValidShipmentLocations(g, p, false).Where(l => !g.ContainsConflictingAlly(p, l));
-
-        public static int ValidOrangeMaxForces(Player p) => Math.Min(p.ForcesInReserve, 4);
-
-        public static int ValidPurpleMaxAmount(Player p) => Math.Min(p.ForcesKilled, 4);
-
-        public static IEnumerable<IHero> ValidPurpleHeroes(Game game, Player player) => game.KilledHeroes(player);
-
-        public static bool MayPass(Player p) => p.Faction == Faction.Pink;
-
-        [JsonIgnore]
-        public int TotalAmountOfForces => YellowForceLocations != null ? YellowForceLocations.Values.Sum(b => b.TotalAmountOfForces) : 0;
-
-        [JsonIgnore]
-        public Dictionary<Location, Battalion> ForceLocations => YellowForceLocations;
+        #endregion Execution
     }
-
 }

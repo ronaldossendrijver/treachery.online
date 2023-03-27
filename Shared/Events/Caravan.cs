@@ -2,6 +2,8 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
+using System.Linq;
+
 namespace Treachery.Shared
 {
     public class Caravan : PlacementEvent
@@ -23,7 +25,30 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Game.RecentMoves.Add(this);
+
+            Game.StormLossesToTake.Clear();
+            var initiator = GetPlayer(Initiator);
+            var card = initiator.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Caravan);
+
+            Game.Discard(initiator, TreacheryCardType.Caravan);
+            Game.PerformMoveFromLocations(initiator, ForceLocations, this, Initiator != Faction.Blue || AsAdvisors, true);
+
+            if (Game.ContainsConflictingAlly(initiator, To))
+            {
+                Game.ChosenDestinationsWithAllies.Add(To.Territory);
+            }
+
+            Game.CheckIntrusion(this);
+
+            Game.PausedPhase = Game.CurrentPhase;
+            Game.Enter(Game.LastBlueIntrusion != null, Phase.BlueIntrudedByCaravan, Game.LastTerrorTrigger != null, Phase.TerrorTriggeredByCaravan, Game.LastAmbassadorTrigger != null, Phase.AmbassadorTriggeredByCaravan);
+
+            Game.CurrentFlightUsed = null;
+            Game.CurrentFlightDiscoveryUsed = null;
+
+            if (!Game.Applicable(Rule.FullPhaseKarma)) Game.Allow(FactionAdvantage.YellowExtraMove);
+            if (!Game.Applicable(Rule.FullPhaseKarma)) Game.Allow(FactionAdvantage.GreyCyborgExtraMove);
         }
 
         public override Message GetMessage()

@@ -14,7 +14,11 @@ namespace Treachery.Shared
         public int _toId;
 
         [JsonIgnore]
-        public Location To { get { return Game.Map.LocationLookup.Find(_toId); } set { _toId = Game.Map.LocationLookup.GetId(value); } }
+        public Location To
+        {
+            get => Game.Map.LocationLookup.Find(_toId);
+            set => _toId = Game.Map.LocationLookup.GetId(value);
+        }
 
         public string _forceLocations = "";
 

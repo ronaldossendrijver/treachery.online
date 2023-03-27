@@ -90,7 +90,7 @@ namespace Treachery.Shared
         }
 
 
-        private readonly List<Territory> ChosenDestinationsWithAllies = new List<Territory>();
+        internal readonly List<Territory> ChosenDestinationsWithAllies = new();
 
         public void HandleEvent(Shipment s)
         {
@@ -481,37 +481,7 @@ namespace Treachery.Shared
             LatestIntrusion = Intrusions.Dequeue();
         }
 
-
-
-        private Phase PausedPhase { get; set; }
-
-        public void HandleEvent(Caravan e)
-        {
-            RecentMoves.Add(e);
-
-            StormLossesToTake.Clear();
-            var initiator = GetPlayer(e.Initiator);
-            var card = initiator.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Caravan);
-
-            Discard(initiator, TreacheryCardType.Caravan);
-            PerformMoveFromLocations(initiator, e.ForceLocations, e, e.Initiator != Faction.Blue || e.AsAdvisors, true);
-
-            if (ContainsConflictingAlly(initiator, e.To))
-            {
-                ChosenDestinationsWithAllies.Add(e.To.Territory);
-            }
-
-            CheckIntrusion(e);
-
-            PausedPhase = CurrentPhase;
-            Enter(LastBlueIntrusion != null, Phase.BlueIntrudedByCaravan, LastTerrorTrigger != null, Phase.TerrorTriggeredByCaravan, LastAmbassadorTrigger != null, Phase.AmbassadorTriggeredByCaravan);
-
-            CurrentFlightUsed = null;
-            CurrentFlightDiscoveryUsed = null;
-
-            if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.YellowExtraMove);
-            if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyCyborgExtraMove);
-        }
+        internal Phase PausedPhase { get; set; }
 
         internal void PerformMoveFromLocations(Player initiator, Dictionary<Location, Battalion> forceLocations, ILocationEvent evt, bool asAdvisors, bool byCaravan)
         {
@@ -615,7 +585,7 @@ namespace Treachery.Shared
             totalNumberOfSpecialForces += battalion.AmountOfSpecialForces;
         }
 
-        private FlightUsed CurrentFlightUsed { get; set; }
+        internal FlightUsed CurrentFlightUsed { get; set; }
 
         public void HandleEvent(FlightUsed e)
         {
@@ -624,7 +594,7 @@ namespace Treachery.Shared
             CurrentFlightUsed = e;
         }
 
-        private FlightDiscoveryUsed CurrentFlightDiscoveryUsed { get; set; }
+        internal FlightDiscoveryUsed CurrentFlightDiscoveryUsed { get; set; }
 
         public void HandleEvent(FlightDiscoveryUsed e)
         {
