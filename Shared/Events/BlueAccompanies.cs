@@ -11,6 +11,8 @@ namespace Treachery.Shared
 {
     public class BlueAccompanies : GameEvent, ILocationEvent
     {
+        #region Construction
+
         public BlueAccompanies(Game game) : base(game)
         {
         }
@@ -19,10 +21,18 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion
+
+        #region Properties
+
         public int _targetId;
 
         [JsonIgnore]
-        public Location Location { get { return Game.Map.LocationLookup.Find(_targetId); } set { _targetId = Game.Map.LocationLookup.GetId(value); } }
+        public Location Location 
+        { 
+            get => Game.Map.LocationLookup.Find(_targetId); 
+            set => _targetId = Game.Map.LocationLookup.GetId(value);
+        }
 
         [JsonIgnore]
         public Location To => Location;
@@ -30,6 +40,56 @@ namespace Treachery.Shared
         public bool Accompanies { get; set; }
 
         public bool ExtraAdvisor { get; set; }
+
+        [JsonIgnore]
+        public int TotalAmountOfForces => (Accompanies ? 1 : 0) + (ExtraAdvisor ? 1 : 0);
+
+        #endregion Properties
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            Game.BlueMayAccompany = false;
+
+            if (Accompanies && Player.ForcesInReserve > 0)
+            {
+                if (Player.Occupies(Location.Territory) || !Game.IsOccupied(Location.Territory) || !Game.Applicable(Rule.BlueAdvisors))
+                {
+                    Player.ShipForces(Location, 1);
+                }
+                else
+                {
+                    Player.ShipAdvisors(Location, 1);
+                }
+
+                Log(Initiator, " accompany to ", Location);
+                Game.LastShipmentOrMovement = this;
+                Game.CheckIntrusion(this);
+            }
+            else
+            {
+                Log(Initiator, " don't accompany");
+            }
+
+            Game.DetermineNextShipmentAndMoveSubPhase();
+        }
+
+        public override Message GetMessage()
+        {
+            if (Accompanies)
+            {
+                return Message.Express(Initiator, " accompany shipment to ", Location);
+            }
+            else
+            {
+                return Message.Express(Initiator, " don't accompany shipment");
+            }
+        }
+
+        #endregion
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -78,24 +138,6 @@ namespace Treachery.Shared
 
         public static bool MaySendExtraAdvisor(Game g, Player p, Location l) => p.HasHighThreshold() && l == g.Map.PolarSink && p.ForcesInReserve >= 2;
 
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
-        public override Message GetMessage()
-        {
-            if (Accompanies)
-            {
-                return Message.Express(Initiator, " accompany shipment to ", Location);
-            }
-            else
-            {
-                return Message.Express(Initiator, " don't accompany shipment");
-            }
-        }
-
-        [JsonIgnore]
-        public int TotalAmountOfForces => (Accompanies ? 1 : 0) + (ExtraAdvisor ? 1 : 0);
+        #endregion Validation
     }
 }

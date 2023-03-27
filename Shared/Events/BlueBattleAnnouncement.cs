@@ -10,7 +10,7 @@ namespace Treachery.Shared
 {
     public class BlueBattleAnnouncement : GameEvent
     {
-        public int _territoryId;
+        #region Construction
 
         public BlueBattleAnnouncement(Game game) : base(game)
         {
@@ -20,12 +20,22 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public int _territoryId;
+
         [JsonIgnore]
         public Territory Territory
         {
-            get { return Game.Map.TerritoryLookup.Find(_territoryId); }
-            set { _territoryId = Game.Map.TerritoryLookup.GetId(value); }
+            get => Game.Map.TerritoryLookup.Find(_territoryId);
+            set => _territoryId = Game.Map.TerritoryLookup.GetId(value);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -47,19 +57,22 @@ namespace Treachery.Shared
                 !t.Locations.Any(l => l.Sector == g.SectorInStorm && p.SpecialForcesIn(l) > 0));
         }
 
-        public static bool IsStrongholdInStorm(Game g, Territory t)
-        {
-            return t.IsStronghold && t.Locations.All(l => l.Sector == g.SectorInStorm);
-        }
+        #endregion Properties
+
+        #region Execution
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            var initiator = GetPlayer(Initiator);
+            initiator.FlipForces(Territory, false);
+            Log();
         }
 
         public override Message GetMessage()
         {
             return Message.Express(Initiator, " flip to ", FactionForce.Blue, " in ", Territory);
         }
+
+        #endregion
     }
 }

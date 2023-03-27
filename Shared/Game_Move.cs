@@ -329,42 +329,6 @@ namespace Treachery.Shared
                    p.Initiated(CurrentOrangeNexus);
         }
 
-        private bool BlueMustBeFighterIn(Location l)
-        {
-            if (l == null) return true;
-
-            var benegesserit = GetPlayer(Faction.Blue);
-            return benegesserit.Occupies(l.Territory) || !IsOccupied(l.Territory) || !Applicable(Rule.BlueAdvisors);
-        }
-
-        public void HandleEvent(BlueAccompanies c)
-        {
-            BlueMayAccompany = false;
-
-            var benegesserit = GetPlayer(c.Initiator);
-            if (c.Accompanies && benegesserit.ForcesInReserve > 0)
-            {
-                if (BlueMustBeFighterIn(c.Location))
-                {
-                    benegesserit.ShipForces(c.Location, 1);
-                }
-                else
-                {
-                    benegesserit.ShipAdvisors(c.Location, 1);
-                }
-
-                Log(c.Initiator, " accompany to ", c.Location);
-                LastShipmentOrMovement = c;
-                CheckIntrusion(c);
-            }
-            else
-            {
-                Log(c.Initiator, " don't accompany");
-            }
-
-            DetermineNextShipmentAndMoveSubPhase();
-        }
-
         private bool MayPerformExtraMove { get; set; }
         public void HandleEvent(Move m)
         {
@@ -423,7 +387,7 @@ namespace Treachery.Shared
             CurrentPlanetology = null;
         }
 
-        private bool BlueMayAccompany { get; set; } = false;
+        internal bool BlueMayAccompany { get; set; } = false;
 
         internal void CheckIntrusion(ILocationEvent e)
         {
@@ -695,20 +659,6 @@ namespace Treachery.Shared
         }
 
         private MessagePart CaravanMessage(bool byCaravan) => MessagePart.ExpressIf(byCaravan, "By ", TreacheryCardType.Caravan, ", ");
-
-        public void HandleEvent(BlueFlip e)
-        {
-            var initiator = GetPlayer(e.Initiator);
-
-            Log(e.GetDynamicMessage(this));
-
-            initiator.FlipForces(LastShipmentOrMovement.To.Territory, e.AsAdvisors);
-
-            if (Version >= 102) FlipBeneGesseritWhenAloneOrWithPinkAlly();
-
-            DequeueIntrusion(IntrusionType.BlueIntrusion);
-            DetermineNextShipmentAndMoveSubPhase();
-        }
 
         internal AmbassadorActivated CurrentAmbassadorActivated { get; set; }
         public Faction AllianceByAmbassadorOfferedTo { get; internal set; }

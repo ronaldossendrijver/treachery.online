@@ -24,8 +24,8 @@ namespace Treachery.Shared
         private bool BiddingRoundWasStarted { get; set; }
         private bool WhiteAuctionShouldStillHappen { get; set; }
         private int NumberOfCardsOnAuction { get; set; }
-        private TriggeredBureaucracy BiddingTriggeredBureaucracy { get; set; }
-        private TreacheryCard CardSoldOnBlackMarket { get; set; }
+        internal TriggeredBureaucracy BiddingTriggeredBureaucracy { get; set; }
+        internal TreacheryCard CardSoldOnBlackMarket { get; set; }
         internal IEnumerable<Player> PlayersThatCanBid => Players.Where(p => p.HasRoomForCards);
 
         #endregion
@@ -84,155 +84,18 @@ namespace Treachery.Shared
             }
         }
 
-        public void HandleEvent(BlackMarketBid bid)
-        {
-            BidSequence.NextPlayer();
-            SkipPlayersThatCantBid(BidSequence);
-            Stone(Milestone.Bid);
+        public Faction FactionThatMayReplaceBoughtCard { get; internal set; }
+        public bool ReplacingBoughtCardUsingNexus { get; internal set; } = false;
 
-            if (Bids.ContainsKey(bid.Initiator))
-            {
-                Bids.Remove(bid.Initiator);
-            }
+        
 
-            Bids.Add(bid.Initiator, bid);
-
-            if (!bid.Passed)
-            {
-                CurrentBid = bid;
-            }
-
-            switch (CurrentAuctionType)
-            {
-                case AuctionType.BlackMarketNormal:
-                    HandleBlackMarketNormalBid(bid);
-                    break;
-
-                case AuctionType.BlackMarketOnceAround:
-                case AuctionType.BlackMarketSilent:
-                    HandleBlackMarketSpecialBid(bid);
-                    break;
-            }
-        }
-
-        private void HandleBlackMarketSpecialBid(BlackMarketBid bid)
-        {
-            var isLastBid = Version < 140 ? Players.Count(p => p.HasRoomForCards) == Bids.Count :
-                CurrentAuctionType == AuctionType.BlackMarketSilent && Players.Count(p => p.HasRoomForCards) == Bids.Count ||
-                CurrentAuctionType == AuctionType.BlackMarketOnceAround && bid.Initiator == Faction.White || !GetPlayer(Faction.White).HasRoomForCards && BidSequence.HasPassedWhite;
-
-            if (isLastBid)
-            {
-                if (CurrentAuctionType == AuctionType.BlackMarketSilent)
-                {
-                    Log(Bids.Select(b => MessagePart.Express(b.Key, Payment.Of(b.Value.TotalAmount), " ")).ToList());
-                }
-
-                var highestBid = DetermineHighestBid(Bids);
-                if (highestBid != null && highestBid.TotalAmount > 0)
-                {
-                    var card = WinByHighestBid(
-                        highestBid.Player,
-                        highestBid,
-                        highestBid.Amount,
-                        highestBid.AllyContributionAmount,
-                        highestBid.RedContributionAmount,
-                        highestBid.Initiator != Faction.White ? Faction.White : Faction.Red,
-                        CardsOnAuction, false);
-
-                    FinishBlackMarketBid(highestBid.Player, card);
-                }
-                else
-                {
-                    GetPlayer(Faction.White).TreacheryCards.Add(CardsOnAuction.Draw());
-                    Log(Faction.White, " keep their card as no faction bid on it");
-                    EnterWhiteBidding();
-                }
-            }
-        }
-
-        private void HandleBlackMarketNormalBid(BlackMarketBid bid)
-        {
-            if (bid.Passed)
-            {
-                if (CurrentBid != null && BidSequence.CurrentFaction == CurrentBid.Initiator)
-                {
-                    var card = WinByHighestBid(
-                        CurrentBid.Player,
-                        CurrentBid,
-                        CurrentBid.Amount,
-                        CurrentBid.AllyContributionAmount,
-                        CurrentBid.RedContributionAmount,
-                        CurrentBid.Initiator != Faction.White ? Faction.White : Faction.Red,
-                        CardsOnAuction, false);
-
-                    FinishBlackMarketBid(CurrentBid.Player, card);
-                }
-                else if (CurrentBid == null && Bids.Count >= PlayersThatCanBid.Count())
-                {
-                    GetPlayer(Faction.White).TreacheryCards.Add(CardsOnAuction.Draw());
-                    Log(Faction.White, " keep their card as no faction bid on it");
-                    EnterWhiteBidding();
-                }
-            }
-        }
-
-        public Faction FactionThatMayReplaceBoughtCard { get; private set; }
-        public bool ReplacingBoughtCardUsingNexus { get; private set; } = false;
-
-        private void FinishBlackMarketBid(Player winner, TreacheryCard card)
-        {
-            CardJustWon = card;
-            WinningBid = CurrentBid;
-            CardSoldOnBlackMarket = card;
-            FactionThatMayReplaceBoughtCard = Faction.None;
-            bool enterReplacingCardJustWon = winner != null && Version > 150 && Players.Any(p => p.Nexus != Faction.None);
-
-            if (winner != null)
-            {
-                if (winner.Ally == Faction.Grey && AllyMayReplaceCards)
-                {
-                    if (!Prevented(FactionAdvantage.GreyAllyDiscardingCard))
-                    {
-                        FactionThatMayReplaceBoughtCard = winner.Faction;
-                        enterReplacingCardJustWon = true;
-                    }
-                    else
-                    {
-                        if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyAllyDiscardingCard);
-
-                        if (NexusAllowsReplacingBoughtCards(winner))
-                        {
-                            FactionThatMayReplaceBoughtCard = winner.Faction;
-                            ReplacingBoughtCardUsingNexus = true;
-                            enterReplacingCardJustWon = true;
-                        }
-                    }
-                }
-                else if (NexusAllowsReplacingBoughtCards(winner))
-                {
-                    FactionThatMayReplaceBoughtCard = winner.Faction;
-                    enterReplacingCardJustWon = true;
-                    ReplacingBoughtCardUsingNexus = true;
-                }
-            }
-
-            Enter(enterReplacingCardJustWon, Phase.ReplacingCardJustWon, EnterWhiteBidding);
-
-            if (BiddingTriggeredBureaucracy != null)
-            {
-                ApplyBureaucracy(BiddingTriggeredBureaucracy.PaymentFrom, BiddingTriggeredBureaucracy.PaymentTo);
-                BiddingTriggeredBureaucracy = null;
-            }
-        }
-
-        private bool NexusAllowsReplacingBoughtCards(Player p) => (p.Nexus == Faction.Grey || p.Nexus == Faction.White) && NexusPlayed.CanUseSecretAlly(this, p);
+        internal bool NexusAllowsReplacingBoughtCards(Player p) => (p.Nexus == Faction.Grey || p.Nexus == Faction.White) && NexusPlayed.CanUseSecretAlly(this, p);
 
         #endregion
 
         #region WhiteBidding
 
-        private void EnterWhiteBidding()
+        internal void EnterWhiteBidding()
         {
             NumberOfCardsOnAuction = PlayersThatCanBid.Count();
 
@@ -709,9 +572,9 @@ namespace Treachery.Shared
             }
         }
 
-        public TreacheryCard CardJustWon { get; private set; }
+        public TreacheryCard CardJustWon { get; internal set; }
 
-        public IBid WinningBid { get; private set; }
+        public IBid WinningBid { get; internal set; }
 
         internal void FinishBid(Player winner, TreacheryCard card, bool mightReplace)
         {

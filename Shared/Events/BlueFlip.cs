@@ -2,10 +2,14 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
+using System;
+
 namespace Treachery.Shared
 {
     public class BlueFlip : GameEvent
     {
+        #region Construction
+
         public BlueFlip(Game game) : base(game)
         {
         }
@@ -14,7 +18,15 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
         public bool AsAdvisors { get; set; }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -23,30 +35,42 @@ namespace Treachery.Shared
             return null;
         }
 
+        public static Territory GetTerritory(Game g) => g.LastBlueIntrusion.Territory;
+
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Log(GetDynamicMessage());
+
+            Player.FlipForces(Game.LastShipmentOrMovement.To.Territory, AsAdvisors);
+
+            if (Game.Version >= 102) Game.FlipBeneGesseritWhenAloneOrWithPinkAlly();
+
+            Game.DequeueIntrusion(IntrusionType.BlueIntrusion);
+            Game.DetermineNextShipmentAndMoveSubPhase();
         }
 
         public override Message GetMessage()
         {
-            return Message.Express(Initiator, " flip to ", AsAdvisors ? (object)FactionSpecialForce.Blue : FactionForce.Blue);
+            return Message.Express(Initiator, " flip to ", AsAdvisors ? FactionSpecialForce.Blue : FactionForce.Blue);
         }
 
-        public Message GetDynamicMessage(Game g)
+        public Message GetDynamicMessage()
         {
-            var territory = GetTerritory(g);
-            var blue = g.GetPlayer(Faction.Blue);
-            bool hasAdvisorsThere = blue != null && blue.SpecialForcesIn(territory) > 0;
+            var territory = GetTerritory(Game);
+            bool hasAdvisorsThere = Player.SpecialForcesIn(territory) > 0;
 
             return Message.Express(
                 Initiator,
                 hasAdvisorsThere ^ AsAdvisors ? " become " : " stay as ",
-                AsAdvisors ? (object)FactionSpecialForce.Blue : FactionForce.Blue,
+                AsAdvisors ? FactionSpecialForce.Blue : FactionForce.Blue,
                 " in ",
                 territory);
         }
 
-        public static Territory GetTerritory(Game g) => g.LastBlueIntrusion.Territory;
+        #endregion Execution
     }
 }

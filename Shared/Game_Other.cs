@@ -64,13 +64,6 @@ namespace Treachery.Shared
             }
         }
 
-        public void HandleEvent(BlueBattleAnnouncement e)
-        {
-            var initiator = GetPlayer(e.Initiator);
-            initiator.FlipForces(e.Territory, false);
-            Log(e);
-        }
-
         public void HandleEvent(Donated e)
         {
             var target = GetPlayer(e.Target);
@@ -531,7 +524,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void Allow(FactionAdvantage advantage)
+        internal void Allow(FactionAdvantage advantage)
         {
             if (PreventedAdvantages.Contains(advantage))
             {
@@ -614,7 +607,7 @@ namespace Treachery.Shared
         private Phase _phaseBeforeBureaucratWasActivated;
         public Faction TargetOfBureaucracy { get; private set; }
 
-        private void ApplyBureaucracy(Faction payer, Faction receiver)
+        internal void ApplyBureaucracy(Faction payer, Faction receiver)
         {
             if (!BureaucratWasUsedThisPhase)
             {

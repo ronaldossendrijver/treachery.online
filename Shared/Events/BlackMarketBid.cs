@@ -3,14 +3,28 @@
  */
 
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-
 
 namespace Treachery.Shared
 {
     public class BlackMarketBid : GameEvent, IBid
     {
+        #region Construction
+
+        public BlackMarketBid(Game game) : base(game)
+        {
+        }
+
+        public BlackMarketBid()
+        {
+        }
+
+        #endregion Construction
+
+        #region Properties
+
         public int Amount { get; set; }
 
         public int AllyContributionAmount { get; set; }
@@ -21,24 +35,166 @@ namespace Treachery.Shared
         public bool UsesRedSecretAlly => false;
 
         [JsonIgnore]
-        public int TotalAmount
-        {
-            get
-            {
-                return Amount + AllyContributionAmount + RedContributionAmount;
-            }
-        }
+        public int TotalAmount => Amount + AllyContributionAmount + RedContributionAmount;
 
         public bool Passed { get; set; }
 
+        #endregion Properties
 
-        public BlackMarketBid(Game game) : base(game)
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
         {
+            Game.BidSequence.NextPlayer();
+            Game.SkipPlayersThatCantBid(Game.BidSequence);
+            Game.Stone(Milestone.Bid);
+            Game.Bids.Remove(Initiator);
+            Game.Bids.Add(Initiator, this);
+
+            if (!Passed)
+            {
+                Game.CurrentBid = this;
+            }
+
+            switch (Game.CurrentAuctionType)
+            {
+                case AuctionType.BlackMarketNormal:
+                    HandleBlackMarketNormalBid();
+                    break;
+
+                case AuctionType.BlackMarketOnceAround:
+                case AuctionType.BlackMarketSilent:
+                    HandleBlackMarketSpecialBid();
+                    break;
+            }
         }
 
-        public BlackMarketBid()
+        private void HandleBlackMarketNormalBid()
         {
+            if (Passed)
+            {
+                var winningBid = Game.CurrentBid;
+
+                if (winningBid != null && Game.BidSequence.CurrentFaction == winningBid.Initiator)
+                {
+                    var card = Game.WinByHighestBid(
+                        winningBid.Player,
+                        winningBid,
+                        winningBid.Amount,
+                        winningBid.AllyContributionAmount,
+                        winningBid.RedContributionAmount,
+                        winningBid.Initiator != Faction.White ? Faction.White : Faction.Red,
+                        Game.CardsOnAuction, false);
+
+                    FinishBlackMarketBid(winningBid.Player, card);
+                }
+                else if (winningBid == null && Game.Bids.Count >= Game.PlayersThatCanBid.Count())
+                {
+                    GetPlayer(Faction.White).TreacheryCards.Add(Game.CardsOnAuction.Draw());
+                    Log(Faction.White, " keep their card as no faction bid on it");
+                    Game.EnterWhiteBidding();
+                }
+            }
         }
+
+        private void HandleBlackMarketSpecialBid()
+        {
+            var isLastBid = Game.Version < 140 ? Game.Players.Count(p => p.HasRoomForCards) == Game.Bids.Count :
+                Game.CurrentAuctionType == AuctionType.BlackMarketSilent && Game.Players.Count(p => p.HasRoomForCards) == Game.Bids.Count ||
+                Game.CurrentAuctionType == AuctionType.BlackMarketOnceAround && Initiator == Faction.White || !GetPlayer(Faction.White).HasRoomForCards && Game.BidSequence.HasPassedWhite;
+
+            if (isLastBid)
+            {
+                if (Game.CurrentAuctionType == AuctionType.BlackMarketSilent)
+                {
+                    Log(Game.Bids.Select(b => MessagePart.Express(b.Key, Payment.Of(b.Value.TotalAmount), " ")).ToList());
+                }
+
+                var highestBid = Game.DetermineHighestBid(Game.Bids);
+                if (highestBid != null && highestBid.TotalAmount > 0)
+                {
+                    var card = Game.WinByHighestBid(
+                        highestBid.Player,
+                        highestBid,
+                        highestBid.Amount,
+                        highestBid.AllyContributionAmount,
+                        highestBid.RedContributionAmount,
+                        highestBid.Initiator != Faction.White ? Faction.White : Faction.Red,
+                        Game.CardsOnAuction, false);
+
+                    FinishBlackMarketBid(highestBid.Player, card);
+                }
+                else
+                {
+                    GetPlayer(Faction.White).TreacheryCards.Add(Game.CardsOnAuction.Draw());
+                    Log(Faction.White, " keep their card as no faction bid on it");
+                    Game.EnterWhiteBidding();
+                }
+            }
+        }
+
+        private void FinishBlackMarketBid(Player winner, TreacheryCard card)
+        {
+            Game.CardJustWon = card;
+            Game.WinningBid = Game.CurrentBid;
+            Game.CardSoldOnBlackMarket = card;
+            Game.FactionThatMayReplaceBoughtCard = Faction.None;
+
+            bool enterReplacingCardJustWon = winner != null && Game.Version > 150 && Game.Players.Any(p => p.Nexus != Faction.None);
+
+            if (winner != null)
+            {
+                if (winner.Ally == Faction.Grey && Game.AllyMayReplaceCards)
+                {
+                    if (!Game.Prevented(FactionAdvantage.GreyAllyDiscardingCard))
+                    {
+                        Game.FactionThatMayReplaceBoughtCard = winner.Faction;
+                        enterReplacingCardJustWon = true;
+                    }
+                    else
+                    {
+                        if (!Game.Applicable(Rule.FullPhaseKarma)) Game.Allow(FactionAdvantage.GreyAllyDiscardingCard);
+
+                        if (Game.NexusAllowsReplacingBoughtCards(winner))
+                        {
+                            Game.FactionThatMayReplaceBoughtCard = winner.Faction;
+                            Game.ReplacingBoughtCardUsingNexus = true;
+                            enterReplacingCardJustWon = true;
+                        }
+                    }
+                }
+                else if (Game.NexusAllowsReplacingBoughtCards(winner))
+                {
+                    Game.FactionThatMayReplaceBoughtCard = winner.Faction;
+                    enterReplacingCardJustWon = true;
+                    Game.ReplacingBoughtCardUsingNexus = true;
+                }
+            }
+
+            Game.Enter(enterReplacingCardJustWon, Phase.ReplacingCardJustWon, Game.EnterWhiteBidding);
+
+            if (Game.BiddingTriggeredBureaucracy != null)
+            {
+                Game.ApplyBureaucracy(Game.BiddingTriggeredBureaucracy.PaymentFrom, Game.BiddingTriggeredBureaucracy.PaymentTo);
+                Game.BiddingTriggeredBureaucracy = null;
+            }
+        }
+
+        public override Message GetMessage()
+        {
+            if (!Passed)
+            {
+                return Message.Express(Initiator, " bid");
+            }
+            else
+            {
+                return Message.Express(Initiator, " pass");
+            }
+        }
+
+        #endregion Execution
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -58,32 +214,9 @@ namespace Treachery.Shared
             return null;
         }
 
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
+        public static int ValidMaxAmount(Player p) => p.Resources;
 
-        public override Message GetMessage()
-        {
-            if (!Passed)
-            {
-                return Message.Express(Initiator, " bid");
-            }
-            else
-            {
-                return Message.Express(Initiator, " pass");
-            }
-        }
-
-        public static int ValidMaxAmount(Player p)
-        {
-            return p.Resources;
-        }
-
-        public static int ValidMaxAllyAmount(Game g, Player p)
-        {
-            return g.SpiceYourAllyCanPay(p);
-        }
+        public static int ValidMaxAllyAmount(Game g, Player p) => g.SpiceYourAllyCanPay(p);
 
         public static IEnumerable<SequenceElement> PlayersToBid(Game g)
         {
@@ -105,6 +238,7 @@ namespace Treachery.Shared
             return game.CurrentAuctionType == AuctionType.BlackMarketSilent && !game.Bids.ContainsKey(player.Faction) && player.HasRoomForCards ||
                    game.CurrentAuctionType != AuctionType.BlackMarketSilent && player == game.BidSequence.CurrentPlayer;
         }
-    }
 
+        #endregion Validation
+    }
 }
