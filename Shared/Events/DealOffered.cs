@@ -24,7 +24,7 @@ namespace Treachery.Shared
 
         #region Properties
 
-        public Faction[] To { get; set; }
+        public Faction[] To { get; set; } = Array.Empty<Faction>();
 
         public DealType Type { get; set; }
 
@@ -55,7 +55,7 @@ namespace Treachery.Shared
         {
             if (!Cancel)
             {
-                return Message.Express(Initiator, " offer ", MessagePart.ExpressIf(To.Any(), To, " "), "for ", Payment.Of(Price), ": ", Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1));
+                return Message.Express(Initiator, " offer ", MessagePart.ExpressIf(To != null && To.Any(), To, " "), "for ", Payment.Of(Price), ": ", Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1));
             }
             else
             {

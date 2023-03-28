@@ -558,7 +558,6 @@ namespace Treachery.Shared
 
         protected virtual float MaxDial(Player p, Territory t, Player opponent, bool ignoreSpiceDialing = false)
         {
-            Console.WriteLine($"{p} {t} {opponent}");
             int countForcesForWhite = 0;
             if (p.Faction == Faction.White && p.SpecialForcesIn(t) > 0)
             {
@@ -592,16 +591,6 @@ namespace Treachery.Shared
             var result =
                 Battle.DetermineSpecialForceStrength(Game, player.Faction, opponentFaction) * (specialForcesAtFullStrength + 0.5f * specialForcesAtHalfStrength) +
                 Battle.DetermineNormalForceStrength(Game, player.Faction) * (forcesAtFullStrength + 0.5f * forcesAtHalfStrength);
-
-            /*LogInfo("MaxDial: {0} (SpecialForceStrength {1} * (specialForcesAtFullStrength {2} + 0.5 * specialForcesAtHalfStrength {3}) + NormalForceStrength {4} * (forcesAtFullStrength {5} + 0.5 * forcesAtHalfStrength {6}))", 
-                result, 
-                Battle.DetermineSpecialForceStrength(Game, player.Faction, opponentFaction), 
-                specialForcesAtFullStrength, 
-                specialForcesAtHalfStrength,
-                Battle.DetermineNormalForceStrength(player.Faction),
-                forcesAtFullStrength,
-                forcesAtHalfStrength
-                );*/
 
             return result;
         }

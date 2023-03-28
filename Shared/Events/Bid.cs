@@ -238,7 +238,8 @@ namespace Treachery.Shared
         {
             var isLastBid = Game.Version < 140 ? Game.Players.Count(p => p.HasRoomForCards) == Game.Bids.Count :
                 Game.CurrentAuctionType == AuctionType.WhiteSilent && Game.Players.Count(p => p.HasRoomForCards) == Game.Bids.Count ||
-                Game.CurrentAuctionType == AuctionType.WhiteOnceAround && Initiator == Faction.White || !GetPlayer(Faction.White).HasRoomForCards && Game.BidSequence.HasPassedWhite;
+                Game.Version < 151 && (Game.CurrentAuctionType == AuctionType.WhiteOnceAround && Initiator == Faction.White || !GetPlayer(Faction.White).HasRoomForCards && Game.BidSequence.HasPassedWhite) ||
+                Game.Version >= 151 && Game.CurrentAuctionType == AuctionType.WhiteOnceAround && (Initiator == Faction.White || !GetPlayer(Faction.White).HasRoomForCards && Game.BidSequence.HasPassedWhite);
 
             if (isLastBid)
             {
