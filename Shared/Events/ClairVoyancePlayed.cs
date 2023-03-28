@@ -11,6 +11,8 @@ namespace Treachery.Shared
 {
     public class ClairVoyancePlayed : GameEvent
     {
+        #region Construction
+
         public ClairVoyancePlayed(Game game) : base(game)
         {
         }
@@ -19,111 +21,45 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
         public ClairvoyanceQuestion Question { get; set; }
-
-        public string QuestionParameter1 { get; set; }
-
-        public string QuestionParameter2 { get; set; }
-
+                
         public Faction Target { get; set; }
-
-        public override Message Validate()
-        {
-            return null;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
-        public override Message GetMessage()
-        {
-            if (Target == Faction.None)
-            {
-                return Message.Express(Initiator, " perform ", TreacheryCardType.Clairvoyance);
-            }
-            else
-            {
-                if (Question == ClairvoyanceQuestion.None)
-                {
-                    return Message.Express("By ", TreacheryCardType.Clairvoyance, ", ", Initiator, " ask ", Target, " a question");
-                }
-                else
-                {
-                    return Message.Express("By ", TreacheryCardType.Clairvoyance, ", ", Initiator, " ask ", Target, ": \"", GetQuestion(), "\"");
-                }
-            }
-        }
-
-        public static IEnumerable<Faction> ValidTargets(Game g, Player p)
-        {
-            return g.PlayersOtherThan(p);
-        }
-
-        public static IEnumerable<ClairvoyanceQuestion> ValidQuestions(Game g, Faction target)
-        {
-            var allValues = Enumerations.GetValues<ClairvoyanceQuestion>(typeof(ClairvoyanceQuestion));
-            var targetPlayer = g.GetPlayer(target);
-            if (targetPlayer == null || !(targetPlayer.IsBot))
-            {
-                return allValues;
-            }
-            else
-            {
-                return allValues.Where(v => AppliesToBot(v, g, targetPlayer));
-            }
-        }
-
-        private static bool AppliesToBot(ClairvoyanceQuestion q, Game g, Player p)
-        {
-            switch (q)
-            {
-                case ClairvoyanceQuestion.CardTypeInBattle:
-                case ClairvoyanceQuestion.CardTypeAsDefenseInBattle:
-                case ClairvoyanceQuestion.CardTypeAsWeaponInBattle:
-                case ClairvoyanceQuestion.LeaderInBattle:
-                case ClairvoyanceQuestion.DialOfMoreThanXInBattle:
-                    return g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(p);
-
-                default: return true;
-            }
-        }
 
         public bool IsAbout(TreacheryCardType type)
         {
             return Parameter1 is TreacheryCardType t && t == type;
         }
 
+        public string QuestionParameter1 { get; set; }
+
         [JsonIgnore]
         public object Parameter1
         {
             get
             {
-                switch (Question)
+                return Question switch
                 {
-                    case ClairvoyanceQuestion.CardTypeInBattle:
-                    case ClairvoyanceQuestion.CardTypeAsDefenseInBattle:
-                    case ClairvoyanceQuestion.CardTypeAsWeaponInBattle:
-                    case ClairvoyanceQuestion.HasCardTypeInHand:
-                        return Enum.Parse<TreacheryCardType>(QuestionParameter1);
+                    ClairvoyanceQuestion.CardTypeInBattle or 
+                    ClairvoyanceQuestion.CardTypeAsDefenseInBattle or 
+                    ClairvoyanceQuestion.CardTypeAsWeaponInBattle or 
+                    ClairvoyanceQuestion.HasCardTypeInHand => Enum.Parse<TreacheryCardType>(QuestionParameter1),
 
-                    case ClairvoyanceQuestion.LeaderAsFacedancer:
-                    case ClairvoyanceQuestion.LeaderAsTraitor:
-                    case ClairvoyanceQuestion.LeaderInBattle:
-                        return LeaderManager.HeroLookup.Find(int.Parse(QuestionParameter1));
+                    ClairvoyanceQuestion.LeaderAsFacedancer or 
+                    ClairvoyanceQuestion.LeaderAsTraitor or 
+                    ClairvoyanceQuestion.LeaderInBattle => LeaderManager.HeroLookup.Find(int.Parse(QuestionParameter1)),
 
-                    case ClairvoyanceQuestion.Prediction:
-                        return Enum.Parse<Faction>(QuestionParameter1);
+                    ClairvoyanceQuestion.Prediction => Enum.Parse<Faction>(QuestionParameter1),
 
-                    case ClairvoyanceQuestion.WillAttackX:
-                        return Game.Map.TerritoryLookup.Find(int.Parse(QuestionParameter1));
+                    ClairvoyanceQuestion.WillAttackX => Game.Map.TerritoryLookup.Find(int.Parse(QuestionParameter1)),
 
-                    case ClairvoyanceQuestion.DialOfMoreThanXInBattle:
-                        return float.Parse(QuestionParameter1, CultureInfo.InvariantCulture);
-                }
+                    ClairvoyanceQuestion.DialOfMoreThanXInBattle => float.Parse(QuestionParameter1, CultureInfo.InvariantCulture),
 
-                return null;
+                    _ => null,
+                };
             }
 
             set
@@ -134,19 +70,17 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    switch (Question)
+                    QuestionParameter1 = Question switch
                     {
-                        case ClairvoyanceQuestion.DialOfMoreThanXInBattle:
-                            QuestionParameter1 = ((float)value).ToString(CultureInfo.InvariantCulture);
-                            break;
+                        ClairvoyanceQuestion.DialOfMoreThanXInBattle => ((float)value).ToString(CultureInfo.InvariantCulture),
 
-                        default:
-                            QuestionParameter1 = value.ToString();
-                            break;
-                    }
+                        _ => value.ToString(),
+                    };
                 }
             }
         }
+
+        public string QuestionParameter2 { get; set; }
 
         [JsonIgnore]
         public object Parameter2
@@ -183,6 +117,48 @@ namespace Treachery.Shared
             {
                 return Express(Question, Parameter1, Parameter2);
             }
+        }
+
+        #endregion Properties
+
+        #region Validation
+
+        public override Message Validate()
+        {
+            return null;
+        }
+
+        public static IEnumerable<Faction> ValidTargets(Game g, Player p)
+        {
+            return g.PlayersOtherThan(p);
+        }
+
+        public static IEnumerable<ClairvoyanceQuestion> ValidQuestions(Game g, Faction target)
+        {
+            var allValues = Enumerations.GetValues<ClairvoyanceQuestion>(typeof(ClairvoyanceQuestion));
+            var targetPlayer = g.GetPlayer(target);
+            if (targetPlayer == null || !(targetPlayer.IsBot))
+            {
+                return allValues;
+            }
+            else
+            {
+                return allValues.Where(v => AppliesToBot(v, g, targetPlayer));
+            }
+        }
+
+        private static bool AppliesToBot(ClairvoyanceQuestion q, Game g, Player p)
+        {
+            return q switch
+            {
+                ClairvoyanceQuestion.CardTypeInBattle or 
+                ClairvoyanceQuestion.CardTypeAsDefenseInBattle or 
+                ClairvoyanceQuestion.CardTypeAsWeaponInBattle or 
+                ClairvoyanceQuestion.LeaderInBattle or 
+                ClairvoyanceQuestion.DialOfMoreThanXInBattle => g.CurrentBattle != null && g.CurrentBattle.IsAggressorOrDefender(p),
+
+                _ => true,
+            };
         }
 
         public static Message Express(ClairvoyanceQuestion q, object parameter1 = null, object parameter2 = null)
@@ -228,38 +204,67 @@ namespace Treachery.Shared
             return false;
         }
 
-        public static TreacheryCard Card(Game g, Player p)
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
         {
-            if (p.Has(TreacheryCardType.Clairvoyance))
+            var card = Card;
+
+            if (card != null)
             {
-                return p.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Clairvoyance);
-            }
-            else if (p.Occupies(g.Map.Cistern))
-            {
-                return Karma.ValidKarmaCards(g, p).FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
+                Game.Discard(card);
+                Log();
+                Game.Stone(Milestone.Clairvoyance);
             }
 
-            return null;
+            if (Target != Faction.None)
+            {
+                Game.LatestClairvoyance = this;
+                Game.LatestClairvoyanceQandA = null;
+                Game.LatestClairvoyanceBattle = Game.CurrentBattle;
+                Game.PhasePausedByClairvoyance = Game.CurrentPhase;
+                Game.Enter(Phase.Clairvoyance);
+            }
         }
-    }
 
+        private TreacheryCard Card
+        {
+            get
+            {
+                if (Player.Has(TreacheryCardType.Clairvoyance))
+                {
+                    return Player.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Clairvoyance);
+                }
+                else if (Player.Occupies(Game.Map.Cistern))
+                {
+                    return Karma.ValidKarmaCards(Game, Player).FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
+                }
 
+                return null;
+            }
+        }
 
-    public enum ClairvoyanceQuestion : int
-    {
-        None = 0,
+        public override Message GetMessage()
+        {
+            if (Target == Faction.None)
+            {
+                return Message.Express(Initiator, " perform ", TreacheryCardType.Clairvoyance);
+            }
+            else
+            {
+                if (Question == ClairvoyanceQuestion.None)
+                {
+                    return Message.Express("By ", TreacheryCardType.Clairvoyance, ", ", Initiator, " ask ", Target, " a question");
+                }
+                else
+                {
+                    return Message.Express("By ", TreacheryCardType.Clairvoyance, ", ", Initiator, " ask ", Target, ": \"", GetQuestion(), "\"");
+                }
+            }
+        }
 
-        Prediction = 10,
-        LeaderAsTraitor = 20,
-        LeaderAsFacedancer = 30,
-        HasCardTypeInHand = 40,
-
-        LeaderInBattle = 100,
-        CardTypeInBattle = 110,
-        CardTypeAsDefenseInBattle = 111,
-        CardTypeAsWeaponInBattle = 112,
-        DialOfMoreThanXInBattle = 120,
-
-        WillAttackX = 200
+        #endregion Execution
     }
 }

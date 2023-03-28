@@ -478,7 +478,8 @@ namespace Treachery.Shared
             }
         }
 
-        public TreacheryCard CardThatMustBeKeptOrGivenToAlly { get; private set; }
+        public TreacheryCard CardThatMustBeKeptOrGivenToAlly { get; internal set; }
+
         internal void GivePlayerExtraCardIfApplicable(Player winner)
         {
             if (winner.Is(Faction.Black))
@@ -530,19 +531,6 @@ namespace Treachery.Shared
                     }
                 }
             }
-        }
-
-        public void HandleEvent(CardGiven e)
-        {
-            Log(e);
-
-            if (!e.Passed)
-            {
-                e.Player.TreacheryCards.Remove(CardThatMustBeKeptOrGivenToAlly);
-                e.Player.AlliedPlayer.TreacheryCards.Add(CardThatMustBeKeptOrGivenToAlly);
-            }
-
-            CardThatMustBeKeptOrGivenToAlly = null;
         }
 
         internal TreacheryCard DrawTreacheryCard()

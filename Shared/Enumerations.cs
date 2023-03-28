@@ -824,4 +824,30 @@ namespace Treachery.Shared
         EndOfTurn = 20,
         WhilePinkWorldIsOccupied = 30
     }
+
+    public enum ClairVoyanceAnswer : int
+    {
+        None = 0,
+        Yes = 10,
+        No = 20,
+        Unknown = 30
+    }
+
+    public enum ClairvoyanceQuestion : int
+    {
+        None = 0,
+
+        Prediction = 10,
+        LeaderAsTraitor = 20,
+        LeaderAsFacedancer = 30,
+        HasCardTypeInHand = 40,
+
+        LeaderInBattle = 100,
+        CardTypeInBattle = 110,
+        CardTypeAsDefenseInBattle = 111,
+        CardTypeAsWeaponInBattle = 112,
+        DialOfMoreThanXInBattle = 120,
+
+        WillAttackX = 200
+    }
 }

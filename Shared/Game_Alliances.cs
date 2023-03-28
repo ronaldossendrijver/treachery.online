@@ -141,41 +141,9 @@ namespace Treachery.Shared
 
         #region BrownCardTrading
 
-        public void HandleEvent(CardTraded e)
-        {
-            if (CurrentCardTradeOffer == null)
-            {
-                Log(e);
-                CurrentCardTradeOffer = e;
-                PhaseBeforeCardTrade = CurrentPhase;
-                Enter(Phase.TradingCards);
-            }
-            else
-            {
-                Log(e.Initiator, " and ", CurrentCardTradeOffer.Initiator, " exchange a card");
-
-                if (CurrentCardTradeOffer.Player.TreacheryCards.Count > 1 || e.Player.TreacheryCards.Count > 1)
-                {
-                    foreach (var p in Players.Where(pl => pl != CurrentCardTradeOffer.Player && pl != e.Player))
-                    {
-                        UnregisterKnown(p, CurrentCardTradeOffer.Player.TreacheryCards);
-                        UnregisterKnown(p, e.Player.TreacheryCards);
-                    }
-                }
-
-                CurrentCardTradeOffer.Player.TreacheryCards.Add(e.Card);
-                e.Player.TreacheryCards.Remove(e.Card);
-                e.Player.TreacheryCards.Add(CurrentCardTradeOffer.Card);
-                CurrentCardTradeOffer.Player.TreacheryCards.Remove(CurrentCardTradeOffer.Card);
-                CurrentCardTradeOffer = null;
-                Stone(Milestone.CardTraded);
-                LastTurnCardWasTraded = CurrentTurn;
-                Enter(PhaseBeforeCardTrade);
-            }
-        }
-        public CardTraded CurrentCardTradeOffer { get; private set; } = null;
-        private Phase PhaseBeforeCardTrade { get; set; } = Phase.None;
-        private int LastTurnCardWasTraded { get; set; } = -1;
+        public CardTraded CurrentCardTradeOffer { get; internal set; } = null;
+        internal Phase PhaseBeforeCardTrade { get; set; } = Phase.None;
+        internal int LastTurnCardWasTraded { get; set; } = -1;
 
         #endregion
 

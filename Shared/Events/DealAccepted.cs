@@ -10,6 +10,20 @@ namespace Treachery.Shared
 {
     public class DealAccepted : GameEvent
     {
+        #region Construction
+
+        public DealAccepted(Game game) : base(game)
+        {
+        }
+
+        public DealAccepted()
+        {
+        }
+
+        #endregion Construction
+
+        #region Properties
+
         public Faction BoundFaction { get; set; }
 
         public DealType Type { get; set; }
@@ -22,17 +36,13 @@ namespace Treachery.Shared
 
         public Phase End { get; set; }
 
-        public int Price;
+        public int Price { get; set; }
 
-        public int Benefit;
+        public int Benefit { get; set; }
 
-        public DealAccepted(Game game) : base(game)
-        {
-        }
+        #endregion Properties
 
-        public DealAccepted()
-        {
-        }
+        #region Validation
 
         public override Message Validate()
         {
@@ -58,27 +68,6 @@ namespace Treachery.Shared
                 g.CurrentBid.Initiator != p.Faction && (g.CurrentBid.AllyContributionAmount == 0 || g.CurrentBid.Player.Ally != p.Faction);
         }
 
-        public override Message GetMessage()
-        {
-            return Message.Express(
-                Initiator,
-                " accept ",
-                BoundFaction,
-                " offer for ",
-                Payment.Of(Price),
-                ": ",
-                GetDealDescription());
-        }
-
-        public Message GetDealDescription() => Deal.DealContentsDescription(Game, Type, Text, Benefit, End, DealParameter1);
-
-        public Message GetDealContents() => (Text != null && Text.Length > 0) ? Message.Express(Text) : Message.Express(Type);
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
         public static IEnumerable<DealOffered> AcceptableDeals(Game g, Player p)
         {
             return g.DealOffers.Where(offer =>
@@ -97,5 +86,74 @@ namespace Treachery.Shared
         {
             return g.Deals;
         }
+
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            Log();
+            var offer = Game.DealOffers.FirstOrDefault(offer => offer.IsAcceptedBy(this));
+
+            if (offer != null)
+            {
+                var newDeal = new Deal() { 
+                    BoundFaction = offer.Initiator, 
+                    ConsumingFaction = Initiator, 
+                    DealParameter1 = DealParameter1, 
+                    DealParameter2 = DealParameter2, 
+                    End = End, 
+                    Text = Text, 
+                    Benefit = Benefit, 
+                    Type = Type };
+
+                Game.StartDeal(newDeal);
+
+                if (Price > 0)
+                {
+                    Game.ExchangeResourcesInBribe(Player, GetPlayer(offer.Initiator), Price);
+                    Game.Stone(Milestone.Bribe);
+                }
+
+                if (Benefit > 0)
+                {
+                    Game.ExchangeResourcesInBribe(GetPlayer(offer.Initiator), Player, Benefit);
+                    Game.Stone(Milestone.Bribe);
+                }
+
+                if (offer.Player.IsBot)
+                {
+                    HandleAcceptedBotDeal(offer);
+                }
+            }
+        }
+
+        private void HandleAcceptedBotDeal(DealOffered offer)
+        {
+            if (offer.Type == DealType.TellDiscardedTraitors)
+            {
+                LogTo(Initiator, offer.Initiator, " discarded: ", offer.Player.DiscardedTraitors);
+                Log(offer.Initiator, " gave ", Initiator, " the agreed information");
+            }
+        }
+
+        public override Message GetMessage()
+        {
+            return Message.Express(
+                Initiator,
+                " accept ",
+                BoundFaction,
+                " offer for ",
+                Payment.Of(Price),
+                ": ",
+                GetDealDescription());
+        }
+
+        public Message GetDealDescription() => Deal.DealContentsDescription(Game, Type, Text, Benefit, End, DealParameter1);
+
+        public Message GetDealContents() => (Text != null && Text.Length > 0) ? Message.Express(Text) : Message.Express(Type);
+
+        #endregion Execution
     }
 }

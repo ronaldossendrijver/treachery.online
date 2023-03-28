@@ -322,7 +322,7 @@ namespace Treachery.Shared
         #region TradingFactions
         public readonly IList<FactionTradeOffered> CurrentTradeOffers = new List<FactionTradeOffered>();
 
-        private void EnterPhaseTradingFactions()
+        internal void EnterPhaseTradingFactions()
         {
             CurrentTradeOffers.Clear();
             Enter(Phase.TradingFactions);
@@ -376,18 +376,8 @@ namespace Treachery.Shared
 
             Enter(Applicable(Rule.CustomDecks) && Version >= 134, Phase.CustomizingDecks, EnterSetupPhase);
         }
-        public void HandleEvent(CardsDetermined e)
-        {
-            TreacheryDeck = new Deck<TreacheryCard>(e.TreacheryCards, Random);
-            TreacheryDeck.Shuffle();
-            Stone(Milestone.Shuffled);
-            WhiteCache = new List<TreacheryCard>(e.WhiteCards);
-            Log(e.GetVerboseMessage());
 
-            Enter(Version < 134, EnterPhaseTradingFactions, EnterSetupPhase);
-        }
-
-        private void EnterSetupPhase()
+        internal void EnterSetupPhase()
         {
             Enter(Applicable(Rule.CustomDecks) && Version >= 134, Phase.CustomizingDecks, EnterPhaseTradingFactions);
 

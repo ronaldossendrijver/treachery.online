@@ -6,6 +6,8 @@ namespace Treachery.Shared
 {
     public class CardGiven : PassableGameEvent
     {
+        #region Construction
+
         public CardGiven(Game game) : base(game)
         {
         }
@@ -14,6 +16,10 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
@@ -21,9 +27,21 @@ namespace Treachery.Shared
 
         public static bool IsApplicable(Game game, Player p) => p.TreacheryCards.Contains(game.CardThatMustBeKeptOrGivenToAlly);
 
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Log();
+
+            if (!Passed)
+            {
+                Player.TreacheryCards.Remove(Game.CardThatMustBeKeptOrGivenToAlly);
+                Player.AlliedPlayer.TreacheryCards.Add(Game.CardThatMustBeKeptOrGivenToAlly);
+            }
+
+            Game.CardThatMustBeKeptOrGivenToAlly = null;
         }
 
         public override Message GetMessage()
@@ -37,5 +55,7 @@ namespace Treachery.Shared
                 return Message.Express(Initiator, " give the card to their ally");
             }
         }
+
+        #endregion Execution
     }
 }

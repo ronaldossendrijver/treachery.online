@@ -333,6 +333,7 @@ namespace Treachery.Client
                 JuiceType jt => Describe(jt),
                 CaptureDecision cd => Describe(cd),
                 StrongholdAdvantage sa => Describe(sa),
+                ClairVoyanceAnswer cva => Describe(cva),
                 IEnumerable ienum => Join(Enumerable.Cast<object>(ienum)),
                 _ => value.ToString()
             };
@@ -358,6 +359,17 @@ namespace Treachery.Client
             {
                 return input[0].ToString().ToUpper() + input[1..];
             }
+        }
+
+        public string Describe(ClairVoyanceAnswer answer)
+        {
+            return answer switch
+            {
+                ClairVoyanceAnswer.No => "No.",
+                ClairVoyanceAnswer.Yes => "Yes.",
+                ClairVoyanceAnswer.Unknown => "I don't know...",
+                _ => "?",
+            };
         }
 
         public string Describe(Territory t)

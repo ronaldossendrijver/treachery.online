@@ -37,10 +37,10 @@ namespace Treachery.Shared
         public List<Faction> HasActedOrPassed { get; private set; } = new();
         public List<Player> Players { get; private set; } = new();
         public Report CurrentReport { get; private set; }
-        public Deck<TreacheryCard> TreacheryDeck { get; private set; }
+        public Deck<TreacheryCard> TreacheryDeck { get; internal set; }
         public Deck<TreacheryCard> TreacheryDiscardPile { get; private set; }
         public List<TreacheryCard> RemovedTreacheryCards { get; private set; } = new();
-        public List<TreacheryCard> WhiteCache { get; private set; } = new();
+        public List<TreacheryCard> WhiteCache { get; internal set; } = new();
         public Deck<ResourceCard> ResourceCardDeck { get; private set; }
         public Deck<ResourceCard> ResourceCardDiscardPileA { get; private set; }
         public Deck<ResourceCard> ResourceCardDiscardPileB { get; private set; }

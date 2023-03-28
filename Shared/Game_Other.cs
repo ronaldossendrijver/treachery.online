@@ -180,7 +180,7 @@ namespace Treachery.Shared
             Stone(Milestone.Shuffled);
         }
 
-        private void ExchangeResourcesInBribe(Player from, Player target, int amount)
+        internal void ExchangeResourcesInBribe(Player from, Player target, int amount)
         {
             from.Resources -= amount;
 
@@ -201,85 +201,10 @@ namespace Treachery.Shared
             }
         }
 
-        private Phase phasePausedByClairvoyance;
-        public ClairVoyancePlayed LatestClairvoyance { get; private set; }
-        public ClairVoyanceQandA LatestClairvoyanceQandA { get; private set; }
-        public BattleInitiated LatestClairvoyanceBattle { get; private set; }
-
-        public void HandleEvent(ClairVoyancePlayed e)
-        {
-            var card = ClairVoyancePlayed.Card(this, e.Player);
-
-            if (card != null)
-            {
-                Discard(card);
-                Log(e);
-                Stone(Milestone.Clairvoyance);
-            }
-
-            if (e.Target != Faction.None)
-            {
-                LatestClairvoyance = e;
-                LatestClairvoyanceQandA = null;
-                LatestClairvoyanceBattle = CurrentBattle;
-                phasePausedByClairvoyance = CurrentPhase;
-                Enter(Phase.Clairvoyance);
-            }
-        }
-
-        public void HandleEvent(ClairVoyanceAnswered e)
-        {
-            LatestClairvoyanceQandA = new ClairVoyanceQandA(LatestClairvoyance, e);
-            Log(e);
-
-            if (LatestClairvoyance.Question == ClairvoyanceQuestion.WillAttackX && e.Answer == ClairVoyanceAnswer.No)
-            {
-                var deal = new Deal() { Type = DealType.DontShipOrMoveTo, BoundFaction = e.Initiator, ConsumingFaction = LatestClairvoyance.Initiator, DealParameter1 = LatestClairvoyance.QuestionParameter1, End = Phase.ShipmentAndMoveConcluded };
-                StartDeal(deal);
-            }
-
-            if (LatestClairvoyance.Question == ClairvoyanceQuestion.LeaderAsTraitor)
-            {
-                var hero = LatestClairvoyance.Parameter1 as IHero;
-
-                if (e.Answer == ClairVoyanceAnswer.Yes)
-                {
-                    if (!e.Player.ToldTraitors.Contains(hero))
-                    {
-                        e.Player.ToldTraitors.Add(hero);
-                    }
-                }
-                else if (e.Answer == ClairVoyanceAnswer.No)
-                {
-                    if (!e.Player.ToldNonTraitors.Contains(hero))
-                    {
-                        e.Player.ToldNonTraitors.Add(hero);
-                    }
-                }
-            }
-
-            if (LatestClairvoyance.Question == ClairvoyanceQuestion.LeaderAsFacedancer)
-            {
-                var hero = LatestClairvoyance.Parameter1 as IHero;
-
-                if (e.Answer == ClairVoyanceAnswer.Yes)
-                {
-                    if (!e.Player.ToldFacedancers.Contains(hero))
-                    {
-                        e.Player.ToldFacedancers.Add(hero);
-                    }
-                }
-                else if (e.Answer == ClairVoyanceAnswer.No)
-                {
-                    if (!e.Player.ToldNonFacedancers.Contains(hero))
-                    {
-                        e.Player.ToldNonFacedancers.Add(hero);
-                    }
-                }
-            }
-
-            Enter(phasePausedByClairvoyance);
-        }
+        internal Phase PhasePausedByClairvoyance;
+        public ClairVoyancePlayed LatestClairvoyance { get; internal set; }
+        public ClairVoyanceQandA LatestClairvoyanceQandA { get; internal set; }
+        public BattleInitiated LatestClairvoyanceBattle { get; internal set; }
 
         public int KarmaHmsMovesLeft { get; private set; } = 2;
         public void HandleEvent(KarmaHmsMovement e)

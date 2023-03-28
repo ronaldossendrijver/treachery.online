@@ -650,12 +650,12 @@ namespace Treachery.Shared
 
                 if (myClairvoyance.Question.IsAbout(TreacheryCardType.Projectile))
                 {
-                    if (myClairvoyance.Answer.IsYes())
+                    if (myClairvoyance.Answer.IsYes)
                     {
                         mostEffectiveDefense = availableDefenses.FirstOrDefault(d => d.IsProjectileDefense);
                         return (mostEffectiveDefense != null) ? 1 : 0;
                     }
-                    else if (myClairvoyance.Answer.IsNo())
+                    else if (myClairvoyance.Answer.IsNo)
                     {
                         mostEffectiveDefense = availableDefenses.FirstOrDefault(d => d.IsPoisonDefense);
                         if (mostEffectiveDefense != null) return 0.5f;
@@ -664,12 +664,12 @@ namespace Treachery.Shared
 
                 if (myClairvoyance.Question.IsAbout(TreacheryCardType.Poison))
                 {
-                    if (myClairvoyance.Answer.IsYes())
+                    if (myClairvoyance.Answer.IsYes)
                     {
                         mostEffectiveDefense = availableDefenses.FirstOrDefault(d => d.IsPoisonDefense);
                         return (mostEffectiveDefense != null) ? 1 : 0;
                     }
-                    else if (myClairvoyance.Answer.IsNo())
+                    else if (myClairvoyance.Answer.IsNo)
                     {
                         mostEffectiveDefense = availableDefenses.FirstOrDefault(d => d.IsProjectileDefense);
                         if (mostEffectiveDefense != null) return 0.5f;
@@ -833,13 +833,13 @@ namespace Treachery.Shared
             {
                 if (myClairvoyance.Question.IsAbout(TreacheryCardType.ProjectileDefense))
                 {
-                    if (Game.LatestClairvoyanceQandA.Answer.IsNo())
+                    if (Game.LatestClairvoyanceQandA.Answer.IsNo)
                     {
                         enemyCanDefendPoisonTooth = knownEnemyDefenses.Any(c => c.IsNonAntidotePoisonDefense);
                         mostEffectiveWeapon = usefulWeapons.FirstOrDefault(d => d.IsProjectileWeapon);
                         if (mostEffectiveWeapon != null) return 1f;
                     }
-                    else if (Game.LatestClairvoyanceQandA.Answer.IsYes())
+                    else if (Game.LatestClairvoyanceQandA.Answer.IsYes)
                     {
                         mostEffectiveWeapon = usefulWeapons.FirstOrDefault(d => d.IsPoisonWeapon);
                         if (mostEffectiveWeapon != null) return 1f;
@@ -847,12 +847,12 @@ namespace Treachery.Shared
                 }
                 else if (myClairvoyance.Question.IsAbout(TreacheryCardType.PoisonDefense))
                 {
-                    if (Game.LatestClairvoyanceQandA.Answer.IsNo())
+                    if (Game.LatestClairvoyanceQandA.Answer.IsNo)
                     {
                         mostEffectiveWeapon = usefulWeapons.FirstOrDefault(d => d.IsPoisonWeapon);
                         if (mostEffectiveWeapon != null) return 1f;
                     }
-                    else if (Game.LatestClairvoyanceQandA.Answer.IsYes())
+                    else if (Game.LatestClairvoyanceQandA.Answer.IsYes)
                     {
                         enemyCanDefendPoisonTooth = knownEnemyDefenses.Any(c => c.IsNonAntidotePoisonDefense);
                         mostEffectiveWeapon = usefulWeapons.FirstOrDefault(d => d.IsProjectileWeapon);

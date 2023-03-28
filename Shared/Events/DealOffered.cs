@@ -10,7 +10,21 @@ namespace Treachery.Shared
 {
     public class DealOffered : GameEvent
     {
-        public Faction[] To = Array.Empty<Faction>();
+        #region Construction
+
+        public DealOffered(Game game) : base(game)
+        {
+        }
+
+        public DealOffered()
+        {
+        }
+
+        #endregion Construction
+
+        #region Properties
+
+        public Faction[] To { get; set; }
 
         public DealType Type { get; set; }
 
@@ -22,19 +36,15 @@ namespace Treachery.Shared
 
         public Phase EndPhase { get; set; }
 
-        public int Price;
+        public int Price { get; set; }
 
-        public int Benefit;
+        public int Benefit { get; set; }
 
-        public bool Cancel;
+        public bool Cancel { get; set; }
 
-        public DealOffered(Game game) : base(game)
-        {
-        }
+        #endregion Properties
 
-        public DealOffered()
-        {
-        }
+        #region Validation
 
         public override Message Validate()
         {
@@ -45,33 +55,12 @@ namespace Treachery.Shared
         {
             if (!Cancel)
             {
-                return Message.Express(Initiator, " offer ", MessagePart.ExpressIf(To.Any(), ToObjects(To)), " for ", Payment.Of(Price), ": ", Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1));
+                return Message.Express(Initiator, " offer ", MessagePart.ExpressIf(To.Any(), To, " "), "for ", Payment.Of(Price), ": ", Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1));
             }
             else
             {
                 return Message.Express(Initiator, " withdraw a deal offer");
             }
-        }
-
-        private object[] ToObjects(IEnumerable<Faction> factions)
-        {
-            var result = new List<object>();
-            foreach (var faction in factions)
-            {
-                result.Add(faction);
-            }
-            result.Add(" ");
-            return result.ToArray();
-        }
-
-        public Message GetDealDescription()
-        {
-            return Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1);
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
         }
 
         public DealOffered Cancellation()
@@ -145,5 +134,31 @@ namespace Treachery.Shared
 
             return result;
         }
+
+        #endregion Validation
+
+        #region Execution
+
+        public Message GetDealDescription()
+        {
+            return Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1);
+        }
+
+        protected override void ExecuteConcreteEvent()
+        {
+            if (Cancel)
+            {
+                var sameOffer = Game.DealOffers.FirstOrDefault(o => o.Same(this));
+                Game.DealOffers.Remove(sameOffer);
+            }
+            else
+            {
+                Game.DealOffers.Add(this);
+            }
+        }
+
+        #endregion Execution
+
+        
     }
 }

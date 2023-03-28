@@ -10,7 +10,7 @@ namespace Treachery.Shared
     {
         #region State
 
-        private bool ResourceTechTokenIncome { get; set; }
+        internal bool ResourceTechTokenIncome { get; set; }
 
         #endregion
 
@@ -90,7 +90,7 @@ namespace Treachery.Shared
             }
         }
 
-        private int CurrentCharityMultiplier
+        internal int CurrentCharityMultiplier
         {
             get
             {
@@ -109,7 +109,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void GiveCharity(Player to, int basicAmount)
+        internal void GiveCharity(Player to, int basicAmount)
         {
             int homeworldBonus = 0;
             if (GetsExtraCharityAndFreeRevivalDueToLowThreshold(to))
@@ -138,19 +138,7 @@ namespace Treachery.Shared
             }
         }
 
-        public void HandleEvent(CharityClaimed e)
-        {
-            HasActedOrPassed.Add(e.Initiator);
-
-            GiveCharity(e.Player, (2 - e.Player.Resources) * CurrentCharityMultiplier);
-
-            if (e.Initiator != Faction.Blue)
-            {
-                ResourceTechTokenIncome = true;
-            }
-
-            Stone(Milestone.CharityClaimed);
-        }
+        
 
         #endregion
 

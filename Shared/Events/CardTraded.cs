@@ -10,9 +10,7 @@ namespace Treachery.Shared
 {
     public class CardTraded : GameEvent
     {
-        public int _cardId;
-        public Faction Target;
-        public int _requestedCardId;
+        #region Construction
 
         public CardTraded(Game game) : base(game)
         {
@@ -22,31 +20,33 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public Faction Target;
+
+        public int _cardId;
+
         [JsonIgnore]
         public TreacheryCard Card
         {
-            get
-            {
-                return TreacheryCardManager.Get(_cardId);
-            }
-            set
-            {
-                _cardId = TreacheryCardManager.GetId(value);
-            }
+            get => TreacheryCardManager.Get(_cardId);
+            set => _cardId = TreacheryCardManager.GetId(value);
         }
+
+        public int _requestedCardId;
 
         [JsonIgnore]
         public TreacheryCard RequestedCard
         {
-            get
-            {
-                return TreacheryCardManager.Get(_requestedCardId);
-            }
-            set
-            {
-                _requestedCardId = TreacheryCardManager.GetId(value);
-            }
+            get => TreacheryCardManager.Get(_requestedCardId);
+            set => _requestedCardId = TreacheryCardManager.GetId(value);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -62,9 +62,47 @@ namespace Treachery.Shared
             return null;
         }
 
+        public static IEnumerable<TreacheryCard> ValidCards(Player p)
+        {
+            return p.TreacheryCards;
+        }
+
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            if (Game.CurrentCardTradeOffer == null)
+            {
+                Log();
+                Game.CurrentCardTradeOffer = this;
+                Game.PhaseBeforeCardTrade = Game.CurrentPhase;
+                Game.Enter(Phase.TradingCards);
+            }
+            else
+            {
+                Log(Initiator, " and ", Game.CurrentCardTradeOffer.Initiator, " exchange a card");
+                var otherPlayer = Game.CurrentCardTradeOffer.Player;
+
+                if (otherPlayer.TreacheryCards.Count > 1 || Player.TreacheryCards.Count > 1)
+                {
+                    foreach (var p in Game.Players.Where(pl => pl != otherPlayer && pl != Player))
+                    {
+                        Game.UnregisterKnown(p, otherPlayer.TreacheryCards);
+                        Game.UnregisterKnown(p, Player.TreacheryCards);
+                    }
+                }
+
+                otherPlayer.TreacheryCards.Add(Card);
+                Player.TreacheryCards.Remove(Card);
+                Player.TreacheryCards.Add(Game.CurrentCardTradeOffer.Card);
+                otherPlayer.TreacheryCards.Remove(Game.CurrentCardTradeOffer.Card);
+                Game.CurrentCardTradeOffer = null;
+                Game.Stone(Milestone.CardTraded);
+                Game.LastTurnCardWasTraded = Game.CurrentTurn;
+                Game.Enter(Game.PhaseBeforeCardTrade);
+            }
         }
 
         public override Message GetMessage()
@@ -72,9 +110,6 @@ namespace Treachery.Shared
             return Message.Express(Initiator, " offer their ally a card trade");
         }
 
-        public static IEnumerable<TreacheryCard> ValidCards(Player p)
-        {
-            return p.TreacheryCards;
-        }
+        #endregion Execution
     }
 }
