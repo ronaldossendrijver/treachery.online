@@ -6,12 +6,15 @@
     
 <div class="card @Width @Border mb-2" style="@BackgroundStyle">
 
-    <div class="card-header" style="@HeaderStyle;cursor:pointer;" @onclick=@(e => CollapsedInternal = !CollapsedInternal)>
+    @if (Collapsible)
+    {
+        <div class="card-header" style="@HeaderStyle;cursor:pointer;" @onclick=@(e => CollapsedInternal = !CollapsedInternal)>
 
-        <CollapseButton @bind-Collapsed=@CollapsedInternal />
-        @Header
+            <CollapseButton @bind-Collapsed=@CollapsedInternal />
+            @Header
 
-    </div>
+        </div>
+    }
 
     @if (!_collapsedInternal) 
     {
@@ -61,6 +64,9 @@
 
     [Parameter]
     public RenderFragment Body { get; set; }
+
+    [Parameter]
+    public bool Collapsible { get; set; } = true;
 
     [Parameter]
     public CollapseState Collapsed { get; set; }

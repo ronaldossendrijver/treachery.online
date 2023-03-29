@@ -15,8 +15,8 @@
 
 <g filter="url(#dropshadow)">
  <path d="M 20 0 L 80 0 C 105 0, 105 40, 80 40 L 20 40 C -5 40, -5 0, 20 0 Z" stroke="none" stroke-width="1" fill="#fec348"/>
- <text text-anchor="middle" x="50" y="15" font-size="12" font-family="system-ui" letter-spacing="0" font-weight="bolder">Like this game?</text>
- <text text-anchor="middle" x="50" y="33" font-size="22" font-family="system-ui" letter-spacing="1" font-weight="bolder">Donate</text>
+ <text text-anchor="middle" x="50" y="16" font-size="12" font-family="system-ui" letter-spacing="0" font-weight="bolder">Like this game?</text>
+ <text text-anchor="middle" x="50" y="33" font-size="23" font-family="system-ui" letter-spacing="0.5" font-weight="bolder">Donate</text>
 </g>
 
 </svg>

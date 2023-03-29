@@ -1,4 +1,4 @@
-﻿<!--
+﻿    <!--
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
 
@@ -23,30 +23,34 @@
     {
     <div class="row d-flex align-items-center m-n4" style="min-height: 95vh; background-image: url('../art/planet.png'); background-size: 55%; background-position-x: center; background-position-y: 0; background-repeat: no-repeat;">
 
-            <div class="col-sm-12 col-lg-3"/>
-            <div class="col-sm-12 col-lg-6">
 
                 @if (h.IsConnected)
                 {
-                    if (h.PlayerName == "")
-                    {
-                        <div class="d-flex justify-content-center">
-                            <PlayerNameComponent h="@h" />
-                        </div>
-                    }
-                    else if (h.HostProxy == null && h.Host == null)
-                    {
-                        <HostOrJoinGameComponent h="@h" />
-                    }
-                    else
-                    {
-                        <ActionPanel h="@h" />
-                    }
+                    var centerSize = h.PlayerName != "" && h.HostProxy == null && h.Host == null ? 6 : 4;
+                    var fillerSize = 0.5f * (12 - centerSize);
+
+                    <div class="col-sm-12 col-lg-@fillerSize" />
+                    <div class="col-sm-12 col-lg-@centerSize">
+
+                        @if (h.PlayerName == "")
+                        {
+                            <div class="d-flex justify-content-center">
+                                <PlayerNameComponent h="@h" />
+                            </div>
+                        }
+                        else if (h.HostProxy == null && h.Host == null)
+                        {
+                            <HostOrJoinGameComponent h="@h" />
+                        }
+                        else
+                        {
+                            <ActionPanel h="@h" />
+                        }
+
+                    </div>
+                    <div class="col-sm-12 col-lg-@fillerSize" />
+
                 }
-
-            </div>
-            <div class="col-sm-12 col-lg-3"/>
-
         </div>
 
     }

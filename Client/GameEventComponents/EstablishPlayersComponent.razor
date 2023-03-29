@@ -6,9 +6,9 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameEventComponent<EstablishPlayers>
 
-<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType()>
+<GameEventComponentLayout IsUrgent="@IsUrgent" BackgroundStyle="@BackgroundStyle" HeaderStyle="@HeaderStyle" BodyStyle=@BodyStyle CollapsedType=GetType() Collapsible=false>
 
-    <Header>You may now configure your game below.</Header>
+    <Header>Please review your game configuration</Header>
     <Body>
 
         <CheckboxComponent @bind-Value="info.HostParticipates">The host (you) will participate in this game</CheckboxComponent>
@@ -17,47 +17,54 @@
 
         <div class="mt-2"><strong>Players:</strong> @string.Join(", ", Players)</div>
 
-        <SelectNumberComponent Disabled="@Readonly" @bind-Value="info.MaximumNumberOfTurns" Min="1" Max="EstablishPlayers.GetMaximumNumberOfTurns()" Label="Maximum number of turns"/>
+        <SelectNumberComponent Disabled="@Readonly" @bind-Value="info.MaximumNumberOfTurns" Min="1" Max="EstablishPlayers.GetMaximumNumberOfTurns()" Label="Maximum number of turns:"/>
 
-        <SelectNumberComponent Disabled="@Readonly" @bind-Value="info.MaximumNumberOfPlayers" Min="2" Max="EstablishPlayers.GetMaximumNumberOfPlayers(Game)" Label="Maximum number of players"/>
+        <SelectNumberComponent Disabled="@Readonly" @bind-Value="info.MaximumNumberOfPlayers" Min="2" Max="EstablishPlayers.GetMaximumNumberOfPlayers(Game)" Label="Maximum number of players:"/>
 
         <SelectFromImageComponent Disabled="@Readonly" Selected="info.FactionsInPlay" Values="EstablishPlayers.AvailableFactions()" T=Faction OnChanged=@StateHasChanged ImageWidth="40" Required=false>
-            <Label>Factions in play</Label>
+            <Label>Factions in play:</Label>
         </SelectFromImageComponent>
 
-        <label class="mt-1 mb-0">AI Players</label>
+        <label class="mt-2 mb-0">AI Players:</label>
         @foreach (var rule in Game.GetRulesInGroup(RuleGroup.Bots, Game.ExpansionLevel))
         {
             <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" Callback="StateHasChanged" />
         }
 
         <SelectComponent Disabled="@Readonly" @bind-Value="@Ruleset" Values=@Game.GetAvailableRulesets()>
-            <Label>Rules</Label>
+            <Label>Ruleset:</Label>
         </SelectComponent>
 
         <ButtonRowComponent Confirm="StartNewOrLoadedGame" ConfirmText="@StartButtonLabel" ConfirmError=@Validate />
 
         @if (h.Host.LoadedGame == null)
         {
-            <div class="text-info mt-2 mb-1">You can enable or disable individual rules below.</div>
+            <CheckboxComponent @bind-Value=_advancedOptions>Show advanced options</CheckboxComponent>
+        }
+        else
+        {
+            _advancedOptions = true;
         }
 
-        @foreach (var rulegroup in EstablishPlayers.AvailableRuleGroups())
+        @if (_advancedOptions)
         {
-            if (Game.GetRulesInGroup(rulegroup, Game.ExpansionLevel).Any())
+            foreach (var rulegroup in EstablishPlayers.AvailableRuleGroups())
             {
-                <label class="mt-1 mb-0">@Skin.Current.Describe(rulegroup)</label>
-                @foreach (var rule in Game.GetRulesInGroup(rulegroup, Game.ExpansionLevel).OrderBy(r => Name(r)))
+                if (Game.GetRulesInGroup(rulegroup, Game.ExpansionLevel).Any())
                 {
-                    @if (IsNew(rule))
+                    <label class="mt-1 mb-0">@Skin.Current.Describe(rulegroup)</label>
+                    @foreach (var rule in Game.GetRulesInGroup(rulegroup, Game.ExpansionLevel).OrderBy(r => Name(r)))
                     {
-                        <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules">
-                            <span class="badge badge-info">new!</span>
-                        </ChecklistItemComponent>
-                    }
-                    else
-                    {
-                        <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" />
+                        @if (IsNew(rule))
+                        {
+                            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules">
+                                <span class="badge badge-info">new!</span>
+                            </ChecklistItemComponent>
+                        }
+                        else
+                        {
+                            <ChecklistItemComponent Disabled="@Readonly" Value="@rule" Values="info.Rules" />
+                        }
                     }
                 }
             }
@@ -72,6 +79,8 @@
     protected override bool IsUrgent => true;
 
     private GameInfo info => h.Host.GameBeingEstablished;
+
+    private bool _advancedOptions = false;
 
     private Ruleset _ruleset;
     private Ruleset Ruleset
@@ -158,7 +167,7 @@
 
     private bool Readonly => h.Host.LoadedGame != null;
 
-    private string StartButtonLabel => string.Format("{0} Game!", h.Host.LoadedGame == null ? "Start" : "Continue");
+    private string StartButtonLabel => h.Host.LoadedGame == null ? "Go!" : "Continue!";
 
     private bool IsNew(Rule rule) => false; // rule == Rule.CustomDecks || rule == Rule.DisableEndOfGameReport;
 }
