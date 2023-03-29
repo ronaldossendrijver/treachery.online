@@ -8,6 +8,8 @@ namespace Treachery.Shared
 {
     public class DiscardedSearchedAnnounced : GameEvent
     {
+        #region Construction
+
         public DiscardedSearchedAnnounced(Game game) : base(game)
         {
         }
@@ -16,14 +18,31 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
         }
 
+        public static bool CanBePlayed(Game g, Player p)
+        {
+            return !g.CurrentPhaseIsUnInterruptable && p.Resources >= 2 && p.Has(TreacheryCardType.SearchDiscarded) && DiscardedSearched.ValidCards(g).Any();
+        }
+
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Log();
+            Game.PhaseBeforeSearchingDiscarded = Game.CurrentPhase;
+            Player.Resources -= 2;
+            Game.Enter(Phase.SearchingDiscarded);
+            Game.Stone(Milestone.CardWonSwapped);
         }
 
         public override Message GetMessage()
@@ -31,9 +50,6 @@ namespace Treachery.Shared
             return Message.Express(Initiator, " use ", TreacheryCardType.SearchDiscarded, " and pay ", Payment.Of(2), " to search a card in the Treachery Discard Pile");
         }
 
-        public static bool CanBePlayed(Game g, Player p)
-        {
-            return !g.CurrentPhaseIsUnInterruptable && p.Resources >= 2 && p.Has(TreacheryCardType.SearchDiscarded) && DiscardedSearched.ValidCards(g).Any();
-        }
+        #endregion Execution
     }
 }

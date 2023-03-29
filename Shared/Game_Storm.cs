@@ -44,36 +44,6 @@ namespace Treachery.Shared
             DetermineOccupationAtStartOrEndOfTurn();
         }
 
-        public void HandleEvent(DiscoveryEntered e)
-        {
-            JustRevealedDiscoveryStrongholds.Remove(e.To as DiscoveredLocation);
-            Stone(Milestone.Move);
-
-            Log(e);
-
-            if (!e.Passed)
-            {
-                foreach (var fromTerritory in e.ForceLocations.Keys.Select(l => l.Territory).Distinct())
-                {
-                    int totalNumberOfForces = 0;
-                    int totalNumberOfSpecialForces = 0;
-
-                    foreach (var fl in e.ForceLocations.Where(fl => fl.Key.Territory == fromTerritory))
-                    {
-                        if (fl.Value.TotalAmountOfForces > 0)
-                        {
-                            PerformMoveFromLocation(e.Player, fl.Key, fl.Value, e.To, ref totalNumberOfForces, ref totalNumberOfSpecialForces);
-                        }
-                    }
-
-                    if (totalNumberOfForces > 0 || totalNumberOfSpecialForces > 0)
-                    {
-                        LogMove(e.Player, fromTerritory, e.To, totalNumberOfForces, totalNumberOfSpecialForces, false, false);
-                    }
-                }
-            }
-        }
-
         public void HandleEvent(StormDialled e)
         {
             Dials.Add(e.Amount);

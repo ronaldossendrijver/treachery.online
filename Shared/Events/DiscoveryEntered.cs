@@ -10,6 +10,8 @@ namespace Treachery.Shared
 {
     public class DiscoveryEntered : PlacementEvent
     {
+        #region Construction
+
         public DiscoveryEntered(Game game) : base(game)
         {
         }
@@ -18,16 +20,9 @@ namespace Treachery.Shared
         {
         }
 
-        //public int _targetId;
+        #endregion Construction
 
-        /*
-        [JsonIgnore]
-        public DiscoveryStronghold Location { get { return Game.Map.LocationLookup.Find(_targetId) as DiscoveryStronghold; } set { _targetId = Game.Map.LocationLookup.GetId(value); } }
-        */
-        /*
-        [JsonIgnore]
-        public Location To => Location;
-        */
+        #region Validation
 
         public override Message Validate()
         {
@@ -44,9 +39,38 @@ namespace Treachery.Shared
 
         public static IEnumerable<Location> ValidSources(Player p, DiscoveredLocation ds) => ds.AttachedToLocation.Territory.Locations.Where(l => p.AnyForcesIn(l) > 0);
 
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Game.JustRevealedDiscoveryStrongholds.Remove(To as DiscoveredLocation);
+            Game.Stone(Milestone.Move);
+
+            Log();
+
+            if (!Passed)
+            {
+                foreach (var fromTerritory in ForceLocations.Keys.Select(l => l.Territory).Distinct())
+                {
+                    int totalNumberOfForces = 0;
+                    int totalNumberOfSpecialForces = 0;
+
+                    foreach (var fl in ForceLocations.Where(fl => fl.Key.Territory == fromTerritory))
+                    {
+                        if (fl.Value.TotalAmountOfForces > 0)
+                        {
+                            Game.PerformMoveFromLocation(Player, fl.Key, fl.Value, To, ref totalNumberOfForces, ref totalNumberOfSpecialForces);
+                        }
+                    }
+
+                    if (totalNumberOfForces > 0 || totalNumberOfSpecialForces > 0)
+                    {
+                        Game.LogMove(Player, fromTerritory, To, totalNumberOfForces, totalNumberOfSpecialForces, false, false);
+                    }
+                }
+            }
         }
 
         public override Message GetMessage()
@@ -60,5 +84,7 @@ namespace Treachery.Shared
                 return Message.Express(Initiator, " don't enter ");
             }
         }
+
+        #endregion Validation
     }
 }

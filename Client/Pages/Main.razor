@@ -21,7 +21,7 @@
 
     @if (!GameStarted)
     {
-        <div class="row vh-100 d-flex align-items-center" style="background-image: url('../art/planet.png'); background-size: 55%; background-position-x: center; background-position-y: center; background-repeat: no-repeat;">
+    <div class="row d-flex align-items-center m-n4" style="min-height: 95vh; background-image: url('../art/planet.png'); background-size: 55%; background-position-x: center; background-position-y: 0; background-repeat: no-repeat;">
 
             <div class="col-sm-12 col-lg-3"/>
             <div class="col-sm-12 col-lg-6">
@@ -30,7 +30,9 @@
                 {
                     if (h.PlayerName == "")
                     {
-                        <PlayerNameComponent h="@h" />
+                        <div class="d-flex justify-content-center">
+                            <PlayerNameComponent h="@h" />
+                        </div>
                     }
                     else if (h.HostProxy == null && h.Host == null)
                     {

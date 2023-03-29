@@ -3,6 +3,7 @@
  */
 
 using Newtonsoft.Json;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Treachery.Shared
@@ -28,14 +29,8 @@ namespace Treachery.Shared
         [JsonIgnore]
         public TreacheryCard Card
         {
-            get
-            {
-                return TreacheryCardManager.Get(_cardId);
-            }
-            set
-            {
-                _cardId = TreacheryCardManager.GetId(value);
-            }
+            get => TreacheryCardManager.Get(_cardId);
+            set => _cardId = TreacheryCardManager.GetId(value);
         }
 
         #endregion Properties
@@ -44,6 +39,8 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
+            if (!ValidCards(Game).Contains(Card)) return Message.Express("Invalid card");
+
             return null;
         }
 

@@ -145,25 +145,7 @@ namespace Treachery.Shared
             }
         }
 
-        public void HandleEvent(DiscardedTaken e)
-        {
-            Log(e);
-            RecentlyDiscarded.Remove(e.Card);
-            TreacheryDiscardPile.Items.Remove(e.Card);
-            e.Player.TreacheryCards.Add(e.Card);
-            Discard(e.Player, TreacheryCardType.TakeDiscarded);
-            Stone(Milestone.CardWonSwapped);
-        }
-
         internal Phase PhaseBeforeSearchingDiscarded { get; set; }
-        public void HandleEvent(DiscardedSearchedAnnounced e)
-        {
-            Log(e);
-            PhaseBeforeSearchingDiscarded = CurrentPhase;
-            e.Player.Resources -= 2;
-            Enter(Phase.SearchingDiscarded);
-            Stone(Milestone.CardWonSwapped);
-        }
 
         internal void ExchangeResourcesInBribe(Player from, Player target, int amount)
         {

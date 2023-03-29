@@ -551,7 +551,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void PerformMoveFromLocation(Player initiator, Location from, Battalion battalion, Location to, ref int totalNumberOfForces, ref int totalNumberOfSpecialForces)
+        internal void PerformMoveFromLocation(Player initiator, Location from, Battalion battalion, Location to, ref int totalNumberOfForces, ref int totalNumberOfSpecialForces)
         {
             bool mustMoveThroughStorm = MustMoveThroughStorm(initiator, from, to, battalion);
             if (IsInStorm(to) || mustMoveThroughStorm)
@@ -613,7 +613,7 @@ namespace Treachery.Shared
             return !targetsAvoidingStorm.Contains(to) && targetsIgnoringStorm.Contains(to);
         }
 
-        private void LogMove(Player initiator, Territory from, Location to, int forceAmount, int specialForceAmount, bool asAdvisors, bool byCaravan)
+        internal void LogMove(Player initiator, Territory from, Location to, int forceAmount, int specialForceAmount, bool asAdvisors, bool byCaravan)
         {
             Log(
                 CaravanMessage(byCaravan),
