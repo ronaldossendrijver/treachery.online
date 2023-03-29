@@ -1630,12 +1630,8 @@ namespace Treachery.Shared
 
         #region PostBattle
 
-        public Diplomacy CurrentDiplomacy { get; private set; }
-        public void HandleEvent(Diplomacy e)
-        {
-            Log(e.GetDynamicMessage());
-            CurrentDiplomacy = e;
-        }
+        public Diplomacy CurrentDiplomacy { get; internal set; }
+        
 
         public IList<TreacheryCard> AuditedCards { get; private set; }
 

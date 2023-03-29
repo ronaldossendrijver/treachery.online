@@ -10,7 +10,7 @@ namespace Treachery.Shared
 {
     public class Diplomacy : GameEvent
     {
-        public int _cardId;
+        #region Construction
 
         public Diplomacy(Game game) : base(game)
         {
@@ -20,37 +20,26 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public int _cardId;
+
         [JsonIgnore]
         public TreacheryCard Card
         {
-            get
-            {
-                return TreacheryCardManager.Get(_cardId);
-            }
-            set
-            {
-                _cardId = TreacheryCardManager.GetId(value);
-            }
+            get => TreacheryCardManager.Get(_cardId);
+            set => _cardId = TreacheryCardManager.GetId(value);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
             return null;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " use Diplomacy to turn ", Card, " into a copy of the opponent's defense");
-        }
-
-        public Message GetDynamicMessage()
-        {
-            return Message.Express(Initiator, " use Diplomacy to turn ", Card, " into a ", Game.CurrentBattle?.PlanOfOpponent(Player)?.Defense);
         }
 
         public static IEnumerable<TreacheryCard> ValidCards(Game g, Player p)
@@ -77,5 +66,22 @@ namespace Treachery.Shared
 
             return false;
         }
+
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            Log(Initiator, " use Diplomacy to turn ", Card, " into a ", Game.CurrentBattle?.PlanOfOpponent(Player)?.Defense);
+            Game.CurrentDiplomacy = this;
+        }
+
+        public override Message GetMessage()
+        {
+            return Message.Express(Initiator, " use Diplomacy to turn ", Card, " into a copy of the opponent's defense");
+        }
+
+        #endregion Execution
     }
 }

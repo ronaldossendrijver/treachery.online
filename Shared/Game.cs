@@ -336,18 +336,8 @@ namespace Treachery.Shared
             }
         }
 
-        private Phase PhaseBeforeDiscarding { get; set; }
-        public List<Faction> FactionsThatMustDiscard { get; private set; } = new();
-        public void HandleEvent(Discarded e)
-        {
-            FactionsThatMustDiscard.Remove(e.Initiator);
-            Discard(e.Player, e.Card);
-
-            if (!FactionsThatMustDiscard.Any())
-            {
-                CurrentPhase = PhaseBeforeDiscarding;
-            }
-        }
+        internal Phase PhaseBeforeDiscarding { get; set; }
+        public List<Faction> FactionsThatMustDiscard { get; internal set; } = new();
 
         private Phase PhaseBeforeDiscardingTraitor { get; set; }
         private Faction FactionThatMustDiscardTraitor { get; set; }

@@ -9,7 +9,7 @@ namespace Treachery.Shared
 {
     public class DiscardedSearched : GameEvent
     {
-        public int _cardId;
+        #region Construction
 
         public DiscardedSearched(Game game) : base(game)
         {
@@ -18,6 +18,12 @@ namespace Treachery.Shared
         public DiscardedSearched()
         {
         }
+
+        #endregion Construction
+
+        #region Properties
+
+        public int _cardId;
 
         [JsonIgnore]
         public TreacheryCard Card
@@ -32,19 +38,13 @@ namespace Treachery.Shared
             }
         }
 
+        #endregion Properties
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " take one card. The Treachery Discard Pile is then shuffled");
         }
 
         public static IEnumerable<TreacheryCard> ValidCards(Game g)
@@ -56,5 +56,33 @@ namespace Treachery.Shared
         {
             return p.Has(TreacheryCardType.SearchDiscarded);
         }
+
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            Log();
+
+            foreach (var p in Game.Players)
+            {
+                Game.UnregisterKnown(p, Game.TreacheryDiscardPile.Items);
+            }
+
+            Game.TreacheryDiscardPile.Items.Remove(Card);
+            Player.TreacheryCards.Add(Card);
+            Game.TreacheryDiscardPile.Shuffle();
+            Game.Discard(Player, TreacheryCardType.SearchDiscarded);
+            Game.Enter(Game.PhaseBeforeSearchingDiscarded);
+            Game.Stone(Milestone.Shuffled);
+        }
+
+        public override Message GetMessage()
+        {
+            return Message.Express(Initiator, " take one card and the Treachery Discard Pile is then shuffled");
+        }
+
+        #endregion Execution
     }
 }

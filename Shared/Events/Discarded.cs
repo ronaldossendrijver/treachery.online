@@ -3,12 +3,13 @@
  */
 
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace Treachery.Shared
 {
     public class Discarded : GameEvent
     {
-        public int _cardId;
+        #region Construction
 
         public Discarded(Game game) : base(game)
         {
@@ -17,6 +18,12 @@ namespace Treachery.Shared
         public Discarded()
         {
         }
+
+        #endregion Construction
+
+        #region Properties
+
+        public int _cardId;
 
         [JsonIgnore]
         public TreacheryCard Card
@@ -31,6 +38,10 @@ namespace Treachery.Shared
             }
         }
 
+        #endregion Properties
+
+        #region Validation
+
         public override Message Validate()
         {
             if (Card == null) return Message.Express("Choose a card to discard");
@@ -39,14 +50,26 @@ namespace Treachery.Shared
             return null;
         }
 
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Game.FactionsThatMustDiscard.Remove(Initiator);
+            Game.Discard(Player, Card);
+
+            if (!Game.FactionsThatMustDiscard.Any())
+            {
+                Game.Enter(Game.PhaseBeforeDiscarding);
+            }
         }
 
         public override Message GetMessage()
         {
             return Message.Express(Initiator, " discard ", Card);
         }
+
+        #endregion Execution
     }
 }

@@ -155,7 +155,7 @@ namespace Treachery.Shared
             Stone(Milestone.CardWonSwapped);
         }
 
-        private Phase PhaseBeforeSearchingDiscarded { get; set; }
+        internal Phase PhaseBeforeSearchingDiscarded { get; set; }
         public void HandleEvent(DiscardedSearchedAnnounced e)
         {
             Log(e);
@@ -163,21 +163,6 @@ namespace Treachery.Shared
             e.Player.Resources -= 2;
             Enter(Phase.SearchingDiscarded);
             Stone(Milestone.CardWonSwapped);
-        }
-
-        public void HandleEvent(DiscardedSearched e)
-        {
-            Log(e);
-            foreach (var p in Players)
-            {
-                UnregisterKnown(p, TreacheryDiscardPile.Items);
-            }
-            TreacheryDiscardPile.Items.Remove(e.Card);
-            e.Player.TreacheryCards.Add(e.Card);
-            TreacheryDiscardPile.Shuffle();
-            Discard(e.Player, TreacheryCardType.SearchDiscarded);
-            Enter(PhaseBeforeSearchingDiscarded);
-            Stone(Milestone.Shuffled);
         }
 
         internal void ExchangeResourcesInBribe(Player from, Player target, int amount)
