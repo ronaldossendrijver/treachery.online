@@ -25,146 +25,61 @@ namespace Treachery.Client
             Storage = new LocalStorage(runtime);
         }
 
-        public static async Task ReloadPage()
-        {
-            await JsInvoke("Reload");
-        }
-
-        private static readonly ElementReference defaultElementReferenceValue = default;
+        //private static readonly ElementReference defaultElementReferenceValue = default;
 
         public static async Task EnablePopover(ElementReference element)
         {
-            await JsInvoke("EnablePopover", element);
+            if (!element.Equals(default(ElementReference))) await JsInvoke("EnablePopover", element);
         }
 
         public static async Task EnablePopovers(ElementReference element)
         {
-            if (!defaultElementReferenceValue.Equals(element))
-            {
-                await JsInvoke("EnablePopovers", element);
-            }
+            if (!element.Equals(default(ElementReference))) await JsInvoke("EnablePopovers", element);
         }
 
         public static async Task RemovePopover(ElementReference element)
         {
-            if (!defaultElementReferenceValue.Equals(element))
-            {
-                await JsInvoke("RemovePopover", element);
-            }
+            if (!element.Equals(default(ElementReference))) await JsInvoke("RemovePopover", element);
         }
 
         public static async Task RemovePopovers(ElementReference element)
         {
-            if (!defaultElementReferenceValue.Equals(element))
-            {
-                await JsInvoke("RemovePopovers", element);
-            }
+            if (!element.Equals(default(ElementReference))) await JsInvoke("RemovePopovers", element);
         }
 
         public static async Task RefreshPopover(ElementReference element)
         {
-            await JsInvoke("RefreshPopover", element);
+            if (!element.Equals(default(ElementReference))) await JsInvoke("RefreshPopover", element);
         }
-
 
         public static async Task RefreshPopovers(ElementReference element)
         {
-            if (!defaultElementReferenceValue.Equals(element))
-            {
-                await JsInvoke("RefreshPopovers", element);
-            }
+            if (!element.Equals(default(ElementReference))) await JsInvoke("RefreshPopovers", element);
         }
 
-        public static async Task RemoveFocusFromButtons()
-        {
-            await JsInvoke("RemoveFocusFromButtons");
-        }
+        public static async Task RemoveFocusFromButtons() => await JsInvoke("RemoveFocusFromButtons");
 
-        private static readonly Dictionary<string, Dimensions> measuredText = new();
-        public static async Task<Dimensions> MeasureText(string text, string font)
-        {
-            string key = text + font;
+        public static async Task<Dimensions> MeasureText(string text, string font) => await JsInvoke<Dimensions>("MeasureText", text, font);
 
-            if (measuredText.ContainsKey(key))
-            {
-                return measuredText[key];
-            }
-            else
-            {
+        public static async Task HideModal(string modalId) => await JsInvoke("HideModal", modalId);
 
-                var value = await JsInvoke<Dimensions>("MeasureText", text, font);
+        public static async Task Save(string filename, string data) => await JsInvoke<object>("saveFile", filename, data);
 
-                lock (measuredText)
-                {
-                    if (!measuredText.ContainsKey(key))
-                    {
-                        measuredText.Add(key, value);
-                    }
-                }
-            }
+        public static async Task<string> LoadFile(object fileDialogRef) => await JsInvoke<string>("readFile", fileDialogRef);
 
-            return measuredText[key];
-        }
+        public static async Task ClearFileInput(string fileDialogId) => await JsInvoke<object>("Clear", fileDialogId);
 
-        public static async Task HideModal(string modalId)
-        {
-            await JsInvoke("HideModal", modalId);
-        }
+        public static async Task<bool> UrlExists(string url) => await JsInvoke<bool>("UrlExists", url);
 
-        public static async Task Save(string filename, string data)
-        {
-            await JsInvoke<object>("saveFile", filename, data);
-        }
+        public static async Task SetPlanetMapScale() => await JsInvoke("SetPlanetMapScale");
 
-        public static async Task<string> LoadFile(object fileDialogRef)
-        {
-            return await JsInvoke<string>("readFile", fileDialogRef);
-        }
+        public static async Task<Dimensions> GetWindowDimensions() => await JsInvoke<Dimensions>("GetWindowDimensions");
 
-        public static async Task ClearFileInput(string fileDialogId)
-        {
-            await JsInvoke<object>("Clear", fileDialogId);
-        }
-
-        public static async Task<bool> UrlExists(string url)
-        {
-            return await JsInvoke<bool>("UrlExists", url);
-        }
-
-        public static async Task SetPlanetMapScale()
-        {
-            await JsInvoke("SetPlanetMapScale");
-        }
-
-        public static async Task<Dimensions> GetWindowDimensions()
-        {
-            return await JsInvoke<Dimensions>("GetWindowDimensions");
-        }
-
-        private static readonly Dictionary<string, Dimensions> _cachedDimensions = new();
-        public static async Task<Dimensions> GetImageDimensions(string imgUrl)
-        {
-            if (_cachedDimensions.TryGetValue(imgUrl, out var dimensions))
-            {
-                return dimensions;
-            }
-            else
-            {
-                var result = await JsInvoke<Dimensions>("GetImageDimensions", imgUrl);
-                if (result.Width != 0 || result.Height != 0)
-                {
-                    _cachedDimensions.Add(imgUrl, result);
-                }
-                return result;
-            }
-        }
+        public static async Task<Dimensions> GetImageDimensions(string imgUrl) => await JsInvoke<Dimensions>("GetImageDimensions", imgUrl);
 
         public static async Task PlaySound(string sound, float volume = 100f, bool loop = false)
         {
-            if (sound != null && sound != "" && sound != "?")
-            {
-                await JsInvoke("PlaySound", sound, CalculateVolume(volume), loop);
-            }
+            if (IsValidSound(sound)) await JsInvoke("PlaySound", sound, CalculateVolume(volume), loop);
         }
 
         private static float CalculateVolume(float volumeOnLinearScaleFrom0to100)
@@ -185,121 +100,30 @@ namespace Treachery.Client
 
         public static async Task ChangeSoundVolume(string sound, float volume)
         {
-            if (sound != null && sound != null)
-            {
-                await JsInvoke("ChangeSoundVolume", sound, CalculateVolume(volume));
-            }
+            if (IsValidSound(sound)) await JsInvoke("ChangeSoundVolume", sound, CalculateVolume(volume));
         }
 
         public static async Task StopSound(string sound)
         {
-            if (sound != null && sound != null)
-            {
-                await JsInvoke("StopSound", sound);
-            }
+            if (IsValidSound(sound)) await JsInvoke("StopSound", sound);
         }
 
         public static async Task FadeSound(string sound, float fromVolume, float toVolume, int milliseconds)
         {
-            if (sound != null && sound != null && fromVolume != toVolume)
-            {
-                await JsInvoke("FadeSound", sound, CalculateVolume(fromVolume), CalculateVolume(toVolume), milliseconds);
-            }
+            if (IsValidSound(sound) && fromVolume != toVolume) await JsInvoke("FadeSound", sound, CalculateVolume(fromVolume), CalculateVolume(toVolume), milliseconds);
         }
 
         public static async Task FadeAndStopSound(string sound, float fromVolume)
         {
             await FadeSound(sound, fromVolume, 0, 3000);
-            _ = Task.Delay(3000).ContinueWith(e => StopSound(sound));
+            await Task.Delay(3000).ContinueWith(e => StopSound(sound));
         }
 
-        public static async Task StopSounds()
-        {
-            await JsInvoke("StopSounds");
-        }
+        private static bool IsValidSound(string sound) => sound != null && sound != "" && sound != "?";
 
-        public static async Task<IEnumerable<CaptureDevice>> GetCaptureDevices(bool getPermissionsFirst)
-        {
-            var devices = await JsInvokeWithTimeout<JsonElement[]>(2000, "GetCaptureDevices", getPermissionsFirst);
+        public static async Task StopSounds() => await JsInvoke("StopSounds");
 
-            if (devices == null) return new List<CaptureDevice>();
-
-            return devices.Select(d => new CaptureDevice()
-            {
-                DeviceId = d.GetProperty("deviceId").GetString(),
-                GroupId = d.GetProperty("groupId").GetString(),
-                Kind = d.GetProperty("kind").GetString(),
-                Label = DetermineDeviceLabel(d.GetProperty("label").GetString(), d.GetProperty("deviceId").GetString(), d.GetProperty("kind").GetString(), d.GetProperty("groupId").GetString())
-            });
-        }
-
-        private static string DetermineDeviceLabel(string label, string deviceId, string kind, string groupId)
-        {
-            if (label != null && label.Length > 0)
-            {
-                return label;
-            }
-            else if (deviceId != null && deviceId.Length > 0)
-            {
-                return deviceId;
-            }
-            else if (kind != null && kind.Length > 0)
-            {
-                return kind;
-            }
-            else if (groupId != null && groupId.Length > 0)
-            {
-                return groupId;
-            }
-            else
-            {
-                return "unknown device";
-            }
-        }
-
-        public static async Task InitializeVideo(string videoId)
-        {
-            await JsInvoke("InitializeVideo", videoId);
-        }
-
-        private static readonly SemaphoreSlim semaphoreSlim = new(1, 1);
-        public static async Task PushVideoData(string videoId, byte[] data, float volume)
-        {
-            await semaphoreSlim.WaitAsync();
-
-            try
-            {
-
-                await JsInvoke("PushVideoData", videoId, data, volume);
-            }
-            finally
-            {
-                semaphoreSlim.Release();
-            }
-        }
-
-        public static async Task CaptureMedia(string videoId, string audioDeviceId, string videoDeviceId)
-        {
-            await JsInvoke("CaptureMedia", videoId, audioDeviceId, videoDeviceId);
-        }
-
-        public static async Task StopCapture(string videoId)
-        {
-            await JsInvoke("StopCapture", videoId);
-        }
-
-        public static event Action<byte[]> OnVideoData;
-
-        [JSInvokable("HandleVideoData")]
-        public static void HandleVideoData(byte[] data)
-        {
-            OnVideoData?.Invoke(data);
-        }
-
-        public static async Task SaveSetting(string name, object value)
-        {
-            await Storage.SetAsync(name, value);
-        }
+        public static async Task SaveSetting(string name, object value) => await Storage.SetAsync(name, value);
 
         public static async Task ClearSettingsStartingWith(string startOfName)
         {
@@ -310,57 +134,19 @@ namespace Treachery.Client
             }
         }
 
-        public static async Task ClearSetting(string name)
-        {
-            await Storage.RemoveAsync(name);
-        }
+        public static async Task ClearSetting(string name) => await Storage.RemoveAsync(name);
 
-        public static async Task SaveStringSetting(string name, string value)
-        {
-            await Storage.SetStringAsync(name, value);
-        }
+        public static async Task SaveStringSetting(string name, string value) => await Storage.SetStringAsync(name, value);
 
-        public static async Task<T> LoadSetting<T>(string name)
-        {
-            return await Storage.GetAsync<T>(name);
-        }
+        public static async Task<T> LoadSetting<T>(string name) => await Storage.GetAsync<T>(name);
 
-        public static async Task<string> LoadStringSetting(string name)
-        {
-            return await Storage.GetStringAsync(name);
-        }
+        public static async Task<string> LoadStringSetting(string name) => await Storage.GetStringAsync(name);
 
-        public static async Task OpenChatPopup()
-        {
-            await JsInvoke("OpenChatPopup");
-        }
+        public static async Task ToggleFullScreen() => await JsInvoke("ToggleFullScreen");
 
-        public static async Task SendToChatPopup(PopupChatCommand msg)
-        {
-            await JsInvoke("SendToChatPopup", msg);
-        }
+        public static async Task<bool> IsFullScreen() => await JsInvoke<bool>("IsFullScreen");
 
-        public static async Task ToggleFullScreen()
-        {
-            await JsInvoke("ToggleFullScreen");
-        }
-
-        public static async Task<bool> IsFullScreen()
-        {
-            return await JsInvoke<bool>("IsFullScreen");
-        }
-
-        public static async Task Print(string elementName)
-        {
-            try
-            {
-                await JsInvoke("Print", elementName);
-            }
-            catch (Exception e)
-            {
-                Support.Log(e);
-            }
-        }
+        public static async Task Print(string elementName) => await JsInvoke("Print", elementName);
 
         private static async Task<T> JsInvoke<T>(string method, params object[] args)
         {
@@ -373,27 +159,6 @@ namespace Treachery.Client
                 Support.Log("Error invoking method: {0}", e);
                 return default;
             }
-        }
-
-        private static async Task<T> JsInvokeWithTimeout<T>(int timeout, string method, params object[] args)
-        {
-            try
-            {
-                var task = JsInvoke<T>(method, args);
-
-                return await await Task.WhenAny<T>(task, ValueTimeout<T>(timeout));
-            }
-            catch (Exception e)
-            {
-                Support.Log("Error invoking method: {0}", e);
-                return default;
-            }
-        }
-
-        private static async Task<T> ValueTimeout<T>(int duration)
-        {
-            await Task.Delay(duration);
-            return default;
         }
 
         private static async Task JsInvoke(string method, params object[] args)

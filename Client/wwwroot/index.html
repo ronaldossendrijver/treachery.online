@@ -14,7 +14,7 @@
 
     <link href="https://bootswatch.com/5/darkly/bootstrap.min.css" rel="stylesheet" />
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha256-m81NDyncZVbr7v9E6qCWXwx/cwjuWDlHCMzi9pjMobA=" crossorigin="anonymous"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js"></script>
 
@@ -290,47 +290,6 @@
         }
 
         /*
-         * Popout Chat Panel functions
-         */
-
-        var chatPopup;
-        function OpenChatPopup() {
-
-            if (chatPopup == null) {
-
-                let eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
-                let eventer = window[eventMethod];
-                let messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
-
-                // Listen to message from child window
-                eventer(messageEvent, function (e) {
-
-                    DotNet.invokeMethodAsync('Treachery.Client', 'SendMessage', e.data.body, e.data.target)
-
-                }, false);
-            }
-
-            chatPopup = window.open("chat.html", "mywindow", "width=640,height=480,status=no,titlebar=no,location=no");
-            chatPopup.onload = ChatPopupLoaded();
-        }
-
-        function ChatPopupLoaded() {
-
-            if (chatPopup != null) {
-
-                DotNet.invokeMethodAsync('Treachery.Client', 'InitializeChatPopup')
-                chatPopup.focus();
-            }
-        }
-
-        function SendToChatPopup(chatobj) {
-
-            if (chatPopup != null) {
-                chatPopup.postMessage(chatobj, '*');
-            }
-        }
-
-        /*
          * Other support functions
          */
 
@@ -385,220 +344,12 @@
             window.print();
         }
 
-        function Reload() {
-
-            window.onbeforeunload = null;
-            location.reload();
-        }
-
         function Log(text) {
 
             if (LoggingEnabled) {
 
                 console.log(text);
             }
-        }
-
-        /*
-         * Webcam
-         */
-
-        const webcamCodec = 'video/webm;codecs="vp8,opus"';
-        const webcamInterval = 1000;
-
-        async function GetCaptureDevices(getPermissionsFirst) {
-
-            if (getPermissionsFirst) {
-
-                await navigator.mediaDevices.getUserMedia({ audio: true, video: true })
-                    .then(function (stream) {
-
-                        devices = GetDevices(stream);
-                    });
-            }
-            else {
-
-                devices = GetDevices();
-            }
-
-            return devices;
-        }
-
-        async function GetDevices(stream) {
-
-            let result = await navigator.mediaDevices.enumerateDevices();
-
-            if (stream != null) {
-                stream.getTracks().forEach(function (track) {
-                    track.stop();
-                });
-            }
-
-            return result;
-        }
-
-        var mediaRecorder = null;
-        var recordedStream = null;
-        function CaptureMedia(videoId, audioDeviceId, videoDeviceId) {
-
-            try {
-
-                navigator.mediaDevices.getUserMedia(
-                    {
-                        audio: {
-                            echoCancellation: true,
-                            autoGainControl: true,
-                            noiseSuppression: true,
-                            deviceId: { exact: audioDeviceId }
-                        },
-                        video: {
-                            width: { ideal: 320 },
-                            height: { ideal: 200 },
-                            deviceId: { exact: videoDeviceId }
-                        }
-                    })
-                    .then(function (stream) {
-
-                        recordedStream = stream;
-
-                        video = document.getElementById(videoId);
-                        if (video != null) {
-
-                            video.srcObject = stream;
-                            video.muted = true;
-                            video.play();
-                        }
-
-                        mediaRecorder = new MediaRecorder(stream, { mimeType: webcamCodec });
-                        mediaRecorder.ondataavailable = HandleVideoData
-                        mediaRecorder.start(webcamInterval);
-                    });
-            }
-            catch (error) {
-
-                //
-            }
-        }
-
-        async function HandleVideoData(event) {
-
-            let arraybuffer = await event.data.arrayBuffer()
-            let bytes = new Uint8Array(arraybuffer);
-            DotNet.invokeMethodAsync('Treachery.Client', 'HandleVideoData', bytes);
-        }
-
-        function StopCapture(videoId) {
-
-            if (mediaRecorder != null) {
-
-                mediaRecorder.stop();
-
-                recordedStream.getTracks().forEach(function (track) {
-                    track.stop();
-                });
-            }
-
-            StopVideo(videoId);
-        }
-
-        function StopVideo(videoId) {
-
-            let video = document.getElementById(videoId);
-            if (video != null) {
-
-                video.pause();
-                video.src = '';
-                video.load();
-            }
-        }
-
-        var mediaSources = new Map();
-        function InitializeVideo(videoId) {
-
-            try {
-
-                let mediaSource = new MediaSource();
-                mediaSource.addEventListener('sourceopen', sourceOpen);
-                mediaSources.set(videoId, mediaSource);
-
-                let video = document.getElementById(videoId);
-                video.src = URL.createObjectURL(mediaSource);
-            }
-            catch (error) {
-
-                //
-            }
-        }
-
-        function sourceOpen(_) {
-
-            if (this.readyState == "open") {
-
-                let buffer = this.addSourceBuffer(webcamCodec);
-                buffer.mode = "sequence";
-            }
-        };
-
-        async function PushVideoData(videoId, buffer, volume) {
-
-            try {
-
-                let mediaSource = mediaSources.get(videoId)
-                let video = document.getElementById(videoId);
-
-                if (video != null) {
-
-                    if (mediaSource != null) {
-
-                        if (mediaSource.sourceBuffers.length > 0) {
-
-                            video.volume = volume;
-
-                            let sourceBuffer = mediaSource.sourceBuffers[0];
-
-                            if (sourceBuffer.buffered.length > 0) {
-
-                                if (video.buffered.end(0) - video.currentTime > 1) {
-
-                                    video.playbackRate = 1.5;
-                                }
-                                else {
-
-                                    video.playbackRate = 1;
-                                }
-                            }
-
-                            sourceBuffer.appendBuffer(buffer.buffer);
-
-                            while (sourceBuffer.updating) {
-
-                                await Sleep(100);
-                            }
-
-                            video.hidden = false;
-                            video.play();
-                        }
-                        else {
-
-                            mediaSources.delete(videoId);
-                            InitializeVideo(videoId);
-                        }
-                    }
-                    else {
-
-                        InitializeVideo(videoId);
-                    }
-                }
-            }
-            catch (error) {
-
-                //
-            }
-        }
-
-        function Sleep(ms) {
-
-            return new Promise(resolve => setTimeout(resolve, ms));
         }
 
     </script>

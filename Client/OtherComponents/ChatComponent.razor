@@ -147,19 +147,6 @@
         }
     }
 
-    [JSInvokable("InitializeChatPopup")]
-    public static void InitializeChatPopup()
-    {
-        var init = new PopupChatInitialization()
-        {
-            playerNames = currentHandler.Game.Players.Where(p => p.Name != currentHandler.Player.Name).Select(p => p.Name).ToArray(),
-            playerStyles = currentHandler.Game.Players.Where(p => p.Name != currentHandler.Player.Name).Select(p => Skin.Current.GetFactionColor(p.Faction)).ToArray(),
-            messages = currentHandler.Messages.Select(m => PopupChatMessage.Construct(currentHandler.Game, currentHandler.MyName, m)).ToArray()
-        };
-
-        _ = Task.Delay(1000).ContinueWith(e => Browser.SendToChatPopup(init));
-    }
-
     private string Placeholder => "Chat to " + playername + "...";
 
     private string SelectedFactionColor

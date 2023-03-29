@@ -573,7 +573,6 @@ namespace Treachery.Client
             {
                 Messages.AddFirst(m);
                 await Browser.PlaySound(Skin.Current.Sound_Chatmessage_URL, CurrentChatVolume);
-                await Browser.SendToChatPopup(PopupChatMessage.Construct(Game, MyName, m));
                 Refresh();
             }
         }
@@ -586,14 +585,8 @@ namespace Treachery.Client
             if (!MuteGlobalChat)
             {
                 await Browser.PlaySound(Skin.Current.Sound_Chatmessage_URL, CurrentChatVolume);
-                await Browser.SendToChatPopup(PopupChatMessage.Construct(Game, MyName, m));
                 Refresh();
             }
-        }
-
-        public static async Task PopoutChatWindow()
-        {
-            await Browser.OpenChatPopup();
         }
 
         #endregion HostMessageHandlers
@@ -624,7 +617,7 @@ namespace Treachery.Client
                 ResetAutopassThreshold();
             }
 
-            await PerformEndOfTurnTasks();
+            PerformEndOfTurnTasks();
 
             if (Game.CurrentMainPhase == MainPhase.Ended)
             {
@@ -688,12 +681,11 @@ namespace Treachery.Client
         }
 
         private Phase previousPhase;
-        private async Task PerformEndOfTurnTasks()
+        private void PerformEndOfTurnTasks()
         {
             if (Game.CurrentPhase == Phase.TurnConcluded && Game.CurrentPhase != previousPhase)
             {
                 Messages.Clear();
-                await Browser.SendToChatPopup(new PopupChatClear());
             }
 
             previousPhase = Game.CurrentPhase;
