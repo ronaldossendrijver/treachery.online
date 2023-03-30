@@ -531,7 +531,7 @@ namespace Treachery.Shared
 
             var shortage = DetermineForcesInShipment(dialNeeded, location, forcesAvailable, specialForcesAvailable, ref forces, ref specialForces, maxUnsupportedForces, preferSpecialForces, normalStrength, specialStrength, spiceAvailable, noSpiceForForceModifier, costPerForceInBattle);
 
-            if (maxForcesWithNoField >= 0 && !Shipment.ShipsForFree(Game, this, location) && spiceAvailable > 0)
+            if (maxForcesWithNoField >= 0 && Shipment.DetermineCost(Game, this, 2, location, false, false, false, false) != 0 && spiceAvailable > 0)
             {
                 int availableSpecialForcesNoField;
                 int availableForcesNoField;

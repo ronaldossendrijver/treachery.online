@@ -176,11 +176,6 @@ namespace Treachery.Shared
             return DetermineCost(g, p, Math.Abs(s.ForceAmount) + Math.Abs(s.SpecialForceAmount), s.To, s.IsUsingKarma, s.IsBackToReserves, s.IsSiteToSite, s.IsNoField);
         }
 
-        public static bool ShipsForFree(Game g, Player p, Location to)
-        {
-            return p.Is(Faction.Yellow) && YellowSpawnLocations(g, p).Contains(to);
-        }
-
         public static int DetermineCost(Game g, Player p, int amount, Location to, bool karamaShipment, bool backToReserves, bool siteToSite, bool noField)
         {
             var amountToPayFor = amount;
@@ -199,7 +194,7 @@ namespace Treachery.Shared
             }
             else
             {
-                if (ShipsForFree(g, p, to))
+                if ((g.Version < 154 || !siteToSite && !backToReserves) && p.Is(Faction.Yellow) && YellowSpawnLocations(g, p).Contains(to))
                 {
                     return 0;
                 }

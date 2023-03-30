@@ -901,7 +901,7 @@ namespace Treachery.Shared
             var mostEffectiveMove = myKills.HighestOrDefault(myKills => enemyKills[myKills.Key] - myKills.Value);
             LogInfo("StormSpellPlayed() - Most effective number of moves: {0} sectors with {1} allied and {2} enemy kills.", mostEffectiveMove.Key, myKills[mostEffectiveMove.Key], enemyKills[mostEffectiveMove.Key]);
 
-            if (enemyKills[mostEffectiveMove.Key] - myKills[mostEffectiveMove.Key] >= 10)
+            if (enemyKills[mostEffectiveMove.Key] - myKills[mostEffectiveMove.Key] >= 10 - (Game.CurrentTurn + (HasRoomForCards ? 0 : 4)))
             {
                 var stormspell = new StormSpellPlayed(Game) { Initiator = Faction, MoveAmount = mostEffectiveMove.Key };
                 return stormspell;
@@ -955,10 +955,9 @@ namespace Treachery.Shared
         {
             if (Game.CurrentRevivalRequests.Any()) return null;
 
-            int availableResources = Math.Max(0, (int)(0.5f * Resources - 2));
             int nrOfLivingLeaders = Leaders.Count(l => Game.IsAlive(l));
             int minimumValue = Faction == Faction.Purple && nrOfLivingLeaders > 2 ? 4 : 0;
-            int maxToSpendOnHeroRevival = Math.Min(availableResources, 7);
+            int maxToSpendOnHeroRevival = Math.Min(Resources, 8);
 
             var leaderToRevive = Revival.ValidRevivalHeroes(Game, this).Where(l =>
                 SafeOrKnownTraitorLeaders.Contains(l) &&
@@ -989,7 +988,7 @@ namespace Treachery.Shared
                 specialForcesRevivedByRed + specialForcesToRevive + 1 <= SpecialForcesKilled &&
 
                 //check if i have enough spice
-                Revival.DetermineCost(Game, this, leaderToRevive, 0, specialForcesToRevive + 1, forcesRevivedByRed, specialForcesRevivedByRed, useSecretAlly).TotalCostForPlayer <= availableResources)
+                Revival.DetermineCost(Game, this, leaderToRevive, 0, specialForcesToRevive + 1, forcesRevivedByRed, specialForcesRevivedByRed, useSecretAlly).TotalCostForPlayer <= Resources)
             {
                 specialForcesToRevive++;
             }
@@ -1004,7 +1003,7 @@ namespace Treachery.Shared
                 forcesRevivedByRed + normalForcesToRevive + 1 <= ForcesKilled &&
 
                 //check if i have enough spice
-                Revival.DetermineCost(Game, this, leaderToRevive, normalForcesToRevive + 1, specialForcesToRevive, forcesRevivedByRed, specialForcesRevivedByRed, useSecretAlly).TotalCostForPlayer <= availableResources)
+                Revival.DetermineCost(Game, this, leaderToRevive, normalForcesToRevive + 1, specialForcesToRevive, forcesRevivedByRed, specialForcesRevivedByRed, useSecretAlly).TotalCostForPlayer <= Resources)
             {
                 normalForcesToRevive++;
             }

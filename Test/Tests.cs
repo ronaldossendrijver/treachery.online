@@ -27,13 +27,17 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            /*
-            if ()
+            if (e is Shipment sh && e.By(Faction.Yellow) && e.Player.Ally == Faction.Orange && (e.Player.AnyForcesIn(g.Map.TueksSietch) > 0 || e.Player.AnyForcesIn(g.Map.PolarSink) > 0))
             {
-                WriteSavegameIfApplicable(g, e.Player, "");
+                WriteSavegameIfApplicable(g, e.Player, "MaySiteToSiteShip");
             }
-            */
-        }
+                /*
+                if ()
+                {
+                    WriteSavegameIfApplicable(g, e.Player, "");
+                }
+                */
+            }
 
         private readonly List<string> WrittenCases = new();
         private void WriteSavegameIfApplicable(Game g, Player playerWithAction, string c)
