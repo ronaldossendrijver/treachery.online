@@ -18,42 +18,20 @@ namespace Treachery.Shared
         public Intrusion LastTerrorTrigger => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.Terror ? Intrusions.Peek() : null;
         public Intrusion LastAmbassadorTrigger => Intrusions.Count > 0 && Intrusions.Peek().Type == IntrusionType.Ambassador ? Intrusions.Peek() : null;
 
-        public PlayerSequence ShipmentAndMoveSequence { get; private set; }
-        public bool ShipsTechTokenIncome { get; private set; }
-        public List<IPlacement> RecentMoves { get; private set; } = new();
-        public int CurrentNoFieldValue { get; private set; } = -1;
-        public int LatestRevealedNoFieldValue { get; private set; } = -1;
+        public PlayerSequence ShipmentAndMoveSequence { get; internal set; }
+        public bool ShipsTechTokenIncome { get; internal set; }
+        public List<IPlacement> RecentMoves { get; internal set; } = new();
+        public int CurrentNoFieldValue { get; internal set; } = -1;
+        public int LatestRevealedNoFieldValue { get; internal set; } = -1;
 
         public Dictionary<Faction, ShipmentPermission> ShipmentPermissions { get; private set; } = new();
 
-        private List<Faction> FactionsWithOrnithoptersAtStartOfMovement;
-        private bool BeginningOfShipmentAndMovePhase;
+        internal List<Faction> FactionsWithOrnithoptersAtStartOfMovement { get; set; }
 
-        private void EnterShipmentAndMovePhase()
-        {
-            MainPhaseStart(MainPhase.ShipmentAndMove);
-            FactionsWithOrnithoptersAtStartOfMovement = Players.Where(p => OccupiesArrakeenOrCarthag(p)).Select(p => p.Faction).ToList();
-            RecentMoves.Clear();
-            BeginningOfShipmentAndMovePhase = true;
-            FactionsWithIncreasedRevivalLimits = Array.Empty<Faction>();
-            EarlyRevivalsOffers.Clear();
+        internal bool BeginningOfShipmentAndMovePhase { get; set; }
+                
 
-            ShipsTechTokenIncome = false;
-            CurrentFreeRevivalPrevention = null;
-            Allow(FactionAdvantage.BlueAnnouncesBattle);
-            Allow(FactionAdvantage.RedLetAllyReviveExtraForces);
-            Allow(FactionAdvantage.PurpleReceiveRevive);
-            Allow(FactionAdvantage.BrownRevival);
-
-            HasActedOrPassed.Clear();
-            LastShipmentOrMovement = null;
-
-            ShipmentAndMoveSequence = new PlayerSequence(this);
-
-            Enter(Version >= 107, Phase.BeginningOfShipAndMove, StartShipAndMoveSequence);
-        }
-
-        private void StartShipAndMoveSequence()
+        internal void StartShipAndMoveSequence()
         {
             if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && OrangeMayShipOutOfTurnOrder)
             {
@@ -63,24 +41,12 @@ namespace Treachery.Shared
             Enter(JuiceForcesFirstPlayer && CurrentJuice.Initiator != Faction.Orange, Phase.NonOrangeShip, IsPlaying(Faction.Orange) && OrangeMayShipOutOfTurnOrder, Phase.OrangeShip, Phase.NonOrangeShip);
         }
 
-        public bool OccupiesArrakeenOrCarthag(Player p)
+        internal bool OccupiesArrakeenOrCarthag(Player p)
         {
             return p.Occupies(Map.Arrakeen) || p.Occupies(Map.Carthag);
         }
 
-        private void ReceiveGraveyardTechIncome()
-        {
-            if (RevivalTechTokenIncome)
-            {
-                var techTokenOwner = Players.FirstOrDefault(p => p.TechTokens.Contains(TechToken.Graveyard));
-                if (techTokenOwner != null)
-                {
-                    var amount = techTokenOwner.TechTokens.Count;
-                    techTokenOwner.Resources += amount;
-                    Log(techTokenOwner.Faction, " receive ", Payment.Of(amount), " from ", TechToken.Graveyard);
-                }
-            }
-        }
+        
 
         public void HandleEvent(OrangeDelay e)
         {

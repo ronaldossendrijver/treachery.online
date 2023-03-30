@@ -13,7 +13,7 @@ namespace Treachery.Shared
 
         public List<Player> Winners { get; private set; } = new List<Player>();
 
-        private void EnterMentatPhase()
+        internal void EnterMentatPhase()
         {
             foreach (var player in Players)
             {
@@ -35,8 +35,6 @@ namespace Treachery.Shared
                     p.BankedResources = 0;
                 }
             }
-
-
 
             Enter(Version >= 103, EnterMentatPause, ContinueMentatPhase);
         }
@@ -82,7 +80,7 @@ namespace Treachery.Shared
             Log(e);
         }
 
-        private void EndMentatPause()
+        internal void EndMentatPause()
         {
             if (ExtortionToBeReturned)
             {
@@ -104,7 +102,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void ContinueMentatPhase()
+        internal void ContinueMentatPhase()
         {
             CheckNormalWin();
             CheckBeneGesseritPrediction();
@@ -149,7 +147,7 @@ namespace Treachery.Shared
             WhenToSetAsideVidal = VidalMoment.None;
         }
 
-        private void AddBribesToPlayerResources()
+        internal void AddBribesToPlayerResources()
         {
             foreach (var p in Players)
             {

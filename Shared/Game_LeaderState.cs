@@ -162,7 +162,7 @@ namespace Treachery.Shared
             return result;
         }
 
-        private void CallHeroesHome()
+        internal void CallHeroesHome()
         {
             foreach (var ls in LeaderState)
             {

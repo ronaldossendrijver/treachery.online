@@ -12,33 +12,25 @@ namespace Treachery.Shared
     {
         #region State
 
-        public PlayerSequence BattleSequence { get; private set; }
-        public BattleInitiated CurrentBattle { get; private set; }
+        public PlayerSequence BattleSequence { get; internal set; }
+        public BattleInitiated CurrentBattle { get; internal set; }
         public Battle AggressorBattleAction { get; internal set; }
         public TreacheryCalled AggressorTraitorAction { get; internal set; }
         public Battle DefenderBattleAction { get; internal set; }
         public TreacheryCalled DefenderTraitorAction { get; internal set; }
         public BattleOutcome BattleOutcome { get; internal set; }
-        public Faction BattleWinner { get; private set; }
-        public Faction BattleLoser { get; private set; }
-        public int GreySpecialForceLossesToTake { get; private set; }
+        public Faction BattleWinner { get; internal set; }
+        public Faction BattleLoser { get; internal set; }
+        public int GreySpecialForceLossesToTake { get; internal set; }
 
-        private int NrOfBattlesFought { get; set; } = 0;
-        private TriggeredBureaucracy BattleTriggeredBureaucracy { get; set; }
+        internal int NrOfBattlesFought { get; set; } = 0;
+        internal TriggeredBureaucracy BattleTriggeredBureaucracy { get; set; }
 
         #endregion State
 
         #region BeginningOfBattlePhase
 
-        private void EnterBattlePhase()
-        {
-            MainPhaseStart(MainPhase.Battle);
-            NrOfBattlesFought = 0;
-            BattleSequence = new PlayerSequence(this);
-            if (KarmaHmsMovesLeft != 2) KarmaHmsMovesLeft = 0;
-            ResetBattle();
-            Enter(NextPlayerToBattle == null, EnterSpiceCollectionPhase, Version >= 107, Phase.BeginningOfBattle, Phase.BattlePhase);
-        }
+        
 
         #endregion
 
@@ -106,7 +98,7 @@ namespace Treachery.Shared
 
         #region VoiceAndPrescience
 
-        public Voice CurrentVoice { get; private set; } = null;
+        public Voice CurrentVoice { get; internal set; } = null;
         public void HandleEvent(Voice e)
         {
             CurrentVoice = e;
@@ -130,7 +122,7 @@ namespace Treachery.Shared
             Stone(Milestone.Voice);
         }
 
-        public Prescience CurrentPrescience { get; private set; } = null;
+        public Prescience CurrentPrescience { get; internal set; } = null;
         public void HandleEvent(Prescience e)
         {
             CurrentPrescience = e;
@@ -138,7 +130,7 @@ namespace Treachery.Shared
             Stone(Milestone.Prescience);
         }
 
-        public Thought CurrentThought { get; private set; }
+        public Thought CurrentThought { get; internal set; }
         public void HandleEvent(Thought e)
         {
             CurrentThought = e;
@@ -214,7 +206,7 @@ namespace Treachery.Shared
             CurrentPortableAntidoteUsed = e;
         }
 
-        private bool PoisonToothCancelled { get; set; } = false;
+        internal bool PoisonToothCancelled { get; set; } = false;
         public void HandleEvent(PoisonToothCancelled e)
         {
             PoisonToothCancelled = true;
@@ -285,7 +277,7 @@ namespace Treachery.Shared
 
         #region BattleResolution
 
-        private void HandleRevealedBattlePlans()
+        internal void HandleRevealedBattlePlans()
         {
             ResolveEffectOfOwnedTueksSietch(AggressorBattleAction);
             ResolveEffectOfOwnedTueksSietch(DefenderBattleAction);
@@ -666,7 +658,7 @@ namespace Treachery.Shared
 
         #region BattleOutcome
 
-        public bool LoserMayTryToAssassinate { get; private set; } = false;
+        public bool LoserMayTryToAssassinate { get; internal set; } = false;
 
         public void HandleBattleOutcome(Battle agg, Battle def, Territory territory)
         {
@@ -1403,7 +1395,7 @@ namespace Treachery.Shared
 
         
 
-        public Leader BlackVictim { get; private set; }
+        public Leader BlackVictim { get; internal set; }
         private void SelectVictimOfBlackWinner(Battle harkonnenAction, Battle victimAction)
         {
             var harkonnen = GetPlayer(harkonnenAction.Initiator);
@@ -1708,38 +1700,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void ResetBattle()
-        {
-            FacedancerWasCancelled = false;
-            CurrentBattle = null;
-            CurrentPrescience = null;
-            CurrentThought = null;
-            CurrentVoice = null;
-            CurrentGreenNexus = null;
-            CurrentBlueNexus = null;
-            CurrentRedNexus = null;
-            CurrentGreyNexus = null;
-            BlackVictim = null;
-            AggressorBattleAction = null;
-            DefenderBattleAction = null;
-            AggressorTraitorAction = null;
-            DefenderTraitorAction = null;
-            PoisonToothCancelled = false;
-            GreySpecialForceLossesToTake = 0;
-            BattleWinner = Faction.None;
-            BattleLoser = Faction.None;
-            HasActedOrPassed.Clear();
-            BattleTriggeredBureaucracy = null;
-            CardsToBeDiscardedByLoserAfterBattle.Clear();
-            BattleWasConcludedByWinner = false;
-            LoserMayTryToAssassinate = false;
-            BattleWinnerMayChooseToDiscard = true;
-            BattleAboutToStart = null;
-            CurrentPinkOrAllyFighter = Faction.None;
-            CurrentPinkBattleContribution = 0;
-            GreenKarma = false;
-            PinkKarmaBonus = 0;
-        }
+        
 
         #endregion
 

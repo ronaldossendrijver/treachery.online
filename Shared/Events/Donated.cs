@@ -11,6 +11,8 @@ namespace Treachery.Shared
 {
     public class Donated : GameEvent
     {
+        #region Construction
+
         public Donated(Game game) : base(game)
         {
         }
@@ -19,36 +21,37 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
         public Faction Target { get; set; }
 
         public int Resources { get; set; }
 
-        public int _cardId = -1;
-
         public bool FromBank { get; set; } = false;
+
+        public int _cardId = -1;
 
         [JsonIgnore]
         public TreacheryCard Card
         {
-            get
-            {
-                return TreacheryCardManager.Lookup.Find(_cardId);
-            }
-            set
-            {
-                _cardId = TreacheryCardManager.Lookup.GetId(value);
-            }
+            get => TreacheryCardManager.Lookup.Find(_cardId);
+            set => _cardId = TreacheryCardManager.Lookup.GetId(value);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
             if (FromBank) return null;
 
-            var p = Player;
             if (!MayDonate(Game, Player)) return Message.Express("You currently have an outstanding bid");
             if (Card == null && Resources <= 0) return Message.Express("Invalid amount");
-            if (p.Resources < Resources) return Message.Express("You can't give that much");
-            if (Initiator != Faction.Red && Target == p.Ally) return Message.Express("You can't bribe your ally");
+            if (Player.Resources < Resources) return Message.Express("You can't give that much");
+            if (Initiator != Faction.Red && Target == Player.Ally) return Message.Express("You can't bribe your ally");
             if (Initiator != Faction.Red && Game.Applicable(Rule.DisableResourceTransfers)) return Message.Express(Concept.Resource, " transfers are disabled by house rule");
             if (!FromBank && (Game.EconomicsStatus == BrownEconomicsStatus.Double || Game.EconomicsStatus == BrownEconomicsStatus.DoubleFlipped)) Message.Express("No bribes can be made during Double Inflation");
 
@@ -61,16 +64,6 @@ namespace Treachery.Shared
         public static IEnumerable<Faction> ValidTargets(Game g, Player p)
         {
             return g.Players.Where(x => x.Faction != p.Faction && (p.Is(Faction.Red) || x.Faction != p.Ally)).Select(x => x.Faction);
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " give ", Payment.Of(Resources), MessagePart.ExpressIf(Card != null, " and a card"), " to ", Target);
         }
 
         public static bool MayDonate(Game g, Player p)
@@ -92,9 +85,57 @@ namespace Treachery.Shared
             }
         }
 
-        public static int MaxAmount(Player p)
+        public static int MaxAmount(Player p) => p.Resources;
+
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
         {
-            return p.Resources;
+            var target = GetPlayer(Target);
+
+            if (!FromBank)
+            {
+                Game.ExchangeResourcesInBribe(Player, target, Resources);
+
+                if (Card != null)
+                {
+                    Player.TreacheryCards.Remove(Card);
+                    Game.RegisterKnown(Player, Card);
+                    target.TreacheryCards.Add(Card);
+
+                    foreach (var p in Game.Players.Where(p => !p.Is(Initiator) && p != target))
+                    {
+                        Game.UnregisterKnown(p, Player.TreacheryCards);
+                        Game.UnregisterKnown(p, target.TreacheryCards);
+                    }
+                }
+
+                Log();
+                Game.Stone(Milestone.Bribe);
+            }
+            else
+            {
+                if (Resources < 0)
+                {
+                    int resourcesToTake = Math.Min(Math.Abs(Resources), target.Resources);
+                    Log("Host puts ", Payment.Of(resourcesToTake), " from ", Target, " into the ", Concept.Resource, " Bank");
+                    target.Resources -= resourcesToTake;
+                }
+                else
+                {
+                    Log("Host gives ", Target, Payment.Of(Resources), " from the ", Concept.Resource, " Bank");
+                    target.Resources += Resources;
+                }
+            }
         }
+
+        public override Message GetMessage()
+        {
+            return Message.Express(Initiator, " give ", Payment.Of(Resources), MessagePart.ExpressIf(Card != null, " and a card"), " to ", Target);
+        }
+
+        #endregion Execution
     }
 }

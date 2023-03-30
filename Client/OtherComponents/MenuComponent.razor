@@ -303,15 +303,7 @@ else if (IsVisible(RESTART))
             if (data.Length < MAX_SKINFILE_SIZE)
             {
                 var newSkin = Skin.Load(data);
-
-                if (newSkin.Version >= Skin.MINIMUM_SUPPORTED_VERSION)
-                {
-                    await h.Host.LoadSkin(newSkin.SkinToString());
-                }
-                else
-                {
-                    _loadValidationError = "Unsupported skin file or version....";
-                }
+                await h.Host.LoadSkin(newSkin.SkinToString());
             }
             else
             {

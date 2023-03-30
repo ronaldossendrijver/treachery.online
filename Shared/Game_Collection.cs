@@ -10,62 +10,22 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        private int ResourcesCollectedByYellow { get; set; }
-        private int ResourcesCollectedByBlackFromDesertOrHomeworld { get; set; }
+        internal int ResourcesCollectedByYellow { get; set; }
+        internal int ResourcesCollectedByBlackFromDesertOrHomeworld { get; set; }
         public IList<DiscoveryToken> PendingDiscoveries { get; set; }
 
-        private void EnterSpiceCollectionPhase()
-        {
-            MainPhaseStart(MainPhase.Collection);
-            ResourcesCollectedByYellow = 0;
-            ResourcesCollectedByBlackFromDesertOrHomeworld = 0;
-            CallHeroesHome();
-            PendingDiscoveries = DiscoveriesOnPlanet.Where(kvp => AnyForcesIn(kvp.Key.Territory)).Select(kvp => kvp.Value.Token).ToList();
+        
 
-            if (Version < 122)
-            {
-                StartCollection();
-            }
-            else
-            {
-                Enter(Phase.BeginningOfCollection);
-            }
-        }
-
-        private void StartCollection()
+        internal void StartCollection()
         {
             CollectResourcesFromTerritories();
             CollectResourcesFromStrongholdsAndHomeworlds();
             Enter(CollectedResourcesToBeDivided.Any(), Phase.DividingCollectedResources, EndCollectionMainPhase);
         }
 
-        public DivideResources CurrentDivideResources { get; private set; }
+        public DivideResources CurrentDivideResources { get; internal set; }
 
-        public void HandleEvent(DivideResources e)
-        {
-            CurrentDivideResources = e;
-
-            if (e.Passed)
-            {
-                DivideResourcesFromCollection(false);
-                Enter(CollectedResourcesToBeDivided.Any(), Phase.DividingCollectedResources, EndCollectionMainPhase);
-            }
-            else
-            {
-                var toBeDivided = DivideResources.GetResourcesToBeDivided(this);
-                int gainedByOtherFaction = DivideResources.GainedByOtherFaction(toBeDivided, true, e.PortionToFirstPlayer);
-                Log(e.Initiator, " propose that they take ", Payment.Of(e.PortionToFirstPlayer), " and ", toBeDivided.OtherFaction, " take ", Payment.Of(gainedByOtherFaction));
-                Enter(Phase.AcceptingResourceDivision);
-            }
-        }
-
-        public void HandleEvent(DivideResourcesAccepted e)
-        {
-            DivideResourcesFromCollection(!e.Passed);
-            Enter(CollectedResourcesToBeDivided.Any(), Phase.DividingCollectedResources, EndCollectionMainPhase);
-        }
-
-        private void DivideResourcesFromCollection(bool divisionWasAgreed)
+        internal void DivideResourcesFromCollection(bool divisionWasAgreed)
         {
             var toBeDivided = DivideResources.GetResourcesToBeDivided(this);
 
@@ -88,60 +48,10 @@ namespace Treachery.Shared
             if (faction == Faction.Black && !from.IsStronghold && !from.IsProtectedFromWorm) ResourcesCollectedByBlackFromDesertOrHomeworld += amount;
         }
 
-        public Faction OwnerOfFlightDiscovery { get; private set; }
-        public List<DiscoveredLocation> JustRevealedDiscoveryStrongholds { get; private set; } = new();
-        public void HandleEvent(DiscoveryRevealed e)
-        {
-            var discovery = DiscoveriesOnPlanet[e.Location];
-            PendingDiscoveries.Remove(discovery.Token);
+        public Faction OwnerOfFlightDiscovery { get; internal set; }
+        public List<DiscoveredLocation> JustRevealedDiscoveryStrongholds { get; internal set; } = new();
 
-            if (!e.Passed)
-            {
-                Stone(Milestone.DiscoveryRevealed);
-                DiscoveriesOnPlanet.Remove(discovery.Location);
-
-                Log(e.Initiator, " reveal ", discovery.Token, " in ", discovery.Location.Territory);
-
-
-                switch (discovery.Token)
-                {
-                    case DiscoveryToken.Jacurutu:
-                    case DiscoveryToken.Shrine:
-                    case DiscoveryToken.TestingStation:
-                    case DiscoveryToken.Cistern:
-                    case DiscoveryToken.ProcessingStation:
-                        var sh = Map.GetDiscoveryStronghold(discovery.Token);
-                        sh.PointAt(discovery.Location);
-                        JustRevealedDiscoveryStrongholds.Add(sh);
-                        break;
-
-                    case DiscoveryToken.CardStash:
-                        var card = DrawTreacheryCard();
-                        e.Player.TreacheryCards.Add(card);
-                        Log(e.Initiator, " draw a treachery card");
-                        if (e.Player.HandSizeExceeded)
-                        {
-                            LetFactionsDiscardSurplusCards();
-                        }
-                        break;
-
-                    case DiscoveryToken.ResourceStash:
-                        e.Player.Resources += 7;
-                        Log(e.Initiator, " get ", Payment.Of(7));
-                        break;
-
-                    case DiscoveryToken.Flight:
-                        OwnerOfFlightDiscovery = e.Initiator;
-                        Log(e.Initiator, " gain the ", discovery.Token, " discovery token");
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-        }
-
-        private void EndCollectionMainPhase()
+        internal void EndCollectionMainPhase()
         {
             int receivedAmountByYellow = ResourcesCollectedByYellow;
             ModifyIncomeBasedOnThresholdOrOccupation(GetPlayer(Faction.Yellow), ref receivedAmountByYellow);

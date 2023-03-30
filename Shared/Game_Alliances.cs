@@ -93,7 +93,7 @@ namespace Treachery.Shared
 
         private bool NexusHasOccured { get; set; } = false;
 
-        private void EndNexus()
+        internal void EndNexus()
         {
             NexusHasOccured = true;
             CurrentAllianceOffers.Clear();

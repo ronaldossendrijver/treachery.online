@@ -10,6 +10,8 @@ namespace Treachery.Shared
 {
     public class DistransUsed : GameEvent
     {
+        #region Construction
+
         public DistransUsed(Game game) : base(game)
         {
         }
@@ -18,6 +20,10 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
         public Faction Target { get; set; }
 
         public int _cardId = -1;
@@ -25,18 +31,19 @@ namespace Treachery.Shared
         [JsonIgnore]
         public TreacheryCard Card
         {
-            get
-            {
-                return TreacheryCardManager.Lookup.Find(_cardId);
-            }
-            set
-            {
-                _cardId = TreacheryCardManager.Lookup.GetId(value);
-            }
+            get => TreacheryCardManager.Lookup.Find(_cardId);
+            set => _cardId = TreacheryCardManager.Lookup.GetId(value);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
+            if (!ValidCards(Player).Contains(Card)) return Message.Express("Invalid card");
+            if (!ValidTargets(Game, Player).Contains(Target)) return Message.Express("Invalid target");
+
             return null;
         }
 
@@ -50,9 +57,51 @@ namespace Treachery.Shared
             return g.Players.Where(target => target != p && target.HasRoomForCards).Select(target => target.Faction);
         }
 
+        public static bool CanBePlayed(Game game, Player player)
+        {
+            return player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Distrans) && ValidCards(player).Any() && ValidTargets(game, player).Any();
+        }
+
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            var target = GetPlayer(Target);
+
+            bool targetHadRoomForCards = target.HasRoomForCards;
+
+            Game.Discard(Player, TreacheryCardType.Distrans);
+
+            Player.TreacheryCards.Remove(Card);
+            Game.RegisterKnown(Player, Card);
+            target.TreacheryCards.Add(Card);
+
+            if (Player.TreacheryCards.Any())
+            {
+                foreach (var p in Game.Players.Where(p => !p.Is(Initiator) && p != target))
+                {
+                    Game.UnregisterKnown(p, Player.TreacheryCards);
+                    Game.UnregisterKnown(p, target.TreacheryCards);
+                }
+            }
+
+            Log();
+
+            CheckIfBiddingForPlayerShouldBeSkipped(target, targetHadRoomForCards);
+        }
+
+        private void CheckIfBiddingForPlayerShouldBeSkipped(Player player, bool hadRoomForCards)
+        {
+            if (Game.CurrentPhase == Phase.BlackMarketBidding && hadRoomForCards && !player.HasRoomForCards && BlackMarketBid.MayBePlayed(Game, player))
+            {
+                new Bid(Game) { Initiator = player.Faction, Passed = true }.Execute(false, false);
+            }
+            else if (Game.CurrentPhase == Phase.Bidding && hadRoomForCards && !player.HasRoomForCards && Bid.MayBePlayed(Game, player))
+            {
+                new Bid(Game) { Initiator = player.Faction, Passed = true }.Execute(false, false);
+            }
         }
 
         public override Message GetMessage()
@@ -60,9 +109,6 @@ namespace Treachery.Shared
             return Message.Express(Initiator, " use ", TreacheryCardType.Distrans, " to give a card to ", Target);
         }
 
-        public static bool CanBePlayed(Game game, Player player)
-        {
-            return player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Distrans) && ValidCards(player).Any() && ValidTargets(game, player).Any();
-        }
+        #endregion Execution
     }
 }

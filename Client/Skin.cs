@@ -17,7 +17,6 @@ namespace Treachery.Client
         #region Attributes
 
         public const int CurrentVersion = 151;
-        public const int MINIMUM_SUPPORTED_VERSION = 23;
         public const string DEFAULT_ART_LOCATION = ".";
 
         public string Description;
@@ -67,7 +66,7 @@ namespace Treachery.Client
         public Dictionary<Ambassador, string> AmbassadorName_STR;
         public Dictionary<Ambassador, string> AmbassadorDescription_STR;
 
-        public bool DrawResourceIconsOnMap;
+        public bool DrawResourceIconsOnMap { get; set; }
         public bool ShowVerboseToolipsOnMap;
         public bool ShowArrowsForRecentMoves;
 
@@ -807,10 +806,7 @@ namespace Treachery.Client
 
         #region NamesAndImages
 
-        public string GetTerritoryBorder(Territory t)
-        {
-            return t != null ? GetLabel(TerritoryBorder_SVG, t.SkinId) : ""; ;
-        }
+        public string GetTerritoryBorder(Territory t) => t != null ? GetLabel(TerritoryBorder_SVG, t.SkinId) : "";
 
         public string GetImageURL(TreacheryCard c) => c != null ? GetLabel(TreacheryCardImage_URL, c.SkinId) : ""; 
 
@@ -855,15 +851,9 @@ namespace Treachery.Client
 
         public string GetFactionSpecialForceImageURL(Faction f) => GetLabel(FactionSpecialForceImage_URL, f);
 
-        public string GetImageURL(FactionForce ff)
-        {
-            return GetFactionForceImageURL(GetFaction(ff));
-        }
+        public string GetImageURL(FactionForce ff) => GetFactionForceImageURL(GetFaction(ff));
 
-        public string GetImageURL(FactionSpecialForce fsf)
-        {
-            return GetFactionSpecialForceImageURL(GetFaction(fsf));
-        }
+        public string GetImageURL(FactionSpecialForce fsf) => GetFactionSpecialForceImageURL(GetFaction(fsf));
 
         public string GetHomeworldCardImageURL(World w) => GetLabel(HomeWorldCardImage_URL, w);
 

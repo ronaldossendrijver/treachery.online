@@ -12,39 +12,13 @@ namespace Treachery.Shared
     {
         #region BeginningOfRevival
 
-        private bool RevivalTechTokenIncome { get; set; }
+        internal bool RevivalTechTokenIncome { get; set; }
 
         public List<Faction> FactionsThatTookFreeRevival { get; private set; } = new List<Faction>();
 
-        private bool PurpleStartedRevivalWithLowThreshold { get; set; }
+        internal bool PurpleStartedRevivalWithLowThreshold { get; set; }
 
-        private void EnterRevivalPhase()
-        {
-            MainPhaseStart(MainPhase.Resurrection);
-            Allow(FactionAdvantage.BlackFreeCard);
-            Allow(FactionAdvantage.RedReceiveBid);
-            Allow(FactionAdvantage.GreyAllyDiscardingCard);
-            RevivalTechTokenIncome = false;
-            AmbassadorsPlacedThisTurn = 0;
-            FactionsThatTookFreeRevival.Clear();
-            HasActedOrPassed.Clear();
-            PurpleStartedRevivalWithLowThreshold = HasLowThreshold(Faction.Purple);
-
-            if (Version < 122)
-            {
-                StartResurrection();
-            }
-            else
-            {
-                Enter(Phase.BeginningOfResurrection);
-            }
-        }
-
-        private void StartResurrection()
-        {
-            Enter(Phase.Resurrection);
-        }
-
+        
         #endregion
 
         #region Revival
@@ -298,7 +272,7 @@ namespace Treachery.Shared
 
         #region RevivalEvents
 
-        public Faction[] FactionsWithIncreasedRevivalLimits { get; private set; } = Array.Empty<Faction>();
+        public Faction[] FactionsWithIncreasedRevivalLimits { get; internal set; } = Array.Empty<Faction>();
 
         public void HandleEvent(SetIncreasedRevivalLimits e)
         {
@@ -401,7 +375,7 @@ namespace Treachery.Shared
 
         public bool PreventedFromReviving(Faction f) => CurrentKarmaRevivalPrevention != null && CurrentKarmaRevivalPrevention.Target == f;
 
-        private KarmaRevivalPrevention CurrentKarmaRevivalPrevention = null;
+        internal KarmaRevivalPrevention CurrentKarmaRevivalPrevention = null;
         public void HandleEvent(KarmaRevivalPrevention e)
         {
             CurrentKarmaRevivalPrevention = e;
@@ -419,23 +393,7 @@ namespace Treachery.Shared
 
         #region EndOfRevival
 
-        private void EndResurrectionPhase()
-        {
-            ReceiveGraveyardTechIncome();
-            CurrentKarmaRevivalPrevention = null;
-            CurrentYellowNexus = null;
-            CurrentRecruitsPlayed = null;
-
-            if (Version < 122)
-            {
-                EnterShipmentAndMovePhase();
-            }
-            else
-            {
-                if (Version >= 132) MainPhaseEnd();
-                Enter(Phase.ResurrectionReport);
-            }
-        }
+        
 
         #endregion
     }

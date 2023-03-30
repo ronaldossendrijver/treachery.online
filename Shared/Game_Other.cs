@@ -64,87 +64,6 @@ namespace Treachery.Shared
             }
         }
 
-        public void HandleEvent(Donated e)
-        {
-            var target = GetPlayer(e.Target);
-
-            if (!e.FromBank)
-            {
-                var initiator = GetPlayer(e.Initiator);
-
-                ExchangeResourcesInBribe(initiator, target, e.Resources);
-
-                if (e.Card != null)
-                {
-                    initiator.TreacheryCards.Remove(e.Card);
-                    RegisterKnown(initiator, e.Card);
-                    target.TreacheryCards.Add(e.Card);
-
-                    foreach (var p in Players.Where(p => p != initiator && p != target))
-                    {
-                        UnregisterKnown(p, initiator.TreacheryCards);
-                        UnregisterKnown(p, target.TreacheryCards);
-                    }
-                }
-
-                Log(e);
-                Stone(Milestone.Bribe);
-            }
-            else
-            {
-                if (e.Resources < 0)
-                {
-                    int resourcesToTake = Math.Min(Math.Abs(e.Resources), target.Resources);
-                    Log("Host puts ", Payment.Of(resourcesToTake), " from ", e.Target, " into the ", Concept.Resource, " Bank");
-                    target.Resources -= resourcesToTake;
-                }
-                else
-                {
-                    Log("Host gives ", e.Target, Payment.Of(e.Resources), " from the ", Concept.Resource, " Bank");
-                    target.Resources += e.Resources;
-                }
-            }
-        }
-
-        public void HandleEvent(DistransUsed e)
-        {
-            var initiator = GetPlayer(e.Initiator);
-            var target = GetPlayer(e.Target);
-
-            bool targetHadRoomForCards = target.HasRoomForCards;
-
-            Discard(initiator, TreacheryCardType.Distrans);
-
-            initiator.TreacheryCards.Remove(e.Card);
-            RegisterKnown(initiator, e.Card);
-            target.TreacheryCards.Add(e.Card);
-
-            if (initiator.TreacheryCards.Any())
-            {
-                foreach (var p in Players.Where(p => p != initiator && p != target))
-                {
-                    UnregisterKnown(p, initiator.TreacheryCards);
-                    UnregisterKnown(p, target.TreacheryCards);
-                }
-            }
-
-            Log(e);
-
-            CheckIfBiddingForPlayerShouldBeSkipped(target, targetHadRoomForCards);
-        }
-
-        private void CheckIfBiddingForPlayerShouldBeSkipped(Player player, bool hadRoomForCards)
-        {
-            if (CurrentPhase == Phase.BlackMarketBidding && hadRoomForCards && !player.HasRoomForCards && BlackMarketBid.MayBePlayed(this, player))
-            {
-                new Bid(this) { Initiator = player.Faction, Passed = true }.Execute(false, false);
-            }
-            else if (CurrentPhase == Phase.Bidding && hadRoomForCards && !player.HasRoomForCards && Bid.MayBePlayed(this, player))
-            {
-                new Bid(this) { Initiator = player.Faction, Passed = true }.Execute(false, false);
-            }
-        }
-
         internal Phase PhaseBeforeSearchingDiscarded { get; set; }
 
         internal void ExchangeResourcesInBribe(Player from, Player target, int amount)
@@ -173,7 +92,7 @@ namespace Treachery.Shared
         public ClairVoyanceQandA LatestClairvoyanceQandA { get; internal set; }
         public BattleInitiated LatestClairvoyanceBattle { get; internal set; }
 
-        public int KarmaHmsMovesLeft { get; private set; } = 2;
+        public int KarmaHmsMovesLeft { get; internal set; } = 2;
         public void HandleEvent(KarmaHmsMovement e)
         {
             var initiator = GetPlayer(e.Initiator);
@@ -274,7 +193,7 @@ namespace Treachery.Shared
             }
         }
 
-        public bool GreenKarma { get; private set; } = false;
+        public bool GreenKarma { get; internal set; } = false;
         public void HandleEvent(KarmaPrescience e)
         {
             var initiator = GetPlayer(e.Initiator);
@@ -285,7 +204,7 @@ namespace Treachery.Shared
             GreenKarma = true;
         }
 
-        public int PinkKarmaBonus { get; private set; } = 0;
+        public int PinkKarmaBonus { get; internal set; } = 0;
         public void HandleEvent(KarmaPinkDial e)
         {
             var initiator = GetPlayer(e.Initiator);
@@ -534,8 +453,8 @@ namespace Treachery.Shared
         }
 
 
-        public bool BlackTraitorWasCancelled { get; private set; } = false;
-        public bool FacedancerWasCancelled { get; private set; } = false;
+        public bool BlackTraitorWasCancelled { get; internal set; } = false;
+        public bool FacedancerWasCancelled { get; internal set; } = false;
         private void HandleBetrayal(NexusPlayed e)
         {
             switch (e.Faction)
@@ -707,12 +626,12 @@ namespace Treachery.Shared
             DiscardNexusCard(initiator);
         }
 
-        public NexusPlayed CurrentGreenNexus { get; private set; }
-        public NexusPlayed CurrentYellowNexus { get; private set; }
-        public NexusPlayed CurrentRedNexus { get; private set; }
-        public NexusPlayed CurrentOrangeNexus { get; private set; }
-        public NexusPlayed CurrentBlueNexus { get; private set; }
-        public NexusPlayed CurrentGreyNexus { get; private set; }
+        public NexusPlayed CurrentGreenNexus { get; internal set; }
+        public NexusPlayed CurrentYellowNexus { get; internal set; }
+        public NexusPlayed CurrentRedNexus { get; internal set; }
+        public NexusPlayed CurrentOrangeNexus { get; internal set; }
+        public NexusPlayed CurrentBlueNexus { get; internal set; }
+        public NexusPlayed CurrentGreyNexus { get; internal set; }
         private void HandleCunning(NexusPlayed e)
         {
             switch (e.Faction)

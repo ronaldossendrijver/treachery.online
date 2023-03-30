@@ -15,7 +15,7 @@ namespace Treachery.Shared
 
         private readonly List<int> Dials = new List<int>();
 
-        private void EnterStormPhase()
+        internal void EnterStormPhase()
         {
             CurrentTurn++;
             MainPhaseStart(MainPhase.Storm, CurrentTurn > 1);
@@ -84,7 +84,7 @@ namespace Treachery.Shared
             Enter(IsPlaying(Faction.Grey) || Applicable(Rule.HMSwithoutGrey), Phase.HmsPlacement, EndStormPhase);
         }
 
-        private void MoveHMSBeforeDiallingStorm()
+        internal void MoveHMSBeforeDiallingStorm()
         {
             if (IsPlaying(Faction.Grey) && GetPlayer(Faction.Grey).AnyForcesIn(Map.HiddenMobileStronghold) > 0)
             {
@@ -282,14 +282,9 @@ namespace Treachery.Shared
             NextStormMoves += e.ValueAdded;
         }
 
-        private void EnterNormalStormPhase()
-        {
-            Log("The storm moves ", NextStormMoves, " sectors");
-            MoveStormAndDetermineNext(NextStormMoves);
-            EndStormPhase();
-        }
+        
 
-        private void MoveStormAndDetermineNext(int amount)
+        internal void MoveStormAndDetermineNext(int amount)
         {
             if (amount == 0)
             {
@@ -445,7 +440,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void EndStormPhase()
+        internal void EndStormPhase()
         {
             JustRevealedDiscoveryStrongholds.Clear();
 

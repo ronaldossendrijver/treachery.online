@@ -20,7 +20,7 @@ namespace Treachery.Shared
 
         #region BeginningOfSpiceBlow
 
-        private void EnterSpiceBlowPhase()
+        internal void EnterSpiceBlowPhase()
         {
             MainPhaseStart(MainPhase.Blow);
             MonsterAppearedInTerritoryWithoutForces = false;
@@ -293,7 +293,7 @@ namespace Treachery.Shared
             Stone(Milestone.Harvester);
         }
 
-        private void MoveToNextPhaseAfterResourceBlow()
+        internal void MoveToNextPhaseAfterResourceBlow()
         {
             if (Monsters.Count == 0)
             {
@@ -429,7 +429,7 @@ namespace Treachery.Shared
             FlipBeneGesseritWhenAloneOrWithPinkAlly();
         }
 
-        private void EnterBlowA()
+        internal void EnterBlowA()
         {
             Monsters.Clear();
             NexusVoteMustHappen = false;
@@ -439,7 +439,7 @@ namespace Treachery.Shared
             LetFactionsDiscardSurplusCards();
         }
 
-        private void EnterBlowB()
+        internal void EnterBlowB()
         {
             Monsters.Clear();
             NexusVoteMustHappen = false;

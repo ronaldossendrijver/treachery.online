@@ -21,36 +21,35 @@
 
     @if (!GameStarted)
     {
-    <div class="row d-flex align-items-center m-n4" style="min-height: 95vh; background-image: url('../art/planet.png'); background-size: 55%; background-position-x: center; background-position-y: 0; background-repeat: no-repeat;">
+        <div class="row d-flex align-items-center m-n4" style="min-height: 95vh; background-image: url('../art/planet.png'); background-size: 55%; background-position-x: center; background-position-y: 0; background-repeat: no-repeat;">
 
+            @if (h.IsConnected)
+            {
+                var centerSize = h.PlayerName != "" && h.HostProxy == null && h.Host == null ? 6 : 4;
+                var fillerSize = 0.5f * (12 - centerSize);
 
-                @if (h.IsConnected)
-                {
-                    var centerSize = h.PlayerName != "" && h.HostProxy == null && h.Host == null ? 6 : 4;
-                    var fillerSize = 0.5f * (12 - centerSize);
+                <div class="col-sm-12 col-lg-@fillerSize" />
+                <div class="col-sm-12 col-lg-@centerSize">
 
-                    <div class="col-sm-12 col-lg-@fillerSize" />
-                    <div class="col-sm-12 col-lg-@centerSize">
+                    @if (h.PlayerName == "")
+                    {
+                        <div class="d-flex justify-content-center">
+                            <PlayerNameComponent h="@h" />
+                        </div>
+                    }
+                    else if (h.HostProxy == null && h.Host == null)
+                    {
+                        <HostOrJoinGameComponent h="@h" />
+                    }
+                    else
+                    {
+                        <ActionPanel h="@h" />
+                    }
 
-                        @if (h.PlayerName == "")
-                        {
-                            <div class="d-flex justify-content-center">
-                                <PlayerNameComponent h="@h" />
-                            </div>
-                        }
-                        else if (h.HostProxy == null && h.Host == null)
-                        {
-                            <HostOrJoinGameComponent h="@h" />
-                        }
-                        else
-                        {
-                            <ActionPanel h="@h" />
-                        }
+                </div>
+                <div class="col-sm-12 col-lg-@fillerSize" />
+            }
 
-                    </div>
-                    <div class="col-sm-12 col-lg-@fillerSize" />
-
-                }
         </div>
 
     }
@@ -83,10 +82,10 @@
             <!--Information Column-->
             <div class="col-sm-12 col-lg-3 cursor-hand @Scrollbars">
 
-                <MenuComponent h="@h" />
-
                 @if (!h.IsObserver)
                 {
+                    <MenuComponent h="@h" />
+
                     if (h.Player.Faction != Faction.None)
                     {
                         <PlayerPanel h="h" ShownPlayer="h.Player" />
@@ -136,6 +135,17 @@
 
             </div>
 
+            <!--Chat window for observers-->
+            @if (h.IsObserver)
+            {
+                <div class="col-sm-12 col-lg-3">
+
+                    <MenuComponent h="@h" />
+                    <ChatComponent h="@h" BackgroundColor="#e8dba6dd" />
+
+                </div>
+            }
+
             <!--Global Components-->
             @if (!h.IsObserver && h.CurrentPhase > Phase.AwaitingPlayers)
             {
@@ -150,16 +160,6 @@
             }
 
             <ImageFlashComponent h="@h" />
-
-            <!--Chat window for observers-->
-            @if (h.IsObserver)
-            {
-                <div class="col-sm-12 col-lg-3">
-
-                    <ChatComponent h="@h" BackgroundColor="#e8dba6dd" />
-
-                </div>
-            }
 
         </div>
     }
@@ -207,12 +207,8 @@
         var existingSkinData = await Browser.LoadStringSetting("treachery.online;setting.skin");
         if (existingSkinData != null && existingSkinData.Length > 0)
         {
-            var existingSkin = Skin.Load(existingSkinData);
-            if (existingSkin.Version >= Skin.CurrentVersion)
-            {
-                Skin.Current = existingSkin;
-                Message.DefaultDescriber = Skin.Current;
-            }
+            Skin.Current = Skin.Load(existingSkinData);
+            Message.DefaultDescriber = Skin.Current;
         }
     }
 

@@ -280,7 +280,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void AssignFactionsAndEnterFactionTrade()
+        internal void AssignFactionsAndEnterFactionTrade()
         {
             var inPlay = new Deck<Faction>(FactionsInPlay, Random);
             Stone(Milestone.Shuffled);
@@ -367,15 +367,7 @@ namespace Treachery.Shared
 
         #region SettingUp
 
-        private void EstablishDecks()
-        {
-            if (IsPlaying(Faction.White))
-            {
-                WhiteCache = TreacheryCardManager.GetWhiteCards();
-            }
-
-            Enter(Applicable(Rule.CustomDecks) && Version >= 134, Phase.CustomizingDecks, EnterSetupPhase);
-        }
+        
 
         internal void EnterSetupPhase()
         {

@@ -12,8 +12,8 @@ namespace Treachery.Shared
     {
         public const int LowestSupportedVersion = 100;
         public const int LatestVersion = 154;
-        public const int ExpansionLevel = 3;
 
+        public const int ExpansionLevel = 3;
         public bool BotInfologging = true;
 
         #region GameState
@@ -195,147 +195,6 @@ namespace Treachery.Shared
 
         public int EventCount => History.Count;
 
-        public void HandleEndPhaseEvent()
-        {
-            switch (CurrentPhase)
-            {
-                case Phase.SelectingFactions:
-                    AssignFactionsAndEnterFactionTrade();
-                    break;
-
-                case Phase.TradingFactions:
-                    EstablishDecks();
-                    break;
-
-                case Phase.BeginningOfStorm:
-                    MoveHMSBeforeDiallingStorm();
-                    break;
-
-                case Phase.MetheorAndStormSpell:
-                    EnterNormalStormPhase();
-                    break;
-
-                case Phase.StormReport:
-                    EnterSpiceBlowPhase();
-                    break;
-
-                case Phase.Thumper:
-                    EnterBlowA();
-                    break;
-
-                case Phase.HarvesterA:
-                case Phase.HarvesterB:
-                    MoveToNextPhaseAfterResourceBlow();
-                    break;
-
-                case Phase.AllianceA:
-                case Phase.AllianceB:
-                    EndNexus();
-                    break;
-
-                case Phase.BlowReport:
-                    if (Applicable(Rule.HasCharityPhase))
-                    {
-                        EnterCharityPhase();
-                    }
-                    else
-                    {
-                        EnterBiddingPhase();
-                    }
-                    break;
-
-                case Phase.BeginningOfCharity:
-                    StartClaimingCharity();
-                    break;
-
-                case Phase.ClaimingCharity:
-                    EndCharityPhase();
-                    break;
-
-                case Phase.CharityReport:
-                    EnterBiddingPhase();
-                    break;
-
-                case Phase.BeginningOfBidding:
-                    StartBiddingPhase();
-                    break;
-
-                case Phase.ReplacingCardJustWon:
-                    if (CardJustWon == CardSoldOnBlackMarket)
-                    {
-                        EnterWhiteBidding();
-                    }
-                    else
-                    {
-                        DetermineNextStepAfterCardWasSold();
-                    }
-                    break;
-
-                case Phase.WaitingForNextBiddingRound:
-                    PutNextCardOnAuction();
-                    break;
-
-                case Phase.BiddingReport:
-                    EnterRevivalPhase();
-                    break;
-
-                case Phase.BeginningOfResurrection:
-                    StartResurrection();
-                    break;
-
-                case Phase.Resurrection:
-                    EndResurrectionPhase();
-                    break;
-
-                case Phase.ResurrectionReport:
-                    EnterShipmentAndMovePhase();
-                    break;
-
-                case Phase.BeginningOfShipAndMove:
-                    StartShipAndMoveSequence();
-                    break;
-
-                case Phase.ShipmentAndMoveConcluded:
-                    EnterBattlePhase();
-                    break;
-
-                case Phase.BeginningOfBattle:
-                    Enter(Phase.BattlePhase);
-                    break;
-
-                case Phase.CancellingTraitor:
-                    Enter(Phase.CallTraitorOrPass);
-                    HandleRevealedBattlePlans();
-                    break;
-
-                case Phase.BattleReport:
-                    ResetBattle();
-                    Enter(NextPlayerToBattle != null, Phase.BattlePhase, EnterSpiceCollectionPhase);
-                    break;
-
-                case Phase.BeginningOfCollection:
-                    StartCollection();
-                    break;
-
-                case Phase.CollectionReport:
-                    EnterMentatPhase();
-                    break;
-
-                case Phase.Extortion:
-                    EndMentatPause();
-                    break;
-
-                case Phase.Contemplate:
-                    ContinueMentatPhase();
-                    break;
-
-                case Phase.TurnConcluded:
-                    if (Version < 108) AddBribesToPlayerResources();
-                    EnterStormPhase();
-                    break;
-            }
-        }
-
         internal Phase PhaseBeforeDiscarding { get; set; }
         public List<Faction> FactionsThatMustDiscard { get; internal set; } = new();
 
@@ -442,7 +301,7 @@ namespace Treachery.Shared
 
         #region PhaseTransitions
 
-        private void MainPhaseStart(MainPhase phase, bool clearReport = true)
+        internal void MainPhaseStart(MainPhase phase, bool clearReport = true)
         {
             CurrentMainPhase = phase;
             CurrentMoment = MainPhaseMoment.Start;
@@ -453,12 +312,12 @@ namespace Treachery.Shared
             BankerWasUsedThisPhase = false;
         }
 
-        private void MainPhaseMiddle()
+        internal void MainPhaseMiddle()
         {
             if (CurrentMoment == MainPhaseMoment.Start) CurrentMoment = MainPhaseMoment.Middle;
         }
 
-        private void MainPhaseEnd()
+        internal void MainPhaseEnd()
         {
             CurrentMoment = MainPhaseMoment.End;
 

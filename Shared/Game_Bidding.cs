@@ -32,7 +32,7 @@ namespace Treachery.Shared
 
         #region BeginningOfBidding
 
-        private void EnterBiddingPhase()
+        internal void EnterBiddingPhase()
         {
             MainPhaseStart(MainPhase.Bidding);
             Allow(FactionAdvantage.BrownControllingCharity);
@@ -52,7 +52,7 @@ namespace Treachery.Shared
             Enter(Version > 150, Phase.BeginningOfBidding, StartBiddingPhase);
         }
 
-        private void StartBiddingPhase()
+        internal void StartBiddingPhase()
         {
             var white = GetPlayer(Faction.White);
             Enter(white != null && Applicable(Rule.WhiteBlackMarket) && !Prevented(FactionAdvantage.WhiteBlackMarket) && white.TreacheryCards.Count > 0,
@@ -650,7 +650,7 @@ namespace Treachery.Shared
 
         public bool WhiteBiddingJustFinished { get; private set; }
 
-        private void DetermineNextStepAfterCardWasSold()
+        internal void DetermineNextStepAfterCardWasSold()
         {
             WhiteBiddingJustFinished = CurrentAuctionType == AuctionType.WhiteOnceAround || CurrentAuctionType == AuctionType.WhiteSilent;
 
@@ -702,7 +702,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void PutNextCardOnAuction()
+        internal void PutNextCardOnAuction()
         {
             if (!WhiteBiddingJustFinished)
             {
