@@ -95,16 +95,9 @@
 
 @code {
 
-    private float turnFontHeight;
-    private float activeFontHeight;
-    private float passiveFontHeight;   
-
-    protected override async Task OnInitializedAsync()
-    {
-        turnFontHeight = (await Browser.MeasureText("Turn", Skin.Current.TURN_FONT)).Height;
-        activeFontHeight = 0.6f * (await Browser.MeasureText("X", Skin.Current.PHASE_ACTIVE_FONT)).Height;
-        passiveFontHeight = 0.6f * (await Browser.MeasureText("X", Skin.Current.PHASE_FONT)).Height;   
-    }
+    private const float turnFontHeight = 16;
+    private const float activeFontHeight = 16;
+    private const float passiveFontHeight = 8;   
 
     private string ObserverPopover => string.Join(", ", Observers);
 

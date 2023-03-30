@@ -24,9 +24,6 @@ namespace Treachery.Client
             _runtime = runtime;
             Storage = new LocalStorage(runtime);
         }
-
-        //private static readonly ElementReference defaultElementReferenceValue = default;
-
         public static async Task EnablePopover(ElementReference element)
         {
             if (!element.Equals(default(ElementReference))) await JsInvoke("EnablePopover", element);
@@ -58,8 +55,6 @@ namespace Treachery.Client
         }
 
         public static async Task RemoveFocusFromButtons() => await JsInvoke("RemoveFocusFromButtons");
-
-        public static async Task<Dimensions> MeasureText(string text, string font) => await JsInvoke<Dimensions>("MeasureText", text, font);
 
         public static async Task HideModal(string modalId) => await JsInvoke("HideModal", modalId);
 

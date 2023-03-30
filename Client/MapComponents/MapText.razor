@@ -1,26 +1,24 @@
 ﻿<!--
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
 --->
-
 @using Treachery.Shared;
 @inherits MapComponent
 @implements IDisposable;
 
-@if (Popover != null && !PopoverAsTooltip) {
+@if (Popover != null && !PopoverAsTooltip)
+{
 
-    <span 
-        @ref=@element
-        style=@Style
-        data-bs-trigger="hover" data-bs-toggle="popover" data-bs-html="true" data-bs-animation="false" data-bs-delay="50" data-container="body" data-bs-content="@Popover" data-bs-template="@PopoverTemplate">
-            @ToShow
-            @ChildContent
+    <span @ref=@element
+          style=@style
+          data-bs-trigger="hover" data-bs-toggle="popover" data-bs-html="true" data-bs-animation="false" data-bs-delay="50" data-container="body" data-bs-content="@Popover" data-bs-template="@PopoverTemplate">
+        @ToShow
+        @ChildContent
     </span>
 }
 else
 {
-    <span 
-        title=@Popover
-        style="@Style;user-select:none;">
+    <span title=@Popover
+          style="@style;user-select:none;">
         @ToShow
         @ChildContent
     </span>
@@ -60,31 +58,30 @@ else
     [Parameter]
     public bool PopoverAsTooltip { get; set; }
 
-    private double TextWidth;
-    private double TextHeight;
-    private double AlignedX;
+    private string style;
 
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
-
-        var textDimensions = await Browser.MeasureText(ToShow, Font);
-
-        TextWidth = textDimensions.Width;
-        TextHeight = 0.45f * textDimensions.Height;
-
-        AlignedX = Align switch
-        {
-            TextAlignment.Center => X - 0.5f * TextWidth,
-            TextAlignment.Right => X - TextWidth,
-            _ => X
-        };
 
         if (_popover != Popover)
         {
             _popover = Popover;
             _popoverNeedsUpdate = true;
         }
+
+        var transformX = Align switch
+        {
+            TextAlignment.Left => "",
+            TextAlignment.Center => "translateX(-50%)",
+            TextAlignment.Right => "translateX(-100%)",
+            _ => ""
+        };
+
+        var border = Support.TextBorder(BorderWidth, BorderColor);
+        var pointerevents = Popover != null ? "cursor:pointer;pointer-events:all" : "pointer-events:none";
+
+        style = $"position:absolute;transform:{transformX}translateY(-40%);left:{Px(X)};top:{Px(Y)};white-space:nowrap;user-select:none;font:{Font};color:{FontColor};max-width:{Px(MaxWidth)};{border};{pointerevents};";
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -102,16 +99,6 @@ else
             }
         }
     }
-
-    private string Style => 
-        string.Format("position:absolute;white-space:nowrap;left:{0};top:{1};user-select:none;font:{2};color:{3};max-width:{4};{5};{6};", 
-        Px(AlignedX), 
-        Px(Y - TextHeight), 
-        Font, FontColor, 
-        Px(MaxWidth), 
-        Support.TextBorder(BorderWidth, BorderColor),
-        Popover != null ? "cursor:pointer;pointer-events:all" : "pointer-events:none");
-    
 
     public void Dispose()
     {
