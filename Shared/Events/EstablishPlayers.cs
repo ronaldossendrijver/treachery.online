@@ -11,40 +11,7 @@ namespace Treachery.Shared
 {
     public class EstablishPlayers : GameEvent
     {
-        public string _players = "";
-
-        public int Seed { get; set; }
-
-        public int MaximumNumberOfPlayers { get; set; } = 6;
-
-        public int MaximumTurns { get; set; } = 10;
-
-        public Rule[] ApplicableRules { get; set; }
-
-        public string _factionsInPlay = "";
-
-        public string _gameName = "";
-
-        [JsonIgnore]
-        public string GameName
-        {
-            get
-            {
-                if (_gameName == null || _gameName == "")
-                {
-                    return string.Format("{0}'s Game", Players.FirstOrDefault());
-                }
-                else
-                {
-                    return _gameName;
-                }
-            }
-
-            set
-            {
-                _gameName = value;
-            }
-        }
+        #region Construction
 
         public EstablishPlayers(Game game) : base(game)
         {
@@ -54,45 +21,48 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public int Seed { get; set; }
+
+        public int MaximumNumberOfPlayers { get; set; } = 6;
+
+        public int MaximumTurns { get; set; } = 10;
+
+        public Rule[] ApplicableRules { get; set; }
+
+        public string _gameName = "";
+
+        [JsonIgnore]
+        public string GameName
+        {
+            get => _gameName == null || _gameName == "" ? string.Format("{0}'s Game", Players.FirstOrDefault()) : _gameName;
+            set => _gameName = value;
+        }
+
+        public string _players = "";
+
         [JsonIgnore]
         public IEnumerable<string> Players
         {
-            get
-            {
-                if (_players == "")
-                {
-                    return new string[] { };
-                }
-                else
-                {
-                    return _players.Split('>');
-                }
-            }
-            set
-            {
-                _players = string.Join('>', value);
-            }
+            get => _players == "" ? Array.Empty<string>() : _players.Split('>');
+            set => _players = string.Join('>', value);
         }
+
+        public string _factionsInPlay = "";
 
         [JsonIgnore]
         public List<Faction> FactionsInPlay
         {
-            get
-            {
-                if (_factionsInPlay == null || _factionsInPlay.Length == 0)
-                {
-                    return new List<Faction>();
-                }
-                else
-                {
-                    return _factionsInPlay.Split(',').Select(f => Enum.Parse<Faction>(f)).ToList();
-                }
-            }
-            set
-            {
-                _factionsInPlay = string.Join(',', value);
-            }
+            get => _factionsInPlay == null || _factionsInPlay.Length == 0 ? new List<Faction>() : _factionsInPlay.Split(',').Select(f => Enum.Parse<Faction>(f)).ToList();
+            set => _factionsInPlay = string.Join(',', value);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -128,7 +98,7 @@ namespace Treachery.Shared
             return null;
         }
 
-        public static int GetMaximumNumberOfPlayers(Game g)
+        public static int GetMaximumNumberOfPlayers()
         {
             return AvailableFactions().Count();
         }
@@ -136,33 +106,6 @@ namespace Treachery.Shared
         public static int GetMaximumNumberOfTurns()
         {
             return 20;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
-        public override Message Execute(bool performValidation, bool isHost)
-        {
-            if (performValidation)
-            {
-                var result = Validate();
-                if (result == null)
-                {
-                    Game.PerformPreEventTasks(this);
-                    ExecuteConcreteEvent();
-                    Game.PerformPostEventTasks(this, true);
-                }
-                return result;
-            }
-            else
-            {
-                Game.PerformPreEventTasks(this);
-                ExecuteConcreteEvent();
-                Game.PerformPostEventTasks(this, true);
-                return null;
-            }
         }
 
         public static IEnumerable<Faction> AvailableFactions()
@@ -236,5 +179,278 @@ namespace Treachery.Shared
 
             return result;
         }
+
+        #endregion Validation
+
+        #region Execution
+
+        public override Message Execute(bool performValidation, bool isHost)
+        {
+            if (performValidation)
+            {
+                var result = Validate();
+                if (result == null)
+                {
+                    Game.PerformPreEventTasks(this);
+                    ExecuteConcreteEvent();
+                    Game.PerformPostEventTasks(this, true);
+                }
+                return result;
+            }
+            else
+            {
+                Game.PerformPreEventTasks(this);
+                ExecuteConcreteEvent();
+                Game.PerformPostEventTasks(this, true);
+                return null;
+            }
+        }
+
+        protected override void ExecuteConcreteEvent()
+        {
+            Game.CurrentReport = new Report(MainPhase.Setup);
+
+            Game.Stone(Milestone.GameStarted);
+            Log("Game started!");
+
+            Game.CurrentMainPhase = MainPhase.Setup;
+
+            Game.Seed = Seed;
+            Game.Name = GameName;
+            Game.Random = new Random(Seed);
+
+            Game.AllRules = ApplicableRules.ToList();
+            Game.Rules = ApplicableRules.Where(r => Game.GetRuleGroup(r) != RuleGroup.Bots).ToList();
+            Game.RulesForBots = ApplicableRules.Where(r => Game.GetRuleGroup(r) == RuleGroup.Bots).ToList();
+            Game.Rules.AddRange(Game.GetRulesInGroup(RuleGroup.CoreBasic, Game.ExpansionLevel));
+
+            Game.Ruleset = Game.DetermineApproximateRuleset(FactionsInPlay, Game.Rules, Game.ExpansionLevel);
+            Log("Ruleset: ", Game.Ruleset);
+            
+            var customRules = Game.GetCustomRules().ToList();
+            LogIf(customRules.Any(), "House rules: ", customRules);
+
+            if (Game.Applicable(Rule.ExpansionTreacheryCards))
+            {
+                if (!Game.Rules.Contains(Rule.ExpansionTreacheryCardsExceptPBandSSandAmal)) Game.Rules.Add(Rule.ExpansionTreacheryCardsExceptPBandSSandAmal);
+                if (!Game.Rules.Contains(Rule.ExpansionTreacheryCardsPBandSS)) Game.Rules.Add(Rule.ExpansionTreacheryCardsPBandSS);
+                if (!Game.Rules.Contains(Rule.ExpansionTreacheryCardsAmal)) Game.Rules.Add(Rule.ExpansionTreacheryCardsAmal);
+            }
+
+            Game.ResourceCardDeck = CreateAndShuffleResourceCardDeck();
+            Game.TreacheryDeck = TreacheryCardManager.CreateTreacheryDeck(Game, Game.Random);
+            CreateDiscoveryTokens();
+
+            if (!Game.Applicable(Rule.CustomDecks))
+            {
+                Game.TreacheryDeck.Shuffle();
+                Game.Stone(Milestone.Shuffled);
+            }
+
+            Game.TreacheryDiscardPile = new Deck<TreacheryCard>(Game.Random);
+            Game.ResourceCardDiscardPileA = new Deck<ResourceCard>(Game.Random);
+            Game.ResourceCardDiscardPileB = new Deck<ResourceCard>(Game.Random);
+
+            if (Game.Applicable(Rule.NexusCards))
+            {
+                CreateNexusDeck();
+            }
+
+            CreateTerrorTokens();
+            Game.UnassignedAmbassadors = new Deck<Ambassador>(AvailableFactions().Where(f => f != Faction.Cyan).Select(f => Game.AmbassadorOf(f)), Game.Random);
+
+            Game.AllyMayShipAsOrange = true;
+            Game.AllyMayReviveAsPurple = true;
+            Game.AllyMayReplaceCards = true;
+            Game.RedWillPayForExtraRevival = 0;
+            Game.YellowWillProtectFromMonster = true;
+            Game.YellowAllowsThreeFreeRevivals = true;
+            Game.YellowSharesPrescience = true;
+            Game.YellowRefundsBattleDial = true;
+            Game.GreenSharesPrescience = true;
+            Game.BlueAllowsUseOfVoice = true;
+            Game.WhiteAllowsUseOfNoField = true;
+
+            Game.MaximumNumberOfTurns = MaximumTurns;
+            Game.MaximumNumberOfPlayers = MaximumNumberOfPlayers;
+
+            Log("The maximum number of turns is: ", Game.MaximumNumberOfTurns);
+
+            Game.FactionsInPlay = FactionsInPlay;
+
+            AddPlayersToGame();
+
+            FillEmptySeatsWithBots();
+            RemoveClaimedFactions();
+            InitializeTimers();
+
+            Game.Enter(Game.Applicable(Rule.PlayersChooseFactions), Phase.SelectingFactions, Game.AssignFactionsAndEnterFactionTrade);
+        }
+
+        private void CreateTerrorTokens()
+        {
+            Game.UnplacedTerrorTokens = new List<TerrorType> {
+                TerrorType.Assassination,
+                TerrorType.Atomics,
+                TerrorType.Extortion,
+                TerrorType.Robbery,
+                TerrorType.Sabotage,
+                TerrorType.SneakAttack
+            };
+        }
+
+        private void CreateNexusDeck()
+        {
+            Game.NexusCardDeck = new Deck<Faction>(AvailableFactions(), Game.Random);
+            Game.NexusCardDeck.Shuffle();
+        }
+
+        private void InitializeTimers()
+        {
+            foreach (var player in Game.Players)
+            {
+                var playerTimers = new Dictionary<MainPhase, TimeSpan>();
+                foreach (var mainphase in Enumerations.GetValuesExceptDefault(typeof(MainPhase), MainPhase.None))
+                {
+                    playerTimers.Add(mainphase, TimeSpan.Zero);
+                }
+
+                Game.Timers.Add(player, playerTimers);
+            }
+        }
+
+        private void RemoveClaimedFactions()
+        {
+            foreach (var f in Game.Players.Where(p => !p.Is(Faction.None)).Select(p => p.Faction))
+            {
+                Game.FactionsInPlay.Remove(f);
+            }
+        }
+
+        private Deck<ResourceCard> CreateAndShuffleResourceCardDeck()
+        {
+            var result = new Deck<ResourceCard>(Game.Random);
+            foreach (var c in Map.GetResourceCardsInPlay(Game))
+            {
+                result.PutOnTop(c);
+            }
+
+            Game.Stone(Milestone.Shuffled);
+            result.Shuffle();
+            return result;
+        }
+
+
+
+        private void AddPlayersToGame()
+        {
+            if (Game.Version < 113)
+            {
+                AddBots();
+            }
+
+            foreach (var newPlayer in Players)
+            {
+                var p = new Player(Game, newPlayer);
+                if (!Game.Players.Contains(p))
+                {
+                    Game.Players.Add(p);
+                    Log(p.Name, " joined the game");
+                }
+                else
+                {
+                    Log(p.Name, " is already in the game");
+                }
+            }
+        }
+
+        private void AddBots()
+        {
+            //Can be removed later, this was replaced by filling empty seats with bots.
+            if (Game.Applicable(Rule.OrangeBot)) Game.Players.Add(new Player(Game, UniquePlayerName("Edric*"), Faction.Orange, true));
+            if (Game.Applicable(Rule.RedBot)) Game.Players.Add(new Player(Game, UniquePlayerName("Shaddam IV*"), Faction.Red, true));
+            if (Game.Applicable(Rule.BlackBot)) Game.Players.Add(new Player(Game, UniquePlayerName("The Baron*"), Faction.Black, true));
+            if (Game.Applicable(Rule.PurpleBot)) Game.Players.Add(new Player(Game, UniquePlayerName("Scytale*"), Faction.Purple, true));
+            if (Game.Applicable(Rule.BlueBot)) Game.Players.Add(new Player(Game, UniquePlayerName("Mother Mohiam*"), Faction.Blue, true));
+            if (Game.Applicable(Rule.GreenBot)) Game.Players.Add(new Player(Game, UniquePlayerName("Paul Atreides*"), Faction.Green, true));
+            if (Game.Applicable(Rule.YellowBot)) Game.Players.Add(new Player(Game, UniquePlayerName("Liet Kynes*"), Faction.Yellow, true));
+            if (Game.Applicable(Rule.GreyBot)) Game.Players.Add(new Player(Game, UniquePlayerName("Prince Rhombur*"), Faction.Grey, true));
+        }
+
+        private string UniquePlayerName(string name)
+        {
+            var result = name;
+            while (Game.Players.Any(p => p.Name == result))
+            {
+                result += "'";
+            }
+            return result;
+        }
+
+        private void CreateDiscoveryTokens()
+        {
+            Game.YellowDiscoveryTokens = new Deck<DiscoveryToken>(Game.Random);
+            Game.OrangeDiscoveryTokens = new Deck<DiscoveryToken>(Game.Random);
+
+            if (Game.Applicable(Rule.DiscoveryTokens))
+            {
+                Game.YellowDiscoveryTokens.Items.Add(DiscoveryToken.Jacurutu);
+                Game.YellowDiscoveryTokens.Items.Add(DiscoveryToken.Shrine);
+                Game.YellowDiscoveryTokens.Items.Add(DiscoveryToken.TestingStation);
+                Game.YellowDiscoveryTokens.Items.Add(DiscoveryToken.Cistern);
+                Game.YellowDiscoveryTokens.Shuffle();
+
+                Game.OrangeDiscoveryTokens.Items.Add(DiscoveryToken.ProcessingStation);
+                Game.OrangeDiscoveryTokens.Items.Add(DiscoveryToken.CardStash);
+                Game.OrangeDiscoveryTokens.Items.Add(DiscoveryToken.ResourceStash);
+                Game.OrangeDiscoveryTokens.Items.Add(DiscoveryToken.Flight);
+                Game.OrangeDiscoveryTokens.Shuffle();
+            }
+        }
+
+        private void FillEmptySeatsWithBots()
+        {
+            if (Game.Applicable(Rule.FillWithBots))
+            {
+                if (Game.Version <= 125)
+                {
+                    var available = new Deck<Faction>(FactionsInPlay.Where(f => !Game.IsPlaying(f)), Game.Random);
+                    available.Shuffle();
+
+                    while (Game.Players.Count < MaximumNumberOfPlayers)
+                    {
+                        var bot = available.Draw() switch
+                        {
+                            Faction.Black => new Player(Game, UniquePlayerName("The Baron*"), Faction.Black, true),
+                            Faction.Blue => new Player(Game, UniquePlayerName("Mother Mohiam*"), Faction.Blue, true),
+                            Faction.Green => new Player(Game, UniquePlayerName("Paul Atreides*"), Faction.Green, true),
+                            Faction.Yellow => new Player(Game, UniquePlayerName("Liet Kynes*"), Faction.Yellow, true),
+                            Faction.Red => new Player(Game, UniquePlayerName("Shaddam IV*"), Faction.Red, true),
+                            Faction.Orange => new Player(Game, UniquePlayerName("Edric*"), Faction.Orange, true),
+                            Faction.Grey => new Player(Game, UniquePlayerName("Prince Rhombur*"), Faction.Grey, true),
+                            Faction.Purple => new Player(Game, UniquePlayerName("Scytale*"), Faction.Purple, true),
+                            Faction.Brown => new Player(Game, UniquePlayerName("Brown*"), Faction.Brown, true),
+                            Faction.White => new Player(Game, UniquePlayerName("White*"), Faction.White, true),
+                            Faction.Pink => new Player(Game, UniquePlayerName("Pink*"), Faction.Pink, true),
+                            Faction.Cyan => new Player(Game, UniquePlayerName("Cyan*"), Faction.Cyan, true),
+                            _ => new Player(Game, UniquePlayerName("The Baron*"), Faction.Black, true)
+                        };
+
+                        Game.Players.Add(bot);
+                    }
+                }
+                else
+                {
+                    int botNr = 1;
+
+                    while (Game.Players.Count < MaximumNumberOfPlayers)
+                    {
+                        Game.Players.Add(new Player(Game, UniquePlayerName(string.Format("Bot{0}", botNr++)), Faction.None, true));
+                    }
+                }
+            }
+        }
+
+        #endregion Execution
     }
 }

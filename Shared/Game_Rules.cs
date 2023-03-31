@@ -11,7 +11,7 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public Ruleset Ruleset { get; private set; }
+        public Ruleset Ruleset { get; internal set; }
 
         public IEnumerable<Rule> GetCustomRules()
         {
@@ -91,9 +91,8 @@ namespace Treachery.Shared
                 rules.Contains(Rule.StrongholdBonus);
         }
 
-        public static Dictionary<Ruleset, Rule[]> RulesetDefinition = new()
+        public static Dictionary<Ruleset, Rule[]> RulesetDefinition { get; private set; } = new()
         {
-
             [Ruleset.BasicGame] = new Rule[] {
                 Rule.BasicTreacheryCards,
                 Rule.HasCharityPhase

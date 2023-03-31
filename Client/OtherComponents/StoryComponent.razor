@@ -145,14 +145,14 @@
                                 {
                                     if (b.AmountOfForces > 0)
                                     {
-                                        <Image Width=32 Shown=replay.GetPlayer(b.Faction).Force />
+                                        <Image Width=24 Shown=replay.GetPlayer(b.Faction).Force />
                                         <strong>@b.AmountOfForces</strong>
                                         <span>&nbsp;</span>
                                     }
 
                                     @if (b.AmountOfSpecialForces > 0)
                                     {
-                                        <Image Width=32 Shown=replay.GetPlayer(b.Faction).SpecialForce />
+                                        <Image Width=24 Shown=replay.GetPlayer(b.Faction).SpecialForce />
                                         <strong>@b.AmountOfSpecialForces</strong>
                                     }
                                 }
@@ -161,10 +161,15 @@
                             @if (replay.Applicable(Rule.StrongholdBonus))
                             {
                                 var owner = replay.OwnerOf(sh);
-                                if (owner != null)
-                                {
-                                    <td><Image Width=32 Shown=owner.Faction /></td>
-                                }
+
+                                <td>
+                                
+                                    @if (owner != null)
+                                    {
+                                        <Image Width=24 Shown=owner.Faction />
+                                    }
+
+                                </td>
                             }
 
                             @if (replay.IsPlaying(Faction.Pink) || replay.IsPlaying(Faction.Cyan))
@@ -174,12 +179,12 @@
                                     var ambassador = replay.AmbassadorIn(sh.Territory);
                                     if (ambassador != Ambassador.None)
                                     {
-                                        <Image Width=32 Shown=ambassador />
+                                        <Image Width=24 Shown=ambassador />
                                     }
 
                                     foreach (var terror in replay.TerrorIn(sh.Territory))
                                     {
-                                        <Image Width=32 Shown=terror />
+                                        <Image Width=24 Shown=terror />
                                     }
                                 }
                                 </td>

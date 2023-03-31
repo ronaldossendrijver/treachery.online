@@ -67,8 +67,8 @@ namespace Treachery.Client
         public Dictionary<Ambassador, string> AmbassadorDescription_STR;
 
         public bool DrawResourceIconsOnMap { get; set; }
-        public bool ShowVerboseToolipsOnMap;
-        public bool ShowArrowsForRecentMoves;
+        public bool ShowVerboseToolipsOnMap { get; set; }
+        public bool ShowArrowsForRecentMoves { get; set; }
 
         public string MusicGeneral_URL;
         public string MusicResourceBlow_URL;
@@ -85,7 +85,6 @@ namespace Treachery.Client
         public string Map_URL;
         public string Eye_URL;
         public string EyeSlash_URL;
-        public string Planet_URL;
         public string CardBack_ResourceCard_URL;
         public string CardBack_TreacheryCard_URL;
         public string BattleScreen_URL;
@@ -106,7 +105,6 @@ namespace Treachery.Client
         public Point CardSize;
 
         public int BattleScreenWidth;
-        public int BattleScreenHeight;
         public int BattleScreenHeroX;
         public int BattleScreenHeroY;
         public int BattleWheelHeroWidth;
@@ -124,13 +122,8 @@ namespace Treachery.Client
         //Force tokens
         public string FORCETOKEN_FONT;
         public string FORCETOKEN_FONTCOLOR;
-        public string FORCETOKEN_SPECIAL_FONTCOLOR;
         public string FORCETOKEN_FONT_BORDERCOLOR;
         public int FORCETOKEN_FONT_BORDERWIDTH;
-        public string FORCETOKEN_SPECIAL_BORDERCOLOR;
-        public string FORCETOKEN_BORDERCOLOR;
-        public int FORCETOKEN_BORDERWIDTH;
-        public int FORCETOKEN_SPECIAL_BORDERWIDTH;
         public int FORCETOKEN_RADIUS;
 
         //Spice tokens
@@ -138,8 +131,6 @@ namespace Treachery.Client
         public string RESOURCETOKEN_FONTCOLOR;
         public string RESOURCETOKEN_FONT_BORDERCOLOR;
         public int RESOURCETOKEN_FONT_BORDERWIDTH;
-        public string RESOURCETOKEN_COLOR;
-        public string RESOURCETOKEN_BORDERCOLOR;
         public int RESOURCETOKEN_RADIUS;
 
         //Other highlights
@@ -196,10 +187,7 @@ namespace Treachery.Client
         public string SHADOW;
 
         //General
-        public string GAMEVERSION_FONT;
-        public string PLAYEDCARD_MESSAGE_FONT;
         public string FACTION_INFORMATIONCARDSTYLE;
-        public string TRACKER_FONT;
 
         #endregion Attributes
 
@@ -955,7 +943,7 @@ namespace Treachery.Client
         }
 
         private static string SheetHeader(string atStart, int resources, int freeRevival, string theme) =>
-            $"<div style='{{25}}'><p><strong>AT START:</strong> {atStart}. Start with {resources} {{16}}.</p><p><strong>FREE REVIVAL:</strong> {freeRevival}</p><h5>Advantages</h5><p>{theme}:</p>";
+            $"<div style='{{25}}'><p><strong>AT START:</strong> {atStart}. Start with {resources} {{16}}.</p><p><strong>FREE REVIVAL:</strong> {freeRevival}</p><h5>{theme}</h5>";
 
         private static string Advantage(string advantageName, string advantageDescription, bool condition = true) =>
             condition ? $"<p><strong>{advantageName.ToUpper()}</strong> - {advantageDescription}" : "";
@@ -1261,7 +1249,6 @@ namespace Treachery.Client
             FixValue(ref toFix.Map_URL, donor.Map_URL);
             FixValue(ref toFix.Eye_URL, donor.Eye_URL);
             FixValue(ref toFix.EyeSlash_URL, donor.EyeSlash_URL);
-            FixValue(ref toFix.Planet_URL, donor.Planet_URL);
             FixValue(ref toFix.CardBack_ResourceCard_URL, donor.CardBack_ResourceCard_URL);
             FixValue(ref toFix.CardBack_TreacheryCard_URL, donor.CardBack_TreacheryCard_URL);
             FixValue(ref toFix.BattleScreen_URL, donor.BattleScreen_URL);
@@ -1279,7 +1266,6 @@ namespace Treachery.Client
             FixValue(ref toFix.TreacheryDeckLocation, donor.TreacheryDeckLocation);
             FixValue(ref toFix.CardSize, donor.CardSize);
             FixValue(ref toFix.BattleScreenWidth, donor.BattleScreenWidth);
-            FixValue(ref toFix.BattleScreenHeight, donor.BattleScreenHeight);
             FixValue(ref toFix.BattleScreenHeroX, donor.BattleScreenHeroX);
             FixValue(ref toFix.BattleScreenHeroY, donor.BattleScreenHeroY);
             FixValue(ref toFix.BattleWheelHeroWidth, donor.BattleWheelHeroWidth);
@@ -1293,20 +1279,13 @@ namespace Treachery.Client
             FixValue(ref toFix.MONSTERTOKEN_RADIUS, donor.MONSTERTOKEN_RADIUS);
             FixValue(ref toFix.FORCETOKEN_FONT, donor.FORCETOKEN_FONT);
             FixValue(ref toFix.FORCETOKEN_FONTCOLOR, donor.FORCETOKEN_FONTCOLOR);
-            FixValue(ref toFix.FORCETOKEN_SPECIAL_FONTCOLOR, donor.FORCETOKEN_SPECIAL_FONTCOLOR);
             FixValue(ref toFix.FORCETOKEN_FONT_BORDERCOLOR, donor.FORCETOKEN_FONT_BORDERCOLOR);
             FixValue(ref toFix.FORCETOKEN_FONT_BORDERWIDTH, donor.FORCETOKEN_FONT_BORDERWIDTH);
-            FixValue(ref toFix.FORCETOKEN_SPECIAL_BORDERCOLOR, donor.FORCETOKEN_SPECIAL_BORDERCOLOR);
-            FixValue(ref toFix.FORCETOKEN_BORDERCOLOR, donor.FORCETOKEN_BORDERCOLOR);
-            FixValue(ref toFix.FORCETOKEN_BORDERWIDTH, donor.FORCETOKEN_BORDERWIDTH);
-            FixValue(ref toFix.FORCETOKEN_SPECIAL_BORDERWIDTH, donor.FORCETOKEN_SPECIAL_BORDERWIDTH);
             FixValue(ref toFix.FORCETOKEN_RADIUS, donor.FORCETOKEN_RADIUS);
             FixValue(ref toFix.RESOURCETOKEN_FONT, donor.RESOURCETOKEN_FONT);
             FixValue(ref toFix.RESOURCETOKEN_FONTCOLOR, donor.RESOURCETOKEN_FONTCOLOR);
             FixValue(ref toFix.RESOURCETOKEN_FONT_BORDERCOLOR, donor.RESOURCETOKEN_FONT_BORDERCOLOR);
             FixValue(ref toFix.RESOURCETOKEN_FONT_BORDERWIDTH, donor.RESOURCETOKEN_FONT_BORDERWIDTH);
-            FixValue(ref toFix.RESOURCETOKEN_COLOR, donor.RESOURCETOKEN_COLOR);
-            FixValue(ref toFix.RESOURCETOKEN_BORDERCOLOR, donor.RESOURCETOKEN_BORDERCOLOR);
             FixValue(ref toFix.RESOURCETOKEN_RADIUS, donor.RESOURCETOKEN_RADIUS);
             FixValue(ref toFix.HIGHLIGHT_OVERLAY_COLOR, donor.HIGHLIGHT_OVERLAY_COLOR);
             FixValue(ref toFix.METHEOR_OVERLAY_COLOR, donor.METHEOR_OVERLAY_COLOR);
@@ -1343,10 +1322,7 @@ namespace Treachery.Client
             FixValue(ref toFix.WHEEL_FONT_DEFENDER_BORDERCOLOR, donor.WHEEL_FONT_DEFENDER_BORDERCOLOR);
             FixValue(ref toFix.WHEEL_FONT_BORDERWIDTH, donor.WHEEL_FONT_BORDERWIDTH);
             FixValue(ref toFix.SHADOW, donor.SHADOW);
-            FixValue(ref toFix.GAMEVERSION_FONT, donor.GAMEVERSION_FONT);
-            FixValue(ref toFix.PLAYEDCARD_MESSAGE_FONT, donor.PLAYEDCARD_MESSAGE_FONT);
             FixValue(ref toFix.FACTION_INFORMATIONCARDSTYLE, donor.FACTION_INFORMATIONCARDSTYLE);
-            FixValue(ref toFix.TRACKER_FONT, donor.TRACKER_FONT);
         }
 
         private static Dictionary<TKey, TValue> FixDictionary<TKey, TValue>(Dictionary<TKey, TValue> toFix, Dictionary<TKey, TValue> donor)
@@ -1391,7 +1367,6 @@ namespace Treachery.Client
             Map_URL = DEFAULT_ART_LOCATION + "/art/map.svg",
             Eye_URL = DEFAULT_ART_LOCATION + "/art/eye.svg",
             EyeSlash_URL = DEFAULT_ART_LOCATION + "/art/eyeslash.svg",
-            Planet_URL = DEFAULT_ART_LOCATION + "/art/planet.png",
             CardBack_ResourceCard_URL = DEFAULT_ART_LOCATION + "/art/SpiceBack.gif",
             CardBack_TreacheryCard_URL = DEFAULT_ART_LOCATION + "/art/TreacheryBack.gif",
             BattleScreen_URL = DEFAULT_ART_LOCATION + "/art/wheel.png",
@@ -2649,7 +2624,6 @@ namespace Treachery.Client
             CardSize = new Point(40, 56),
 
             BattleScreenWidth = 273,
-            BattleScreenHeight = 273,
 
             BattleScreenHeroX = 47,
             BattleScreenHeroY = 150,
@@ -2670,13 +2644,8 @@ namespace Treachery.Client
             //Force tokens
             FORCETOKEN_FONT = "normal normal bold 8px Verdana, Open Sans, Calibri, Tahoma, sans-serif",
             FORCETOKEN_FONTCOLOR = "white",
-            FORCETOKEN_SPECIAL_FONTCOLOR = "gold",
             FORCETOKEN_FONT_BORDERCOLOR = "black",
-            FORCETOKEN_SPECIAL_BORDERCOLOR = "gold",
             FORCETOKEN_FONT_BORDERWIDTH = 1,
-            FORCETOKEN_BORDERCOLOR = "white",
-            FORCETOKEN_BORDERWIDTH = 1,
-            FORCETOKEN_SPECIAL_BORDERWIDTH = 2,
             FORCETOKEN_RADIUS = 8,
 
             //Spice tokens
@@ -2684,8 +2653,6 @@ namespace Treachery.Client
             RESOURCETOKEN_FONTCOLOR = "white",
             RESOURCETOKEN_FONT_BORDERCOLOR = "black",
             RESOURCETOKEN_FONT_BORDERWIDTH = 1,
-            RESOURCETOKEN_COLOR = "rgba(255,140,60,0.9)",
-            RESOURCETOKEN_BORDERCOLOR = "white",
             RESOURCETOKEN_RADIUS = 8,
 
             //Other highlights
@@ -2740,10 +2707,7 @@ namespace Treachery.Client
             SHADOW = "#000000AA",
 
             //General
-            GAMEVERSION_FONT = "normal normal normal 16px Advokat, Calibri, Tahoma, sans-serif;",
-            PLAYEDCARD_MESSAGE_FONT = "normal normal normal 20px Advokat, Calibri, Tahoma, sans-serif",
-            FACTION_INFORMATIONCARDSTYLE = "font: normal normal normal 14px Verdana, Open Sans, Calibri, Tahoma, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; line-height: 95%; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;",
-            TRACKER_FONT = "normal normal normal 12px Verdana, Open Sans, Calibri, Tahoma, sans-serif;"
+            FACTION_INFORMATIONCARDSTYLE = "font: normal normal normal 14px Calibri, Tahoma, sans-serif; color: white; padding: 5px 5px 5px 5px; overflow: auto; background-color: rgba(32,32,32,0.95); border-color: grey; border-style: solid; border-width: 1px; border-radius: 3px;",
         };
 
         #endregion

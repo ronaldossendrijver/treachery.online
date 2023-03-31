@@ -410,7 +410,7 @@ namespace Treachery.Shared
             }
         }
 
-        private Ambassador AmbassadorOf(Faction faction) => (Ambassador)((int)faction);
+        internal Ambassador AmbassadorOf(Faction faction) => (Ambassador)((int)faction);
 
         private void CheckTerrorTriggered(ILocationEvent e)
         {

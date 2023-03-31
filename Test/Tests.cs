@@ -1189,12 +1189,6 @@ namespace Treachery.Test
         }
 
 
-        private static int GetRandomId()
-        {
-            return (new Random()).Next();
-        }
-
-
         [TestMethod]
         public void TestShuffleMethod()
         {
@@ -1235,61 +1229,7 @@ namespace Treachery.Test
             return standardDeviation;
         }
 
-        [TestMethod]
-        public void DetermineBias()
-        {
-            var joined = new List<string>()
-            {
-                "Ronald",
-                "Rene",
-                "Ren�",
-                "X1",
-                "X2",
-                ""
-            };
-
-            var factions = new List<Faction> { Faction.Green, Faction.Black, Faction.Yellow, Faction.Red, Faction.Orange, Faction.Blue };
-
-            var assignedFactions = new List<Tuple<string, Faction>>();
-            var assignedPositions = new List<Tuple<Faction, int>>();
-            for (int i = 0; i < 10000; i++)
-            {
-                int _playerID = GetRandomId();
-                var game = new Game(_playerID);
-
-                game.HandleEvent(new EstablishPlayers() { Players = joined, FactionsInPlay = factions, MaximumTurns = 10, ApplicableRules = Game.RulesetDefinition[Ruleset.AdvancedGame], Seed = _playerID });
-
-                foreach (var p in game.Players)
-                {
-                    assignedFactions.Add(new Tuple<string, Faction>(p.Name, p.Faction));
-                    assignedPositions.Add(new Tuple<Faction, int>(p.Faction, p.PositionAtTable));
-                }
-            }
-
-            Console.WriteLine("{0}: {1} {2} {3} {4} {5} {6}", "Player".PadLeft(20), "Atr".PadLeft(5), "Hrk".PadLeft(5), "Fre".PadLeft(5), "Emp".PadLeft(5), "Gld".PadLeft(5), "Bgt".PadLeft(5));
-            foreach (var playerName in joined)
-            {
-                var a = assignedFactions.Count(t => t.Item1 == playerName && t.Item2 == Faction.Green).ToString();
-                var h = assignedFactions.Count(t => t.Item1 == playerName && t.Item2 == Faction.Black).ToString();
-                var f = assignedFactions.Count(t => t.Item1 == playerName && t.Item2 == Faction.Yellow).ToString();
-                var e = assignedFactions.Count(t => t.Item1 == playerName && t.Item2 == Faction.Red).ToString();
-                var g = assignedFactions.Count(t => t.Item1 == playerName && t.Item2 == Faction.Orange).ToString();
-                var b = assignedFactions.Count(t => t.Item1 == playerName && t.Item2 == Faction.Blue).ToString();
-                Console.WriteLine("{0}: {1} {2} {3} {4} {5} {6}", playerName.PadLeft(20), a.PadLeft(5), h.PadLeft(5), f.PadLeft(5), e.PadLeft(5), g.PadLeft(5), b.PadLeft(5));
-            }
-
-            Console.WriteLine("{0}: {1} {2} {3} {4} {5} {6}", "Faction".PadLeft(20), "0".PadLeft(5), "1".PadLeft(5), "2".PadLeft(5), "3".PadLeft(5), "4".PadLeft(5), "5".PadLeft(5));
-            foreach (var faction in factions)
-            {
-                var p0 = assignedPositions.Count(t => t.Item1 == faction && t.Item2 == 0).ToString();
-                var p1 = assignedPositions.Count(t => t.Item1 == faction && t.Item2 == 1).ToString();
-                var p2 = assignedPositions.Count(t => t.Item1 == faction && t.Item2 == 2).ToString();
-                var p3 = assignedPositions.Count(t => t.Item1 == faction && t.Item2 == 3).ToString();
-                var p4 = assignedPositions.Count(t => t.Item1 == faction && t.Item2 == 4).ToString();
-                var p5 = assignedPositions.Count(t => t.Item1 == faction && t.Item2 == 5).ToString();
-                Console.WriteLine("{0}: {1} {2} {3} {4} {5} {6}", faction.ToString().PadLeft(20), p0.PadLeft(5), p1.PadLeft(5), p2.PadLeft(5), p3.PadLeft(5), p4.PadLeft(5), p5.PadLeft(5));
-            }
-        }
+        
 
         [TestMethod]
         public void ScanForUndecoratedGetOnlyProperties()

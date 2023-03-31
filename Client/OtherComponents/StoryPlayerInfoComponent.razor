@@ -206,7 +206,7 @@
                         <td>
                             @foreach (var c in p.Leaders.Where(l => Game.IsAlive(l)))
                             {
-                                <Image Class="img-fluid p-1" Width=60 Shown=@c Popover=@Popup.Get(c, Game) />
+                                <Image Class="img-fluid p-1" Width=60 Shown=@c />
                             }
 
                             @if (Game.Applicable(Rule.GreenMessiah) && p.Faction == Faction.Green && p.TotalForcesKilledInBattle >= 7 && Game.IsAlive(LeaderManager.Messiah))
