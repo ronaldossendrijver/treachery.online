@@ -17,13 +17,25 @@ namespace Treachery.Shared
             return result;
         }
 
-        public static Dictionary<X, Y> CloneDictionary<X, Y>(Dictionary<X, Y> toClone) where Y : ICloneable
+        public static Dictionary<X, Y> CloneObjectDictionary<X, Y>(Dictionary<X, Y> toClone) where Y : ICloneable
         {
             var result = new Dictionary<X, Y>();
 
             foreach (var item in toClone)
             {
                 result.Add(item.Key, (Y)item.Value.Clone());
+            }
+
+            return result;
+        }
+
+        public static Dictionary<X, Y> CloneEnumDictionary<X, Y>(Dictionary<X, Y> toClone) where Y : struct, Enum
+        {
+            var result = new Dictionary<X, Y>();
+
+            foreach (var item in toClone)
+            {
+                result.Add(item.Key, (Y)item.Value);
             }
 
             return result;

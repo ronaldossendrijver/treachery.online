@@ -48,7 +48,7 @@
 
     private string DetermineEventDescription(int eventnumber, GameEvent e) => "" + eventnumber + ". " + e.GetMessage()?.ToString(Skin.Current);
 
-    private string DetermineGroup(Game g) => "Turn " + g.CurrentTurn + " - " + Skin.Current.Describe(g.CurrentMainPhase);
+    private string DetermineGroup(Moment m) => "Turn " + m.Turn + " - " + Skin.Current.Describe(m.Phase);
 
     private Dictionary<string,Dictionary<int, GameEvent>> UndoableEvents
     {
@@ -61,7 +61,7 @@
                 var e = h.Game.History[i];
                 if (!(e is AllyPermission) && !(e is BattleRevision))
                 {
-                    var group = DetermineGroup(h.Game.States[i-1]);
+                    var group = DetermineGroup(h.Game.Moments[i-1]);
                     if (!result.ContainsKey(group))
                     {
                         result.Add(group, new());

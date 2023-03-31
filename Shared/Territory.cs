@@ -2,12 +2,13 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Treachery.Shared
 {
-    public class Territory : IIdentifiable
+    public class Territory : IIdentifiable, ICloneable
     {
         public Territory(int id)
         {
@@ -77,5 +78,7 @@ namespace Treachery.Shared
                 return base.ToString();
             }
         }
+
+        public object Clone() => MemberwiseClone();
     }
 }

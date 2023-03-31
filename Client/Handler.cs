@@ -522,7 +522,7 @@ namespace Treachery.Client
                 _pending.Clear();
 
                 var state = GameState.Load(stateData);
-                var errorMessage = Game.TryLoad(state, false, false, out Game loadedGame, true);
+                var errorMessage = Game.TryLoad(state, false, false, out Game loadedGame);
 
                 if (errorMessage == null)
                 {

@@ -18,7 +18,14 @@
 
                 @if (ShowAlly)
                 {
-                    <th>Ally</th>
+                    if (Game.Applicable(Rule.NexusCards))
+                    {
+                        <th>Ally or Nexus*</th>
+                    }
+                    else
+                    {
+                        <th>Ally</th>
+                    }
                 }
 
                 @if (ShowCards)
@@ -83,6 +90,11 @@
                             @if (p.Ally != Faction.None)
                             {
                                 <img class="img-fluid p-1" width=60 src="@Skin.Current.GetFactionTableImageURL(p.Ally)" />
+                            }
+                            else if (p.Nexus != Faction.None)
+                            {
+                                <img class="img-fluid p-1" width=60 src="@Skin.Current.GetFactionTableImageURL(p.Nexus)" />
+                                <strong>*</strong>
                             }
                         </td>
                     }

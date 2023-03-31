@@ -265,7 +265,7 @@ else if (IsVisible(RESTART))
 
                 if (state.Version > 0)
                 {
-                    var result = Game.TryLoad(state, true, true, out Game game, true);
+                    var result = Game.TryLoad(state, true, true, out Game game);
 
                     if (result != null)
                     {

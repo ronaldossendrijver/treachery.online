@@ -27,9 +27,9 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (e is Shipment sh && e.By(Faction.Yellow) && e.Player.Ally == Faction.Orange && (e.Player.AnyForcesIn(g.Map.TueksSietch) > 0 || e.Player.AnyForcesIn(g.Map.PolarSink) > 0))
+            if (g.CurrentMainPhase == MainPhase.Ended && g.CurrentTurn > 6 && g.IsPlaying(Faction.Pink) && g.IsPlaying(Faction.Cyan))
             {
-                WriteSavegameIfApplicable(g, e.Player, "MaySiteToSiteShip");
+                WriteSavegameIfApplicable(g, e.Player, "Ended");
             }
                 /*
                 if ()
@@ -239,7 +239,7 @@ namespace Treachery.Test
 
                     var fs = File.OpenText(f);
                     var state = GameState.Load(fs.ReadToEnd());
-                    var game = new Game(state.Version, false);
+                    var game = new Game(state.Version);
                     var testcase = new Testcase();
 
                     foreach (var e in state.Events)
@@ -413,7 +413,7 @@ namespace Treachery.Test
         {
             BattleOutcome previousBattleOutcome = null;
 
-            var game = new Game(false)
+            var game = new Game()
             {
                 BotInfologging = infoLogging,
             };
@@ -634,7 +634,7 @@ namespace Treachery.Test
             var fs = File.OpenText(fileData);
             var state = GameState.Load(fs.ReadToEnd());
             Console.WriteLine("Checking {0} (version {1})...", fileData, state.Version);
-            var game = new Game(state.Version, false);
+            var game = new Game(state.Version);
 
             fs = File.OpenText(fileData + ".testcase");
             var tc = LoadObject<Testcase>(fs.ReadToEnd());
@@ -1255,7 +1255,7 @@ namespace Treachery.Test
             for (int i = 0; i < 10000; i++)
             {
                 int _playerID = GetRandomId();
-                var game = new Game(_playerID, false);
+                var game = new Game(_playerID);
 
                 game.HandleEvent(new EstablishPlayers() { Players = joined, FactionsInPlay = factions, MaximumTurns = 10, ApplicableRules = Game.RulesetDefinition[Ruleset.AdvancedGame], Seed = _playerID });
 

@@ -12,10 +12,15 @@
         MainPhase previousMainPhase = MainPhase.Started;
         IBid previousWinningBid = null;
 
+        var replayBase = new Treachery.Shared.Game(Game.Version);
+
         for (int i = 0; i < Game.History.Count; i++)
         {
-            var evt = Game.History[i];
-            var replay = Game.States[i];
+            var evt = Game.History[i].Clone();
+            evt.Game = replayBase;
+            evt.Execute(false, true);
+
+            var replay = replayBase.Clone();
 
             if ((previousPhase == Phase.TradingFactions || previousPhase == Phase.SelectingFactions) &&
                 replay.CurrentPhase != Phase.TradingFactions && replay.CurrentPhase != Phase.SelectingFactions)
@@ -76,7 +81,7 @@
                 <h4 class="h4">Turn @replay.CurrentTurn</h4>
 
                 <h5 class="mt-2">Situation at the start of Bidding:</h5>
-                <StoryPlayerInfoComponent Game="replay" ShowAlly="ShowAllies(replay)" ShowCards="true" ShowTraitorsAndFacedancers="true" ShowResources="true" ShowTechTokens="@(Game.Applicable(Rule.TechTokens))" />
+                <StoryPlayerInfoComponent Game="replay" ShowAlly="ShowAllies(replay)" ShowCards="true" ShowTraitorsAndFacedancers="true" ShowResources="true" ShowTechTokens="@(replay.Applicable(Rule.TechTokens))" />
             }
 
             if (replay.CurrentMainPhase != previousMainPhase && (replay.CurrentMainPhase == MainPhase.Resurrection))
@@ -108,10 +113,83 @@
                 <StoryBattleComponent Game="replay" />
             }
 
-            if (replay.CurrentMainPhase != previousMainPhase && replay.CurrentMainPhase == MainPhase.Contemplate)
+            if (replay.CurrentPhase != previousPhase && replay.CurrentPhase == Phase.TurnConcluded)
             {
                 <h5 class="mt-2">Situation at the end of turn @replay.CurrentTurn:</h5>
                 <StoryPlayerInfoComponent Game="replay" ShowAlly="ShowAllies(replay)" ShowForces="true" ShowTanks="true" ShowResources="true" ShowTechTokens="true" ShowPoints="true" />
+
+                <table class="table table-sm table-striped" style="background-color:#FFFFFF32">
+
+                    <thead>
+                        <tr>
+                            <th>Stronghold</th>
+                            <th>Forces</th>
+                            @if (replay.Applicable(Rule.StrongholdBonus))
+                            {
+                                <th>Owned by</th>
+                            }
+                            @if (replay.IsPlaying(Faction.Pink) || replay.IsPlaying(Faction.Cyan))
+                            {
+                                <th>Ambassadors and Terror</th>
+                            }
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    @foreach (var sh in replay.Map.Strongholds)
+                    {
+                        <tr>
+                            <td>@Skin.Current.Describe(sh)</td>
+                            <td>
+                                @foreach (var b in replay.BattalionsIn(sh))
+                                {
+                                    if (b.AmountOfForces > 0)
+                                    {
+                                        <Image Width=32 Shown=replay.GetPlayer(b.Faction).Force />
+                                        <strong>@b.AmountOfForces</strong>
+                                        <span>&nbsp;</span>
+                                    }
+
+                                    @if (b.AmountOfSpecialForces > 0)
+                                    {
+                                        <Image Width=32 Shown=replay.GetPlayer(b.Faction).SpecialForce />
+                                        <strong>@b.AmountOfSpecialForces</strong>
+                                    }
+                                }
+                            </td>
+
+                            @if (replay.Applicable(Rule.StrongholdBonus))
+                            {
+                                var owner = replay.OwnerOf(sh);
+                                if (owner != null)
+                                {
+                                    <td><Image Width=32 Shown=owner.Faction /></td>
+                                }
+                            }
+
+                            @if (replay.IsPlaying(Faction.Pink) || replay.IsPlaying(Faction.Cyan))
+                            {
+                                <td>
+                                @{
+                                    var ambassador = replay.AmbassadorIn(sh.Territory);
+                                    if (ambassador != Ambassador.None)
+                                    {
+                                        <Image Width=32 Shown=ambassador />
+                                    }
+
+                                    foreach (var terror in replay.TerrorIn(sh.Territory))
+                                    {
+                                        <Image Width=32 Shown=terror />
+                                    }
+                                }
+                                </td>
+                            }
+
+                        </tr>
+                    }
+                    </tbody>
+
+                </table>
             }
 
             @if (replay.CurrentMainPhase != previousMainPhase && replay.CurrentMainPhase == MainPhase.Ended)

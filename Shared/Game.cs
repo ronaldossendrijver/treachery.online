@@ -28,8 +28,7 @@ namespace Treachery.Shared
         public List<Rule> RulesForBots { get; private set; } = new();
         public List<Rule> AllRules { get; private set; } = new();
         public List<GameEvent> History { get; private set; } = new();
-        public bool TrackStatesForReplay { get; private set; } = true;
-        public List<Game> States { get; private set; } = new();
+        public List<Moment> Moments { get; private set; } = new();
         public int CurrentTurn { get; private set; } = 0;
         public MainPhase CurrentMainPhase { get; private set; } = MainPhase.Started;
         public MainPhaseMoment CurrentMoment { get; private set; } = MainPhaseMoment.None;
@@ -71,17 +70,12 @@ namespace Treachery.Shared
 
         #region Initialization
 
-        public Game() : this(LatestVersion, true)
+        public Game() : this(LatestVersion)
         {
 
         }
 
-        public Game(bool trackStatesForReplay) : this(LatestVersion, trackStatesForReplay)
-        {
-
-        }
-
-        public Game(int version, bool trackStatesForReplay)
+        public Game(int version)
         {
             if (version < LowestSupportedVersion)
             {
@@ -89,7 +83,7 @@ namespace Treachery.Shared
             }
 
             Version = version;
-            TrackStatesForReplay = trackStatesForReplay;
+
             InitializeLeaderState();
             EnterPhaseAwaitingPlayers();
         }
@@ -156,16 +150,12 @@ namespace Treachery.Shared
             if (!justEnteredStartOfPhase && e is not AllyPermission && e is not DealOffered && e is not DealAccepted) MainPhaseMiddle();
 
             History.Add(e);
-
-            if (TrackStatesForReplay)
-            {
-                States.Add(Clone());
-            }
+            Moments.Add(new Moment(CurrentTurn, CurrentMainPhase));
         }
 
         public Game Undo(int untilEventNr)
         {
-            var result = new Game(Version, TrackStatesForReplay);
+            var result = new Game(Version);
             for (int i = 0; i < untilEventNr; i++)
             {
                 var clone = History[i].Clone();
@@ -930,10 +920,16 @@ namespace Treachery.Shared
         public Game Clone()
         {
             var result = (Game)MemberwiseClone();
+            
             result.Players = Utilities.CloneList(Players);
-            result.LeaderState = Utilities.CloneDictionary(LeaderState);
+            result.LeaderState = Utilities.CloneObjectDictionary(LeaderState);
             result.SecretsRemainHidden = new List<Faction>(SecretsRemainHidden);
             result.PreventedAdvantages = new List<FactionAdvantage>(PreventedAdvantages);
+            result.AmbassadorsOnPlanet = Utilities.CloneEnumDictionary(AmbassadorsOnPlanet);
+            result.TerrorOnPlanet = Utilities.CloneObjectDictionary(TerrorOnPlanet);
+            result.StrongholdOwnership = Utilities.CloneEnumDictionary(StrongholdOwnership);
+
+
             return result;
         }
 
@@ -1197,11 +1193,11 @@ namespace Treachery.Shared
 
         public Player OwnerOf(Location stronghold) => StrongholdOwnership.TryGetValue(stronghold, out Faction value) ? GetPlayer(value) : null;
 
-        public static Message TryLoad(GameState state, bool performValidation, bool isHost, out Game result, bool trackStatesForReplay)
+        public static Message TryLoad(GameState state, bool performValidation, bool isHost, out Game result)
         {
             try
             {
-                result = new Game(state.Version, trackStatesForReplay);
+                result = new Game(state.Version);
 
                 int nr = 0;
                 foreach (var e in state.Events)

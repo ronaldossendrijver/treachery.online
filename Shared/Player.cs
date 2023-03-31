@@ -679,7 +679,7 @@ namespace Treachery.Shared
             result.FaceDancers = new List<IHero>(FaceDancers);
             result.RevealedDancers = new List<IHero>(RevealedDancers);
             result.Leaders = new List<Leader>(Leaders);
-            result.ForcesInLocations = Utilities.CloneDictionary(ForcesInLocations);
+            result.ForcesInLocations = Utilities.CloneObjectDictionary(ForcesInLocations);
             result.TechTokens = new List<TechToken>(TechTokens);
 
             return result;

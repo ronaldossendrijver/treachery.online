@@ -2362,20 +2362,20 @@ namespace Treachery.Client
             {
                 [Ambassador.None] = "None",
 
-                [Ambassador.Green] = "See visitor's hand",
-                [Ambassador.Black] = "Look at a random Traitor Card the visiting faction holds",
-                [Ambassador.Yellow] = "Move a group of your forces on the board to any territory (subject to storm and occupancy rules)",
-                [Ambassador.Red] = "Gain 5 spice",
-                [Ambassador.Orange] = "Send up to 4 of your forces in reserves to any territory not in storm for free",
-                [Ambassador.Blue] = "Trigger the effect of any Ambassador that was not part of your supply",
+                [Ambassador.Green] = "Atreides - See visitor's hand",
+                [Ambassador.Black] = "Harkonnen - Look at a random Traitor Card the visiting faction holds",
+                [Ambassador.Yellow] = "Fremen - Move a group of your forces on the board to any territory (subject to storm and occupancy rules)",
+                [Ambassador.Red] = "Emperor - Gain 5 spice",
+                [Ambassador.Orange] = "Guild - Send up to 4 of your forces in reserves to any territory not in storm for free",
+                [Ambassador.Blue] = "Bene Gesserit - Trigger the effect of any Ambassador that was not part of your supply",
 
-                [Ambassador.Grey] = "Discard a Treachery Card and draw from the deck",
-                [Ambassador.Purple] = "Revive one of your leaders or up to 4 of your forces for free",
+                [Ambassador.Grey] = "Ixian - Discard a Treachery Card and draw from the deck",
+                [Ambassador.Purple] = "Tleilaxu - Revive one of your leaders or up to 4 of your forces for free",
 
-                [Ambassador.Brown] = "Discard any of your Treachery Cards and gain 3 spice for each one",
-                [Ambassador.White] = "Pay 3 spice to the Bank for a Treachery Card",
+                [Ambassador.Brown] = "CHOAM - Discard any of your Treachery Cards and gain 3 spice for each one",
+                [Ambassador.White] = "Richese - Pay 3 spice to the Bank for a Treachery Card",
 
-                [Ambassador.Pink] = "Gain Vidal if he is not in the Tanks, captured, or a ghola until used in a battle, or form an alliance with the visiting faction (if neither of you are allied); they may take control of Vidal instead. This token returns to your available supply"
+                [Ambassador.Pink] = "Ecaz - Gain Vidal if he is not in the Tanks, captured, or a ghola until used in a battle, or form an alliance with the visiting faction (if neither of you are allied); they may take control of Vidal instead. This token returns to your available supply"
             },
 
             TechTokenName_STR = Game.ExpansionLevel < 1 ? new() : new Dictionary<TechToken, string>()
