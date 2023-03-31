@@ -2,6 +2,8 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
+using System.Reflection.Metadata.Ecma335;
+
 namespace Treachery.Shared
 {
     public struct Point
@@ -36,5 +38,7 @@ namespace Treachery.Shared
         public static bool operator ==(PointD lhs, PointD rhs) => lhs.Equals(rhs);
 
         public static bool operator !=(PointD lhs, PointD rhs) => !(lhs == rhs);
+
+        public PointD Translate(double dX, double dY) => new(X + dX, Y + dY);
     }
 }
