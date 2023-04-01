@@ -6,7 +6,7 @@
 @using Treachery.Client.GenericComponents;
 @inherits GameComponent
 
-<div class="card mb-2 shadow-lg border-light" style="opacity:0.9">
+<div class="card mb-2 shadow-lg border-light" style="opacity:0.9;animation:fadeIn90 3s;">
     <div class="card-header">Please enter your player name to start playing!</div>
     <div class="card-body">
         <input @ref=inputField class="form-control" @bind-value="playername" @bind-value:event="oninput" maxlength="24" placeholder="Your name" @onkeyup=@KeyUp/>
