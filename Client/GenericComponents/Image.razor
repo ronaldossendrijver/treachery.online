@@ -79,7 +79,7 @@ else
 
         if (Shown != null)
         {
-            Src = GetShownImageURL();
+            Src = Skin.Current.GetImageURL(Shown);
             PopoverAsTooltip = !ShownHasRichPopover;
             Popover = GetShownPopover();
         }
@@ -110,25 +110,6 @@ else
         {
             _ = Browser.RemovePopover(element);
         }
-    }
-
-    private string GetShownImageURL()
-    {
-        return (Shown) switch
-        {
-            null => "",
-            TreacheryCard tc => Skin.Current.GetImageURL(tc),
-            ResourceCard rc => Skin.Current.GetImageURL(rc),
-            IHero h => Skin.Current.GetImageURL(h),
-            LeaderSkill ls => Skin.Current.GetImageURL(ls),
-            TechToken tt => Skin.Current.GetImageURL(tt),
-            Faction f => Skin.Current.GetImageURL(f),
-            Ambassador a => Skin.Current.GetImageURL(a),
-            FactionForce ff => Skin.Current.GetImageURL(ff),
-            FactionSpecialForce fsf => Skin.Current.GetImageURL(fsf),
-            StrongholdAdvantage adv => Skin.Current.GetImageURL(adv),
-            _ => ""
-        };
     }
 
     private string GetShownPopover()

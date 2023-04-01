@@ -46,7 +46,7 @@
     foreach (var location in Game.Map.Locations(false).Where(l => l.Visible).OrderBy(l => Skin.Current.GetCenter(l).Y))
     {
         var pos = Skin.Current.GetCenter(location);
-        bool showForces = forceLocations.ContainsKey(location);
+        bool showForces = true;
         float forceDiameter = 2 * Skin.Current.FORCETOKEN_RADIUS;
 
         if (location is HiddenMobileStronghold hms)

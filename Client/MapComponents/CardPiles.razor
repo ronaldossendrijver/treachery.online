@@ -132,18 +132,24 @@
 
         if (h.Game.AssistedNotekeepingEnabled(Player))
         {
-            result += "<div class=\"row row-cols-6 ms-0 me-0 mt-1\">";
-            foreach (var c in h.Game.TreacheryDiscardPile.Items)
-            {
-                result += string.Format("<img src=\"{0}\" class=\"img-fluid\"/>", Skin.Current.GetImageURL(c));
-            }
-            result += "</div>";
+            result += GetCardImages(h.Game.TreacheryDiscardPile.Items);
         }
         else if (h.Game.TreacheryDiscardPile.Top != null)
         {
-            result += "Most recently discarded:";
             result += Popup.Get(h.Game.TreacheryDiscardPile.Top);
         }
+
+        return result;
+    }
+
+    private string GetCardImages<T>(IEnumerable<T> items)
+    {
+        string result = "<div class=\"row row-cols-6 mt-1\">";
+        foreach (var c in items)
+        {
+            result += string.Format("<img src=\"{0}\" class=\"img-fluid p-1\"/>", Skin.Current.GetImageURL(c));
+        }
+        result += "</div>";
 
         return result;
     }
@@ -157,12 +163,7 @@
 
             if (h.Faction == Faction.White || h.Game.AssistedNotekeepingEnabled(Player))
             {
-                result += "<div class=\"row row-cols-6 ms-0 me-0 mt-1\">";
-                foreach (var c in h.Game.WhiteCache)
-                {
-                    result += string.Format("<img src=\"{0}\" class=\"img-fluid\"/>", Skin.Current.GetImageURL(c));
-                }
-                result += "</div>";
+                result += GetCardImages(h.Game.WhiteCache);
             }
         }
 
@@ -187,31 +188,18 @@
     private string IntelOfResourceDiscardPileA()
     {
         string result = "";
+        var pileName = h.Game.Applicable(Rule.IncreasedResourceFlow) ? " A" : "";
 
-        if (h.Game.Applicable(Rule.IncreasedResourceFlow))
+        result += $"<h4>Discard pile{pileName}: {h.Game.ResourceCardDiscardPileA.Items.Count} cards</h4>";
+        if (h.Game.LatestSpiceCardA != null)
         {
-            result += Skin.Current.Format("<h4>Discard pile A: {0} cards</h4>", h.Game.ResourceCardDiscardPileA.Items.Count);
-            if (h.Game.LatestSpiceCardA != null)
+            if (h.Game.AssistedNotekeepingEnabled(Player))
             {
-                result += "<p>Latest card:</p>";
-                result += Popup.Get(h.Game.LatestSpiceCardA);
-                if (h.Game.AssistedNotekeepingEnabled(Player))
-                {
-                    result += "<p>" + Skin.Current.Join(h.Game.ResourceCardDiscardPileA.Items.Where(c => c != h.Game.LatestSpiceCardA)) + "</p>";
-                }
+                result += GetCardImages(h.Game.ResourceCardDiscardPileA.Items);
             }
-        }
-        else
-        {
-            result += Skin.Current.Format("<h4>Discard pile: {0} cards</h4>", h.Game.ResourceCardDiscardPileA.Items.Count);
-            if (h.Game.LatestSpiceCardA != null)
+            else
             {
-                result += "<p>Latest card:</p>";
                 result += Popup.Get(h.Game.LatestSpiceCardA);
-                if (h.Game.AssistedNotekeepingEnabled(Player))
-                {
-                    result += "<p>" + Skin.Current.Join(h.Game.ResourceCardDiscardPileB.Items.Where(c => c != h.Game.LatestSpiceCardA)) + "</p>";
-                }
             }
         }
 
@@ -227,11 +215,13 @@
             result += Skin.Current.Format("<h4>Discard pile B: {0} cards</h4>", h.Game.ResourceCardDiscardPileB.Items.Count);
             if (h.Game.LatestSpiceCardB != null)
             {
-                result += "<p>Latest card:</p>";
-                result += Popup.Get(h.Game.LatestSpiceCardB);
                 if (h.Game.AssistedNotekeepingEnabled(Player))
                 {
-                    result += "<p>" + Skin.Current.Join(h.Game.ResourceCardDiscardPileB.Items.Where(c => c != h.Game.LatestSpiceCardA)) + "</p>";
+                    result += GetCardImages(h.Game.ResourceCardDiscardPileB.Items); 
+                }
+                else
+                {
+                    result += Popup.Get(h.Game.LatestSpiceCardB);
                 }
             }
         }

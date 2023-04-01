@@ -426,6 +426,25 @@ namespace Treachery.Client
 
         public string GetDiscoveryTokenDescription(DiscoveryToken dt) => GetLabel(DiscoveryTokenDescription_STR, dt);
 
+        public string GetImageURL(object obj)
+        {
+            return (obj) switch
+            {
+                null => "",
+                TreacheryCard tc => Skin.Current.GetImageURL(tc),
+                ResourceCard rc => Skin.Current.GetImageURL(rc),
+                IHero h => Skin.Current.GetImageURL(h),
+                LeaderSkill ls => Skin.Current.GetImageURL(ls),
+                TechToken tt => Skin.Current.GetImageURL(tt),
+                Faction f => Skin.Current.GetImageURL(f),
+                Ambassador a => Skin.Current.GetImageURL(a),
+                FactionForce ff => Skin.Current.GetImageURL(ff),
+                FactionSpecialForce fsf => Skin.Current.GetImageURL(fsf),
+                StrongholdAdvantage adv => Skin.Current.GetImageURL(adv),
+                _ => ""
+            };
+        }
+
         public string GetImageURL(DiscoveryTokenType dtt) => GetLabel(DiscoveryTokenTypeImage_URL, dtt);
 
         public string GetImageURL(DiscoveryToken dt) => GetLabel(DiscoveryTokenImage_URL, dt);

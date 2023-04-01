@@ -262,7 +262,7 @@
 
     private PointD Pos(float positionOnCircle, float radiusOfToken = 0) {
 
-        var mapradius = 1.07f * Skin.Current.MapRadius;
+        var mapradius = 1.06f * Skin.Current.MapRadius;
         return new PointD(
             X = Skin.Current.PlanetCenter.X + (float)(Math.Cos(positionOnCircle) * mapradius) - radiusOfToken, 
             Y = Skin.Current.PlanetCenter.Y + (float)(Math.Sin(positionOnCircle) * mapradius) - radiusOfToken);
