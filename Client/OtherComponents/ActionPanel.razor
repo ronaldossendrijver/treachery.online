@@ -482,11 +482,6 @@
                     <SimpleActionComponent GameEventType="HideSecrets" h="@h" Title="Hide your secret info (like cards and traitors) from other players at the end of the game?" ConfirmLabel="Yes" Alert="true" Dismissable="true" DismissLabel="No" />
                 }
                 break;
-            case "PlayerReplaced":
-                {
-                    <PlayerReplacedComponent h="@h" />
-                }
-                break;
             case "DealOffered":
                 {
                     <DealOfferedComponent h="@h" />
@@ -740,6 +735,11 @@
     @if (h.Game.CurrentPhase == Phase.GameEnded && h.IsHost && !h.StatisticsSent && h.Game.Players.Count() >= 4 && h.Game.Players.Count(p => !(p.IsBot)) > h.Game.Players.Count(p => p.IsBot))
     {
         <UploadStatisticsComponent h="@h" />
+    }
+
+    @if (h.Game.CurrentMainPhase != MainPhase.Ended && h.Actions.Contains(typeof(PlayerReplaced)))
+    {
+        <PlayerReplacedComponent h="@h" />
     }
 
 </div>

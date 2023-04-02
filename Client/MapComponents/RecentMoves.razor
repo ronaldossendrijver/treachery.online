@@ -12,7 +12,7 @@
             width="@(Skin.Current.PlanetRadius * 2)" height="@(Skin.Current.PlanetRadius * 2)" 
             style="position: absolute; left:0px; top:0px; height: 100%; width: 100%;"
             pointer-events="none">
-            
+
         @foreach (var move in h.Game.RecentMoves)
         {
             foreach (var origin in move.ForceLocations.Keys)
@@ -38,6 +38,7 @@
                 }
                 else
                 {
+
                     <Arrow FillColor="@Skin.Current.FactionColor[move.Initiator]" StrokeColor=@Skin.Current.GetFactionColorTransparant(move.Initiator, "bb")
                             MarginX="0" MarginY="0" Radius="@(1.2f * Skin.Current.PlanetRadius)" From=@Skin.Current.GetCenter(origin) To=@Skin.Current.GetCenter(move.To) ArrowScale="0.05f" />
                 }
