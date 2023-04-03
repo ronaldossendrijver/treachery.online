@@ -39,7 +39,7 @@ namespace Treachery.Shared
             Enter(Version >= 103, EnterMentatPause, ContinueMentatPhase);
         }
 
-        private bool ExtortionToBeReturned { get; set; } = false;
+        internal bool ExtortionToBeReturned { get; set; } = false;
         private void EnterMentatPause()
         {
             DetermineIfCyanDrawsNewTraitor();
@@ -73,12 +73,6 @@ namespace Treachery.Shared
             }
         }
 
-        public void HandleEvent(ExtortionPrevented e)
-        {
-            ExtortionToBeReturned = false;
-            e.Player.Resources -= 3;
-            Log(e);
-        }
 
         internal void EndMentatPause()
         {

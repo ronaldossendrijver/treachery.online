@@ -10,7 +10,7 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        private void KillHero(IHero h)
+        internal void KillHero(IHero h)
         {
             if (h is Leader || h is Messiah)
             {

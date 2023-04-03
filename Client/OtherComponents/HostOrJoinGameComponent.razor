@@ -192,15 +192,15 @@
     {
         if (av.NumberOfBots == 1)
         {
-            return " (1 bot)";
+            return string.Format(" ({0} players, 1 bot)", av.Players.Length);
         }
         else if (av.NumberOfBots > 1)
         {
-            return $" ({av.NumberOfBots} bots)";
+            return string.Format(" ({0} players, {1} bots)", av.Players.Length, av.NumberOfBots);
         }
         else
         {
-            return "";
+            return string.Format(" ({0} players)", av.Players.Length);
         }
     }
 

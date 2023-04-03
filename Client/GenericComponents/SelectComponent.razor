@@ -28,9 +28,9 @@
 
         @Options
 
-        @foreach (var item in _shown.Values) {
+        @foreach (var item in Values) {
 
-            <option value=@item.Id selected=@Equals(item.Value, Value)>@item.Label</option>
+            <option value=@GetId(item) selected=@Equals(item, Value)>@GetLabel(item)</option>
         }
 
     </select>
@@ -44,8 +44,6 @@
 
     [Parameter]
     public T Value { get; set; }
-
-    private Dictionary<string,ValueToShow> _shown { get; set; }
 
     [Parameter]
     public IEnumerable<string> ValueLabels { get; set; }
@@ -88,18 +86,11 @@
         {
             await SetValue(Required ? Values.FirstOrDefault() : default);
         }
-
-        if (ValueLabels == null || ValueLabels.Count() != Values.Count())
-        {
-            ValueLabels = Values.Select(v => v != null ? Skin.Current.Describe(v) : EmptyLabel);
-        }
-
-        _shown = Values.Zip(ValueLabels, (v, l) => new ValueToShow { Value = v, Id = GetId(v), Label = l }).ToDictionary(triple => triple.Id, triple => triple);
     }
 
     private async Task ChangeValue(ChangeEventArgs e)
     {
-        await SetValue(_shown[e.Value as string].Value);
+        await SetValue(Values.FirstOrDefault(v => GetId(v).Equals(e.Value as string)));
     }
 
     private async Task SetValue(T newValue) {
@@ -112,10 +103,5 @@
         }
     }
 
-    private struct ValueToShow {
-
-        internal T Value;
-        internal string Id;
-        internal string Label;
-    }
+    private string GetLabel(T value) => value != null ? Skin.Current.Describe(value) : EmptyLabel;
 }
