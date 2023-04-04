@@ -6,8 +6,8 @@
 /// When adding a new GameEvent 'XYZ' to the game:
 /// - Add it to Game.GetApplicableEvents()
 /// - Add a HandleEvent(XYZ e) method to the Game class
-/// - Create a XYZComponent to show the event in Treachery.online.Client.Pages. An event without parameters can be shown with a SimpleEventComponent
-/// - Add the XYZComponent to Treachery.online.Client.Pages.Index.razor
+/// - Create a XYZComponent to show the event in Treachery.Client.GameEventComponents.
+/// - Add the XYZComponent to Treachery.Client.OtherComponents.ActionPanel
 /// - Add a method RequestXYZ(int hostID, XYZ e)<XYZ>(XYZ e) to Treachery.online.Server.GameHub
 /// </summary>
 /// 
@@ -21,14 +21,7 @@ namespace Treachery.Shared
 {
     public abstract class GameEvent
     {
-        private const char IDSTRINGSEPARATOR = ';';
-
-        [JsonIgnore]
-        public Game Game;
-
-        public Faction Initiator { get; set; }
-
-        public DateTime Time { get; set; }
+        #region Construction
 
         public GameEvent()
         {
@@ -40,19 +33,44 @@ namespace Treachery.Shared
             Game = game;
         }
 
-        [JsonIgnore]
-        public string _validationErrors = "";
+        #endregion Construction
+
+        #region Properties
+
+        private const char IDSTRINGSEPARATOR = ';';
+
+        public Faction Initiator { get; set; }
+
+        public DateTime Time { get; set; }
 
         [JsonIgnore]
-        public bool IsValid
-        {
-            get
-            {
-                return Validate() == null;
-            }
-        }
+        public Game Game;
+
+        [JsonIgnore]
+        public virtual Player Player => Game.GetPlayer(Initiator);
+
+        #endregion Properties
+
+        #region Validation
 
         public abstract Message Validate();
+
+        [JsonIgnore]
+        public bool IsValid => Validate() == null;
+
+        public virtual bool IsApplicable(bool isHost)
+        {
+            if (Game == null)
+            {
+                throw new ArgumentException("Cannot check applicability of a GameEvent without a Game.");
+            }
+
+            return Game.GetApplicableEvents(Player, isHost).Contains(GetType());
+        }
+
+        #endregion Validation
+
+        #region Execution
 
         public virtual void ExecuteWithoutValidation()
         {
@@ -105,6 +123,14 @@ namespace Treachery.Shared
 
         protected abstract void ExecuteConcreteEvent();
 
+        public virtual Message GetMessage() => Message.Express(GetType().Name, " by ", Initiator);
+
+        public virtual Message GetShortMessage() => GetMessage();
+
+        #endregion Execution
+
+        #region Support
+
         public static List<T> IdStringToObjects<T>(string ids, IFetcher<T> lookup)
         {
             var result = new List<T>();
@@ -125,46 +151,13 @@ namespace Treachery.Shared
             return string.Join(IDSTRINGSEPARATOR, objs.Select(pj => Convert.ToString(lookup.GetId(pj))));
         }
 
-        public virtual Message GetMessage()
-        {
-            return Message.Express(GetType().Name, " by ", Initiator);
-        }
+        public bool By(Faction f) => Initiator == f;
 
-        public virtual Message GetShortMessage() => GetMessage();
-        
+        public GameEvent Clone() => (GameEvent)MemberwiseClone();
 
-        [JsonIgnore]
-        public virtual Player Player => Game.GetPlayer(Initiator);
+        protected void Log() => Game.CurrentReport.Express(this);
 
-        public virtual bool IsApplicable(bool isHost)
-        {
-            if (Game == null)
-            {
-                throw new ArgumentException("Cannot check applicability of a GameEvent without a Game.");
-            }
-
-            return Game.GetApplicableEvents(Player, isHost).Contains(this.GetType());
-        }
-
-        public bool By(Faction f)
-        {
-            return Initiator == f;
-        }
-
-        public GameEvent Clone()
-        {
-            return (GameEvent)MemberwiseClone();
-        }
-
-        protected void Log()
-        {
-            Game.CurrentReport.Express(this);
-        }
-
-        protected void Log(params object[] expression)
-        {
-            Game.CurrentReport.Express(expression);
-        }
+        protected void Log(params object[] expression) => Game.CurrentReport.Express(expression);
 
         protected void LogIf(bool condition, params object[] expression)
         {
@@ -174,13 +167,12 @@ namespace Treachery.Shared
             }
         }
 
-        protected void LogTo(Faction faction, params object[] expression)
-        {
-            Game.CurrentReport.ExpressTo(faction, expression);
-        }
+        protected void LogTo(Faction faction, params object[] expression) => Game.CurrentReport.ExpressTo(faction, expression);
 
         protected Player GetPlayer(Faction f) => Game.GetPlayer(f);
+
+        protected bool IsPlaying(Faction f) => Game.IsPlaying(f);
+
+        #endregion Support
     }
 }
-
-

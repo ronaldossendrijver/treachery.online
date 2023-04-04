@@ -6,6 +6,8 @@ namespace Treachery.Shared
 {
     public class FlightDiscoveryUsed : GameEvent
     {
+        #region Construction
+
         public FlightDiscoveryUsed(Game game) : base(game)
         {
         }
@@ -14,19 +16,13 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " use the ", DiscoveryToken.Flight, " discovert token to gain movement speed");
         }
 
         public static bool IsAvailable(Game g, Player p)
@@ -34,5 +30,22 @@ namespace Treachery.Shared
             return g.OwnerOfFlightDiscovery == p.Faction;
         }
 
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            Log();
+            Game.OwnerOfFlightDiscovery = Faction.None;
+            Game.CurrentFlightDiscoveryUsed = this;
+        }
+
+        public override Message GetMessage()
+        {
+            return Message.Express(Initiator, " use the ", DiscoveryToken.Flight, " discovert token to gain movement speed");
+        }
+
+        #endregion Execution
     }
 }

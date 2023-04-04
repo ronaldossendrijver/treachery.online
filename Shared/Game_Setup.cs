@@ -81,40 +81,6 @@ namespace Treachery.Shared
             Enter(Phase.TradingFactions);
         }
 
-        public void HandleEvent(FactionTradeOffered thisOffer)
-        {
-            if (!IsPlaying(thisOffer.Target))
-            {
-                Log(thisOffer.Initiator, " switch to ", thisOffer.Target);
-                FactionsInPlay.Add(thisOffer.Initiator);
-                thisOffer.Player.Faction = thisOffer.Target;
-
-            }
-            else
-            {
-                var match = CurrentTradeOffers.SingleOrDefault(matchingOffer => matchingOffer.Initiator == thisOffer.Target && matchingOffer.Target == thisOffer.Initiator);
-                if (match != null)
-                {
-                    Log(thisOffer.Initiator, " and ", match.Initiator, " traded factions");
-                    var initiator = GetPlayer(thisOffer.Initiator);
-                    var target = GetPlayer(thisOffer.Target);
-                    (target.Faction, initiator.Faction) = (initiator.Faction, target.Faction);
-                    FactionTradeOffered invalidOffer;
-                    while ((invalidOffer = CurrentTradeOffers.FirstOrDefault(x => x.Initiator == thisOffer.Initiator || x.Initiator == thisOffer.Target)) != null)
-                    {
-                        CurrentTradeOffers.Remove(invalidOffer);
-                    }
-                }
-                else
-                {
-                    Log(thisOffer.GetMessage());
-                    if (!CurrentTradeOffers.Any(o => o.Initiator == thisOffer.Initiator && o.Target == thisOffer.Target))
-                    {
-                        CurrentTradeOffers.Add(thisOffer);
-                    }
-                }
-            }
-        }
 
         #endregion TradingFactions
 
@@ -605,17 +571,7 @@ namespace Treachery.Shared
             Enter(IsPlaying(Faction.Grey), Phase.GreySelectingCard, DealRemainingStartingTreacheryCardsToNonGrey);
         }
 
-        public void HandleEvent(GreySelectedStartingCard e)
-        {
-            GetPlayer(e.Initiator).TreacheryCards.Add(e.Card);
-            StartingTreacheryCards.Items.Remove(e.Card);
-            Log(e);
-            StartingTreacheryCards.Shuffle();
-            Stone(Milestone.Shuffled);
-            DealRemainingStartingTreacheryCardsToNonGrey();
-        }
-
-        private void DealRemainingStartingTreacheryCardsToNonGrey()
+        internal void DealRemainingStartingTreacheryCardsToNonGrey()
         {
             foreach (var p in Players.Where(p => p.Faction != Faction.Grey))
             {

@@ -9,32 +9,32 @@ namespace Treachery.Shared
 {
     public class FlightUsed : GameEvent
     {
-        public bool MoveThreeTerritories { get; set; }
+        #region Construction
 
         public FlightUsed(Game game) : base(game)
         {
         }
-
-        [JsonIgnore]
-        public bool ExtraMove => !MoveThreeTerritories;
-
+        
         public FlightUsed()
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public bool MoveThreeTerritories { get; set; }
+
+        [JsonIgnore]
+        public bool ExtraMove => !MoveThreeTerritories;
+
+        #endregion Properties
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " use an ", TreacheryCardType.Flight, " to ", ExtraMove ? " move an additional group of forces " : " gain movement speed");
         }
 
         public static bool IsAvailable(Player p)
@@ -42,5 +42,22 @@ namespace Treachery.Shared
             return p.TreacheryCards.Any(c => c.Type == TreacheryCardType.Flight);
         }
 
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            Log();
+            Game.Discard(Player, TreacheryCardType.Flight);
+            Game.CurrentFlightUsed = this;
+        }
+
+        public override Message GetMessage()
+        {
+            return Message.Express(Initiator, " use an ", TreacheryCardType.Flight, " to ", ExtraMove ? " move an additional group of forces " : " gain movement speed");
+        }
+
+        #endregion Execution
     }
 }

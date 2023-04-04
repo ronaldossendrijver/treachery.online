@@ -8,9 +8,7 @@ namespace Treachery.Shared
 {
     public class GreyRemovedCardFromAuction : GameEvent
     {
-        public bool PutOnTop;
-
-        public int _cardId;
+        #region Construction
 
         public GreyRemovedCardFromAuction(Game game) : base(game)
         {
@@ -20,27 +18,69 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public bool PutOnTop { get; set; }
+
+        public int _cardId;
+
         [JsonIgnore]
         public TreacheryCard Card
         {
-            get
-            {
-                return TreacheryCardManager.Get(_cardId);
-            }
-            set
-            {
-                _cardId = TreacheryCardManager.GetId(value);
-            }
+            get => TreacheryCardManager.Get(_cardId);
+            set => _cardId = TreacheryCardManager.GetId(value);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
             return null;
         }
 
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Game.CardsOnAuction.Items.Remove(Card);
+
+            if (PutOnTop)
+            {
+                Game.TreacheryDeck.PutOnTop(Card);
+            }
+            else
+            {
+                Game.TreacheryDeck.PutOnBottom(Card);
+            }
+
+            Game.RegisterKnown(Faction.Grey, Card);
+            Game.CardsOnAuction.Shuffle();
+            Game.Stone(Milestone.Shuffled);
+            Log();
+
+            if (Game.GreyMaySwapCardOnBid)
+            {
+                if (Game.Version < 113 || !Game.Prevented(FactionAdvantage.GreySwappingCard))
+                {
+                    Game.Enter(Phase.GreySwappingCard);
+                }
+                else
+                {
+                    Game.LogPreventionByKarma(FactionAdvantage.GreySwappingCard);
+                    if (!Game.Applicable(Rule.FullPhaseKarma)) Game.Allow(FactionAdvantage.GreySwappingCard);
+                    Game.StartBiddingRound();
+                }
+            }
+            else
+            {
+                Game.StartBiddingRound();
+            }
         }
 
         public override Message GetMessage()
@@ -54,5 +94,7 @@ namespace Treachery.Shared
                 return Message.Express(Initiator, " put a card at the bottom of the Treachery Card deck");
             }
         }
+
+        #endregion Execution
     }
 }

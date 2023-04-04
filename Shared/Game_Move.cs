@@ -553,21 +553,7 @@ namespace Treachery.Shared
 
         internal FlightUsed CurrentFlightUsed { get; set; }
 
-        public void HandleEvent(FlightUsed e)
-        {
-            Log(e);
-            Discard(e.Player, TreacheryCardType.Flight);
-            CurrentFlightUsed = e;
-        }
-
         internal FlightDiscoveryUsed CurrentFlightDiscoveryUsed { get; set; }
-
-        public void HandleEvent(FlightDiscoveryUsed e)
-        {
-            Log(e);
-            OwnerOfFlightDiscovery = Faction.None;
-            CurrentFlightDiscoveryUsed = e;
-        }
 
         private bool MustMoveThroughStorm(Player initiator, Location from, Location to, Battalion moved)
         {

@@ -3,14 +3,13 @@
  */
 
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace Treachery.Shared
 {
-    public class GreySwappedCardOnBid : GameEvent
+    public class GreySwappedCardOnBid : PassableGameEvent
     {
-        public bool Passed;
-
-        public int _cardId;
+        #region Construction
 
         public GreySwappedCardOnBid(Game game) : base(game)
         {
@@ -20,27 +19,59 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public int _cardId;
+
         [JsonIgnore]
         public TreacheryCard Card
         {
-            get
-            {
-                return TreacheryCardManager.Get(_cardId);
-            }
-            set
-            {
-                _cardId = TreacheryCardManager.GetId(value);
-            }
+            get => TreacheryCardManager.Get(_cardId);
+            set => _cardId = TreacheryCardManager.GetId(value);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
             return null;
         }
 
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            if (!Passed)
+            {
+                Game.GreySwappedCardOnBid = true;
+                Player.TreacheryCards.Remove(Card);
+                Player.TreacheryCards.Add(Game.CardsOnAuction.Draw());
+
+                foreach (var p in Game.Players.Where(p => !Game.HasBiddingPrescience(p)))
+                {
+                    Game.UnregisterKnown(p, Player.TreacheryCards);
+                }
+
+                Game.CardsOnAuction.PutOnTop(Card);
+                Game.RegisterKnown(Faction.Grey, Card);
+                Game.Stone(Milestone.CardOnBidSwapped);
+                Log();
+            }
+
+            if (!Game.BiddingRoundWasStarted)
+            {
+                Game.StartBiddingRound();
+            }
+            else
+            {
+                Game.Enter(IsPlaying(Faction.Green), Phase.WaitingForNextBiddingRound, Game.PutNextCardOnAuction);
+            }
         }
 
         public override Message GetMessage()
@@ -54,5 +85,7 @@ namespace Treachery.Shared
                 return Message.Express(Initiator, " don't swap a card from hand with the next card on bid");
             }
         }
+
+        #endregion Execution
     }
 }

@@ -57,11 +57,6 @@ else
 {
     <div @ref=@element class="row">
 
-        @if (IsLandscapeScreen)
-        {
-            <MenuComponent h="@h" />
-        }
-
         <!--Map Column-->
         <div id="mapdiv" class="@MapGrid">
             <Board h="h" OnLocationClick="@h.LocationClick" />
@@ -89,10 +84,7 @@ else
 
             @if (!h.IsObserver)
             {
-                if (!IsLandscapeScreen)
-                {
-                    <MenuComponent h="@h" />
-                }
+                <MenuComponent h="@h" />
 
                 if (h.Player.Faction != Faction.None)
                 {
@@ -148,11 +140,7 @@ else
         {
             <div class="col-sm-12 col-lg-3">
 
-                @if (!IsLandscapeScreen)
-                {
-                    <MenuComponent h="@h" />
-                }
-
+                <MenuComponent h="@h" />
                 <ChatComponent h="@h" BackgroundColor="#e8dba6dd" />
 
             </div>
@@ -180,7 +168,6 @@ else
 
     private Handler h;
     protected ElementReference element;
-    private bool IsLandscapeScreen;
 
     protected override async Task OnInitializedAsync()
     {
@@ -189,9 +176,6 @@ else
         h = new Handler(NavigationManager.ToAbsoluteUri("/gameHub"));
         await h.Start();
         await LoadSkinDataIfSaved();
-
-        var screenDimensions = await Browser.GetScreenDimensions();
-        IsLandscapeScreen = screenDimensions != null && screenDimensions.Height > screenDimensions.Width;
     }
 
     private bool isFullscreen = false;

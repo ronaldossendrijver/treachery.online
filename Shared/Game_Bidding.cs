@@ -19,9 +19,9 @@ namespace Treachery.Shared
         public IBid CurrentBid { get; internal set; }
         public Dictionary<Faction, IBid> Bids { get; private set; } = new Dictionary<Faction, IBid>();
 
-        private bool GreySwappedCardOnBid { get; set; }
+        internal bool GreySwappedCardOnBid { get; set; }
         private bool RegularBiddingIsDone { get; set; }
-        private bool BiddingRoundWasStarted { get; set; }
+        internal bool BiddingRoundWasStarted { get; set; }
         private bool WhiteAuctionShouldStillHappen { get; set; }
         private int NumberOfCardsOnAuction { get; set; }
         internal TriggeredBureaucracy BiddingTriggeredBureaucracy { get; set; }
@@ -246,44 +246,7 @@ namespace Treachery.Shared
             Enter(IsPlaying(Faction.Grey) && !Prevented(FactionAdvantage.GreySelectingCardsOnAuction), Phase.GreyRemovingCardFromBid, StartBiddingRound);
         }
 
-        public void HandleEvent(GreyRemovedCardFromAuction e)
-        {
-            CardsOnAuction.Items.Remove(e.Card);
-
-            if (e.PutOnTop)
-            {
-                TreacheryDeck.PutOnTop(e.Card);
-            }
-            else
-            {
-                TreacheryDeck.PutOnBottom(e.Card);
-            }
-
-            RegisterKnown(Faction.Grey, e.Card);
-            CardsOnAuction.Shuffle();
-            Stone(Milestone.Shuffled);
-            Log(e);
-
-            if (GreyMaySwapCardOnBid)
-            {
-                if (Version < 113 || !Prevented(FactionAdvantage.GreySwappingCard))
-                {
-                    Enter(Phase.GreySwappingCard);
-                }
-                else
-                {
-                    LogPreventionByKarma(FactionAdvantage.GreySwappingCard);
-                    if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreySwappingCard);
-                    StartBiddingRound();
-                }
-            }
-            else
-            {
-                StartBiddingRound();
-            }
-        }
-
-        private bool GreyMaySwapCardOnBid
+        internal bool GreyMaySwapCardOnBid
         {
             get
             {
@@ -292,37 +255,7 @@ namespace Treachery.Shared
             }
         }
 
-        public void HandleEvent(GreySwappedCardOnBid e)
-        {
-            if (!e.Passed)
-            {
-                GreySwappedCardOnBid = true;
-                var initiator = GetPlayer(e.Initiator);
-                initiator.TreacheryCards.Remove(e.Card);
-                initiator.TreacheryCards.Add(CardsOnAuction.Draw());
-
-                foreach (var p in Players.Where(p => !HasBiddingPrescience(p)))
-                {
-                    UnregisterKnown(p, initiator.TreacheryCards);
-                }
-
-                CardsOnAuction.PutOnTop(e.Card);
-                RegisterKnown(Faction.Grey, e.Card);
-                Stone(Milestone.CardOnBidSwapped);
-                Log(e);
-            }
-
-            if (!BiddingRoundWasStarted)
-            {
-                StartBiddingRound();
-            }
-            else
-            {
-                Enter(IsPlaying(Faction.Green), Phase.WaitingForNextBiddingRound, PutNextCardOnAuction);
-            }
-        }
-
-        private void StartBiddingRound()
+        internal void StartBiddingRound()
         {
             BiddingRoundWasStarted = true;
             SkipPlayersThatCantBid(BidSequence);

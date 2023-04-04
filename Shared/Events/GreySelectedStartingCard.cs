@@ -8,8 +8,8 @@ namespace Treachery.Shared
 {
     public class GreySelectedStartingCard : GameEvent
     {
-        public int _cardId;
-
+        #region Construction
+        
         public GreySelectedStartingCard(Game game) : base(game)
         {
         }
@@ -18,32 +18,47 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public int _cardId;
+
         [JsonIgnore]
         public TreacheryCard Card
         {
-            get
-            {
-                return TreacheryCardManager.Get(_cardId);
-            }
-            set
-            {
-                _cardId = TreacheryCardManager.GetId(value);
-            }
+            get => TreacheryCardManager.Get(_cardId);
+            set => _cardId = TreacheryCardManager.GetId(value);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
             return null;
         }
 
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            GetPlayer(Initiator).TreacheryCards.Add(Card);
+            Game.StartingTreacheryCards.Items.Remove(Card);
+            Log();
+            Game.StartingTreacheryCards.Shuffle();
+            Game.Stone(Milestone.Shuffled);
+            Game.DealRemainingStartingTreacheryCardsToNonGrey();
         }
 
         public override Message GetMessage()
         {
             return Message.Express(Initiator, " pick their starting treachery card");
         }
+
+        #endregion Execution
     }
 }
