@@ -2,10 +2,14 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
+using System.Linq;
+
 namespace Treachery.Shared
 {
     public class FaceDancerRevealed : PassableGameEvent
     {
+        #region Construction
+
         public FaceDancerRevealed(Game game) : base(game)
         {
         }
@@ -13,6 +17,10 @@ namespace Treachery.Shared
         public FaceDancerRevealed()
         {
         }
+
+        #endregion Construction
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -23,11 +31,25 @@ namespace Treachery.Shared
             return null;
         }
 
-        public bool FacedancerSucceeded(Game g) => !Passed && (Initiator != Faction.Purple || !g.FacedancerWasCancelled);
+        #endregion Validation
+
+        #region Execution
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            if (!Passed)
+            {
+                var facedancer = Player.FaceDancers.FirstOrDefault(f => Game.WinnerHero.IsFaceDancer(f));
+                Log(Initiator, " reveal ", facedancer, " as one of their Face Dancers!");
+
+                Game.Stone(Milestone.FaceDanced);
+                Game.Enter(Phase.Facedancing);
+            }
+            else
+            {
+                Log(Initiator, " don't reveal a Face Dancer");
+                Game.FinishBattle();
+            }
         }
 
         public override Message GetMessage()
@@ -41,5 +63,7 @@ namespace Treachery.Shared
                 return Message.Express(Initiator, " don't reveal a face dancer");
             }
         }
+
+        #endregion Execution
     }
 }

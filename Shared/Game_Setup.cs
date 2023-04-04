@@ -33,17 +33,6 @@ namespace Treachery.Shared
         
 
 
-        public void HandleEvent(FactionSelected e)
-        {
-            var initiator = Players.FirstOrDefault(p => p.Name == e.InitiatorPlayerName);
-            if (initiator != null && FactionsInPlay.Contains(e.Faction))
-            {
-                initiator.Faction = e.Faction;
-                FactionsInPlay.Remove(e.Faction);
-                Log(e);
-            }
-        }
-
         internal void AssignFactionsAndEnterFactionTrade()
         {
             var inPlay = new Deck<Faction>(FactionsInPlay, Random);

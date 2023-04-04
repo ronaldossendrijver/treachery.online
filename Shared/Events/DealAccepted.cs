@@ -150,6 +150,11 @@ namespace Treachery.Shared
                 GetDealDescription());
         }
 
+        public override Message GetShortMessage()
+        {
+            return Message.Express(Initiator, " accept a deal by ", BoundFaction);
+        }
+
         public Message GetDealDescription() => Deal.DealContentsDescription(Game, Type, Text, Benefit, End, DealParameter1);
 
         public Message GetDealContents() => (Text != null && Text.Length > 0) ? Message.Express(Text) : Message.Express(Type);

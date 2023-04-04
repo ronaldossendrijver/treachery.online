@@ -265,6 +265,8 @@ namespace Treachery.Shared
             }
         }
 
+        public override Message GetShortMessage() => Message.Express(Initiator, " perform ", TreacheryCardType.Clairvoyance);
+
         #endregion Execution
     }
 }

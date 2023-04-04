@@ -46,7 +46,7 @@
         await h.Host.Undo(undoEventId);
     }
 
-    private string DetermineEventDescription(int eventnumber, GameEvent e) => "" + eventnumber + ". " + e.GetMessage()?.ToString(Skin.Current);
+    private string DetermineEventDescription(int eventnumber, GameEvent e) => "" + eventnumber + ". " + e.GetShortMessage()?.ToString(Skin.Current);
 
     private string DetermineGroup(Moment m) => "Turn " + m.Turn + " - " + Skin.Current.Describe(m.Phase);
 

@@ -114,10 +114,10 @@
             var ruleInfo = "";
             foreach (var group in groups)
             {
-                ruleInfo += Skin.Current.Format("<h5>{0}</h5><p class='mt-0 mb-2'>{1}.</p>", group, rulesWithGroups.Where(rg => rg.Group == group).Select(rg => rg.Rule));
+                ruleInfo += Skin.Current.Format("<h5 class='h5'>{0}</h5><p class='mt-0 mb-2'>{1}.</p>", group, rulesWithGroups.Where(rg => rg.Group == group).Select(rg => rg.Rule));
             }
 
-            result += Skin.Current.Format("<h4>{0}</h4>{1}", Game.Ruleset, ruleInfo);
+            result += Skin.Current.Format("<h4>{0}</h4><p>Game version: {1}</p>{2}", Game.Ruleset, Game.Version, ruleInfo);
 
             result += Skin.Current.Format("<h4>Timers</h4>");
             result += string.Format("<p><string>Game started:</strong> {0}", Game.Started.ToString("dddd, dd MMMM yyyy H:mm:ss"));

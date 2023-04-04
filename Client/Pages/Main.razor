@@ -12,165 +12,175 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 
-    @if (h.InScheduledMaintenance)
-    {
-        <div class="alert alert-danger text-center p-0" role="alert">
-            treachery.online will be down for maintenance from @h.ServerSettings.ScheduledMaintenance.ToLocalTime() until @h.ServerSettings.ScheduledMaintenance.AddMinutes(15).ToLocalTime() (your local time)
-        </div>
-    }
+@if (h.InScheduledMaintenance)
+{
+    <div class="alert alert-danger text-center p-0" role="alert">
+        treachery.online will be down for maintenance from @h.ServerSettings.ScheduledMaintenance.ToLocalTime() until @h.ServerSettings.ScheduledMaintenance.AddMinutes(15).ToLocalTime() (your local time)
+    </div>
+}
 
-    @if (!GameStarted)
-    {
-        <div class="row d-flex align-items-center" style="min-height: 98vh; background-image: url('../art/planet.png'); background-size: cover; background-position-x: center; background-position-y: center; background-repeat: no-repeat;">
+@if (!GameStarted)
+{
+    <div class="row d-flex align-items-center" style="min-height: 98vh; background-image: url('../art/planet.png'); background-size: cover; background-position-x: center; background-position-y: center; background-repeat: no-repeat;">
 
-            @if (h.IsConnected)
-            {
-                var centerSize = h.PlayerName != "" && h.HostProxy == null && h.Host == null ? 6 : 4;
-                var fillerSize = 0.5f * (12 - centerSize);
+        @if (h.IsConnected)
+        {
+            var centerSize = h.PlayerName != "" && h.HostProxy == null && h.Host == null ? 6 : 4;
+            var fillerSize = 0.5f * (12 - centerSize);
 
-                <div class="col-sm-12 col-lg-@fillerSize" />
-                <div class="col-sm-12 col-lg-@centerSize">
+            <div class="col-sm-12 col-lg-@fillerSize" />
+            <div class="col-sm-12 col-lg-@centerSize">
 
-                    @if (h.PlayerName == "")
-                    {
-                        <div class="d-flex justify-content-center">
-                            <PlayerNameComponent h="@h" />
-                        </div>
-                    }
-                    else if (h.HostProxy == null && h.Host == null)
-                    {
-                        <HostOrJoinGameComponent h="@h" />
-                    }
-                    else
-                    {
-                        <ActionPanel h="@h" />
-                    }
+                @if (h.PlayerName == "")
+                {
+                    <div class="d-flex justify-content-center">
+                        <PlayerNameComponent h="@h" />
+                    </div>
+                }
+                else if (h.HostProxy == null && h.Host == null)
+                {
+                    <HostOrJoinGameComponent h="@h" />
+                }
+                else
+                {
+                    <ActionPanel h="@h" />
+                }
 
-                </div>
-                <div class="col-sm-12 col-lg-@fillerSize" />
-            }
-
-        </div>
-
-    }
-    else
-    {
-        <div @ref=@element class="row">
-
-            <!--Map Column-->
-            <div id="mapdiv" class="@MapGrid">
-                <Board h="h" OnLocationClick="@h.LocationClick" />
             </div>
+            <div class="col-sm-12 col-lg-@fillerSize" />
+        }
 
-            <!--Action Column-->
+    </div>
+
+}
+else
+{
+    <div @ref=@element class="row">
+
+        @if (IsLandscapeScreen)
+        {
+            <MenuComponent h="@h" />
+        }
+
+        <!--Map Column-->
+        <div id="mapdiv" class="@MapGrid">
+            <Board h="h" OnLocationClick="@h.LocationClick" />
+        </div>
+
+        <!--Action Column-->
+        @if (!h.IsObserver)
+        {
+            <div class="@ActionGrid @Scrollbars">
+
+                <GameStatusComponent h="@h" CanEndPhase="h.Actions.Contains(typeof(EndPhase))" />
+
+                @if (h.CurrentPhase == Phase.GameEnded)
+                {
+                    <WinnerPanel h="h" />
+                }
+
+                <ActionPanel h="@h" />
+
+            </div>
+        }
+
+        <!--Information Column-->
+        <div class="col-sm-12 col-lg-3 cursor-hand @Scrollbars">
+
             @if (!h.IsObserver)
             {
-                <div class="@ActionGrid @Scrollbars">
-
-                    <GameStatusComponent h="@h" CanEndPhase="h.Actions.Contains(typeof(EndPhase))" />
-
-                    @if (h.CurrentPhase == Phase.GameEnded)
-                    {
-                        <WinnerPanel h="h" />
-                    }
-
-                    <ActionPanel h="@h" />
-
-                </div>
-            }
-
-            <!--Information Column-->
-            <div class="col-sm-12 col-lg-3 cursor-hand @Scrollbars">
-
-                @if (!h.IsObserver)
+                if (!IsLandscapeScreen)
                 {
                     <MenuComponent h="@h" />
-
-                    if (h.Player.Faction != Faction.None)
-                    {
-                        <PlayerPanel h="h" ShownPlayer="h.Player" />
-                    }
-                    else if (h.PlayerName != "")
-                    {
-                        <ChatComponent h="@h" BackgroundColor="#e8dba6dd" />
-                    }
                 }
-                else if (h.IsObserver)
+
+                if (h.Player.Faction != Faction.None)
                 {
-                    <GameStatusComponent h="@h" />
-
-                    @if (h.CurrentPhase == Phase.GameEnded)
-                    {
-                        <WinnerPanel h="h" />
-                    }
-
-                    @if (h.Game.CurrentPhase == Phase.Bidding)
-                    {
-                        <NormalBiddingPanel h="h" CanBid="h.Actions.Contains(typeof(Bid))" />
-                    }
-
-                    @if (h.Game.CurrentPhase == Phase.BlackMarketBidding)
-                    {
-                        <BlackMarketBiddingPanel h="h" CanBid="h.Actions.Contains(typeof(BlackMarketBid))" />
-                    }
-
-                    @if (DealAccepted.CurrentDeals(h.Game).Any())
-                    {
-                        <DealComponent h="@h" />
-                    }
+                    <PlayerPanel h="h" ShownPlayer="h.Player" />
                 }
-
-                @if (h.Game.CurrentReport != null)
+                else if (h.PlayerName != "")
                 {
-                    <ReportComponent h="@h" Report="h.Game.CurrentReport" />
-                }
-
-                @if (!h.IsObserver && h.CurrentPhase > Phase.TradingFactions && h.Player.Faction == Faction.None)
-                {
-                    foreach (Player p in h.Game.Players)
-                    {
-                        <PlayerPanel h="h" ShownPlayer="p" ShowHeader="true" />
-                    }
-                }
-
-            </div>
-
-            <!--Chat window for observers-->
-            @if (h.IsObserver)
-            {
-                <div class="col-sm-12 col-lg-3">
-
-                    <MenuComponent h="@h" />
                     <ChatComponent h="@h" BackgroundColor="#e8dba6dd" />
-
-                </div>
+                }
             }
-
-            <!--Global Components-->
-            @if (!h.IsObserver && h.CurrentPhase > Phase.AwaitingPlayers)
+            else if (h.IsObserver)
             {
-                <HoverPanel Width=400 HandleWidth=12 BackgroundColor="#e8dba6dd">
-                    <ChatComponent h="@h" />
-                </HoverPanel>
+                <GameStatusComponent h="@h" />
+
+                @if (h.CurrentPhase == Phase.GameEnded)
+                {
+                    <WinnerPanel h="h" />
+                }
+
+                @if (h.Game.CurrentPhase == Phase.Bidding)
+                {
+                    <NormalBiddingPanel h="h" CanBid="h.Actions.Contains(typeof(Bid))" />
+                }
+
+                @if (h.Game.CurrentPhase == Phase.BlackMarketBidding)
+                {
+                    <BlackMarketBiddingPanel h="h" CanBid="h.Actions.Contains(typeof(BlackMarketBid))" />
+                }
+
+                @if (DealAccepted.CurrentDeals(h.Game).Any())
+                {
+                    <DealComponent h="@h" />
+                }
             }
 
-            @if (h.JoinableAdvertisedGames.Any() && (h.IsObserver || h.Game != null && h.Game.NumberOfHumanPlayers <= 1))
+            @if (h.Game.CurrentReport != null)
             {
-                <AdvertisedGamesComponent h="@h" />
+                <ReportComponent h="@h" Report="h.Game.CurrentReport" />
             }
 
-            <ImageFlashComponent h="@h" />
+            @if (!h.IsObserver && h.CurrentPhase > Phase.TradingFactions && h.Player.Faction == Faction.None)
+            {
+                foreach (Player p in h.Game.Players)
+                {
+                    <PlayerPanel h="h" ShownPlayer="p" ShowHeader="true" />
+                }
+            }
 
         </div>
-    }
 
+        <!--Chat window for observers-->
+        @if (h.IsObserver)
+        {
+            <div class="col-sm-12 col-lg-3">
 
+                @if (!IsLandscapeScreen)
+                {
+                    <MenuComponent h="@h" />
+                }
 
+                <ChatComponent h="@h" BackgroundColor="#e8dba6dd" />
+
+            </div>
+        }
+
+        <!--Global Components-->
+        @if (!h.IsObserver && h.CurrentPhase > Phase.AwaitingPlayers)
+        {
+            <HoverPanel Width=400 HandleWidth=12 BackgroundColor="#e8dba6dd">
+                <ChatComponent h="@h" />
+            </HoverPanel>
+        }
+
+        @if (h.JoinableAdvertisedGames.Any() && (h.IsObserver || h.Game != null && h.Game.NumberOfHumanPlayers <= 1))
+        {
+            <AdvertisedGamesComponent h="@h" />
+        }
+
+        <ImageFlashComponent h="@h" />
+
+    </div>
+}
 
 @code {
 
     private Handler h;
     protected ElementReference element;
+    private bool IsLandscapeScreen;
 
     protected override async Task OnInitializedAsync()
     {
@@ -179,6 +189,9 @@
         h = new Handler(NavigationManager.ToAbsoluteUri("/gameHub"));
         await h.Start();
         await LoadSkinDataIfSaved();
+
+        var screenDimensions = await Browser.GetScreenDimensions();
+        IsLandscapeScreen = screenDimensions != null && screenDimensions.Height > screenDimensions.Width;
     }
 
     private bool isFullscreen = false;

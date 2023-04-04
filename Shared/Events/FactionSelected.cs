@@ -10,6 +10,8 @@ namespace Treachery.Shared
 {
     public class FactionSelected : GameEvent
     {
+        #region Construction
+
         public FactionSelected(Game game) : base(game)
         {
         }
@@ -18,25 +20,26 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
         public string InitiatorPlayerName { get; set; }
+
+        [JsonIgnore]
+        public override Player Player => Game.GetPlayer(InitiatorPlayerName);
 
         public Faction Faction { get; set; }
 
+        #endregion Properties
+
+        #region Validation
+
         public override Message Validate()
         {
-            if (Faction != Faction.None && !Game.FactionsInPlay.Contains(Faction)) return Message.Express("Faction not available");
+            if (Faction != Faction.None && !ValidFactions(Game).Contains(Faction)) return Message.Express("Faction not available");
 
             return null;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(InitiatorPlayerName, " plays ", Faction);
         }
 
         public static IEnumerable<Faction> ValidFactions(Game g)
@@ -44,7 +47,26 @@ namespace Treachery.Shared
             return g.FactionsInPlay.Where(f => !g.Players.Any(p => p.Faction == f));
         }
 
-        [JsonIgnore]
-        public override Player Player => Game.GetPlayer(InitiatorPlayerName);
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            var initiator = Game.Players.FirstOrDefault(p => p.Name == InitiatorPlayerName);
+            if (initiator != null && Game.FactionsInPlay.Contains(Faction))
+            {
+                initiator.Faction = Faction;
+                Game.FactionsInPlay.Remove(Faction);
+                Log();
+            }
+        }
+
+        public override Message GetMessage()
+        {
+            return Message.Express(InitiatorPlayerName, " plays ", Faction);
+        }
+
+        #endregion Execution
     }
 }

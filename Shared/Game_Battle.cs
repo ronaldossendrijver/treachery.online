@@ -1483,27 +1483,7 @@ namespace Treachery.Shared
         #endregion
 
         #region FaceDancing
-
-        public void HandleEvent(FaceDancerRevealed f)
-        {
-            if (!f.Passed)
-            {
-                var initiator = GetPlayer(f.Initiator);
-                var facedancer = initiator.FaceDancers.FirstOrDefault(f => WinnerHero.IsFaceDancer(f));
-                Log(f.Initiator, " reveal ", facedancer, " as one of their Face Dancers!");
-
-                Stone(Milestone.FaceDanced);
-
-                Enter(Phase.Facedancing);
-            }
-            else
-            {
-                Log(f.Initiator, " don't reveal a Face Dancer");
-                FinishBattle();
-            }
-        }
-
-        
+                
 
         public IHero WinnerHero
         {

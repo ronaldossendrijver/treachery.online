@@ -51,18 +51,6 @@ namespace Treachery.Shared
             return null;
         }
 
-        public override Message GetMessage()
-        {
-            if (!Cancel)
-            {
-                return Message.Express(Initiator, " offer ", MessagePart.ExpressIf(To != null && To.Any(), To, " "), "for ", Payment.Of(Price), ": ", Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1));
-            }
-            else
-            {
-                return Message.Express(Initiator, " withdraw a deal offer");
-            }
-        }
-
         public DealOffered Cancellation()
         {
             var result = (DealOffered)MemberwiseClone();
@@ -154,6 +142,30 @@ namespace Treachery.Shared
             else
             {
                 Game.DealOffers.Add(this);
+            }
+        }
+
+        public override Message GetMessage()
+        {
+            if (!Cancel)
+            {
+                return Message.Express(Initiator, " offer ", MessagePart.ExpressIf(To != null && To.Any(), To, " "), "for ", Payment.Of(Price), ": ", Deal.DealContentsDescription(Game, Type, Text, Benefit, EndPhase, DealParameter1));
+            }
+            else
+            {
+                return Message.Express(Initiator, " withdraw a deal offer");
+            }
+        }
+
+        public override Message GetShortMessage()
+        {
+            if (!Cancel)
+            {
+                return Message.Express(Initiator, " offer a deal");
+            }
+            else
+            {
+                return Message.Express(Initiator, " withdraw a deal offer");
             }
         }
 

@@ -130,6 +130,9 @@ namespace Treachery.Shared
             return Message.Express(GetType().Name, " by ", Initiator);
         }
 
+        public virtual Message GetShortMessage() => GetMessage();
+        
+
         [JsonIgnore]
         public virtual Player Player => Game.GetPlayer(Initiator);
 
@@ -177,18 +180,6 @@ namespace Treachery.Shared
         }
 
         protected Player GetPlayer(Faction f) => Game.GetPlayer(f);
-
-        protected void SetValue(IIdentifiable value, ref int idField)
-        {
-            if (value == null)
-            {
-                idField = -1;
-            }
-            else
-            {
-                idField = value.Id;
-            }
-        }
     }
 }
 

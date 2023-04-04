@@ -44,7 +44,7 @@ namespace Treachery.Shared
         public TreacheryCard KarmaCard
         {
             get => TreacheryCardManager.Lookup.Find(_karmaCardId);
-            set => SetValue(value, ref _karmaCardId);
+            set => _karmaCardId = TreacheryCardManager.GetId(value);
         }
 
         /// <summary>

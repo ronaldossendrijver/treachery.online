@@ -70,6 +70,8 @@ namespace Treachery.Client
 
         public static async Task<Dimensions> GetWindowDimensions() => await JsInvoke<Dimensions>("GetWindowDimensions");
 
+        public static async Task<Dimensions> GetScreenDimensions() => await JsInvoke<Dimensions>("GetScreenDimensions");
+
         public static async Task<Dimensions> GetImageDimensions(string imgUrl) => await JsInvoke<Dimensions>("GetImageDimensions", imgUrl);
 
         public static async Task PlaySound(string sound, float volume = 100f, bool loop = false)
