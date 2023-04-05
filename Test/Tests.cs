@@ -27,9 +27,9 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (g.CurrentMainPhase == MainPhase.Ended && g.CurrentTurn > 6 && g.IsPlaying(Faction.Pink) && g.IsPlaying(Faction.Cyan))
+            if (e is BattleConcluded bc && g.CurrentBattle.Territory.IsDiscoveredStronghold)
             {
-                WriteSavegameIfApplicable(g, e.Player, "Ended");
+                WriteSavegameIfApplicable(g, e.Player, "Battle in discovered stronghold");
             }
                 /*
                 if ()

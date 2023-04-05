@@ -68,12 +68,13 @@
                             FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" StrokeWidth="1" StrokeColor="red"/>
                 }
 
-                var verticalRoomRequired = Game.BattalionsIn(homeworld).Count() * Skin.Current.FORCETOKEN_RADIUS;
-                var reservesY = homeworldXY.Y + Skin.Current.PlayerTokenRadius + 0.5f * (Skin.Current.PlayerTokenRadius - verticalRoomRequired);
+                var verticalSpaceRequired = Game.BattalionsIn(homeworld).Count() * Skin.Current.FORCETOKEN_RADIUS;
+                var reservesY = homeworldXY.Y + 0.5f * (2 * Skin.Current.PlayerTokenRadius - verticalSpaceRequired);
 
                 foreach (var b in Game.BattalionsIn(homeworld)) {
 
-                    var reservesX = homeworldXY.X + 0.8f * Skin.Current.PlayerTokenRadius;
+                    var horizontalSpaceRequired = (b.AmountOfForces > 0 && b.AmountOfSpecialForces > 0 ? 2 : 1) * Skin.Current.FORCETOKEN_RADIUS;
+                    var reservesX = homeworldXY.X + 0.5f * (2 * Skin.Current.PlayerTokenRadius - horizontalSpaceRequired);
 
                     if (b.AmountOfForces > 0)
                     {

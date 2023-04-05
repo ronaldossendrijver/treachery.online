@@ -228,8 +228,10 @@
     {
         return
             evt is FaceDanced fd && fd.FaceDancerCalled ||
+            evt is FaceDancerRevealed fdr && !fdr.Passed ||
             evt is TreacheryCalled tc && tc.TraitorCalled ||
             evt is GreySwappedCardOnBid gscob && !gscob.Passed ||
+            evt is TerrorRevealed tr && tr.Type == TerrorType.Atomics ||
             evt is PoisonToothCancelled ||
             evt is ReplacedCardWon ||
             evt is Voice ||

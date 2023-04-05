@@ -135,14 +135,14 @@
 
     private float Angle => 360f / Map.NUMBER_OF_SECTORS;
 
-    private float StartX(int sector) => (float)Math.Cos(2f * Math.PI * (6 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.X;
-    private float StartY(int sector) => (float)Math.Sin(2f * Math.PI * (6 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.Y;
-    private float EndX(int sector) => (float)Math.Cos(2f * Math.PI * (5 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.X;
-    private float EndY(int sector) => (float)Math.Sin(2f * Math.PI * (5 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.Y;
+    private double StartX(int sector) => Math.Cos(2f * Math.PI * (6 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.X;
+    private double StartY(int sector) => Math.Sin(2f * Math.PI * (6 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.Y;
+    private double EndX(int sector) => Math.Cos(2f * Math.PI * (5 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.X;
+    private double EndY(int sector) => Math.Sin(2f * Math.PI * (5 - sector) / Map.NUMBER_OF_SECTORS) * Skin.Current.PlanetRadius + Skin.Current.PlanetCenter.Y;
 
-    private float ScaleX = 563f / Skin.Current.MapDimensions.X;
+    private double ScaleX = 563f / Skin.Current.MapDimensions.X;
 
-    private float ScaleY = 626f / Skin.Current.MapDimensions.Y;
+    private double ScaleY = 626f / Skin.Current.MapDimensions.Y;
 
     private string PointerEvents => OnLocationClick.HasDelegate ? "all" : "none";
 

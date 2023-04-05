@@ -21,13 +21,13 @@
         {
             if (p.ForcesKilled > 0)
             {
-                <MapForce X=@(x + Skin.Current.FORCETOKEN_RADIUS) Y=@(y + Skin.Current.FORCETOKEN_RADIUS) Special=@false Amount=@p.ForcesKilled Faction=@p.Faction />
+                <MapForce X=@x Y=@y Special=@false Amount=@p.ForcesKilled Faction=@p.Faction />
             }
 
             if (p.SpecialForcesKilled > 0)
             {
                 var dX = (p.ForcesKilled > 0) ? 2 * Skin.Current.FORCETOKEN_RADIUS : 0;
-                <MapForce X=@(x + Skin.Current.FORCETOKEN_RADIUS + dX) Y=@(y + Skin.Current.FORCETOKEN_RADIUS) Special=@true Amount=@p.SpecialForcesKilled Faction=@p.Faction />
+                <MapForce X=@(x + dX) Y=@y Special=@true Amount=@p.SpecialForcesKilled Faction=@p.Faction />
             }
 
             y += spacing * 2 * Skin.Current.FORCETOKEN_RADIUS;
@@ -46,7 +46,7 @@
             int displaceX = (int)(0.2f * leaderDiameter);
             foreach (var leader in corpses)
             {
-                var l = new Point((int)x, (int)y - dy);
+                var l = new PointD(x, y - dy);
 
                 if (h.Game.LeaderState[leader].IsFaceDownDead)
                 {
@@ -70,7 +70,7 @@
 
         if (p.Faction == Faction.Green && !h.Game.MessiahIsAlive)
         {
-            var l = new Point((int)x, (int)y);
+            var l = new PointD(x, y);
             <MapImage X="@(x)" Y="@(y)" Diameter="@(0.5f * leaderDiameter)"
                    Src="@Skin.Current.Messiah_URL"
                    ShadowColor="@Skin.Current.SHADOW" ShadowX="2" ShadowY="2" ShadowBlur="1" Popover="@Skin.Current.Describe(Concept.Messiah)"/>

@@ -28,8 +28,8 @@ namespace Treachery.Client
         public Dictionary<int, string> PersonImage_URL;
         public Dictionary<int, string> TerritoryName_STR;
         public Dictionary<int, string> TerritoryBorder_SVG;
-        public Dictionary<int, Point> LocationCenter_Point;
-        public Dictionary<int, Point> LocationSpice_Point;
+        public Dictionary<int, PointD> LocationCenter_Point;
+        public Dictionary<int, PointD> LocationSpice_Point;
         public Dictionary<Faction, string> FactionName_STR;
         public Dictionary<Faction, string> FactionImage_URL;
         public Dictionary<Faction, string> FactionTableImage_URL;
@@ -94,15 +94,15 @@ namespace Treachery.Client
         public string Resource_URL;
         public string HMS_URL;
 
-        public Point MapDimensions;
-        public Point PlanetCenter;
+        public PointD MapDimensions;
+        public PointD PlanetCenter;
         public int PlanetRadius;
         public int MapRadius;
         public int PlayerTokenRadius;
 
-        public Point SpiceDeckLocation;
-        public Point TreacheryDeckLocation;
-        public Point CardSize;
+        public PointD SpiceDeckLocation;
+        public PointD TreacheryDeckLocation;
+        public PointD CardSize;
 
         public int BattleScreenWidth;
         public int BattleScreenHeroX;
@@ -244,18 +244,18 @@ namespace Treachery.Client
             return Join(itemsAsObjects);
         }
 
-        public Point GetCenter(Location location)
+        public PointD GetCenter(Location location)
         {
             if (location is HiddenMobileStronghold hms)
             {
                 if (hms.AttachedToLocation != null)
                 {
                     var attachedToCenter = GetCenter(hms.AttachedToLocation);
-                    return new Point(attachedToCenter.X + (int)HmsDX, attachedToCenter.Y);
+                    return new PointD(attachedToCenter.X + (int)HmsDX, attachedToCenter.Y);
                 }
                 else
                 {
-                    return new Point((int)HmsDX, (int)HmsDX);
+                    return new PointD((int)HmsDX, (int)HmsDX);
                 }
             }
             else if (location is DiscoveredLocation ds)
@@ -263,11 +263,11 @@ namespace Treachery.Client
                 if (ds.AttachedToLocation != null)
                 {
                     var attachedToCenter = GetCenter(ds.AttachedToLocation);
-                    return new Point(attachedToCenter.X - 2 * FORCETOKEN_RADIUS, attachedToCenter.Y - 2 * FORCETOKEN_RADIUS);
+                    return new PointD(attachedToCenter.X - 1.5f * FORCETOKEN_RADIUS, attachedToCenter.Y - 1.5f * FORCETOKEN_RADIUS);
                 }
                 else
                 {
-                    return new Point(-4 * FORCETOKEN_RADIUS, -4 * FORCETOKEN_RADIUS);
+                    return new PointD(-4 * FORCETOKEN_RADIUS, -4 * FORCETOKEN_RADIUS);
                 }
             }
             else
@@ -280,7 +280,7 @@ namespace Treachery.Client
 
         public float HmsRadius => 1.5f * PlayerTokenRadius;
 
-        public Point GetSpiceLocation(Location location) => location.SpiceBlowAmount != 0 ? LocationSpice_Point[location.Id] : new Point(0, 0);
+        public PointD GetSpiceLocation(Location location) => location.SpiceBlowAmount != 0 ? LocationSpice_Point[location.Id] : new PointD(0, 0);
 
         public string Describe(object value)
         {
@@ -1980,113 +1980,113 @@ namespace Treachery.Client
                 [41] = "M193.6 384.7 L186.5 417.4 L176.5 428.8 L178.4 459.3 L183.1 466.8 L179.5 487.3 L195.1 486.8 L208.8 474 L210.1 462.8 L217.3 453.4 L219.7 438.3 L218 432.7 L224.5 427.7 L221.1 424.6 L219.8 417.5 L224.1 410 L213.3 388.3 L212.5 368.9 L193.6 384.7 z",
             },
 
-            LocationCenter_Point = new Dictionary<int, Point>()
+            LocationCenter_Point = new Dictionary<int, PointD>()
             {
-                [0] = new Point(277, 314), //Polar Sink
-                [1] = new Point(327, 243), //Imperial Basin (East Sector)
-                [2] = new Point(323, 204), //Imperial Basin (Center Sector)
-                [3] = new Point(291, 204), //Imperial Basin (West Sector)
-                [4] = new Point(274, 169), //Carthag
-                [5] = new Point(348, 146), //Arrakeen
-                [6] = new Point(451, 407), //Tuek's Sietch
-                [7] = new Point(110, 201), //Sietch Tabr
-                [8] = new Point(109, 408), //Habbanya Sietch
-                [9] = new Point(241, 417), //Cielago North (West Sector)
-                [10] = new Point(279, 421), //Cielago North (Center Sector)
-                [11] = new Point(316, 416), //Cielago North (East Sector)
-                [12] = new Point(236, 457), //Cielago Depression (West Sector)
-                [13] = new Point(277, 454), //Cielago Depression (Center Sector)
-                [14] = new Point(324, 461), //Cielago Depression (East Sector)
-                [15] = new Point(217, 511), //Meridian (West Sector)
-                [16] = new Point(253, 523), //Meridian (East Sector)
-                [17] = new Point(296, 498), //Cielago South (West Sector)
-                [18] = new Point(326, 497), //Cielago South (East Sector)
-                [19] = new Point(358, 462), //Cielago East (West Sector)
-                [20] = new Point(380, 468), //Cielago East (East Sector)
-                [21] = new Point(312, 355), //Harg Pass (West Sector)
-                [22] = new Point(333, 346), //Harg Pass (East Sector)
-                [23] = new Point(388, 434), //False Wall South (West Sector)
-                [24] = new Point(394, 393), //False Wall South (East Sector)
-                [25] = new Point(319, 333), //False Wall East (Far South Sector)
-                [26] = new Point(326, 320), //False Wall East (South Sector)
-                [27] = new Point(332, 303), //False Wall East (Middle Sector)
-                [28] = new Point(325, 284), //False Wall East (North Sector)
-                [29] = new Point(316, 276), //False Wall East (Far North Sector)
-                [30] = new Point(367, 355), //The Minor Erg (Far South Sector)
-                [31] = new Point(361, 326), //The Minor Erg (South Sector)
-                [32] = new Point(379, 295), //The Minor Erg (North Sector)
-                [33] = new Point(371, 268), //The Minor Erg (Far North Sector)
-                [34] = new Point(408, 365), //Pasty Mesa (Far South Sector)
-                [35] = new Point(433, 336), //Pasty Mesa (South Sector)
-                [36] = new Point(439, 288), //Pasty Mesa (North Sector)
-                [37] = new Point(431, 234), //Pasty Mesa (Far North Sector)
-                [38] = new Point(489, 279), //Red Chasm
-                [39] = new Point(446, 473), //South Mesa (South Sector)
-                [40] = new Point(460, 449), //South Mesa (Middle Sector)
-                [41] = new Point(507, 346), //South Mesa (North Sector)
-                [42] = new Point(428, 129), //Basin
-                [43] = new Point(367, 179), //Rim Wall West
-                [44] = new Point(393, 187), //Hole In The Rock
-                [45] = new Point(428, 159), //Sihaya Ridge
-                [46] = new Point(383, 235), //Shield Wall (South Sector)
-                [47] = new Point(355, 235), //Shield Wall (North Sector)
-                [48] = new Point(477, 190), //Gara Kulon
-                [49] = new Point(400, 118), //OH Gap (East Sector)
-                [50] = new Point(357, 93), //OH Gap (Middle Sector)
-                [51] = new Point(312, 80), //OH Gap (West Sector)
-                [52] = new Point(278, 82), //Broken Land (East Sector)
-                [53] = new Point(219, 97), //Broken Land (West Sector)
-                [54] = new Point(272, 114), //Tsimpo (East Sector)
-                [55] = new Point(230, 137), //Tsimpo (Middle Sector)
-                [56] = new Point(192, 178), //Tsimpo (West Sector)
-                [57] = new Point(275, 223), //Arsunt (East Sector)
-                [58] = new Point(266, 268), //Arsunt (West Sector)
-                [59] = new Point(124, 156), //Rock Outcroppings (North Sector)
-                [60] = new Point(81, 180), //Rock Outcroppings (South Sector)
-                [61] = new Point(198, 132), //Plastic Basin (North Sector)
-                [62] = new Point(165, 165), //Plastic Basin (Middle Sector)
-                [63] = new Point(172, 254), //Plastic Basin (South Sector)
-                [64] = new Point(235, 188), //Hagga Basin (East Sector)
-                [65] = new Point(199, 203), //Hagga Basin (West Sector)
-                [66] = new Point(71, 214), //Bight Of The Cliff (North Sector)
-                [67] = new Point(67, 244), //Bight Of The Cliff (South Sector)
-                [68] = new Point(85, 261), //Funeral Plain
-                [69] = new Point(143, 295), //The Great Flat
-                [70] = new Point(236, 287), //Wind Pass (Far North Sector)
-                [71] = new Point(227, 303), //Wind Pass (North Sector)
-                [72] = new Point(213, 327), //Wind Pass (South Sector)
-                [73] = new Point(207, 357), //Wind Pass (Far South Sector)
-                [74] = new Point(155, 327), //The Greater Flat
-                [75] = new Point(84, 371), //Habbanya Erg (West Sector)
-                [76] = new Point(145, 375), //Habbanya Erg (East Sector)
-                [77] = new Point(192, 334), //False Wall West (North Sector)
-                [78] = new Point(196, 374), //False Wall West (Middle Sector)
-                [79] = new Point(163, 449), //False Wall West (South Sector)
-                [80] = new Point(241, 336), //Wind Pass North (North Sector)
-                [81] = new Point(247, 355), //Wind Pass North (South Sector)
-                [82] = new Point(79, 408), //Habbanya Ridge Flat (West Sector)
-                [83] = new Point(152, 485), //Habbanya Ridge Flat (East Sector)
-                [84] = new Point(205, 402), //Cielago West (North Sector)
-                [85] = new Point(201, 463), //Cielago West (South Sector)
+                [0] = new PointD(277, 314), //Polar Sink
+                [1] = new PointD(327, 243), //Imperial Basin (East Sector)
+                [2] = new PointD(323, 204), //Imperial Basin (Center Sector)
+                [3] = new PointD(291, 204), //Imperial Basin (West Sector)
+                [4] = new PointD(274, 169), //Carthag
+                [5] = new PointD(348, 146), //Arrakeen
+                [6] = new PointD(451, 407), //Tuek's Sietch
+                [7] = new PointD(110, 201), //Sietch Tabr
+                [8] = new PointD(109, 408), //Habbanya Sietch
+                [9] = new PointD(241, 417), //Cielago North (West Sector)
+                [10] = new PointD(279, 421), //Cielago North (Center Sector)
+                [11] = new PointD(316, 416), //Cielago North (East Sector)
+                [12] = new PointD(236, 457), //Cielago Depression (West Sector)
+                [13] = new PointD(277, 454), //Cielago Depression (Center Sector)
+                [14] = new PointD(324, 461), //Cielago Depression (East Sector)
+                [15] = new PointD(217, 511), //Meridian (West Sector)
+                [16] = new PointD(253, 523), //Meridian (East Sector)
+                [17] = new PointD(296, 498), //Cielago South (West Sector)
+                [18] = new PointD(326, 497), //Cielago South (East Sector)
+                [19] = new PointD(358, 462), //Cielago East (West Sector)
+                [20] = new PointD(380, 468), //Cielago East (East Sector)
+                [21] = new PointD(312, 355), //Harg Pass (West Sector)
+                [22] = new PointD(333, 346), //Harg Pass (East Sector)
+                [23] = new PointD(388, 434), //False Wall South (West Sector)
+                [24] = new PointD(394, 393), //False Wall South (East Sector)
+                [25] = new PointD(319, 333), //False Wall East (Far South Sector)
+                [26] = new PointD(326, 320), //False Wall East (South Sector)
+                [27] = new PointD(332, 303), //False Wall East (Middle Sector)
+                [28] = new PointD(325, 284), //False Wall East (North Sector)
+                [29] = new PointD(316, 276), //False Wall East (Far North Sector)
+                [30] = new PointD(367, 355), //The Minor Erg (Far South Sector)
+                [31] = new PointD(361, 326), //The Minor Erg (South Sector)
+                [32] = new PointD(379, 295), //The Minor Erg (North Sector)
+                [33] = new PointD(371, 268), //The Minor Erg (Far North Sector)
+                [34] = new PointD(408, 365), //Pasty Mesa (Far South Sector)
+                [35] = new PointD(433, 336), //Pasty Mesa (South Sector)
+                [36] = new PointD(439, 288), //Pasty Mesa (North Sector)
+                [37] = new PointD(431, 234), //Pasty Mesa (Far North Sector)
+                [38] = new PointD(489, 279), //Red Chasm
+                [39] = new PointD(446, 473), //South Mesa (South Sector)
+                [40] = new PointD(460, 449), //South Mesa (Middle Sector)
+                [41] = new PointD(507, 346), //South Mesa (North Sector)
+                [42] = new PointD(428, 129), //Basin
+                [43] = new PointD(367, 179), //Rim Wall West
+                [44] = new PointD(393, 187), //Hole In The Rock
+                [45] = new PointD(428, 159), //Sihaya Ridge
+                [46] = new PointD(383, 235), //Shield Wall (South Sector)
+                [47] = new PointD(355, 235), //Shield Wall (North Sector)
+                [48] = new PointD(477, 190), //Gara Kulon
+                [49] = new PointD(400, 118), //OH Gap (East Sector)
+                [50] = new PointD(357, 93), //OH Gap (Middle Sector)
+                [51] = new PointD(312, 80), //OH Gap (West Sector)
+                [52] = new PointD(278, 82), //Broken Land (East Sector)
+                [53] = new PointD(219, 97), //Broken Land (West Sector)
+                [54] = new PointD(272, 114), //Tsimpo (East Sector)
+                [55] = new PointD(230, 137), //Tsimpo (Middle Sector)
+                [56] = new PointD(192, 178), //Tsimpo (West Sector)
+                [57] = new PointD(275, 223), //Arsunt (East Sector)
+                [58] = new PointD(266, 268), //Arsunt (West Sector)
+                [59] = new PointD(124, 156), //Rock Outcroppings (North Sector)
+                [60] = new PointD(81, 180), //Rock Outcroppings (South Sector)
+                [61] = new PointD(198, 132), //Plastic Basin (North Sector)
+                [62] = new PointD(165, 165), //Plastic Basin (Middle Sector)
+                [63] = new PointD(172, 254), //Plastic Basin (South Sector)
+                [64] = new PointD(235, 188), //Hagga Basin (East Sector)
+                [65] = new PointD(199, 203), //Hagga Basin (West Sector)
+                [66] = new PointD(71, 214), //Bight Of The Cliff (North Sector)
+                [67] = new PointD(67, 244), //Bight Of The Cliff (South Sector)
+                [68] = new PointD(85, 261), //Funeral Plain
+                [69] = new PointD(143, 295), //The Great Flat
+                [70] = new PointD(236, 287), //Wind Pass (Far North Sector)
+                [71] = new PointD(227, 303), //Wind Pass (North Sector)
+                [72] = new PointD(213, 327), //Wind Pass (South Sector)
+                [73] = new PointD(207, 357), //Wind Pass (Far South Sector)
+                [74] = new PointD(155, 327), //The Greater Flat
+                [75] = new PointD(84, 371), //Habbanya Erg (West Sector)
+                [76] = new PointD(145, 375), //Habbanya Erg (East Sector)
+                [77] = new PointD(192, 334), //False Wall West (North Sector)
+                [78] = new PointD(196, 374), //False Wall West (Middle Sector)
+                [79] = new PointD(163, 449), //False Wall West (South Sector)
+                [80] = new PointD(241, 336), //Wind Pass North (North Sector)
+                [81] = new PointD(247, 355), //Wind Pass North (South Sector)
+                [82] = new PointD(79, 408), //Habbanya Ridge Flat (West Sector)
+                [83] = new PointD(152, 485), //Habbanya Ridge Flat (East Sector)
+                [84] = new PointD(205, 402), //Cielago West (North Sector)
+                [85] = new PointD(201, 463), //Cielago West (South Sector)
             },
 
-            LocationSpice_Point = new Dictionary<int, Point>()
+            LocationSpice_Point = new Dictionary<int, PointD>()
             {
-                [11] = new Point(309, 393), //Cielago North (East Sector)
-                [17] = new Point(290, 539), //Cielago South (West Sector)
-                [33] = new Point(362, 272), //The Minor Erg (Far North Sector)
-                [38] = new Point(509, 292), //Red Chasm
-                [40] = new Point(491, 401), //South Mesa (Middle Sector)
-                [45] = new Point(442, 144), //Sihaya Ridge
-                [50] = new Point(335, 86), //OH Gap (Middle Sector)
-                [53] = new Point(196, 99), //Broken Land (West Sector)
-                [60] = new Point(94, 176), //Rock Outcroppings (South Sector)
-                [65] = new Point(216, 233), //Hagga Basin (West Sector)
-                [68] = new Point(59, 266), //Funeral Plain
-                [69] = new Point(55, 293), //The Great Flat
-                [75] = new Point(60, 367), //Habbanya Erg (West Sector)
-                [80] = new Point(233, 340), //Wind Pass North (North Sector)
-                [83] = new Point(133, 483), //Habbanya Ridge Flat (East Sector)
+                [11] = new PointD(309, 393), //Cielago North (East Sector)
+                [17] = new PointD(290, 539), //Cielago South (West Sector)
+                [33] = new PointD(362, 272), //The Minor Erg (Far North Sector)
+                [38] = new PointD(509, 292), //Red Chasm
+                [40] = new PointD(491, 401), //South Mesa (Middle Sector)
+                [45] = new PointD(442, 144), //Sihaya Ridge
+                [50] = new PointD(335, 86), //OH Gap (Middle Sector)
+                [53] = new PointD(196, 99), //Broken Land (West Sector)
+                [60] = new PointD(94, 176), //Rock Outcroppings (South Sector)
+                [65] = new PointD(216, 233), //Hagga Basin (West Sector)
+                [68] = new PointD(59, 266), //Funeral Plain
+                [69] = new PointD(55, 293), //The Great Flat
+                [75] = new PointD(60, 367), //Habbanya Erg (West Sector)
+                [80] = new PointD(233, 340), //Wind Pass North (North Sector)
+                [83] = new PointD(133, 483), //Habbanya Ridge Flat (East Sector)
             },
 
             FactionName_STR = new Dictionary<Faction, string>()
@@ -2632,15 +2632,15 @@ namespace Treachery.Client
                 [Milestone.Assassination] = DEFAULT_ART_LOCATION + "/art/scream.mp3",
             },
 
-            MapDimensions = new Point(563, 626),
+            MapDimensions = new PointD(563, 626),
             PlanetRadius = 242,
             MapRadius = 260,
-            PlanetCenter = new Point(281, 311),
+            PlanetCenter = new PointD(281, 311),
             PlayerTokenRadius = 11,
 
-            SpiceDeckLocation = new Point(0, 540),
-            TreacheryDeckLocation = new Point(475, 540),
-            CardSize = new Point(40, 56),
+            SpiceDeckLocation = new PointD(0, 540),
+            TreacheryDeckLocation = new PointD(475, 540),
+            CardSize = new PointD(40, 56),
 
             BattleScreenWidth = 273,
 

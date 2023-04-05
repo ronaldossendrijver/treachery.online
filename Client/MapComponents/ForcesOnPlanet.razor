@@ -81,13 +81,13 @@
         {
             forceDiameter = 1.5f * Skin.Current.FORCETOKEN_RADIUS;
 
-            <MapImage X=@(pos.X - 1.5f * Skin.Current.FORCETOKEN_RADIUS) Y=@(pos.Y - 2f * Skin.Current.FORCETOKEN_RADIUS) Diameter=@(3 * Skin.Current.FORCETOKEN_RADIUS) 
+            <MapImage X=@(pos.X - 1.25f * Skin.Current.FORCETOKEN_RADIUS) Y=@(pos.Y - 1.25f * Skin.Current.FORCETOKEN_RADIUS) Diameter=@(2.5f * Skin.Current.FORCETOKEN_RADIUS) 
                 Src=@Skin.Current.GetImageURL(ds.Discovery) Popover=@Intel(ds) 
                 ShadowX=1 ShadowY=1 />
 
             @if (h.Status.HighlightedTerritories.Contains(location.Territory))
             {
-                <Circle X="(pos.X)" Y=@(pos.Y - 0.5f * Skin.Current.FORCETOKEN_RADIUS) Radius="(1.5f * Skin.Current.FORCETOKEN_RADIUS)"
+                <Circle X=pos.X Y=pos.Y Radius=@(1.25f * Skin.Current.FORCETOKEN_RADIUS)
                     FillColor="@Skin.Current.HIGHLIGHT_OVERLAY_COLOR" FillOpacity="1" StrokeColor="red" StrokeWidth="1" />
             }
         }

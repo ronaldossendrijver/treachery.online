@@ -36,8 +36,8 @@
 
     if (Game.CurrentMainPhase > MainPhase.Setup)
     {
-        float posX = x;
-        float posY = 0.7f * turnFontHeight;
+        double posX = x;
+        double posY = 0.7f * turnFontHeight;
 
         foreach (var phase in Enumerations.GetValues<MainPhase>(typeof(MainPhase)).Where(p => p >= MainPhase.Storm && p <= MainPhase.Contemplate))
         {
