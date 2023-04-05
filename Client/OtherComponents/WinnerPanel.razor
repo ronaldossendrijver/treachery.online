@@ -12,7 +12,7 @@
 
         @foreach (var w in h.Game.Winners)
         {
-            <h1 style="-webkit-text-stroke-width: 1px; -webkit-text-stroke-color: black;"><img width="80" src="@Skin.Current.GetImageURL(w.Faction)" /> @w.Name</h1>
+            <h1 class="h1" style=@Support.TextBorder(1,"black")><img width="80" src="@Skin.Current.GetImageURL(w.Faction)" /> @w.Name</h1>
         }
 
         @if (!Game.Applicable(Rule.DisableEndOfGameReport))

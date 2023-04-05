@@ -17,27 +17,11 @@
 
 @if (OnClick.HasDelegate || OnMouseOver.HasDelegate || OnMouseExited.HasDelegate) 
 {
-    if (Popover != null && !PopoverAsTooltip)
-    {
-        <img @ref=@element @onclick="@OnClick" @onmouseenter="@OnMouseOver" @onmouseout="@OnMouseExited" style="@Style" src=@Src
-         data-bs-trigger="hover" data-bs-toggle="popover" data-bs-html="true" data-bs-animation="false" data-bs-delay="50" data-container="body" data-bs-content="@Popover" data-bs-template="@PopoverTemplate" />
-    }
-    else
-    {
-        <img @onclick="@OnClick" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseExited" title="@Popover" style="@Style" src=@Src />
-    }
+    <img @attributes=_attributes @ref=@element @onclick="@OnClick" @onmouseenter="@OnMouseOver" @onmouseout="@OnMouseExited"  />
 }
 else
 {
-    if (Popover != null && !PopoverAsTooltip)
-    {
-        <img @ref=@element style="@Style" src=@Src
-        data-bs-trigger="hover" data-bs-toggle="popover" data-bs-html="true" data-bs-animation="false" data-bs-delay="50" data-container="body" data-bs-content="@Popover" data-bs-template="@PopoverTemplate" />
-    }
-    else
-    {
-        <img title="@Popover" style="@Style" src=@Src />
-    }
+    <img @attributes=_attributes @ref=@element />
 }
 
 @code {
@@ -59,6 +43,9 @@ else
 
     [Parameter]
     public string Filter { get; set; } = "";
+
+    [Parameter]
+    public string Animation { get; set; } = null;
 
     [Parameter]
     public string BackgroundCircleColor { get; set; } = null;
@@ -86,6 +73,8 @@ else
     [Parameter]
     public bool PopoverAsTooltip { get; set; }
 
+    private Dictionary<string, object> _attributes;
+
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -95,6 +84,27 @@ else
             _popover = Popover;
             _popoverNeedsRefresh = true;
         }
+
+        _attributes = new();
+
+        if (Popover != null && !PopoverAsTooltip)
+        {
+            _attributes.Add("data-bs-trigger", "hover");
+            _attributes.Add("data-bs-toggle", "popover");
+            _attributes.Add("data-bs-html", "true");
+            _attributes.Add("data-bs-animation", "false");
+            _attributes.Add("data-bs-delay", "100");
+            _attributes.Add("data-container", "body");
+            _attributes.Add("data-bs-content", @Popover);
+            _attributes.Add("data-bs-template", @PopoverTemplate);
+        }
+        else
+        {
+            _attributes.Add("title", @Popover);
+        }
+
+        _attributes.Add("style", Style);
+        _attributes.Add("src", Src);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -136,6 +146,11 @@ else
             if (shadowFilter.Length > 0 || Filter.Length > 0)
             {
                 result += string.Format("filter:{0} {1};", ShadowFilter, Filter);
+            }
+
+            if (Animation != null)
+            {
+                result += string.Format("animation:{0};", Animation);
             }
 
             return result;

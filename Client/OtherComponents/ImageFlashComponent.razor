@@ -8,28 +8,25 @@
 @inherits GameComponent;
 @inject IJSRuntime JSRuntime;
 
-@if (h.Game != null && h.Status != null)
+@if (h.Game != null && h.Status != null && Time > 0)
 {
-    if (timeLeft > 0)
-    {
-        <div style="position:absolute;left:@Support.Px(WindowX);top:@Support.Px(WindowY);width:@Support.Px(FlashWidth);overflow:hidden;animation:@AnimationType 2s;z-index:1000;" @onclick="Hide">
+    <div style="position:absolute;left:@Support.Px(WindowX);top:@Support.Px(WindowY);width:@Support.Px(FlashWidth);overflow:hidden;animation:fadeInFadeOut @(Time)ms;z-index:1000;" @onclick=@Hide>
 
-            @foreach (var img in h.Status.FlashInfo)
-            {
-                <div style="float:left;position:relative;top:0px;display:inline-block;vertical-align:top;width:@Support.Px(ItemWidth)">
+        @foreach (var img in h.Status.FlashInfo)
+        {
+            <div style="float:left;position:relative;top:0px;display:inline-block;vertical-align:top;width:@Support.Px(ItemWidth)">
 
-                    <img src="@img.Url" width=@CardWidth style="filter:drop-shadow(2px 2px 2px black);"/>
+                <img src="@img.Url" width=@CardWidth style="filter:drop-shadow(2px 2px 2px black);"/>
 
-                    @if (img.Message != null)
-                    {
-                        <div style="@MsgStyle"><ExpressionComponent Game=Game Expression=@img.Message.Expression Size=24 TextBorder=@Support.TextBorder(2, "black")/></div>
-                    }
+                @if (img.Message != null)
+                {
+                    <div style="@MsgStyle"><ExpressionComponent Game=Game Expression=@img.Message.Expression Size=24 TextBorder=@Support.TextBorder(2, "black")/></div>
+                }
 
-                </div>
-            }
+            </div>
+        }
 
-        </div>
-    }
+    </div>
 }
 
 @code {
@@ -39,44 +36,9 @@
     private int WindowY = 0;
     private int FlashWidth = 500;
     private int CardWidth = 100;
-
+    private int Time = 0;
+    private bool Hidden = false;
     int afterEventId = -1;
-
-    protected override void OnInitialized()
-    {
-        StartRedrawCycle(1000);
-    }
-
-    int timeLeft = 0;
-    protected override void Redraw()
-    {
-        if (timeLeft > 0)
-        {
-            timeLeft -= 1000;
-        }
-
-        StateHasChanged();
-    }
-
-    private void Hide()
-    {
-        timeLeft = 0;
-        StateHasChanged();
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (h.Game.EventCount != afterEventId)
-        {
-            afterEventId = h.Game.EventCount;
-
-            if (h.Status != null && h.Status.FlashInfo.Any())
-            {
-                timeLeft = 4000 + h.Status.FlashInfo.Count() * 1000;
-                StateHasChanged();
-            }
-        }
-    }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -116,13 +78,35 @@
 
         FlashWidth = nrOfItems * (ItemWidth + 20);
         WindowX = (int)(0.5f * (dimensions.Width - FlashWidth));
+
+        if (h.Game.EventCount != afterEventId)
+        {
+            afterEventId = h.Game.EventCount;
+
+            if (h.Status != null && h.Status.FlashInfo.Any())
+            {
+                Time = 5000 + h.Status.FlashInfo.Count() * 1000;
+            }
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstDraw)
+    {
+        if (Time > 0)
+        {
+            await Task.Delay(Time).ContinueWith(e => Hide());
+        }
+    }
+
+    private void Hide()
+    {
+        Time = 0;
+        StateHasChanged();
     }
 
     private string MsgStyle =>
         string.Format("width:{0};font:normal normal normal 24px Advokat, Calibri, Tahoma, sans-serif;color:white;text-align:center;", Support.Px(CardWidth));
 
     private int ItemWidth => (int)(SPACING_X * CardWidth);
-
-    private string AnimationType => timeLeft <= 1000 ? "fadeOut" : "fadeIn";
 }
 
