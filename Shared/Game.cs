@@ -816,7 +816,7 @@ namespace Treachery.Shared
 
         #region Resources
 
-        private void ChangeResourcesOnPlanet(Location location, int amount)
+        internal void ChangeResourcesOnPlanet(Location location, int amount)
         {
             if (ResourcesOnPlanet.ContainsKey(location))
             {

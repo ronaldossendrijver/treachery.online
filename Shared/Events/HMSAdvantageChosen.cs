@@ -9,7 +9,7 @@ namespace Treachery.Shared
 {
     public class HMSAdvantageChosen : GameEvent
     {
-        public StrongholdAdvantage Advantage;
+        #region Construction
 
         public HMSAdvantageChosen(Game game) : base(game)
         {
@@ -19,19 +19,19 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public StrongholdAdvantage Advantage { get; set; }
+
+        #endregion Properties
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " use the ", Advantage, " stronghold advantage for this battle");
         }
 
         public static bool CanBePlayed(Game g, Player p)
@@ -50,9 +50,21 @@ namespace Treachery.Shared
             return result;
         }
 
-        public static bool MayBeUsed(Game game, Player player)
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
         {
-            return game.SkilledAs(player, LeaderSkill.Thinker) && game.CurrentBattle != null && game.CurrentThought == null && game.CurrentBattle.IsAggressorOrDefender(player);
+            Log();
+            Game.ChosenHMSAdvantage = Advantage;
         }
+
+        public override Message GetMessage()
+        {
+            return Message.Express(Initiator, " use the ", Advantage, " stronghold advantage for this battle");
+        }
+
+        #endregion Execution
     }
 }

@@ -246,12 +246,7 @@ namespace Treachery.Shared
             }
         }
 
-        public IList<Faction> SecretsRemainHidden { get; private set; } = new List<Faction>();
-
-        public void HandleEvent(HideSecrets e)
-        {
-            SecretsRemainHidden.Add(e.Initiator);
-        }
+        public List<Faction> SecretsRemainHidden { get; private set; } = new();
 
         public bool YieldsSecrets(Player p)
         {
@@ -349,35 +344,7 @@ namespace Treachery.Shared
         public bool JuiceForcesLastPlayer => CurrentJuice != null && CurrentJuice.Type == JuiceType.GoLast;
 
 
-        public JuicePlayed CurrentJuice { get; set; }
-        public void HandleEvent(JuicePlayed e)
-        {
-            Log(e);
-
-            var aggressorBeforeJuiceIsPlayed = CurrentBattle?.AggressivePlayer;
-
-            CurrentJuice = e;
-            Discard(e.Player, TreacheryCardType.Juice);
-
-            if ((e.Type == JuiceType.GoFirst || e.Type == JuiceType.GoLast) && Version <= 117)
-            {
-                switch (CurrentMainPhase)
-                {
-                    case MainPhase.Bidding: BidSequence.CheckCurrentPlayer(); break;
-                    case MainPhase.ShipmentAndMove: ShipmentAndMoveSequence.CheckCurrentPlayer(); break;
-                    case MainPhase.Battle: BattleSequence.CheckCurrentPlayer(); break;
-                }
-            }
-            else if (CurrentBattle != null && e.Type == JuiceType.Aggressor && CurrentBattle.AggressivePlayer != aggressorBeforeJuiceIsPlayed)
-            {
-                var currentAggressorBattleAction = AggressorBattleAction;
-                var currentAggressorTraitorAction = AggressorTraitorAction;
-                AggressorBattleAction = DefenderBattleAction;
-                AggressorTraitorAction = DefenderTraitorAction;
-                DefenderBattleAction = currentAggressorBattleAction;
-                DefenderTraitorAction = currentAggressorTraitorAction;
-            }
-        }
+        public JuicePlayed CurrentJuice { get; internal set; }
 
         private bool BureaucratWasUsedThisPhase { get; set; } = false;
         private Phase _phaseBeforeBureaucratWasActivated;

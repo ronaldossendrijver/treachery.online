@@ -277,22 +277,6 @@ namespace Treachery.Shared
 
         private MessagePart SandtroutMessage(bool SandTroutDoublesResources) => MessagePart.ExpressIf(SandTroutDoublesResources, ", doubled by ", Concept.BabyMonster);
 
-        public void HandleEvent(HarvesterPlayed e)
-        {
-            Discard(GetPlayer(e.Initiator), TreacheryCardType.Harvester);
-            var lastResourceCard = CurrentPhase == Phase.HarvesterA ? LatestSpiceCardA : LatestSpiceCardB;
-            int currentAmountOfSpice = ResourcesOnPlanet.ContainsKey(lastResourceCard.Location) ? ResourcesOnPlanet[lastResourceCard.Location] : 0;
-
-            if (currentAmountOfSpice > 0)
-            {
-                ChangeResourcesOnPlanet(lastResourceCard.Location, currentAmountOfSpice);
-            }
-
-            Log(e);
-            MoveToNextPhaseAfterResourceBlow();
-            Stone(Milestone.Harvester);
-        }
-
         internal void MoveToNextPhaseAfterResourceBlow()
         {
             if (Monsters.Count == 0)

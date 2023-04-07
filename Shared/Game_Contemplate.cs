@@ -173,7 +173,7 @@ namespace Treachery.Shared
             }
         }
 
-        public StrongholdAdvantage ChosenHMSAdvantage { get; private set; } = StrongholdAdvantage.None;
+        public StrongholdAdvantage ChosenHMSAdvantage { get; internal set; } = StrongholdAdvantage.None;
 
         public bool HasStrongholdAdvantage(Faction f, StrongholdAdvantage advantage, Territory battleTerritory)
         {

@@ -9,6 +9,8 @@ namespace Treachery.Shared
 {
     public class JuicePlayed : GameEvent
     {
+        #region Construction
+
         public JuicePlayed(Game game) : base(game)
         {
         }
@@ -17,21 +19,19 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
         public JuiceType Type { get; set; }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
             return null;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " use ", TreacheryCardType.Juice, " to ", Type);
         }
 
         public static IEnumerable<JuiceType> ValidTypes(Game g, Player p)
@@ -72,5 +72,43 @@ namespace Treachery.Shared
 
             return applicablePhase && player.TreacheryCards.Any(c => c.Type == TreacheryCardType.Juice);
         }
+
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            Log();
+
+            var aggressorBeforeJuiceIsPlayed = Game.CurrentBattle?.AggressivePlayer;
+
+            Game.CurrentJuice = this;
+            Game.Discard(Player, TreacheryCardType.Juice);
+
+            if ((Type == JuiceType.GoFirst || Type == JuiceType.GoLast) && Game.Version <= 117)
+            {
+                switch (Game.CurrentMainPhase)
+                {
+                    case MainPhase.Bidding: Game.BidSequence.CheckCurrentPlayer(); break;
+                    case MainPhase.ShipmentAndMove: Game.ShipmentAndMoveSequence.CheckCurrentPlayer(); break;
+                    case MainPhase.Battle: Game.BattleSequence.CheckCurrentPlayer(); break;
+                }
+            }
+            else if (Game.CurrentBattle != null && Type == JuiceType.Aggressor && Game.CurrentBattle.AggressivePlayer != aggressorBeforeJuiceIsPlayed)
+            {
+                (Game.DefenderBattleAction, Game.AggressorBattleAction) = (Game.AggressorBattleAction, Game.DefenderBattleAction);
+                (Game.DefenderTraitorAction, Game.AggressorTraitorAction) = (Game.AggressorTraitorAction, Game.DefenderTraitorAction);
+            }
+        }
+
+        public override Message GetMessage()
+        {
+            return Message.Express(Initiator, " use ", TreacheryCardType.Juice, " to ", Type);
+        }
+
+        #endregion Execution
+
+        
     }
 }

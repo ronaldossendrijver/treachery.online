@@ -159,12 +159,6 @@ namespace Treachery.Shared
 
         #region BattlePlan
 
-        public void HandleEvent(HMSAdvantageChosen e)
-        {
-            Log(e);
-            ChosenHMSAdvantage = e.Advantage;
-        }
-
         public void HandleEvent(SwitchedSkilledLeader e)
         {
             var leader = SwitchedSkilledLeader.SwitchableLeader(this, e.Player);
