@@ -376,14 +376,6 @@ namespace Treachery.Shared
         public bool PreventedFromReviving(Faction f) => CurrentKarmaRevivalPrevention != null && CurrentKarmaRevivalPrevention.Target == f;
 
         internal KarmaRevivalPrevention CurrentKarmaRevivalPrevention = null;
-        public void HandleEvent(KarmaRevivalPrevention e)
-        {
-            CurrentKarmaRevivalPrevention = e;
-            Discard(e.Player, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
-            e.Player.SpecialKarmaPowerUsed = true;
-            Log(e);
-            Stone(Milestone.Karma);
-        }
 
         public int AmbassadorsPlacedThisTurn { get; internal set; } = 0;
 

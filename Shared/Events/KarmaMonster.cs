@@ -10,7 +10,7 @@ namespace Treachery.Shared
 {
     public class KarmaMonster : GameEvent
     {
-        public int _territoryId;
+        #region Construction
 
         public KarmaMonster(Game game) : base(game)
         {
@@ -20,17 +20,50 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public int _territoryId;
+
         [JsonIgnore]
-        public Territory Territory { get { return Game.Map.TerritoryLookup.Find(_territoryId); } set { _territoryId = Game.Map.TerritoryLookup.GetId(value); } }
+        public Territory Territory
+        {
+            get => Game.Map.TerritoryLookup.Find(_territoryId);
+            set => _territoryId = Game.Map.TerritoryLookup.GetId(value);
+        }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
             return null;
         }
 
+        public static IEnumerable<Territory> ValidTargets(Game g)
+        {
+            return g.Map.Territories(false).Where(t => !t.IsProtectedFromWorm);
+        }
+
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Game.Discard(Player, Karma.ValidKarmaCards(Game, Player).FirstOrDefault());
+            Player.SpecialKarmaPowerUsed = true;
+            Log();
+            Game.Stone(Milestone.Karma);
+            Game.NumberOfMonsters++;
+            Game.LetMonsterAppear(Territory, false);
+
+            if (Game.CurrentPhase == Phase.BlowReport)
+            {
+                Game.Enter(Phase.AllianceB);
+            }
         }
 
         public override Message GetMessage()
@@ -38,9 +71,6 @@ namespace Treachery.Shared
             return Message.Express("Using ", TreacheryCardType.Karma, ", ", Initiator, " send ", Concept.Monster, " to ", Territory);
         }
 
-        public static IEnumerable<Territory> ValidTargets(Game g)
-        {
-            return g.Map.Territories(false).Where(t => !t.IsProtectedFromWorm);
-        }
+        #endregion Execution
     }
 }

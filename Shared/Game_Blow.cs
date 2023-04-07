@@ -55,7 +55,7 @@ namespace Treachery.Shared
 
         #region ExecuteResourceBlow
 
-        public int NumberOfMonsters { get; private set; } = 0;
+        public int NumberOfMonsters { get; internal set; } = 0;
 
         public ResourceCard SandTrout { get; private set; } = null;
 
@@ -319,7 +319,7 @@ namespace Treachery.Shared
 
         public bool MonsterAppearedInTerritoryWithoutForces { get; private set; } = false;
 
-        private void LetMonsterAppear(Territory t, bool isGreatMonster)
+        internal void LetMonsterAppear(Territory t, bool isGreatMonster)
         {
             var m = new MonsterAppearence(t, isGreatMonster);
 

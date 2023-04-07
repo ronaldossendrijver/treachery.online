@@ -11,8 +11,7 @@ namespace Treachery.Shared
 {
     public class Karma : GameEvent
     {
-        public int _cardId;
-        public FactionAdvantage Prevented;
+        #region Construction
 
         public Karma(Game game) : base(game)
         {
@@ -22,40 +21,30 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public FactionAdvantage Prevented { get; set; }
+
+        public int _cardId;
+        
         [JsonIgnore]
         public TreacheryCard Card
         {
-            get
-            {
-                return TreacheryCardManager.Get(_cardId);
-            }
-            set
-            {
-                _cardId = TreacheryCardManager.GetId(value);
-            }
+            get => TreacheryCardManager.Get(_cardId);
+            set => _cardId = TreacheryCardManager.GetId(value);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
             if (!ValidFactionAdvantages(Game, Player).Contains(Prevented)) return Message.Express("You cannot prevent ", Prevented, " at this moment");
 
             return null;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(
-                Initiator,
-                " play ",
-                MessagePart.ExpressIf(Card.Type != TreacheryCardType.Karma, Card, " as "),
-                " a ",
-                TreacheryCardType.Karma,
-                " card");
         }
 
         public static IEnumerable<FactionAdvantage> ValidFactionAdvantages(Game g, Player p)
@@ -256,5 +245,75 @@ namespace Treachery.Shared
         {
             return ValidKarmaCards(g, p).Any();
         }
+
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            Game.Discard(Card);
+            Log();
+            Game.Stone(Milestone.Karma);
+
+            if (Prevented != FactionAdvantage.None)
+            {
+                Game.Prevent(Initiator, Prevented);
+            }
+
+            RevokeBattlePlansIfNeeded();
+
+            if (Prevented == FactionAdvantage.BlueUsingVoice)
+            {
+                Game.CurrentVoice = null;
+            }
+
+            if (Prevented == FactionAdvantage.GreenBattlePlanPrescience)
+            {
+                Game.CurrentPrescience = null;
+            }
+        }
+
+        private void RevokeBattlePlansIfNeeded()
+        {
+            if (Game.CurrentMainPhase == MainPhase.Battle)
+            {
+                if (Prevented == FactionAdvantage.YellowNotPayingForBattles ||
+                    Prevented == FactionAdvantage.YellowSpecialForceBonus)
+                {
+                    Game.RevokePlanIfNeeded(Faction.Yellow);
+                }
+
+                if (Prevented == FactionAdvantage.RedSpecialForceBonus)
+                {
+                    Game.RevokePlanIfNeeded(Faction.Red);
+                }
+
+                if (Prevented == FactionAdvantage.GreySpecialForceBonus)
+                {
+                    Game.RevokePlanIfNeeded(Faction.Grey);
+                }
+
+                if (Prevented == FactionAdvantage.GreenUseMessiah)
+                {
+                    Game.RevokePlanIfNeeded(Faction.Green);
+                }
+            }
+        }
+
+        public override Message GetMessage()
+        {
+            return Message.Express(
+                Initiator,
+                " play ",
+                MessagePart.ExpressIf(Card.Type != TreacheryCardType.Karma, Card, " as "),
+                " a ",
+                TreacheryCardType.Karma,
+                " card");
+        }
+
+        #endregion Execution
+
+        
     }
 }

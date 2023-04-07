@@ -93,158 +93,10 @@ namespace Treachery.Shared
         public BattleInitiated LatestClairvoyanceBattle { get; internal set; }
 
         public int KarmaHmsMovesLeft { get; internal set; } = 2;
-        public void HandleEvent(KarmaHmsMovement e)
-        {
-            var initiator = GetPlayer(e.Initiator);
-            int collectionRate = initiator.AnyForcesIn(Map.HiddenMobileStronghold) * 2;
-            Log(e);
-
-            if (!initiator.SpecialKarmaPowerUsed)
-            {
-                Discard(initiator, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
-                initiator.SpecialKarmaPowerUsed = true;
-            }
-
-            var currentLocation = Map.HiddenMobileStronghold.AttachedToLocation;
-            CollectSpiceFrom(e.Initiator, currentLocation, collectionRate);
-
-            if (!e.Passed)
-            {
-                Map.HiddenMobileStronghold.PointAt(e.Target);
-                CollectSpiceFrom(e.Initiator, e.Target, collectionRate);
-                KarmaHmsMovesLeft--;
-                Stone(Milestone.HmsMovement);
-            }
-
-            if (e.Passed)
-            {
-                KarmaHmsMovesLeft = 0;
-            }
-        }
-
-        public void HandleEvent(KarmaBrownDiscard e)
-        {
-            Discard(e.Player, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
-            Log(e);
-
-            foreach (var card in e.Cards)
-            {
-                Discard(e.Player, card);
-            }
-
-            e.Player.Resources += e.Cards.Count() * 3;
-            e.Player.SpecialKarmaPowerUsed = true;
-        }
-
-        public void HandleEvent(KarmaWhiteBuy e)
-        {
-            Discard(e.Player, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
-            Log(e);
-            e.Player.TreacheryCards.Add(e.Card);
-            WhiteCache.Remove(e.Card);
-            e.Player.Resources -= 3;
-            e.Player.SpecialKarmaPowerUsed = true;
-        }
-
-        public void HandleEvent(KarmaFreeRevival e)
-        {
-            Stone(Milestone.Revival);
-            Log(e);
-            var initiator = GetPlayer(e.Initiator);
-
-            Discard(initiator, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
-            initiator.SpecialKarmaPowerUsed = true;
-
-            if (e.Hero != null)
-            {
-                ReviveHero(e.Hero);
-
-                if (e.AssignSkill)
-                {
-                    PrepareSkillAssignmentToRevivedLeader(e.Player, e.Hero as Leader);
-                }
-
-            }
-            else
-            {
-                initiator.ReviveForces(e.AmountOfForces);
-                initiator.ReviveSpecialForces(e.AmountOfSpecialForces);
-
-                if (e.AmountOfSpecialForces > 0)
-                {
-                    FactionsThatRevivedSpecialForcesThisTurn.Add(e.Initiator);
-                }
-            }
-        }
-
-        public void HandleEvent(KarmaMonster e)
-        {
-            var initiator = GetPlayer(e.Initiator);
-            Discard(initiator, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
-            initiator.SpecialKarmaPowerUsed = true;
-            Log(e);
-            Stone(Milestone.Karma);
-            NumberOfMonsters++;
-            LetMonsterAppear(e.Territory, false);
-
-            if (CurrentPhase == Phase.BlowReport)
-            {
-                Enter(Phase.AllianceB);
-            }
-        }
 
         public bool GreenKarma { get; internal set; } = false;
-        public void HandleEvent(KarmaPrescience e)
-        {
-            var initiator = GetPlayer(e.Initiator);
-            Discard(initiator, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
-            initiator.SpecialKarmaPowerUsed = true;
-            Log(e);
-            Stone(Milestone.Karma);
-            GreenKarma = true;
-        }
 
         public int PinkKarmaBonus { get; internal set; } = 0;
-        public void HandleEvent(KarmaPinkDial e)
-        {
-            var initiator = GetPlayer(e.Initiator);
-            Discard(initiator, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
-            initiator.SpecialKarmaPowerUsed = true;
-            Stone(Milestone.Karma);
-            var myLeader = CurrentBattle.PlanOf(e.Initiator).Hero;
-            var opponentLeader = CurrentBattle.PlanOfOpponent(initiator).Hero;
-
-            if (myLeader != null && opponentLeader != null)
-            {
-                PinkKarmaBonus = Math.Abs(myLeader.Value - opponentLeader.ValueInCombatAgainst(myLeader));
-            }
-
-            Log("Using ", TreacheryCardType.Karma, ", ", e.Initiator, " add ", PinkKarmaBonus, " to their dial");
-        }
-
-        public void HandleEvent(Karma e)
-        {
-            Discard(e.Card);
-            Log(e);
-            Stone(Milestone.Karma);
-
-            if (e.Prevented != FactionAdvantage.None)
-            {
-                Prevent(e.Initiator, e.Prevented);
-            }
-
-            RevokeBattlePlansIfNeeded(e);
-
-            if (e.Prevented == FactionAdvantage.BlueUsingVoice)
-            {
-                CurrentVoice = null;
-            }
-
-            if (e.Prevented == FactionAdvantage.GreenBattlePlanPrescience)
-            {
-                CurrentPrescience = null;
-            }
-        }
 
         public List<Faction> SecretsRemainHidden { get; private set; } = new();
 
@@ -252,44 +104,18 @@ namespace Treachery.Shared
         {
             return !SecretsRemainHidden.Contains(p.Faction);
         }
+
         public bool YieldsSecrets(Faction f)
         {
             return !SecretsRemainHidden.Contains(f);
         }
 
-        private void RevokeBattlePlansIfNeeded(Karma e)
-        {
-            if (CurrentMainPhase == MainPhase.Battle)
-            {
-                if (e.Prevented == FactionAdvantage.YellowNotPayingForBattles ||
-                    e.Prevented == FactionAdvantage.YellowSpecialForceBonus)
-                {
-                    RevokePlanIfNeeded(Faction.Yellow);
-                }
-
-                if (e.Prevented == FactionAdvantage.RedSpecialForceBonus)
-                {
-                    RevokePlanIfNeeded(Faction.Red);
-                }
-
-                if (e.Prevented == FactionAdvantage.GreySpecialForceBonus)
-                {
-                    RevokePlanIfNeeded(Faction.Grey);
-                }
-
-                if (e.Prevented == FactionAdvantage.GreenUseMessiah)
-                {
-                    RevokePlanIfNeeded(Faction.Green);
-                }
-            }
-        }
-
-        private void RevokePlanIfNeeded(Faction f)
+        internal void RevokePlanIfNeeded(Faction f)
         {
             RevokePlan(CurrentBattle?.PlanOf(f));
         }
 
-        private void RevokePlan(Battle plan)
+        internal void RevokePlan(Battle plan)
         {
             if (plan == AggressorBattleAction)
             {
@@ -303,7 +129,7 @@ namespace Treachery.Shared
 
         private List<FactionAdvantage> PreventedAdvantages = new();
 
-        private void Prevent(Faction initiator, FactionAdvantage advantage)
+        internal void Prevent(Faction initiator, FactionAdvantage advantage)
         {
             Log(initiator, " prevent ", advantage);
 

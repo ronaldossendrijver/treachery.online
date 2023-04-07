@@ -10,9 +10,7 @@ namespace Treachery.Shared
 {
     public class KarmaHmsMovement : GameEvent
     {
-        public bool Passed;
-
-        public int _targetId;
+        #region Construction
 
         public KarmaHmsMovement(Game game) : base(game)
         {
@@ -22,8 +20,24 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public bool Passed;
+
+        public int _targetId;
+
         [JsonIgnore]
-        public Location Target { get { return Game.Map.LocationLookup.Find(_targetId); } set { _targetId = Game.Map.LocationLookup.GetId(value); } }
+        public Location Target
+        {
+            get => Game.Map.LocationLookup.Find(_targetId);
+            set => _targetId = Game.Map.LocationLookup.GetId(value);
+        }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -32,9 +46,41 @@ namespace Treachery.Shared
             return null;
         }
 
+        public static IEnumerable<Location> ValidLocations(Game g)
+        {
+            return Map.FindNeighboursForHmsMovement(g.Map.HiddenMobileStronghold.AttachedToLocation, 1, false, g.SectorInStorm).Where(l => !l.IsStronghold);
+        }
+
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            int collectionRate = Player.AnyForcesIn(Game.Map.HiddenMobileStronghold) * 2;
+            Log();
+
+            if (!Player.SpecialKarmaPowerUsed)
+            {
+                Game.Discard(Player, Karma.ValidKarmaCards(Game, Player).FirstOrDefault());
+                Player.SpecialKarmaPowerUsed = true;
+            }
+
+            var currentLocation = Game.Map.HiddenMobileStronghold.AttachedToLocation;
+            Game.CollectSpiceFrom(Initiator, currentLocation, collectionRate);
+
+            if (!Passed)
+            {
+                Game.Map.HiddenMobileStronghold.PointAt(Target);
+                Game.CollectSpiceFrom(Initiator, Target, collectionRate);
+                Game.KarmaHmsMovesLeft--;
+                Game.Stone(Milestone.HmsMovement);
+            }
+
+            if (Passed)
+            {
+                Game.KarmaHmsMovesLeft = 0;
+            }
         }
 
         public override Message GetMessage()
@@ -49,9 +95,6 @@ namespace Treachery.Shared
             }
         }
 
-        public static IEnumerable<Location> ValidLocations(Game g)
-        {
-            return Map.FindNeighboursForHmsMovement(g.Map.HiddenMobileStronghold.AttachedToLocation, 1, false, g.SectorInStorm).Where(l => !l.IsStronghold);
-        }
+        #endregion Execution
     }
 }

@@ -10,7 +10,7 @@ namespace Treachery.Shared
 {
     public class KarmaBrownDiscard : GameEvent
     {
-        public string _cardIds;
+        #region Construction
 
         public KarmaBrownDiscard(Game game) : base(game)
         {
@@ -19,6 +19,12 @@ namespace Treachery.Shared
         public KarmaBrownDiscard()
         {
         }
+
+        #endregion Construction
+
+        #region Properties
+
+        public string _cardIds;
 
         [JsonIgnore]
         public IEnumerable<TreacheryCard> Cards
@@ -33,6 +39,10 @@ namespace Treachery.Shared
             }
         }
 
+        #endregion Properties
+
+        #region Validation
+
         public override Message Validate()
         {
             var karmaCardToUse = Player.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
@@ -42,9 +52,28 @@ namespace Treachery.Shared
             return null;
         }
 
+        public static IEnumerable<TreacheryCard> ValidCards(Player p)
+        {
+            var karmaCardToUse = p.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
+            return p.TreacheryCards.Where(c => c != karmaCardToUse);
+        }
+
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Game.Discard(Player, Karma.ValidKarmaCards(Game, Player).FirstOrDefault());
+            Log();
+
+            foreach (var card in Cards)
+            {
+                Game.Discard(Player, card);
+            }
+
+            Player.Resources += Cards.Count() * 3;
+            Player.SpecialKarmaPowerUsed = true;
         }
 
         public override Message GetMessage()
@@ -52,10 +81,6 @@ namespace Treachery.Shared
             return Message.Express(Initiator, "Using ", TreacheryCardType.Karma, ", ", Initiator, " discard ", Cards.Select(c => MessagePart.Express(" ", c, " ")), "to get ", Payment.Of(Cards.Count() * 3));
         }
 
-        public static IEnumerable<TreacheryCard> ValidCards(Player p)
-        {
-            var karmaCardToUse = p.TreacheryCards.FirstOrDefault(c => c.Type == TreacheryCardType.Karma);
-            return p.TreacheryCards.Where(c => c != karmaCardToUse);
-        }
+        #endregion Execution
     }
 }

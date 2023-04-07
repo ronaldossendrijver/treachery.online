@@ -9,6 +9,8 @@ namespace Treachery.Shared
 {
     public class KarmaShipmentPrevention : GameEvent
     {
+        #region Construction
+
         public KarmaShipmentPrevention(Game game) : base(game)
         {
         }
@@ -17,7 +19,15 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
         public Faction Target { get; set; }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -26,19 +36,29 @@ namespace Treachery.Shared
             return null;
         }
 
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
         public static IEnumerable<Faction> GetValidTargets(Game g, Player p)
         {
             return g.PlayersOtherThan(p).Where(f => f != Faction.Yellow);
+        }
+
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            Game.CurrentKarmaShipmentPrevention = this;
+            Game.Discard(Player, Karma.ValidKarmaCards(Game, Player).FirstOrDefault());
+            Player.SpecialKarmaPowerUsed = true;
+            Log();
+            Game.Stone(Milestone.Karma);
         }
 
         public override Message GetMessage()
         {
             return Message.Express("Using ", TreacheryCardType.Karma, ", ", Initiator, " prevent shipment by ", Target);
         }
+
+        #endregion Execution
     }
 }

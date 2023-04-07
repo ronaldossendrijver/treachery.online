@@ -4,12 +4,13 @@
 
 using Newtonsoft.Json;
 using System;
+using System.Linq;
 
 namespace Treachery.Shared
 {
     public class KarmaFreeRevival : GameEvent
     {
-        public int _heroId;
+        #region Construction
 
         public KarmaFreeRevival(Game game) : base(game)
         {
@@ -19,17 +20,17 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public int _heroId;
+
         [JsonIgnore]
         public IHero Hero
         {
-            get
-            {
-                return LeaderManager.HeroLookup.Find(_heroId);
-            }
-            set
-            {
-                _heroId = LeaderManager.HeroLookup.GetId(value);
-            }
+            get => LeaderManager.HeroLookup.Find(_heroId);
+            set => _heroId = LeaderManager.HeroLookup.GetId(value);
         }
 
         public int AmountOfForces { get; set; }
@@ -37,6 +38,10 @@ namespace Treachery.Shared
         public int AmountOfSpecialForces { get; set; }
 
         public bool AssignSkill { get; set; } = false;
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -52,9 +57,49 @@ namespace Treachery.Shared
             return null;
         }
 
+        public static int ValidMaxAmount(Player p, bool specialForces)
+        {
+            if (specialForces)
+            {
+                return Math.Min(1, p.SpecialForcesKilled);
+            }
+            else
+            {
+                return Math.Min(3, p.ForcesKilled);
+            }
+        }
+
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Game.Stone(Milestone.Revival);
+            Log();
+
+            Game.Discard(Player, Karma.ValidKarmaCards(Game, Player).FirstOrDefault());
+            Player.SpecialKarmaPowerUsed = true;
+
+            if (Hero != null)
+            {
+                Game.ReviveHero(Hero);
+
+                if (AssignSkill)
+                {
+                    Game.PrepareSkillAssignmentToRevivedLeader(Player, Hero as Leader);
+                }
+            }
+            else
+            {
+                Player.ReviveForces(AmountOfForces);
+                Player.ReviveSpecialForces(AmountOfSpecialForces);
+
+                if (AmountOfSpecialForces > 0)
+                {
+                    Game.FactionsThatRevivedSpecialForcesThisTurn.Add(Initiator);
+                }
+            }
         }
 
         public override Message GetMessage()
@@ -85,16 +130,6 @@ namespace Treachery.Shared
             }
         }
 
-        public static int ValidMaxAmount(Player p, bool specialForces)
-        {
-            if (specialForces)
-            {
-                return Math.Min(1, p.SpecialForcesKilled);
-            }
-            else
-            {
-                return Math.Min(3, p.ForcesKilled);
-            }
-        }
+        #endregion Execution
     }
 }

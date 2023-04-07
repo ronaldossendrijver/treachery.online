@@ -27,17 +27,13 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (e is BattleConcluded bc && g.CurrentBattle.Territory.IsDiscoveredStronghold)
+            /*
+            if ()
             {
-                WriteSavegameIfApplicable(g, e.Player, "Battle in discovered stronghold");
+                WriteSavegameIfApplicable(g, e.Player, "");
             }
-                /*
-                if ()
-                {
-                    WriteSavegameIfApplicable(g, e.Player, "");
-                }
-                */
-            }
+            */
+        }
 
         private readonly List<string> WrittenCases = new();
         private void WriteSavegameIfApplicable(Game g, Player playerWithAction, string c)

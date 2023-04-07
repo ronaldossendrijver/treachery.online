@@ -715,64 +715,9 @@ namespace Treachery.Shared
 
         #region OtherBiddingEvents
 
-        public int KarmaHandSwapNumberOfCards { get; private set; }
-        public Faction KarmaHandSwapTarget { get; private set; }
-        private Phase KarmaHandSwapPausedPhase { get; set; }
-
-        public void HandleEvent(KarmaHandSwapInitiated e)
-        {
-            KarmaHandSwapPausedPhase = CurrentPhase;
-            Enter(Phase.PerformingKarmaHandSwap);
-
-            var initiator = GetPlayer(e.Initiator);
-            var victim = GetPlayer(e.Target);
-
-            initiator.SpecialKarmaPowerUsed = true;
-            Discard(initiator, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
-
-            KarmaHandSwapNumberOfCards = victim.TreacheryCards.Count;
-            KarmaHandSwapTarget = e.Target;
-
-            var cardsToDrawFrom = new Deck<TreacheryCard>(victim.TreacheryCards, Random);
-            Stone(Milestone.Shuffled);
-            cardsToDrawFrom.Shuffle();
-            for (int i = 0; i < KarmaHandSwapNumberOfCards; i++)
-            {
-                var card = cardsToDrawFrom.Draw();
-                RegisterKnown(initiator, card);
-                victim.TreacheryCards.Remove(card);
-                initiator.TreacheryCards.Add(card);
-            }
-
-            Log(e);
-            Stone(Milestone.Karma);
-        }
-
-        public void HandleEvent(KarmaHandSwap e)
-        {
-            var initiator = GetPlayer(e.Initiator);
-            var victim = GetPlayer(KarmaHandSwapTarget);
-
-            foreach (var p in Players.Where(p => p != initiator && p != victim))
-            {
-                UnregisterKnown(p, initiator.TreacheryCards);
-                UnregisterKnown(p, victim.TreacheryCards);
-            }
-
-            foreach (var returned in e.ReturnedCards)
-            {
-                victim.TreacheryCards.Add(returned);
-                initiator.TreacheryCards.Remove(returned);
-            }
-
-            foreach (var returned in e.ReturnedCards)
-            {
-                RegisterKnown(initiator, returned);
-            }
-
-            Log(e);
-            Enter(KarmaHandSwapPausedPhase);
-        }
+        public int KarmaHandSwapNumberOfCards { get; internal set; }
+        public Faction KarmaHandSwapTarget { get; internal set; }
+        internal Phase KarmaHandSwapPausedPhase { get; set; }
 
         public bool HasBidToPay(Player p) => CurrentPhase == Phase.Bidding && CurrentBid != null &&
             (CurrentBid.Initiator == p.Faction || CurrentBid.Initiator == p.Ally && CurrentBid.AllyContributionAmount > 0);

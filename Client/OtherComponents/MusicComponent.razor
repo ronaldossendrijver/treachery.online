@@ -88,10 +88,6 @@
         {
             return Skin.Current.MusicGeneral_URL;
         }
-        else if (h.Game.CurrentPhase == Phase.BattlePhase || h.Game.CurrentPhase == Phase.BeginningOfBattle ) {
-
-            return Skin.Current.MusicBattle_URL;
-        }
         else
         {
             return (h.Game.CurrentMainPhase) switch
@@ -100,8 +96,8 @@
                 MainPhase.Blow or MainPhase.Charity => Skin.Current.MusicResourceBlow_URL,
                 MainPhase.Bidding => Skin.Current.MusicBidding_URL,
                 MainPhase.ShipmentAndMove => Skin.Current.MusicShipmentAndMove_URL,
-
-                MainPhase.Battle => Skin.Current.MusicBattleClimax_URL,
+                MainPhase.Battle when Game.CurrentPhase >= Phase.BattleConclusion => Skin.Current.MusicBattleClimax_URL,
+                MainPhase.Battle => Skin.Current.MusicBattle_URL,
                 MainPhase.Collection or MainPhase.Contemplate or MainPhase.Ended => Skin.Current.MusicMentat_URL,
                 _ => Skin.Current.MusicGeneral_URL
             };

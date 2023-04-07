@@ -176,7 +176,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void CollectSpiceFrom(Faction faction, Location l, int maximumAmount)
+        internal void CollectSpiceFrom(Faction faction, Location l, int maximumAmount)
         {
             if (ResourcesOnPlanet.ContainsKey(l))
             {

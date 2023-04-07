@@ -10,7 +10,7 @@ namespace Treachery.Shared
 {
     public class KarmaHandSwap : GameEvent
     {
-        public string _cardIds;
+        #region Construction
 
         public KarmaHandSwap(Game game) : base(game)
         {
@@ -20,18 +20,22 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public string _cardIds;
+
         [JsonIgnore]
         public IEnumerable<TreacheryCard> ReturnedCards
         {
-            get
-            {
-                return IdStringToObjects(_cardIds, TreacheryCardManager.Lookup);
-            }
-            set
-            {
-                _cardIds = ObjectsToIdString(value, TreacheryCardManager.Lookup);
-            }
+            get => IdStringToObjects(_cardIds, TreacheryCardManager.Lookup);
+            set => _cardIds = ObjectsToIdString(value, TreacheryCardManager.Lookup);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -40,14 +44,40 @@ namespace Treachery.Shared
             return null;
         }
 
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            var victim = GetPlayer(Game.KarmaHandSwapTarget);
+
+            foreach (var p in Game.Players.Where(p => p != Player && p != victim))
+            {
+                Game.UnregisterKnown(p, Player.TreacheryCards);
+                Game.UnregisterKnown(p, victim.TreacheryCards);
+            }
+
+            foreach (var returned in ReturnedCards)
+            {
+                victim.TreacheryCards.Add(returned);
+                Player.TreacheryCards.Remove(returned);
+            }
+
+            foreach (var returned in ReturnedCards)
+            {
+                Game.RegisterKnown(Player, returned);
+            }
+
+            Log();
+            Game.Enter(Game.KarmaHandSwapPausedPhase);
         }
 
         public override Message GetMessage()
         {
             return Message.Express(Initiator, " return ", ReturnedCards.Count(), " cards");
         }
+
+        #endregion Execution
     }
 }

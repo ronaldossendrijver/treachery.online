@@ -1291,15 +1291,7 @@ namespace Treachery.Shared
 
         public bool PreventedFromShipping(Faction f) => CurrentKarmaShipmentPrevention != null && CurrentKarmaShipmentPrevention.Target == f;
 
-        private KarmaShipmentPrevention CurrentKarmaShipmentPrevention = null;
-        public void HandleEvent(KarmaShipmentPrevention e)
-        {
-            CurrentKarmaShipmentPrevention = e;
-            Discard(e.Player, Karma.ValidKarmaCards(this, e.Player).FirstOrDefault());
-            e.Player.SpecialKarmaPowerUsed = true;
-            Log(e);
-            Stone(Milestone.Karma);
-        }
+        internal KarmaShipmentPrevention CurrentKarmaShipmentPrevention { get; set; }
 
         public void HandleEvent(SetShipmentPermission e)
         {
