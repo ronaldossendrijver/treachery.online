@@ -4,7 +4,7 @@
 
 namespace Treachery.Shared
 {
-    public class ReplacedCardWon : GameEvent
+    public class ReplacedCardWon : PassableGameEvent
     {
         public ReplacedCardWon(Game game) : base(game)
         {
@@ -13,8 +13,6 @@ namespace Treachery.Shared
         public ReplacedCardWon()
         {
         }
-
-        public bool Passed { get; set; }
 
         public override Message Validate()
         {

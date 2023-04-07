@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Treachery.Shared
 {
-    public class AmbassadorActivated : GameEvent, ILocationEvent, IPlacement
+    public class AmbassadorActivated : PassableGameEvent, ILocationEvent, IPlacement
     {
         #region Construction
 
@@ -24,8 +24,6 @@ namespace Treachery.Shared
         #endregion Construction
 
         #region Properties
-
-        public bool Passed { get; set; }
 
         public Ambassador BlueSelectedAmbassador { get; set; }
 

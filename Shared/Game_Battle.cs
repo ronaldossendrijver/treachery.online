@@ -1306,86 +1306,6 @@ namespace Treachery.Shared
             return false;
         }
 
-        public void HandleEvent(LoserConcluded e)
-        {
-            if (e.KeptCard != null)
-            {
-                if (SecretAllyAllowsKeepingCardsAfterLosingBattle)
-                {
-                    SecretAllyAllowsKeepingCardsAfterLosingBattle = false;
-                    PlayNexusCard(e.Player, "Secret Ally", " to keep ", e.KeptCard);
-                }
-                else
-                {
-                    Log(e.Initiator, " keep ", e.KeptCard);
-                }
-            }
-
-            foreach (var c in CardsToBeDiscardedByLoserAfterBattle.Where(c => c != e.KeptCard))
-            {
-                Discard(c);
-            }
-
-            CardsToBeDiscardedByLoserAfterBattle.Clear();
-
-            Log(e);
-
-            var winner = GetPlayer(BattleWinner);
-
-            if (e.KarmaForcedKeptCardDecision == LoserConcluded.KARMA_DISCARD || e.KarmaForcedKeptCardDecision == LoserConcluded.KARMA_KEEP)
-            {
-                BattleWinnerMayChooseToDiscard = false;
-                Discard(e.Player, TreacheryCardType.Karma);
-                Stone(Milestone.Karma);
-
-                foreach (var c in e.ForcedKeptOrDiscardedCards)
-                {
-                    if (e.KarmaForcedKeptCardDecision == LoserConcluded.KARMA_DISCARD)
-                    {
-                        Log("Using ", TreacheryCardType.Karma, ", ", e.Initiator, " force ", winner.Faction, " to discard ", c);
-                        if (winner.Has(c)) Discard(c);
-                    }
-                    else if (e.KarmaForcedKeptCardDecision == LoserConcluded.KARMA_KEEP)
-                    {
-                        Log("Using ", TreacheryCardType.Karma, ", ", e.Initiator, " force ", winner.Faction, " to keep ", c);
-                        if (TreacheryDiscardPile.Items.Contains(c))
-                        {
-                            TreacheryDiscardPile.Items.Remove(c);
-                            winner.TreacheryCards.Add(c);
-                        }
-                    }
-                }
-            }
-
-            if (e.Assassinate)
-            {
-                Stone(Milestone.Assassination);
-
-                var assassinated = LoserConcluded.TargetOfAssassination(this, e.Player);
-
-                Assassinated.Add(assassinated);
-                e.Player.RevealedTraitors.Add(assassinated);
-
-                if (!IsAlive(assassinated) || !winner.Leaders.Contains(assassinated))
-                {
-                    Log(e.Initiator, " reveal ", assassinated, " as their target of assassination...");
-                }
-                else
-                {
-                    Log(e.Initiator, " get ", Payment.Of(assassinated.CostToRevive), " by ASSASSINATING ", assassinated, "!");
-                    e.Player.Resources += assassinated.CostToRevive;
-                    KillHero(assassinated);
-                }
-            }
-
-            LoserMayTryToAssassinate = false;
-
-            if (BattleWasConcludedByWinner)
-            {
-                Enter(!IsPlaying(Faction.Purple) || BattleWinner == Faction.Purple, FinishBattle, Version <= 150, Phase.Facedancing, Phase.RevealingFacedancer);
-            }
-        }
-
 
         
 
@@ -1601,7 +1521,7 @@ namespace Treachery.Shared
         }
 
 
-        private bool SecretAllyAllowsKeepingCardsAfterLosingBattle = false;
+        internal bool SecretAllyAllowsKeepingCardsAfterLosingBattle { get; set; } = false;
         public List<TreacheryCard> CardsToBeDiscardedByLoserAfterBattle { get; private set; } = new();
 
         private void LoseCards(Battle plan, bool mayChooseToKeepOne)

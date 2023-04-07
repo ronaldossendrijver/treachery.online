@@ -244,27 +244,6 @@ namespace Treachery.Shared
             }
         }
 
-        public void HandleEvent(MetheorPlayed e)
-        {
-            var player = GetPlayer(e.Initiator);
-            var card = player.Card(TreacheryCardType.Metheor);
-
-            Stone(Milestone.MetheorUsed);
-            ShieldWallDestroyed = true;
-            player.TreacheryCards.Remove(card);
-            RemovedTreacheryCards.Add(card);
-            Log(e);
-
-            foreach (var p in Players)
-            {
-                foreach (var location in Map.ShieldWall.Locations.Where(l => p.AnyForcesIn(l) > 0))
-                {
-                    RevealCurrentNoField(p, location);
-                    p.KillAllForces(location, false);
-                }
-            }
-        }
-
         public void HandleEvent(StormSpellPlayed e)
         {
             Discard(GetPlayer(e.Initiator), TreacheryCardType.StormSpell);

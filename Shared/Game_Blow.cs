@@ -562,41 +562,7 @@ namespace Treachery.Shared
             Enter(Phase.NexusCards);
         }
 
-        public void HandleEvent(NexusCardDrawn e)
-        {
-            if (!e.Passed)
-            {
-                DealNexusCard(e.Player);
-                FactionsThatDrewNexusCard.Add(e.Initiator);
-            }
-
-            if (e.Passed)
-            {
-                FactionsThatMayDrawNexusCard.Remove(e.Initiator);
-            }
-
-            if (!FactionsThatMayDrawNexusCard.Any())
-            {
-                EndBlowPhase();
-            }
-        }
-
-        private void DealNexusCard(Player p)
-        {
-            DiscardNexusCard(p);
-
-            if (NexusCardDeck.IsEmpty)
-            {
-                NexusCardDeck.Items.AddRange(NexusDiscardPile);
-                NexusDiscardPile.Clear();
-                NexusCardDeck.Shuffle();
-                Stone(Milestone.Shuffled);
-                Log("The Nexus Card discard pile was shuffled into a new Nexus Card deck");
-            }
-
-            Log(p.Faction, " draw a Nexus Card");
-            p.Nexus = NexusCardDeck.Draw();
-        }
+        
 
         internal void DiscardNexusCard(Player p)
         {
@@ -609,7 +575,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void EndBlowPhase()
+        internal void EndBlowPhase()
         {
             CurrentYellowNexus = null;
             HasActedOrPassed.Clear();
@@ -624,7 +590,7 @@ namespace Treachery.Shared
             {
                 if (ignoredMonsters.Count > 0)
                 {
-                    Log(ignoredMonsters.Count, " ignored ", Concept.Monster, "cards were shuffled back into the ", Concept.Resource, " deck");
+                    Log(ignoredMonsters.Count, " ignored ", Concept.Monster, " cards were shuffled back into the ", Concept.Resource, " deck");
                     foreach (var c in ignoredMonsters)
                     {
                         ResourceCardDeck.Items.Add(c);
@@ -633,7 +599,7 @@ namespace Treachery.Shared
 
                 if (ignoredSandtrout != null)
                 {
-                    Log(Concept.BabyMonster, "card was shuffled back into the ", Concept.Resource, " deck");
+                    Log(Concept.BabyMonster, " card was shuffled back into the ", Concept.Resource, " deck");
                     ResourceCardDeck.Items.Add(ignoredSandtrout);
                 }
 

@@ -1393,6 +1393,7 @@ namespace Treachery.Client
             Monster_URL = DEFAULT_ART_LOCATION + "/art/monster.svg",
             DrawResourceIconsOnMap = true,
             ShowVerboseToolipsOnMap = true,
+            ShowArrowsForRecentMoves = true,
             Resource_URL = DEFAULT_ART_LOCATION + "/art/PassiveSpice.svg",
             Harvester_URL = DEFAULT_ART_LOCATION + "/art/ActiveSpice.svg",
             HMS_URL = DEFAULT_ART_LOCATION + "/art/hms.svg",

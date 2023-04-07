@@ -186,7 +186,7 @@ namespace Treachery.Shared
             return result;
         }
 
-        private void DealBlackTraitorCards()
+        internal void DealBlackTraitorCards()
         {
             var black = GetPlayer(Faction.Black);
             for (int i = 1; i <= 4; i++)
@@ -195,39 +195,9 @@ namespace Treachery.Shared
             }
         }
 
-        private void DealNonBlackTraitorCards()
-        {
-            for (int i = 1; i <= 4; i++)
-            {
-                foreach (var p in Players.Where(p => p.Faction != Faction.Black && p.Faction != Faction.Purple))
-                {
-                    p.Traitors.Add(TraitorDeck.Draw());
-                }
-            }
-        }
+        
 
-        public void HandleEvent(MulliganPerformed e)
-        {
-            if (!e.Passed)
-            {
-                var initiator = GetPlayer(e.Initiator);
-                TraitorDeck.Items.AddRange(initiator.Traitors);
-                initiator.Traitors.Clear();
-                TraitorDeck.Shuffle();
-                Stone(Milestone.Shuffled);
-                DealBlackTraitorCards();
-                Enter(Phase.BlackMulligan);
-            }
-            else
-            {
-                DealNonBlackTraitorCards();
-                EnterSelectTraitors();
-            }
-
-            Log(e);
-        }
-
-        private void EnterSelectTraitors()
+        internal void EnterSelectTraitors()
         {
             HasActedOrPassed.Clear();
 

@@ -295,63 +295,7 @@ namespace Treachery.Shared
                    p.Initiated(CurrentOrangeNexus);
         }
 
-        private bool MayPerformExtraMove { get; set; }
-        public void HandleEvent(Move m)
-        {
-            StormLossesToTake.Clear();
-            var initiator = GetPlayer(m.Initiator);
-
-            MayPerformExtraMove = (CurrentFlightUsed != null && CurrentFlightUsed.Initiator == m.Initiator && CurrentFlightUsed.ExtraMove);
-
-            if (!MayPerformExtraMove && !InOrangeCunningShipment)
-            {
-                HasActedOrPassed.Add(m.Initiator);
-
-                if (CurrentPhase == Phase.NonOrangeMove)
-                {
-                    ShipmentAndMoveSequence.NextPlayer();
-
-                    if (ShipmentAndMoveSequence.CurrentFaction == Faction.Orange && OrangeMayShipOutOfTurnOrder)
-                    {
-                        ShipmentAndMoveSequence.NextPlayer();
-                    }
-                }
-            }
-
-            if (InOrangeCunningShipment)
-            {
-                CurrentOrangeNexus = null;
-                InOrangeCunningShipment = false;
-            }
-
-            if (!m.Passed)
-            {
-                RecentMoves.Add(m);
-
-                if (ContainsConflictingAlly(initiator, m.To))
-                {
-                    ChosenDestinationsWithAllies.Add(m.To.Territory);
-                }
-
-                PerformMoveFromLocations(initiator, m.ForceLocations, m, m.Initiator != Faction.Blue || m.AsAdvisors, false);
-                CheckIntrusion(m);
-            }
-            else
-            {
-                Log(m.Initiator, " pass movement");
-            }
-
-            DetermineNextShipmentAndMoveSubPhase();
-            CheckIfForcesShouldBeDestroyedByAllyPresence(initiator);
-            FlipBeneGesseritWhenAloneOrWithPinkAlly();
-
-            if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.YellowExtraMove);
-            if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.GreyCyborgExtraMove);
-
-            CurrentFlightUsed = null;
-            CurrentFlightDiscoveryUsed = null;
-            CurrentPlanetology = null;
-        }
+        internal bool MayPerformExtraMove { get; set; }
 
         internal bool BlueMayAccompany { get; set; } = false;
 
@@ -1205,9 +1149,9 @@ namespace Treachery.Shared
 
         public bool OrangeMayDelay => OrangeMayShipOutOfTurnOrder && Players.Count - HasActedOrPassed.Count > (JuiceForcesLastPlayer && !HasActedOrPassed.Contains(CurrentJuice.Initiator) ? 2 : 1);
 
-        private bool OrangeMayShipOutOfTurnOrder => Applicable(Rule.OrangeDetermineShipment) && (Version < 113 || !Prevented(FactionAdvantage.OrangeDetermineMoveMoment));
+        internal bool OrangeMayShipOutOfTurnOrder => Applicable(Rule.OrangeDetermineShipment) && (Version < 113 || !Prevented(FactionAdvantage.OrangeDetermineMoveMoment));
 
-        public bool InOrangeCunningShipment { get; private set; }
+        public bool InOrangeCunningShipment { get; internal set; }
         private void DetermineNextSubPhaseAfterOrangeShipAndMove()
         {
             if (MayPerformExtraMove)

@@ -11,9 +11,7 @@ namespace Treachery.Shared
 {
     public class LoserConcluded : GameEvent
     {
-        public const int KARMA_NO = 0;
-        public const int KARMA_KEEP = 1;
-        public const int KARMA_DISCARD = 2;
+        #region Construction
 
         public LoserConcluded(Game game) : base(game)
         {
@@ -22,6 +20,14 @@ namespace Treachery.Shared
         public LoserConcluded()
         {
         }
+
+        #endregion Construction
+
+        #region Properties
+
+        public const int KARMA_NO = 0;
+        public const int KARMA_KEEP = 1;
+        public const int KARMA_DISCARD = 2;
 
         public int KarmaForcedKeptCardDecision { get; set; }
 
@@ -56,6 +62,10 @@ namespace Treachery.Shared
             }
         }
 
+        #endregion Properties
+
+        #region Validation
+
         public override Message Validate()
         {
             if (Assassinate && !CanAssassinate(Game, Player)) return Message.Express("You can't assassinate");
@@ -68,12 +78,6 @@ namespace Treachery.Shared
             return null;
         }
 
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
         public static bool CanAssassinate(Game g, Player p) => g.LoserMayTryToAssassinate && TargetOfAssassination(g, p) != null;
 
         public static Leader TargetOfAssassination(Game g, Player p) => p.Traitors.FirstOrDefault(l => l is Leader && l != g.WinnerHero && (l.Faction == g.BattleWinner || g.BattleWinner == Faction.Purple && g.IsGhola(l)) && !p.RevealedTraitors.Contains(l)) as Leader;
@@ -81,11 +85,6 @@ namespace Treachery.Shared
         public static IEnumerable<TreacheryCard> CardsLoserMayKeep(Game g) => g.CardsToBeDiscardedByLoserAfterBattle;
 
         public static bool IsApplicable(Game g, Player p) => p.Faction == g.BattleLoser && (CardsLoserMayKeep(g).Any() || g.LoserMayTryToAssassinate);
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " conclude the battle");
-        }
 
         public static bool MayUseKarmaToForceKeptCards(Game game, Player player) =>
             player.Faction == Faction.Cyan &&
@@ -98,7 +97,6 @@ namespace Treachery.Shared
 
         public static IEnumerable<TreacheryCard> CardsThatMayBeKeptOrDiscarded(Game game)
         {
-
             var result = new List<TreacheryCard>();
             var winnerPlan = game.CurrentBattle.PlanOf(game.BattleWinner);
 
@@ -108,5 +106,96 @@ namespace Treachery.Shared
 
             return result;
         }
+
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            if (KeptCard != null)
+            {
+                if (Game.SecretAllyAllowsKeepingCardsAfterLosingBattle)
+                {
+                    Game.SecretAllyAllowsKeepingCardsAfterLosingBattle = false;
+                    Game.PlayNexusCard(Player, "Secret Ally", " to keep ", KeptCard);
+                }
+                else
+                {
+                    Log(Initiator, " keep ", KeptCard);
+                }
+            }
+
+            foreach (var c in Game.CardsToBeDiscardedByLoserAfterBattle.Where(c => c != KeptCard))
+            {
+                Game.Discard(c);
+            }
+
+            Game.CardsToBeDiscardedByLoserAfterBattle.Clear();
+
+            Log();
+
+            var winner = GetPlayer(Game.BattleWinner);
+
+            if (KarmaForcedKeptCardDecision == KARMA_DISCARD || KarmaForcedKeptCardDecision == KARMA_KEEP)
+            {
+                Game.BattleWinnerMayChooseToDiscard = false;
+                Game.Discard(Player, TreacheryCardType.Karma);
+                Game.Stone(Milestone.Karma);
+
+                foreach (var c in ForcedKeptOrDiscardedCards)
+                {
+                    if (KarmaForcedKeptCardDecision == KARMA_DISCARD)
+                    {
+                        Log("Using ", TreacheryCardType.Karma, ", ", Initiator, " force ", winner.Faction, " to discard ", c);
+                        if (winner.Has(c)) Game.Discard(c);
+                    }
+                    else if (KarmaForcedKeptCardDecision == KARMA_KEEP)
+                    {
+                        Log("Using ", TreacheryCardType.Karma, ", ", Initiator, " force ", winner.Faction, " to keep ", c);
+                        if (Game.TreacheryDiscardPile.Items.Contains(c))
+                        {
+                            Game.TreacheryDiscardPile.Items.Remove(c);
+                            winner.TreacheryCards.Add(c);
+                        }
+                    }
+                }
+            }
+
+            if (Assassinate)
+            {
+                Game.Stone(Milestone.Assassination);
+
+                var assassinated = LoserConcluded.TargetOfAssassination(Game, Player);
+
+                Game.Assassinated.Add(assassinated);
+                Player.RevealedTraitors.Add(assassinated);
+
+                if (!Game.IsAlive(assassinated) || !winner.Leaders.Contains(assassinated))
+                {
+                    Log(Initiator, " reveal ", assassinated, " as their target of assassination...");
+                }
+                else
+                {
+                    Log(Initiator, " get ", Payment.Of(assassinated.CostToRevive), " by ASSASSINATING ", assassinated, "!");
+                    Player.Resources += assassinated.CostToRevive;
+                    Game.KillHero(assassinated);
+                }
+            }
+
+            Game.LoserMayTryToAssassinate = false;
+
+            if (Game.BattleWasConcludedByWinner)
+            {
+                Game.Enter(!IsPlaying(Faction.Purple) || Game.BattleWinner == Faction.Purple, Game.FinishBattle, Game.Version <= 150, Phase.Facedancing, Phase.RevealingFacedancer);
+            }
+        }
+
+        public override Message GetMessage()
+        {
+            return Message.Express(Initiator, " conclude the battle");
+        }
+
+        #endregion Execution
     }
 }

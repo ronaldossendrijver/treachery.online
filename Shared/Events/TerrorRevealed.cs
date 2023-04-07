@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Treachery.Shared
 {
-    public class TerrorRevealed : GameEvent, ILocationEvent
+    public class TerrorRevealed : PassableGameEvent, ILocationEvent
     {
         public TerrorRevealed(Game game) : base(game)
         {
@@ -20,8 +20,6 @@ namespace Treachery.Shared
         }
 
         public bool AllianceOffered;
-
-        public bool Passed { get; set; }
 
         public TerrorType Type { get; set; }
 

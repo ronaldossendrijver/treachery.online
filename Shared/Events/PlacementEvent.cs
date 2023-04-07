@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Treachery.Shared
 {
-    public abstract class PlacementEvent : GameEvent, ILocationEvent, IPlacement
+    public abstract class PlacementEvent : PassableGameEvent, ILocationEvent, IPlacement
     {
         public int _toId;
 
@@ -90,8 +90,6 @@ namespace Treachery.Shared
                 _forceLocations = ForceLocationsString(Game, value);
             }
         }
-
-        public bool Passed { get; set; }
 
         public static string ForceLocationsString(Game g, Dictionary<Location, Battalion> forceLocations)
         {

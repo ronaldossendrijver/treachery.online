@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Treachery.Shared
 {
-    public class Shipment : GameEvent, ILocationEvent
+    public class Shipment : PassableGameEvent, ILocationEvent
     {
         public int _toId;
         public int _fromId;
@@ -64,8 +64,6 @@ namespace Treachery.Shared
                 _cunningNoFieldValue = value + 1;
             }
         }
-
-        public bool Passed { get; set; }
 
         public int _karmaCardId;
 

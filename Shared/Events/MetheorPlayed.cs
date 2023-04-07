@@ -8,6 +8,8 @@ namespace Treachery.Shared
 {
     public class MetheorPlayed : GameEvent
     {
+        #region Construction
+
         public MetheorPlayed(Game game) : base(game)
         {
         }
@@ -16,19 +18,15 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Validation
+
         public override Message Validate()
         {
+            if (!MayPlayMetheor(Game, Player)) return Message.Express("You cannot use ", TreacheryCardType.Metheor);
+
             return null;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " use ", TreacheryCardType.Metheor, " to destroy the ", Game.Map.ShieldWall, "!");
         }
 
         public static bool MayPlayMetheor(Game g, Player p)
@@ -57,5 +55,36 @@ namespace Treachery.Shared
 
             return false;
         }
+
+        #endregion Construction
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            var card = Player.Card(TreacheryCardType.Metheor);
+
+            Game.Stone(Milestone.MetheorUsed);
+            Game.ShieldWallDestroyed = true;
+            Player.TreacheryCards.Remove(card);
+            Game.RemovedTreacheryCards.Add(card);
+            Log();
+
+            foreach (var p in Game.Players)
+            {
+                foreach (var location in Game.Map.ShieldWall.Locations.Where(l => p.AnyForcesIn(l) > 0))
+                {
+                    Game.RevealCurrentNoField(p, location);
+                    p.KillAllForces(location, false);
+                }
+            }
+        }
+
+        public override Message GetMessage()
+        {
+            return Message.Express(Initiator, " use ", TreacheryCardType.Metheor, " to destroy the ", Game.Map.ShieldWall, "!");
+        }
+
+        #endregion Execution
     }
 }

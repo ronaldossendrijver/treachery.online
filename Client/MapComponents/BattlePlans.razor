@@ -5,7 +5,7 @@
 @using Treachery.Shared
 @inherits MapComponent
 
-@if (Game.CurrentMainPhase == MainPhase.Battle && Game.CurrentPhase != Phase.RevealingFacedancer && Game.CurrentPhase != Phase.BattleReport)
+@if (Game.CurrentMainPhase == MainPhase.Battle && Game.CurrentPhase != Phase.BattleReport)
 {
     bool MaySeeAggressorBattlePlan = Game.AggressorBattleAction != null && (Game.AggressorBattleAction.Initiator == h.Faction || Game.GreenKarma && Game.CurrentBattle.OpponentOf(Faction.Green) == Game.AggressorBattleAction.Player);
     bool MaySeeDefenderBattlePlan = Game.DefenderBattleAction != null && (Game.DefenderBattleAction.Initiator == h.Faction || Game.GreenKarma && Game.CurrentBattle.OpponentOf(Faction.Green) == Game.DefenderBattleAction.Player);

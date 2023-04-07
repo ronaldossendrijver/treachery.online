@@ -247,7 +247,7 @@ else
        ShadowColor="@Skin.Current.SHADOW" ShadowX="1" ShadowY="1" ShadowBlur="1"/>
 }
 
-<MapImage X=@(X + 0.5f * Skin.Current.BattleScreenWidth - 0.45f * Skin.Current.FORCETOKEN_RADIUS) Y=@(Y + 0.5f * Skin.Current.FORCETOKEN_RADIUS)
+<MapImage X=@(X + 0.5f * Skin.Current.BattleScreenWidth - 0.5f * Skin.Current.FORCETOKEN_RADIUS) Y=@(Y + 0.5f * Skin.Current.FORCETOKEN_RADIUS)
     Diameter=@Skin.Current.FORCETOKEN_RADIUS
     Src="@(showPlan ? Skin.Current.Eye_URL : Skin.Current.EyeSlash_URL)"
     OnClick="OnShowPlanClick"

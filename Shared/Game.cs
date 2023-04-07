@@ -13,7 +13,7 @@ namespace Treachery.Shared
         public const int LowestSupportedVersion = 100;
         public const int LatestVersion = 154;
 
-        public const int ExpansionLevel = 3;
+        public const int ExpansionLevel = 2;
         public bool BotInfologging = false;
 
         #region GameState
@@ -45,7 +45,7 @@ namespace Treachery.Shared
         public Deck<ResourceCard> ResourceCardDiscardPileB { get; internal set; }
         public int SectorInStorm { get; private set; } = -1;
         public int NextStormMoves { get; private set; } = -1;
-        public bool ShieldWallDestroyed { get; private set; } = false;
+        public bool ShieldWallDestroyed { get; internal set; } = false;
         public Territory AtomicsAftermath { get; private set; } = null;
         public BrownEconomicsStatus EconomicsStatus { get; internal set; } = BrownEconomicsStatus.None;
         public Dictionary<Location, int> ResourcesOnPlanet { get; private set; } = new();

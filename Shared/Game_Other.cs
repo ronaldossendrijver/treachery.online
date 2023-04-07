@@ -222,7 +222,7 @@ namespace Treachery.Shared
             }
         }
 
-        public Planetology CurrentPlanetology { get; private set; }
+        public Planetology CurrentPlanetology { get; internal set; }
         public void HandleEvent(Planetology e)
         {
             Log(e);

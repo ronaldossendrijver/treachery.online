@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Treachery.Shared
 {
-    public class DivideResources : GameEvent
+    public class DivideResources : PassableGameEvent
     {
         #region Construction
 
@@ -23,8 +23,6 @@ namespace Treachery.Shared
         #region Properties
 
         public int PortionToFirstPlayer { get; set; }
-
-        public bool Passed { get; set; }
 
         #endregion Properties
 

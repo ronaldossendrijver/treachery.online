@@ -2,11 +2,13 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
+using System.Linq;
+
 namespace Treachery.Shared
 {
-    public class NexusCardDrawn : GameEvent
+    public class NexusCardDrawn : PassableGameEvent
     {
-        public bool Passed { get; set; }
+        #region Construction
 
         public NexusCardDrawn(Game game) : base(game)
         {
@@ -16,20 +18,14 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Validation
+
         public override Message Validate()
         {
             if (!Passed && !MayDraw(Game, Player)) return Message.Express("You're not allowed to draw a Nexus Card");
             return null;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, MessagePart.ExpressIf(Passed, " don't"), " draw a Nexus card");
         }
 
         public static bool MayDraw(Game g, Player p)
@@ -41,5 +37,54 @@ namespace Treachery.Shared
         {
             return g.FactionsThatMayDrawNexusCard.Contains(p.Faction);
         }
+
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            if (!Passed)
+            {
+                DealNexusCard();
+                Game.FactionsThatDrewNexusCard.Add(Initiator);
+            }
+
+            if (Passed)
+            {
+                Game.FactionsThatMayDrawNexusCard.Remove(Initiator);
+            }
+
+            if (!Game.FactionsThatMayDrawNexusCard.Any())
+            {
+                Game.EndBlowPhase();
+            }
+        }
+
+
+        private void DealNexusCard()
+        {
+            Game.DiscardNexusCard(Player);
+
+            if (Game.NexusCardDeck.IsEmpty)
+            {
+                Game.NexusCardDeck.Items.AddRange(Game.NexusDiscardPile);
+                Game.NexusDiscardPile.Clear();
+                Game.NexusCardDeck.Shuffle();
+                Game.Stone(Milestone.Shuffled);
+                Log("The Nexus Card discard pile was shuffled into a new Nexus Card deck");
+            }
+
+            Log(Player.Faction, " draw a Nexus Card");
+            Player.Nexus = Game.NexusCardDeck.Draw();
+        }
+
+        public override Message GetMessage()
+        {
+            return Message.Express(Initiator, MessagePart.ExpressIf(Passed, " don't"), " draw a Nexus card");
+        }
+
+        #endregion Execution
+
     }
 }

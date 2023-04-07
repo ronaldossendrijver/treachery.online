@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Treachery.Shared
 {
-    public class BlackMarketBid : GameEvent, IBid
+    public class BlackMarketBid : PassableGameEvent, IBid
     {
         #region Construction
 
@@ -36,8 +36,6 @@ namespace Treachery.Shared
 
         [JsonIgnore]
         public int TotalAmount => Amount + AllyContributionAmount + RedContributionAmount;
-
-        public bool Passed { get; set; }
 
         #endregion Properties
 

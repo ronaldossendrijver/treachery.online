@@ -7,10 +7,8 @@ using System.Collections.Generic;
 
 namespace Treachery.Shared
 {
-    public class FaceDancerReplaced : GameEvent
+    public class FaceDancerReplaced : PassableGameEvent
     {
-        public bool Passed { get; set; }
-
         public int dancerId;
 
         public FaceDancerReplaced(Game game) : base(game)

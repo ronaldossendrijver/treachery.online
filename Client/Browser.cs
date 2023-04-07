@@ -78,23 +78,7 @@ namespace Treachery.Client
         {
             if (IsValidSound(sound)) await JsInvoke("PlaySound", sound, CalculateVolume(volume), loop);
         }
-
-        private static float CalculateVolume(float volumeOnLinearScaleFrom0to100)
-        {
-            if (volumeOnLinearScaleFrom0to100 <= 0)
-            {
-                return 0;
-            }
-            else if (volumeOnLinearScaleFrom0to100 >= 100)
-            {
-                return 1;
-            }
-            else
-            {
-                return (float)(Math.Exp(0.05f * volumeOnLinearScaleFrom0to100 - 4) / Math.E);
-            }
-        }
-
+                
         public static async Task ChangeSoundVolume(string sound, float volume)
         {
             if (IsValidSound(sound)) await JsInvoke("ChangeSoundVolume", sound, CalculateVolume(volume));
@@ -113,7 +97,23 @@ namespace Treachery.Client
         public static async Task FadeAndStopSound(string sound, float fromVolume)
         {
             await FadeSound(sound, fromVolume, 0, 3000);
-            await Task.Delay(3000).ContinueWith(e => StopSound(sound));
+            _ = Task.Delay(3000).ContinueWith(e => StopSound(sound));
+        }
+
+        private static float CalculateVolume(float volumeOnLinearScaleFrom0to100)
+        {
+            if (volumeOnLinearScaleFrom0to100 <= 0)
+            {
+                return 0;
+            }
+            else if (volumeOnLinearScaleFrom0to100 >= 100)
+            {
+                return 1;
+            }
+            else
+            {
+                return (float)(Math.Exp(0.05f * volumeOnLinearScaleFrom0to100 - 4) / Math.E);
+            }
         }
 
         private static bool IsValidSound(string sound) => sound != null && sound != "" && sound != "?";
