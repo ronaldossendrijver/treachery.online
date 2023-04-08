@@ -103,5 +103,22 @@
         }
     }
 
-    private string GetLabel(T value) => value != null ? Skin.Current.Describe(value) : EmptyLabel;
+    private string GetLabel(T value) 
+    {
+        if (value == null)
+        {
+            return EmptyLabel;
+        }
+        else if (ValueLabels != null && ValueLabels.Count() == Values.Count())
+        {
+            int i = 0;
+            foreach (var item in Values)
+            {
+                if (value.Equals(item)) return ValueLabels.ElementAt(i);
+                i++;
+            }
+        }
+
+        return Skin.Current.Describe(value);
+    }
 }

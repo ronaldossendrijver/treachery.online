@@ -28,9 +28,9 @@ namespace Treachery.Test
         private void SaveSpecialCases(Game g, GameEvent e)
         {
             /*
-            if ()
+            if (e is ClairVoyancePlayed)
             {
-                WriteSavegameIfApplicable(g, e.Player, "");
+                WriteSavegameIfApplicable(g, e.Player, "ClairVoyancePlayed");
             }
             */
         }
