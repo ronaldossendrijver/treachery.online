@@ -39,7 +39,7 @@
 
             @if (Game.ContainsConflictingAlly(Player, toLocation))
             {
-                <div class="text-danger bg-dark">Note: any of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
+                <div class="text-danger bg-dark">Note: if you place forces there, all of your forces there at the end of your move turn will be destroyed due to ally presence!</div>
             }
 
             @if (Faction == Faction.Blue && toLocation != null)

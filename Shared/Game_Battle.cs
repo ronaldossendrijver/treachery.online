@@ -663,7 +663,7 @@ namespace Treachery.Shared
             LogIf(BattleOutcome.DefBattlePenalty != 0, def.Hero, " ", BattleOutcome.AggActivatedPenaltySkill, " penalty: ", BattleOutcome.DefBattlePenalty);
 
             LogIf(BattleOutcome.AggMessiahContribution > 0, agg.Hero, " ", Concept.Messiah, " bonus: ", BattleOutcome.AggMessiahContribution);
-            LogIf(BattleOutcome.DefMessiahContribution > 0, agg.Hero, " ", Concept.Messiah, " bonus: ", BattleOutcome.DefMessiahContribution);
+            LogIf(BattleOutcome.DefMessiahContribution > 0, def.Hero, " ", Concept.Messiah, " bonus: ", BattleOutcome.DefMessiahContribution);
 
             BattleWinner = BattleOutcome.Winner.Faction;
             BattleLoser = BattleOutcome.Loser.Faction;

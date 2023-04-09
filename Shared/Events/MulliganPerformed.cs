@@ -24,7 +24,7 @@ namespace Treachery.Shared
 
         public override Message Validate()
         {
-            if (Game.Version >= 154 && !MayMulligan(Player)) return Message.Express("You can't take a mulligan");
+            if (!Passed && Game.Version >= 150 && !MayMulligan(Player)) return Message.Express("You can't take a mulligan");
 
             return null;
         }
@@ -71,7 +71,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            return Message.Express(Initiator, Passed ? "pass" : "take", " a mulligan");
+            return Message.Express(Initiator, Passed ? " pass" : " take", " a mulligan");
         }
 
         #endregion Execution

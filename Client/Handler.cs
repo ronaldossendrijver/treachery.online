@@ -37,7 +37,6 @@ namespace Treachery.Client
         //Sound and camera
         public float CurrentEffectVolume { get; set; } = -1;
         public float CurrentChatVolume { get; set; } = -1;
-        //public float CurrentVideoVolume { get; set; } = -1;
         public CaptureDevice AudioDevice { get; set; }
         public CaptureDevice VideoDevice { get; set; }
 
@@ -71,46 +70,19 @@ namespace Treachery.Client
             Game = new Game();
             UpdateStatus(Game, Player, IsPlayer);
             RegisterHandlers();
-            //Browser.OnVideoData += ProcessVideoData;
         }
-
-        /*
-        private void ProcessVideoData(byte[] data)
-        {
-            if (HostProxy != null)
-            {
-                _ = HostProxy.SendVideo(Player.PositionAtTable, data);
-            }
-        }
-        */
 
         public bool IsDisconnected
         {
-            get
-            {
-                return Disconnected != default;
-            }
-
-            set
-            {
-                Disconnected = default;
-            }
+            get => Disconnected != default;
+            set => Disconnected = default;
         }
 
-        public void Refresh()
-        {
-            RefreshHandler?.Invoke();
-        }
+        public void Refresh() => RefreshHandler?.Invoke();
 
-        public void RefreshPopovers()
-        {
-            RefreshPopoverHandler?.Invoke();
-        }
+        public void RefreshPopovers() => RefreshPopoverHandler?.Invoke();
 
-        private void LogSerializationError(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs e)
-        {
-            Support.Log(e.ErrorContext.Error.ToString());
-        }
+        private void LogSerializationError(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs e) => Support.Log(e.ErrorContext.Error.ToString());
 
         public string MyName => Player != null ? Player.Name : "";
 
@@ -148,7 +120,6 @@ namespace Treachery.Client
             _connection.On<GameChatMessage>("HandleChatMessage", (message) => HandleChatMessage(message));
             _connection.On<int>("HandleUndo", (untilEventNr) => HandleUndo(untilEventNr));
             _connection.On<string>("HandleLoadSkin", (skin) => HandleLoadSkin(skin));
-            //_connection.On<int, byte[]>("ReceiveVideo", (playerposition, data) => ReceiveVideo(playerposition, data));
             _connection.On<string, string, string>("HandleLoadGame", (state, playerName, skin) => HandleLoadGame(state, playerName, skin));
             _connection.On<int>("UpdateTimer", (value) => UpdateTimer(value));
             _connection.On<GlobalChatMessage>("ReceiveGlobalChatMessage", (message) => HandleGlobalChatMessage(message));
@@ -158,11 +129,6 @@ namespace Treachery.Client
         {
             Timer = value;
         }
-
-        /*private async Task ReceiveVideo(int playerPosition, byte[] data)
-        {
-            await Browser.PushVideoData("video" + playerPosition, data, 0.01f * CurrentVideoVolume);
-        }*/
 
         //Process information about a currently running game on treachery.online
         public IEnumerable<GameInfo> RunningGames => _availableGames.Where(gameAndDate => DateTime.Now.Subtract(gameAndDate.Value).TotalSeconds < 15).Select(gameAndDate => gameAndDate.Key);
@@ -241,7 +207,6 @@ namespace Treachery.Client
                 }
             }
         }
-
 
         public void Reset()
         {
