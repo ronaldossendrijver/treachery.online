@@ -123,7 +123,7 @@ namespace Treachery.Shared
 
         public int RecentlyPaidTotalAmount => RecentlyPaid.Sum(p => p.Amount);
 
-        private List<Payment> StoredRecentlyPaid { get; set; } = new();
+        internal List<Payment> StoredRecentlyPaid { get; set; } = new();
         public void ClearRecentPayments()
         {
             StoredRecentlyPaid = RecentlyPaid;
@@ -188,9 +188,9 @@ namespace Treachery.Shared
         internal Phase PhaseBeforeDiscarding { get; set; }
         public List<Faction> FactionsThatMustDiscard { get; internal set; } = new();
 
-        private Phase PhaseBeforeDiscardingTraitor { get; set; }
-        private Faction FactionThatMustDiscardTraitor { get; set; }
-        private int NumberOfTraitorsToDiscard { get; set; }
+        internal Phase PhaseBeforeDiscardingTraitor { get; set; }
+        internal Faction FactionThatMustDiscardTraitor { get; set; }
+        internal int NumberOfTraitorsToDiscard { get; set; }
         public void HandleEvent(TraitorDiscarded e)
         {
             Log(e);

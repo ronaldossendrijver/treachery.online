@@ -9,55 +9,63 @@ namespace Treachery.Shared
 
         public void Count(T obj)
         {
-            if (!counters.ContainsKey(obj))
+            lock (counters)
             {
-                counters.Add(obj, 1);
-            }
-            else
-            {
-                counters[obj]++;
+                if (counters.ContainsKey(obj))
+                {
+                    counters[obj]++;
+                }
+                else
+                {
+                    counters.Add(obj, 1);
+                }
             }
         }
 
         public void Count2(T obj)
         {
-            if (!counters.ContainsKey(obj))
+            lock (counters)
             {
-                counters.Add(obj, 2);
-            }
-            else
-            {
-                counters[obj] += 2;
+                if (counters.ContainsKey(obj))
+                {
+                    counters[obj] += 2;
+                }
+                else
+                {
+                    counters.Add(obj, 2);
+                }
             }
         }
 
         public void CountN(T obj, int n)
         {
-            if (!counters.ContainsKey(obj))
+            lock (counters)
             {
-                counters.Add(obj, n);
-            }
-            else
-            {
-                counters[obj] += n;
+                if (counters.ContainsKey(obj))
+                {
+                    counters[obj] += n;
+                }
+                else
+                {
+                    counters.Add(obj, n);
+                }
             }
         }
 
         public void SetToN(T obj, int n)
         {
-            if (counters.ContainsKey(obj))
+            lock (counters)
             {
                 counters.Remove(obj);
+                counters.Add(obj, n);
             }
-
-            counters.Add(obj, n);
         }
 
         public int CountOf(T obj)
         {
-            if (counters.ContainsKey(obj))
+            if (counters.TryGetValue(obj, out int value))
             {
-                return counters[obj];
+                return value;
             }
 
             return 0;

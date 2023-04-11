@@ -498,29 +498,6 @@ namespace Treachery.Shared
                 TreacheryCardsBeforeTraitors, EnterStormPhase, DealStartingTreacheryCards);
         }
 
-        public void HandleEvent(PerformBluePlacement e)
-        {
-            var player = GetPlayer(e.Initiator);
-            if (IsOccupied(e.Target))
-            {
-                player.ShipAdvisors(e.Target, 1);
-            }
-            else
-            {
-                player.ShipForces(e.Target, 1);
-            }
-
-            Log(e);
-            Enter(IsPlaying(Faction.Cyan), Phase.CyanSettingUp, TreacheryCardsBeforeTraitors, EnterStormPhase, DealStartingTreacheryCards);
-        }
-
-        public void HandleEvent(PerformCyanSetup e)
-        {
-            e.Player.ShipForces(e.Target, 6);
-            Log(e);
-            Enter(TreacheryCardsBeforeTraitors, EnterStormPhase, DealStartingTreacheryCards);
-        }
-
         public Deck<TreacheryCard> StartingTreacheryCards { get; private set; }
 
         private TreacheryCard ExtraStartingCardForBlack = null;

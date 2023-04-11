@@ -46,16 +46,6 @@ namespace Treachery.Shared
             return p.Occupies(Map.Arrakeen) || p.Occupies(Map.Carthag);
         }
 
-        
-
-        public void HandleEvent(OrangeDelay e)
-        {
-            BeginningOfShipmentAndMovePhase = false;
-            Log(e);
-            Enter(Phase.NonOrangeShip);
-        }
-
-
         internal readonly List<Territory> ChosenDestinationsWithAllies = new();
 
         public void HandleEvent(Shipment s)

@@ -14,7 +14,7 @@ namespace Treachery.Shared
         public List<MonsterAppearence> Monsters { get; private set; } = new();
         private readonly List<ResourceCard> ignoredMonsters = new();
         private ResourceCard ignoredSandtrout = null;
-        private List<NexusVoted> NexusVotes { get; set; } = new();
+        internal List<NexusVoted> NexusVotes { get; set; } = new();
 
         #endregion State
 
@@ -299,24 +299,6 @@ namespace Treachery.Shared
             }
         }
 
-
-        public void HandleEvent(NexusVoted e)
-        {
-            Log(e);
-            NexusVotes.Add(e);
-            if (NexusVotes.Count == Players.Count)
-            {
-                if (2 * NexusVotes.Count(v => v.Passed) >= Players.Count)
-                {
-                    Enter(CurrentPhase == Phase.VoteAllianceA && Applicable(Rule.IncreasedResourceFlow), EnterBlowB, StartNexusCardPhase);
-                }
-                else
-                {
-                    Enter(CurrentPhase == Phase.VoteAllianceA, Phase.AllianceA, Phase.AllianceB);
-                }
-            }
-        }
-
         public bool MonsterAppearedInTerritoryWithoutForces { get; private set; } = false;
 
         internal void LetMonsterAppear(Territory t, bool isGreatMonster)
@@ -539,7 +521,7 @@ namespace Treachery.Shared
 
         #region EndOfSpiceBlow
 
-        private void StartNexusCardPhase()
+        internal void StartNexusCardPhase()
         {
             if (NexusHasOccured && Applicable(Rule.NexusCards) && Players.Any(p => p.HasAlly) && Players.Any(p => !p.HasAlly))
             {

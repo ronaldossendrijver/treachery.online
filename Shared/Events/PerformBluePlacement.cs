@@ -10,7 +10,7 @@ namespace Treachery.Shared
 {
     public class PerformBluePlacement : GameEvent
     {
-        public int _targetId;
+        #region Construction
 
         public PerformBluePlacement(Game game) : base(game)
         {
@@ -20,24 +20,28 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public int _targetId;
+
         [JsonIgnore]
-        public Location Target { get { return Game.Map.LocationLookup.Find(_targetId); } set { _targetId = Game.Map.LocationLookup.GetId(value); } }
+        public Location Target 
+        { 
+            get => Game.Map.LocationLookup.Find(_targetId); 
+            set => _targetId = Game.Map.LocationLookup.GetId(value); 
+        }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
             if (!ValidLocations(Game).Contains(Target)) return Message.Express("Invalid location");
 
             return null;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " position themselves in ", Target);
         }
 
         public static bool BlueMayPlaceFirstForceInAnyTerritory(Game g) => g.Applicable(Rule.BlueFirstForceInAnyTerritory) || g.Version >= 144 && g.Applicable(Rule.BlueAdvisors);
@@ -55,5 +59,31 @@ namespace Treachery.Shared
                 }
             }
         }
+
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            if (Game.IsOccupied(Target))
+            {
+                Player.ShipAdvisors(Target, 1);
+            }
+            else
+            {
+                Player.ShipForces(Target, 1);
+            }
+
+            Log();
+            Game.Enter(IsPlaying(Faction.Cyan), Phase.CyanSettingUp, Game.TreacheryCardsBeforeTraitors, Game.EnterStormPhase, Game.DealStartingTreacheryCards);
+        }
+
+        public override Message GetMessage()
+        {
+            return Message.Express(Initiator, " position themselves in ", Target);
+        }
+
+        #endregion Execution
     }
 }
