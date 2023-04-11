@@ -18,11 +18,4 @@ namespace Treachery.Shared
             return "";
         }
     }
-
-    public class PlayerRejoined
-    {
-        public string HashedPassword { get; set; }
-
-        public string Name { get; set; }
-    }
 }

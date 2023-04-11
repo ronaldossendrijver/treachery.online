@@ -9,38 +9,48 @@ namespace Treachery.Shared
 {
     public class AcceptOrCancelPurpleRevival : GameEvent
     {
-        public bool Cancel;
+        #region Construction
 
-        public int Price;
+        public AcceptOrCancelPurpleRevival(Game g) : base(g) 
+        { 
+        }
+
+        public AcceptOrCancelPurpleRevival()
+        {
+        }
+
+        #endregion Construction
+
+        #region Properties
+
+        public bool Cancel { get; set; }
+
+        public int Price { get; set; }
 
         public int _heroId;
 
         [JsonIgnore]
         public IHero Hero
         {
-            get
-            {
-                return LeaderManager.HeroLookup.Find(_heroId);
-            }
-            set
-            {
-                _heroId = LeaderManager.HeroLookup.GetId(value);
-            }
+            get => LeaderManager.HeroLookup.Find(_heroId);
+            set => _heroId = LeaderManager.HeroLookup.GetId(value);
         }
 
         [JsonIgnore]
         private bool IsDenial => Price == int.MaxValue;
 
-        public AcceptOrCancelPurpleRevival(Game g) : base(g) { }
+        #endregion Properties
 
-        public AcceptOrCancelPurpleRevival()
-        {
-        }
+        #region Validation
 
         public override Message Validate()
         {
             return null;
         }
+
+        #endregion Validation
+
+        #region Execution
 
         protected override void ExecuteConcreteEvent()
         {
@@ -97,5 +107,7 @@ namespace Treachery.Shared
                 }
             }
         }
+
+        #endregion Execution
     }
 }

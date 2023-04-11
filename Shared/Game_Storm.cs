@@ -10,10 +10,10 @@ namespace Treachery.Shared
 {
     public partial class Game
     {
-        public int HmsMovesLeft { get; private set; }
+        public int HmsMovesLeft { get; internal set; }
         public List<Faction> HasBattleWheel { get; private set; } = new List<Faction>();
 
-        private readonly List<int> Dials = new List<int>();
+        private readonly List<int> Dials = new();
 
         internal void EnterStormPhase()
         {
@@ -124,7 +124,7 @@ namespace Treachery.Shared
             return Random.Next(6) + 1;
         }
 
-        private void DetermineStorm()
+        internal void DetermineStorm()
         {
             if (UseStormDeck)
             {
@@ -143,37 +143,6 @@ namespace Treachery.Shared
             HasActedOrPassed.Clear();
             Log("The storm will move ", NextStormMoves, " sectors...");
             Enter(Phase.MetheorAndStormSpell);
-        }
-
-        public void HandleEvent(PerformHmsPlacement e)
-        {
-            Map.HiddenMobileStronghold.PointAt(e.Target);
-            Log(e);
-            EndStormPhase();
-            Stone(Milestone.HmsMovement);
-        }
-
-        public void HandleEvent(PerformHmsMovement e)
-        {
-            var initiator = GetPlayer(e.Initiator);
-            int collectionRate = initiator.AnyForcesIn(Map.HiddenMobileStronghold) * 2;
-            Log(e);
-
-            var currentLocation = Map.HiddenMobileStronghold.AttachedToLocation;
-            CollectSpiceFrom(e.Initiator, currentLocation, collectionRate);
-
-            if (!e.Passed)
-            {
-                Map.HiddenMobileStronghold.PointAt(e.Target);
-                CollectSpiceFrom(e.Initiator, e.Target, collectionRate);
-                HmsMovesLeft--;
-                Stone(Milestone.HmsMovement);
-            }
-
-            if (e.Passed || HmsMovesLeft == 0)
-            {
-                DetermineStorm();
-            }
         }
 
         internal void CollectSpiceFrom(Faction faction, Location l, int maximumAmount)

@@ -6,11 +6,19 @@ namespace Treachery.Shared
 {
     public class AllianceBroken : GameEvent
     {
-        public AllianceBroken(Game g) : base(g) { }
+        #region Construction
+
+        public AllianceBroken(Game g) : base(g) 
+        { 
+        }
 
         public AllianceBroken()
         {
         }
+
+        #endregion Construction
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -19,10 +27,9 @@ namespace Treachery.Shared
             return null;
         }
 
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " end their alliance");
-        }
+        #endregion Validation
+
+        #region Execution
 
         protected override void ExecuteConcreteEvent()
         {
@@ -30,5 +37,12 @@ namespace Treachery.Shared
             Game.BreakAlliance(Initiator);
             Game.LetFactionsDiscardSurplusCards();
         }
+
+        public override Message GetMessage()
+        {
+            return Message.Express(Initiator, " end their alliance");
+        }
+
+        #endregion Execution
     }
 }

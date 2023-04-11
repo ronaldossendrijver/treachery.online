@@ -457,29 +457,6 @@ namespace Treachery.Shared
 
         public Faction NextFactionToPerformCustomSetup => Players.Select(p => p.Faction).Where(f => !HasActedOrPassed.Contains(f)).FirstOrDefault();
 
-        public void HandleEvent(PerformSetup e)
-        {
-            var faction = NextFactionToPerformCustomSetup;
-            var player = GetPlayer(faction);
-
-            foreach (var fl in e.ForceLocations)
-            {
-                var location = fl.Key;
-                player.ShipForces(location, fl.Value.AmountOfForces);
-                player.ShipSpecialForces(location, fl.Value.AmountOfSpecialForces);
-            }
-
-            player.Resources = e.Resources;
-
-            Log(faction, " initial positions set, starting with ", Payment.Of(e.Resources));
-            HasActedOrPassed.Add(faction);
-
-            if (Players.Count == HasActedOrPassed.Count)
-            {
-                Enter(TreacheryCardsBeforeTraitors, EnterStormPhase, DealStartingTreacheryCards);
-            }
-        }
-
         public void HandleEvent(PerformYellowSetup e)
         {
             var initiator = GetPlayer(e.Initiator);
