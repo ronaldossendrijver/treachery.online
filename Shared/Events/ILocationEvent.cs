@@ -10,6 +10,6 @@ namespace Treachery.Shared
 
         public Location To { get; }
 
-        public int TotalAmountOfForces { get; }
+        public int TotalAmountOfForcesAddedToLocation { get; }
     }
 }

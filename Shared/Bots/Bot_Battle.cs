@@ -13,7 +13,7 @@ namespace Treachery.Shared
         protected virtual BattleClaimed DetermineBattleClaimed()
         {
             var territory = Game.BattleAboutToStart.Territory;
-            var opponent = Game.BattleAboutToStart.OpponentOf(this);
+            var opponent = Game.GetPlayer(Game.BattleAboutToStart.Target);
             bool iWillFight = GetDialNeeded(AlliedPlayer, territory, opponent, false) > GetDialNeeded(this, territory, opponent, false);
             return new BattleClaimed(Game) { Initiator = Faction, Passed = !iWillFight };
         }

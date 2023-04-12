@@ -47,37 +47,17 @@ namespace Treachery.Shared
 
         internal void InitiateBattle()
         {
-            CurrentReport = new Report(MainPhase.Battle);
             CurrentBattle = BattleAboutToStart;
             ChosenHMSAdvantage = StrongholdAdvantage.None;
             BattleOutcome = null;
             NrOfBattlesFought++;
 
-            if (CurrentPinkOrAllyFighter == Faction.None)
-            {
-                Log(CurrentBattle.Initiator, " initiate battle with ", CurrentBattle.Target, " in ", CurrentBattle.Territory);
-            }
-            else
-            {
-                var initiatorIsWithPink = CurrentBattle.Initiator == Faction.Pink || CurrentBattle.Player.Ally == Faction.Pink;
-                Log(CurrentBattle.Initiator,
-                    MessagePart.ExpressIf(initiatorIsWithPink, CurrentBattle.Player.Ally),
-                    " initiate battle with ",
-                    CurrentBattle.Target,
-                    MessagePart.ExpressIf(!initiatorIsWithPink, GetPlayer(CurrentBattle.Target).Ally),
-                    " in ",
-                    CurrentBattle.Territory,
-                    ", where ",
-                    CurrentPinkOrAllyFighter,
-                    " will fight for their ally");
-            }
-
-            AnnounceHeroAvailability(BattleAboutToStart.AggressivePlayer);
-            AnnounceHeroAvailability(BattleAboutToStart.DefendingPlayer);
-            AssignBattleWheels(BattleAboutToStart.AggressivePlayer, BattleAboutToStart.DefendingPlayer);
+			AnnounceHeroAvailability(CurrentBattle.AggressivePlayer);
+            AnnounceHeroAvailability(CurrentBattle.DefendingPlayer);
+            AssignBattleWheels(CurrentBattle.AggressivePlayer, CurrentBattle.DefendingPlayer);
         }
 
-        private void AssignBattleWheels(params Player[] players)
+		private void AssignBattleWheels(params Player[] players)
         {
             HasBattleWheel.Clear();
             foreach (var p in players)
@@ -123,12 +103,6 @@ namespace Treachery.Shared
         }
 
         public Prescience CurrentPrescience { get; internal set; } = null;
-        public void HandleEvent(Prescience e)
-        {
-            CurrentPrescience = e;
-            Log(e);
-            Stone(Milestone.Prescience);
-        }
 
         public Thought CurrentThought { get; internal set; }
         public void HandleEvent(Thought e)
@@ -193,19 +167,9 @@ namespace Treachery.Shared
         }
 
 
-        public PortableAntidoteUsed CurrentPortableAntidoteUsed { get; private set; }
-        public void HandleEvent(PortableAntidoteUsed e)
-        {
-            Log(e);
-            CurrentPortableAntidoteUsed = e;
-        }
+        public PortableAntidoteUsed CurrentPortableAntidoteUsed { get; internal set; }
 
         internal bool PoisonToothCancelled { get; set; } = false;
-        public void HandleEvent(PoisonToothCancelled e)
-        {
-            PoisonToothCancelled = true;
-            Log(e);
-        }
 
         private RockWasMelted CurrentRockWasMelted { get; set; }
         public void HandleEvent(RockWasMelted e)

@@ -192,9 +192,9 @@ namespace Treachery.Shared
 
         protected virtual int ResourcesIn(Location l)
         {
-            if (Game.ResourcesOnPlanet.ContainsKey(l))
+            if (Game.ResourcesOnPlanet.TryGetValue(l, out int value))
             {
-                return Game.ResourcesOnPlanet[l];
+                return value;
             }
             else
             {

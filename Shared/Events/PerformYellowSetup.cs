@@ -8,6 +8,8 @@ namespace Treachery.Shared
 {
     public class PerformYellowSetup : PlacementEvent
     {
+        #region Construction
+
         public PerformYellowSetup(Game game) : base(game)
         {
         }
@@ -15,6 +17,10 @@ namespace Treachery.Shared
         public PerformYellowSetup()
         {
         }
+
+        #endregion Construction
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -28,14 +34,32 @@ namespace Treachery.Shared
             return null;
         }
 
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            foreach (var fl in ForceLocations)
+            {
+                var location = fl.Key;
+                Player.ShipForces(location, fl.Value.AmountOfForces);
+                Player.ShipSpecialForces(location, fl.Value.AmountOfSpecialForces);
+            }
+
+            Log();
+
+            Game.Enter(
+                IsPlaying(Faction.Blue) && PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(Game), Phase.BlueSettingUp,
+                IsPlaying(Faction.Cyan), Phase.CyanSettingUp,
+                Game.TreacheryCardsBeforeTraitors, Game.EnterStormPhase, Game.DealStartingTreacheryCards);
         }
 
         public override Message GetMessage()
         {
             return Message.Express(Initiator, " have set up forces");
         }
+
+        #endregion Execution
     }
 }

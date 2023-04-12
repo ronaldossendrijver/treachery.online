@@ -152,12 +152,6 @@ namespace Treachery.Shared
 
         public bool BribesDuringMentat => !Applicable(Rule.BribesAreImmediate);
 
-        public void HandleEvent(PlayerReplaced e)
-        {
-            GetPlayer(e.ToReplace).IsBot = !GetPlayer(e.ToReplace).IsBot;
-            Log(e.ToReplace, " will now be played by a ", GetPlayer(e.ToReplace).IsBot ? "Bot" : "Human");
-        }
-
         public bool KarmaPrevented(Faction f)
         {
             return CurrentKarmaPrevention != null && CurrentKarmaPrevention.Target == f;
@@ -208,7 +202,7 @@ namespace Treachery.Shared
 
         private bool BankerWasUsedThisPhase { get; set; } = false;
 
-        private void ActivateBanker(Player playerWhoPaid)
+        internal void ActivateBanker(Player playerWhoPaid)
         {
             if (!BankerWasUsedThisPhase)
             {
@@ -223,11 +217,6 @@ namespace Treachery.Shared
         }
 
         public Planetology CurrentPlanetology { get; internal set; }
-        public void HandleEvent(Planetology e)
-        {
-            Log(e);
-            CurrentPlanetology = e;
-        }
 
         public bool BlackTraitorWasCancelled { get; internal set; } = false;
         public bool FacedancerWasCancelled { get; internal set; } = false;

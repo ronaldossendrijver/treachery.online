@@ -11,7 +11,7 @@ namespace Treachery.Shared
 {
     public class Revival : GameEvent, ILocationEvent
     {
-        public int _heroId;
+        #region Construction
 
         public Revival(Game game) : base(game)
         {
@@ -21,6 +21,10 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
         public int AmountOfForces { get; set; } = 0;
 
         public int AmountOfSpecialForces { get; set; } = 0;
@@ -29,17 +33,23 @@ namespace Treachery.Shared
 
         public int ExtraSpecialForcesPaidByRed { get; set; } = 0;
 
+        public int NumberOfForcesInLocation { get; set; }
+
+        public int NumberOfSpecialForcesInLocation { get; set; }
+
         public int _locationId = -1;
 
         [JsonIgnore]
-        public Location Location { get { return Game.Map.LocationLookup.Find(_locationId); } set { _locationId = Game.Map.LocationLookup.GetId(value); } }
+        public Location Location
+        {
+            get => Game.Map.LocationLookup.Find(_locationId);
+            set => _locationId = Game.Map.LocationLookup.GetId(value);
+        }
 
         [JsonIgnore]
         public Location To => Location;
 
-        [JsonIgnore]
-        public int TotalAmountOfForces => Initiator == Faction.Yellow ? AmountOfSpecialForces + ExtraForcesPaidByRed : AmountOfForces + ExtraSpecialForcesPaidByRed;
-
+        public int _heroId;
 
         [JsonIgnore]
         public IHero Hero
@@ -57,6 +67,13 @@ namespace Treachery.Shared
         public bool AssignSkill { get; set; } = false;
 
         public bool UsesRedSecretAlly { get; set; }
+
+        [JsonIgnore]
+        public int TotalAmountOfForcesAddedToLocation => NumberOfForcesInLocation + NumberOfSpecialForcesInLocation;
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -96,8 +113,13 @@ namespace Treachery.Shared
 
             if (Location != null)
             {
-                if (!MaySelectLocationForRevivedForces(Game, Player, AmountOfForces + ExtraForcesPaidByRed, AmountOfSpecialForces + ExtraSpecialForcesPaidByRed, UsesRedSecretAlly)) return Message.Express("You can't place revived forces directly on the planet");
                 if (!ValidRevivedForceLocations(Game, Player).Contains(Location)) return Message.Express("You can't place revived forces there");
+
+                if (NumberOfForcesInLocation > NumberOfForcesThatMayBePlacedOnPlanet(Game, Player, UsesRedSecretAlly, AmountOfForces + ExtraForcesPaidByRed) || 
+                    NumberOfSpecialForcesInLocation > NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, AmountOfSpecialForces + ExtraSpecialForcesPaidByRed))
+                {
+                    return Message.Express("You can't place that many forces directly on the planet");
+                }
             }
 
             return null;
@@ -111,16 +133,6 @@ namespace Treachery.Shared
         public static RevivalCost DetermineCost(Game g, Player initiator, IHero hero, int amountOfForces, int amountOfSpecialForces, int extraForcesPaidByRed, int extraSpecialForcesPaidByRed, bool usesRedSecretAlly)
         {
             return new RevivalCost(g, initiator, hero, amountOfForces, amountOfSpecialForces, extraForcesPaidByRed, extraSpecialForcesPaidByRed, usesRedSecretAlly);
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " perform revival");
         }
 
         public static IEnumerable<IHero> ValidRevivalHeroes(Game g, Player p)
@@ -206,7 +218,6 @@ namespace Treachery.Shared
         private static bool AtLeastFiveLeadersHaveDiedOnce(Game g, Player p) => p.Leaders.Count(l => g.LeaderState[l].DeathCounter > 0) >= 5;
 
         private static bool AllAvailableLeadersHaveDiedOnce(Game g, Player p) => p.Leaders.All(l => g.LeaderState[l].DeathCounter > 0);
-
 
         public static IEnumerable<IHero> UnrestrictedRevivableHeroes(Game g, Player p)
         {
@@ -309,13 +320,13 @@ namespace Treachery.Shared
             return price;
         }
 
-        public static float GetPricePerForce(Game g, Player revivingPlayer) =>
+        private static float GetPricePerForce(Game g, Player revivingPlayer) =>
             (MayReviveWithDiscount(g, revivingPlayer) ? 0.5f : 1) * (revivingPlayer.Is(Faction.Brown) && !g.Prevented(FactionAdvantage.BrownRevival) ? 1 : 2);
 
-        public static float GetPricePerSpecialForce(Game g, Player revivingPlayer, Faction ofRevivedForces) =>
+        private static float GetPricePerSpecialForce(Game g, Player revivingPlayer, Faction ofRevivedForces) =>
             (MayReviveWithDiscount(g, revivingPlayer) ? 0.5f : 1) * (ofRevivedForces == Faction.Grey ? 3 : 2);
 
-        public static int RedExtraRevivalLimit(Game g, Player p) => p.Ally == Faction.Red && (g.Version < 113 || !g.Prevented(FactionAdvantage.RedLetAllyReviveExtraForces)) ? g.RedWillPayForExtraRevival : 0;
+        private static int RedExtraRevivalLimit(Game g, Player p) => p.Ally == Faction.Red && (g.Version < 113 || !g.Prevented(FactionAdvantage.RedLetAllyReviveExtraForces)) ? g.RedWillPayForExtraRevival : 0;
 
         public static int ValidMaxRevivalsByRed(Game g, Player p)
         {
@@ -355,9 +366,9 @@ namespace Treachery.Shared
 
         public static bool MayUseRedSecretAlly(Game game, Player player) => player.Nexus == Faction.Red && NexusPlayed.CanUseSecretAlly(game, player);
 
-        public static bool MaySelectLocationForRevivedForces(Game game, Player player, int forces, int specialForces, bool usesRedSecretAlly) =>
-            (player.Is(Faction.Yellow) && specialForces >= 1 || player.Is(Faction.Purple) && forces >= 1 && game.FreeRevivals(player, usesRedSecretAlly) > 0) &&
-            player.HasHighThreshold() && ValidRevivedForceLocations(game, player).Any();
+        public static int NumberOfForcesThatMayBePlacedOnPlanet(Game game, Player player, bool usesRedSecretAlly, int nrOfForcesToRevive) => player.Is(Faction.Purple) && player.HasHighThreshold() ? Math.Min(nrOfForcesToRevive, game.FreeRevivals(player, usesRedSecretAlly)) : 0;
+
+        public static int NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player player, int nrOfSpecialForcesToRevive) => player.Is(Faction.Yellow) && player.HasHighThreshold() ? Math.Min(nrOfSpecialForcesToRevive, 1) : 0;
 
         public static IEnumerable<Location> ValidRevivedForceLocations(Game g, Player p)
         {
@@ -367,5 +378,164 @@ namespace Treachery.Shared
                     (!p.HasAlly || l == g.Map.PolarSink || !p.AlliedPlayer.Occupies(l)) &&
                     (p.Faction == Faction.Purple || p.Faction == Faction.Yellow && p.AnyForcesIn(l.Territory) >= 1));
         }
+
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            if (UsesRedSecretAlly)
+            {
+                Game.PlayNexusCard(Player, "Secret Ally", "revive ", 3, " additional forces beyond revival limits for free");
+            }
+
+            //Payment
+            var cost = DetermineCost(Game, Player, Hero, AmountOfForces, AmountOfSpecialForces, ExtraForcesPaidByRed, ExtraSpecialForcesPaidByRed, UsesRedSecretAlly);
+            if (cost.CostForEmperor > 0)
+            {
+                var emperor = GetPlayer(Faction.Red);
+                emperor.Resources -= cost.CostForEmperor;
+            }
+            Player.Resources -= cost.TotalCostForPlayer;
+
+            int highThresholdBonus = Initiator == Faction.Grey && Player.HasHighThreshold() ? Math.Max(0, Math.Min(2, Player.ForcesKilled - AmountOfForces - ExtraForcesPaidByRed)) : 0;
+
+            //Force revival
+            Player.ReviveForces(AmountOfForces + ExtraForcesPaidByRed + highThresholdBonus);
+            Player.ReviveSpecialForces(AmountOfSpecialForces + ExtraSpecialForcesPaidByRed);
+
+            if (AmountOfSpecialForces > 0)
+            {
+                Game.FactionsThatRevivedSpecialForcesThisTurn.Add(Initiator);
+            }
+
+            //Register free revival
+            bool usesFreeRevival = false;
+            if (AmountOfForces + AmountOfSpecialForces > 0 && Game.FreeRevivals(Player, UsesRedSecretAlly) > 0)
+            {
+                usesFreeRevival = true;
+                Game.FactionsThatTookFreeRevival.Add(Initiator);
+            }
+
+            //Tech token activated?
+            if (usesFreeRevival && Initiator != Faction.Purple)
+            {
+                Game.RevivalTechTokenIncome = true;
+            }
+
+            //Purple income
+            var purple = GetPlayer(Faction.Purple);
+            int totalProfitsForPurple = 0;
+            if (purple != null)
+            {
+                if (usesFreeRevival && !Game.PurpleStartedRevivalWithLowThreshold)
+                {
+                    totalProfitsForPurple += 1;
+                }
+
+                if (Initiator != Faction.Purple)
+                {
+                    totalProfitsForPurple += cost.TotalCostForForceRevival;
+                    totalProfitsForPurple += cost.CostToReviveHero;
+                }
+
+                if (totalProfitsForPurple > 0 && Game.Prevented(FactionAdvantage.PurpleReceiveRevive))
+                {
+                    totalProfitsForPurple = 0;
+                    Game.LogPreventionByKarma(FactionAdvantage.PurpleReceiveRevive);
+                    if (!Game.Applicable(Rule.FullPhaseKarma)) Game.Allow(FactionAdvantage.PurpleReceiveRevive);
+                }
+
+                purple.Resources += totalProfitsForPurple;
+
+                if (totalProfitsForPurple >= 5)
+                {
+                    Game.ApplyBureaucracy(Initiator, Faction.Purple);
+                }
+
+                if (cost.Total - totalProfitsForPurple >= 4)
+                {
+                    Game.ActivateBanker(Player);
+                }
+            }
+
+            //Hero revival
+            bool asGhola = false;
+            if (Hero != null)
+            {
+                if (Initiator != Hero.Faction && Hero is Leader leader)
+                {
+                    asGhola = true;
+                    Game.ReviveGhola(Player, leader);
+                }
+                else if (purple != null && purple.Leaders.Contains(Hero) && Game.IsAlive(Hero))
+                {
+                    //Transfer of ghola
+                    purple.Leaders.Remove(Hero as Leader);
+                    Player.Leaders.Add(Hero as Leader);
+                }
+                else
+                {
+                    Game.ReviveHero(Hero);
+                }
+
+                if (AssignSkill)
+                {
+                    Game.PrepareSkillAssignmentToRevivedLeader(Player, Hero as Leader);
+                }
+
+                Game.EarlyRevivalsOffers.Remove(Hero);
+            }
+
+            //Logging
+            Game.Stone(Milestone.Revival);
+            LogRevival(cost, totalProfitsForPurple, asGhola, highThresholdBonus);
+
+            if (Location != null)
+            {
+                if (NumberOfSpecialForcesInLocation > 0)
+                {
+                    Player.ShipSpecialForces(Location, NumberOfSpecialForcesInLocation);
+                    Log(Initiator, " place ", NumberOfSpecialForcesInLocation, FactionSpecialForce.Yellow, " in ", Location);
+                }
+                
+                if (NumberOfForcesInLocation > 0)
+                {
+                    Player.ShipForces(Location, NumberOfForcesInLocation);
+                    Log(Initiator, " place ", NumberOfForcesInLocation, FactionForce.Purple, " in ", Location);
+                }
+            }
+
+            if (Initiator != Faction.Purple)
+            {
+                Game.HasActedOrPassed.Add(Initiator);
+            }
+        }
+
+        private void LogRevival(RevivalCost cost, int purpleReceivedResources, bool asGhola, int highThresholdBonus)
+        {
+            int totalAmountOfForces = AmountOfForces + ExtraForcesPaidByRed + highThresholdBonus;
+
+            Log(
+                Initiator,
+                " revive ",
+                MessagePart.ExpressIf(Hero != null, Hero),
+                MessagePart.ExpressIf(asGhola, " as Ghola"),
+                MessagePart.ExpressIf(Hero != null && totalAmountOfForces + AmountOfSpecialForces + ExtraSpecialForcesPaidByRed > 0, " and "),
+                MessagePart.ExpressIf(totalAmountOfForces > 0, totalAmountOfForces, Player.Force),
+                MessagePart.ExpressIf(AmountOfSpecialForces + ExtraSpecialForcesPaidByRed > 0, AmountOfSpecialForces + ExtraSpecialForcesPaidByRed, Player.SpecialForce),
+                " for ",
+                Payment.Of(cost.TotalCostForPlayer + cost.CostForEmperor),
+                MessagePart.ExpressIf(ExtraForcesPaidByRed > 0 || ExtraSpecialForcesPaidByRed > 0, " (", Payment.Of(cost.CostForEmperor, Faction.Red), ")"),
+                MessagePart.ExpressIf(purpleReceivedResources > 0, " → ", Faction.Purple, " get ", Payment.Of(purpleReceivedResources)));
+        }
+
+        public override Message GetMessage()
+        {
+            return Message.Express(Initiator, " perform revival");
+        }
+
+        #endregion Execution
     }
 }

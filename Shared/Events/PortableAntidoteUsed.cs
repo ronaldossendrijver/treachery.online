@@ -9,6 +9,8 @@ namespace Treachery.Shared
 {
     public class PortableAntidoteUsed : GameEvent
     {
+        #region Construction
+
         public PortableAntidoteUsed(Game game) : base(game)
         {
         }
@@ -17,19 +19,13 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " equip a ", TreacheryCardType.PortableAntidote);
         }
 
         public static bool CanBePlayed(Game g, Player p)
@@ -46,5 +42,22 @@ namespace Treachery.Shared
 
             return false;
         }
+
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            Log();
+            Game.CurrentPortableAntidoteUsed = this;
+        }
+
+        public override Message GetMessage()
+        {
+            return Message.Express(Initiator, " equip a ", TreacheryCardType.PortableAntidote);
+        }
+
+        #endregion Execution
     }
 }

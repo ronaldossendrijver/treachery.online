@@ -457,24 +457,6 @@ namespace Treachery.Shared
 
         public Faction NextFactionToPerformCustomSetup => Players.Select(p => p.Faction).Where(f => !HasActedOrPassed.Contains(f)).FirstOrDefault();
 
-        public void HandleEvent(PerformYellowSetup e)
-        {
-            var initiator = GetPlayer(e.Initiator);
-
-            foreach (var fl in e.ForceLocations)
-            {
-                var location = fl.Key;
-                initiator.ShipForces(location, fl.Value.AmountOfForces);
-                initiator.ShipSpecialForces(location, fl.Value.AmountOfSpecialForces);
-            }
-
-            Log(e);
-            Enter(
-                IsPlaying(Faction.Blue) && PerformBluePlacement.BlueMayPlaceFirstForceInAnyTerritory(this), Phase.BlueSettingUp,
-                IsPlaying(Faction.Cyan), Phase.CyanSettingUp,
-                TreacheryCardsBeforeTraitors, EnterStormPhase, DealStartingTreacheryCards);
-        }
-
         public Deck<TreacheryCard> StartingTreacheryCards { get; private set; }
 
         private TreacheryCard ExtraStartingCardForBlack = null;

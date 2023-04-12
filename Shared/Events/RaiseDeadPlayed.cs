@@ -11,7 +11,7 @@ namespace Treachery.Shared
 {
     public class RaiseDeadPlayed : GameEvent, ILocationEvent
     {
-        public int _heroId;
+        #region Construction
 
         public RaiseDeadPlayed(Game game) : base(game)
         {
@@ -21,35 +21,43 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
         public int AmountOfForces { get; set; } = 0;
 
         public int AmountOfSpecialForces { get; set; } = 0;
 
         public bool AssignSkill { get; set; } = false;
 
+        public int _heroId;
+
         [JsonIgnore]
         public IHero Hero
         {
-            get
-            {
-                return LeaderManager.HeroLookup.Find(_heroId);
-            }
-            set
-            {
-                _heroId = LeaderManager.HeroLookup.GetId(value);
-            }
+            get => LeaderManager.HeroLookup.Find(_heroId);
+            set => _heroId = LeaderManager.HeroLookup.GetId(value);
         }
+
+        public int NumberOfSpecialForcesInLocation { get; set; }
 
         public int _locationId = -1;
 
         [JsonIgnore]
-        public Location Location { get { return Game.Map.LocationLookup.Find(_locationId); } set { _locationId = Game.Map.LocationLookup.GetId(value); } }
+        public Location Location
+        {
+            get => Game.Map.LocationLookup.Find(_locationId);
+            set => _locationId = Game.Map.LocationLookup.GetId(value);
+        }
 
         [JsonIgnore]
         public Location To => Location;
 
         [JsonIgnore]
-        public int TotalAmountOfForces => Initiator == Faction.Yellow ? AmountOfSpecialForces : AmountOfForces;
+        public int TotalAmountOfForcesAddedToLocation => NumberOfSpecialForcesInLocation;
+
+        #endregion Properties
 
         public override Message Validate()
         {
@@ -68,8 +76,12 @@ namespace Treachery.Shared
 
             if (Location != null)
             {
-                if (!Revival.MaySelectLocationForRevivedForces(Game, Player, AmountOfForces, AmountOfSpecialForces, false)) return Message.Express("You can't place revived forces directly on the planet");
                 if (!Revival.ValidRevivedForceLocations(Game, Player).Contains(Location)) return Message.Express("You can't place revived forces there");
+
+                if (NumberOfSpecialForcesInLocation > Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, AmountOfSpecialForces))
+                {
+                    return Message.Express("You can't place that many forces directly on the planet");
+                }
             }
 
             return null;

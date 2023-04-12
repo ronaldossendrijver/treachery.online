@@ -25,32 +25,22 @@ namespace Treachery.Shared
         public int _territoryId;
 
         [JsonIgnore]
-        public Territory Territory { get { return Game.Map.TerritoryLookup.Find(_territoryId); } set { _territoryId = Game.Map.TerritoryLookup.GetId(value); } }
+        public Territory Territory
+		{
+			get => Game.Map.TerritoryLookup.Find(_territoryId);
+			set => _territoryId = Game.Map.TerritoryLookup.GetId(value);
+		}
 
-
-        public Faction Target { get; set; }
-
-        [JsonIgnore]
-        private Faction ActualInitiator => Game.CurrentPinkOrAllyFighter != Faction.None && Initiator == Game.GetAlly(Game.CurrentPinkOrAllyFighter) ? Game.CurrentPinkOrAllyFighter : Initiator;
-
-        [JsonIgnore]
-        private Faction ActualTarget => Game.CurrentPinkOrAllyFighter != Faction.None && Target == Game.GetAlly(Game.CurrentPinkOrAllyFighter) ? Game.CurrentPinkOrAllyFighter : Target;
+		public Faction Target { get; set; }
 
         [JsonIgnore]
-        public Faction Defender
-        {
-            get
-            {
-                if (ActualInitiator == Aggressor)
-                {
-                    return ActualTarget;
-                }
-                else
-                {
-                    return ActualInitiator;
-                }
-            }
-        }
+        public Faction ActualInitiator => Game.CurrentPinkOrAllyFighter != Faction.None && Initiator == Game.GetAlly(Game.CurrentPinkOrAllyFighter) ? Game.CurrentPinkOrAllyFighter : Initiator;
+
+        [JsonIgnore]
+		public Faction ActualTarget => Game.CurrentPinkOrAllyFighter != Faction.None && Target == Game.GetAlly(Game.CurrentPinkOrAllyFighter) ? Game.CurrentPinkOrAllyFighter : Target;
+
+        [JsonIgnore]
+        public Faction Defender => (ActualInitiator == Aggressor) ? ActualTarget : ActualInitiator;
 
         [JsonIgnore]
         public Player DefendingPlayer => Game.GetPlayer(Defender);
@@ -108,11 +98,6 @@ namespace Treachery.Shared
         public bool IsAggressorOrDefender(Faction f)
         {
             return Aggressor == f || Defender == f;
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " initiate a battle ", Territory.IsHomeworld ? " on " : " in ", Territory);
         }
 
         public Player OpponentOf(Player p)
@@ -202,19 +187,6 @@ namespace Treachery.Shared
 
         #endregion Properties
 
-        #region Execution
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.BattleAboutToStart = this;
-            
-            var pink = GetPlayer(Faction.Pink);
-
-            Game.Enter(pink != null && !Game.HasLowThreshold(Faction.Pink) && pink.HasAlly && pink.Occupies(Territory) && pink.HasAlly && pink.AlliedPlayer.Occupies(Territory), Phase.ClaimingBattle, Game.InitiateBattle);
-        }
-
-        #endregion
-
         #region Validation
 
         public override Message Validate()
@@ -231,5 +203,24 @@ namespace Treachery.Shared
         }
 
         #endregion Validation
-    }
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+			Game.CurrentReport = new Report(MainPhase.Battle);
+			Log();
+			Game.BattleAboutToStart = this;
+
+            var pink = GetPlayer(Faction.Pink);
+            Game.Enter(pink != null && !Game.HasLowThreshold(Faction.Pink) && IsInvolved(Faction.Pink) && pink.Occupies(Territory) && pink.HasAlly && pink.AlliedPlayer.Occupies(Territory), Phase.ClaimingBattle, Game.InitiateBattle);
+		}
+
+		public override Message GetMessage()
+		{
+			return Message.Express(Initiator, " initiate battle against ", Target, Territory.IsHomeworld ? " on " : " in ", Territory);
+		}
+
+		#endregion Execution
+	}
 }

@@ -27,13 +27,31 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            /*
-            if (e is ClairVoyancePlayed)
+            if (e is Revival rev && rev.NumberOfSpecialForcesInLocation > 0)
             {
-                WriteSavegameIfApplicable(g, e.Player, "ClairVoyancePlayed");
+                WriteSavegameIfApplicable(g, e.Player, "Fremen Revival to planet");
             }
-            */
-        }
+
+            if (e is Revival rev2 && rev2.NumberOfForcesInLocation > 0)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Tleilaxu Revival to planet");
+            }
+
+            if (e is RaiseDeadPlayed rev3 && rev3.NumberOfSpecialForcesInLocation > 0)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Tleilaxu Ghola to planet");
+            }
+
+            if (e is NexusPlayed rev4 && rev4.PurpleNumberOfSpecialForcesInLocation > 0)
+            {
+                WriteSavegameIfApplicable(g, e.Player, "Nexus revival to planet");
+            }
+
+			if (e is NexusPlayed rev5 && rev5.Initiator == Faction.Yellow && rev5.PurpleForces > 0)
+			{
+				WriteSavegameIfApplicable(g, e.Player, "Fremen Nexus revival");
+			}
+		}
 
         private readonly List<string> WrittenCases = new();
         private void WriteSavegameIfApplicable(Game g, Player playerWithAction, string c)
@@ -194,9 +212,13 @@ namespace Treachery.Test
                 return "Lost Leader";
             }
 
-            if (g.CurrentPhase == Phase.BeginningOfCollection && g.OccupyingForcesOnPlanet.Any(kvp => kvp.Key != g.Map.PolarSink && !g.IsInStorm(kvp.Key.Territory) && kvp.Value.Count(b => b.Faction != Faction.Pink) > 1))
+            if (g.CurrentPhase == Phase.BeginningOfCollection)
             {
-                return "Territory occupied by more than one faction";
+                var terr = g.OccupyingForcesOnPlanet.Where(kvp => kvp.Key != g.Map.PolarSink && !g.IsInStorm(kvp.Key.Territory) && kvp.Value.Count(b => b.Faction != Faction.Pink) > 1).Select(kvp => kvp.Key).FirstOrDefault();
+                if (terr != null)
+                {
+                    return $"{terr} occupied by more than one faction";
+                }
             }
 
             if (g.CurrentBattle != null)
@@ -345,7 +367,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 100;
+            int nrOfGames = 5000;
             int nrOfTurns = 10;
             int nrOfPlayers = 7;
 

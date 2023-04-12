@@ -74,6 +74,8 @@ namespace Treachery.Shared
             set => _cyanTerritoryId = Game.Map.TerritoryLookup.GetId(value);
         }
 
+        public int PurpleNumberOfSpecialForcesInLocation { get; set; }
+
         public int _purpleLocationId = -1;
 
         [JsonIgnore]
@@ -87,7 +89,7 @@ namespace Treachery.Shared
         public Location To => PurpleLocation;
 
         [JsonIgnore]
-        public int TotalAmountOfForces => Initiator == Faction.Yellow ? PurpleSpecialForces : PurpleForces;
+        public int TotalAmountOfForcesAddedToLocation => PurpleNumberOfSpecialForcesInLocation;
 
         [JsonIgnore]
         public bool IsCunning => Initiator == Faction;
@@ -122,10 +124,15 @@ namespace Treachery.Shared
                         if (PurpleForces + PurpleSpecialForces > 5) return Message.Express("You can't revive that many forces");
                         if (PurpleAssignSkill && PurpleHero == null) return Message.Express("You must revive a leader to assign a skill to");
                         if (PurpleAssignSkill && !Revival.MayAssignSkill(Game, Player, PurpleHero)) return Message.Express("You can't assign a skill to this leader");
+
                         if (PurpleLocation != null)
                         {
-                            if (!Revival.MaySelectLocationForRevivedForces(Game, Player, PurpleForces, PurpleSpecialForces, false)) return Message.Express("You can't place revived forces directly on the planet");
                             if (!Revival.ValidRevivedForceLocations(Game, Player).Contains(PurpleLocation)) return Message.Express("You can't place revived forces there");
+
+                            if (PurpleNumberOfSpecialForcesInLocation > Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, PurpleSpecialForces))
+                            {
+                                return Message.Express("You can't place that many forces directly on the planet");
+                            }
                         }
                     }
                     break;

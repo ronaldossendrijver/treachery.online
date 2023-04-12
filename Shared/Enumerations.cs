@@ -850,4 +850,13 @@ namespace Treachery.Shared
 
         WillAttackX = 200
     }
+
+    public enum PrescienceAspect
+    {
+        None = 0,
+        Dial = 10,
+        Leader = 20,
+        Weapon = 30,
+        Defense = 40
+    }
 }

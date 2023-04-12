@@ -35,6 +35,29 @@
                 amountOfSpecialForces = 0;
             }
 
+            int maxSpecialForcesPlacedOnPlanet = Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, amountOfSpecialForces);
+            if (maxSpecialForcesPlacedOnPlanet > 0)
+            {
+                <div>
+                    <SelectForcesComponent Label="Place forces on the planet?" @bind-Value="amountOfSpecialForcesToLocation" Min=0 Max=maxSpecialForcesPlacedOnPlanet Faction=Faction Special=true />
+                </div>
+            }
+            else
+            {
+                amountOfSpecialForcesToLocation = 0;
+            }
+
+            if (amountOfSpecialForcesToLocation > 0)
+            {
+                <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="location" Values=@Revival.ValidRevivedForceLocations(Game, Player)>
+                    <Label>Place them where?</Label>
+                </SelectComponent>
+            }
+            else
+            {
+                location = null;
+            }
+
             if (hasHeroesToRevive)
             {
                 <SelectFromImageComponent Game="Game" @bind-Value="hero" Values="RaiseDeadPlayed.ValidHeroes(Game, Player)" Required="false" ImageWidth="80" />
@@ -49,26 +72,6 @@
             else
             {
                 assignSkill = false;
-            }
-
-            if (RaiseDeadPlayed.MaySelectLocationForRevivedForces(Game, Player, amountOfSpecialForces))
-            {
-                <CheckboxComponent @bind-Value="reviveToLocation">Place revived @(Faction == Faction.Yellow ? Skin.Current.SpecialForceName_STR[Faction.Yellow] : Skin.Current.ForceName_STR[Faction.Purple]) on the planet?</CheckboxComponent>
-
-                if (reviveToLocation)
-                {
-                    <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value="location" Values=@Revival.ValidRevivedForceLocations(Game, Player)>
-                        <Label>Place them where?</Label>
-                    </SelectComponent>
-                }
-                else
-                {
-                    location = null;
-                }
-            }
-            else
-            {
-                location = null;
             }
 
             if (!(hasForcesToRevive || hasSpecialForcesToRevive || hasHeroesToRevive))
@@ -89,7 +92,7 @@
     private int amountOfSpecialForces;
     private IHero hero;
     private bool assignSkill;
-    private bool reviveToLocation;
+    private int amountOfSpecialForcesToLocation;
     private Location location;
 
     protected override void OnAfterRender(bool firstRender)
@@ -112,6 +115,7 @@
         AmountOfSpecialForces = amountOfSpecialForces, 
         Hero = hero, 
         AssignSkill = assignSkill,
+        NumberOfSpecialForcesInLocation = amountOfSpecialForcesToLocation,
         Location = location
     };
 

@@ -8,7 +8,7 @@ namespace Treachery.Shared
 
     public class Prescience : GameEvent
     {
-        public PrescienceAspect Aspect { get; set; }
+        #region Construction
 
         public Prescience(Game game) : base(game)
         {
@@ -18,14 +18,19 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public PrescienceAspect Aspect { get; set; }
+
+        #endregion Properties
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
         }
 
         public static IEnumerable<PrescienceAspect> ValidAspects(Game g, Player p)
@@ -58,18 +63,22 @@ namespace Treachery.Shared
             return false;
         }
 
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            Game.CurrentPrescience = this;
+            Log();
+            Game.Stone(Milestone.Prescience);
+        }
+
         public override Message GetMessage()
         {
             return Message.Express(Initiator, " use Prescience to see the enemy ", Aspect);
         }
-    }
 
-    public enum PrescienceAspect
-    {
-        None = 0,
-        Dial = 10,
-        Leader = 20,
-        Weapon = 30,
-        Defense = 40
+        #endregion Execution
     }
 }

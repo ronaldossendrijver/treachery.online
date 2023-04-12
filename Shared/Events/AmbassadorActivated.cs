@@ -88,7 +88,7 @@ namespace Treachery.Shared
         public bool PurpleAssignSkill { get; set; }
 
         [JsonIgnore]
-        public int TotalAmountOfForces => YellowForceLocations != null ? YellowForceLocations.Values.Sum(b => b.TotalAmountOfForces) : 0;
+        public int TotalAmountOfForcesAddedToLocation => YellowForceLocations != null ? YellowForceLocations.Values.Sum(b => b.TotalAmountOfForces) : 0;
 
         [JsonIgnore]
         public Dictionary<Location, Battalion> ForceLocations => YellowForceLocations;

@@ -23,137 +23,7 @@ namespace Treachery.Shared
 
         #region Revival
 
-        public List<Faction> FactionsThatRevivedSpecialForcesThisTurn { get; private set; } = new List<Faction>();
-        public void HandleEvent(Revival r)
-        {
-            var initiator = GetPlayer(r.Initiator);
-
-            if (r.UsesRedSecretAlly)
-            {
-                PlayNexusCard(r.Player, "Secret Ally", "revive ", 3, " additional forces beyond revival limits for free");
-            }
-
-            //Payment
-            var cost = Revival.DetermineCost(this, initiator, r.Hero, r.AmountOfForces, r.AmountOfSpecialForces, r.ExtraForcesPaidByRed, r.ExtraSpecialForcesPaidByRed, r.UsesRedSecretAlly);
-            if (cost.CostForEmperor > 0)
-            {
-                var emperor = GetPlayer(Faction.Red);
-                emperor.Resources -= cost.CostForEmperor;
-            }
-            initiator.Resources -= cost.TotalCostForPlayer;
-
-            int highThresholdBonus = r.Initiator == Faction.Grey && HasHighThreshold(Faction.Grey) ? Math.Max(0, Math.Min(2, r.Player.ForcesKilled - r.AmountOfForces - r.ExtraForcesPaidByRed)) : 0;
-
-            //Force revival
-            initiator.ReviveForces(r.AmountOfForces + r.ExtraForcesPaidByRed + highThresholdBonus);
-            initiator.ReviveSpecialForces(r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed);
-
-            if (r.AmountOfSpecialForces > 0)
-            {
-                FactionsThatRevivedSpecialForcesThisTurn.Add(r.Initiator);
-            }
-
-            //Register free revival
-            bool usesFreeRevival = false;
-            if (r.AmountOfForces + r.AmountOfSpecialForces > 0 && FreeRevivals(initiator, r.UsesRedSecretAlly) > 0)
-            {
-                usesFreeRevival = true;
-                FactionsThatTookFreeRevival.Add(r.Initiator);
-            }
-
-            //Tech token activated?
-            if (usesFreeRevival && r.Initiator != Faction.Purple)
-            {
-                RevivalTechTokenIncome = true;
-            }
-
-            //Purple income
-            var purple = GetPlayer(Faction.Purple);
-            int totalProfitsForPurple = 0;
-            if (purple != null)
-            {
-                if (usesFreeRevival && !PurpleStartedRevivalWithLowThreshold)
-                {
-                    totalProfitsForPurple += 1;
-                }
-
-                if (r.Initiator != Faction.Purple)
-                {
-                    totalProfitsForPurple += cost.TotalCostForForceRevival;
-                    totalProfitsForPurple += cost.CostToReviveHero;
-                }
-
-                if (totalProfitsForPurple > 0 && Prevented(FactionAdvantage.PurpleReceiveRevive))
-                {
-                    totalProfitsForPurple = 0;
-                    LogPreventionByKarma(FactionAdvantage.PurpleReceiveRevive);
-                    if (!Applicable(Rule.FullPhaseKarma)) Allow(FactionAdvantage.PurpleReceiveRevive);
-                }
-
-                purple.Resources += totalProfitsForPurple;
-
-                if (totalProfitsForPurple >= 5)
-                {
-                    ApplyBureaucracy(initiator.Faction, Faction.Purple);
-                }
-
-                if (cost.Total - totalProfitsForPurple >= 4)
-                {
-                    ActivateBanker(initiator);
-                }
-            }
-
-            //Hero revival
-            bool asGhola = false;
-            if (r.Hero != null)
-            {
-                if (initiator.Faction != r.Hero.Faction && r.Hero is Leader)
-                {
-                    asGhola = true;
-                    ReviveGhola(initiator, r.Hero as Leader);
-                }
-                else if (purple != null && purple.Leaders.Contains(r.Hero) && IsAlive(r.Hero))
-                {
-                    //Transfer of ghola
-                    purple.Leaders.Remove(r.Hero as Leader);
-                    initiator.Leaders.Add(r.Hero as Leader);
-                }
-                else
-                {
-                    ReviveHero(r.Hero);
-                }
-
-                if (r.AssignSkill)
-                {
-                    PrepareSkillAssignmentToRevivedLeader(r.Player, r.Hero as Leader);
-                }
-
-                EarlyRevivalsOffers.Remove(r.Hero);
-            }
-
-            if (r.Location != null)
-            {
-                if (r.Initiator == Faction.Yellow)
-                {
-                    initiator.ShipSpecialForces(r.Location, 1);
-                    Log(r.Initiator, " place ", FactionSpecialForce.Yellow, " in ", r.Location);
-                }
-                else if (r.Initiator == Faction.Purple)
-                {
-                    initiator.ShipForces(r.Location, r.AmountOfForces + r.ExtraForcesPaidByRed);
-                    Log(r.Initiator, " place ", r.AmountOfForces + r.ExtraForcesPaidByRed, FactionForce.Purple, " in ", r.Location);
-                }
-            }
-
-            //Logging
-            Stone(Milestone.Revival);
-            LogRevival(r, initiator, cost, totalProfitsForPurple, asGhola, highThresholdBonus);
-
-            if (r.Initiator != Faction.Purple)
-            {
-                HasActedOrPassed.Add(r.Initiator);
-            }
-        }
+        public List<Faction> FactionsThatRevivedSpecialForcesThisTurn { get; } = new();
 
         internal void PrepareSkillAssignmentToRevivedLeader(Player player, Leader leader)
         {
@@ -176,7 +46,7 @@ namespace Treachery.Shared
             LeaderState[h].CurrentTerritory = null;
         }
 
-        private void ReviveGhola(Player initiator, Leader l)
+        internal void ReviveGhola(Player initiator, Leader l)
         {
             LeaderState[l].Revive();
             LeaderState[l].CurrentTerritory = null;
@@ -250,23 +120,7 @@ namespace Treachery.Shared
             player.Is(Faction.Red) && player.HasLowThreshold(World.Red) ||
             player.Is(Faction.Brown) && player.HasLowThreshold() && OccupierOf(World.Brown) == null;
 
-        private void LogRevival(Revival r, Player initiator, RevivalCost cost, int purpleReceivedResources, bool asGhola, int highThresholdBonus)
-        {
-            int totalAmountOfForces = r.AmountOfForces + r.ExtraForcesPaidByRed + highThresholdBonus;
-
-            Log(
-            r.Initiator,
-                " revive ",
-                MessagePart.ExpressIf(r.Hero != null, r.Hero),
-                MessagePart.ExpressIf(asGhola, " as Ghola"),
-                MessagePart.ExpressIf(r.Hero != null && totalAmountOfForces + r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed > 0, " and "),
-                MessagePart.ExpressIf(totalAmountOfForces > 0, totalAmountOfForces, initiator.Force),
-                MessagePart.ExpressIf(r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed > 0, r.AmountOfSpecialForces + r.ExtraSpecialForcesPaidByRed, initiator.SpecialForce),
-                " for ",
-                Payment.Of(cost.TotalCostForPlayer + cost.CostForEmperor),
-                MessagePart.ExpressIf(r.ExtraForcesPaidByRed > 0 || r.ExtraSpecialForcesPaidByRed > 0, " (", Payment.Of(cost.CostForEmperor, Faction.Red), ")"),
-                MessagePart.ExpressIf(purpleReceivedResources > 0, " → ", Faction.Purple, " get ", Payment.Of(purpleReceivedResources)));
-        }
+        
 
         #endregion
 

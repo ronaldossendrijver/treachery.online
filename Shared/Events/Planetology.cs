@@ -8,6 +8,8 @@ namespace Treachery.Shared
 {
     public class Planetology : GameEvent
     {
+        #region Construction
+
         public Planetology(Game game) : base(game)
         {
         }
@@ -16,19 +18,37 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
         public bool AddOneToMovement { get; set; }
 
         [JsonIgnore]
         public bool MoveFromTwoTerritories => !AddOneToMovement;
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
             return null;
         }
 
+        public static bool CanBePlayed(Game g, Player p)
+        {
+            return (g.SkilledAs(p, LeaderSkill.Planetologist) && g.CurrentPlanetology == null);
+        }
+
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Log();
+            Game.CurrentPlanetology = this;
         }
 
         public override Message GetMessage()
@@ -43,9 +63,6 @@ namespace Treachery.Shared
             }
         }
 
-        public static bool CanBePlayed(Game g, Player p)
-        {
-            return (g.SkilledAs(p, LeaderSkill.Planetologist) && g.CurrentPlanetology == null);
-        }
+        #endregion Execution
     }
 }

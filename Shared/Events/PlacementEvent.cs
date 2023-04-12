@@ -11,6 +11,20 @@ namespace Treachery.Shared
 {
     public abstract class PlacementEvent : PassableGameEvent, ILocationEvent, IPlacement
     {
+        #region Construction
+
+        protected PlacementEvent(Game game) : base(game)
+        {
+        }
+
+        protected PlacementEvent()
+        {
+        }
+
+        #endregion Construction
+
+        #region Properties
+
         public int _toId;
 
         [JsonIgnore]
@@ -22,13 +36,9 @@ namespace Treachery.Shared
 
         public string _forceLocations = "";
 
-        protected PlacementEvent(Game game) : base(game)
-        {
-        }
+        #endregion Properties
 
-        protected PlacementEvent()
-        {
-        }
+        #region Validation
 
         protected Message ValidateMove(bool AsAdvisors)
         {
@@ -73,6 +83,8 @@ namespace Treachery.Shared
 
             return null;
         }
+
+        #endregion Validation
 
         public static bool MayMoveAsAdvisors(Game g, Player p, Territory to) => p.Is(Faction.Blue) && g.Applicable(Rule.BlueAdvisors) && (p.SpecialForcesIn(to) > 0 || p.ForcesIn(to) == 0 && g.AnyForcesIn(to));
 
@@ -167,6 +179,6 @@ namespace Treachery.Shared
         }
 
         [JsonIgnore]
-        public virtual int TotalAmountOfForces => ForceLocations != null ? ForceLocations.Values.Sum(b => b.TotalAmountOfForces) : 0;
+        public virtual int TotalAmountOfForcesAddedToLocation => ForceLocations != null ? ForceLocations.Values.Sum(b => b.TotalAmountOfForces) : 0;
     }
 }

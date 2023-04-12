@@ -115,7 +115,7 @@
 
                 case Faction.Purple when secretAlly:
                     <div>Revive up to 5 forces for 1 @Name(Concept.Resource) each and one leader for free?</div>
-                    @if (NexusPlayed.ValidPurpleMaxAmount(Game, Player, false) > 0)
+                    if (NexusPlayed.ValidPurpleMaxAmount(Game, Player, false) > 0)
                     {
                         <SelectForcesComponent @bind-Value="purpleAmountOfForces" Min="0" Max="NexusPlayed.ValidPurpleMaxAmount(Game, Player, false)" Faction="Faction" Special="false" />
                     }
@@ -124,7 +124,7 @@
                         purpleAmountOfForces = 0;
                     }
 
-                    @if (NexusPlayed.ValidPurpleMaxAmount(Game, Player, true) > 0)
+                    if (NexusPlayed.ValidPurpleMaxAmount(Game, Player, true) > 0)
                     {
                         <SelectForcesComponent @bind-Value="purpleAmountOfSpecialForces" Min="0" Max="NexusPlayed.ValidPurpleMaxAmount(Game, Player, true)" Faction="Faction" Special="true" />
                     }
@@ -133,9 +133,32 @@
                         purpleAmountOfSpecialForces = 0;
                     }
 
+                    int maxSpecialForcesPlacedOnPlanet = Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, purpleAmountOfSpecialForces);
+                    if (maxSpecialForcesPlacedOnPlanet > 0)
+                    {
+                        <div>
+                            <SelectForcesComponent Label="Place forces on the planet?" @bind-Value="purpleAmountOfSpecialForcesToLocation" Min=0 Max=maxSpecialForcesPlacedOnPlanet Faction=Faction Special=true />
+                        </div>
+                    }
+                    else
+                    {
+                        purpleAmountOfSpecialForcesToLocation = 0;
+                    }
+
+                    if (purpleAmountOfSpecialForcesToLocation > 0)
+                    {
+                        <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value=purpleOrYellowLocation Values=@Revival.ValidRevivedForceLocations(Game, Player)>
+                            <Label>Place them where?</Label>
+                        </SelectComponent>
+                    }
+                    else
+                    {
+                        purpleOrYellowLocation = null;
+                    }
+
                     <SelectFromImageComponent Game="Game" @bind-Value="purpleHero" Values="NexusPlayed.ValidPurpleHeroes(Game, Player)" Required="false" ImageWidth="80"/>
 
-                    @if (purpleHero != null && Revival.MayAssignSkill(Game, Player, purpleHero))
+                    if (purpleHero != null && Revival.MayAssignSkill(Game, Player, purpleHero))
                     {
                         <RadioComponent @bind-Value="purpleAssignSkill" Values="@(new bool[] {false,true})" ValueLabels="@(new string[] {"No","Yes"})">
                             <Label>Do you wish to assign a skill to this leader?</Label>
@@ -144,26 +167,6 @@
                     else
                     {
                         purpleAssignSkill = false;
-                    }
-
-                    @if (NexusPlayed.MaySelectLocationForRevivedForces(Game, Player, purpleAmountOfSpecialForces))
-                    {
-                        <CheckboxComponent @bind-Value="purpleReviveToLocation">Place revived @(Faction == Faction.Yellow ? Skin.Current.SpecialForceName_STR[Faction.Yellow] : Skin.Current.ForceName_STR[Faction.Purple]) on the planet?</CheckboxComponent>
-
-                        if (purpleReviveToLocation)
-                        {
-                            <SelectComponent ButtonHint="ClickHintButton.LMB" @bind-Value=@purpleOrYellowLocation Values=@Revival.ValidRevivedForceLocations(Game, Player)>
-                                <Label>Place them where?</Label>
-                            </SelectComponent>
-                        }
-                        else
-                        {
-                            purpleOrYellowLocation = null;
-                        }
-                    }
-                    else
-                    {
-                        purpleOrYellowLocation = null;
                     }
 
                     break;
@@ -235,7 +238,7 @@
     private int purpleAmountOfSpecialForces;
     private IHero purpleHero;
     private bool purpleAssignSkill;
-    private bool purpleReviveToLocation;
+    private int purpleAmountOfSpecialForcesToLocation;
 
     private TreacheryCard brownCard;
 
@@ -275,6 +278,7 @@
         PurpleHero = purpleHero,
         PurpleAssignSkill = purpleAssignSkill,
         PurpleLocation = purpleOrYellowLocation,
+        PurpleNumberOfSpecialForcesInLocation = purpleAmountOfSpecialForcesToLocation,
         BrownCard = brownCard,
         PinkTerritory = pinkTerritory,
         PinkFaction = pinkFaction,
@@ -293,7 +297,7 @@
         }
         else if (Faction == Faction.Purple || Faction == Faction.Yellow)
         {
-            SetIfValid(ref purpleOrYellowLocation, Revival.ValidRevivedForceLocations(Game, Player).OrderBy(l => Name(l)), l);
+            SetIfValid(ref purpleOrYellowLocation, Revival.ValidRevivedForceLocations(Game, Player), l);
         }
     }
 

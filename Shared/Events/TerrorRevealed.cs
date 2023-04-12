@@ -76,7 +76,7 @@ namespace Treachery.Shared
         {
             if (AllianceOffered)
             {
-                return Message.Express(Initiator, " offer an alliance to ", Type);
+                return Message.Express(Initiator, " offer an alliance instead of terror");
             }
             else if (Passed)
             {
@@ -90,7 +90,13 @@ namespace Treachery.Shared
 
         public static bool MayPass(Game g) => !g.AllianceByTerrorWasOffered;
 
-        public static bool MayOfferAlliance(Game g) => !g.AllianceByTerrorWasOffered && GetVictim(g) != Faction.Pink && !g.Prevented(FactionAdvantage.CyanEnemyOfEnemy);
+        public static bool MayOfferAlliance(Game g)
+        {
+            var victim = g.GetPlayer(GetVictim(g));
+            var cyan = g.GetPlayer(Faction.Cyan);
+
+			return !g.AllianceByTerrorWasOffered && !g.Prevented(FactionAdvantage.CyanEnemyOfEnemy) && !victim.Is(Faction.Pink) && !victim.ForcesInLocations.Keys.Any(l => cyan.AnyForcesIn(l.Territory) > 0);
+        }
 
         public static Territory GetTerritory(Game g) => g.LastTerrorTrigger?.Territory;
 
@@ -108,6 +114,6 @@ namespace Treachery.Shared
             (!p.HasAlly || p.AlliedPlayer.AnyForcesIn(l.Territory) == 0 || p.Ally == Faction.Blue && g.Applicable(Rule.AdvisorsDontConflictWithAlly) && p.AlliedPlayer.ForcesIn(l.Territory) == 0);
 
         [JsonIgnore]
-        public int TotalAmountOfForces => ForcesInSneakAttack;
+        public int TotalAmountOfForcesAddedToLocation => ForcesInSneakAttack;
     }
 }

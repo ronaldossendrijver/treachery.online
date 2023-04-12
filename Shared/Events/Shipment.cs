@@ -430,6 +430,6 @@ namespace Treachery.Shared
         public static bool MayUseCunningNoField(Player p) => p.Faction == Faction.White && NexusPlayed.CanUseCunning(p);
 
         [JsonIgnore]
-        public int TotalAmountOfForces => ForceAmount + SpecialForceAmount + SmuggledAmount + SmuggledSpecialAmount;
+        public int TotalAmountOfForcesAddedToLocation => ForceAmount + SpecialForceAmount + SmuggledAmount + SmuggledSpecialAmount;
     }
 }

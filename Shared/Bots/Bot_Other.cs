@@ -392,12 +392,20 @@ namespace Treachery.Shared
                     }
 
                     var hero = NexusPlayed.ValidPurpleHeroes(Game, this).HighestOrDefault(l => l.Value);
-                    if (hero != null && amountOfForces + amountOfSpecialForces > 2)
+                    if (hero != null && amountOfForces + amountOfSpecialForces > 2 || amountOfForces + amountOfSpecialForces >= 5)
                     {
                         result.PurpleForces = amountOfForces;
                         result.PurpleSpecialForces = amountOfSpecialForces;
                         result.PurpleHero = hero;
                         result.PurpleAssignSkill = Revival.MayAssignSkill(Game, this, hero);
+
+                        result.PurpleNumberOfSpecialForcesInLocation = Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(this, amountOfSpecialForces);
+                        if (result.PurpleNumberOfSpecialForcesInLocation > 0)
+                        {
+                            result.PurpleLocation = BestRevivalLocation(Revival.ValidRevivedForceLocations(Game, this).ToList());
+                            if (result.PurpleLocation == null) result.PurpleNumberOfSpecialForcesInLocation = 0;
+                        }
+
                         return result;
                     }
                     break;
@@ -751,18 +759,29 @@ namespace Treachery.Shared
 
         protected virtual RaiseDeadPlayed DetermineRaiseDeadPlayed()
         {
-            int specialForcesThatCanBeRevived = Math.Min(5, Revival.ValidMaxRevivals(Game, this, true, false));
+            
 
-            if (Game.CurrentTurn == Game.MaximumNumberOfTurns || Game.CurrentMainPhase > MainPhase.Resurrection)
+            if (Game.CurrentTurn == Game.MaximumNumberOfTurns || !HasRoomForCards || Game.CurrentMainPhase > MainPhase.Resurrection && Game.CurrentMainPhase <= MainPhase.Battle)
             {
-                if (ForcesKilled + specialForcesThatCanBeRevived >= 7)
+                int nrOfLivingLeaders = Leaders.Count(l => Game.IsAlive(l));
+                int specialForcesThatCanBeRevived = Math.Min(5, Revival.ValidMaxRevivals(Game, this, true, false));
+
+                if (ForcesKilled + specialForcesThatCanBeRevived >= 7 && nrOfLivingLeaders > 0)
                 {
                     int forces = Math.Max(0, Math.Min(5, ForcesKilled) - specialForcesThatCanBeRevived);
-                    return new RaiseDeadPlayed(Game) { Initiator = Faction, Hero = null, AmountOfForces = forces, AmountOfSpecialForces = specialForcesThatCanBeRevived, AssignSkill = false };
+                    
+                    Location targetOfForces = null;
+                    int specialForcesToPlanet = Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(this, specialForcesThatCanBeRevived);
+                    if (specialForcesToPlanet > 0)
+                    {
+                        targetOfForces = BestRevivalLocation(Revival.ValidRevivedForceLocations(Game, this).ToList());
+                        if (targetOfForces == null) specialForcesToPlanet = 0;
+                    }
+
+                    return new RaiseDeadPlayed(Game) { Initiator = Faction, Hero = null, AmountOfForces = forces, AmountOfSpecialForces = specialForcesThatCanBeRevived, AssignSkill = false, Location = targetOfForces, NumberOfSpecialForcesInLocation = specialForcesToPlanet };
                 }
                 else
                 {
-                    int nrOfLivingLeaders = Leaders.Count(l => Game.IsAlive(l));
                     int minimumValue = Faction == Faction.Purple && nrOfLivingLeaders > 2 ? 4 : 0;
 
                     var leaderToRevive = RaiseDeadPlayed.ValidHeroes(Game, this).Where(l =>
@@ -1010,6 +1029,21 @@ namespace Treachery.Shared
 
             var assignSkill = leaderToRevive != null && Revival.MayAssignSkill(Game, this, leaderToRevive);
 
+            Location targetOfForces = null;
+            int forcesToPlanet = Revival.NumberOfForcesThatMayBePlacedOnPlanet(Game, this, useSecretAlly, normalForcesToRevive + forcesRevivedByRed);
+            int specialForcesToPlanet = Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(this, specialForcesToRevive + specialForcesRevivedByRed);
+
+            if (forcesToPlanet > 0)
+            {
+                targetOfForces = BestRevivalLocation(Revival.ValidRevivedForceLocations(Game, this).ToList());
+                if (targetOfForces == null) forcesToPlanet = 0;
+            }
+            else if (specialForcesToPlanet > 0)
+            {
+                targetOfForces = BestRevivalLocation(Revival.ValidRevivedForceLocations(Game, this).ToList());
+                if (targetOfForces == null) specialForcesToPlanet = 0;
+            }
+
             if (leaderToRevive != null || specialForcesToRevive + normalForcesToRevive > 0)
             {
                 return new Revival(Game)
@@ -1021,13 +1055,27 @@ namespace Treachery.Shared
                     AmountOfSpecialForces = specialForcesToRevive,
                     ExtraSpecialForcesPaidByRed = specialForcesRevivedByRed,
                     AssignSkill = assignSkill,
-                    UsesRedSecretAlly = useSecretAlly
+                    UsesRedSecretAlly = useSecretAlly,
+                    Location = targetOfForces,
+                    NumberOfForcesInLocation = forcesToPlanet,
+                    NumberOfSpecialForcesInLocation = specialForcesToPlanet,
                 };
             }
             else
             {
                 return null;
             }
+        }
+
+        private Location BestRevivalLocation(List<Location> validLocations)
+        {
+            var result = validLocations.FirstOrDefault(l => l == Game.Map.Carthag && (Vacant(l) || AnyForcesIn(l) > 0 && AnyForcesIn(l) < 4));
+            if (result == null) result = validLocations.FirstOrDefault(l => l == Game.Map.Arrakeen && (Vacant(l) || AnyForcesIn(l) > 0 && AnyForcesIn(l) < 4));
+            if (result == null) result = validLocations.FirstOrDefault(l => ResourcesIn(l) >= 4);
+            if (result == null) result = validLocations.FirstOrDefault(l => l.IsStronghold && (Vacant(l) || AnyForcesIn(l) > 0 && AnyForcesIn(l) < 4));
+            if (result == null && ForcesInReserve + SpecialForcesInReserve > 0) result = validLocations.FirstOrDefault(l => l == Game.Map.PolarSink);
+
+            return result;
         }
 
         private static void DetermineOptimalUseOfRedRevivals(Game g, Player p, out int forces, out int specialForces, bool useCunning)

@@ -6,6 +6,8 @@ namespace Treachery.Shared
 {
     public class PoisonToothCancelled : GameEvent
     {
+        #region Construction
+
         public PoisonToothCancelled(Game game) : base(game)
         {
         }
@@ -14,19 +16,30 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
         }
 
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Game.PoisonToothCancelled = true;
+            Log();
         }
 
         public override Message GetMessage()
         {
             return Message.Express(Initiator, " don't use their ", TreacheryCardType.PoisonTooth);
         }
+
+        #endregion Execution
     }
 }

@@ -45,7 +45,7 @@ namespace Treachery.Shared
 
         public override Message GetMessage()
         {
-            if (Passed)
+            if (!Passed)
             {
                 return Message.Express(Faction.Pink, " will fight this battle");
             }

@@ -350,7 +350,7 @@ namespace Treachery.Shared
         {
             var cyanPlayer = GetPlayer(Faction.Cyan);
             if (cyanPlayer != null &&
-                (e.TotalAmountOfForces >= 3 || !cyanPlayer.HasLowThreshold()) &&
+                (e.TotalAmountOfForcesAddedToLocation >= 3 || !cyanPlayer.HasLowThreshold()) &&
                 e.Initiator != Faction.Cyan &&
                 e.Initiator != cyanPlayer.Ally &&
                 !IsOccupiedByFactionOrTheirAlly(World.Cyan, e.Initiator) &&

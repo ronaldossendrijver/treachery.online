@@ -147,6 +147,6 @@ namespace Treachery.Shared
         }
 
         [JsonIgnore]
-        public override int TotalAmountOfForces => base.TotalAmountOfForces + ForcesFromReserves + SpecialForcesFromReserves;
+        public override int TotalAmountOfForcesAddedToLocation => base.TotalAmountOfForcesAddedToLocation + ForcesFromReserves + SpecialForcesFromReserves;
     }
 }
