@@ -6,6 +6,8 @@ namespace Treachery.Shared
 {
     public class Audited : GameEvent
     {
+        #region Construction
+
         public Audited(Game game) : base(game)
         {
         }
@@ -14,10 +16,18 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
         }
+
+        #endregion Validation
+
+        #region Execution
 
         protected override void ExecuteConcreteEvent()
         {
@@ -37,5 +47,6 @@ namespace Treachery.Shared
             return Message.Express(Faction.Brown, " finish their audit");
         }
 
+        #endregion Execution
     }
 }

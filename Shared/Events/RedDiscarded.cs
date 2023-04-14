@@ -8,7 +8,7 @@ namespace Treachery.Shared
 {
     public class RedDiscarded : GameEvent
     {
-        public int _cardId;
+        #region Construction
 
         public RedDiscarded(Game game) : base(game)
         {
@@ -18,18 +18,22 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public int _cardId;
+
         [JsonIgnore]
         public TreacheryCard Card
         {
-            get
-            {
-                return TreacheryCardManager.Get(_cardId);
-            }
-            set
-            {
-                _cardId = TreacheryCardManager.GetId(value);
-            }
+            get => TreacheryCardManager.Get(_cardId);
+            set => _cardId = TreacheryCardManager.GetId(value);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -39,14 +43,22 @@ namespace Treachery.Shared
             return null;
         }
 
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Log();
+            Player.Resources -= 2;
+            Game.Discard(Player, Card);
         }
 
         public override Message GetMessage()
         {
             return Message.Express(Initiator, " pay ", Payment.Of(2), " to discard ", Card);
         }
+
+        #endregion Execution
     }
 }

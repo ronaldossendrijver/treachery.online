@@ -11,7 +11,7 @@ namespace Treachery.Shared
 {
     public class RequestPurpleRevival : GameEvent
     {
-        public int _heroId;
+        #region Construction
 
         public RequestPurpleRevival(Game game) : base(game)
         {
@@ -21,18 +21,22 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
+        public int _heroId;
+
         [JsonIgnore]
         public IHero Hero
         {
-            get
-            {
-                return LeaderManager.HeroLookup.Find(_heroId);
-            }
-            set
-            {
-                _heroId = LeaderManager.HeroLookup.GetId(value);
-            }
+            get => LeaderManager.HeroLookup.Find(_heroId);
+            set => _heroId = LeaderManager.HeroLookup.GetId(value);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -41,22 +45,34 @@ namespace Treachery.Shared
             return null;
         }
 
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " request ", Faction.Purple, " revival of a leader");
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
         public static IEnumerable<IHero> ValidTargets(Game g, Player p)
         {
             var purple = g.GetPlayer(Faction.Purple);
             var gholas = purple != null ? purple.Leaders.Where(l => l.Faction == p.Faction) : Array.Empty<Leader>();
             return g.KilledHeroes(p).Union(gholas);
         }
-    }
 
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            var existingRequest = Game.CurrentRevivalRequests.FirstOrDefault(r => r.Hero == Hero);
+            if (existingRequest != null)
+            {
+                Game.CurrentRevivalRequests.Remove(existingRequest);
+            }
+
+            Log();
+            Game.CurrentRevivalRequests.Add(this);
+        }
+
+        public override Message GetMessage()
+        {
+            return Message.Express(Initiator, " request ", Faction.Purple, " revival of a leader");
+        }
+
+        #endregion Execution
+    }
 }

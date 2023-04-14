@@ -59,6 +59,8 @@ namespace Treachery.Shared
 
         #endregion Properties
 
+        #region Validation
+
         public override Message Validate()
         {
             var p = Player;
@@ -86,6 +88,16 @@ namespace Treachery.Shared
 
             return null;
         }
+
+        public static IEnumerable<IHero> ValidHeroes(Game game, Player player) => game.KilledHeroes(player);
+
+        public static bool MaySelectLocationForRevivedForces(Game game, Player player, int specialForces) =>
+            player.Is(Faction.Yellow) && specialForces >= 1 && player.HasHighThreshold() && Revival.ValidRevivedForceLocations(game, player).Any();
+
+
+        #endregion Validation
+
+        #region Execution
 
         protected override void ExecuteConcreteEvent()
         {
@@ -145,10 +157,6 @@ namespace Treachery.Shared
             }
         }
 
-        public static IEnumerable<IHero> ValidHeroes(Game game, Player player) => game.KilledHeroes(player);
-
-        public static bool MaySelectLocationForRevivedForces(Game game, Player player, int specialForces) =>
-            player.Is(Faction.Yellow) && specialForces >= 1 && player.HasHighThreshold() && Revival.ValidRevivedForceLocations(game, player).Any();
-
+        #endregion Execution
     }
 }

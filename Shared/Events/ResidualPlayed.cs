@@ -8,6 +8,8 @@ namespace Treachery.Shared
 {
     public class ResidualPlayed : GameEvent
     {
+        #region Construction
+
         public ResidualPlayed(Game game) : base(game)
         {
         }
@@ -16,10 +18,23 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
         }
+
+        public static bool MayPlay(Game g, Player p)
+        {
+            return g.CurrentBattle.IsAggressorOrDefender(p) && p.TreacheryCards.Any(c => c.Type == TreacheryCardType.Residual);
+        }
+
+        #endregion Validation
+
+        #region Execution
 
         protected override void ExecuteConcreteEvent()
         {
@@ -31,10 +46,6 @@ namespace Treachery.Shared
             return Message.Express(Initiator, " use ", TreacheryCardType.Residual, " to kill a random opponent leader");
         }
 
-        public static bool MayPlay(Game g, Player p)
-        {
-            return g.CurrentBattle.IsAggressorOrDefender(p) && p.TreacheryCards.Any(c => c.Type == TreacheryCardType.Residual);
-        }
-
+        #endregion Execution
     }
 }

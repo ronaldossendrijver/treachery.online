@@ -40,13 +40,6 @@ namespace Treachery.Shared
         internal RecruitsPlayed CurrentRecruitsPlayed { get; set; }
 
 
-        public void HandleEvent(RecruitsPlayed e)
-        {
-            Log(e);
-            CurrentRecruitsPlayed = e;
-            Discard(e.Player, TreacheryCardType.Recruits);
-        }
-
         
     }
 }

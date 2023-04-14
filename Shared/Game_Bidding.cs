@@ -548,39 +548,6 @@ namespace Treachery.Shared
             }
         }
 
-        public void HandleEvent(ReplacedCardWon e)
-        {
-            if (!e.Passed)
-            {
-                Discard(CardJustWon);
-                var initiator = GetPlayer(e.Initiator);
-                var newCard = DrawTreacheryCard();
-                initiator.TreacheryCards.Add(newCard);
-                Stone(Milestone.CardWonSwapped);
-
-                if (ReplacingBoughtCardUsingNexus)
-                {
-                    PlayNexusCard(e.Player, "Secret Ally", "to replace the card they just bought");
-                    ReplacingBoughtCardUsingNexus = false;
-                }
-                else
-                {
-                    Log(e);
-                }
-
-                LogTo(initiator.Faction, "You replaced your ", CardJustWon, " with a ", newCard);
-            }
-
-            if (CardJustWon == CardSoldOnBlackMarket)
-            {
-                EnterWhiteBidding();
-            }
-            else
-            {
-                DetermineNextStepAfterCardWasSold();
-            }
-        }
-
         public bool WhiteBiddingJustFinished { get; private set; }
 
         internal void DetermineNextStepAfterCardWasSold()
@@ -722,13 +689,6 @@ namespace Treachery.Shared
         public bool HasBidToPay(Player p) => CurrentPhase == Phase.Bidding && CurrentBid != null &&
             (CurrentBid.Initiator == p.Faction || CurrentBid.Initiator == p.Ally && CurrentBid.AllyContributionAmount > 0);
 
-
-
-        public void HandleEvent(RedBidSupport e)
-        {
-            PermittedUseOfRedSpice = e.Amounts;
-            Log(e);
-        }
 
         #endregion
 

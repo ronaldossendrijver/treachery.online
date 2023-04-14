@@ -27,30 +27,7 @@ namespace Treachery.Test
     {
         private void SaveSpecialCases(Game g, GameEvent e)
         {
-            if (e is Revival rev && rev.NumberOfSpecialForcesInLocation > 0)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Fremen Revival to planet");
-            }
-
-            if (e is Revival rev2 && rev2.NumberOfForcesInLocation > 0)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Tleilaxu Revival to planet");
-            }
-
-            if (e is RaiseDeadPlayed rev3 && rev3.NumberOfSpecialForcesInLocation > 0)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Tleilaxu Ghola to planet");
-            }
-
-            if (e is NexusPlayed rev4 && rev4.PurpleNumberOfSpecialForcesInLocation > 0)
-            {
-                WriteSavegameIfApplicable(g, e.Player, "Nexus revival to planet");
-            }
-
-			if (e is NexusPlayed rev5 && rev5.Initiator == Faction.Yellow && rev5.PurpleForces > 0 && rev5.Player.ForcesOnPlanet.Any())
-			{
-				WriteSavegameIfApplicable(g, e.Player, "Fremen Nexus revival");
-			}
+		
 		}
 
         private readonly List<string> WrittenCases = new();
@@ -367,7 +344,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 200;
+            int nrOfGames = 10000;
             int nrOfTurns = 10;
             int nrOfPlayers = 7;
 

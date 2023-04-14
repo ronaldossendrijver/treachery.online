@@ -6,6 +6,8 @@ namespace Treachery.Shared
 {
     public class BattleRevision : GameEvent
     {
+        #region Construction
+
         public BattleRevision(Game game) : base(game)
         {
         }
@@ -14,10 +16,18 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
         }
+
+        #endregion Validation
+
+        #region Execution
 
         protected override void ExecuteConcreteEvent()
         {
@@ -35,5 +45,7 @@ namespace Treachery.Shared
         {
             return Message.Express(Initiator, " revise their battle plan");
         }
+
+        #endregion Execution
     }
 }

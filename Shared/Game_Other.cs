@@ -12,15 +12,6 @@ namespace Treachery.Shared
     {
         public List<Faction> ResourceAuditedFactions { get; private set; } = new();
 
-        public void HandleEvent(ResourcesAudited e)
-        {
-            ResourceAuditedFactions.Add(e.Target);
-            var target = GetPlayer(e.Target);
-
-            Log(e);
-            LogTo(e.Initiator, e.Target, " own ", Payment.Of(target.Resources), ", ", target.TreacheryCards.Count(tc => tc.IsWeapon), " weapons and ", target.TreacheryCards.Count(tc => tc.IsDefense), " defenses");
-        }
-
         public void HandleEvent(WhiteRevealedNoField e)
         {
             RevealCurrentNoField(e.Player);
@@ -258,15 +249,6 @@ namespace Treachery.Shared
         public NexusPlayed CurrentBlueNexus { get; internal set; }
         public NexusPlayed CurrentGreyNexus { get; internal set; }
         
-
-        public void HandleEvent(ResourcesTransferred e)
-        {
-            Log(e);
-            e.Player.Resources -= e.Resources;
-            e.Player.TransferrableResources -= e.Resources;
-            e.Player.AlliedPlayer.Resources += e.Resources;
-        }
-
         internal void LogPreventionByKarma(FactionAdvantage prevented)
         {
             Log(TreacheryCardType.Karma, " prevents ", prevented);

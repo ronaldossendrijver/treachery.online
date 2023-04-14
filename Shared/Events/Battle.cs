@@ -11,6 +11,18 @@ namespace Treachery.Shared
 {
     public class Battle : GameEvent
     {
+        #region Construction
+
+        public Battle(Game game) : base(game)
+        {
+        }
+
+        public Battle()
+        {
+        }
+
+        #endregion Construction
+
         #region Properties
 
         public int _heroId;
@@ -18,15 +30,8 @@ namespace Treachery.Shared
         [JsonIgnore]
         public IHero Hero
         {
-            get
-            {
-                return LeaderManager.HeroLookup.Find(_heroId);
-            }
-
-            set
-            {
-                _heroId = LeaderManager.HeroLookup.GetId(value);
-            }
+            get => LeaderManager.HeroLookup.Find(_heroId);
+            set => _heroId = LeaderManager.HeroLookup.GetId(value);
         }
 
         public bool Messiah { get; set; }
@@ -46,14 +51,8 @@ namespace Treachery.Shared
         [JsonIgnore]
         public TreacheryCard Weapon
         {
-            get
-            {
-                return TreacheryCardManager.Lookup.Find(_weaponCardId);
-            }
-            set
-            {
-                _weaponCardId = TreacheryCardManager.Lookup.GetId(value);
-            }
+            get => TreacheryCardManager.Lookup.Find(_weaponCardId);
+            set => _weaponCardId = TreacheryCardManager.Lookup.GetId(value);
         }
 
         public int _defenseCardId;
@@ -61,14 +60,8 @@ namespace Treachery.Shared
         [JsonIgnore]
         public TreacheryCard Defense
         {
-            get
-            {
-                return TreacheryCardManager.Lookup.Find(_defenseCardId);
-            }
-            set
-            {
-                _defenseCardId = TreacheryCardManager.Lookup.GetId(value);
-            }
+            get => TreacheryCardManager.Lookup.Find(_defenseCardId);
+            set => _defenseCardId = TreacheryCardManager.Lookup.GetId(value);
         }
 
         public int BankerBonus { get; set; }
@@ -119,18 +112,6 @@ namespace Treachery.Shared
         public bool HasUseless => Weapon != null && Weapon.IsUseless || Defense != null && Defense.IsUseless;
 
         #endregion Properties
-
-        #region Construction
-
-        public Battle(Game game) : base(game)
-        {
-        }
-
-        public Battle()
-        {
-        }
-
-        #endregion Construction
 
         #region Execution
 

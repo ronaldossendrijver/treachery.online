@@ -179,12 +179,6 @@ namespace Treachery.Shared
 
         public TreacheryCalled TreacheryOf(Faction f) => TreacheryOf(Game.GetPlayer(f));
 
-        [JsonIgnore]
-        public Battle AggressorAction => Game.AggressorBattleAction;
-
-        [JsonIgnore]
-        public Battle DefenderAction => Game.DefenderBattleAction;
-
         #endregion Properties
 
         #region Validation

@@ -197,17 +197,6 @@ namespace Treachery.Shared
         }
 
         public List<RequestPurpleRevival> CurrentRevivalRequests { get; private set; } = new();
-        public void HandleEvent(RequestPurpleRevival e)
-        {
-            var existingRequest = CurrentRevivalRequests.FirstOrDefault(r => r.Hero == e.Hero);
-            if (existingRequest != null)
-            {
-                CurrentRevivalRequests.Remove(existingRequest);
-            }
-
-            Log(e);
-            CurrentRevivalRequests.Add(e);
-        }
 
         public Dictionary<IHero, int> EarlyRevivalsOffers { get; private set; } = new();
 

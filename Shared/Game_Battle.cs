@@ -512,7 +512,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void DetermineHowToProceedAfterRevealingBattlePlans()
+        internal void DetermineHowToProceedAfterRevealingBattlePlans()
         {
             if (Auditee != null && !BrownLeaderWasRevealedAsTraitor)
             {
@@ -815,7 +815,7 @@ namespace Treachery.Shared
             return result;
         }
 
-        private void HandleLosses()
+        internal void HandleLosses()
         {
             ProcessWinnerLosses(CurrentBattle.Territory, BattleOutcome.Winner, BattleOutcome.WinnerBattlePlan, false);
             ProcessLoserLosses(CurrentBattle.Territory, BattleOutcome.Loser, BattleOutcome.LoserBattlePlan);
@@ -1404,32 +1404,6 @@ namespace Treachery.Shared
 
                 return null;
             }
-        }
-
-        public void HandleEvent(Retreat e)
-        {
-            int forcesToMove = e.Forces;
-            foreach (var l in CurrentBattle.Territory.Locations.Where(l => e.Player.ForcesIn(l) > 0).ToArray())
-            {
-                if (forcesToMove == 0) break;
-                int toMoveFromHere = Math.Min(forcesToMove, e.Player.ForcesIn(l));
-                e.Player.MoveForces(l, e.Location, toMoveFromHere);
-                forcesToMove -= toMoveFromHere;
-            }
-
-            int specialForcesToMove = e.SpecialForces;
-            foreach (var l in CurrentBattle.Territory.Locations.Where(l => e.Player.SpecialForcesIn(l) > 0).ToArray())
-            {
-                if (specialForcesToMove == 0) break;
-                int toMoveFromHere = Math.Min(specialForcesToMove, e.Player.SpecialForcesIn(l));
-                e.Player.MoveSpecialForces(l, e.Location, toMoveFromHere);
-                specialForcesToMove -= toMoveFromHere;
-            }
-
-            Log(e);
-            HandleLosses();
-            FlipBeneGesseritWhenAloneOrWithPinkAlly();
-            DetermineHowToProceedAfterRevealingBattlePlans();
         }
 
         private void CaptureLeaderIfApplicable()

@@ -6,6 +6,8 @@ namespace Treachery.Shared
 {
     public class RecruitsPlayed : GameEvent
     {
+        #region Construction
+
         public RecruitsPlayed(Game game) : base(game)
         {
         }
@@ -14,14 +16,13 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
         }
 
         public static bool IsApplicable(Game g, Player p)
@@ -29,9 +30,22 @@ namespace Treachery.Shared
             return g.CurrentPhase == Phase.BeginningOfResurrection && p.Has(TreacheryCardType.Recruits);
         }
 
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            Log();
+            Game.CurrentRecruitsPlayed = this;
+            Game.Discard(Player, TreacheryCardType.Recruits);
+        }
+
         public override Message GetMessage()
         {
-            return Message.Express(Initiator, " use ", TreacheryCardType.Recruits, " to double free revival rates and increase the revival limit to ", 7);
+            return Message.Express(Initiator, " use ", TreacheryCardType.Recruits, " to double free revivals and set revival limits to ", 7);
         }
+
+        #endregion Execution
     }
 }

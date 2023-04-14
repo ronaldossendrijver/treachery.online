@@ -9,6 +9,8 @@ namespace Treachery.Shared
 {
     public class RedBidSupport : GameEvent
     {
+        #region Construction
+
         public RedBidSupport(Game game) : base(game)
         {
         }
@@ -17,16 +19,29 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
         public Dictionary<Faction, int> Amounts { get; set; }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
             return null;
         }
 
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Game.PermittedUseOfRedSpice = Amounts;
+            Log();
         }
 
         public override Message GetMessage()
@@ -40,5 +55,7 @@ namespace Treachery.Shared
                 return Message.Express(Initiator, " doesn't support bids by other factions");
             }
         }
+
+        #endregion Execution
     }
 }

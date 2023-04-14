@@ -6,6 +6,8 @@ namespace Treachery.Shared
 {
     public class BattleClaimed : PassableGameEvent
     {
+        #region Construction
+
         public BattleClaimed(Game game) : base(game)
         {
         }
@@ -14,10 +16,18 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
         }
+
+        #endregion Validation
+
+        #region Execution
 
         protected override void ExecuteConcreteEvent()
         {
@@ -54,5 +64,7 @@ namespace Treachery.Shared
                 return Message.Express(Faction.Pink, "'s ally will fight this battle");
             }
         }
+
+        #endregion Execution
     }
 }
