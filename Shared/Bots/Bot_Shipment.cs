@@ -738,7 +738,7 @@ namespace Treachery.Shared
                 Passed = false,
                 From = null,
                 KarmaCard = null,
-                KarmaShipment = false,
+                //KarmaShipment = false,
                 To = location
             };
 
@@ -799,7 +799,7 @@ namespace Treachery.Shared
                 !Game.MayShipWithDiscount(this) &&
                 Shipment.DetermineCost(Game, this, shipment) > 7)
             {
-                shipment.KarmaShipment = true;
+                //shipment.KarmaShipment = true;
                 shipment.KarmaCard = Karma.ValidKarmaCards(Game, this).FirstOrDefault();
             }
         }
@@ -911,7 +911,7 @@ namespace Treachery.Shared
                 Passed = false,
                 From = null,
                 KarmaCard = null,
-                KarmaShipment = false,
+                //KarmaShipment = false,
                 NoFieldValue = 0,
                 To = location
             };

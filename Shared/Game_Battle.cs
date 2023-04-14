@@ -171,14 +171,7 @@ namespace Treachery.Shared
 
         internal bool PoisonToothCancelled { get; set; } = false;
 
-        private RockWasMelted CurrentRockWasMelted { get; set; }
-        public void HandleEvent(RockWasMelted e)
-        {
-            Log(e);
-            if (Version < 146) Discard(e.Player, TreacheryCardType.Rockmelter);
-            CurrentRockWasMelted = e;
-            Enter(Phase.CallTraitorOrPass);
-        }
+        internal RockWasMelted CurrentRockWasMelted { get; set; }
 
         internal void RegisterKnownCards(Battle battle)
         {

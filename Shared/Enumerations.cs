@@ -859,4 +859,13 @@ namespace Treachery.Shared
         Weapon = 30,
         Defense = 40
     }
+
+    [Flags]
+    public enum ShipmentPermission
+    {
+        None = 0,
+        Cross = 1,
+        ToHomeworld = 2,
+        OrangeRate = 4
+    }
 }

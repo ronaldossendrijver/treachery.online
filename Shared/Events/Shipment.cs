@@ -11,23 +11,37 @@ namespace Treachery.Shared
 {
     public class Shipment : PassableGameEvent, ILocationEvent
     {
-        public int _toId;
-        public int _fromId;
+        #region Construction
 
-        private static List<Location> YellowSpawnLocations(Game g, Player p)
+        public Shipment(Game game) : base(game)
         {
-            return g.Map.Locations(g.Applicable(Rule.Homeworlds)).Where(l => g.IsNotFull(p, l) && (l == g.Map.TheGreatFlat || l == g.Map.TheGreaterFlat || l == g.Map.FuneralPlain || l.Territory == g.Map.BightOfTheCliff || l == g.Map.SietchTabr ||
-                l.Territory == g.Map.PlasticBasin || l.Territory == g.Map.RockOutcroppings || l.Territory == g.Map.BrokenLand || l.Territory == g.Map.Tsimpo || l.Territory == g.Map.HaggaBasin ||
-                l == g.Map.PolarSink || l.Territory == g.Map.WindPass || l.Territory == g.Map.WindPassNorth || l.Territory == g.Map.CielagoWest || l.Territory == g.Map.FalseWallWest || l.Territory == g.Map.HabbanyaErg ||
-                l is DiscoveredLocation dsPastyMesa && dsPastyMesa.Visible && dsPastyMesa.AttachedToLocation.Territory == g.Map.PastyMesa || l is DiscoveredLocation dsFalseWallWest && dsFalseWallWest.Visible && dsFalseWallWest.AttachedToLocation.Territory == g.Map.FalseWallWest))
-                .ToList();
         }
 
-        [JsonIgnore]
-        public Location To { get { return Game.Map.LocationLookup.Find(_toId); } set { _toId = Game.Map.LocationLookup.GetId(value); } }
+        public Shipment()
+        {
+        }
+
+        #endregion Construction
+
+        #region Properties
+
+        public int _toId;
 
         [JsonIgnore]
-        public Location From { get { return Game.Map.LocationLookup.Find(_fromId); } set { _fromId = Game.Map.LocationLookup.GetId(value); } }
+        public Location To
+        {
+            get => Game.Map.LocationLookup.Find(_toId);
+            set => _toId = Game.Map.LocationLookup.GetId(value);
+        }
+
+        public int _fromId;
+
+        [JsonIgnore]
+        public Location From
+        {
+            get => Game.Map.LocationLookup.Find(_fromId);
+            set => _fromId = Game.Map.LocationLookup.GetId(value);
+        }
 
         public int ForceAmount { get; set; }
 
@@ -44,11 +58,7 @@ namespace Treachery.Shared
         public int NoFieldValue
         {
             get => _noFieldValue - 1;
-
-            set
-            {
-                _noFieldValue = value + 1;
-            }
+            set => _noFieldValue = value + 1;
         }
 
         //This is needed for compatibility with pre-exp2 game versions where _cunningNoFieldValue is 0 by default.
@@ -58,54 +68,58 @@ namespace Treachery.Shared
         public int CunningNoFieldValue
         {
             get => _cunningNoFieldValue - 1;
-
-            set
-            {
-                _cunningNoFieldValue = value + 1;
-            }
+            set => _cunningNoFieldValue = value + 1;
         }
+
+        public int AllyContributionAmount { get; set; }
 
         public int _karmaCardId;
-
-        public Shipment(Game game) : base(game)
-        {
-        }
-
-        public Shipment()
-        {
-        }
 
         [JsonIgnore]
         public TreacheryCard KarmaCard
         {
             get => TreacheryCardManager.Lookup.Find(_karmaCardId);
-
-            set
-            {
-                if (value == null)
-                {
-                    _karmaCardId = -1;
-                }
-                else
-                {
-                    _karmaCardId = value.Id;
-                }
-            }
+            set => TreacheryCardManager.GetId(value);
         }
 
         [JsonIgnore]
         public bool IsUsingKarma => KarmaCard != null;
-
-        //To be removed later on
-        public bool KarmaShipment { get; set; } = false;
-
-        public int AllyContributionAmount { get; set; }
 
         [JsonIgnore]
         public bool IsSiteToSite => From != null;
 
         [JsonIgnore]
         public bool IsBackToReserves => ForceAmount + SpecialForceAmount < 0;
+
+        [JsonIgnore]
+        public bool IsNoField => NoFieldValue >= 0;
+
+        [JsonIgnore]
+        public int TotalAmountOfForcesAddedToLocation => ForceAmount + SpecialForceAmount + SmuggledAmount + SmuggledSpecialAmount;
+
+        public int DetermineOrangeProfits(Game game)
+        {
+            var initiator = Player;
+            return
+                DetermineCostToInitiator(game) +
+                ((initiator.Ally != Faction.Orange || game.Applicable(Rule.OrangeShipmentContributionsFlowBack)) ? AllyContributionAmount : 0);
+        }
+
+        public int DetermineCostToInitiator(Game g)
+        {
+            if (g.Version <= 106)
+            {
+                return DetermineCost(Game, Player, ForceAmount + SpecialForceAmount, To, IsUsingKarma, IsBackToReserves, IsNoField, false) - AllyContributionAmount;
+            }
+            else
+            {
+                return DetermineCost(Game, Player, this) - AllyContributionAmount;
+            }
+        }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -162,6 +176,15 @@ namespace Treachery.Shared
             }
 
             return null;
+        }
+
+        private static List<Location> YellowSpawnLocations(Game g, Player p)
+        {
+            return g.Map.Locations(g.Applicable(Rule.Homeworlds)).Where(l => g.IsNotFull(p, l) && (l == g.Map.TheGreatFlat || l == g.Map.TheGreaterFlat || l == g.Map.FuneralPlain || l.Territory == g.Map.BightOfTheCliff || l == g.Map.SietchTabr ||
+                l.Territory == g.Map.PlasticBasin || l.Territory == g.Map.RockOutcroppings || l.Territory == g.Map.BrokenLand || l.Territory == g.Map.Tsimpo || l.Territory == g.Map.HaggaBasin ||
+                l == g.Map.PolarSink || l.Territory == g.Map.WindPass || l.Territory == g.Map.WindPassNorth || l.Territory == g.Map.CielagoWest || l.Territory == g.Map.FalseWallWest || l.Territory == g.Map.HabbanyaErg ||
+                l is DiscoveredLocation dsPastyMesa && dsPastyMesa.Visible && dsPastyMesa.AttachedToLocation.Territory == g.Map.PastyMesa || l is DiscoveredLocation dsFalseWallWest && dsFalseWallWest.Visible && dsFalseWallWest.AttachedToLocation.Territory == g.Map.FalseWallWest))
+                .ToList();
         }
 
         public static int DetermineCost(Game g, Player p, Shipment s)
@@ -301,9 +324,251 @@ namespace Treachery.Shared
             return result;
         }
 
+        public static IEnumerable<TreacheryCard> ValidKarmaCards(Game g, Player p)
+        {
+            var result = ValidOwnKarmaCards(g, p).ToList();
+
+            var allyCard = ValidAllyKarmaCard(g, p);
+            if (allyCard != null)
+            {
+                result.Add(allyCard);
+            }
+
+            return result;
+        }
+
+        public static IEnumerable<TreacheryCard> ValidOwnKarmaCards(Game g, Player p) => Karma.ValidKarmaCards(g, p);
+
+        public static TreacheryCard ValidAllyKarmaCard(Game g, Player p) => g.GetPermittedUseOfAllyKarma(p.Faction);
+
+        public static bool CanKarma(Game g, Player p)
+        {
+            return ValidKarmaCards(g, p).Any();
+        }
+
+        public static bool MaySmuggle(Game g, Player p, Location l)
+        {
+            return l != null && !g.AnyForcesIn(l.Territory) && p.Faction != Faction.Yellow && g.SkilledAs(p, LeaderSkill.Smuggler);
+        }
+
+        public static bool MayUseNoField(Game g, Player p) => p.Faction == Faction.White && !g.Prevented(FactionAdvantage.WhiteNofield) || p.Ally == Faction.White && g.WhiteAllowsUseOfNoField;
+
+        public static bool MayUseCunningNoField(Player p) => p.Faction == Faction.White && NexusPlayed.CanUseCunning(p);
+
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Game.BeginningOfShipmentAndMovePhase = false;
+            Game.CurrentBlockedTerritories.Clear();
+            Game.StormLossesToTake.Clear();
+            Game.ChosenDestinationsWithAllies.Clear();
+            Game.BlueMayAccompany = false;
+
+            MessagePart receivedPaymentMessage = MessagePart.Express();
+            int totalCost = 0;
+
+            if (!Passed)
+            {
+                var ownerOfKarma = KarmaCard != null ? Game.OwnerOf(KarmaCard) : null;
+                totalCost = PayForShipment();
+
+                if (IsNoField)
+                {
+                    if (CunningNoFieldValue >= 0)
+                    {
+                        Game.RevealCurrentNoField(GetPlayer(Faction.White));
+                        Player.ShipSpecialForces(To, 1);
+                        Game.CurrentNoFieldValue = CunningNoFieldValue;
+                        Game.PlayNexusCard(Player, "Cunning", "ship and reveal a second ", FactionSpecialForce.White);
+                    }
+
+                    Game.RevealCurrentNoField(GetPlayer(Faction.White));
+                    Game.CurrentNoFieldValue = NoFieldValue;
+
+                    if (Initiator != Faction.White)
+                    {
+                        //Immediately reveal No-Field
+                        Game.LatestRevealedNoFieldValue = NoFieldValue;
+                        Game.CurrentNoFieldValue = -1;
+                    }
+                }
+
+                if (Game.ContainsConflictingAlly(Player, To))
+                {
+                    Game.ChosenDestinationsWithAllies.Add(To.Territory);
+                }
+
+                Game.LastShipmentOrMovement = this;
+                bool mustBeAdvisors = (Player.Is(Faction.Blue) && (Player.SpecialForcesIn(To) > 0) || Game.Version >= 148 && Player.SpecialForcesIn(To.Territory) > 0);
+
+                if (IsSiteToSite)
+                {
+                    PerformSiteToSiteShipment();
+                }
+                else if (IsBackToReserves)
+                {
+                    Player.ShipForces(To, ForceAmount);
+                }
+                else if (IsNoField && Initiator == Faction.White)
+                {
+                    PerformNormalShipment(Player, To, ForceAmount + SmuggledAmount, 1, false);
+                }
+                else
+                {
+                    PerformNormalShipment(Player, To, ForceAmount + SmuggledAmount, SpecialForceAmount + SmuggledSpecialAmount, IsSiteToSite);
+                }
+
+                if (!By(Faction.Yellow))
+                {
+                    Game.Stone(Milestone.Shipment);
+                }
+
+                Player.FlipForces(To, mustBeAdvisors);
+
+                if (!IsBackToReserves) Game.CheckIntrusion(this);
+
+                Game.DetermineNextShipmentAndMoveSubPhase();
+
+                int receivedPayment = HandleReceivedShipmentPayment(ref receivedPaymentMessage);
+                Log(GetVerboseMessage(totalCost, receivedPaymentMessage, ownerOfKarma));
+
+                if (totalCost - receivedPayment >= 4)
+                {
+                    Game.ActivateBanker(Player);
+                }
+
+                Game.FlipBeneGesseritWhenAloneOrWithPinkAlly();
+                DetermineOccupationAfterShipment();
+            }
+            else
+            {
+                Log(GetVerboseMessage(totalCost, receivedPaymentMessage, null));
+                Game.DetermineNextShipmentAndMoveSubPhase();
+            }
+        }
+
+        private int PayForShipment()
+        {
+            var costToInitiator = DetermineCostToInitiator(Game);
+            Player.Resources -= costToInitiator;
+
+            if (IsUsingKarma)
+            {
+                var karmaCard = KarmaCard;
+                Game.Discard(karmaCard);
+                Game.Stone(Milestone.Karma);
+            }
+
+            if (AllyContributionAmount > 0)
+            {
+                Game.GetPlayer(Player.Ally).Resources -= AllyContributionAmount;
+                Game.DecreasePermittedUseOfAllySpice(Initiator, AllyContributionAmount);
+            }
+
+            return costToInitiator + AllyContributionAmount;
+        }
+
+        private int HandleReceivedShipmentPayment(ref MessagePart profitMessage)
+        {
+            int totalCost = DetermineCost(Game, Player, this);
+
+            int receiverProfit = 0;
+            var orange = GetPlayer(Faction.Orange);
+
+            if (orange != null && !By(Faction.Orange) && !IsUsingKarma)
+            {
+                receiverProfit = DetermineOrangeProfits(Game);
+
+                if (receiverProfit > 0)
+                {
+                    if (!Game.Prevented(FactionAdvantage.OrangeReceiveShipment))
+                    {
+                        Game.ModifyIncomeBasedOnThresholdOrOccupation(orange, ref receiverProfit);
+                        orange.Resources += receiverProfit;
+
+                        if (receiverProfit > 0)
+                        {
+                            profitMessage = MessagePart.Express(" → ", Faction.Orange, " get ", Payment.Of(receiverProfit));
+
+                            if (receiverProfit >= 5)
+                            {
+                                Game.ApplyBureaucracy(Initiator, Faction.Orange);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        profitMessage = MessagePart.Express(" → ", TreacheryCardType.Karma, " prevents ", Faction.Orange, " from receiving", Payment.Of(receiverProfit));
+                        if (!Game.Applicable(Rule.FullPhaseKarma)) Game.Allow(FactionAdvantage.OrangeReceiveShipment);
+                    }
+                }
+            }
+
+            Game.SetRecentPayment(receiverProfit, Initiator, Faction.Orange, this);
+            Game.SetRecentPayment(totalCost - receiverProfit, Initiator, this);
+
+            return receiverProfit;
+        }
+
+        private void PerformSiteToSiteShipment()
+        {
+            Player.MoveForces(From, To, ForceAmount);
+            Player.MoveSpecialForces(From, To, SpecialForceAmount);
+        }
+
+        private void PerformNormalShipment(Player initiator, Location to, int forceAmount, int specialForceAmount, bool isSiteToSite)
+        {
+            Game.BlueMayAccompany = (forceAmount > 0 || specialForceAmount > 0) && initiator.Faction != Faction.Yellow && initiator.Faction != Faction.Blue;
+
+            initiator.ShipForces(to, forceAmount);
+            initiator.ShipSpecialForces(to, specialForceAmount);
+
+            if (initiator.Is(Faction.Yellow) && Game.IsInStorm(to))
+            {
+                int killCount;
+                if (!Game.Prevented(FactionAdvantage.YellowProtectedFromStorm) && Game.Applicable(Rule.YellowStormLosses))
+                {
+                    killCount = 0;
+                    Game.StormLossesToTake.Add(new LossToTake() { Location = to, Amount = Game.LossesToTake(forceAmount, specialForceAmount), Faction = Faction.Yellow });
+                }
+                else
+                {
+                    killCount = initiator.KillForces(to, forceAmount, specialForceAmount, false);
+                }
+
+                if (killCount > 0)
+                {
+                    Log(killCount, initiator.Faction, " forces are killed by the storm");
+                }
+            }
+
+            if (initiator.Faction != Faction.Yellow && initiator.Faction != Faction.Orange && !isSiteToSite)
+            {
+                Game.ShipsTechTokenIncome = true;
+            }
+        }
+
+        private void DetermineOccupationAfterShipment()
+        {
+            var currentOccupierOfPinkHomeworld = Game.OccupierOf(World.Pink);
+            var player = GetPlayer(Initiator);
+
+            if (To is Homeworld hw && !player.Homeworlds.Contains(hw) && player.Controls(Game, hw, false))
+            {
+                if (!Game.Occupies(Initiator, hw.World))
+                {
+                    Game.HomeworldOccupation.Remove(hw);
+                    Game.HomeworldOccupation.Add(hw, Initiator);
+                    Log(Initiator, " now occupy ", hw);
+                }
+            }
+
+            Game.CheckIfShipmentPermissionsShouldBeRevoked();
+            Game.CheckIfOccupierTakesVidal(currentOccupierOfPinkHomeworld);
+            Game.LetFactionsDiscardSurplusCards();
         }
 
         public override Message GetMessage()
@@ -375,61 +640,6 @@ namespace Treachery.Shared
                 MessagePart.ExpressIf(KarmaCard != null && KarmaCard.Type != TreacheryCardType.Karma, " (", KarmaCard, ")"));
         }
 
-        [JsonIgnore]
-        public bool IsNoField => NoFieldValue >= 0;
-
-        public int DetermineOrangeProfits(Game game)
-        {
-            var initiator = Player;
-            return
-                DetermineCostToInitiator(game) +
-                ((initiator.Ally != Faction.Orange || game.Applicable(Rule.OrangeShipmentContributionsFlowBack)) ? AllyContributionAmount : 0);
-        }
-
-        public int DetermineCostToInitiator(Game g)
-        {
-            if (g.Version <= 106)
-            {
-                return DetermineCost(Game, Player, ForceAmount + SpecialForceAmount, To, IsUsingKarma, IsBackToReserves, IsNoField, false) - AllyContributionAmount;
-            }
-            else
-            {
-                return DetermineCost(Game, Player, this) - AllyContributionAmount;
-            }
-        }
-
-        public static IEnumerable<TreacheryCard> ValidKarmaCards(Game g, Player p)
-        {
-            var result = ValidOwnKarmaCards(g, p).ToList();
-
-            var allyCard = ValidAllyKarmaCard(g, p);
-            if (allyCard != null)
-            {
-                result.Add(allyCard);
-            }
-
-            return result;
-        }
-
-        public static IEnumerable<TreacheryCard> ValidOwnKarmaCards(Game g, Player p) => Karma.ValidKarmaCards(g, p);
-
-        public static TreacheryCard ValidAllyKarmaCard(Game g, Player p) => g.GetPermittedUseOfAllyKarma(p.Faction);
-
-        public static bool CanKarma(Game g, Player p)
-        {
-            return ValidKarmaCards(g, p).Any();
-        }
-
-        public static bool MaySmuggle(Game g, Player p, Location l)
-        {
-            return l != null && !g.AnyForcesIn(l.Territory) && p.Faction != Faction.Yellow && g.SkilledAs(p, LeaderSkill.Smuggler);
-        }
-
-        public static bool MayUseNoField(Game g, Player p) => p.Faction == Faction.White && !g.Prevented(FactionAdvantage.WhiteNofield) || p.Ally == Faction.White && g.WhiteAllowsUseOfNoField;
-
-        public static bool MayUseCunningNoField(Player p) => p.Faction == Faction.White && NexusPlayed.CanUseCunning(p);
-
-        [JsonIgnore]
-        public int TotalAmountOfForcesAddedToLocation => ForceAmount + SpecialForceAmount + SmuggledAmount + SmuggledSpecialAmount;
+        #endregion Execution
     }
 }

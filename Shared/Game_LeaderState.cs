@@ -104,7 +104,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void SetSkill(Leader l, LeaderSkill skill)
+        internal void SetSkill(Leader l, LeaderSkill skill)
         {
             LeaderState[l].Skill = skill;
         }

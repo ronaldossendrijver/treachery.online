@@ -9,6 +9,8 @@ namespace Treachery.Shared
 {
     public class SetShipmentPermission : GameEvent
     {
+        #region Construction
+
         public SetShipmentPermission(Game game) : base(game)
         {
         }
@@ -17,9 +19,17 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
         public Faction[] Factions { get; set; }
 
         public ShipmentPermission Permission { get; set; }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -28,6 +38,10 @@ namespace Treachery.Shared
 
             return null;
         }
+
+        #endregion Validation
+
+        #region Execution
 
         public static IEnumerable<Faction> ValidTargets(Game g, Player p)
         {
@@ -38,7 +52,20 @@ namespace Treachery.Shared
 
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Log();
+
+            foreach (var f in Factions)
+            {
+                Game.ShipmentPermissions.Remove(f);
+            }
+
+            if (Permission != ShipmentPermission.None)
+            {
+                foreach (var f in Factions)
+                {
+                    Game.ShipmentPermissions.Add(f, Permission);
+                }
+            }
         }
 
         public override Message GetMessage()
@@ -55,5 +82,7 @@ namespace Treachery.Shared
                     ", discount: ", (Permission & ShipmentPermission.OrangeRate) == ShipmentPermission.OrangeRate ? "yes" : "no");
             }
         }
+
+        #endregion Execution
     }
 }

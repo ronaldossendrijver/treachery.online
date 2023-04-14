@@ -278,25 +278,9 @@ namespace Treachery.Shared
             }
         }
 
-        private Phase PhaseBeforeSkillAssignment { get; set; }
-        public void HandleEvent(SkillAssigned e)
-        {
+        internal Phase PhaseBeforeSkillAssignment { get; set; }
 
-            Log(e);
-            SetSkill(e.Leader, e.Skill);
-            e.Player.SkillsToChooseFrom.Remove(e.Skill);
-            SetInFrontOfShield(e.Leader, true);
-            SkillDeck.PutOnTop(e.Player.SkillsToChooseFrom);
-            e.Player.SkillsToChooseFrom.Clear();
-
-            if (!Players.Any(p => p.SkillsToChooseFrom.Any()))
-            {
-                SkillDeck.Shuffle();
-                Enter(CurrentPhase != Phase.AssigningInitialSkills, PhaseBeforeSkillAssignment, TreacheryCardsBeforeTraitors, DealTraitors, SetupSpiceAndForces);
-            }
-        }
-
-        private void SetupSpiceAndForces()
+        internal void SetupSpiceAndForces()
         {
             foreach (var p in Players)
             {

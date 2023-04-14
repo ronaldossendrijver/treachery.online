@@ -363,12 +363,12 @@ namespace Treachery.Shared
             }
         }
 
-        private int LossesToTake(Battalion battalion)
+        internal int LossesToTake(Battalion battalion)
         {
             return LossesToTake(battalion.AmountOfForces, battalion.AmountOfSpecialForces);
         }
 
-        private int LossesToTake(int AmountOfForces, int AmountOfSpecialForces)
+        internal int LossesToTake(int AmountOfForces, int AmountOfSpecialForces)
         {
             return (int)Math.Ceiling(0.5 * (AmountOfForces + AmountOfSpecialForces));
         }

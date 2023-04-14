@@ -67,7 +67,7 @@ namespace Treachery.Shared
             Enter(Version >= 103, Phase.CollectionReport, EnterMentatPhase);
         }
 
-        private void ModifyIncomeBasedOnThresholdOrOccupation(Player from, ref int receivedAmount)
+        internal void ModifyIncomeBasedOnThresholdOrOccupation(Player from, ref int receivedAmount)
         {
             if (receivedAmount > 1 && Applicable(Rule.Homeworlds))
             {

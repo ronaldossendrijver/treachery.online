@@ -986,25 +986,7 @@ namespace Treachery.Shared
         }
 
         public Dictionary<Homeworld, Faction> HomeworldOccupation { get; private set; } = new();
-        public void DetermineOccupationAfterLocationEvent(ILocationEvent e)
-        {
-            var currentOccupierOfPinkHomeworld = OccupierOf(World.Pink);
-            var player = GetPlayer(e.Initiator);
-
-            if (e.To is Homeworld hw && !player.Homeworlds.Contains(hw) && player.Controls(this, hw, false))
-            {
-                if (!Occupies(e.Initiator, hw.World))
-                {
-                    HomeworldOccupation.Remove(hw);
-                    HomeworldOccupation.Add(hw, e.Initiator);
-                    Log(e.Initiator, " now occupy ", hw);
-                }
-            }
-
-            CheckIfShipmentPermissionsShouldBeRevoked();
-            CheckIfOccupierTakesVidal(currentOccupierOfPinkHomeworld);
-            LetFactionsDiscardSurplusCards();
-        }
+        
 
         public void DetermineOccupationAtStartOrEndOfTurn()
         {
@@ -1042,7 +1024,7 @@ namespace Treachery.Shared
             LetFactionsDiscardSurplusCards();
         }
 
-        private void CheckIfShipmentPermissionsShouldBeRevoked()
+        internal void CheckIfShipmentPermissionsShouldBeRevoked()
         {
             if (!HasHighThreshold(Faction.Orange) && ShipmentPermissions.Any())
             {
@@ -1061,7 +1043,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void CheckIfOccupierTakesVidal(Player previousOccupierOfPinkHomeworld)
+        internal void CheckIfOccupierTakesVidal(Player previousOccupierOfPinkHomeworld)
         {
             var occupierOfPinkHomeworld = OccupierOf(World.Pink);
             if (occupierOfPinkHomeworld != null)

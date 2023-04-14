@@ -6,6 +6,8 @@ namespace Treachery.Shared
 {
     public class RockWasMelted : GameEvent
     {
+        #region Construction
+
         public RockWasMelted(Game game) : base(game)
         {
         }
@@ -14,16 +16,37 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
         public bool Kill { get; set; }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
             return null;
         }
 
+        public static bool CanBePlayed(Game g, Player p)
+        {
+            var plan = g.CurrentBattle.PlanOf(p);
+            return plan != null && plan.Weapon != null && plan.Weapon.IsRockmelter;
+        }
+
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Log();
+            if (Game.Version < 146) Game.Discard(Player, TreacheryCardType.Rockmelter);
+            Game.CurrentRockWasMelted = this;
+            Game.Enter(Phase.CallTraitorOrPass);
         }
 
         public override Message GetMessage()
@@ -38,10 +61,6 @@ namespace Treachery.Shared
             }
         }
 
-        public static bool CanBePlayed(Game g, Player p)
-        {
-            var plan = g.CurrentBattle.PlanOf(p);
-            return plan != null && plan.Weapon != null && plan.Weapon.IsRockmelter;
-        }
+        #endregion Execution
     }
 }

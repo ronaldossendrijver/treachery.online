@@ -122,12 +122,6 @@ namespace Treachery.Shared
 
         public Faction[] FactionsWithIncreasedRevivalLimits { get; internal set; } = Array.Empty<Faction>();
 
-        public void HandleEvent(SetIncreasedRevivalLimits e)
-        {
-            FactionsWithIncreasedRevivalLimits = e.Factions;
-            Log(e);
-        }
-
         public int GetRevivalLimit(Game g, Player p)
         {
             if (p.Is(Faction.Purple) || (p.Is(Faction.Brown) && !g.Prevented(FactionAdvantage.BrownRevival)))

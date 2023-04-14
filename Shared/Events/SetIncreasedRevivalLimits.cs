@@ -9,6 +9,8 @@ namespace Treachery.Shared
 {
     public class SetIncreasedRevivalLimits : GameEvent
     {
+        #region Construction
+
         public SetIncreasedRevivalLimits(Game game) : base(game)
         {
         }
@@ -17,10 +19,20 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
         public Faction[] Factions { get; set; }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
+            if (Factions.Any(f => !ValidTargets(Game, Player).Contains(f))) return Message.Express("Invalid faction");
+
             return null;
         }
 
@@ -29,9 +41,14 @@ namespace Treachery.Shared
             return g.Players.Where(x => x.Faction != p.Faction).Select(x => x.Faction);
         }
 
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Game.FactionsWithIncreasedRevivalLimits = Factions;
+            Log();
         }
 
         public override Message GetMessage()
@@ -45,5 +62,7 @@ namespace Treachery.Shared
                 return Message.Express(Initiator, " don't grant increased revival limits");
             }
         }
+
+        #endregion Execution
     }
 }
