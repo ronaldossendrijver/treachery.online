@@ -1238,6 +1238,8 @@ namespace Treachery.Shared
             }
         }
 
+        internal bool HaveForcesOnEachOthersHomeworld(Player a, Player b) => a.ForcesInLocations.Keys.Any(l => b.Homeworlds.Contains(l)) || b.ForcesInLocations.Keys.Any(l => a.Homeworlds.Contains(l));
+
         private void LogTo(Faction faction, params object[] expression)
         {
             CurrentReport.ExpressTo(faction, expression);

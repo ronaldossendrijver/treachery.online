@@ -73,8 +73,8 @@
                 specialForcesPaidByRed = 0;
             }
 
-            int maxForcesPlacedOnPlanet = Revival.NumberOfForcesThatMayBePlacedOnPlanet(Game, Player, useRedSecretAlly, amountOfForces + forcesPaidByRed);
-            int maxSpecialForcesPlacedOnPlanet = Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, amountOfSpecialForces + specialForcesPaidByRed);
+            int maxForcesPlacedOnPlanet = Revival.ValidRevivedForceLocations(Game, Player).Any() ? Revival.NumberOfForcesThatMayBePlacedOnPlanet(Game, Player, useRedSecretAlly, amountOfForces + forcesPaidByRed) : 0;
+            int maxSpecialForcesPlacedOnPlanet = Revival.ValidRevivedForceLocations(Game, Player).Any() ? Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, amountOfSpecialForces + specialForcesPaidByRed) : 0;
 
             if (maxForcesPlacedOnPlanet > 0)
             {

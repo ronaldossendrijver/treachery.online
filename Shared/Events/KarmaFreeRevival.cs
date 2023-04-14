@@ -83,7 +83,7 @@ namespace Treachery.Shared
 
             if (Hero != null)
             {
-                Game.ReviveHero(Hero);
+                Game.Revive(Player, Hero);
 
                 if (AssignSkill)
                 {

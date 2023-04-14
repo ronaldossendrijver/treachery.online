@@ -2,12 +2,15 @@
  * Copyright 2020-2023 Ronald Ossendrijver. All rights reserved.
  */
 
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Treachery.Shared
 {
     public class AllianceOffered : GameEvent
     {
+        #region Construction
+
         public AllianceOffered(Game game) : base(game)
         {
         }
@@ -16,12 +19,28 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
         public Faction Target { get; set; }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
+            if (!ValidTargets(Game, Player).Contains(Target)) return Message.Express("Invalid faction");
+
             return null;
         }
+
+        public static IEnumerable<Faction> ValidTargets(Game g, Player p) => g.Players.Where(other => p != other && !g.HaveForcesOnEachOthersHomeworld(p, other)).Select(other => other.Faction);
+
+        #endregion Validation
+
+        #region Execution
 
         protected override void ExecuteConcreteEvent()
         {
@@ -53,5 +72,7 @@ namespace Treachery.Shared
         {
             return Message.Express(Initiator, " offer an alliance to ", Target);
         }
+
+        #endregion Execution
     }
 }

@@ -8,6 +8,8 @@ namespace Treachery.Shared
 {
     public class AllyPermission : GameEvent
     {
+        #region Construction
+
         public AllyPermission(Game game) : base(game)
         {
         }
@@ -15,6 +17,10 @@ namespace Treachery.Shared
         public AllyPermission()
         {
         }
+
+        #endregion Construction
+
+        #region Properties
 
         public bool AllyMayShipAsOrange { get; set; }
         public int RedWillPayForExtraRevival { get; set; }
@@ -37,27 +43,22 @@ namespace Treachery.Shared
         [JsonIgnore]
         public TreacheryCard PermittedKarmaCard
         {
-            get
-            {
-                return TreacheryCardManager.Lookup.Find(_permittedKarmaCardId);
-            }
-            set
-            {
-                if (value == null)
-                {
-                    _permittedKarmaCardId = -1;
-                }
-                else
-                {
-                    _permittedKarmaCardId = value.Id;
-                }
-            }
+            get => TreacheryCardManager.Lookup.Find(_permittedKarmaCardId);
+            set => _permittedKarmaCardId = TreacheryCardManager.GetId(value);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
             return null;
         }
+
+        #endregion Validation
+
+        #region Execution
 
         protected override void ExecuteConcreteEvent()
         {
@@ -118,5 +119,7 @@ namespace Treachery.Shared
         {
             return Message.Express(Initiator, " change ally permissions");
         }
+
+        #endregion Execution
     }
 }

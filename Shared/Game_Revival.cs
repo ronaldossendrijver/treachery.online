@@ -40,19 +40,13 @@ namespace Treachery.Shared
             Enter(Phase.AssigningSkill);
         }
 
-        internal void ReviveHero(IHero h)
+        internal void Revive(Player initiator, IHero h)
         {
             LeaderState[h].Revive();
             LeaderState[h].CurrentTerritory = null;
-        }
 
-        internal void ReviveGhola(Player initiator, Leader l)
-        {
-            LeaderState[l].Revive();
-            LeaderState[l].CurrentTerritory = null;
-
-            var currentOwner = Players.FirstOrDefault(p => p.Leaders.Contains(l));
-            if (currentOwner != null)
+            var currentOwner = OwnerOf(h);
+            if (currentOwner != null && h is Leader l && (Version >= 154 || initiator.Faction == Faction.Purple && h.Faction != Faction.Purple))
             {
                 currentOwner.Leaders.Remove(l);
                 initiator.Leaders.Add(l);
@@ -172,11 +166,11 @@ namespace Treachery.Shared
             {
                 if (r.Initiator != r.Hero.Faction && r.Hero is Leader)
                 {
-                    ReviveGhola(player, r.Hero as Leader);
+                    Revive(player, r.Hero as Leader);
                 }
                 else
                 {
-                    ReviveHero(r.Hero);
+                    Revive(player, r.Hero);
                 }
 
                 if (r.AssignSkill)

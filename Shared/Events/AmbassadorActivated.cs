@@ -370,7 +370,7 @@ namespace Treachery.Shared
                             Log(Initiator, " revive a face down leader");
                         }
 
-                        Game.ReviveHero(PurpleHero);
+                        Game.Revive(Player, PurpleHero);
 
                         if (PurpleAssignSkill)
                         {

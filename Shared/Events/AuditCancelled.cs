@@ -10,6 +10,8 @@ namespace Treachery.Shared
 {
     public class AuditCancelled : GameEvent
     {
+        #region Construction
+
         public AuditCancelled(Game game) : base(game)
         {
         }
@@ -18,7 +20,15 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
         public bool Cancelled { get; set; }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -26,6 +36,40 @@ namespace Treachery.Shared
 
             return null;
         }
+
+        public int Cost()
+        {
+            return Cost(Game);
+        }
+
+        public static int Cost(Game g)
+        {
+            return GetNumberOfCardsThatMayBeAudited(g);
+        }
+
+        public static int GetNumberOfCardsThatMayBeAudited(Game g)
+        {
+            var auditor = LeaderManager.GetLeaders(Faction.Brown).First(l => l.HeroType == HeroType.Auditor);
+            return Math.Min(g.IsAlive(auditor) ? 2 : 1, GetCardsThatMayBeAudited(g).Count());
+        }
+
+        public static IEnumerable<TreacheryCard> GetCardsThatMayBeAudited(Game g)
+        {
+            var auditee = g.Auditee;
+            var recentBattlePlan = g.CurrentBattle.PlanOf(auditee);
+            if (recentBattlePlan != null)
+            {
+                return auditee.TreacheryCards.Where(c => c != recentBattlePlan.Weapon && c != recentBattlePlan.Defense && c != recentBattlePlan.Hero);
+            }
+            else
+            {
+                return Array.Empty<TreacheryCard>();
+            }
+        }
+
+        #endregion Validation
+
+        #region Execution
 
         protected override void ExecuteConcreteEvent()
         {
@@ -67,34 +111,6 @@ namespace Treachery.Shared
             }
         }
 
-        public int Cost()
-        {
-            return Cost(Game);
-        }
-
-        public static int Cost(Game g)
-        {
-            return GetNumberOfCardsThatMayBeAudited(g);
-        }
-
-        public static int GetNumberOfCardsThatMayBeAudited(Game g)
-        {
-            var auditor = LeaderManager.GetLeaders(Faction.Brown).First(l => l.HeroType == HeroType.Auditor);
-            return Math.Min(g.IsAlive(auditor) ? 2 : 1, GetCardsThatMayBeAudited(g).Count());
-        }
-
-        public static IEnumerable<TreacheryCard> GetCardsThatMayBeAudited(Game g)
-        {
-            var auditee = g.Auditee;
-            var recentBattlePlan = g.CurrentBattle.PlanOf(auditee);
-            if (recentBattlePlan != null)
-            {
-                return auditee.TreacheryCards.Where(c => c != recentBattlePlan.Weapon && c != recentBattlePlan.Defense && c != recentBattlePlan.Hero);
-            }
-            else
-            {
-                return Array.Empty<TreacheryCard>();
-            }
-        }
+        #endregion Execution
     }
 }

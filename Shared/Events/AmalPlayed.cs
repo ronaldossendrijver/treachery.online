@@ -8,6 +8,8 @@ namespace Treachery.Shared
 {
     public class AmalPlayed : GameEvent
     {
+        #region Construction
+
         public AmalPlayed(Game game) : base(game)
         {
         }
@@ -16,10 +18,18 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
         }
+
+        #endregion Validation
+
+        #region Execution
 
         protected override void ExecuteConcreteEvent()
         {
@@ -40,5 +50,7 @@ namespace Treachery.Shared
         {
             return Message.Express(Initiator, " perform ", TreacheryCardType.Amal);
         }
+
+        #endregion Execution
     }
 }

@@ -8,6 +8,8 @@ namespace Treachery.Shared
 {
     public class AllianceByTerror : PassableGameEvent
     {
+        #region Construction
+
         public AllianceByTerror(Game game) : base(game)
         {
         }
@@ -16,10 +18,18 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
         }
+
+        #endregion Validation
+
+        #region Execution
 
         protected override void ExecuteConcreteEvent()
         {
@@ -71,5 +81,7 @@ namespace Treachery.Shared
         {
             return Message.Express(Initiator, !Passed ? "" : " don't", " agree to ally");
         }
+
+        #endregion Execution
     }
 }

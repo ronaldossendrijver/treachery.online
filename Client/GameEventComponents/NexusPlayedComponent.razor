@@ -133,7 +133,7 @@
                         purpleAmountOfSpecialForces = 0;
                     }
 
-                    int maxSpecialForcesPlacedOnPlanet = Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, purpleAmountOfSpecialForces);
+                    int maxSpecialForcesPlacedOnPlanet = Revival.ValidRevivedForceLocations(Game, Player).Any() ? Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, purpleAmountOfSpecialForces) : 0;
                     if (maxSpecialForcesPlacedOnPlanet > 0)
                     {
                         <div>
@@ -168,6 +168,8 @@
                     {
                         purpleAssignSkill = false;
                     }
+
+                    <div class="mt-1 text-end">Revival cost for you: <SimpleNumberComponent>@NexusPlayed.DeterminePurpleCost(purpleAmountOfForces, purpleAmountOfSpecialForces)</SimpleNumberComponent></div>
 
                     break;
 

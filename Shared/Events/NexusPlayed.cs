@@ -120,7 +120,7 @@ namespace Treachery.Shared
                         if (PurpleHero != null && !ValidPurpleHeroes(Game, Player).Contains(PurpleHero)) return Message.Express("Invalid leader");
                         if (PurpleForces > ValidPurpleMaxAmount(Game, Player, false)) return Message.Express("You can't revive that many ", Player.Force);
                         if (PurpleSpecialForces > ValidPurpleMaxAmount(Game, Player, true)) return Message.Express("You can't revive that many ", Player.SpecialForce);
-                        if (DeterminePurpleCost() > Player.Resources) return Message.Express("You can't pay that many");
+                        if (DeterminePurpleCost() > Player.Resources) return Message.Express("You can't pay that much");
                         if (PurpleForces + PurpleSpecialForces > 5) return Message.Express("You can't revive that many forces");
                         if (PurpleAssignSkill && PurpleHero == null) return Message.Express("You must revive a leader to assign a skill to");
                         if (PurpleAssignSkill && !Revival.MayAssignSkill(Game, Player, PurpleHero)) return Message.Express("You can't assign a skill to this leader");
@@ -514,7 +514,7 @@ namespace Treachery.Shared
                 case Faction.Pink:
                     if (!Game.IsAlive(Game.Vidal))
                     {
-                        Game.ReviveHero(Game.Vidal);
+                        Game.Revive(Player, Game.Vidal);
 
                         if (PurpleAssignSkill)
                         {
@@ -582,7 +582,7 @@ namespace Treachery.Shared
 
                     if (PurpleHero != null)
                     {
-                        Game.ReviveHero(PurpleHero);
+                        Game.Revive(Player, PurpleHero);
 
                         if (PurpleAssignSkill)
                         {

@@ -467,7 +467,7 @@ namespace Treachery.Shared
                 if (Initiator != Hero.Faction && Hero is Leader leader)
                 {
                     asGhola = true;
-                    Game.ReviveGhola(Player, leader);
+                    Game.Revive(Player, leader);
                 }
                 else if (purple != null && purple.Leaders.Contains(Hero) && Game.IsAlive(Hero))
                 {
@@ -477,7 +477,7 @@ namespace Treachery.Shared
                 }
                 else
                 {
-                    Game.ReviveHero(Hero);
+                    Game.Revive(Player, Hero);
                 }
 
                 if (AssignSkill)

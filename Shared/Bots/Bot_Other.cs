@@ -374,39 +374,42 @@ namespace Treachery.Shared
                     break;
 
                 case Faction.Purple:
-                    int amountOfSpecialForces = 0;
-                    int amountOfForces = 0;
-
-                    while (amountOfSpecialForces + 1 < NexusPlayed.ValidPurpleMaxAmount(Game, this, true) &&
-                        NexusPlayed.DeterminePurpleCost(0, amountOfSpecialForces + 1) < Resources &&
-                        amountOfSpecialForces + 1 + amountOfForces <= 5)
+                    if (Game.HasActedOrPassed.Contains(Faction))
                     {
-                        amountOfSpecialForces++;
-                    }
+                        int amountOfSpecialForces = 0;
+                        int amountOfForces = 0;
 
-                    while (amountOfForces + 1 < NexusPlayed.ValidPurpleMaxAmount(Game, this, false) &&
-                        NexusPlayed.DeterminePurpleCost(0, amountOfForces + 1) < Resources &&
-                        amountOfSpecialForces + amountOfForces + 1 <= 5)
-                    {
-                        amountOfForces++;
-                    }
-
-                    var hero = NexusPlayed.ValidPurpleHeroes(Game, this).HighestOrDefault(l => l.Value);
-                    if (hero != null && amountOfForces + amountOfSpecialForces > 2 || amountOfForces + amountOfSpecialForces >= 5)
-                    {
-                        result.PurpleForces = amountOfForces;
-                        result.PurpleSpecialForces = amountOfSpecialForces;
-                        result.PurpleHero = hero;
-                        result.PurpleAssignSkill = Revival.MayAssignSkill(Game, this, hero);
-
-                        result.PurpleNumberOfSpecialForcesInLocation = Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(this, amountOfSpecialForces);
-                        if (result.PurpleNumberOfSpecialForcesInLocation > 0)
+                        while (amountOfSpecialForces + 1 < NexusPlayed.ValidPurpleMaxAmount(Game, this, true) &&
+                            NexusPlayed.DeterminePurpleCost(0, amountOfSpecialForces + 1) < Resources &&
+                            amountOfSpecialForces + 1 + amountOfForces <= 5)
                         {
-                            result.PurpleLocation = BestRevivalLocation(Revival.ValidRevivedForceLocations(Game, this).ToList());
-                            if (result.PurpleLocation == null) result.PurpleNumberOfSpecialForcesInLocation = 0;
+                            amountOfSpecialForces++;
                         }
 
-                        return result;
+                        while (amountOfForces + 1 < NexusPlayed.ValidPurpleMaxAmount(Game, this, false) &&
+                            NexusPlayed.DeterminePurpleCost(0, amountOfForces + 1) < Resources &&
+                            amountOfSpecialForces + amountOfForces + 1 <= 5)
+                        {
+                            amountOfForces++;
+                        }
+
+                        var hero = NexusPlayed.ValidPurpleHeroes(Game, this).HighestOrDefault(l => l.Value);
+                        if (hero != null && amountOfForces + amountOfSpecialForces > 2 || amountOfForces + amountOfSpecialForces >= 5)
+                        {
+                            result.PurpleForces = amountOfForces;
+                            result.PurpleSpecialForces = amountOfSpecialForces;
+                            result.PurpleHero = hero;
+                            result.PurpleAssignSkill = Revival.MayAssignSkill(Game, this, hero);
+
+                            result.PurpleNumberOfSpecialForcesInLocation = Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(this, amountOfSpecialForces);
+                            if (result.PurpleNumberOfSpecialForcesInLocation > 0)
+                            {
+                                result.PurpleLocation = BestRevivalLocation(Revival.ValidRevivedForceLocations(Game, this).ToList());
+                                if (result.PurpleLocation == null) result.PurpleNumberOfSpecialForcesInLocation = 0;
+                            }
+
+                            return result;
+                        }
                     }
                     break;
 

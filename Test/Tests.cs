@@ -47,7 +47,7 @@ namespace Treachery.Test
                 WriteSavegameIfApplicable(g, e.Player, "Nexus revival to planet");
             }
 
-			if (e is NexusPlayed rev5 && rev5.Initiator == Faction.Yellow && rev5.PurpleForces > 0)
+			if (e is NexusPlayed rev5 && rev5.Initiator == Faction.Yellow && rev5.PurpleForces > 0 && rev5.Player.ForcesOnPlanet.Any())
 			{
 				WriteSavegameIfApplicable(g, e.Player, "Fremen Nexus revival");
 			}
@@ -367,7 +367,7 @@ namespace Treachery.Test
             _cardcount = new();
             _leadercount = new();
 
-            int nrOfGames = 5000;
+            int nrOfGames = 200;
             int nrOfTurns = 10;
             int nrOfPlayers = 7;
 

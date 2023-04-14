@@ -1309,7 +1309,7 @@ namespace Treachery.Shared
                 SetAsideVidal();
             }
 
-            ReturnSkilledLeadersInFrontOfShield();
+            ReturnSkilledLeadersInFrontOfShieldAfterBattle();
             if (!Applicable(Rule.FullPhaseKarma)) AllowPreventedBattleFactionAdvantages();
             if (CurrentJuice != null && CurrentJuice.Type == JuiceType.Aggressor) CurrentJuice = null;
             CurrentDiplomacy = null;
@@ -1320,13 +1320,13 @@ namespace Treachery.Shared
             Enter(Phase.BattleReport);
         }
 
-        private void ReturnSkilledLeadersInFrontOfShield()
+        private void ReturnSkilledLeadersInFrontOfShieldAfterBattle()
         {
             foreach (var leader in LeaderState.Where(ls => ls.Key is Leader l && IsSkilled(l) && !ls.Value.InFrontOfShield).Select(ls => ls.Key as Leader))
             {
                 var currentOwner = Players.FirstOrDefault(p => p.Leaders.Contains(leader));
 
-                if (currentOwner == null || !CapturedLeaders.ContainsKey(leader) && !(currentOwner.Faction != Faction.Pink && leader.HeroType == HeroType.Vidal))
+                if (currentOwner == null || !CapturedLeaders.ContainsKey(leader) && !(currentOwner.Faction != Faction.Pink && leader.HeroType == HeroType.Vidal) && CurrentBattle.IsAggressorOrDefender(currentOwner))
                 {
                     SetInFrontOfShield(leader, true);
 

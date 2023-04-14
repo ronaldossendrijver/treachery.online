@@ -35,7 +35,7 @@
                 amountOfSpecialForces = 0;
             }
 
-            int maxSpecialForcesPlacedOnPlanet = Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, amountOfSpecialForces);
+            int maxSpecialForcesPlacedOnPlanet = Revival.ValidRevivedForceLocations(Game, Player).Any() ? Revival.NumberOfSpecialForcesThatMayBePlacedOnPlanet(Player, amountOfSpecialForces) : 0;
             if (maxSpecialForcesPlacedOnPlanet > 0)
             {
                 <div>

@@ -10,6 +10,8 @@ namespace Treachery.Shared
 {
     public class AmbassadorPlaced : GameEvent
     {
+        #region Construction
+
         public AmbassadorPlaced(Game game) : base(game)
         {
         }
@@ -18,16 +20,24 @@ namespace Treachery.Shared
         {
         }
 
-        public Ambassador Ambassador;
+        #endregion Construction
+
+        #region Properties
+
+        public Ambassador Ambassador { get; set; }
 
         public int _strongholdId;
 
         [JsonIgnore]
         public Territory Stronghold
         {
-            get { return Game.Map.TerritoryLookup.Find(_strongholdId); }
-            set { _strongholdId = Game.Map.TerritoryLookup.GetId(value); }
+            get => Game.Map.TerritoryLookup.Find(_strongholdId);
+            set => _strongholdId = Game.Map.TerritoryLookup.GetId(value);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -35,16 +45,6 @@ namespace Treachery.Shared
             if (!ValidAmbassadors(Player).Contains(Ambassador)) return Message.Express("Ambassador not available");
 
             return null;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.AmbassadorsPlacedThisTurn++;
-            Player.Resources -= Game.AmbassadorsPlacedThisTurn;
-            Log(Initiator, " station the ", Ambassador, " ambassador in ", Stronghold, " for ", Payment.Of(Game.AmbassadorsPlacedThisTurn));
-            Game.AmbassadorsOnPlanet.Add(Stronghold, Ambassador);
-            Player.Ambassadors.Remove(Ambassador);
-            Game.Stone(Milestone.AmbassadorPlaced);
         }
 
         public static IEnumerable<Territory> ValidStrongholds(Game g, Player p)
@@ -67,9 +67,25 @@ namespace Treachery.Shared
             ValidAmbassadors(p).Any() &&
             ValidStrongholds(g, p).Any();
 
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            Game.AmbassadorsPlacedThisTurn++;
+            Player.Resources -= Game.AmbassadorsPlacedThisTurn;
+            Log(Initiator, " station the ", Ambassador, " ambassador in ", Stronghold, " for ", Payment.Of(Game.AmbassadorsPlacedThisTurn));
+            Game.AmbassadorsOnPlanet.Add(Stronghold, Ambassador);
+            Player.Ambassadors.Remove(Ambassador);
+            Game.Stone(Milestone.AmbassadorPlaced);
+        }
+
         public override Message GetMessage()
         {
             return Message.Express(Initiator, " station the ", Ambassador, " ambassador in ", Stronghold);
         }
+
+        #endregion Execution
     }
 }
