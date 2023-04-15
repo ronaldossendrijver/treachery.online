@@ -192,7 +192,7 @@ namespace Treachery.Shared
 
         private void DetermineStrongholdOwnership(Location location)
         {
-            var currentOwner = StrongholdOwnership.ContainsKey(location) ? StrongholdOwnership[location] : Faction.None;
+            var currentOwner = StrongholdOwnership.TryGetValue(location, out Faction value) ? value : Faction.None;
             var newOwningPlayer = Players.FirstOrDefault(p => p.Controls(this, location, Applicable(Rule.ContestedStongholdsCountAsOccupied)));
             var newOwner = newOwningPlayer != null ? newOwningPlayer.Faction : Faction.None;
 
@@ -346,7 +346,7 @@ namespace Treachery.Shared
         public bool MeetsHighThresholdPinkVictoryCondition(Player p, bool contestedStongholdsCountAsOccupied) =>
             (p.Is(Faction.Pink) && p.HasAlly || p.Ally == Faction.Pink) &&
             HasHighThreshold(Faction.Pink) &&
-            Strongholds.Count(l => p.Controls(this, l, contestedStongholdsCountAsOccupied) && p.AlliedPlayer.Controls(this, l, contestedStongholdsCountAsOccupied)) >= 1 &&
+            Strongholds.Any(l => p.Controls(this, l, contestedStongholdsCountAsOccupied) && p.AlliedPlayer.Controls(this, l, contestedStongholdsCountAsOccupied)) &&
             HomeworldOccupation.Values.Count(f => f == p.Faction || f == p.Ally) >= 2;
 
         public int NumberOfVictoryPoints(Player p, bool contestedStongholdsCountAsOccupied)
@@ -493,45 +493,9 @@ namespace Treachery.Shared
 
         #region Terror
 
-        public bool CyanHasPlantedTerror { get; private set; } = false;
+        public bool CyanHasPlantedTerror { get; internal set; } = false;
 
         public IEnumerable<TerrorType> TerrorIn(Territory t) => TerrorOnPlanet.Where(kvp => kvp.Value == t).Select(kvp => kvp.Key);
-
-        public void HandleEvent(TerrorPlanted e)
-        {
-            Log(e);
-
-            if (!e.Passed)
-            {
-                Stone(Milestone.TerrorPlanted);
-                CyanHasPlantedTerror = true;
-
-                if (e.Stronghold == null)
-                {
-                    TerrorOnPlanet.Remove(e.Type);
-                    UnplacedTerrorTokens.Add(e.Type);
-                    e.Player.Resources += 4;
-                }
-                else
-                {
-                    if (TerrorIn(e.Stronghold).Any() && !e.Player.HasHighThreshold(World.Cyan))
-                    {
-                        PlayNexusCard(e.Player, "Cunning", "to plant additional Terror in ", e.Stronghold);
-                    }
-
-                    if (UnplacedTerrorTokens.Contains(e.Type))
-                    {
-                        TerrorOnPlanet.Add(e.Type, e.Stronghold);
-                        UnplacedTerrorTokens.Remove(e.Type);
-                    }
-                    else
-                    {
-                        TerrorOnPlanet.Remove(e.Type);
-                        TerrorOnPlanet.Add(e.Type, e.Stronghold);
-                    }
-                }
-            }
-        }
 
         #endregion
     }

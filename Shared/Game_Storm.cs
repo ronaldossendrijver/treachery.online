@@ -13,7 +13,7 @@ namespace Treachery.Shared
         public int HmsMovesLeft { get; internal set; }
         public List<Faction> HasBattleWheel { get; private set; } = new List<Faction>();
 
-        private readonly List<int> Dials = new();
+        internal readonly List<int> Dials = new();
 
         internal void EnterStormPhase()
         {
@@ -44,45 +44,7 @@ namespace Treachery.Shared
             DetermineOccupationAtStartOrEndOfTurn();
         }
 
-        public void HandleEvent(StormDialled e)
-        {
-            Dials.Add(e.Amount);
-            HasActedOrPassed.Add(e.Initiator);
-
-            if (HasBattleWheel.All(f => HasActedOrPassed.Contains(f)))
-            {
-                Log("Storm dial: ", Dials[0], HasActedOrPassed[0], " + ", Dials[1], HasActedOrPassed[1], " = ", Dials[0] + Dials[1]);
-                NextStormMoves = Dials.Sum();
-
-                if (CurrentTurn == 1)
-                {
-                    PositionFirstStorm();
-                }
-                else
-                {
-                    RevealStorm();
-                }
-            }
-        }
-
-        private void PositionFirstStorm()
-        {
-            SectorInStorm = NextStormMoves % Map.NUMBER_OF_SECTORS;
-            Log("The first storm moves ", SectorInStorm, " sectors");
-            PerformStorm();
-
-            if (Applicable(Rule.TechTokens))
-            {
-                AssignTechTokens();
-            }
-
-            if (UseStormDeck)
-            {
-                NextStormMoves = DetermineLaterStormWithStormDeck();
-            }
-
-            Enter(IsPlaying(Faction.Grey) || Applicable(Rule.HMSwithoutGrey), Phase.HmsPlacement, EndStormPhase);
-        }
+        
 
         internal void MoveHMSBeforeDiallingStorm()
         {
@@ -119,7 +81,7 @@ namespace Treachery.Shared
             }
         }
 
-        private int DetermineLaterStormWithStormDeck()
+        internal int DetermineLaterStormWithStormDeck()
         {
             return Random.Next(6) + 1;
         }
@@ -138,7 +100,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void RevealStorm()
+        internal void RevealStorm()
         {
             HasActedOrPassed.Clear();
             Log("The storm will move ", NextStormMoves, " sectors...");
@@ -147,9 +109,9 @@ namespace Treachery.Shared
 
         internal void CollectSpiceFrom(Faction faction, Location l, int maximumAmount)
         {
-            if (ResourcesOnPlanet.ContainsKey(l))
+            if (ResourcesOnPlanet.TryGetValue(l, out int value))
             {
-                int collected = Math.Min(ResourcesOnPlanet[l], maximumAmount);
+                int collected = Math.Min(value, maximumAmount);
                 ChangeResourcesOnPlanet(l, -collected);
                 var collector = GetPlayer(faction);
                 collector.Resources += collected;
@@ -157,70 +119,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void AssignTechTokens()
-        {
-            var techTokensToBeDealt = new List<TechToken>();
-
-            var yellow = GetPlayer(Faction.Yellow);
-            if (yellow != null)
-            {
-                yellow.TechTokens.Add(TechToken.Resources);
-                Log(Faction.Yellow, " receive ", TechToken.Resources);
-            }
-            else
-            {
-                techTokensToBeDealt.Add(TechToken.Resources);
-            }
-
-            var purple = GetPlayer(Faction.Purple);
-            if (purple != null)
-            {
-                purple.TechTokens.Add(TechToken.Graveyard);
-                Log(Faction.Purple, " receive ", TechToken.Graveyard);
-            }
-            else
-            {
-                techTokensToBeDealt.Add(TechToken.Graveyard);
-            }
-
-            var grey = GetPlayer(Faction.Grey);
-            if (grey != null)
-            {
-                grey.TechTokens.Add(TechToken.Ships);
-                Log(Faction.Grey, " receive ", TechToken.Ships);
-            }
-            else
-            {
-                techTokensToBeDealt.Add(TechToken.Ships);
-            }
-
-            var remainingTechTokens = new Deck<TechToken>(techTokensToBeDealt, Random);
-            remainingTechTokens.Shuffle();
-            Stone(Milestone.Shuffled);
-
-            var techTokenSequence = new PlayerSequence(this);
-
-            while (!remainingTechTokens.IsEmpty && Players.Any(p => p.TechTokens.Count == 0))
-            {
-                if (techTokenSequence.CurrentPlayer.TechTokens.Count == 0)
-                {
-                    var token = remainingTechTokens.Draw();
-                    techTokenSequence.CurrentPlayer.TechTokens.Add(token);
-                    Log(techTokenSequence.CurrentPlayer.Faction, " receive ", token);
-                }
-
-                techTokenSequence.NextPlayer();
-            }
-        }
-
-        public void HandleEvent(StormSpellPlayed e)
-        {
-            Discard(GetPlayer(e.Initiator), TreacheryCardType.StormSpell);
-            Log(e);
-            MoveStormAndDetermineNext(e.MoveAmount);
-            EndStormPhase();
-        }
-
+        
         public bool CurrentTestingStationUsed { get; private set; }
         public void HandleEvent(TestingStationUsed e)
         {
@@ -253,7 +152,7 @@ namespace Treachery.Shared
             Stone(Milestone.Storm);
         }
 
-        private void PerformStorm()
+        internal void PerformStorm()
         {
             foreach (var l in Forces(false).Where(f => f.Key.Sector == SectorInStorm && !IsProtectedFromStorm(f.Key)))
             {
@@ -266,7 +165,7 @@ namespace Treachery.Shared
                     {
                         if (!Prevented(FactionAdvantage.YellowProtectedFromStorm))
                         {
-                            StormLossesToTake.Add(new LossToTake() { Location = l.Key, Amount = LossesToTake(battalion), Faction = battalion.Faction });
+                            StormLossesToTake.Add(new LossToTake() { Location = l.Key, Amount = TakeLosses.HalfOf(battalion.AmountOfForces, battalion.AmountOfSpecialForces), Faction = battalion.Faction });
                         }
                         else
                         {
@@ -316,62 +215,7 @@ namespace Treachery.Shared
             }
         }
 
-        private Phase PhaseBeforeStormLoss;
-
-        public void HandleEvent(TakeLosses e)
-        {
-            var player = GetPlayer(e.Initiator);
-            bool mustDiscard = false;
-
-            if (e.UseUselessCard)
-            {
-                var card = TakeLosses.ValidUselessCardToPreventLosses(this, e.Player);
-                if (card == null && NexusPlayed.CanUseCunning(player))
-                {
-                    PlayNexusCard(player, "Cunning", " prevent losing forces in ", StormLossesToTake[0].Location);
-                    mustDiscard = true;
-                }
-                else
-                {
-                    Discard(e.Player, card);
-                    Log(e.Initiator, " prevent losing forces in ", StormLossesToTake[0].Location);
-                }
-
-                StormLossesToTake.RemoveAt(0);
-                Stone(Milestone.SpecialUselessPlayed);
-            }
-            else
-            {
-                player.KillForces(TakeLosses.LossesToTake(this).Location, e.ForceAmount, e.SpecialForceAmount, false);
-                StormLossesToTake.RemoveAt(0);
-                Log(e);
-            }
-
-            if (PhaseBeforeStormLoss == Phase.BlowA)
-            {
-                Enter(StormLossesToTake.Count > 0, Phase.StormLosses, EndStormPhase);
-            }
-            else
-            {
-                Enter(PhaseBeforeStormLoss);
-                DetermineNextShipmentAndMoveSubPhase();
-            }
-
-            if (mustDiscard)
-            {
-                LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
-            }
-        }
-
-        internal int LossesToTake(Battalion battalion)
-        {
-            return LossesToTake(battalion.AmountOfForces, battalion.AmountOfSpecialForces);
-        }
-
-        internal int LossesToTake(int AmountOfForces, int AmountOfSpecialForces)
-        {
-            return (int)Math.Ceiling(0.5 * (AmountOfForces + AmountOfSpecialForces));
-        }
+        internal Phase PhaseBeforeStormLoss { get; set; }
 
         public List<LossToTake> StormLossesToTake { get; private set; } = new List<LossToTake>();
         public bool UseStormDeck => Applicable(Rule.StormDeckWithoutYellow) || IsPlaying(Faction.Yellow) && Applicable(Rule.YellowSeesStorm);

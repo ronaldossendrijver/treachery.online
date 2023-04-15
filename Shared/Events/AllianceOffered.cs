@@ -36,7 +36,7 @@ namespace Treachery.Shared
             return null;
         }
 
-        public static IEnumerable<Faction> ValidTargets(Game g, Player p) => g.Players.Where(other => p != other && !g.HaveForcesOnEachOthersHomeworld(p, other)).Select(other => other.Faction);
+        public static IEnumerable<Faction> ValidTargets(Game g, Player p) => g.Players.Where(other => p != other && !Game.HaveForcesOnEachOthersHomeworld(p, other)).Select(other => other.Faction);
 
         #endregion Validation
 

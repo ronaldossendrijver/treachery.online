@@ -218,17 +218,12 @@ namespace Treachery.Shared
 
         public static IEnumerable<SequenceElement> PlayersToBid(Game g)
         {
-            switch (g.CurrentAuctionType)
+            return g.CurrentAuctionType switch
             {
-                case AuctionType.BlackMarketNormal:
-                case AuctionType.BlackMarketOnceAround:
-                    return g.BidSequence.GetPlayersInSequence();
-
-                case AuctionType.BlackMarketSilent:
-                    return g.Players.Select(p => new SequenceElement() { Player = p, HasTurn = p.HasRoomForCards && !g.Bids.Keys.Contains(p.Faction) });
-
-                default: return new SequenceElement[] { };
-            }
+                AuctionType.BlackMarketNormal or AuctionType.BlackMarketOnceAround => g.BidSequence.GetPlayersInSequence(),
+                AuctionType.BlackMarketSilent => g.Players.Select(p => new SequenceElement() { Player = p, HasTurn = p.HasRoomForCards && !g.Bids.ContainsKey(p.Faction) }),
+                _ => Array.Empty<SequenceElement>(),
+            };
         }
 
         public static bool MayBePlayed(Game game, Player player)

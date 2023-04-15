@@ -6,6 +6,8 @@ namespace Treachery.Shared
 {
     public class StormSpellPlayed : GameEvent
     {
+        #region Construction
+
         public StormSpellPlayed(Game game) : base(game)
         {
         }
@@ -14,7 +16,15 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Properties
+
         public int MoveAmount { get; set; }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -23,14 +33,23 @@ namespace Treachery.Shared
             return null;
         }
 
+        #endregion Validation
+
+        #region Execution
+
         protected override void ExecuteConcreteEvent()
         {
-            Game.HandleEvent(this);
+            Game.Discard(Player, TreacheryCardType.StormSpell);
+            Log();
+            Game.MoveStormAndDetermineNext(MoveAmount);
+            Game.EndStormPhase();
         }
 
         public override Message GetMessage()
         {
             return Message.Express(Initiator, " use ", TreacheryCardType.StormSpell, " to move the storm ", MoveAmount, " sectors");
         }
+
+        #endregion Execution
     }
 }

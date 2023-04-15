@@ -43,10 +43,10 @@ namespace Treachery.Shared
         public Deck<ResourceCard> ResourceCardDeck { get; internal set; }
         public Deck<ResourceCard> ResourceCardDiscardPileA { get; internal set; }
         public Deck<ResourceCard> ResourceCardDiscardPileB { get; internal set; }
-        public int SectorInStorm { get; private set; } = -1;
-        public int NextStormMoves { get; private set; } = -1;
+        public int SectorInStorm { get; internal set; } = -1;
+        public int NextStormMoves { get; internal set; } = -1;
         public bool ShieldWallDestroyed { get; internal set; } = false;
-        public Territory AtomicsAftermath { get; private set; } = null;
+        public Territory AtomicsAftermath { get; internal set; } = null;
         public BrownEconomicsStatus EconomicsStatus { get; internal set; } = BrownEconomicsStatus.None;
         public Dictionary<Location, int> ResourcesOnPlanet { get; private set; } = new();
         public Dictionary<TerrorType, Territory> TerrorOnPlanet { get; private set; } = new();
@@ -1213,7 +1213,7 @@ namespace Treachery.Shared
             }
         }
 
-        internal bool HaveForcesOnEachOthersHomeworld(Player a, Player b) => a.ForcesInLocations.Keys.Any(l => b.Homeworlds.Contains(l)) || b.ForcesInLocations.Keys.Any(l => a.Homeworlds.Contains(l));
+        internal static bool HaveForcesOnEachOthersHomeworld(Player a, Player b) => a.ForcesInLocations.Keys.Any(l => b.Homeworlds.Contains(l)) || b.ForcesInLocations.Keys.Any(l => a.Homeworlds.Contains(l));
 
         private void LogTo(Faction faction, params object[] expression)
         {

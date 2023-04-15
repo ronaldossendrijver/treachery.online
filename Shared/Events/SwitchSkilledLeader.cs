@@ -8,6 +8,8 @@ namespace Treachery.Shared
 {
     public class SwitchedSkilledLeader : GameEvent
     {
+        #region Construction
+
         public SwitchedSkilledLeader(Game game) : base(game)
         {
         }
@@ -16,19 +18,13 @@ namespace Treachery.Shared
         {
         }
 
+        #endregion Construction
+
+        #region Validation
+
         public override Message Validate()
         {
             return null;
-        }
-
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
-        public override Message GetMessage()
-        {
-            return Message.Express(Initiator, " switch their skilled leader");
         }
 
         public static Leader SwitchableLeader(Game game, Player player) => player.Leaders.FirstOrDefault(l => game.IsSkilled(l) && !game.CapturedLeaders.ContainsKey(l) && (player.Faction == Faction.Pink || l.HeroType != HeroType.Vidal));
@@ -37,5 +33,23 @@ namespace Treachery.Shared
         {
             return game.CurrentBattle.IsAggressorOrDefender(player) && game.CurrentBattle.PlanOf(player) == null && SwitchableLeader(game, player) != null;
         }
+
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            var leader = SwitchableLeader(Game, Player);
+            Game.SetInFrontOfShield(leader, !Game.IsInFrontOfShield(leader));
+            Log(Initiator, " place ", Game.Skill(leader), " ", leader, Game.IsInFrontOfShield(leader) ? " in front of" : " behind", " their shield");
+        }
+
+        public override Message GetMessage()
+        {
+            return Message.Express(Initiator, " switch their skilled leader");
+        }
+
+        #endregion Execution
     }
 }

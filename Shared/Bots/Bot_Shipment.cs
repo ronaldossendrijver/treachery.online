@@ -899,7 +899,7 @@ namespace Treachery.Shared
 
         private int UnlockedForcesInPolarSink(Location location) => location == Game.Map.Arrakeen || location == Game.Map.Carthag ? AnyForcesIn(Game.Map.PolarSink) : 0;
 
-        private float DeterminePenalty(Player opponent) => opponent != null && opponent.IsBot && (!opponent.HasAlly || opponent.AlliedPlayer.IsBot) ? BotParameters.PenaltyForAttackingBots : 0;
+        private static float DeterminePenalty(Player opponent) => opponent != null && opponent.IsBot && (!opponent.HasAlly || opponent.AlliedPlayer.IsBot) ? BotParameters.PenaltyForAttackingBots : 0;
 
         private void DoZeroNoFieldShipment(ShipmentDecision action, Location location)
         {

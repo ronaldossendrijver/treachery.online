@@ -532,7 +532,7 @@ namespace Treachery.Shared
                 if (!Game.Prevented(FactionAdvantage.YellowProtectedFromStorm) && Game.Applicable(Rule.YellowStormLosses))
                 {
                     killCount = 0;
-                    Game.StormLossesToTake.Add(new LossToTake() { Location = to, Amount = Game.LossesToTake(forceAmount, specialForceAmount), Faction = Faction.Yellow });
+                    Game.StormLossesToTake.Add(new LossToTake() { Location = to, Amount = TakeLosses.HalfOf(forceAmount, specialForceAmount), Faction = Faction.Yellow });
                 }
                 else
                 {

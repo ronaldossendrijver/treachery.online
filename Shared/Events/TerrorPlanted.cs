@@ -8,8 +8,10 @@ using System.Linq;
 
 namespace Treachery.Shared
 {
-    public class TerrorPlanted : GameEvent
+    public class TerrorPlanted : PassableGameEvent
     {
+        #region Construction
+
         public TerrorPlanted(Game game) : base(game)
         {
         }
@@ -18,18 +20,24 @@ namespace Treachery.Shared
         {
         }
 
-        public bool Passed;
+        #endregion Construction
 
-        public TerrorType Type;
+        #region Properties
+
+        public TerrorType Type { get; set; }
 
         public int _territoryId;
 
         [JsonIgnore]
         public Territory Stronghold
         {
-            get { return Game.Map.TerritoryLookup.Find(_territoryId); }
-            set { _territoryId = Game.Map.TerritoryLookup.GetId(value); }
+            get => Game.Map.TerritoryLookup.Find(_territoryId);
+            set => _territoryId = Game.Map.TerritoryLookup.GetId(value);
         }
+
+        #endregion Properties
+
+        #region Validation
 
         public override Message Validate()
         {
@@ -73,17 +81,52 @@ namespace Treachery.Shared
             }
         }
 
-        protected override void ExecuteConcreteEvent()
-        {
-            Game.HandleEvent(this);
-        }
-
         public static bool IsApplicable(Game g, Player p) =>
             g.CurrentPhase == Phase.Contemplate &&
             !g.CyanHasPlantedTerror &&
             !g.Prevented(FactionAdvantage.CyanPlantingTerror) &&
             ValidTerrorTypes(g, false).Any() &&
             ValidStrongholds(g, p).Any();
+
+        #endregion Validation
+
+        #region Execution
+
+        protected override void ExecuteConcreteEvent()
+        {
+            Log();
+
+            if (!Passed)
+            {
+                Game.Stone(Milestone.TerrorPlanted);
+                Game.CyanHasPlantedTerror = true;
+
+                if (Stronghold == null)
+                {
+                    Game.TerrorOnPlanet.Remove(Type);
+                    Game.UnplacedTerrorTokens.Add(Type);
+                    Player.Resources += 4;
+                }
+                else
+                {
+                    if (Game.TerrorIn(Stronghold).Any() && !Player.HasHighThreshold(World.Cyan))
+                    {
+                        Game.PlayNexusCard(Player, "Cunning", "to plant additional Terror in ", Stronghold);
+                    }
+
+                    if (Game.UnplacedTerrorTokens.Contains(Type))
+                    {
+                        Game.TerrorOnPlanet.Add(Type, Stronghold);
+                        Game.UnplacedTerrorTokens.Remove(Type);
+                    }
+                    else
+                    {
+                        Game.TerrorOnPlanet.Remove(Type);
+                        Game.TerrorOnPlanet.Add(Type, Stronghold);
+                    }
+                }
+            }
+        }
 
         public override Message GetMessage()
         {
@@ -100,5 +143,7 @@ namespace Treachery.Shared
                 return Message.Express(Initiator, " remove a terror token to get ", Payment.Of(4));
             }
         }
+
+        #endregion Execution
     }
 }

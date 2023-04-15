@@ -265,7 +265,7 @@ namespace Treachery.Shared
                     killCount = 0;
                     initiator.MoveForces(from, to, battalion.AmountOfForces);
                     initiator.MoveSpecialForces(from, to, battalion.AmountOfSpecialForces);
-                    StormLossesToTake.Add(new LossToTake() { Location = to, Amount = LossesToTake(battalion), Faction = battalion.Faction });
+                    StormLossesToTake.Add(new LossToTake() { Location = to, Amount = TakeLosses.HalfOf(battalion.AmountOfForces, battalion.AmountOfSpecialForces), Faction = battalion.Faction });
                 }
                 else
                 {
@@ -356,139 +356,6 @@ namespace Treachery.Shared
         internal Phase PausedTerrorPhase { get; set; }
         public bool AllianceByTerrorWasOffered { get; internal set; } = false;
         public Faction AllianceByTerrorOfferedTo { get; internal set; }
-        public void HandleEvent(TerrorRevealed e)
-        {
-            var initiator = GetPlayer(e.Initiator);
-            var territory = TerrorRevealed.GetTerritory(this);
-            var victim = TerrorRevealed.GetVictim(this);
-            var victimPlayer = GetPlayer(victim);
-
-            if (e.Passed)
-            {
-                Log(e.Initiator, " don't terrorize ", territory);
-                AllianceByTerrorWasOffered = false;
-                DequeueIntrusion(IntrusionType.Terror);
-                DetermineNextShipmentAndMoveSubPhase();
-            }
-            else if (e.AllianceOffered)
-            {
-                Log(e.Initiator, " offer an alliance to ", victim, " as an alternative to terror");
-                AllianceByTerrorOfferedTo = victim;
-                AllianceByTerrorWasOffered = true;
-                PausedTerrorPhase = CurrentPhase;
-                Enter(Phase.AllianceByTerror);
-            }
-            else
-            {
-                Stone(Milestone.TerrorRevealed);
-
-                TerrorOnPlanet.Remove(e.Type);
-
-                if (e.Passed || !TerrorIn(territory).Any())
-                {
-                    DequeueIntrusion(IntrusionType.Terror);
-                }
-
-                AllianceByTerrorWasOffered = false;
-
-                switch (e.Type)
-                {
-                    case TerrorType.Assassination:
-
-                        var randomLeader = victimPlayer.Leaders.RandomOrDefault(Random);
-                        if (randomLeader != null)
-                        {
-                            Log(e.Initiator, " gain ", Payment.Of(randomLeader.CostToRevive), " from assassinating ", randomLeader, " in ", territory);
-                            initiator.Resources += randomLeader.CostToRevive;
-                            KillHero(randomLeader);
-                        }
-                        else
-                        {
-                            Log(e.Initiator, " fail to assassinate a leader in ", territory);
-                        }
-                        break;
-
-                    case TerrorType.Atomics:
-
-                        KillAllForcesIn(territory, false);
-
-                        KillAmbassadorIn(territory);
-
-                        AtomicsAftermath = territory;
-
-                        if (initiator.TreacheryCards.Count > initiator.MaximumNumberOfCards)
-                        {
-                            Discard(initiator, initiator.TreacheryCards.RandomOrDefault(Random));
-                        }
-
-                        Stone(Milestone.MetheorUsed);
-                        Log(e.Initiator, " DETONATE ATOMICS in ", territory);
-                        break;
-
-                    case TerrorType.Extortion:
-
-                        Log(e.Initiator, " will get ", Payment.Of(5), " from ", e.Type, " during ", MainPhase.Contemplate);
-                        initiator.Extortion += 5;
-                        break;
-
-                    case TerrorType.Robbery:
-
-                        if (e.RobberyTakesCard)
-                        {
-                            initiator.TreacheryCards.Add(DrawTreacheryCard());
-                            Log(e.Initiator, " draw a Treachery Card");
-                        }
-                        else
-                        {
-                            var amountStolen = (int)Math.Ceiling(0.5f * victimPlayer.Resources);
-                            initiator.Resources += amountStolen;
-                            victimPlayer.Resources -= amountStolen;
-                            Log(e.Initiator, " steal ", Payment.Of(amountStolen), " by ", e.Type, " in ", territory);
-                        }
-                        break;
-
-                    case TerrorType.Sabotage:
-
-                        Log(e.Initiator, " sabotage ", victimPlayer.Faction);
-
-                        if (victimPlayer.TreacheryCards.Any())
-                        {
-                            Discard(victimPlayer.TreacheryCards.RandomOrDefault(Random));
-                        }
-                        else
-                        {
-                            Log(victimPlayer.Faction, " have no treachery cards to discard");
-                        }
-
-                        if (e.CardToGiveInSabotage != null)
-                        {
-                            initiator.TreacheryCards.Remove(e.CardToGiveInSabotage);
-                            victimPlayer.TreacheryCards.Add(e.CardToGiveInSabotage);
-                            Log(e.Initiator, " give a treachery card to ", victimPlayer.Faction);
-                        }
-
-                        break;
-
-                    case TerrorType.SneakAttack:
-
-                        if (e.SneakAttackTo != null)
-                        {
-                            Log(e.Initiator, " sneak attack ", territory, " with ", e.ForcesInSneakAttack, initiator.Force);
-                            initiator.ShipForces(e.SneakAttackTo, e.ForcesInSneakAttack);
-                            CheckIntrusion(e);
-                        }
-                        break;
-
-                }
-
-                DetermineNextShipmentAndMoveSubPhase();
-            }
-
-            if (!e.Passed && e.Type == TerrorType.Robbery && e.RobberyTakesCard && initiator.TreacheryCards.Count > initiator.MaximumNumberOfCards)
-            {
-                LetPlayerDiscardTreacheryCardOfChoice(e.Initiator);
-            }
-        }
 
         internal void LetPlayerDiscardTreacheryCardOfChoice(Faction f)
         {
@@ -497,7 +364,7 @@ namespace Treachery.Shared
             Enter(Phase.Discarding);
         }
 
-        private void KillAmbassadorIn(Territory territory)
+        internal void KillAmbassadorIn(Territory territory)
         {
             var ambassador = AmbassadorIn(territory);
             if (ambassador != Ambassador.None)

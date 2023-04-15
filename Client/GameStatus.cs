@@ -512,8 +512,6 @@ namespace Treachery.Client
             }
         }
 
-        private static Player PlayerOrOccupier(Game g, Faction f, World w) => g.GetPlayer(FactionOrOccupier(g, f, w));
-
         private static IEnumerable<Player> PlayerAndAlly(Game g, Faction f)
         {
             var player = g.GetPlayer(f);

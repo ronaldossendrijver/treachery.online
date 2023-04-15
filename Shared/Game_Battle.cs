@@ -133,13 +133,6 @@ namespace Treachery.Shared
 
         #region BattlePlan
 
-        public void HandleEvent(SwitchedSkilledLeader e)
-        {
-            var leader = SwitchedSkilledLeader.SwitchableLeader(this, e.Player);
-            SetInFrontOfShield(leader, !IsInFrontOfShield(leader));
-            Log(e.Initiator, " place ", Skill(leader), " ", leader, IsInFrontOfShield(leader) ? " in front of" : " behind", " their shield");
-        }
-
         public void HandleEvent(ResidualPlayed e)
         {
             Discard(e.Player, TreacheryCardType.Residual);
@@ -1209,7 +1202,7 @@ namespace Treachery.Shared
             }
         }
 
-        private void KillAllForcesIn(Territory territory, bool inBattle)
+        internal void KillAllForcesIn(Territory territory, bool inBattle)
         {
             foreach (var p in Players)
             {

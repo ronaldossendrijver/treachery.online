@@ -215,9 +215,9 @@ namespace Treachery.Shared
 
         public int ForcesIn(Location location)
         {
-            if (ForcesInLocations.ContainsKey(location))
+            if (ForcesInLocations.TryGetValue(location, out Battalion battalion))
             {
-                return ForcesInLocations[location].AmountOfForces;
+                return battalion.AmountOfForces;
             }
             else
             {
@@ -227,9 +227,9 @@ namespace Treachery.Shared
 
         public int SpecialForcesIn(Location location)
         {
-            if (ForcesInLocations.ContainsKey(location))
+            if (ForcesInLocations.TryGetValue(location, out Battalion battalion))
             {
-                return ForcesInLocations[location].AmountOfSpecialForces;
+                return battalion.AmountOfSpecialForces;
             }
             else
             {
@@ -239,9 +239,9 @@ namespace Treachery.Shared
 
         public int AnyForcesIn(Location location)
         {
-            if (ForcesInLocations.ContainsKey(location))
+            if (ForcesInLocations.TryGetValue(location, out Battalion battalion))
             {
-                return ForcesInLocations[location].TotalAmountOfForces;
+                return battalion.TotalAmountOfForces;
             }
             else
             {
@@ -350,10 +350,8 @@ namespace Treachery.Shared
 
         public int KillAllForces(Location location, bool inBattle)
         {
-            if (ForcesInLocations.ContainsKey(location))
+            if (ForcesInLocations.TryGetValue(location, out Battalion battallion))
             {
-                var battallion = ForcesInLocations[location];
-
                 int killCount = battallion.AmountOfForces;
                 ForcesKilled += killCount;
 
